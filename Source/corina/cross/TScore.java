@@ -169,6 +169,11 @@ public class TScore extends Cross {
             smoothed[i] = Math.log(Math.max(100.0*smoothed[i], Double.MIN_VALUE));
         */
 
+        // TESTING: make sure everything is positive (for GAZ37ABC.TRU)
+        for (int i=0; i<N; i++)
+            if (((Number) data.get(i)).intValue() < 0)
+                data.set(i, new Integer(1));
+
         // make array weights={1,1,1,...}
         int weights[] = new int[WINDOW];
         Arrays.fill(weights, 1);
