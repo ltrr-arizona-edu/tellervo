@@ -47,8 +47,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
 import java.awt.print.Pageable;
 import java.awt.print.Printable;
 import java.awt.print.PageFormat;
@@ -58,14 +56,6 @@ import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JCheckBox;
-import javax.swing.JButton;
-import javax.swing.ButtonGroup;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.Action;
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
@@ -356,146 +346,4 @@ public class GridFrame extends XFrame
         // redraw?  sure.
         repaint();
     }
-
-    /* prefs: (these are the defaults)
-       corina.grid.markSig = true
-       corina.grid.booleanOp = and
-       corina.grid.useTscore = true
-       corina.grid.useTrend = false
-       corina.grid.useDscore = false
-       corina.grid.useOverlap = true
-     */
-    private static class MarkCrosses extends JDialog {
-	MarkCrosses() {
-	    setTitle("Mark Significant Crosses");
-	    setResizable(false);
-
-	    JCheckBox markSig;
-	    markSig = new JCheckBox("Mark Significant Crosses");
-	    markSig.setSelected(Boolean.getBoolean("corina.grid.markSig"));
-
-	    JButton change;
-	    change = new JButton("Change Color...");
-
-	    final JRadioButton oneOf, allOf;
-	    ButtonGroup group;
-	    oneOf = new JRadioButton("If ONE of the following is significant");
-	    allOf = new JRadioButton("If ALL of the following are significant");
-	    group = new ButtonGroup();
-	    group.add(oneOf);
-	    group.add(allOf);
-	    oneOf.setSelected(true);
-
-	    final JCheckBox tscore, trend, dscore, overlap;
-	    tscore = new JCheckBox("T-Score (t > 2.65)");
-	    tscore.setSelected(Boolean.getBoolean("corina.grid.useTscore"));
-	    trend = new JCheckBox("Trend (tr > 55%)");
-	    trend.setSelected(Boolean.getBoolean("corina.grid.useTrend"));
-	    dscore = new JCheckBox("D-Score (d > 13.2)");
-	    dscore.setSelected(Boolean.getBoolean("corina.grid.useDscore"));
-	    overlap = new JCheckBox("Overlap (N > 50)");
-	    overlap.setSelected(Boolean.getBoolean("corina.grid.useOverlap"));
-
-	    // disable stuff that should be disabled
-	    if (!Boolean.getBoolean("corina.grid.markSig")) {
-		oneOf.setEnabled(false);
-		allOf.setEnabled(false);
-		tscore.setEnabled(false);
-		trend.setEnabled(false);
-		dscore.setEnabled(false);
-		overlap.setEnabled(false);
-	    }
-
-	    //
-	    // event handling
-	    //
-	    markSig.addItemListener(new ItemListener() {
-		    public void itemStateChanged(ItemEvent e) {
-			boolean active = (e.getStateChange() == ItemEvent.SELECTED);
-			oneOf.setEnabled(active);
-			allOf.setEnabled(active);
-			tscore.setEnabled(active);
-			trend.setEnabled(active);
-			dscore.setEnabled(active);
-			overlap.setEnabled(active);
-			System.setProperty("corina.grid.markSig", String.valueOf(active));
-			// fire something
-		    }
-		});
-	    oneOf.addItemListener(new ItemListener() {
-		    public void itemStateChanged(ItemEvent e) {
-			boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
-			if (!selected) return;
-			System.setProperty("corina.grid.booleanOp", "or");
-			// fire something
-		    }
-		});
-	    allOf.addItemListener(new ItemListener() {
-		    public void itemStateChanged(ItemEvent e) {
-			boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
-			if (!selected) return;
-			System.setProperty("corina.grid.booleanOp", "and");
-			// fire something
-		    }
-		});
-	    tscore.addItemListener(new ItemListener() {
-		    public void itemStateChanged(ItemEvent e) {
-			boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
-			System.setProperty("corina.grid.useTscore", String.valueOf(selected));
-			// fire something
-		    }
-		});
-	    trend.addItemListener(new ItemListener() {
-		    public void itemStateChanged(ItemEvent e) {
-			boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
-			System.setProperty("corina.grid.useTrend", String.valueOf(selected));
-			// fire something
-		    }
-		});
-	    dscore.addItemListener(new ItemListener() {
-		    public void itemStateChanged(ItemEvent e) {
-			boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
-			System.setProperty("corina.grid.useDscore", String.valueOf(selected));
-			// fire something
-		    }
-		});
-	    overlap.addItemListener(new ItemListener() {
-		    public void itemStateChanged(ItemEvent e) {
-			boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
-			System.setProperty("corina.grid.useOverlap", String.valueOf(selected));
-			// fire something
-		    }
-		});
-
-	    // layout
-            JPanel indented = new JPanel();
-            indented.setLayout(new BoxLayout(indented, BoxLayout.Y_AXIS));
-	    indented.add(change);
-	    indented.add(Box.createVerticalStrut(12));
-	    indented.add(oneOf);
-	    indented.add(allOf);
-	    indented.add(Box.createVerticalStrut(12));
-	    indented.add(tscore);
-	    indented.add(trend);
-	    indented.add(dscore);
-	    indented.add(overlap);
-
-	    JPanel vert = new JPanel(new BorderLayout());
-	    vert.add(markSig, BorderLayout.NORTH);
-	    vert.add(Box.createHorizontalStrut(40), BorderLayout.WEST);
-	    vert.add(indented, BorderLayout.CENTER);
-
-	    getContentPane().add(vert, BorderLayout.CENTER);
-	    getContentPane().add(Box.createVerticalStrut(14), BorderLayout.NORTH);
-	    getContentPane().add(Box.createVerticalStrut(20), BorderLayout.SOUTH);
-	    getContentPane().add(Box.createHorizontalStrut(20), BorderLayout.EAST);
-	    getContentPane().add(Box.createHorizontalStrut(20), BorderLayout.WEST);
-
-	    pack();
-	    show();
-	}
-    }
-
-    // class SignificanceRule?  method?
-
 }
