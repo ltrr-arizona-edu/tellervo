@@ -21,3 +21,7 @@ we copy this one to her home directory.
 -- Manifest
 	The manifest, so Corina knows where to find its libraries
 and what to do when you double-click it.
+
+-- build (generated at compile-time)
+	Where the compiled classes are put before being put into
+Corina.jar.
