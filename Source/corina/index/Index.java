@@ -80,7 +80,10 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
         every case, this is the same as the source.  This is modified
     in-place by apply().
         @see source */
-    public Sample target;
+    private Sample target;
+    public Sample getTarget() {
+        return target; // for graphing
+    }
 
     /** Constructs an index with a given source sample, and creates a
         list for data.

@@ -390,9 +390,8 @@ public class IndexDialog extends JDialog {
                 sample.postEdit(index);
 
                 // also: clear filename, set modified
-                index.target.setModified();
-                index.target.meta.remove("filename");
-                // ISN'T INDEX.TARGET=SAMPLE?  IF SO, TARGET CAN BE PRIVATE.
+                sample.setModified();
+                sample.meta.remove("filename");
                 
                 // tell editor, and close
                 sample.fireSampleMetadataChanged();
