@@ -35,6 +35,9 @@ import corina.gui.ButtonLayout;
 import corina.gui.DialogLayout;
 import corina.editor.CountRenderer;
 import corina.util.Platform;
+import corina.util.Sort;
+import corina.print.Printer;
+import corina.prefs.Prefs;
 
 import java.io.IOException;
 
@@ -189,7 +192,8 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
             // copy data
             this.c = c;
 
-            df = new DecimalFormat(c.getFormat());
+            // pick up its format
+            formatChanged();
         }
 
         public void formatChanged() {
@@ -280,10 +284,14 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         @return the column's name */
         public String getColumnName(int col) {
             switch (col) {
-                case 0: return cross.getName();
-                case 1: return msg.getString("quantity");
-                case 2: return msg.getString("histogram");
-                default: throw new IllegalArgumentException(); // never happens
+                case 0:
+                    return cross.getName();
+                case 1:
+                    return msg.getString("quantity");
+                case 2:
+                    return msg.getString("histogram");
+                default:
+                    throw new IllegalArgumentException(); // never happens
             }
         }
 
@@ -355,9 +363,33 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         }
     }
 
+    // convert fixedFloats/movingFloats to a string, for storing in the prefs
+    private String encode() {
+        if (fixedFloats && !movingFloats)
+            return "fixed";
+        else if (!fixedFloats && movingFloats)
+            return "moving";
+        else
+            return "both";
+    }
+    // set fixedFloats/movingFloats based on a string, which was stored in the prefs
+    private void decode(String pref) {
+        if (pref.equals("fixed")) {
+            fixedFloats = true;
+            movingFloats = false;
+        } else if (pref.equals("both")) {
+            fixedFloats = true;
+            movingFloats = true;
+        } else { // "moving"
+            fixedFloats = false;
+            movingFloats = true;
+        }
+    }
+
     // gui setup
     private void initGui() {
         // timer ------------------------------------------------------------
+        // A TIMER?  WHAT IN THE NAME OF JESUS H CHRIST WERE YOU THINKING?
         timer = new Timer(10 /* ms */, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (cross.isFinished()) {
@@ -379,9 +411,18 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
             }
         });
 
-	// bottom panel ------------------------------------------------------------
+        // cards!
+        cardLayout = new CardLayout();
+        cards = new JPanel(cardLayout);
+        getContentPane().add(cards);
+
+        // default view
+        JPanel defaultView = new JPanel(new BorderLayout());
+        cards.add(defaultView, "default");
+        
+        // bottom panel ------------------------------------------------------------
         JPanel buttons = new JPanel(new ButtonLayout());
-        getContentPane().add(buttons, BorderLayout.SOUTH);
+        defaultView.add(buttons, BorderLayout.SOUTH);
         buttons.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // HACK!
 
         // classloader, for icons
@@ -550,9 +591,9 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         buttons.add(prevButton);
         buttons.add(nextButton);
 
-	// center panel ----------------------------------------------------------------------
-	tabPane = new JTabbedPane();
-	getContentPane().add(tabPane, BorderLayout.CENTER);
+        // center panel ----------------------------------------------------------------------
+        tabPane = new JTabbedPane();
+        defaultView.add(tabPane, BorderLayout.CENTER);
 
         // top panel ----------------------------------------------------------------------
         // i'd rather use a dialoglayout to right-align the "fixed"/"moving" labels,
@@ -583,12 +624,12 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         top.add(m);
 
         // BUG: titles/icons don't get updated on next/prev
-	
-	// TODO: add "swap f/m" button to right side, 1-line high,
-	// align-right, centered vertically in the 2-line space (its
-	// own panel, somehow)
 
-	getContentPane().add(top, BorderLayout.NORTH);
+        // TODO: add "swap f/m" button to right side, 1-line high,
+        // align-right, centered vertically in the 2-line space (its
+        // own panel, somehow)
+        
+        defaultView.add(top, BorderLayout.NORTH);
     }
 
     /** Update both tables, the frame title, and the prev/next
@@ -699,107 +740,119 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         for (int i=1; i<=10; i++)
             scoresTable.getColumnModel().getColumn(i).setCellRenderer(sr);
 
-	// double-click-able
-	scoresTable.addMouseListener(new MouseAdapter() {
-		public void mouseClicked(MouseEvent e) {
-		    // respond only to double-clicks
-		    if (e.getClickCount() != 2)
-			return;
+        // double-click-able
+        scoresTable.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                // respond only to double-clicks
+                if (e.getClickCount() != 2)
+                    return;
 
-		    // get the (row,col) of the click
-		    int row = scoresTable.rowAtPoint(e.getPoint());
-		    int col = scoresTable.columnAtPoint(e.getPoint());
+                // get the (row,col) of the click
+                int row = scoresTable.rowAtPoint(e.getPoint());
+                int col = scoresTable.columnAtPoint(e.getPoint());
 
-		    // get the year (== end-date of moving sample)
-		    Year y = ((CrossTableModel) scoresTable.getModel()).getYear(row, col);
+                // get the year (== end-date of moving sample)
+                Year y = ((CrossTableModel) scoresTable.getModel()).getYear(row, col);
 
-                    // blank spot -- better to just look for empty cell?
-                    if (!cross.range.contains(y))
+                // blank spot -- better to just look for empty cell?
+                if (!cross.range.contains(y))
+                    return;
+                if (col == 0)
+                    return;
+                if ((row + cross.range.getStart().row() == 0) && (col == 1))
+                    return;
+
+                // new graph at this place
+                new GraphFrame(cross, y);
+            }
+        });
+
+        // sigs
+        sigsTable = new JTable(new CrossSigsTableModel(cross));
+        sigsTable.getTableHeader().setReorderingAllowed(false);
+        sigsTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        sigsTable.getColumnModel().getColumn(0).setPreferredWidth(24); // number column is too big
+        sigsTable.getColumnModel().getColumn(0).setMaxWidth(36);
+
+        selectHighest();
+
+        // double-click-able
+        sigsTable.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                // respond only to double-clicks
+                if (e.getClickCount() != 2)
+                    return;
+
+                // get the row of the click
+                int row = scoresTable.rowAtPoint(e.getPoint());
+
+                // get the year (== end-date of moving sample)
+                Year y = ((Score) cross.highScores.get(row)).movingRange.getEnd();
+
+                // new cross at this offset
+                new GraphFrame(cross, y);
+            }
+        });
+
+        // sortable
+        final JTable glue = sigsTable;
+        sigsTable.getTableHeader().addMouseListener(new MouseAdapter() {
+            private void dataChanged() {
+                // old comment: "is this needed?" (i think yes)
+                // -- well, it's sufficient, but is it necessary?  (i would think still yes)
+                ((AbstractTableModel) glue.getModel()).fireTableDataChanged();
+            }
+            private int nr; // the value of the # column
+            private void saveSelection() {
+                int row = glue.getSelectedRow();
+                Score s = (Score) cross.highScores.get(row);
+                nr = s.number;
+            }
+            private void restoreSelection() {
+                for (int i=0; i<cross.highScores.size(); i++) {
+                    Score s = (Score) cross.highScores.get(i);
+                    if (s.number == nr) {
+                        glue.setRowSelectionInterval(i, i);
                         return;
-                    if (col == 0)
-                        return;
-                    if ((row + cross.range.getStart().row() == 0) && (col == 1))
-                        return;
-                    
-		    // new graph at this place
-		    new GraphFrame(cross, y);
-		}
-	    });
+                    }
+                }
+            }
+            public void mouseClicked(MouseEvent e) {
+                int col = glue.getColumnModel().getColumnIndexAtX(e.getX());
 
-	// sigs
-	sigsTable = new JTable(new CrossSigsTableModel(cross));
-	sigsTable.getTableHeader().setReorderingAllowed(false);
-	sigsTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	sigsTable.getColumnModel().getColumn(0).setPreferredWidth(24); // number column is too big
-	sigsTable.getColumnModel().getColumn(0).setMaxWidth(36);
+                // when sorting, let's count double-click as 2 clicks, because (1)
+                // that's what the finder does, and (2) that's probably what users
+                // would normally expect, anyway.
 
-	selectHighest();
+                // (but it doesn't matter here, since the sort order is always the same)
 
-	// double-click-able
-	sigsTable.addMouseListener(new MouseAdapter() {
-		public void mouseClicked(MouseEvent e) {
-		    // respond only to double-clicks
-		    if (e.getClickCount() != 2)
-			return;
-
-		    // get the row of the click
-		    int row = scoresTable.rowAtPoint(e.getPoint());
-
-		    // get the year (== end-date of moving sample)
-		    Year y = ((Score) cross.highScores.get(row)).movingRange.getEnd();
-
-		    // new cross at this offset
-		    new GraphFrame(cross, y);
-		}
-	    });
-
-	// sortable -- fixme: maintain selected row
-	final JTable glue = sigsTable;
-	sigsTable.getTableHeader().addMouseListener(new MouseAdapter() {
-		public void mouseClicked(MouseEvent e) {
-		    int col = glue.getColumnModel().getColumnIndexAtX(e.getX());
-		    if (e.getClickCount() == 1) { // wtf was i thinking?
-			switch (col) {
-			case 0: // number
-			    Collections.sort(cross.highScores, new Comparator() {
-				    public int compare(Object o1, Object o2) {
-					int s1 = ((Score) o1).number;
-					int s2 = ((Score) o2).number;
-					return (s1 - s2);
-				    }
-				});
-			    ((AbstractTableModel) glue.getModel()).fireTableDataChanged(); // is this needed?
-			    break;
-			case 1: // fixed range
-			    // sort by fixedRange?
-			    break;
-			case 2: // moving range
-			    // sort by movingRange?
-			    break;
-			case 3: // score
-			    Collections.sort(cross.highScores, new Comparator() {
-				    public int compare(Object o1, Object o2) {
-					double s1 = ((Score) o1).score;
-					double s2 = ((Score) o2).score;
-					return (s1 > s2 ? -1 : 1); // no zero possible?
-				    }
-				});
-			    ((AbstractTableModel) glue.getModel()).fireTableDataChanged();
-			    break;
-			case 4: // overlap
-			    Collections.sort(cross.highScores, new Comparator() {
-				    public int compare(Object o1, Object o2) {
-					int s1 = ((Score) o1).span;
-					int s2 = ((Score) o2).span;
-					return (s2 - s1);
-				    }
-				});
-			    ((AbstractTableModel) glue.getModel()).fireTableDataChanged();
-			    break;
-			}
-		    }
-		}
-	    });
+                // wow, i can even factor out the switch statement ... (do i want to?)
+                switch (col) {
+                    case 0: // by number
+                        saveSelection();
+                        Sort.sort(cross.highScores, "number");
+                        dataChanged();
+                        restoreSelection();
+                        break;
+                    case 1: // "fixed range" -- don't do anything
+                        break;
+                    case 2: // "moving range" -- don't do anything
+                        break;
+                    case 3: // by score
+                        saveSelection();
+                        Sort.sort(cross.highScores, "score", true);
+                        dataChanged();
+                        restoreSelection();
+                        break;
+                    case 4: // by overlap
+                        saveSelection();
+                        Sort.sort(cross.highScores, "span", true);
+                        dataChanged();
+                        restoreSelection();
+                        break;
+                }
+            }
+        });
 
         // histogram
         histo = new Histogram(cross);
@@ -877,45 +930,105 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 
     // TODO: note that what's printed (and even the options to present the user)
     // depend on which view is shown -- crossprinter, tableprinter, gridprinter.
-    // crossprinter and tableprinter should be refactored to use corina.print, as well.
+    // tableprinter should be refactored to use corina.print, as well.
+
+    // feedback for longer operations
+    private Cursor was;
+    private void startWaiting() {
+        was = getCursor();
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+    }
+    private void stopWaiting() {
+        setCursor(was);
+    }
+
+    // what i'm actually displaying
+    private CardLayout cardLayout;
+    private JPanel cards;
+
+    // null=not made yet
+    private JComponent tableView = null;
+    private JComponent gridView = null;
+    private Grid grid = null; // if you want me to print it, i'll need to remember it
+    private Table table = null; // likewise
+    private int view = 0; // 0=default
     
     private JMenu[] makeMenus() {
         JMenuItem asCross = new XMenubar.XRadioButtonMenuItem("as Crossdates");
-        asCross.setSelected(true);
+        asCross.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize("control 1")));
         asCross.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("WRITEME: stub to switch to crossdate-view");
+                // nothing need be done, right?
+                cardLayout.show(cards, "default");
+                view = 0;
             }
         });
 
         final JFrame glue = this;
         
         JMenuItem asTable = new XMenubar.XRadioButtonMenuItem("as Table");
+        asTable.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize("control 2")));
         asTable.setEnabled(true); // enabled for 1-by-n crossdates _only_
         asTable.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                // this might be as simple as ...
                 try {
-                    JTable table = new JTable(new TableTableModel(new Table(seq)));
-                    glue.setContentPane(new JScrollPane(table));
-                    table.getColumnModel().getColumn(0).setPreferredWidth((int) (glue.getWidth() * 0.40)); // not table.getWidth?  (doesn't work, dunno why not)
-                    // i think a cardlayout would be more like what i'm looking for, and probably not require validate+repaint
-                    glue.validate();
-                    glue.repaint();
+                    // make table, if null
+                    if (tableView == null) {
+                        startWaiting();
+                        table = new Table(seq); // this can take a little while
+                        stopWaiting();
+                        final JTable jtable = new JTable(new TableTableModel(table)); // pizza pizza!
+                        // should i make my own crossdatingtable extends jtable?  i'll need some more stuff...
+
+                        // click-to-sort
+                        jtable.getTableHeader().addMouseListener(new MouseAdapter() {
+                            private int oldSort = -1;
+                            private boolean reverse = false; // (initial value doesn't matter)
+                            public void mouseClicked(MouseEvent me) {
+                                // sort once per click
+                                for (int i=0; i<me.getClickCount(); i++) {
+
+                                    int col = jtable.getColumnModel().getColumnIndexAtX(me.getX());
+                                    final String fields[] = new String[] { "title", "t", "tr", "d", "overlap", "dist" };
+                                    if (col != oldSort)
+                                        reverse = (col == 1 || col == 2 || col == 3 || col == 4); // t, tr, d, overlap
+                                    else
+                                        reverse = !reverse;
+
+                                    // BUG: .dist are often null, but sort() doesn't check for that, yet -- catch it here, there, i don't care
+                                    Sort.sort(table.table, fields[col], reverse);
+                                    ((AbstractTableModel) jtable.getModel()).fireTableDataChanged();
+
+                                    // BUG: doesn't store old selection (!)
+
+                                    oldSort = col;
+                                }
+                            }
+                        });
+
+                        tableView = new JScrollPane(jtable);
+                        jtable.getColumnModel().getColumn(0).setPreferredWidth((int) (glue.getWidth() * 0.5f));
+                        
+                        // add card
+                        cards.add(tableView, "table");
+                    }
+
+                    // show card
+                    cardLayout.show(cards, "table");
+                    view = 1;
+
                 } catch (IOException ioe) {
+                    // (eh, how graceful)
                     System.out.println("ack -- " + ioe);
                 }
                 // but:
-                // -- memoize it
                 // -- show it, THEN start computing it
                 // (idea: not-yet-loaded rows are shown as filename-only, with a gray background)
 
                 // other things to keep in mind:
-                // -- "title" column should be wider
                 // -- select the crossdate the user was just looking at
                 // -- double-clicking (or return) on any crossdate does what?  sets view=cross, or graphs, i don't know
                 // -- need graph/map buttons still?  sure!
-                // -- doesn't invalidate/repaint correctly
                 // -- write cell renderer so "3.85" gets centered around the "." (and ranges around their "-"'s)
                 // -- highlight significant crosses on this view, as well; or just use even-odd coloring
                 // -- overlap (and others, until they're decimal-aligned) should be align-right
@@ -924,7 +1037,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
                 // -- (well, saving should save everything all the time, but have a view="table" arg)
                 // -- window title is wrong
                 // -- as-table should only be enabled for 1-by-n crossdates (should it?)
-                // -- context menu: open sample, graph sample, ---, view crossdate, graph crossdate
+                // -- context menu: open sample, graph sample, ---, view this crossdate, graph this crossdate, ---, graph all
                 // -- still need "recompute" button?  (no, recompute is evil.  but how else to know when a file changed?)
                 // -- accept drops: samples are added to moving-list; collections(?) have all of their items added
                 // -- edit menu: "select-all, copy" should be supported
@@ -934,14 +1047,57 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         });
 
         JMenuItem asGrid = new XMenubar.XRadioButtonMenuItem("as Grid");
+        asGrid.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize("control 3")));
         asGrid.setEnabled(true); // enabled for n-by-n crossdates _only_
         asGrid.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("WRITEME: stub to switch to grid-view");
+//                try {
+                    // make grid, if null
+                    if (gridView == null) {
+                        // make gridview, however you want
+
+                        startWaiting();
+                        grid = new Grid(seq); // this can take a little while
+                        stopWaiting();
+
+                        // -- extracted from GridFrame.initTable():
+                        JTable output = new JTable(new GridFrame.GridTableModel(grid));
+
+                        // cell-selection only
+                        output.setRowSelectionAllowed(false);
+
+                        // set cell height/width from Grid
+                        output.setRowHeight((int) (Grid.getCellHeight()*1.0) + 2); // was: *scale
+                        for (int i=0; i<output.getColumnCount(); i++)
+                            output.getColumnModel().getColumn(i).setPreferredWidth((int) (Grid.getCellWidth()*1.0) + 2); // was: *scale
+
+                        // no top-header
+                        output.setTableHeader(null);
+                        output.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+                        // renderer -- use same as for printer
+                        output.setDefaultRenderer(Object.class, new GridFrame.GridRenderer());
+                        output.setShowGrid(false);
+
+                        // -- end extraction
+                        
+                        gridView = new JScrollPane(output);
+
+                        // add card
+                        cards.add(gridView, "grid");
+                    }
+
+                    // show card
+                    cardLayout.show(cards, "grid");
+                view = 2;
+
+/*                } catch (IOException ioe) {
+                    // (eh, how graceful)
+                    System.out.println("ack -- " + ioe);
+                }
+*/
 //                JComponent gridComponent = new GridComponent(new Grid(seq)); // write GridComponent!
 //                glue.setContentPane(new JScrollPane(gridComponent));
-                glue.validate();
-                glue.repaint();
                 
                 // normal grid operations:
                 // -- save, print.  (keep operations, override usual menuitems.)
@@ -950,37 +1106,62 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
             }
         });
 
-        JMenuItem fixed = new XMenubar.XRadioButtonMenuItem("Fixed floats");
-        fixed.addActionListener(new AbstractAction() {
+        // menuitems (final for inner class use)
+        final JMenuItem moving = new XMenubar.XRadioButtonMenuItem("First sample fixed, second sample moving");
+        final JMenuItem fixed = new XMenubar.XRadioButtonMenuItem("First sample moving, second sample fixed");
+        final JMenuItem both = new XMenubar.XRadioButtonMenuItem("Both samples moving");
+
+        // prefs -> window
+        if (System.getProperty("corina.cross.dating") != null) {
+            decode(System.getProperty("corina.cross.dating"));
+            if (!fixedFloats && movingFloats)
+                moving.setSelected(true);
+            else if (fixedFloats && !movingFloats)
+                fixed.setSelected(true);
+            else
+                both.setSelected(true);
+        } else {
+            moving.setSelected(true);
+        }
+
+        // an action to call when one of the 3 menuitems is selected
+        Action a = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                fixedFloats = true;
-                movingFloats = false;
+                // based on menuitem, set flags
+                Object source = e.getSource();
+                if (source == moving) {
+                    fixedFloats = false;
+                    movingFloats = true;
+                } else if (source == fixed) {
+                    fixedFloats = true;
+                    movingFloats = false;
+                } else { // both
+                    fixedFloats = true;
+                    movingFloats = true;
+                }
+
+                // update view
                 repaint();
+
+                // set pref, and save
+                System.setProperty("corina.cross.dating", encode()); // save pref
+                try {
+                    Prefs.save();
+                } catch (IOException ioe) {
+                    System.out.println("oops..."); // FIXME: make an intelligent warning here (with "don't warn again"?)
+                }
             }
-        });
-        JMenuItem moving = new XMenubar.XRadioButtonMenuItem("Moving floats");
-        moving.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                fixedFloats = false;
-                movingFloats = true;
-                repaint();
-            }
-        });
-        moving.setSelected(true);
-        JMenuItem both = new XMenubar.XRadioButtonMenuItem("Both float");
-        both.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                fixedFloats = true;
-                movingFloats = true;
-                repaint();
-            }
-        });
-        
-        { // views radio button group
+        };
+        moving.addActionListener(a);
+        fixed.addActionListener(a);
+        both.addActionListener(a);
+
+        { // views radio button group -- this always starts as-cross
             ButtonGroup views = new ButtonGroup();
             views.add(asCross);
             views.add(asTable);
             views.add(asGrid);
+            asCross.setSelected(true);
         }
 
         { // ranges radio button group
@@ -992,12 +1173,12 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 
         // make a menu
         JMenu view = new XMenubar.XMenu("View");
-//        view.add(asCross);
-//        view.add(asTable);
-//        view.add(asGrid);
-//        view.addSeparator();
-        view.add(fixed);
+        view.add(asCross);
+        view.add(asTable);
+        view.add(asGrid);
+        view.addSeparator();
         view.add(moving);
+        view.add(fixed);
         view.add(both);
 
         return new JMenu[] { view };
@@ -1042,10 +1223,23 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 
     // printing
     public int getPrintingMethod() {
-        return PrintableDocument.PRINTABLE;
+        return (view==2 ? PrintableDocument.PAGEABLE : PrintableDocument.PRINTABLE);
     }
     public Printable makePrintable(PageFormat pf) {
+        // hack: look at the view, figure out what to print
+        if (view == 2) {
+            // grid's a pageable, bad!
+            throw new IllegalArgumentException();
+        } else if (view == 1) {
+            // print table -- not done yet! -- but it'll be 
+            // throw new IllegalArgumentException();
+            TablePrinter printer = new TablePrinter(table, pf);
+            return Printer.print(printer.lines);
+        }
+        // ... else normal view
+
         // ask what to print
+        // REFACTOR: move this into its own class, like inner class PrintViewsDialog
         final JDialog d = new JDialog(this, "Print Views", true);
         JPanel p = new JPanel(new BorderLayout());
         d.setContentPane(p);
@@ -1091,7 +1285,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 //                reallyPrint = true;
             }
         });
-        
+
         corina.util.OKCancel.addKeyboardDefaults(d, ok);
         d.setResizable(false);
         d.pack();
@@ -1099,11 +1293,21 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 
         // print it
         //        return (reallyPrint ? new CrossPrinter(cross) : null); // need UserCancelled here!
-        return new CrossPrinter(cross, sigsCheckbox.isSelected(), allCheckbox.isSelected(), histoCheckbox.isSelected());
+//        return new CrossPrinter(cross, sigsCheckbox.isSelected(), allCheckbox.isSelected(), histoCheckbox.isSelected());
+        CrossPrinter printer = new CrossPrinter(cross,
+                                                sigsCheckbox.isSelected(),
+                                                allCheckbox.isSelected(),
+                                                histoCheckbox.isSelected());
+        return Printer.print(printer.lines);
         // need UserCancelled here!
     }
     public Pageable makePageable(PageFormat pf) {
-        return null;
+        if (view == 2)
+            return grid.makeHardcopy(pf);
+//        else if (view == 1) {
+//            return new TablePrinter(table, pf);
+        else
+            throw new IllegalArgumentException();
     }
     public String getPrintTitle() {
         return cross.toString();
