@@ -59,7 +59,6 @@ import java.awt.print.PageFormat;
 - highlight sigscores in the allscores table
 - try to abstract out center/right-aligned text printing
 - try to consolidate header/data lines, which have redundant tab-processing
-- waaaay too many new Font() calls.  (at least string literals are interned...)
 - use an em-dash for ranges?  (can i do this everywhere, or just for printouts?)
 - get histogram from cross, where it belongs anyway.
 
@@ -76,6 +75,9 @@ public class CrossPrinter implements Printable {
 
     // l10n
     private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
+
+    // standard font
+    private static final Font NORMAL = new Font("serif", Font.PLAIN, 9);
 
     // formatter
     private DecimalFormat fmt;
@@ -219,7 +221,7 @@ public class CrossPrinter implements Printable {
             float baseline = (float) (y + height(g));
             Graphics2D g2 = (Graphics2D) g;
             float colWidth = (float) ((right - left) / 11.);
-            g2.setFont(new Font("serif", Font.PLAIN, 9));
+            g2.setFont(NORMAL);
 
             // "year"
             String yr = msg.getString("year");
@@ -234,7 +236,7 @@ public class CrossPrinter implements Printable {
             }
         }
         public int height(Graphics g) {
-            return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+            return g.getFontMetrics(NORMAL).getHeight();
         }
     }
 
@@ -249,7 +251,7 @@ public class CrossPrinter implements Printable {
             float baseline = (float) (y + height(g));
             Graphics2D g2 = (Graphics2D) g;
             float colWidth = (float) ((right - left) / 11.);
-            g2.setFont(new Font("serif", Font.PLAIN, 9));
+            g2.setFont(NORMAL);
 
             // decade
             int row_min = cross.range.getStart().row();
@@ -274,7 +276,7 @@ public class CrossPrinter implements Printable {
             }
         }
         public int height(Graphics g) {
-            return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+            return g.getFontMetrics(NORMAL).getHeight();
         }
     }
 
@@ -284,7 +286,7 @@ public class CrossPrinter implements Printable {
             // baseline
             float baseline = (float) (y + height(g));
             Graphics2D g2 = (Graphics2D) g;
-            g2.setFont(new Font("serif", Font.PLAIN, 9));
+            g2.setFont(NORMAL);
             double span = (right - left);
 
             // #
@@ -308,7 +310,7 @@ public class CrossPrinter implements Printable {
             g2.drawString(msg.getString("overlap"), (float) (left+span*1.00-width), baseline);
         }
         public int height(Graphics g) {
-            return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+            return g.getFontMetrics(NORMAL).getHeight();
         }
     }
 
@@ -321,7 +323,7 @@ class SigsLine implements Line {
         // baseline
         float baseline = (float) (y + height(g));
         Graphics2D g2 = (Graphics2D) g;
-        g2.setFont(new Font("serif", Font.PLAIN, 9));
+        g2.setFont(NORMAL);
         Score s = (Score) cross.highScores.get(row);
         double span = (right - left);
         
@@ -351,7 +353,7 @@ class SigsLine implements Line {
         g2.drawString(x, (float) (left+span*1.00-width), baseline);
     }
     public int height(Graphics g) {
-        return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+        return g.getFontMetrics(NORMAL).getHeight();
     }
 }
 
@@ -361,7 +363,7 @@ class HistoHeaderLine implements Line {
         float baseline = (float) (y + height(g));
         Graphics2D g2 = (Graphics2D) g;
         float colWidth = (float) ((right - left) / 5.);
-        g2.setFont(new Font("serif", Font.PLAIN, 9));
+        g2.setFont(NORMAL);
 
         // guides
         int rangeGuide = (int) (left + (float) ((right - left) * 0.15)); // center guide for ranges
@@ -379,7 +381,7 @@ class HistoHeaderLine implements Line {
         g2.drawString(msg.getString("histogram"), (float) ((histoGuide+right)/2 - width/2), baseline);
     }
     public int height(Graphics g) {
-        return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+        return g.getFontMetrics(NORMAL).getHeight();
     }
 }
 
@@ -395,7 +397,7 @@ class HistoLine implements Line {
         float baseline = (float) (y + height(g));
         Graphics2D g2 = (Graphics2D) g;
         float colWidth = (float) ((right - left) / 5.);
-        g2.setFont(new Font("serif", Font.PLAIN, 9));
+        g2.setFont(NORMAL);
 
         // guides
         int rangeGuide = (int) (left + (float) ((right - left) * 0.15)); // center guide for ranges
@@ -426,7 +428,7 @@ class HistoLine implements Line {
         }
     }
     public int height(Graphics g) {
-        return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+        return g.getFontMetrics(NORMAL).getHeight();
     }
 }
 
@@ -444,16 +446,16 @@ class HistoLine implements Line {
             Graphics2D g2 = (Graphics2D) g;
 
             // label
-            g2.setFont(new Font("serif", Font.PLAIN, 9)); // too many news!
+            g2.setFont(NORMAL);
             int width = g.getFontMetrics().stringWidth(label);
             g2.drawString(label, (float) left+TAB-width, baseline); // |left| is from enclosing class
 
             // value
-            g2.setFont(new Font("serif", Font.PLAIN, 9)); // (no news is good news)
+            g2.setFont(NORMAL);
             g2.drawString(value, (float) left + TAB, baseline);
         }
         public int height(Graphics g) {
-            return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+            return g.getFontMetrics(NORMAL).getHeight();
         }
     }
 
@@ -477,11 +479,11 @@ class ByLine implements Line {
         float baseline = (float) (y + height(g));
         Graphics2D g2 = (Graphics2D) g;
 
-        g2.setFont(new Font("serif", Font.PLAIN, 9));
+        g2.setFont(NORMAL);
         g2.drawString(makeByLine(), (float) left, baseline);
     }
     public int height(Graphics g) {
-        return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+        return g.getFontMetrics(NORMAL).getHeight();
     }
 }
 
