@@ -20,6 +20,8 @@
 
 package corina.gui;
 
+import corina.util.OKCancel;
+
 import java.awt.Dimension;
 import java.awt.Container;
 import java.awt.BorderLayout;
@@ -40,13 +42,13 @@ public class ConfirmSave extends JDialog {
     // - move to gui.util?
     // - i18n
     // - frame as param?
-    // - javadoc
+    // - javadoc?
 
     public static void showDialog(SaveableDocument doc) {
 	// construct a prompt
 	String prompt1 = "Do you want to save the changes you made in";
 	String prompt2 = "the document \"" + doc.getDocumentTitle() + "\"?"; // ack!
-	// String prompt3 = "Your changes will be lost if you don't save them.";
+	// String prompt3 = "Your changes will be lost if you don't save them.";  (smaller?)
 
 	// dialog
 	final JDialog dlg = new JDialog((JFrame) doc, true);
@@ -93,36 +95,33 @@ public class ConfirmSave extends JDialog {
 		}
 	    });
 
-	// text chunk
-	JPanel text = new JPanel();
-	text.setLayout(new BoxLayout(text, BoxLayout.Y_AXIS));
-	text.add(new JLabel(prompt1));
-	text.add(new JLabel(prompt2));
+        // text chunk
+        JPanel text = new JPanel();
+        text.setLayout(new BoxLayout(text, BoxLayout.Y_AXIS));
+        text.add(new JLabel(prompt1));
+        text.add(new JLabel(prompt2));
+        text.add(Box.createVerticalStrut(10));
 
-	// layout/buttons: left-to-right
-	JPanel buttons = new JPanel();
-	buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-	buttons.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-	buttons.add(dontSave);
-	buttons.add(Box.createHorizontalGlue());
-	buttons.add(cancel);
-	buttons.add(Box.createHorizontalStrut(12));
-	buttons.add(save);
+        // layout/buttons: left-to-right
+        JPanel buttons = new JPanel(new ButtonLayout());
+        buttons.add(dontSave);
+        buttons.add(Box.createHorizontalGlue());
+        buttons.add(cancel);
+        buttons.add(save);
 
-	// layout: box (top-to-bottom)
-	Container cont = dlg.getContentPane();
-	cont.add(Box.createVerticalStrut(12), BorderLayout.NORTH);
-	cont.add(Box.createHorizontalStrut(12), BorderLayout.WEST);
-	cont.add(Box.createHorizontalStrut(12), BorderLayout.EAST);
-	cont.add(text, BorderLayout.CENTER);
-	cont.add(buttons, BorderLayout.SOUTH);
+        // layout: box (top-to-bottom)
+        JPanel cont = new JPanel(new BorderLayout());
+        dlg.setContentPane(cont);
+        cont.setBorder(BorderFactory.createEmptyBorder(15, 24, 20, 24));
+        cont.add(text, BorderLayout.CENTER);
+        cont.add(buttons, BorderLayout.SOUTH);
 
-	// save is default, no resizing
-	dlg.getRootPane().setDefaultButton(save);
-	dlg.setResizable(false);
+        // ret/esc
+        OKCancel.addKeyboardDefaults(dlg, save);
 
-	// pack, show
-	dlg.pack();
-	dlg.show();
+        // pack, disable sizing, show
+        dlg.pack();
+        dlg.setResizable(false);
+        dlg.show();
     }
 }
