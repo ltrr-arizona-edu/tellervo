@@ -1,5 +1,9 @@
 package corina.map;
 
+import corina.site.SiteDB;
+import corina.site.Site;
+import corina.site.SiteProperties;
+import corina.site.SiteNotFoundException;
 import corina.gui.JarIcon;
 import corina.util.ColorUtils;
 
@@ -74,6 +78,82 @@ public class ToolBox extends JToolBar {
             p.setCursor(getCursor());
         }
         abstract void decorate(Graphics g);
+    }
+
+    // arrow
+    // -- click a site to select it
+    // -- control-click to select another
+    // -- click on nothing to deselect all
+    // -- drag a box(?) to select all sites in an area
+    // -- double-click a site to view its properties (edit it)
+    // -- drag a site to move it
+    private class Arrow extends Tool {
+        Icon getIcon() {
+            return JarIcon.getIcon("Images/arrow.png");
+        }
+        Cursor getCursor() {
+            return new Cursor(Cursor.DEFAULT_CURSOR);
+        }
+
+        // mouse
+        public void mouseClicked(MouseEvent e) {
+            // what site am i looking at?
+            // if control, add this to the selected-set
+            // if no control, this becomes the selected-set
+            
+            // if double-click, show the properties for this site
+            if (e.getClickCount() == 2) {
+                Renderer r = Renderer.makeRenderer(view);
+                Location l = r.unrender(e.getPoint());
+                try {
+                    Site s = SiteDB.getSiteDB().getSite(l);
+                    SiteProperties.showProperties(s);
+                } catch (SiteNotFoundException snfe) {
+                    // do nothing
+                }
+            }
+        }
+
+// temps here?
+        public void mousePressed(MouseEvent e) {
+            // record where this was
+//            r = Renderer.makeRenderer(view);
+//            l = r.unrender(e.getPoint());
+
+            // if there is a site here, record that
+            // WRITEME
+        }
+        public void mouseDragged(MouseEvent e) {
+            // record this place
+/*
+            l2 = r.unrender(e.getPoint());
+
+            Location diff = new Location(); // make a location.diff(location) (-- LoD)
+            diff.latitude = l2.latitude - l1.latitude;
+            diff.longitude = l2.longitude - l1.longitude;
+
+            view.center.latitude -= diff.latitude;
+            view.center.longitude -= diff.longitude;
+
+            // reset l1 now -- only for live-update dragging, not gridline-dragging
+            // l1 = l2;
+
+            // now update the buffer, and redraw
+            ((MapPanel) p).updateBufferGridlinesOnly(); // ugly!
+            p.repaint();
+*/
+        }
+        public void mouseReleased(MouseEvent e) {
+//            ((MapPanel) p).updateBuffer(); // only for gridline-dragging
+//            p.repaint();
+        }
+
+        public void mouseEntered(MouseEvent e) { }
+        public void mouseMoved(MouseEvent e) { }
+        public void mouseExited(MouseEvent e) { }
+
+        // todo: decorate selected site(s)
+        void decorate(Graphics g) { }
     }
 
     // scroll around by dragging.
@@ -372,6 +452,7 @@ public class ToolBox extends JToolBar {
         this.p = p;
 
         tools = new Tool[] {
+            new Arrow(),
             new Hand(),
             new Ruler(),
             new Zoom(),
