@@ -34,6 +34,7 @@ import javax.swing.filechooser.FileFilter;
 
 import corina.prefs.Prefs;
 import corina.ui.I18n;
+import corina.util.CorinaLog;
 
 /**
  * A wrapper for JFileChooser, providing typical (Corina) usage.
@@ -70,11 +71,16 @@ import corina.ui.I18n;
  * @version $Id$
  */
 public class FileDialog {
-  private static final Dimension DEFAULT_DIMENSION = new Dimension(480, 360);
+  private static final Dimension SINGLE_DEFAULT_DIMENSION = new Dimension(480, 360);
+  private static final Dimension MULTI_DEFAULT_DIMENSION = new Dimension(640, 480);
   private static final String CLASS_NAME = FileDialog.class.getName();
-  private static final String DIM_PREF = CLASS_NAME + ".dimension";
-  private static final String VIEWMODE_PREF = CLASS_NAME + ".viewmode";
+  private static final String SINGLE_DIM_PREF = CLASS_NAME + ".single.dimension";
+  private static final String MULTI_DIM_PREF = CLASS_NAME + ".double.dimension";
+  private static final String SINGLE_VIEWMODE_PREF = CLASS_NAME + ".single.viewmode";
+  private static final String MULTI_VIEWMODE_PREF = CLASS_NAME + ".double.viewmode";
 
+  private static final CorinaLog log = new CorinaLog("Prefs");
+  
   private FileDialog() {
     // (don't instantiate me)
   }
@@ -148,8 +154,8 @@ public class FileDialog {
    * the details view mode button and fire it, so we can preserve
    * settings. 
    */
-  private static void setConfiguredMode(JFileChooser chooser) {
-    String v = Prefs.getPrefs().getProperty(VIEWMODE_PREF, "list");
+  private static void setConfiguredMode(JFileChooser chooser, String pref) {
+    String v = Prefs.getPrefs().getProperty(pref, "list");
     if (!"details".equals(v)) return;
     Component[] comps = chooser.getComponents();
     // ok, the JFileChooser contains a JToolBar
@@ -170,7 +176,7 @@ public class FileDialog {
     }
   }
   
-  private static void saveConfiguredMode(JFileChooser chooser) {
+  private static void saveConfiguredMode(JFileChooser chooser, String pref) {
     Component[] comps = chooser.getComponents();
     // ok, the JFileChooser contains a JToolBar
     for (int i = 0; i < comps.length; i++) {
@@ -184,7 +190,9 @@ public class FileDialog {
         if (s != null &&
             s.equals(UIManager.getString("FileChooser.detailsViewButtonAccessibleName",chooser.getLocale()))) {
           if (tb.isSelected()) {
-            Prefs.getPrefs().setProperty(VIEWMODE_PREF, "details");
+            Prefs.getPrefs().setProperty(pref, "details");
+          } else {
+            Prefs.getPrefs().setProperty(pref, "list");
           }
         }
       }      
@@ -211,9 +219,9 @@ public class FileDialog {
     f.setAccessory(new SamplePreview(f));
 
     // make the window a resonable size to see everything
-    Dimension dim = Prefs.getDimensionPref(DIM_PREF, DEFAULT_DIMENSION);
+    Dimension dim = Prefs.getDimensionPref(SINGLE_DIM_PREF, SINGLE_DEFAULT_DIMENSION);
     f.setPreferredSize(dim);
-    setConfiguredMode(f);
+    setConfiguredMode(f, SINGLE_VIEWMODE_PREF);
 
     // show the dialog
     int result = f.showDialog(null, prompt);
@@ -229,8 +237,8 @@ public class FileDialog {
       }
     } finally {
       Dimension d = f.getSize();
-      Prefs.setPref(DIM_PREF, d.width + "," + d.height);
-      saveConfiguredMode(f);
+      Prefs.setPref(SINGLE_DIM_PREF, d.width + "," + d.height);
+      saveConfiguredMode(f, SINGLE_VIEWMODE_PREF);
     }
   }
 
@@ -297,12 +305,17 @@ public class FileDialog {
     f.setAccessory(mp);
 
     // make the window a resonable size to see everything
-    f.setMinimumSize(new Dimension(640, 480));
-    f.setPreferredSize(new Dimension(640, 480));
+    Dimension dim = Prefs.getDimensionPref(MULTI_DIM_PREF, MULTI_DEFAULT_DIMENSION);
+    f.setPreferredSize(dim);
+    setConfiguredMode(f, MULTI_VIEWMODE_PREF);
 
     // show dialog
     f.showDialog(null, prompt); // don't care what the return value is, it's
     // always CANCEL
+    
+    Dimension d = f.getSize();
+    Prefs.setPref(MULTI_DIM_PREF, d.width + "," + d.height);
+    saveConfiguredMode(f, MULTI_VIEWMODE_PREF);
 
     // store wd, if ok
     if (mp.getSamples() != null)
