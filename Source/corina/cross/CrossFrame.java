@@ -158,13 +158,15 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 		else
 		    return getYear(row, col+1);
 	    } else {
-		Year y = getYear(row, col);
-		if (!c.range.contains(y))
-		    return null;
-		else
-		    return new Double(c.data[y.diff(c.range.getStart())]);
-	    }
-	}
+                if ((row + row_min == 0) && (col == 1))
+                    return null; // year-zero
+                Year y = getYear(row, col);
+                if (!c.range.contains(y))
+                    return null;
+                else
+                    return new Double(c.data[y.diff(c.range.getStart())]);
+            }
+        }
     }
 
     /**
@@ -683,6 +685,14 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 		    // get the year (== end-date of moving sample)
 		    Year y = ((CrossTableModel) scoresTable.getModel()).getYear(row, col);
 
+                    // blank spot -- better to just look for empty cell?
+                    if (!cross.range.contains(y))
+                        return;
+                    if (col == 0)
+                        return;
+                    if ((row + cross.range.getStart().row() == 0) && (col == 1))
+                        return;
+                    
 		    // new graph at this place
 		    new GraphFrame(cross, y);
 		}
@@ -720,7 +730,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 	sigsTable.getTableHeader().addMouseListener(new MouseAdapter() {
 		public void mouseClicked(MouseEvent e) {
 		    int col = glue.getColumnModel().getColumnIndexAtX(e.getX());
-		    if (e.getClickCount() == 1) {
+		    if (e.getClickCount() == 1) { // wtf was i thinking?
 			switch (col) {
 			case 0: // number
 			    Collections.sort(cross.highScores, new Comparator() {
