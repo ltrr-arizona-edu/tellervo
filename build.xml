@@ -114,7 +114,12 @@ classpath="${lib}/jython.jar:${lib}/junit.jar:${lib}/gnujaxp.jar:${lib}/comm.jar
         <delete dir="${javadoc}" />
         <delete file="${src}/corina/Build.java" />
         <delete file="Corina.jar" />
-        <delete file="junit*" />
+        <delete>
+            <fileset dir="." includes="junit**.properties" />
+        </delete>
+        <delete>
+            <fileset dir="." includes="jikes-**" />
+        </delete>
         <delete dir="cachedir" />
     </target>
 
