@@ -60,7 +60,7 @@
 	    <jvmarg value="-Xdock:name=Corina"/>
 	</java>
     </target>
-    <target name="run" depends="jar,test,run-nonmac,run-mac"/>
+    <target name="run" depends="jar,run-nonmac,run-mac"/> <!-- was: jar, test, ... -->
 
     <!-- jar -->
     <target name="jar" depends="compile">
@@ -98,6 +98,7 @@ classpath="${lib}/jython.jar:${lib}/junit.jar:${lib}/gnujaxp.jar:${lib}/comm.jar
 	</copy>
         <copy todir="${build}" file="${src}/prefs.properties"/>
 	<copy todir="${build}" file="${src}/species.properties"/>
+	<copy todir="${build}" file="${src}/countries.properties"/>
 	<copy todir="${build}" flatten="yes">
 	    <fileset dir="${src}/">
 	        <patternset>
