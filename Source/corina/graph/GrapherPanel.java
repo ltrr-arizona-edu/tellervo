@@ -175,7 +175,6 @@ public class GrapherPanel extends JPanel
     // MouseMotionListener, for vertical line under cursor ----------
     private Point dragStart=null;
     private int startX; // initial xoff
-    private int cursorX=0;
     public void mouseDragged(MouseEvent e) {
 	// didn't drag from a graph?  sorry.
 	if (clicked == -1)
@@ -214,6 +213,12 @@ public class GrapherPanel extends JPanel
 	updateTitle();
 	repaint();
     }
+    private int cursorX=0;
+    // this is bug #199, because mouseMoved events stop being generated as soon as a
+    // mouseExited event is fired.  idea: compute dx, and on mouseExited set cursorX
+    // to (dx<0 ? minCursorX : maxCursorX), but that doesn't take into account moving
+    // off the bottom.  there's got to be a way to track mouseMoved events for the focused
+    // window regardless of the position of the mouse.
     public void mouseMoved(MouseEvent e) {
 	// old cursorX
 	int old = cursorX;
