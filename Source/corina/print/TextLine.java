@@ -39,6 +39,8 @@ public class TextLine implements Line {
         Graphics2D g2 = (Graphics2D) g;
 
         // -- inefficient, and too specific => refactor
+	// REFACTOR: extract method
+	// REFACTOR: use largest same-case chunks possible
 	// (used by ByLine only)
         if (smallcaps) {
             float x = (float) pf.getImageableX();
