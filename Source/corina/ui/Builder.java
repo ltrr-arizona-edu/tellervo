@@ -148,7 +148,7 @@ public class Builder {
     // use: Builder.getIcon("x.png") returns an Icon made from the file "Images/x.png".
     public static Icon getIcon(String name) {
       java.net.URL url = cl.getResource("Images/" + name);
-      if (url != null) return new ImageIcon();
+      if (url != null) return new ImageIcon(url);
       else return null;
     }
     // TODO: Cursor makeCursor(String name)
@@ -198,40 +198,40 @@ public class Builder {
     (same for buttons?)
   */
 
-    /**
-       An easy way to add actions.  The action string is of the form
-       <code>"new package.SomeClass();"</code> or
-       <code>"package.SomeClass.staticMethod();</code>.  Be sure to
-       fully-qualify the class name.
-       @param button a JButton or JMenuItem
-       @param action an action string */
-    public static void addAction(AbstractButton button, String action) {
-  // parse |action|
-  action = action.trim();
-  StringTokenizer tok = new StringTokenizer(action, " ();");
-  String arg1 = tok.nextToken();
+  /**
+   * An easy way to add actions.  The action string is of the form
+   * <code>"new package.SomeClass();"</code> or
+   * <code>"package.SomeClass.staticMethod();</code>.  Be sure to
+   * fully-qualify the class name.
+   * @param button a JButton or JMenuItem
+   * @param action an action string */
+  public static void addAction(AbstractButton button, String action) {
+    // parse |action|
+    action = action.trim();
+    StringTokenizer tok = new StringTokenizer(action, " ();");
+    String arg1 = tok.nextToken();
 
-  // "new package.SomeClass();"
-  if (arg1.equals("new")) {
+    // "new package.SomeClass();"
+    if (arg1.equals("new")) {
       String arg2 = tok.nextToken();
       try {
-    final Class c = Class.forName(arg2);
+        final Class c = Class.forName(arg2);
 
-    button.addActionListener(new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-          try {
-        c.newInstance();
-          } catch (Exception ex) {
-                                System.out.println("Builder.addAction(): can't instantiate!");
-                                // FIXME?  (state what the action was, at least)
-        ex.printStackTrace();
+        button.addActionListener(new AbstractAction() {
+          public void actionPerformed(ActionEvent e) {
+            try {
+              c.newInstance();
+            } catch (Exception ex) {
+              System.out.println("Builder.addAction(): can't instantiate " + c);
+              // FIXME?  (state what the action was, at least)
+              ex.printStackTrace(System.out);
+            }
           }
-      }
         });
       } catch (ClassNotFoundException cnfe) {
-    throw new IllegalArgumentException("class '" + arg2 + "' not found");
+        throw new IllegalArgumentException("class '" + arg2 + "' not found");
       }
-      return;
+    return;
   }
 
   // "package.SomeClass.staticMethod();"
