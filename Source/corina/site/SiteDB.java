@@ -34,7 +34,11 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Vector;
 
+import java.lang.reflect.Method;
+
+// REFACTOR: move i/o to a separate class?
 import org.xml.sax.XMLReader;
 import org.xml.sax.InputSource;
 import org.xml.sax.Attributes;
@@ -53,7 +57,7 @@ public class SiteDB {
 
     // make it able to import/export/append stuff?
 
-    // make site an inner class?
+    // TODO: call the file "Corina Sites", not "Site DB"
 
     // list of the sites -- use a different data struct? (private?)
     public List sites=null;
@@ -81,7 +85,7 @@ public class SiteDB {
     private String getDBFilename() {
         return System.getProperty("corina.dir.data") + File.separator + "Site DB";
     }
-    
+
     void loadDB() throws IOException {
         try {
             // create XML reader
@@ -100,51 +104,26 @@ public class SiteDB {
         }
     }
 
-    // save the sitedb to disk -- is this never used?
+    // save the sitedb to disk -- not used yet!
     void saveDB() throws IOException {
         BufferedWriter w = new BufferedWriter(new FileWriter(getDBFilename()));
 
-	w.write("<?xml version=\"1.0\"?>");
-	w.newLine();
-	w.newLine();
-	w.write("<sitedb>");
-	w.newLine();
-	w.newLine();
+        w.write("<?xml version=\"1.0\"?>");
+        w.newLine();
+        w.write("<sitedb>");
+        w.newLine();
 
-	for (int i=0; i<sites.size(); i++) {
-	    Site s = (Site) sites.get(i);
-
-	    w.write("<site>");
-	    w.newLine();
-            maybeSave(w, s.country, "country");
-            maybeSave(w, s.code, "code");
-	    // need to escape &'s?
-            maybeSave(w, s.name, "name");
-            maybeSave(w, s.id, "id");
-            maybeSave(w, s.species, "species");
-            maybeSave(w, s.type, "type");
-            maybeSave(w, s.filename, "filename");
-            maybeSave(w, s.location, "location");
-
-	    w.write("</site>");
-	    w.newLine();
-
-	    w.newLine();
-	}
-
-	w.newLine();
-	w.write("</sitedb>");
-	w.newLine();
-
-	w.close();
-    }
-
-    // save "<tag>value</tag>\n" to w if value!=null
-    private void maybeSave(BufferedWriter w, Object value, String tag) throws IOException {
-        if (value != null) {
-            w.write("    <" + tag + ">" + value + "</" + tag + ">");
-            w.newLine();
+	// (loop for s in sites do (write w (site-to-xml s)))
+        for (int i=0; i<sites.size(); i++) {
+            Site s = (Site) sites.get(i);
+	    w.write(s.toXML());
         }
+
+        w.newLine();
+        w.write("</sitedb>");
+        w.newLine();
+
+        w.close();
     }
 
     // XML loader ------------------------------------------------------------
@@ -174,28 +153,30 @@ public class SiteDB {
 
 		// parse -- use hashtable?
 		if (state.equals("country"))
-		    site.country = data;
+		    site.setCountry(data);
 		else if (state.equals("code"))
-		    site.code = data;
+		    site.setCode(data);
 		else if (state.equals("name"))
-		    site.name = data;
+		    site.setName(data);
 		else if (state.equals("id"))
-		    site.id = data;
+		    site.setID(data);
 		else if (state.equals("species"))
 		    site.species = data;
 		else if (state.equals("type")) {
                     site.type = data;
-		} else if (state.equals("filename")) {
-		    site.filename = data;
+		} else if (state.equals("filename")) { // shouldn't this be "folder"?
+		    site.setFolder(data);
 		} else if (state.equals("location")) {
-		    site.location = new Location(data);
+		    site.setLocation(new Location(data));
+		} else if (state.equals("comments")) {
+		    site.setComments(data);
 		} else {
 		    // else ... what?
 		    return;
 		}
 
 		// something matched => reset data
-		data = new String();
+                data = "";
 	    }
 	}
 	public void characters(char ch[], int start, int length) {
@@ -203,7 +184,6 @@ public class SiteDB {
 	    data += new String(ch, start, length);
 	}
     }
-
     // -----------------------------------------------------------------------------
 
     // query functions -- only simple ones here, complex sql-selects
@@ -213,7 +193,17 @@ public class SiteDB {
         // return the site with code |code|
         for (int i=0; i<sites.size(); i++) {
             Site s = (Site) sites.get(i);
-            if (s.code.equals(code))
+            if (s.getCode().equals(code))
+                return s;
+        }
+        throw new SiteNotFoundException();
+    }
+
+    public Site getSite(File folder) throws SiteNotFoundException {
+        // return the site for folder |folder|
+        for (int i=0; i<sites.size(); i++) {
+            Site s = (Site) sites.get(i);
+            if (matchesFilename(folder.getPath(), s))
                 return s;
         }
         throw new SiteNotFoundException();
@@ -229,34 +219,42 @@ public class SiteDB {
         // look through the database for that filename
         for (int i=0; i<sites.size(); i++) {
             Site s = (Site) sites.get(i);
-            if (s.filename == null)
+            if (s.getFolder() == null)
                 continue;
 
-            // i think this might not always work, depending on OS, rel/abs filenames, etc.
-            if (filename.startsWith(s.filename) ||
-                filename.startsWith(System.getProperty("corina.dir.data") + File.separator + s.filename) ||
-                filename.startsWith(System.getProperty("corina.dir.data") + s.filename))
+            // i think this might not always work, depending on OS, rel/abs filenames, etc. -- no, it seems to...
+            if (matchesFilename(filename, s))
                 return s;
         }
 
         throw new SiteNotFoundException();
     }
 
+    private boolean matchesFilename(String filename, Site site) {
+        return filename.startsWith(site.getFolder()) ||
+	       filename.startsWith(System.getProperty("corina.dir.data") + File.separator + site.getFolder()) ||
+	       filename.startsWith(System.getProperty("corina.dir.data") + site.getFolder());
+	// this matches if (1) folder is relative,
+	//                 (2) absolute and dir.data has no file.sep, or
+	//                 (3) absolute and dir.data ends with file.sep
+    }
+
+    // is this still used?
     public Site getSite(Location l) throws SiteNotFoundException {
         // return the site at |l|.  if there's more than one, return
         // an arbitrary one.
         for (int i=0; i<sites.size(); i++) {
             Site s = (Site) sites.get(i);
-            if (s.location!=null && s.location.equals(l))
+            if (s.getLocation()!=null && s.getLocation().equals(l))
                 return s;
         }
 
         // none was there, but let's look for something nearby.
         for (int i=0; i<sites.size(); i++) {
             Site s = (Site) sites.get(i);
-            if (s.location == null)
+            if (s.getLocation() == null)
                 continue; // wha?
-            if (s.location.isNear(l, 10))
+            if (s.getLocation().isNear(l, 10))
                 return s;
         }
         throw new SiteNotFoundException();
@@ -283,7 +281,7 @@ public class SiteDB {
         Set countries = new HashSet();
         for (int i=0; i<n; i++) {
             Site s = (Site) sites.get(i);
-            countries.add(s.country);
+            countries.add(s.getCountry());
         }
         return (String[]) countries.toArray(new String[0]);
     }
@@ -309,6 +307,91 @@ public class SiteDB {
 	// number of samples, longest sample, etc. would be really
 	// neat)
 
+        // print = { print header, print EACH country, print footer }
+        // print country = { print header, print EACH site, print footer }
+        // print site = { ... about 7 lines ... }
+
+        // -- embed stylesheet in header; there won't be multiple sitedb.html's floating around,
+        // so there's no reason to complicate things by keeping it separate.
+        // (UNLESS that's the only way to switch on media -- ???)
         w.close();
     }
-}	
+
+    // ----
+    // event handling -- stolen from Sample.java
+    // REFACTOR: extract event handling to external (abstract) class?
+    private Vector listeners = new Vector();
+
+    public synchronized void addSiteDBListener(SiteDBListener l) {
+        if (!listeners.contains(l))
+            listeners.add(l);
+    }
+    public synchronized void removeSiteDBListener(SiteDBListener l) {
+        listeners.remove(l);
+    }
+
+    private void fireSiteEvent(String method, Site source) {
+        // alert all listeners
+        Vector l;
+        synchronized (this) {
+            l = (Vector) listeners.clone();
+        }
+
+        int size = l.size();
+
+        if (size == 0)
+            return;
+
+        SiteEvent e = new SiteEvent(source);
+
+        for (int i=0; i<size; i++) {
+            SiteDBListener listener = (SiteDBListener) l.elementAt(i);
+
+            // this is like "listener.method(e)", though it's not terribly elegant.
+            try {
+                Method m = SiteDBListener.class.getMethod(method, new Class[] { SiteEvent.class });
+                m.invoke(listener, new Object[] { e });
+            } catch (Exception ex) {
+                // just ignore them all... (?)
+            }
+        }
+    }
+
+    public void fireSiteMoved(Site source) { fireSiteEvent("siteMoved", source); }
+    public void fireSiteNameChanged(Site source) { fireSiteEvent("siteNameChanged", source); }
+    public void fireSiteCodeChanged(Site source) { fireSiteEvent("siteCodeChanged", source); }
+    public void fireSiteIDChanged(Site source) { fireSiteEvent("siteIDChanged", source); }
+    public void fireSiteCommentsChanged(Site source) { fireSiteEvent("siteCommentsChanged", source); }
+    public void fireSiteCountryChanged(Site source) { fireSiteEvent("siteCountryChanged", source); }
+
+    /*
+      NOTICE!  when you add a site event, it needs to be added to
+      -- SiteDBListener, SiteDBAdapter
+      -- SiteDB (new fireXXX() method)
+      -- SiteDB (call save() in its own listener)
+     */
+
+    // ------------------------------------------------------
+    // keep disk updated
+    static {
+	getSiteDB().addSiteDBListener(new SiteDBListener() {
+		public void siteMoved(SiteEvent e) { save(e); }
+		public void siteNameChanged(SiteEvent e) { save(e); }
+		public void siteCodeChanged(SiteEvent e) { save(e); }
+		public void siteIDChanged(SiteEvent e) { save(e); }
+		public void siteCountryChanged(SiteEvent e) { save(e); }
+		public void siteCommentsChanged(SiteEvent e) { save(e); }
+		private void save(SiteEvent e) {
+		    System.out.println("saving sitedb (" + ((Site) e.getSource()).getCode() + " just changed)...");
+		    /* TODO:
+		       -- actually call save() here
+		       -- the first time it fails, let the user know.
+		       -- (and give the user options: try again, cancel, don't warn again?)
+		       -- call it after a delay: every 10sec or so, say, in a background thread
+		       -- (if it's updated, then again 1sec later, cancel the first one, of course)
+		       -- if user quits corina before it would have run, make sure to explicitly run it
+		     */
+		}
+	    });
+    }
+}
