@@ -1,21 +1,42 @@
+// 
+// This file is part of Corina.
+// 
+// Corina is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// Corina is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Corina; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// Copyright 2001 Ken Harris <kbh7@cornell.edu>
+//
+
 package corina.files;
 
 import corina.Sample;
-import corina.gui.ButtonLayout;
+import corina.gui.Buttons;
 import corina.gui.DialogLayout;
 import corina.gui.UserCancelledException;
 import corina.gui.FileDialog;
 import corina.gui.Bug;
+import corina.gui.Help;
 import corina.util.OKCancel;
 import corina.util.Overwrite;
+import corina.util.TextClipboard;
 import corina.browser.FileLength;
 import corina.ui.Builder;
+import corina.ui.I18n;
 
 import java.io.File;
 import java.io.StringWriter;
 import java.io.IOException;
-
-import java.util.ResourceBundle;
 
 import java.awt.Font;
 import java.awt.Frame;
@@ -36,7 +57,6 @@ import javax.swing.BorderFactory;
 import javax.swing.AbstractAction;
 
 // issues:
-// -- needs help!  (literally! --  hook up the "help" button.)
 // -- heidelberg/hohenheim need wj -- give intelligent error when they fail?  or don't present them?
 // -- this is a fairly basic class, probably should have javadoc
 // -- filetype should have a suggestedExtension, so "ok" here gives you a default of "<old-filename>.<sug-ext>"
@@ -60,21 +80,21 @@ import javax.swing.AbstractAction;
  and user classes, i can't just extend java to include features i want; they'll always be second-
  class citizens (so to speak).
 
- -- it doesn't behave the same on windows and mac.  i don't know why it doesn't scroll to
- the top on windows.  windows users don't seem to notice minor bugs, anyway.
-
- -- on help: yes, help should be included with the application, and not require an internet
- connection or a web browser to view.  if it's in a jar, it won't be loaded until the user asks
- for it, and i can always distribute a version that matches the program.  i can also keep
- it up-to-date with web-start.  of course, it can still be HTML; it'll just ignore my stylesheets.
+ -- it doesn't behave exactly the same on windows and mac.  i don't know why it doesn't scroll to
+ the top on windows.  (windows users don't seem to notice minor bugs, anyway.)
 */
 
+/**
+   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
+   @version $Id$
+*/
 public class ExportDialog extends JDialog {
 
     private static final String EXPORTERS[] = new String[] {
         "corina.files.Tucson",
         "corina.files.TwoColumn",
         "corina.files.Corina",
+        "corina.files.TRML",
         "corina.files.Heidelberg",
         "corina.files.Hohenheim",
         "corina.files.TSAPMatrix",
@@ -83,8 +103,6 @@ public class ExportDialog extends JDialog {
         "corina.files.PackedTucson",
     };
 
-    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
-
     private JComboBox popup;
     private JLabel size;
     private JTextArea preview;
@@ -92,7 +110,7 @@ public class ExportDialog extends JDialog {
     private Sample sample;
 
     public ExportDialog(Sample s, Frame parent) {
-        super(parent, msg.getString("export"), true);
+        super(parent, I18n.getText("export"), true);
         this.sample = s;
 
         // filetype popup
@@ -129,39 +147,23 @@ public class ExportDialog extends JDialog {
 
         // in a panel
         JPanel tuples = new JPanel(new DialogLayout());
-        tuples.add(popup, msg.getString("filetype"));
-        tuples.add(size, msg.getString("size"));
-        tuples.add(new JScrollPane(preview), msg.getString("preview"));
+        tuples.add(popup, I18n.getText("filetype"));
+        tuples.add(size, I18n.getText("size"));
+        tuples.add(new JScrollPane(preview), I18n.getText("export_preview"));
 
         // buttons
         JButton help = Builder.makeButton("help");
-        help.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-/*
- TODO: create new help window here, at getClass().getClassLoader().getResource("Manual/Filetypes.html") (???)
- */
-                try {
-                    Class.forName("javax.jnlp.ServiceManager");
-                    Bug.bug(new IllegalArgumentException("jnlp!"));
-                } catch (Exception ee) {
-                    Bug.bug(new IllegalArgumentException("no jnlp!"));
-                }
-/*
-                BasicService bs = (javax.jnlp.BasicService) javax.jnlp.ServiceManagor.lookup("javax.jnlp.BasicService");
-                URL url = getClass().getClassLoader().getResource("Filetypes.html");
-                bs.showDocument(url);
- */
-            }
-        });
+	Help.addToButton(help, "exporting");
+	// BETTER?: look at state of filetype popup, and present appropriate format page
+
         JButton copy = Builder.makeButton("copy");
         copy.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                corina.util.TextClipboard.copy(preview.getText());
+                TextClipboard.copy(preview.getText());
             }
         });
         JButton cancel = Builder.makeButton("cancel");
         ok = Builder.makeButton("ok");
-        OKCancel.addKeyboardDefaults(this, ok);
 
         // button actions
         cancel.addActionListener(new AbstractAction() {
@@ -178,7 +180,7 @@ public class ExportDialog extends JDialog {
                     dispose();
 
                     // ask for filename
-                    String fn = FileDialog.showSingle(msg.getString("export"));
+                    String fn = FileDialog.showSingle(I18n.getText("export"));
 
                     // check for already-exists
                     if (new File(fn).exists() && Overwrite.overwrite(fn))
@@ -192,8 +194,10 @@ public class ExportDialog extends JDialog {
                     // do nothing
                 } catch (IOException ioe) {
                     // problem saving, tell user
-                    JOptionPane.showMessageDialog(me, msg.getString("xport_error") + ioe,
-                                                  msg.getString("export_error_title"), JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(me,
+						  I18n.getText("xport_error") + ioe,
+                                                  I18n.getText("export_error_title"),
+						  JOptionPane.WARNING_MESSAGE);
                 } catch (Exception ex) {
                     // problem creating filetype, or npe, or whatever -- bug.
                     Bug.bug(ex);
@@ -202,12 +206,7 @@ public class ExportDialog extends JDialog {
         });
         
         // in a panel
-        JPanel buttons = new JPanel(new ButtonLayout());
-        buttons.add(help);
-        buttons.add(copy);
-        buttons.add(Box.createHorizontalGlue());
-        buttons.add(cancel);
-        buttons.add(ok);
+	Buttons buttons = new Buttons(help, copy, null, cancel, ok);
         buttons.setBorder(BorderFactory.createEmptyBorder(14, 0, 0, 0));
 
         JPanel main = new JPanel();
@@ -216,6 +215,8 @@ public class ExportDialog extends JDialog {
         setContentPane(main);
         main.add(tuples, BorderLayout.CENTER);
         main.add(buttons, BorderLayout.SOUTH);
+
+        OKCancel.addKeyboardDefaults(ok);
 
         // initial view
         updatePreview();
