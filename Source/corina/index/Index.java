@@ -66,8 +66,8 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
 
     /* Return the default scale for the index: always 1.0.
        @return default scale factor, 1.0 */
-    public final double getScale() {
-        return 1.0;
+    public final float getScale() {
+        return 1.0f;
     }
 
     /** A reference to the Sample to use to compute the index.
@@ -156,6 +156,11 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
             double chi = a - b;
             chi2 += chi*chi;
         }
+
+        // according to http://www.na.astro.it/datoz-bin/corsi?chi2, i should now say chi2/=n.
+        // numerical methods (which i don't trust) seems to say not, but it's not terribly clear.
+        // what to do?
+
         return chi2;
     }
 
@@ -181,9 +186,10 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
         // compute xx, yy, z1/z2/z3
         double z1=0.0, z2=0.0, z3=0.0;
         for (int i=0; i<n; i++) {
+            // BUG?  this doesn't look like the r-value from the t-score algorithm in the manual...
             double xx = ((Number) A.get(i)).doubleValue() - Amean;
             double yy = ((Number) B.get(i)).doubleValue() - Bmean;
-
+            
             z1 += xx*xx;
             z2 += yy*yy;
             z3 += xx*yy;
@@ -206,7 +212,10 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
         // back up the old data
         if (backup == null)
             backup = (List) ((ArrayList) target.data).clone();
-
+        // INEFFICIENT: make a copy of the old data, then overwrite it all.
+        // why not just move the old data, and create a new list for the new stuff?
+        // (well, you only save an O(n) copy, it won't help that much.)
+        
         // target[i] = ind[i] / raw[i] * 1000
         for (int i=0; i<data.size(); i++) {
             double ind = ((Number) data.get(i)).doubleValue();
