@@ -72,12 +72,6 @@ public class Hohenheim extends Filetype {
 	return "Hohenheim";
     }
 
-    /** Return a unique character in the name to use as a mnemonic.
-	@return character to use as mnemonic */
-    public char getMnemonic() {
-	return 'H';
-    }
-
     /** Load a sample in Hohenheim format.
 	@param filename file to load from
 	@return Sample loaded from the file
@@ -97,7 +91,6 @@ public class Hohenheim extends Filetype {
 
 	// new sample, with given filename
 	Sample s = new Sample();
-//	s.meta.put("filename", filename);
 
 	// first line has the title after the "+" (padded)
 	s.meta.put("title", line.substring(1).trim());
@@ -152,7 +145,7 @@ public class Hohenheim extends Filetype {
 		}
 	    }
 
-	} else { // not summed
+	} else {
 
 	    // data -- summed
 	    s.incr = new ArrayList();
@@ -189,7 +182,7 @@ public class Hohenheim extends Filetype {
 	}
 
 	// close file
-	r.close();
+        r.close();
 
 	// compute range
 	s.range = new Range(start, s.data.size());

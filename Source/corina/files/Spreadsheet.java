@@ -65,10 +65,6 @@ public class Spreadsheet extends Filetype {
     }
 
     public String toString() {
-        return "Spreadsheet";
-    }
-
-    public char getMnemonic() {
-        return 'S';
+        return "Spreadsheet"; // i18n!
     }
 }

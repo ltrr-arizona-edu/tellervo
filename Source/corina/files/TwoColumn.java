@@ -72,12 +72,6 @@ public class TwoColumn extends Filetype {
 	return "2-column";
     }
 
-    /** Return a unique character in the name to use as a mnemonic.
-	@return character to use as mnemonic */
-    public char getMnemonic() {
-	return '2';
-    }
-
     /** Load tab-delimited data from a file.
 	@param filename the file to load data from
 	@return the loaded Sample

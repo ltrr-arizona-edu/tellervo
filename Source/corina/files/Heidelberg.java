@@ -53,12 +53,6 @@ public class Heidelberg extends Filetype {
 	return "Heidelberg";
     }
 
-    /** Return a unique character in the name to use as a mnemonic.
-	@return character to use as mnemonic */
-    public char getMnemonic() {
-	return 'B';
-    }
-
     /** Load a sample in Heidelberg format.
 	@param filename file to load from
 	@return Sample loaded from the file

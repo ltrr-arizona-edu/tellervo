@@ -47,8 +47,4 @@ public class RangesOnly extends Filetype {
     public String toString() {
         return "Ranges Only";
     }
-
-    public char getMnemonic() {
-        return 'R';
-    }
 }

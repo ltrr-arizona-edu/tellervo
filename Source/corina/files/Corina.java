@@ -186,12 +186,6 @@ public class Corina extends Filetype {
 	return "Corina";
     }
 
-    /** Return a unique character in the name to use as a mnemonic.
-	@return character to use as mnemonic */
-    public char getMnemonic() {
-	return 'C';
-    }
-
     // enters when the reader is just beyond the ';',
     // leaves the reader just beyond the ' ' on return;
     private String loadTag() throws IOException {
