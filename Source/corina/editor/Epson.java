@@ -90,7 +90,7 @@ public class Epson {
 	w.write("Printed by: " + System.getProperty("user.name", "(unknown)") + "\r\n");
 	w.write(new Date() + "\r\n");
 	w.write("\r\n");
-	double radius = ((double) s.computeRadius()) / 1000;
+	double radius = s.computeRadius() / 1000.;
 	double average = radius / (double) s.data.size();
 	DecimalFormat df = new DecimalFormat("0.000");
 	w.write("Radius: " + df.format(radius) + " cm, " +
@@ -118,7 +118,7 @@ public class Epson {
 
 	    // print data
 	    int index = y.diff(s.range.getStart());
-	    StringBuffer buf = new StringBuffer(((Integer) s.data.get(index)).toString());
+	    StringBuffer buf = new StringBuffer(s.data.get(index).toString());
 	    while (buf.length() < 6)
 		buf.insert(0, ' ');
 	    w.write(buf.toString());
@@ -222,7 +222,7 @@ public class Epson {
 	if (s.meta.get("species") != null)
 	    w.write("Species: " + s.meta.get("species") + "\r\n");
 	if (s.meta.get("format") != null) { // use a switch?
-	    if (((String) s.meta.get("format")).equals("R")) // ???
+	    if (s.meta.get("format").equals("R"))
 		w.write("Raw format\r\n");
 	    else if (s.isIndexed())
 		w.write("Indexed format\r\n");
@@ -230,7 +230,7 @@ public class Epson {
 		w.write("Unknown format\r\n");
 	}
 	if (s.meta.get("sapwood") != null)
-	    w.write((Integer) s.meta.get("sapwood") + " sapwood rings.\r\n");
+	    w.write(s.meta.get("sapwood") + " sapwood rings.\r\n");
 	if (s.meta.get("pith") != null) {
 	    String p = (String) s.meta.get("pith");
 	    if (p.equals("+"))
@@ -275,7 +275,7 @@ public class Epson {
 		
 		// grab summary info
 		Object meta[] = new Object[] {
-		    sample.meta.get("id"), // was: .toString(), // was: no .toString()
+		    sample.meta.get("id"), // was: .toString() (?)
 		    filename,
 		    sample.meta.get("pith"),
 		    sample.meta.get("unmeas_pre"),
