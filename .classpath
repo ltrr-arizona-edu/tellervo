@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="Source"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/xalan.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/batik.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/bcel.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/bsh.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/comm.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/commons-logging.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/crimson.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/findbugs.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/fop.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/ftp.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/gnujaxp.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/hsqldb.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/JFontChooser.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/jfor.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/jh.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/jhall.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/JimiProClasses.zip"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/jlfgr-1_0.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/junit.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/jython.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/kawa.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/log4j-1.2.8.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/postgresql.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/saxon.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Projects/Corina/Libraries/avalon.jar"/>
+	<classpathentry kind="output" path="build"/>
+</classpath>
