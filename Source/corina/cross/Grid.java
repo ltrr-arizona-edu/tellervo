@@ -27,6 +27,7 @@ import corina.Preview;
 import corina.Previewable;
 import corina.ui.I18n;
 import corina.formats.WrongFiletypeException;
+import corina.prefs.Prefs;
 
 import java.io.File;
 import java.io.FileReader;
@@ -289,8 +290,8 @@ public class Grid implements Runnable, Previewable {
 
 	    // set font (for all cells)
 	    // FIXME: use Prefs
-	    if (System.getProperty("corina.grid.font") != null)
-		g2.setFont(Font.getFont("corina.grid.font"));
+	    if (Prefs.getPref("corina.grid.font") != null)
+		g2.setFont(Font.decode(Prefs.getPref("corina.grid.font")));
 
 	    // figure out stop row, col: end of page, or end of grid,
 	    // whichever comes first

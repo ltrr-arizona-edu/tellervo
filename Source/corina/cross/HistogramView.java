@@ -212,8 +212,8 @@ public class HistogramView extends JPanel implements PrefsListener {
     private void refreshFont() {
 	// font
         // WAS: corina.cross.font (merged)
-        if (System.getProperty("corina.edit.font") != null) {
-            Font f = Font.getFont("corina.edit.font");
+        if (Prefs.getPref("corina.edit.font") != null) {
+            Font f = Font.decode(Prefs.getPref("corina.edit.font"));
             table.setFont(f);
             table.setRowHeight(f.getSize() + 3);
         }
@@ -240,12 +240,12 @@ public class HistogramView extends JPanel implements PrefsListener {
     public void addNotify() {
         super.addNotify();
         
-        Prefs.addPrefsListener(this);
+      Prefs.addPrefsListener(this);
     }
     
     public void removeNotify() {
         super.removeNotify();
         
-        Prefs.removePrefsListener(this);
+      Prefs.removePrefsListener(this);
     }
 }
