@@ -23,15 +23,13 @@ package corina.cross;
 import corina.Sample;
 import corina.Element;
 import corina.cross.Score;
-import corina.site.Site;
-import corina.site.SiteDB;
-import corina.site.SiteNotFoundException;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -75,17 +73,17 @@ import java.util.ResourceBundle;
 public class Table implements Runnable { //, Printable, Pageable {
 
     // input
-    private Sample singleton;
+    public Sample singleton; // temporarily (?) public
     private List ss;
 
     // i18n
-    private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
+    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // get rid of these formatters eventually.  scores should be able
     // to format themselves.
     static DecimalFormat f1, f2, f3;
     static {
-        // REFACTOR: the crosses to use should be user-pickable, so this is b-a-d.
+        // REFACTOR: the crosses to use should be user-pickable, so this is B-A-D.
         f1 = new DecimalFormat(new TScore().getFormat());
         f2 = new DecimalFormat(new Trend().getFormat());
         f3 = new DecimalFormat(new DScore().getFormat());
@@ -101,26 +99,26 @@ public class Table implements Runnable { //, Printable, Pageable {
        @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
        @version $Id$ */
     public class Row {
-        /** The row's (master's) title. */
+        /** The row's (sample's) title. */
         public String title;
 
-        /** The distance to this site, if able to be calculated, else null. */
-        public Integer dist;
+	// crossdate scores, overlap, distance
+	Single cross;
 
-        // change these from doubles to Scores.  (they should be able
-        // to print themselves.)
-        public double t=0.0;
-        public double tr=0.0;
-        public double d=0.0;
-        // they shouldn't be hard-coded like this, either.  what about the wj cross?  r-score?
-
-        /** Number of years overlap with this master. */
-        public int overlap;
+	public Row(Sample fixed, Sample moving) {
+	    title = moving.toString();
+	    cross = new Single(fixed, moving); // here's where all the computations get done
+	}
 
         // write the row, given a format string
-        // -- cache mf to bypass parsing?  nah, thread safety goes out the window.  better just pass in the msgfmt.
-        public String toString(String format) {
-            return null; // writeme?
+	// {0}=title, {1}-{3}=t/tr/d, {4}=overlap, {5}=dist
+        public String format(MessageFormat format) {
+	    return format.format(new Object[] {
+		title,
+		f1.format(cross.t), f2.format(cross.tr), f3.format(cross.d),
+		String.valueOf(cross.n),
+		cross.distanceAsString(),
+	    });
         }
     }
 
@@ -170,55 +168,30 @@ public class Table implements Runnable { //, Printable, Pageable {
     /** Run all computations for the table.  Computes T, trend, D,
 	overlap, and distance (if applicable) between sites.  */
     public void run() {
-        Site site1;
-        try {
-            site1 = SiteDB.getSiteDB().getSite(singleton);
-        } catch (SiteNotFoundException snfe) {
-            site1 = null;
-        }
-
         for (int i=0; i<ss.size(); i++) {
             // skip inactive elements
-            if (!((Element) ss.get(i)).active)
+            if (!((Element) ss.get(i)).isActive())
                 continue;
 
             // load element into s2
             String f = ((Element) ss.get(i)).filename;
-            Sample s2;
+            Sample s2; // "s2"?  geez, what was i on?
             try {
                 s2 = new Sample(f);
             } catch (IOException ioe) {
-                continue;
+                continue; // ugh-ly!
             }
 
-            // new row
-            Row r = new Row();
-            r.title = s2.toString();
-
-            // fill in crosses, if they overlap
-            r.overlap = s2.range.overlap(singleton.range);
-            if (r.overlap > 0) {
-                r.t = new TScore(singleton, s2).single();
-                r.tr = new Trend(singleton, s2).single();
-                r.d = new DScore(t, tr).single();
-            }
-
-            // distance
-            try {
-                Site site2 = SiteDB.getSiteDB().getSite(s2);
-                r.dist = new Integer(site1.location.distanceTo(site2.location));
-            } catch (SiteNotFoundException snfe) {
-                r.dist = null;
-            }
-
-            // add to table
-            table.add(r);
+            // add new row to table
+            table.add(new Row(singleton, s2));
         }
     }
 
     // true, this [saveHTML] is simple enough it shouldn't be in its own class.  therefore, for exportdialog,
     // i need to be able to REGISTER THIS METHOD as a saver for this type.  exportdialog, then,
     // is given any object and presents any savers it knows about:
+
+    // [[ gee, i really wish i had closures.  but i think i've said that before... ]]
 
     /*
      static {
@@ -292,28 +265,18 @@ public class Table implements Runnable { //, Printable, Pageable {
         w.write("   <tbody>\n");
 
         // write lines
+	MessageFormat html = new MessageFormat("<td>{0}</td><td>{1}</td><td>{2}</td>" +
+					       "<td>{3}</td><td>{4}</td><td>{5}</td>");
         for (int i=0; i<table.size(); i++) {
             // get table row
             Table.Row r = (Table.Row) table.get(i);
 
-            // write html table row -- (why isn't this a method of row, then?)
+            // write html table row
             w.write("   <tr class=\"" + (i%2==1 ? "odd" : "even") + "\">\n");
-            w.write("<td>" + r.title + "</td>" + // see below; start=<tr><td>, end=</td></tr>\n, spacer=</td><td> (!)
-                    "<td>" + f1.format(r.t) + "</td>" +
-                    "<td>" + f2.format(r.tr) + "</td>" +
-                    "<td>" + f3.format(r.d) + "</td>" +
-                    "<td>" + r.overlap + "</td>" +
-                    "<td>" + (r.dist==null ? "" : (r.dist + " " + msg.getString("km"))) + "</td>\n");
+	    w.write(r.format(html));
             w.write("   </tr>\n");
         }
 
-        // even better than writerow(start,end,spacer): use messageformat.
-        // writerow("{1}\t{2}\t{3}\t{4}\t{5}\t{6}");
-        // (they're all strings; 1-2-3-4-5-6 = title-t-tr-d-overlap-dist but you're of course welcome to use them out-of-order)
-        // writerow("<tr><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>");
-        // -- more printf-like, and much more readable.  yay!
-        // -- can do the title this way with a static method, too.
-        
         w.write("   </tbody>\n");
         w.write("</table>\n");
         w.write("\n");
@@ -333,7 +296,7 @@ public class Table implements Runnable { //, Printable, Pageable {
 
         // write header
         w.write(msg.getString("title") + "\t" +
-         msg.getString("tscore") + "\t" +
+		msg.getString("tscore") + "\t" +
                 msg.getString("trend") + "\t" +
                 msg.getString("dscore") + "\t" +
                 msg.getString("overlap") + "\t" +
@@ -341,16 +304,14 @@ public class Table implements Runnable { //, Printable, Pageable {
         w.newLine();
 
         // write lines
+	MessageFormat text = new MessageFormat("{0}\t{1}\t{2}\t{3}\t{4}\t{5}");
         for (int i=0; i<table.size(); i++) {
             Table.Row r = (Table.Row) table.get(i);
-            w.write(r.title + "\t" + // again, method of row?  yes, with start="", end="", spacer="\t"
-                    f1.format(r.t) + "\t" +
-                    f2.format(r.tr) + "\t" +
-                    f3.format(r.d) + "\t" +
-                    r.overlap + "\t" +
-                    (r.dist==null ? "" : (r.dist + " " + msg.getString("km"))));
-            w.newLine();
+	    w.write(r.format(text));
+            w.newLine(); // (make me part of the MF?)
         }
+
+	// (loop for r in table do (write (row-format r text))) -- or something like that
 
         // close file
         w.close();
