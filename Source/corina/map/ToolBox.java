@@ -88,7 +88,8 @@ public class ToolBox extends JToolBar {
     // -- drag a site to move it
     private class Arrow extends Tool {
         Icon getIcon() {
-            return new ImageIcon(ClassLoader.getSystemResource("Images/arrow.png"));
+            ClassLoader cl = this.getClass().getClassLoader();
+            return new ImageIcon(cl.getResource("Images/arrow.png"));
         }
         Cursor getCursor() {
             return new Cursor(Cursor.DEFAULT_CURSOR);
@@ -161,7 +162,8 @@ public class ToolBox extends JToolBar {
     // -- press, drag to scroll.
     private class Hand extends Tool {
         Icon getIcon() {
-            return new ImageIcon(ClassLoader.getSystemResource("Images/hand.png"));
+            ClassLoader cl = this.getClass().getClassLoader();
+            return new ImageIcon(cl.getResource("Images/hand.png"));
         }
         Cursor getCursor() {
             return new Cursor(Cursor.HAND_CURSOR);
@@ -214,10 +216,12 @@ public class ToolBox extends JToolBar {
     // -- auto-scroll
     private class Ruler extends Tool {
         Icon getIcon() {
-            return new ImageIcon(ClassLoader.getSystemResource("Images/ruler.png"));
+            ClassLoader cl = this.getClass().getClassLoader();
+            return new ImageIcon(cl.getResource("Images/ruler.png"));
         }
         Cursor getCursor() {
-            return Toolkit.getDefaultToolkit().createCustomCursor(new ImageIcon(ClassLoader.getSystemResource("Images/ruler-pointer.png")).getImage(),
+            ClassLoader cl = this.getClass().getClassLoader();
+            return Toolkit.getDefaultToolkit().createCustomCursor(new ImageIcon(cl.getResource("Images/ruler-pointer.png")).getImage(),
                                                                   new Point(0, 0), "Ruler");
         }
 
@@ -325,10 +329,12 @@ public class ToolBox extends JToolBar {
     // -- cursor looks like crosshair for zoom-area?
     private class Zoom extends Tool {
         Icon getIcon() {
-            return new ImageIcon(ClassLoader.getSystemResource("Images/zoom.png"));
+            ClassLoader cl = this.getClass().getClassLoader();
+            return new ImageIcon(cl.getResource("Images/zoom.png"));
         }
         Cursor getCursor() {
-            return Toolkit.getDefaultToolkit().createCustomCursor(new ImageIcon(ClassLoader.getSystemResource("Images/zoom-small.png")).getImage(),
+            ClassLoader cl = this.getClass().getClassLoader();
+            return Toolkit.getDefaultToolkit().createCustomCursor(new ImageIcon(cl.getResource("Images/zoom-small.png")).getImage(),
                                               new Point(0, 0), "Zoomer");
             // can't respond to keyboard events?  (Well, why not?  tool can implements keyboard listener, or some such, too)
         }
