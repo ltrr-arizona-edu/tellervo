@@ -21,6 +21,7 @@
 package corina;
 
 import corina.gui.Bug;
+import corina.prefs.Prefs;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -80,7 +81,7 @@ public class Species {
     static {
         try {
             // load properties
-            ClassLoader cl = Class.forName("corina.Species").getClassLoader();
+            ClassLoader cl = corina.Species.class.getClassLoader();
             species.load(cl.getResource("species.properties").openStream());
         } catch (Exception e) {
             // can't happen
@@ -139,7 +140,7 @@ public class Species {
 
     static {
         // load most-common species
-        String s = System.getProperty("corina.species.common", DEFAULT);
+        String s = Prefs.getPref("corina.species.common", DEFAULT);
 
         StringTokenizer t = new StringTokenizer(s, ", ");
         while (t.hasMoreTokens())
