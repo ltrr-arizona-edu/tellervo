@@ -23,9 +23,12 @@ public class UnitTests extends TestCase {
             Sample s2 = new Sample("Demo Data/chil/chil002.crn");
             Cross c = new Trend(s1, s2);
             c.run();
-        } catch (Exception e) {
             fail();
-        }
+        } catch (IllegalArgumentException e) {
+	    // success
+        } catch (Exception e) {
+	    fail();
+	}
     }
 
     // testing histogram
