@@ -170,9 +170,10 @@ public class TSAPMatrix extends Filetype {
             w.write(leftPad(sample.count==null ? "1" : sample.count.get(i).toString(), 15)); // count may be null?
             w.write(',');
 
-            w.write(leftPad(sample.incr==null ? "0" : sample.incr.get(i).toString(), 15)); // incr may be null?
+            // may not have wj
+            w.write(leftPad(sample.hasWeiserjahre() ? sample.incr.get(i).toString() : "0", 15));
             w.write(',');
-            w.write(leftPad(sample.decr==null ? "0" : sample.decr.get(i).toString(), 15)); // decr may be null?
+            w.write(leftPad(sample.hasWeiserjahre() ? sample.decr.get(i).toString() : "0", 15));
 
             // newline
             w.newLine();
