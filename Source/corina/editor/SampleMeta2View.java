@@ -147,23 +147,23 @@ public class SampleMeta2View extends JPanel implements SampleListener {
 
     // if not, add document listener here
     private void addField(String var, int x, int y, int width) {
-	// label
-	c.gridx = x;
-	c.gridy = y;
-	c.anchor = GridBagConstraints.NORTHEAST;
-	JLabel label = new JLabel(msg.getString(var + ".name") + ":");
-	label.setHorizontalAlignment(SwingConstants.RIGHT);
-	gridbag.setConstraints(label, c);
-	add(label);
+        // label
+        c.gridx = x;
+        c.gridy = y;
+        c.anchor = GridBagConstraints.NORTHEAST;
+        JLabel label = new JLabel(msg.getString(var + ".name") + ":");
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        gridbag.setConstraints(label, c);
+        add(label);
 
-	// field
-	c.anchor = GridBagConstraints.NORTHWEST;
-	c.gridx = x+1;
-	c.gridy = y;
-	JTextField field = new JTextField(s.meta.get(var) == null ? "" : s.meta.get(var).toString(),
-					  width);
-	gridbag.setConstraints(field, c);
-	add(field);
+        // field
+        c.anchor = GridBagConstraints.NORTHWEST;
+        c.gridx = x+1;
+        c.gridy = y;
+        String initialText = s.meta.containsKey(var) ? "" : s.meta.get(var).toString();
+        JTextField field = new JTextField(initialText, width);
+        gridbag.setConstraints(field, c);
+        add(field);
     }
 
     // fixme:
