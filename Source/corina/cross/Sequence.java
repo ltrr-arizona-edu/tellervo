@@ -26,6 +26,8 @@ import corina.Element;
 import java.io.File;
 import java.io.IOException;
 
+import java.lang.reflect.Constructor;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -36,10 +38,16 @@ public class Sequence {
     private List fixed = new ArrayList();
     private List moving = new ArrayList();
 
+    List getAllFixed() {
+        return fixed;
+    }
+    List getAllMoving() {
+        return moving;
+    }
+
     // FIXME: no reason for "fixed" and "moving" to be separate.
     // pairings are just indices into one or the other...  consolidate.
     // (this'll save more memory when i pre-load the samples.)
-
     // OTOH, the new interface will display "fixed" and "moving"
     // samples.  hmm...
 
@@ -61,11 +69,23 @@ public class Sequence {
     // i *could* use 2 lists (fixed_pairings, moving_pairings), but
     // i'd have to stuff them with Integers, so it's not really worth it.
 
-    // pointer into pairing list
+    // the current cross (pointer into pairing list)
     private int i=0;
 
     // inputs: lists of filenames (String) or elements (Element).
+    // -- BUG: you can't crossdate unsaved samples (filename=null) with this.
+    // -- (I should accept plain ol' Samples, too, then.)
     public Sequence(List f, List m) {
+        /*
+         SOLUTION:
+         -- also accept Samples in the list
+         -- copy filenames as now
+         -- if a sample's filename is null, use "" (which isn't a valid filename)
+         -- waitaminute, who uses this, anyway?
+
+         WORKING HERE.
+         */
+        
         // copy active elements to filenames
         for (int i=0; i<f.size(); i++)
             if (f.get(i) instanceof String)
@@ -118,45 +138,75 @@ public class Sequence {
     // low-level for that now, but they're still used by getCross(),
     // and there's no reason to get rid of them.
     // EXCEPT THEY'RE UNNECESSARY AND HORRIBLY INEFFICIENT.  SUCK!
+    // (5-50ms per load(), for small local files)
     private Sample getFixed() throws IOException {
         Pairing p = (Pairing) pairings.get(i);
         String fn = (String) fixed.get(p.f);
-        return new Sample(fn);
+	Sample s = new Sample(fn); // PERF: calls load()!
+        return s;
     }
     private Sample getMoving() throws IOException {
         Pairing p = (Pairing) pairings.get(i);
         String fn = (String) moving.get(p.m);
-        return new Sample(fn);
+	Sample s = new Sample(fn); // PERF: calls load()!
+        return s;
     }
 
     // cross
+    // REFACTOR: use reflection, and allow any list of crossdates -- default is '(TScore Trend DScore)
     public Cross getCross() throws IOException {
-        switch (crossNr) {
-            case 0: return new TScore(getFixed(), getMoving());
-            case 1: return new Trend(getFixed(), getMoving());
-            case 2: return new DScore(getFixed(), getMoving()); // inefficient, but what the hey...
-                                                                // if you add/remove a case here, change NUM_ALGS
-            default: return null; // never happens
-        }
+	// get fixed/moving samples
+	Sample fixed = getFixed();
+	Sample moving = getMoving();
+
+	// depending on the nr, return the right cross
+	// (note, this is inefficient for DScore, but not too bad.)
+	try {
+	    Class c = Class.forName(algs[crossNr]);
+	    Constructor cons = c.getConstructor(new Class[] { Sample.class, Sample.class });
+	    Cross x = (Cross) cons.newInstance(new Object[] {fixed, moving});
+	    return x;
+	} catch (Exception e) {
+	    System.out.println("e -- " + e);
+	    return null;
+	}
     }
 
-    private int crossNr = 0;
-    private static final int NUM_ALGS = 3; // there are this many cases in getCross()
+    private static final String DEFAULT_CROSSES[] = new String[] {
+	"corina.cross.TScore",
+	"corina.cross.Trend",
+	"corina.cross.DScore",
+    };
 
+    private String algs[] = DEFAULT_CROSSES;
+    void setAlgorithms(String a[]) {
+	this.algs = a;
+    }
+    String [] getAlgorithms() {
+	return algs;
+    }
+    // next step in refactoring: allow changing this at runtime.
+    // but: what about crosses like the weiserjahre that don't apply to every pairing?
+    // also: add a row of checkboxes ("t-score", "trend", "d-score", "weiserjahre") near the bottom of the CdK
+
+    private int crossNr = 0;
+
+    // go to next pairing; if at end, does nothing
     public void nextPairing() {
-        if (crossNr < NUM_ALGS-1) {
+        if (crossNr < algs.length-1) {
             crossNr++;
         } else if (i < pairings.size()-1) {
             i++;
             crossNr = 0;
         }
     }
+    // go to previous pairing; if at start, does nothing
     public void prevPairing() {
         if (crossNr > 0) {
             crossNr--;
         } else if (i > 0) {
             i--;
-            crossNr = NUM_ALGS-1;
+            crossNr = algs.length-1;
         }
     }
 
@@ -164,6 +214,6 @@ public class Sequence {
         return (i==0 && crossNr==0);
     }
     public boolean isLast() {
-        return (i==pairings.size()-1 && crossNr==NUM_ALGS-1);
+        return (i==pairings.size()-1 && crossNr==algs.length-1);
     }
 }
