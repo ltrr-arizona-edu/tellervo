@@ -21,6 +21,7 @@ import java.util.ResourceBundle;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.JDialog;
@@ -28,7 +29,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
-import javax.swing.JScrollBar;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -37,17 +37,12 @@ import javax.swing.BorderFactory;
 import javax.swing.AbstractAction;
 
 // issues:
-// -- needs i18n!
-// -- needs help!  (hook up the "help" button, that is.  the code's fine.)
-// -- heidelberg/hohenheim need wj -- give intelligent error when they fail
-// -- rangesonly/spreadsheet need elements -- give intelligent error when they fail
+// -- needs help!  (literally! --  hook up the "help" button.)
+// -- heidelberg/hohenheim need wj -- give intelligent error when they fail?  or don't present them?
 // -- this is a fairly basic class, probably should have javadoc
-// -- "problem using this format" in textarea is bad ... replace the text area with a label, perhaps, or don't even list unusable choices (yeah!)
 // -- filetype should have a suggestedExtension, so "ok" here gives you a default of "<old-filename>.<sug-ext>"
 // -- make it resizable, if i can figure out how to get the jtextarea to resize, as well.
 // -- add a "copy" button, so you can get a funny format to the clipboard without saving first
-
-// -- don't even list rangesonly,spreadsheet,packedtucson if there's no elements?
 
 /*
  notes on this implementation:
@@ -87,20 +82,23 @@ public class ExportDialog extends JDialog {
         "corina.files.TSAPMatrix",
         "corina.files.RangesOnly",
         "corina.files.Spreadsheet",
-        "corina.files.PackedTucson", // new!
+        "corina.files.PackedTucson",
     };
+
+    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
+
     private JComboBox popup;
     private JLabel size;
     private JTextArea preview;
-    private JScrollPane scroll;
     private JButton ok;
     private Sample sample;
+
     public ExportDialog(Sample s, Frame parent) {
-        super(parent, "Export", true);
+        super(parent, msg.getString("export"), true);
         this.sample = s;
 
         // filetype popup
-        int n = EXPORTERS.length;
+        int n = (s.elements!=null ? EXPORTERS.length : EXPORTERS.length-3); // "last 3 are summed-only"
         String v[] = new String[n];
         for (int i=0; i<n; i++) {
             try {
@@ -111,7 +109,7 @@ public class ExportDialog extends JDialog {
             }
         }
         popup = new JComboBox(v);
-        popup.setMaximumRowCount(10); // i have 9 now, and this shouldn't scroll
+        popup.setMaximumRowCount(10); // i have 9 now, and this shouldn't scroll for so few
         popup.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 updatePreview();
@@ -123,7 +121,7 @@ public class ExportDialog extends JDialog {
 
         // text preview
         preview = new JTextArea(12, 80) {
-            public boolean isManagingFocus() {
+            public boolean isManagingFocus() { // what's this for?  i've forgotten, document me!
                 return false;
             }
         };
@@ -133,16 +131,17 @@ public class ExportDialog extends JDialog {
 
         // in a panel
         JPanel tuples = new JPanel(new DialogLayout());
-        tuples.add(popup, "Filetype:");
-        tuples.add(size, "Size:");
-        scroll = new JScrollPane(preview);
-        tuples.add(scroll, "Preview:");
-                        
+        tuples.add(popup, msg.getString("filetype"));
+        tuples.add(size, msg.getString("size"));
+        tuples.add(new JScrollPane(preview), msg.getString("preview"));
+
         // buttons
-        JButton help = new JButton("Help");
-//        help.setEnabled(false);
+        JButton help = new JButton(msg.getString("help"));
         help.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
+/*
+ TODO: create new help window here, at getClass().getClassLoader().getResource("Manual/Filetypes.html") (???)
+ */
                 try {
                     Class.forName("javax.jnlp.ServiceManager");
                     Bug.bug(new IllegalArgumentException("jnlp!"));
@@ -156,8 +155,14 @@ public class ExportDialog extends JDialog {
  */
             }
         });
-        JButton cancel = new JButton("Cancel");
-        ok = new JButton("OK");
+        JButton copy = new JButton("Copy");
+        copy.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                corina.util.TextClipboard.copy(preview.getText());
+            }
+        });
+        JButton cancel = new JButton(msg.getString("cancel"));
+        ok = new JButton(msg.getString("ok"));
         OKCancel.addKeyboardDefaults(this, ok);
 
         // button actions
@@ -175,7 +180,7 @@ public class ExportDialog extends JDialog {
                     dispose();
 
                     // ask for filename
-                    String fn = FileDialog.showSingle("Export");
+                    String fn = FileDialog.showSingle(msg.getString("export"));
 
                     // check for already-exists
                     if (new File(fn).exists() && Overwrite.overwrite(fn))
@@ -189,8 +194,8 @@ public class ExportDialog extends JDialog {
                     // do nothing
                 } catch (IOException ioe) {
                     // problem saving, tell user
-                    JOptionPane.showMessageDialog(me, "Error exporting sample: " + ioe,
-                                                  "Error Exporting", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(me, msg.getString("xport_error") + ioe,
+                                                  msg.getString("export_error_title"), JOptionPane.WARNING_MESSAGE);
                 } catch (Exception ex) {
                     // problem creating filetype, or npe, or whatever -- bug.
                     Bug.bug(ex);
@@ -201,6 +206,7 @@ public class ExportDialog extends JDialog {
         // in a panel
         JPanel buttons = new JPanel(new ButtonLayout());
         buttons.add(help);
+        buttons.add(copy);
         buttons.add(Box.createHorizontalGlue());
         buttons.add(cancel);
         buttons.add(ok);
@@ -229,10 +235,12 @@ public class ExportDialog extends JDialog {
         int i = popup.getSelectedIndex();
         try {
             // save to buffer
+            setCursor(new Cursor(Cursor.WAIT_CURSOR)); // this could take a second...
             Filetype f = (Filetype) Class.forName(EXPORTERS[i]).newInstance();
             StringBuffer buf = writer.getBuffer();
             buf.delete(0, buf.length()); // clear it
             f.save(writer, sample);
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); // ok, done with the slow part
 
             // update views
             preview.setText(buf.toString());
@@ -243,12 +251,12 @@ public class ExportDialog extends JDialog {
             preview.setCaretPosition(0);
         } catch (IOException ioe) {
             // for now, use this to mean "inappropriate data/filetype" -- WTFE will be better, though.
-            size.setText("");
-            preview.setText("Problem using this format:\n" + ioe.getMessage());
-            ok.setEnabled(false);
+//            size.setText("");
+//            preview.setText("Problem using this format:\n" + ioe.getMessage());
+//            ok.setEnabled(false);
 
             // problem saving it -- bug
-//            Bug.bug(ioe);
+            Bug.bug(ioe);
         } catch (Exception e) {
             // problem creating the filetype -- bug
             Bug.bug(e);
