@@ -39,7 +39,6 @@ import javax.swing.plaf.FontUIResource;
 
 import corina.core.AbstractSubsystem;
 import corina.core.App;
-import corina.core.ProgressListener;
 import corina.gui.Bug;
 import corina.logging.CorinaLog;
 import corina.ui.I18n;
@@ -132,7 +131,7 @@ public class Prefs extends AbstractSubsystem {
     setInitialized(true);
   }
 
-  public void destroy(ProgressListener pl) {
+  public void destroy() {
     // don't need to prevent double destroys, just resave
     if (!initialized) log.debug("being destroyed more than once!");
     save();

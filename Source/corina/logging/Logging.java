@@ -1,7 +1,9 @@
+// Copyright (c) 2004-2005 Aaron Hamid.  All rights reserved.
+// See license in COPYING.txt distributed with this file and available online at http://www.gnu.org/licenses/gpl.txt
+
 package corina.logging;
 
 import corina.core.AbstractSubsystem;
-import corina.core.ProgressListener;
 
 /**
  * Logging subsystem - just initializes CorinaLog.

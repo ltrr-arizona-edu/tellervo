@@ -7,7 +7,6 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import corina.core.AbstractSubsystem;
-import corina.core.ProgressListener;
 import corina.gui.Bug;
 import corina.logging.CorinaLog;
 

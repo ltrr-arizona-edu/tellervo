@@ -21,6 +21,7 @@
 package corina.gui;
 
 import java.awt.Toolkit;
+import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -31,11 +32,11 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import corina.core.App;
-import corina.core.ProgressListener;
 
 /**
  * Bootstrap for Corina. It all starts here...
@@ -70,13 +71,17 @@ public class Startup implements PrivilegedAction {
      */
     try {
       // TODO: implement progress listeners and splash screen for real
-      ProgressListener dummy = new ProgressListener() {
-        public void setLimit(int i) { /* do nothing */ }
-        public void setValue(int i) { /* do nothing */ }
-        public void setNote(String string) { /* do nothing */ }
-      };
-      App.init(dummy, dummy);
-
+      ClassLoader cl = this.getClass().getClassLoader();
+      URL url = cl.getResource("Images/Tree.png");
+      ImageIcon ii = null;
+      if (url != null) {
+        ii = new ImageIcon(url);
+      }
+      Splash splash = new Splash("Starting Corina", ii);
+      ProgressMeter pm = new ProgressMeter();
+      pm.addProgressListener(splash);
+      App.init(pm);
+      //monitor.close();
       // let's go...
       XCorina.showCorinaWindow();
 

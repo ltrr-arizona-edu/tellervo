@@ -1,14 +1,13 @@
+// Copyright (c) 2004-2005 Aaron Hamid.  All rights reserved.
+// See license in COPYING.txt distributed with this file and available online at http://www.gnu.org/licenses/gpl.txt
+
 package corina.core;
 
-import java.io.IOException;
+import javax.swing.ProgressMonitor;
 
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-
+import corina.gui.ProgressMeter;
 import corina.logging.CorinaLog;
 import corina.logging.Logging;
-import corina.platform.Macintosh;
-import corina.platform.Netware;
 import corina.platform.Platform;
 import corina.prefs.Prefs;
 
@@ -26,24 +25,24 @@ public class App {
   private static final CorinaLog log = new CorinaLog(App.class);
   private static boolean initialized;
 
-  public static synchronized void init(ProgressListener app_listener, ProgressListener subsystem_listener) {
+  public static synchronized void init(ProgressMeter meter) {
     // throwing an error instead of simply ignoring it
     // will point out bad design and/or bugs
     if (initialized) throw new IllegalStateException("AppContext already initialized.");
 
     log.debug("initializing App");
 
-    app_listener.setLimit(3);
+    meter.setMaximum(3);
 
-    app_listener.setNote("Logging");
+    meter.setNote("Initializing Logging...");
     logging = new Logging();
     logging.init();
-    app_listener.setValue(1);
+    meter.setProgress(1);
     
-    app_listener.setNote("Platform");
+    meter.setNote("Initializing Platform...");
     platform = new Platform();
     platform.init();
-    app_listener.setValue(2);
+    meter.setProgress(2);
 
     // <init prefs>
     //prefs = new Prefs();
@@ -60,10 +59,10 @@ public class App {
     // WAS: Migrate.migrate();
 
     // load properties -- messagedialog here is UGLY!
-    app_listener.setNote("Preferences");
+    meter.setNote("Initializing Preferences...");
     prefs = new Prefs();
     prefs.init();
-    app_listener.setValue(3);
+    meter.setProgress(3);
     /*try {
       //Prefs.init();
     } catch (IOException ioe) {
@@ -71,11 +70,11 @@ public class App {
           "While trying to load preferences:\n" + ioe.getMessage(),
           "Corina: Error Loading Preferences", JOptionPane.ERROR_MESSAGE);
     }*/
-    
+
     initialized = true;   
   }
   
-  public static synchronized void destroy(ProgressListener app, ProgressListener subsystem) {
+  public static synchronized void destroy(ProgressMeter meter) {
     // throwing an error instead of simply ignoring it
     // will point out bad design and/or bugs
     if (!initialized) throw new IllegalStateException("AppContext already destroyed.");
