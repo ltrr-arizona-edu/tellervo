@@ -25,9 +25,9 @@ import corina.Range;
 import corina.Sample;
 import corina.gui.ButtonLayout;
 import corina.gui.DialogLayout;
-import corina.gui.XButton;
 import corina.util.OKCancel;
 import corina.util.Platform;
+import corina.ui.Builder;
 
 import java.util.ResourceBundle;
 
@@ -193,13 +193,12 @@ public class RedateDialog extends JDialog {
         controls.add(rangePanel, msg.getString("new_range") + ":");
 
         // dating --------------------------------------------------
+	// TODO: add builder for radiobuttons?
         ButtonGroup datingGroup = new ButtonGroup();
-        JRadioButton relButton = new JRadioButton(msg.getString("relative"), !isAbsolute);
-        if (!Platform.isMac)
-            relButton.setMnemonic(msg.getString("relative_key").charAt(0));
-        final JRadioButton absButton = new JRadioButton(msg.getString("absolute"), isAbsolute);
-        if (!Platform.isMac)
-            absButton.setMnemonic(msg.getString("absolute_key").charAt(0));
+        JRadioButton relButton = Builder.makeRadioButton("relative");
+	relButton.setSelected(!isAbsolute);
+        final JRadioButton absButton = Builder.makeRadioButton("absolute");
+	absButton.setSelected(isAbsolute);
 
         // on click (either radiobutton), set absolute (re-use listener)
         ActionListener absListener = new AbstractAction() {
@@ -231,8 +230,8 @@ public class RedateDialog extends JDialog {
         p.add(buttons);
 
         // cancel, ok
-        JButton cancel = new XButton("cancel");
-        final JButton ok = new XButton("ok");
+        JButton cancel = Builder.makeButton("cancel");
+        final JButton ok = Builder.makeButton("ok");
         buttons.add(cancel);
         buttons.add(ok);
 
