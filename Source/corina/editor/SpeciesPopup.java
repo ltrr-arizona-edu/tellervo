@@ -16,6 +16,7 @@ package corina.editor;
  */
 
 import corina.Species;
+import corina.UnknownSpeciesException;
 import corina.Sample;
 import corina.gui.ButtonLayout;
 
@@ -46,18 +47,24 @@ public class SpeciesPopup extends JComboBox { // implements my own listeners?
 
         // parse and normalize
         if (species!=null) {
-            String code = Species.getCode(species);
-            if (code != null) {
+            try {
+                String code = Species.getCode(species);
                 s.meta.put("species", code);
                 species = code;
+            } catch (UnknownSpeciesException use) {
+                // ignore?
             }
         }
 
         // add the most common species
         int n = Species.common.size();
         for (int i=0; i<n; i++) {
-            String name = Species.getName((String) Species.common.get(i));
-            addItem(name);
+            try {
+                String name = Species.getName((String) Species.common.get(i));
+                addItem(name);
+            } catch (UnknownSpeciesException use) {
+                // ignore -- can't happen: Species.common all exist
+            }
         }
 
         // select whichever it is (maybe a special one)
@@ -158,11 +165,17 @@ public class SpeciesPopup extends JComboBox { // implements my own listeners?
             int i = Species.common.indexOf(code);
             setSelectedIndex(1 + i);
         } else {
-            // look up its name, at least
-            String name = Species.getName(code);
-            
+            String value;
+            try {
+                // look up its name, at least
+                value = Species.getName(code);
+            } catch (UnknownSpeciesException use) {
+                // just use it as-is
+                value = code;
+            }
+
             // add it, and select it
-            insertItemAt(name==null ? code : name, 1); // MAYBE BUG: will this get set correctly when selected?  doesn't need to...
+            insertItemAt(value, 1); // MAYBE BUG: will this get set correctly when selected?  doesn't need to...
             setSelectedIndex(1);
             customSpecies = true;
         }

@@ -54,18 +54,22 @@ public class Species {
         }
     }
 
-    public static String getCode(String s) {
+    public static String getCode(String s) throws UnknownSpeciesException {
         Enumeration e = species.keys();
         while (e.hasMoreElements()) {
             String maybe = (String) e.nextElement();
             if (species.get(maybe).equals(s))
                 return maybe;
         }
-        return null;
+        throw new UnknownSpeciesException();
     }
 
-    public static String getName(String c) {
-        return (String) species.get(c);
+    public static String getName(String c) throws UnknownSpeciesException {
+        String r = (String) species.get(c);
+        if (r == null)
+            throw new UnknownSpeciesException();
+        else
+            return r;
     }
     
     public static List common = new ArrayList(); // list of strings, like ("PISP" "QUSP")
