@@ -40,7 +40,7 @@ public class SearchField extends JTextField {
 
         // pass arrow-key, etc., events on to eventTarget
         final Component table = eventTarget;
-        addKeyListener(new KeyAdapter() { // WORKING HERE
+        addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 int code = e.getKeyCode();
                 if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_UP ||
@@ -48,6 +48,9 @@ public class SearchField extends JTextField {
                     code == KeyEvent.VK_ENTER) {
                     table.requestFocus(); // focus on the table, and ...
                     table.dispatchEvent(e); // ... pass arrow-key event to it.
+                } else if (code == KeyEvent.VK_ESCAPE) {
+                    // esc clears field.  very handy.
+                    reset();
                 }
             }
             // ignore keyReleased, keyPressed events
