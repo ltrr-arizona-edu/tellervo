@@ -168,10 +168,13 @@ public class GridFrame extends XFrame
             // FIXME: new font each time seems even MORE inefficient!
             // better: in refresh() just do component.setFont(...), and i'll pick it up automatically, right?
 
+	    // ((Graphics2D) g).scale(scale, scale);
+	    // FIXME: agh!  just call g2.scale(scale, scale) -- grid cells shouldn't have to
+	    // scale themselves.  but scale() doesn't scale the text as nicely as i do, so
+	    // until i figure that out, i'll keep passing in my own scale.
+
             // call the printing method (REFACTOR: rename method?  it's not just for printing, anymore...)
             cell.print((Graphics2D) g, 0, 0, scale);
-	    // FIXME: agh!  just call g2.scale(scale, scale) -- grid cells shouldn't have to
-	    // scale themselves.
         }
     }
 
