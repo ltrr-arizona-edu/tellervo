@@ -33,12 +33,12 @@ public class UnitTests extends TestCase {
     public void testSiteDB() {
         if (System.getProperty("org.xml.sax.driver") == null)
             System.setProperty("org.xml.sax.driver", "gnu.xml.aelfred2.SAXDriver");
-        if (System.getProperty("corina.sites.file") == null)
-            System.setProperty("corina.sites.file", "sites.db");
+        if (System.getProperty("corina.dir.data") == null)
+            System.setProperty("corina.dir.data", "Demo Data");
         try {
             SiteDB db = SiteDB.getSiteDB();
-            assert(db != null);
-            assert(db.sites != null);
+            assertTrue(db != null);
+            assertTrue(db.sites != null);
         } catch (Exception e) {
             fail();
         }

@@ -23,11 +23,12 @@ package corina.site;
 import corina.Sample;
 import corina.map.Location;
 
-import java.io.IOException;
+import java.io.File;
 import java.io.Writer;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.IOException;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -74,32 +75,32 @@ public class SiteDB {
         return db;
     }
 
+    // this causes all sorts of failures if corina.dir.data==null!
+    private String getDBFilename() {
+        return System.getProperty("corina.dir.data") + File.separator + "Site DB";
+    }
+    
     void loadDB() throws IOException {
-	// get filename
-	String filename = System.getProperty("corina.sites.file");
+        try {
+            // create XML reader
+            XMLReader xr = XMLReaderFactory.createXMLReader();
 
-	try {
-	    // create XML reader
-	    XMLReader xr = XMLReaderFactory.createXMLReader();
+            // set it up as a sitedb loader
+            SiteDBLoader loader = new SiteDBLoader();
+            xr.setContentHandler(loader);
+            xr.setErrorHandler(loader);
 
-	    // set it up as a sitedb loader
-	    SiteDBLoader loader = new SiteDBLoader();
-	    xr.setContentHandler(loader);
-	    xr.setErrorHandler(loader);
-
-	    // load it
-	    FileReader r = new FileReader(filename);
-	    xr.parse(new InputSource(r));
-	} catch (SAXException se) {
-	    throw new IOException(se.getMessage());
-	}
+            // load it
+            FileReader r = new FileReader(getDBFilename());
+            xr.parse(new InputSource(r));
+        } catch (SAXException se) {
+            throw new IOException(se.getMessage());
+        }
     }
 
     // save the sitedb to disk -- is this never used?
     void saveDB() throws IOException {
-	// this fails if corina.sites.file==null!
-	String filename = System.getProperty("corina.sites.file");
-	BufferedWriter w = new BufferedWriter(new FileWriter(filename));
+        BufferedWriter w = new BufferedWriter(new FileWriter(getDBFilename()));
 
 	w.write("<?xml version=\"1.0\"?>");
 	w.newLine();
@@ -226,22 +227,27 @@ public class SiteDB {
     }
 
     public Site getSite(Sample sample) {
-	String filename = (String) sample.meta.get("filename");
+        String filename = (String) sample.meta.get("filename");
 
-	// make sure it's been saved
-	if (filename == null)
-	    throw new IllegalArgumentException();
+        // make sure it's been saved
+        if (filename == null)
+            throw new IllegalArgumentException();
 
-	// look through the database for that filename
-	for (int i=0; i<sites.size(); i++) {
-	    Site s = (Site) sites.get(i);
+        // look through the database for that filename
+        for (int i=0; i<sites.size(); i++) {
+            Site s = (Site) sites.get(i);
+            if (s.filename == null)
+                continue;
 
-	    if (s.filename!=null && filename.startsWith(s.filename))
-		return s;
-	}
+            // i think this might not always work, depending on OS, rel/abs filenames, etc.
+            if (filename.startsWith(s.filename) ||
+                filename.startsWith(System.getProperty("corina.dir.data") + File.separator + s.filename) ||
+                filename.startsWith(System.getProperty("corina.dir.data") + s.filename))
+                return s;
+        }
 
-	// just return null
-	return null;
+        // just return null
+        return null;
     }
 
     public Site getSite(Location l) {
@@ -307,4 +313,4 @@ public class SiteDB {
 
         w.close();
     }
-}
+}	
