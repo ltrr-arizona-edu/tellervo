@@ -96,7 +96,7 @@ public class Histogram {
             for (int i=0; i<n; i++)
                 fullest = Math.max(fullest, buckets[i]);
         }
-        return max;
+        return fullest;
     }
 
     public int countBuckets() {
