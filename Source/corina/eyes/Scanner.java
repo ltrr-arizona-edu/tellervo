@@ -21,6 +21,7 @@
 package corina.eyes;
 
 import corina.util.Sort;
+import corina.util.Angle;
 
 import java.io.FileWriter;
 import java.io.BufferedWriter;
@@ -41,20 +42,6 @@ public class Scanner {
 
     private double theta;
 
-    // compute the angle of a line drawn from a to b -- EXISTS ELSEWHERE, REFACTOR
-    public static double angle(Point a, Point b) {
-	double theta;
-	double dx = b.x - a.x;
-	double dy = b.y - a.y;
-	if (dx == 0)
-	    theta = Math.PI * (b.y < a.y ? 3/2 : 1/2);
-	else
-	    theta = Math.atan(dy/dx);
-	if (b.x < a.x)
-	    theta += Math.PI;
-	return theta;
-    }
-
     public Scanner(BufferedImage img, Point p1, Point p2) {
 	this.img = img;
 	this.p1 = p1;
@@ -72,7 +59,7 @@ public class Scanner {
     }
 
     public void rescan() {
-	theta = angle(p1, p2);
+	theta = Angle.angle(p1, p2);
 	brightness = new ArrayList();
 	distances = new ArrayList();
 	rings = new ArrayList();
