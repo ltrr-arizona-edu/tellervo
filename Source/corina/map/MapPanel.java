@@ -167,9 +167,9 @@ public class MapPanel extends JPanel { // implements MouseListener, MouseMotionL
                 drawOneGridline(g2, r, Map.makeGridline(false, lat, lon));
     }
 
-    // europe on 5000 ints a day?
-    private int x[] = new int[5000];
-    private int y[] = new int[5000];
+    // europe on 64 ints a day?
+    private int x[] = new int[64];
+    private int y[] = new int[64];
     
     private void drawMap(Graphics2D g2, Renderer r) throws IOException {
         for (int i=0; i<Map.headers.length; i++) {
@@ -188,9 +188,13 @@ public class MapPanel extends JPanel { // implements MouseListener, MouseMotionL
                 // we'll have to render the whole thing.  get the data -- hopefully cached -- and render it
                 Map.Data d = h.getData();
                 int n = d.x.length;
-                if (n > x.length) {
-                    x = new int[n]; // normalize to 2^n, to minimize the number of times i'll be here in the future?
-                    y = new int[n];
+                int m = x.length; // round up to power of 2, to minimize allocations
+                while (m < n) {
+                    m *= 2;
+                }
+                if (m > x.length) {
+                    x = new int[m];
+                    y = new int[m];
                 }
                 for (int j=0; j<n; j++) {
                     Vector3 v = r.project(new Location(d.y[j], d.x[j])); // maybe keep this location around, even.
