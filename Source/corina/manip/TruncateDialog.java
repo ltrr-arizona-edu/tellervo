@@ -24,6 +24,8 @@ import corina.Year;
 import corina.Range;
 import corina.Sample;
 import corina.gui.ButtonLayout;
+import corina.util.OKCancel;
+import corina.util.JLine;
 
 import java.util.ResourceBundle;
 
@@ -39,10 +41,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
-import javax.swing.JSeparator;
 import javax.swing.JPanel;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
 import javax.swing.AbstractAction;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentListener;
@@ -195,21 +197,27 @@ public class TruncateDialog extends JDialog {
 	};
     
     private void updateResult() {
-	// error?
-	if (r == null) {
-	    result.setText(msg.getString("after") + ": " + msg.getString("badcrop"));
-	    return;
-	}
+        // error?
+        if (r == null) {
+            result.setText(msg.getString("after") + ": " + msg.getString("badcrop"));
+            return;
+        }
 
-	// display result
-	result.setText(msg.getString("after") + ": " + r + " (n=" + r.span() + ")");
+        // display result
+        result.setText(msg.getString("after") + ": " + r + " (n=" + r.span() + ")");
     }
 
+    private JPanel p;
     private void setup() {
+        // use my own toplevel, so i can create my own border
+        p = new JPanel(new BorderLayout());
+        p.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
+        setContentPane(p);
+        
 	// the big panel
 	JPanel pri = new JPanel();
 	pri.setLayout(new BoxLayout(pri, BoxLayout.Y_AXIS));
-	getContentPane().add(pri, BorderLayout.CENTER);
+	p.add(pri, BorderLayout.CENTER);
 
 	// secondary panel: start | end
 	JPanel sec = new JPanel();
@@ -273,14 +281,14 @@ public class TruncateDialog extends JDialog {
 	endPanel.add(f4);
 	f4.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-	// build secondary panel
-	sec.add(Box.createHorizontalStrut(16));
-	sec.add(startPanel);
-	sec.add(Box.createHorizontalStrut(12));
-	sec.add(new JSeparator(SwingConstants.VERTICAL));
-	sec.add(Box.createHorizontalStrut(12));
-	sec.add(endPanel);
-	sec.add(Box.createHorizontalStrut(16));
+        // build secondary panel
+        sec.add(Box.createHorizontalStrut(16));
+        sec.add(startPanel);
+        sec.add(Box.createHorizontalStrut(12));
+        sec.add(new JLine(JLine.VERTICAL));
+        sec.add(Box.createHorizontalStrut(12));
+        sec.add(endPanel);
+        sec.add(Box.createHorizontalStrut(16));
 
 	// bottom line: "after truncating..."
 	result = new JLabel();
@@ -303,9 +311,10 @@ public class TruncateDialog extends JDialog {
 	pri.add(Box.createVerticalStrut(8));
     }
 
-    private void initButtons() {
+    // returns "ok" button
+    private JButton initButtons() {
         JPanel buttons = new JPanel(new ButtonLayout());
-        getContentPane().add(buttons, BorderLayout.SOUTH);
+        p.add(buttons, BorderLayout.SOUTH);
 
         // cancel == close
         JButton cancel = new JButton(msg.getString("cancel"));
@@ -370,7 +379,7 @@ public class TruncateDialog extends JDialog {
             }
         });
         buttons.add(apply);
-        getRootPane().setDefaultButton(apply);
+        return apply;
     }
 
     public TruncateDialog(Sample s, JFrame owner) {
@@ -389,15 +398,10 @@ public class TruncateDialog extends JDialog {
 
 	// pass
 	setup();
-	initButtons();
+	JButton ok = initButtons();
 
-	// esc => cancel
-	addKeyListener(new KeyAdapter() {
-		public void keyPressed(KeyEvent e) {
-		    if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-			dispose();
-		}
-	    });
+        // ret => ok, esc => cancel
+        OKCancel.addKeyboardDefaults(this, ok);
 
 	// all done
 	pack();
