@@ -243,19 +243,19 @@ public class Prefs {
    * Loads any saved uidefaults preferences and installs them
    */
   private static synchronized void loadUIDefaults() {
-   Iterator it = prefs.entrySet().iterator();
-   UIDefaults uidefaults = UIManager.getDefaults();
-   log.debug("iterating prefs");
-   while (it.hasNext()) {
-     Map.Entry entry = (Map.Entry) it.next();
-     String prefskey = entry.getKey().toString();
-     if (!prefskey.startsWith("uidefaults.") ||
-          prefskey.length() <= "uidefaults.".length()) continue;
-     String uikey = prefskey.substring("uidefaults.".length());
-     Object object = uidefaults.get(uikey);
-     log.debug("prefs property " + uikey + " " + object);
-     installUIDefault(object.getClass(), prefskey, uikey);
-   }
+    Iterator it = prefs.entrySet().iterator();
+    UIDefaults uidefaults = UIManager.getDefaults();
+    log.debug("iterating prefs");
+    while (it.hasNext()) {
+      Map.Entry entry = (Map.Entry) it.next();
+      String prefskey = entry.getKey().toString();
+      if (!prefskey.startsWith("uidefaults.") ||
+           prefskey.length() <= "uidefaults.".length()) continue;
+      String uikey = prefskey.substring("uidefaults.".length());
+      Object object = uidefaults.get(uikey);
+      log.debug("prefs property " + uikey + " " + object);
+      installUIDefault(object.getClass(), prefskey, uikey);
+    }
   }
 
   private static void installUIDefault(Class type, String prefskey, String uikey) {
@@ -443,7 +443,18 @@ public class Prefs {
     }
     return d;
   }
-  
+
+  public static int getIntPref(String pref, int deflt) {
+    String value = prefs.getProperty(pref);
+    if (value == null) return deflt;
+    try {
+      return Integer.parseInt(value);
+    } catch (NumberFormatException nfe) {
+      log.warn("Invalid integer for preference '" + pref + "': " + value);
+      return deflt;
+    }
+  }
+
   public static Color getColorPref(String pref, Color deflt) {
     String value = prefs.getProperty(pref);
     if (value == null) return deflt;
