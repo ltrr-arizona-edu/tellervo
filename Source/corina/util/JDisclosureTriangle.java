@@ -2,6 +2,7 @@ package corina.util;
 
 import java.awt.BorderLayout;
 import java.awt.Window;
+import java.awt.Dimension;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -75,6 +76,13 @@ public class JDisclosureTriangle extends JPanel /*implements DropTargetListener*
     // TODO: if something (an object to be dropped) is held over the label and it's closed, it should open
     // (possible to close it when the drop is done, then?)
 
+    // width when closed should be same as width when opened
+    public Dimension getPreferredSize() {
+	Dimension d = super.getPreferredSize();
+	d.width = component.getPreferredSize().width;
+	return d;
+    }
+
     private void expand() {
 	visible = true;
 	label.setIcon(expandedIcon);
@@ -89,7 +97,7 @@ public class JDisclosureTriangle extends JPanel /*implements DropTargetListener*
 
     private void update() {
 	window.pack();
-	window.repaint();
+	window.repaint(); // BUG: doesn't work!
     }
 
     // ----------------------------------------
