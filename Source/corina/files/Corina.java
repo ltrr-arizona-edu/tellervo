@@ -503,7 +503,7 @@ public class Corina extends Filetype {
 
     private void saveMeta() throws IOException {
 	if (s.meta.get("title") != null)
-	    w.write((String) s.meta.get("title"));
+	    w.write(s.meta.get("title").toString());
 	w.newLine();
 
 	w.newLine();
