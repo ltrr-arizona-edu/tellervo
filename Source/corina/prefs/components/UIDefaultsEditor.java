@@ -5,6 +5,8 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.AbstractCellEditor;
 import javax.swing.table.TableCellEditor;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 
@@ -16,13 +18,18 @@ import corina.util.CorinaLog;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class UIDefaultsEditor extends AbstractCellEditor implements TableCellEditor {
+public class UIDefaultsEditor extends AbstractCellEditor implements TableCellEditor, CellEditorListener {
   private static final CorinaLog log = new CorinaLog(UIDefaultsEditor.class);
   
   private ColorEditor colorEditor = new ColorEditor();
   private FontEditor fontEditor = new FontEditor();
   private TableCellEditor chosenEditor;
   
+  public UIDefaultsEditor() {
+    colorEditor.addCellEditorListener(this);
+    fontEditor.addCellEditorListener(this);
+  }
+
   public Component getTableCellEditorComponent(JTable table,
     Object value, boolean isSelected, int row, int column) {
       
@@ -42,5 +49,21 @@ public class UIDefaultsEditor extends AbstractCellEditor implements TableCellEdi
   
   public Object getCellEditorValue() {
     return chosenEditor.getCellEditorValue();
+  }
+
+  public void cancelCellEditing() {
+    chosenEditor.cancelCellEditing();
+  }
+
+  public boolean stopCellEditing() {
+    return chosenEditor.stopCellEditing();
+  }
+
+  public void editingCanceled(ChangeEvent e) {
+    super.cancelCellEditing();     
+  }
+
+  public void editingStopped(ChangeEvent e) {
+    super.stopCellEditing();  
   }
 }
