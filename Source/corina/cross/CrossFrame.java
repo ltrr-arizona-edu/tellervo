@@ -58,7 +58,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.*; // !!!
 import javax.swing.event.*; // !!!
-import javax.swing.Timer;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -77,7 +76,6 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
     private JTable scoresTable=null, sigsTable, histoTable;
     private JTabbedPane tabPane;
     private JButton prevButton, nextButton, graphButton, mapButton, closeButton;
-    private Timer timer;
 
     // l10n
     private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
@@ -386,31 +384,30 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         }
     }
 
-    // gui setup
-    private void initGui() {
-        // timer ------------------------------------------------------------
-        // A TIMER?  WHAT IN THE NAME OF JESUS H CHRIST WERE YOU THINKING?
-        timer = new Timer(10 /* ms */, new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (cross.isFinished()) {
-                    // stop timer
-                    ((Timer) e.getSource()).stop();
+    // stuff to do when the crossdate run is finished
+    private void crossdateRunFinished() {
+        // do this in the dispatch thread!
+        // (otherwise, each change to the table is visible ... choppy and distracting)
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
 
-                    // show tables
-                    if (scoresTable == null)
-                        initTables();
-                    else
-                        updateTables();
+                // show tables
+                if (scoresTable == null)
+                    initTables();
+                else
+                    updateTables();
 
-                    // update titles
-                    fixedTitle.setText(cross.fixed.toString());
-                    movingTitle.setText(cross.moving.toString());
-                    fixedTree.setSample(cross.fixed);
-                    movingTree.setSample(cross.moving);
-                }
+                // update titles
+                fixedTitle.setText(cross.fixed.toString());
+                movingTitle.setText(cross.moving.toString());
+                fixedTree.setSample(cross.fixed);
+                movingTree.setSample(cross.moving);
             }
         });
+    }
 
+    // gui setup
+    private void initGui() {
         // cards!
         cardLayout = new CardLayout();
         cards = new JPanel(cardLayout);
@@ -433,55 +430,43 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
                                  new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Back16.gif")));
         if (Platform.isMac) prevButton.setIcon(null);
         prevButton.setMnemonic(msg.getString("prev_key").charAt(0));
-        prevButton.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent ae) {
-                // disable buttons during processing
-                disableButtons();
-
-                // get prev cross
-                if (!seq.isFirst()) {
-                    seq.prevPairing();
-                    try {
-                        cross = seq.getCross();
-                    } catch (IOException ioe) {
-                        // DEAL WITH ME
-                    }
-                }
-
-                // run it in its own thread
-                Thread thread = new Thread(cross);
-                timer.start();
-                thread.start();
-            }
-        });
 
         // next
         nextButton = new JButton(msg.getString("next"),
                                  new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Forward16.gif")));
         if (Platform.isMac) nextButton.setIcon(null);
         nextButton.setMnemonic(msg.getString("next_key").charAt(0));
-        nextButton.addActionListener(new AbstractAction() {
+
+        // actionlistener for prev/next
+        Action prevNext = new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 // disable buttons during processing
                 disableButtons();
 
-                // get next cross
-                if (!seq.isLast()) {
-                    seq.nextPairing();
-                    try {
-                        cross = seq.getCross();
-                    } catch (IOException ioe) {
-                        // DEAL WITH ME
+                try {
+                    if (ae.getSource() == prevButton) {
+                        seq.prevPairing();
+                    } else { // nextButton
+                        seq.nextPairing();
                     }
+                    cross = seq.getCross();
+                } catch (IOException ioe) {
+                    System.out.println("ioe! -- " + ioe);
+                    // DEAL WITH ME INTELLIGENTLY!
                 }
 
-                // run it in its own thread
-                Thread thread = new Thread(cross);
-                timer.start();
-                thread.start();
+                // run it in its own thread, and then call crossdateRunFinished()
+                new Thread(new Runnable() {
+                    public void run() {
+                        cross.run();
+                        crossdateRunFinished();
+                    }
+                }).start();
             }
-        });
-
+        };
+        prevButton.addActionListener(prevNext);
+        nextButton.addActionListener(prevNext);
+                
         // graph
         graphButton = new JButton(msg.getString("plot"));
         graphButton.setMnemonic(msg.getString("plot_key").charAt(0));
@@ -662,6 +647,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 
         // title
         setTitle(cross.toString());
+        // JVM BUG?: on OS X this sometimes doesn't set the title until you move the mouse.  ack.
 
         // buttons
         prevButton.setEnabled(!(seq.isFirst()));
@@ -910,18 +896,25 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
             // DEAL WITH ME
         }
 
-        // init gui (incl. timer)
+        // init gui
         initGui();
 
         // menubar: in testing
         setJMenuBar(new XMenubar(this, makeMenus())); // REFACTOR: move makeMenus() part of XFrame?
 
-        // run cross
-        Thread thread = new Thread(cross);
+        // disable buttons: don't let user do anything until the first cross is done
         disableButtons();
-        timer.start();
-        thread.start();
 
+// HEY!  the line before and after this are just the same as Action prevNext, apart from the seq.*pairing() call.  refactor?
+        
+        // run it in its own thread, and then call crossdateRunFinished()
+        new Thread(new Runnable() {
+            public void run() {
+                cross.run();
+                crossdateRunFinished();
+            }
+        }).start();
+        
         // show
         pack();
         setSize(new Dimension(640, 480));
