@@ -32,12 +32,16 @@ public class Weiserjahre extends Cross {
     }
 
     public String getFormat() {
-	return System.getProperty("corina.cross.weiserjahre.format", "00.0%");
+        // FIXME: this should be a pref, as well
+        return System.getProperty("corina.cross.weiserjahre.format", "0.0%");
     }
 
-    // same as trend?
+    // same as trend?  (this is old-style trend, even -- very obsolete!)
+    public boolean isSignificant(double score, int overlap) {
+        return score > 0.65;
+    }
     public double getMinimumSignificant() {
-	return 0.65;
+        return 0.65;
     }
 
     public String getName() {
@@ -98,8 +102,10 @@ public class Weiserjahre extends Cross {
 	    j++;
 	}
 
+        // if there were no significant intervals, call it 0.0.
+        if (totalSigs == 0)
+            return 0.0;
+
 	return (double) synchroTrends / (double) totalSigs;
     }
-
-    // histo was: 0.0, 10.0 (?)
 }
