@@ -8,9 +8,6 @@ import java.awt.Dimension;
 // idea: make renderer an abstract class, call this SphericalRenderer, (put matrix inside it?), make a make/useRenderer(r) method, add other renderers...
 
 public class SphericalRenderer extends Renderer {
-    // what we're looking at (input only)
-//    /* MAKE ME private */ View view;
-    
     // method: Point render(Location)
     // project my (latitude,longitude) onto a width-by-height bitmap, using rotation matrix rot
     private final static double FAKE_EARTH_RADIUS = 2500.; // (actual size is too big for most displays.)
@@ -83,10 +80,9 @@ public class SphericalRenderer extends Renderer {
     // RENAME THIS METHOD!  something like reset() or rerender() or ...
     // NO!  this method is called so rarely, and renderer holds so little state, just make a new renderer each time!  (separate renderer and view!)
     public SphericalRenderer(View v) {
-        // copy the view
-        view = v;
+        view = v; // copy the view
 
-        // make rotation matrix
+ // make rotation matrix
         // REFACTOR: THIS BELONGS IN VIEW or MATRIX!
         rot = Matrix.makeRotateX(-view.center.latitude); // BACKWARDS
         rot = Matrix.multiply(Matrix.makeRotateY(view.center.longitude), rot); // BACKWARDS, AND NEGATIVE

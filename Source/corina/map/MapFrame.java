@@ -71,50 +71,34 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
     }
     public Printable makePrintable(PageFormat pf) {
         try {
-            // get lat/lon/zoom, make new MapPrinter
-            MapPrinter p = new MapPrinter(mapPanel.getView());
-            p.setS1(s1);
-            p.setS2(s2);
-
-	    /* -- debug
-	    System.out.println("LANDSCAPE = " + PageFormat.LANDSCAPE);
-	    System.out.println("PORTRAIT = " + PageFormat.PORTRAIT);
-	    System.out.println("REVERSE_LANDSCAPE = " + PageFormat.REVERSE_LANDSCAPE);
-	    System.out.println("pf = " + pf.getOrientation());
-	    */
-
-	    p.setPageFormat(pf);
-	    return p;
-	} catch (Exception e) {
-	    System.out.println("e! " + e);
-	    return null; // ouch!
-	}
+            mapPanel.setPageFormat(pf);
+            return mapPanel;
+        } catch (Exception e) {
+            System.out.println("e! " + e);
+            return null; // ouch!
+        }
     }
     public String getPrintTitle() {
         return "Map"; // add location/sites/etc.
     }
 
     public MapFrame() throws IOException {
-	super();
-
-	// init stuff
-	init();
+        super();
+        init(); // init stuff
     }
 
     public MapFrame(Site s1, Site s2) throws IOException {
-	super();
-	init();
+        super();
+        init();
 
-	// set s1, s2
-	this.s1 = s1;
-	this.s2 = new Site[] { s2 };
-	mapPanel.s1 = s1;
-	mapPanel.s2 = new Site[] { s2 };
+        // set s1, s2
+        this.s1 = s1;
+        this.s2 = new Site[] { s2 };
+        mapPanel.s1 = s1;
+        mapPanel.s2 = new Site[] { s2 };
 
-	// center between them
-        double lat = (s1.location.latitude + s2.location.latitude) / 2; // REFACTOR: move to Location(s1,s2)=avg
-	double lon = (s1.location.longitude + s2.location.longitude) / 2;
-        mapPanel.getView().center = new Location(lat, lon);
+        // center between them
+        mapPanel.getView().center = Location.midpoint(s1.location, s2.location);
     }
 
     public MapFrame(Site s1, Site s2[]) throws IOException {
@@ -132,19 +116,19 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
     }
 
     public MapFrame(SiteDB db) throws IOException {
-	super();
-	init();
+        super();
+        init();
 
-	// set s1, s2
-	this.s1 = null;
-	this.s2 = (Site[]) db.sites.toArray(new Site[0]);
-	mapPanel.s1 = null;
-	mapPanel.s2 = s2;
+        // set s1, s2
+        this.s1 = null;
+        this.s2 = (Site[]) db.sites.toArray(new Site[0]);
+        mapPanel.s1 = null;
+        mapPanel.s2 = s2;
 
-	// center?  well, don't bother for now.
- // TODO: center on the average site in the map.  (what's "average" on a circular loop?)
- // TODO: zoom out to show all sites (?) -- seems harder
- // mapPanel.getRenderer().location = (Location) s1.location.clone();
+        // center?  well, don't bother for now.
+        // TODO: center on the average site in the map.  (what's "average" on a circular loop?)
+        // TODO: zoom out to show all sites (?) -- seems harder
+        // mapPanel.getRenderer().location = (Location) s1.location.clone();
     }
 
     // component listener
@@ -161,43 +145,41 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
 	if (t != null)
 	    t.cancel();
 	t = new Timer();
-	// System.out.println("scheduling update");
 	t.schedule(new TimerTask() {
 		public void run() {
-		    // System.out.println("UPDATING");
 		    mapPanel.updateBuffer(); // expensive
 		    mapPanel.repaint(); // cheap
 		    t = null;
 		}
 	    }, 250 /* ms */);
     }
-    public void componentHidden(ComponentEvent e) { }
-    public void componentMoved(ComponentEvent e) { }
-    public void componentShown(ComponentEvent e) { }
+    public void componentHidden(ComponentEvent e) { } // timer is private, hence i need to implement
+    public void componentMoved(ComponentEvent e) { } // componentlistener myself, hence i need to
+    public void componentShown(ComponentEvent e) { } // have a bunch of empty method bodies.  ack.
 
     public void init() throws IOException {
-	setTitle("Map");
-	setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setTitle("Map");
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-	// add mappanel
-	mapPanel = new MapPanel();
-	// mapPanel.updateBuffer(); // it's "resized" when the frame first appears
-	getContentPane().add(mapPanel, BorderLayout.CENTER);
+        // add mappanel
+        mapPanel = new MapPanel();
+        // mapPanel.updateBuffer(); // it's "resized" when the frame first appears
+        getContentPane().add(mapPanel, BorderLayout.CENTER);
 
         // toolbox
         ToolBox tools = new ToolBox(mapPanel.getView(), mapPanel);
         getContentPane().add(tools, BorderLayout.NORTH);
 
         // status bar -- doesn't work (!) (?)
-	// final JLabel label = new JLabel("xyz");
-	// getContentPane().add(label, BorderLayout.SOUTH);
+        // final JLabel label = new JLabel("xyz");
+        // getContentPane().add(label, BorderLayout.SOUTH);
         mapPanel.setLabel(this); // FIXME: OBSOLETE?
 
-	// scrollbars -- need more complex layout for this stuff now
-	JScrollBar sb1 = new JScrollBar(JScrollBar.HORIZONTAL,
-                                 (int) mapPanel.getView().center.longitude,
-                                 10, // changes -- augh!
-                                 -180, 180);
+        // scrollbars -- need more complex layout for this stuff now
+        JScrollBar sb1 = new JScrollBar(JScrollBar.HORIZONTAL,
+                                        (int) mapPanel.getView().center.longitude,
+                                        10, // changes -- augh!
+                                        -180, 180);
         sb1.addAdjustmentListener(new AdjustmentListener() {
             public void adjustmentValueChanged(AdjustmentEvent e) {
                 mapPanel.getView().center.longitude = e.getValue();
@@ -219,13 +201,13 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
 	JPanel flow = new JPanel();
 	flow.setLayout(new BorderLayout());
 	zoomer = new JComboBox(new String[] { "10%", "25%", "50%", "75%", "100%", "150%", "200%", "400%", "800%", "1600%" });
-	zoomer.setSelectedIndex(4); // 100% is default
-	Font f = zoomer.getFont();
-	zoomer.setFont(new Font(f.getFontName(), f.getStyle(), sb1.getPreferredSize().height * 2/3)); // 2/3 of sb height
-	zoomer.setPreferredSize(new Dimension(zoomer.getPreferredSize().width, sb1.getPreferredSize().height));
-	zoomer.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    try {
+        zoomer.setSelectedIndex(4); // 100% is default
+        Font f = zoomer.getFont();
+        zoomer.setFont(new Font(f.getFontName(), f.getStyle(), sb1.getPreferredSize().height * 3/4));
+        zoomer.setPreferredSize(new Dimension(zoomer.getPreferredSize().width, sb1.getPreferredSize().height));
+        zoomer.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                try {
 			String pct = (String) zoomer.getSelectedItem();
 			DecimalFormat fmt = new DecimalFormat("#%");
 			double z = ((Number) fmt.parse(pct)).doubleValue();
@@ -256,7 +238,8 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
 	// set size, and show it
 	pack();
 	setSize(new Dimension(640, 480));
-	componentResized(null); // initial panel size
+//	componentResized(null); // initial panel size
+        mapPanel.updateBuffer(); // is this better?
 	show();
     }
 
@@ -283,6 +266,10 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
 		    int i = zoomer.getSelectedIndex() + 1;
 		    zoomer.setSelectedIndex(i);
 		    updateZoomMenus();
+                    // breakage.  better:
+                    // figure out what's closest to the current zoom.
+                    // increment that.
+                    // ok, the popup needs an "other..." option.
 		}
 	    });
 	view.add(zoomIn);

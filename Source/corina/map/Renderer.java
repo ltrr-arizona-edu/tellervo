@@ -27,7 +27,7 @@ public abstract class Renderer {
     }
 
     public View view;
-    
+
     // nonzero iff the current segment is visible.
     public static final int VISIBLE_NO = 0; // out of view
     public static final int VISIBLE_YES = 1; // in view

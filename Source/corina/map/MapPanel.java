@@ -38,11 +38,15 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.BasicStroke;
+import java.awt.RenderingHints;
+import java.awt.Dimension;
+
+import java.awt.print.Printable;
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterException;
 
 import java.awt.image.BufferedImage;
-//import java.awt.event.MouseEvent;
-//import java.awt.event.MouseListener; // REMOVE THESE (all 3)
-//import java.awt.event.MouseMotionListener;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 
@@ -52,7 +56,7 @@ import javax.swing.JFrame;
 // --- draw lines (between sites)
 // --- draw circles? (range from a site)
 
-public class MapPanel extends JPanel { // implements MouseListener, MouseMotionListener { // UNIMPLEMENT THESE
+public class MapPanel extends JPanel implements Printable {
 
     private View view;
     
@@ -86,17 +90,18 @@ public class MapPanel extends JPanel { // implements MouseListener, MouseMotionL
         // switch to WAIT cursor
         Cursor oldCursor = getCursor();
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        
+
         // recreate buf
         buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = (Graphics2D) buf.getGraphics();
 
         // aa -- much slower, and doesn't help quality much, if at all.
-        // g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-        // RenderingHints.VALUE_ANTIALIAS_ON);
+//        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+//                            RenderingHints.VALUE_ANTIALIAS_ON);
+// but on mac it's ok, and without it looks horrible
 
-        // set stroke -- why?
-        // g2.setStroke(new BasicStroke(1.0f)); // medium: 0.5 to 1.2 is best
+        // set stroke
+        g2.setStroke(new BasicStroke(0.4f)); // 1.0f)); // medium: 0.5 to 1.2 is best
 
         // background
         g2.setColor(Color.white); // const?  use pallette.java
@@ -106,7 +111,7 @@ public class MapPanel extends JPanel { // implements MouseListener, MouseMotionL
 
         // "let's get ready to reeeenderrrrr!"
         Renderer r = Renderer.makeRenderer(view);
-        
+
         drawGridlines(g2, r);
 
         // draw on the map -- what's with the exceptions?
@@ -167,7 +172,7 @@ public class MapPanel extends JPanel { // implements MouseListener, MouseMotionL
                 drawOneGridline(g2, r, Map.makeGridline(false, lat, lon));
     }
 
-    // europe on 64 ints a day?
+    // (europe on 64 ints a day?)
     private int x[] = new int[64];
     private int y[] = new int[64];
     
@@ -224,7 +229,7 @@ public class MapPanel extends JPanel { // implements MouseListener, MouseMotionL
          */
 
     // draw a little label, like those flags on hors d'oeuvres to tell you
-    // which one has dead animals in it and which ones are food
+    // which ones have dead animals in them and which ones are food
     private void label(Graphics2D g2, String text, int x, int y) {
         // measure the text
         int textWidth = g2.getFontMetrics().stringWidth(text);
@@ -387,7 +392,8 @@ public class MapPanel extends JPanel { // implements MouseListener, MouseMotionL
         decorate(g);
     }
 
-    // extra crap, er, decorators -- via callbacks.  probably not threadsafe, but CONSOLIDATE WITH SAMPLE LISTENERS if you really want that.
+    // extra crap, er, decorators -- via callbacks.  probably not threadsafe, but
+    // consolodate with sample listeners if you really want that.
     private List decorators = new ArrayList();
     public void addDecorator(Tool t) {
         decorators.add(t);
@@ -416,95 +422,60 @@ public class MapPanel extends JPanel { // implements MouseListener, MouseMotionL
     // there should be a permanent mouse/motion listener here:
     // right-click on a site should always show:
     // [see "map planned features"]
+    // and the title bar should always show the current location.
 
-    // ----------------------------------------------------------------------
-    // below here is mouselistener / mousemotionlistener -- enjoy -- REMOVE
-    // ----------------------------------------------------------------------
-
-    /*
-    private boolean _dragged = false;
-
-    // drag!
-    private Location _original=null;
-    private Site _target=null;
-    public void mousePressed(MouseEvent e) {
-        // store starting (x,y)
-        p1 = e.getPoint();
-        _original = renderer.unrender(p1);
-
-        _dragged = false;
-
-        // figure out what was pressed
-        if (_original == null)
-            return;
-
-        // look for the _target
-        SiteDB db = SiteDB.getSiteDB();
-        Site near[] = db.getSitesAt(_original);
-        if (near.length > 0)
-            _target = near[0];
-
-        // hit?  print it
-        // if (_target != null)
-        // System.out.println(_target);
-
-        // repaint -- this is not strictly needed, but it signifies to
-        // the user that the mouse button was received.
-        // !!! updateBuffer();
-        repaint();
+    // NATIVE PRINTABLE
+    private PageFormat pf = new PageFormat();
+    public void setPageFormat(PageFormat pf) {
+        this.pf = pf;
     }
-    public void mouseReleased(MouseEvent e) {
-	// user clicked on something, but didn't drag it: show info
-	if (!_dragged && _target!=null)
-	    SiteFrame.showSiteInfo(_target);
+    private final static float DPI=300; // change me, if you like
+    private final static float detail=DPI/60; // normal printing is 60dpi -- DON't CHANGE ME
+    public int print(Graphics g, PageFormat format, int pageNr) throws PrinterException {
+        // a map is always exactly one page
+        if (pageNr > 0)
+            return Printable.NO_SUCH_PAGE;
 
-	// done dragging
-	_dragged = false;
+        // create my own view: zoom
+        View detailedView = (View) view.clone();
+        detailedView.zoom *= detail;
 
-	// no target now
-	_target = null;
-	_original = null;
+        // then set the size -- scale up by |detail| to get |DPI|
+        int ww = (int) pf.getImageableWidth();
+        int hh = (int) pf.getImageableHeight();
+        // h = w = Math.min(h, w); // if you wanted a square map
+        detailedView.size = new Dimension((int) (ww*detail), (int) (hh*detail));
 
-	// no line
-	drawLine = false;
-    }
-    public void mouseEntered(MouseEvent e) { }
-    public void mouseExited(MouseEvent e) { }
-    public void mouseClicked(MouseEvent e) {
-	// does this ever get called now?
-    }
-    private Point p1, p2;
-    public void mouseDragged(MouseEvent e) {
-        p2 = e.getPoint();
-        Location loc = renderer.unrender(p2);
+        // create my own renderer
+        Renderer r2 = new RectangularRenderer(detailedView);
 
-        _dragged = true;
+        // small brush
+        Graphics2D g2 = (Graphics2D) g;
+        // g2.setStroke(new BasicStroke(0.5f));
 
-        if (loc != null && _label != null) {
-            String text = msg.getString("map") + ": " + _target + " to " + loc;
-            if (_target != null)
-                text += " (" + _target.location.distanceTo(loc) + " km)";
-            _label.setTitle(text);
+        // offset so it's entirely on the page, and scale down to
+        // make it look detailed but normal-sized
+        final float dx = (float) pf.getImageableX();
+        final float dy = (float) pf.getImageableY();
+        g2.translate(dx, dy);
+        g2.scale(1/detail, 1/detail);
+
+        // REFACTOR: from here on -- gridlines, map, sites -- is (or should be)
+        // the same for printing as for updating the buffer, so it should use the
+        // same code.
+
+        // draw gridlines
+        drawGridlines(g2, r2);
+
+        // draw map
+        try {
+            drawMap(g2, r2);
+        } catch (IOException ioe) {
+            System.out.println("ioe=" + ioe);
         }
 
-        // no site?  forget it.
-        if (_target == null)
-            return;
+        // WORKING HERE -- draw sites, scale/legend, etc.
 
-        // uh, why's stuff null?  oh well, shit happens.
-        if (loc == null || _original == null)
-            return;
-
-        // ok, we don't actually DO anything here any more, do we?
-        // ---
-        repaint();
-        drawLine = true;
+        return Printable.PAGE_EXISTS;
     }
-    private boolean drawLine = false;
-    public void mouseMoved(MouseEvent e) {
-        Location loc = renderer.unrender(e.getPoint());
-        if (loc != null && _label != null) // WHY would _label be null?
-            _label.setTitle(msg.getString("map") + ": " + loc);
-    }
-     */
 }

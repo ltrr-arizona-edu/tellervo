@@ -3,9 +3,8 @@ package corina.map;
 import java.awt.Point;
 
 public class RectangularRenderer extends Renderer {
-//    private View view;
     public RectangularRenderer(View v) {
-        view = v;
+        this.view = v;
     }
 
     private static final int EXTRA_ZOOM = 10;
