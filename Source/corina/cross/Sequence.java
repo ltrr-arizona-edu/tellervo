@@ -78,6 +78,13 @@ public class Sequence {
             else if (((Element) m.get(i)).isActive())
                 moving.add(((Element) m.get(i)).getFilename());
 
+        // special case: some idiot is trying to crossdate exactly one file
+        // against itself.  ok, whatever...
+        if (fixed.size()==1 && moving.size()==1 && fixed.get(0).equals(moving.get(0))) {
+            pairings.add(new Pairing(0, 0));
+            return;
+        }
+
         // a hash of "sample1:sample2", only used to keep track of
         // what crosses have been recorded so far.
         Set used = new HashSet();
