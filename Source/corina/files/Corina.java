@@ -442,6 +442,8 @@ public class Corina extends Filetype {
 	  using a streamtokenizer here to read in characters is just
 	  plain wrong.  just read the chars!  FIXME.
 
+	  (loadData(t) takes the tokenizer -- but can't it be created there?)
+
 	  - kbh, 9-jan-2002
 	*/
 
@@ -466,7 +468,7 @@ public class Corina extends Filetype {
 		    throw new WrongFiletypeException();
 	    } else { // (x == StreamTokenizer.TT_EOF)
 		if (t.lineno() >= 3 && s.meta.containsKey("title")) // if 3 lines + ;TITLE, it's Corina-format
-		    throw new IOException("Early end-of-file detected. (" + t.lineno() + ")");
+		    throw new IOException("Early end-of-file detected (at line " + t.lineno() + ")");
 		else
 		    throw new WrongFiletypeException();
 	    }
@@ -682,7 +684,7 @@ public class Corina extends Filetype {
 	    int i = y.diff(s.range.getStart()) + 1; // first is 0/0, so add 1 to index
 
 	    // always use '/' in corina files
-	    w.write(Weiserjahre.toStringFixed(s, i, 9, '/'));
+	    w.write(Weiserjahre.toStringFixed(s, i, 9, "/"));
 
 	    // newline
 	    if (y.column() == 9 || y.equals(s.range.getEnd().add(-1)))
