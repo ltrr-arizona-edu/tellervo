@@ -20,25 +20,51 @@
 
 package corina.editor;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
+import java.awt.Component;
+import java.awt.Color;
+import java.awt.Graphics;
+import javax.swing.JTable;
+import javax.swing.JComponent;
+import javax.swing.table.TableCellRenderer;
 
-public class CountRenderer extends JProgressBar implements TableCellRenderer {
+public class CountRenderer extends JComponent implements TableCellRenderer {
+    // GENERALIZE: take any number (double)
+    private int val, max;
     public CountRenderer(int max) {
-	// range is 0..max
-	super(0, max);
+        // range is 0..max
+        this.max = max;
+    }
 
-	// on win32, this forces native pixel-granularity
-	// progressbars -- otherwise they'd be chunky
-	setStringPainted(true);
-	setString("");
-    }
+    // me!
     public Component getTableCellRendererComponent(JTable table,
-						   Object value,
-						   boolean isSelected, boolean hasFocus,
-						   int row, int column) {
-	setValue(((Integer) value).intValue());
-	return this;
+                                                   Object value,
+                                                   boolean isSelected, boolean hasFocus,
+                                                   int row, int column) {
+        val = ((Integer) value).intValue();
+        return this;
     }
+
+    // make it look like an aqua relevence control.  see:
+    // http://developer.apple.com/techpubs/macosx/Essentials/AquaHIGuidelines/AHIGControls/Progress_In_ce_Controls.html
+    public void paintComponent(Graphics g) {
+        int w = getSize().width;
+        double frac = (double) val / (double) max;
+        int stop = (int) (frac * w);
+
+        // draw dark lines
+        g.setColor(dark);
+        //        for (int x=0; x<stop; x+=2)
+        //            g.drawLine(x, TOP, x, TOP+HEIGHT-1);
+        // actually, let's draw a big rectangle, instead.  it's simpler and maybe faster.
+        g.fillRect(0, TOP, stop, HEIGHT);
+
+        // draw light lines
+        g.setColor(light);
+        for (int x=1; x<stop; x+=2)
+            g.drawLine(x, TOP, x, TOP+HEIGHT-1);
+    }
+
+    private static Color dark = new Color(136, 136, 136);
+    private static Color light = new Color(184, 184, 184);
+    private static int TOP=4, HEIGHT=8;
 }
