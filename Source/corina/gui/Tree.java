@@ -78,8 +78,7 @@ public class Tree extends JLabel
         int height = getFont().getSize() + 4;
 
         // scale -- assumes square icon
-        img = new ImageIcon(img.getImage().getScaledInstance(height,
-                                                             height,
+        img = new ImageIcon(img.getImage().getScaledInstance(height, height,
                                                              Image.SCALE_SMOOTH));
 
         // use that
@@ -143,5 +142,4 @@ public class Tree extends JLabel
     public void dragOver(DragSourceDragEvent event) { }
     public void dropActionChanged( DragSourceDragEvent event) { }
     public void dragDropEnd(DragSourceDropEvent event) { }
-
 }
