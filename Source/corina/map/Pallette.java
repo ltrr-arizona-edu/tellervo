@@ -1,10 +1,22 @@
 package corina.map;
 
+import corina.util.ColorUtils;
+
 import java.awt.Color;
 
 public class Pallette {
+    // earthmap10k.jpg uses a blue sort of like this one
+    private static Color waterBlue = new Color(25, 72, 98);
+
+    //    private static Color lightBlue = new Color(0.7f, 0.7f, 1.0f);
+//    private static Color lightBlue = ColorUtils.addAlpha(Color.blue, 127);
+    private static Color lightBlue = ColorUtils.addAlpha(waterBlue, 127);
+    // private static Color lightLightBlue = new Color(0.9f, 0.9f, 1.0f);
+//    private static Color lightLightBlue = ColorUtils.addAlpha(Color.blue, 63);
+    private static Color lightLightBlue = ColorUtils.addAlpha(waterBlue, 63);
+
     private static Color colors[][] = new Color[][] {
-    { // category=0 "jmap-added"
+    { // category=0 "corina-added"
         null,
         null,
         null,
@@ -40,14 +52,16 @@ public class Pallette {
     },
     { // category=2 "Rivers"
         null,
-        Color.blue, // permanent major rivers
-        Color.blue, // additional major rivers
-        new Color(0.7f, 0.7f, 1.0f), // additional rivers
-        new Color(0.7f, 0.7f, 1.0f), // minor rivers
-        new Color(0.7f, 0.7f, 1.0f), // double-lined rivers
-        new Color(0.7f, 0.7f, 1.0f), // intermittent rivers -- major
-        new Color(0.9f, 0.9f, 1.0f), // intermittent rivers -- additional
-        new Color(0.9f, 0.9f, 1.0f), // intermittent rivers -- minor
+        waterBlue, // permanent major rivers
+        waterBlue, // additional major rivers
+        lightBlue, // additional rivers
+        lightBlue, // minor rivers
+        lightBlue, // double-lined rivers
+        lightBlue, // intermittent rivers -- major
+        lightLightBlue, // intermittent rivers -- additional
+        lightLightBlue, // intermittent rivers -- minor
+                        //        new Color(0.9f, 0.9f, 1.0f), // intermittent rivers -- additional
+        // new Color(0.9f, 0.9f, 1.0f), // intermittent rivers -- minor
         null, // major canals
         null, // canals of lesser importance
         null,
@@ -77,11 +91,11 @@ public class Pallette {
         null,
         Color.black, // coast, islands and lakes that appear on all maps
         Color.black, // additional major islands and lakes
-        new Color(0.7f, 0.7f, 1.0f), // intermediate islands and lakes
-        new Color(0.7f, 0.7f, 1.0f), // minor islands and lakes
+        lightBlue, // intermediate islands and lakes
+        lightBlue, // minor islands and lakes
         null,
-        new Color(0.7f, 0.7f, 1.0f), // intermittent major lakes
-        new Color(0.7f, 0.7f, 1.0f), // intermittent minor lakes
+        lightBlue, // intermittent major lakes
+        lightBlue, // intermittent minor lakes
         null, // reefs
         null, // salt pans -- major
         null, // salt pans -- minor
