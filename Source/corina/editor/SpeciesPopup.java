@@ -1,28 +1,18 @@
 package corina.editor;
 
-/*
- what's the job description for the species popup?
- -x- list all the common (to the user) species
- -x- also [below a separator] list "Other..."
- --- Other... dialog shows all known species, plus blank
- -x- when user selects a species, update backing Sample
- -x- if Sample gets updated, update popup
- --- if common-list gets updated, update all popups?
- -x- always use 4-letter code for sample, latin name for popup
- -x- if a non-listed species is selected, display it first
- -x- migration: 4-letter code stays 4-letter code
- -x- if a species matches exactly, convert to 4-letter-code
- --- what if it's different?  keep old way... (?)
- */
-
 import corina.Species;
 import corina.UnknownSpeciesException;
 import corina.Sample;
 import corina.gui.ButtonLayout;
+import corina.gui.Bug;
+import corina.util.OKCancel;
 
-import java.util.Map;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JComboBox;
@@ -30,29 +20,41 @@ import javax.swing.JDialog;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.Box;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CannotRedoException;
 
-public class SpeciesPopup extends JComboBox { // implements my own listeners?
+public class SpeciesPopup extends JComboBox {
 
     private Sample s;
     private boolean customSpecies=false;
-    public SpeciesPopup(Sample s) {
+    private Editor parent;
+    public SpeciesPopup(Sample s, Editor editor) {
         this.s = s;
-        String species = (String) s.meta.get("species");
+        parent = editor;
+
+        // don't show scrollbars unless i really need 'em -- 24 should work pretty well
+        setMaximumRowCount(24);
 
         // -not specified-, as usual
         addItem("- not specified -");
 
         // parse and normalize
-        if (species!=null) {
+        String species = (String) s.meta.get("species");
+        if (species != null) {
             try {
                 String code = Species.getCode(species);
                 s.meta.put("species", code);
                 species = code;
             } catch (UnknownSpeciesException use) {
-                // ignore?
+                // ignore.
             }
         }
 
@@ -92,8 +94,9 @@ public class SpeciesPopup extends JComboBox { // implements my own listeners?
                     glue.fireSampleMetadataChanged();
                 } else if (i == m-1) {
                     // "Other..." dialog
-                    new OtherDialog(); // (this)?
-                    // be sure to set newSpecies!
+                    new OtherDialog(parent);
+                    newSpecies = (String) glue.meta.get("species");
+                    selectSpecies(newSpecies);
                 } else if (i == 1 && customSpecies) {
                     // custom species: user must have cancelled, right?
                     // so do nothing...
@@ -107,6 +110,11 @@ public class SpeciesPopup extends JComboBox { // implements my own listeners?
                     newSpecies = (String) Species.common.get(i);
                     glue.fireSampleMetadataChanged();
                 }
+
+                // set modified
+                if ((newSpecies!=null && !newSpecies.equals(oldSpecies)) ||
+                    (oldSpecies!=null && !oldSpecies.equals(newSpecies)))
+                    glue.setModified();
 
                 // undoability!
                 final String newSpeciesGlue = newSpecies; // augh!
@@ -151,7 +159,7 @@ public class SpeciesPopup extends JComboBox { // implements my own listeners?
 
     // given a species |species|, select that item in the popup
     private void selectSpecies(String code) {
-        System.out.println("selecting code=" + code);
+//        System.out.println("selecting code=" + code);
         removeCustomEntry();
 
         // null?  don't bother
@@ -180,27 +188,139 @@ public class SpeciesPopup extends JComboBox { // implements my own listeners?
             customSpecies = true;
         }
     }
-    
+
+    //
+    // "other..." dialog
+    //
+
     private class OtherDialog extends JDialog {
-        OtherDialog() {
-            super((JDialog)null, "Other Species"); // null?  what's the arg?  i'm modal, right?
+        OtherDialog(Editor parent) {
+            super(parent, "Species", true);
+            final Sample sample = parent.getSample();
+            
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+            panel.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
+            getContentPane().add(panel);
 
-            // -- all species, by name, in a big list
-            // -- (by default, select the current one?)
-            // -- checkbox, with "[x] Other: [          ]" field (dimmed if not checked, else list is dimmed)
-            JCheckBox other = new JCheckBox("Other:");
+            // label
+            JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            labelPanel.add(new JLabel("Choose the species:", JLabel.LEFT));
+            panel.add(labelPanel);
 
+            // TRY: use 2 lists: "Abies", "Pinus", "Quercus", etc. on the left size,
+            // and update the right size when something is selected:
+            // "Abies", "Abies alba", "Abies amabilis", etc.
+
+            // list of all species
+            Vector speciesNames = new Vector();
+            try {
+                Enumeration e = Species.species.keys();
+                while (e.hasMoreElements()) {
+                    String code = (String) e.nextElement();
+                    speciesNames.add(Species.getName(code));
+                }
+            } catch (UnknownSpeciesException use) {
+                // can't happen
+                Bug.bug(use);
+            }
+            Collections.sort(speciesNames);
+            
+            // WRITEME
+            final JList speciesList = new JList(speciesNames);
+            panel.add(new JScrollPane(speciesList));
+            // TODO: indent list,field 20px to the right
+
+            // double-click in list selects that
+            
+            // -- (by default, select the current one.)
+            // if user types something, automatically check the checkbox
+
+            // (check box needs me)
+            final JTextField otherField = new JTextField("", 20);
+
+            final JCheckBox otherCheck = new JCheckBox("Or type in another species:");
+            otherCheck.addActionListener(new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    boolean other = otherCheck.isSelected();
+                    speciesList.setEnabled(!other);
+                    otherField.setEnabled(other);
+                    if (other)
+                        otherField.requestFocus();
+                    else
+                        speciesList.requestFocus();
+                }
+            });
+            // win32: alt-O checks box, and sends focus to textfield
+            JPanel checkPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            checkPanel.add(otherCheck);
+            panel.add(checkPanel);
+
+            // --- (8px)
+            panel.add(Box.createVerticalStrut(8));
+
+            // entry blank (otherField)
+            // WRITE ME
+            //            JTextField otherField = new JTextField("", 20);
+            otherField.setEnabled(false);
+            otherField.setMaximumSize(otherField.getPreferredSize());
+            panel.add(otherField);
+            // TODO: indent list,field 20px to the right
+
+            // --- (14px)
+            panel.add(Box.createVerticalStrut(14));
+            
             // -- Cancel, OK buttons
-            JButton cancel, ok;
             JPanel buttons = new JPanel(new ButtonLayout());
-            cancel = new JButton("Cancel");
-            ok = new JButton("OK");
+            JButton cancel = new JButton("Cancel");
+            cancel.addActionListener(new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    dispose();
+                }
+            });
+            JButton ok = new JButton("OK");
+            ok.addActionListener(new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    // TODO: update sample, add to popup if needed
+                    String species;
+                    if (otherCheck.isSelected()) {
+                        species = otherField.getText();
+                        try {
+//                            species = Species.getCode(species);
+                            species = Species.closestSpecies(species);
+                        } catch (UnknownSpeciesException use) {
+                            // well, it really is an Other species.  that's fine.
+                        }
+                    } else {
+                        try {
+                            species = Species.getCode((String) speciesList.getSelectedValue());
+                        } catch (UnknownSpeciesException use) {
+                            // ignore, can't happen
+                            species = "----";
+                        }
+                    }
+
+                    // just set the sample; when this returns, the popup calls selectSpecies(),
+                    // so i don't have to worry about that here.
+                    sample.meta.put("species", species);
+                    sample.fireSampleMetadataChanged();
+
+                    // dispose after i find out what the species was.
+                    dispose();
+                }
+            });
             buttons.add(cancel);
             buttons.add(ok);
-            getContentPane().add(buttons, BorderLayout.SOUTH);
+            panel.add(buttons);
+            OKCancel.addKeyboardDefaults(this, ok);
+
+            // TODO:
+            // -- focus on the list
+            // -- allow typing at the list to select.
 
             // show myself
             pack();
+//            setResizable(false); -- when layout is done, and the size is reasonable.
             this.show(); // what?
         }
     }
