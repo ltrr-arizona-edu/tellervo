@@ -7,6 +7,7 @@ import corina.prefs.components.ColorPrefComponent;
 import corina.gui.*;
 import corina.gui.layouts.DialogLayout;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Vector;
 import java.util.ArrayList;
@@ -72,7 +73,31 @@ public class CrossdatingPrefsPanel extends JPanel {
 
         bottom.add(hilite);
         bottom.add(color, "Color:");
-
+        
+        SpinnerComboBox scb = new SpinnerComboBox(new Integer[] { new Integer(0),
+                                                                  new Integer(1),
+                                                                  new Integer(2) });
+        DecimalFormat df0 = new DecimalFormat("#,##0");
+        DecimalFormat df1 = new DecimalFormat("#,##0 years");
+        System.out.println("isParseIntegerOnly: " + df0.isParseIntegerOnly() + " " + df0.getMinimumFractionDigits());
+        System.out.println("isParseIntegerOnly: " + df1.isParseIntegerOnly() + " " + df1.getMinimumFractionDigits());  
+        scb.setFormats(df0, df1);
+        
+        top.add(scb, "test");
+      
+        DecimalFormat df2 = new DecimalFormat("#,##0.0##");
+        DecimalFormat df3 = new DecimalFormat("#,##0.0## years");
+      System.out.println("isParseIntegerOnly: " + df2.isParseIntegerOnly() + " " + df2.getMinimumFractionDigits());
+              System.out.println("isParseIntegerOnly: " + df3.isParseIntegerOnly() + " " + df3.getMinimumFractionDigits());  
+        
+        SpinnerComboBox scb2 = new SpinnerComboBox(new Double[] { new Double(0),
+                                                                        new Double(1),
+                                                                        new Double(2) });
+        scb2.setFormats(df2, df3);
+       
+        top.add(scb2, "test2");  
+        
+        
         // put it all together
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(top);
