@@ -212,11 +212,6 @@ public class Macintosh {
     // --------------------------------------------------
     // common code:
     private static ClassLoader getClassLoader() {
-	try {
-	    return Class.forName("corina.util.Macintosh").getClassLoader();
-	} catch (ClassNotFoundException cnfe) {
-	    // can't happen
-	    return null;
-	}
+	    return corina.util.Macintosh.class.getClassLoader();
     }
 }
