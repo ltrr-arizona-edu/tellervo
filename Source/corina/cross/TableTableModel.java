@@ -22,52 +22,50 @@ package corina.cross;
 
 import javax.swing.table.AbstractTableModel;
 
+import java.util.ResourceBundle;
+
 public class TableTableModel extends AbstractTableModel {
 
     private Table t; // data
 
+    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
+
     public int getColumnCount() {
-	return 6; // count(name, t, tr, d, n, dist)
+        return 6; // count(name, t, tr, d, n, dist)
+                  // LATER: use any number of crosses (but table.java needs support first)
     }
 
     public int getRowCount() {
-	if (t == null) // delete me later ... this should never happen
-	    return 0;
-
-	return t.table.size();
+        return t.table.size();
     }
 
     public String getColumnName(int col) {
-	switch (col) {
-	case 0: return "Title";
-	case 1: return "T-Score";
-	case 2: return "Trend";
-	case 3: return "D-Score";
-	case 4: return "Overlap";
-	case 5: return "Distance";
-	default: return null;
-	}
+        switch (col) {
+            case 0: return msg.getString("title");
+            case 1: return msg.getString("tscore");
+            case 2: return msg.getString("trend");
+            case 3: return msg.getString("dscore");
+            case 4: return msg.getString("overlap");
+            case 5: return msg.getString("distance");
+            default: throw new IllegalArgumentException(); // never happens
+        }
     }
 
     public Object getValueAt(int row, int col) {
-	if (t == null) // delete me later ... this should never happen
-	    return null;
+        Table.Row r = (Table.Row) t.table.get(row);
 
-	Table.Row r = (Table.Row) t.table.get(row);
-
-	switch (col) {
-	case 0: return r.title;
-	case 1: return t.f1.format(r.t);
-	case 2: return t.f2.format(r.tr);
-	case 3: return t.f3.format(r.d);
-	case 4: return String.valueOf(r.overlap);
-	case 5: return ((r.dist == null) ? null : (r.dist + " km"));
-	default: return null;
-	}
+        switch (col) {
+            case 0: return r.title;
+            case 1: return t.f1.format(r.cross.t);
+            case 2: return t.f2.format(r.cross.tr);
+            case 3: return t.f3.format(r.cross.d);
+            case 4: return String.valueOf(r.cross.n);
+            case 5: return r.cross.distanceAsString();
+            default: throw new IllegalArgumentException(); // never happens
+        }
     }
 
     public TableTableModel(Table t) {
-	this.t = t;
+        this.t = t;
     }
-
 }
