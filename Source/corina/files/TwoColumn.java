@@ -110,13 +110,16 @@ public class TwoColumn extends Filetype {
             // we'll read 3 lines, but put them back by the end of the block
             r.mark(3*80);
 
-            // read 3 lines of numbers
-            int a[] = parseLine(r.readLine());
-            int b[] = parseLine(r.readLine());
-            int c[] = parseLine(r.readLine());
-
+            // read 3 lines of numbers -- yes, this means you can't load a 1- or 2-line file.
+            double a[] = parseLine(r.readLine());
+            double b[] = parseLine(r.readLine());
+            double c[] = parseLine(r.readLine());
+            
             // if they're sequential, they're probably years
-            hasYear = ((a[0]+1 == b[0]) && (b[0]+1 == c[0]));
+            int a0 = (int) a[0];
+            int b0 = (int) b[0];
+            int c0 = (int) c[0];
+            hasYear = (a0+1==b0) && (b0+1==c0);
 
             // if there's an extra column, it's the count
             int normal = 1 + (hasYear ? 1 : 0);
@@ -129,12 +132,12 @@ public class TwoColumn extends Filetype {
         // if no year, let's make one up.
         if (!hasYear)
             start = Year.DEFAULT;
-        
+
         // hasData
         s.data = new ArrayList();
         if (hasCount)
             s.count = new ArrayList();
-        
+
         for (;;) {
             String line = r.readLine();
 
@@ -152,9 +155,10 @@ public class TwoColumn extends Filetype {
                     start = new Year(y);
             }
 
-            int d = Integer.parseInt(tok.nextToken());
-            s.data.add(new Integer(d));
-
+            // allow floating-point values here
+            double d = Double.parseDouble(tok.nextToken());
+            s.data.add(new Integer((int) Math.round(d)));
+            
             if (hasCount) {
                 int c = Integer.parseInt(tok.nextToken());
                 s.count.add(new Integer(c));
@@ -192,13 +196,13 @@ public class TwoColumn extends Filetype {
             r.reset();
     }
 
-    // given a string like "1 2 3", return an int array like int[] {1, 2, 3}.
-    private int[] parseLine(String s) {
+    // given a string like "1 2 3", return an int array like double[] {1, 2, 3}.
+    private double[] parseLine(String s) {
         StringTokenizer tok = new StringTokenizer(s, ",; \t");
         int n = tok.countTokens();
-        int x[] = new int[n];
+        double x[] = new double[n];
         for (int i=0; i<n; i++)
-            x[i] = Integer.parseInt(tok.nextToken());
+            x[i] = Double.parseDouble(tok.nextToken());
         return x;
     }
     
@@ -217,21 +221,21 @@ public class TwoColumn extends Filetype {
     public void save(Sample s) throws IOException {
 //	w = new BufferedWriter(new FileWriter(filename));
 
-	Year y = s.range.getStart();
-	boolean summed = s.isSummed();
+        Year y = s.range.getStart();
+        boolean summed = s.isSummed();
 
-	for (int i=0; i<s.data.size(); i++) {
-	    String line = y + "\t" + s.data.get(i);
-	    if (summed)
-		line += "\t" + s.count.get(i);
+        for (int i=0; i<s.data.size(); i++) {
+            String line = y + "\t" + s.data.get(i);
+            if (summed)
+                line += "\t" + s.count.get(i);
 
-	    w.write(line);
-	    w.newLine();
+            w.write(line);
+            w.newLine();
 
-	    y = y.add(+1);
-	}
+            y = y.add(+1);
+        }
 
-	// close file
-	w.close();
+        // close file
+        w.close();
     }
 }
