@@ -23,6 +23,7 @@ package corina.map;
 import corina.map.tools.Tool;
 import corina.map.tools.ToolBox;
 import corina.util.ColorUtils;
+import corina.util.Platform;
 import corina.site.Site;
 import corina.site.SiteDB;
 import corina.site.SiteDBAdapter;
@@ -43,6 +44,7 @@ import java.util.Iterator;
 import java.util.ResourceBundle;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -94,40 +96,75 @@ public class MapPanel extends JPanel implements Printable {
         RepaintManager.currentManager(this).setDoubleBufferingEnabled(false);
 
         // initial buffer
-	// REFACTOR ME -- wait, do i need the A?  can i get a BI without it?
-        buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB);
-	sBuf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB_PRE);
-	// updateBuffer();
+	reconstructBuffers();
 
 	// add listener: update map when DB changes
 	SiteDB.getSiteDB().addSiteDBListener(new SiteDBAdapter() {
 		public void siteMoved(SiteEvent e) {
 		    // System.out.println("site " + e.getSource() + " moved");
-		    updateBuffer(); // PERF: this is slow, nothing better?  i only need to redraw the labels
+		    updateBufferLabelsOnly(); // PERF: this is slow, nothing better?  i only need to redraw part of the label buffer
 		    repaint();
 		}
 		public void siteCodeChanged(SiteEvent e) {
 		    // System.out.println("site " + e.getSource() + " moved");
-		    updateBuffer(); // PERF: this is slow, nothing better?  i only need to redraw the labels
+		    updateBufferLabelsOnly(); // PERF: this is slow, nothing better?  i only need to redraw part of the label buffer
 		    repaint();
 		}
 		// REFACTOR: both of these are "update-buffer, repaint"
 	    });
     }
 
+    public void updateBufferLabelsOnly() {
+	Renderer r = Renderer.createRenderer(view);
+	long t1 = System.currentTimeMillis(); {
+	    drawSitesOnBuffer(lBuf, r);
+	} long t2 = System.currentTimeMillis();
+	System.out.println("spent " + (t2-t1) + " ms drawing labels to buffer");
+    }
+    public void updateBufferLabelsOnly(Site s, Rectangle extra) {
+	Renderer r = Renderer.createRenderer(view);
+	// long t1 = System.currentTimeMillis();
+	{
+	    // the site itself (point of the arrow)
+	    r.render(s.getLocation(), p2);
+	    Point point = new Point();
+	    point.x = (int) p2.x;
+	    point.y = (int) p2.y;
+
+	    // make rect
+	    Rectangle clip = new Rectangle(point.x-2, point.y-2, 4, 4);
+
+	    // add old-bubble to our rect
+	    clip = clip.union(extra);
+
+	    // bubble-rect bounds to our rect
+	    clip = clip.union(getLabelBounds(s, r));
+
+	    // draw to that clip, only
+	    drawSitesOnBuffer(lBuf, r, clip);
+	} // long t2 = System.currentTimeMillis();
+	// System.out.println("spent " + (t2-t1) + " ms drawing labels to clipped buffer");
+    }
+
+    public Rectangle getLabelBounds(Site s, Renderer r) {
+	String text = s.getCode();
+	Graphics g2 = lBuf.createGraphics(); // is this expensive?
+	int textWidth = g2.getFontMetrics().stringWidth(text);
+	int textHeight = g2.getFontMetrics().getHeight();
+	Offset o = getOffset(s.getLocation());
+	r.render(s.getLocation(), p2);
+	t.x = (int) p2.x + (int) (o.dist * view.zoom * Math.sin(o.angle));
+	t.y = (int) p2.y - (int) (o.dist * view.zoom * Math.cos(o.angle));
+	int left = t.x - (textWidth/2 + EPS), width = textWidth + 2*EPS;
+	int top = t.y - (textHeight/2 + EPS/4), height = textHeight + EPS/2;
+
+	return new Rectangle(left, top, width, height);
+    }
+
     // double-buffer for map+sites (everything but tool decorators)
     private BufferedImage buf;
     // BETTER?: one buffer for the map, another for the labels -- for only a couple MB, i get much faster updates
 
-//    private List sites=null; // was: private
-    // REFACTOR: instead of a list of sites, make it a (location => list of sites) hash
-    /*
-     that's a really nasty refactoring.  how to proceed?
-     -- first, make it private.  then i have 2 classes of problems to deal with: internal, and external.
-     -- resolve all external issues by adding methods as needed.
-     -- i guess internal issues can be resolved the same way.
-     -- changing its name (|siteHash|?), temporarily, might really help with the internal stuff
-     */
     HashMap siteHash = new HashMap(); // a Map of (Location=>(Site|List)); first element of each list is the frontmost site
     // i'll need iterators ... (will i need to make my own site iterator?  no.  maybe.)
 
@@ -158,6 +195,7 @@ public class MapPanel extends JPanel implements Printable {
         return list.contains(s);
     }
     
+    // BUG: these violate any sitedb invariant i was pretending existed
     public void show(Site s) {
         String loc = s.getLocation().toString();
         if (siteHash.containsKey(loc)) {
@@ -219,36 +257,35 @@ public class MapPanel extends JPanel implements Printable {
         Cursor oldCursor = getCursor();
         setCursor(wait);
 
-        // recreate buf
-        if (buf.getWidth()!=view.size.width || buf.getHeight()!=view.size.height) {
-            buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB);
-            sBuf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB_PRE);
-	}
-        Graphics2D g2 = (Graphics2D) buf.getGraphics();
+        // recreate bufs, if resized
+	maybeReconstructBuffers();
+
+	// why do i need a graphics here?  only drawMap() and
+	// drawGridlines() use it, and even they shouldn't.  (if i get
+	// rid of it, and memoize the renderers, event listeners can
+	// just call public  updateXYZBuffer() methods themselves!)
+        Graphics2D g2 = buf.createGraphics();
 
         // aa -- much slower, and doesn't help quality much, if at all.
 //        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 //                            RenderingHints.VALUE_ANTIALIAS_ON);
 // but on mac it's ok, and without it looks horrible
 
-        // background: fill with white
-        g2.setColor(Color.white); // const?  use pallette.java
-        g2.fillRect(0, 0, getWidth(), getHeight());
+        // background: erase it
+	erase(buf);
 
         // "let's get ready to reeeenderrrrr!"
-        final Renderer r = Renderer.makeRenderer(view);
+        Renderer r = Renderer.createRenderer(view);
+
+	long tt1, tt2;
 
         // draw section of earthmap10k.jpg onto g2 here
         // (NEW IDEA: tile bitmap onto locations, instead of extracting bitmap offsets from locations)
         // ADD FEATURE: drag an image file or URL to the map, and it's used as a background
-        long tt1 = System.currentTimeMillis();
-        sat.draw(g2, view, r);
-        long tt2 = System.currentTimeMillis();
-        System.out.println("spent " + (tt2-tt1) + " ms drawing overlay");
+	//        sat.draw(g2, view, r);
+	drawOverlayOnBuffer(oBuf, r);
 
         // ----------------------------------------
-
-        drawGridlines(g2, r);
 
         // draw on the map
         try {
@@ -260,12 +297,21 @@ public class MapPanel extends JPanel implements Printable {
             System.out.println("ERROR: " + ioe); // yeah!
         }
 
-        long t1 = System.currentTimeMillis();
-        drawSites(g2, r);
-        long t2 = System.currentTimeMillis();
-        System.out.println("spent " + (t2-t1) + " ms drawing labels");
+	drawGridlines(g2, r);
 
-        drawScale(g2, r);
+        long t1 = System.currentTimeMillis();
+        // drawSites(g2, r);
+	drawSitesOnBuffer(lBuf, r);
+        long t2 = System.currentTimeMillis();
+        System.out.println("spent " + (t2-t1) + " ms drawing labels to buffer");
+
+	// t1 = System.currentTimeMillis();
+        // drawSites(g2, r);
+	// g2.drawImage(lBuf, 0, 0, null);
+	// t2 = System.currentTimeMillis();
+        // System.out.println("spent " + (t2-t1) + " ms blitting label buffer to main buffer");
+
+        drawScale(r); // onto sBuf, really
 
         System.out.println("----");
         
@@ -274,25 +320,134 @@ public class MapPanel extends JPanel implements Printable {
         setCursor(oldCursor);
     }
 
+    public static final int LAYER_OVERLAY = 0x01;
+    public static final int LAYER_LINEMAP = 0x02;
+    public static final int LAYER_GRIDLINES = 0x04;
+    public static final int LAYER_SITES = 0x08;
+    public static final int LAYER_SCALE = 0x10;
+    // this replaces everything EXCEPT updateBufferLabelsOnly(Site,Rectangle), for obvious reasons
+    public void updateBuffer(int layers) {
+        // switch to WAIT cursor
+	// BUG: this should be optional (the hand-dragger, for example)
+        Cursor oldCursor = getCursor();
+        setCursor(wait);
+
+        // recreate bufs, if resized
+	maybeReconstructBuffers();
+	// HMM: i won't need to do this unless all of them have changed, right?  well, it's a quick test anyway
+	// (BUT BETTER: put this line in an updateBuffer() which does all of them, and i can avoid even the test)
+
+	// create renderer -- this is immutable, right?  that's why i'm not keeping it around?  (still, is it expensive?)
+        Renderer r = Renderer.createRenderer(view);
+
+	if ((layers & LAYER_OVERLAY) != 0)
+	    drawOverlayOnBuffer(oBuf, r);
+
+	// (bit of a hack)
+	if ((layers & LAYER_LINEMAP) != 0 || (layers & LAYER_GRIDLINES) != 0)
+	    erase(buf);
+
+	if ((layers & LAYER_LINEMAP) != 0)
+	    try {
+		drawMapOnBuffer(buf, r);
+	    } catch (IOException ioe) {
+		System.out.println("error! -- " + ioe);
+	    }
+
+	if ((layers & LAYER_GRIDLINES) != 0)
+	    drawGridlinesOnBuffer(buf, r);
+
+	if ((layers & LAYER_SITES) != 0)
+	    drawSitesOnBuffer(lBuf, r);
+
+	// (i'm sensing a pattern here...)
+
+	if ((layers & LAYER_SCALE) != 0)
+	    drawScale(r);
+
+        // switch back cursor
+        // FIXME: don't use oldCursor, use *(whatever it should be) -- ask again, so it doesn't get stuck
+        setCursor(oldCursor);
+    }
+    // (also need: a version of this that takes a clip rect)
+
     // a hacked version of updatebuffer for gridline-dragging
-    public void updateBufferGridlinesOnly() {// REFACTOR: updateBuffer(fast=true);
-        if (buf.getWidth()!=view.size.width || buf.getHeight()!=view.size.height) {
-            buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB);
-            sBuf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB_PRE);
-	}
-        Graphics2D g2 = (Graphics2D) buf.getGraphics();
+    public void updateBufferQuick() { // REFACTOR: updateBuffer(fast=true);?
+	maybeReconstructBuffers();
+
+        Graphics2D g2 = buf.createGraphics();
 
         // background
-        g2.setColor(Color.white); // const?  use pallette.java
-        g2.fillRect(0, 0, getWidth(), getHeight());
+	erase(buf);
 
-        Renderer r = Renderer.makeRenderer(view);
+        Renderer r = Renderer.createRenderer(view);
 
         // well, and the colorful stuff
-        sat.draw(g2, view, r);
+        // sat.draw(g2, view, r);
+	drawOverlayOnBuffer(oBuf, r);
 
         // just render the gridlines
-        drawGridlines(g2, r);
+	drawGridlines(g2, r);
+
+	// and labels
+	drawSitesOnBuffer(lBuf, r);
+
+	// and the scale
+	drawScale(r); // onto sBuf, really
+    }
+    public void updateBufferLinemapOnly() {
+	maybeReconstructBuffers();
+
+        Graphics2D g2 = buf.createGraphics();
+
+	erase(buf);
+        Renderer r = Renderer.createRenderer(view);
+	
+        // draw on the map
+        try {
+	    long tt1 = System.currentTimeMillis();
+            drawMap(g2, r);
+	    long tt2 = System.currentTimeMillis();
+	    System.out.println("spent " + (tt2-tt1) + " ms drawing line map");
+        } catch (IOException ioe) {
+            System.out.println("ERROR: " + ioe); // yeah!
+        }
+
+	drawGridlines(g2, r);
+    }
+
+    BufferedImage oBuf = null;
+    private void drawOverlayOnBuffer(BufferedImage buf, Renderer r) {
+	// erase old
+	erase(buf);
+
+	// get graphics to draw with
+	Graphics2D g2 = buf.createGraphics();
+
+	// ask the overlay to draw itself
+	sat.draw(g2, view, r);
+    }
+
+    private void erase(BufferedImage buf) {
+	Graphics2D g2 = buf.createGraphics();
+	erase(g2, 0, 0, buf.getWidth(), buf.getHeight());
+    }
+    private void erase(Graphics2D g2, int x, int y, int width, int height) {
+	Composite keep = g2.getComposite();
+	g2.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
+	g2.fillRect(x, y, width, height); // 0, 0, buf.getWidth(), buf.getHeight());
+	g2.setComposite(keep);
+    }
+
+    private void reconstructBuffers() {
+	buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB_PRE);
+	lBuf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB_PRE);
+	sBuf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB_PRE);
+	oBuf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB_PRE);
+    }
+    private void maybeReconstructBuffers() {
+        if (buf.getWidth()!=view.size.width || buf.getHeight()!=view.size.height)
+	    reconstructBuffers();
     }
 
     private Location corner = new Location(); // for corners
@@ -373,8 +528,13 @@ public class MapPanel extends JPanel implements Printable {
     private int interpolate(int x1, int y1, int x2, int y2, int x) {
         return (y1 + y2) / 2 - 5; // DUMMY!
     }
+    private void drawGridlinesOnBuffer(BufferedImage buf, Renderer r) { // use me!  use me!
+	Graphics2D g2 = buf.createGraphics();
+	drawGridlines(g2, r);
+    }
     private void drawGridlines(Graphics2D g2, Renderer r) {
-        // drawing the gridlines: a simple loop for now (MUCH BETTER: start at r.loc, go out each way until !vis)
+        // drawing the gridlines: a simple loop for now.
+	// PERF: should start at r.loc, go out each way until !vis)
         Color gc = Pallette.getColor(Map.makeGridline(false, 0, 0)); // eh?
         if (gc != null)
             g2.setColor(gc);
@@ -398,6 +558,11 @@ public class MapPanel extends JPanel implements Printable {
     private Location l = new Location();
     private Vector3 v = new Vector3();
 
+    void drawMapOnBuffer(BufferedImage buf, Renderer r) throws IOException {
+	// erase(buf); // !!!
+	Graphics2D g2 = buf.createGraphics();
+	drawMap(g2, r);
+    }
     private synchronized void drawMap(Graphics2D g2, Renderer r) throws IOException {
         for (int i=0; i<Map.headers.length; i++) {
             Map.Header h = Map.headers[i];
@@ -408,7 +573,7 @@ public class MapPanel extends JPanel implements Printable {
             // ok, we know we're going to draw something.
             Color c = Pallette.getColor(h);
             if (c == null)
-                continue; // ...maybe...
+                continue; // (...maybe)  (hey, don't use nulls for error handling)
             g2.setColor(c);
 
             if (vis == Renderer.VISIBLE_YES) {
@@ -527,6 +692,7 @@ public class MapPanel extends JPanel implements Printable {
     private final Offset nullOffset = new Offset(); // singleton
 
     private Vector3 p1 = new Vector3(), p2 = new Vector3(); // (document what these are used for!)
+
     private void drawSites(Graphics2D g2, Renderer r) {
         // this should be in drawLabel(), but i don't want to call it /n/ times for no reason.
         // therefore: be sure to call this before calling drawLabel()!
@@ -555,9 +721,108 @@ public class MapPanel extends JPanel implements Printable {
             }
         }
     }
+
+    // PERF: when i recieve a sitemoved/codechanged event i need to
+    // respond to, i only need to look at its bounding box and redraw
+    // that, not the entire buffer.  that's going to be a LOT faster.
+
+    private void drawSitesOnBuffer(BufferedImage buf, Renderer r) {
+	// get graphics to draw with
+	Graphics2D g2 = buf.createGraphics();
+
+	// erase old
+	erase(buf);
+
+        // this should be in drawLabel(), but i don't want to call it /n/ times for no reason.
+        // therefore: be sure to call this before calling drawLabel()!
+        setFontForLabel(g2, view);
+
+	// antialias!  windows needs this or the labels are illegible.
+	g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // /n/ sites
+        if (siteHash != null) {
+
+            // draw sites
+            Iterator iter = siteHash.values().iterator();
+            while (iter.hasNext()) {
+                List list = (List) iter.next();
+                Site top = (Site) list.get(0);
+
+                g2.setColor(top.getSiteColor());
+                r.render(top.getLocation(), p2);
+                if (p2.z < 0) // "invisible" -- this should be a result of render(), not a z<0
+                    continue;
+
+                // label it
+                pt.x = (int) p2.x;
+                pt.y = (int) p2.y;
+                drawLabel(g2, pt, top, list.size(), view);
+
+                // (obsolete, from when there was s1 and s2: draw s1-s2 line here)
+            }
+        }
+    }
+
+    // WRITEME: draw sites on buffer, but only within |clip|.
+    // strategy:
+    // -- set clip
+    // -- (erase only clip)
+    // -- when looping through sites, compute bounding box
+    // -- (if it doesn't intersect clip, skip it) -- yes, i just tested this, you don't get this for free (darn)
+    // -- reset clip
+    // BUT: move this into its own class, and refactor so this and the original drawSitesOnBuffer() can share code!
+    // BUGS:
+    // -- should use the clipping algorithm here for drawSitesOnBuffer(buf,r), too
+    // -- it's slow for big diagonal labels; if this is a problem, chop up the big rectangle into little ones,
+    // and then only update along (and near) the diagonal.
+    // -- getLabelBounds() doesn't take into account drop-shadows (but that should be moved to SiteRenderer and fixed there).
+    // -- should raise a label when it's moved
+    // -- some off-by-one errors with some tags at higher zoom levels (???)
+    private void drawSitesOnBuffer(BufferedImage buf, Renderer r, Rectangle clip) {
+	// get graphics to draw with
+	Graphics2D g2 = buf.createGraphics();
+
+	// testing: set clip
+	g2.setClip(clip);
+
+	// erase old
+	erase(g2, clip.x, clip.y, clip.width, clip.height);
+
+        // this should be in drawLabel(), but i don't want to call it /n/ times for no reason.
+        // therefore: be sure to call this before calling drawLabel()!
+        setFontForLabel(g2, view);
+
+        // /n/ sites
+        if (siteHash != null) {
+
+            // draw sites
+            Iterator iter = siteHash.values().iterator();
+            while (iter.hasNext()) {
+                List list = (List) iter.next();
+                Site top = (Site) list.get(0);
+
+                g2.setColor(top.getSiteColor());
+                r.render(top.getLocation(), p2);
+                if (p2.z < 0) // "invisible" -- this should be a result of render(), not a z<0
+                    continue;
+
+                // label it
+                pt.x = (int) p2.x;
+                pt.y = (int) p2.y;
+		// if (clip.contains(pt)) // VERY PRIMITIVE CLIPPING!
+		if (clip.intersects(new Rectangle(pt).union(getLabelBounds(top, r)))) // much better!
+		    drawLabel(g2, pt, top, list.size(), view);
+		// TODO: compute union of (point,rect) like in updateBufferLabelsOnly(), and test for clip.intersects(that)
+
+                // (obsolete, from when there was s1 and s2: draw s1-s2 line here)
+            }
+	}
+    }
+
     private Point pt = new Point();
 
-    BufferedImage lBuf=null;
+    BufferedImage lBuf=null; // label double buffer
 
     // for actual POINT -- list all sites here, to be put in a popup menu
     public List sitesForPoint(Site target) {
@@ -574,7 +839,7 @@ public class MapPanel extends JPanel implements Printable {
 
         // i'll need a graphics, of some sort.  might as well be this one.
         // (only used for measuring text)
-        Graphics2D g2 = (Graphics2D) buf.getGraphics();
+        Graphics2D g2 = buf.createGraphics();
         setFontForLabel(g2, view); // yeah, very weird...
 
         // (stuff that was originally in the loop, but are invariant and moved out for performance)
@@ -602,8 +867,8 @@ public class MapPanel extends JPanel implements Printable {
             // get offset, if any
             Offset o = getOffset(s.getLocation());
 
-            // center of Text bubble -- like drawLabel(), but not quite (view.zoom)
-            // NO, IT'S EXACTLY LIKE DRAWLABEL -- USE THAT!
+            // center of Text bubble -- like drawLabel()
+            // IT'S EXACTLY LIKE DRAWLABEL -- USE THAT!
             t.x = (int) p2.x + (int) (o.dist * view.zoom * Math.sin(o.angle));
             t.y = (int) p2.y - (int) (o.dist * view.zoom * Math.cos(o.angle));
 
@@ -621,18 +886,6 @@ public class MapPanel extends JPanel implements Printable {
     }
     private static int EPS = 4; // must be same as in siterenderer?
 
-    // REFACTOR: by LoD, this really ought to be in Renderer
-    private Location leftLoc = new Location(), rightLoc = new Location();
-    private Vector3 rightVec = new Vector3();
-    private int pixelsForDistanceAtPoint(Renderer r, Point p, float km) {
-        r.unrender(p, leftLoc);
-        double radius = 40000. * Math.cos(Math.toRadians(leftLoc.latitude)); // radius of circle at latitude
-        double deg = (km / radius) * 360.; // deg for |km|
-        deg = Math.abs(deg); // ack
-        rightLoc = new Location(leftLoc.latitude, leftLoc.longitude + (float) deg); // PERF: new!
-        r.render(rightLoc, rightVec);
-        return (int) (rightVec.x - p.x); }
-
     // constants
     private static final Color LEGEND_YELLOW = new Color(255, 255, 127, 204);
     private static final Stroke LEGEND_STROKE = new BasicStroke(0.5f);
@@ -644,20 +897,25 @@ public class MapPanel extends JPanel implements Printable {
 	// milliseconds -- that's the case when the user just changes
 	// longitude, for example
 
+	// erase old
+	erase(buf);
+
 	// get graphics to draw with
 	Graphics2D g2 = buf.createGraphics();
 
-	// erase old
-	Composite keep = g2.getComposite();
-	g2.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
-	g2.fillRect(0, 0, buf.getWidth(), buf.getHeight());
-	g2.setComposite(keep);
+	// antialias!  windows needs this or the labels are illegible.
+	g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 	// REFACTOR: for printing, there's no reason to draw to
 	// intermediate buffers, especially because they'd be friggin'
 	// huge.  so i want these to still be draw(Graphics, ...), and
 	// update methods will do { create graphics, clear buffer,
 	// draw new data on buffer }
+
+	// PERF: for "erase old" here i only need to erase a small
+	// rectangle, not the whole thing.  be smart!  (i only have to
+	// draw a small part, too -- why am i using a big honkin'
+	// buffer?)
 
         // draw a nice yellow box
         g2.setStroke(LEGEND_STROKE);
@@ -691,15 +949,15 @@ public class MapPanel extends JPanel implements Printable {
         int w = g2.getFontMetrics().stringWidth(text);
         g2.drawString(text, (p1.x+p2.x)/2 - w/2, p1.y + 15); }
 
-    private void drawScale(Graphics2D g2, Renderer r) {
+    private void drawScale(Renderer r) {
         try {
 
 	    // figure out a good distance to mark off: 100km isn't always ideal
             int km = 100;
             for (;;) {
-                Point p1 = new Point(25, getHeight() - 40);
-                int dist = pixelsForDistanceAtPoint(r, p1, km);
-                Point p2 = new Point(p1.x + dist, p1.y);
+                Point p1 = new Point(25, getHeight() - 40); // PERF: new
+                int dist = r.pixelsForDistanceAtPoint(p1, km);
+                Point p2 = new Point(p1.x + dist, p1.y); // PERF: new
 
                 if (dist < 20 && km < 1000)
                     km *= 10;
@@ -720,10 +978,43 @@ public class MapPanel extends JPanel implements Printable {
     
     BufferedImage sBuf=null;
 
+    BufferedImage doubleBuf=null;
+
     // blit out the buffer, and draw Extra Crap.
     public void paintComponent(Graphics g) {
-        g.drawImage(buf, 0, 0, null);
-	g.drawImage(sBuf, 0, 0, null);
+	// it's around 10-20ms per blit (500MHz G4, 1000MHz P3), which is reasonable responsiveness.
+	// however, win32 doesn't double-buffer for free, so i have to do that myself.
+
+	if (Platform.isMac) {
+	    g.drawImage(oBuf, 0, 0, null);
+	    g.drawImage(buf, 0, 0, null);
+	    g.drawImage(lBuf, 0, 0, null); // looks funny while dragging, right now -- but it's right, right?
+	    g.drawImage(sBuf, 0, 0, null);
+	} else {
+	    // resize double if needed
+	    if (doubleBuf==null || doubleBuf.getWidth()!=view.size.width || doubleBuf.getHeight()!=view.size.height)
+		doubleBuf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB_PRE);
+
+	    // erase double
+	    erase(doubleBuf);
+
+	    // draw images onto double (~50ms)
+	    Graphics gd = doubleBuf.getGraphics();
+	    gd.drawImage(oBuf, 0, 0, null);
+	    gd.drawImage(buf, 0, 0, null);
+	    gd.drawImage(lBuf, 0, 0, null); // looks funny while dragging, right now -- but it's right, right?
+	    gd.drawImage(sBuf, 0, 0, null);
+
+	    // draw double onto g (~25ms)
+	    g.drawImage(doubleBuf, 0, 0, null);
+	}
+
+	// BUG (that i just noticed but isn't here): when you drag a
+	// tag with the tag tool, it redraws everything, which there's
+	// absolutely no reason to do.  actually, now that drawSites()
+	// is independent (and so fast), i can probably do it 100%
+	// right now: just draw it in the right place at
+	// paintComponent()-time (but that would take some more work)
 
         // current tool gets a chance to decorate
         decorate(g);
