@@ -52,11 +52,11 @@ public class UnitTests extends TestCase {
 
             // distance to somebody else is >0
             Location l2 = new Location("48*30'N 33*45'E");
-            assert(l.distanceTo(l2) > 0);
+            assertTrue(l.distanceTo(l2) > 0);
 
             // functional requirements say it's to be rounded to the
             // nearest 10km, too.
-            assert(l.distanceTo(l2) % 10 == 0);
+            assertEquals(l.distanceTo(l2) % 10, 0);
         } catch (NumberFormatException nfe) {
             fail();
         }
