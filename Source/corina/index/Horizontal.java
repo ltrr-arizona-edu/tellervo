@@ -49,7 +49,7 @@ public class Horizontal extends Index {
     public void index() {
 	// compute mean; make a flyweight for the list
 	Double mean = new Double((double) source.computeRadius() /
-				 (double) source.data.size());
+				 source.data.size());
 
 	// the curve: it's flat...
 	int n = source.data.size();
