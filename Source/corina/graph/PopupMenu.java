@@ -30,7 +30,7 @@ import javax.swing.AbstractAction;
 
 public class PopupMenu extends JPopupMenu {
 
-    JMenuItem titleItem, rangeItem, open, plot;
+    private JMenuItem titleItem, rangeItem, open, plot;
 
     public PopupMenu() {
         // dummy entries: the name of the sample, and its range
