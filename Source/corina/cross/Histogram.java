@@ -25,12 +25,11 @@ import java.text.DecimalFormat;
 public class Histogram {
     // input
     private double low, step;
+    private boolean hasInfty;
 
     // output
     private int buckets[];
 
-    // better inteface: Histogram(String formatString, double[] data)
-    // Histogram(Cross) calls this(c.getFormat(), c.data)
     public Histogram(Cross c) {
         this(c.data, c.getFormat());
     }
@@ -45,15 +44,27 @@ public class Histogram {
         // number of buckets
         int numberOfBuckets = 30;
 
-        // set it up -- just make 20 buckets for now
+        // specias case: max(data) = infty.  solution?
+        // -- if there's an infty, ignore when computing low/high
+        // -- add an extra bucket on the top, called "high - \infty"
+        // no scores can be negative, but if they did, i'd probably need a special case for that, too
+
+        // set it up -- use a fixed number of buckets for now
         {
             double high;
             low = high = data[0];
             for (int i=1; i<n; i++) {
-                low = Math.min(low, data[i]);
-                high = Math.max(high, data[i]);
+                if (Double.isInfinite(data[i]) && data[i]>0) {
+                    hasInfty = true;
+                } else {
+                    low = Math.min(low, data[i]);
+                    high = Math.max(high, data[i]);
+                }
             }
-            step = (high - low) / numberOfBuckets;
+            if (hasInfty)
+                step = (high - low) / (numberOfBuckets + 1);
+            else
+                step = (high - low) / numberOfBuckets;
         }
 
         // make the buckets
@@ -66,7 +77,7 @@ public class Histogram {
 
             // place it in the proper bucket
             int target = (int) ((x - low) / step);
-            if (target == numberOfBuckets) // ???
+            if (target >= numberOfBuckets) // for when round-up puts it out of the last bucket, or infty
                 target = numberOfBuckets-1;
             buckets[target]++;
         }
@@ -81,10 +92,6 @@ public class Histogram {
             max = Math.max(max, buckets[i]);
         return max;
     }
-
-    // there's PROBABLY no reason for bucket to be its own class,
-    // so here are some access-by-bucket methods.
-    // i can always refactor later if need be.
 
     public int countBuckets() {
         return buckets.length;
@@ -103,7 +110,10 @@ public class Histogram {
         // compute result
         String result;
         if (memo[bucket] == null) {
-            result = fmt.format(low+step*bucket) + " - " + fmt.format(low+step*(bucket+1));
+            if (hasInfty && bucket==buckets.length-1)
+                result = fmt.format(low+step*bucket) + " - " + fmt.format(Double.POSITIVE_INFINITY);
+            else
+                result = fmt.format(low+step*bucket) + " - " + fmt.format(low+step*(bucket+1));
             memo[bucket] = result;
         } else {
             result = memo[bucket];
