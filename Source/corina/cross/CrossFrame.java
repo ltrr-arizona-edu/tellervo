@@ -477,12 +477,14 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         // prev
         prevButton = Builder.makeButton("prev");
         if (!Platform.isMac)
-            prevButton.setIcon(new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Back16.gif")));
+            prevButton.setIcon(new ImageIcon(cl.getResource("Images/Back16.gif")));
+	// prevButton.setIcon(new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Back16.gif")));
 
         // next
         nextButton = Builder.makeButton("next");
         if (!Platform.isMac)
-            nextButton.setIcon(new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Forward16.gif")));
+            nextButton.setIcon(new ImageIcon(cl.getResource("Images/Forward16.gif")));
+	// nextButton.setIcon(new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Forward16.gif")));
 
         // actionlistener for prev/next
         Action prevNext = new AbstractAction() {
@@ -1290,8 +1292,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
             ranges.add(both);
         }
 
-        JMenuItem kit = new XMenubar.XMenuItem("Edit Fixed/Moving Lists");
-        kit.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize("control E")));
+	JMenuItem kit = Builder.makeMenuItem("edit_crossdate");
         kit.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 dispose();
@@ -1299,8 +1300,30 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
             }
         });
 
-        // make a menu
-        JMenu view = new XMenubar.XMenu("View");
+	// dimmed menuitems, so they'll feel at home
+	JMenuItem undo = Builder.makeMenuItem("undo");
+	undo.setEnabled(false);
+	JMenuItem redo = Builder.makeMenuItem("redo");
+	redo.setEnabled(false);
+	JMenuItem cut = Builder.makeMenuItem("cut");
+	cut.setEnabled(false);
+	JMenuItem copy = Builder.makeMenuItem("copy");
+	copy.setEnabled(false);
+	JMenuItem paste = Builder.makeMenuItem("paste");
+	paste.setEnabled(false);
+
+	// edit menu
+	JMenu edit = Builder.makeMenu("edit");
+	edit.add(undo);
+	edit.add(redo);
+	edit.add(cut);
+	edit.add(copy);
+	edit.add(paste);
+	edit.addSeparator();
+	edit.add(kit);
+
+        // view menu
+        JMenu view = Builder.makeMenu("view");
         view.add(asCross);
         view.add(asTable);
         view.add(asGrid);
@@ -1308,10 +1331,8 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         view.add(moving);
         view.add(fixed);
         view.add(both);
-        view.addSeparator();
-        view.add(kit);
 
-        return new JMenu[] { view };
+        return new JMenu[] { edit, view };
     }
 
     private boolean fixedFloats = false, movingFloats = true;
