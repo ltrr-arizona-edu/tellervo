@@ -32,6 +32,7 @@ import java.text.DecimalFormat;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -47,14 +48,12 @@ import java.awt.print.PageFormat;
  - race condition: quit too soon doesn't finish printing.
  --- (how to solve?  start thread for printing, in "printing" threadgroup, "quit" joins 'em all)
 
- - draw sigscores is the order they're sorted on-screen
- - highlight sigscores in the allscores table
  - try to abstract out center/right-aligned text printing
  - try to consolidate header/data lines, which have redundant tab-processing
  - get histogram from cross, where it belongs anyway.
- - (page numbers disappeared; be prepared to add 'em back)
+ - (page numbers disappeared; be prepared to add 'em back if users complain)
 
- - need a way to export the crossdate so word can read it.  (gah.)  maybe edit->copy is easiest, but what format?
+ - need a way to export the crossdate so word can read it.  (gah.)  maybe edit->copy is easiest, but what format?  HTML?
  */
 
 public class CrossPrinter implements Printable {
@@ -174,7 +173,7 @@ public class CrossPrinter implements Printable {
         public void print(Graphics g, double y);
         public int height(Graphics g);
     }
-    
+
     class TitleLine implements Line {
         private String title;
         private int size;
@@ -238,7 +237,7 @@ public class CrossPrinter implements Printable {
             // decade
             int row_min = cross.range.getStart().row();
             String decade = null;
-            if (row == 0)
+            if (row == 0) // REFACTOR!
                 decade = cross.range.getStart().toString();
             else if (row + row_min == 0)
                 decade = "1"; // special case
@@ -249,10 +248,27 @@ public class CrossPrinter implements Printable {
 
             // data
             for (int i=0; i<10; i++) {
-                Year yr = new Year(10 * (row + row_min) + i); // DUPLICATE CODE FROM SOMEWHERE!
+                Year yr = new Year(10 * (row + row_min) + i); // DUPLICATE CODE FROM SOMEWHERE!  I SMELL IT!
                 if (cross.range.contains(yr)) {
-                    String datum = fmt.format(cross.data[yr.diff(cross.range.getStart())]);
+                    double x = cross.data[yr.diff(cross.range.getStart())];
+                    String datum = fmt.format(x);
                     width = g2.getFontMetrics().stringWidth(datum);
+
+                    // background, if significant
+                    // REFACTOR: better would be cross.isSignificant(Year), which can check the overlap, too
+                    if (x > cross.getMinimumSignificant()) {
+                        final int EPS = 2; // extra area around just-the-text
+                        int ascent = g.getFontMetrics(NORMAL).getAscent();
+                        Color old = g2.getColor();
+                        g2.setColor(Color.getColor("corina.grid.highlightcolor"));
+                        // ugly ugly ugly!
+                        g2.setStroke(new BasicStroke(0f)); // !!!
+                        g2.fillRect((int) (left + colWidth*(i+2)-width - EPS), (int) (baseline - ascent - EPS),
+                                    (int) (width + 2*EPS), (int) (ascent + 2*EPS));
+                        g2.setColor(old);
+                    }
+
+                    // text
                     g2.drawString(datum, (float) (left+colWidth*(i+2)-width), baseline);
                 }
             }
@@ -472,9 +488,6 @@ public class CrossPrinter implements Printable {
     class EmptyLine implements Line {
         private int height=18; // 1/4"
         public EmptyLine() {
-        }
-        public EmptyLine(int space) {
-            height = space;
         }
         public void print(Graphics g, double y) {
             // do nothing.
