@@ -160,21 +160,6 @@ public class ReconcileDialog extends JDialog {
 
     private boolean lengthVisible=true, trendsVisible=true, percentsVisible=true;
 
-    /*
-      [x] Extra years		 [x] Trend (5 years)		[x] 3% rule (2 years)
-
-      (X) Trend	        1001-1002	   142 -> 136		137 -> 141
-      (%) 3% rule	1001		   142			137
-      (+) Extra year	1042		   157			-- doesn't exist --
-    */
-
-    /*
-      icons?
-      -- trend = superimposed / and \
-      -- 3% rule = % symbol?
-      -- extra years = short line over longer line?
-    */
-
     // show length, then trend, then 3% errors (no, that's not the order they're done on paper!)
     public class ReconcileListModel extends AbstractListModel {
 	public Object getElementAt(int index) {
