@@ -23,8 +23,11 @@ package corina.map;
 // matrix math routines for double[][] matrices
 abstract class Matrix {
 
+    // BETTER: instead of making these methods public, why not just make rotate(matrix,angle) public?
+    // that way, i can re-use the matrices safely, and lusers won't need to know how i do rotations.
+    
     // rotateX: a rotate matrix for deg degrees
-    public static double[][] makeRotateX(double deg) {
+    public static double[][] makeRotateX(float deg) {
         double rad = Math.toRadians(deg);
         double c = Math.cos(rad);
         double s = Math.sin(rad);
@@ -32,11 +35,11 @@ abstract class Matrix {
         { 1, 0, 0 },
         { 0, c, s },
         { 0, -s, c }};
-        // was: {1,0,0},{0,c,-s},{0,s,c}, but that looked buggy to me
+        // was: {1,0,0},{0,c,-s},{0,s,c}, but that looked buggy to me -- tell the rmap guy?  (he never responded to my first bug report)
     }
 
     // rotateY: a rotate matrix for deg degrees
-    public static double[][] makeRotateY(double deg) {
+    public static double[][] makeRotateY(float deg) {
         double rad = Math.toRadians(deg);
         double c = Math.cos(rad);
         double s = Math.sin(rad);
@@ -47,7 +50,7 @@ abstract class Matrix {
     }
 
     // rotateZ: a rotate matrix for deg degrees
-    public static double[][] makeRotateZ(double deg) {
+    public static double[][] makeRotateZ(float deg) {
         double rad = Math.toRadians(deg);
         double c = Math.cos(rad);
         double s = Math.sin(rad);
@@ -77,7 +80,7 @@ abstract class Matrix {
         return c;
     }
     
-    public static void scale(double matrix[][], double s) {
+    public static void scale(double matrix[][], float s) {
         for (int i=0; i<matrix.length; i++)
             for (int j=0; j<matrix[0].length; j++)
                 matrix[i][j] *= s;
