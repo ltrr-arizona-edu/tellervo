@@ -23,16 +23,10 @@ package corina.files;
 import corina.Year;
 import corina.Range;
 import corina.Sample;
-import corina.Weiserjahre;
 
 import java.util.ArrayList;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.FileNotFoundException;
 
 /**
    <p>"TSAP Matrix Format".  I think these files we have come from
@@ -52,29 +46,23 @@ public class TSAPMatrix extends Filetype {
     /** Return the human-readable name of this file format.
 	@return the name of this file format */
     public String toString() {
-	return "TSAP Matrix";
+	return "TSAP";
     }
 
     /** Return a unique character in the name to use as a mnemonic.
 	@return character to use as mnemonic */
     public char getMnemonic() {
-	return 'M';
+	return 'P';
     }
 
     /** Load a sample in TSAP-MATRIX format.
 	@param filename file to load from
 	@return Sample loaded from the file
-	@exception FileNotFoundException if the file cannot be found
 	@exception WrongFiletypeException if the file is obviously not
 	this filetype
 	@exception IOException if something goes wrong
 	@see Sample */
-    public Sample load()
-	throws FileNotFoundException, WrongFiletypeException, IOException
-    {
-	// set up a reader
-//	r = new BufferedReader(new FileReader(filename));
-
+    public Sample load() throws WrongFiletypeException, IOException {
 	// make sure it's a tsap-matrix file
 	String line = r.readLine();
 	if (!line.startsWith("TSAP-MATRIX-FORMAT"))
@@ -162,38 +150,35 @@ public class TSAPMatrix extends Filetype {
 	@param s the sample to save
 	@exception IOException if an I/O exception occurs */
     public void save(Sample sample) throws IOException {
-	// open for writing
-//	w = new BufferedWriter(new FileWriter(filename));
+        // header
+        w.write("TSAP-MATRIX-FORMAT");
+        w.newLine();
 
-	// header
-	w.write("TSAP-MATRIX-FORMAT");
-	w.newLine();
+        // WRITE ME: other header stuff here ("Project:", "Location:")
 
-	// WRITE ME: other header stuff here ("Project:", "Location:")
+        w.newLine();
+        w.write("    Year,       100 Val        100 Nos        100 Nois       100 Nods");
+        w.newLine();
+        for (int i=0; i<sample.data.size(); i++) { // zero year!
+                                                   // format: "     820,            129,              1,              0,              0"
+                                                   // (year,width,count,up,down)
 
-	w.newLine();
-	w.write("    Year,       100 Val        100 Nos        100 Nois       100 Nods");
-	w.newLine();
-	for (int i=0; i<sample.data.size(); i++) { // zero year!
-	    // format: "     820,            129,              1,              0,              0"
-	    // (year,width,count,up,down)
+            w.write(leftPad(sample.getStart().add(i).toString(), 8));
+            w.write(',');
+            w.write(leftPad(sample.data.get(i).toString(), 15));
+            w.write(',');
+            w.write(leftPad(sample.count==null ? "1" : sample.count.get(i).toString(), 15)); // count may be null?
+            w.write(',');
 
-	    w.write(leftPad(sample.getStart().add(i).toString(), 8));
-	    w.write(',');
-	    w.write(leftPad(sample.data.get(i).toString(), 15));
-	    w.write(',');
-	    w.write(leftPad(sample.count.get(i).toString(), 15));
-	    w.write(',');
+            w.write(leftPad(sample.incr==null ? "0" : sample.incr.get(i).toString(), 15)); // incr may be null?
+            w.write(',');
+            w.write(leftPad(sample.decr==null ? "0" : sample.decr.get(i).toString(), 15)); // decr may be null?
 
-	    w.write(leftPad(sample.incr.get(i).toString(), 15));
-	    w.write(',');
-	    w.write(leftPad(sample.decr.get(i).toString(), 15));
+            // newline
+            w.newLine();
+        }
 
-	    // newline
-	    w.newLine();
-	}
-
-	// close file
-	w.close();
+        // close file
+        w.close();
     }
 }
