@@ -171,6 +171,7 @@ public class Editor extends XFrame
     // gui -- menus
     private JMenuItem resumMenu, cleanMenu, reverseMenu, reconcile;
     private JMenuItem indexMenu;
+    private JMenuItem crossElements;
     private JMenuItem addMenu, remMenu;
     private JMenuItem plotAll, bargraphAll;
     private JMenuItem v1, v2, v3;
@@ -227,8 +228,9 @@ public class Editor extends XFrame
 	// clean menu: only if summed
 	cleanMenu.setEnabled(sample.isSummed());
 
-	// resum menu: only if elements present
+	// resum menu, cross elements: only if elements present
 	resumMenu.setEnabled(sample.elements != null);
+	crossElements.setEnabled(sample.elements != null);
 
         // measure menu: only if not summed
         if (measureMenu != null)
@@ -752,8 +754,7 @@ public class Editor extends XFrame
         edit.addSeparator();
 
         // insert
-	JMenuItem insert = new XMenubar.XMenuItem(msg.getString("insert_year"), 'I');
-	insert.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, Event.CTRL_MASK));
+	JMenuItem insert = Builder.makeMenuItem("insert_year");
 	insert.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    ((SampleDataView) dataView).insertYear();
@@ -762,8 +763,7 @@ public class Editor extends XFrame
 	edit.add(insert);
 
 	// delete
-	JMenuItem delete = new XMenubar.XMenuItem(msg.getString("delete_year"), 'D');
-	delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, Event.CTRL_MASK));
+	JMenuItem delete = Builder.makeMenuItem("delete_year");
 	delete.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    ((SampleDataView) dataView).deleteYear();
@@ -928,8 +928,6 @@ public class Editor extends XFrame
 
 	// redate
 	final Editor glue = this;
-	// JMenuItem redate = new XMenubar.XMenuItem(msg.getString("redate..."), // OOPS!  how to deal with ... and builder?
-	// msg.getString("redate_key").charAt(0));
 	JMenuItem redate = Builder.makeMenuItem("redate...");
 	// redate.setAccelerator(KeyStroke.getKeyStroke(msg.getString("redate_acc")));
 	// control-R, etc., are grabbed by the table -- agH!
@@ -941,11 +939,13 @@ public class Editor extends XFrame
 	s.add(redate);
 
 	// index
-	indexMenu = Builder.makeMenuItem("index..."); // new XMenubar.XMenuItem(msg.getString("index..."),
-	// msg.getString("index_key").charAt(0));
-	// indexMenu.setAccelerator(KeyStroke.getKeyStroke(msg.getString("index_acc")));
+	indexMenu = Builder.makeMenuItem("index...");
 	indexMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
+		    // PERF: for big samples, it can take a couple
+		    // seconds for the dialog to appear.  not enough
+		    // for a progressbar, but enough that i should use
+		    // the "wait" cursor on the editor window.
 		    new IndexDialog(sample, glue);
 		}
 	    });
@@ -954,9 +954,6 @@ public class Editor extends XFrame
 
 	// truncate
 	JMenuItem truncate = Builder.makeMenuItem("truncate...");
-	//new XMenubar.XMenuItem(msg.getString("truncate..."),
-	// msg.getString("truncate_key").charAt(0));
-	// truncate.setAccelerator(KeyStroke.getKeyStroke(msg.getString("truncate_acc")));
 	truncate.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    new TruncateDialog(sample, glue);
@@ -977,11 +974,8 @@ public class Editor extends XFrame
     // ---
     s.addSeparator();
 
-    // cross
+    // cross against
     JMenuItem crossAgainst = Builder.makeMenuItem("cross_against...");
-    // new XMenubar.XMenuItem(msg.getString("cross_against..."),
-    // msg.getString("cross_against_key").charAt(0));
-    // crossAgainst.setAccelerator(KeyStroke.getKeyStroke(msg.getString("cross_against_acc")));
     crossAgainst.addActionListener(new AbstractAction() {
         public void actionPerformed(ActionEvent ae) {
             try {
@@ -990,12 +984,12 @@ public class Editor extends XFrame
 
                 // (note also the Peter-catcher: see XMenubar.java)
 
-                // fix for bug 228: filename may be null, and sequence uses it to hash,
+                // hack for bug 228: filename may be null, and sequence uses it to hash,
                 // so let's make up a fake filename that can't be a real filename.
                 String filename = getFilename();
                 if (filename == null)
                     filename = "\u011e"; // this can't begin a word!
-                
+
                 new CrossFrame(new Sequence(Collections.singletonList(filename), ss));
             } catch (UserCancelledException uce) {
                 // do nothing
@@ -1003,6 +997,16 @@ public class Editor extends XFrame
         }
     });
     s.add(crossAgainst);
+
+    // cross all
+    crossElements = Builder.makeMenuItem("cross_elements");
+    crossElements.addActionListener(new AbstractAction() {
+        public void actionPerformed(ActionEvent ae) {
+	    // n-by-n cross
+	    new CrossFrame(new Sequence(sample.elements, sample.elements));
+        }
+    });
+    s.add(crossElements);
 
     // reconcile
     reconcile = Builder.makeMenuItem("reconcile");
@@ -1135,6 +1139,7 @@ public class Editor extends XFrame
 	m.addSeparator();
 
 	// add item -- ENABLED IFF THERE EXIST OTHER ELEMENTS OR DATA IS-EMPTY
+	// FIXME: use Builder
 	addMenu = new XMenubar.XMenuItem("Add...", 'A');
 	addMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
