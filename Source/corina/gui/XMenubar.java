@@ -25,10 +25,12 @@ import org.python.util.PythonInterpreter;
 import corina.Sample;
 import corina.Element;
 import corina.files.Filetype;
+import corina.files.ExportDialog;
 import corina.cross.Sequence;
 import corina.cross.CrossFrame;
 import corina.cross.GridFrame;
 import corina.cross.TableFrame;
+import corina.cross.CrossdateKit;
 import corina.manip.Sum;
 import corina.graph.GraphFrame;
 import corina.editor.Editor;
@@ -36,6 +38,9 @@ import corina.site.SiteDB;
 import corina.map.MapFrame;
 import corina.prefs.PrefsDialog;
 import corina.util.Platform;
+import corina.util.Overwrite;
+import corina.browser.Browser;
+import corina.ui.Builder;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,7 +63,8 @@ import javax.swing.*;
 public class XMenubar extends JMenuBar {
 
     // i18n
-    private static ResourceBundle msg = ResourceBundle.getBundle("MenubarBundle");
+    private static ResourceBundle oldmsg = ResourceBundle.getBundle("MenubarBundle");
+    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // mac-ize keystrokes.  s/control/meta/ (meta==command)
     public static String macize(String k) {
@@ -173,20 +179,24 @@ public class XMenubar extends JMenuBar {
     private PageFormat pageFormat=new PageFormat();
 
     public static class NewSample extends AbstractAction {
-	public NewSample() {
-            super("    " + msg.getString("sample")); // REFACTOR: indent() method...  BETTER: my own sub-menu, 2 styles.
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("sample_key").charAt(0)));
-	    putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(msg.getString("sample_acc"))));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    new Editor();
-	}
+        public NewSample() {
+            super("    " + oldmsg.getString("sample")); // REFACTOR: indent() method...  BETTER: my own sub-menu, 2 styles.
+            putValue(Action.MNEMONIC_KEY, new Integer(oldmsg.getString("sample_key").charAt(0)));
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(oldmsg.getString("sample_acc"))));
+        }
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                new Editor();
+            } catch (Throwable t) {
+                Bug.bug(t);
+            }
+        }
     }
 
     public class NewSum extends AbstractAction {
         public NewSum() {
-            super("    " + msg.getString("sum") + "...");
-            putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("sum_key").charAt(0)));
+            super("    " + oldmsg.getString("sum") + "...");
+            putValue(Action.MNEMONIC_KEY, new Integer(oldmsg.getString("sum_key").charAt(0)));
         }
         public void actionPerformed(ActionEvent ae) {
             List tmp;
@@ -239,13 +249,13 @@ public class XMenubar extends JMenuBar {
 
     public class NewPlot extends AbstractAction {
         public NewPlot() {
-            super("    " + msg.getString("plot") + "...");
-            putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("plot_key").charAt(0)));
+            super("    " + oldmsg.getString("plot") + "...");
+            putValue(Action.MNEMONIC_KEY, new Integer(oldmsg.getString("plot_key").charAt(0)));
         }
         public void actionPerformed(ActionEvent ae) {
             try {
                 // get samples
-                List ss = FileDialog.showMulti(msg.getString("plot"));
+                List ss = FileDialog.showMulti(oldmsg.getString("plot"));
 
                 // make graph
                 new GraphFrame(ss);
@@ -257,26 +267,28 @@ public class XMenubar extends JMenuBar {
 
     public class NewGrid extends AbstractAction {
         public NewGrid() {
-            super("    " + msg.getString("grid") + "...");
-            putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("grid_key").charAt(0)));
+            super("    " + oldmsg.getString("grid") + "...");
+            putValue(Action.MNEMONIC_KEY, new Integer(oldmsg.getString("grid_key").charAt(0)));
         }
         public void actionPerformed(ActionEvent ae) {
             try {
                 // get samples
-                List ss = FileDialog.showMulti(msg.getString("grid"));
+                List ss = FileDialog.showMulti(oldmsg.getString("grid"));
 
                 // make grid
                 new GridFrame(ss);
             } catch (UserCancelledException uce) {
                 // do nothing
+            } catch (Throwable t) {
+                Bug.bug(t);
             }
         }
     }
 
     public class NewTable extends AbstractAction {
         public NewTable() {
-            super(msg.getString("table"));
-            putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("table_key").charAt(0)));
+            super(oldmsg.getString("table"));
+            putValue(Action.MNEMONIC_KEY, new Integer(oldmsg.getString("table_key").charAt(0)));
         }
         public void actionPerformed(ActionEvent ae) {
             try {
@@ -294,31 +306,23 @@ public class XMenubar extends JMenuBar {
         }
     }
 
-    public class Preferences extends AbstractAction {
-	public Preferences() {
-	    super(msg.getString("preferences"));
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("preferences_key").charAt(0)));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    PrefsDialog.showPreferences();
-	}
-    }
-
     // ----------------------------------------------------------------------
 
     public static class Open extends AbstractAction {
         public Open() {
-            super(msg.getString("open"));
-            putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("open_key").charAt(0)));
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(msg.getString("open_acc"))));
+            super(oldmsg.getString("open"));
+            putValue(Action.MNEMONIC_KEY, new Integer(oldmsg.getString("open_key").charAt(0)));
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(oldmsg.getString("open_acc"))));
         }
         public void actionPerformed(ActionEvent ae) {
             try {
                 // get filename, and load
-                CanOpener.open(FileDialog.showSingle(msg.getString("open")));
+                CanOpener.open(FileDialog.showSingle(oldmsg.getString("open")));
             } catch (UserCancelledException uce) {
                 return;
             } catch (IOException ioe) {
+		// BUG: this should never happen.  loading is so fast, it'll get displayed
+		// in the preview component, and if it can't be loaded, "ok" should be dimmed.
                 JOptionPane.showMessageDialog(null,
                                               "Can't open file: " + ioe.getMessage(),
                                               "I/O Error",
@@ -327,228 +331,107 @@ public class XMenubar extends JMenuBar {
         }
     }
 
-    public final class Save extends AbstractAction {
-	public Save() {
-	    super(msg.getString("save"));
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("save_key").charAt(0)));
-	    putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(msg.getString("save_acc"))));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    if (myFrame instanceof SaveableDocument) {
-		SaveableDocument doc = (SaveableDocument) myFrame;
-
-		doc.save();
-		OpenRecent.fileOpened(doc.getFilename());
-	    }
-	}
-    }
-
-    public class SaveAs extends AbstractAction {
-        public SaveAs() {
-            super(msg.getString("save_as"));
-            putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("save_as_key").charAt(0)));
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(msg.getString("save_as_acc"))));
+    public class Rename extends AbstractAction {
+        public Rename() {
+            super(oldmsg.getString("rename_to"));
+            putValue(Action.MNEMONIC_KEY, new Integer(oldmsg.getString("rename_to_key").charAt(0)));
         }
         public void actionPerformed(ActionEvent ae) {
-            if (myFrame instanceof SaveableDocument) {
-                // get new filename
-                String filename;
-                try {
-                    filename = FileDialog.showSingle(msg.getString("save"));
-                } catch (UserCancelledException uce) {
-                    return;
-                }
+            // make sure we're a saveable document
+            if (!(myFrame instanceof SaveableDocument))
+                return;
+            SaveableDocument doc = (SaveableDocument) myFrame;
 
-                // check for already-exists -- THIS IS SO FRIGGIN' DUPLICATE CODE IT'S NOT FUNNY
-                {
-                    File f = new File(filename);
-                    if (f.exists()) {
-                        int x = JOptionPane.showConfirmDialog(null,
-                                                              "File \"" + filename + "\"\n" +
-                                                              "already exists; overwrite?",
-                                                              "Already exists",
-                                                              JOptionPane.YES_NO_OPTION);
-                        if (x == JOptionPane.NO_OPTION)
-                            return;
-                    }
-                }
+            // just show the filename.  ("de fault!  the two sweetest words in the english language".)
+            String deFault = (new File(doc.getFilename())).getName();
 
-                // set filename
-                ((SaveableDocument) myFrame).setFilename(filename);
+            String filename = (String) JOptionPane.showInputDialog(myFrame,
+                                                                   "Rename this file to:",
+                                                                   "Rename File",
+                                                                   JOptionPane.PLAIN_MESSAGE,
+                                                                   null, null, // icon, values
+                                                                   deFault);
 
-                // save
-                ((SaveableDocument) myFrame).save();
+            if (filename == null) {
+		return; // user cancelled
             }
+            
+            // make new file
+            String parent = (new File(doc.getFilename())).getParent();
+            File newFile = new File(parent + File.separator + filename);
+
+            // check for already-exists
+            if (newFile.exists() && Overwrite.overwrite(filename)) // BUG: isn't this check backwards?
+                return;
+
+            // rename disk file
+            File oldFile = new File(doc.getFilename());
+            try {
+                boolean success = oldFile.renameTo(newFile);
+                if (!success) {
+                    return; // error!  BUG: deal with me (when does this happen?  the api doesn't say...)
+                }
+            } catch (SecurityException se) {
+                return; // error!  BUG: deal with me (when does this happen?  if it can't be written to)
+            }
+
+            // set filename
+            doc.setFilename(newFile.getPath());
         }
     }
 
-    public class Rename extends AbstractAction {
-	public Rename() {
-	    super(msg.getString("rename_to"));
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("rename_to_key").charAt(0)));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    // make sure we're a saveable document
-	    if (!(myFrame instanceof SaveableDocument))
-		return;
-	    SaveableDocument doc = (SaveableDocument) myFrame;
-
-	    // new way: just show the filename.  ("de-fault!  the two
-	    // sweetest words in the English language".)
-	    String deFault = (new File(doc.getFilename())).getName();
-
-	    String filename = (String) JOptionPane.showInputDialog(myFrame,
-								   "Rename this file to:",
-								   "Rename File",
-								   JOptionPane.PLAIN_MESSAGE,
-								   null, // icon
-								   null, // values
-								   deFault);
-
-/* -- old way: show a file dialog
-	    // get new name
-	    String filename = FileDialog.showSingle("Rename to"); -- be sure to catch UCE now
-*/
-
-	    if (filename == null) {
-		// user cancelled
-		return;
-	    }
-
-	    // make new file
-	    String parent = (new File(doc.getFilename())).getParent();
-	    File newFile = new File(parent + File.separator + filename);
-
-	    // check for already-exists
-	    if (newFile.exists()) {
-		int x = JOptionPane.showConfirmDialog(null,
-						      "File \"" + filename + "\"\n" +
-						          "already exists; overwrite?",
-						      "Already exists",
-						      JOptionPane.YES_NO_OPTION);
-		if (x == JOptionPane.NO_OPTION)
-		    return;
-	    }
-
-	    // rename disk file
-	    File oldFile = new File(doc.getFilename());
-	    try {
-		boolean success = oldFile.renameTo(newFile);
-		if (!success) {
-		    // error!
-		    return;
-		}
-	    } catch (SecurityException se) {
-		// error!
-		return;
-	    }
-
-	    // set filename
-	    doc.setFilename(newFile.getPath());
-	}
-    }
-
-    public final class Close extends AbstractAction {
-	public Close() {
-	    super(msg.getString("close"));
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("close_key").charAt(0)));
-	    putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(msg.getString("close_acc"))));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    myFrame.close();
-	}
-    }
-
-    public final class PageSetup extends AbstractAction {
-	public PageSetup(boolean canPrint) {
-	    super(msg.getString("page_setup"));
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("page_setup_key").charAt(0)));
-	    putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(msg.getString("page_setup_acc"))));
-	    super.setEnabled(canPrint);
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    // make printer job, if none exists yet
+    private void tryToPrint(boolean askOptions) {
+	if (myFrame instanceof PrintableDocument) {
+	    // page setup wasn't run: force it
 	    if (printJob == null)
 		printJob = PrinterJob.getPrinterJob();
+	    if (pageFormat == null)
+		pageFormat = printJob.pageDialog(pageFormat);
+	    if (pageFormat == null)
+		return; // abort
 
-	    // get page format
-	    pageFormat = printJob.pageDialog(pageFormat);
-	}
-    }
+	    int method = ((PrintableDocument) myFrame).getPrintingMethod();
+	    if (method == PrintableDocument.PAGEABLE) {
+		// get document to print
+		Pageable pageable = ((PrintableDocument) myFrame).makePageable(pageFormat);
 
-    public final class Print extends AbstractAction {
-	public Print(boolean canPrint) {
-	    super(msg.getString("print"));
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("print_key").charAt(0)));
-	    putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(msg.getString("print_acc"))));
-	    super.setEnabled(canPrint);
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    // SPECIAL CASE: text print of Editor
-	    if (myFrame instanceof Editor) {
-		((Editor) myFrame).printText();
-		return;
+		// prepare to print
+		printJob.setPageable(pageable);
+	    } else {
+		// get document to print
+		Printable printable = ((PrintableDocument) myFrame).makePrintable(pageFormat);
+
+		// prepare to print
+		printJob.setPrintable(printable);
 	    }
 
-            if (myFrame instanceof PrintableDocument) {
-                // page setup wasn't run: force it
-                if (printJob == null)
-                    printJob = PrinterJob.getPrinterJob();
-                if (pageFormat == null)
-                    pageFormat = printJob.pageDialog(pageFormat);
-                if (pageFormat == null)
-                    return; // abort
+	    // job title
+	    printJob.setJobName(((PrintableDocument) myFrame).getPrintTitle());
 
-                int method = ((PrintableDocument) myFrame).getPrintingMethod();
-                if (method == PrintableDocument.PAGEABLE) {
-                    // get document to print
-                    Pageable pageable = ((PrintableDocument) myFrame).makePageable(pageFormat);
+	    // ask user options
+	    if (askOptions)
+                if (!printJob.printDialog())
+                    return;
 
-                    // prepare to print
-                    printJob.setPageable(pageable);
-                } else {
-                    // get document to print
-                    Printable printable = ((PrintableDocument) myFrame).makePrintable(pageFormat);
-
-                    // prepare to print
-                    printJob.setPrintable(printable);
-                }
-
-                // job title
-                printJob.setJobName(((PrintableDocument) myFrame).getPrintTitle());
-
-                // ask user options
-		if (!printJob.printDialog())
-		    return;
-
-		// print (in background thread)
-		final PrinterJob glue = printJob;
-		(new Thread() {
-			public void run() {
-			    try {
-				glue.print();
-			    } catch (PrinterException pe) {
-				JOptionPane.showMessageDialog(null,
-							      "Printer error: " + pe.getMessage(),
-							      "Error printing",
-							      JOptionPane.ERROR_MESSAGE);
-				return;
-			    }
-			}
-		    }).start();
-	    }
-	}
-    }
-
-    public class Quit extends AbstractAction {
-	public Quit() {
-	    super(msg.getString("quit"));
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("quit_key").charAt(0)));
-	    putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(msg.getString("quit_acc"))));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    // this deals with unsaved documents, etc.
-	    XCorina.quit();
+	    // print (in background thread)
+	    final PrinterJob glue = printJob;
+	    (new Thread() {
+                    public void run() {
+                        try {
+                            glue.print();
+                        } catch (PrinterException pe) {
+                            // make this friendlier/more useful!
+                            // "an error in the print system caused printing to be aborted.  this could indicate
+                            // a hardware or system problem, or a bug in Corina."  ( details ) (( ok ))
+                            // (details->stacktrace) -- create static String Bug.getStackTrace(ex)
+                            JOptionPane.showMessageDialog(null,
+                                                          "Printer error: " + pe.getMessage(),
+                                                          "Error printing",
+                                                          JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    }
+                }).start();
 	}
     }
 
@@ -571,7 +454,7 @@ public class XMenubar extends JMenuBar {
                 // select moving files
                 List ss = FileDialog.showMulti(msg.getString("moving"));
 
-            // the Peter-catcher: if the "fixed" file is relatively
+            // the Peter-catcher: if the 'fixed' file is relatively
             // dated, he really wanted an Nx1.  d'oh!  DWIM.
             /*
              if (!fixedSample.isAbsolute())
@@ -668,7 +551,7 @@ public class XMenubar extends JMenuBar {
                 List f = FileDialog.showMulti(msg.getString("fixed"));
 
                 // select moving files
-                List m = FileDialog.showMulti(msg.getString("fixed"));
+                List m = FileDialog.showMulti(msg.getString("moving"));
 
                 // go ahead if m = f?
 
@@ -680,20 +563,25 @@ public class XMenubar extends JMenuBar {
         }
     }
 
+    public class CrossSuperSpiffy extends AbstractAction {
+        public CrossSuperSpiffy() {
+            super("Crossdate Kit...");
+        }
+        public void actionPerformed(ActionEvent ae) {
+            new CrossdateKit();
+        }
+    }
+
     // temporary mapper!
     // better: "draw a map of (1) all sites in the database, (2) only some sites, ..."
     public class Map extends AbstractAction {
-	public Map() {
-	    super("    " + "Map");
-	    putValue(Action.MNEMONIC_KEY, new Integer('M'));
-	}
-	public void actionPerformed(ActionEvent e) {
-	    try {
-		new MapFrame(SiteDB.getSiteDB());
-	    } catch (IOException ioe) {
-		System.out.println("error -- " + ioe);
-	    }
-	}
+        public Map() {
+            super("    " + "Map");
+            putValue(Action.MNEMONIC_KEY, new Integer('M'));
+        }
+        public void actionPerformed(ActionEvent e) {
+            new MapFrame();
+        }
     }
 
     // ----------------------------------------------------------------------
@@ -711,153 +599,12 @@ public class XMenubar extends JMenuBar {
     }
 
     // ----------------------------------------------------------------------
-
-    public final class Manual extends AbstractAction {
-        public Manual() {
-            super(msg.getString("help"));
-            putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("help_key").charAt(0)));
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(msg.getString("help_acc"))));
-        }
-	public void actionPerformed(ActionEvent ae) {
-	    /*
-	    // get browser
-	    String browser = System.getProperty("corina.browser");
-
-	    // autodetect browser, if none specified
-	    if (browser == null) {
-		// WRITE ME
-		return;
-	    }
-
-	    // note: this should use a format string, like for
-	    // printing, because users may want to perform a
-	    // command-line that has the URL in the middle, e.g.,
-	    // "netscape -remote
-	    // 'openURL(http://xcorina.org/manual/)'".
-
-	    // exec it
-	    Runtime r = Runtime.getRuntime();
-	    Process p;
-	    try {
-		// point to xcorina.org
-		p = r.exec(new String[] { browser, "http://www.xcorina.org/manual/" });
-	    } catch (IOException ioe) {
-		JOptionPane.showMessageDialog(null,
-					      "Error starting browser:\n" +
-					      ioe.getMessage(),
-					      "Can't start browser",
-					      JOptionPane.ERROR_MESSAGE);
-		return;
-	    }
-	    */
-	    new HelpBrowser();
-	}
-    }
-
-    public final class About extends AbstractAction {
-	public About() {
-	    super(msg.getString("about"));
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("about_key").charAt(0)));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    // the new about-box
-	    new AboutBox();
-	}
-    }
-
-    // ----------------------------------------------------------------------
-
-    // formats to allow exporting
-    public final static String EXPORTS[] = { "corina.files.Tucson",
-					     "corina.files.TwoColumn",
-					     "corina.files.Corina",
-					     "corina.files.Heidelberg",
-					     "corina.files.Hohenheim",
-					     "corina.files.TSAPMatrix",
-					     // "corina.files.HTML",
-    };
-
-    public XMenu makeExportMenu() {
-	XMenu exportMenu = new XMenu(msg.getString("export"));
-
-	for (int i=0; i<EXPORTS.length; i++) {
-	    Filetype exporter;
-	    try {
-		exporter = Filetype.makeFiletype(EXPORTS[i]);
-	    } catch (Exception e) {
-		System.err.println("error when trying to create exporter for class " + EXPORTS[i]);
-		continue;
-	    }
-
-	    XMenuItem tmp = new XMenuItem(exporter + "...", exporter.getMnemonic());
-	    final int glue = i;
-	    tmp.addActionListener(new AbstractAction() {
-		    public void actionPerformed(ActionEvent ae) {
-			// get sample for export
-			if (!(myFrame instanceof Editor)) {
-			    JOptionPane.showMessageDialog(null,
-							  "This window is not a sample, and therefore\n" +
-							  "cannot be exported.",
-							  "Not a sample",
-							  JOptionPane.ERROR_MESSAGE);
-			    return;
-			}
-			Sample sample = ((Editor) myFrame).getSample();
-
-                        // get filename for export
-                        String filename;
-                        try {
-                            filename = FileDialog.showSingle(msg.getString("export"));
-                        } catch (UserCancelledException uce) {
-                            return;
-                        }
-
-			// check for already-exists
-			{
-			    File f = new File(filename);
-			    if (f.exists()) {
-				int x = JOptionPane.showConfirmDialog(null,
-								      "File \"" + filename + "\"\n" +
-								      "already exists; overwrite?",
-								      "Already exists",
-								      JOptionPane.YES_NO_OPTION);
-				if (x == JOptionPane.NO_OPTION)
-				    return;
-			    }
-			}
-
-			// try to save
-			try {
-			    Filetype myExporter = Filetype.makeFiletype(EXPORTS[glue]);
-			    myExporter.save(filename, sample);
-			} catch (IOException ioe) {
-			    JOptionPane.showMessageDialog(null,
-							  "Error: " + ioe.getMessage(),
-							  "Error Exporting",
-							  JOptionPane.ERROR_MESSAGE);
-			    return;
-			} catch (Exception e) { // instantiation, classnotfound, ...
-			    JOptionPane.showMessageDialog(null,
-							  "Error: " + e.getMessage(),
-							  "Error with exporter",
-							  JOptionPane.ERROR_MESSAGE);
-			    return;
-			}
-		    }
-		});
-	    exportMenu.add(tmp);
-	}
-
-	return exportMenu;
-    }
-
-    // ----------------------------------------------------------------------
     // public stuff!
     // ----------------------------------------------------------------------
 
     // new way: indent!
     public void addNewMenu(JMenu n) {
-        XMenuItem header = new XMenuItem(msg.getString("new"));
+        XMenuItem header = new XMenuItem(oldmsg.getString("new"));
         header.setEnabled(false);
         n.add(header);
         n.add(new XMenuItem(new NewSample()));
@@ -871,9 +618,7 @@ public class XMenubar extends JMenuBar {
     // old way: a nested menu.  UNUSED NOW.
     public void addNewMenuOLD(JMenu m) {
         // a nested menu
-        XMenu n = new XMenu(msg.getString("new"));
-        if (!Platform.isMac)
-            n.setMnemonic(msg.getString("new_key").charAt(0));
+	JMenu n = Builder.makeMenu("new");
         n.add(new XMenuItem(new NewSample()));
         n.add(new XMenuItem(new NewSum()));
         n.add(new XMenuItem(new NewPlot()));
@@ -887,23 +632,36 @@ public class XMenubar extends JMenuBar {
         m.add(n);
     }
 
-    private XMenu makeHelpMenu() {
-        XMenu help = new XMenu("Help");
-        if (!Platform.isMac)
-            help.setMnemonic('H');
-        help.add(new XMenuItem(new XMenubar.Manual()));
-        if (!Platform.isMac)
-            help.add(new XMenuItem(new XMenubar.About()));
+    private JMenu makeHelpMenu() {
+        JMenu help = Builder.makeMenu("help");
+	JMenuItem manual = Builder.makeMenuItem("help");
+	manual.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    new HelpBrowser();
+		}
+	    });
+        help.add(manual);
+        if (!Platform.isMac) {
+	    JMenuItem about = Builder.makeMenuItem("about");
+	    about.addActionListener(new AbstractAction() {
+		    public void actionPerformed(ActionEvent e) {
+			new AboutBox();
+		    }
+		});
+            help.add(about);
+	}
         return help;
     }
 
     static {
-        // on mac, register about menuitem -- MOVE THIS TO PLATFORM
+        // on mac, register about menuitem -- MOVE THIS TO PLATFORM.JAVA
         if (Platform.isMac) {
             // add about-handler
             try {
                 Class appUtils = Class.forName("com.apple.mrj.MRJApplicationUtils");
-                Object aboutHandler = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(),
+//                Object aboutHandler = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(),
+                ClassLoader cl = Class.forName("corina.gui.XMenubar").getClassLoader();
+                Object aboutHandler = Proxy.newProxyInstance(cl,
                                                              new Class[] { Class.forName("com.apple.mrj.MRJAboutHandler") },
                                                              new InvocationHandler() {
                                                                  public Object invoke(Object proxy, Method method, Object[] args) {
@@ -916,6 +674,7 @@ public class XMenubar extends JMenuBar {
                 register.invoke(appUtils.newInstance(), new Object[] { aboutHandler });
             } catch (Exception e) {
                 // can't happen <=> bug!
+                Bug.bug(e);
             }
 
             /* that's a pure-reflection way to say this, which won't even compile on non-mac platforms:
@@ -945,9 +704,10 @@ public class XMenubar extends JMenuBar {
 */
             try {
                 Class appUtils = Class.forName("com.apple.mrj.MRJApplicationUtils");
-                Object quitHandler = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(),
-                                                             new Class[] { Class.forName("com.apple.mrj.MRJQuitHandler") },
-                                                             new InvocationHandler() {
+//                Object quitHandler = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(),
+                Object quitHandler = Proxy.newProxyInstance(appUtils.getClassLoader(),
+                                                            new Class[] { Class.forName("com.apple.mrj.MRJQuitHandler") },
+                                                            new InvocationHandler() {
                                                                  public Object invoke(Object proxy, Method method, Object[] args) {
                                                                      if (method.getName().equals("handleQuit")) {
                                                                          (new Thread() { // needs to run in its own thread, for reasons i don't entirely understand.
@@ -980,7 +740,9 @@ public class XMenubar extends JMenuBar {
              */
             try {
                 Class appUtils = Class.forName("com.apple.mrj.MRJApplicationUtils");
-                Object prefsHandler = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(),
+//                Object prefsHandler = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(),
+                ClassLoader cl = Class.forName("corina.gui.XMenubar").getClassLoader();
+                Object prefsHandler = Proxy.newProxyInstance(cl, // appUtils.getClassLoader(),
                                                              new Class[] { Class.forName("com.apple.mrj.MRJPrefsHandler") },
                                                              new InvocationHandler() {
                                                                  public Object invoke(Object proxy, Method method, Object[] args) {
@@ -1001,48 +763,66 @@ public class XMenubar extends JMenuBar {
     // for XCorina (main window)
     public XMenubar() {
         // menu: file
-        XMenu file = new XMenu(msg.getString("file"));
-        if (!Platform.isMac)
-            file.setMnemonic(msg.getString("file_key").charAt(0));
+	JMenu file = Builder.makeMenu("file");
         addNewMenu(file);
         file.add(new XMenuItem(new XMenubar.Open()));
+	{
+	    JMenuItem browse = Builder.makeMenuItem("browse...");
+	    browse.addActionListener(new AbstractAction() {
+		    public void actionPerformed(ActionEvent e) {
+			new Browser();
+		    }
+		});
+	    file.add(browse);
+	}
         file.add(OpenRecent.makeOpenRecentMenu());
-
+        
         // Mac OS X already has a "Quit Corina" menuitem, under the
         // "Corina" menu.  unfortunately, it doesn't do everything my
         // Quit does, but that's another problem.
         if (!Platform.isMac) {
             file.addSeparator();
-            file.add(new XMenuItem(new Quit()));
+	    JMenuItem quit = Builder.makeMenuItem("quit");
+	    quit.addActionListener(new AbstractAction() {
+		    public void actionPerformed(ActionEvent e) {
+			XCorina.quit(); // this deals with unsaved documents, etc.
+		    }
+		});
+            file.add(quit);
         }
 
         // menu: edit.  (Mac has preferences under the app menu, so there's no reason.)
-        XMenu edit = null;
+	JMenu edit = null;
         if (!Platform.isMac) {
-            edit = new XMenu(msg.getString("edit"));
-            edit.setMnemonic(msg.getString("edit_key").charAt(0));
-            edit.add(new XMenuItem(new XMenubar.Preferences()));
+            edit = Builder.makeMenu("edit");
+
+	    JMenuItem prefs = Builder.makeMenuItem("preferences");
+	    prefs.addActionListener(new AbstractAction() {
+		    public void actionPerformed(ActionEvent e) {
+			PrefsDialog.showPreferences();
+		    }
+		});
+
+            edit.add(prefs);
         }
 
         // menu: cross
-        XMenu cross = new XMenu(msg.getString("crossdate"));
-        if (!Platform.isMac)
-            cross.setMnemonic(msg.getString("crossdate_key").charAt(0));
+        JMenu cross = Builder.makeMenu("crossdate");
         cross.add(new XMenuItem(new XMenubar.Cross1byN()));
         cross.add(new XMenuItem(new XMenubar.CrossNbyN()));
         cross.add(new XMenuItem(new XMenubar.Cross1by1()));
         cross.add(new XMenuItem(new XMenubar.CrossNby1()));
-        cross.add(new XMenuItem(new XMenubar.CrossSpiffy())); // the next-gen crosser!
+        cross.addSeparator();
+        // cross.add(new XMenuItem(new XMenubar.CrossSpiffy())); // the next-gen crosser!
+        cross.add(new XMenuItem(new XMenubar.CrossSuperSpiffy())); // the next-gen^2 crosser!
 
-        XMenu script = new XMenu("Script");
-        if (!Platform.isMac)
-            script.setMnemonic('S');
+	JMenu script = Builder.makeMenu("script");
         // script.add(Shell.makeShellMenuItem());
         script.add(new XMenuItem(new XMenubar.ShellWindow()));
         script.addSeparator();
         JMenuItem scripts[] = Shell.loadScripts();
         if (scripts.length == 0) {
-            JMenuItem blank = new XMenuItem("no scripts found");
+	    JMenuItem blank = Builder.makeMenuItem("no_scripts_found");
             blank.setEnabled(false);
             script.add(blank);
         }
@@ -1051,7 +831,7 @@ public class XMenubar extends JMenuBar {
                 script.add(scripts[i]);
 
         // menu: help
-        XMenu help = makeHelpMenu();
+        JMenu help = makeHelpMenu();
 
         // put them all together
         add(file);
@@ -1069,30 +849,128 @@ public class XMenubar extends JMenuBar {
         myFrame = me;
 
         // can print this document?
-        boolean canPrint = (me instanceof PrintableDocument) || (me instanceof Editor);
+        boolean canPrint = (me instanceof PrintableDocument);
 
         // menu: file
-        XMenu file = new XMenu(msg.getString("file"));
-        if (!Platform.isMac)
-            file.setMnemonic(msg.getString("file_key").charAt(0));
+	JMenu file = Builder.makeMenu("file");
         addNewMenu(file);
         file.add(new XMenuItem(new XMenubar.Open()));
+	{
+	    JMenuItem browse = Builder.makeMenuItem("browse...");
+	    browse.addActionListener(new AbstractAction() {
+		    public void actionPerformed(ActionEvent e) {
+			new Browser();
+		    }
+		});
+	    file.add(browse);
+	}
         file.add(OpenRecent.makeOpenRecentMenu());
         file.addSeparator();
-        file.add(new XMenuItem(new XMenubar.Close()));
-        file.add(new XMenuItem(new XMenubar.Save()));
-        file.add(new XMenuItem(new XMenubar.SaveAs()));
-        file.add(new XMenuItem(new XMenubar.Rename()));
-        if (myFrame instanceof Editor) // this belongs in Editor *only*
-            file.add(makeExportMenu());
-        file.addSeparator();
-        file.add(new XMenuItem(new XMenubar.PageSetup(canPrint)));
-        file.add(new XMenuItem(new XMenubar.Print(canPrint)));
+	{
+	    JMenuItem close = Builder.makeMenuItem("close");
+	    close.addActionListener(new AbstractAction() {
+		    public void actionPerformed(ActionEvent e) {
+			myFrame.close();
+		    }
+		});
+	    file.add(close);
+	}
+        {
+	    JMenuItem save = Builder.makeMenuItem("save");
+	    save.addActionListener(new AbstractAction() {
+		    public void actionPerformed(ActionEvent ae) {
+			if (myFrame instanceof SaveableDocument) {
+			    SaveableDocument doc = (SaveableDocument) myFrame;
 
+			    doc.save();
+			    OpenRecent.fileOpened(doc.getFilename());
+			}
+		    }
+		});
+	    file.add(save);
+	}
+        {
+	    JMenuItem saveAs = Builder.makeMenuItem("save_as");
+	    saveAs.addActionListener(new AbstractAction() {
+		    public void actionPerformed(ActionEvent ae) {
+			if (myFrame instanceof SaveableDocument) {
+			    // get new filename
+			    String filename;
+			    try {
+				filename = FileDialog.showSingle(msg.getString("save")); // TODO: need to call getText() on this?
+			    } catch (UserCancelledException uce) {
+				return;
+			    }
+
+			    // check for already-exists
+			    if (new File(filename).exists() && Overwrite.overwrite(filename))
+				return;
+
+			    // set filename
+			    ((SaveableDocument) myFrame).setFilename(filename);
+
+			    // save
+			    ((SaveableDocument) myFrame).save();
+			}
+		    }
+		});
+	    file.add(saveAs);
+	}
+        if (myFrame instanceof Editor) {
+	    JMenuItem export = Builder.makeMenuItem("export...");
+	    export.addActionListener(new AbstractAction() {
+		    public void actionPerformed(ActionEvent e) {
+			// get the sample
+			Sample s = ((Editor) myFrame).getSample();
+
+			// make an export dialog
+			new ExportDialog(s, myFrame);
+		    }
+		});
+	    file.add(export);
+	}
+        file.add(new XMenuItem(new XMenubar.Rename()));
+        file.addSeparator();
+        {
+	    JMenuItem setup = Builder.makeMenuItem("page_setup");
+	    setup.addActionListener(new AbstractAction() {
+		    public void actionPerformed(ActionEvent ae) {
+			// make printer job, if none exists yet
+			if (printJob == null)
+			    printJob = PrinterJob.getPrinterJob();
+
+			// get page format
+			pageFormat = printJob.pageDialog(pageFormat);
+		    }
+		});
+	    setup.setEnabled(canPrint);
+	    file.add(setup);
+	}
+        {
+	    JMenuItem printOne = Builder.makeMenuItem("print_one");
+	    printOne.addActionListener(new AbstractAction() {
+		    public void actionPerformed(ActionEvent e) {
+			tryToPrint(/* ask options = */ false);
+		    }
+		});
+	    printOne.setEnabled(canPrint);
+	    file.add(printOne);
+	}
+        {
+	    JMenuItem print = Builder.makeMenuItem("print");
+	    print.addActionListener(new AbstractAction() {
+		    public void actionPerformed(ActionEvent e) {
+			tryToPrint(/* ask options = */ true);
+		    }
+		});
+	    print.setEnabled(canPrint);
+	    file.add(print);
+	}
+                
         // menu: edit -- see below
 
         // menu: help
-        XMenu help = makeHelpMenu();
+        JMenu help = makeHelpMenu();
 
         // (i don't want to worry about menus being null, so just in case...)
         if (menus == null)
@@ -1103,15 +981,20 @@ public class XMenubar extends JMenuBar {
 
         // if the first menu is called "Edit", add "Preferences..." to the bottom.
         if (!Platform.isMac) {
+	    JMenuItem prefs = Builder.makeMenuItem("preferences");
+	    prefs.addActionListener(new AbstractAction() {
+		    public void actionPerformed(ActionEvent e) {
+			PrefsDialog.showPreferences();
+		    }
+		});
+
             if (menus.length >= 1 && menus[0].getText().equals(msg.getString("edit"))) { // ick!
                 menus[0].addSeparator();
-                menus[0].add(new XMenuItem(new XMenubar.Preferences()));
+                menus[0].add(prefs);
             } else {
                 // otherwise, make an edit menu, and give it "Preferences..."
-                XMenu edit = new XMenu(msg.getString("edit"));
-                if (!Platform.isMac)
-                    edit.setMnemonic(msg.getString("edit_key").charAt(0));
-                edit.add(new XMenuItem(new XMenubar.Preferences()));
+		JMenu edit = Builder.makeMenu("edit");
+                edit.add(prefs);
                 add(edit);
             }
         }
