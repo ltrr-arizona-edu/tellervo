@@ -235,7 +235,4 @@ public abstract class Cross implements Runnable {
 	// return the score
 	return compute(off_f, off_m);
     }
-
-    // this just plain sucks ...  fixme.
-    public abstract Histogram.Bucket[] getBuckets();
 }

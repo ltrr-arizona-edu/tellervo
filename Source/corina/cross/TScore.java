@@ -243,8 +243,5 @@ public class TScore extends Cross {
 	movingMean = mean(movingData);
     }
 
-    private static Histogram.Bucket buckets[] = Histogram.makeBuckets(0.00, 0.25, 5.00);
-    public Histogram.Bucket[] getBuckets() {
-	return buckets;
-    }
+    // histo was: 0.00, 0.25, 5.00
 }

@@ -94,24 +94,5 @@ public class Trend extends Cross {
 	return agree / (double) total;
     }
 
-    private static Histogram.Bucket buckets[] = Histogram.makeBuckets(0.00, 0.05, 1.00);
-
-	/* -- another (non-linear) way:
-	new Histogram.Bucket(0.00, 0.55),
-	new Histogram.Bucket(0.50, 0.55),
-	new Histogram.Bucket(0.55, 0.60),
-	new Histogram.Bucket(0.60, 0.65),
-	new Histogram.Bucket(0.65, 0.70),
-	new Histogram.Bucket(0.70, 0.75),
-	new Histogram.Bucket(0.75, 0.80),
-	new Histogram.Bucket(0.80, 0.85),
-	new Histogram.Bucket(0.85, 0.90),
-	new Histogram.Bucket(0.90, 0.95),
-	new Histogram.Bucket(0.95, 1.00),
-	*/
-
-    public Histogram.Bucket[] getBuckets() {
-	return buckets;
-    }
-
+    // histo was: 0.00, 0.05, 1.00
 }

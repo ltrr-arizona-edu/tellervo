@@ -80,8 +80,7 @@ public class CrossPrinter implements Printable {
 
     // the cross to print, and its histogram
     private Cross cross;
-    private Histogram h;
-    private Histogram.Bucket b[];
+    private Histogram histo;
 
     // pct formatter (not user-settable), for histogram only
     private DecimalFormat pctFmt = new DecimalFormat("0.0%");
@@ -100,18 +99,17 @@ public class CrossPrinter implements Printable {
 
     // a new crossdate printer
     public CrossPrinter(Cross c) {
-	cross = c;
-	h = new Histogram(c);
-	b = h.getBuckets();
+        cross = c;
+        histo = new Histogram(c);
 
-	// count some rows
-	scoreRows = c.range.getEnd().row() - c.range.getStart().row() + 1;
-	sigRows = c.highScores.size();
-	distroRows = cross.getBuckets().length;
-	totalRows = 1 + 2 + 1 + 1+scoreRows + 1 + 1+sigRows + 1 + 1+distroRows + 1;
+        // count some rows
+        scoreRows = c.range.getEnd().row() - c.range.getStart().row() + 1;
+        sigRows = c.highScores.size();
+        distroRows = histo.countBuckets();
+        totalRows = 1 + 2 + 1 + 1+scoreRows + 1 + 1+sigRows + 1 + 1+distroRows + 1;
 
-	// formatter
-	formatter = new DecimalFormat(cross.getFormat());
+        // formatter
+        formatter = new DecimalFormat(cross.getFormat());
     }
 
     // number of rows the last page we printed had.
@@ -329,38 +327,39 @@ public class CrossPrinter implements Printable {
 
     // n = 0 is title ("t-score, number, percent, histogram"), n>0 is row n-1
     void printDistro(int n) {
-	small();
-	float colWidth = (float) ((right - left) / 4.);
-	if (n == 0) {
-	    String headers[] = new String[] { cross.getName(), "Number", "Percent", "Histogram" };
-	    for (int i=0; i<headers.length; i++) {
-		drawStringRight(headers[i], left+colWidth*(i+1));
-	    }
-	} else {
-	    int row = n-1;
+        small();
+        float colWidth = (float) ((right - left) / 4.);
+        if (n == 0) {
+            String headers[] = new String[] { cross.getName(), "Number", "Percent", "Histogram" };
+            for (int i=0; i<headers.length; i++) {
+                drawStringRight(headers[i], left+colWidth*(i+1));
+            }
+        } else {
+            int row = n-1;
 
-	    // col 0: score
-	    String score = formatter.format(b[row].low) + " - " + formatter.format(b[row].high);
-	    g2.drawString(score, (float) left, (float) position+lineHeight());
+            // col 0: score
+            String score = histo.getRange(row);
+            g2.drawString(score, (float) left, (float) position+lineHeight());
 
-	    // col 1: number (right-aligned), but only if >0
-	    if (b[row].number > 0) {
-		String number = String.valueOf(b[row].number);
-		drawStringRight(number, left+colWidth*2);
+            // col 1: number (right-aligned), but only if >0
+            if (histo.getNumber(row) > 0) {
+                String number = String.valueOf(histo.getNumber(row));
+                drawStringRight(number, left+colWidth*2);
 
-		// col 2: percent (right-aligned?), but also only if >0
-		String pct = pctFmt.format(b[row].pct);
-		drawStringRight(pct, left+colWidth*3);
+                // col 2: percent (right-aligned?), but also only if >0
+                // -- we don't do pct any more
+                //String pct = pctFmt.format(b[row].pct);
+                //drawStringRight(pct, left+colWidth*3);
 
-		// col 3: histogram -- only if n>0?
-		int x = (int) (left + colWidth*3) + 72/4;
-		int y = (int) (position + lineHeight()); // not /2?  no, that's full  height, incl. leading, etc.  FIXME
-		int dx = (int) (((double) b[row].number / (double) cross.data.length) * (double) colWidth);
-		g2.drawLine(x, y, x+dx, y);
-	    }
-	}
+                // col 3: histogram -- only if n>0?
+                int x = (int) (left + colWidth*3) + 72/4;
+                int y = (int) (position + lineHeight()); // not /2?  no, that's full  height, incl. leading, etc.  FIXME
+                int dx = (int) (((double) histo.getNumber(row) / (double) cross.data.length) * (double) colWidth);
+                g2.drawLine(x, y, x+dx, y);
+            }
+        }
 
-	newLine();
+        newLine();
     }
 
     // used for "Fixed:" and "Moving:" labels at the top

@@ -20,64 +20,93 @@
 
 package corina.cross;
 
-/*
-  the histogram sucks.  everybody just uses makeBuckets().  there's no
-  "...above X" for open-ended crosses, like t-score.  and the
-  abstraction is all wrong.
-*/
+import java.text.DecimalFormat;
 
 public class Histogram {
+    // input
+    private double low, step, high;
 
-    public static class Bucket {
-	public double low, high;
-	public int number=0;
-	public double pct=0.0;
-	public Bucket(double low, double high) {
-	    this.low = low;
-	    this.high = high;
-	}
-    }
+    // output
+    private int buckets[];
 
-    // buckets
-    private Bucket[] buckets;
-
-    // create a histogram for an already-run cross
+    // better inteface: Histogram(String formatString, double[] data)
+    // Histogram(Cross) calls this(c.getFormat(), c.data)
     public Histogram(Cross c) {
-	// get buckets
-	buckets = c.getBuckets();
-
-	// number of scores
-	int n = c.data.length;
-
-	// fill the buckets
-	for (int i=0; i<n; i++) {
-
-	    // fits in which bucket?
-	    for (int j=0; j<buckets.length; j++) {
-		if (c.data[i] > buckets[j].low && c.data[i] <= buckets[j].high) {
-		    buckets[j].number++;
-		}
-	    }
-	}
-
-	// compute percentages
-	for (int i=0; i<buckets.length; i++)
-	    buckets[i].pct = (double) buckets[i].number / (double) n;
+        this(c.data, c.getFormat());
     }
+    private DecimalFormat fmt; // format string for values/scores
+    public Histogram(double data[], String fmt) {
+        // copy format string
+        this.fmt = new DecimalFormat(fmt);
 
-    public Bucket[] getBuckets() {
-        return buckets;
-    }
+        // number of inputs
+        int n = data.length;
 
-    public static Bucket[] makeBuckets(double low, double increment, double high) {
-        int n = (int) ((high-low) / increment);
-        Bucket b[] = new Bucket[n];
+        // number of buckets
+        int m = 30;
 
-        double l = low;
-        for (int i=0; i<n; i++) {
-            b[i] = new Bucket(l, l+increment);
-            l += increment;
+        // set it up -- just make 20 buckets for now
+        low = high = data[0];
+        for (int i=1; i<n; i++) {
+            low = Math.min(low, data[i]);
+            high = Math.max(high, data[i]);
         }
-        return b;
+        step = (high - low) / m;
+
+        // make the buckets
+        buckets = new int[m]; // all zero
+
+        // run it
+        for (int i=0; i<n; i++) {
+            // get the next val
+            double x = data[i];
+
+            // place it in the proper bucket -- POSSIBLE TO DO THIS WITHOUT LOOPING?  (divide?)
+            int target = (int) ((x - low) / step);
+            if (target == m) // ???
+                target = m-1;
+            buckets[target]++;
+            /*
+            int j;
+            for (j=0; j<m; j++) {
+                if ((low+step*j <= x) && (x <= low+step*(j+1))){
+                    buckets[j]++;
+                    break;
+                }
+            }
+            if (j==m)
+                System.out.println("didn't find a place for " + x);
+ */
+        }
+    }
+
+    // the number of entries in the fullest bucket.
+    // (don't bother remembering this; it's only used once.)
+    public int getFullestBucket() {
+        int n=buckets.length;
+        int max=0;
+        for (int i=0; i<n; i++)
+            max = Math.max(max, buckets[i]);
+        return max;
+    }
+
+    // there's PROBABLY no reason for bucket to be its own class,
+    // so here are some access-by-bucket methods.
+    // i can always refactor later if need be.
+
+    public int countBuckets() {
+        return buckets.length;
+    }
+    
+    public String getRange(int bucket) {
+        // make sure it's a legit bucket
+        if (bucket<0 || bucket>=buckets.length)
+            throw new ArrayIndexOutOfBoundsException();
+
+        // format it
+        return fmt.format(low+step*bucket) + " - " + fmt.format(low+step*(bucket+1));
+    }
+    public int getNumber(int bucket) {
+        return buckets[bucket];
     }
 }

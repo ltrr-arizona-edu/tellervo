@@ -101,12 +101,5 @@ public class Weiserjahre extends Cross {
 	return (double) synchroTrends / (double) totalSigs;
     }
 
-    private static Histogram.Bucket buckets[] = new Histogram.Bucket[] {
-	new Histogram.Bucket(0.0, 10.0),
-	// WRITE ME
-    };
-    public Histogram.Bucket[] getBuckets() {
-	return buckets;
-    }
-
+    // histo was: 0.0, 10.0 (?)
 }

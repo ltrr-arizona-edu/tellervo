@@ -150,8 +150,5 @@ public class DScore extends Cross {
         return (trend > 0.50 ? 100 * (trend - 0.50) * tscore : 0.0);
     }
 
-    private static Histogram.Bucket buckets[] = Histogram.makeBuckets(0.0, 2.5, 50.0);
-    public Histogram.Bucket[] getBuckets() {
-	return buckets;
-    }
+    // histo was: 0.0, 2.5, 50.0
 }

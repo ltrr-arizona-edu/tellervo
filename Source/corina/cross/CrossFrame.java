@@ -34,6 +34,7 @@ import corina.gui.HasPreferences;
 import corina.gui.Tree;
 import corina.gui.ButtonLayout;
 import corina.gui.DialogLayout;
+import corina.editor.CountRenderer;
 
 import java.io.IOException;
 
@@ -75,7 +76,7 @@ import javax.swing.table.TableCellRenderer;
 
 public class CrossFrame extends XFrame implements PrintableDocument, HasPreferences {
     // gui
-    private JTable scoresTable=null, sigsTable, histogram;
+    private JTable scoresTable=null, sigsTable, histoTable;
     private JTabbedPane tabPane;
     private JButton prevButton, nextButton, graphButton, mapButton, closeButton;
     private Timer timer;
@@ -86,6 +87,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
     // data
     private Sequence seq;
     private Cross cross=null;
+    private Histogram histo;
 
     // titles on top
     private JLabel fixedTitle;
@@ -134,13 +136,13 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 	    return 11;
 	}
 
-	/** Compute the year of a particular (row, col) cell.
-	    @param row the cell's row
-	    @param col the cell's column
-	    @return the Year of that cell */
-	protected Year getYear(int row, int col) {
-	    return new Year(10 * (row + row_min) + col - 1);
-	}
+        /** Compute the year of a particular (row, col) cell.
+            @param row the cell's row
+            @param col the cell's column
+            @return the Year of that cell */
+        protected Year getYear(int row, int col) {
+            return new Year(10 * (row + row_min) + col - 1); // REFACTOR: this looks really friggin familiar...
+        }
 
 	/** The value at a (row, col) location.  The crossdate score,
 	    except the lefthand column, which is the decade label.
@@ -207,7 +209,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 	    case 2: return msg.getString("moving") + " (" + c.moving.range + ")";
 	    case 3: return c.getName();
 	    case 4: return msg.getString("overlap");
-	    default: return null;
+	    default: return null; // never happens
 	    }
 	}
 
@@ -245,126 +247,98 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 	    case 2: return ((Score) c.highScores.get(row)).movingRange;
 	    case 3: return df.format(((Score) c.highScores.get(row)).score);
 	    case 4: return new Integer(((Score) c.highScores.get(row)).span);
-	    default: return null;
+	    default: return null; // never happens
 	    }
 	}
     }
 
-    public class CountRenderer extends JProgressBar implements TableCellRenderer {
-	public CountRenderer(int max) {
-	    // range is 0..max
-	    super(0, max);
+    public class HistogramTableModel extends AbstractTableModel {
+        public void formatChanged() {
+            // df = new DecimalFormat(c.getFormat());
+            // i'll still need this, but not sure what form it'll take.
+            // WRITEME?
+        }
 
-	    // on win32, this forces native pixel-granularity
-	    // progressbars -- otherwise they'd be chunky
-	    setStringPainted(true);
-	    setString("");
-	}
-	public Component getTableCellRendererComponent(JTable table,
-						       Object value,
-						       boolean isSelected, boolean hasFocus,
-						       int row, int column) {
-	    setValue(((Integer) value).intValue());
-	    return this;
-	}
-    }
+        /** The column name.  The columns are:
+        <ul>
+        <li>Score range (the column header is the name, like "T-Score")
+        <li># (number of scores in that range)
+        <li>Histogram (as a bar)
+        </ul>
+        @param col the column to query
+        @return the column's name */
+        public String getColumnName(int col) {
+            switch (col) {
+                case 0: return cross.getName();
+                case 1: return msg.getString("quantity");
+                case 2: return msg.getString("histogram");
+                default: return null; // never happens
+            }
+        }
 
-    public final class HistogramTableModel extends AbstractTableModel {
-	// the histogram to display; its cross
-	private Cross c;
-	private Histogram h;
-	private Histogram.Bucket b[];
+        /** The number of rows.
+        @return the number of rows */
+        public int getRowCount() {
+            return histo.countBuckets();
+        }
 
-	// formatters
-	private DecimalFormat df; // scores
-	private DecimalFormat pctFmt; // pct
+        /** The number of columns.
+        @return the number of columns */
+        public int getColumnCount() {
+            return 3;
+        }
 
-	/** Create a Tablemodel to display the significant scores of a
-	    given Cross.
-	    @param c the Cross to be displayed */
-	public HistogramTableModel(Cross c) {
-	    // copy data
-	    this.c = c;
-	    h = new Histogram(c);
-	    b = h.getBuckets();
+        /** The class of a given column.  This is used so the default
+        table renderer right-aligns Integers.
+        @param col the column to query
+        @return Class of this column's data */
+        public Class getColumnClass(int col) {
+            switch (col) {
+                case 0: return String.class;
+                case 1: return Integer.class;
+                case 2: return Integer.class;
+                default: return null; // never happens
+                                      // REFACTOR: use array lookup
+            }
+        }
 
-	    df = new DecimalFormat(c.getFormat());
-	    pctFmt = new DecimalFormat("0.0%");
-	}
+        /** The value at a (row, col) location.
+            @param row row number to query
+            @param col column number to query
+            @return the cell's value */
+        public Object getValueAt(int row, int col) {
+            // ICK: calling format all the time can't be great for preformance, especially with all the garbage from strings.
+            // there won't be many of these, so why not just make an array?  or compute in-place?
+            int n = histo.getNumber(row);
+            switch (col) {
+                case 0:
+                    return histo.getRange(row);
 
-	public void formatChanged() {
-	    df = new DecimalFormat(c.getFormat());
-	}
+                case 1:
+                    /*when*/ if (n == 0)
+                        return "";
+                    return new Integer(n);
 
-	/** The column name.  The columns are:
-	    <ul>
-	    <li>Score range
-	    <li>Number
-	    <li>Percent
-	    <li>Number (again, as a bar)
-	    </ul>
-	    @param col the column to query
-	    @return the column's name */
-	public String getColumnName(int col) {
-	    switch (col) {
-	    case 0: return c.getName();
-	    case 1: return msg.getString("quantity");
-	    case 2: return msg.getString("percent");
-	    case 3: return msg.getString("histogram");
-	    default: return null;
-	    }
-	}
+                case 2:
+                    return new Integer(n);
 
-	/** The number of rows.
-	    @return the number of rows */
-	public int getRowCount() {
-	    return b.length;
-	}
+                default:
+                    return null; // never happens
+                                 // possible solution: return thisrow[col]; -- no default needed!
 
-	/** The number of columns.
-	    @return the number of columns */
-	public int getColumnCount() {
-	    return 4;
-	}
-
-	/** The class of a given column.  This is used so the default
-	    table renderer right-aligns Integers.
-	    @param col the column to query
-	    @return Class of this column's data */
-	public Class getColumnClass(int col) {
-	    switch (col) {
-	    case 0: return String.class;
-	    case 1: return Integer.class;
-	    case 2: return String.class;
-	    case 3: return Integer.class;
-	    default: return null;
-	    }
-	}
-
-	/** The value at a (row, col) location.
-	    @param row row number to query
-	    @param col column number to query
-	    @return the cell's value */
-	public Object getValueAt(int row, int col) {
-	    if (c == null) // is this test needed?
-		return null;
-
-	    switch (col) {
-
-	    case 0: return df.format(b[row].low) + " - " + df.format(b[row].high);
-
-	    case 1:
-		if (b[row].number == 0)
-		    return null;
-	    case 3: // ... else ... (fall-through!)
-		return new Integer(b[row].number);
-
-	    case 2: return (b[row].number == 0 ? null : pctFmt.format(b[row].pct));
-
-	    default: return null;
-
-	    }
-	}
+                    // what i'll need to do this right:
+                    // -- new DecimalRenderer(String fmt) -- renders Numbers as decimals
+                    // (don't render non-Numbers, so the model can always send up "" to mean "blank")
+                    /*
+                     then this becomes:
+                     -- ouch, still can't render ranges that way.  oh well.
+                     case 0: return ...;
+                     case 1: return (n==0 ? "" : b[r].n);
+                     case 2: return (n==0 ? "" : b[r].pct); // DecRend
+                     case 3: return b[r].n; // CountRend
+                     */
+            }
+        }
     }
 
     // gui setup
@@ -395,94 +369,102 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         JPanel buttons = new JPanel(new ButtonLayout());
         getContentPane().add(buttons, BorderLayout.SOUTH);
         buttons.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // HACK!
-        
-	// prev
-	prevButton = new JButton(msg.getString("prev"),
-				 JarIcon.getJavaIcon("toolbarButtonGraphics/navigation/Back16.gif"));
-	prevButton.setMnemonic(msg.getString("prev_key").charAt(0));
-	prevButton.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // disable buttons during processing
-		    disableButtons();
 
-		    // get prev cross
-		    if (!seq.isFirst()) {
-			seq.prevPairing();
-			cross = seq.getCross();
-		    }
+        // prev
+        prevButton = new JButton(msg.getString("prev"),
+                                 JarIcon.getJavaIcon("toolbarButtonGraphics/navigation/Back16.gif"));
+        prevButton.setMnemonic(msg.getString("prev_key").charAt(0));
+        prevButton.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent ae) {
+                // disable buttons during processing
+                disableButtons();
 
-		    // run it in its own thread
-		    Thread thread = new Thread(cross);
-		    timer.start();
-		    thread.start();
-		}
-	    });
-	buttons.add(prevButton);
+                // get prev cross
+                if (!seq.isFirst()) {
+                    seq.prevPairing();
+                    try {
+                        cross = seq.getCross();
+                    } catch (IOException ioe) {
+                        // DEAL WITH ME
+                    }
+                }
 
-	// next
-	nextButton = new JButton(msg.getString("next"),
-				 JarIcon.getJavaIcon("toolbarButtonGraphics/navigation/Forward16.gif"));
-	nextButton.setMnemonic(msg.getString("next_key").charAt(0));
-	nextButton.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // disable buttons during processing
-		    disableButtons();
+                // run it in its own thread
+                Thread thread = new Thread(cross);
+                timer.start();
+                thread.start();
+            }
+        });
+        buttons.add(prevButton);
 
-		    // get next cross
-		    if (!seq.isLast()) {
-			seq.nextPairing();
-			cross = seq.getCross();
-		    }
+        // next
+        nextButton = new JButton(msg.getString("next"),
+                                 JarIcon.getJavaIcon("toolbarButtonGraphics/navigation/Forward16.gif"));
+        nextButton.setMnemonic(msg.getString("next_key").charAt(0));
+        nextButton.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent ae) {
+                // disable buttons during processing
+                disableButtons();
 
-		    // run it in its own thread
-		    Thread thread = new Thread(cross);
-		    timer.start();
-		    thread.start();
-		}
-	    });
-	buttons.add(nextButton);
+                // get next cross
+                if (!seq.isLast()) {
+                    seq.nextPairing();
+                    try {
+                        cross = seq.getCross();
+                    } catch (IOException ioe) {
+                        // DEAL WITH ME
+                    }
+                }
 
-	// graph
-	graphButton = new JButton(msg.getString("plot"));
-	graphButton.setMnemonic(msg.getString("plot_key").charAt(0));
-	graphButton.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // "significant scores" selected
-		    if (tabPane.getSelectedIndex() == 0) {
-			int nr = sigsTable.getSelectedRow(); // which cross to use
+                // run it in its own thread
+                Thread thread = new Thread(cross);
+                timer.start();
+                thread.start();
+            }
+        });
+        buttons.add(nextButton);
 
-			// error-checking! -- make sure user picked something
-			if (nr == -1) {
-			    JOptionPane.showMessageDialog(null,
-							  msg.getString("selecterror"),
-							  msg.getString("error"),
-							  JOptionPane.ERROR_MESSAGE);
-			    return;
-			}
+        // graph
+        graphButton = new JButton(msg.getString("plot"));
+        graphButton.setMnemonic(msg.getString("plot_key").charAt(0));
+        graphButton.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent ae) {
+                // "significant scores" selected
+                if (tabPane.getSelectedIndex() == 0) {
+                    int nr = sigsTable.getSelectedRow(); // which cross to use
 
-			// get year (== moving sample end-year) for this row
-			Year y = ((Score) cross.highScores.get(nr)).movingRange.getEnd();
+                    // error-checking! -- make sure user picked something
+                    if (nr == -1) {
+                        JOptionPane.showMessageDialog(null,
+                                                      msg.getString("selecterror"),
+                                                      msg.getString("error"),
+                                                      JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
-			// new cross at this offset
-			new GraphFrame(cross, y);
+                    // get year (== moving sample end-year) for this row
+                    Year y = ((Score) cross.highScores.get(nr)).movingRange.getEnd();
 
-		    // "all scores" selected
-		    } else {
-			int r = scoresTable.getSelectedRow();
-			int c = scoresTable.getSelectedColumn();
-			if (r==-1 || c==-1) {
-			    JOptionPane.showMessageDialog(null,
-							  msg.getString("selecterror"),
-							  msg.getString("error"),
-							  JOptionPane.ERROR_MESSAGE);
-			    return;
-			}
-			Year y = ((CrossTableModel) scoresTable.getModel()).getYear(r, c);
-			new GraphFrame(cross, y);
-		    }
-		}
-	    });
-	buttons.add(graphButton);
+                    // new cross at this offset
+                    new GraphFrame(cross, y);
+
+                    // "all scores" selected
+                } else {
+                    int r = scoresTable.getSelectedRow();
+                    int c = scoresTable.getSelectedColumn();
+                    if (r==-1 || c==-1) {
+                        JOptionPane.showMessageDialog(null,
+                                                      msg.getString("selecterror"),
+                                                      msg.getString("error"),
+                                                      JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    Year y = ((CrossTableModel) scoresTable.getModel()).getYear(r, c);
+                    new GraphFrame(cross, y);
+                }
+            }
+        });
+        buttons.add(graphButton);
 
 	// map (!)
 	mapButton = new JButton(msg.getString("map"));
@@ -592,9 +574,9 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         sigsTable.setModel(new CrossSigsTableModel(cross));
         sigsTable.getColumnModel().getColumn(0).setPreferredWidth(24); // number column is too big
         sigsTable.getColumnModel().getColumn(0).setMaxWidth(36);
-        histogram.setModel(new HistogramTableModel(cross));
-        histogram.getColumnModel().getColumn(3).setCellRenderer(new CountRenderer(cross.data.length));
-        // => max(buckets[].count) would be better
+        histo = new Histogram(cross);
+        histoTable.setModel(new HistogramTableModel());
+        histoTable.getColumnModel().getColumn(2).setCellRenderer(new CountRenderer(histo.getFullestBucket()));
 
         // select highest score
         selectHighest();
@@ -772,11 +754,12 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 		}
 	    });
 
-	// histogram
-	histogram = new JTable(new HistogramTableModel(cross));
-	histogram.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	histogram.getColumnModel().getColumn(3).setCellRenderer(new CountRenderer(cross.data.length));
-	// => max(buckets[].count) would be better
+        // histogram
+        histo = new Histogram(cross);
+        histoTable = new JTable(new HistogramTableModel());
+        histoTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        histoTable.getColumnModel().getColumn(2).setCellRenderer(new CountRenderer(histo.getFullestBucket()));
+        histoTable.getTableHeader().setReorderingAllowed(false);
 
 	// set preference-able stuff
 	refreshFromPreferences();
@@ -784,7 +767,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 	// stuff tables into tabs
 	tabPane.addTab(msg.getString("sig_scores"), new JScrollPane(sigsTable));
 	tabPane.addTab(msg.getString("all_scores"), new JScrollPane(scoresTable));
-	tabPane.addTab(msg.getString("score_distro"), new JScrollPane(histogram));
+	tabPane.addTab(msg.getString("score_distro"), new JScrollPane(histoTable));
 
 	// label
 	setTitle(cross.toString());
@@ -796,34 +779,40 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
     }
 
     private void disableButtons() {
-	prevButton.setEnabled(false);
-	nextButton.setEnabled(false);
-	graphButton.setEnabled(false);
+        prevButton.setEnabled(false);
+        nextButton.setEnabled(false);
+        graphButton.setEnabled(false);
     }
 
     /** Create a crossdate for a given Sequence.
 	@param s the Sequence to display */
     public CrossFrame(Sequence s) {
-	// copy data
-	seq = s;
-	cross = seq.getCross();
+        // REFACTOR: the getCross(), disableButtons(), start()/start() exists in several places.
 
-	// init gui (incl. timer)
-	initGui();
+        // copy data
+        seq = s;
+        try {
+            cross = seq.getCross();
+        } catch (IOException ioe) {
+            // DEAL WITH ME
+        }
 
-	// menubar: in testing
-	setJMenuBar(new XMenubar(this, null));
+        // init gui (incl. timer)
+        initGui();
 
-	// run cross
-	Thread thread = new Thread(cross);
-	disableButtons();
-	timer.start();
-	thread.start();
+        // menubar: in testing
+        setJMenuBar(new XMenubar(this, null));
 
-	// show
-	pack();
-	setSize(new Dimension(640, 480));
-	show();
+        // run cross
+        Thread thread = new Thread(cross);
+        disableButtons();
+        timer.start();
+        thread.start();
+
+        // show
+        pack();
+        setSize(new Dimension(640, 480));
+        show();
     }
 
     public void refreshFromPreferences() {
@@ -842,10 +831,10 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 	    Font f = Font.getFont("corina.cross.font");
 	    scoresTable.setFont(f);
 	    sigsTable.setFont(f);
-	    histogram.setFont(f);
+	    histoTable.setFont(f);
 	    scoresTable.setRowHeight(f.getSize() + 3);
 	    sigsTable.setRowHeight(f.getSize() + 3);
-	    histogram.setRowHeight(f.getSize() + 3);
+	    histoTable.setRowHeight(f.getSize() + 3);
 	}
 
 	// colors
