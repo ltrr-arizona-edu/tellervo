@@ -28,7 +28,7 @@ import corina.Weiserjahre;
 import corina.files.TwoColumn;
 import corina.site.Site;
 import corina.site.SiteDB;
-import corina.site.SiteProperties;
+import corina.site.SiteInfo;
 import corina.site.SiteNotFoundException;
 import corina.map.MapFrame;
 import corina.graph.GraphFrame;
@@ -42,6 +42,7 @@ import corina.manip.Reverse;
 import corina.manip.Sum;
 import corina.manip.Clean;
 import corina.manip.Reconcile;
+import corina.manip.ReconcileDialog;
 import corina.gui.XFrame;
 import corina.gui.WindowMenu;
 import corina.gui.FileDialog;
@@ -49,6 +50,7 @@ import corina.gui.UserCancelledException;
 import corina.gui.ElementsPanel;
 import corina.gui.HasPreferences;
 import corina.gui.SaveableDocument;
+import corina.gui.PrintableDocument;
 import corina.gui.XMenubar;
 import corina.gui.Bug;
 import corina.prefs.Prefs;
@@ -56,6 +58,9 @@ import corina.files.WrongFiletypeException;
 import corina.util.PureStringWriter;
 import corina.util.TextClipboard;
 import corina.util.Platform;
+import corina.util.Overwrite;
+import corina.print.Printer;
+import corina.ui.Builder;
 
 import java.io.File;
 import java.io.StringWriter;
@@ -79,11 +84,14 @@ import java.awt.BorderLayout;
 import java.awt.Event;
 import java.awt.Toolkit;
 import java.awt.event.*;
-import java.awt.print.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.undo.UndoManager;
 import java.awt.datatransfer.*;
+
+import java.awt.print.PageFormat;
+import java.awt.print.Pageable;
+import java.awt.print.Printable;
 
 /*
   change around the menus slightly:
@@ -147,7 +155,7 @@ import java.awt.datatransfer.*;
 */
 
 public class Editor extends XFrame
-                 implements SaveableDocument, HasPreferences, SampleListener {
+                 implements SaveableDocument, HasPreferences, SampleListener, PrintableDocument {
 
     // gui
     private JTable wjTable;
@@ -195,7 +203,7 @@ public class Editor extends XFrame
     private Sample sample;
 
     // i18n
-    private ResourceBundle msg = ResourceBundle.getBundle("EditorBundle");
+    private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // BUG: measureMenu gets enabled/disabled here, when it's status
     // should be the AND of what editor thinks and what measure
@@ -249,11 +257,11 @@ public class Editor extends XFrame
 	    if (!sample.hasWeiserjahre())
 		rolodex.remove(wjPanel);
 	    else if (rolodex.indexOfComponent(wjPanel) == -1)
-		rolodex.add(wjPanel, msg.getString("weiserjahre"));
+		rolodex.add(wjPanel, msg.getString("tab_weiserjahre"));
 	    if (sample.elements == null)
 		rolodex.remove(elemPanel);
 	    else if (rolodex.indexOfComponent(elemPanel) == -1)
-		rolodex.add(elemPanel, msg.getString("elements"));
+		rolodex.add(elemPanel, msg.getString("tab_elements"));
 	}
     }
     public void sampleElementsChanged(SampleEvent e) { }
@@ -272,17 +280,57 @@ public class Editor extends XFrame
 	return (String) sample.meta.get("filename");
     }
     public String getDocumentTitle() {
-	String fn = getFilename();
-	if (fn == null)
-	    return (String) sample.meta.get("title");
-	else
-	    return fn;
+        String fn = getFilename();
+        if (fn != null) {
+            int lastSlash = fn.lastIndexOf(File.separatorChar);
+            if (lastSlash != -1)
+                fn = fn.substring(lastSlash+1);
+            return fn;
+        } else {
+            return (String) sample.meta.get("title");
+        }
     }
     public void save() {
+        // make sure user isn't editing
+        ((SampleDataView) dataView).stopEditing();
+
+        // make sure they're all numbers -- no nulls, strings, etc.
+        // abstract this out as "boolean verifyOnlyNumbers()" or something?
+        for (int i=0; i<sample.data.size(); i++) {
+            Object o = sample.data.get(i);
+            if (o==null || !(o instanceof Integer)) { // integer?  or number?
+                JOptionPane.showMessageDialog(this,
+                                              "One or more years had bad (non-numeric) data, or no data:\n" +
+                                              "- year " + sample.range.getStart().add(i) + " has " + (o==null ? "no value" : "value " + o),
+                                              "Bad Data",
+                                              JOptionPane.ERROR_MESSAGE);
+                return;
+                // BUG: return failure.  how?  UserCancelled
+            }
+        }
+
         // get filename from sample; fall back to user's choice
         String filename = (String) sample.meta.get("filename");
         if (filename == null) {
 
+            // make sure metadata was entered
+            if (!sample.wasMetadataChanged()) {
+                int x = JOptionPane.showOptionDialog(this,
+                                                      "You didn't set the metadata!",
+                                                      "Metadata Untouched",
+                                                      JOptionPane.YES_NO_OPTION,
+                                                      JOptionPane.QUESTION_MESSAGE,
+                                                      null, // no icon
+                                                      new String[] { "Save Anyway", "Cancel"},
+                                                      null); // default
+                if (x == 1) {
+                    // show metadata tab, and abort.
+                    rolodex.setSelectedIndex(1);
+                    return; // user cancelled!
+                }
+            }
+
+            // get target filename
             try {
                 filename = corina.gui.FileDialog.showSingle("Save");
             } catch (UserCancelledException uce) {
@@ -290,21 +338,8 @@ public class Editor extends XFrame
             }
 
             // check for already-exists -- DUPLICATE CODE, REFACTOR
-            {
-                if (new File(filename).exists()) {
-                    int x = JOptionPane.showOptionDialog(null,
-                                                         "A file called \"" + filename + "\"\n" +
-                                                         "already exists; overwrite it with this data?",
-                                                         "Already Exists",
-                                                         JOptionPane.YES_NO_OPTION,
-                                                         JOptionPane.QUESTION_MESSAGE,
-                                                         null, // icon
-                                                         new Object[] { "Overwrite", "Cancel" }, // good, explicit commands
-                                                         null); // default
-                    if (x == 1) // cancel
-                        return; // should return FAILURE -- how?
-                }
-            }
+            if (new File(filename).exists() && !Overwrite.overwrite(filename))
+                return; // BUG: should return FAILURE -- how?  UserCancelled
             sample.meta.put("filename", filename);
         }
 
@@ -326,6 +361,10 @@ public class Editor extends XFrame
         }
 
         sample.clearModified();
+        Platform.setModified(this, false); // mac os x
+                                           // BIGGER ISSUE: need to separate/abstract window-title/window-modified setting
+        // -- make window (jframe) a samplelistener for updating platform.modified?
+        // -- (platform.modified sets either mac property, or resets *+title from getTitle()?)
         updateTitle();
     }
 
@@ -377,15 +416,15 @@ public class Editor extends XFrame
     }
 
     private void initMetaView() {
-	metaView = new SampleMetaView(sample); // SampleMeta2View is a work-in-progress
-	sample.addSampleListener((SampleListener) metaView);
+        metaView = new SampleMetaView(sample, this); // SampleMeta2View is a work-in-progress
+        sample.addSampleListener((SampleListener) metaView);
     }
 
     private void initElemPanel() {
-	if (sample.elements != null) {
-	    elemPanel = new ElementsPanel(this);
-	    sample.addSampleListener(elemPanel);
-	}
+        if (sample.elements != null) {
+            elemPanel = new ElementsPanel(this);
+            sample.addSampleListener(elemPanel);
+        }
     }
 
     private void addCards() {
@@ -393,14 +432,14 @@ public class Editor extends XFrame
 	rolodex.removeAll();
 
 	// all samples get data, meta
-	rolodex.add(dataView = new SampleDataView(sample), msg.getString("data"));
-	rolodex.add(metaView, msg.getString("metadata"));
+	rolodex.add(dataView = new SampleDataView(sample), msg.getString("tab_data"));
+	rolodex.add(metaView, msg.getString("tab_metadata"));
 
 	// wj and elements, if it's summed
 	if (sample.hasWeiserjahre())
-	    rolodex.add(wjPanel, msg.getString("weiserjahre"));
+	    rolodex.add(wjPanel, msg.getString("tab_weiserjahre"));
 	if (sample.elements != null)
-	    rolodex.add(elemPanel, msg.getString("elements"));
+	    rolodex.add(elemPanel, msg.getString("tab_elements"));
     }
 
     private void initRolodex() {
@@ -437,14 +476,17 @@ public class Editor extends XFrame
 
     // ask the user for a title for this (new) sample.  it's guaranteed to have a number, now!
     private String askTitle() throws UserCancelledException {
-        String title="";
+        return askTitle("");
+    }
+    private String askTitle(String defaultText) throws UserCancelledException {
+        String title=defaultText;
         for (;;) {
             title = (String) JOptionPane.showInputDialog(null, // parent component
-                                                         msg.getString("new_sample_prompt"),
-                                                         msg.getString("new_sample"),
+                                                         msg.getString("new_sample_prompt"), // message
+                                                         msg.getString("new_sample"), // title
                                                          JOptionPane.QUESTION_MESSAGE,
-                                                         null, // todo: document these nulls!
-                                                         null,
+                                                         null, // icon
+                                                         null, // values (options)
                                                          title);
 
             // user cancelled?
@@ -470,6 +512,25 @@ public class Editor extends XFrame
         String title;
         try {
             title = askTitle();
+        } catch (UserCancelledException uce) {
+            dispose();
+            return;
+        }
+
+        // make dataset ref, with our title
+        sample = new Sample();
+        sample.meta.put("title", title);
+
+        // pass
+        setup();
+    }
+
+    // new sample for site
+    public Editor(Site s) {
+        // ask user for title
+        String title;
+        try {
+            title = askTitle(s.getName() + " ");
         } catch (UserCancelledException uce) {
             dispose();
             return;
@@ -519,11 +580,41 @@ public class Editor extends XFrame
         // pack, size, and show
         pack(); // is this needed?
         setSize(new Dimension(640, 480));
-        show();
+	show();
+
+	/*
+	// strategy: keep going down, until it would go off-screen, then start again.
+	// -- unless there's somewhere else the user would like it (save bounds in file?)
+	if (base == null) {
+	    show();
+	    doffset = getContentPane().getLocationOnScreen().y - getLocationOnScreen().y;
+	    base = getLocationOnScreen();
+	    // System.out.println("doffset = " + doffset);
+	} else {
+	    Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+	    setLocation(new java.awt.Point(base.x+offset, base.y+offset));
+	    show(); // BUG!  don't show until i've made sure it's where i want it!
+	    if (getBounds().x + getBounds().width > screen.width ||
+		getBounds().y + getBounds().height > screen.height) {
+		setLocation(new java.awt.Point(0, 0));
+		offset = doffset;
+	    } else {
+		offset += doffset;
+	    }
+	    // show();
+	}
+	*/
 
         // datatable gets initial focus, and select year 1001
         dataView.requestFocus();
     }
+
+    // bump windows down by this much
+    /*
+      private static int offset = 0; // _next_ window by this much
+    private static java.awt.Point base = null;
+    private static int doffset = 0; // height of the titlebar (i'll compute this at runtime)
+    */
 
     // measure-mode menu
     private JMenuItem measureMenu=null;
@@ -531,8 +622,7 @@ public class Editor extends XFrame
     // menus for XMenubar constuctor
     private JMenu[] makeMenus() {
 	// edit menu
-	JMenu edit = new XMenubar.XMenu(msg.getString("edit"),
-					msg.getString("edit_key").charAt(0));
+	JMenu edit = Builder.makeMenu("edit");
 
 	// undo
 	undoMenu = new XMenubar.XMenuItem(msg.getString("cant_undo"));
@@ -566,11 +656,14 @@ public class Editor extends XFrame
         edit.add(cut);
 
         // copy: put all data unto clipboard in 2-column format
-        JMenuItem copy = new XMenubar.XMenuItem("Copy");
-        copy.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize("control C")));
+        // JMenuItem copy = new XMenubar.XMenuItem("Copy"); // i18n!  use Builder!
+        // copy.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize("control C"))); // accel C!
+	JMenuItem copy = Builder.makeMenuItem("copy");
         copy.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 try {
+		    // REFACTOR: extract method -- but to where?
+
                     // save this sample, in 2-col format, to a string
                     PureStringWriter w = new PureStringWriter(10 * glue7.data.size());
                     new TwoColumn(w).save(glue7);
@@ -578,7 +671,7 @@ public class Editor extends XFrame
                     // copy that string to the clipboard
                     TextClipboard.copy(w.toString());
                 } catch (IOException ioe) {
-                    // can't happen
+		    // can't happen -- it's i/o to memory, not a real i/o device
                 }
             }
         });
@@ -703,10 +796,7 @@ public class Editor extends XFrame
         }
 
 	// view menu
-	JMenu v = new XMenubar.XMenu(msg.getString("view"),
-				     msg.getString("view_key").charAt(0));
-
-	ButtonGroup bg = new ButtonGroup();
+	JMenu v = Builder.makeMenu("view");
 
 	/*
 	  this should be:
@@ -721,6 +811,9 @@ public class Editor extends XFrame
 	  Elements by Summary Fields
 	  Elements by All Fields
 	  ---
+	* Show Count as Histogram
+	  Show Count as Numbers
+	  ---
          Font >
          Size >
          (Style >)
@@ -733,6 +826,8 @@ public class Editor extends XFrame
 
          (global means i'll need more references like open-recent.  abstract that out somehow?  GlobalMenu?  GlobalMenuItem?)
 	 */
+
+	ButtonGroup bg = new ButtonGroup();
 
 	v1 = new XMenubar.XRadioButtonMenuItem(msg.getString("view_filenames"));
 	v1.addActionListener(new AbstractAction() {
@@ -763,9 +858,40 @@ public class Editor extends XFrame
 
 	v1.setSelected(true);
 
+	ButtonGroup bg2 = new ButtonGroup();
+
+	/* TODO:
+	   -- implement a new renderer for numbers-only (medium)
+	   -- add hooks so these menuitems change renderers (easy)
+	   -- (remember what renderer you used, as a hidden pref?) (easy)
+	   -- these items are undimmed iff the sample has a nonnull .count field (easy)
+	 */
+
+	JMenuItem vc1 = new XMenubar.XRadioButtonMenuItem(msg.getString("view_histogram"));
+	vc1.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    // WRITE ME
+		    System.out.println("view histogram");
+		}
+	    });
+
+	JMenuItem vc2 = new XMenubar.XRadioButtonMenuItem(msg.getString("view_numbers"));
+	vc2.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    // WRITE ME
+		    System.out.println("view numbers");
+		}
+	    });
+
+	bg2.add(vc1);
+	bg2.add(vc2);
+	v.addSeparator();
+	v.add(vc1);
+	v.add(vc2);
+	vc1.setSelected(true);
+
 	// manipulate menu
-	final JMenu s = new XMenubar.XMenu(msg.getString("manip"),
-					   msg.getString("manip_key").charAt(0));
+	final JMenu s = Builder.makeMenu("manip");
 
 	// manip, until now, was simply a catch-all for random stuff people wanted to do to samples.
 	// make it an interface for operating on samples, so redate/truncate/index know that they're
@@ -813,7 +939,7 @@ public class Editor extends XFrame
 
 	// redate
 	final Editor glue = this;
-	JMenuItem redate = new XMenubar.XMenuItem(msg.getString("redate"),
+	JMenuItem redate = new XMenubar.XMenuItem(msg.getString("redate..."),
 						  msg.getString("redate_key").charAt(0));
 	// redate.setAccelerator(KeyStroke.getKeyStroke(msg.getString("redate_acc")));
 	// control-R, etc., are grabbed by the table -- agH!
@@ -825,7 +951,7 @@ public class Editor extends XFrame
 	s.add(redate);
 
 	// index
-	indexMenu = new XMenubar.XMenuItem(msg.getString("index"),
+	indexMenu = new XMenubar.XMenuItem(msg.getString("index..."),
 					   msg.getString("index_key").charAt(0));
 	// indexMenu.setAccelerator(KeyStroke.getKeyStroke(msg.getString("index_acc")));
 	indexMenu.addActionListener(new AbstractAction() {
@@ -836,33 +962,33 @@ public class Editor extends XFrame
 	indexMenu.setEnabled(!sample.isIndexed());
 	s.add(indexMenu);
 
-	// truncate
-	JMenuItem truncate = new XMenubar.XMenuItem(msg.getString("truncate"),
-						    msg.getString("truncate_key").charAt(0));
-	// truncate.setAccelerator(KeyStroke.getKeyStroke(msg.getString("truncate_acc")));
-	truncate.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    new TruncateDialog(sample, glue);
-		}
-	    });
-	s.add(truncate);
+    // truncate
+    JMenuItem truncate = new XMenubar.XMenuItem(msg.getString("truncate..."),
+                                                msg.getString("truncate_key").charAt(0));
+    // truncate.setAccelerator(KeyStroke.getKeyStroke(msg.getString("truncate_acc")));
+    truncate.addActionListener(new AbstractAction() {
+        public void actionPerformed(ActionEvent ae) {
+            new TruncateDialog(sample, glue);
+        }
+    });
+    s.add(truncate);
 
-	// reverse
-	reverseMenu = new XMenubar.XMenuItem(msg.getString("reverse"),
-					     msg.getString("reverse_key").charAt(0));
-	reverseMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // reverse, and add to the undo-stack
-		    sample.postEdit(Reverse.reverse(sample));
-		}
-	    });
-        s.add(reverseMenu);
-    
-	// ---
-	s.addSeparator();
+    // reverse
+    reverseMenu = new XMenubar.XMenuItem(msg.getString("reverse"),
+                                         msg.getString("reverse_key").charAt(0));
+    reverseMenu.addActionListener(new AbstractAction() {
+        public void actionPerformed(ActionEvent ae) {
+            // reverse, and add to the undo-stack
+            sample.postEdit(Reverse.reverse(sample));
+        }
+    });
+    s.add(reverseMenu);
+
+    // ---
+    s.addSeparator();
 
     // cross
-    JMenuItem crossAgainst = new XMenubar.XMenuItem(msg.getString("cross_against"),
+    JMenuItem crossAgainst = new XMenubar.XMenuItem(msg.getString("cross_against..."),
                                                     msg.getString("cross_against_key").charAt(0));
     // crossAgainst.setAccelerator(KeyStroke.getKeyStroke(msg.getString("cross_against_acc")));
     crossAgainst.addActionListener(new AbstractAction() {
@@ -873,7 +999,13 @@ public class Editor extends XFrame
 
                 // (note also the Peter-catcher: see XMenubar.java)
 
-                new CrossFrame(new Sequence(Collections.singletonList(getFilename()), ss));
+                // fix for bug 228: filename may be null, and sequence uses it to hash,
+                // so let's make up a fake filename that can't be a real filename.
+                String filename = getFilename();
+                if (filename == null)
+                    filename = "\u011e"; // this can't begin a word!
+                
+                new CrossFrame(new Sequence(Collections.singletonList(filename), ss));
             } catch (UserCancelledException uce) {
                 // do nothing
             }
@@ -914,7 +1046,8 @@ public class Editor extends XFrame
 
             try {
                 // reconcile this and target
-                Reconcile r = new Reconcile(sample, new Sample(target));
+		new ReconcileDialog(sample, new Sample(target)); // IN TESTING!
+		/*                Reconcile r = new Reconcile(sample, new Sample(target));
                 r.run();
 
                 // report it
@@ -925,6 +1058,7 @@ public class Editor extends XFrame
                 myFrame.getContentPane().add(new JScrollPane(text), BorderLayout.CENTER);
                 myFrame.setSize(new Dimension(500, 400));
                 myFrame.show();
+*/
             } catch (IOException ioe) {
                 return; // ack!
             } catch (Exception ex) {
@@ -953,7 +1087,7 @@ public class Editor extends XFrame
     s.add(reconcile);
 
 	// master menu
-	JMenu m = new XMenubar.XMenu("Sum", 'S');
+	JMenu m = Builder.makeMenu("sum");
 
 	// re-sum
 	resumMenu = new XMenubar.XMenuItem(msg.getString("resum"),
@@ -1040,7 +1174,10 @@ public class Editor extends XFrame
             // modified, and update
             sample.setModified();
             sample.fireSampleElementsChanged();
-            sample.fireSampleMetadataChanged(); // so title gets updated (modified-flag)
+            if (!Platform.isMac)
+                sample.fireSampleMetadataChanged(); // so title gets updated (modified-flag)
+            else
+                Platform.setModified(glue, true);
         }
     });
     m.add(addMenu);
@@ -1055,8 +1192,7 @@ public class Editor extends XFrame
 	m.add(remMenu);
 
 	// graph menu
-	JMenu d = new XMenubar.XMenu(msg.getString("graph"),
-				     msg.getString("graph_key").charAt(0));
+	JMenu d = Builder.makeMenu("graph");
 
     // plot
     JMenuItem plotMenu = new XMenubar.XMenuItem(msg.getString("graph"),
@@ -1072,7 +1208,8 @@ public class Editor extends XFrame
 	// plot all
 	plotAll = new XMenubar.XMenuItem(msg.getString("graph_elements"),
 					 msg.getString("graph_elements_key").charAt(0));
-	plotAll.addActionListener(new AbstractAction() {
+    plotAll.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize(msg.getString("graph_elements_acc"))));
+    plotAll.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    new GraphFrame(sample.elements);
 		}
@@ -1094,7 +1231,7 @@ public class Editor extends XFrame
 	d.add(bargraphAll);
 
     // site
-    JMenu ss = new XMenubar.XMenu("Site");
+    JMenu ss = Builder.makeMenu("site");
 
     // map
     JMenuItem map = new XMenubar.XMenuItem(msg.getString("map"),
@@ -1113,8 +1250,6 @@ public class Editor extends XFrame
                                               "Couldn't find a site for this sample.",
                                               "No Site Found",
                                               JOptionPane.ERROR_MESSAGE);
-            } catch (IOException ioe) {
-                // bugger all, what to do?
             } catch (Exception e) {
                 Bug.bug(e);
             }
@@ -1131,7 +1266,7 @@ public class Editor extends XFrame
                 Site mySite = SiteDB.getSiteDB().getSite(sample);
 
                 // show props
-                SiteProperties.showProperties(mySite);
+                SiteInfo.showInfo(mySite);
             } catch (SiteNotFoundException snfe) {
                 JOptionPane.showMessageDialog(null,
                                               "Couldn't find a site for this sample.",
@@ -1194,5 +1329,21 @@ public class Editor extends XFrame
     //
     public void measured(int x) {
 	((SampleDataView) dataView).measured(x);
+    }
+
+    // printing
+    public String getPrintTitle() {
+	return getTitle();
+    }
+    public Pageable makePageable(PageFormat format) {
+	return null;
+    }
+    public Printable makePrintable(PageFormat format) { // what to do with |format| here?
+	//    return new SamplePrinter(sample);
+	SamplePrinter printer = new SamplePrinter(sample);
+	return Printer.print(printer);
+    }
+    public int getPrintingMethod() {
+	return PRINTABLE;
     }
 }
