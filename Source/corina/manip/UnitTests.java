@@ -42,7 +42,7 @@ public class UnitTests extends TestCase {
     //
     public void testClean() {
 	try {
-	    Sample s = new Sample("../Demo Data/chil001.crn");
+	    Sample s = new Sample("Demo Data/chil/chil001.crn");
 	    UndoableEdit undo = Clean.clean(s);
 	    assertEquals(s.incr, null);
 	    assertEquals(s.decr, null);
@@ -69,10 +69,10 @@ public class UnitTests extends TestCase {
     //
     public void testSum() {
 	try {
-	    Element e1 = new Element("../Demo Data/chil001.crn");
-	    Element e2 = new Element("../Demo Data/chil002.crn");
-	    Element e3 = new Element("../Demo Data/chil006.crn");
-	    Element e4 = new Element("../Demo Data/chil007.crn");
+	    Element e1 = new Element("Demo Data/chil/chil001.crn");
+	    Element e2 = new Element("Demo Data/chil/chil002.crn");
+	    Element e3 = new Element("Demo Data/chil/chil006.crn");
+	    Element e4 = new Element("Demo Data/chil/chil007.crn");
 	    List l = new ArrayList();
 	    l.add(e1);
 	    l.add(e2);
