@@ -213,73 +213,73 @@ public class TruncateDialog extends JDialog {
         p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
         setContentPane(p);
-        
-	// the big panel
-	JPanel pri = new JPanel();
-	pri.setLayout(new BoxLayout(pri, BoxLayout.Y_AXIS));
-	p.add(pri, BorderLayout.CENTER);
 
-	// secondary panel: start | end
-	JPanel sec = new JPanel();
-	sec.setLayout(new BoxLayout(sec, BoxLayout.X_AXIS));
+        // the big panel
+        JPanel pri = new JPanel();
+        pri.setLayout(new BoxLayout(pri, BoxLayout.Y_AXIS));
+        p.add(pri, BorderLayout.CENTER);
 
-	// start panel
-	JPanel startPanel = new JPanel();
-	startPanel.setLayout(new BoxLayout(startPanel, BoxLayout.Y_AXIS));
+        // secondary panel: start | end
+        JPanel sec = new JPanel();
+        sec.setLayout(new BoxLayout(sec, BoxLayout.X_AXIS));
 
-	// "Start"
-	JLabel cropStart = new JLabel(msg.getString("crop_start"));
-	cropStart.setHorizontalAlignment(SwingConstants.CENTER);
-	cropStart.setAlignmentX(Component.CENTER_ALIGNMENT);
-	startPanel.add(cropStart);
+        // start panel
+        JPanel startPanel = new JPanel();
+        startPanel.setLayout(new BoxLayout(startPanel, BoxLayout.Y_AXIS));
 
-	// "by [ xxx ] years"
-	JPanel f1 = new JPanel(new FlowLayout(FlowLayout.LEFT)); // no size?
-	f1.add(new JLabel("by "));
-	tf1 = new JTextField("0", 4);
-	tf1.getDocument().addDocumentListener(updater1);
-	f1.add(tf1);
-	f1.add(new JLabel(" years"));
-	startPanel.add(f1);
-	f1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // "Start"
+        JLabel cropStart = new JLabel(msg.getString("crop_start"));
+        cropStart.setHorizontalAlignment(SwingConstants.CENTER);
+        cropStart.setAlignmentX(Component.CENTER_ALIGNMENT);
+        startPanel.add(cropStart);
 
-	// "to year [ xxx ]"
-	JPanel f2 = new JPanel(new FlowLayout(FlowLayout.LEFT)); // no size?
-	f2.add(new JLabel("to year "));
-	tf2 = new JTextField(s.range.getStart().toString(), 5);
-	tf2.getDocument().addDocumentListener(updater2);
-	f2.add(tf2);
-	startPanel.add(f2);
-	f2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // "by [ xxx ] years"
+        JPanel f1 = new JPanel(new FlowLayout(FlowLayout.LEFT)); // no size?
+        f1.add(new JLabel("by "));
+        tf1 = new JTextField("0", 4);
+        tf1.getDocument().addDocumentListener(updater1);
+        f1.add(tf1);
+        f1.add(new JLabel(" years"));
+        startPanel.add(f1);
+        f1.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-	// end panel
-	JPanel endPanel = new JPanel();
-	endPanel.setLayout(new BoxLayout(endPanel, BoxLayout.Y_AXIS));
+        // "to year [ xxx ]"
+        JPanel f2 = new JPanel(new FlowLayout(FlowLayout.LEFT)); // no size?
+        f2.add(new JLabel("to year "));
+        tf2 = new JTextField(s.range.getStart().toString(), 5);
+        tf2.getDocument().addDocumentListener(updater2);
+        f2.add(tf2);
+        startPanel.add(f2);
+        f2.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-	// "End"
-	JLabel cropEnd = new JLabel(msg.getString("crop_end"));
-	cropEnd.setHorizontalAlignment(SwingConstants.CENTER);
-	cropEnd.setAlignmentX(Component.CENTER_ALIGNMENT);
-	endPanel.add(cropEnd);
+        // end panel
+        JPanel endPanel = new JPanel();
+        endPanel.setLayout(new BoxLayout(endPanel, BoxLayout.Y_AXIS));
 
-	// "by [ xxx ] years"
-	JPanel f3 = new JPanel(new FlowLayout(FlowLayout.LEFT)); // no size?
-	f3.add(new JLabel("by "));
-	tf3 = new JTextField("0", 4);
-	tf3.getDocument().addDocumentListener(updater1);
-	f3.add(tf3);
-	f3.add(new JLabel(" years"));
-	endPanel.add(f3);
-	f3.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // "End"
+        JLabel cropEnd = new JLabel(msg.getString("crop_end"));
+        cropEnd.setHorizontalAlignment(SwingConstants.CENTER);
+        cropEnd.setAlignmentX(Component.CENTER_ALIGNMENT);
+        endPanel.add(cropEnd);
 
-	// "to year [ xxx ]"
-	JPanel f4 = new JPanel(new FlowLayout(FlowLayout.LEFT)); // no size?
-	f4.add(new JLabel("to year "));
-	tf4 = new JTextField(s.range.getEnd().toString(), 5);
-	tf4.getDocument().addDocumentListener(updater2);
-	f4.add(tf4);
-	endPanel.add(f4);
-	f4.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // "by [ xxx ] years"
+        JPanel f3 = new JPanel(new FlowLayout(FlowLayout.LEFT)); // no size?
+        f3.add(new JLabel("by "));
+        tf3 = new JTextField("0", 4);
+        tf3.getDocument().addDocumentListener(updater1);
+        f3.add(tf3);
+        f3.add(new JLabel(" years"));
+        endPanel.add(f3);
+        f3.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // "to year [ xxx ]"
+        JPanel f4 = new JPanel(new FlowLayout(FlowLayout.LEFT)); // no size?
+        f4.add(new JLabel("to year "));
+        tf4 = new JTextField(s.range.getEnd().toString(), 5);
+        tf4.getDocument().addDocumentListener(updater2);
+        f4.add(tf4);
+        endPanel.add(f4);
+        f4.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // build secondary panel
         sec.add(Box.createHorizontalStrut(16));
@@ -290,25 +290,25 @@ public class TruncateDialog extends JDialog {
         sec.add(endPanel);
         sec.add(Box.createHorizontalStrut(16));
 
-	// bottom line: "after truncating..."
-	result = new JLabel();
-	updateResult();
+        // bottom line: "after truncating..."
+        result = new JLabel();
+        updateResult();
 
-	// build primary panel
-	pri.add(Box.createVerticalStrut(8));
-	JLabel tmp = new JLabel(msg.getString("before") + ": " + s.range + " (n=" + s.range.span() + ")");
-	   // center the label
-	   tmp.setHorizontalAlignment(SwingConstants.CENTER);
-	   tmp.setAlignmentX(Component.CENTER_ALIGNMENT);
-	pri.add(tmp);
-	pri.add(Box.createVerticalStrut(8));
-	pri.add(sec);
-	pri.add(Box.createVerticalStrut(8));
-	   // center the label
-	   result.setHorizontalAlignment(SwingConstants.CENTER);
-	   result.setAlignmentX(Component.CENTER_ALIGNMENT);
-	pri.add(result);
-	pri.add(Box.createVerticalStrut(8));
+        // build primary panel
+        pri.add(Box.createVerticalStrut(8));
+        JLabel tmp = new JLabel(msg.getString("before") + ": " + s.range + " (n=" + s.range.span() + ")");
+        // center the label
+        tmp.setHorizontalAlignment(SwingConstants.CENTER);
+        tmp.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pri.add(tmp);
+        pri.add(Box.createVerticalStrut(8));
+        pri.add(sec);
+        pri.add(Box.createVerticalStrut(8));
+        // center the label
+        result.setHorizontalAlignment(SwingConstants.CENTER);
+        result.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pri.add(result);
+        pri.add(Box.createVerticalStrut(8));
     }
 
     // returns "ok" button
@@ -383,29 +383,29 @@ public class TruncateDialog extends JDialog {
     }
 
     public TruncateDialog(Sample s, JFrame owner) {
-	// modal
-	super(owner);
-	setModal(true);
+        // modal
+        super(owner);
+        setModal(true);
 
-	// get sample
-	this.s = s;
+        // get sample
+        this.s = s;
 
-	// copy range
-	r = s.range;
+        // copy range
+        r = s.range;
 
-	// set title
-	setTitle(msg.getString("truncate"));
+        // set title
+        setTitle(msg.getString("truncate"));
 
-	// pass
-	setup();
-	JButton ok = initButtons();
+        // pass
+        setup();
+        JButton ok = initButtons();
 
         // ret => ok, esc => cancel
         OKCancel.addKeyboardDefaults(this, ok);
 
-	// all done
-	pack();
-	setResizable(false);
-	show();
+        // all done
+        pack();
+        setResizable(false);
+        show();
     }
 }
