@@ -35,7 +35,6 @@ import corina.gui.HasPreferences;
 import corina.gui.Tree;
 import corina.gui.ButtonLayout;
 import corina.gui.DialogLayout;
-import corina.gui.XButton;
 import corina.editor.CountRenderer;
 import corina.util.Platform;
 import corina.util.Sort;
@@ -45,6 +44,7 @@ import corina.util.JLinedLabel;
 import corina.print.Printer;
 import corina.prefs.Prefs;
 import corina.index.IndexDialog.DecimalRenderer; // extract class!
+import corina.ui.Builder;
 
 import java.io.IOException;
 
@@ -475,12 +475,12 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         ClassLoader cl = this.getClass().getClassLoader();
 
         // prev
-        prevButton = new XButton("prev");
+        prevButton = Builder.makeButton("prev");
         if (!Platform.isMac)
             prevButton.setIcon(new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Back16.gif")));
 
         // next
-        nextButton = new XButton("next");
+        nextButton = Builder.makeButton("next");
         if (!Platform.isMac)
             nextButton.setIcon(new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Forward16.gif")));
 
@@ -510,7 +510,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         nextButton.addActionListener(prevNext);
 
         // graph
-        graphButton = new XButton("plot");
+        graphButton = Builder.makeButton("plot");
         graphButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 switch (tabPane.getSelectedIndex()) {
@@ -553,7 +553,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         });
 
         // map (!)
-        mapButton = new XButton("map");
+        mapButton = Builder.makeButton("map");
         mapButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 try {
@@ -1400,8 +1400,8 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         p.add(c, BorderLayout.CENTER);
                         
         JPanel b = new JPanel(new ButtonLayout());
-        JButton cancel = new XButton("cancel");
-        JButton ok = new XButton("ok");
+        JButton cancel = Builder.makeButton("cancel");
+        JButton ok = Builder.makeButton("ok");
         b.add(Box.createHorizontalStrut(24));
         b.add(cancel);
         b.add(ok);
