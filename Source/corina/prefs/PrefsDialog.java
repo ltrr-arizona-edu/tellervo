@@ -42,6 +42,7 @@ import java.awt.Toolkit;
 import java.awt.event.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -310,13 +311,18 @@ public class PrefsDialog extends JFrame {
 	categories = PrefsTemplate.getCategories();
 	options = PrefsTemplate.getOptions();
 
+        // use my own panel
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        setContentPane(p);
+
         // fill up the tabbed pane
         tabs = new JTabbedPane();
         for (int i=0; i<categories.size(); i++) {
             String cat = (String) categories.get(i);
             tabs.addTab(cat, new OptionsPanel(cat)); // nothing scrolls any more...
         }
-        getContentPane().add(tabs, BorderLayout.CENTER);
+        p.add(tabs);
 
         // button: okay
         JButton okay = new JButton("OK");
@@ -338,6 +344,7 @@ public class PrefsDialog extends JFrame {
         });
 
         // esc => cancel, too.
+        // REFACTOR SO THIS CAN USE OKCANCEL, TOO
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
@@ -350,10 +357,11 @@ public class PrefsDialog extends JFrame {
         JPanel buttons = new JPanel(new ButtonLayout());
         buttons.add(cancel);
         buttons.add(okay);
-        getContentPane().add(buttons, BorderLayout.SOUTH);
+        p.add(Box.createVerticalStrut(12));
+        p.add(buttons);
 
         // a little border
-        tabs.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        p.setBorder(BorderFactory.createEmptyBorder(12, 20, 20, 20));
 
         // pack
         pack();
