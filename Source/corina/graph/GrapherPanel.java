@@ -24,6 +24,7 @@ import corina.Year;
 import corina.Range;
 import corina.Sample;
 import corina.gui.XFrame;
+import corina.gui.Bug;
 import corina.editor.Editor;
 import corina.util.ColorUtils;
 import corina.util.Platform;
@@ -80,17 +81,19 @@ public class GrapherPanel extends JPanel
     // setPreferredSize() doesn't belong here, either.
     // -- not threadsafe -- bounds changes
     private void computeRange() {
-	if (graphs.isEmpty()) {
-	    bounds = new Range();
-	} else {
-	    Graph g0 = (Graph) graphs.get(0);
-	    bounds = g0.getRange();
-	    for (int i=1; i<graphs.size(); i++) { // this looks familiar ... yes, i do believe it's (reduce), again, just like in sum.  ick.
-		Graph g = (Graph) graphs.get(i);
-		bounds = bounds.union(g.getRange());
-	    }
-	}
-	setPreferredSize(new Dimension(bounds.span() * yearSize, 200));
+        if (graphs.isEmpty()) {
+            // can't happen
+            Bug.bug(new IllegalArgumentException("no graphs!"));
+            // bounds = new Range();
+        } else {
+            Graph g0 = (Graph) graphs.get(0);
+            bounds = g0.getRange();
+            for (int i=1; i<graphs.size(); i++) { // this looks familiar ... yes, i do believe it's (reduce), again, just like in sum.  ick.
+                Graph g = (Graph) graphs.get(i);
+                bounds = bounds.union(g.getRange());
+            }
+        }
+        setPreferredSize(new Dimension(bounds.span() * yearSize, 200));
     }
 	
     // here, we union ranges in Graphs; in Sum.java, we union ranges
