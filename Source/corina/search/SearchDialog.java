@@ -175,7 +175,7 @@ public class SearchDialog extends JDialog {
 			// ASSUMES: rhsField is a DataComponent, which it isn't guaranteed to be (yet).
 
 			// is this criterion fast to check?
-			boolean fast = (field.equals("filename") || field.equals("moddate"));
+			boolean fast = "filename".equals(field) || "moddate".equals(field);
 
 			s.addCriterion(crit, fast);
 		    }
