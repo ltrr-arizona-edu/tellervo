@@ -20,6 +20,8 @@
 
 package corina.prefs;
 
+import corina.gui.Bug;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -97,52 +99,55 @@ public class Prefs {
 	properties with p.  (I don't remember offhand which is which.)
 	As usual, the API docs don't really specify.  Grrr... */
     public static void load() throws IOException {
-	// get existing properties
-	Properties p = System.getProperties();
+        // get existing properties
+        Properties p = System.getProperties();
 
-	// a place to record errors that may occur, because we don't
-	// want to crap out before we've tried everything.
-	String errors="";
+        // a place to record errors that may occur, because we don't
+        // want to crap out before we've tried everything.
+        String errors="";
 
-	// load system properties
-	try {
-            p.load(ClassLoader.getSystemResource(SYSTEM_PROPERTIES_FILE).openStream());
-	} catch (IOException ioe) {
+        // load system properties
+        try {
+            ClassLoader cl = Class.forName("corina.prefs.Prefs").getClassLoader();
+            p.load(cl.getResource(SYSTEM_PROPERTIES_FILE).openStream());
+        } catch (IOException ioe) {
             errors += "Error loading Corina's default preferences (bug!).";
-	}
+        } catch (ClassNotFoundException cnfe) {
+            Bug.bug(cnfe);
+        }
 
-	// make sure the user has a .corina directory; silently create, if absent
-	File dir = new File(USER_PROPERTIES_DIR);
-	if (!dir.exists())
-	    dir.mkdir();
+        // make sure the user has a .corina directory; silently create, if absent
+        File dir = new File(USER_PROPERTIES_DIR);
+        if (!dir.exists())
+            dir.mkdir();
 
-	// get user properties
-	try {
-	    p.load(new FileInputStream(USER_PROPERTIES_FILE));
-	} catch (FileNotFoundException fnfe) {
-	    // user doesn't have a properties file, so we'll give her
-	    // one!  the system properties were already loaded, so all
-	    // i need to do is call save() now.
+        // get user properties
+        try {
+            p.load(new FileInputStream(USER_PROPERTIES_FILE));
+        } catch (FileNotFoundException fnfe) {
+            // user doesn't have a properties file, so we'll give her
+            // one!  the system properties were already loaded, so all
+            // i need to do is call save() now.
 
-	    // (p->system properties, for save())
-	    System.setProperties(p);
+            // (p->system properties, for save())
+            System.setProperties(p);
 
-	    try {
-		save();
-	    } catch (IOException ioe) {
-		errors += "Error copying preferences file to your home directory: " +
-                          ioe.getMessage();
-	    }
-	} catch (IOException ioe) {
-	    errors += "Error loading user preferences file: " + ioe.getMessage();
-	}
+            try {
+                save();
+            } catch (IOException ioe) {
+                errors += "Error copying preferences file to your home directory: " +
+                ioe.getMessage();
+            }
+        } catch (IOException ioe) {
+            errors += "Error loading user preferences file: " + ioe.getMessage();
+        }
 
-	// set properties
-	System.setProperties(p);
+        // set properties
+        System.setProperties(p);
 
-	// if there was an exception thrown-and-caught, re-throw it now
-	if (errors.length() != 0)
-	    throw new IOException(errors);
+        // if there was an exception thrown-and-caught, re-throw it now
+        if (errors.length() != 0)
+            throw new IOException(errors);
     }
 
     /** <p>Save current properties to the user's system-writable
