@@ -98,7 +98,7 @@ public class Modeline extends JPanel
 
 	// bail out if not on data
 	if (col<1 || col>10) {
-	    label.setText(" ");
+	    label.setText(EMPTY);
 	    return;
 	}
 
@@ -110,7 +110,7 @@ public class Modeline extends JPanel
 
 	// bail out if out of range
 	if (i<0 || i>=sample.data.size()) {
-	    label.setText(" "); // violates OAOO -- and say why i'm using " " instead of ""!
+	    label.setText(EMPTY);
 	    return;
 	}
 
@@ -124,6 +124,10 @@ public class Modeline extends JPanel
 	// set modeline
 	label.setText(modeline);
     }
+
+    // if i set it to "", it would have no height, either.  force it
+    // to have normal line height by making this a non-empty string.
+    private static final String EMPTY = " ";
 
     // row-change
     public void valueChanged(ListSelectionEvent e) {
