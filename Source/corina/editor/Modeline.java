@@ -126,11 +126,11 @@ public class Modeline extends JPanel
 
     // data changed
     public void sampleDataChanged(SampleEvent e) {
-	// update mean sensitivity
-	double m = MeanSensitivity.ms(sample);
-	DecimalFormat f = new DecimalFormat("ms = 0.000");
-	String str = (Double.isNaN(m) ? "ms undefined" : f.format(m));
-	ms.setText(str);
+        // update mean sensitivity
+        float m = MeanSensitivity.ms(sample);
+        DecimalFormat f = new DecimalFormat("ms = 0.000");
+        String str = (Float.isNaN(m) ? "ms undefined" : f.format(m));
+        ms.setText(str);
     }
     public void sampleRedated(SampleEvent e) { }
     public void sampleMetadataChanged(SampleEvent e) { }
