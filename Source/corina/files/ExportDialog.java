@@ -215,7 +215,7 @@ public class ExportDialog extends JDialog {
 
         // initial view
         updatePreview();
-        
+
         // show
         pack();
         setResizable(false);
@@ -239,19 +239,14 @@ public class ExportDialog extends JDialog {
             size.setText(new FileLength(buf.length()).toString());
             ok.setEnabled(true);
 
-            // scroll back to top -- doesn't work on windows
-            JScrollBar b = scroll.getVerticalScrollBar();
-            b.setValue(b.getMinimum());
-
-            // since setting the scrollbar apparently doesn't work, let's type a HOME at it.
-            preview.dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED,
-                                               System.currentTimeMillis(), 0, KeyEvent.VK_HOME));
+            // move cursor to start -- this scrolls to the top, as well
+            preview.setCaretPosition(0);
         } catch (IOException ioe) {
             // for now, use this to mean "inappropriate data/filetype" -- WTFE will be better, though.
             size.setText("");
             preview.setText("Problem using this format:\n" + ioe.getMessage());
             ok.setEnabled(false);
-            
+
             // problem saving it -- bug
 //            Bug.bug(ioe);
         } catch (Exception e) {
