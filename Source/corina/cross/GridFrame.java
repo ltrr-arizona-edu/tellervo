@@ -25,9 +25,10 @@ import corina.Sample;
 import corina.graph.GraphWindow;
 import corina.gui.SaveableDocument;
 import corina.gui.PrintableDocument;
-import corina.gui.HasPreferences;
 import corina.prefs.PrefsDialog;
 import corina.prefs.Prefs;
+import corina.prefs.PrefsListener;
+import corina.prefs.PrefsEvent;
 import corina.gui.XFrame;
 import corina.gui.FileDialog;
 import corina.gui.menus.FileMenu;
@@ -78,7 +79,7 @@ import javax.swing.table.TableCellRenderer;
   -- refactor this into GridView, a JPanel
 */
 public class GridFrame extends XFrame
-                    implements SaveableDocument, PrintableDocument, HasPreferences {
+                    implements SaveableDocument, PrintableDocument, PrefsListener {
     // gui
     private JTable output;
 
@@ -149,7 +150,7 @@ public class GridFrame extends XFrame
 
     // BUG: static!
     private static float scale = Float.parseFloat(
-			      System.getProperty("corina.grid.scale", "1.0"));
+    Prefs.getPref("corina.grid.scale", "1.0"));
 
     // cell renderer
     static class GridRenderer extends JComponent implements TableCellRenderer {
@@ -166,8 +167,8 @@ public class GridFrame extends XFrame
         private Grid.Cell cell;
         public void paintComponent(Graphics g) {
             // set font: get original font, and scale it
-            Font origFont = (System.getProperty("corina.grid.font")==null ?
-			     g.getFont() : Font.getFont("corina.grid.font"));
+            Font origFont = (Prefs.getPref("corina.grid.font")==null ?
+			     g.getFont() : Font.decode(Prefs.getPref("corina.grid.font")));
 	    Font scaledFont = origFont.deriveFont(origFont.getSize() * scale);
 //            System.out.println("new font t=" + System.currentTimeMillis()); -- for debugging
             g.setFont(scaledFont);
@@ -302,6 +303,8 @@ public class GridFrame extends XFrame
             setJMenuBar(menubar);
         }
 
+        Prefs.addPrefsListener(this);
+
         pack();
         setSize(new Dimension(640, 480));
         show();
@@ -341,11 +344,7 @@ public class GridFrame extends XFrame
                     scale += 0.1;
 
                     // set pref
-                    Prefs.setPref("corina.grid.scale", Float.toString(scale));
-
-                    // tell 'em -- use Preferences.updateAll()?
-                    refreshFromPreferences();
-                    // OBSOLETE once gridframe is a prefslistener
+                  Prefs.setPref("corina.grid.scale", Float.toString(scale));
                 }
             });
             add(zoomIn);
@@ -358,30 +357,32 @@ public class GridFrame extends XFrame
                     scale -= 0.1;
 
                     // set pref
-                    Prefs.setPref("corina.grid.scale", Float.toString(scale));
-
-                    // tell 'em -- use Preferences.updateAll()?
-                    refreshFromPreferences();
-                    // OBSOLETE once gridframe is a prefslistener
+                  Prefs.setPref("corina.grid.scale", Float.toString(scale));
                 }
             });
             add(zoomOut);
         }
     }
 
-    // HasPreferences
-    public void refreshFromPreferences() {
-        // re-read scale
-        scale = Float.parseFloat(System.getProperty("corina.grid.scale", "1.0"));
+  // PrefsListener
+  public void prefChanged(PrefsEvent e) {
+    if (!e.getPref().equals("corina.grid.scale")) return;
+    // re-read scale
+    scale = Float.parseFloat(Prefs.getPref("corina.grid.scale", "1.0"));
 
-        // reset sizes
-        output.setRowHeight((int)(Grid.getCellHeight()*scale) + 2);
-	int w = (int) (Grid.getCellWidth()*scale) + 2;
-        for (int i=0; i<output.getColumnCount(); i++) {
-            output.getColumnModel().getColumn(i).setPreferredWidth(w);
-	}
-
-        // redraw?  sure.
-        repaint();
+    // reset sizes
+    output.setRowHeight((int)(Grid.getCellHeight()*scale) + 2);
+    int w = (int) (Grid.getCellWidth()*scale) + 2;
+    for (int i=0; i<output.getColumnCount(); i++) {
+      output.getColumnModel().getColumn(i).setPreferredWidth(w);      
     }
+
+    // redraw?  sure.
+    repaint();
+	}
+  
+  protected void finalize() throws Throwable {
+    super.finalize();
+    Prefs.removePrefsListener(this); 
+  }
 }
