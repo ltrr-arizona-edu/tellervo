@@ -634,14 +634,11 @@ public class Editor extends XFrame
         final Sample glue7 = sample; // hack!
 
         // let's make the user feel at home
-        JMenuItem cut = new XMenubar.XMenuItem("Cut");
-        cut.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize("control X")));
+        JMenuItem cut = Builder.makeMenuItem("cut");
         cut.setEnabled(false);
         edit.add(cut);
 
         // copy: put all data unto clipboard in 2-column format
-        // JMenuItem copy = new XMenubar.XMenuItem("Copy"); // i18n!  use Builder!
-        // copy.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize("control C"))); // accel C!
 	JMenuItem copy = Builder.makeMenuItem("copy");
         copy.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -662,8 +659,7 @@ public class Editor extends XFrame
         edit.add(copy);
 
         // paste: replace (insert?) data from clipboard (any format) into this sample
-        JMenuItem paste = new XMenubar.XMenuItem("Paste");
-        paste.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize("control V")));
+        JMenuItem paste = Builder.makeMenuItem("paste");
         paste.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 // get the stuff that's on the clipboard
@@ -923,7 +919,7 @@ public class Editor extends XFrame
 
 	// redate
 	final Editor glue = this;
-	JMenuItem redate = new XMenubar.XMenuItem(msg.getString("redate..."),
+	JMenuItem redate = new XMenubar.XMenuItem(msg.getString("redate..."), // OOPS!  how to deal with ... and builder?
 						  msg.getString("redate_key").charAt(0));
 	// redate.setAccelerator(KeyStroke.getKeyStroke(msg.getString("redate_acc")));
 	// control-R, etc., are grabbed by the table -- agH!
@@ -958,8 +954,7 @@ public class Editor extends XFrame
     s.add(truncate);
 
     // reverse
-    reverseMenu = new XMenubar.XMenuItem(msg.getString("reverse"),
-                                         msg.getString("reverse_key").charAt(0));
+    reverseMenu = Builder.makeMenuItem("reverse");
     reverseMenu.addActionListener(new AbstractAction() {
         public void actionPerformed(ActionEvent ae) {
             // reverse, and add to the undo-stack
@@ -998,8 +993,7 @@ public class Editor extends XFrame
     s.add(crossAgainst);
 
     // reconcile
-    reconcile = new XMenubar.XMenuItem(msg.getString("reconcile"),
-                                       msg.getString("reconcile_key").charAt(0));
+    reconcile = Builder.makeMenuItem("reconcile");
     reconcile.addActionListener(new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
             // check for filename
@@ -1074,8 +1068,7 @@ public class Editor extends XFrame
 	JMenu m = Builder.makeMenu("sum");
 
 	// re-sum
-	resumMenu = new XMenubar.XMenuItem(msg.getString("resum"),
-					   msg.getString("resum_key").charAt(0));
+	resumMenu = Builder.makeMenuItem("resum");
 	resumMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    // resum it
@@ -1100,8 +1093,7 @@ public class Editor extends XFrame
 	m.add(resumMenu);
 
 	// clean
-	cleanMenu = new XMenubar.XMenuItem(msg.getString("clean"),
-					   msg.getString("clean_key").charAt(0));
+	cleanMenu = Builder.makeMenuItem("clean");
 	cleanMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    // clean, and add to undo-stack
@@ -1110,61 +1102,78 @@ public class Editor extends XFrame
 	    });
 	m.add(cleanMenu);
 
+	/*
+	  so, eventually, this list of menus and menuitems will reduce to a sequence of
+	    menuX = Builder.makeMenuItem("blah");
+	    menuX.addActionListener(real code!);
+	    menubar.add(menuX);
+	    ...
+	  which in turn could be reduced to
+	    menubar = Builder.makeMenuBar("blah");
+	  where "blah" is defined in a resource file as
+	    menubar "blah" = menu "oink", menu "moo", menu "baa", ...
+	    menu "oink" = menuitem "oink 1", menuitem "oink 2", ...
+	  but putting these in a resource file might not be the best idea for performance
+	  so put them all in one java class
+	  and let that java class be generated at compile-time from a resource file
+	  (when performance doesn't matter, so XML is ok)
+	*/
+
 	// ---
 	m.addSeparator();
 
-    // add item -- ENABLED IFF THERE EXIST OTHER ELEMENTS OR DATA IS-EMPTY
-    addMenu = new XMenubar.XMenuItem("Add...", 'A');
-    addMenu.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-            // open file dialog
-            String filename;
-            try {
-                filename = FileDialog.showSingle("Add");
-            } catch (UserCancelledException uce) {
-                return;
-            }
+	// add item -- ENABLED IFF THERE EXIST OTHER ELEMENTS OR DATA IS-EMPTY
+	addMenu = new XMenubar.XMenuItem("Add...", 'A');
+	addMenu.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    // open file dialog
+		    String filename;
+		    try {
+			filename = FileDialog.showSingle("Add");
+		    } catch (UserCancelledException uce) {
+			return;
+		    }
 
-            // new elements, if needed
-            if (sample.elements == null)
-                sample.elements = new ArrayList();
+		    // new elements, if needed
+		    if (sample.elements == null)
+			sample.elements = new ArrayList();
 
-            // ADD CHECK: make sure indexed+indexed, or raw+raw
+		    // ADD CHECK: make sure indexed+indexed, or raw+raw
 
-            // remember how many elements there used to be
-            int numOld = sample.elements.size();
+		    // remember how many elements there used to be
+		    int numOld = sample.elements.size();
 
-            // add -- if summed, add each one
-            Sample testSample=null;
-            try {
-                testSample = new Sample(filename);
-            } catch (IOException ioe) {
-                int x = JOptionPane.showConfirmDialog(null,
-                                                      "The file \"" + filename + "\" could not be loaded.  Add anyway?",
-                                                      "Unloadable file.",
-                                                      JOptionPane.YES_NO_OPTION);
-                if (x == JOptionPane.NO_OPTION)
-                    return;
-            }
+		    // add -- if summed, add each one
+		    Sample testSample=null;
+		    try {
+			testSample = new Sample(filename);
+		    } catch (IOException ioe) {
+			int x = JOptionPane.showConfirmDialog(null,
+							      "The file \"" + filename + "\" could not be loaded.  Add anyway?",
+							      "Unloadable file.",
+							      JOptionPane.YES_NO_OPTION);
+			if (x == JOptionPane.NO_OPTION)
+			    return;
+		    }
 
-            // for a summed sample, don't add it, but add its elements
-            if (testSample.elements != null) {
-                for (int i=0; i<testSample.elements.size(); i++)
-                    sample.elements.add(testSample.elements.get(i)); // copy ref only
-            } else {
-                sample.elements.add(new Element(filename));
-            }
+		    // for a summed sample, don't add it, but add its elements
+		    if (testSample.elements != null) {
+			for (int i=0; i<testSample.elements.size(); i++)
+			    sample.elements.add(testSample.elements.get(i)); // copy ref only
+		    } else {
+			sample.elements.add(new Element(filename));
+		    }
 
-            // modified, and update
-            sample.setModified();
-            sample.fireSampleElementsChanged();
-            if (!Platform.isMac)
-                sample.fireSampleMetadataChanged(); // so title gets updated (modified-flag)
-            else
-                Platform.setModified(glue, true);
-        }
-    });
-    m.add(addMenu);
+		    // modified, and update
+		    sample.setModified();
+		    sample.fireSampleElementsChanged();
+		    if (!Platform.isMac)
+			sample.fireSampleMetadataChanged(); // so title gets updated (modified-flag)
+		    else
+			Platform.setModified(glue, true);
+		}
+	    });
+	m.add(addMenu);
 
 	// remove item
 	remMenu = new XMenubar.XMenuItem("Remove", 'R');
@@ -1178,22 +1187,18 @@ public class Editor extends XFrame
 	// graph menu
 	JMenu d = Builder.makeMenu("graph");
 
-    // plot
-    JMenuItem plotMenu = new XMenubar.XMenuItem(msg.getString("graph"),
-                                                msg.getString("graph_key").charAt(0));
-    plotMenu.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize(msg.getString("graph_acc"))));
-    plotMenu.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent ae) {
-            new GraphFrame(sample);
-        }
-    });
-    d.add(plotMenu);
+	// plot
+	JMenuItem plotMenu = Builder.makeMenuItem("graph");
+	plotMenu.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent ae) {
+		    new GraphFrame(sample);
+		}
+	    });
+	d.add(plotMenu);
 
 	// plot all
-	plotAll = new XMenubar.XMenuItem(msg.getString("graph_elements"),
-					 msg.getString("graph_elements_key").charAt(0));
-    plotAll.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize(msg.getString("graph_elements_acc"))));
-    plotAll.addActionListener(new AbstractAction() {
+	plotAll = Builder.makeMenuItem("graph_elements");
+	plotAll.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    new GraphFrame(sample.elements);
 		}
@@ -1201,8 +1206,7 @@ public class Editor extends XFrame
 	d.add(plotAll);
 
 	// bargraph all
-	bargraphAll = new XMenubar.XMenuItem(msg.getString("bargraph"),
-					     msg.getString("bargraph_key").charAt(0));
+	bargraphAll = Builder.makeMenuItem("bargraph");
 	bargraphAll.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    // FIXME: the bargraph should have this
@@ -1218,8 +1222,7 @@ public class Editor extends XFrame
     JMenu ss = Builder.makeMenu("site");
 
     // map
-    JMenuItem map = new XMenubar.XMenuItem(msg.getString("map"),
-                                           msg.getString("map_key").charAt(0));
+    JMenuItem map = Builder.makeMenuItem("map");
     map.addActionListener(new AbstractAction() {
         public void actionPerformed(ActionEvent ae) {
             try {
@@ -1242,7 +1245,7 @@ public class Editor extends XFrame
     ss.add(map);
 
     // site properties
-    JMenuItem props = new XMenubar.XMenuItem("Properties", 'P');
+    JMenuItem props = Builder.makeMenuItem("properties");
     props.addActionListener(new AbstractAction() {
         public void actionPerformed(ActionEvent ae) {
             try {
