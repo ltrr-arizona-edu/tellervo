@@ -462,7 +462,7 @@ public class SiteInfo {
 	    group.add(openButton, "");
 	    group.add(Box.createVerticalStrut(8), null);
 
-	    JDisclosureTriangle triangle = new JDisclosureTriangle("Samples:", group, diag);
+	    JDisclosureTriangle triangle = new JDisclosureTriangle("Samples:", group, diag, false);
 	    singlePanel.add(triangle);
 
 	    // this is a BAD INTERFACE.
@@ -480,7 +480,7 @@ public class SiteInfo {
 	JList mastersList = new JList();
 	JScrollPane mastersScroller = new JScrollPane(mastersList);
 	forceToDefaultSize(mastersScroller, mastersList);
-	JDisclosureTriangle masters = new JDisclosureTriangle("Masters:", mastersScroller, diag);
+	JDisclosureTriangle masters = new JDisclosureTriangle("Masters:", mastersScroller, diag, false);
 	// WRITEME: implement!
 	singlePanel.add(masters);
 	// WRITEME: make "masters" triangle-label draggable?
@@ -491,7 +491,7 @@ public class SiteInfo {
 	JList nonfitsList = new JList();
 	JScrollPane nonfitsScroller = new JScrollPane(nonfitsList);
 	forceToDefaultSize(nonfitsScroller, nonfitsList);
-	JDisclosureTriangle nonfits = new JDisclosureTriangle("Non-Fits:", nonfitsScroller, diag);
+	JDisclosureTriangle nonfits = new JDisclosureTriangle("Non-Fits:", nonfitsScroller, diag, false);
 	// WRITEME: implement!
 	singlePanel.add(nonfits);
 	// WRITEME: make "non-fits" triangle-label draggable?
@@ -501,7 +501,7 @@ public class SiteInfo {
 	// section: comments
 	JScrollPane commentsScroller = new JScrollPane(commentsField);
 	forceToDefaultSize(commentsScroller, commentsField);
-	JDisclosureTriangle comments = new JDisclosureTriangle("Comments:", commentsScroller, diag);
+	JDisclosureTriangle comments = new JDisclosureTriangle("Comments:", commentsScroller, diag, false);
 	// WRITEME: implement!
 	singlePanel.add(comments);
 
