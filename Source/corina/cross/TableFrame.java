@@ -24,6 +24,7 @@ import corina.gui.XFrame;
 import corina.gui.PrintableDocument;
 import corina.gui.FileDialog;
 import corina.gui.UserCancelledException;
+import corina.print.Printer;
 
 import java.io.IOException;
 
@@ -78,73 +79,22 @@ public class TableFrame extends XFrame implements PrintableDocument {
     }
 
     private void initTable() {
-	table = new JTable(new TableTableModel(t));
-	getContentPane().add(new JScrollPane(table), BorderLayout.CENTER);
+        table = new JTable(new TableTableModel(t));
+        getContentPane().add(new JScrollPane(table), BorderLayout.CENTER);
     }
 
     public int getPrintingMethod() {
         return PrintableDocument.PAGEABLE;
     }
     public Pageable makePageable(PageFormat pf) {
-	return new TablePager(t, pf);
+        return null;
     }
     public Printable makePrintable(PageFormat pf) {
-        return null;
+        TablePrinter printer = new TablePrinter(t, pf);
+        return Printer.print(printer);
     }
     public String getPrintTitle() {
         return "Table"; // customize with master?
-    }
-
-    private void initButtons() {
-        JPanel tmpPanel = new JPanel();
-        tmpPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 0, 6, 6));
-        tmpPanel.add(buttonPanel);
-        getContentPane().add(tmpPanel, BorderLayout.SOUTH);
-
-        // classloader, for icons
-        ClassLoader cl = this.getClass().getClassLoader();
-
-        JButton saveButton = new JButton("Save (ASCII)...",
-                                         new ImageIcon(cl.getResource("toolbarButtonGraphics/general/Save16.gif")));
-        saveButton.setMnemonic('S');
-        saveButton.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent ae) {
-                try {
-                    t.saveText(FileDialog.showSingle("Save table"));
-                } catch (IOException ioe) {
-                    JOptionPane.showMessageDialog(null,
-                                                  "Error while saving: " + ioe.getMessage(),
-                                                  "Error saving",
-                                                  JOptionPane.ERROR_MESSAGE);
-                    return;
-                } catch (UserCancelledException uce) {
-                    // ignore
-                }
-            }
-        });
-        buttonPanel.add(saveButton);
-
-        JButton saveButton2 = new JButton("Save (HTML)...",
-                                          new ImageIcon(cl.getResource("toolbarButtonGraphics/general/Save16.gif")));
-        saveButton2.setMnemonic('H');
-        saveButton2.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent ae) {
-                try {
-                    t.saveHTML(FileDialog.showSingle("Save table"));
-                } catch (IOException ioe) {
-                    JOptionPane.showMessageDialog(null,
-                                                  "Error while saving: " + ioe.getMessage(),
-                                                  "Error saving",
-                                                  JOptionPane.ERROR_MESSAGE);
-                    return;
-                } catch (UserCancelledException uce) {
-                    // ignore
-                }
-            }
-        });
-        buttonPanel.add(saveButton2);
     }
 
     private void create() {
@@ -155,8 +105,14 @@ public class TableFrame extends XFrame implements PrintableDocument {
 	// init gui
 	computeTable();
 	initTable();
-	initButtons();
 
+        // using buttons is silly.  it's just save-text and save-html.
+        // how it should be done: file->export has options "plain text"
+        // and "HTML" (possibly multiple versions, as long as there's help saying when to use what).
+        // so: make exportdialog flexible enough to handle non-sample data, and add a "copy" button
+        // so users can copy the HTML (for example) to the clipboard directly.
+        // but make sure there's a plain ol' "save" command to save the crossdate (seq only?), too.
+        
 	// show the frame
 	pack();
 	setSize(new Dimension(640, 480));
