@@ -255,31 +255,53 @@ public class MultiColumn implements Filetype {
     
     writeHeader(isbc, w);
     
-    // now write the first row, being sure to offset by the position within the decade
-    int column = y.column();
+    w.newLine();
     
-    for (int i = 0; i < column; i++) {
-      w.write('\t');
-    }
-
-    // write any data out in the first decade
-    for (int i = column; i < 10 - column; i++, y.add(1)) {
-      if (&& i < s.data.size()) {
-        w.write(s.data.get(i));
-      }      
-      w.write('\t');
-    }
-
-
-    for (int i = column; i < 10 - column; i++) {
-      if (hasCount && i < s.count.size()) {
-        w.write(s.count.get(i));
+    int datapos = 0;
+    int countpos = 0;
+    
+    while (datapos < s.data.size()) {
+    
+      // write the decade data, being sure to offset by the position within the decade
+      int column = y.column();
+      
+      boolean flipped = isbc ^ (y.compareTo(new Year(1)) < 0);
+    
+      if (flipped) bc = !bc;
+      
+      writeHeader(isbc, w);
+    
+      writeHeader(isbc, w);
+      
+      w.newLine();
+      
+      
+      for (int i = 0; i < column; i++) {
+        w.write('\t');
       }
-      w.write('\t');
-    }
+        
+      for (int i = column; i < 10 - column; i++, y.add(1)) {
+        if (datapos < s.data.size()) {
+          w.write(s.data.get(datapos));
+          datapos++;
+        }      
+        w.write('\t');
+      }
+      
+      // write the decade counts, being sure to offset by the position within the decade
+      for (int i = 0; i < column; i++) {
+        w.write('\t');
+      }
+
+      for (int i = column; i < 10 - column; i++) {
+        if (hasCount && countpos < s.count.size()) {
+          w.write(s.count.get(countpos));
+          countpos++;
+        }
+        w.write('\t');
+      }
     
-    // now write the rest    
-    for (int i = 0; i < s.data.size(); i++) {
+    
       // write the year
       w.write(Integer.toString(y.row() * 10));
       
@@ -288,14 +310,14 @@ public class MultiColumn implements Filetype {
       // row/decade of data, but it probably isn't an issue
       for (int i = 0; i < 10 - column; i++) {
         if (!y.isYearOne() && i < s.data.size()) {
-          w.write(s.data.get(i));
+          w.write(s.data.get(i).toString());
         }      
         w.write('\t');
       }
       
       for (int i = 0; i < 10 - column; i++) {
         if (hasCount && i < s.count.size()) {
-          w.write(s.count.get(i));
+          w.write(s.count.get(i).toString());
         }
         w.write('\t');
       }
