@@ -23,7 +23,7 @@ package corina.prefs.panels;
 import corina.prefs.Prefs;
 import corina.prefs.components.ColorPrefComponent;
 import corina.prefs.components.BoolPrefComponent;
-import corina.prefs.components.FontPrefPanel;
+import corina.prefs.components.FontPrefComponent;
 import corina.prefs.components.UIDefaultsComponent;
 
 import java.awt.*;
@@ -33,8 +33,8 @@ import javax.swing.*;
 // TODO: write
 // TODO: debug
 // TODO: use
-public class AppearancePrefsPanel extends Container {
-
+public class AppearancePrefsPanel extends JComponent {
+  private FontPrefComponent fpc;
   public AppearancePrefsPanel() {
     setLayout(new GridBagLayout());
     
@@ -65,7 +65,13 @@ public class AppearancePrefsPanel extends Container {
     gridGroup.add(c, gbc);
     
     l = new JLabel("Font:");
-    c = new FontPrefPanel(Prefs.EDIT_FONT);
+    Container co = new Container();
+    fpc = new FontPrefComponent(Prefs.EDIT_FONT);
+    co.setLayout(new FlowLayout(FlowLayout.LEFT, 4, 0));
+    co.add(fpc.getLabel());
+    co.add(fpc.getButton());
+
+    c = co;
 
     gbc.gridx = 0;
     gbc.gridy = 2;
@@ -95,5 +101,10 @@ public class AppearancePrefsPanel extends Container {
     c = new UIDefaultsComponent();
     ((JComponent) c).setBorder(BorderFactory.createTitledBorder("UI fonts and colors"));
     add(c, gbc);
+  }
+  
+  public void addNotify() {
+    fpc.setParent(getTopLevelAncestor());
+    super.addNotify();
   }
 }
