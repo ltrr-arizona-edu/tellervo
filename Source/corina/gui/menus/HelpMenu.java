@@ -86,7 +86,7 @@ public class HelpMenu extends JMenu {
     */
     protected void addSystemInfoMenu() {
         add(Builder.makeMenuItem("system_info...",
-                                 "new corina.util.PropertiesWindow()"));
+                                 "corina.util.PropertiesWindow.showPropertiesWindow()"));
     }
 
     /**
