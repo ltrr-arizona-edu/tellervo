@@ -21,26 +21,18 @@
 package corina;
 
 /**
-   This class represents a range of years which can be redated
-   safely.
+   This class represents a range of years which can be redated safely.
+   It's immutable; all destructive operations on it return new Ranges.
 
-   <p>Unfortunately, this data structure violates two [sic] major
-   principles:</p>
-
-   <ol>
-
-     <li>Single-instance storage: we hope that the user of Range and
-     Sample will always keep <code>Sample.data.size() ==
-     Range.span()</code>, but there aren't any built-in ways to do
-     this, so it's up to the user.  The problem is that
-     <code>end</code> is a duplicate of <code>Sample.data.size() +
-     start</code>.  (Resolution: nothing, for now; r1.overlap(r2) is
-     just too incredibly useful and concise.  Perhaps it would be
-     better to store only the ending year?)
-
-   </ol>
+   Unfortunately, this data structure violates single-instance
+   storage: we hope that the usage of Range and Sample will always
+   keep <code>Sample.data.size() == Range.span()</code>, but there
+   aren't any built-in ways to do this, so it's up to you.  The
+   problem is that <code>end</code> is a duplicate of
+   <code>Sample.data.size() + start</code>.
 
    @see Year
+   @see Sample
 
    @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
    @version $Id$ */
@@ -107,8 +99,8 @@ public class Range implements Comparable {
 	String y2 = t.substring(dash+1);
 
 	// construct years
-	start = new Year(y1.trim());
-	end = new Year(y2.trim());
+	start = new Year(y1);
+	end = new Year(y2);
     }
 
     /** Get the starting year of this range.
@@ -122,9 +114,6 @@ public class Range implements Comparable {
     public Year getEnd() {
 	return end;
     }
-    //
-    // these 2 methods are all that's preventing Range from being immutable!
-    //
 
     /** Set the starting year of the range, and adjust the ending year
 	to maintain the same length.
@@ -158,12 +147,12 @@ public class Range implements Comparable {
         like "1001 - 1036".
         @return a string representation of the range */
     public String toString() {
-        return start + " - " + end;
+        return start + " - " + end; // use \u2014 EM DASH?
     }
 
     // "(1001 - 1036, n=36)"
     public String toStringWithSpan() {
-        return "(" + start + " - " + end + ", n=" + span() + ")";
+        return "(" + start + " - " + end + ", n=" + span() + ")"; // use \u2014 EM DASH?
     }
 
     /** Return true if (and only if) the given year is inside the range, inclusive.
@@ -207,6 +196,7 @@ public class Range implements Comparable {
 	@param r range to compare with this
 	@return true, if the ranges are equal, else false */
     public boolean equals(Object o) {
+        // o instanceof Range first?
 	Range r = (Range) o;
 	return start.equals(r.start) && end.equals(r.end);
     }
