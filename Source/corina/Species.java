@@ -35,22 +35,19 @@ import java.util.StringTokenizer;
 // the file came from web.utk.edu/~grissino/species.htm
 // I hope I didn't murder it too bad in converting it to a text file
 
-// UUUGHH!
-// is this really enough to justify its own class?
-// how about a field of SpeciesPopup, or maybe an inner class?  (see how it turns out first)
+// (from before i wrote it:) is this really enough to justify its own class?
 
 public class Species {
     public static Properties species = new Properties(); // code => name hash
-    // BAD INTERFACE
-    // BETTER: public List(/array) codes, Species.nameOf(code), maybe Species.codeFor(names)
 
     static {
         try {
             // load properties
-            species.load(ClassLoader.getSystemResource("species.properties").openStream());
-        } catch (IOException ioe) {
+            ClassLoader cl = Class.forName("corina.Species").getClassLoader();
+            species.load(cl.getResource("species.properties").openStream());
+        } catch (Exception e) {
             // can't happen
-            Bug.bug(ioe);
+            Bug.bug(e); // move to its own class so the exception can be caught and it can be unit tested?
         }
     }
 
@@ -71,7 +68,7 @@ public class Species {
         else
             return r;
     }
-    
+
     public static List common = new ArrayList(); // list of strings, like ("PISP" "QUSP")
 
     static {
