@@ -21,9 +21,9 @@
 package corina.gui;
 
 import corina.prefs.Prefs;
-import corina.gui.XMenubar.XMenu;
-import corina.gui.XMenubar.XMenuItem;
+import corina.gui.XMenubar.XMenuItem; // delete me!
 import corina.util.Platform;
+import corina.ui.Builder;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -113,17 +113,13 @@ public class OpenRecent {
 	saveList();
     }
 
-    private static ResourceBundle msg = ResourceBundle.getBundle("MenubarBundle");
-
     /** Generate a new recent-file menu.  This menu will contain the
 	names of (up to) the last 4 files opened.  As long as the menu
 	returned by this method is referenced, it will automatically
 	be kept updated. */
     public static JMenu makeOpenRecentMenu() {
         // create a new menu
-        JMenu menu = new XMenu(msg.getString("open_recent"));
-        if (!Platform.isMac)
-            menu.setMnemonic(msg.getString("open_recent_key").charAt(0));
+        JMenu menu = Builder.makeMenu("open_recent");
 
         // generate its elements
         updateMenu(menu);
@@ -190,7 +186,7 @@ public class OpenRecent {
 	    menu.add(r);
 	}
 
-	JMenuItem clear = new XMenuItem(msg.getString("clear_menu"));
+	JMenuItem clear = Builder.makeMenuItem("clear_menu");
 	if (recent.isEmpty()) {
 	    // no recent items: just "Clear Menu", but dimmed
 	    clear.setEnabled(false);
