@@ -20,9 +20,6 @@
 
 package corina.editor;
 
-// i'm putting this in editor because it's the only package that uses
-// it.  if it needs to be used elsewhere, it can be moved.
-
 import corina.Year;
 import corina.Sample;
 import corina.Element;
@@ -32,6 +29,7 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 
 import java.util.Date;
+import java.util.StringTokenizer;
 
 import java.io.File;
 import java.io.BufferedWriter;
@@ -84,17 +82,22 @@ public class Epson {
 	w.write(0);
     }
 
+    private String getUserName() {
+        return System.getProperty("user.name", "(unknown user)");
+    }
+    
     // "unknown user", "radius", etc. need i18n
     private void printHeader(Sample s) throws IOException {
-	w.write(s.meta.get("title") + "\r\n");
-	w.write("Printed by: " + System.getProperty("user.name", "(unknown)") + "\r\n");
-	w.write(new Date() + "\r\n");
-	w.write("\r\n");
-	double radius = s.computeRadius() / 1000.;
-	double average = radius / (double) s.data.size();
-	DecimalFormat df = new DecimalFormat("0.000");
-	w.write("Radius: " + df.format(radius) + " cm, " +
-		"Average ring width: " + df.format(average) + " cm\r\n\r\n");
+        w.write(s.meta.get("title") + "\r\n");
+        w.write("Printed by: " + getUserName() + "\r\n");
+        w.write(new Date() + "\r\n");
+        w.write("\r\n");
+        double radius = s.computeRadius() / 1000.;
+        double average = radius / s.data.size();
+        DecimalFormat df = new DecimalFormat("0.000");
+        if (!s.isIndexed())
+            w.write("Radius: " + df.format(radius) + " cm, " +
+                    "Average ring width: " + df.format(average) + " cm\r\n\r\n");
     }
 
     private void printSummedData(Sample s) throws IOException {
@@ -189,51 +192,45 @@ public class Epson {
     }
 
     private void printMetadata(Sample s) throws IOException {
-	if (s.meta.get("id") != null)
+	if (s.meta.containsKey("id"))
 	    w.write("ID Number " + s.meta.get("id") + "\r\n");
-	if (s.meta.get("title") != null)
+	if (s.meta.containsKey("title"))
 	    w.write("Title of sample: " + s.meta.get("title") + "\r\n");
 	w.write(s.isAbsolute() ? "Absolutely dated\r\n" : "Relatively dated\r\n");
-	if (s.meta.get("unmeas_pre") != null)
+	if (s.meta.containsKey("unmeas_pre"))
 	    w.write(s.meta.get("unmeas_pre") + " unmeasured rings at beginning of sample.\r\n");
-	if (s.meta.get("unmeas_post") != null)
+	if (s.meta.containsKey("unmeas_post"))
 	    w.write(s.meta.get("unmeas_post") + " unmeasured rings at end of sample.\r\n");
-	if (s.meta.get("filename") != null)
+	if (s.meta.containsKey("filename"))
 	    w.write("File saved as " + s.meta.get("filename") + "\r\n");
 
-	// - comments -- loop
-	if (s.meta.get("comments") != null) { // line-by-line
-	    int start = 0;
-	    String comments = (String) s.meta.get("comments");
-	    while (start < comments.length()) {
-		int x = comments.indexOf('\n', start);
-		if (x == -1) {
-		    w.write("Comments: " + comments.substring(start) + "\r\n");
-		    break;
-		} else {
-		    w.write("Comments: " + comments.substring(start, x+1));
-		    start = x+1;
-		}
-	    }
-	}
+        // - comments -- loop
+        if (s.meta.containsKey("comments")) {
+            int start = 0;
+            String comments = (String) s.meta.get("comments");
+            StringTokenizer tok = new StringTokenizer(comments, "\n");
+            int n = tok.countTokens();
+            for (int i=0; i<n; i++)
+                w.write("Comments: " + tok.nextToken());
+        }
 
-	if (s.meta.get("type") != null)
-	    w.write("Type of sample " + s.meta.get("type") + "\r\n");
-	if (s.meta.get("species") != null)
-	    w.write("Species: " + s.meta.get("species") + "\r\n");
-	if (s.meta.get("format") != null) { // use a switch?
-	    if (s.meta.get("format").equals("R"))
-		w.write("Raw format\r\n");
-	    else if (s.isIndexed())
-		w.write("Indexed format\r\n");
-	    else
-		w.write("Unknown format\r\n");
-	}
-	if (s.meta.get("sapwood") != null)
-	    w.write(s.meta.get("sapwood") + " sapwood rings.\r\n");
-	if (s.meta.get("pith") != null) {
+        if (s.meta.containsKey("type"))
+            w.write("Type of sample " + s.meta.get("type") + "\r\n");
+        if (s.meta.containsKey("species"))
+            w.write("Species: " + s.meta.get("species") + "\r\n");
+        if (s.meta.containsKey("format")) { // use a switch?
+            if (s.meta.get("format").equals("R"))
+                w.write("Raw format\r\n");
+            else if (s.isIndexed())
+                w.write("Indexed format\r\n");
+            else
+                w.write("Unknown format\r\n");
+        }
+        if (s.meta.containsKey("sapwood"))
+            w.write(s.meta.get("sapwood") + " sapwood rings.\r\n");
+	if (s.meta.containsKey("pith")) {
 	    String p = (String) s.meta.get("pith");
-	    if (p.equals("+"))
+	    if (p.equals("P"))
 		w.write("Pith present and datable\r\n");
 	    else if (p.equals("*"))
 		w.write("Pith present but undatable\r\n");
@@ -242,16 +239,16 @@ public class Epson {
 	    else
 		w.write("Unknown pith\r\n");
 	}
-	if (s.meta.get("terminal") != null)
+	if (s.meta.containsKey("terminal"))
 	    w.write("Last ring measured " + s.meta.get("terminal") + "\r\n");
-	if (s.meta.get("continuous") != null) {
+	if (s.meta.containsKey("continuous")) {
 	    String c = (String) s.meta.get("continuous");
 	    if (c.equals("C")) // uppercase only?
 		w.write("Last ring measured is continuous\r\n");
 	    else if (c.equals("R")) // uppercase only?
 		w.write("Last ring measured is partially continuous\r\n");
 	}
-	if (s.meta.get("quality") != null)
+	if (s.meta.containsKey("quality"))
 	    w.write("The quality of the sample is " + s.meta.get("quality") + "\r\n");
     }
 
