@@ -1,24 +1,24 @@
 <body>
 
-<p>The <code>edu.cornell.dendro.corina.cross</code> package contains
-algorithms for crossdating samples, and also higher-level data
-structures which help for crossing many samples.</p>
+<p>The <code>corina.cross</code> package contains algorithms for
+crossdating samples, and also higher-level data structures which help
+for crossing sets of samples.</p>
 
 
 
 <h2>How to use in an application</h2>
 
 <p>Sequence provides the client interface to crossdating.  Construct a
-Sequence (any of its subclasses: 1xN, NxN, 1x1, or Nx1).  You can step
+Sequence with any number of fixed and moving samples.  You can step
 through the crosses with nextCross() and prevCross(), and get the
 current cross with getCross().  (Unfortunately, Java Enumerations are
-forward-only.)</p>
+forward-only, which is why I had to write my own.)</p>
 
 <p>The Cross you get will only be references: you must still run() it.
 A Cross contains the scores in <code>data</code>, as a
-<code>double[]</code>.  Significant scores are stored in the
-<code>ArrayList</code> <code>highScores</code>, as indexes into the
-data array.  (The method <code>yearOfIndex()</code> might help.)
+<code>double[]</code>.  Significant scores are stored in
+<code>highScores</code>, as indexes into the data array.  (The method
+<code>yearOfIndex()</code> might help.)
 
 <p>Grids and Tables are completely different, because they're not
 typically interactive, but they are constructed roughly the same as
@@ -30,20 +30,21 @@ NxN and 1xN Sequences, respectively.</p>
 
 <p>Look at <code>Cross.java</code>; that's the class you need to
 extend.  The only two methods you need to define are
-<code>getMinimumSignificant()</code>, which returns the minimum
+<code>getMinimumSignificant()</code>, which returns the minimum -- NO, THIS IS OBSOLETE!  DON'T DO IT! --
 significant crossdate score for that algorithm, and
 <code>compute(int,int)</code>, which computes the score at those
 particular offsets.  Your constructor should accept two Sample
-objects, and pass them to super().</p>
+objects, and pass them to super().</p> -- NO, THERE SHOULD BE A FACTORY, NO CONSTRUCTOR SHOULD BE REQUIRED
 
 <p>You may need to create a <code>preamble()</code> method, too; this
 does any needed operations with the data that must be done before
 individual scores are calculated.  For example, the T-Score preamble
-creates a normalized copy of the data.</p>
+creates a normalized copy of the data.</p> -- NO, PREAMBLE SHOULD BE A SPECIAL CASE OF RUN, NOT AN ABSTRACT METHOD
 
-<p>A <code>CrossSet</code> is a full set of crossdates for a given
-pair (fixed and moving) of samples.  If you want your crossdate to be
-in general use, add it to <code>CrossSet()</code>.</p>
+<p>If you want your crossdate to be in general use, add it to
+<code>CrossdateKit</code>, so people can use it.  If it's so popular
+that people will want to use it all the time, add it to the list of
+defaults in <code>Sequence</code>.</p>
 
 
 
