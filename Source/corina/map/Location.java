@@ -192,4 +192,18 @@ public class Location implements Cloneable {
     public boolean isNear(Location loc) {
         return (loc != null) && (distanceTo(loc) <= NEAR);
     }
+
+    public static Location midpoint(Location a, Location b) {
+        // latitude doesn't wrap around, just take the mean
+        Location l = new Location();
+        l.latitude = (a.latitude + b.latitude) / 2;
+
+        // longitude, otoh, does wrap around, so pick the short way
+        l.longitude = (a.longitude + b.longitude) / 2;
+        if (Math.abs(a.longitude - b.longitude) >= 180) {
+            l.longitude += 180;
+            l.longitude %= 180;
+        }
+        return l;
+    }
 }
