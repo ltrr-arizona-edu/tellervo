@@ -93,16 +93,16 @@ public class FontPrefComponent implements ActionListener {
   private Runnable showdialog = new Runnable() {
     public void run() {
       Component actualParent;
-      if (parent == null) actualParent = parent;
+      if (parent != null) actualParent = parent;
       else actualParent = BOGUS_PARENT;
+      System.out.println(actualParent);
       Font font = JFontChooser.showDialog(actualParent, "Choose new font", "Sample", label.getFont());
-    
-      // XXX: appears not to be working at the moment.. to be fixed soon
-      // update sample text, font
+
+      if (font == null) return;
+
       label.setFont(font);
       label.setText(font.getName() + " " + font.getSize());
       label.repaint();
-
       // store pref
       Prefs.setPref(pref, UIDefaultsComponent.stringifyFont(font));
     }
