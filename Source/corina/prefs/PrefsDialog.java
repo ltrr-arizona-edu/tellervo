@@ -279,9 +279,10 @@ public class PrefsDialog extends JFrame {
         categories = PrefsTemplate.getCategories();
         options = PrefsTemplate.getOptions();
 
-        // use my own panel
+        // use my own panel, so i can add a border
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        p.setBorder(BorderFactory.createEmptyBorder(12, 20, 20, 20));
         setContentPane(p);
 
         // fill up the tabbed pane
@@ -327,9 +328,6 @@ public class PrefsDialog extends JFrame {
         buttons.add(okay);
         p.add(Box.createVerticalStrut(12));
         p.add(buttons);
-
-        // a little border
-        p.setBorder(BorderFactory.createEmptyBorder(12, 20, 20, 20));
 
         // pack
         pack();
