@@ -386,17 +386,13 @@ public class SampleDataView extends JPanel implements SampleListener, PrefsListe
 	// BUG: this seems to not work sometimes (?) -- try zapfino
 
 	// disable gridlines, if requested
-	boolean gridlines = Boolean.getBoolean("corina.edit.gridlines");
+	boolean gridlines = Boolean.valueOf(Prefs.getPref(Prefs.EDIT_GRIDLINES)).booleanValue();
 	myTable.setShowGrid(gridlines);
 
 	// set colors
-	Color fore = Color.getColor("corina.edit.foreground");
-	Color back = Color.getColor("corina.edit.background");
-	if (back != null)
-	    myTable.setBackground(back);
-	if (fore != null)
-	    myTable.setForeground(fore);
-    }
+	  myTable.setBackground(Prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
+    myTable.setForeground(Prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
+  }
 
     public void measured(int x) {
 	// figure out what year we're looking at now -- BREAKS IF EDITING=TRUE

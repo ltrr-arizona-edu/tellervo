@@ -163,7 +163,7 @@ public class CrossdatingPrefsPanel extends Container {
     // highlight sig scores -- corina.grid.highlight
     // TODO: rename this pref to corina.cross.highlight!
     BoolPrefComponent hilite = new BoolPrefComponent("Highlight significant scores",
-                                                     "corina.grid.highlight");
+                                                     Prefs.GRID_HIGHLIGHT);
     gbc.gridy++;
     gbc.gridx = 0;
     gbc.weightx = 0;
@@ -172,7 +172,7 @@ public class CrossdatingPrefsPanel extends Container {
         
     // highlight color (indented) -- corina.grid.highlightcolor
     // TODO: rename this pref to corina.cross.highlight.color?
-    ColorPrefComponent color = new ColorPrefComponent("corina.grid.highlightcolor");
+    ColorPrefComponent color = new ColorPrefComponent(Prefs.GRID_HIGHLIGHTCOLOR);
     hilite.controls(color);
     l = new JLabel("Color:");
     l.setLabelFor(color);

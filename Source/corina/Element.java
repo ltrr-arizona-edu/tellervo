@@ -21,6 +21,7 @@
 package corina;
 
 import corina.formats.WrongFiletypeException;
+import corina.prefs.Prefs;
 
 import java.io.File;
 import java.io.IOException;
@@ -163,7 +164,7 @@ public class Element implements Comparable {
        @return the filename, with @'s
     */
     public String getFilenameWithAts() {
-	String root = System.getProperty("corina.dir.data");
+	String root = Prefs.getPref("corina.dir.data");
 
 	// no known root, or isn't a subfolder of root
 	// (BUG: i don't think this is 100% correct, for various reasons)

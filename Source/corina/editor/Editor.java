@@ -20,58 +20,72 @@
 
 package corina.editor;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.print.PageFormat;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
+import javax.swing.undo.UndoableEditSupport;
+
 import corina.Sample;
-import corina.SampleListener;
 import corina.SampleEvent;
-import corina.Element;
-import corina.Weiserjahre;
-import corina.site.Site;
-import corina.gui.XFrame;
-import corina.gui.menus.WindowMenu;
-import corina.gui.menus.HelpMenu;
-import corina.gui.FileDialog;
-import corina.gui.UserCancelledException;
-import corina.gui.ElementsPanel;
-import corina.gui.SaveableDocument;
-import corina.gui.PrintableDocument;
+import corina.SampleListener;
 import corina.gui.Bug;
-import corina.gui.Layout;
+import corina.gui.ElementsPanel;
+import corina.gui.FileDialog;
 import corina.gui.Help;
+import corina.gui.Layout;
+import corina.gui.PrintableDocument;
+import corina.gui.SaveableDocument;
+import corina.gui.UserCancelledException;
+import corina.gui.XFrame;
+import corina.gui.menus.HelpMenu;
+import corina.gui.menus.WindowMenu;
 import corina.prefs.Prefs;
 import corina.prefs.PrefsEvent;
 import corina.prefs.PrefsListener;
-import corina.util.Platform;
-import corina.util.Overwrite;
-import corina.util.OKCancel;
-import corina.util.Center;
-import corina.util.DocumentListener2;
+import corina.site.Site;
+import corina.ui.Alert;
 import corina.ui.Builder;
 import corina.ui.I18n;
-import corina.ui.Alert;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.util.Collections;
-
-import java.text.MessageFormat;
-
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Dimension;
-import java.awt.Component;
-import java.awt.BorderLayout;
-import java.awt.Frame; // for dummy parent frames
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.undo.UndoManager;
-import javax.swing.undo.UndoableEditSupport;
-import javax.swing.undo.UndoableEdit;
-import javax.swing.text.Document;
-import javax.swing.text.BadLocationException;
-
-import java.awt.print.PageFormat;
+import corina.util.Center;
+import corina.util.CorinaLog;
+import corina.util.DocumentListener2;
+import corina.util.OKCancel;
+import corina.util.Overwrite;
+import corina.util.Platform;
 
 /*
  left to do:
@@ -139,6 +153,8 @@ import java.awt.print.PageFormat;
 public class Editor extends XFrame
                     implements SaveableDocument, PrefsListener,
                                SampleListener, PrintableDocument {
+
+  private static final CorinaLog log = new CorinaLog("Editor");
 
     // gui
     private JTable wjTable;
@@ -662,9 +678,7 @@ public class Editor extends XFrame
         initRolodex();
 
         // set preferences
-        // HACK: this is a hack right now to initialize prefs, until
-        // I refactor into an initialization method
-        prefChanged(null);
+        setUIFromPrefs();
 
         // init undo/redo
         initUndoRedo();
@@ -715,6 +729,26 @@ public class Editor extends XFrame
       setMod(this,meta.mod?) on metadataChanged() -- or anything, actually.
     */
 
+    private void setUIFromPrefs() {
+      if (wjTable == null) return;
+      Font font = Font.decode(Prefs.getPref(Prefs.EDIT_FONT));
+      if (font != null)
+          wjTable.setFont(font);
+      // BUG: this doesn't reset the row-heights!
+
+      // from font size, set table row height
+      wjTable.setRowHeight((font == null ? 12 : font.getSize()) + 4);
+
+      // disable gridlines, if requested
+      boolean gridlines = Boolean.valueOf(Prefs.getPref(Prefs.EDIT_GRIDLINES, "true")).booleanValue();
+      wjTable.setShowGrid(gridlines);
+
+      // set colors
+      wjTable.setBackground(Prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
+      wjTable.setForeground(Prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
+      wjTable.repaint();
+    }
+    
     // PrefsListener
     public void prefChanged(PrefsEvent e) {
 	// strategy: refresh each view i contain
@@ -728,30 +762,7 @@ public class Editor extends XFrame
 
 	// add metadata update here, when it's written
 
-	// --- old-style stuff below here: wj ---
-
-	// reset fonts
-	Font font = Font.getFont("corina.edit.font");
-	if (font != null && wjTable != null)
-	    wjTable.setFont(font);
-	// BUG: this doesn't reset the row-heights!
-
-	// from font size, set table row height
-	if (wjTable != null)
-	    wjTable.setRowHeight((font == null ? 12 : font.getSize()) + 4);
-
-	// disable gridlines, if requested
-	boolean gridlines = Boolean.getBoolean("corina.edit.gridlines");
-	if (wjTable != null)
-	    wjTable.setShowGrid(gridlines);
-
-	// set colors
-	Color fore = Color.getColor("corina.edit.foreground");
-	Color back = Color.getColor("corina.edit.background");
-	if (back != null && wjTable != null)
-	    wjTable.setBackground(back);
-	if (fore != null && wjTable != null)
-	    wjTable.setForeground(fore);
+      setUIFromPrefs();
     }
 
     //

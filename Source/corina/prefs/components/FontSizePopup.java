@@ -1,11 +1,17 @@
 package corina.prefs.components;
 
-import java.awt.Font;
 import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.event.*;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
+
+import corina.prefs.Prefs;
 
 public class FontSizePopup extends JComboBox {
 
@@ -37,7 +43,7 @@ public class FontSizePopup extends JComboBox {
     };
 
     public FontSizePopup(String property, JTable preview) {
-	Font oldFont = Font.getFont(property);
+	Font oldFont = Prefs.getFontPref(property, new Font(null));
 	for (int i=0; i<sizes.length; i++) {
 	    addItem(String.valueOf(sizes[i]));
 	    if (oldFont.getSize() == sizes[i])

@@ -1,13 +1,18 @@
 package corina.prefs.components;
 
-import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Component;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
+
+import corina.prefs.Prefs;
 
 // UNUSED!
 public class FontPopup extends JComboBox {
@@ -36,7 +41,7 @@ public class FontPopup extends JComboBox {
     }
 
     public FontPopup(String property, JTable preview) {
-	Font oldFont = Font.getFont(property);
+	Font oldFont = Prefs.getFontPref(property, new Font(null));
 	String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
 	// --start hack--
 	int n=0;

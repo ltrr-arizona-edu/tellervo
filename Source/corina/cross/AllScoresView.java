@@ -156,9 +156,9 @@ public class AllScoresView extends JPanel implements PrefsListener {
 	    // ...BETTER: align around decimal point
             setOpaque(true); // is this still needed?
             df = new DecimalFormat(crossdate.getFormat());
-            fore = Color.getColor("corina.edit.foreground"); // WAS: ...cross...
-            back = Color.getColor("corina.edit.background"); // WAS: ...cross...
-            lite = Color.getColor("corina.grid.highlightcolor");
+            fore = Prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black); // WAS: ...cross...
+            back = Prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white); // WAS: ...cross...
+            lite = Prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR, Color.green);
         }
         public Component getTableCellRendererComponent(JTable table,
 						       Object value,
@@ -176,7 +176,7 @@ public class AllScoresView extends JPanel implements PrefsListener {
             if (!fontSetYet) {
                 super.setFont(table.getFont());
                 // super.setForeground(Color.getColor("corina.cross.foreground")); // do fore, too
-                super.setForeground(Color.getColor("corina.edit.foreground")); // do fore, too
+                super.setForeground(Prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black)); // do fore, too
                 // BUG: what if corina.edit.foreground == null?
                 fontSetYet = true;
             }
@@ -336,38 +336,36 @@ public class AllScoresView extends JPanel implements PrefsListener {
     private void refreshFont() {
         // font
         // WAS: corina.cross.font (merged)
-        if (System.getProperty("corina.edit.font") != null) {
-            Font f = Font.getFont("corina.edit.font");
-            table.setFont(f);
-            table.setRowHeight(f.getSize() + 3);
-        }
+         Font f = Prefs.getFontPref(Prefs.EDIT_FONT, null);
+         if (f != null) {
+           table.setFont(f);
+           table.setRowHeight(f.getSize() + 3);
+         }
     }
     private void refreshBackground() {
-        if (System.getProperty("corina.edit.background") != null)
-            table.setBackground(Color.getColor("corina.edit.background"));
+      table.setBackground(Prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
     }
     private void refreshForeground() {
-        if (System.getProperty("corina.edit.foreground") != null)
-            table.setForeground(Color.getColor("corina.edit.foreground"));
-        // WAS: corina.cross.background, corina.cross.foreground
+      table.setForeground(Prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
+      // WAS: corina.cross.background, corina.cross.foreground
     }
 
     public void prefChanged(PrefsEvent e) {
         String pref = e.getPref();
 
-        if (pref.equals("corina.edit.gridlines")) {
+        if (pref.equals(Prefs.EDIT_GRIDLINES)) {
             refreshGridlines();
         } else if (pref.startsWith("corina.cross.") && pref.endsWith(".format")) {
             refreshFormat();
-        } else if (pref.equals("corina.edit.font")) {
+        } else if (pref.equals(Prefs.EDIT_FONT)) {
             refreshFont();
-        } else if (pref.equals("corina.edit.background")) {
+        } else if (pref.equals(Prefs.EDIT_BACKGROUND)) {
             refreshBackground();
             refreshFormat();
-        } else if (pref.equals("corina.edit.foreground")) {
+        } else if (pref.equals(Prefs.EDIT_FOREGROUND)) {
             refreshForeground();
             refreshFormat();
-        } else if (pref.equals("corina.grid.highlightcolor")) {
+        } else if (pref.equals(Prefs.GRID_HIGHLIGHTCOLOR)) {
             refreshFormat();
         }
     }

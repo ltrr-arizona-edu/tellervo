@@ -244,7 +244,7 @@ public class StandardPlot {
 
     public void update() {
         // read sys props
-        _baselines = Boolean.getBoolean("corina.graph.baselines");
+        _baselines = Boolean.valueOf(Prefs.getPref("corina.graph.baselines")).booleanValue();
         _yearsize = Integer.parseInt(Prefs.getPref("corina.graph.pixelsperyear", "10"));
         _dottedIndexes = Boolean.getBoolean("corina.graph.dotindexes");
     }

@@ -1113,7 +1113,7 @@ public class Browser extends JFrame {
         }
     }
 
-    private String folder=System.getProperty("corina.dir.data"); // redundant?
+    private String folder=Prefs.getPref("corina.dir.data"); // redundant?
 
     private static final Map fileMetadata = new Hashtable();
     static {
@@ -1280,8 +1280,8 @@ public class Browser extends JFrame {
     }
 
     // the name of the field to sort by
-    private String sortField = System.getProperty("corina.browser.sort", "name");
-    private boolean reverse = Boolean.getBoolean("corina.browser.reverse"); // BUG: need to set SHR
+    private String sortField = Prefs.getPref("corina.browser.sort", "name");
+    private boolean reverse = Boolean.valueOf(Prefs.getPref("corina.browser.reverse")).booleanValue(); // BUG: need to set SHR
 
     // assumes it's given a valid (view) column
     public void sortBy(int viewColumn) {
@@ -1473,7 +1473,7 @@ public class Browser extends JFrame {
 
     // load fields from prefs (or use a reasonable default).
     private void loadFields() {
-        String pref = System.getProperty("corina.browser.fields", DEFAULT_FIELDS);
+        String pref = Prefs.getPref("corina.browser.fields", DEFAULT_FIELDS);
 	// FIXME: prefs.getPref() needs defaults!
 
 	// always add name, if for some reason it's not there (e.g., fields="")

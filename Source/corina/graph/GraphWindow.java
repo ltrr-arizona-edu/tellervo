@@ -429,7 +429,7 @@ public class GraphWindow extends XFrame implements SampleListener,
             this.add(_axisMenu);
 
             // Show/hide gridlines
-            _gridlinesMenu = Builder.makeMenuItem(Boolean.getBoolean("corina.graph.graphpaper") ?
+            _gridlinesMenu = Builder.makeMenuItem(Boolean.valueOf(Prefs.getPref("corina.graph.graphpaper")).booleanValue() ?
                                                   "grid_hide" : "grid_show");
             _gridlinesMenu.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
@@ -442,7 +442,7 @@ public class GraphWindow extends XFrame implements SampleListener,
             this.add(_gridlinesMenu);
 
             // Show/hide baselines
-            _baselinesMenu = Builder.makeMenuItem(Boolean.getBoolean("corina.graph.baselines") ?
+            _baselinesMenu = Builder.makeMenuItem(Boolean.valueOf(Prefs.getPref("corina.graph.baselines")).booleanValue() ?
                                                   "base_hide" : "base_show");
             _baselinesMenu.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {

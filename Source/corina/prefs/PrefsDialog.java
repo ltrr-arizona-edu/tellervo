@@ -20,20 +20,24 @@
 
 package corina.prefs;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+
+import corina.gui.Bug;
+import corina.prefs.panels.AdvancedPrefsPanel;
 import corina.prefs.panels.AppearancePrefsPanel;
+import corina.prefs.panels.CrossdatingPrefsPanel;
 import corina.prefs.panels.DataPrefsPanel;
 import corina.prefs.panels.GraphPrefsPanel;
-import corina.prefs.panels.CrossdatingPrefsPanel;
-import corina.prefs.panels.AdvancedPrefsPanel;
-
-import corina.gui.Bug; // ???
 import corina.ui.Builder;
 import corina.util.Center;
-
-import java.awt.BorderLayout;
-import javax.swing.JFrame;
-import javax.swing.JTabbedPane;
-import javax.swing.BorderFactory;
 
 /**
     A dialog for setting user preferences.
@@ -145,6 +149,17 @@ public class PrefsDialog extends JFrame {
     tabs.addTab("Graphs", new GraphPrefsPanel());
     tabs.addTab("Advanced", new AdvancedPrefsPanel());
     getContentPane().add(tabs, BorderLayout.CENTER);
+    JPanel okButtonContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    String oktext = corina.ui.I18n.getText("ok");
+    if (oktext == null) oktext = "OK";
+    JButton okButton = new JButton(oktext);
+    okButtonContainer.add(okButton);
+    okButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent ae) {
+        PrefsDialog.this.hide();
+      }
+    });
+    getContentPane().add(okButtonContainer, BorderLayout.SOUTH);
     
     // pack, center on screen, and show
     pack();

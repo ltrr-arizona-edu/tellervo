@@ -20,20 +20,21 @@
 
 package corina.prefs.components;
 
-import corina.prefs.Prefs;
-
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Component;
-import java.awt.event.ActionListener;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.Icon;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JColorChooser;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
-import javax.swing.Icon;
+
+import corina.prefs.Prefs;
 
 /**
     A popup menu for picking a color.  Given a key (like "corina.graph.background"),
@@ -137,8 +138,7 @@ public class ColorPrefComponent extends JComboBox {
     */
     public ColorPrefComponent(String preference) {
 	// color
-        String oldColorString = Prefs.getPref(preference);
-	Color oldColor = Color.decode(oldColorString); // BUG: what if it's not parseable?
+      Color oldColor = Prefs.getColorPref(preference, Color.black); // BUG: what if it's not parseable?
 	boolean stdColor = false;
 
 	// add a bunch of standard colors

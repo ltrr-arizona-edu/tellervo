@@ -21,6 +21,7 @@
 package corina.cross;
 
 import corina.Year;
+import corina.prefs.Prefs;
 import corina.print.Line;
 import corina.print.EmptyLine;
 import corina.print.TextLine;
@@ -325,7 +326,7 @@ public class CrossdatePrinter extends Printer {
                         int ascent = g.getFontMetrics(NORMAL).getAscent();
                         Color old = g2.getColor();
 			// FIXME: use Prefs
-                        g2.setColor(Color.getColor("corina.grid.highlightcolor"));
+                        g2.setColor(Prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR, Color.green));
                         // FIXME: ugly ugly ugly!
                         g2.setStroke(new BasicStroke(0)); // !!!
                         g2.fillRect((int) (pf.getImageableX() + colWidth*(i+2)-width - EPS),

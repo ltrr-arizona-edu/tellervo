@@ -500,12 +500,10 @@ System.out.println("movingFloats: " + movingFloats);
         }
     }
     private void refreshBackground() {
-        if (System.getProperty("corina.edit.background") != null) // WAS: ...cross...
-            table.setBackground(Color.getColor("corina.edit.background"));
+      table.setBackground(Prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
     }
     private void refreshForeground() {
-        if (System.getProperty("corina.edit.foreground") != null) // WAS: ...cross...
-            table.setForeground(Color.getColor("corina.edit.foreground"));
+      table.setForeground(Prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
     }
 
     public void prefChanged(PrefsEvent e) {

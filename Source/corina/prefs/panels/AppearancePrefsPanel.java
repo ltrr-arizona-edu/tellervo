@@ -40,7 +40,7 @@ public class AppearancePrefsPanel extends JComponent {
     
     JComponent gridGroup = new JPanel(new GridBagLayout());
     gridGroup.setBorder(BorderFactory.createTitledBorder("Grid settings"));
-    gridGroup.setToolTipText("Grid settings");
+    gridGroup.setToolTipText("Grid settings: these settings apply to various Corina grid components");
     
     JLabel l = new JLabel("Text color:");
     Component c = new ColorPrefComponent(Prefs.EDIT_FOREGROUND);
@@ -100,6 +100,7 @@ public class AppearancePrefsPanel extends JComponent {
     
     c = new UIDefaultsComponent();
     ((JComponent) c).setBorder(BorderFactory.createTitledBorder("UI fonts and colors"));
+    ((JComponent) c).setToolTipText("UI fonts and colors: settings modified here will apply to all universally throughout Corina");
     add(c, gbc);
   }
   

@@ -190,9 +190,9 @@ public class Grid implements Runnable, Previewable {
         }
         public void print(Graphics2D g2, int x, int y, float scale) {
             // fill with highlight -- would the user ever NOT want this?  well, yes, possibly.
-            if (Boolean.getBoolean("corina.grid.highlight") && cross.isSignificant()) {
+            if (Boolean.valueOf(Prefs.getPref(Prefs.GRID_HIGHLIGHT)).booleanValue() && cross.isSignificant()) {
                 Color oldColor = g2.getColor();
-                g2.setColor(Color.getColor("corina.grid.highlightcolor"));
+                g2.setColor(Prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR, Color.green));
                 g2.fillRect(x, y, (int) (getCellWidth()*scale), (int) (getCellHeight()*scale));
                 g2.setColor(oldColor);
             }
@@ -561,7 +561,7 @@ public class Grid implements Runnable, Previewable {
         int h; // height of a line of text
 
         // font to use
-        Font myFont = Font.getFont("corina.grid.font", new Font("sansserif", Font.PLAIN, 12));
+        Font myFont = Prefs.getFontPref("corina.grid.font", new Font("sansserif", Font.PLAIN, 12));
         // erp ... this calls new font() for the second arg even when it's not needed (!)
 
         // i don't think this is quite kosher...  (uh, nope.  fixme.

@@ -508,7 +508,7 @@ public class GrapherPanel extends JPanel
 	setCursor(crosshair);
 
 	// baselines?
-	baselines = Boolean.getBoolean("corina.graph.baselines");
+	baselines = Boolean.valueOf(Prefs.getPref("corina.graph.baselines")).booleanValue();
 
 	// key listener -- apparently the focus gets screwed up and
 	// keys stop responding if I don't add a key listener to both
@@ -829,7 +829,7 @@ public class GrapherPanel extends JPanel
 	// the bottommost layer, on up to the vertical-bar on top.
 
 	// draw graphpaper
-	if (Boolean.getBoolean("corina.graph.graphpaper")) {
+	if (Boolean.valueOf(Prefs.getPref("corina.graph.graphpaper")).booleanValue()) {
 	    // PERF: is this expensive?  (it's not just a bool!)
 	    paintGraphPaper(g2);
 	}

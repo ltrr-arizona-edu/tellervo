@@ -20,50 +20,43 @@
 
 package corina.prefs;
 
-import corina.util.Platform;
-import corina.util.JDisclosureTriangle;
-import corina.util.JLinedLabel;
-import corina.gui.Bug;
-import corina.ui.I18n;
-import corina.util.CorinaLog;
-
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.FileNotFoundException;
-
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.AbstractAction;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
-
-import java.awt.event.ActionEvent;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
+
+import corina.gui.Bug;
+import corina.ui.I18n;
+import corina.util.CorinaLog;
+import corina.util.JDisclosureTriangle;
+import corina.util.Platform;
 
 /**
  * Storage and access of user preferences.
@@ -88,6 +81,10 @@ public class Prefs {
   public static final String EDIT_BACKGROUND = "corina.edit.background";
   public static final String EDIT_FONT = "corina.edit.font";
   public static final String EDIT_GRIDLINES = "corina.edit.gridlines";
+  public static final String GRID_HIGHLIGHT = "corina.grid.highlight";
+  public static final String GRID_HIGHLIGHTCOLOR = "corina.grid.hightlightcolor";
+  
+  
   
   private static final CorinaLog log = new CorinaLog("Prefs");
   /*
@@ -422,7 +419,50 @@ public class Prefs {
     if (value == null) value = deflt;
     return value;
   }
+
+  public static Dimension getDimensionPref(String pref, Dimension deflt) {
+    String value = prefs.getProperty(pref);
+    if (value == null) return deflt;
+    StringTokenizer st = new StringTokenizer(value, ",");
+    Dimension d = new Dimension(deflt);
+    if (st.hasMoreTokens()) {
+      String s = st.nextToken();
+      try {
+        int i = Integer.parseInt(s);
+        if (i > 0) d.width = i;
+      } catch (NumberFormatException nfe) {
+        log.warn("Invalid dimension width: " + s);
+      }
+    }
+    if (st.hasMoreTokens()) {
+      String s = st.nextToken();
+      try {
+        int i = Integer.parseInt(s);
+        if (i > 0) d.height = i; 
+      } catch (NumberFormatException nfe) {
+        log.warn("Invalid dimension height: " + s);
+      }
+    }
+    return d;
+  }
   
+  public static Color getColorPref(String pref, Color deflt) {
+    String value = prefs.getProperty(pref);
+    if (value == null) return deflt;
+    try {
+      return Color.decode(value);
+    } catch (NumberFormatException nfe) {
+      log.warn("Invalid color for preference '" + pref + "': " + value);
+      return deflt;
+    }
+  }
+
+  public static Font getFontPref(String pref, Font deflt) {
+    String value = prefs.getProperty(pref);
+    if (value == null) return deflt;
+    return Font.decode(value);
+  }
+
   public static void removePref(String pref) {
     prefs.remove(pref);
     save();
