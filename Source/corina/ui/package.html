@@ -1,0 +1,51 @@
+<p>This isn't used yet (it's just a rough hack),
+but the idea is to be able to generate
+parts of the UI automatically,
+like menubars and menus,
+and (nested) component layouts.
+It's sort of like <a href="http://www.xulplanet.com/">XUL</a>,
+except that it's converted to actual code and compiled
+at build-time, so it gives the programmer increased readability
+without sacrificing any performance at runtime.</p>
+
+<p>For testing, my sample input file (<code>"GridMenus.xmlui"</code>) is:</p>
+
+<pre style="background-color: #ddd">
+&lt;?xml version="1.0"?&gt;
+
+&lt;ui class="GridMenus" package="corina.cross"&gt;
+
+        &lt;menu id="view" title="View" mnemonic="V"&gt;
+                &lt;menuitem id="graph" title="Graph All"/&gt;
+                &lt;separator/&gt;
+                &lt;menuitem id="zoom_in" title="Zoom In" mnemonic="I" accelerator="accel up"/&gt;
+                &lt;menuitem id="zoom_out" title="Zoom Out" mnemonic="O" accelerator="accel down"/&gt;
+        &lt;/menu&gt;
+&lt;/ui&gt;
+</pre>
+
+<p>Which generates this output file (<code>"GridMenus.java"</code>):</p>
+
+<pre style="background-color: #ddd">
+package corina.cross;
+
+public class GridMenus {
+  public static javax.swing.JComponent getComponent() {
+   javax.swing.JMenu id0 = new javax.swing.JMenu("View");
+   id0.setMnemonic('V');
+   javax.swing.JMenuItem id1 = new javax.swing.JMenuItem("Graph All");
+   javax.swing.JMenuItem id3 = new javax.swing.JMenuItem("Zoom In");
+   id3.setMnemonic('I');
+   id3.setAccelerator(corina.ui.RuntimeUtils.getKeyStroke("accel up"));
+   javax.swing.JMenuItem id4 = new javax.swing.JMenuItem("Zoom Out");
+   id4.setMnemonic('O');
+   id4.setAccelerator(corina.ui.RuntimeUtils.getKeyStroke("accel down"));
+   id0.add(id1);
+   id0.addSeparator();
+   id0.add(id3);
+   id0.add(id4);
+
+    return id0;
+  }
+}
+</pre>
