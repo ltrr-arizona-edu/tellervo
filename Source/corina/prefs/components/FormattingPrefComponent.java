@@ -4,10 +4,11 @@ import corina.prefs.Prefs;
 
 import java.text.DecimalFormat;
 
-import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
+
+import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 
 /*
@@ -16,7 +17,7 @@ import java.awt.event.ActionEvent;
 
 // a prefs component for number formatting: 0.0, 0.00, 0.000, etc.
 // FIXME: extend jcombobox, instead of jpanel?
-public class FormattingPrefComponent extends JPanel {
+public class FormattingPrefComponent extends Container {
     private static String FORMAT_STRINGS[] = new String[] {
         "0.0", "0.00", "0.000", "0.0000", "0.00000",
         "0%", "0.0%", "0.00%", "0.000%",
@@ -27,6 +28,7 @@ public class FormattingPrefComponent extends JPanel {
     // example: "corina.cross.tscore.format", "0.00", "T-score format:"
     // defaultValue may be null, in which case it falls back to "0.00" if needed.
     public FormattingPrefComponent(String key, String defaultValue) {
+      setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
         // make an array, |items|, that holds the strings i'll actually show
         int n = FORMAT_STRINGS.length;
         String items[] = new String[n];
@@ -39,7 +41,7 @@ public class FormattingPrefComponent extends JPanel {
             // add(new JLabel(label)); // REMOVE!
         add(popup);
         // HACK:
-        setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        //setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
         // set default value
         setInitialValue(popup, key, defaultValue);
