@@ -15,198 +15,513 @@
 // along with Corina; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// Copyright 2001 Ken Harris <kbh7@cornell.edu>
+// Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
 package corina.map;
 
-import java.io.StringReader;
-import java.io.StreamTokenizer;
-import java.io.IOException;
+import corina.ui.I18n;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.StringTokenizer;
 
-import java.awt.Dimension;
+import java.text.DecimalFormat;
 
 /**
-   A (latitude, longitude) location on the earth.  (See also ISO 6709,
-   which I ignore, because it's too much trouble to support too many
-   standards.)
+   A (latitude, longitude) location on the earth.
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
+   <p>Latitudes run from -90 to 90 degrees; longitudes run from -180 to 180 degrees.
+   Positive latitudes are north; positive longitudes are east.</p>
 
+   <p>The accessors are a bit different than most classes, because there are two
+   fairly natural ways to access latitude and longitude angles.
+
+   <ul>
+     <li>The first is how you'd read or write them, with degrees, minutes, and seconds,
+     like "38&deg;15'N".
+
+     <li>The second is more natural for computation, as a floating point number, like
+     38.25.
+   </ul>
+
+   <p>Since there are times you'd need both, both are provided.  There are 8
+   accessors total, for each combination of get/set, latitude/longitude, and
+   integer/floating point.  The methods that end with "...AsDegrees()" deal with
+   floating point numbers, as degrees, and the methods that end with "...AsSeconds()"
+   deal with integers, as seconds (60 seconds to a minute, 60 minutes to a degree).
+   (Note that 1 second is about 30 meters at the equator.  You'll never need
+   sub-second resolution.)</p>
+
+   <p>(It might be nice to have immutable Locations sometimes, but when rendering maps
+   you need speed, speed, speed, and one of the best ways to make Java go faster is to
+   generate less garbage for the GC to have to deal with.)</p>
+ 
+   <p>ISO 6709 provides an ASCII-only, locale-independent way to store
+   latitude, longitude, and altitude.  ISO is
+   <a href="http://www.iso.org/iso/en/CatalogueDetailPage.CatalogueDetail?CSNUMBER=13152">charging
+   30 bucks for it</a>, even though it's only a 3-page PDF.  Sigh.
+   But you can get <a href="http://www.ftp.uni-erlangen.de/pub/doc/ISO/ISO-6709-summary">the
+   Cliff notes here</a>, or <a href="http://www.ftp.uni-erlangen.de/pub/doc/ISO/iso-6709.pdf">the
+   whole thing here</a>.</p>
+
+   <h2>Left to do:</h2>
+   <ul>
+     <li>Extend parseISO6709() to parse any ISO-6709 format
+     <li>Decide if this class is threadsafe or not.
+   </ul>
+ 
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class Location implements Cloneable {
 
-    /** Radius of the earth in kilometers, from Miller & Schroeer,
-        <i>College Physics</i>, 6th ed: 6.36x10<sup>3</sup> km. */
-    public final static double EARTH_RADIUS = 6.38e3; // 6.38e6m
+    //
+    // CONSTANTS
+    //
 
-    // ------------------------------------------------------------
-    // +lat is N, +long is E
-    public double latitude=0.0, longitude=0.0;
+    /**
+       Radius of the earth in kilometers.  From Miller & Schroeer,
+       <i>College Physics</i>, 6th ed: 6.38x10<sup>3</sup> km.
+    */
+    public final static float EARTH_RADIUS = 6.38e3f; // 6.38 x 10^6 m
 
-    // merely to make clone public ... a shallow copy of 2 doubles is fine.
+    // limits on latitude and longitude, in seconds
+    private static final int MIN_LATITUDE = -90 * 3600;
+    private static final int MAX_LATITUDE = 90 * 3600;
+    private static final int MIN_LONGITUDE = -180 * 3600;
+    private static final int MAX_LONGITUDE = 180 * 3600 - 1;
+
+    // L10n of N/S/E/W -- i'll use these inside a loop, later,
+    // so i'll just keep them around.
+    private static final String NORTH = I18n.getText("north");
+    private static final String SOUTH = I18n.getText("south");
+    private static final String EAST = I18n.getText("east");
+    private static final String WEST = I18n.getText("west");
+    
+    //
+    // FIELDS
+    //
+
+    // in seconds
+    private int latitude = 0;
+    private int longitude = 0;
+
+    //
+    // CLONING
+    //
+
+    /**
+       Make a clone of this Location.
+
+       @return a Location with the same latitude and longitude as this one
+    */
     public Object clone() {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException cnse) {
-            return null; // can't happen
-        }
+        Location clone = new Location();
+        clone.latitude = this.latitude;
+        clone.longitude = this.longitude;
+        return clone;
     }
 
-    // ------------------------------------------------------------
-
-    /** Default constructor.  0 degrees North, 0 degrees East. */
-    public Location() { }
-
-    // lat/long, given as degrees
-    public Location(double latitude, double longitude) {
-        this.latitude = latitude % 90;
-        this.longitude = longitude % 180;
+    /**
+       Copy the (latitude, longitude) from one location to another.
+        
+       @param target the Location to copy from
+       @param source the Location to copy to
+    */
+    public static void copy(Location target, Location source) {
+        target.latitude = source.latitude;
+        target.longitude = source.longitude;
     }
 
-    // lat/long, given as minutes
-    public Location(int latitude, int longitude) {
-        this.latitude = (latitude / 3600.) % 90;
-        this.longitude = (longitude / 3600.) % 180;
+    //
+    // ACCESSORS
+    //
+
+    /**
+       Return the latitude, in degrees.
+        
+       @return the latitude, in degrees
+    */
+    public float getLatitudeAsDegrees() {
+        return latitude / 3600f;
+    }
+    /**
+       Return the longitude, in degrees.
+
+       @return the longitude, in degrees
+    */
+    public float getLongitudeAsDegrees() {
+        return longitude / 3600f;
     }
 
-    /** Constructor, given String.  The input format is perfectly
+    /**
+       Set the latitude, in degrees.
+
+       @param degrees the new latitude, in degrees
+    */
+    public void setLatitudeAsDegrees(float degrees) {
+        int seconds = Math.round(degrees * 3600);
+        if (seconds < MIN_LATITUDE)
+            seconds = MIN_LATITUDE;
+        else if (seconds > MAX_LATITUDE)
+            seconds = MAX_LATITUDE;
+        this.latitude = seconds;
+    }
+    /**
+       Set the longitude, in degrees.
+
+       @param degrees the new longitude, in degrees
+    */
+    public void setLongitudeAsDegrees(float degrees) {
+        int seconds = Math.round(degrees * 3600);
+
+        // need to make sure the longitude is between -180 and 179 degrees.
+        // 180 degrees, for example, gets sent back down to -180.
+        // if i were doing degrees, i'd add 180, mod 360, sub 180.
+        // so just do that in seconds.
+        seconds += 180 * 3600;
+        seconds %= 360 * 3600;
+        if (seconds <= 0)
+            seconds += 180 * 3600;
+        else
+            seconds -= 180 * 3600;
+        
+        this.longitude = seconds;
+    }
+
+    /**
+       Get the latitude, in seconds.
+
+       @return the latitude, in seconds
+    */
+    public int getLatitudeAsSeconds() {
+        return latitude;
+    }
+    /**
+       Get the longitude, in seconds.
+
+       @return the longitude, in seconds
+    */
+    public int getLongitudeAsSeconds() {
+        return longitude;
+    }
+
+    /**
+       Set the latitude, in seconds.
+
+       @param seconds the new latitude, in seconds
+    */
+    public void setLatitudeAsSeconds(int seconds) {
+        if (seconds < MIN_LATITUDE)
+            seconds = MIN_LATITUDE;
+        else if (seconds > MAX_LATITUDE)
+            seconds = MAX_LATITUDE;
+        this.latitude = seconds;
+    }
+    /**
+       Set the longitude, in seconds.
+
+       @param seconds the new longitude, in seconds
+    */
+    public void setLongitudeAsSeconds(int seconds) {
+        // make sure longitude is between -180 and 179 degrees.
+        // see setLongitudeAsDegrees().
+        seconds += 180 * 3600;
+        seconds %= 360 * 3600;
+        if (seconds <= 0)
+            seconds += 180 * 3600;
+        else
+            seconds -= 180 * 3600;
+        
+        this.longitude = seconds;
+    }
+
+    //
+    // CONSTRUCTORS
+    //
+
+    /** Default location: 0&deg;N 0&deg;E. */
+    public Location() {
+        // do nothing
+    }
+
+    /**
+        Constructor, given a String.  The input format is perfectly
 	compatible with the output of toString(), but is lenient in
 	case users type in a location and can't type the degree-sign
-	-- any gap between numbers works, so "34*56' N 11 22W" should
-	parse just fine.
-	@param string the String to parse */
+        &mdash; any gap between numbers works, so "34*56' N 11 22W" will
+	work just fine.
+        
+	@param string the String to parse
+        @exception NumberFormatException if the location can't be parsed
+    */
     public Location(String string) throws NumberFormatException {
-	// parse as "%d %d [NS] %d %d [EW]" (scanf) but using [^0-9] instead of whitespace
-	// so really something like "(%d[^0-9])+ [nsewNSEW] (%d[^0-9])+ [nsewNSEW]" (regex)
-
-	int angle[] = new int[3];
-	int n = 0; // slot to fill
-	angle[0] = angle[1] = angle[2] = 0;
-
-	boolean justHadDigit = false;
-
-	for (int i=0; i<string.length(); i++) {
-	    char c = Character.toUpperCase(string.charAt(i));
-
-	    if (Character.isDigit(c)) {
-		// reading a number
-		angle[n] *= 10;
-		angle[n] += Integer.parseInt(String.valueOf(c));
-	    } else if (c == 'N' || c == 'S' || c == 'E' || c == 'W') {
-		// finished an angle
-		double x = 0.;
-		double divider = 1.;
-		for (int j=0; j<3; j++) {
-		    x += (double) angle[j] / divider;
-		    angle[j] = 0; // reset for next round
-		    divider *= 60.;
-		}
-		n = 0;
-		switch (c) {
-		case 'N': latitude = x; break;
-		case 'S': latitude = -x; break;
-		case 'E': longitude = x; break;
-		case 'W': longitude = -x; break;
-		}
-
-	    } else if (justHadDigit) {
-		// just had a digit, but not now: increment pointer
-		n++;
-	    }
-
-	    justHadDigit = Character.isDigit(c);
-	}
+        if (isISO6709(string))
+            parseISO6709(string);
+        else
+            parseString(string);
     }
 
-    /** Return this location as a nicely-formatted String.
-	@return this location as a string */
+    private void parseString(String string) throws NumberFormatException {
+        String whitespace = " \t\n\r";
+        String degreeMinuteSecond = "\u00B0*'\"";
+        StringTokenizer tok = new StringTokenizer(string, whitespace + degreeMinuteSecond);
+
+        int multiplier = 3600; // mulitply by this to make seconds
+        int total = 0; // total of the seconds so far
+
+        // we'll barf unless we have exactly one of each.
+        int latitudeCount = 0, longitudeCount = 0;
+        
+        while (tok.hasMoreTokens()) {
+            String token = tok.nextToken();
+
+            try {
+                // it's a number: multiply it, to make it seconds, and add it.
+                // (if we get too many numbers, like "12*34'56''78'''N",
+                // multiplier=0 after 3 of them, so it's automatically ignored.)
+                int number = Integer.parseInt(token);
+                total += number * multiplier;
+                multiplier /= 60;
+            } catch (NumberFormatException nfe) {
+                // it's not a number: it's N/S/E/W (if not, ignore it).
+                // assume, in any given locale, that compass points never
+                // differ from each other only by case.  users will love you.
+                String compassPoint = token.toUpperCase();
+
+                if (compassPoint.equals(NORTH)) {
+                    setLatitudeAsSeconds(total); latitudeCount++;
+                } else if (compassPoint.equals(SOUTH)) {
+                    setLatitudeAsSeconds(-total); latitudeCount++;
+                } else if (compassPoint.equals(EAST)) {
+                    setLongitudeAsSeconds(total); longitudeCount++;
+                } else if (compassPoint.equals(WEST)) {
+                    setLongitudeAsSeconds(-total); longitudeCount++;
+                }
+
+                // reset multiplier, total
+                multiplier = 3600;
+                total = 0;
+            }
+        }
+
+        // a location has exactly one latitude, and one longitude.  double-check this.
+        if (latitudeCount != 1 || longitudeCount != 1)
+            throw new NumberFormatException("bad number of terms in location!");
+    }
+
+    // this method only knows how to parse the "+DDMMSS+DDDMMSS/" format so far
+    // (i.e., the format that toISO6709() returns)
+    private void parseISO6709(String string) throws NumberFormatException {
+        if (string.length() != 16)
+            throw new NumberFormatException("don't know how to parse all ISO-6709 locations yet!");
+
+        boolean north = (string.charAt(0) == '+');
+        int latDegs = Integer.parseInt(string.substring(1, 3));
+        int latMins = Integer.parseInt(string.substring(3, 5));
+        int latSecs = Integer.parseInt(string.substring(5, 7));
+        setLatitudeAsSeconds((north ? +1 : -1) * (latDegs*3600 + latMins*60 + latSecs));
+
+        boolean east = (string.charAt(7) == '+');
+        int longDegs = Integer.parseInt(string.substring(8, 11));
+        int longMins = Integer.parseInt(string.substring(11, 13));
+        int longSecs = Integer.parseInt(string.substring(13, 15));
+        setLongitudeAsSeconds((east ? +1 : -1) * (longDegs*3600 + longMins*60 + longSecs));
+    }
+    
+    //
+    // TOSTRING
+    //
+    
+    /**
+       Return this location as a nicely-formatted string.  The string returned by this
+       method is locale-dependent, and should only be used for presentation to the user,
+       not for long-term storage; for that, see the toISO6709() method.
+
+       @see #toISO6709
+     
+       @return this location as a string
+    */
     public String toString() {
-	double tmpLat = Math.abs(latitude);
-	double tmpLong = Math.abs(longitude);
-
-	int latDegs = (int) tmpLat;
-	int latMins = (int) Math.round((tmpLat - latDegs) * 60);
-	int longDegs = (int) tmpLong;
-	int longMins = (int) Math.round((tmpLong - longDegs) * 60);
-
-	// at this point, i'd get returned stuff like "29*60' E".
-	// this is easily solved with some simple normalization.
-	if (latMins == 60) {
-	    latDegs++;
-	    latMins = 0;
-	}
-	if (longMins == 60) {
-	    longDegs++;
-	    longMins = 0;
-	}
-
+        // extract degrees and minutes, latitude and longitude
+        int latDegs = Math.abs(getLatitudeAsSeconds()) / 3600;
+        int latMins = Math.abs(getLatitudeAsSeconds()) / 60 - latDegs * 60;
+        int longDegs = Math.abs(getLongitudeAsSeconds()) / 3600;
+        int longMins = Math.abs(getLongitudeAsSeconds()) / 60 - longDegs * 60;
+        
 	// hemispheres
-	char latHemi = (latitude > 0.0 ? 'N' : 'S');
-	char longHemi = (longitude > 0.0 ? 'E' : 'W');
+	String latHemi = (latitude > 0 ? NORTH : SOUTH);
+	String longHemi = (longitude > 0 ? EAST : WEST);
 
-	// return it
-	return latDegs + "\u00B0" + latMins + "'" + latHemi + " " +
-	    longDegs + "\u00B0" + longMins + "'" + longHemi;
+	// assemble it into a string
+	return latDegs + DEGREE_SIGN + latMins + "'" + latHemi + " " +
+               longDegs + DEGREE_SIGN + longMins + "'" + longHemi;
     }
 
-    // test equality by comparing strings.  not the fastest, but this
-    // takes care of the round-off problem of comparing doubles.
-    public boolean equals(Object l) {
-        return (l instanceof Location) && toString().equals(l.toString());
+    // unicode DEGREE SIGN character
+    private static final String DEGREE_SIGN = "*"; //\u00B0';
+
+    // is this string an ISO-6709 location?
+    private boolean isISO6709(String check) {
+        return (check.startsWith("+") || check.startsWith("-")) && check.endsWith("/");
     }
 
-    /** Compute the surface distance between two Locations, rounded to
-	the nearest 10km.
-	@param loc measure distance to this Location
-	@return the distance in kilometers */
-    public int distanceTo(Location loc) {
+    /**
+       Convert this location to an ISO-6709 string.  (See above for where to ind ISO-6709
+       information.)
+
+       <p>This method always uses the ISO-6709 format <code>+DDMMSS+DDDMMSS/</code>.</p>
+        
+       @return this Location as an ISO-6709 string
+    */
+    public String toISO6709() {
+        StringBuffer buf = new StringBuffer();
+
+        DecimalFormat twoDigits = new DecimalFormat("00");
+        DecimalFormat threeDigits = new DecimalFormat("000");
+        
+        // latitude
+        buf.append(latitude < 0 ? "-" : "+");
+        int latDegs = Math.abs(getLatitudeAsSeconds()) / 3600;
+        int latMins = Math.abs(getLatitudeAsSeconds()) / 60 - latDegs * 60;
+        int latSecs = Math.abs(getLatitudeAsSeconds()) - latDegs * 3600 - latMins * 60;
+        buf.append(twoDigits.format(latDegs));
+        buf.append(twoDigits.format(latMins));
+        buf.append(twoDigits.format(latSecs));
+
+        // longitude
+        buf.append(longitude < 0 ? "-" : "+");
+        int longDegs = Math.abs(getLongitudeAsSeconds()) / 3600;
+        int longMins = Math.abs(getLongitudeAsSeconds()) / 60 - longDegs * 60;
+        int longSecs = Math.abs(getLongitudeAsSeconds()) - longDegs * 3600 - longMins * 60;
+        buf.append(threeDigits.format(longDegs));
+        buf.append(twoDigits.format(longMins));
+        buf.append(twoDigits.format(longSecs));
+        
+        // altitude
+        // -- if i want altitude later, add it here, as "+AAA..."
+
+        // terminator
+        buf.append("/");
+
+        return buf.toString();
+    }
+
+    //
+    // EQUALS and HASHCODE
+    //
+
+    /**
+       Check if an object is equal to this Location.  This tests equality to
+       second accuracy.
+
+       @param object the other Location to compare this against
+       @return true, if the object is a Location and equal to this, else false
+    */
+    public boolean equals(Object object) {
+        // make sure it's a Location
+        if (!(object instanceof Location))
+            return false;
+
+        // check seconds
+        Location location = (Location) object;
+        return (latitude == location.latitude && longitude == location.longitude);
+    }
+
+    /**
+       A hashcode for Locations.  (Since I define equals(), I need to define hashCode().)
+
+       @return a hash code for this Location
+    */
+    public int hashCode() {
+        return latitude*latitude*latitude + 3*longitude*longitude*longitude;
+    }
+
+    //
+    // DISTANCE
+    //
+
+    /**
+       Compute the surface distance between two Locations, rounded to
+       the nearest 10km.
+     
+       @param location measure distance to this Location
+       @return the distance in kilometers
+    */
+    public synchronized int distanceTo(Location location) {
+        // i have to be synch because i use static points
+        // for computation, to save allocations.  it's ok,
+        // i'm really fast.
+        
         // the two points, in (x,y,z) coordinates
-        Vector3 p1 = new Vector3(this);
-        Vector3 p2 = new Vector3(loc);
+        p1.setFromLocation(this);
+        p2.setFromLocation(location);
 
-        // sides of a triangle; third side is straight-line distance between the locations
-        double a = EARTH_RADIUS;
-        double b = EARTH_RADIUS;
-        double c = p1.distanceTo(p2);
+        // sides of a triangle:
+        float a = EARTH_RADIUS; // center-to-A
+        float b = EARTH_RADIUS; // center-to-B
+        float c = p1.distanceTo(p2); // A-to-B (straight-line distance)
 
-        // angle at center between two locations
-        double C = Math.acos((a*a+b*b-c*c) / (2*a*b));
+        // angle at center between two locations (law of cosine)
+        float C = (float) Math.acos((a*a+b*b-c*c) / (2*a*b));
 
-        // surface distance between locations
-        double dist = EARTH_RADIUS * C;
+        // distance between locations, on the sphere of the earth
+        float dist = EARTH_RADIUS * C;
 
-        // round to ten km (just fixed: write unit test.)
+        // round to nearest ten kilometers
         return roundTo(dist, 10);
     }
 
-    // roundTo(x, 10) rounds to the nearest 10, for example
-    private int roundTo(double value, int place) {
-        return place * (int) Math.round(value / (double) place);
+    // points used by distanceTo().  distanceTo() is otherwise pretty darn
+    // fast, so i'll preallocate these (only once, as class members).
+    // the only downside is that distanceTo() has to be synchronized,
+    // but it returns almost immediately so it's probably no big deal.
+    private static Point3D p1 = new Point3D(), p2 = new Point3D();
+
+    // roundTo(x, 10) rounds x to the nearest 10, for example.
+    // WRITEME: unit test for this method?
+    private int roundTo(float value, int place) {
+        return place * (int) Math.round(value / (float) place);
     }
 
-    private final static int NEAR = 100; // "near" is 100km
-    public boolean isNear(Location loc) {
-        return isNear(loc, NEAR);
+    /**
+       Check whether the given location is near this location.
+
+       <p>Unlike most Java methods, the parameter <code>location</code>
+       may be null; isNear(null, threshold) is always false.</p>
+
+       @param location the location to check
+       @param threshold the number of kilometers to consider "near"
+       @return true, if the location is non-null and within the threshold
+    */
+    public boolean isNear(Location location, int threshold) {
+        return (location != null) && (distanceTo(location) <= threshold);
     }
-    public boolean isNear(Location loc, int threshold) {
-        return (loc != null) && (distanceTo(loc) <= threshold);
-    }
-    
+
+    /**
+       Make a location halfway between 2 locations.
+
+       <p>The midpoint is computed as the average of the latitudes, and
+       the average of the longitudes.  That may not be very accurate on
+       non-rectangular projections.</p>
+     
+       @param a the first point
+       @param b the second point
+       @return the midpoint of a and b
+    */
     public static Location midpoint(Location a, Location b) {
         // latitude doesn't wrap around, just take the mean
         Location l = new Location();
-        l.latitude = (a.latitude + b.latitude) / 2;
+        l.setLatitudeAsSeconds((a.getLatitudeAsSeconds() + b.getLatitudeAsSeconds()) / 2);
 
-        // longitude, otoh, does wrap around, so pick the short way
-        l.longitude = (a.longitude + b.longitude) / 2;
-        if (Math.abs(a.longitude - b.longitude) >= 180) {
-            l.longitude += 180;
-            l.longitude %= 180;
+        // longitude, though, does wrap around, so pick the short way.
+        // (i.e., if the difference is greater than 180 degrees, jump to the
+        // opposite side, which is also equidistant, but closer to both.)
+        l.setLongitudeAsSeconds((a.getLongitudeAsSeconds() + b.getLongitudeAsSeconds()) / 2);
+        if (Math.abs(a.getLongitudeAsDegrees() - b.getLongitudeAsDegrees()) >= 180) {
+            final int HALFWAY = 180 * 60 * 60; // 180 degrees, in seconds
+            l.setLongitudeAsSeconds((l.getLongitudeAsSeconds() + HALFWAY) % HALFWAY);
         }
+        
         return l;
     }
 }
