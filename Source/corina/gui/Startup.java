@@ -247,6 +247,7 @@ public class Startup implements PrivilegedAction {
     System.out.println("Authentication succeeded!");
 
     Subject mySubject = lc.getSubject();
-    Subject.doAs(mySubject, new Startup(args));
+    Subject.doAsPrivileged(mySubject, new Startup(args), null);
+    //Subject.doAs(mySubject, new Startup(args));
   }
 }

@@ -3,17 +3,15 @@ package corina.editor;
 import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.util.Collections;
 import java.util.List;
-import java.util.PropertyPermission;
 
-import javax.security.auth.Subject;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import corina.CorinaPermission;
 import corina.Sample;
 import corina.SampleEvent;
 import corina.SampleListener;
@@ -50,10 +48,9 @@ public class EditorManipMenu extends JMenu implements SampleListener {
 	JMenuItem redate = Builder.makeMenuItem("redate...");
 	redate.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
-        //AccessControlContext ctx = AccessController.getContext();
-        //Subject s = Subject.getSubject(ctx);
-        //System.out.println("SUBJECT: " + s);
-        //AccessController.checkPermission(new PropertyPermission("corina.redate", "read"));
+        if (System.getSecurityManager() != null) {
+          AccessController.checkPermission(new CorinaPermission("redate"));
+        }
 		    new RedateDialog(sample, editor);
 		}
 	    });
