@@ -2,7 +2,9 @@ package corina.browser;
 
 import corina.Sample;
 import corina.Metadata;
+import corina.Element;
 import corina.Range;
+import corina.graph.GraphFrame;
 import corina.editor.Editor;
 import corina.util.Platform;
 import corina.prefs.Prefs;
@@ -39,26 +41,23 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 public class Browser extends JFrame {
     /*
-     -- refactor!  (this is less of an issue, now.)
+     -- refactor!
+     
      -- add ITRDB support, now that i can efficiently load URLs.  (need helper classes for ftp dir listing?)
      -- probably should abstract out FileSystem->(LocalFileSystem,RemoteFileSystem)  (later!)
 
      -- RET on a non-sample file opens it (canopener!)
-     -- if a file is not a sample, dim it to 50%
      -- full drag-n-drop
      -- cmd-up/backspace to go up a folder?
      -- ugh, when folderpopup has focus, up/down cause all hell to break loose!  (well, sort of)  possible to fix?
      -- type at table to jump to file?
-     
-     -- possible to select multiple files for summing/plotting/grids/bargraphs/etc.?  (what's my interface?  ps7-style popup?)
-
-     -- tab-order is folder, search, files, sort-by, show-headers.
 
      -- i18n. (futured.)  (nearly done, too.)
 
+     -- possible to select multiple files for summing/plotting/grids/bargraphs/etc.?  (what's my interface?  ps7-style popup?)
      -- MENUS! :
+     -- menu: File -> { open, plot, index (!), crossdate (?), grid }
      -- menu: Edit -> { Undo, Redo, Cut/Copy/Paste, Select All, Select None }
-     -- menu: Selection -> { open, plot, index (!), crossdate (?), grid }
      -- menu: Help -> Corina Help (/Browser.html)
 
      -- ps7 context menu: [ open, select all, deselect all, ---, rename, batch rename..., delete, ---, (rotate), ---, reveal location in finder, new folder, ---, (rankings) ]
@@ -73,9 +72,12 @@ public class Browser extends JFrame {
 
      -- search string "pam am" should match "pam, 7am", but not "pam" alone (!)
 
-     -- add keyboard shortcut: esc = searchField.reset()
+     -- highlight search term matches in the table -- this sounds hard
 
-     -- highlight search term matches in the table
+     -- need something along the lines of:
+     ---- open in new tab
+     ---- clone this view (in another tab, window)
+     ---- i dunno, but some way to manage multiple views.
      */
 
     private FolderPopup folderPopup;
@@ -111,8 +113,9 @@ public class Browser extends JFrame {
         // set folder
         folder = dir;
 
-        JTabbedPane t = new JTabbedPane();
-        p.add(t);
+// TEMPORARILY REMOVED!  if there's only one tab, it's not worth it.
+//        JTabbedPane t = new JTabbedPane();
+//        p.add(t);
 
         // label
         label = new JLabel("", JLabel.CENTER);
@@ -231,7 +234,9 @@ public class Browser extends JFrame {
             south.add(thermo, BorderLayout.WEST);
             main.add(south, BorderLayout.SOUTH);
 
-            t.addTab("Data", main);
+// TEMPORARILY REMOVED!  see above.
+//            t.addTab("Data", main);
+            p.add(main);
         }
 
 //        { // placeholder
@@ -307,6 +312,32 @@ public class Browser extends JFrame {
 
     private void makeMenus() {
         JMenuBar mb = new JMenuBar();
+
+        // FILE
+        JMenu file = new JMenu("File");
+
+        // open
+        JMenuItem graph = new JMenuItem("Graph");
+        graph.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                // get selected samples
+                int selected[] = table.getSelectedRows();
+                int n = selected.length;
+                List elements = new ArrayList(n);
+                for (int i=0; i<n; i++) {
+                    elements.add(new Element(((Row) visibleFiles.get(selected[i])).getPath()));
+                }
+                // BUG: not all rows will be loadable ... only get samples
+                // BUG: what if no files are selected?  (add listener so if none are, this isn't even enabled?)
+                // TODO: add cmd-G shortcut for graph
+                
+                // graph
+                new GraphFrame(elements);
+            }
+        });
+        file.add(graph);
+
+        // VIEW
         JMenu display = new JMenu("View");
 
         // -- file metadata -- USE RESOURCEBUNDLE TO GET THE NAMES!
@@ -332,6 +363,7 @@ public class Browser extends JFrame {
         for (int i=0; i<Metadata.fields.length; i++)
             display.add(new FieldCheckBoxMenuItem(Metadata.fields[i].variable, Metadata.fields[i].description, model));
 
+        mb.add(file);
         mb.add(display);
         setJMenuBar(mb); // use xmenubar for a real file menu, etc.?
     }
