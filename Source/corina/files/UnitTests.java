@@ -57,7 +57,7 @@ public class UnitTests extends TestCase {
     private void testFiletype(String filetype) {
 	try {
 	    // load a sample
-	    Sample s = new Sample("../Demo Data/chil001.crn");
+	    Sample s = new Sample("Demo Data/chil/chil001.crn");
 
 	    // save it as |filetype| in /tmp
 	    Filetype f=null;
