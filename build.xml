@@ -134,6 +134,7 @@ classpath="${lib}/jython.jar:${lib}/junit.jar:${lib}/gnujaxp.jar:${lib}/comm.jar
             <test name="corina.site.UnitTests" />
             <test name="corina.map.UnitTests" />
             <test name="corina.index.UnitTests" />
+            <test name="corina.cross.UnitTests" />
             <!-- add new unit tests here -->
         </junit>
     </target>
