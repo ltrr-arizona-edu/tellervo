@@ -43,7 +43,7 @@ public class WindowMenu extends JMenu {
             public void actionPerformed(ActionEvent e) {
                 // tell it to dispatch a WINDOW_CLOSING event, so it asks the user
                 // to save the file first.
-                w.dispatchEvent(new WindowEvent(w, java.awt.event.WindowEvent.WINDOW_CLOSING));
+                w.dispatchEvent(new WindowEvent(w, WindowEvent.WINDOW_CLOSING));
             }
         });
         add(close);
@@ -142,7 +142,7 @@ public class WindowMenu extends JMenu {
                     for (int j=0; j<n; j++) {
                         if (m.getItem(j) == null)
                             continue; // null means "not a menuitem" (separator)
-                        if (m.getItem(j).getLabel().equals(w.getTitle())) {
+                        if (m.getItem(j).getText().equals(w.getTitle())) {
                             m.remove(j); // remove menuitem: DOESN'T QUITE WORK!
                             break;
                         }
