@@ -59,7 +59,7 @@ import javax.swing.filechooser.FileFilter;
 public class FileDialog {
 
     // i18n
-    private static ResourceBundle msg = ResourceBundle.getBundle("FileDialogBundle");
+    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     private static class ExtensionFilter extends FileFilter {
 	private String TLA, tla;
@@ -102,7 +102,7 @@ public class FileDialog {
     private static void addFilters(JFileChooser f) {
 	for (int i=0; i<FILTERS.length; i++)
 	    f.addChoosableFileFilter(new ExtensionFilter(FILTERS[i],
-                                                  msg.getString(FILTERS[i])));
+							 msg.getString("." + FILTERS[i])));
 	f.setFileFilter(f.getAcceptAllFileFilter());
     }
 
