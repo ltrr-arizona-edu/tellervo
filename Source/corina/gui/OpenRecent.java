@@ -44,7 +44,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.AbstractAction;
-;
 
 // todo:
 // - refactor -- separate model and view?
