@@ -31,12 +31,13 @@ public class UnitTests extends TestCase {
     // testing SiteDB.java
     //
     public void testSiteDB() {
+	// violates OAOO: startup.java sets this, too (call startup.initSax()?)
         if (System.getProperty("org.xml.sax.driver") == null)
-            System.setProperty("org.xml.sax.driver", "gnu.xml.aelfred2.SAXDriver");
+            System.setProperty("org.xml.sax.driver", "org.apache.crimson.parser.XMLReaderImpl");
         if (System.getProperty("corina.dir.data") == null)
             System.setProperty("corina.dir.data", "Demo Data");
         try {
-            SiteDB db = SiteDB.getSiteDB();
+            SiteDB db = SiteDB.getSiteDB(); // this is SLOW!
             assertTrue(db != null);
             assertTrue(db.sites != null);
         } catch (Exception e) {
