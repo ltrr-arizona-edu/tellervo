@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import java.text.MessageFormat;
+
 import javax.swing.undo.UndoableEdit;
 
 /**
@@ -171,7 +173,9 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
         return r.doubleValue();
     }
     
-    // uses the r-algorithm stolen from t-score
+    // uses the r-algorithm stolen from t-score.
+    // why can't i steal it directly?  because they use arrays, i use lists (and t-score uses funny offsets).
+    // i really shouldn't violate OAOO, though -- REFACTOR.
     private static double computeR(List A, List B) {
         // compute means
         int n = A.size();
@@ -263,7 +267,8 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
 	algorithm, and the target sample.
 	@return complete title of this index */
     public final String toString() {
-	return getName() + ' ' + msg.getString("index_of") + ' ' + target;
+        return MessageFormat.format(msg.getString("index_of"),
+                                    new Object[] { getName(), target.toString() });
     }
 
     // -------------------- undoable edit --------------------
