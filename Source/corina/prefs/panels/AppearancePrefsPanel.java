@@ -23,7 +23,7 @@ package corina.prefs.panels;
 import corina.prefs.Prefs;
 import corina.prefs.components.ColorPrefComponent;
 import corina.prefs.components.BoolPrefComponent;
-import corina.prefs.components.FontPrefComponent;
+import corina.prefs.components.FontPrefPanel;
 import corina.prefs.components.UIDefaultsComponent;
 
 import java.awt.*;
@@ -65,7 +65,7 @@ public class AppearancePrefsPanel extends Container {
     gridGroup.add(c, gbc);
     
     l = new JLabel("Font:");
-    c = new FontPrefComponent(Prefs.EDIT_FONT);
+    c = new FontPrefPanel(Prefs.EDIT_FONT);
 
     gbc.gridx = 0;
     gbc.gridy = 2;
