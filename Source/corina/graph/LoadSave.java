@@ -79,28 +79,31 @@ public class LoadSave {
     // try to load a plot from disk
     // (synch because temp samples would get overwritten)
     public static synchronized List load(String filename) throws IOException {
-	// this is load(String) from Grid.java
-	try {
-	    // make a new XML parser
-	    XMLReader xr = XMLReaderFactory.createXMLReader();
+        // this is load(String) from Grid.java
+        // REFACTOR: i should be able to load an xml file in one line.  dunno why
+        // sax doesn't let me do that, but i should write a wrapper for this crap.
+        // something like: try { my_blob = XML.load("filename", SomeHandler.class); } catch (SE) { ... }
+        try {
+            // make a new XML parser
+            XMLReader xr = XMLReaderFactory.createXMLReader();
 
-	    // ... configure it to use a my SampleHandler ...
-	    GraphHandler loader = new GraphHandler();
-	    xr.setContentHandler(loader);
-	    xr.setErrorHandler(loader);
+            // ... configure it to use a my SampleHandler ...
+            GraphHandler loader = new GraphHandler();
+            xr.setContentHandler(loader);
+            xr.setErrorHandler(loader);
 
-	    // ... and feed it the file
-	    BufferedReader r = new BufferedReader(new FileReader(filename));
-	    xr.parse(new InputSource(r));
-	} catch (Exception e) { // (SAXException se) {
-	    // if (se.getMessage().equals("Not a grid!"))
-	    throw new WrongFiletypeException();
-	    // else
-	    // throw new IOException("SAX exception: " + se.getMessage());
-	}
+            // ... and feed it the file
+            BufferedReader r = new BufferedReader(new FileReader(filename));
+            xr.parse(new InputSource(r));
+        } catch (Exception e) { // (SAXException se) {
+                                // if (se.getMessage().equals("Not a grid!"))
+            throw new WrongFiletypeException();
+            // else
+            // throw new IOException("SAX exception: " + se.getMessage());
+        }
 
-	return samples;
-    }
+        return samples;
+        }
 
     // temp storage
     private static List samples;
@@ -108,7 +111,7 @@ public class LoadSave {
     // sax2 handler for load()
     private static class GraphHandler extends DefaultHandler {
 	// state
-	double scale;
+	float scale;
 	int xoffset, yoffset;
 	String filename;
 	public void startDocument() {
@@ -123,7 +126,7 @@ public class LoadSave {
 
 	    // "graph" is a graph -- get scale/x/y
 	    if (name.equals("graph")) {
-		scale = Double.parseDouble(atts.getValue("scale"));
+		scale = Float.parseFloat(atts.getValue("scale"));
 		xoffset = Integer.parseInt(atts.getValue("xoffset"));
 		yoffset = Integer.parseInt(atts.getValue("yoffset"));
 	    }
