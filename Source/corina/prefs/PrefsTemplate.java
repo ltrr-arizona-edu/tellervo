@@ -40,7 +40,8 @@ public class PrefsTemplate {
 	public final static int TYPE_COLOR = 1; // a Ccolor
 	public final static int TYPE_BOOL = 2; // a boolean
 	public final static int TYPE_FONT = 3; // a Font
-
+        	public final static int TYPE_HIDDEN = 4; // don't show user
+                
 	public String category; // category, as a string; use title capitalization
 	public String description; // human-readable description
 	public String property; // java property this sets
@@ -92,6 +93,23 @@ public class PrefsTemplate {
 	options.add(new Option("Editor", "Serial Port:",
                         "corina.measure.port", Option.TYPE_STRING));
 
+        /*
+         something like:
+         (define *prefs-template*
+          '(prefs-group :title "Editor"
+            (prefs-field :title "Background color:" :key corina-edit-background :type color)
+            (prefs-field :title "Text color:" :key corina-edit-foreground :type color)
+            (prefs-field :title "Font:" :key corina-edit-font :type font)
+            (prefs-field :title "Draw Gridlines" :key corina-edit-gridlines :type boolean))
+          (prefs-group :title "Index"
+           ...))
+
+         -- is each field its own alist?  hmm...
+
+         -- put defaults here?  and load from disk on startup.
+         (define *prefs-values* nil)
+         */
+
 	// index
 	options.add(new Option("Index", "High-pass filter weights:",
                         "corina.index.lowpass", Option.TYPE_STRING));
@@ -121,22 +139,23 @@ public class PrefsTemplate {
 	options.add(new Option("Crossdate", "Grid Font:",
                         "corina.grid.font", Option.TYPE_FONT));
 	options.add(new Option("Crossdate", "Grid on-screen Scale:",
-                        "corina.grid.scale", Option.TYPE_STRING));
+                        "corina.grid.scale", Option.TYPE_HIDDEN));
 	options.add(new Option("Crossdate", "Highlight Significant Scores",
                         "corina.grid.highlight", Option.TYPE_BOOL));
 	options.add(new Option("Crossdate", "Highlight Color:",
                         "corina.grid.highlightcolor", Option.TYPE_COLOR));
 
-	// graph
+        options.add(new Option("Crossdate", "Date view:",
+                               "corina.cross.dating", Option.TYPE_HIDDEN));
+
+        // graph
 	options.add(new Option("Graph", "Pixels per year:",
                         "corina.graph.pixelsperyear", Option.TYPE_STRING));
-	options.add(new Option("Graph", "Smoother Graph Drawing",
-                        "corina.graph.antialias", Option.TYPE_BOOL));
 	options.add(new Option("Graph", "Line thickness:",
                         "corina.graph.thickness", Option.TYPE_STRING));
 	options.add(new Option("Graph", "Draw Baselines",
                         "corina.graph.baselines", Option.TYPE_BOOL));
-	options.add(new Option("Graph", "Indicate Sapwood",
+	options.add(new Option("Graph", "Draw Sapwood (as thicker line)",
                         "corina.graph.sapwood", Option.TYPE_BOOL));
 	options.add(new Option("Graph", "Background Color:",
                         "corina.graph.background", Option.TYPE_COLOR));
@@ -159,7 +178,13 @@ public class PrefsTemplate {
 	options.add(new Option("Advanced", "Menubar Font:",
                         "corina.menubar.font", Option.TYPE_FONT));
         options.add(new Option("Advanced", "Browser fields:",
-                               "corina.browser.fields", Option.TYPE_STRING)); // THIS ONE SHOULD BE HIDDEN!
+                               "corina.browser.fields", Option.TYPE_HIDDEN));
+        options.add(new Option("Advanced", "Browser folder:",
+                               "corina.browser.folder", Option.TYPE_HIDDEN));
+        options.add(new Option("Advanced", "Browser sort:",
+                               "corina.browser.sort", Option.TYPE_HIDDEN));
+        options.add(new Option("Advanced", "Browser reverse?",
+                               "corina.browser.reverse", Option.TYPE_HIDDEN));
     }
 
     // public access to options
