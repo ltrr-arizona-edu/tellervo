@@ -42,7 +42,11 @@ public class UnitTests extends TestCase {
     //
     public void testClean() {
         try {
+            // load sample
             Sample s = new Sample("Demo Data/chil/chil001.crn");
+            assertTrue(s.count != null);
+
+            // clean it
             UndoableEdit undo = Clean.clean(s);
             assertEquals(s.incr, null);
             assertEquals(s.decr, null);
@@ -57,7 +61,7 @@ public class UnitTests extends TestCase {
 
             // redo it
             undo.redo();
-            assertTrue(s.count == null);
+            assertEquals(s.count, null);
             assertTrue(!s.meta.containsKey("filename"));
         } catch (IOException ioe) {
             fail();
