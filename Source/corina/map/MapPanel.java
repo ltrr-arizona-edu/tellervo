@@ -52,6 +52,8 @@ import java.awt.Cursor;
 import java.awt.Stroke;
 import java.awt.BasicStroke;
 import java.awt.RenderingHints;
+import java.awt.AlphaComposite;
+import java.awt.Composite;
 
 import java.awt.print.Printable;
 import java.awt.print.PageFormat;
@@ -92,7 +94,9 @@ public class MapPanel extends JPanel implements Printable {
         RepaintManager.currentManager(this).setDoubleBufferingEnabled(false);
 
         // initial buffer
-        buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB); // REFACTOR ME -- wait, do i need the A?  can i get a BI without it?
+	// REFACTOR ME -- wait, do i need the A?  can i get a BI without it?
+        buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB);
+	sBuf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB_PRE);
 	// updateBuffer();
 
 	// add listener: update map when DB changes
@@ -216,8 +220,10 @@ public class MapPanel extends JPanel implements Printable {
         setCursor(wait);
 
         // recreate buf
-        if (buf.getWidth()!=view.size.width || buf.getHeight()!=view.size.height)
+        if (buf.getWidth()!=view.size.width || buf.getHeight()!=view.size.height) {
             buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB);
+            sBuf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB_PRE);
+	}
         Graphics2D g2 = (Graphics2D) buf.getGraphics();
 
         // aa -- much slower, and doesn't help quality much, if at all.
@@ -270,8 +276,10 @@ public class MapPanel extends JPanel implements Printable {
 
     // a hacked version of updatebuffer for gridline-dragging
     public void updateBufferGridlinesOnly() {// REFACTOR: updateBuffer(fast=true);
-        if (buf.getWidth()!=view.size.width || buf.getHeight()!=view.size.height)
+        if (buf.getWidth()!=view.size.width || buf.getHeight()!=view.size.height) {
             buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB);
+            sBuf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB_PRE);
+	}
         Graphics2D g2 = (Graphics2D) buf.getGraphics();
 
         // background
@@ -543,15 +551,13 @@ public class MapPanel extends JPanel implements Printable {
                 pt.y = (int) p2.y;
                 drawLabel(g2, pt, top, list.size(), view);
 
-                // BUG: if s.location has had a label drawn to it before, draw all sites as "AAA,BBB,...",
-                // possibly using 2 lines if needed -- or even actually drawing the elipsis, which the user can
-                // hover/click to see more.
-
-                // (when there was s1 and s2: draw s1-s2 line here)
+                // (obsolete, from when there was s1 and s2: draw s1-s2 line here)
             }
         }
     }
     private Point pt = new Point();
+
+    BufferedImage lBuf=null;
 
     // for actual POINT -- list all sites here, to be put in a popup menu
     public List sitesForPoint(Site target) {
@@ -631,10 +637,30 @@ public class MapPanel extends JPanel implements Printable {
     private static final Color LEGEND_YELLOW = new Color(255, 255, 127, 204);
     private static final Stroke LEGEND_STROKE = new BasicStroke(0.5f);
     private static final Font LEGEND_FONT = new Font("serif", Font.PLAIN, 12);
-    private void drawScaleDirectly(Graphics2D g2, Point p1, Point p2, int dist) {
-        g2.setStroke(LEGEND_STROKE);
+
+    private void drawScaleOnBuffer(BufferedImage buf, Point p1, Point p2, int dist) {
+	// TODO: if p1/p2/dist are the same as they used to be, i
+	// don't need to do anything here, and i can save a few dozen
+	// milliseconds -- that's the case when the user just changes
+	// longitude, for example
+
+	// get graphics to draw with
+	Graphics2D g2 = buf.createGraphics();
+
+	// erase old
+	Composite keep = g2.getComposite();
+	g2.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
+	g2.fillRect(0, 0, buf.getWidth(), buf.getHeight());
+	g2.setComposite(keep);
+
+	// REFACTOR: for printing, there's no reason to draw to
+	// intermediate buffers, especially because they'd be friggin'
+	// huge.  so i want these to still be draw(Graphics, ...), and
+	// update methods will do { create graphics, clear buffer,
+	// draw new data on buffer }
 
         // draw a nice yellow box
+        g2.setStroke(LEGEND_STROKE);
         g2.setColor(LEGEND_YELLOW);
         g2.fillRect(p1.x-10, p1.y-10, p2.x-p1.x+20, 30);
         g2.setColor(Color.black);
@@ -665,54 +691,6 @@ public class MapPanel extends JPanel implements Printable {
         int w = g2.getFontMetrics().stringWidth(text);
         g2.drawString(text, (p1.x+p2.x)/2 - w/2, p1.y + 15); }
 
-    private void drawScale(Graphics2D g2, Point p1, Point p2, int dist) {
-	int boxWidth = p2.x - p1.x + 20;
-	int boxHeight = p2.y - p1.y + 30;
-	BufferedImage buf = new BufferedImage(boxWidth, boxHeight, BufferedImage.TYPE_INT_ARGB_PRE); // (this takes ~1ms)
-	Graphics2D b2 = buf.createGraphics();
-
-        b2.setStroke(LEGEND_STROKE);
-
-        // draw a nice yellow box
-	b2.setColor(LEGEND_YELLOW);
-	b2.fillRect(0, 0, p2.x-p1.x+20, 30);
-        b2.setColor(Color.black);
-        b2.drawRect(0, 0, p2.x-p1.x+20, 30);
-
-        // draw the bar
-        b2.setColor(Color.black);
-        b2.drawLine(10, 10, p2.x - (p1.x-10), 10);
-
-        // draw ticks going across
-        double dx = (p2.x-p1.x) / 10.;
-        double xi = 10;
-        for (int i=0; i<=10; i++) {
-            int length;
-            if (i % 10 == 0)
-                length = 10;
-            else if (i % 5 == 0)
-                length = 8;
-            else
-                length = 5;
-            b2.drawLine((int) xi, 10, (int) xi, 10+length);
-            xi += dx; }
-
-        // draw "100 km" on it
-        b2.setFont(LEGEND_FONT);
-        // BUG: this isn't centered or anything...
-        String text = dist + " km";
-        int w = b2.getFontMetrics().stringWidth(text);
-        b2.drawString(text, 10+(p2.x-p1.x)/2 - w/2, 10 + 15);
-
-	// testing: clear the center of it
-	//	    b2.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.CLEAR));
-	//	    b2.setColor(new Color(255, 255, 255, 0));
-	//	    b2.fillRect(20, 0, 50, 30);
-
-	// copy back (this takes ~1ms)
-	g2.drawImage(buf, p1.x-10, p1.y-10, null);
-}
-
     private void drawScale(Graphics2D g2, Renderer r) {
         try {
 
@@ -728,19 +706,7 @@ public class MapPanel extends JPanel implements Printable {
                 else if (dist > 200 && km > 1)
                     km /= 10;
                 else {
-		    long t1, t2;
-
-		    t1 = System.currentTimeMillis();
-                    drawScale(g2, p1, p2, km);
-		    t2 = System.currentTimeMillis();
-		    System.out.println("spent " + (t2-t1) + " ms drawing scale using buffer");
-
-		    p1.y -= 50; p2.y -= 50;
-
-		    t1 = System.currentTimeMillis();
-                    drawScaleDirectly(g2, p1, p2, km);
-		    t2 = System.currentTimeMillis();
-		    System.out.println("spent " + (t2-t1) + " ms drawing scale directly");
+                    drawScaleOnBuffer(sBuf, p1, p2, km);
 
                     break;
                 }
@@ -752,9 +718,12 @@ public class MapPanel extends JPanel implements Printable {
         }
     }
     
+    BufferedImage sBuf=null;
+
     // blit out the buffer, and draw Extra Crap.
     public void paintComponent(Graphics g) {
-        g.drawImage(buf, 0, 0, Color.white, null);
+        g.drawImage(buf, 0, 0, null);
+	g.drawImage(sBuf, 0, 0, null);
 
         // current tool gets a chance to decorate
         decorate(g);
