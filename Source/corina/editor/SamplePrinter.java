@@ -115,29 +115,35 @@ public class SamplePrinter implements Printable {
             }
         }
 
-        // if you want (or for debugging), print out page boundaries like printers do
+        // if you want (or for debugging), print out page boundaries like real printers do
         if (false) {
             Graphics2D g2 = (Graphics2D) g;
-            g2.setStroke(new BasicStroke(0.1f));
+            final float stroke = 0.1f;
+            g2.setStroke(new BasicStroke(stroke));
             g2.setColor(Color.black);
-            final int inch = 72;
+            final int inch = 72, radius = inch/2;
+
+            // horizontal lines
             g2.drawLine((int) (left-inch/2), (int) top, (int) (left+inch*3/2), (int) top);
             g2.drawLine((int) (right-inch*3/2), (int) top, (int) (right+inch/2), (int) top);
+            g2.translate(0, -stroke);
             g2.drawLine((int) (left-inch/2), (int) bottom, (int) (left+inch*3/2), (int) bottom);
             g2.drawLine((int) (right-inch*3/2), (int) bottom, (int) (right+inch/2), (int) bottom);
+            g2.translate(0, +stroke);
 
+            // vertical lines
             g2.drawLine((int) left, (int) (top-inch/2), (int) left, (int) (top+inch*3/2));
             g2.drawLine((int) right, (int) (top-inch/2), (int) right, (int) (top+inch*3/2));
             g2.drawLine((int) left, (int) (bottom-inch*3/2), (int) left, (int) (bottom+inch/2));
             g2.drawLine((int) right, (int) (bottom-inch*3/2), (int) right, (int) (bottom+inch/2));
                                                 
-            final int radius = inch/2;
+            // circles
             g2.drawOval((int) (left - radius/2), (int) (top - radius/2), radius, radius);
             g2.drawOval((int) (right - radius/2), (int) (top - radius/2), radius, radius);
             g2.drawOval((int) (left - radius/2), (int) (bottom - radius/2), radius, radius);
             g2.drawOval((int) (right - radius/2), (int) (bottom - radius/2), radius, radius);
         }
-        
+
         return PAGE_EXISTS;
     }
 
