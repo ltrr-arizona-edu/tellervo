@@ -27,171 +27,164 @@ import java.awt.Image;
 
 public class Builder {
 
-    // (don't instantiate me)
-    private Builder() {
-    }
-
-    // UNUSED!
-    public final static String INDENT = "    "; // 4 spaces
-
-    public static JMenu makeMenu(String key) {
-  JMenu m = new JMenu();
-
-  // TODO: set font only on java<1.4?
-  if (!Platform.isMac && System.getProperty("corina.menubar.font")!=null)
-      m.setFont(Font.getFont("corina.menubar.font"));
-
-  m.setText(I18n.getText(key));
-
-  if (!Platform.isMac) {
-      Character mnemonic = I18n.getMnemonic(key);
-      if (mnemonic != null)
-    m.setMnemonic(mnemonic.charValue());
+  // (don't instantiate me)
+  private Builder() {
   }
 
-  return m;
-    }
+  // UNUSED!
+  public final static String INDENT = "    "; // 4 spaces
 
-    public static JMenuItem makeMenuItem(String key) {
-  JMenuItem m = new JMenuItem("");
+  public static JMenu makeMenu(String key) {
+    JMenu m = new JMenu();
 
-  // TODO: set font only on java<1.4?
-  if (!Platform.isMac && System.getProperty("corina.menubar.font")!=null)
-      m.setFont(Font.getFont("corina.menubar.font"));
+    // TODO: set font only on java<1.4?
+    // NOTE: now using UIDefaults customization through Appearance Panel
+    // instead of corina.menubar.font property - cross this off PRIORITY list
 
-  m.setText(I18n.getText(key));
+    m.setText(I18n.getText(key));
 
-  if (!Platform.isMac) {
+    if (!Platform.isMac) {
       Character mnemonic = I18n.getMnemonic(key);
       if (mnemonic != null)
-    m.setMnemonic(mnemonic.charValue());
+        m.setMnemonic(mnemonic.charValue());
+    }
+
+    return m;
   }
 
-  String keystroke = I18n.getKeyStroke(key);
-  if (keystroke != null)
+  public static JMenuItem makeMenuItem(String key) {
+    JMenuItem m = new JMenuItem("");
+
+    // TODO: set font only on java<1.4?
+    // NOTE: now using UIDefaults customization through Appearance Panel
+    // instead of corina.menubar.font property - cross this off PRIORITY list
+
+    m.setText(I18n.getText(key));
+
+    if (!Platform.isMac) {
+      Character mnemonic = I18n.getMnemonic(key);
+      if (mnemonic != null)
+        m.setMnemonic(mnemonic.charValue());
+    }
+
+    String keystroke = I18n.getKeyStroke(key);
+    if (keystroke != null)
       m.setAccelerator(KeyStroke.getKeyStroke(keystroke));
 
-  return m;
-    }
-
-    public static JMenuItem makeMenuItem(String key, boolean enabled) {
-  JMenuItem m = makeMenuItem(key);
-  m.setEnabled(enabled);
-  return m;
-    }
-
-    public static JMenuItem makeMenuItem(String key, String action) {
-  JMenuItem m = makeMenuItem(key);
-  addAction(m, action);
-  return m;
-    }
-
-    public static JRadioButtonMenuItem makeRadioButtonMenuItem(String key) {
-  JRadioButtonMenuItem m = new JRadioButtonMenuItem("");
-
-  // TODO: set font only on java<1.4?
-  if (!Platform.isMac && System.getProperty("corina.menubar.font")!=null)
-      m.setFont(Font.getFont("corina.menubar.font"));
-
-  m.setText(I18n.getText(key));
-
-  if (!Platform.isMac) {
-      Character mnemonic = I18n.getMnemonic(key);
-      if (mnemonic != null)
-    m.setMnemonic(mnemonic.charValue());
+    return m;
   }
 
-  String keystroke = I18n.getKeyStroke(key);
-  if (keystroke != null)
+  public static JMenuItem makeMenuItem(String key, boolean enabled) {
+    JMenuItem m = makeMenuItem(key);
+    m.setEnabled(enabled);
+    return m;
+  }
+
+  public static JMenuItem makeMenuItem(String key, String action) {
+    JMenuItem m = makeMenuItem(key);
+    addAction(m, action);
+    return m;
+  }
+
+  public static JRadioButtonMenuItem makeRadioButtonMenuItem(String key) {
+    JRadioButtonMenuItem m = new JRadioButtonMenuItem("");
+
+    // TODO: set font only on java<1.4?
+    // NOTE: now using UIDefaults customization through Appearance Panel
+    // instead of corina.menubar.font property - cross this off PRIORITY list
+
+    m.setText(I18n.getText(key));
+
+    if (!Platform.isMac) {
+      Character mnemonic = I18n.getMnemonic(key);
+      if (mnemonic != null)
+        m.setMnemonic(mnemonic.charValue());
+    }
+
+    String keystroke = I18n.getKeyStroke(key);
+    if (keystroke != null)
       m.setAccelerator(KeyStroke.getKeyStroke(keystroke));
 
-  return m;
-    }
+    return m;
+  }
 
-    public static JButton makeButton(String key) {
-  JButton b = new JButton();
+  public static JButton makeButton(String key) {
+    JButton b = new JButton();
 
-  b.setText(I18n.getText(key));
+    b.setText(I18n.getText(key));
 
-  if (!Platform.isMac) {
+    if (!Platform.isMac) {
       Character mnemonic = I18n.getMnemonic(key);
       if (mnemonic != null)
-    b.setMnemonic(mnemonic.charValue());
+        b.setMnemonic(mnemonic.charValue());
+    }
+
+    return b;
   }
 
-  return b;
-    }
+  public static JLabel makeLabel(String key) {
+    JLabel l = new JLabel();
 
-    public static JLabel makeLabel(String key) {
-  JLabel l = new JLabel();
+    l.setText(I18n.getText(key));
 
-  l.setText(I18n.getText(key));
+    return l;
+  }
 
-  return l;
-    }
+  public static JRadioButton makeRadioButton(String key) {
+    JRadioButton r = new JRadioButton();
 
-    public static JRadioButton makeRadioButton(String key) {
-  JRadioButton r = new JRadioButton();
+    r.setText(I18n.getText(key));
 
-  r.setText(I18n.getText(key));
-
-  if (!Platform.isMac) {
+    if (!Platform.isMac) {
       Character mnemonic = I18n.getMnemonic(key);
       if (mnemonic != null)
-    r.setMnemonic(mnemonic.charValue());
+        r.setMnemonic(mnemonic.charValue());
+    }
+
+    return r;
   }
 
-  return r;
-    }
-
-    // i make icons from files in Images/ so often, i'll just make it a builder method.
-    // use: Builder.getIcon("x.png") returns an Icon made from the file "Images/x.png".
-    public static Icon getIcon(String name) {
-      java.net.URL url = cl.getResource("Images/" + name);
-      if (url != null) return new ImageIcon(url);
-      else return null;
-    }
-    // TODO: Cursor makeCursor(String name)
-    // (yeah, it's pretty much the same as getIcon(), but don't tell anybody!)
-    public static Image getImage(String name) {
-      java.net.URL url = cl.getResource("Images/" + name);
-      if (url != null) return new ImageIcon(url).getImage();
-      else return null;
-    }
-
-    // my classloador, for getting icons as resources.
-    private static ClassLoader cl=null;
-    static {
-  try {
-      cl = Class.forName("corina.ui.Builder").getClassLoader();
-  } catch (ClassNotFoundException cnfe) {
-      // can't happen
+  // i make icons from files in Images/ so often, i'll just make it a builder method.
+  // use: Builder.getIcon("x.png") returns an Icon made from the file "Images/x.png".
+  public static Icon getIcon(String name) {
+    java.net.URL url = cl.getResource("Images/" + name);
+    if (url != null) return new ImageIcon(url);
+    else return null;
   }
-    }
+  // TODO: Cursor makeCursor(String name)
+  // (yeah, it's pretty much the same as getIcon(), but don't tell anybody!)
+  public static Image getImage(String name) {
+    java.net.URL url = cl.getResource("Images/" + name);
+    if (url != null) return new ImageIcon(url).getImage();
+    else return null;
+  }
 
-    // ----------------------------------------
+  // my classloador, for getting icons as resources.
+  private static ClassLoader cl = corina.ui.Builder.class.getClassLoader();
+
+  // ----------------------------------------
   /*
     REFACTOR!
-
+  
     pattern:
-
+  
     A.addActionListener(new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         new B();
       }
     });
-
+  
     or:
-
+  
     A.addActionListener(new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         B.c();
       }
     });
-
+  
     -- of course, what i really want is simpler closures.
     can i fake that easily?
-
+  
     how about another param for Builder?
       Builder.makeMenuItem("crossdate_kit", "new CrossdateKit();");
     not perfect, but it would make my job easier in places, i think.
@@ -231,42 +224,41 @@ public class Builder {
       } catch (ClassNotFoundException cnfe) {
         throw new IllegalArgumentException("class '" + arg2 + "' not found");
       }
-    return;
-  }
+      return;
+    }
 
-  // "package.SomeClass.staticMethod();"
-  int lastDot = action.lastIndexOf(".");
-  if (lastDot == -1)
+    // "package.SomeClass.staticMethod();"
+    int lastDot = action.lastIndexOf(".");
+    if (lastDot == -1)
       throw new IllegalArgumentException("no 'new' or '.' in action string");
-  final String className = action.substring(0, lastDot);
+    final String className = action.substring(0, lastDot);
 
-        // the method name is everything after the last dot, for as long
-        // as java-identifier chars are available.
-  String methodName = action.substring(lastDot + 1);
-  while (!Character.isJavaIdentifierPart(methodName.charAt(methodName.length()-1)))
+    // the method name is everything after the last dot, for as long
+    // as java-identifier chars are available.
+    String methodName = action.substring(lastDot + 1);
+    while (!Character.isJavaIdentifierPart(methodName.charAt(methodName.length() - 1)))
       methodName = methodName.substring(0, methodName.length() - 1);
-        final String methodNameGlue = methodName;
+    final String methodNameGlue = methodName;
 
-  try {
+    try {
       Class c = Class.forName(className);
-      final Method m = c.getMethod(methodName, new Class[] { });
+      final Method m = c.getMethod(methodName, new Class[] {});
 
       button.addActionListener(new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-      try {
-          m.invoke(null, new Object[] { });
-          // IllegalAccess, InvocationTarget exceptions
-      } catch (Exception ex) {
-                            throw new IllegalArgumentException("Builder.addAction(): can't invoke " +
-                                                            "requested method (" + methodNameGlue + " in " +
-                                                            className + ")");
-      }
+          try {
+            m.invoke(null, new Object[] {});
+            // IllegalAccess, InvocationTarget exceptions
+          } catch (Exception ex) {
+            throw new IllegalArgumentException(
+              "Builder.addAction(): can't invoke " + "requested method (" + methodNameGlue + " in " + className + ")");
+          }
         }
-    });
-  } catch (ClassNotFoundException cnfe) {
-            throw new IllegalArgumentException("Builder.addAction(): can't find requested class");
-  } catch (NoSuchMethodException nsme) {
-            throw new IllegalArgumentException("Builder.addAction(): can't find requested method");
-  }
+      });
+    } catch (ClassNotFoundException cnfe) {
+      throw new IllegalArgumentException("Builder.addAction(): can't find requested class");
+    } catch (NoSuchMethodException nsme) {
+      throw new IllegalArgumentException("Builder.addAction(): can't find requested method");
     }
+  }
 }
