@@ -32,11 +32,9 @@ import java.util.EventObject;
 */
 
 public class SampleEvent extends EventObject {
-
     /** Construct a new SampleEvent with the specified source.
 	@param source the Sample this event is about */
     public SampleEvent(Sample source) {
 	super(source);
     }
-
 }
