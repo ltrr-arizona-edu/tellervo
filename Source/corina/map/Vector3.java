@@ -20,11 +20,24 @@
 
 package corina.map;
 
-// a 3-vector
-class Vector3 {
-    double x, y, z;
-    Vector3() { }
-    Vector3(double lat, double lon, double radius) {
+// a 3-vector -- WHAT'S IT USED FOR?  i can't remember.
+public class Vector3 {
+    public double x, y, z; // non-private?  what was i thinking?
+
+    public Vector3() {
+        // nothing (then why do i exist?)
+    }
+    public Vector3(Vector3 old) { // REFACTOR: why isn't this clone()
+        this.x = old.x;
+        this.y = old.y;
+        this.z = old.z;
+    }
+    public Vector3(double lat, double lon, double radius) {
+        // ACK.  i can't just call setLocation() here, because i don't have a location!
+        // and if Vector3(loc) doesn't call Vector3(double,double,double), what's the point of
+        // having separate constructors?
+        // -- DO I EVEN NEED THIS CONSTRUCTOR NOW?
+        
         // convert angles
         lat = Math.toRadians(lat);
         lon = Math.toRadians(lon);
@@ -34,14 +47,27 @@ class Vector3 {
         y = radius * Math.sin(lat);
         z = radius * Math.cos(lat) * Math.cos(-lon);
     }
-    Vector3(Location l) {
-        this(l.latitude, l.longitude, Location.EARTH_RADIUS);
+    public Vector3(Location l) {
+        setLocation(l);
     }
-    double distanceTo(Vector3 p2) {
-        // pythagorean distance
-        double dx = this.x - p2.x;
-        double dy = this.y - p2.y;
-        double dz = this.z - p2.z;
-        return Math.sqrt(dx*dx + dy*dy + dz*dz);
+
+    void setLocation(Location l) {
+        // convert angles
+        float lat = (float) Math.toRadians(l.latitude);
+        float lon = (float) Math.toRadians(l.longitude);
+
+        // spherical->cartesian coordinates
+        x = Location.EARTH_RADIUS * Math.cos(lat) * Math.sin(-lon);
+        y = Location.EARTH_RADIUS * Math.sin(lat);
+        z = Location.EARTH_RADIUS * Math.cos(lat) * Math.cos(-lon);
+    }
+
+    // how many times is this implemented?  Scanner.java (ring width), MapPanel.java (threshold), Vector3 (???)
+    float distanceTo(Vector3 p2) {
+        // pythagorean distance -- AGAIN!
+        float dx = (float) (this.x - p2.x);
+        float dy = (float) (this.y - p2.y);
+        float dz = (float) (this.z - p2.z);
+        return (float) Math.sqrt(dx*dx + dy*dy + dz*dz);
     }
 }
