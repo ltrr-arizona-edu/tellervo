@@ -28,6 +28,7 @@ import corina.Weiserjahre;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import java.io.StreamTokenizer;
 import java.io.FileWriter;
@@ -52,7 +53,7 @@ import java.io.FileNotFoundException;
    <p>The title comes first, on a line by itself, followed by a blank
    line.  The title is repeated later, so this is only to make it
    easier for people or external programs (like `head -1`) to read the
-   title.  A reader may ignore it.</p>
+   title.</p>
 
    <p>The metadata section comes next.  The syntax is <code>;TAG
    value</code>.  Tags are all uppercase.  Their order is fixed.  Some
@@ -469,7 +470,7 @@ public class Corina extends Filetype {
 		if (s.meta.isEmpty() && t.lineno()>4)
 		    throw new WrongFiletypeException();
 	    } else { // (x == StreamTokenizer.TT_EOF)
-		if (t.lineno() >= 3 && s.meta.get("title") != null) // if 3 lines + ;TITLE, it's Corina-format
+		if (t.lineno() >= 3 && s.meta.containsKey("title")) // if 3 lines + ;TITLE, it's Corina-format
 		    throw new IOException("Early end-of-file detected. (" + t.lineno() + ")");
 		else
 		    throw new WrongFiletypeException();
@@ -515,14 +516,14 @@ public class Corina extends Filetype {
     }
 
     private void saveMeta() throws IOException {
-	if (s.meta.get("title") != null)
+	if (s.meta.containsKey("title"))
 	    w.write(s.meta.get("title").toString());
 	w.newLine();
 
 	w.newLine();
 
 	saveTag("id");
-	if (s.meta.get("title") != null) // special case (!)
+	if (s.meta.containsKey("title")) // special case (!)
 	    w.write(";NAME " + s.meta.get("title"));
 	saveTag("dating");
 	saveTag("unmeas_pre");
@@ -552,49 +553,32 @@ public class Corina extends Filetype {
     }
 
     private void saveComments() throws IOException {
-	if (s.meta.get("comments") != null) {
-	    String c = (String) s.meta.get("comments");
+        if (s.meta.containsKey("comments")) {
+            String comments = (String) s.meta.get("comments");
+            int n = 1; // the comment number, starting at 1
+            StringTokenizer tok = new StringTokenizer(comments, "\n");
 
-	    int x = 0; // index of part of string left to search
-	    int n = 1; // what comment number, starting at 1
+            // print any number of lines...
+            while (tok.hasMoreTokens()) {
+                // ";COMMENTS(n)"
+                String tag = ";COMMENTS";
+                if (n > 1)
+                    tag += n;
 
-	    // print any number
-	    for (;;) {
-		// index of newline
-		int i = c.indexOf('\n', x);
+                // get the line
+                String line = tok.nextToken();
 
-		// ";COMMENTS(n)"
-		String tag = ";COMMENTS" + (n==1 ? " " : n+" ");
+                // if empty, skip it: ms-dos corina can't handle ";COMMENTS \n"
+                if (line.length() > 0) {
+                    // write line, replacing ';' with ','
+                    w.write(tag + " " + line.replace(';', ','));
+                    w.newLine();
+                }
 
-		// buffer to store line
-		char buf[] = null;
-		if (i == -1)
-		    buf = ((String) s.meta.get("comments")).substring(x).toCharArray();
-		else
-		    buf = ((String) s.meta.get("comments")).substring(x, i).toCharArray();
-
-		// if empty, skip it: ms-dos corina can't handle ";COMMENTS \n"
-		if (buf.length != 0) {
-		    // write it
-		    w.write(tag);
-
-		    // replace ';' with ',', and write string
-		    for (int j=0; j<buf.length; j++)
-			if (buf[j] == ';')
-			    buf[j] = ',';
-		    w.write(buf);
-		    w.newLine();
-		}
-
-		// last one: stop
-		if (i == -1)
-		    break;
-
-		// skip \n, and continue
-		x = i+1;
-		n++;
-	    }
-	}
+                // next line
+                n++;
+            }
+        }
     }
 
     // save the ;DATA section
