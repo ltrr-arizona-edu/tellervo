@@ -24,6 +24,7 @@ import corina.Year;
 import corina.Range;
 import corina.Element;
 import corina.Sample;
+import corina.util.Sort;
 
 import org.xml.sax.XMLReader;
 import org.xml.sax.Attributes;
@@ -156,6 +157,10 @@ public class Bargraph {
 	}
     }
 
+    // this is a BAD IDEA.  to the user, a-graph-is-a-graph-is-a-graph.  if you want to save
+    // a graph, that's fine, but there should be one format for all graphs, not one per type.
+    // <graph style="bar"> or <graph style="normal">, for example.
+    
     /** Save a bargraph in XML format.
 	@param filename the target to save to
 	@exception IOException if an I/O exception occurs while trying
