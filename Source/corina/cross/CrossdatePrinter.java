@@ -174,11 +174,11 @@ public class CrossdatePrinter extends Printer {
 
 	DecimalFormat fmt = new DecimalFormat(cross.getFormat());
 
-	for (int i=0; i<cross.highScores.size(); i++) {
+	for (int i=0; i<cross.getHighScores().getScores().size(); i++) {
 
 	    // ***
 
-	    TopScores.HighScore s = (TopScores.HighScore) cross.highScores.get(i);
+	    TopScores.HighScore s = (TopScores.HighScore) cross.getHighScores().getScores().get(i);
 	    lines.add(f.makeLine(s.number + "\t" +
 				 s.fixedRange + "\t" +
 				 s.movingRange + "\t" +
