@@ -25,15 +25,31 @@ import corina.Range;
 import corina.Sample;
 import corina.gui.ButtonLayout;
 import corina.gui.DialogLayout;
+import corina.gui.XButton;
 import corina.util.OKCancel;
+import corina.util.Platform;
 
 import java.util.ResourceBundle;
 
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
+import javax.swing.ButtonGroup;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
+import javax.swing.AbstractAction;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.DocumentEvent;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CannotRedoException;
@@ -54,7 +70,7 @@ public class RedateDialog extends JDialog {
     private JTextField startField, endField;
     private DocumentListener startListener, endListener;
 
-    private ResourceBundle msg = ResourceBundle.getBundle("RedateBundle");
+    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     private class StartListener implements DocumentListener {
 	public void changedUpdate(DocumentEvent e) { update(); }
@@ -126,8 +142,7 @@ public class RedateDialog extends JDialog {
 
 	// all done
 	pack();
-        java.awt.Dimension d = getSize();
-        setSize(new java.awt.Dimension(d.width*3/2, d.height));
+	// (resize to make 50% wider here?)
 	setResizable(false);
 	show();
 	endField.requestFocus();
@@ -180,9 +195,11 @@ public class RedateDialog extends JDialog {
         // dating --------------------------------------------------
         ButtonGroup datingGroup = new ButtonGroup();
         JRadioButton relButton = new JRadioButton(msg.getString("relative"), !isAbsolute);
-        relButton.setMnemonic(msg.getString("relative_key").charAt(0));
+        if (!Platform.isMac)
+            relButton.setMnemonic(msg.getString("relative_key").charAt(0));
         final JRadioButton absButton = new JRadioButton(msg.getString("absolute"), isAbsolute);
-        absButton.setMnemonic(msg.getString("absolute_key").charAt(0));
+        if (!Platform.isMac)
+            absButton.setMnemonic(msg.getString("absolute_key").charAt(0));
 
         // on click (either radiobutton), set absolute (re-use listener)
         ActionListener absListener = new AbstractAction() {
@@ -199,23 +216,36 @@ public class RedateDialog extends JDialog {
         controls.add(Box.createVerticalStrut(4), null); // (8)
         controls.add(absButton, "");
 
+        // 22-jul-2002: maryanne says this might be useful:
+        final JCheckBox elementsToo = new JCheckBox("Also redate all elements");
+        controls.add(Box.createVerticalStrut(8), null);
+        controls.add(elementsToo, "");
+	// if (sample.elements == null)
+	elementsToo.setEnabled(false);
+        // OUCH.  that's about as dangerous a weapon as i've ever thought about handing the lusers.
+	// (permanently disabled, now)
+
         // buttons --------------------------------------------------
         JPanel buttons = new JPanel(new ButtonLayout());
         p.add(Box.createVerticalStrut(14), null); // ???
         p.add(buttons);
 
         // cancel, ok
-        JButton cancel = new JButton(msg.getString("cancel"));
-        final JButton ok = new JButton(msg.getString("ok"));
+        JButton cancel = new XButton("cancel");
+        final JButton ok = new XButton("ok");
         buttons.add(cancel);
         buttons.add(ok);
 
         // (listen for cancel, ok)
         ActionListener buttonListener = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                if (e.getSource()==ok &&
-                    (!sample.range.equals(range) || sample.isAbsolute()!=isAbsolute))
-                    sample.postEdit(Redate.redate(sample, range, isAbsolute ? "A" : "R"));
+                boolean isOk = (e.getSource() == ok);
+                boolean rangeChanged = !sample.range.equals(range);
+                boolean absRelChanged = (sample.isAbsolute() != isAbsolute);
+
+                if (isOk && (rangeChanged || absRelChanged))
+                    sample.postEdit(Redate.redate(sample, range, isAbsolute ? "A" : "R", elementsToo.isSelected()));
+
                 dispose();
             }
         };
