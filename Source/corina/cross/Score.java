@@ -27,14 +27,20 @@ import corina.Range;
     // as well -- that i'm just not seeing yet.  FIXME.
 
 // currently only used in sigstable -- should be used in table and grid.
+// (no, it shouldn't, that would be silly.  no silliness!)
 
-public final class Score {
+// this should go back to being an inner class of Cross.
+
+// unless you want to make it extend Single...
+
+public class Score {
 
     public int number; // 0, 1, 2, ... -- ugly, fixme?
     public Range fixedRange;
     public Range movingRange;
-    public double score;
+    public float score;
     public int span;
+    public float confidence;
 
     public Score(Cross cross, int index, int nr) {
         int movedBy = cross.range.getStart().add(index).diff(cross.moving.range.getEnd());
@@ -42,9 +48,11 @@ public final class Score {
 
         movingRange = cross.moving.range.redateEndTo(cross.range.getStart().add(index));
 
-        score = cross.data[index];
+        score = (float) cross.data[index]; // FIXME:  what?  why's this still doubles?
 
         span = cross.fixed.range.overlap(movingRange);
+
+	confidence = Bayesian.getSignificance(cross, (float) score); // WRITEME!
 
         number = nr;
     }
