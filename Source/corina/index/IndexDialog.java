@@ -28,6 +28,7 @@ import corina.gui.UserCancelledException;
 import corina.util.OKCancel;
 import corina.util.TextClipboard;
 import corina.util.Platform;
+import corina.gui.Bug;
 
 import java.io.File;
 import java.io.IOException;
@@ -106,7 +107,7 @@ public class IndexDialog extends JDialog {
             switch (col) {
                 case 0: return msg.getString("index");
                 case 1: return "\u03C7\u00B2"; // "Chi^2"
-                case 2: return "r"; // it's always "r", right?
+                case 2: return "\u03C1"; // "rho"
                 default: return null;
             }
         }
@@ -156,13 +157,27 @@ public class IndexDialog extends JDialog {
         table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scroller = new JScrollPane(table);
         // scroller.setBorder(BorderFactory.createEmptyBorder(0, 14, 0, 14));
-        
+
         // select last entry
         table.setRowSelectionInterval(table.getRowCount()-1, table.getRowCount()-1);
 
-        // don't allow reordering
+        // don't allow reordering or resizing of the columns
         table.getTableHeader().setReorderingAllowed(false);
+        for (int i=0; i<3; i++)
+            table.getColumn(table.getColumnName(i)).setResizable(false);
 
+        // don't allow deselecting the only selection
+        table.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent e) {
+                javax.swing.ListSelectionModel model = table.getSelectionModel();
+                if (model.isSelectionEmpty()) {
+                    // user's trying to screw it up, fixing...
+                    int x = model.getAnchorSelectionIndex();
+                    model.addSelectionInterval(x, x);
+                }
+            }
+        });
+        
         return scroller;
     }
 
@@ -173,12 +188,9 @@ public class IndexDialog extends JDialog {
             public void actionPerformed(ActionEvent ae) {
                 int row = table.getSelectedRow();
 
-                // error-checking!
+                // this should never happen, but in case it does...
                 if (row == -1) {
-                    JOptionPane.showMessageDialog(null,
-                                                  "Select a possible index to graph first.",
-                                                  "No index selected!",
-                                                  JOptionPane.ERROR_MESSAGE);
+                    Bug.bug(new IllegalArgumentException("bug: no row selected in preview"));
                     return;
                 }
 
@@ -194,12 +206,11 @@ public class IndexDialog extends JDialog {
         b.setMnemonic('C');
         b.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                // error-checking!
-                if (table.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null,
-                                                  "Select a possible index to copy first.",
-                                                  "No index selected!",
-                                                  JOptionPane.ERROR_MESSAGE);
+                int row = table.getSelectedRow();
+                
+                // this should never happen, but just in case...
+                if (row == -1) {
+                    Bug.bug(new IllegalArgumentException("no index selected in copy!"));
                     return;
                 }
 
@@ -249,7 +260,7 @@ public class IndexDialog extends JDialog {
         // data
         sample = s;
 
-        // watch for already-indexed files
+        // watch for already-indexed files -- shouldn't this be a "never happens", too?
         if (sample.isIndexed()) {
             JOptionPane.showMessageDialog(null,
                                           msg.getString("already_indexed_text"),
@@ -446,11 +457,9 @@ public class IndexDialog extends JDialog {
             public void actionPerformed(ActionEvent ae) {
                 int row = table.getSelectedRow();
 
-                if (row == -1) { // error-checking!
-                    JOptionPane.showMessageDialog(null,
-                                                  "Select a possible index to apply first.",
-                                                  "No index selected!",
-                                                  JOptionPane.ERROR_MESSAGE);
+                // should never happen...
+                if (row == -1) {
+                    Bug.bug(new IllegalArgumentException("bug: no row selected in apply"));
                     return;
                 }
 
