@@ -20,6 +20,8 @@
 
 package corina.cross;
 
+import corina.Element;
+import corina.Sample;
 import corina.graph.GraphFrame;
 import corina.gui.SaveableDocument;
 import corina.gui.PrintableDocument;
@@ -35,6 +37,7 @@ import corina.gui.UserCancelledException;
 import corina.util.Overwrite;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import java.io.File;
@@ -47,6 +50,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.print.Pageable;
 import java.awt.print.Printable;
 import java.awt.print.PageFormat;
@@ -80,13 +85,17 @@ public class GridFrame extends XFrame
     public boolean isSaved() { // don't worry about deleting grids, for now
 	return true; // fixme
     }
+    /*
+      REFACTOR: make Grid Saveable(?), and move all of this up to XFrame, which
+      i should rename as DocumentFrame(?).  it's the same for samples, grids, graphs, ...
+     */
     public void save() {
         // check filename
         if (filename == null) {
             try {
                 filename = FileDialog.showSingle("Save");
             } catch (UserCancelledException uce) {
-                return;
+                return; // this should return FAILURE, too -- solution: save() throws UCE
             }
 
             // try up here, try down there.  can these be merged?  (but there's an if-stmt...)
@@ -108,17 +117,21 @@ public class GridFrame extends XFrame
         }
     }
     public String getDocumentTitle() {
-        return "Grid: " + filename;
+        return msg.getString("grid") + ": " + filename;
     }
     public void setFilename(String fn) {
-	filename = fn;
+        filename = fn;
     }
     public String getFilename() {
-	return filename;
+        return filename;
     }
 
     // table model for the grid
-    private class GridTableModel extends AbstractTableModel {
+    static class GridTableModel extends AbstractTableModel {
+        private Grid grid;
+        public GridTableModel(Grid grid) {
+            this.grid = grid;
+        }
         public int getColumnCount() {
             return (grid == null ? 0 : grid.size()+1);
         }
@@ -130,15 +143,13 @@ public class GridFrame extends XFrame
         }
     }
 
-    private static double scale = Double.parseDouble(System.getProperty("corina.grid.scale", "1.0"));
+    private static float scale = Float.parseFloat(System.getProperty("corina.grid.scale", "1.0"));
 
     // cell renderer
-    private class GridRenderer extends JComponent implements TableCellRenderer {
+    static class GridRenderer extends JComponent implements TableCellRenderer {
 
-        public Component getTableCellRendererComponent(JTable table,
-                                                       Object value,
-                                                       boolean isSelected,
-                                                       boolean hasFocus,
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus,
                                                        int row, int column) {
             // set myself, return myself
             cell = (Grid.Cell) value;
@@ -151,16 +162,19 @@ public class GridFrame extends XFrame
             Font origFont = (System.getProperty("corina.grid.font")==null ? g.getFont() : Font.getFont("corina.grid.font"));
             Font scaledFont = new Font(origFont.getName(),
                                        origFont.getStyle(),
-                                       (int) ((double) origFont.getSize() * scale));
+                                       (int) (origFont.getSize() * scale));
+//            System.out.println("new font t=" + System.currentTimeMillis()); -- for debugging
             g.setFont(scaledFont);
-            // new font each time seems even MORE inefficient!
-            System.out.println("new font t=" + System.currentTimeMillis());
+            // FIXME: new font each time seems even MORE inefficient!
+            // better: in refresh() just do component.setFont(...), and i'll pick it up automatically, right?
 
-            // call the printing method (REFACTOR: rename method?)
+            // call the printing method (REFACTOR: rename method?  it's not just for printing, anymore...)
             cell.print((Graphics2D) g, 0, 0, scale);
+	    // FIXME: agh!  just call g2.scale(scale, scale) -- grid cells shouldn't have to
+	    // scale themselves.
         }
     }
-    
+
     // PrintableDocument
     public int getPrintingMethod() {
         return PrintableDocument.PAGEABLE;
@@ -176,7 +190,7 @@ public class GridFrame extends XFrame
     }
 
     private void initTable() {
-        output = new JTable(new GridTableModel());
+        output = new JTable(new GridTableModel(grid));
 
         // cell-selection only
         output.setRowSelectionAllowed(false);
@@ -193,6 +207,27 @@ public class GridFrame extends XFrame
         // renderer -- use same as for printer
         output.setDefaultRenderer(Object.class, new GridRenderer());
         output.setShowGrid(false);
+
+	// respond to double-clicks
+	output.addMouseListener(new MouseAdapter() {
+		public void mouseClicked(MouseEvent e) {
+		    if (e.getClickCount() == 2) {
+			// get the (row,col) of the click
+			int row = output.rowAtPoint(e.getPoint());
+			int col = output.columnAtPoint(e.getPoint());
+
+			// figure out what samples are there (REFACTOR: LoD says this should be in grid)
+			Element e1 = (Element) grid.getFiles().get(row-1);
+			Element e2 = (Element) grid.getFiles().get(col-1);
+
+			// make a graph
+			List list = new ArrayList(2);
+			list.add(e1);
+			list.add(e2);
+			new GraphFrame(list);
+		    }
+		}
+	    });
 
         // put the table in a scroller
         JScrollPane scroller = new JScrollPane(output);
@@ -215,7 +250,7 @@ public class GridFrame extends XFrame
         init();
     }
 
-    // never used -- could be used by xmenubar
+    // never used -- could be used by xmenubar, but isn't
     public GridFrame() {
         try {
             // get args
@@ -242,20 +277,10 @@ public class GridFrame extends XFrame
         setSize(new Dimension(640, 480));
         show();
     }
-    
+
     private JMenu[] makeMenus() {
 	// menubar
 	JMenu view = new XMenubar.XMenu("View", 'V');
-
-	/*
-	JMenuItem mark = new XMenubar.XMenuItem("Mark Cells...");
-	mark.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    new MarkCrosses();
-		}
-	    });
-	view.add(mark);
-	*/
 
 	JMenuItem graph = new XMenubar.XMenuItem("Graph All");
 	graph.addActionListener(new AbstractAction() {
@@ -286,7 +311,7 @@ public class GridFrame extends XFrame
                 scale += 0.1;
 
                 // set property
-                System.setProperty("corina.grid.scale", Double.toString(scale));
+                System.setProperty("corina.grid.scale", Float.toString(scale));
 
                 // tell 'em -- use Preferences.updateAll()?
                 refreshFromPreferences();
@@ -295,7 +320,11 @@ public class GridFrame extends XFrame
                 try {
                     Prefs.save();
                 } catch (IOException ioe) {
-                    // ignore
+                    // ignore?
+                    // BAD INTERFACE: if save() is meant to be called at random time by users like this,
+                    // it should handle ioe's gracefully.  i shouldn't have to worry about this sort of crap now.
+                    // (at worst, i should have 2 save()s, one that's force-save-dialog-on-fail, the other that's
+                    // save-now-if-you-can-but-not-required.)
                 }
             }
         };
@@ -310,7 +339,7 @@ public class GridFrame extends XFrame
                 scale -= 0.1;
 
                 // set property
-                System.setProperty("corina.grid.scale", Double.toString(scale));
+                System.setProperty("corina.grid.scale", Float.toString(scale));
 
                 // tell 'em -- use Preferences.updateAll()?
                 refreshFromPreferences();
@@ -337,7 +366,7 @@ public class GridFrame extends XFrame
     // HasPreferences
     public void refreshFromPreferences() {
         // re-read scale
-        scale = Double.parseDouble(System.getProperty("corina.grid.scale", "1.0"));
+        scale = Float.parseFloat(System.getProperty("corina.grid.scale", "1.0"));
 
         // reset sizes
         output.setRowHeight((int)(Grid.getCellHeight()*scale) + 2);
