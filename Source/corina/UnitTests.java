@@ -21,6 +21,8 @@ public class UnitTests extends TestCase {
         assertEquals(y.toString(), "1");
         y = new Year(2).add(-4);
         assertEquals(y.toString(), "-3");
+        y = new Year(-2).add(1); // oops, my original algorithm didn't handle this (!)
+        assertEquals(y.toString(), "-1");
     }
     public void testYearDiff() {
         int d = new Year(5).diff(new Year(2));
