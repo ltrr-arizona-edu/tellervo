@@ -20,12 +20,16 @@
 
 package corina.map;
 
-import corina.map.ToolBox.Tool;
+import corina.map.tools.Tool;
+import corina.map.tools.ToolBox;
 import corina.util.ColorUtils;
 import corina.site.Site;
 import corina.site.SiteDB;
-import corina.site.SiteProperties;
+import corina.site.SiteDBAdapter;
+import corina.site.SiteEvent;
+import corina.site.SiteInfo; // never used?
 import corina.site.SiteNotFoundException;
+import corina.gui.Bug;
 
 import java.io.IOException;
 
@@ -35,6 +39,7 @@ import java.util.Set;
 import java.util.HashSet;
 // import java.util.Map; -- name collision!
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 import java.awt.Point;
@@ -44,6 +49,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Stroke;
 import java.awt.BasicStroke;
 import java.awt.RenderingHints;
 
@@ -72,23 +78,44 @@ public class MapPanel extends JPanel implements Printable {
         _label = label;
     }
 
-    public MapPanel() {
+    private MapFrame fr;
+    public void setZoom() {
+        fr.setZoom(); }
+
+    public MapPanel(MapFrame fr) {
         view = new View(); // where?
         setBackground(Color.white);
 
+        this.fr = fr;
+        
         // disable double-buffering: not really useful, with the BufferedImage
         RepaintManager.currentManager(this).setDoubleBufferingEnabled(false);
 
         // initial buffer
-        buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB); // REFACTOR ME
-        updateBuffer();
+        buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB); // REFACTOR ME -- wait, do i need the A?  can i get a BI without it?
+	// updateBuffer();
+
+	// add listener: update map when DB changes
+	SiteDB.getSiteDB().addSiteDBListener(new SiteDBAdapter() {
+		public void siteMoved(SiteEvent e) {
+		    // System.out.println("site " + e.getSource() + " moved");
+		    updateBuffer(); // PERF: this is slow, nothing better?  i only need to redraw the labels
+		    repaint();
+		}
+		public void siteCodeChanged(SiteEvent e) {
+		    // System.out.println("site " + e.getSource() + " moved");
+		    updateBuffer(); // PERF: this is slow, nothing better?  i only need to redraw the labels
+		    repaint();
+		}
+		// REFACTOR: both of these are "update-buffer, repaint"
+	    });
     }
 
     // double-buffer for map+sites (everything but tool decorators)
     private BufferedImage buf;
     // BETTER?: one buffer for the map, another for the labels -- for only a couple MB, i get much faster updates
 
-    List sites=null; // was: private
+//    private List sites=null; // was: private
     // REFACTOR: instead of a list of sites, make it a (location => list of sites) hash
     /*
      that's a really nasty refactoring.  how to proceed?
@@ -100,23 +127,85 @@ public class MapPanel extends JPanel implements Printable {
     HashMap siteHash = new HashMap(); // a Map of (Location=>(Site|List)); first element of each list is the frontmost site
     // i'll need iterators ... (will i need to make my own site iterator?  no.  maybe.)
 
+    public void setSites(List sites) {
+        for (int i=0; i<sites.size(); i++) {
+            Site s = (Site) sites.get(i);
+            if (s.getLocation() == null)
+                continue; // ignore these
+            String loc = s.getLocation().toString();
+            if (siteHash.containsKey(loc)) {
+                List list = (List) siteHash.get(loc);
+                list.add(s);
+            } else {
+                List list = new ArrayList();
+                list.add(s);
+                siteHash.put(loc, list);
+            }
+        }
+    }
+
+    public boolean isVisible(Site s) {
+        if (s.getLocation() == null)
+            return false;
+        String loc = s.getLocation().toString();
+        if (!siteHash.containsKey(loc))
+            return false;
+        List list = (List) siteHash.get(loc);
+        return list.contains(s);
+    }
+    
     public void show(Site s) {
+        String loc = s.getLocation().toString();
+        if (siteHash.containsKey(loc)) {
+            List list = (List) siteHash.get(loc);
+            if (!list.contains(s))
+                list.add(s);
+        } else {
+            List list = new ArrayList();
+            list.add(s);
+            siteHash.put(loc, list);
+        }
+        updateBuffer();
+        repaint();
+        /* OLD:
         if (!sites.contains(s)) {
             sites.add(s);
             updateBuffer();
             repaint();
         }
+        */
     }
     public void hide(Site s) {
+        String loc = s.getLocation().toString();
+        if (siteHash.containsKey(loc)) {
+            List list = (List) siteHash.get(loc);
+            if (list.contains(s)) {
+                list.remove(s);
+                if (list.isEmpty())
+                    siteHash.remove(loc);
+            }
+        }
+        updateBuffer();
+        repaint();
+        /* OLD:
         if (sites.contains(s)) {
             sites.remove(s);
             updateBuffer();
             repaint();
         }
+         */
+    }
+    public void toFront(Site s) {
+        String loc = s.getLocation().toString();
+        List list = (List) siteHash.get(loc);
+        list.remove(s);
+        list.add(0, s);
+        updateBuffer();
+        repaint();
     }
 
-    // small value: diameter of the dot, and distance from dot to text
-    private static int EPS = 4;
+    // map overlay
+    SatelliteOverlay sat = new SatelliteOverlay();
 
     // does this need to be synch'd?  might solve a misdraw problem.
     // (no, it doesn't.)
@@ -136,34 +225,44 @@ public class MapPanel extends JPanel implements Printable {
 //                            RenderingHints.VALUE_ANTIALIAS_ON);
 // but on mac it's ok, and without it looks horrible
 
-        // set stroke
-//        g2.setStroke(new BasicStroke(1f));
-//        g2.setStroke(new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 10f,
-//                                     new float[] { 20f, 4f }, 0));
-// REFACTOR: make a DottedStroke(float[]), this is stupid
-// FIXME: stroke should be an attribute of the palette, not a global (default, no less) setting
-
-        // background
+        // background: fill with white
         g2.setColor(Color.white); // const?  use pallette.java
         g2.fillRect(0, 0, getWidth(), getHeight());
-
-        // ----------------------------------------
 
         // "let's get ready to reeeenderrrrr!"
         final Renderer r = Renderer.makeRenderer(view);
 
+        // draw section of earthmap10k.jpg onto g2 here
+        // (NEW IDEA: tile bitmap onto locations, instead of extracting bitmap offsets from locations)
+        // ADD FEATURE: drag an image file or URL to the map, and it's used as a background
+        long tt1 = System.currentTimeMillis();
+        sat.draw(g2, view, r);
+        long tt2 = System.currentTimeMillis();
+        System.out.println("spent " + (tt2-tt1) + " ms drawing overlay");
+
+        // ----------------------------------------
+
         drawGridlines(g2, r);
-        
+
         // draw on the map
         try {
+	    tt1 = System.currentTimeMillis();
             drawMap(g2, r);
+	    tt2 = System.currentTimeMillis();
+	    System.out.println("spent " + (tt2-tt1) + " ms drawing line map");
         } catch (IOException ioe) {
             System.out.println("ERROR: " + ioe); // yeah!
         }
-        
+
+        long t1 = System.currentTimeMillis();
         drawSites(g2, r);
+        long t2 = System.currentTimeMillis();
+        System.out.println("spent " + (t2-t1) + " ms drawing labels");
+
         drawScale(g2, r);
 
+        System.out.println("----");
+        
         // switch back cursor
         // FIXME: don't use oldCursor, use *(whatever it should be) -- ask again, so it doesn't get stuck
         setCursor(oldCursor);
@@ -179,13 +278,17 @@ public class MapPanel extends JPanel implements Printable {
         g2.setColor(Color.white); // const?  use pallette.java
         g2.fillRect(0, 0, getWidth(), getHeight());
 
-        // just render the gridlines
         Renderer r = Renderer.makeRenderer(view);
+
+        // well, and the colorful stuff
+        sat.draw(g2, view, r);
+
+        // just render the gridlines
         drawGridlines(g2, r);
     }
 
     private Location corner = new Location(); // for corners
-    private void drawOneGridline(Graphics2D g2, Renderer r, Map.Header g) {
+    private void drawOneGridline(Graphics2D g2, Renderer r, Map.Header g, boolean horizontal) {
         // REDUNDANT: isVisible projects the corners -- see below, too
         if (g.isVisible(r) != Renderer.VISIBLE_NO) {
 
@@ -199,7 +302,68 @@ public class MapPanel extends JPanel implements Printable {
             g2.drawLine(x1, y1, x2, y2);
             // nb, this takes advantage of the fact that gridlines are
             // just 2 points, which i suppose is ok (though a bit weird).
+
+            // random label stuff
+            Color oldColor = g2.getColor();
+
+            // label it, at the left edge of the screen
+            if (x1 <= 0 && x2 > 0) {
+                Location l1 = new Location();
+                g.getInsideCorner(l1);
+                int x = 5;
+                int y = interpolate(x1, y1, x2, y1, x);
+                // (---same from here down---)
+                int value = (int) (horizontal ? l1.latitude : l1.longitude);
+                String compass; // eep!  want a way to do part of a toString()
+                if (horizontal)
+                    compass = (value > 0 ? "N" : (value < 0 ? "S" : "N/S"));
+                else
+                    compass = (value > 0 ? "E" : (value < 0 ? "W" : "E/W"));
+                value = Math.abs(value);
+                g2.setColor(Color.black);
+                g2.setFont(new Font("sansserif", Font.BOLD, 12));
+                g2.drawString(value + "¡" + compass, x+1, y+1);
+                g2.setColor(oldColor);
+                g2.setFont(new Font("sansserif", Font.BOLD, 12));
+                g2.drawString(value + "¡" + compass, x, y);
+            }
+
+            // label it, at the top edge of the screen
+            if (y1 <= 0 && y2 > 0) {
+                Location l1 = new Location();
+                g.getInsideCorner(l1);
+                int x = (x1 + x2) / 2 + 5; // DUMMY
+                int y = 15; // ???
+                // (---same from here down---)
+                int value = (int) (horizontal ? l1.latitude : l1.longitude);
+                String compass; // eep!  want a way to do part of a toString()
+                if (horizontal)
+                    compass = (value > 0 ? "N" : (value < 0 ? "S" : "N/S"));
+                else
+                    compass = (value > 0 ? "E" : (value < 0 ? "W" : "E/W"));
+                value = Math.abs(value);
+                if (!horizontal) { // better: use slope of gridline at this point
+                    x += 15;
+                    g2.rotate(Math.toRadians(90), x, 0); }
+                g2.setColor(Color.black);
+                g2.setFont(new Font("sansserif", Font.BOLD, 12));
+                g2.drawString(value + "¡" + compass, x+1, y+1);
+                g2.setColor(oldColor);
+                g2.setFont(new Font("sansserif", Font.BOLD, 12));
+                g2.drawString(value + "¡" + compass, x, y);
+                if (!horizontal)
+                    g2.rotate(Math.toRadians(-90), x, 0);
+            }
+
+            // FIXME: align stuff properly
+            // WRITEME: also label bottom and right edges?
+            // FIXME: it's kind of hard to read
+            // PERF: it's not very efficient at all
+            // FIXME: shouldn't the numbers be on top of the map lines?
         }
+    }
+    private int interpolate(int x1, int y1, int x2, int y2, int x) {
+        return (y1 + y2) / 2 - 5; // DUMMY!
     }
     private void drawGridlines(Graphics2D g2, Renderer r) {
         // drawing the gridlines: a simple loop for now (MUCH BETTER: start at r.loc, go out each way until !vis)
@@ -212,12 +376,12 @@ public class MapPanel extends JPanel implements Printable {
         // horizontal gridlines
         for (int lat=-90; lat<=90; lat+=10) // gridlines every 10 degrees
             for (int lon=-180; lon<180; lon+=Map.STEP)
-                drawOneGridline(g2, r, Map.makeGridline(true, lat, lon));
+                drawOneGridline(g2, r, Map.makeGridline(true, lat, lon), true);
 
         // vertical gridlines
         for (int lon=-180; lon<=180; lon+=10) // gridlines every 10 degrees
             for (int lat=-90; lat<90; lat+=Map.STEP)
-                drawOneGridline(g2, r, Map.makeGridline(false, lat, lon));
+                drawOneGridline(g2, r, Map.makeGridline(false, lat, lon), false);
     }
 
     // (europe on 64 ints a day?)
@@ -249,10 +413,10 @@ public class MapPanel extends JPanel implements Printable {
                 synchronized (Map.headers) {
                     d = h.getData();
                 }
-                int numberOfLines = d.n; // was: d.x.length;
+                int numberOfLines = d.n;
 
                 // realloc x/y, if needed
-                int myArraySize = x.length; // round up to power of 2, to minimize allocations
+                int myArraySize = x.length; // round up to power of 2, to minimize reallocations
                 while (myArraySize < numberOfLines) {
                     myArraySize *= 2;
                 }
@@ -276,7 +440,7 @@ public class MapPanel extends JPanel implements Printable {
                     int to = 0;
                     int lastX = x[0], lastY = y[0];
                     for (int from=0; from<numberOfLines; from++) {
-                        int threshold = 2; // "detail" -- detail = 5->2? (no need to go finer)
+                        final int threshold = 3; // "detail" -- detail = 5->2? (no need to go finer)
                         // threshold=2 removes a lot of lines, and looks much cleaner -- USE THIS NORMALLY
                         // threshold=1 and even =0 remove quite a few lines, but i can't see any real improvement
                         double leapSize = Math.sqrt((x[from]-lastX)*(x[from]-lastX) + (y[from]-lastY)*(y[from]-lastY));
@@ -308,159 +472,76 @@ public class MapPanel extends JPanel implements Printable {
             }
         }
     }
-    
-    // draw a little label, like those flags on hors d'oeuvres to tell you
-    // which ones have dead animals in them and which ones are food
-    // REFACTOR: why isn't this in Site?
-    // FEATURE: it should handle multi-line text
-    /* no longer private! */ static void drawLabel(Graphics2D g2, float zoom, String text, Point p, float angle, int dist, boolean dupe) {
-        // measure the text
-        int textWidth = g2.getFontMetrics().stringWidth(text);
-        int textHeight = g2.getFontMetrics().getHeight();
-        
-        // center of Text bubble
-        Point t = new Point(p.x + (int) (dist * Math.sin(angle)),
-                            p.y - (int) (dist * Math.cos(angle)));
 
-        // abort!  (if completely off-screen) -- er, what if the stretchy goes on screen?
-        // FIXME: i'll need some sort of clipping
-        //        if (right < 0 || left > view.size.width)
-//            return;
-//        if (p.y < 0 || top > view.size.height)
-//            return;
+    // draw a label using this mappanel's offset hash
+    public void drawLabel(Graphics2D g2, Point p, Site site, int numSites, View view) {
+        // get offsets
+         Offset o = getOffset(site.getLocation());
 
-        // extra drop shadows
-        if (dupe) {
-            Color body = g2.getColor();
-            for (int nr=0; nr<2; nr++) {
-                Color c = body;
-                for (int i=2; i>=nr; i--)
-                    c = c.darker();
-                for (int in=0; in<2; in++) {
-                    g2.setColor(in==0 ? Color.black : c);
-                    g2.setStroke(new BasicStroke((in==0 ? 2f : 1f), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
-                    // other JOINs make the point look mis-drawn (twice, from different angles)
+         // compute bubble point
+         t.x = p.x + (int) (o.dist * view.zoom * Math.sin(o.angle));
+         t.y = p.y - (int) (o.dist * view.zoom * Math.cos(o.angle));
 
-                    // draw the bubble
-                    {
-                        int left = t.x - (textWidth/2 + EPS), width = textWidth + 2*EPS;
-                        int top = t.y - (textHeight/2 + EPS/4), height = textHeight + EPS/2;
-                        top += 3*(2-nr);
-                        left += 3*(2-nr);
-                        if (in==0)
-                            g2.drawRoundRect(left, top, width, height, (int) zoom, (int) zoom);
-                        else
-                            g2.fillRoundRect(left, top, width, height, (int) zoom, (int) zoom);
-                        // (don't worry, roundrect doesn't appear to take up (much) more time than rect)
-                    }
-                }
-            }
-            g2.setColor(body);
-        }
-        
-        // drop shadow
-        Color body = g2.getColor();
-        for (int ii=0; ii<2; ii++) {
-            g2.setColor(ii==0 ? Color.black : body);
-            g2.setStroke(new BasicStroke((ii==0 ? 2f : 1f), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
-            // other JOINs make the point look mis-drawn (twice, from different angles)
-
-            // draw the bubble
-            {
-                int left = t.x - (textWidth/2 + EPS), width = textWidth + 2*EPS;
-                int top = t.y - (textHeight/2 + EPS/4), height = textHeight + EPS/2;
-                if (ii==0)
-                    g2.drawRoundRect(left, top, width, height, (int) zoom, (int) zoom);
-                else
-                    g2.fillRoundRect(left, top, width, height, (int) zoom, (int) zoom);
-                // (don't worry, roundrect doesn't appear to take up (much) more time than rect)
-            }
-
-            // draw the stretchy to the point
-            {
-                // compute corners of label-rect
-                int top = t.y - textHeight/8, bottom = t.y + textHeight/8;
-                int left = t.x - textWidth/8, right = t.x + textWidth/8;
-
-                // corners of label-rect, in arrays
-                sx[0] = left;  sy[0] = top;
-                sx[1] = right;  sy[1] = top;
-                sx[2] = right;  sy[2] = bottom;
-                sx[3] = left;  sy[3] = bottom;
-
-                // draw trangles to each side
-                for (int i=0; i<4; i++) {
-
-                    // corners of triangles
-                    tx[0] = p.x;  ty[0] = p.y;
-                    tx[1] = sx[i];  ty[1] = sy[i];
-                    tx[2] = sx[(i+1) % 4];  ty[2] = sy[(i+1) % 4];
-
-                    // draw polygon, then fill with color
-                    if (ii==0)
-                        g2.drawPolygon(tx, ty, 3);
-                    else
-                        g2.fillPolygon(tx, ty, 3);
-
-                    // it really does suck that i can't switch on method invocation, and also
-                    // that draw/fill isn't simply a boolean parameter (which is sort of related)
-                }
-            }
-        }
-        
-        // write the text, in black
-        g2.setColor(ColorUtils.reallyDark(body) ? Color.white : Color.black);
-        g2.drawString(text, t.x - textWidth/2, t.y + textHeight/2 - EPS/2); // is this y-value right?
+         // call renderer to draw it for me
+         SiteRenderer.drawLabel(g2, p, site, numSites, view, t);
     }
-    private static int sx[] = new int[4], sy[] = new int[4]; // square corners (x,y)
-    private static int tx[] = new int[3], ty[] = new int[3]; // triangle corners (x,y)
+    Point t = new Point();
 
-    void setFontForLabel(Graphics g) {
-        g.setFont(new Font("sans-serif", Font.BOLD, (int)view.zoom*5));
+    // make this GETfont, instead.
+    public static void setFontForLabel(Graphics g, View view) {
+        //        g.setFont(new Font("sans-serif", Font.BOLD, (int)view.zoom*5));
+        // g.setFont(new Font("sans-serif", Font.PLAIN, 9));
+        int size = 9;
+        if (view.zoom < 1.2)
+            size = 8;
+        if (view.zoom > 3)
+            size = 10;
+        g.setFont(new Font("sans-serif", Font.PLAIN, size));
     }
-    
-    // idea for refactoring: don't have s1/s2 special cases, just one s = set of sites
-    // initial case is the same as measure-tool just having been used, so line+dist
-    // is still drawn.  (only problem:  how to deal with 1-n maps, where you want
-    // multiple lines?
-    private Vector3 p1 = new Vector3(), p2 = new Vector3();
+
+    /* private */ public static class Offset {
+        public float angle = 0f;
+        public float dist = 0f; // new!
+    }
+    private HashMap offsets = new HashMap(); // (location.toString() => [angle, dist]) hash -- what bug makes me need toString()?
+    public void setOffset(Location loc, float angle, float dist) {
+        Offset o = new Offset();
+        o.angle = angle;
+        o.dist = dist;
+        offsets.put(loc.toString(), o);
+    }
+    public Offset getOffset(Location location) {
+        if (offsets.containsKey(location.toString()))
+            return (Offset) offsets.get(location.toString()); // anaphoric macros, where are you?
+        else
+            return nullOffset;
+    }
+    private final Offset nullOffset = new Offset(); // singleton
+
+    private Vector3 p1 = new Vector3(), p2 = new Vector3(); // (document what these are used for!)
     private void drawSites(Graphics2D g2, Renderer r) {
         // this should be in drawLabel(), but i don't want to call it /n/ times for no reason.
         // therefore: be sure to call this before calling drawLabel()!
-        setFontForLabel(g2);
+        setFontForLabel(g2, view);
 
         // /n/ sites
-        if (sites != null) {
-
-            // look for duplicate sites
-            Set locations = new HashSet();
-            Set dupes = new HashSet();
-            for (int i=0; i<sites.size(); i++) {
-                Site s = (Site) sites.get(i);
-                if (s.location == null)
-                    continue;
-                if (locations.contains(s.location.toString())) // tostring is bad here, but it makes it work (why?)
-                    dupes.add(s.location.toString());
-                else
-                    locations.add(s.location.toString());
-            }
-            locations = null; // gc it
+        if (siteHash != null) {
 
             // draw sites
-            for (int i=0; i<sites.size(); i++) {
-                Site s = (Site) sites.get(i);
-                
-                // no location known for this site
-                if (s.location == null)
-                    continue;
+            Iterator iter = siteHash.values().iterator();
+            while (iter.hasNext()) {
+                List list = (List) iter.next();
+                Site top = (Site) list.get(0);
 
-                g2.setColor(s.getSiteColor());
-                r.render(s.location, p2);
+                g2.setColor(top.getSiteColor());
+                r.render(top.getLocation(), p2);
                 if (p2.z < 0) // "invisible" -- this should be a result of render(), not a z<0
                     continue;
-//                if (dupes.contains(s.location.toString())) // HACK: make dupes black, for now
-//                    g2.setColor(Color.black);
-                drawLabel(g2, view.zoom, s.code, new Point((int) p2.x, (int) p2.y), s.angle, s.dist /* (int) (10*view.zoom) */, dupes.contains(s.location.toString())); // label it
+
+                // label it
+                pt.x = (int) p2.x;
+                pt.y = (int) p2.y;
+                drawLabel(g2, pt, top, list.size(), view);
 
                 // BUG: if s.location has had a label drawn to it before, draw all sites as "AAA,BBB,...",
                 // possibly using 2 lines if needed -- or even actually drawing the elipsis, which the user can
@@ -470,139 +551,207 @@ public class MapPanel extends JPanel implements Printable {
             }
         }
     }
+    private Point pt = new Point();
 
     // for actual POINT -- list all sites here, to be put in a popup menu
-    public List sitesForPoint(Renderer r, Site target) {
-        List found = new ArrayList();
-        for (int i=0; i<sites.size(); i++) {
-            Site s = (Site) sites.get(i);
-            if (s.location == null)
-                continue;
-            if (s.location.toString().equals(target.location.toString())) // memoize!
-                found.add(s);
-        }
-        return found;
+    public List sitesForPoint(Site target) {
+        String loc = target.getLocation().toString();
+        return (List) siteHash.get(loc);
     }
     // how to use: on click (where? how?) on site, show popup consisting of these sites
 
-    // important: for LABEL [ future: return topmost site, of course ]
+    // important: for LABEL -- (return topmost site, of course)
+    // (who uses this?)
     public Site siteForPoint(Renderer r, Point p, int dist) throws SiteNotFoundException {
-        if (sites == null)
+        if (siteHash == null)
             throw new SiteNotFoundException();
 
         // i'll need a graphics, of some sort.  might as well be this one.
+        // (only used for measuring text)
         Graphics2D g2 = (Graphics2D) buf.getGraphics();
-        setFontForLabel(g2); // yeah, very weird...
+        setFontForLabel(g2, view); // yeah, very weird...
 
-        for (int i=sites.size()-1; i>=0; i--) {
-            // check backwards, so you get the top-most (last-drawn) one first,
-            // which is what the user expects
+        // (stuff that was originally in the loop, but are invariant and moved out for performance)
+        int textHeight = g2.getFontMetrics().getHeight();
+        Point t = new Point();
 
-            Site s = (Site) sites.get(i);
-            if (s.location == null)
-                continue;
-            r.render(s.location, p2);
+        Iterator iter = siteHash.values().iterator();
+        // normally, i'd check in backwards order, so you get the top-most (last-drawn) one first,
+        // which is what the user expects.  IteratorsSuck, and I can't iterate backwards, so I'll
+        // look at all and take the last one (it's still O(n)).
+        Site returnValue = null;
+        while (iter.hasNext()) {
+            List list = (List) iter.next();
+            Site s = (Site) list.get(0);
+            
+            r.render(s.getLocation(), p2);
             if (p2.z < 0)
                 continue;
 
-            String text = s.code;
+            String text = s.getCode(); // REFACTOR: violates OAOO -- should ask SiteRenderer what's there
 
             // measure the text
             int textWidth = g2.getFontMetrics().stringWidth(text);
-            int textHeight = g2.getFontMetrics().getHeight();
 
-            // center of Text bubble
-            Point t = new Point((int) p2.x + (int) (s.dist * Math.sin(s.angle)),
-                                (int) p2.y - (int) (s.dist * Math.cos(s.angle)));            
+            // get offset, if any
+            Offset o = getOffset(s.getLocation());
 
-            // ripped from drawLabel()
+            // center of Text bubble -- like drawLabel(), but not quite (view.zoom)
+            // NO, IT'S EXACTLY LIKE DRAWLABEL -- USE THAT!
+            t.x = (int) p2.x + (int) (o.dist * view.zoom * Math.sin(o.angle));
+            t.y = (int) p2.y - (int) (o.dist * view.zoom * Math.cos(o.angle));
+
+            // ripped from drawLabel() -- SO MAKE IT A METHOD IN SITERENDERER AND USE THAT!
             int left = t.x - (textWidth/2 + EPS), width = textWidth + 2*EPS;
             int top = t.y - (textHeight/2 + EPS/4), height = textHeight + EPS/2;
             if (p.x>=left && p.x<=(left+width) && p.y>=top && p.y<=(top+height))
-                return s;
+                returnValue = s;
         }
+
+        // if i have something, return it, else snfe
+        if (returnValue != null)
+            return returnValue;
         throw new SiteNotFoundException();
     }
+    private static int EPS = 4; // must be same as in siterenderer?
 
-    // this method is lousy.  instead of direct computation, it uses
-    // nested binary searches, neither of which is guaranteed to
-    // terminate with the correct result.  ouch.  rewrite me, please.
-    // ---
-    // it needs to ask the renderer, "how many pixels is 100km of longitude at x¡ latitude"?
-    // add that to renderer, perhaps.
-    private static Location loc1 = new Location(), loc2 = new Location();
+    // REFACTOR: by LoD, this really ought to be in Renderer
+    private Location leftLoc = new Location(), rightLoc = new Location();
+    private Vector3 rightVec = new Vector3();
+    private int pixelsForDistanceAtPoint(Renderer r, Point p, float km) {
+        r.unrender(p, leftLoc);
+        double radius = 40000. * Math.cos(Math.toRadians(leftLoc.latitude)); // radius of circle at latitude
+        double deg = (km / radius) * 360.; // deg for |km|
+        deg = Math.abs(deg); // ack
+        rightLoc = new Location(leftLoc.latitude, leftLoc.longitude + (float) deg); // PERF: new!
+        r.render(rightLoc, rightVec);
+        return (int) (rightVec.x - p.x); }
+
+    // constants
+    private static final Color LEGEND_YELLOW = new Color(255, 255, 127, 204);
+    private static final Stroke LEGEND_STROKE = new BasicStroke(0.5f);
+    private static final Font LEGEND_FONT = new Font("serif", Font.PLAIN, 12);
+    private void drawScaleDirectly(Graphics2D g2, Point p1, Point p2, int dist) {
+        g2.setStroke(LEGEND_STROKE);
+
+        // draw a nice yellow box
+        g2.setColor(LEGEND_YELLOW);
+        g2.fillRect(p1.x-10, p1.y-10, p2.x-p1.x+20, 30);
+        g2.setColor(Color.black);
+        g2.drawRect(p1.x-10, p1.y-10, p2.x-p1.x+20, 30);
+
+        // draw the bar
+        g2.setColor(Color.black);
+        g2.drawLine(p1.x, p1.y, p2.x, p2.y);
+
+        // draw ticks going across
+        double dx = (p2.x-p1.x) / 10.;
+        double xi = p1.x;
+        for (int i=0; i<=10; i++) {
+            int length;
+            if (i % 10 == 0)
+                length = 10;
+            else if (i % 5 == 0)
+                length = 8;
+            else
+                length = 5;
+            g2.drawLine((int) xi, p1.y, (int) xi, p1.y+length);
+            xi += dx; }
+
+        // draw "100 km" on it
+        g2.setFont(LEGEND_FONT);
+        // BUG: this isn't centered or anything...
+        String text = dist + " km";
+        int w = g2.getFontMetrics().stringWidth(text);
+        g2.drawString(text, (p1.x+p2.x)/2 - w/2, p1.y + 15); }
+
+    private void drawScale(Graphics2D g2, Point p1, Point p2, int dist) {
+	int boxWidth = p2.x - p1.x + 20;
+	int boxHeight = p2.y - p1.y + 30;
+	BufferedImage buf = new BufferedImage(boxWidth, boxHeight, BufferedImage.TYPE_INT_ARGB_PRE); // (this takes ~1ms)
+	Graphics2D b2 = buf.createGraphics();
+
+        b2.setStroke(LEGEND_STROKE);
+
+        // draw a nice yellow box
+	b2.setColor(LEGEND_YELLOW);
+	b2.fillRect(0, 0, p2.x-p1.x+20, 30);
+        b2.setColor(Color.black);
+        b2.drawRect(0, 0, p2.x-p1.x+20, 30);
+
+        // draw the bar
+        b2.setColor(Color.black);
+        b2.drawLine(10, 10, p2.x - (p1.x-10), 10);
+
+        // draw ticks going across
+        double dx = (p2.x-p1.x) / 10.;
+        double xi = 10;
+        for (int i=0; i<=10; i++) {
+            int length;
+            if (i % 10 == 0)
+                length = 10;
+            else if (i % 5 == 0)
+                length = 8;
+            else
+                length = 5;
+            b2.drawLine((int) xi, 10, (int) xi, 10+length);
+            xi += dx; }
+
+        // draw "100 km" on it
+        b2.setFont(LEGEND_FONT);
+        // BUG: this isn't centered or anything...
+        String text = dist + " km";
+        int w = b2.getFontMetrics().stringWidth(text);
+        b2.drawString(text, 10+(p2.x-p1.x)/2 - w/2, 10 + 15);
+
+	// testing: clear the center of it
+	//	    b2.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.CLEAR));
+	//	    b2.setColor(new Color(255, 255, 255, 0));
+	//	    b2.fillRect(20, 0, 50, 30);
+
+	// copy back (this takes ~1ms)
+	g2.drawImage(buf, p1.x-10, p1.y-10, null);
+}
+
     private void drawScale(Graphics2D g2, Renderer r) {
         try {
 
-            /*
-            // new strategy: (O(1), only 1 unrender() call)
-            // - figure out the y-coord we will draw on
-            int y0 = getHeight() - 40;
-            // - unrender that (!)
-            Location loc = renderer.unrender(new Point(getWidth()/2, y0));
-            System.out.println("center point = " + loc);
-            // - from that latitude, ASSUME there's no tilt, etc., and figure out how many degs long. make 100km
-            double r = 360 * 100 / (2500 * Math.cos(loc.latitude)); // hack!
-            r = Math.abs(r);
-            System.out.println("at " + loc.latitude + "N, 100km=" + r + "deg");
-             r  = Math.toRadians(r); // BELOW SEEMS OK
-            // - if that result is r, render map.r.loc.long-r/2, map.r.loc.long+r/2
-            Location center = renderer.location;
-            Vector3 left = renderer.project(new Location(center.latitude, center.longitude - r/2));
-            Vector3 right = renderer.project(new Location(center.latitude, center.longitude + r/2));
-            // - figure out dx between those points, and draw a line that long.
-            int dist = (int) (right.x - left.x);
-
-            // back-ass-wards compatibility
-            int x0=25, x1=x0+dist;
-             */
-
-            // find 100km to mark off
-            int x0=25, x1=275, y0=getHeight()-40;
-            int jump = view.size.width/4;
-            r.unrender(new Point(x0, y0), loc1);
-            int dist;
+	    // figure out a good distance to mark off: 100km isn't always ideal
+            int km = 100;
             for (;;) {
-                // look for x1 s.t. dist[(x0,y0)..(x1,y0)] = 100km
-                r.unrender(new Point(x1, y0), loc2);
-                // if (loc2 == null) return; // ack!
-                dist = loc1.distanceTo(loc2);
-                if (dist == 100 || jump==0)
+                Point p1 = new Point(25, getHeight() - 40);
+                int dist = pixelsForDistanceAtPoint(r, p1, km);
+                Point p2 = new Point(p1.x + dist, p1.y);
+
+                if (dist < 20 && km < 1000)
+                    km *= 10;
+                else if (dist > 200 && km > 1)
+                    km /= 10;
+                else {
+		    long t1, t2;
+
+		    t1 = System.currentTimeMillis();
+                    drawScale(g2, p1, p2, km);
+		    t2 = System.currentTimeMillis();
+		    System.out.println("spent " + (t2-t1) + " ms drawing scale using buffer");
+
+		    p1.y -= 50; p2.y -= 50;
+
+		    t1 = System.currentTimeMillis();
+                    drawScaleDirectly(g2, p1, p2, km);
+		    t2 = System.currentTimeMillis();
+		    System.out.println("spent " + (t2-t1) + " ms drawing scale directly");
+
                     break;
-                x1 += (dist < 100 ? jump : -jump);
-                jump *= 0.5;
+                }
             }
-            
-	    // do i have a problem here if dist!=100?
 
-	    // draw a nice yellow box
-	    g2.setColor(new Color(255, 255, 127, 204));
-	    g2.fillRect(x0-10, y0-10, x1-x0+20, 30);
-	    g2.setColor(Color.black);
-	    g2.drawRect(x0-10, y0-10, x1-x0+20, 30);
-
-	    // draw the bar
-	    g2.setColor(Color.black);
-	    g2.drawLine(x0, y0, x1, y0);
-	    g2.drawLine(x0, y0, x0, y0+10);
-	    if (x1-x0 > 100) { // draw ticks if >100 pixels wide
-		double dx = (x1-x0) / 10.;
-		double xi = x0 + dx;
-		for (int i=1; i<10; i++) {
-		    g2.drawLine((int) xi, y0, (int) xi, y0+5);
-		    xi += dx;
-		}
-	    }
-	    g2.drawLine(x1, y0, x1, y0+10);
-	    g2.setFont(new Font("serif", Font.PLAIN, 12));
-	    g2.drawString("100 km", x1 - 50, y0 + 15);
-
-	} catch (Exception e) {
-	    // this method has all sorts of problems.  if all hell
-	    // breaks loose, just exit quietly.
-	}
+        } catch (Exception e) {
+            // this method used to have all sorts of problems -- it shouldn't any more, but just in case,
+	    Bug.bug(e);
+        }
     }
-
+    
     // blit out the buffer, and draw Extra Crap.
     public void paintComponent(Graphics g) {
         g.drawImage(buf, 0, 0, Color.white, null);
@@ -612,7 +761,7 @@ public class MapPanel extends JPanel implements Printable {
     }
 
     // extra crap, er, decorators -- via callbacks.  probably not threadsafe, but
-    // consolodate with sample listeners if you really want that.
+    // consolidate with sample listeners if you really want that.
     private List decorators = new ArrayList();
     public void addDecorator(Tool t) {
         decorators.add(t);
@@ -627,11 +776,9 @@ public class MapPanel extends JPanel implements Printable {
 
     // hrm...
     public void setHeight(int h) {
-        view.size.height = h;
-    }
+        view.size.height = h; }
     public void setWidth(int w) {
-        view.size.width = w;
-    }
+        view.size.width = w; }
 
     // they really want my view
     public View getView() {
@@ -695,7 +842,7 @@ public class MapPanel extends JPanel implements Printable {
 
         // WORKING HERE -- draw sites, scale/legend, etc.
         drawSites(g2, r2);
-        
+
         return Printable.PAGE_EXISTS;
     }
 }
