@@ -21,82 +21,79 @@
 package corina.prefs.components;
 
 import corina.prefs.Prefs;
-import corina.gui.UserCancelledException;
 
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.FlowLayout;
-import java.awt.Frame;
-import javax.swing.JPanel;
+
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JButton;
-import javax.swing.Box;
-import javax.swing.AbstractAction;
+import javax.swing.SwingUtilities;
+
+import com.ozten.font.JFontChooser;
+
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
-    A component for changing a font preference.
-    
-    <p>One limitation of this component is that it can only be used
-    inside of top-level containers that extend Frame; in other words,
-    it can't be used in applets.</p>
+  A component for changing a font preference.
+  
+  <p>One limitation of this component is that it can only be used
+  inside of top-level containers that extend Frame; in other words,
+  it can't be used in applets.</p>
 
-    <h2>Left to do</h2>
-    <ul>
-        <li>If value of pref is null, bad things happen (bug!) -
-            see both getPref() calls
-        <li>Fix up variable names to be clearer
-        <li>Use font name/size for preview-label text
-        <li>Put button on new line?
-        <li>I18n -- "Sample", "Change...", "Choose new font"
-    </ul>
+  <h2>Left to do</h2>
+  <ul>
+      <li>Use font name/size for preview-label text
+      <li>Put button on new line?
+      <li>I18n -- "Sample", "Change...", "Choose new font"
+  </ul>
 
-    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
-    @version $Id$
+  @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+  @version $Id$
 */
-public class FontPrefComponent extends JPanel {
+public class FontPrefComponent extends JComponent implements ActionListener {
+  private JLabel label = new JLabel("Sample");
+  private String pref;
+  private Component owner;
+  /**
+      Make a new FontPrefComponent which sets the specified preference.
+      
+      @param pref the preference key to change
+  */
+  public FontPrefComponent(String pref) {
+    this.pref = pref;
+    System.out.println("Owner: " + owner);
+    
+    setLayout(new FlowLayout(FlowLayout.LEFT, 4, 0));
+    Font font = Font.decode(Prefs.getPref(pref));
+    label.setFont(font);
+    label.setText(font.getName() + " " + font.getSize());
 
-    /**
-        Make a new FontPrefComponent which sets the specified preference.
-        
-        @param pref the preference key to change
-    */
-    public FontPrefComponent(String pref) {
-        JPanel flow = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+    final String glue = pref;
+    JButton b = new JButton("Change...");
+    b.addActionListener(this);
+            
+    add(label);
+    add(b);
+  }
+  private Runnable showdialog = new Runnable() {
+    public void run() {
+      Font font = JFontChooser.showDialog(owner, "Choose new font", "Sample", label.getFont());
+    
+      // update sample text, font
+      label.setFont(font);
+      label.setText(font.getName() + " " + font.getSize());
 
-        final JLabel p = new JLabel("Sample");
-        Font font = Font.decode(Prefs.getPref(pref));
-        p.setFont(font);
-        p.setText(font.getName() + " " + font.getSize());
-
-        final String glue = pref;
-        JButton b = new JButton("Change...");
-        b.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent ae) {
-                try {
-                    // get new value
-                    String oldValue = Prefs.getPref(glue);
-                    Frame owner = (Frame) getTopLevelAncestor();
-                    String newValue = FontChooser.showDialog(owner,
-                                                        "Choose new font",
-                                                        oldValue);
-
-                    // get the font
-                    Font font = Font.decode(newValue);
-
-                    // update sample text, font
-                    p.setFont(font);
-                    p.setText(font.getName() + " " + font.getSize());
-
-                    // store pref
-                    Prefs.setPref(glue, newValue);
-                } catch (UserCancelledException uce) {
-                    // do nothing
-                }
-            }
-        });
-
-        flow.add(p);
-        flow.add(Box.createHorizontalStrut(8));
-        flow.add(b);
+      // store pref
+      Prefs.setPref(pref, UIDefaultsComponent.stringifyFont(font));
     }
+  };
+  
+  public void actionPerformed(ActionEvent ae) {
+    this.owner = getTopLevelAncestor();
+    SwingUtilities.invokeLater(showdialog);
+  }
 }
+
