@@ -25,6 +25,7 @@ import corina.graph.GraphFrame;
 import corina.gui.FileDialog;
 import corina.gui.UserCancelledException;
 import corina.util.OKCancel;
+import corina.util.TextClipboard;
 
 import java.io.File;
 import java.io.IOException;
@@ -174,6 +175,42 @@ public class IndexDialog extends JDialog {
             }
         });
         return preview;
+    }
+
+    private JButton makeCopyButton() {
+        JButton b = new JButton("Copy");
+        b.setMnemonic('C');
+        b.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                int row = table.getSelectedRow();
+
+                // error-checking!
+                if (row == -1) {
+                    JOptionPane.showMessageDialog(null,
+                                                  "Select a possible index to copy first.",
+                                                  "No index selected!",
+                                                  JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // get the index
+                Index ind = (Index) iset.indexes.get(row);
+
+                // convert it to a 1-column string
+                // -- add title here?
+                // -- copy year, too?
+                // -- copy data, too?
+                StringBuffer buf = new StringBuffer();
+                for (int i=0; i<ind.data.size(); i++) { // Index.data is a LIST?  what was i thinking?
+                    buf.append(ind.data.get(i).toString());
+                    buf.append('\n');
+                }
+
+                // copy it
+                TextClipboard.copy(buf.toString());
+            }
+        });
+        return b;
     }
 
     private JButton makeCancelButton() {
@@ -357,6 +394,9 @@ public class IndexDialog extends JDialog {
 
         // graph button
         buttonPanel.add(makePreviewButton());
+
+        // save button
+        buttonPanel.add(makeCopyButton());
 
         // (spacer)
         buttonPanel.add(Box.createHorizontalGlue());
