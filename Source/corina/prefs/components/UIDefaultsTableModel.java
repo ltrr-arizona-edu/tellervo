@@ -80,9 +80,6 @@ public class UIDefaultsTableModel extends AbstractTableModel {
       public int compare(Object o1, Object o2) {
         return ((String) ((Object[]) o1)[1]).compareTo((String) ((Object[]) o2)[1]);
       }
-      public boolean equals(Object obj) {
-        return false;
-      }
     });
   }
 

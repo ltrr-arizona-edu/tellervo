@@ -28,8 +28,8 @@ public class CorinaLog extends SimpleLog {
   private static int logLineCount;
   private static boolean wrap;
   private static LogListModel listModel = new LogListModel();
-  public static PrintStream realOut;
-  public static PrintStream realErr;
+  public final static PrintStream realOut;
+  public final static PrintStream realErr;
   private static CorinaLog STDOUT = new CorinaLog("STDOUT", false);
   private static CorinaLog STDERR = new CorinaLog("STDERR", false);
 
