@@ -92,19 +92,20 @@ public class AboutBox extends JDialog {
 
     // add the icon and name: centered
     private void addName() {
-	JLabel name = new JLabel("Corina");
-	{ // (add icon to name)
-	    URL iconURL = ClassLoader.getSystemResource("Images/Tree.png");
-	    Icon icon = new ImageIcon(iconURL);
-	    name.setIcon(icon);
-	    name.setHorizontalTextPosition(SwingConstants.CENTER);
-	    name.setVerticalTextPosition(SwingConstants.BOTTOM);
-	    name.setIconTextGap(12);
-	}
-	name.setHorizontalAlignment(SwingConstants.CENTER);
-	name.setFont(nameFont);
-	name.setAlignmentX(Component.CENTER_ALIGNMENT);
-	box.add(name);
+        JLabel name = new JLabel("Corina");
+        { // (add icon to name)
+            ClassLoader cl = this.getClass().getClassLoader();
+            URL iconURL = cl.getResource("Images/Tree.png");
+            Icon icon = new ImageIcon(iconURL);
+            name.setIcon(icon);
+            name.setHorizontalTextPosition(SwingConstants.CENTER);
+            name.setVerticalTextPosition(SwingConstants.BOTTOM);
+            name.setIconTextGap(12);
+        }
+        name.setHorizontalAlignment(SwingConstants.CENTER);
+        name.setFont(nameFont);
+        name.setAlignmentX(Component.CENTER_ALIGNMENT);
+        box.add(name);
     }
 
     // add the version number: centered

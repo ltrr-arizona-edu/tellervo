@@ -57,12 +57,13 @@ public abstract class XFrame extends JFrame implements WindowListener {
     // icon
     //
     private void setTreeIcon() {
-	ImageIcon treeIcon = null;
-	URL iconURL = ClassLoader.getSystemResource("Images/tree.png");
-	if (iconURL != null) {
-	    treeIcon = new ImageIcon(iconURL);
-	    setIconImage(treeIcon.getImage());
-	}
+        ImageIcon treeIcon = null; // ugh!
+        ClassLoader cl = this.getClass().getClassLoader();
+        URL iconURL = cl.getResource("Images/tree.png");
+        if (iconURL != null) { // ugh!
+            treeIcon = new ImageIcon(iconURL);
+            setIconImage(treeIcon.getImage());
+        }
     }
 
     //
