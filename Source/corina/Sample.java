@@ -633,7 +633,7 @@ public class Sample implements Previewable, Graphable {
     }
 
     /* FUTURE: */
-    private UndoableEditSupport undoSupport;
+    private UndoableEditSupport undoSupport = new UndoableEditSupport();
     public void postEdit(UndoableEdit e) {
 	undoSupport.postEdit(e);
     }
