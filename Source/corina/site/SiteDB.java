@@ -32,6 +32,8 @@ import java.io.IOException;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.xml.sax.XMLReader;
 import org.xml.sax.InputSource;
@@ -120,7 +122,7 @@ public class SiteDB {
             maybeSave(w, s.name, "name");
             maybeSave(w, s.id, "id");
             maybeSave(w, s.species, "species");
-            maybeSave(w, s.type2, "type");
+            maybeSave(w, s.type, "type");
             maybeSave(w, s.filename, "filename");
             maybeSave(w, s.location, "location");
 
@@ -182,16 +184,7 @@ public class SiteDB {
 		else if (state.equals("species"))
 		    site.species = data;
 		else if (state.equals("type")) {
-		    // number style
-		    site.type2 = data;
-
-		    // verbose style
-		    if (data.equals("forest"))
-			site.type = Site.TYPE_FOREST;
-		    else if (data.equals("medieval"))
-			site.type = Site.TYPE_MEDIEVAL;
-		    else if (data.equals("ancient"))
-			site.type = Site.TYPE_ANCIENT;
+                    site.type = data;
 		} else if (state.equals("filename")) {
 		    site.filename = data;
 		} else if (state.equals("location")) {
@@ -216,17 +209,17 @@ public class SiteDB {
     // query functions -- only simple ones here, complex sql-selects
     // and stuff can go in their own class.
 
-    public Site getSite(String code) {
-	// return the site with code |code|
-	for (int i=0; i<sites.size(); i++) {
-	    Site s = (Site) sites.get(i);
-	    if (s.code.equals(code))
-		return s;
-	}
-	return null;
+    public Site getSite(String code) throws SiteNotFoundException {
+        // return the site with code |code|
+        for (int i=0; i<sites.size(); i++) {
+            Site s = (Site) sites.get(i);
+            if (s.code.equals(code))
+                return s;
+        }
+        throw new SiteNotFoundException();
     }
 
-    public Site getSite(Sample sample) {
+    public Site getSite(Sample sample) throws SiteNotFoundException {
         String filename = (String) sample.meta.get("filename");
 
         // make sure it's been saved
@@ -246,38 +239,32 @@ public class SiteDB {
                 return s;
         }
 
-        // just return null
-        return null;
+        throw new SiteNotFoundException();
     }
 
-    public Site getSite(Location l) {
-	// return the site at |l|.  if there's more than one, return
-	// an arbitrary one.
-	for (int i=0; i<sites.size(); i++) {
-	    Site s = (Site) sites.get(i);
-	    if (s.location!=null && s.location.equals(l))
-		return s;
-	}
-	return null;
-    }
-
-    /** Return an array of sites within 100km of the given site.
-	@param origin look for sites near this one
-	@return an array of Sites within 100km of origin */
-    public Site[] getSitesNear(Site origin) {
-        Location l1 = origin.getLocation();
-        List near = new ArrayList();
-
+    public Site getSite(Location l) throws SiteNotFoundException {
+        // return the site at |l|.  if there's more than one, return
+        // an arbitrary one.
         for (int i=0; i<sites.size(); i++) {
             Site s = (Site) sites.get(i);
-            if (l1.isNear(s.getLocation()))
-                near.add(s);
+            if (s.location!=null && s.location.equals(l))
+                return s;
         }
 
-        return (Site[]) near.toArray(new Site[0]);
+        // none was there, but let's look for something nearby.
+        for (int i=0; i<sites.size(); i++) {
+            Site s = (Site) sites.get(i);
+            if (s.location == null)
+                continue; // wha?
+            if (s.location.isNear(l, 10))
+                return s;
+        }
+        throw new SiteNotFoundException();
     }
 
-    // !!!REFACTOR: virtually identical to getSitesNear().  ack, no, it's just (collect)...
+    // ---------------------------------------------------------------------------
+
+    // (loop for s in +sitedb+ when (eq loc (site-location s)) collect s)
     public Site[] getSitesAt(Location loc) {
         List output = new ArrayList();
 
@@ -288,6 +275,17 @@ public class SiteDB {
         }
 
         return (Site[]) output.toArray(new Site[0]);
+    }
+
+    // return an array of the 2-letter codes of all countries represented in the sitedb
+    public String[] getCountries() {
+        int n = sites.size();
+        Set countries = new HashSet();
+        for (int i=0; i<n; i++) {
+            Site s = (Site) sites.get(i);
+            countries.add(s.country);
+        }
+        return (String[]) countries.toArray(new String[0]);
     }
 
     // -----------------------------------------------------------------------------
