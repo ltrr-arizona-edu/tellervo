@@ -26,8 +26,12 @@ import corina.gui.FileDialog;
 import corina.gui.ButtonLayout;
 import corina.gui.UserCancelledException;
 import corina.util.OKCancel;
+import corina.util.UserFriendlyFile;
+import corina.util.NoEmptySelection;
 import corina.util.TextClipboard;
 import corina.util.Platform;
+import corina.gui.HelpBrowser;
+import corina.gui.XButton;
 import corina.gui.Bug;
 
 import java.io.File;
@@ -36,9 +40,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
+import java.util.Collections;
 import java.util.Vector;
-import java.util.List;
-import java.util.ArrayList;
 
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
@@ -61,19 +64,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JComponent;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.BoxLayout;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-
-// todo:
-// -- help button? => xcorina.org/manual/indexing
-// -- graph multiple?  preview graph in same window?
-// -- right-align the chi^2 numbers
-// -- use radio buttons?
 
 /**
    Indexing dialog.  Lets the user choose an indexing algorithm to use.
@@ -154,14 +151,9 @@ public class IndexDialog extends JDialog {
     // given a String to render, draw everything before the |dot| to the left of
     // a certain x-position, and everything after it to the right.  the |dot| char
     // is centered at |position| of the way across the column.
-    private static class DecimalRenderer extends DefaultTableCellRenderer {
-        private char dot = new DecimalFormatSymbols().getDecimalSeparator(); // default decimal point for this locale
-//        private float position = 0.5f;
-/*
-        public DecimalRenderer(float position) {
-            this.dot = dot;
-            this.position = position;
-        }*/
+    public static class DecimalRenderer extends DefaultTableCellRenderer {
+        // default decimal point for this locale
+        private char dot = new DecimalFormatSymbols().getDecimalSeparator();
         public DecimalRenderer(String sample) {
             this.sample = sample;
         }
@@ -173,20 +165,34 @@ public class IndexDialog extends JDialog {
                                                        int row, int column) {
             // hack!
             if (!offsetSet) {
+		// use the table's font -- only needs to get set once
+		super.setFont(table.getFont());
+
                 // compute position from a sample value -- needs a table, too
                 int split = sample.indexOf(dot); // assumes: there is a dot somewhere
-                String leftValue = sample.substring(0, split);
-                String rightValue = sample.substring(split+1);
-                int leftWidth = table.getGraphics().getFontMetrics().stringWidth(leftValue);
-                int rightWidth = table.getGraphics().getFontMetrics().stringWidth(rightValue);
-                // if i don't know the column width here, i can't compute position
-                // but i wouldn't want to, since it'd be wrong if it ever was resized
-                // instead i should have a pixel offset from centerline
-                offset = (leftWidth - rightWidth) / 2;
 
-                offsetSet = true;
+		// if not, let's assume it's at the end -- HOW?  i think this is harder...
+		if (split == -1) {
+		    int width = table.getGraphics().getFontMetrics().stringWidth(sample);
+		    offset = width / 2;
+		    offsetSet = true;
+		} else {
+		    // good, there was a dot
+		    String leftValue = sample.substring(0, split);
+		    String rightValue = sample.substring(split+1);
+		    int leftWidth = table.getGraphics().getFontMetrics().stringWidth(leftValue);
+		    int rightWidth = table.getGraphics().getFontMetrics().stringWidth(rightValue);
+		    // if i don't know the column width here, i can't compute position
+		    // but i wouldn't want to, since it'd be wrong if it ever was resized
+		    // instead i should have a pixel offset from centerline
+		    offset = (leftWidth - rightWidth) / 2;
+
+		    offsetSet = true;
+		}
             }
 
+	    if (!(value instanceof String))
+		value = String.valueOf(value); // for Integers...
             setText((String) value); // assumes: value is a string
             if (isSelected) {
                 setBackground(table.getSelectionBackground());
@@ -200,40 +206,56 @@ public class IndexDialog extends JDialog {
         public void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
 
-            // strategy:
+            // compute baseline
+            int baseline = getSize().height - g2.getFontMetrics().getDescent(); // (is this right?)
 
-            // get everything to the left of the dot
+            // get text to draw
             String value = getText();
-            int split = value.indexOf(dot); // assumes: there is a dot somewhere
-            String valueLeft = value.substring(0, split);
 
-            // fill background
+            // fill background -- (is this needed/allowed/automatic?)
             g2.setColor(getBackground());
             g2.fillRect(0, 0, getSize().width, getSize().height); // on isOpaque() only?
-
-            // compute position the dot should be at
-            int guide = offset + getSize().width / 2;
 
             // set foreground
             g2.setColor(getForeground());
 
-            // compute baseline, and width of left half
-            int baseline = getSize().height - g2.getFontMetrics().getDescent(); // (is this right?)
+            // get everything to the left of the dot
+            int split = value.indexOf(dot); // assumes: there is a dot somewhere
+
+	    // hack -- no dot!
+	    if (split == -1) {
+		int guide = getSize().width / 2 + offset;
+		int width = g2.getFontMetrics().stringWidth(value);
+		// (TODO: draw elipsis here if not enough room)
+		g2.drawString(value, guide - width, baseline);
+		return;
+	    }
+
+            String valueLeft = value.substring(0, split);
+
+            // compute position the dot should be at
+            int guide = offset + getSize().width / 2;
+
+            // compute width of left half
             int dotWidth = g2.getFontMetrics().stringWidth(String.valueOf(dot));
             int leftWidth = g2.getFontMetrics().stringWidth(valueLeft);
+
+            // if they go outside the cell, just draw "..."
+            int width = g2.getFontMetrics().stringWidth(value);
+            if ((guide - dotWidth/2 - leftWidth < 0) ||
+		(guide - dotWidth/2 - leftWidth + width >= getSize().width)) {
+                String elipsis = "\u2026"; // "..." -- 3 dots -- the
+		// unicode is \u2026, but "..." is guaranteed -- pick one
+                int elipsisWidth = g2.getFontMetrics().stringWidth(elipsis);
+                g2.drawString(elipsis, getSize().width/2 - elipsisWidth/2, baseline);
+                return;
+            }
 
             // draw them all at once
             g2.drawString(value, guide - dotWidth/2 - leftWidth, baseline);
         }
     }
 
-    // just like a java.io.File except toString() returns its name, not its path.
-    // used in a popup, where i want to know the path but users should only see the name.
-    private static class UserFriendlyFile extends File {
-        public UserFriendlyFile(String f)	{ super(f); }
-        public String toString()		{ return getName(); }
-    }
-    
     // label, centered
    private JComponent makeLabel() {
         JPanel b = new JPanel(new BorderLayout());
@@ -257,33 +279,29 @@ public class IndexDialog extends JDialog {
         table.getColumnModel().getColumn(1).setCellRenderer(new DecimalRenderer(CHI2_FORMAT.replace('#', '0')));
         table.getColumnModel().getColumn(2).setCellRenderer(new DecimalRenderer(RHO_FORMAT.replace('#', '0')));
 
-        // select last entry
-        table.setRowSelectionInterval(table.getRowCount()-1, table.getRowCount()-1);
-
         // don't allow reordering or resizing of the columns
         table.getTableHeader().setReorderingAllowed(false);
         // disabled for debugging:
         //        for (int i=0; i<3; i++)
         //            table.getColumn(table.getColumnName(i)).setResizable(false);
 
-        // don't allow deselecting the only selection
-        table.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent e) {
-                javax.swing.ListSelectionModel model = table.getSelectionModel();
-                if (model.isSelectionEmpty()) {
-                    // user's trying to screw it up, fixing...
-                    int x = model.getAnchorSelectionIndex();
-                    model.addSelectionInterval(x, x);
-                }
+        // or deselecting the only selection
+        NoEmptySelection.noEmptySelection(table);
+
+        // select exponential, because that's probably the one that's going to get used
+        // (and we should encourage that)
+        for (int i=0; i<iset.indexes.size(); i++) {
+            if (iset.indexes.get(i) instanceof Exponential) {
+                table.setRowSelectionInterval(i, i);
+                break;
             }
-        });
-        
+        }
+
         return scroller;
     }
 
     private JButton makePreviewButton() {
-        JButton preview = new JButton(msg.getString("preview"));
-        preview.setMnemonic(msg.getString("preview_key").charAt(0));
+        JButton preview = new XButton("preview");
         preview.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 int row = table.getSelectedRow();
@@ -302,8 +320,7 @@ public class IndexDialog extends JDialog {
     }
 
     private JButton makeCopyButton() {
-        JButton b = new JButton("Copy");
-        b.setMnemonic('C');
+        JButton b = new XButton("copy");
         b.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 int row = table.getSelectedRow();
@@ -342,7 +359,7 @@ public class IndexDialog extends JDialog {
     }
     
     private JButton makeCancelButton() {
-        JButton cancel = new JButton(msg.getString("cancel"));
+        JButton cancel = new XButton("cancel");
         cancel.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 dispose();
@@ -495,11 +512,13 @@ public class IndexDialog extends JDialog {
                         } catch (IOException ioe) {
                             System.out.println("oops2, can't load or something...");
                         } catch (RuntimeException re) {
+                            // FIXME: runtimeexception?  what was i smoking?
                             JOptionPane.showMessageDialog(null,
                                                           "That proxy dataset (" + proxy.range + ") doesn't cover\n" +
                                                           "the entire range of the sample (" + sample.range + ") you're indexing.",
                                                           "Proxy Dataset Too Short",
                                                           JOptionPane.ERROR_MESSAGE);
+                            // that wasn't very localizeable
                             proxyPopup.setSelectedIndex(oldSelection);
                             return;
                         }
@@ -520,11 +539,21 @@ public class IndexDialog extends JDialog {
         buttonPanel.setLayout(new ButtonLayout());
         p.add(buttonPanel);
 
+        // TESTING
+        JButton help = new XButton("help");
+        help.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                new HelpBrowser("Manual/Indexing.html");
+            }
+        });
+        buttonPanel.add(help);
+        buttonPanel.add(Box.createHorizontalGlue());
+
         // graph button
         buttonPanel.add(makePreviewButton());
 
         // copy button
-        buttonPanel.add(makeCopyButton());
+//        buttonPanel.add(makeCopyButton()); -- CAROL WANTS THIS, BUT IT'S NOW TEMPORARILY DISABLED
 
         // also copy on cmd-C -- BROKEN
 /*
@@ -546,13 +575,13 @@ public class IndexDialog extends JDialog {
 */
         
         // (spacer)
-        buttonPanel.add(Box.createHorizontalGlue());
-
+//        buttonPanel.add(Box.createHorizontalGlue());
+        
         // cancel button
         buttonPanel.add(makeCancelButton());
 
         // ok button -- REFACTOR: EXTRACT METHOD
-        JButton okButton = new JButton(msg.getString("ok"));
+        JButton okButton = new XButton("ok");
         okButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 int row = table.getSelectedRow();
@@ -602,14 +631,17 @@ public class IndexDialog extends JDialog {
         File files[] = new File(filename).getParentFile().listFiles();
 
         // return those that match "*.sum"
-        // -- this is something like: (remove-if-not (lambda (x) (ends-with x ".SUM")))
+        // -- this is something like: (remove-if-not (lambda (x) (ends-with x ".SUM")) (list-files filename))
         Vector result = new Vector();
         if (files != null) { // null if not-a-dir
             for (int i=0; i<files.length; i++)
-                if (files[i].getName().toUpperCase().endsWith(".SUM"))
+                // if it ends with .sum, and it's not me (i'm already in the list), add it
+                if (files[i].getName().toUpperCase().endsWith(".SUM") && !files[i].getPath().equals(filename))
                     result.add(new UserFriendlyFile(files[i].getPath()));
-            // oops: if filename ends with .sum, it'll get added twice; i should remove duplicates, and maybe sort (?)
         }
+
+        // sort the list, and return it
+        Collections.sort(result);
         return result;
     }
 }
