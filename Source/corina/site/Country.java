@@ -5,7 +5,7 @@ import corina.gui.Bug;
 import java.util.Properties;
 import java.io.IOException;
 
-// yes, this would be trivial in lisp.  don't laugh.
+// yes, this would be trivial in lisp.  please don't laugh.
 public class Country {
     // somebody suggested 2 maps -- good idea?
     private String code, name;
@@ -14,7 +14,7 @@ public class Country {
     static {
         Properties blah = new Properties();
         try {
-            ClassLoader cl = Class.forName("corina.site.properties").getClassLoader();
+            ClassLoader cl = Class.forName("corina.site.Country").getClassLoader();
             blah.load(cl.getResource("countries.properties").openStream());
         } catch (Exception e) {
             Bug.bug(e); // can't happen
