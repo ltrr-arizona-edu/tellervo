@@ -39,6 +39,7 @@ public class TextLine implements Line {
         Graphics2D g2 = (Graphics2D) g;
 
         // -- inefficient, and too specific => refactor
+	// (used by ByLine only)
         if (smallcaps) {
             float x = (float) pf.getImageableX();
             Font smallFont = new Font("serif", Font.PLAIN, (int) (size * 0.8)); // sc are 80%?
@@ -50,6 +51,11 @@ public class TextLine implements Line {
                 String str = String.valueOf(c);
                 g2.drawString(str, x, baseline);
                 x += g2.getFontMetrics().stringWidth(str);
+		// ^^^ this is probably pretty simplistic compared to what modern text layout
+		// routines (like aqua's) normally do.  but then, my whole printing subsystem
+		// is pretty simplistic.  ok, compromise: if printing like this under aqua
+		// looks noticably worse than normal text, i'll take it out, or add some
+		// platform-specific code.
             }
             return;
         }
