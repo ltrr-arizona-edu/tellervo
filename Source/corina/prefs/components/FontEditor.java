@@ -31,6 +31,10 @@ public class FontEditor extends AbstractCellEditor implements TableCellEditor {
     this.text = text;   
   }
   
+  public void setFont(Font f) {
+    currentFont = f;
+  }
+  
   //Implement the one CellEditor method that AbstractCellEditor doesn't.
   public Object getCellEditorValue() {
     return currentFont;

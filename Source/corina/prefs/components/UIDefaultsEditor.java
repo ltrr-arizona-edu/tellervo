@@ -1,6 +1,8 @@
 package corina.prefs.components;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 
 import javax.swing.JTable;
 import javax.swing.AbstractCellEditor;
@@ -37,10 +39,12 @@ public class UIDefaultsEditor extends AbstractCellEditor implements TableCellEdi
     if (value instanceof ColorUIResource) {
       log.trace("returning colorEditor");
       chosenEditor = colorEditor;
+      colorEditor.setColor((Color) value);
       return colorEditor.getTableCellEditorComponent(table, value, isSelected, row, column);
     } else if (value instanceof FontUIResource) {
       log.trace("returning fontEditor");
       fontEditor.setText(table.getModel().getValueAt(row, 0).toString());
+      fontEditor.setFont((Font) value);
       chosenEditor = fontEditor;
       return fontEditor.getTableCellEditorComponent(table, value, isSelected, row, column);
     }

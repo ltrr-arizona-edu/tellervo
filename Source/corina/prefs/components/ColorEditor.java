@@ -44,6 +44,10 @@ public class ColorEditor extends AbstractCellEditor implements TableCellEditor, 
     colorChooser, null, //OK button handler
   null); //no CANCEL button handler
   }
+  
+  public void setColor(Color c) {
+    currentColor = c;
+  }
 
   public void actionPerformed(ActionEvent e) {
     log.debug("action: " + e.getActionCommand());
