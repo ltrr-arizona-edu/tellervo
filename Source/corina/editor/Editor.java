@@ -593,15 +593,15 @@ public class Editor extends XFrame
                 Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
                 Transferable t = c.getContents(null);
                 if (t == null)
-                    return; // error: clipboard contains no data
+                    return; // clipboard contains no data
 
-                // copy text from the clipboard to ~/.corina/clipboard.
-                // why?  because Sample(filename) takes arbitrary formats, load(Reader) does not.  fixable?
-                DataFlavor f = DataFlavor.selectBestTextFlavor(t.getTransferDataFlavors());
                 try {
+                    // copy text from the clipboard to ~/.corina/clipboard.
+                    // (why?  because Sample(filename) takes arbitrary formats, load(Reader) does not.  (fixable?))
+                    DataFlavor f = DataFlavor.selectBestTextFlavor(t.getTransferDataFlavors());
                     BufferedReader r = new BufferedReader(f.getReaderForText(t));
                     BufferedWriter w = new BufferedWriter(new FileWriter(Prefs.USER_PROPERTIES_DIR +
-                                                          File.separator + "clipboard"));
+                                                                         File.separator + "clipboard"));
                     for (;;) {
                         String l = r.readLine();
                         if (l == null)
@@ -611,17 +611,7 @@ public class Editor extends XFrame
 
                     w.close();
                     r.close();
-                } catch (IOException ioe) {
-                    System.out.println("ioe: " + ioe);
-                    // ???
-                    return;
-                } catch (UnsupportedFlavorException ufe) {
-                    // not text ... tell user?
-                    System.out.println("ufe: " + ufe);
-                    return;
-                }
 
-                try {
                     // now try to load it
                     Sample tmp = new Sample(Prefs.USER_PROPERTIES_DIR +
                                             File.separator + "clipboard");
@@ -630,12 +620,23 @@ public class Editor extends XFrame
                     Sample.copy(tmp, sample);
                     sample.meta.remove("filename");
                 } catch (WrongFiletypeException wfte) {
-                    System.out.println("wfte: " + wfte);
-                    // !!!
+                    // unreadable format.  tell user.
+                    JOptionPane.showMessageDialog(null,
+                                                  "The clipboard doesn't appear to have a dendro dataset.",
+                                                  "Problem While Pasting",
+                                                  JOptionPane.ERROR_MESSAGE);
                     return;
                 } catch (IOException ioe) {
-                    System.out.println("ioe: " + ioe);
-                    // !!!
+                    // shouldn't ever happen.  this means there was a problem reading or
+                    // writing a "clipboard" file in USER_PROPERTIES_DIR.  probably a bug, then.
+                    Bug.bug(ioe);
+                    return;
+                } catch (UnsupportedFlavorException ufe) {
+                    // clipboard doesn't have text on it.  tell user.
+                    JOptionPane.showMessageDialog(null,
+                                                  "The clipboard doesn't appear to have text on it.",
+                                                  "Problem While Pasting",
+                                                  JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
