@@ -156,12 +156,15 @@ public class Shell extends JFrame {
     // this is really easy, just something along the lines of:
 
 	    // get script
-	    String script = FileDialog.showSingle("Run");
-	    if (script == null) return;
+        try {
+            String script = FileDialog.showSingle("Run");
+        } catch (UserCancelledException uce) {
+            return;
+        }
 
-	    // run it
-	    PythonInterpreter interp = new PythonInterpreter();
-	    interp.execfile(script);
+        // run it
+        PythonInterpreter interp = new PythonInterpreter();
+        interp.execfile(script);
 
     // but it'd never get used, so ...
     }

@@ -24,6 +24,7 @@ import corina.gui.XFrame;
 import corina.gui.PrintableDocument;
 import corina.gui.JarIcon;
 import corina.gui.FileDialog;
+import corina.gui.UserCancelledException;
 
 import java.io.IOException;
 
@@ -95,54 +96,52 @@ public class TableFrame extends XFrame implements PrintableDocument {
     }
 
     private void initButtons() {
-	JPanel tmpPanel = new JPanel();
-	tmpPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-	JPanel buttonPanel = new JPanel();
-	buttonPanel.setLayout(new GridLayout(1, 0, 6, 6));
-	tmpPanel.add(buttonPanel);
-	getContentPane().add(tmpPanel, BorderLayout.SOUTH);
+        JPanel tmpPanel = new JPanel();
+        tmpPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 0, 6, 6));
+        tmpPanel.add(buttonPanel);
+        getContentPane().add(tmpPanel, BorderLayout.SOUTH);
 
-	JButton saveButton = new JButton("Save (ASCII)...", JarIcon.getJavaIcon("toolbarButtonGraphics/general/Save16.gif"));
-	saveButton.setMnemonic('S');
-	saveButton.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    String filename = FileDialog.showSingle("Save table");
-		    if (filename == null)
-			return;
+        JButton saveButton = new JButton("Save (ASCII)...",
+                                         JarIcon.getJavaIcon("toolbarButtonGraphics/general/Save16.gif"));
+        saveButton.setMnemonic('S');
+        saveButton.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent ae) {
+                try {
+                    t.saveText(FileDialog.showSingle("Save table"));
+                } catch (IOException ioe) {
+                    JOptionPane.showMessageDialog(null,
+                                                  "Error while saving: " + ioe.getMessage(),
+                                                  "Error saving",
+                                                  JOptionPane.ERROR_MESSAGE);
+                    return;
+                } catch (UserCancelledException uce) {
+                    // ignore
+                }
+            }
+        });
+        buttonPanel.add(saveButton);
 
-		    try {
-			t.saveText(filename);
-		    } catch (IOException ioe) {
-			JOptionPane.showMessageDialog(null,
-						      "Error while saving: " + ioe.getMessage(),
-						      "Error saving",
-						      JOptionPane.ERROR_MESSAGE);
-			return;
-		    }
-		}
-	    });
-	buttonPanel.add(saveButton);
-
-	JButton saveButton2 = new JButton("Save (HTML)...", JarIcon.getJavaIcon("toolbarButtonGraphics/general/Save16.gif"));
-	saveButton2.setMnemonic('H');
-	saveButton2.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    String filename = FileDialog.showSingle("Save table");
-		    if (filename == null)
-			return;
-
-		    try {
-			t.saveHTML(filename);
-		    } catch (IOException ioe) {
-			JOptionPane.showMessageDialog(null,
-						      "Error while saving: " + ioe.getMessage(),
-						      "Error saving",
-						      JOptionPane.ERROR_MESSAGE);
-			return;
-		    }
-		}
-	    });
-	buttonPanel.add(saveButton2);
+        JButton saveButton2 = new JButton("Save (HTML)...",
+                                          JarIcon.getJavaIcon("toolbarButtonGraphics/general/Save16.gif"));
+        saveButton2.setMnemonic('H');
+        saveButton2.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent ae) {
+                try {
+                    t.saveHTML(FileDialog.showSingle("Save table"));
+                } catch (IOException ioe) {
+                    JOptionPane.showMessageDialog(null,
+                                                  "Error while saving: " + ioe.getMessage(),
+                                                  "Error saving",
+                                                  JOptionPane.ERROR_MESSAGE);
+                    return;
+                } catch (UserCancelledException uce) {
+                    // ignore
+                }
+            }
+        });
+        buttonPanel.add(saveButton2);
     }
 
     private void create() {
@@ -162,30 +161,20 @@ public class TableFrame extends XFrame implements PrintableDocument {
     }
 
     public TableFrame(String s, List ss) {
-	// data
-	this.s = s;
-	this.ss = ss;
-
-	create(); // pseudo-constructor
+        // data
+        this.s = s;
+        this.ss = ss;
+        create(); // pseudo-constructor
     }
 
     public TableFrame() {
-	// pick 1
-	s = FileDialog.showSingle("First");
-	if (s == null) {
-	    dispose(); // -- HELP!
-	    return;
-	}
-
-	// pick N
-	ss = FileDialog.showMulti("Samples");
-	if (ss == null) {
-	    dispose(); // -- HELP!
-	    return;
-	}
-
-	// load 1
-	create();
+        try {
+            s = FileDialog.showSingle("First");
+            ss = FileDialog.showMulti("Samples");
+            create();
+        } catch (UserCancelledException uce) {
+            dispose(); // ok?
+            return;
+        }
     }
-
 }

@@ -28,6 +28,8 @@ import corina.Weiserjahre;
 import corina.files.TwoColumn;
 import corina.site.Site;
 import corina.site.SiteDB;
+import corina.site.SiteProperties;
+import corina.site.SiteNotFoundException;
 import corina.map.MapFrame;
 import corina.graph.GraphFrame;
 import corina.graph.BargraphFrame;
@@ -43,6 +45,7 @@ import corina.manip.Reconcile;
 import corina.gui.XFrame;
 import corina.gui.WindowMenu;
 import corina.gui.FileDialog;
+import corina.gui.UserCancelledException;
 import corina.gui.ElementsPanel;
 import corina.gui.HasPreferences;
 import corina.gui.SaveableDocument;
@@ -55,11 +58,12 @@ import corina.util.TextClipboard;
 import corina.util.Platform;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.FileNotFoundException;
 
 import java.util.Collections;
 import java.util.List;
@@ -135,9 +139,9 @@ import java.awt.datatransfer.*;
 
   -- the 3 view menuitems can certainly be combined into one Action
 
-  -- all of the hold-down-control code NEEDS to be in its own class.  it needs general cleaning up, too.
+ -- since the hold-down-control crap is gone now, those menus don't need object-scope.
 
-  -- reconcile should be only in Reconcile and ReconcileDialog -- and it needs to be a real display, not just html
+ -- reconcile should be only in Reconcile and ReconcileDialog -- and it needs to be a real display, not just html
 
   -- refactor mapframe so it can be simply "new MapFrame(sample)"
 */
@@ -273,53 +277,54 @@ public class Editor extends XFrame
 	    return fn;
     }
     public void save() {
-	// get filename from sample; fall back to user's choice
-	String filename = (String) sample.meta.get("filename");
-	if (filename == null) {
-	    filename = corina.gui.FileDialog.showSingle("Save");
-	    if (filename == null)
-		return;
+        // get filename from sample; fall back to user's choice
+        String filename = (String) sample.meta.get("filename");
+        if (filename == null) {
 
-	    // check for already-exists
-	    {
-		File f = new File(filename);
-		    if (f.exists()) {
-			Object options[] = new Object[] { "Overwrite", "Cancel" }; // good, explicit commands
-			int x = JOptionPane.showOptionDialog(null,
-							     "A file called \"" + filename + "\"\n" +
-							       "already exists; overwrite it with this data?",
-							     "Already Exists",
-							     JOptionPane.YES_NO_OPTION,
-							     JOptionPane.QUESTION_MESSAGE,
-							     null, // icon
-							     options,
-							     null); // default
-			if (x == 1) // cancel
-			    return; // should return FAILURE -- how?
-		    }
-	    }
-	    sample.meta.put("filename", filename);
-	}
+            try {
+                filename = corina.gui.FileDialog.showSingle("Save");
+            } catch (UserCancelledException uce) {
+                return;
+            }
 
-	save(filename);
+            // check for already-exists -- DUPLICATE CODE, REFACTOR
+            {
+                if (new File(filename).exists()) {
+                    int x = JOptionPane.showOptionDialog(null,
+                                                         "A file called \"" + filename + "\"\n" +
+                                                         "already exists; overwrite it with this data?",
+                                                         "Already Exists",
+                                                         JOptionPane.YES_NO_OPTION,
+                                                         JOptionPane.QUESTION_MESSAGE,
+                                                         null, // icon
+                                                         new Object[] { "Overwrite", "Cancel" }, // good, explicit commands
+                                                         null); // default
+                    if (x == 1) // cancel
+                        return; // should return FAILURE -- how?
+                }
+            }
+            sample.meta.put("filename", filename);
+        }
+
+        save(filename);
     }
     public void save(String filename) {
-	// save sample
-	try {
-	    sample.save((String) sample.meta.get("filename"));
-	} catch (IOException ioe) {
-	    JOptionPane.showMessageDialog(null,
-					  "There was an error while saving the file: \n" +
-					     ioe.getMessage(),
-					  "I/O Error",
-					  JOptionPane.ERROR_MESSAGE);
-	    return;
-	} catch (Exception e) {
-	    Bug.bug(e);
-	}
+        // save sample
+        try {
+            sample.save((String) sample.meta.get("filename"));
+        } catch (IOException ioe) {
+            JOptionPane.showMessageDialog(null,
+                                          "There was an error while saving the file: \n" +
+                                          ioe.getMessage(),
+                                          "I/O Error",
+                                          JOptionPane.ERROR_MESSAGE);
+            return;
+        } catch (Exception e) {
+            Bug.bug(e);
+        }
 
-	sample.clearModified();
-	updateTitle();
+        sample.clearModified();
+        updateTitle();
     }
 
     // init methods
@@ -847,62 +852,95 @@ public class Editor extends XFrame
 	// ---
 	s.addSeparator();
 
-	// cross
-	JMenuItem crossAgainst = new XMenubar.XMenuItem(msg.getString("cross_against"),
-							msg.getString("cross_against_key").charAt(0));
-	// crossAgainst.setAccelerator(KeyStroke.getKeyStroke(msg.getString("cross_against_acc")));
-	crossAgainst.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // select moving files
-		    List ss = FileDialog.showMulti("Crossdate \"" + sample + "\" against:");
-		    if (ss == null || ss.size() == 0)
-			return;
+    // cross
+    JMenuItem crossAgainst = new XMenubar.XMenuItem(msg.getString("cross_against"),
+                                                    msg.getString("cross_against_key").charAt(0));
+    // crossAgainst.setAccelerator(KeyStroke.getKeyStroke(msg.getString("cross_against_acc")));
+    crossAgainst.addActionListener(new AbstractAction() {
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                // select moving files
+                List ss = FileDialog.showMulti("Crossdate \"" + sample + "\" against:");
 
-		    // (note also the Peter-catcher: see XMenubar.java)
+                // (note also the Peter-catcher: see XMenubar.java)
 
-		    new CrossFrame(new Sequence(Collections.singletonList(getFilename()), ss));
-		}
-	    });
-	s.add(crossAgainst);
+                new CrossFrame(new Sequence(Collections.singletonList(getFilename()), ss));
+            } catch (UserCancelledException uce) {
+                // do nothing
+            }
+        }
+    });
+    s.add(crossAgainst);
 
-	// reconcile
-	reconcile = new XMenubar.XMenuItem(msg.getString("reconcile"),
-					   msg.getString("reconcile_key").charAt(0));
-	reconcile.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    // check for filename
-		    String filename = (String) sample.meta.get("filename");
+    // reconcile
+    reconcile = new XMenubar.XMenuItem(msg.getString("reconcile"),
+                                       msg.getString("reconcile_key").charAt(0));
+    reconcile.addActionListener(new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            // check for filename
+            String filename = (String) sample.meta.get("filename");
 
-		    // if null, or can't guess, need to ask user.
-		    String target=null;
-		    if (filename==null || (target=Reconcile.guessOtherReading(filename))==null) {
-			// ask user here
-			target = corina.gui.FileDialog.showSingle(msg.getString("other_reading"));
-			if (target == null)
-			    return;
-		    }
+            // if null, need to ask user.
+            String target=null;
+            if (filename==null) {
+                // ask user here
+                try {
+                    target = FileDialog.showSingle(msg.getString("other_reading"));
+                } catch (UserCancelledException uce) {
+                    return;
+                }
+            }
 
-		    try {
-			// reconcile this and target
-			Reconcile r = new Reconcile(sample, new Sample(target));
-			r.run();
+            // try to guess
+            try {
+                target = Reconcile.guessOtherReading(filename);
+            } catch (FileNotFoundException fnfe) {
+                // ask user here -- REDUNDANT!
+                try {
+                    target = FileDialog.showSingle(msg.getString("other_reading"));
+                } catch (UserCancelledException uce) {
+                    return;
+                }
+            }
 
-			// report it
-			JEditorPane text = new JEditorPane("text/html", r.getReport());
-			text.setEditable(false);
-			JFrame myFrame = new JFrame(r.toString());
-			myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			myFrame.getContentPane().add(new JScrollPane(text), BorderLayout.CENTER);
-			myFrame.setSize(new Dimension(500, 400));
-			myFrame.show();
-		    } catch (IOException ioe) {
-			return; // ack!
-		    } catch (Exception ex) {
-			Bug.bug(ex);
-		    }
-		}
-	    });
-	// (gets added with reverse)
+            try {
+                // reconcile this and target
+                Reconcile r = new Reconcile(sample, new Sample(target));
+                r.run();
+
+                // report it
+                JEditorPane text = new JEditorPane("text/html", r.getReport());
+                text.setEditable(false);
+                JFrame myFrame = new JFrame(r.toString());
+                myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                myFrame.getContentPane().add(new JScrollPane(text), BorderLayout.CENTER);
+                myFrame.setSize(new Dimension(500, 400));
+                myFrame.show();
+            } catch (IOException ioe) {
+                return; // ack!
+            } catch (Exception ex) {
+                Bug.bug(ex);
+            }
+/*
+ here's how the reconcile UI should work:
+ -- auto-tile
+ +------A Reading------+ +------C Reading------+
+ |                                |   |                                |
+ |                                |   |                                |
+ |                                |   |                                |
+ |                                |   |                                |
+ |                                |   |                                |
+ |                                |   |                                |
+ |                                |   |                                |
+ +-------------------------+  +-------------------------+
+ +-----------------Reconcile Dialog-----------------+
+ |                                                                     |
+ |                                                                     |
+ +--------------------------------------------------------+
+ -- selecting an error row in the reconcile dialog selects that year in A and C
+ */
+        }
+    });
     s.add(reconcile);
 
 	// master menu
@@ -948,52 +986,55 @@ public class Editor extends XFrame
 	// ---
 	m.addSeparator();
 
-	// add item -- ENABLED IFF THERE EXIST OTHER ELEMENTS OR DATA IS-EMPTY
-	addMenu = new XMenubar.XMenuItem("Add...", 'A');
-	addMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    // open file dialog
-		    String filename = FileDialog.showSingle("Add");
-		    if (filename == null)
-			return;
+    // add item -- ENABLED IFF THERE EXIST OTHER ELEMENTS OR DATA IS-EMPTY
+    addMenu = new XMenubar.XMenuItem("Add...", 'A');
+    addMenu.addActionListener(new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            // open file dialog
+            String filename;
+            try {
+                filename = FileDialog.showSingle("Add");
+            } catch (UserCancelledException uce) {
+                return;
+            }
 
-		    // new elements, if needed
-		    if (sample.elements == null)
-			sample.elements = new ArrayList();
+            // new elements, if needed
+            if (sample.elements == null)
+                sample.elements = new ArrayList();
 
-		    // ADD CHECK: make sure indexed+indexed, or raw+raw
+            // ADD CHECK: make sure indexed+indexed, or raw+raw
 
-		    // remember how many elements there used to be
-		    int numOld = sample.elements.size();
+            // remember how many elements there used to be
+            int numOld = sample.elements.size();
 
-		    // add -- if summed, add each one
-		    Sample testSample=null;
-		    try {
-			testSample = new Sample(filename);
-		    } catch (IOException ioe) {
-			int x = JOptionPane.showConfirmDialog(null,
-							      "The file \"" + filename + "\" could not be loaded.  Add anyway?",
-							      "Unloadable file.",
-							      JOptionPane.YES_NO_OPTION);
-			if (x == JOptionPane.NO_OPTION)
-			    return;
-		    }
+            // add -- if summed, add each one
+            Sample testSample=null;
+            try {
+                testSample = new Sample(filename);
+            } catch (IOException ioe) {
+                int x = JOptionPane.showConfirmDialog(null,
+                                                      "The file \"" + filename + "\" could not be loaded.  Add anyway?",
+                                                      "Unloadable file.",
+                                                      JOptionPane.YES_NO_OPTION);
+                if (x == JOptionPane.NO_OPTION)
+                    return;
+            }
 
-		    // for a summed sample, don't add it, but add its elements
-		    if (testSample.elements != null) {
-			for (int i=0; i<testSample.elements.size(); i++)
-			    sample.elements.add(testSample.elements.get(i)); // copy ref only
-		    } else {
-			sample.elements.add(new Element(filename));
-		    }
+            // for a summed sample, don't add it, but add its elements
+            if (testSample.elements != null) {
+                for (int i=0; i<testSample.elements.size(); i++)
+                    sample.elements.add(testSample.elements.get(i)); // copy ref only
+            } else {
+                sample.elements.add(new Element(filename));
+            }
 
-		    // modified, and update
-		    sample.setModified();
-		    sample.fireSampleElementsChanged();
-		    sample.fireSampleMetadataChanged(); // so title gets updated (modified-flag)
-		}
-	    });
-	m.add(addMenu);
+            // modified, and update
+            sample.setModified();
+            sample.fireSampleElementsChanged();
+            sample.fireSampleMetadataChanged(); // so title gets updated (modified-flag)
+        }
+    });
+    m.add(addMenu);
 
 	// remove item
 	remMenu = new XMenubar.XMenuItem("Remove", 'R');
@@ -1043,46 +1084,63 @@ public class Editor extends XFrame
 	    });
 	d.add(bargraphAll);
 
-	// ---
-	d.addSeparator();
+    // site
+    JMenu ss = new XMenubar.XMenu("Site");
 
-	// map
-	JMenuItem map = new XMenubar.XMenuItem(msg.getString("map"),
-					       msg.getString("map_key").charAt(0));
-	map.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // get site
-		    Site mySite = SiteDB.getSiteDB().getSite(sample);
+    // map
+    JMenuItem map = new XMenubar.XMenuItem(msg.getString("map"),
+                                           msg.getString("map_key").charAt(0));
+    map.addActionListener(new AbstractAction() {
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                // get site
+                Site mySite = SiteDB.getSiteDB().getSite(sample);
 
-		    // not found?
-		    if (mySite == null) {
-			JOptionPane.showMessageDialog(null,
-						      "Couldn't find a site for this sample.",
-						      "No Site Found",
-						      JOptionPane.ERROR_MESSAGE);
-			return;
-		    }
+                // draw map there
+                new MapFrame(mySite, mySite); // no MapFrame(Site) yet, but this is almost as good
 
-		    // draw map there
-		    try {
-			new MapFrame(mySite, mySite); // no MapFrame(Site) yet, but this is almost as good
-		    } catch (IOException ioe) {
-			// bugger all, what to do?
-		    } catch (Exception e) {
-			Bug.bug(e);
-		    }
-		}
-	    });
-	d.add(map);
+            } catch (SiteNotFoundException snfe) {
+                JOptionPane.showMessageDialog(null,
+                                              "Couldn't find a site for this sample.",
+                                              "No Site Found",
+                                              JOptionPane.ERROR_MESSAGE);
+            } catch (IOException ioe) {
+                // bugger all, what to do?
+            } catch (Exception e) {
+                Bug.bug(e);
+            }
+        }
+    });
+    ss.add(map);
 
-	// do fake-events to trick the menus into their correct states
-	sampleFormatChanged(null);
+    // site properties
+    JMenuItem props = new XMenubar.XMenuItem("Properties", 'P');
+    props.addActionListener(new AbstractAction() {
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                // get my site -- FIXME: LoD says this should be sample.getSite();
+                Site mySite = SiteDB.getSiteDB().getSite(sample);
+
+                // show props
+                SiteProperties.showProperties(mySite);
+            } catch (SiteNotFoundException snfe) {
+                JOptionPane.showMessageDialog(null,
+                                              "Couldn't find a site for this sample.",
+                                              "No Site Found",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    });
+    ss.add(props);
+
+    // do fake-events to trick the menus into their correct states
+    sampleFormatChanged(null);
 
     // store and return
     if (Platform.isMac) {
-        return new JMenu[] { edit, v, s, m, d, new WindowMenu(this) };
+        return new JMenu[] { edit, v, s, m, d, ss, new WindowMenu(this) };
     } else {
-        return new JMenu[] { edit, v, s, m, d };
+        return new JMenu[] { edit, v, s, m, d, ss };
     }
             }
 

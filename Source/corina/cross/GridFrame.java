@@ -31,6 +31,7 @@ import corina.gui.XMenubar;
 import corina.gui.FileDialog;
 import corina.gui.WindowMenu;
 import corina.util.Platform;
+import corina.gui.UserCancelledException;
 
 import java.util.List;
 import java.util.ResourceBundle;
@@ -91,42 +92,45 @@ public class GridFrame extends XFrame
 	return true; // fixme
     }
     public void save() {
-	// check filename
-	if (filename == null) {
-	    filename = FileDialog.showSingle("Save");
-	    if (filename == null)
-		return;
+        // check filename
+        if (filename == null) {
+            try {
+                filename = FileDialog.showSingle("Save");
+            } catch (UserCancelledException uce) {
+                return;
+            }
 
-	    // check for already-exists
-	    {
-		File f = new File(filename);
-		    if (f.exists()) {
-			Object options[] = new Object[] { "Overwrite", "Cancel" }; // good, explicit commands
-			int x = JOptionPane.showOptionDialog(null,
-							     "A file called \"" + filename + "\"\n" +
-							       "already exists; overwrite it with this grid?",
-							     "Already Exists",
-							     JOptionPane.YES_NO_OPTION,
-							     JOptionPane.QUESTION_MESSAGE,
-							     null, // icon
-							     options,
-							     null); // default
-			if (x == 1) // cancel
-			    return; // should return FAILURE -- how?
-		    }
-	    }
-	}
+            // try up here, try down there.  can these be merged?  (but there's an if-stmt...)
+            
+            // check for already-exists
+            {
+                File f = new File(filename);
+                if (f.exists()) {
+                    int x = JOptionPane.showOptionDialog(null,
+                                                         "A file called \"" + filename + "\"\n" +
+                                                         "already exists; overwrite it with this grid?",
+                                                         "Already Exists",
+                                                         JOptionPane.YES_NO_OPTION,
+                                                         JOptionPane.QUESTION_MESSAGE,
+                                                         null, // icon
+                                                         new Object[] { "Overwrite", "Cancel" }, // good, explicit commands,
+                                                         null); // default
+                    if (x == 1) // cancel
+                        return; // should return FAILURE -- how?
+                }
+            }
+        }
 
-	// save!
-	try {
-	    grid.save(filename);
-	} catch (IOException ioe) {
-	    // error!
-	    JOptionPane.showMessageDialog(null,
-					  "Error: " + ioe.getMessage(),
-					  "Error saving",
-					  JOptionPane.ERROR_MESSAGE);
-	}
+        // save!
+        try {
+            grid.save(filename);
+        } catch (IOException ioe) {
+            // error!
+            JOptionPane.showMessageDialog(null,
+                                          "Error: " + ioe.getMessage(),
+                                          "Error saving",
+                                          JOptionPane.ERROR_MESSAGE);
+        }
     }
     public String getDocumentTitle() {
         return "Grid: " + filename;
@@ -236,16 +240,17 @@ public class GridFrame extends XFrame
     }
 
     public GridFrame() {
-        // get args
-        List samples = FileDialog.showMulti(msg.getString("grid"));
-        if (samples == null) { // nothing selected ... exit gracefully
+        try {
+            // get args
+            List samples = FileDialog.showMulti(msg.getString("grid"));
+
+            grid = new Grid(samples);
+            grid.run(); // change cursor to WAIT?
+            init();
+        } catch (UserCancelledException uce) {
             dispose();
             return;
         }
-
-        grid = new Grid(samples);
-        grid.run(); // change cursor to WAIT?
-        init();
     }
 
     void init() {

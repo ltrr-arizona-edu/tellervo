@@ -23,6 +23,7 @@ package corina.index;
 import corina.Sample;
 import corina.graph.GraphFrame;
 import corina.gui.FileDialog;
+import corina.gui.UserCancelledException;
 import corina.util.OKCancel;
 
 import java.io.File;
@@ -286,34 +287,32 @@ public class IndexDialog extends JDialog {
 
                     if (proxyPopup.getSelectedIndex() == proxyPopup.getItemCount()-1) {
                         // "other..." selected
-                        String fn = FileDialog.showSingle("Proxy");
-                        if (fn == null) {
-                            // user cancelled => reselect previous value.
-                            proxyPopup.setSelectedIndex(oldSelection);
-                        } else {
-                            // user ok'd => load it, etc.
-                            Sample proxy = null;
-                            try {
-                                proxy = new Sample(fn);
-                                iset = new IndexSet(sample, proxy);
-                                iset.run();
-                                model.setIndexSet(iset);
+                        Sample proxy=null;
+                        try {
+                            String fn = FileDialog.showSingle("Proxy");
+                            // load it, etc.
+                            proxy = new Sample(fn);
+                            iset = new IndexSet(sample, proxy);
+                            iset.run();
+                            model.setIndexSet(iset);
 
-                                // add to popup AFTER running -- if it couldn't run, we don't want to add it
-                                int x = proxyPopup.getItemCount() - 1;
-                                proxyPopup.insertItemAt(new UserFriendlyFile(fn), x);
-                                proxyPopup.setSelectedIndex(x);
-                            } catch (IOException ioe) {
-                                System.out.println("oops, can't load or something...");
-                            } catch (RuntimeException re) {
-                                JOptionPane.showMessageDialog(null,
-                                                              "That proxy dataset (" + proxy.range + ") doesn't cover\n" +
-                                                                  "the entire range of the sample (" + sample.range + ") you're indexing.",
-                                                              "Proxy Dataset Too Short",
-                                                              JOptionPane.ERROR_MESSAGE);
-                                proxyPopup.setSelectedIndex(oldSelection);
-                                return;
-                            }
+                            // add to popup AFTER running -- if it couldn't run, we don't want to add it
+                            int x = proxyPopup.getItemCount() - 1;
+                            proxyPopup.insertItemAt(new UserFriendlyFile(fn), x);
+                            proxyPopup.setSelectedIndex(x);
+                        } catch (UserCancelledException uce) {
+                            proxyPopup.setSelectedIndex(oldSelection); // reselect previous value.
+                        } catch (IOException ioe) {
+                            // IMPROVE THIS!
+                            System.out.println("oops, can't load or something...");
+                        } catch (RuntimeException re) { // ICK!
+                            JOptionPane.showMessageDialog(null,
+                                                          "That proxy dataset (" + proxy.range + ") doesn't cover\n" +
+                                                          "the entire range of the sample (" + sample.range + ") you're indexing.",
+                                                          "Proxy Dataset Too Short",
+                                                          JOptionPane.ERROR_MESSAGE);
+                            proxyPopup.setSelectedIndex(oldSelection);
+                            return;
                         }
                     } else {
                         // a file already in the list was selected

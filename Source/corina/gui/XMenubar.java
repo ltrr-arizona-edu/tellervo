@@ -184,113 +184,120 @@ public class XMenubar extends JMenuBar {
     }
 
     public class NewSum extends AbstractAction {
-	public NewSum() {
-	    super("    " + msg.getString("sum") + "...");
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("sum_key").charAt(0)));
-	}	
-	public void actionPerformed(ActionEvent ae) {
-	    // get files for sum
-	    List tmp = FileDialog.showMulti("Sum");
-	    if (tmp == null)
-		return;
+        public NewSum() {
+            super("    " + msg.getString("sum") + "...");
+            putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("sum_key").charAt(0)));
+        }
+        public void actionPerformed(ActionEvent ae) {
+            List tmp;
+            try {
+                // get files for sum
+                tmp = FileDialog.showMulti("Sum");
+            } catch (UserCancelledException uce) {
+                return;
+            }
 
-	    // get sampleset, and copy to new, loading elements as needed
-	    List s = new ArrayList();
-	    for (int i=0; i<tmp.size(); i++) {
-		String filename = ((Element) tmp.get(i)).filename;
-		Sample testSample;
-		try {
-		    testSample = new Sample(filename);
-		} catch (IOException ioe) {
-		    JOptionPane.showMessageDialog(null,
-						  "The file \"" + filename + "\" could not be loaded.",
-						  "Can't load file",
-						  JOptionPane.ERROR_MESSAGE);
-		    return;
-		} catch (Exception e) {
-		    Bug.bug(e);
-		    return;
-		}
-		if (testSample.elements != null) // if summed (has elements),
-		    s.addAll(testSample.elements); // add all elements
-		else
-		    s.add(new Element(filename));
-	    }
+            // get sampleset, and copy to new, loading elements as needed
+            List s = new ArrayList();
+            for (int i=0; i<tmp.size(); i++) {
+                String filename = ((Element) tmp.get(i)).filename;
+                Sample testSample;
+                try {
+                    testSample = new Sample(filename);
+                } catch (IOException ioe) {
+                    JOptionPane.showMessageDialog(null,
+                                                  "The file \"" + filename + "\" could not be loaded.",
+                                                  "Can't load file",
+                                                  JOptionPane.ERROR_MESSAGE);
+                    return;
+                    // this error-handling is really piss-poor.
+                } catch (Exception e) {
+                    Bug.bug(e);
+                    return;
+                }
+                if (testSample.elements != null) // if summed (has elements),
+                    s.addAll(testSample.elements); // add all elements
+                else
+                    s.add(new Element(filename));
+            }
 
-	    // sort
-	    Collections.sort(s);
+            // sort
+            Collections.sort(s);
 
-	    // make sum
-	    try {
-		Sample m = Sum.sum(s);
-		new Editor(m);
-	    } catch (IOException e) {
-		JOptionPane.showMessageDialog(null,
-					      e.getMessage(),
-					      "Error summing",
-					      JOptionPane.ERROR_MESSAGE);
-	    }
-	}
+            // make sum
+            try {
+                Sample m = Sum.sum(s);
+                new Editor(m);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null,
+                                              e.getMessage(),
+                                              "Error summing",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     public class NewPlot extends AbstractAction {
-	public NewPlot() {
-	    super("    " + msg.getString("plot") + "...");
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("plot_key").charAt(0)));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    // get samples
-	    List ss = FileDialog.showMulti(msg.getString("plot"));
-	    if (ss == null)
-		return;
+        public NewPlot() {
+            super("    " + msg.getString("plot") + "...");
+            putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("plot_key").charAt(0)));
+        }
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                // get samples
+                List ss = FileDialog.showMulti(msg.getString("plot"));
 
-	    // make graph
-	    new GraphFrame(ss);
-	}
+                // make graph
+                new GraphFrame(ss);
+            } catch (UserCancelledException uce) {
+                // do nothing
+            }
+        }
     }
 
     public class NewGrid extends AbstractAction {
-	public NewGrid() {
-	    super("    " + msg.getString("grid") + "...");
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("grid_key").charAt(0)));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    // get samples
-	    List ss = FileDialog.showMulti(msg.getString("grid"));
-	    if (ss == null)
-		return;
+        public NewGrid() {
+            super("    " + msg.getString("grid") + "...");
+            putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("grid_key").charAt(0)));
+        }
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                // get samples
+                List ss = FileDialog.showMulti(msg.getString("grid"));
 
-	    // make grid
-	    new GridFrame(ss);
-	}
+                // make grid
+                new GridFrame(ss);
+            } catch (UserCancelledException uce) {
+                // do nothing
+            }
+        }
     }
 
     public class NewTable extends AbstractAction {
-	public NewTable() {
-	    super(msg.getString("table"));
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("table_key").charAt(0)));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    // get single
-	    String s = FileDialog.showSingle("First");
-	    if (s == null)
-		return;
+        public NewTable() {
+            super(msg.getString("table"));
+            putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("table_key").charAt(0)));
+        }
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                // get single
+                String s = FileDialog.showSingle("First");
 
-	    // get many
-	    List ss = FileDialog.showMulti("Samples");
-	    if (ss == null)
-		return;
+                // get many
+                List ss = FileDialog.showMulti("Samples");
 
-	    // make graph
-	    new TableFrame(s, ss);
-	}
+                // make graph
+                new TableFrame(s, ss);
+            } catch (UserCancelledException uce) {
+                // do nothing
+            }
+        }
     }
 
     public class Preferences extends AbstractAction {
 	public Preferences() {
 	    super(msg.getString("preferences"));
 	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("preferences_key").charAt(0)));
-	    // putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(msg.getString("preferences_acc"))));
 	}
 	public void actionPerformed(ActionEvent ae) {
 	    PrefsDialog.showPreferences();
@@ -300,27 +307,24 @@ public class XMenubar extends JMenuBar {
     // ----------------------------------------------------------------------
 
     public static class Open extends AbstractAction {
-	public Open() {
-	    super(msg.getString("open"));
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("open_key").charAt(0)));
-	    putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(msg.getString("open_acc"))));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    try {
-		// get filename
-		String filename = FileDialog.showSingle(msg.getString("open"));
-		if (filename == null)
-		    return;
-
-		// load
-		CanOpener.open(filename);
-	    } catch (IOException ioe) {
-		JOptionPane.showMessageDialog(null,
-					      "Can't open file: " + ioe.getMessage(),
-					      "I/O Error",
-					      JOptionPane.ERROR_MESSAGE);
-	    }
-	}
+        public Open() {
+            super(msg.getString("open"));
+            putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("open_key").charAt(0)));
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(msg.getString("open_acc"))));
+        }
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                // get filename, and load
+                CanOpener.open(FileDialog.showSingle(msg.getString("open")));
+            } catch (UserCancelledException uce) {
+                return;
+            } catch (IOException ioe) {
+                JOptionPane.showMessageDialog(null,
+                                              "Can't open file: " + ioe.getMessage(),
+                                              "I/O Error",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     public final class Save extends AbstractAction {
@@ -339,40 +343,43 @@ public class XMenubar extends JMenuBar {
 	}
     }
 
-    public final class SaveAs extends AbstractAction {
-	public SaveAs() {
-	    super(msg.getString("save_as"));
-	    putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("save_as_key").charAt(0)));
-	    putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(msg.getString("save_as_acc"))));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    if (myFrame instanceof SaveableDocument) {
-		// get new filename
-		String filename = FileDialog.showSingle(msg.getString("save"));
-		if (filename == null)
-		    return;
+    public class SaveAs extends AbstractAction {
+        public SaveAs() {
+            super(msg.getString("save_as"));
+            putValue(Action.MNEMONIC_KEY, new Integer(msg.getString("save_as_key").charAt(0)));
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(msg.getString("save_as_acc"))));
+        }
+        public void actionPerformed(ActionEvent ae) {
+            if (myFrame instanceof SaveableDocument) {
+                // get new filename
+                String filename;
+                try {
+                    filename = FileDialog.showSingle(msg.getString("save"));
+                } catch (UserCancelledException uce) {
+                    return;
+                }
 
-		// check for already-exists
-		{
-		    File f = new File(filename);
-		    if (f.exists()) {
-			int x = JOptionPane.showConfirmDialog(null,
-							      "File \"" + filename + "\"\n" +
-							         "already exists; overwrite?",
-							      "Already exists",
-							      JOptionPane.YES_NO_OPTION);
-			if (x == JOptionPane.NO_OPTION)
-			    return;
-		    }
-		}
+                // check for already-exists -- THIS IS SO FRIGGIN' DUPLICATE CODE IT'S NOT FUNNY
+                {
+                    File f = new File(filename);
+                    if (f.exists()) {
+                        int x = JOptionPane.showConfirmDialog(null,
+                                                              "File \"" + filename + "\"\n" +
+                                                              "already exists; overwrite?",
+                                                              "Already exists",
+                                                              JOptionPane.YES_NO_OPTION);
+                        if (x == JOptionPane.NO_OPTION)
+                            return;
+                    }
+                }
 
-		// set filename
-		((SaveableDocument) myFrame).setFilename(filename);
+                // set filename
+                ((SaveableDocument) myFrame).setFilename(filename);
 
-		// save
-		((SaveableDocument) myFrame).save();
-	    }
-	}
+                // save
+                ((SaveableDocument) myFrame).save();
+            }
+        }
     }
 
     public class Rename extends AbstractAction {
@@ -400,7 +407,7 @@ public class XMenubar extends JMenuBar {
 
 /* -- old way: show a file dialog
 	    // get new name
-	    String filename = FileDialog.showSingle("Rename to");
+	    String filename = FileDialog.showSingle("Rename to"); -- be sure to catch UCE now
 */
 
 	    if (filename == null) {
@@ -552,121 +559,125 @@ public class XMenubar extends JMenuBar {
     // - at the worst, these should be created from the cross package.
     // (ideally, they're not really needed at all...)
 
-    public final class Cross1byN extends AbstractAction {
-	public Cross1byN() {
-	    super(msg.getString("1_by_n"));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    // select fixed file
-	    String fixed = FileDialog.showSingle(msg.getString("fixed"));
-	    if (fixed == null)
-		return;
+    public class Cross1byN extends AbstractAction {
+        public Cross1byN() {
+            super(msg.getString("1_by_n"));
+        }
+        public void actionPerformed(ActionEvent ae) {
+            // select fixed file
+            try {
+                String fixed = FileDialog.showSingle(msg.getString("fixed"));
 
-	    // select moving files
-	    List ss = FileDialog.showMulti(msg.getString("moving"));
-	    if (ss == null)
-		return;
+                // select moving files
+                List ss = FileDialog.showMulti(msg.getString("moving"));
 
-	    // the Peter-catcher: if the "fixed" file is relatively
-	    // dated, he really wanted an Nx1.  d'oh!  DWIM.
-	    /*
-	    if (!fixedSample.isAbsolute())
-		new CrossFrame(new Sequence(f, ss));
-	    else
-	        new CrossFrame(new Sequence(ss, f));
-	    */
+            // the Peter-catcher: if the "fixed" file is relatively
+            // dated, he really wanted an Nx1.  d'oh!  DWIM.
+            /*
+             if (!fixedSample.isAbsolute())
+             new CrossFrame(new Sequence(f, ss));
+             else
+             new CrossFrame(new Sequence(ss, f));
+             */
 
-	    // new Cross
-	    new CrossFrame(new Sequence(Collections.singletonList(fixed), ss));
-	}
+                // new Cross
+                new CrossFrame(new Sequence(Collections.singletonList(fixed), ss));
+            } catch (UserCancelledException uce) {
+                // do nothing
+            }
+        }
     }
 
-    public final class CrossNbyN extends AbstractAction {
-	public CrossNbyN() {
-	    super(msg.getString("n_by_n"));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    // select files
-	    List ss = FileDialog.showMulti(msg.getString("crossdate"));
-	    if (ss == null)
-		return;
-		    
-	    // watch out: need at least 2 samples
-	    if (ss.size() < 2) {
-		JOptionPane.showMessageDialog(null,
-					      "For N-by-N crossdating, you must\n" +
-					      "select at least 2 samples",
-					      "Not enough samples",
-					      JOptionPane.ERROR_MESSAGE);
-		return;
-	    }
-	    
-	    // new Cross
-	    new CrossFrame(new Sequence(ss, ss));
-	}
+    public class CrossNbyN extends AbstractAction {
+        public CrossNbyN() {
+            super(msg.getString("n_by_n"));
+        }
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                // select files
+                List ss = FileDialog.showMulti(msg.getString("crossdate"));
+
+                // watch out: need at least 2 samples
+                if (ss.size() < 2) {
+                    JOptionPane.showMessageDialog(null,
+                                                  "For N-by-N crossdating, you must\n" +
+                                                  "select at least 2 samples",
+                                                  "Not enough samples",
+                                                  JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // new Cross
+                new CrossFrame(new Sequence(ss, ss));
+            } catch (UserCancelledException uce) {
+                // do nothing
+            }
+        }
     }
 
-    public final class Cross1by1 extends AbstractAction {
-	public Cross1by1() {
-	    super(msg.getString("1_by_1"));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    // select fixed file
-	    String fixed = FileDialog.showSingle(msg.getString("fixed"));
-	    if (fixed == null)
-		return;
-		    
-	    // select moving file
-	    String moving = FileDialog.showSingle(msg.getString("moving"));
-	    if (moving == null)
-		return;
-		    
-	    // new Cross
-	    new CrossFrame(new Sequence(Collections.singletonList(fixed),
-					Collections.singletonList(moving)));
-	}
+    public class Cross1by1 extends AbstractAction {
+        public Cross1by1() {
+            super(msg.getString("1_by_1"));
+        }
+        public void actionPerformed(ActionEvent ae) {
+            // select fixed file
+            try {
+                String fixed = FileDialog.showSingle(msg.getString("fixed"));
+
+                // select moving file
+                String moving = FileDialog.showSingle(msg.getString("moving"));
+                if (moving == null)
+                    return;
+
+                // new Cross
+                new CrossFrame(new Sequence(Collections.singletonList(fixed),
+                                            Collections.singletonList(moving)));
+            } catch (UserCancelledException uce) {
+                // do nothing
+            }
+        }
     }
 
-    public final class CrossNby1 extends AbstractAction {
-	public CrossNby1() {
-	    super(msg.getString("n_by_1"));
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    // select fixed files
-	    List ss = FileDialog.showMulti(msg.getString("fixed"));
-	    if (ss == null)
-		return;
+    public class CrossNby1 extends AbstractAction {
+        public CrossNby1() {
+            super(msg.getString("n_by_1"));
+        }
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                // select fixed files
+                List ss = FileDialog.showMulti(msg.getString("fixed"));
 
-	    // select moving file
-	    String moving = FileDialog.showSingle(msg.getString("moving"));
-	    if (moving == null)
-		return;
+                // select moving file
+                String moving = FileDialog.showSingle(msg.getString("moving"));
 
-	    // new Cross
-	    new CrossFrame(new Sequence(ss, Collections.singletonList(moving)));
-	}
+                // new Cross
+                new CrossFrame(new Sequence(ss, Collections.singletonList(moving)));
+            } catch (UserCancelledException uce) {
+                // do nothing
+            }
+        }
     }
 
     public class CrossSpiffy extends AbstractAction {
-	public CrossSpiffy() {
-	    super("Crossdate...");
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    // select fixed files
-	    List f = FileDialog.showMulti(msg.getString("fixed"));
-	    if (f == null)
-		return;
-		    
-	    // select moving files
-	    List m = FileDialog.showMulti(msg.getString("fixed"));
-	    if (m == null)
-		return;
+        public CrossSpiffy() {
+            super("Crossdate...");
+        }
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                // select fixed files
+                List f = FileDialog.showMulti(msg.getString("fixed"));
 
-	    // go ahead if m = f?
+                // select moving files
+                List m = FileDialog.showMulti(msg.getString("fixed"));
 
-	    // new Cross
-	    new CrossFrame(new Sequence(f, m));
-	}
+                // go ahead if m = f?
+
+                // new Cross
+                new CrossFrame(new Sequence(f, m));
+            } catch (UserCancelledException uce) {
+                // do nothing
+            }
+        }
     }
 
     // temporary mapper!
@@ -793,10 +804,13 @@ public class XMenubar extends JMenuBar {
 			}
 			Sample sample = ((Editor) myFrame).getSample();
 
-			// get filename for export
-			String filename = FileDialog.showSingle(msg.getString("export"));
-			if (filename == null)
-			    return;
+                        // get filename for export
+                        String filename;
+                        try {
+                            filename = FileDialog.showSingle(msg.getString("export"));
+                        } catch (UserCancelledException uce) {
+                            return;
+                        }
 
 			// check for already-exists
 			{
@@ -886,7 +900,6 @@ public class XMenubar extends JMenuBar {
     static {
         // on mac, register about menuitem -- MOVE THIS TO PLATFORM
         if (Platform.isMac) {
-
             // add about-handler
             try {
                 Class appUtils = Class.forName("com.apple.mrj.MRJApplicationUtils");
@@ -1050,6 +1063,7 @@ public class XMenubar extends JMenuBar {
     }
 
     // for XFrames; arg menus is inserted between file and manip, if non-null
+    // MOVE THIS TO XFRAME!
     public XMenubar(XFrame me, JMenu menus[]) {
         // store frame reference
         myFrame = me;

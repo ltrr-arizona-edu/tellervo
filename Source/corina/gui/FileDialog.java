@@ -61,7 +61,7 @@ public class FileDialog {
     // i18n
     private static ResourceBundle msg = ResourceBundle.getBundle("FileDialogBundle");
 
-    public static class ExtensionFilter extends FileFilter {
+    private static class ExtensionFilter extends FileFilter {
 	private String TLA, tla;
 	private String name;
 	/** Create a new filter with the given name, for the given
@@ -95,24 +95,22 @@ public class FileDialog {
     /** The default list of filters to use, as a list of extensions;
         the names of these are in FileDialogBundle. */
     public static String FILTERS[] = new String[] {
-	"raw",
-	"sum",
-	"rec",
-	"ind",
-	"cln",
-	"trn",
+	"raw", "sum", "rec", "ind", "cln", "trn",
     };
 
     // add all default filters to this target, and then reset to default (*.*)
     private static void addFilters(JFileChooser f) {
 	for (int i=0; i<FILTERS.length; i++)
 	    f.addChoosableFileFilter(new ExtensionFilter(FILTERS[i],
-							 msg.getString(FILTERS[i])));
+                                                  msg.getString(FILTERS[i])));
 	f.setFileFilter(f.getAcceptAllFileFilter());
     }
 
     // working directory -- this gets updated whenever OK is clicked
     private static String wd = System.getProperty("corina.dir.data");
+    public static String getWorkingDirectory() {
+        return wd;
+    }
 
     /** Show a file selection dialog.  This allows the user to select
 	one file.  It shows a preview component, and has the default
@@ -121,43 +119,43 @@ public class FileDialog {
 	and approve button
 	@return the filename that was selected, or null if the user
 	cancelled */
-    public static String showSingle(String prompt) {
-	// create chooser
-	JFileChooser f = new JFileChooser(wd);
+    public static String showSingle(String prompt) throws UserCancelledException {
+        // create chooser
+        JFileChooser f = new JFileChooser(wd);
 
-	// add filters
-	addFilters(f);
+        // add filters
+        addFilters(f);
 
-	// preview component
-	f.setAccessory(new SamplePreview(f));
+        // preview component
+        f.setAccessory(new SamplePreview(f));
 
-	// make the window a resonable size to see everything
-	f.setPreferredSize(new Dimension(480, 360));
+        // make the window a resonable size to see everything
+        f.setPreferredSize(new Dimension(480, 360));
 
-	// show the dialog
-	if (f.showDialog(null, prompt) != JFileChooser.APPROVE_OPTION)
-	    return null;
+        // show the dialog
+        if (f.showDialog(null, prompt) != JFileChooser.APPROVE_OPTION)
+            throw new UserCancelledException();
 
-	// store wd
-	wd = f.getCurrentDirectory().getPath();
+        // store wd
+        wd = f.getCurrentDirectory().getPath();
 
-	// return file
-	return f.getSelectedFile().getPath();
+        // return file
+        return f.getSelectedFile().getPath();
     }
 
     // --- multi ----------------------------------------
-    public static List showMulti(String prompt) {
+    public static List showMulti(String prompt) throws UserCancelledException {
 	// create a new list to use
 	List list = new ArrayList();
 	return showMultiReal(prompt, list);
     }
 
-    public static List showMulti(String prompt, List list) { // to edit a list
+    public static List showMulti(String prompt, List list) throws UserCancelledException { // to edit a list
 	// use the given list
 	return showMultiReal(prompt, list);
     }
 
-    private static List showMultiReal(String prompt, List list) {
+    private static List showMultiReal(String prompt, List list) throws UserCancelledException {
 	// big-preview-list-component-thingy ... yeah.
 	final MultiPreview mp = new MultiPreview(list);
 
@@ -189,8 +187,12 @@ public class FileDialog {
 	if (mp.getSamples() != null)
 	    wd = f.getCurrentDirectory().getPath();
 
-	// return samples -- automatically null, if user cancelled
-	return mp.getSamples();
+        // null?  have to deal, now.
+        if (mp.getSamples() == null)
+            throw new UserCancelledException();
+
+        // return samples
+        return mp.getSamples();
     }
 
 }

@@ -33,6 +33,8 @@ import corina.gui.XMenubar;
 import corina.gui.SaveableDocument;
 import corina.gui.PrintableDocument;
 import corina.gui.HasPreferences;
+import corina.gui.FileDialog;
+import corina.gui.UserCancelledException;
 import corina.prefs.PrefsDialog;
 
 import java.io.File;
@@ -148,41 +150,43 @@ public class GraphFrame extends XFrame implements SampleListener,
 	return true; // fixme: false if saved once, but modified (?)
     }
     public void save() { // copied from gridder.java -- refactor?
-	if (filename == null) {
-	    filename = corina.gui.FileDialog.showSingle("Save");
-	    if (filename == null)
-		return;
+        if (filename == null) {
+            try {
+                filename = FileDialog.showSingle("Save");
+            } catch (UserCancelledException uce) {
+                return;
+            }
 
-	    // check for already-exists
-	    {
-		File f = new File(filename);
-		    if (f.exists()) {
-			Object options[] = new Object[] { "Overwrite", "Cancel" }; // good, explicit commands
-			int x = JOptionPane.showOptionDialog(null,
-							     "A file called \"" + filename + "\"\n" +
-							       "already exists; overwrite it with this graph?",
-							     "Already Exists",
-							     JOptionPane.YES_NO_OPTION,
-							     JOptionPane.QUESTION_MESSAGE,
-							     null, // icon
-							     options,
-							     null); // default
-			if (x == 1) // cancel
-			    return; // should return FAILURE -- how?
-		    }
-	    }
-	}
+            // check for already-exists
+            {
+                File f = new File(filename);
+                if (f.exists()) {
+                    Object options[] = new Object[] { "Overwrite", "Cancel" }; // good, explicit commands
+                    int x = JOptionPane.showOptionDialog(null,
+                                                         "A file called \"" + filename + "\"\n" +
+                                                         "already exists; overwrite it with this graph?",
+                                                         "Already Exists",
+                                                         JOptionPane.YES_NO_OPTION,
+                                                         JOptionPane.QUESTION_MESSAGE,
+                                                         null, // icon
+                                                         options,
+                                                         null); // default
+                    if (x == 1) // cancel
+                        return; // should return FAILURE -- how?
+                }
+            }
+        }
 
-	// save!
-	try {
-	    LoadSave.save(filename, samples);
-	} catch (IOException ioe) {
-	    // error!
-	    JOptionPane.showMessageDialog(null,
-					  "Error: " + ioe.getMessage(),
-					  "Error saving",
-					  JOptionPane.ERROR_MESSAGE);
-	}
+        // save!
+        try {
+            LoadSave.save(filename, samples);
+        } catch (IOException ioe) {
+            // error!
+            JOptionPane.showMessageDialog(null,
+                                          "Error: " + ioe.getMessage(),
+                                          "Error saving",
+                                          JOptionPane.ERROR_MESSAGE);
+        }
     }
     public void setFilename(String fn) {
 	filename = fn;
@@ -204,7 +208,7 @@ public class GraphFrame extends XFrame implements SampleListener,
         return null;
     }
     public Printable makePrintable(PageFormat pf) {
-	return this;
+        return this;
     }
     public String getPrintTitle() {
         String s = "Graph: " + samples.get(0);
@@ -538,7 +542,7 @@ public class GraphFrame extends XFrame implements SampleListener,
     public GraphFrame(Index i) {
 	// samples
 	samples = new ArrayList(2);
-	samples.add(new Graph(i.target));
+	samples.add(new Graph(i.getTarget()));
 	samples.add(new Graph(i));
 
 	// go
