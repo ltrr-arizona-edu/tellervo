@@ -1,6 +1,7 @@
 package corina.gui;
 
-import java.io.StringWriter;
+import corina.util.PureStringWriter;
+
 import java.io.PrintWriter;
 import javax.swing.JOptionPane;
 
@@ -15,8 +16,9 @@ public class Bug {
     */
 
     public static void bug(Throwable t) {
-        // get stack trace
-        StringWriter sw = new StringWriter();
+        // get stack trace -- use purestringwriter because otherwise
+	// windows would show funny boxes when displaying it (ugh).
+        PureStringWriter sw = new PureStringWriter();
         PrintWriter pw = new PrintWriter(sw);
         t.printStackTrace(pw);
 
