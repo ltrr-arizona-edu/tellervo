@@ -23,12 +23,12 @@ package corina.manip;
 import corina.Year;
 import corina.Range;
 import corina.Sample;
-import corina.gui.Buttons;
+import corina.gui.Layout;
 import corina.util.OKCancel;
 import corina.util.JLine;
+import corina.util.DocumentListener2;
 import corina.ui.Builder;
-
-import java.util.ResourceBundle;
+import corina.ui.I18n;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -46,7 +46,6 @@ import javax.swing.BoxLayout;
 import javax.swing.BorderFactory;
 import javax.swing.AbstractAction;
 import javax.swing.SwingConstants;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotUndoException;
@@ -67,9 +66,9 @@ import javax.swing.undo.CannotRedoException;
    present.  Graphing could draw the disabled data as a dotted
    line.</p>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class TruncateDialog extends JDialog {
     // data
     private Sample s;
@@ -78,9 +77,6 @@ public class TruncateDialog extends JDialog {
     // gui
     private JTextField tf1, tf2, tf3, tf4;
     private JLabel result;
-
-    // i18n
-    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // update everything from "by /n/ years"
     private void updateFromNumbers() {
@@ -148,30 +144,30 @@ public class TruncateDialog extends JDialog {
     }
 
     // when something is typed, update everything from the numbers
-    DocumentListener updater1 = new DocumentListener() {
-        public void changedUpdate(DocumentEvent e) { update(); }
-        public void insertUpdate(DocumentEvent e) { update(); }
-        public void removeUpdate(DocumentEvent e) { update(); }
-        private void update() {
-            updateFromNumbers();
-            updateResult();
-        }
-    };
+    DocumentListener2 updater1 = new DocumentListener2() {
+	    public void update(DocumentEvent e) {
+		updateFromNumbers();
+		updateResult();
+	    }
+	};
 
     // when something is typed, update everything from the years
-    DocumentListener updater2 = new DocumentListener() {
-        public void changedUpdate(DocumentEvent e) { update(); }
-        public void insertUpdate(DocumentEvent e) { update(); }
-        public void removeUpdate(DocumentEvent e) { update(); }
-        private void update() {
-            updateFromYears();
-            updateResult();
-        }
-    };
+    DocumentListener2 updater2 = new DocumentListener2() {
+	    public void update(DocumentEvent e) {
+		updateFromYears();
+		updateResult();
+	    }
+	};
 
+    // update "after:" text with resultant range.
     private void updateResult() {
-        String rangeAndSpan = (r!=null) ? (r + " (n=" + r.span() + ")") : msg.getString("badcrop");
-        result.setText(msg.getString("after") + ": " + rangeAndSpan);
+        String rangeAndSpan;
+	if (r == null)
+	    rangeAndSpan = I18n.getText("badcrop");
+	else
+	    rangeAndSpan = r + " (n=" + r.span() + ")";
+
+        result.setText(I18n.getText("after") + ": " + rangeAndSpan);
     }
 
     private JPanel setup() {
@@ -179,51 +175,49 @@ public class TruncateDialog extends JDialog {
         JPanel pri = new JPanel();
         pri.setLayout(new BoxLayout(pri, BoxLayout.Y_AXIS));
 
-        // secondary panel: start | end
-        JPanel sec = new JPanel();
-        sec.setLayout(new BoxLayout(sec, BoxLayout.X_AXIS));
-
         // "Start"
-        JLabel cropStart = new JLabel(msg.getString("crop_start"));
+        JLabel cropStart = new JLabel(I18n.getText("crop_start"));
         cropStart.setHorizontalAlignment(SwingConstants.CENTER);
         cropStart.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // "by [ xxx ] years"
         tf1 = new JTextField("0", 4);
         tf1.getDocument().addDocumentListener(updater1);
-	JPanel f1 = Buttons.flowLayoutL(new JLabel("by "), tf1, new JLabel(" years"));
+	JPanel f1 = Layout.flowLayoutL("by ", tf1, " years");
         f1.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // "to year [ xxx ]"
         tf2 = new JTextField(s.range.getStart().toString(), 5);
         tf2.getDocument().addDocumentListener(updater2);
-	JPanel f2 = Buttons.flowLayoutL(new JLabel("to year "), tf2);
+	JPanel f2 = Layout.flowLayoutL("to year ", tf2);
         f2.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // start panel
-	JPanel startPanel = Buttons.boxLayoutY(cropStart, f1, f2);
+	JPanel startPanel = Layout.boxLayoutY(cropStart, f1, f2);
 
         // "End"
-        JLabel cropEnd = new JLabel(msg.getString("crop_end"));
+        JLabel cropEnd = new JLabel(I18n.getText("crop_end"));
         cropEnd.setHorizontalAlignment(SwingConstants.CENTER);
         cropEnd.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // "by [ xxx ] years"
         tf3 = new JTextField("0", 4);
         tf3.getDocument().addDocumentListener(updater1);
-	JPanel f3 = Buttons.flowLayoutL(new JLabel("by "), tf3, new JLabel(" years"));
+	JPanel f3 = Layout.flowLayoutL("by ", tf3, " years");
         f3.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // "to year [ xxx ]"
         tf4 = new JTextField(s.range.getEnd().toString(), 5);
         tf4.getDocument().addDocumentListener(updater2);
-	JPanel f4 = Buttons.flowLayoutL(new JLabel("to year "), tf4);
+	JPanel f4 = Layout.flowLayoutL("to year ", tf4);
         f4.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // end panel
-	JPanel endPanel = Buttons.boxLayoutY(cropEnd, f3, f4);
+	JPanel endPanel = Layout.boxLayoutY(cropEnd, f3, f4);
 
-        // build secondary panel
+        // build secondary panel: start | end
+        JPanel sec = new JPanel();
+        sec.setLayout(new BoxLayout(sec, BoxLayout.X_AXIS));
         sec.add(Box.createHorizontalStrut(16));
         sec.add(startPanel);
         sec.add(Box.createHorizontalStrut(12));
@@ -238,7 +232,9 @@ public class TruncateDialog extends JDialog {
 
         // build primary panel
         pri.add(Box.createVerticalStrut(8));
-        JLabel tmp = new JLabel(msg.getString("before") + ": " + s.range + " (n=" + s.range.span() + ")");
+	String text = I18n.getText("before") + ": " +
+	              s.range + " (n=" + s.range.span() + ")";
+	JLabel tmp = new JLabel(text);
         // center the label
         tmp.setHorizontalAlignment(SwingConstants.CENTER);
         tmp.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -256,7 +252,6 @@ public class TruncateDialog extends JDialog {
 	return pri;
     }
 
-    // returns "ok" button
     private void initButtons() {
         // cancel == close
         cancel = Builder.makeButton("cancel");
@@ -303,7 +298,7 @@ public class TruncateDialog extends JDialog {
                         return true;
                     }
                     public String getPresentationName() {
-                        return msg.getString("truncate");
+                        return I18n.getText("truncate");
                     }
                 });
 
@@ -325,7 +320,7 @@ public class TruncateDialog extends JDialog {
 
     public TruncateDialog(Sample s, JFrame owner) {
         // owner, title, modal
-        super(owner, msg.getString("truncate"), true);
+        super(owner, I18n.getText("truncate"), true);
 
         // get sample, range
         this.s = s;
@@ -336,9 +331,9 @@ public class TruncateDialog extends JDialog {
         initButtons();
 
         // create a panel for the top, with a border
-	JPanel p = Buttons.borderLayout(null,
-					null, guts, null,
-					new Buttons(cancel, ok));
+	JPanel p = Layout.borderLayout(null,
+				       null, guts, null,
+				       Layout.buttonLayout(cancel, ok));
         p.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
         setContentPane(p);
 
