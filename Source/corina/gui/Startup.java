@@ -166,8 +166,6 @@ public class Startup implements PrivilegedAction {
     private String pass;
 
     public void handle(Callback[] callbacks) {
-      System.out.println("HANDLE");
-      Thread.currentThread().getThreadGroup().list();
       if (prompted) return;
 
       JTextField nameField = new JTextField();
@@ -179,8 +177,6 @@ public class Startup implements PrivilegedAction {
                                                 JOptionPane.QUESTION_MESSAGE,
                                                 null, null, null);
       prompted = true;
-      System.out.println("HANDLE2");
-      Thread.currentThread().getThreadGroup().list();
       if (option == JOptionPane.CLOSED_OPTION || option == JOptionPane.CANCEL_OPTION) {
         return;
       }
