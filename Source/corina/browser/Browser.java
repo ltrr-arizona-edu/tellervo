@@ -1,335 +1,329 @@
 package corina.browser;
 
-import corina.Previewable;
 import corina.Sample;
-import corina.Element;
-import corina.cross.Grid;
-import corina.files.WrongFiletypeException;
 import corina.editor.Editor;
-import corina.gui.ElementsPanel;
+import corina.util.Platform;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileReader;
 import java.io.IOException;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Enumeration;
+import java.util.Vector;
+import java.util.StringTokenizer;
 
-import java.awt.Dimension;
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.AbstractTableModel;
 import java.awt.BorderLayout;
-import java.awt.event.*;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JTree;
-import javax.swing.JSplitPane;
-import javax.swing.JScrollPane;
-import javax.swing.event.*;
-import javax.swing.tree.*;
+import java.awt.FlowLayout;
+import java.awt.Component;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.ActionEvent;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
-/*
-  TODO:
-  -- use new preview model; wait, no preview model at all?
-  -- don't say "Unreadable file" -- dim files, but that requires extensions -- anything else...
-  -- show only dirs on left, add elementspanel on right
-  -- add summary label ("19 samples, 24 KB")
-  -- add search box
-  -- add realtime searching/limiting capabilities
-  -- multiple top-level directories, user-specifyable
-  -- virtual fs (ftp, etc.)
-  -- drag-n-drop
-  -- "wait..." while opening
-*/
-
-public class Browser extends JFrame implements TreeExpansionListener,
-					       TreeSelectionListener,
-					       MouseListener,
-					       KeyListener,
-                                               FileFilter {
-
-    JSplitPane splitPane;
-
-    // filefilter -- ignore dotfiles
-    public boolean accept(File pathname) {
-	return !pathname.getName().startsWith(".");
-    }
-
-    // treeexpansionlistener
-    public void treeCollapsed(TreeExpansionEvent e) {
-	// delete all children of this node
-	DefaultMutableTreeNode parent = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
-
-	// get count, and store a list -- i can't remove things in the
-	// middle of an enumeration (arg!)
-	int n = parent.getChildCount();
-	DefaultMutableTreeNode children[] = new DefaultMutableTreeNode[n];
-	int count=0;
-	Enumeration enum = parent.children();
-	while (enum.hasMoreElements())
-	    children[count++] = (DefaultMutableTreeNode) enum.nextElement();
-
-	// now i can remove them
-	for (int i=0; i<n; i++)
-	    ((DefaultTreeModel) tree.getModel()).removeNodeFromParent(children[i]);
-    }
-    public void treeExpanded(TreeExpansionEvent e) {
-	Object p[] = e.getPath().getPath();
-
-	String path = parent;
-	for (int i=0; i<p.length; i++)
-	    path += File.separatorChar + p[i].toString();
-
-	File newDir = new File(path);
-	File children[] = newDir.listFiles(this);
-
-	// sort by name
-	Arrays.sort(children, new Comparator() {
-		public int compare(Object o1, Object o2) {
-		    String f1 = ((File) o1).getPath();
-		    String f2 = ((File) o2).getPath();
-		    return f1.compareToIgnoreCase(f2);
-		}
-	    });
-
-	DefaultMutableTreeNode parent = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
-
-	// go backwards, so i'm always inserting at 0 (wimp)
-	// for (int i=children.length-1; i>=0; i--) {
-	for (int i=0; i<children.length; i++) {
-	    final boolean isDir = children[i].isDirectory();
-	    DefaultMutableTreeNode t = new DefaultMutableTreeNode(children[i].getName()) {
-		    public boolean isLeaf() {
-			return !isDir;
-		    }
-		};
-
-	    // ((DefaultTreeModel) tree.getModel()).insertNodeInto(t, parent, 0);
-	    ((DefaultTreeModel) tree.getModel()).insertNodeInto(t, parent, i);
-	}
-
-	// -- child is "please wait..."
-	// -- read directory (fsv?)
-	// -- children are all files
-    }
-
-    // treeselectionlistener
-    public void valueChanged(TreeSelectionEvent e) {
-	String filename = getSelectedFilename();
-
-	// put directory/filename in title?
-	if (filename == null)
-	    setTitle("Corina");
-	else {
-
-	    Object p[] = tree.getSelectionPath().getPath();
-	    String path = p[0].toString();
-	    for (int i=1; i<p.length; i++)
-		path += File.separatorChar + p[i].toString();
-	    setTitle("Corina: " + path);
-	}
-
-	// nothing selected?
-	if (filename == null) {
-	    // what to do?
-	    return;
-	}
-
-	// not a dir?
-	File file = new File(filename);
-	if (!file.isDirectory()) {
-	    // what to do?
-	    return;
-	}
-
-	// set preview: it's an elementspanel
-	List el = new ArrayList();
-	File[] children = file.listFiles(); // fixme: no dotfiles!
-	for (int i=0; i<children.length; i++)
-	    try {
-		if (children[i].isDirectory())
-		    continue;
-		new Sample(children[i].getPath());
-		el.add(new Element(children[i].getPath(), false)); // false?
-	    } catch (IOException ioe) {
-		// ignore
-	    }
-	ElementsPanel ep = new ElementsPanel(el);
-	ep.setView(ElementsPanel.VIEW_STANDARD);
-	splitPane.setRightComponent(ep);
-    }
-
-    // mouselistener
-    public void mouseClicked(MouseEvent e) {
-	if (e.getClickCount() == 2) {
-	    openSelectedFile();
-	} else if (e.isPopupTrigger()) {
-	    System.out.println("context..."); // doesn't work -- why not?
-	}
-    }
-    public void mouseEntered(MouseEvent e) { }
-    public void mouseExited(MouseEvent e) { }
-    public void mousePressed(MouseEvent e) { }
-    public void mouseReleased(MouseEvent e) { }
-
-    // keylistener
-    private String typed="";
-    private long lastKey=-1;
-    private static int DT = 1000;
-    public void keyPressed(KeyEvent e) {
-	// -- ENTER / control-O => open
-	if (e.getKeyCode() == KeyEvent.VK_ENTER ||
-	    (e.getKeyCode()==KeyEvent.VK_O && e.isControlDown())) {
-	    openSelectedFile();
-	    typed = "";
-	    lastKey = -1;
-	}
-
-	// -- ESCAPE?  kill.
-	if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-	    typed = "";
-	    lastKey = -1;
-	}
-
-	// -- letters => jump to file/folder
-	char c = e.getKeyChar();
-	if (Character.isLetter(c) || Character.isDigit(c) || c=='.' || c==' ') {
-	    // time's up!
-	    if (lastKey + DT < System.currentTimeMillis())
-		typed = "";
-
-	    // record this time
-	    lastKey = System.currentTimeMillis();
-
-	    // append typed
-	    typed += Character.toUpperCase(c);
-
-	    // select node
-	    int r = tree.getMaxSelectionRow(); // selected row
-	    if (r == -1)
-		r = 0;
-
-	    // this row still good?  stay here.
-	    {
-		TreePath p = tree.getPathForRow(r);
-		if (p.getLastPathComponent().toString().toUpperCase().indexOf(typed) == 0)
-		    return;
-	    }
-
-	    // ok, let's go hunting for a good row.
-	    int startRow = r; // if we get back here, we've failed
-	    for (;;) {
-		TreePath p = tree.getPathForRow(r);
-		if (p.getLastPathComponent().toString().toUpperCase().indexOf(typed) == 0) {
-		    // select it, and scroll to it
-		    tree.setSelectionPath(p);
-		    tree.scrollRowToVisible(tree.getMaxSelectionRow());
-		    return;
-		}
-
-		// next one
-		r++;
-		r %= tree.getRowCount();
-
-		if (r == startRow)
-		    return;
-	    }
-	}
-    }
-    public void keyReleased(KeyEvent e) { }
-    public void keyTyped(KeyEvent e) { }
-
-    private String getSelectedFilename() {
-	try {
-	    Object p[] = tree.getSelectionPath().getPath();
-	    String path = parent;
-	    for (int i=0; i<p.length; i++)
-		path += File.separatorChar + p[i].toString();
-	    return path;
-	} catch (NullPointerException npe) {
-	    return null;
-	}
-    }
-    private void openSelectedFile() {
-	try {
-	    new Editor(new Sample(getSelectedFilename()));
-	} catch (IOException ioe) {
-	    // tell user what's wrong
-	}
-    }
-
-    private String _fn;
-
-    private JTree tree;
-    private JPanel preview;
-
-    private String parent;
-
-    public Browser(String fn) {
-	setTitle("Corina");
-	setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-	_fn = fn;
-
-	File dir = new File(fn);
-	final File files[] = dir.listFiles(this);
-
-	parent = dir.getParent();
-
-	// sort by name
-	Arrays.sort(files, new Comparator() {
-		public int compare(Object o1, Object o2) {
-		    String f1 = ((File) o1).getPath();
-		    String f2 = ((File) o2).getPath();
-		    return f1.compareToIgnoreCase(f2);
-		}
-	    });
-
-	// tree
-	DefaultMutableTreeNode top = new DefaultMutableTreeNode(dir.getName());
-	for (int i=0; i<files.length; i++) {
-	    final boolean isDir = files[i].isDirectory();
-	    DefaultMutableTreeNode t = new DefaultMutableTreeNode(files[i].getName()) {
-		    public boolean isLeaf() {
-			return !isDir;
-		    }
-		};
-	    top.add(t);
-	}
-	tree = new JTree(top);
-	tree.addTreeExpansionListener(this);
-	tree.addTreeSelectionListener(this);
-	tree.addMouseListener(this);
-	tree.addKeyListener(this);
-	tree.putClientProperty("JTree.lineStyle", "Angled"); // is there a better way to do this now?
-
-	// preview
-	preview = new JPanel();
-
-	// split pane
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-	splitPane.setContinuousLayout(true);
-        splitPane.setLeftComponent(new JScrollPane(tree));
-        splitPane.setRightComponent(preview);
-
-	getContentPane().add(splitPane, BorderLayout.CENTER);
-	pack();
-	setSize(new Dimension(320, 480));
-	show();
-	tree.requestFocus();
-    }
-
-    public static void main(String args[]) {
-	new Browser(args.length>=1 ? args[0] : System.getProperty("user.home"));
-    }
-
+public class Browser extends JFrame {
     /*
-      do immediately:
-      -- combine checkbox and filename/title (whichever is first?  doesn't much matter, title will be gone soon)
-      -- remove add/remove buttons from elementspanel
-      -- clean up bargraphs
-      -- clean up (normal) graphing code -- is StandardPlot really needed?
-    */
+     -- refactor!  this is too big for one source file now.
+     -- add ITRDB support, now that i can efficiently load URLs.  (need helper classes for ftp dir listing?)
+     -- probably should abstract out FileSystem->(LocalFileSystem,RemoteFileSystem)
+     
+     -- put folders first?  no, better: its type is "Folder", so only when sort=filetype
+     -- by default, select the first one
+     -- RET on a non-sample file opens it (canopener!)
+     -- in background thread, load/cache metadata, updating view as you go
+     -- if a file is not a sample, dim it to 50%
+     -- use tree-doc icon for samples
+     -- full drag-n-drop
+     -- cmd-up/backspace to go up a folder?
+     -- ugh, when folderpopup has focus, up/down cause all hell to break loose!  (well, sort of)  possible to fix?
+     -- type at table to jump to file
+     
+     -- possible to select multiple files for summing/plotting/grids/bargraphs/etc.?  (what's my interface?)
+
+     -- add generous spacing around components, especially folder/search components
+
+     -- tab-order is folder, search, files, sort-by, show-headers.
+
+     -- i18n (futured)
+
+     -- MENUS! :
+     -- menu: Sort -> by { name, kind, size, date-mod, <all metadata fields> }
+     -- menu: Show -> { <everything in Sort menu, with name=dimmed,checked, > }
+
+     -- add full support for file-metadata and sample-metadata columns to table.
+     -- search ALL VISIBLE COLUMNS, not just filename
+
+     -- ps7 context menu: [ open, select all, deselect all, ---, rename, batch rename..., delete, ---, (rotate), ---, reveal location in finder, new folder, ---, (rankings) ]
+     */
+
+    private FolderPopup folderPopup;
+
+    public void goToParent(int numTimes) {
+        File me = new File(folder);
+        for (int i=0; i<numTimes; i++)
+            me = me.getParentFile();
+        folder = me.getPath();
+    }
+
+    private JLabel label;
+    private void updateSummary() {
+        String text = files.size() + " files and folders";
+        if (!searchField.isEmpty())
+            text += ", " + visibleFiles.size() + " shown";
+        label.setText(text);
+    }
+
+    private SearchField searchField;
+    private JTable table;
+    private AbstractTableModel model;
+    public Browser() {
+        this(System.getProperty("corina.dir.data"));
+    }
+    public Browser(String dir) {
+        super(Platform.isMac ? "Browser" : "Corina: Browser"); // or just "Corina", if this is my top-level?
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        setContentPane(p);
+        p.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        
+        JTabbedPane t = new JTabbedPane();
+        p.add(t);
+
+        // label
+        label = new JLabel("", JLabel.CENTER);
+        label.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        
+        {
+            // main panel...
+            JPanel main = new JPanel(new BorderLayout());
+
+            // north is another panel
+            JPanel north = new JPanel();
+            north.setLayout(new BoxLayout(north, BoxLayout.X_AXIS));
+            main.add(north, BorderLayout.NORTH);
+
+            // "folder"
+            JLabel folderLabel = new JLabel("Folder:");
+            if (!Platform.isMac)
+                folderLabel.setDisplayedMnemonic('F');
+            folderPopup = new FolderPopup(folder, this);
+            folderLabel.setLabelFor(folderPopup);
+            north.add(Box.createHorizontalStrut(14));
+            north.add(folderLabel);
+            north.add(Box.createHorizontalStrut(10));
+            north.add(folderPopup);
+            
+            // |<-- space -->|
+            north.add(Box.createHorizontalGlue());
+            north.add(Box.createVerticalStrut(50)); // temp hack...
+
+            // center is the table (but searchfield needs this, so put it here)
+            model = new BrowserTableModel();
+            table = new JTable(model) {
+                public boolean isManagingFocus() {
+                    return false; // don't let the table see tab/ctrl-tab -- DOESN'T WORK ON WIN32?
+                }
+            };
+            table.setShowGrid(false);
+            table.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
+                public Component getTableCellRendererComponent(JTable table, Object value,
+                                                               boolean isSelected, boolean hasFocus, int row, int column) {
+                    JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                    // CATCHER FOR THREAD PROTOTYPE
+                    if (!(visibleFiles.get(row) instanceof File)) {
+                        c.setIcon(leafIcon);
+                        c.setText(visibleFiles.get(row).toString());
+                        return c;
+                    }
+                    File f = (File) visibleFiles.get(row); // is this just another way to say f=value?
+                    c.setIcon(f.isDirectory() ? closedIcon : leafIcon); // leafIcon isn't exactly correct on win32
+                    c.setText(f.getName()); // show just the name, not the whole path
+                    return c;
+                }
+            });
+
+            // "search for"
+            JLabel searchLabel = new JLabel("Search for:");
+            if (!Platform.isMac)
+                searchLabel.setDisplayedMnemonic('S');
+            searchField = new SearchField(this, table);
+            searchLabel.setLabelFor(searchField);
+            north.add(searchLabel);
+            north.add(Box.createHorizontalStrut(10));
+            north.add(searchField);
+            north.add(Box.createHorizontalStrut(14));
+            
+            // table: return opens a file/folder
+            table.addKeyListener(new KeyListener() {
+                public void keyPressed(KeyEvent e) {
+                    if (e.getKeyChar() == KeyEvent.VK_ENTER)
+                        e.consume();
+                }
+                public void keyReleased(KeyEvent e) {
+                    if (e.getKeyChar() == KeyEvent.VK_ENTER)
+                        e.consume();
+                }
+                public void keyTyped(KeyEvent e) {
+                    if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+                        e.consume(); // don't go to next row of table
+                        openCurrentFile();
+                    }
+                }
+            });
+
+            // table: double-click opens, too.
+            table.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 2) {
+                        openCurrentFile();
+                    }
+                }
+            });
+            
+            // table: initial view
+            doList();
+            main.add(new JScrollPane(table), BorderLayout.CENTER);
+
+            // south is a summary label
+            main.add(label, BorderLayout.SOUTH);
+
+            t.addTab("Local", main);
+        }
+
+        { // placeholder
+            t.addTab("ITRDB", new JLabel("Coming soon...", JLabel.CENTER));
+        }
+        
+        pack();
+        show();
+        searchField.requestFocus();
+    }
+
+    // (actually a method of the table)
+    private void selectFirstRow() {
+        if (table.getRowCount() >= 1)
+            table.setRowSelectionInterval(0, 0);
+    }
+
+    private void openCurrentFile() {
+        int i = table.getSelectedRow();
+        File f = (File) visibleFiles.get(i);
+        
+        // if fn is a folder, enter that folder
+        if (f.isDirectory()) {
+            // set folder and re-list table
+            folder = f.getPath();
+            doList();
+
+            // add an element to the folderPopup
+            folderPopup.descendInto(f);
+
+            // focus back on the search field?
+            searchField.requestFocus();
+
+            // stop.  (not pretty, i know.)
+            return;
+        }
+
+        // nope, it's a file, so try to open that.  BETTER: use the canopener so you can load grids, too.
+        try {
+            new Editor(new Sample(f.getPath()));
+        } catch (IOException ioe) {
+            System.out.println("ugh, i/o error: " + ioe);
+        }
+    }
+
+    private String folder=System.getProperty("corina.dir.data");
+
+    // this'll get a lot bigger, and eventually go in its own file
+    class BrowserTableModel extends AbstractTableModel {
+        public int getRowCount() {
+            return visibleFiles.size();
+        }
+        public int getColumnCount() {
+            return 1;
+        }
+        public String getColumnName(int column) {
+            return "Name";
+        }
+        public Object getValueAt(int row, int column) {
+            return visibleFiles.get(row);
+        }
+    }
+
+    // files to view
+    List files=new ArrayList(); // of Element
+    List visibleFiles= new ArrayList(); // of Element
+
+    public void doList() {
+        // reset search field (good idea?)
+        searchField.reset();
+
+        // clear old list
+        while (files.size() > 0)
+            files.remove(0);
+
+        // dump all files
+        File all[] = new File(folder).listFiles();
+        for (int i=0; i<all.length; i++)
+            if (!all[i].isHidden())
+                files.add(all[i]);
+
+        // just sort them by name (alphabetical, case-insensitive) for now.
+        Collections.sort(files, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                File f1 = (File) o1;
+                File f2 = (File) o2;
+                return f1.getName().compareToIgnoreCase(f2.getName());
+            }
+        });
+
+        // update search
+        doSearch();
+    }
+
+    // searching: update |visibleFiles| from |files|, using |searchField|
+    public void doSearch() {
+        // clear old list
+        while (visibleFiles.size() > 0)
+            visibleFiles.remove(0);
+
+        // create search target: fake case insensitivity by doing everything in lower-case
+        String words[] = searchField.getTextAsWords();
+
+        // loop through files, adding to visibleFiles if it should be visible
+        for (int i=0; i<files.size(); i++) {
+            // TEMPORARY CATCH FOR THREAD PROTOTYPE
+            if (!(files.get(i) instanceof File)) { visibleFiles.add(files.get(i)); continue; }
+            
+            File f = (File) files.get(i);
+
+            // look for a match
+            String check = f.getName().toLowerCase();
+            boolean match = true; // bad!  use a named break?
+            for (int j=0; j<words.length; j++) {
+                if (check.indexOf(words[j]) == -1) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match)
+                visibleFiles.add(f);
+        }
+
+        // update the table and summary line, and select the first one
+        model.fireTableDataChanged();
+        updateSummary();
+        selectFirstRow();
+    }
+
+    // icon singletons
+    private static Icon leafIcon = new DefaultTreeCellRenderer().getLeafIcon();
+    private static Icon closedIcon = new DefaultTreeCellRenderer().getClosedIcon();
 }
