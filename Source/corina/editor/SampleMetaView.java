@@ -91,7 +91,7 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
             try { // need to synch on e to guarantee no exception?
                 return e.getDocument().getText(0, e.getDocument().getLength());
             } catch (BadLocationException ble) {
-                return null; // can't happen
+                return ""; // can't happen
             }
         }
         public void changedUpdate(DocumentEvent e) {
