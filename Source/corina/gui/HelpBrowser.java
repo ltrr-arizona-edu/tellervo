@@ -47,59 +47,25 @@ import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 
 public class HelpBrowser extends JFrame implements HyperlinkListener {
 
-    private static URL HELP_URL;
-    static {
-	String cwd = System.getProperty("user.dir");
-	try {
-	    HELP_URL = new File(cwd + "/User Manual/index.html").toURL();
-	} catch (MalformedURLException mue) {
-	    // eep, what to do?  i suppose this should Never Happen.
-	}
-    }
-
-    // listener for hyperlinks
-    public void hyperlinkUpdate(HyperlinkEvent e) {
-	if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-	    JEditorPane pane = (JEditorPane) e.getSource();
-	    if (e instanceof HTMLFrameHyperlinkEvent) {
-		HTMLFrameHyperlinkEvent  evt = (HTMLFrameHyperlinkEvent) e;
-		HTMLDocument doc = (HTMLDocument) pane.getDocument();
-		doc.processHTMLFrameHyperlinkEvent(evt);
-	    } else {
-		try {
-		    // history
-		    back.push(pane.getPage());
-		    fwd = new Stack();
-
-		    // move
-		    pane.setPage(e.getURL());
-		    backButton.setEnabled(true);
-		    fwdButton.setEnabled(false);
-		} catch (Throwable t) {
-		    t.printStackTrace();
-		}
-	    }
-	}
-    }
-
     // history
-    private Stack back = new Stack(), fwd = new Stack();
+    private Stack back=new Stack(), fwd=new Stack();
 
+    // forward/back
     private JButton backButton, fwdButton;
 
     public HelpBrowser() {
-	super("Corina Manual");
-	
-	// set up an HTML pane
-	final JEditorPane editorPane = new JEditorPane();
-	editorPane.setEditable(false);
-	editorPane.addHyperlinkListener(this);
-	URL url=null;
-	try {
-	    editorPane.setPage(HELP_URL);
-	} catch (Exception e) {
-	    System.err.println("Attempted to read a bad URL: " + url);
-	}
+        super("Corina Manual");
+
+        // set up an HTML pane
+        final JEditorPane editorPane = new JEditorPane();
+        editorPane.setEditable(false);
+        editorPane.addHyperlinkListener(this);
+        URL url=null;
+        try {
+            editorPane.setPage(getClass().getClassLoader().getResource("Contents.html"));
+        } catch (Exception e) {
+            System.err.println("Attempted to read a bad URL: " + url);
+        }
 
 	// make it scrollable
 	JScrollPane editorScrollPane = new JScrollPane(editorPane);
@@ -150,5 +116,30 @@ public class HelpBrowser extends JFrame implements HyperlinkListener {
 	// show it
 	pack();
 	show();
+    }
+
+    // listener for hyperlinks
+    public void hyperlinkUpdate(HyperlinkEvent e) {
+        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+            JEditorPane pane = (JEditorPane) e.getSource();
+            if (e instanceof HTMLFrameHyperlinkEvent) {
+                HTMLFrameHyperlinkEvent  evt = (HTMLFrameHyperlinkEvent) e;
+                HTMLDocument doc = (HTMLDocument) pane.getDocument();
+                doc.processHTMLFrameHyperlinkEvent(evt);
+            } else {
+                try {
+                    // history
+                    back.push(pane.getPage());
+                    fwd = new Stack();
+
+                    // move
+                    pane.setPage(e.getURL());
+                    backButton.setEnabled(true);
+                    fwdButton.setEnabled(false);
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            }
+        }
     }
 }
