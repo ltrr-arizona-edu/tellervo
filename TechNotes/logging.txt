@@ -1,0 +1,29 @@
+This document describes how to use log4j for logging in Corina.
+(You need to link in log4j, and add it to the libraries, javadoc,
+etc.)  I tried using it, but never got it to work very well.
+
+Another alternative is to use the java.util.logging package.  I get
+the feeling that this isn't quite as well-designed as log4j, and isn't
+as widely used (partly because it's not as old), but it has the
+advantage that it ships with every 1.4 implementation (and I'll be
+targetting only 1.4 soon) - no need to download and link in log4j.jar,
+and worry about things like getting Javadoc to find it.  In fact,
+that's such a big advantage, unless I find java.util.logging to be
+completely inadequate, I should use that.  (The rest of this document
+is provided for completeness, now.)
+
+import org.apache.log4j.Logger; // BUG: javadoc can't find this! (why not?)
+
+	/*
+	  to use this, set the properties:
+	  -- log4j.rootLogger=DEBUG,A1
+	  -- log4j.appender.A1.Threshold=DEBUG
+	  -- log4j.appender.A1=org.apache.log4j.FileAppender
+	  -- log4j.appender.A1.File=corina.log
+	  -- log4j.appender.corina.Metadata=DEBUG,A1
+	  but even those don't seem to make this work.  what am i missing?
+	*/
+	Logger log = Logger.getLogger("corina.Metadata");
+	log.info("in metadata template init");
+
+(This code comes from corina.Metadata, but was never really used.)

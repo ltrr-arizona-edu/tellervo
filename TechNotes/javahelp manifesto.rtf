@@ -1,0 +1,48 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww11060\viewh14480\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0\fs24 \cf0 What I want from a Java help system, and why JavaHelp isn't acceptable\
+\
+an open letter to Sun's JavaHelp team, from a Java application writer\
+\
+21 July 2003\
+\
+(-- target: desktop apps, normal users)\
+\
+-- what i want:\
+	native help system -- typically faster, already debugged, users don't have to learn a new interface\
+	easy to make help -- for example, from docbook\
+	open -- no proprietary tools needed\
+	open-source, or at least open-source compatible -- i write open-source, and if i can't recruit volunteers easily, that's bad; if i can't distribute my program to users, that's worse.\
+\
+-- what javahelp gives me:\
+	custom java help system -- slower, strange interface, more bugs, fewer features, have to include myself = bigger app\
+	somewhat easy to make help -- need xslt stylesheets to make docbook into javahelp, then need to run special "help indexing" program on the output (not very well documented -- and at least 3 jars needed!)\
+	somewhat open -- ???\
+	not at all open-source: not GPL compatible, so i can't use it with any of the most common programs, or use any routines from the most common programs in my programs; need to make GPL exception clause, and get all contributors to agree to it, or distribute javahelp jar separately.\
+\
+-- how i'd design my ideal help system (for java, or any app)\
+	it would take raw docbook (or, a URL to a main docbook file, which can link to other docbook or image files).  they'd get processed at runtime; for speed, perhaps it would cache parts.\
+	it would use native help systems, where possible.  there might be a simple java help viewer, but it would only be a fallback in case the native help system is unavailable.\
+	it would be compatible with open-source programs.  there are far too many open-source java programs to ignore.\
+	it would present a simple, consistent API to access the help systems on all major platforms.  the only commands you really need are "show the help", and "show the help, starting on page X".\
+		so how about JavaHelp.showHelp() and JavaHelp.showHelp("X")?\
+\
+-- what i'm going to do instead, for now\
+	put chunked HTML in a jar, inside my jar\
+	at runtime, when the user asks for help, un-jar it to $(TMP)/Corina Temp Files/Manual/\
+		(or maybe somewhere like /Users/Shared/Corina Temp Files/Manual/, if available)\
+	ask a native web browser to go to .../Manual/index.html\
+\
+	what i lose: full-text searching.  with a good TOC, index, and glossary, i can minimize this loss.  (if it's too bad, i can write a short function to grep around in .../Manual/*.html and display a list.)\
+\
+	what i gain: native system, bookmarkable (i hope), open-source, and (since javahelp's libraries and input files are so big) my app actually gets smaller.\
+\
+-- if i was in charge of javahelp, what i'd do (in approximate order)\
+	make it open-source, using either an LGPL or apache license.  benefits: more people can use it, people can help fix bugs, if sun decides to drop it we won't be SOL so even projects that can use it now but don't are more likely to.\
+	simplify the help creation process.  there should be at most 2 jar files for the system: javahelp-compile-time.jar and javahelp-runtime.jar.  it should be well documented, it shouldn't matter what folder you run it from, etc.  better yet, don't require anything be done at compile-time, and simply allow docbook to be used.\
+	make it plug into native help systems, where possible.  windows help on windows,, mac help on mac, gnome/kde probably have their own help systems (pick one).  native help systems have printing, searching, copying, mouse-wheel, keyboard navigation, text size adjusting, and so forth.  no point in reinventing the wheel poorly when it's already been done decently.\
+}

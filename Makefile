@@ -77,9 +77,11 @@ JAVAC = $(JAVA_ROOT)/bin/javac
 #JAVAC = /usr/bin/jikes-sun
 JAVADOC = $(JAVA_ROOT)/bin/javadoc
 
+JAR = fastjar
+
 RM = rm -rf
 
-default: test jar
+default: test Corina.jar
 
 # make the "Timestamp" file -- this should always be run!
 timestamp:
@@ -102,7 +104,7 @@ $(BUILD)/corina/Year.class: $(SRC)/corina/*.java $(SRC)/corina/*/*.java $(SRC)/c
 	$(JAVAC) -sourcepath $(SRC) \
 		-d $(BUILD) \
 		$(JAVAC_ARGS) \
-		-classpath $(LIB)/jython.jar:$(LIB)/junit.jar:$(LIB)/crimson.jar:$(LIB)/comm.jar:$(LIB)/jh.jar:$(LIB)/ftp.jar:$(LIB)/hsqldb.jar:$(LIB)/batik.jar:$(LIB)/kawa.jar:$(LIB)/bsh.jar:$(LIB)/log4j-1.2.8.jar \
+		-classpath $(LIB)/junit.jar:$(LIB)/crimson.jar:$(LIB)/comm.jar:$(LIB)/jh.jar:$(LIB)/ftp.jar:$(LIB)/hsqldb.jar:$(LIB)/batik.jar:$(LIB)/log4j-1.2.8.jar \
 		$(SRC)/corina/*.java \
 		$(SRC)/corina/*/*.java \
 		$(SRC)/corina/*/*/*.java
@@ -112,6 +114,8 @@ prejar: compile html timestamp
 	cp $(SRC)/Images/*.png $(BUILD)/Images/
 	# OBSOLETE!  but for now:
 	cp $(SRC)/Images/Preferences16.gif $(BUILD)/Images/
+	cp $(SRC)/Images/Back16.gif $(BUILD)/Images/
+	cp $(SRC)/Images/Forward16.gif $(BUILD)/Images/
 
 	cp $(SRC)/Timestamp $(BUILD)
 
@@ -127,9 +131,8 @@ prejar: compile html timestamp
 	mkdir $(BUILD)/corina/manual/
 	cp -r $(MANUAL)/HTML/* $(BUILD)/corina/manual/
 
-jar: Corina.jar
 Corina.jar: prejar $(SRC)/Manifest timestamp
-	fastjar cfm Corina.jar $(SRC)/Manifest \
+	$(JAR) cfm Corina.jar $(SRC)/Manifest \
 		-C $(BUILD) .
 #		-C $(BUILD) corina/ \
 #		-C $(BUILD) Images/ \
@@ -208,7 +211,7 @@ javadoc: $(SRC)/corina/*.java $(SRC)/corina/*/*.java $(SRC)/corina/*/*/*.java
 # -- use -linkoffline to refer to those stubs
 
 # copies corina.jar and other libraries (OBSOLETE!) to the "Webpage" folder
-web: jar
+web: Corina.jar
 	cp Corina.jar $(WEB)/run/Corina.jar
 
 	cp $(LIB)/crimson.jar $(WEB)/run/
@@ -224,7 +227,7 @@ html-1: $(MANUAL_DOCBOOK)/*.xml $(MANUAL)/Images/*.png
 	$(RM) $(MANUAL)/html-1/
 	mkdir $(MANUAL)/html-1/
 
-	$(JAVA) -cp $(LIB)/saxon.jar:$(LIB)/crimson.jar:$(LIB)/batik.jar:$(LIB)/jimi/ \
+	$(JAVA) -cp $(LIB)/saxon.jar:$(LIB)/crimson.jar:$(LIB)/batik.jar:$(LIB)/JimiProClasses.zip \
 		com.icl.saxon.StyleSheet \
 		-x org.apache.crimson.parser.XMLReaderImpl \
 		-o $(MANUAL)/html-1/Manual.html \
@@ -243,7 +246,7 @@ $(MANUAL)/HTML/index.html: $(MANUAL_DOCBOOK_FILES)
 
 	# run XSLT to generate HTML
 	cd $(MANUAL)/HTML/ && \
-	$(JAVA) -cp "../../$(LIB)/saxon.jar:../../$(LIB)/crimson.jar:../../$(LIB)/batik.jar:/Users/kharris/Documents/Downloads/Jimi/" \
+	$(JAVA) -cp "../../$(LIB)/saxon.jar:../../$(LIB)/crimson.jar:../../$(LIB)/batik.jar:/Users/kharris/Documents/Downloads/JimiProClasses.zip" \
 		com.icl.saxon.StyleSheet \
 		-x org.apache.crimson.parser.XMLReaderImpl \
 		../../$(MANUAL_DOCBOOK)/Manual.docbook \
@@ -262,10 +265,14 @@ $(MANUAL)/HTML/index.html: $(MANUAL_DOCBOOK_FILES)
 	cp -r $(MANUAL)/HTML/ $(WEB)/manual/
 
 # run an XSLT transformation:
-# - usage: $(XSLT) -o output.bleh input.xml bleh.xsl
-XSLT = $(JAVA) -cp $(LIB)/saxon.jar:$(LIB)/crimson.jar \
-	com.icl.saxon.StyleSheet \
-	-x org.apache.crimson.parser.XMLReaderImpl
+
+# !! saxon usage: $(XSLT) -o output.bleh input.xml bleh.xsl
+#XSLT = $(JAVA) -cp $(LIB)/saxon.jar:$(LIB)/crimson.jar \
+#	com.icl.saxon.StyleSheet \
+#	-x org.apache.crimson.parser.XMLReaderImpl
+
+# !! xsltproc usage: $(XSLT) -o output.bleh bleh.xsl input.xml
+XSLT = xsltproc --nonet --noout
 
 # docbook->fo
 # (.fo can be made into .pdf or .rtf)
@@ -275,12 +282,12 @@ $(MANUAL)/fo/Manual.fo: $(MANUAL_DOCBOOK_FILES)
 	mkdir $(MANUAL)/fo/
 
 	$(XSLT) -o $(MANUAL)/fo/Manual.fo \
-		$(MANUAL_DOCBOOK)/Manual.docbook \
-		$(LIB)/docbook/fo/docbook.xsl
+		$(LIB)/docbook/fo/docbook.xsl \
+		$(MANUAL_DOCBOOK)/Manual.docbook
 
 # run FOP: converts .fo to .pdf
 # - usage: $(FOP) -fo bleh.fo -pdf bleh.pdf
-FOP = $(JAVA) -cp $(LIB)/fop.jar:$(LIB)/avalon.jar:$(LIB)/crimson.jar:$(LIB)/batik.jar:$(LIB)/xalan.jar:$(LIB)/saxon.jar:/Users/kharris/Documents/Downloads/Jimi/ \
+FOP = $(JAVA) -cp $(LIB)/fop.jar:$(LIB)/avalon.jar:$(LIB)/crimson.jar:$(LIB)/batik.jar:$(LIB)/xalan.jar:$(LIB)/saxon.jar:/Users/kharris/Documents/Downloads/JimiProClasses.zip \
 		org.apache.fop.apps.Fop
 
 # BUG: pdf creation doesn't work.  FOP gives the error:
@@ -320,8 +327,8 @@ rtf: $(MANUAL)/fo/Manual.fo
 	cp -r $(LIB)/docbook/images/ $(MANUAL)/rtf/images/
 
 	$(XSLT) -o $(MANUAL)/Manual.rtf \
-		$(MANUAL)/fo/Manual.fo \
-		$(LIB)/docbook/fo/fo-rtf.xsl
+		$(LIB)/docbook/fo/fo-rtf.xsl \
+		$(MANUAL)/fo/Manual.fo
 # why doesn't this work?
 # ALSO: what's /pdf/ and /rtf/ for?  aren't they identical, and the same as /fo/?
 #	cp $(MANUAL)/Manual.pdf $(WEB)/manual/Corina.pdf
@@ -338,12 +345,11 @@ rtf: $(MANUAL)/fo/Manual.fo
 # BETTER: each format should be "manual-html", "manual-pdf", etc.
 # BEST: make "manual" its own folder/project
 
-# (TODO: make this explicit?  "Corina.jar"?)
-run: jar
+run: Corina.jar
 	$(JAVA) -jar Corina.jar
 
 # unused, so far.  how to use it?
-run-mac: jar
+run-mac: Corina.jar
 	$(JAVA) -jar Corina.jar \
 		-Xdock:icon=Source/Images/tree.icns \
 		-Xdock:name=Corina
@@ -385,7 +391,7 @@ stats:
 
 # this requires java 1.4 -- findbugs is written in a
 # prerelease java+stuff language.  darn.
-findbugs: jar
+findbugs: Corina.jar
 	$(JAVA) -jar $(LIB)/findbugs.jar Corina.jar | grep -v ^Se:
 
 lint: compile

@@ -1,0 +1,67 @@
+dialog: "Corina: Error Loading Preferences"
+	While trying to load preferences:
+	Error copying preferences file to your home directory: /home/kharris/.corina (Is a directory)
+	[ OK ]
+
+what's wrong with this:
+	-- shouldn't have a title (mac only?)
+	-- is it trying to load, or trying to copy?
+	-- "/home/kharris/.corina (Is a directory)" is an exception, right?
+	-- error?  what can i do about it?  what'll happen now?
+	-- but: why's it trying to copy preferences on startup, anyway?
+		-- it should only save your prefs when you change something
+	-- when this does come up:
+		-- i'll need a much better dialog, with real choices!
+		-- no, no choices: move it out of the way, and say so
+
+========================================
+error log:
+	-- allow printing (button: "Print")
+
+========================================
+new sample:
+	-- autocomplete should be case-insensitive
+		-- type a "z", it goes to "Zonguldak"?  is that better?
+
+========================================
+editor:
+	-- comments field is zero-width!
+	-- "mean sensitivity" needs to show, visually, that it's clickable
+	-- can't type in data -- ?
+
+========================================
+browser startup:
+	-- "corina couldn't save your prefs" -- still uses jdisclosure!
+
+========================================
+graph:
+	"copy" -- copies it as ... what?
+	right-click, "plot" -- should be more descriptive, like "plot in its own window"
+		-- no, shouldn't exist!
+
+========================================
+bargraph:
+	text is too low -- java bug?
+	graph/bargraph should simply be a view-menu toggle
+
+========================================
+undo:
+	lots of errors in the log: posting edits to nulls!
+
+========================================
+map:
+	it's not double-buffered, except on macs
+		-- turn it on, or implement this by hand; without, it's far too slow
+	site list is too slow -- just needs optimizing?
+	site-info dialog is too small (why?)
+
+========================================
+prefs:
+	dialog shows up small (why?)
+
+========================================
+misc:
+	corina.index uses Double -- Float would probably be fine
+========================================
+browser:
+	need right-click, get info!

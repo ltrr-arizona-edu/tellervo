@@ -1,0 +1,13 @@
+perhaps corina should autodetect classes.  for example, look for every
+class in the jar which implements Crossdate.  that way, if somebody
+feels like adding a new crossdating algorithm, they can distribute it
+and say "dump this in corina.jar", and it'll automatically find it.
+
+cons:
+- everybody's corina.jar is different
+- it's harder to get inside a .jar
+- when they upgrade, it'll disappear
+- if they think they can open corina.jar, they could mess other things up
+- ...
+
+so maybe it's not such a great idea.

@@ -1,0 +1,24 @@
+The stuff in Manual/HTML/*.html validates as "HTML 4.01 Transitional"
+if you prepend the line:
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+- I haven't figured out how to make it XHTML 1.1 (maybe a newer
+  version of NW's DocBook-XSL stylesheets?)
+
+- Should I do this prepending myself?  I don't know how to do it
+  automatically (why doesn't the XSLT do this?) but it wouldn't be too
+  hard to make a shell script that does it for each file.
+
+  for x in *.html ; do cat HTML-DOCTYPE $x > tmp ; mv tmp $x ; done
+  rm -f tmp
+
+  (with the line above in the file HTML-DOCTYPE)
+
+- At least, I think it does.  I've only tried adding this line to one
+  file.  I assume the other files don't do anything bad.
+
+- Maybe I should add an HTML-validation rule to the Makefile.  That
+  does seem in the spirit of automated testing of everything.  Is
+  there an independent program I can use, or can I use the XML tools I
+  already have, or can I do it easily (and quickly) over the web?

@@ -1,0 +1,65 @@
+why use xml?  it's big, and bulky.  if i really want to save space, a
+plain text format would be much more efficient, and probably compress
+even better.
+
+one idea:
+
+id|title|sapwood|...
+505563|zonguldak, karabuk 6C|7|...
+...
+
+- all stored in UTF-8
+- first line is each var, separated by |'s
+- each following line is all vars for one file/sample
+- only special chars are | and \n and \\ -- escape them as \|, \n, and \\
+- need to store folders/non-dendro files somehow... (do i?)
+- benefit: this is about as small as you can make a summary file!
+- one sample will be about 100 chars = about 100 bytes
+- 100 samples = 10000 bytes = 10K; ACM = 730 samples = 73K -- not horrible
+- 73 KB compresses to 7.3 KB - 35 KB
+- everything = 50000 samples = 5000000 bytes = 4882 KB = 4.7 MB (raw)
+- (n.b., i *could* simply use compressed xml, except for the synchro issues)
+- everything = 4.7 MB raw = maybe compressed 500 KB - 2.5 MB -- not horrible...
+- 2.5 MB = about 2 seconds at 10Mbps
+- hidden benefit: no SAX handler, so code is smaller/simpler as well
+- (XML: 375 KB -> 30 KB; raw: 73 KB -> ???)
+- saving 15K doesn't sound like much, but at cornell it'll alway be loaded:
+  - over a (slowish) network, or
+  - from a (slowish) laptop hard disk
+  so saving space is very worth it.
+- also, little-to-no loss of readability (right?)
+
+idea for folders/non-dendro files:
+- each line starts with |
+- if a line doesn't start with |, it's a keyword (FOLDER, FILE)?
+- no, i think this is a bad idea.
+- aah, BETTER: add a "filetype" column:
+
+filename|filetype|id|title|sapwood|...
+zkb123.raw|document|505563|Zonguldak, Karabuk 6C|7|...
+ken's stuff|folder|||||||| (use null strings here; nothing else needed -- except moddate?)
+
+comments:
+- could be useful
+- at the least, add a header comment that says what's going on
+- use # at the start of a line to mean comment
+- if a filename starts with #, have to escape it as \# (does that work?)
+
+# this is a summary file of this folder.  it's automatically generated.
+# you can delete it if you like, with no adverse consequences
+# (except that corina will take slightly longer to browse this folder next time)
+
+what do i use the Summary for?
+- give me a List of all Elements in this folder (for browsing)
+- give me a List of all Elements in this folder (for searching)
+- n.b., i never actually need to say "generate a summary file..." -- it's lazy (=smart)
+- bargraphs can also take advantage of a Summary -- though they already use Browser
+- bulk-metadata-changing can maybe use them
+
+i'm not alone!
+-- ESR: http://www.faqs.org/docs/artu/ch05s02.html#id2901882
+-- /etc/passwd, inittab, others
+-- escape delimiter with \
+-- also escape unprintables
+-- (and \, of course)
+-- best when "tabular, keyed by a name (in the first field), and records are typically short (less than 80 characters long)" -- that's me!

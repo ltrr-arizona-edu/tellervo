@@ -1,0 +1,15 @@
+i should have 3 independent (mostly) cvs trees:
+-- corina
+-- corina-manual
+-- corina-website
+(or maybe: program, manual, website)
+
+program = [Libs, Src, Technotes, Makefile]
+manual = [Manual, stuff in Libs needed for docbook processing, part of Makefile]
+website = [Website, part of Makefile]
+
+interconnections:
+-- program needs manual: it includes all of the HTML in the program itself
+-- website needs manual: it includes all of the HTML, plus PDF, etc.
+-- website needs program: it includes binary and source downloads
+

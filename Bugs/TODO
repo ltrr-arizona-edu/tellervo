@@ -1,0 +1,29 @@
+To do:
+-- extract all external programs/libraries from the tree; they should be drop-ins.  If you want to use a newer version of FOP, download it, and plop it in.  (Also, the CVS tree can be much smaller.)
+-- generate makefile rules for downloading them?
+-- make a list of tools needed to build corina, for non-linux users: make, wc, echo, find, tail, grep
+-- print error message if user tries to findbugs with <1.4 (how?) -- hopefully before compiling everything
+-- toplevel should contain: Source/, README.txt, COPYING.txt, Licenses(?), Makefile
+	-- manual project should contain: pretty much the same thing (DocBook/ -> Source/)
+	-- webpage project should contain: pretty much the same thing (??)
+	-- dependencies: webpage depends-on manual, program; program depends-on manual.
+-- libraries/tools i need:
+	-- crimson
+	-- batik -- batik-dom (79 KB), batik-svggen (162 KB)
+ 	-- log4j?
+	-- javahelp?
+	-- junit
+	-- docbook-xml (DTDs)
+	-- docbook-xslt (stylesheets)
+	-- avalon?
+	-- bcel?
+	-- jini?
+	-- saxon?
+	-- xalan?
+	-- some png encoding program?
+-- instead of Libraries folder, make a Utilities folder
+	-- it holds things like FOP, junit, etc.
+	-- in CVS, it has just 2 things: README, and Makefile
+	-- the readme says what belongs here, and by what names
+	-- the makefile has rules for downloading things automatically
+	-- for example, batik.jar -- either link batik.jar to your system's batik, or use the makefile (make batik?) to download the latest version

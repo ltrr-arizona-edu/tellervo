@@ -1,0 +1,43 @@
+when you hit cmd-E (or start a new crossdate), then click "run", it
+always defaults to the first crossdate (F[1] x M[1] x Alg[1]).
+
+but sometimes you don't want that.  for example, suppose you've got
+F[1..10], M[1..10], and Alg[1,2,5], and you're looking at F[7] x M[8]
+with Alg[2], and you decide you want to see what Alg[3] looks like.
+
+with the current system, you'd have to:
+-- press cmd-E
+-- click the crossdate to add (this part is great!)
+-- click "run"
+-- click "next" 8x7x3 times (actually fewer than this, but not much)
+
+what i'd prefer:
+-- press cmd-E
+-- click the crossdate to add (this part is great!)
+-- ("start at: " already points to the last crossdate i was looking at)
+-- click "run"
+
+possible interface:
+
++-----------------Run Crossdates-------------------+
+|                                                  |
+| Fixed                  Moving                    |
+|  |                |     |                      | |
+|  |                |     |                      | |
+|                                                  |
+| Algorithms:                                      |
+| [ ] R  [x] T  [x] D  [ ] WJ                      |
+|                                                  |
+| Start with: (*) First crossdate                  |
+|             ( ) [F-1    v] [M-1    v] [Alg-1  v] |
+|                                                  |
+|                                        (( Run )) |
++--------------------------------------------------+
+
+if i use the 3-popup interface, i'll need to handle events:
+-- fixed-list insert: add item to fixed-popup; if dimmed, un-dim
+-- fixed-list remove: remove item from fixed-popup; if was selected, select (next/prev?); if last one removed, only item becomes "no samples", dimmed
+-- fixed-list re-order: re-order fixed-popup, keeping selected item the same
+-- moving-list events: same as fixed-list events;
+-- alg-check: add item to alg-popup; if dimmed, un-dim
+-- alg-uncheck: remove item from alg-popup; if that was last one, only item should be "no algorithms", dimmed
