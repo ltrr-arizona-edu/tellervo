@@ -24,7 +24,7 @@ import java.text.DecimalFormat;
 
 public class Histogram {
     // input
-    private double low, step, high;
+    private double low, step;
 
     // output
     private int buckets[];
@@ -43,40 +43,32 @@ public class Histogram {
         int n = data.length;
 
         // number of buckets
-        int m = 30;
+        int numberOfBuckets = 30;
 
         // set it up -- just make 20 buckets for now
-        low = high = data[0];
-        for (int i=1; i<n; i++) {
-            low = Math.min(low, data[i]);
-            high = Math.max(high, data[i]);
+        {
+            double high;
+            low = high = data[0];
+            for (int i=1; i<n; i++) {
+                low = Math.min(low, data[i]);
+                high = Math.max(high, data[i]);
+            }
+            step = (high - low) / numberOfBuckets;
         }
-        step = (high - low) / m;
 
         // make the buckets
-        buckets = new int[m]; // all zero
+        buckets = new int[numberOfBuckets]; // all zero
 
         // run it
         for (int i=0; i<n; i++) {
             // get the next val
             double x = data[i];
 
-            // place it in the proper bucket -- POSSIBLE TO DO THIS WITHOUT LOOPING?  (divide?)
+            // place it in the proper bucket
             int target = (int) ((x - low) / step);
-            if (target == m) // ???
-                target = m-1;
+            if (target == numberOfBuckets) // ???
+                target = numberOfBuckets-1;
             buckets[target]++;
-            /*
-            int j;
-            for (j=0; j<m; j++) {
-                if ((low+step*j <= x) && (x <= low+step*(j+1))){
-                    buckets[j]++;
-                    break;
-                }
-            }
-            if (j==m)
-                System.out.println("didn't find a place for " + x);
- */
         }
     }
 
@@ -97,14 +89,28 @@ public class Histogram {
     public int countBuckets() {
         return buckets.length;
     }
-    
+
+    private String memo[]=null;
     public String getRange(int bucket) {
         // make sure it's a legit bucket
         if (bucket<0 || bucket>=buckets.length)
             throw new ArrayIndexOutOfBoundsException();
 
-        // format it
-        return fmt.format(low+step*bucket) + " - " + fmt.format(low+step*(bucket+1));
+        // build memo, if necessary
+        if (memo == null)
+            memo = new String[buckets.length];
+
+        // compute result
+        String result;
+        if (memo[bucket] == null) {
+            result = fmt.format(low+step*bucket) + " - " + fmt.format(low+step*(bucket+1));
+            memo[bucket] = result;
+        } else {
+            result = memo[bucket];
+        }
+        
+        // return it
+        return result;
     }
     public int getNumber(int bucket) {
         return buckets[bucket];
