@@ -221,8 +221,9 @@ public class Editor extends XFrame
 	// resum menu: only if elements present
 	resumMenu.setEnabled(sample.elements != null);
 
-	// measure menu: only if not summed
-	measureMenu.setEnabled(!sample.isSummed());
+        // measure menu: only if not summed
+        if (measureMenu != null)
+            measureMenu.setEnabled(!sample.isSummed());
 
 	// title may have changed
 	updateTitle();
@@ -231,7 +232,8 @@ public class Editor extends XFrame
 	// resum/clean get disabled
 	resumMenu.setEnabled(sample.elements != null);
 	cleanMenu.setEnabled(sample.isSummed());
-	measureMenu.setEnabled(!sample.isSummed());
+        if (measureMenu != null)
+            measureMenu.setEnabled(!sample.isSummed());
 
 	// view menus
 	v1.setEnabled(sample.elements != null);
@@ -434,7 +436,7 @@ public class Editor extends XFrame
     }
 
     // ask the user for a title for this (new) sample.  it's guaranteed to have a number, now!
-    private String askTitle() {
+    private String askTitle() throws UserCancelledException {
         String title="";
         for (;;) {
             title = (String) JOptionPane.showInputDialog(null, // parent component
@@ -444,6 +446,10 @@ public class Editor extends XFrame
                                                          null, // todo: document these nulls!
                                                          null,
                                                          title);
+
+            // user cancelled?
+            if (title == null)
+                throw new UserCancelledException();
 
             // make sure there's a digit in there somewhere, and return.
             for (int i=0; i<title.length(); i++)
@@ -455,14 +461,16 @@ public class Editor extends XFrame
 
             // be sure to put in the user manual the trick for creating a sample
             // without a sample number, if they ever need that: put a digit on
-            // the end, and remove it right away (heh-heh-heh).
+            // the end, and remove it right away (heh heh).
         }
     }
 
     public Editor() {
         // ask user for title
-        String title = askTitle();
-        if (title == null) {
+        String title;
+        try {
+            title = askTitle();
+        } catch (UserCancelledException uce) {
             dispose();
             return;
         }
@@ -686,12 +694,12 @@ public class Editor extends XFrame
 	    });
 	edit.add(delete);
 
-	// if comm present, start/stop measure
-	if (Measure.hasSerialAPI()) {
-	    edit.addSeparator();
-	    measureMenu = new Measure(this).makeMenuItem();
-	    edit.add(measureMenu);
-	}
+        // if comm present, start/stop measure
+        if (false) { // Measure.hasSerialAPI()) {
+            edit.addSeparator();
+            measureMenu = new Measure(this).makeMenuItem();
+            edit.add(measureMenu);
+        }
 
 	// view menu
 	JMenu v = new XMenubar.XMenu(msg.getString("view"),
@@ -1049,16 +1057,16 @@ public class Editor extends XFrame
 	JMenu d = new XMenubar.XMenu(msg.getString("graph"),
 				     msg.getString("graph_key").charAt(0));
 
-	// plot
-	JMenuItem plotMenu = new XMenubar.XMenuItem(msg.getString("graph"),
-						    msg.getString("graph_key").charAt(0));
-	plotMenu.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize(msg.getString("graph_acc"))));
-	plotMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    new GraphFrame(sample);
-		}
-	    });
-	d.add(plotMenu);
+    // plot
+    JMenuItem plotMenu = new XMenubar.XMenuItem(msg.getString("graph"),
+                                                msg.getString("graph_key").charAt(0));
+    plotMenu.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize(msg.getString("graph_acc"))));
+    plotMenu.addActionListener(new AbstractAction() {
+        public void actionPerformed(ActionEvent ae) {
+            new GraphFrame(sample);
+        }
+    });
+    d.add(plotMenu);
 
 	// plot all
 	plotAll = new XMenubar.XMenuItem(msg.getString("graph_elements"),
