@@ -25,6 +25,7 @@ import corina.Element;
 import corina.Previewable;
 import corina.files.WrongFiletypeException;
 import corina.cross.Grid;
+import corina.ui.Builder;
 
 import java.io.File;
 import java.io.IOException;
@@ -107,7 +108,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
         ClassLoader cl = this.getClass().getClassLoader();
         
 	// left: buttons (add)
-        add = new XButton("add");
+        add = Builder.makeButton("add");
         add.setIcon(new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Forward16.gif")));
 	add.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
@@ -121,8 +122,8 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 	buttons.add(add);
 
 	// left: buttons (remove)
-        remove = new XButton("remove");
-			     remove.setIcon(new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Back16.gif")));
+        remove = Builder.makeButton("remove");
+	remove.setIcon(new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Back16.gif")));
 	remove.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    panel.removeSelectedRows();
@@ -131,7 +132,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 	buttons.add(remove);
 
 	// left: buttons (ok)
-	JButton okay = new XButton("ok");
+	JButton okay = Builder.makeButton("ok");
 	okay.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    // if (set.size() == 0) // okay with zero samples is like cancel
@@ -142,7 +143,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 	buttons.add(okay);
 
 	// left: buttons (cancel)
-	JButton cancel = new XButton("cancel");
+	JButton cancel = Builder.makeButton("cancel");
 	cancel.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    set = null;
