@@ -50,7 +50,7 @@ public class Graph {
     public int xoffset=0, yoffset=0;
 
     // scaling
-    public double scale=1.0;
+    public float scale=1.0f;
 
     /** Create a graph from a Graphable object.
         @param g the Graphable object */
@@ -77,8 +77,8 @@ public class Graph {
             public Year getStart() {
                     return yy;
                 }
-            public double getScale() {
-                    return 1.0;
+            public float getScale() {
+                    return 1.0f;
                 }
             public String toString() {
                     return nn;
@@ -86,7 +86,7 @@ public class Graph {
         };
     }
 
-    private final static double SCALE = 1.25; // meaning, 25%, but (fixme) i should just say that
+    private final static float SCALE = 1.25f; // meaning, 25%, but (fixme) i should just say that
     public void bigger() {
         scale *= SCALE;
     }
