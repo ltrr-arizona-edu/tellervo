@@ -21,7 +21,6 @@
 package corina.prefs;
 
 import corina.gui.HasPreferences;
-import corina.gui.JarIcon;
 import corina.gui.ButtonLayout;
 import corina.gui.DialogLayout;
 
@@ -273,7 +272,7 @@ public class PrefsDialog extends JFrame {
         setResizable(false);
 
         // icon!
-        setIconImage(((ImageIcon) JarIcon.getIcon("toolbarButtonGraphics/general/Preferences16.gif")).getImage());
+        setIconImage(new ImageIcon(ClassLoader.getSystemResource("toolbarButtonGraphics/general/Preferences16.gif")).getImage());
 
         // get categories, options from Prefs
         categories = PrefsTemplate.getCategories();

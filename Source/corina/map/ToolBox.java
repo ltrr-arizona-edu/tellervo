@@ -4,7 +4,6 @@ import corina.site.SiteDB;
 import corina.site.Site;
 import corina.site.SiteProperties;
 import corina.site.SiteNotFoundException;
-import corina.gui.JarIcon;
 import corina.util.ColorUtils;
 
 import java.awt.Cursor;
@@ -89,7 +88,7 @@ public class ToolBox extends JToolBar {
     // -- drag a site to move it
     private class Arrow extends Tool {
         Icon getIcon() {
-            return JarIcon.getIcon("Images/arrow.png");
+            return new ImageIcon(ClassLoader.getSystemResource("Images/arrow.png"));
         }
         Cursor getCursor() {
             return new Cursor(Cursor.DEFAULT_CURSOR);
@@ -162,7 +161,7 @@ public class ToolBox extends JToolBar {
     // -- press, drag to scroll.
     private class Hand extends Tool {
         Icon getIcon() {
-            return JarIcon.getIcon("Images/hand.png");
+            return new ImageIcon(ClassLoader.getSystemResource("Images/hand.png"));
         }
         Cursor getCursor() {
             return new Cursor(Cursor.HAND_CURSOR);
@@ -215,10 +214,10 @@ public class ToolBox extends JToolBar {
     // -- auto-scroll
     private class Ruler extends Tool {
         Icon getIcon() {
-            return JarIcon.getIcon("Images/ruler.png");
+            return new ImageIcon(ClassLoader.getSystemResource("Images/ruler.png"));
         }
         Cursor getCursor() {
-            return Toolkit.getDefaultToolkit().createCustomCursor(((ImageIcon) JarIcon.getIcon("Images/ruler-pointer.png")).getImage(),
+            return Toolkit.getDefaultToolkit().createCustomCursor(new ImageIcon(ClassLoader.getSystemResource("Images/ruler-pointer.png")).getImage(),
                                                                   new Point(0, 0), "Ruler");
         }
 
@@ -326,10 +325,10 @@ public class ToolBox extends JToolBar {
     // -- cursor looks like crosshair for zoom-area?
     private class Zoom extends Tool {
         Icon getIcon() {
-            return JarIcon.getIcon("Images/zoom.png");
+            return new ImageIcon(ClassLoader.getSystemResource("Images/zoom.png"));
         }
         Cursor getCursor() {
-            return Toolkit.getDefaultToolkit().createCustomCursor(((ImageIcon) JarIcon.getIcon("Images/zoom-small.png")).getImage(),
+            return Toolkit.getDefaultToolkit().createCustomCursor(new ImageIcon(ClassLoader.getSystemResource("Images/zoom-small.png")).getImage(),
                                               new Point(0, 0), "Zoomer");
             // can't respond to keyboard events?  (Well, why not?  tool can implements keyboard listener, or some such, too)
         }
