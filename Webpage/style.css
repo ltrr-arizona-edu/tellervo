@@ -1,0 +1,89 @@
+h1#corina {
+   font: serif;
+   font-size: 200%;
+}
+
+p.date {
+       color: #666666;
+       font-size: 80%;
+       text-align: right;
+       margin-top: -3em; /* ugly hack, but usually works (what's the right way?) */
+}
+
+p {
+  padding-left: 2em;
+}
+ul {
+   padding-left: 4em;
+}
+pre {
+  padding-left: 3em;
+}
+
+.logo {
+      font: sans-serif;
+      background-color: white;
+      color: black;
+      padding: 0px;
+
+      position: absolute;
+      left: 0px;
+      right: 160px;
+      width: 160px;
+      height: 50px;
+
+	    border-right: solid 1px black;
+	    border-bottom: solid 1px black;
+}
+img.logo {
+	 border: black 1px solid;
+}
+a.logo {
+       color: #555555;
+       text-style: normal;
+       text-align: center;
+}
+
+.top {
+       color: black;
+	background-color: #b4dfb9;
+
+	vertical-align: middle;
+
+	padding: 10px;
+
+	position: absolute;
+	top: 0px;
+	left: 160px;
+	right: 0px;
+	bottom: 50px;
+	height: 50px;
+}
+
+body {
+     margin: 1em;
+     padding: 0;
+}
+
+table.navbar {
+	     position: absolute;
+	     top: 0px;
+	     left: 0px;
+	     text-align: center;
+	     width: 100%;
+}
+td.back {
+	background-color: #cec;
+	border-bottom: 1px solid black;
+
+	border-right: 1px solid #686;
+}
+
+td.front {
+	 background-color: white;
+	 border-bottom: none;
+
+	 border-left: 1px solid black;
+	 border-right: 1px solid black;
+	 border-top: 1px solid black;
+}
