@@ -52,32 +52,25 @@ public class Bargraph {
 
     public List bars; // of Element
     public Range range; // total range -- union of all bars[i].range
-    public Prefs prefs = new Prefs();
 
-    public class Prefs {
-	// all these are inches, so adjust accordingly
-	public double risers = 0.12; // from center up to top of riser
-	public double pith = 0.07; // between parallel pith lines
-	public double bark = 0.07; // between parallel bark lines
-	public double sapwood = 0.03; // from center up to sapwood
-
-	public String title = "click here to type a title";
-
-	public boolean xaxis = true; // draw x-axis?
-
-	public boolean xfixed = true;
-	public double xscale = 100.0; // years per inch
-
-	public boolean yfixed = false;
-	public double yscale = 0.5; // inches per line
-    }
+    // all these are inches, so adjust accordingly
+    public double risers = 0.12; // from center up to top of riser
+    public double pith = 0.07; // between parallel pith lines
+    public double bark = 0.07; // between parallel bark lines
+    public double sapwood = 0.03; // from center up to sapwood
+    public String title = "click here to type a title";
+    public boolean xaxis = true; // draw x-axis?
+    public boolean xfixed = true;
+    public double xscale = 100.0; // years per inch
+    public boolean yfixed = false;
+    public double yscale = 0.5; // inches per line
 
     public String getDocumentTitle() {
-        return prefs.title;
+        return title;
     }
 
     public void setTitle(String newTitle) {
-	prefs.title = newTitle;
+	title = newTitle;
     }
 
     // given: list of Elements
@@ -89,14 +82,8 @@ public class Bargraph {
 	for (int i=0; i<bars.size(); i++)
 	    ((Element) bars.get(i)).loadMeta();
 
-	// sort into fallback order: only if the user wants this?
-	Collections.sort(bars, new Comparator() {
-		public int compare(Object o1, Object o2) {
-		    Element e1 = (Element) o1;
-		    Element e2 = (Element) o2;
-		    return -e1.range.compareTo(e2.range);
-		}
-	    });
+        // sort into fallback order
+        Sort.sort(bars, "range", true);
 
 	// compute range -- union of all bars' ranges, plus some
 	Range tmp = ((Element) bars.get(0)).range;
@@ -133,7 +120,7 @@ public class Bargraph {
 	}
 	public void endElement(String uri, String name, String qName) {
 	    if (name.equals("title")) {
-		prefs.title = currentString;
+		title = currentString;
 		currentString = null;
 	    }
 
@@ -211,7 +198,7 @@ public class Bargraph {
 	*/
 
 	// title
-	w.write("  <title>" + prefs.title + "</title>");
+	w.write("  <title>" + title + "</title>");
 	w.newLine();
 
 	w.newLine();
@@ -225,7 +212,7 @@ public class Bargraph {
 	  -- vert=fixed, height=xxx --OR-- vert=fit
 	 */
 
-	if (prefs.xfixed)
+	if (xfixed)
 	    w.write("    <horiz fixed=\"true\""); // x-scale (look ma, no arms!)  (--okay, no more intel jokes)
 	w.newLine();
 
