@@ -1,5 +1,7 @@
 package corina.ui;
 
+import corina.util.Platform;
+
 import junit.framework.TestCase;
 
 public class UnitTests extends TestCase {
@@ -8,35 +10,18 @@ public class UnitTests extends TestCase {
     }
 
     //
-    // testing parsers
+    // testing I18n
     //
     public void testGetText() {
-	String key;
-
-	key = "&blah";
-	assertEquals(Builder.getText(key), "blah");
-
-	key = "&blah [junk here]";
-	assertEquals(Builder.getText(key), "blah");
+	assertEquals(I18n.getText("edit"), "Edit");
     }
 
     public void testGetKeyStroke() {
-	String key;
-
-	key = "&blah";
-	assertEquals(Builder.getKeyStroke(key), null);
-
-	key = "&blah [junk here]";
-	assertEquals(Builder.getKeyStroke(key), "junk here");
+	assertEquals(I18n.getKeyStroke("file"), null);
+	assertEquals(I18n.getKeyStroke("save"), (Platform.isMac ? "meta S" : "control S"));
     }
 
     public void testGetMnemonic() {
-	String key;
-
-	key = "&blah";
-	assertEquals(Builder.getMnemonic(key).charValue(), 'B');
-
-	key = "blah [junk here]";
-	assertEquals(Builder.getMnemonic(key), null);
+	assertEquals(I18n.getMnemonic("edit").charValue(), 'E');
     }
 }
