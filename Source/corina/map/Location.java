@@ -188,11 +188,14 @@ public class Location implements Cloneable {
         return place * (int) Math.round(value / (double) place);
     }
 
-    private final static int NEAR = 100; // "near" is 100km -- make me customizeable?
+    private final static int NEAR = 100; // "near" is 100km
     public boolean isNear(Location loc) {
-        return (loc != null) && (distanceTo(loc) <= NEAR);
+        return isNear(loc, NEAR);
     }
-
+    public boolean isNear(Location loc, int threshold) {
+        return (loc != null) && (distanceTo(loc) <= threshold);
+    }
+    
     public static Location midpoint(Location a, Location b) {
         // latitude doesn't wrap around, just take the mean
         Location l = new Location();
