@@ -448,6 +448,9 @@ public class SamplePrinter {
     // sample to print
     private Sample s;
 
-    // lines to print -- TEMPORARILY PUBLIC!
-    public List lines = new ArrayList();
+    // lines to print
+    private List lines = new ArrayList();
+    public List getLines() {
+	return lines;
+    }
 }
