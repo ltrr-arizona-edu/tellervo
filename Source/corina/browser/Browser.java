@@ -5,6 +5,8 @@ import corina.Metadata;
 import corina.Range;
 import corina.editor.Editor;
 import corina.util.Platform;
+import corina.prefs.Prefs;
+import corina.gui.Bug;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import java.util.Hashtable;
 import java.util.ResourceBundle;
 
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.AbstractTableModel;
 import java.awt.Color;
@@ -66,8 +69,13 @@ public class Browser extends JFrame {
      -- set initial value of fields from preference
      -- if no preference, pick something sensible
      -- store in order, including column-reordering mangling
+     -- load on open.  when to save?  -- when selecting a menuitem; -- when reordering the columns.
 
      -- search string "pam am" should match "pam, 7am", but not "pam" alone (!)
+
+     -- add keyboard shortcut: esc = searchField.reset()
+
+     -- highlight search term matches in the table
      */
 
     private FolderPopup folderPopup;
@@ -99,7 +107,10 @@ public class Browser extends JFrame {
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         setContentPane(p);
         p.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        
+
+        // set folder
+        folder = dir;
+
         JTabbedPane t = new JTabbedPane();
         p.add(t);
 
@@ -132,14 +143,9 @@ public class Browser extends JFrame {
             north.add(Box.createHorizontalGlue());
             north.add(Box.createVerticalStrut(50)); // temp hack...
 
-            // pick some reasonable default fields
-            fields.add("name");
-            fields.add("size");
-            fields.add("modified");
-            fields.add("format");
-            fields.add("range");
-            fields.add("length");
-                                    
+            // load default fields from prefs
+            loadFields();
+             
             // center is the table (but searchfield needs this, so put it here)
             model = new BrowserTableModel();
             table = new JTable(model) {
@@ -234,10 +240,21 @@ public class Browser extends JFrame {
 
         makeMenus();
 
-        // try putting keyboard-sorting on a bunch of components
+        // try putting keyboard-sorting on a bunch of components -- BUG: still doesn't seem to work on win32, but why?
         addKeyListener(new KeyboardSorter());
         folderPopup.addKeyListener(new KeyboardSorter());
         searchField.addKeyListener(new KeyboardSorter());
+
+        // if user re-orders columns, save new prefs.
+        table.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
+            public void columnAdded(TableColumnModelEvent e) { }
+            public void columnMarginChanged(ChangeEvent e) { }
+            public void columnMoved(TableColumnModelEvent e) {
+                saveFields();
+            }
+            public void columnRemoved(TableColumnModelEvent e) { }
+            public void columnSelectionChanged(ListSelectionEvent e) { }
+        });
         
         pack();
         show();
@@ -286,15 +303,17 @@ public class Browser extends JFrame {
         }
     }
 
+    private final static String INDENT = "    "; // 4 spaces
+
     private void makeMenus() {
         JMenuBar mb = new JMenuBar();
         JMenu display = new JMenu("View");
 
         // -- file metadata -- USE RESOURCEBUNDLE TO GET THE NAMES!
-        display.add(new FieldCheckBoxMenuItem("name", "Name", model));
-        display.add(new FieldCheckBoxMenuItem("kind", "Kind", model));
-        display.add(new FieldCheckBoxMenuItem("size", "Size", model));
-        display.add(new FieldCheckBoxMenuItem("modified", "Date Modified", model));
+        display.add(new FieldCheckBoxMenuItem("name", msg.getString("browser_name"), model));
+        display.add(new FieldCheckBoxMenuItem("kind", msg.getString("browser_kind"), model));
+        display.add(new FieldCheckBoxMenuItem("size", msg.getString("browser_size"), model));
+        display.add(new FieldCheckBoxMenuItem("modified", msg.getString("browser_modified"), model));
 
         // this one isn't even normally used, but it's there.
         display.add(new FieldCheckBoxMenuItem("filetype", "Filetype", model));
@@ -302,10 +321,10 @@ public class Browser extends JFrame {
         display.addSeparator();
 
         // -- range metadata -- USE RESOURCEBUNDLE!
-        display.add(new FieldCheckBoxMenuItem("range", "Range", model));
-        display.add(new FieldCheckBoxMenuItem("start", "    Start", model));
-        display.add(new FieldCheckBoxMenuItem("end", "    End", model));
-        display.add(new FieldCheckBoxMenuItem("length", "    Length", model));
+        display.add(new FieldCheckBoxMenuItem("range", msg.getString("browser_range"), model));
+        display.add(new FieldCheckBoxMenuItem("start", INDENT + msg.getString("browser_start"), model));
+        display.add(new FieldCheckBoxMenuItem("end", INDENT + msg.getString("browser_end"), model));
+        display.add(new FieldCheckBoxMenuItem("length", INDENT + msg.getString("browser_length"), model));
 
         display.addSeparator();
 
@@ -340,6 +359,9 @@ public class Browser extends JFrame {
 
                     // that kills the icons in col0, so reset those
                     addIconsForFirstColumn();
+
+                    // finally, save these fields in the prefs
+                    saveFields();
                 }
             });
         }
@@ -384,7 +406,7 @@ public class Browser extends JFrame {
         }
     }
 
-    private String folder=System.getProperty("corina.dir.data");
+    private String folder=System.getProperty("corina.dir.data"); // redundant?
 
     private static final Map fileMetadata = new Hashtable();
     static {
@@ -581,7 +603,7 @@ public class Browser extends JFrame {
                         return ((Comparable) f1).compareTo(f2);
                 }
 
-                // ranges should go backwards, because that's "fallback-order"
+                // ranges should go backwards, because that's fallback-order
                 if (f1 instanceof Range && f2 instanceof Range) {
                     if (!reverse)
                         return ((Comparable) f2).compareTo(f1);
@@ -652,4 +674,34 @@ public class Browser extends JFrame {
 
     // odd-row color
     private static Color oddRowColor = new Color(232, 245, 255); // iTunes is more like 230,243,255
+
+    // save fields as a pref
+    private synchronized void saveFields() {
+        // generate the string
+        StringBuffer buf = new StringBuffer();
+        for (int i=0; i<fields.size(); i++) {
+            int j = table.convertColumnIndexToModel(i); // view -> model mapping
+            buf.append((String) fields.get(j));
+            if (i < fields.size()-1)
+                buf.append(" ");
+        }
+
+        // save to prefs
+        System.setProperty("corina.browser.fields", buf.toString()); // OAOO the property?
+        try {
+            Prefs.save();
+        } catch (IOException ioe) {
+            Bug.bug(ioe); // i dunno what happened...
+        }
+    }
+
+    // load fields from prefs (or use "name,size,range,format" as a reasonable default)
+    private void loadFields() {
+        String pref = System.getProperty("corina.browser.fields", "name size modified range format");
+        StringTokenizer tok = new StringTokenizer(pref, ", ");
+        int n = tok.countTokens();
+        fields = new ArrayList(n);
+        for (int i=0; i<n; i++)
+            fields.add(tok.nextToken());
+    }
 }
