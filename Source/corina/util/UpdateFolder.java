@@ -175,10 +175,12 @@ public class UpdateFolder implements Runnable {
     public void copy(File from, File to) throws IOException {
 	System.out.println("(note: copying file " + from + ")");
 
-	InputStreamReader r = new InputStreamReader(new FileInputStream(from));
-	OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream(to));
+	InputStreamReader r = null;
+	OutputStreamWriter w = null;
 
   try {
+    r = new InputStreamReader(new FileInputStream(from));
+    w = new OutputStreamWriter(new FileOutputStream(to));
   	int n;
   	do {
 	    n = r.read(cbuf, 0, BUFSIZE);
@@ -188,13 +190,13 @@ public class UpdateFolder implements Runnable {
 	      w.write(cbuf, 0, n);
   	} while (n == BUFSIZE);
   } finally {
-    try {
-      w.close();
+    if (r != null) try {
+      r.close();
     } catch (IOException ioe) {
       ioe.printStackTrace();
     }
-    try {
-      r.close();
+    if (w != null) try {
+      w.close();
     } catch (IOException ioe) {
       ioe.printStackTrace();
     }

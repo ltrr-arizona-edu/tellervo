@@ -39,7 +39,7 @@ public class SpinnerComboBox extends JComboBox {
   private Format outputFormat;
   private boolean isFloatingPoint;
   private boolean isNumberModel;
-  private ComboBoxEditor editor = new SpinnerComboBoxEditor();
+  private ComboBoxEditor scbeditor = new SpinnerComboBoxEditor();
   private ActionListener actionListener = new ActionListener() {
     public void actionPerformed(ActionEvent e) {
       setEditable(true);
@@ -228,7 +228,7 @@ public class SpinnerComboBox extends JComboBox {
   }
 
   private void initComboBox() {
-    setEditor(editor);
+    setEditor(scbeditor);
     addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent me) {
         SwingUtilities.invokeLater(new Runnable() {

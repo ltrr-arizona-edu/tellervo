@@ -14,8 +14,9 @@ public class DecadalTable {
     }
     
     public Object getValue(int x, int y) {
-        if (x == 0);
-        // WRITEME
+        if (x == 0) {
+          // TODO: WRITEME
+        }
         return null;
     }
 

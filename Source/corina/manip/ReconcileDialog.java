@@ -232,7 +232,7 @@ public class ReconcileDialog extends JDialog {
 
     RuleRenderer renderer;
 
-    class RuleRenderer extends JLabel implements ListCellRenderer {
+    static class RuleRenderer extends JLabel implements ListCellRenderer {
 	RuleRenderer() {
 	    setOpaque(true);
 	}

@@ -39,7 +39,6 @@ import java.text.DecimalFormat;
 */
 
 public class Bayesian {
-
     /*
 
       if i take random pairs of samples (A,B) -- hold that thought -- ok, i'm
@@ -248,32 +247,50 @@ public class Bayesian {
     // (need load-from-file, then)
     // (need save-to-file, then)
 
-    // REFACTOR: why doesn't this just load it through Properties?
-    public void load() throws IOException {
-	String input = algorithm + ".intervals";
-	InputStream stream = getClass().getClassLoader().getResourceAsStream(input);
-	BufferedReader r = new BufferedReader(new InputStreamReader(stream)); // NULL!
-	String line;
-	List intBuf = new ArrayList();
-	List scoreBuf = new ArrayList();
-	while ((line = r.readLine()) != null) { // THIS IS THE ONLY THING THAT CAN THROW AN IOE (?)
-	    line = line.trim();
-	    if (line.startsWith("#") || line.length()==0)
-		continue;
-	    int equals = line.indexOf('=');
-	    intBuf.add(new Float(line.substring(0, equals)));
-	    scoreBuf.add(new Float(line.substring(equals+1)));
-	}
-
-	// copy 
-	int n = intBuf.size();
-	intervals = new float[n];
-	scores = new float[n];
-	for (int i=0; i<n; i++) {
-	    intervals[i] = ((Float) intBuf.get(i)).floatValue();
-	    scores[i] = ((Float) scoreBuf.get(i)).floatValue();
-	}
+  // REFACTOR: why doesn't this just load it through Properties?
+  public void load() throws IOException {
+  	String input = algorithm + ".intervals";
+  	InputStream stream = getClass().getClassLoader().getResourceAsStream(input);
+    if (stream == null) return;
+  	BufferedReader r = null;
+    try {
+      r = new BufferedReader(new InputStreamReader(stream)); // NULL!
+      try {
+        String line;
+        List intBuf = new ArrayList();
+        List scoreBuf = new ArrayList();
+        while ((line = r.readLine()) != null) { // THIS IS THE ONLY THING THAT CAN THROW AN IOE (?)
+            line = line.trim();
+            if (line.startsWith("#") || line.length()==0)
+        	continue;
+            int equals = line.indexOf('=');
+            intBuf.add(new Float(line.substring(0, equals)));
+            scoreBuf.add(new Float(line.substring(equals+1)));
+        }
+        
+        // copy 
+        int n = intBuf.size();
+        intervals = new float[n];
+        scores = new float[n];
+        for (int i=0; i<n; i++) {
+            intervals[i] = ((Float) intBuf.get(i)).floatValue();
+            scores[i] = ((Float) scoreBuf.get(i)).floatValue();
+        }
+      } finally {
+        try {
+          r.close();
+        } catch (IOException ioe) {
+          ioe.printStackTrace();
+        }  
+      }
+    } finally {
+      try {
+        stream.close();
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+      }
     }
+  }
 
     // load an existing bayesian distribution
     public Bayesian(Class algorithm) throws IOException {
@@ -421,25 +438,31 @@ public class Bayesian {
 	this.algorithm = algorithm.getName(); // fixme: just the class name, not fqdn
     }
 
-    public void save() throws IOException {
-	// open, and write header
-	String output = algorithm + ".intervals";
-	BufferedWriter w = new BufferedWriter(new FileWriter(output));
-	w.write("#");
-	w.newLine();
-	w.write("# Significance intervals for " + algorithm);
-	w.newLine();
-	w.write("#");
-	w.newLine();
-
-	// write out the intervals
-	for (int i=0; i<scores.length; i++) {
-	    w.write(intervals[i] + " = " + scores[i]);
-	    w.newLine();
-	}
-
-	w.close();
+  public void save() throws IOException {
+  	// open, and write header
+  	String output = algorithm + ".intervals";
+  	BufferedWriter w = new BufferedWriter(new FileWriter(output));
+    try {
+    	w.write("#");
+    	w.newLine();
+    	w.write("# Significance intervals for " + algorithm);
+    	w.newLine();
+    	w.write("#");
+    	w.newLine();
+    
+    	// write out the intervals
+    	for (int i=0; i<scores.length; i++) {
+    	    w.write(intervals[i] + " = " + scores[i]);
+    	    w.newLine();
+    	}
+    } finally {
+      try {
+        w.close();
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+      }
     }
+  }
 
     // in theory, you can change these at any time, and it won't break an existing
     // corina that has old stats files.  but they do have to be monotonically increasing

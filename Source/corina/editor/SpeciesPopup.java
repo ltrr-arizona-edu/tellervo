@@ -195,7 +195,7 @@ public class SpeciesPopup extends JComboBox {
     // "other..." dialog
     //
 
-    private class OtherDialog extends JDialog {
+    private static class OtherDialog extends JDialog {
         OtherDialog(Editor parent) {
             super(parent, "Species", true);
             final Sample sample = parent.getSample();

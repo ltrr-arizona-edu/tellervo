@@ -76,7 +76,7 @@ public class Species {
         // don't instantiate me
     }
 
-    public static Properties species = new Properties(); // code => name hash
+    public static final Properties species = new Properties(); // code => name hash
 
     static {
         try {
@@ -114,7 +114,7 @@ public class Species {
             throw new UnknownSpeciesException();
     }
 
-    public static List common = new ArrayList(); // list of strings, like ("PISP" "QUSP")
+    public static final List common = new ArrayList(); // list of strings, like ("PISP" "QUSP")
 
     public static Iterator getCommonCodes() {
         return new Iterator() {

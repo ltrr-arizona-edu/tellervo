@@ -497,7 +497,7 @@ public class CrossdateWindow extends XFrame
         try {
             crossdate = sequence.makeCross();
         } catch (IOException ioe) {
-            // DEAL WITH ME!
+            // XXX: DEAL WITH ME!
         }
 
         // init gui

@@ -155,34 +155,46 @@ public class MapFile {
         // where i'm going to get the data from
         ClassLoader loader = MapFile.class.getClassLoader();
         InputStream rawInput = loader.getResourceAsStream("earth.rez.gz");
-        BufferedInputStream in = new BufferedInputStream(new GZIPInputStream(rawInput));
 
         // where i'm going to put the data
         String targetFilename = System.getProperty("java.io.tmpdir") + File.separator +
                                 "corina-earth.rez";
-        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(targetFilename));
+        BufferedInputStream in = null;
+        BufferedOutputStream out = null;
         
-        // buffer, for fast reading -- is 16 KB ok?
-        byte buf[] = new byte[16*1024];
-        int total = 0; // total number of bytes written
-        
-        // copy everything from in to out
-        for (;;) {
-            int n = in.read(buf);
-            if (n <= 0)
-                break;
-            out.write(buf, 0, n);
-            
-            total += n;
-            progress.setProgress(total);
+        try {
+          in = new BufferedInputStream(new GZIPInputStream(rawInput));
+          out = new BufferedOutputStream(new FileOutputStream(targetFilename));
+          // buffer, for fast reading -- is 16 KB ok?
+          byte buf[] = new byte[16*1024];
+          int total = 0; // total number of bytes written
+          
+          // copy everything from in to out
+          for (;;) {
+              int n = in.read(buf);
+              if (n <= 0)
+                  break;
+              out.write(buf, 0, n);
+              
+              total += n;
+              progress.setProgress(total);
+          }
+  
+          // get rid of the progress monitor
+          progress.setProgress(progress.getMaximum());
+        } finally {
+          // close the streams
+          if (in != null) try {
+            in.close();
+          } catch (IOException ioe) {
+            ioe.printStackTrace();
+          }
+          if (out != null) try {
+            out.close();
+          } catch (IOException ioe) {
+            ioe.printStackTrace();
+          }
         }
-
-        // get rid of the progress monitor
-        progress.setProgress(progress.getMaximum());
-
-        // close the streams
-        in.close();
-        out.close();
     }
 
     /**

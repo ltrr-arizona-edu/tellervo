@@ -26,6 +26,7 @@ import corina.Element;
 import corina.Preview;
 import corina.Previewable;
 import corina.ui.I18n;
+import corina.util.CorinaLog;
 import corina.formats.WrongFiletypeException;
 import corina.prefs.Prefs;
 
@@ -116,6 +117,8 @@ import java.awt.print.PrinterException;
    @version $Id$
 */
 public class Grid implements Runnable, Previewable {
+  private static final CorinaLog log = new CorinaLog(Grid.class);
+
     // inputs
     private List files;
     private int num; // number of active files
@@ -134,7 +137,7 @@ public class Grid implements Runnable, Previewable {
         public abstract void print(Graphics2D g2, int x, int y, float scale);
         public abstract String toXML();
     }
-    public class EmptyCell implements Cell {
+    public static class EmptyCell implements Cell {
         public void print(Graphics2D g2, int x, int y, float scale) {
             // do nothing
         }
@@ -178,7 +181,7 @@ public class Grid implements Runnable, Previewable {
     // -- BETTER: why doesn't CrossCell just extend Single?
     // (when that's done, t/tr/d can be unified between sequence and onecross)
     // hey, cross.single() only makes sense in the context of a onecross, right?  score!
-    public class CrossCell implements Cell {
+    public static class CrossCell implements Cell {
 	private Single cross;
 	public CrossCell(Sample fixed, Sample moving) {
 	    this.cross = new Single(fixed, moving);
@@ -224,7 +227,7 @@ public class Grid implements Runnable, Previewable {
             return cross.toXML();
         }
     }
-    public class LengthCell implements Cell {
+    public static class LengthCell implements Cell {
         private int length;
         LengthCell(int length) {
             this.length = length;
@@ -720,10 +723,11 @@ public class Grid implements Runnable, Previewable {
        @exception IOException if an I/O exception occurs while trying to save
     */
     public void save(String filename) throws IOException {
-        // open, and write header
-        BufferedWriter w = new BufferedWriter(new FileWriter(filename));
+      // open, and write header
+      BufferedWriter w = new BufferedWriter(new FileWriter(filename));
+      try {
         w.write("<?xml version=\"1.0\"?>\n"); // can/should i make the encoding explicit here?
-	w.write("\n");
+        w.write("\n");
         w.write("<grid>\n");
         w.write("\n");
 
@@ -748,6 +752,12 @@ public class Grid implements Runnable, Previewable {
 
         // end, and close
         w.write("</grid>\n");
-        w.close();
+      } finally {
+        try {
+          w.close();
+        } catch (IOException ioe) {
+          log.error("Error closing writer", ioe);
+        }
+      }
     }
 }

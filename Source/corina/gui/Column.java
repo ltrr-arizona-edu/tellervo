@@ -50,7 +50,7 @@ public class Column extends JPanel {
 	closedIcon = dtcr.getClosedIcon();
     }
 
-    private class MyModel implements ComboBoxModel {
+    private static class MyModel implements ComboBoxModel {
 	String children[];
 	public MyModel(String folder) {
 	    File files[] = new File(folder).listFiles();
@@ -104,7 +104,7 @@ public class Column extends JPanel {
 	}
     }
 
-    private class MyRenderer extends JLabel implements ListCellRenderer {
+    private static class MyRenderer extends JLabel implements ListCellRenderer {
 	public MyRenderer() {
 	    this.setOpaque(true);
 	}

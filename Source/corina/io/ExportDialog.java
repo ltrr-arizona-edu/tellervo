@@ -238,8 +238,15 @@ public class ExportDialog extends JDialog {
             String format = exporters[popup.getSelectedIndex()];
             Filetype f = (Filetype) Class.forName(format).newInstance();
             BufferedWriter w = new BufferedWriter(new FileWriter(fn));
-            f.save(sample, w);
-		        w.close();
+            try {
+              f.save(sample, w);
+            } finally {
+              try {
+                w.close();
+              } catch (IOException ioe) {
+                ioe.printStackTrace();
+              }
+            }
           } catch (UserCancelledException uce) {
             // do nothing
           } catch (IOException ioe) {

@@ -20,59 +20,53 @@
 
 package corina.graph;
 
-import corina.Year;
-import corina.Range;
-import corina.Sample;
-import corina.gui.XFrame;
-import corina.gui.Bug;
-import corina.editor.Editor;
-import corina.util.ColorUtils;
-import corina.util.Platform;
-import corina.prefs.Prefs;
-import corina.ui.Alert;
-
-import java.util.List;
-
-import java.awt.EventQueue;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.Dimension;
 import java.awt.BasicStroke;
-import java.awt.RenderingHints;
 import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Cursor;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
-import javax.swing.Scrollable;
-
 import javax.swing.JScrollPane;
+import javax.swing.Scrollable;
 import javax.swing.filechooser.FileFilter;
 
 import com.keypoint.PngEncoder;
 
-import java.awt.Container;
-import java.io.File;
-import java.io.FileOutputStream;
+import corina.Range;
+import corina.Sample;
+import corina.Year;
+import corina.gui.Bug;
+import corina.gui.XFrame;
+import corina.prefs.Prefs;
+import corina.ui.Alert;
+import corina.util.ColorUtils;
 
 public class GrapherPanel extends JPanel
                        implements KeyListener,
@@ -598,9 +592,16 @@ public class GrapherPanel extends JPanel
                       }*/
                       if (bytes != null) {
                         FileOutputStream fos = new FileOutputStream(chooser.getSelectedFile());
-                        fos.write(bytes);
-                        fos.flush();
-                        fos.close();
+                        try {
+                          fos.write(bytes);
+                          fos.flush();
+                        } finally {
+                          try {
+                            fos.close();
+                          } catch (IOException ioe) {
+                            ioe.printStackTrace();
+                          }
+                        }
                       } else {
                         System.err.println("ERROR IN ENCODER");
                       }

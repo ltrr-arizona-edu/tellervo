@@ -51,6 +51,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
@@ -170,9 +171,16 @@ public class MapPanel extends JPanel {
                     }*/
                     if (bytes != null) {
                       FileOutputStream fos = new FileOutputStream(chooser.getSelectedFile());
-                      fos.write(bytes);
-                      fos.flush();
-                      fos.close();
+                      try {
+                        fos.write(bytes);
+                        fos.flush();
+                      } finally {
+                        try {
+                          fos.close();
+                        } catch (IOException ioe) {
+                          ioe.printStackTrace();
+                        }
+                      }
                     } else {
                       System.err.println("ERROR IN ENCODER");
                     }

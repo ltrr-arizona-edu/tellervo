@@ -83,7 +83,12 @@ public class View implements Cloneable {
     // USED BY: MapPanel (for printing - making detailedView), MapFrame (png export)
     // so what i really want is "make a copy, but with X factor more detail"
     public Object clone() {
-        View v2 = new View();
+        View v2;
+        try {
+          v2 = (View) super.clone();
+        } catch (CloneNotSupportedException cnse) {
+          v2 = new View();
+        }
         v2.center = (Location) center.clone();
         v2.zoom = zoom;
         v2.size = (Dimension) size.clone();

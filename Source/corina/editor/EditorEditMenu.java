@@ -26,6 +26,7 @@ import corina.SampleListener;
 import corina.ui.Builder;
 import corina.ui.I18n;
 import corina.ui.Alert;
+import corina.util.CorinaLog;
 import corina.util.TextClipboard;
 import corina.util.PureStringWriter;
 import corina.formats.TwoColumn;
@@ -80,7 +81,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
    @version $Id$
 */
 public class EditorEditMenu extends EditMenu implements SampleListener {
-
     private Sample sample;
     private SampleDataView dataView;
 
@@ -240,24 +240,35 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 
             // get ready to transfer the data
             DataFlavor f = DataFlavor.selectBestTextFlavor(t.getTransferDataFlavors());
-            BufferedReader r = new BufferedReader(f.getReaderForText(t));
-            BufferedWriter w = new BufferedWriter(new FileWriter(tmpFilename));
-
-            // transfer it
-            for (;;) {
-                String l = r.readLine();
-                if (l == null)
-                    break;
-                w.write(l + '\n');
+            BufferedReader r = null; 
+            BufferedWriter w = null;
+            
+            try {
+              r = new BufferedReader(f.getReaderForText(t));
+              w = new BufferedWriter(new FileWriter(tmpFilename));
+              // transfer it
+              for (;;) {
+                  String l = r.readLine();
+                  if (l == null)
+                      break;
+                  w.write(l + '\n');
+              }
+            } finally {
+              if (r != null) try {
+                r.close();
+              } catch (IOException ioe) {
+                ioe.printStackTrace();
+              }
+              if (w != null) try {
+                w.close();
+              } catch (IOException ioe) {
+                ioe.printStackTrace();
+              }
             }
-
-            // clean up
-            w.close();
-            r.close();
 
             // now try to load it
             Sample tmp = new Sample(tmpFilename);
-
+            
             // copy it here, except for the filename
             Sample.copy(tmp, sample);
             sample.meta.remove("filename");

@@ -100,7 +100,7 @@ public class IndexDialog extends JDialog {
     private static final String RHO_FORMAT = "0.000";
 
     // table model -- (could be static but for i18n)
-    private class IndexTableModel extends AbstractTableModel {
+    private static class IndexTableModel extends AbstractTableModel {
         private DecimalFormat fmtChi2 = new DecimalFormat(CHI2_FORMAT);
         private DecimalFormat fmtR = new DecimalFormat(RHO_FORMAT);
         private IndexSet iset;

@@ -48,32 +48,39 @@ public class LoadSave {
         // open for writing
         BufferedWriter w = new BufferedWriter(new FileWriter(filename));
 
-        // XML header
-        w.write("<?xml version=\"1.0\"?>");
-        w.newLine();
-
-        w.newLine();
-
-        // begin graph
-        w.write("<graphs>");
-        w.newLine();
-
-        w.newLine();
-
-        // each graph
-        for (int i=0; i<graphs.size(); i++) {
-            w.write("  " + ((Graph) graphs.get(i)).toXML());
-            w.newLine();
+        try {
+          // XML header
+          w.write("<?xml version=\"1.0\"?>");
+          w.newLine();
+  
+          w.newLine();
+  
+          // begin graph
+          w.write("<graphs>");
+          w.newLine();
+  
+          w.newLine();
+  
+          // each graph
+          for (int i=0; i<graphs.size(); i++) {
+              w.write("  " + ((Graph) graphs.get(i)).toXML());
+              w.newLine();
+          }
+  
+          w.newLine();
+  
+          // end graph
+          w.write("</graphs>");
+          w.newLine();
+        } finally {
+          try {
+            // close
+            w.close();
+          } catch (IOException ioe) {
+            ioe.printStackTrace();
+          }
         }
 
-        w.newLine();
-
-        // end graph
-        w.write("</graphs>");
-        w.newLine();
-
-        // close
-        w.close();
     }
 
     // try to load a plot from disk

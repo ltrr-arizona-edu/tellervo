@@ -33,7 +33,7 @@ import java.util.HashSet;
 public class LabelSet {
 
     /* DOCUMENT ME! -- does this need to be its own class? */
-    public class Offset {
+    public static class Offset {
         public float angle = 0; // angle, in ???
         public float distance = 0; // distance, in ???
     }
@@ -56,18 +56,18 @@ public class LabelSet {
        @return an Iterator for all of the Locations
     */
     public Iterator getLocations() {
-        // WRITEME
+        // TODO: WRITEME
         return new Iterator() {
             public boolean hasNext() {
-                // WRITEME
+                // TODO: WRITEME
                 return false;
             }
             public Object next() {
-                // WRITEME
+                // TODO: WRITEME
                 return null;
             }
             public void remove() {
-                // WRITEME
+                // TODO: WRITEME
             }
         };
     }

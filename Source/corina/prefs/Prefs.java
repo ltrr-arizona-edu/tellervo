@@ -84,8 +84,6 @@ public class Prefs {
   public static final String GRID_HIGHLIGHT = "corina.grid.highlight";
   public static final String GRID_HIGHLIGHTCOLOR = "corina.grid.hightlightcolor";
   
-  
-  
   private static final CorinaLog log = new CorinaLog("Prefs");
   /*
     OLD:

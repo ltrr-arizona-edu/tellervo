@@ -3,6 +3,7 @@ package corina.search;
 import corina.Year;
 import corina.MetadataTemplate;
 import corina.util.ColorUtils;
+import corina.util.CorinaLog;
 import corina.ui.I18n;
 
 import java.util.Date;
@@ -29,6 +30,7 @@ import javax.swing.JComboBox;
 // only secondarily (optionally?) how you want it to look.
 
 public class DataComponent {
+  private static final CorinaLog log = new CorinaLog(DataComponent.class);
 
     // TODO: doesn't handle POPUP yet.
     public static Component makeComponent(int type) {
@@ -88,10 +90,13 @@ public class DataComponent {
 	}
 	// (ASSUMEs: fieldName is legit)
 
-	// add to popup
-	for (int i=0; i<f.values.length; i++)
-	    popup.addItem(I18n.getText("meta." + f.getVariable() +
-				           "." + f.values[i]));
+    if (f != null) {
+      // add to popup
+      for (int i=0; i<f.values.length; i++)
+        popup.addItem(I18n.getText("meta." + f.getVariable() + "." + f.values[i]));
+    } else {
+      log.error("MetadataTemplate.Field not found: " + fieldName);
+    }
 
 	return popup;
     }
@@ -119,16 +124,21 @@ public class DataComponent {
 	    // HAVE: text=msg[f.variable+"."+code]
 	    // WANT: code
 	    String code = "xxx";
-	    for (int i=0; i<f.values.length; i++)
-		if (I18n.getText("meta." + f.getVariable() +
-			             "." + f.values[i]).equals(text)) {
-		    code = f.values[i];
-		    break;
-		}
+      if (f != null) {
+        for (int i=0; i<f.values.length; i++) {
+          if (I18n.getText("meta." + f.getVariable() +
+                           "." + f.values[i]).equals(text)) {
+            code = f.values[i];
+            break;
+          }
+        }
+      } else {
+        log.error("MetadataTemplate.Field not found: " + field);
+      }
 
 	    return code;
-	}
-    }
+	  }  
+  }
 
     public static interface AbstractDataComponent {
 	Object getData();

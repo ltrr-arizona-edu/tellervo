@@ -168,7 +168,7 @@ public class Element implements Comparable {
 
 	// no known root, or isn't a subfolder of root
 	// (BUG: i don't think this is 100% correct, for various reasons)
-	if (root == null && !filename.startsWith(root))
+	if (root == null || !filename.startsWith(root))
 	    return filename;
 
 	// BUG: file.sep is often (always?) redundant here

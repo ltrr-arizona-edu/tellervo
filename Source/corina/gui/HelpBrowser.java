@@ -87,7 +87,7 @@ public class HelpBrowser extends JFrame {
 
     private static final String HELP_PAGE = "corina/manual/index.html";
 
-    private class JPrettyEditorPane extends JEditorPane {
+    private static class JPrettyEditorPane extends JEditorPane {
 	public void paintComponent(Graphics g) {
 	    Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,

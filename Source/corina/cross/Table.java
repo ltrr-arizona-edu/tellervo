@@ -124,7 +124,7 @@ public class Table extends AbstractTableModel {
       (Single holds all crossdate scores, the overlap, and the
       distance, if available.)
     */
-    private class Row extends Single {
+    private static class Row extends Single {
         /** The row's (sample's) title. */
         String title;
 	// (make private, with getTitle() method?  make this toString()?)

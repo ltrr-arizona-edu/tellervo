@@ -150,7 +150,7 @@ public class IndexDialog2 extends JDialog {
     }
 
     // exponential options
-    private class ExponentialOptions extends JPanel {
+    private static class ExponentialOptions extends JPanel {
 	// no options
     }
 
@@ -277,7 +277,7 @@ public class IndexDialog2 extends JDialog {
     }
 
     // any number of values?
-    private class HighPassOptions extends JPanel {
+    private static class HighPassOptions extends JPanel {
 	// WRITEME
     }
 

@@ -23,12 +23,27 @@
 package corina.gui;
 
 //{{{ Imports
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+
+import corina.prefs.Prefs;
 import corina.util.CorinaLog;
 import corina.util.TextClipboard;
 //}}}
@@ -57,6 +72,7 @@ public class LogViewer extends JPanel
     caption.add(Box.createHorizontalGlue());
 
     //tailIsOn = jEdit.getBooleanProperty("log-viewer.tail", false);
+    tailIsOn = Boolean.valueOf(Prefs.getPref("log-viewer.tail")).booleanValue();
     tail = new JCheckBox("Tail"
       /*jEdit.getProperty("log-viewer.tail.label")*/,tailIsOn);
     tail.addActionListener(new ActionHandler());

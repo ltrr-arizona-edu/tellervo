@@ -27,6 +27,7 @@ import corina.Element;
 import corina.MetadataTemplate;
 import corina.MetadataTemplate.Field;
 import corina.formats.WrongFiletypeException;
+import corina.util.CorinaLog;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -117,6 +118,7 @@ import java.util.Iterator;
    @version $Id$
 */
 public class DB {
+  private static final CorinaLog log = new CorinaLog(DB.class);
 
     private Connection connection;
 
@@ -159,9 +161,10 @@ public class DB {
 
 	// load meta -- including range
 	{
-	    PreparedStatement stmt =
-	      connection.prepareStatement("SELECT * FROM metadata " +
-					  "WHERE sid = ?;");
+    PreparedStatement stmt =
+      connection.prepareStatement("SELECT * FROM metadata " +
+				  "WHERE sid = ?;");
+    try {
 	    stmt.setInt(1, sid);
 	    ResultSet meta = stmt.executeQuery();
 	    meta.next(); // move to first (only) row
@@ -173,25 +176,40 @@ public class DB {
 	    sample.meta = readMeta(meta);
 
 	    // DESIGN: what about "site" field?
+    } finally {
+      try {
+        stmt.close();
+      } catch (SQLException sqle) {
+        log.error("Error closing prepared statement", sqle);
+      }
+    }
 	}
 
 	// load elements
 	{
-	    PreparedStatement stmt =
-	      connection.prepareStatement("SELECT * FROM elements " +
-					  "WHERE sid = ?;");
+    PreparedStatement stmt =
+      connection.prepareStatement("SELECT * FROM elements " +
+				  "WHERE sid = ?;");
+    try {
 	    stmt.setInt(1, sid);
 	    ResultSet elements = stmt.executeQuery();
 
 	    sample.elements = new ArrayList();
 
 	    while (elements.next()) {
-		Element e = new Element(elements.getString("el"));
-		sample.elements.add(e);
+    		Element e = new Element(elements.getString("el"));
+    		sample.elements.add(e);
 	    }
 
 	    if (sample.elements.size() == 0)
-		sample.elements = null;
+	      sample.elements = null;
+    } finally {
+      try {
+        stmt.close();
+      } catch (SQLException sqle) {
+        log.error("Error closing prepared statement", sqle);
+      }
+    }
 	}
 	// DESIGN: would elements be in the database as jdbc urls?
 

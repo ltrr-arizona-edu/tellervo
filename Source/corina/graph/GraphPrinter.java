@@ -33,7 +33,7 @@ printing multi-screen-plots on paper like (some other program) --
  */
 
     // a 1-page graph
-    private class GraphPage implements Printable {
+    private static class GraphPage implements Printable {
         GraphPage() {
             /*
              -- compute range (e.g., 1412-1990)

@@ -184,8 +184,15 @@ public class Snapshot {
 
             // dump the png to disk
             OutputStream o = new BufferedOutputStream(new FileOutputStream(filename));
-            o.write(p);
-            o.close();
+            try {
+              o.write(p);
+            } finally {
+              try {
+                o.close();
+              } catch (IOException ioe) {
+                ioe.printStackTrace();
+              }
+            }
 
             // when done, open containing folder in finder/explorer,
             // and select this file.

@@ -182,7 +182,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	    String key = ((MetadataTemplate.Field) fields.get(col-2)).getVariable();
 
 	    // null?  remove it.  (q: are there any cases where it's assumed key exists, like title?)
-	    if (value == null || value == "") {
+	    if (value == null || (value instanceof String && ((String) value).length() == 0)) {
 		e.details.remove(key);
 	    } else {
 		// try to squeeze the string into an integer

@@ -11,10 +11,8 @@ public class UIDefaultsRenderer implements TableCellRenderer {
   private static CorinaLog log = new CorinaLog(UIDefaultsRenderer.class);
   private ColorRenderer colorRenderer;
   private FontRenderer fontRenderer;
-  private boolean isBordered = true;
 
   public UIDefaultsRenderer(boolean isBordered) {
-    this.isBordered = isBordered;
     colorRenderer = new ColorRenderer(isBordered);
     fontRenderer = new FontRenderer(isBordered);
   }
