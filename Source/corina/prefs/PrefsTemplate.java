@@ -168,13 +168,11 @@ public class PrefsTemplate {
 
 	// advanced
 	options.add(new Option("Advanced", "Username:",
-                        "user.name", Option.TYPE_STRING));
+			       "user.name", Option.TYPE_STRING));
 	options.add(new Option("Advanced", "Data Directory:",
-                        "corina.dir.data", Option.TYPE_STRING));
-	options.add(new Option("Advanced", "Text Printer Command:",
-                        "corina.print.command", Option.TYPE_STRING));
+			       "corina.dir.data", Option.TYPE_STRING));
 	options.add(new Option("Advanced", "Menubar Font:",
-                        "corina.menubar.font", Option.TYPE_FONT));
+			       "corina.menubar.font", Option.TYPE_FONT));
         options.add(new Option("Advanced", "Browser fields:",
                                "corina.browser.fields", Option.TYPE_HIDDEN));
         options.add(new Option("Advanced", "Browser folder:",
