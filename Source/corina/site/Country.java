@@ -38,8 +38,7 @@ public class Country {
     static {
         Properties prop = new Properties();
         try {
-	    Class me = Class.forName("corina.site.Country");
-            ClassLoader cl = me.getClassLoader();
+            ClassLoader cl = corina.site.Country.class.getClassLoader();
             prop.load(cl.getResource("countries.properties").openStream());
         } catch (Exception e) {
             Bug.bug(e); // can't happen
