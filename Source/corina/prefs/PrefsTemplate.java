@@ -151,8 +151,6 @@ public class PrefsTemplate {
                         "user.name", Option.TYPE_STRING));
 	options.add(new Option("Advanced", "Data Directory:",
                         "corina.dir.data", Option.TYPE_STRING));
-	options.add(new Option("Advanced", "Site Database File:",
-                        "corina.sites.file", Option.TYPE_STRING));
 	options.add(new Option("Advanced", "Text Printer Command:",
                         "corina.print.command", Option.TYPE_STRING));
 	options.add(new Option("Advanced", "Menubar Font:",
