@@ -54,7 +54,7 @@ import java.awt.*;
 */
 
 public class AdvancedPrefsPanel extends JPanel {
-
+  private FontPrefComponent fontprefcomponent = new FontPrefComponent("corina.menubar.font");
   public AdvancedPrefsPanel() {
     // setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setLayout(new BorderLayout());
@@ -83,7 +83,6 @@ public class AdvancedPrefsPanel extends JPanel {
     // (idea: PrefComponent interface, getPref(), checkbox calls
     // getPref() on controlled components, sets them to null on dim)
 
-    final FontPrefComponent fontprefcomponent = new FontPrefComponent("corina.menubar.font");
     gbc.gridx++;
     co.add(fontprefcomponent.getLabel(), gbc);
 
@@ -195,5 +194,10 @@ public class AdvancedPrefsPanel extends JPanel {
     // TODO: add spacer below bottom, just in case?
 
     add(co, BorderLayout.NORTH);
+  }
+  
+  public void addNotify() {
+    fontprefcomponent.setParent(getTopLevelAncestor());
+    super.addNotify();
   }
 }
