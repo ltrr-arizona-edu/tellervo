@@ -57,7 +57,7 @@ public class Help {
     private static void createHelpSet() {
 	try {
 	    // Corina help, in the corina/manual/ folder of Corina.jar
-	    ClassLoader loader = Class.forName("corina.gui.Help").getClassLoader();
+	    ClassLoader loader = corina.gui.Help.class.getClassLoader();
             // URL url = loader.getResource("javahelp/jhelpset.hs");
             URL url = loader.getResource("corina/manual/jhelpset.hs");
 	    hs = new HelpSet(null, url);
