@@ -55,34 +55,12 @@ public class Trash extends JLabel implements DropTargetListener, MouseListener {
     public void mouseClicked(MouseEvent e) {
         // double-click?
         if (e.getClickCount() == 2)
-            open(getTrash());
+            Platform.open(Platform.getTrash());
     }
     public void mouseEntered(MouseEvent e) { }
     public void mouseExited(MouseEvent e) { }
     public void mousePressed(MouseEvent e) { }
     public void mouseReleased(MouseEvent e) { }
-
-    // (external: finder/explorer)
-    // -- needs testing on win32
-    // -- should be extracted into its own class in .util
-    private static void open(String folder) {
-        if (Platform.isMac) {
-            try {
-                Runtime.getRuntime().exec("open " + folder);
-            } catch (IOException ioe) {
-                // what could go wrong?
-            }
-        } else if (Platform.isWindows) {
-            // use explorer, but i'm not sure how, yet.  probably something like
-            try {
-                Runtime.getRuntime().exec("start " + folder);
-            } catch (IOException ioe) {
-                // what could go wrong?
-            }
-        } else {
-            // i REALLY don't know
-        }
-    }
 
     // handle drops
     public void dragEnter(DropTargetDragEvent e) {
@@ -125,33 +103,20 @@ public class Trash extends JLabel implements DropTargetListener, MouseListener {
         }
     }
     
-    // (private: where's the trash?)
-    private static String getTrash() {
-        // mac os x
-        if (Platform.isMac)
-            return System.getProperty("user.home") + "/.Trash/";
-
-        // win32
-        if (Platform.isWindows)
-            return "C:\\recycled\\"; // do they still not have a per-user trash?  gah.
-        
-        return null; // "i dunno"
-    }
-    
     // (private: move file to trash)
     public static void trash(File f) { // throws IOE?
-        File target = new File(getTrash(), f.getName());
+        File target = new File(Platform.getTrash(), f.getName());
         if (!target.exists()) {
             f.renameTo(target);
         } else {
             // "x" "x copy" "x copy 2" "x copy 3" ...
-            target = new File(getTrash(), f.getName() + " copy");
+            target = new File(Platform.getTrash(), f.getName() + " copy");
             if (!target.exists()) {
                 f.renameTo(target);
             } else { // this isn't really a special case...  refactor
                 int x=2;
                 for (;;) {
-                    target = new File(getTrash(), f.getName() + " copy " + x);
+                    target = new File(Platform.getTrash(), f.getName() + " copy " + x);
                     if (!target.exists()) {
                         f.renameTo(target);
                         break;
