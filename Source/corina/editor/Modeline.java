@@ -22,14 +22,9 @@ package corina.editor;
 
 import corina.Year;
 import corina.Sample;
-import corina.SampleEvent;
-import corina.SampleListener;
 import corina.Weiserjahre;
-import corina.manip.MeanSensitivity;
 import corina.gui.Tree;
 import corina.gui.ElementsPanel;
-
-import java.text.DecimalFormat;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -55,24 +50,30 @@ import javax.swing.border.EtchedBorder;
    class can implement them both, though it is incredibly
    non-intuitive.</p>
 
-   <p>To add: a modeline for the "Elements" tab: "126 elements, 120
-   used, 6 selected".</p>
-
    @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
    @version $Id$ */
 
 public class Modeline extends JPanel
-                   implements ListSelectionListener,
-			      TableColumnModelListener,
-			      SampleListener {
+                   implements ListSelectionListener, TableColumnModelListener {
+
+/*
+  TODO:
+  -- click on "year:" lets you type in a new year
+  -- (need multiple labels for that?  icon, year, other stuff.  probably, but it's not hard.)
+
+  RENAME:
+  -- "modeline" is an emacs term, because emacs has modes.  corina shouldn't really
+  (and doesn't) have modes, so "status bar" ("status line"?) is more appropriate.
+*/
+
     // icon
     private Tree icon;
 
     // label
     private JLabel label;
 
-    // mean sensitivity
-    private JLabel ms;
+    // statistics
+    private Statistics stats;
 
     // optional: table
     private JTable table;
@@ -109,7 +110,7 @@ public class Modeline extends JPanel
 
 	// bail out if out of range
 	if (i<0 || i>=sample.data.size()) {
-	    label.setText(" ");
+	    label.setText(" "); // violates OAOO -- and say why i'm using " " instead of ""!
 	    return;
 	}
 
@@ -123,19 +124,6 @@ public class Modeline extends JPanel
 	// set modeline
 	label.setText(modeline);
     }
-
-    // data changed
-    public void sampleDataChanged(SampleEvent e) {
-        // update mean sensitivity
-        float m = MeanSensitivity.ms(sample);
-        DecimalFormat f = new DecimalFormat("ms = 0.000");
-        String str = (Float.isNaN(m) ? "ms undefined" : f.format(m));
-        ms.setText(str);
-    }
-    public void sampleRedated(SampleEvent e) { }
-    public void sampleMetadataChanged(SampleEvent e) { }
-    public void sampleFormatChanged(SampleEvent e) { }
-    public void sampleElementsChanged(SampleEvent e) { }
 
     // row-change
     public void valueChanged(ListSelectionEvent e) {
@@ -171,7 +159,8 @@ public class Modeline extends JPanel
 	// add myself as a listener
 	table.getSelectionModel().addListSelectionListener(this);
 	table.getColumnModel().addColumnModelListener(this);
-	sample.addSampleListener(this);
+	// BUG: if data changes (how can this happen?), might need to change text.
+	// so add myself as a samplelistener, too.
 
 	// label, border
 	label = new JLabel();
@@ -180,13 +169,11 @@ public class Modeline extends JPanel
 	// icon
 	icon = new Tree(sample);
 
-	// ms
-	ms = new JLabel();
-	ms.setToolTipText("Mean sensitivity of this dataset");
+	// stats, like mean sensitivity
+	stats = new Statistics(sample);
 
 	// initial text
 	update();
-	sampleDataChanged(null); // ok to pass a null event source?
 
 	// pack stuff
 	setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
@@ -196,7 +183,7 @@ public class Modeline extends JPanel
 	add(Box.createHorizontalStrut(4));
 	add(label);
 	add(Box.createHorizontalGlue());
-	add(ms);
+	add(stats);
 	add(Box.createHorizontalStrut(2));
     }
 
