@@ -1,8 +1,9 @@
 package corina.map.tools;
 
 import corina.map.View;
-import corina.map.Renderer;
+import corina.map.Projection;
 import corina.map.MapPanel;
+import corina.ui.Builder;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -11,6 +12,7 @@ import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
@@ -33,13 +35,13 @@ public class ZoomInTool extends Tool {
     }
 
     Icon getIcon() {
-        ClassLoader cl = this.getClass().getClassLoader();
-        return new ImageIcon(cl.getResource("Images/zoom.png"));
+	return Builder.getIcon("zoom.png");
     }
     Cursor getCursor() {
-        ClassLoader cl = this.getClass().getClassLoader();
-        ImageIcon icon = new ImageIcon(cl.getResource("Images/zoom-small.png"));
-        return Toolkit.getDefaultToolkit().createCustomCursor(icon.getImage(), new Point(0, 0), "Zoomer");
+	Image image = Builder.getImage("zoom-small.png");
+	return Toolkit.getDefaultToolkit().createCustomCursor(image,
+							      new Point(0, 0),
+							      "Zoomer");
     }
     String getTooltip() {
         return "Zoom In Tool";
@@ -68,13 +70,13 @@ public class ZoomInTool extends Tool {
     }
     
     // mouse
-    private Renderer r;
+    private Projection r;
     public void mouseClicked(MouseEvent e) {
         // recenter on this point
-        r.unrender(e.getPoint(), v.center);
+        r.unproject(e.getPoint(), v.center);
 
         // zoom in by a factor of 2 (zoom out if alt pressed?)
-        v.zoom *= 1.25; // EXTRACT CONSTANT
+        v.setZoom(v.getZoom() * 1.25f); // EXTRACT CONSTANT?
 
 	p.setZoom();
 
@@ -88,7 +90,7 @@ public class ZoomInTool extends Tool {
     Point p1, p2;
 
     public void mousePressed(MouseEvent e) {
-        r = Renderer.createRenderer(v);
+        r = Projection.makeProjection(v);
 
         // store mouse-down point
         p1 = e.getPoint();
@@ -125,16 +127,16 @@ public class ZoomInTool extends Tool {
         // location is easy: take the average -- SIMILAR to MOUSECLICKED; REFACTOR
         p2 = e.getPoint();
         Point centerPoint = new Point((p1.x+p2.x)/2, (p1.y+p2.y)/2); // (one new() on mouse-released is fine)
-        r.unrender(centerPoint, v.center); // REFACTOR: Renderer.centerOn(Point) -- LoD
+        r.unproject(centerPoint, v.center); // REFACTOR: Projection.centerOn(Point) -- LoD
 
         // well, zoom isn't too hard, either.  zoom *= panelsize / boxsize
         // (show the user more than she wants: use the smaller ratio)
         float xratio = (float) v.size.width / Math.abs(p1.x - p2.x);
         float yratio = (float) v.size.height / Math.abs(p1.y - p2.y);
         float ratio = Math.min(xratio, yratio);
-        float newZoom = v.zoom * ratio;
-        v.zoom = (float) Math.max(0.10, Math.min(newZoom, 16.00));
-//        System.out.println("zoom=" + v.zoom);
+        float newZoom = v.getZoom() * ratio;
+        v.setZoom((float) Math.max(0.10, Math.min(newZoom, 16.00)));
+//        System.out.println("zoom=" + v.getZoom());
         p.setZoom();
 
         // BUG: this doesn't change the popup menu (placard)

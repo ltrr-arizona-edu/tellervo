@@ -1,15 +1,36 @@
+//
+// This file is part of Corina.
+//
+// Corina is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// Corina is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Corina; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// Copyright 2003 Ken Harris <kbh7@cornell.edu>
+//
+
 package corina.map.tools;
 
 import corina.map.Location;
-import corina.map.Vector3;
+import corina.map.Point3D;
 import corina.map.View;
-import corina.map.Renderer;
+import corina.map.Projection;
 import corina.map.MapPanel;
 import corina.site.Site;
 import corina.site.SiteDB;
-import corina.site.SiteInfo;
+import corina.map.SiteInfoDialog;
 import corina.site.SiteNotFoundException;
 import corina.util.Angle;
+import corina.ui.Builder;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -17,6 +38,7 @@ import java.awt.Point;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
+import java.awt.Rectangle;
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
@@ -25,32 +47,58 @@ import java.awt.event.MouseEvent;
 
 // arrow
 // -- click a site to select it
-// -- control-click to select another
+// -- control-click to select another [mac: command-click]
 // -- click on nothing to deselect all
 // -- drag a box(?) to select all sites in an area
 // -- double-click a site to view its properties (edit it)
 // -- drag a site to move it
 
+/**
+   An arrow tool for selecting and moving sites.
+
+WRITEME.
+ 
+   <h2>Left to do:</h2>
+   <ul>
+     <li>Drag-to-select
+     <li>Command-click to select another
+     <li>Double-click on multiple sites edits multiple
+     <li>Right-click should show a menu, not list the sites there (right?)
+     <li>Clicking on the dot should select all; clicking on a label should select just that one
+     <li>Dragging the label should just move the label, not the site/location
+     <li>Javadoc
+     <li>Get drag-to-move working (real buffer updates)
+   </ul>
+
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class ArrowTool extends Tool {
     private View v;
 
     public ArrowTool(MapPanel p, View v, ToolBox b) {
         super(p, b);
-        this.v = v; }
+        this.v = v;
+    }
 
     Icon getIcon() {
-        ClassLoader cl = this.getClass().getClassLoader();
-        return new ImageIcon(cl.getResource("Images/arrow.png")); }
+	return Builder.getIcon("arrow.png");
+    }
     Cursor getCursor() {
-        return new Cursor(Cursor.DEFAULT_CURSOR); }
+        return new Cursor(Cursor.DEFAULT_CURSOR);
+    }
     String getTooltip() {
-        return "Selection Tool"; }
+        return "Selection Tool";
+    }
     String getName() {
-        return "Info"; }
+        return "Info";
+    }
     Character getKey() {
-        return new Character('v'); }
+        return new Character('v');
+    }
     KeyStroke getFastKey() {
-        return null; } // should i have a NoShortcutException or singleton/flyweight or something?
+        return null; // should i have a NoShortcutException or singleton/flyweight or something?
+    }
 
     // mouse
     public void mouseClicked(MouseEvent e) {
@@ -61,22 +109,25 @@ public class ArrowTool extends Tool {
         // if double-click, show the properties for this site
         if (e.getClickCount() == 2) {
             try {
-                Renderer r = Renderer.createRenderer(v);
+                Projection r = Projection.makeProjection(v);
                 Point pt = e.getPoint();
-                Site site = p.siteForPoint(r, pt, 20*((int) v.zoom)); // from popup trigger, below
-                SiteInfo.showInfo(site); }
-            catch (SiteNotFoundException snfe) { } } // double-click on nothing -> do nothing
-
-	else {
+                Site site = p.siteForPoint(r, pt, 20*((int) v.getZoom())); // from popup trigger, below
+                new SiteInfoDialog(site, null);
+		// FIXME: null = center on screen; would be better to
+		// center on the Atlas window which i'm in
+	    } catch (SiteNotFoundException snfe) {
+		// double-click on nothing -> do nothing
+	    }
+	} else {
 	    // single-click
 	    // WRITEME: select; if command(win32:control) held down, add this to selection.
 	    // rerender this site only (not clip), and repaint.
 	    // (WHAT I WANT FIRST: one updateBuffers(*) method, SiteRenderer knows clipping, drawing with selected=true
 
 	    try {
-		Renderer r = Renderer.createRenderer(v);
+		Projection r = Projection.makeProjection(v);
 		Point pt = e.getPoint();
-		site = p.siteForPoint(r, pt, 20*((int) v.zoom)); // from popup trigger, below
+		site = p.siteForPoint(r, pt, 20*((int) v.getZoom())); // from popup trigger, below
 		p.setSelection(site);
 		// the decorator hilites it now -- (though it shouldn't)
 		p.repaint();
@@ -86,21 +137,24 @@ public class ArrowTool extends Tool {
 		// OOPS: need to know old selection, so i can un-hilite it (efficiently) now.
 		// p.updateBufferLabelsOnly(); // ugly! -- and a hack! -- and ugly! -- and slow!
 		p.repaint();
-	    } } }
+	    }
+	}
+    }
 
     // temps here?
-    Renderer r;
+    Projection r;
     Site site=null;
     Point down=null;
 
     public void mousePressed(MouseEvent e) {
         // if there is a site here, record that
         try {
-            r = Renderer.createRenderer(v);
+            r = Projection.makeProjection(v);
             Point pt = e.getPoint();
-            site = p.siteForPoint(r, pt, 20*((int) v.zoom)); }
-        catch (SiteNotFoundException snfe) {
-	    site = null; } // clicked on empty space => ignore
+            site = p.siteForPoint(r, pt, 20*((int) v.getZoom()));
+	} catch (SiteNotFoundException snfe) {
+	    site = null; // clicked on empty space => ignore
+	}
 
 	down = e.getPoint();
 
@@ -109,7 +163,8 @@ public class ArrowTool extends Tool {
         // tool code -- (how) can i do that?
 
         // popup (mac version)
-        maybeShowPopup(e, v); }
+        maybeShowPopup(e, v);
+    }
 
     public void mouseDragged(MouseEvent e) {
         if (site != null) {
@@ -119,13 +174,12 @@ public class ArrowTool extends Tool {
 
             // record this place
             Location loc = new Location();
-            r.unrender(e.getPoint(), loc);
+            r.unproject(e.getPoint(), loc);
 
             // TODO: esc cancels now
 
             // System.out.println("setting location of " + site.getCode() + " to " + site.getLocation());
             site.setLocation(loc);
-	    SiteDB.getSiteDB().fireSiteMoved(site);
 
              // BUG: this violates all sorts of Site invariants, at least as far as MapPanel is concerned.
              // need an event structure, like for samples?  (it's on the way!)
@@ -148,28 +202,65 @@ public class ArrowTool extends Tool {
 	      
 	    */
 
+            // p.updateBufferLabelsOnly(); // bad!  causes too many redraws.
+
             p.repaint();
 	} else {
 	    down2 = e.getPoint();
 
 	    // TODO: select sites inside of (down..down2)
+            
+            Rectangle selectionBox = new Rectangle();
+            selectionBox.x = Math.min(down.x, down2.x);
+            selectionBox.y = Math.min(down.y, down2.y);
+            selectionBox.width = Math.abs(down.x - down2.x);
+            selectionBox.height = Math.abs(down.y - down2.y);
 
+            // project all sites, and see who's in (down..down2)
+
+            /*
+             TODO: only consider visible sites (perf) -- this changes the loop
+             TODO: lazily/only once make r/p3 objects
+             TODO: deselect other sites
+             TODO: memoize projections, so as you drag, this doesn't change
+            */
+            java.util.List sites = SiteDB.getSiteDB().sites;
+            for (int i=0; i<sites.size(); i++) {
+                Site s = (Site) sites.get(i);
+                Location l = s.getLocation();
+                if (l == null)
+                    continue;
+
+                Projection r = Projection.makeProjection(v);
+                Point3D p3 = new Point3D();
+                r.project(l, p3);
+
+                boolean insideBox = selectionBox.contains(p3.getX(), p3.getY());
+
+                corina.map.LabelSet ls = p.labels; // HACK!
+                ls.setSelected(s, insideBox);
+            }
+
+            corina.map.LabelSet ls = p.labels; // HACK!
+            System.out.println(ls.countSelectedSites() + " sites selected");
+            
 	    p.repaint(); // only if changed?  only relevant area?
 	}
     }
 
-    Point down2 = null;
+    private Point down2 = null;
 
     public void mouseReleased(MouseEvent e) {
         if (site != null) {
 	    // no drag -> do nothing
 	    if (e.getPoint().equals(down)) {
 		site = null;
-		return; }
+		return;
+	    }
 
 	    // these were set on the last drag-event, and don't need to be done again
 	    //            Location loc = new Location();
-	    //            r.unrender(e.getPoint(), loc);
+	    //            r.unproject(e.getPoint(), loc);
 	    //            site.setLocation(loc);
             // System.out.println("setting location of " + site.getCode() + " to " + site.getLocation());
             // p.updateBuffer(); // only if moved!
@@ -192,6 +283,9 @@ public class ArrowTool extends Tool {
     // TODO: don't draw this label!  it's already being drawn!
     public void decorate(Graphics g) {
         if (site != null) {
+            // draw the site here myself.
+            // this is a performance hack: really, i should just revalidate the layer.
+            
             Graphics2D g2 = (Graphics2D) g;
 
             g2.setColor(site.getSiteColor());
@@ -200,24 +294,41 @@ public class ArrowTool extends Tool {
             //                int numSites = p.sitesForPoint(site).size();
 
             Point pt = new Point();
-            Vector3 v3 = new Vector3();
-            r.render(site.getLocation(), v3);
-            pt.x = (int) v3.x;
-            pt.y = (int) v3.y;
+            Point3D v3 = new Point3D();
+            r.project(site.getLocation(), v3);
+            pt.x = (int) v3.getX();
+            pt.y = (int) v3.getY();
 
-            p.drawLabel(g2, pt, site, 1, v); }
-	else if (down != null && down2 != null) {
+            p.drawLabel(g2, pt, site, 1, v);
+	} else if (down != null && down2 != null) {
 	    // dragging to select sites
 
             Graphics2D g2 = (Graphics2D) g;
 
-	    g2.setStroke(new BasicStroke(1f));
+            g2.setStroke(STROKE);
 
-	    g2.setColor(new Color(0, 0, 0, 127));
-	    g2.drawRect(down.x, down.y, down2.x-down.x, down2.y-down.y); // BUG: NPE HERE!
+	    g2.setColor(MUCH_DARKER);
+	    drawRectSafe(g2, down.x, down.y, down2.x, down2.y);
 
-	    g2.setColor(new Color(0, 0, 0, 63));
-	    g2.fillRect(down.x, down.y, down2.x-down.x, down2.y-down.y);
+	    g2.setColor(DARKER);
+	    fillRectSafe(g2, down.x, down.y, down2.x, down2.y);
 	}
+    }
+
+    private static BasicStroke STROKE = new BasicStroke(1);
+    private static Color DARKER = new Color(0, 0, 0, 63);
+    private static Color MUCH_DARKER = new Color(0, 0, 0, 127);
+    
+    // normally drawRect() and fillRect() assume width, height > 0,
+    // so you can't simply say drawRect(x, y, dx, dy) if dx or dy
+    // might be negative.  here are versions that work with any
+    // (x,y), (x2,y2) popints.
+    private void drawRectSafe(Graphics g, int x, int y, int x2, int y2) {
+        g.drawRect(Math.min(x, x2), Math.min(y, y2),
+                   Math.abs(x - x2), Math.abs(y - y2));
+    }
+    private void fillRectSafe(Graphics g, int x, int y, int x2, int y2) {
+        g.fillRect(Math.min(x, x2), Math.min(y, y2),
+                   Math.abs(x - x2), Math.abs(y - y2));
     }
 }

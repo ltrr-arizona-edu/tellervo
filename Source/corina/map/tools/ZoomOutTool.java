@@ -1,12 +1,14 @@
 package corina.map.tools;
 
 import corina.map.View;
-import corina.map.Renderer;
+import corina.map.Projection;
 import corina.map.MapPanel;
+import corina.ui.Builder;
 
 import java.awt.Cursor;
 import java.awt.Toolkit;
 import java.awt.Point;
+import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
@@ -22,13 +24,13 @@ public class ZoomOutTool extends Tool {
     }
 
     Icon getIcon() {
-        ClassLoader cl = this.getClass().getClassLoader();
-        return new ImageIcon(cl.getResource("Images/zoom.png"));
+	return Builder.getIcon("zoom.png");
     }
     Cursor getCursor() {
-        ClassLoader cl = this.getClass().getClassLoader();
-        ImageIcon icon = new ImageIcon(cl.getResource("Images/zoom-small.png"));
-        return Toolkit.getDefaultToolkit().createCustomCursor(icon.getImage(), new Point(0, 0), "Zoomer");
+	Image image = Builder.getImage("zoom-small.png");
+	return Toolkit.getDefaultToolkit().createCustomCursor(image,
+							      new Point(0, 0),
+							      "Zoomer");
     }
     String getTooltip() {
         return "Zoom Out Tool";
@@ -46,13 +48,13 @@ public class ZoomOutTool extends Tool {
 
     public void mouseClicked(MouseEvent e) {
         // recenter on this point
-        Renderer r = Renderer.createRenderer(v);
-        r.unrender(e.getPoint(), v.center);
+        Projection r = Projection.makeProjection(v);
+        r.unproject(e.getPoint(), v.center);
 
         // zoom out by a factor of 2
-        float newZoom = v.zoom / 1.25f;
-        v.zoom = (float) Math.max(0.10, Math.min(newZoom, 16.00));
-//         System.out.println("zoom=" + v.zoom);
+        float newZoom = v.getZoom() / 1.25f;
+        v.setZoom((float) Math.max(0.10, Math.min(newZoom, 16.00)));
+//         System.out.println("zoom=" + v.getZoom());
         p.setZoom();
         
         // now update the buffer, and redraw

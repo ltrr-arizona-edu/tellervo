@@ -1,14 +1,14 @@
 package corina.map.tools;
 
 import corina.map.Location;
-import corina.map.Vector3;
+import corina.map.Point3D;
 import corina.map.View;
-import corina.map.Renderer;
+import corina.map.Projection;
 import corina.map.MapPanel;
 import corina.site.Site;
-import corina.site.SiteInfo;
 import corina.site.SiteNotFoundException;
 import corina.util.Angle;
+import corina.ui.Builder;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -19,6 +19,7 @@ import java.awt.geom.GeneralPath; // is this less efficient?
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
+import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
@@ -37,41 +38,51 @@ public class RulerTool extends Tool {
 
     public RulerTool(MapPanel p, View v, ToolBox b) {
         super(p, b);
-        this.v = v; }
+        this.v = v;
+    }
 
     Icon getIcon() {
-        ClassLoader cl = this.getClass().getClassLoader();
-        return new ImageIcon(cl.getResource("Images/ruler.png")); }
+	return Builder.getIcon("ruler.png");
+    }
     Cursor getCursor() {
-        ClassLoader cl = this.getClass().getClassLoader();
-        ImageIcon icon = new ImageIcon(cl.getResource("Images/ruler-pointer.png"));
-        return Toolkit.getDefaultToolkit().createCustomCursor(icon.getImage(), new Point(0, 0), "Ruler"); }
+	Image image = Builder.getImage("ruler-pointer.png");
+	return Toolkit.getDefaultToolkit().createCustomCursor(image,
+							      new Point(0, 0),
+							      "Ruler");
+    }
     String getTooltip() {
-        return "Measure Tool"; }
+        return "Measure Tool";
+    }
     String getName() {
-        return "Distance"; }
+        return "Distance";
+    }
     Character getKey() {
-        return new Character('m'); }
+        return new Character('m');
+    }
     KeyStroke getFastKey() {
-        return null; }
+        return null;
+    }
 
     // mouse
     boolean mouseIsDown=false;
     int dist;
     Point pointA, pointB;
     Location locA = new Location(), locB = new Location();
-    Vector3 v3 = new Vector3();
-    Renderer r;
+    Point3D v3 = new Point3D();
+    Projection r;
     Site siteA=null, siteB=null;
 
     public void mousePressed(MouseEvent e) {
-        r = Renderer.createRenderer(v);
+        r = Projection.makeProjection(v);
         pointA = e.getPoint();
 
         // if this point is a site label, use that location!  decorate it somehow, too,
         // so it's painfully obvious the site is one end of the drag
         siteA = tryToGetSite(pointA, locA);
     }
+
+    // EXTRACT ME: the stuff in the next method i do in several of the tools,
+    // i.e., "figure out what site is here".  it shouldn't be tool-specific, at all.
 
     // given a point, if there's a site there, return it, and put
     // its location into |result|; otherwise, put the location
@@ -80,16 +91,20 @@ public class RulerTool extends Tool {
     private Site tryToGetSite(Point point, Location result) {
         Site site;
         try {
-            site = p.siteForPoint(r, point, 20*((int) v.zoom));
-            r.render(site.getLocation(), v3);
-            point.x = (int) v3.x; // common operation? -- "copy vector3 to point" --
+            site = p.siteForPoint(r, point, 20*((int) v.getZoom()));
+            r.project(site.getLocation(), v3);
+            point.x = (int) v3.getX(); // common operation? -- "copy Point3D to point" --
             // -- or or maybe i should render to a point -- or maybe i should just subclass point -- or ...
-            point.y = (int) v3.y;
-            Location.copy(result, site.getLocation()); }
-        catch (SiteNotFoundException snfe) {
+            point.y = (int) v3.getY();
+
+            // copy site.getLocation() to result
+            Location.copy(result, site.getLocation());
+	} catch (SiteNotFoundException snfe) {
             site = null;
-            r.unrender(point, result); }
-        return site; }
+            r.unproject(point, result);
+	}
+        return site;
+    }
     
     public void mouseDragged(MouseEvent e) {
         pointB = e.getPoint();
@@ -105,7 +120,8 @@ public class RulerTool extends Tool {
         mouseIsDown = true;
 
         // force a redraw, otherwise, how would the panel know?
-        p.repaint(); }
+        p.repaint();
+    }
 
     public void mouseReleased(MouseEvent e) {
         // stop drawing line
@@ -116,7 +132,8 @@ public class RulerTool extends Tool {
         pointA = pointB = null;
 
         // again, force redraw
-        p.repaint(); }
+        p.repaint();
+    }
 
     // creates a new object -- probably not the greatest idea...
     private void arrow(Graphics2D g2, Point head, Point tail, float dist, float angle) {
@@ -127,32 +144,18 @@ public class RulerTool extends Tool {
         arrow.lineTo((float) head.x, (float) head.y);
         arrow.lineTo((float) (head.x + dist*Math.cos(theta-angle)),
                      (float) (head.y + dist*Math.sin(theta-angle)));
-        g2.draw(arrow); }
+        g2.draw(arrow);
+    }
 
     public void decorate(Graphics g) {
         if (mouseIsDown) {
 
             Graphics2D g2 = (Graphics2D) g;
-
-            //                g2.setColor(Color.red);
+	    g2.setColor(Color.black);
 
             // draw a line between the two points
             g2.drawLine(pointA.x, pointA.y, pointB.x, pointB.y);
-            // draw a curve!
-            /*{ -- terribly inefficient
-                Location l1, l2, l3;
-                Vector3 v1=new Vector3(), v2=new Vector3(), v3=new Vector3();
-                l2 = Location.midpoint(locA, locB);
-                l1 = Location.midpoint(locA, l2);
-                l3 = Location.midpoint(l2, locB);
-                r.render(l1, v1);
-                r.render(l1, v2);
-                r.render(l1, v3);
-                g2.drawLine(pointA.x, pointA.y, (int) v1.x, (int) v1.y);
-                g2.drawLine((int) v1.x, (int) v1.y, (int) v2.x, (int) v2.y);
-                g2.drawLine((int) v2.x, (int) v2.y, (int) v3.x, (int) v3.y);
-                g2.drawLine((int) v3.x, (int) v3.y, pointB.x, pointB.y);
-            }*/
+            // TODO: draw a curve?
 
 	    // TODO: instead of checking for siteA==NULL, if one of (pointA pointB) is on a site that's selected,
 	    // instead of drawing to that site, draw that end to all selected sites.
@@ -160,10 +163,12 @@ public class RulerTool extends Tool {
             // draw flat line, arrow on both ends -- but only if there's no site there
             if (siteA == null) {
                 arrow(g2, pointA, pointB, 10f, (float) (Math.PI/2));
-                arrow(g2, pointA, pointB, 10f, (float) (Math.PI*3/4)); }
+                arrow(g2, pointA, pointB, 10f, (float) (Math.PI*3/4));
+	    }
             if (siteB == null) {
                 arrow(g2, pointB, pointA, 10f, (float) (Math.PI/2));
-                arrow(g2, pointB, pointA, 10f, (float) (Math.PI*3/4)); }
+                arrow(g2, pointB, pointA, 10f, (float) (Math.PI*3/4));
+	    }
 
             // draw siteA, siteB labels, if needed (basically, light them up in yellow)
             if (siteA != null) {
@@ -171,12 +176,14 @@ public class RulerTool extends Tool {
                 int numSites = p.sitesForPoint(siteA).size(); // probably shouldn't rebuild list every time, just to count it -- memoize int
                 g2.setColor(Color.yellow);
                 p.setFontForLabel(g2, v);
-                p.drawLabel(g2, pointA, siteA, numSites, v); }
+                p.drawLabel(g2, pointA, siteA, numSites, v);
+	    }
             if (siteB != null) {
                 int numSites = p.sitesForPoint(siteB).size();
                 g2.setColor(Color.yellow); // (often called twice -- do i care?)
                 p.setFontForLabel(g2, v); // (often called twice -- do i care?)
-                p.drawLabel(g2, pointB, siteB, numSites, v); }
+                p.drawLabel(g2, pointB, siteB, numSites, v);
+	    }
 
             // construct string, and use it to set the tooltip
             String str = dist + " km"; // (... not too bad ...)
@@ -216,10 +223,13 @@ public class RulerTool extends Tool {
             g2.translate(xt, yt);
             g2.setStroke(defaultStroke); // apparently jtooltip doesn't set the stroke -- gah
             tip.paint(g2);
-            g2.translate(-xt, -yt); } }
+            g2.translate(-xt, -yt);
+	}
+    }
 
     private Rectangle r1 = new Rectangle(), r2 = new Rectangle(), rt = new Rectangle(); // siteA, siteB, tag
     private final BasicStroke defaultStroke = new BasicStroke(1f);
     private JToolTip tip = new JToolTip(); {
-        tip.setDoubleBuffered(false); } // i'm buffering myself, no reason to do it again
+        tip.setDoubleBuffered(false); // i'm buffering myself, no reason to do it again
+    }
 }

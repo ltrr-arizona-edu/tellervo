@@ -1,7 +1,27 @@
+//
+// This file is part of Corina.
+//
+// Corina is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// Corina is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Corina; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// Copyright 2003 Ken Harris <kbh7@cornell.edu>
+//
+
 package corina.map.tools;
 
 import corina.map.View;
-import corina.map.Renderer;
+import corina.map.Projection;
 import corina.map.MapPanel;
 import corina.site.Site;
 import corina.site.SiteNotFoundException;
@@ -34,11 +54,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.ActionEvent;
 
+// TODO: document me!
+
 // abstract class tool:
-// -- automatic click-to-select, unselect-all-others
+// -- automatic click to select this tool (and unselect all others)
 // -- specify a cursor to use (png)
 // -- on-click, on-drag, ...
-// -- (gets renderer passed to it -- it doesn't need map -- needs panel, though, for cursor, etc.)
+// -- (gets Projection passed to it -- it doesn't need map -- needs panel, though, for cursor, etc.)
 public abstract class Tool implements MouseListener, MouseMotionListener, KeyListener {
     // (public because MapPanel needs it for its decorators)
     // remember to call repaint() in the mouse listeners if you change, add, or remove decoration
@@ -52,6 +74,12 @@ public abstract class Tool implements MouseListener, MouseMotionListener, KeyLis
     JToggleButton getButton() {
         return button;
     }
+
+    //
+    // key, mouse, and mouse-moved listeners.  classes can implement
+    // any of these they want -- i provide empty bodies here so they can
+    // ignore the rest.
+    //
     public void keyPressed(KeyEvent e) { } // BUG: these don't work -- focus problems?
     public void keyReleased(KeyEvent e) { }
     public void keyTyped(KeyEvent e) { }
@@ -62,8 +90,9 @@ public abstract class Tool implements MouseListener, MouseMotionListener, KeyLis
     public void mouseEntered(MouseEvent e) { }
     public void mouseMoved(MouseEvent e) { }
     public void mouseExited(MouseEvent e) { }
+
     protected MapPanel p;
-     protected ToolBox b;
+    protected ToolBox b;
     Tool(MapPanel p, ToolBox box) {
         this.p = p;
         this.b = box;
@@ -72,6 +101,8 @@ public abstract class Tool implements MouseListener, MouseMotionListener, KeyLis
                             // ASSUMES icon is an imageicon -- enforce via api!
         i = new ImageIcon(((ImageIcon) i).getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH));
         button = new JToggleButton(getName(), i);
+        button.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        button.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         // (default text position is horiz=right, vert=center (i think), which is exactly what i want)
         final Tool glue = this;
         button.addActionListener(new AbstractAction() {
@@ -98,9 +129,9 @@ public abstract class Tool implements MouseListener, MouseMotionListener, KeyLis
         if (e.isPopupTrigger()) {
             try {
                 // get site, and look up all sites at that location
-                Renderer r = Renderer.createRenderer(v);
+                Projection r = Projection.makeProjection(v);
                 Point pt = e.getPoint();
-                Site site = p.siteForPoint(r, pt, 20*((int) v.zoom)); // what's 20*...?
+                Site site = p.siteForPoint(r, pt, 20*((int) v.getZoom())); // what's 20*...?
                 List sites = p.sitesForPoint(site);
 
                 // sort by "code: name"
