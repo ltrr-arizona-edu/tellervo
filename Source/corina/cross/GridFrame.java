@@ -118,52 +118,49 @@ public class GridFrame extends XFrame
     }
 
     // table model for the grid
-    private final class GridTableModel extends AbstractTableModel {
-	public int getColumnCount() {
-	    return (grid == null ? 0 : grid.size()+1);
-	}
-	public int getRowCount() {
-	    return (grid == null ? 0 : grid.size()+1);
-	}
-	public Object getValueAt(int row, int col) {
-	    return grid.getCells()[row][col];
-	}
+    private class GridTableModel extends AbstractTableModel {
+        public int getColumnCount() {
+            return (grid == null ? 0 : grid.size()+1);
+        }
+        public int getRowCount() {
+            return (grid == null ? 0 : grid.size()+1);
+        }
+        public Object getValueAt(int row, int col) {
+            return grid.getCells()[row][col];
+        }
     }
 
     private static double scale = Double.parseDouble(System.getProperty("corina.grid.scale", "1.0"));
 
     // cell renderer
-    private class GridRenderer implements TableCellRenderer {
-	public Component getTableCellRendererComponent(JTable table,
-						       Object value,
-						       boolean isSelected,
-						       boolean hasFocus,
-						       int row, int column) {
-	    final Grid.Cell cell = (Grid.Cell) value;
+    private class GridRenderer extends JComponent implements TableCellRenderer {
 
-	    // hilite on isSelected&&hasFocus?  (why can't i get that
-	    // to work?)
+        public Component getTableCellRendererComponent(JTable table,
+                                                       Object value,
+                                                       boolean isSelected,
+                                                       boolean hasFocus,
+                                                       int row, int column) {
+            // set myself, return myself
+            cell = (Grid.Cell) value;
+            return this;
+        }
 
-	    // new component each time seems inefficient.  come up with a better way.
-	    JComponent c = new JComponent() {
-		    public void paintComponent(Graphics g) {
-			// set font: get original font, and scale it
-			Font origFont = (System.getProperty("corina.grid.font")==null ? g.getFont() : Font.getFont("corina.grid.font"));
-			Font scaledFont = new Font(origFont.getName(),
-						   origFont.getStyle(),
-						   (int) ((double) origFont.getSize() * scale));
-			g.setFont(scaledFont);
+        private Grid.Cell cell;
+        public void paintComponent(Graphics g) {
+            // set font: get original font, and scale it
+            Font origFont = (System.getProperty("corina.grid.font")==null ? g.getFont() : Font.getFont("corina.grid.font"));
+            Font scaledFont = new Font(origFont.getName(),
+                                       origFont.getStyle(),
+                                       (int) ((double) origFont.getSize() * scale));
+            g.setFont(scaledFont);
+            // new font each time seems even MORE inefficient!
+            System.out.println("new font t=" + System.currentTimeMillis());
 
-			// if (System.getProperty("corina.grid.font") != null)
-			// g.setFont(Font.getFont("corina.grid.font"));
-
-			cell.print((Graphics2D) g, 0, 0, scale);
-		    }
-	    };
-	    return c;
-	}
+            // call the printing method (REFACTOR: rename method?)
+            cell.print((Graphics2D) g, 0, 0, scale);
+        }
     }
-
+    
     // PrintableDocument
     public int getPrintingMethod() {
         return PrintableDocument.PAGEABLE;
@@ -175,27 +172,27 @@ public class GridFrame extends XFrame
         return null;
     }
     public String getPrintTitle() {
-        return "Grid";
+        return msg.getString("crossdating_grid");
     }
 
     private void initTable() {
-	output = new JTable(new GridTableModel());
+        output = new JTable(new GridTableModel());
 
-	// cell-selection only
-	output.setRowSelectionAllowed(false);
+        // cell-selection only
+        output.setRowSelectionAllowed(false);
 
-	// set cell height/width from Grid
-	output.setRowHeight((int) (Grid.getCellHeight()*scale) + 2);
-	for (int i=0; i<output.getColumnCount(); i++)
-	    output.getColumnModel().getColumn(i).setPreferredWidth((int) (Grid.getCellWidth()*scale) + 2);
+        // set cell height/width from Grid
+        output.setRowHeight((int) (Grid.getCellHeight()*scale) + 2);
+        for (int i=0; i<output.getColumnCount(); i++)
+            output.getColumnModel().getColumn(i).setPreferredWidth((int) (Grid.getCellWidth()*scale) + 2);
 
-	// no top-header
-	output.setTableHeader(null);
-	output.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        // no top-header
+        output.setTableHeader(null);
+        output.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-	// renderer -- use same as for printer
-	output.setDefaultRenderer(Object.class, new GridRenderer());
-	output.setShowGrid(false);
+        // renderer -- use same as for printer
+        output.setDefaultRenderer(Object.class, new GridRenderer());
+        output.setShowGrid(false);
 
         // put the table in a scroller
         JScrollPane scroller = new JScrollPane(output);
@@ -203,19 +200,22 @@ public class GridFrame extends XFrame
         // REFACTOR: extract GridPanel, GridFrame; then stuffing the panel into a CrossFrame is trivial.
         // OR: it's just a JTable, right?  would GridComponent (extends JTable) be better?
     }
-
+    
+    // used by elementspanel -- shortcut for new gridframe(new grid(list))
     public GridFrame(List s) {
         grid = new Grid(s);
         grid.run(); // change cursor to WAIT?
         init();
     }
 
+    // used by canopener
     public GridFrame(Grid g) {
         grid = g;
         // move grid.run() to init(), and make run() a no-op if already run?
         init();
     }
 
+    // never used -- could be used by xmenubar
     public GridFrame() {
         try {
             // get args
@@ -327,6 +327,7 @@ public class GridFrame extends XFrame
         zoomOut.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(XMenubar.macize("control DOWN")));
         view.add(new XMenubar.XMenuItem(zoomOut));
 
+        // REFACTOR: WindowMenu should be automatic; move up to XFrame or XMenubar or some such
         if (Platform.isMac)
             return new JMenu[] { view, new WindowMenu(this) };
         else
