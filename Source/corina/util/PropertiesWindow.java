@@ -1,7 +1,5 @@
 package corina.util;
 
-import corina.gui.Layout;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
@@ -9,12 +7,16 @@ import java.util.Properties;
 import java.util.Enumeration;
 
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.Box;
 import javax.swing.BorderFactory;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
+
+import java.awt.BorderLayout;
 import java.awt.Component;
 
 // a window which displays all of the system properties.
@@ -36,81 +38,107 @@ import java.awt.Component;
 // - distinguish between or separate standard properties, extra system properties, and corina properties?
 
 public class PropertiesWindow extends JDialog {
-    private static class Property implements Comparable {
-	String key, value;
-	Property(String key, String value) {
+  private static PropertiesWindow instance;
+
+  private static class Property implements Comparable {
+  	private String key, value;
+    private Property(String key, String value) {
 	    this.key = key;
 	    this.value = escape(value);
-	}
-	private static String escape(String s) {
-	    StringBuffer output = new StringBuffer();
-	    for (int i=0; i<s.length(); i++) {
-		if (s.charAt(i) == '\n')
-		    output.append("\\n");
-		else
-		    output.append(s.charAt(i));
-	    }
-	    return output.toString();
-	}
-	public int compareTo(Object o) {
-	    Property p2 = (Property) o;
-	    // (keys are unique, so i don't need to worry about a secondary sort by values)
-	    return key.compareTo(p2.key);
-	}
+	  }
+    private static String escape(String s) {
+      StringBuffer output = new StringBuffer();
+      for (int i=0; i<s.length(); i++) {
+    	  if (s.charAt(i) == '\n')
+    	    output.append("\\n");
+    	  else
+    	    output.append(s.charAt(i));
+      }
+      return output.toString();
     }
+    public int compareTo(Object o) {
+      Property p2 = (Property) o;
+      // (keys are unique, so i don't need to worry about a secondary sort by values)
+      return key.compareTo(p2.key);
+    }
+  }
 
-    private static class PropertiesTableModel extends AbstractTableModel {
-	private List props;
-	PropertiesTableModel() {
+  private static class PropertiesTableModel extends AbstractTableModel {
+	  private List props;
+    private Properties properties;
+    private PropertiesTableModel(Properties properties) {
 	    // initialize from properties
-	    props = new ArrayList();
-
-	    Enumeration e = System.getProperties().propertyNames();
-	    while (e.hasMoreElements()) {
-		String key = (String) e.nextElement();
-		Property p = new Property(key, System.getProperty(key));
-		props.add(p);
-	    }
-
-	    Collections.sort(props);
-	}
-	public int getRowCount() {
-	    return props.size();
-	}
-	public int getColumnCount() {
-	    return 2;
-	}
-	public Object getValueAt(int row, int column) {
+      this.properties = properties;
+      props = new ArrayList();
+      init();
+	  }
+    public synchronized void init() {
+      props.clear();
+      Enumeration e = properties.propertyNames();
+      while (e.hasMoreElements()) {
+        String key = (String) e.nextElement();
+        Property p = new Property(key, System.getProperty(key));
+        props.add(p);
+      }
+      Collections.sort(props);
+      fireTableDataChanged();
+    }
+  	public int getRowCount() {
+  	  return props.size();
+  	}
+  	public int getColumnCount() {
+  	  return 2;
+  	}
+	  public Object getValueAt(int row, int column) {
 	    Property p = (Property) props.get(row);
 	    return (column==0 ? p.key : p.value);
-	}
-	public String getColumnName(int column) {
+	  }
+	  public String getColumnName(int column) {
 	    return (column==0 ? "Property" : "Value");
-	}
-    }
+	  }
+  }
+  
+  private synchronized static PropertiesWindow getInstance() {
+    if (instance == null) instance = new PropertiesWindow();
+    return instance;
+  }
+  
+  public synchronized static void showPropertiesWindow() {
+    PropertiesWindow pw = getInstance();
+    pw.refresh();
+    pw.show();
+  }
 
-    public PropertiesWindow() {
-	setTitle("System Properties");
-	setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+  private PropertiesTableModel model;
+  public PropertiesWindow() {
+	  super((JFrame) null, "System Properties");
+	  //setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-	JTable table = new JTable(new PropertiesTableModel());
+    model = new PropertiesTableModel(System.getProperties());
+	  JTable table = new JTable(model);
 
-	JScrollPane sp = new JScrollPane(table);
-        sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-	sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	  JScrollPane sp = new JScrollPane(table);
+    sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	  sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-	JLabel label = new JLabel("Here are your system properties:");
-	label.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
+	  JLabel label = new JLabel("Here are your system properties:");
+    label.setHorizontalAlignment(SwingConstants.CENTER);
+	  label.setBorder(BorderFactory.createEmptyBorder(14, 0, 14, 0));
 
-        Component leftMargin = Box.createHorizontalStrut(14);
-        Component rightMargin = Box.createHorizontalStrut(14);
-        Component bottomMargin = Box.createVerticalStrut(20);
+    Component leftMargin = Box.createHorizontalStrut(14);
+    Component rightMargin = Box.createHorizontalStrut(14);
+    Component bottomMargin = Box.createVerticalStrut(20);
+    
+    //setContentPane(Layout.borderLayout(label, leftMargin, sp, rightMargin, bottomMargin));
+    
+    getContentPane().add(label, BorderLayout.NORTH);
+    getContentPane().add(sp, BorderLayout.CENTER);
 
-	setContentPane(Layout.borderLayout(label,
-                                           leftMargin, sp, rightMargin,
-                                           bottomMargin));
-
-	setSize(400, 500);
-	show();
-    }
+	  pack(); //setSize(400, 500);
+    Center.center(this);
+  }
+  
+  public void refresh() {
+    model.init();
+  }
 }
