@@ -20,29 +20,18 @@
 
 package corina.prefs;
 
-import corina.prefs.components.ColorPrefComponent;
-import corina.prefs.components.FormattingPrefComponent;
-import corina.prefs.components.BoolPrefComponent;
-import corina.prefs.components.FontPrefComponent;
 import corina.prefs.panels.AppearancePrefsPanel;
 import corina.prefs.panels.DataPrefsPanel;
 import corina.prefs.panels.GraphPrefsPanel;
 import corina.prefs.panels.CrossdatingPrefsPanel;
 import corina.prefs.panels.AdvancedPrefsPanel;
 
-import corina.gui.HasPreferences; // future: not needed
 import corina.gui.Bug; // ???
 import corina.ui.Builder;
 import corina.util.Center;
-import corina.util.DocumentListener2;
-
-import java.util.List;
 
 import java.awt.BorderLayout;
-import java.awt.Frame; // obsolete: used only for HasPrefs
-//import java.awt.event.*; // !!!
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.BorderFactory;
 
@@ -74,100 +63,103 @@ import javax.swing.BorderFactory;
     @version $Id$
 */
 public class PrefsDialog extends JFrame {
-    // static reference: there can be only one! -- gets null on close, how?
-    private static PrefsDialog me = null;
+  // static reference: there can be only one! -- gets null on close, how?
+  private static PrefsDialog instance;
 
-    // REMOVE ME: obsolete, since refreshFromPrefs() is going away
-    public static void updateAll() {
-        // call refreshFromPreferences on every Frame that HasPreferences
-        Frame f[] = Frame.getFrames();
-        for (int i=0; i<f.length; i++)
-            if (f[i] instanceof HasPreferences)
-                try {
-                    ((HasPreferences) f[i]).refreshFromPreferences();
-                } catch (Exception e) {
-                    Bug.bug(e);
-                }
-
-        // save all
-	Prefs.save();
+  // REMOVE ME: obsolete, since refreshFromPrefs() is going away
+  /*public static void updateAll() {
+    // call refreshFromPreferences on every Frame that HasPreferences
+    Frame f[] = Frame.getFrames();
+    for (int i=0; i<f.length; i++) {
+      if (!(f[i] instanceof HasPreferences)) continue;
+      try {
+        ((HasPreferences) f[i]).refreshFromPreferences();
+      } catch (Exception e) {
+        Bug.bug(e);
+      }
     }
+    // save all
+	  Prefs.save();
+  }*/
 
-    /** Show the preferences dialog.  If there is already a Corina
-	preferences dialog, this restores it and brings it to the
-	front.  This prevents multiple preferences dialogs from
-	appearing, which would serve only to confuse the user. */
-    public static void showPreferences() {
-	try {
-	    if (me == null) {
-		me = new PrefsDialog();
-	    } else { // FIXME: THIS CODE IS NEVER USED (...why?)
-		me.setVisible(true); // despite DISPOSE_ON_CLOSE, it's just getting hidden?
-		me.setState(NORMAL);
-		me.toFront();
-	    }
-	} catch (RuntimeException re) {
+  synchronized static PrefsDialog getInstance() {
+    if (instance == null) {
+      instance = new PrefsDialog();
+    }
+    return instance;
+  }
+  
+  /** Show the preferences dialog.  If there is already a Corina
+	  preferences dialog, this restores it and brings it to the
+	  front.  This prevents multiple preferences dialogs from
+	  appearing, which would serve only to confuse the user. */
+  public synchronized static void showPreferences() {
+    PrefsDialog dialog = getInstance();
+	  try {
+      dialog.setVisible(true); // despite DISPOSE_ON_CLOSE, it's just getting hidden?
+      dialog.setState(NORMAL);
+      dialog.toFront();
+	  } catch (RuntimeException re) {
+      re.printStackTrace();
 	    Bug.bug(re);
-	}
+	  }
+  }
+
+  // show a specific tab
+  // TODO: document me!
+  // in the future, this should be passed a name like "corina.prefs.panels.AppearancePrefPanel".
+  // i think right now you'd pass it something like "advanced", but that won't work without the template.
+  public synchronized static void showPreferences(String tab) {
+    getInstance().select(tab);
+
+    //show dialog, as normal
+    showPreferences();
+  }
+
+  private JTabbedPane tabs;
+
+  // private, because nobody outside of showPreferences() should ever construct me
+  private PrefsDialog() {
+    super("Preferences");
+    //setDefaultCloseOperation(HIDE_ON_CLOSE);
+    //setResizable(false);
+
+    // icon!
+    java.awt.Image image = Builder.getImage("Preferences16.gif");
+    if (image != null) {
+      setIconImage(image);
     }
 
-    // show a specific tab
-    // TODO: document me!
-    // in the future, this should be passed a name like "corina.prefs.panels.AppearancePrefPanel".
-    // i think right now you'd pass it something like "advanced", but that won't work without the template.
-    public static void showPreferences(String tab) {
-        // show dialog, as normal
-        showPreferences();
+    // use my own panel, so i can add a border
+    /*JPanel p = new JPanel(new BorderLayout());
+    p.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+    setContentPane(p);*/
 
-        // select the tab
-        // WRITEME -- look for tab, use me.tabs.setSelectedIndex(i)
-/* pseudocode:
-        for (int i=0; i<me.tabs.getNumberOfTabs(); i++) {
-            if (me.tabs.getTabAt(i).getClass().contains(tab))
-                me.tabs.setSelectedIndex(i);
-                return;
-            }
-        }
-*/
+    // fill up the tabbed pane
+    tabs = new JTabbedPane();
 
-        // note: if we're given a bogus tab name, it just falls through,
-        // and the first tab remains selected, which is correct behavior.
+    // add tabs
+    tabs.addTab("Appearance", new AppearancePrefsPanel());
+    tabs.addTab("Data", new DataPrefsPanel());
+    tabs.addTab("Crossdating", new CrossdatingPrefsPanel());
+    tabs.addTab("Graphs", new GraphPrefsPanel());
+    tabs.addTab("Advanced", new AdvancedPrefsPanel());
+    getContentPane().add(tabs, BorderLayout.CENTER);
+    
+    // pack, center on screen, and show
+    pack();
+    //setSize(getWidth() * 2, getHeight()); // FIXME: this is really arbitrary!
+	  Center.center(this);
+    show();
+  }
+  
+  private void select(String tab) {
+    //  select the tab
+    int i = tabs.indexOfTab(tab);
+    if (i != -1) {
+      tabs.setSelectedIndex(i);       
     }
-
-    private JTabbedPane tabs;
-
-    // private, because nobody outside of showPreferences() should ever construct me
-    private PrefsDialog() {
-        setTitle("Preferences");
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE); // dispose?  why?
-        setResizable(false);
-
-        // icon!
-        java.awt.Image image = Builder.getImage("Preferences16.gif");
-        if (image != null) {
-	        setIconImage(image);
-        }
-
-        // use my own panel, so i can add a border
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        setContentPane(p);
-
-        // fill up the tabbed pane
-        tabs = new JTabbedPane();
-
-        // add tabs
-        tabs.addTab("Appearance", new AppearancePrefsPanel());
-        tabs.addTab("Data", new DataPrefsPanel());
-        tabs.addTab("Crossdating", new CrossdatingPrefsPanel());
-        tabs.addTab("Graphs", new GraphPrefsPanel());
-        tabs.addTab("Advanced", new AdvancedPrefsPanel());
-        p.add(tabs);
-
-        // pack, center on screen, and show
-        pack();
-        setSize(getWidth() * 2, getHeight()); // FIXME: this is really arbitrary!
-	Center.center(this);
-        show();
-    }
+    // note: if we're given a bogus tab name, it just falls through,
+    // and the first tab remains selected, which is correct behavior.
+  }
 }
