@@ -21,6 +21,8 @@
 package corina.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 import java.util.Comparator;
 import java.util.Collections;
@@ -34,8 +36,8 @@ import java.util.List;
 
 <pre>
 class Point {
-   int x, y;
-   String label;
+&nbsp;&nbsp;&nbsp;int x, y;
+&nbsp;&nbsp;&nbsp;String label;
 }
 </pre>
 
@@ -47,8 +49,27 @@ Sort.sort(list, "y", true); // sort by y-coordinates, high-to-low
 Sort.sort(list, "label"); // sort by label
 </pre>
 
-   (With the Collections class, you'd have to write a Comparator
-   object for each of these.)
+   <p>(With the Collections class, you'd have to write a Comparator
+   object for each of these.)</p>
+
+   <p>It also works for private fields which have accessors.  For
+   example, if the class had been defined:</p>
+
+<pre>
+class Point {
+&nbsp;&nbsp;&nbsp;public int x, y;
+&nbsp;&nbsp;&nbsp;private String label;
+&nbsp;&nbsp;&nbsp;public String getLabel() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return label;
+&nbsp;&nbsp;&nbsp;}
+}
+</pre>
+
+   <p>you could still sort by label with:</p>
+
+<pre>
+Sort.sort(list, "label");
+</pre>
 
    @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
    @version $Id$
@@ -77,7 +98,7 @@ public class Sort {
         // since i don't even know what type it would be)
         if (data.size() == 0)
             return;
-        
+
         try {
             // possible bug: if data contains different classes of objects, data[0].class
             // might be the declarer of field fieldname -- do i need to call
@@ -85,23 +106,89 @@ public class Sort {
             Class c = data.get(0).getClass();
             final Field f = c.getDeclaredField(fieldName); // final because my anonymous class needs it
 
-            final boolean reverse = decreasing;
+	    // see if data[0].fieldName is visible
+	    try {
+		f.get(data.get(0));
 
-            Collections.sort(data, new Comparator() {
-                public int compare(Object o1, Object o2) {
-                    try {
-                        Comparable v1 = (Comparable) f.get(o1);
-                        Comparable v2 = (Comparable) f.get(o2);
-                        int x = v1.compareTo(v2); // bug: trouble here if v1 (or maybe v2) is null
-                        return (reverse ? -x : x);
-                    } catch (IllegalAccessException iae) {
-                        // gah, nothing i can do here.
-                        throw new IllegalArgumentException("no access to field! -- " + iae);
-                    }
-                }
-            });
+		// if it passes that, then f is visible to me.
+		// so sort by the field.
+		sortByField(data, f, decreasing);
+
+	    } catch (IllegalAccessException iae) {
+
+		// well, we can't see field |fieldName|.  what else can we try?
+		// we try a get<fieldName>() method, of course!
+
+		try {
+		    String methodName = "get" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+		    final Method m = c.getMethod(methodName, new Class[] { });
+		    // FIXME: what if this fails?
+
+		    sortByMethod(data, m, decreasing);
+
+		} catch (NoSuchMethodException nsme) {
+		    // no get() method exists, abort
+		    throw new IllegalArgumentException();
+		}
+
+	    }
         } catch (NoSuchFieldException nsfe) {
             throw new IllegalArgumentException("no such field! --" + nsfe);
         }
+    }
+
+    // sort |data| by |field|, high-to-low iff |decreasing|.
+    private static void sortByField(List data, Field field, boolean decreasing) throws IllegalArgumentException {
+	final boolean reverse = decreasing;
+	final Field f = field;
+
+	Collections.sort(data, new Comparator() {
+		public int compare(Object o1, Object o2) {
+		    try {
+			Comparable v1 = (Comparable) f.get(o1);
+			Comparable v2 = (Comparable) f.get(o2);
+
+			if (v1 == null && v2 == null) return 0;
+			if (v1 == null) return -1;
+			if (v2 == null) return +1;
+
+			int x = v1.compareTo(v2); // bug: trouble here if v1 (or maybe v2) is null
+			return (reverse ? -x : x);
+		    } catch (IllegalAccessException iae) {
+			// gah, nothing i can do here.
+			// can't happen.  or, rather, almost can't happen.
+			throw new IllegalArgumentException("no access to field! -- " + iae);
+			// an IAE can be thrown here (doesn't need to be declared), and it'll clear to the top.
+		    }
+		}
+	    });
+    }
+
+    // sort |data| by result of |method|, high-to-low iff |decreasing|
+    private static void sortByMethod(List data, Method method, boolean decreasing) throws IllegalArgumentException {
+	final boolean reverse = decreasing;
+	final Method m = method;
+
+	Collections.sort(data, new Comparator() {
+		public int compare(Object o1, Object o2) {
+		    try {
+			Comparable v1 = (Comparable) m.invoke(o1, new Object[] { });
+			Comparable v2 = (Comparable) m.invoke(o2, new Object[] { });
+
+			if (v1 == null && v2 == null) return 0;
+			if (v1 == null) return -1;
+			if (v2 == null) return +1;
+
+			int x = v1.compareTo(v2); // bug: trouble here if v1 (or maybe v2) is null
+			return (reverse ? -x : x);
+		    } catch (IllegalAccessException iae) {
+			// gah, nothing i can do here.
+			// can't happen.  or, rather, almost can't happen.
+			throw new IllegalArgumentException("no access to field! -- " + iae);
+		    } catch (InvocationTargetException ie) {
+			throw new IllegalArgumentException();
+		    }
+		}
+	    });
     }
 }
