@@ -45,87 +45,103 @@ import java.awt.print.PageFormat;
  - compute total pages for "page n of m" in corner?
  --- (wait, i don't know how many pages it'll be!  no, it's easy to just count 'em, right?)
  - print with same sorting as on-screen?
- - let user choose which to print (all/sigs/histo)
  - add space between sections
- - start sections on new pages
+ - start sections on new pages?
  - make font/sizes settable?
- - integrate rendering with CrossFrame?  (don't bother)
- - integrate with Editor to print samples?  (later)
- - bug: quit too soon doesn't finish printing.
+ - integrate table rendering with CrossFrame, Editor?  (yes, please!)
+ - race: quit too soon doesn't finish printing.
  --- (how to solve?  start thread for printing, in "printing" threadgroup, "quit" joins 'em all)
-*/
+
+ stuff to do that's specific to the new refactoring:
+ - compute page breaks before any rendering is done
+ - (page numbers disappeared; be prepared to add 'em back)
+- draw sigscores is the order they're sorted on-screen
+- highlight sigscores in the allscores table
+- try to abstract out center/right-aligned text printing
+- try to consolidate header/data lines, which have redundant tab-processing
+- waaaay too many new Font() calls.  (at least string literals are interned...)
+- use an em-dash for ranges?  (can i do this everywhere, or just for printouts?)
+- get histogram from cross, where it belongs anyway.
+
+- need a way to export the crossdate so word can read it.  (gah.)  maybe edit->copy is easiest, but what format?
+    */
 
 public class CrossPrinter implements Printable {
-
-    // font sizes.  use "serif" for the font: it looks a lot nicer,
-    // you can actually see styles like bold text, and postscript
-    // knows it so a 2-page crossdate takes 80KB instead of 3MB (and
-    // it'll print *much* faster)
-    private void big() {
-        g2.setFont(new Font("serif", Font.PLAIN, 18));
-    }
-    private void medium() {
-        g2.setFont(new Font("serif", Font.PLAIN, 12));
-    }
-    private void small() {
-        g2.setFont(new Font("serif", Font.PLAIN, 9));
-    }
-    private void small(boolean bold) {
-        g2.setFont(new Font("serif", (bold ? Font.BOLD : Font.PLAIN), 9));
-    }
-
     // page margins
     private double left, right, top, bottom;
 
     // next pixel row to draw
     private double position;
 
-    // last page of this document, or -1 if not-yet-known
-    private int lastPage = -1;
-
     // the cross to print, and its histogram
     private Cross cross;
-    private Histogram histo;
-
-    // number of rows: scores, sig, distro, total
-    private int scoreRows;
-    private int sigRows;
-    private int distroRows;
-    private int totalRows;
+    private Histogram histo=null;
 
     // l10n
     private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // formatter
-    DecimalFormat formatter;
+    private DecimalFormat fmt;
 
-    // a new crossdate printer with everything (still needed?)
+    // a new crossdate printer with everything.  (do i really need this?)
     public CrossPrinter(Cross c) {
         this(c, true, true, true);
     }
 
+    private List lines;
+    
     // a new crossdate printer, with user-selected stuff
     public CrossPrinter(Cross c, boolean sigScores, boolean allScores, boolean histogram) {
         cross = c;
-        histo = new Histogram(c); // isn't this part of cross?  (well, it should be...)
-
-        // count some rows
-        scoreRows = c.range.getEnd().row() - c.range.getStart().row() + 1;
-        sigRows = c.highScores.size();
-        distroRows = histo.countBuckets();
-        totalRows = 1 + 2 + 1 + 1+scoreRows + 1 + 1+sigRows + 1 + 1+distroRows + 1;
+        if (histogram)
+            histo = new Histogram(c); // isn't this part of cross?  (well, it should be...)
 
         // formatter
-        formatter = new DecimalFormat(cross.getFormat());
-    }
+        fmt = new DecimalFormat(cross.getFormat());
+        
+        // for later.  trust me.
+        firstRowOfPage.add(new Integer(0));
 
-    // number of rows the last page we printed had.
-    private int previousPageRows = 0;
+        // -- start stuffing Lines into a List
+        lines = new ArrayList();
+        lines.add(new TitleLine(cross.getName(), 18));
+        lines.add(new LabelLine(msg.getString("fixed") + ": ", cross.fixed.toString()));
+        lines.add(new LabelLine(msg.getString("moving") + ": ", cross.moving.toString()));
+        lines.add(new EmptyLine());
+        if (sigScores) {
+            lines.add(new TitleLine(msg.getString("sig_scores"), 12));
+            lines.add(new SigsHeaderLine());
+            int sigRows = c.highScores.size();
+            for (int i=0; i<sigRows; i++)
+                lines.add(new SigsLine(i));
+            lines.add(new EmptyLine());
+        }
+        if (allScores) {
+            lines.add(new TitleLine(msg.getString("all_scores"), 12));
+            lines.add(new ScoresHeaderLine());
+            int scoreRows = c.range.getEnd().row() - c.range.getStart().row() + 1;
+            for (int i=0; i<scoreRows; i++)
+                lines.add(new ScoresLine(i));
+            lines.add(new EmptyLine());
+        }
+        if (histogram) {
+            lines.add(new TitleLine(msg.getString("histogram"), 12));
+            lines.add(new HistoHeaderLine());
+            int histoRows = histo.countBuckets();
+            for (int i=0; i<histoRows; i++)
+                lines.add(new HistoLine(histo, i));
+            lines.add(new EmptyLine());
+        }
+        lines.add(new ByLine());
+        // -- for now, wait until print() to measure them
+    }
 
     // print() assigns this right away, and print() is the only public
     // method (the constructor doesn't use it), so we're safe.
     private Graphics2D g2;
 
+    private List firstRowOfPage = new ArrayList();
+    
     public int print(Graphics g, PageFormat pf, int page) {
         // store margins
         left = pf.getImageableX();
@@ -139,248 +155,307 @@ public class CrossPrinter implements Printable {
         // start at the top
         position = top;
 
-        // strategy: print lines from start (until position+height>bottom)
-
-        // already done?  say so
-        if (lastPage != -1 && page > lastPage)
+        // REWRITE ME: compute all page ranges before starting, not on-demand.
+        
+        // well, i know where it starts, at least.
+        // is it a bogus page?
+        if (((Integer) firstRowOfPage.get(page)).intValue() == -1)
             return NO_SUCH_PAGE;
 
-        // what page to draw?
-        int startHere = 0;
-
-        // never printed this page before?  then i need to know what's on it...
-        int lastKnownPage = startRows.size() - 1;
-        if (page > lastKnownPage) {
-            // compute page start/end?  or just draw it for the first time?
-
-            // where's it start?
-            if (page > 0)
-                startHere = ((Integer) startRows.get(lastKnownPage)).intValue() + previousPageRows;
-            startRows.add(new Integer(startHere));
-        } else {
-            // print it before, let's try to remember where we started last time
-            startHere = ((Integer) startRows.get(page)).intValue();
-        }
-
-        // print the page number (make it 1-indexed for people)
-        printPageNr(page+1);
-
-        // now just draw starting with |startHere| until there's no
-        // more room
-        int n = 0;
-
-        // this checks if the *last* line could fit on this page, not
-        // whether the *next* one can, but 99% of the time, it'll be
-        // fine.  the line heights are close enough it'll probably
-        // never even be noticable.
-        while ((position + lineHeight()) < bottom) {
-
-            // done?
-            if (startHere >= totalRows) {
-                lastPage = page;
-                return PAGE_EXISTS;
+        // ok, it's a real page.  pick out its first row
+        int start = ((Integer) firstRowOfPage.get(page)).intValue(); // move me up
+        int row = start;
+        int nextPage = -1;
+        
+        // start printing
+        while (row < lines.size()) {
+            Line l = (Line) lines.get(row);
+            if (position + l.height(g2) < bottom) {
+                l.print(g2, position);
+                position += l.height(g2);
+                row++;
+            } else {
+                nextPage = row;
+                break;
             }
-
-            printRow((Graphics2D) g, startHere++);
-            n++;
         }
 
-        // if this is the first time we've drawn this page, better
-        // record how many rows it was.  how?
-        previousPageRows = n;
+        // if i now know more, say so
+        if (page >= firstRowOfPage.size()-1)
+            firstRowOfPage.add(new Integer(nextPage));
 
-        // done
         return PAGE_EXISTS;
     }
 
-    // starting row for page /i/ -- List of Integers
-    List startRows = new ArrayList();
+    interface Line {
+        public void print(Graphics g, double y);
+        public int height(Graphics g);
+    }
+    
+    class TitleLine implements Line {
+        private String title;
+        private int size;
+        public TitleLine(String title, int size) {
+            this.title = title;
+            this.size = size;
+        }
+        public void print(Graphics g, double y) {
+            // baseline
+            float baseline = (float) (y + height(g));
+            Graphics2D g2 = (Graphics2D) g;
 
-    static final int ROW_EXISTS = 10;
-    static final int NO_SUCH_ROW = 36;
-
-    void printPageNr(int page) {
-        small();
-        String nr = msg.getString("page") + " " + page; // of /n/???
-        drawStringRight(nr, right);
-
-        // page 1 starts with "T-score" (or whatever the score is), so
-        // the top-right corner is free, so we don't need to do
-        // anything.  on other pages, there will be data there, so
-        // skip down.
-        if (page != 1)
-            newLine();
+            // title
+            g2.setFont(new Font("serif", Font.PLAIN, size)); // too many news!
+            g2.drawString(title, (float) left, baseline); // |left| is from enclosing class
+        }
+        public int height(Graphics g) {
+            return g.getFontMetrics(new Font("serif", Font.PLAIN, size)).getHeight();
+        }
     }
 
-    // print row |row|.  Whatever It Takes.
-    void printRow(Graphics2D g, int row) {
-	/*
-	  what are the rows?
-	  - title: Crossdate
-	  -   line: Fixed: ...
-	  -   line: Moving: ...
-	  - section: All Scores
-	  -   table: scores
-	  - section: Significant Scores
-	  -   table: sig scores
-	  - section: Distribution of Scores
-	  -   table: histogram table
-	  - footer: printed by ...
-	 */
+    // the "Year  0  1  2 ..." line across the top of the scores
+    class ScoresHeaderLine implements Line {
+        public void print(Graphics g, double y) {
+            // baseline
+            float baseline = (float) (y + height(g));
+            Graphics2D g2 = (Graphics2D) g;
+            float colWidth = (float) ((right - left) / 11.);
+            g2.setFont(new Font("serif", Font.PLAIN, 9));
 
-        if (row == 0)
-            printTitle(cross.getName());
-        else if (row == 1)
-            printLabel(msg.getString("fixed") + ": ", cross.fixed.toString());
-        else if (row == 2)
-            printLabel(msg.getString("moving") + ": ", cross.moving.toString());
-        else if (row == 3)
-            printSection(msg.getString("all_scores"));
-        else if (row <= 4 + scoreRows)
-            printScores(row - 4);
-        else if (row == 5 + scoreRows)
-            printSection(msg.getString("sig_scores"));
-        else if (row <= 6 + scoreRows + sigRows)
-            printSigs(row - (6 + scoreRows));
-        else if (row == 7 + scoreRows + sigRows)
-            printSection(msg.getString("histogram"));
-        else if (row <= 8 + scoreRows + sigRows + distroRows)
-            printHisto(row - (8 + scoreRows + sigRows));
-        else if (row == 9 + scoreRows + sigRows + distroRows)
-            printByLine();
-
-        // ... else something's wrong, so ignore it.  nah, let's bug the user.
-        Bug.bug(new IllegalArgumentException("eep."));
-    }
-
-    void printTitle(String text) {
-	big();
-	g2.drawString(text, (float) left, (float) position + lineHeight());
-	newLine();
-    }
-
-    void printSection(String text) {
-	medium();
-	g2.drawString(text, (float) left, (float) position + lineHeight());
-	newLine();
-    }
-
-    // n = 0 is title ("year, 0, 1, ..., 9"), n>0 is row n-1
-    void printScores(int n) {
-        small();
-        float colWidth = (float) ((right - left) / 11.);
-        if (n == 0) {
+            // "year"
             String yr = msg.getString("year");
-            drawStringRight(yr, left+colWidth);
+            int width = g2.getFontMetrics().stringWidth(yr);
+            g2.drawString(yr, (float) (left+colWidth-width), baseline);
 
+            // numbers
             for (int i=0; i<10; i++) {
-                drawStringRight(String.valueOf(i), left+colWidth*(i+2));
+                yr = String.valueOf(i);
+                width = g2.getFontMetrics().stringWidth(yr);
+                g2.drawString(yr, (float) (left+colWidth*(i+2)-width), baseline);
             }
-        } else {
-            // column 0: the decade
+        }
+        public int height(Graphics g) {
+            return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+        }
+    }
+
+    // a row (decade) of scores
+    class ScoresLine implements Line {
+        private int row;
+        public ScoresLine(int row) {
+            this.row = row;
+        }
+        public void print(Graphics g, double y) {
+            // baseline
+            float baseline = (float) (y + height(g));
+            Graphics2D g2 = (Graphics2D) g;
+            float colWidth = (float) ((right - left) / 11.);
+            g2.setFont(new Font("serif", Font.PLAIN, 9));
+
+            // decade
             int row_min = cross.range.getStart().row();
-            String decade=null;
-            if (n == 1)
+            String decade = null;
+            if (row == 0)
                 decade = cross.range.getStart().toString();
-            else if (n-1 + row_min == 0)
+            else if (row + row_min == 0)
                 decade = "1"; // special case
             else
-                decade = (new Year(10 * (n-1 + row_min))).toString();
-            drawStringRight(decade, left+colWidth);
+                decade = (new Year(10 * (row + row_min))).toString();
+            int width = g2.getFontMetrics().stringWidth(decade);
+            g2.drawString(decade, (float) (left+colWidth-width), baseline);
 
-            // rest of the columns
+            // data
             for (int i=0; i<10; i++) {
-                Year y = new Year(10 * (n-1 + row_min) + i); // DUPLICATE CODE FROM SOMEWHERE!
-                if (cross.range.contains(y)) {
-                    String val = formatter.format(cross.data[y.diff(cross.range.getStart())]);
-                    drawStringRight(val, left+colWidth*(i+2));
+                Year yr = new Year(10 * (row + row_min) + i); // DUPLICATE CODE FROM SOMEWHERE!
+                if (cross.range.contains(yr)) {
+                    String datum = fmt.format(cross.data[yr.diff(cross.range.getStart())]);
+                    width = g2.getFontMetrics().stringWidth(datum);
+                    g2.drawString(datum, (float) (left+colWidth*(i+2)-width), baseline);
                 }
             }
         }
-
-        newLine();
-    }
-
-    // n = 0 is title ("no, fixed, moving, t-score, overlap"), n>0 is row n-1
-    void printSigs(int n) {
-        small();
-        float colWidth = (float) ((right - left) / 5.);
-        if (n == 0) {
-            String headers[] = new String[] {
-                msg.getString("number"),
-                msg.getString("fixed"),
-                msg.getString("moving"),
-                cross.getName(),
-                msg.getString("overlap") };
-            for (int i=0; i<headers.length; i++) {
-                drawStringRight(headers[i], left+colWidth*(i+1));
-            }
-        } else {
-            // straight from CrossFrame's getValueAt():
-            int row = n-1;
-            Score s = (Score) cross.highScores.get(row);
-            String vals[] = new String[] {
-                String.valueOf(s.number),
-                s.fixedRange.toString(),
-                s.movingRange.toString(),
-                formatter.format(s.score),
-                String.valueOf(s.span),
-            };
-
-            for (int i=0; i<5; i++) {
-                drawStringRight(vals[i], left+colWidth*(i+1));
-            }
+        public int height(Graphics g) {
+            return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
         }
-
-        newLine();
     }
 
-    // n = 0 is title ("t-score, number, histogram"), n>0 is row n-1
-    void printHisto(int n) {
-        small();
+    // "#", "Fixed", "Moving", "T-Score", "Overlap" headers for the sigs table
+    class SigsHeaderLine implements Line {
+        public void print(Graphics g, double y) {
+            // baseline
+            float baseline = (float) (y + height(g));
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setFont(new Font("serif", Font.PLAIN, 9));
+            double span = (right - left);
+
+            // #
+            int width = g2.getFontMetrics().stringWidth(msg.getString("number"));
+            g2.drawString(msg.getString("number"), (float) (left+span*0.05-width), baseline);
+
+            // "Fixed"
+            width = g2.getFontMetrics().stringWidth(msg.getString("fixed"));
+            g2.drawString(msg.getString("fixed"), (float) (left+span*0.25-width/2), baseline);
+
+            // "Moving"
+            width = g2.getFontMetrics().stringWidth(msg.getString("moving"));
+            g2.drawString(msg.getString("moving"), (float) (left+span*0.50-width/2), baseline);
+
+            // "T-Score" (or some such)
+            width = g2.getFontMetrics().stringWidth(cross.getName());
+            g2.drawString(cross.getName(), (float) (left+span*0.80-width), baseline);
+
+            // "Overlap"
+            width = g2.getFontMetrics().stringWidth(msg.getString("overlap"));
+            g2.drawString(msg.getString("overlap"), (float) (left+span*1.00-width), baseline);
+        }
+        public int height(Graphics g) {
+            return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+        }
+    }
+
+class SigsLine implements Line {
+    private int row;
+    public SigsLine(int row) {
+        this.row = row;
+    }
+    public void print(Graphics g, double y) {
+        // baseline
+        float baseline = (float) (y + height(g));
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setFont(new Font("serif", Font.PLAIN, 9));
+        Score s = (Score) cross.highScores.get(row);
+        double span = (right - left);
+        
+        // #
+        String x = String.valueOf(s.number);
+        int width = g2.getFontMetrics().stringWidth(x);
+        g2.drawString(x, (float) (left+span*0.05-width), baseline);
+
+        // "Fixed"
+        x = s.fixedRange.toString();
+        width = g2.getFontMetrics().stringWidth(x);
+        g2.drawString(x, (float) (left+span*0.25-width/2), baseline);
+
+        // "Moving"
+        x = s.movingRange.toString();
+        width = g2.getFontMetrics().stringWidth(x);
+        g2.drawString(x, (float) (left+span*0.50-width/2), baseline);
+
+        // "T-Score" (or some such)
+        x = fmt.format(s.score);
+        width = g2.getFontMetrics().stringWidth(x);
+        g2.drawString(x, (float) (left+span*0.80-width), baseline);
+
+        // "Overlap"
+        x = String.valueOf(s.span);
+        width = g2.getFontMetrics().stringWidth(x);
+        g2.drawString(x, (float) (left+span*1.00-width), baseline);
+    }
+    public int height(Graphics g) {
+        return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+    }
+}
+
+class HistoHeaderLine implements Line {
+    public void print(Graphics g, double y) {
+        // baseline
+        float baseline = (float) (y + height(g));
+        Graphics2D g2 = (Graphics2D) g;
+        float colWidth = (float) ((right - left) / 5.);
+        g2.setFont(new Font("serif", Font.PLAIN, 9));
+
+        // guides
         int rangeGuide = (int) (left + (float) ((right - left) * 0.15)); // center guide for ranges
         int histoGuide = (int) (left + (float) ((right - left) * 0.50)); // left guide for histo
         int qtyGuide = (rangeGuide + histoGuide) / 2; // center guide for qtys
-        if (n == 0) {
-            // header
-            drawStringCenter(cross.getName(), rangeGuide);
-            drawStringCenter(msg.getString("quantity"), qtyGuide);
-            drawStringCenter(msg.getString("histogram"), (int) ((histoGuide+right)/2));
-            
-        } else {
-            int row = n-1;
 
-            // col 0: score
-            String score = histo.getRange(row);
-            drawStringCenter(score, rangeGuide);
+        int width;
+        width = g2.getFontMetrics().stringWidth(cross.getName());
+        g2.drawString(cross.getName(), (float) (rangeGuide - width/2), baseline);
 
-            // col 1: number (right-aligned), but only if >0
-            if (histo.getNumber(row) > 0) {
-                String number = String.valueOf(histo.getNumber(row));
-                drawStringCenter(number, qtyGuide);
+        width = g2.getFontMetrics().stringWidth(msg.getString("quantity"));
+        g2.drawString(msg.getString("quantity"), (float) (qtyGuide - width/2), baseline);
 
-                // col 2: histogram -- only if n>0
-                g2.setStroke(new BasicStroke(0.5f));
-                int ascent = g2.getFontMetrics().getAscent();
-                int y = (int) (position + lineHeight() - ascent);
-                double frac = (double) histo.getNumber(row) / (double) histo.getFullestBucket();
-                int dx = (int) (frac * (right - histoGuide));
-                g2.drawRect((int) histoGuide, y, dx, lineHeight());
-            }
-        }
-
-        newLine();
+        width = g2.getFontMetrics().stringWidth(msg.getString("histogram"));
+        g2.drawString(msg.getString("histogram"), (float) ((histoGuide+right)/2 - width/2), baseline);
     }
+    public int height(Graphics g) {
+        return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+    }
+}
 
-    // used for "Fixed:" and "Moving:" labels at the top
-    void printLabel(String label, String value) {
-        small(true);
-        drawStringRight(label, left+72);
+class HistoLine implements Line {
+    private Histogram histo;
+    private int row;
+    public HistoLine(Histogram histo, int row) {
+        this.histo = histo;
+        this.row = row;
+    }
+    public void print(Graphics g, double y) {
+        // baseline
+        float baseline = (float) (y + height(g));
+        Graphics2D g2 = (Graphics2D) g;
+        float colWidth = (float) ((right - left) / 5.);
+        g2.setFont(new Font("serif", Font.PLAIN, 9));
 
-        small();
-        g2.drawString(value, (float) left + 72, (float) position + lineHeight());
+        // guides
+        int rangeGuide = (int) (left + (float) ((right - left) * 0.15)); // center guide for ranges
+        int histoGuide = (int) (left + (float) ((right - left) * 0.50)); // left guide for histo
+        int qtyGuide = (rangeGuide + histoGuide) / 2; // center guide for qtys
 
-        newLine();
+        // col 0: score
+        String score = histo.getRange(row);
+        int width = g2.getFontMetrics().stringWidth(score);
+        g2.drawString(score, (float) (rangeGuide - width/2), baseline);
+
+        // col 1: number (right-aligned), but only if >0
+        if (histo.getNumber(row) > 0) {
+            String number = String.valueOf(histo.getNumber(row));
+            width = g2.getFontMetrics().stringWidth(number);
+            g2.drawString(number, (float) (qtyGuide - width/2), baseline);
+
+            // col 2: histogram -- only if n>0
+            g2.setStroke(new BasicStroke(0.5f)); // new!
+            int ascent = g2.getFontMetrics().getAscent();
+            int y0 = (int) (y + g2.getFontMetrics().getHeight() - ascent);
+            double frac = (double) histo.getNumber(row) / (double) histo.getFullestBucket();
+            int dx = (int) (frac * (right - histoGuide));
+            g2.drawRect((int) histoGuide - 10, y0, dx, g2.getFontMetrics().getHeight());
+            // "-10" here prevents it from flowing off the right side, which Mac OS X
+            // really doesn't like (but strangely, only when you print just the histogram)
+            // -- nope, it doesn't.  at least not always.
+        }
+    }
+    public int height(Graphics g) {
+        return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+    }
+}
+
+    // a "Label: Value" line, where label is bold; used for printing the fixed/moving samples
+    class LabelLine implements Line {
+        private String label, value;
+        private static final int TAB = 72; // 1" -- where to break between label and value
+        public LabelLine(String label, String value) {
+            this.label = label;
+            this.value = value;
+        }
+        public void print(Graphics g, double y) {
+            // baseline for both
+            float baseline = (float) (y + height(g));
+            Graphics2D g2 = (Graphics2D) g;
+
+            // label
+            g2.setFont(new Font("serif", Font.PLAIN, 9)); // too many news!
+            int width = g.getFontMetrics().stringWidth(label);
+            g2.drawString(label, (float) left+TAB-width, baseline); // |left| is from enclosing class
+
+            // value
+            g2.setFont(new Font("serif", Font.PLAIN, 9)); // (no news is good news)
+            g2.drawString(value, (float) left + TAB, baseline);
+        }
+        public int height(Graphics g) {
+            return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+        }
     }
 
     // print a "printed by ... at ..." line.
@@ -397,37 +472,31 @@ public class CrossPrinter implements Printable {
         return byline;
     }
 
-    void printByLine() {
-        // draw on very bottom of page
-        small();
-        g2.drawString(makeByLine(), (float) left, (float) bottom - lineHeight());
-        newLine(); // (does this do anything now?)
-    }
+class ByLine implements Line {
+    public void print(Graphics g, double y) {
+        // baseline
+        float baseline = (float) (y + height(g));
+        Graphics2D g2 = (Graphics2D) g;
 
-    // compute the line height for the current font.  (in C, this would be a macro.)
-    private int lineHeight() {
-        return g2.getFontMetrics().getHeight();
+        g2.setFont(new Font("serif", Font.PLAIN, 9));
+        g2.drawString(makeByLine(), (float) left, baseline);
     }
+    public int height(Graphics g) {
+        return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
+    }
+}
 
-    // draw some text to the right and below (left,position)
-    private void drawStringLeft(String s, double left) {
-        g2.drawString(s, (float) left, (float) position + lineHeight());
+class EmptyLine implements Line {
+    private int height=18; // 1/4"
+    public EmptyLine() {
     }
-
-    // draw some text to the left and below (right,position)
-    private void drawStringRight(String s, double right) {
-        int width = g2.getFontMetrics().stringWidth(s);
-        g2.drawString(s, (float) right - width, (float) position + lineHeight());
+    public EmptyLine(int space) {
+        height = space;
     }
-    
-    // draw some text centered below (center,position)
-    private void drawStringCenter(String s, double center) {
-        int width = g2.getFontMetrics().stringWidth(s);
-        g2.drawString(s, (float) center - width/2, (float) position + lineHeight());
+    public void print(Graphics g, double y) {
     }
-    
-    // increment position by lineheight
-    private void newLine() {
-        position += lineHeight();
+    public int height(Graphics g) {
+        return height;
     }
+}
 }
