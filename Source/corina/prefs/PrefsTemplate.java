@@ -158,6 +158,8 @@ public class PrefsTemplate {
                         "corina.print.command", Option.TYPE_STRING));
 	options.add(new Option("Advanced", "Menubar Font:",
                         "corina.menubar.font", Option.TYPE_FONT));
+        options.add(new Option("Advanced", "Browser fields:",
+                               "corina.browser.fields", Option.TYPE_STRING)); // THIS ONE SHOULD BE HIDDEN!
     }
 
     // public access to options
