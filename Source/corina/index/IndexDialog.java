@@ -33,6 +33,8 @@ import corina.gui.Bug;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import java.util.Vector;
 import java.util.List;
@@ -41,6 +43,10 @@ import java.util.ArrayList;
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
@@ -61,15 +67,13 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 // todo:
 // -- help button? => xcorina.org/manual/indexing
 // -- graph multiple?  preview graph in same window?
 // -- right-align the chi^2 numbers
-
-// -- use radio buttons?  this solves the following other issues:
-// -- (set size more intelligently?)
-// -- ("no index selected" should never occur -- don't allow deselection, or disable it if that happens)
+// -- use radio buttons?
 
 /**
    Indexing dialog.  Lets the user choose an indexing algorithm to use.
@@ -95,20 +99,35 @@ public class IndexDialog extends JDialog {
     // i18n
     private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
+    // formatting for decimals
+    private static final String CHI2_FORMAT = "#,##0.0";
+    private static final String RHO_FORMAT = "0.000";
+
     // table model -- (could be static but for msg.getString())
     private class IndexTableModel extends AbstractTableModel {
-        private DecimalFormat fmtChi2 = new DecimalFormat("###,##0.0"); // for chi2
-        private DecimalFormat fmtR = new DecimalFormat("0.000"); // for r
+        private DecimalFormat fmtChi2 = new DecimalFormat(CHI2_FORMAT);
+        private DecimalFormat fmtR = new DecimalFormat(RHO_FORMAT);
         private IndexSet iset;
         public IndexTableModel(IndexSet iset) {
             this.iset = iset;
         }
         public String getColumnName(int col) {
             switch (col) {
-                case 0: return msg.getString("index");
-                case 1: return "\u03C7\u00B2"; // "Chi^2"
-                case 2: return "\u03C1"; // "rho"
-                default: return null;
+                case 0:
+                    return msg.getString("algorithm");
+                case 1:
+                    return "\u03C7\u00B2"; // should be "Chi\overline^2" = \u03C7\u0304\u00B2
+                    // unfortunately, Mac OS X (at least -- so probably others) apparently doesn't
+                    // combine combining diacritics after greek letters, so it looks just plain bad.
+                    // (but a\u0304\u00B2 looks fine, so it's not completely ignorant of combining diacritics)
+                    // (actually, a\u0304 looks fine in window titles, but not tables headers, so ... yeah.  ick.)
+                    // Windows 2000 report: swing labels can do the greek but not the diacritic (chi, followed
+                    // by a box), window titles can do the diacritic but not the greek (box, with an overline).
+
+                case 2:
+                    return "\u03C1"; // "rho"
+                default:
+                    throw new IllegalArgumentException(); // can't happen
             }
         }
         public int getRowCount() {
@@ -123,12 +142,88 @@ public class IndexDialog extends JDialog {
                 case 0: return i.getName();
                 case 1: return fmtChi2.format(i.getChi2());
                 case 2: return fmtR.format(i.getR());
-                default: return null;
+                default: throw new IllegalArgumentException(); // can't happen
             }
         }
         public void setIndexSet(IndexSet iset) {
             this.iset = iset;
             fireTableDataChanged();
+        }
+    }
+
+    // given a String to render, draw everything before the |dot| to the left of
+    // a certain x-position, and everything after it to the right.  the |dot| char
+    // is centered at |position| of the way across the column.
+    private static class DecimalRenderer extends DefaultTableCellRenderer {
+        private char dot = new DecimalFormatSymbols().getDecimalSeparator(); // default decimal point for this locale
+//        private float position = 0.5f;
+/*
+        public DecimalRenderer(float position) {
+            this.dot = dot;
+            this.position = position;
+        }*/
+        public DecimalRenderer(String sample) {
+            this.sample = sample;
+        }
+        private int offset=0;
+        private String sample=null;
+        private boolean offsetSet=false;
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
+            // hack!
+            if (!offsetSet) {
+                // compute position from a sample value -- needs a table, too
+                int split = sample.indexOf(dot); // assumes: there is a dot somewhere
+                String leftValue = sample.substring(0, split);
+                String rightValue = sample.substring(split+1);
+                int leftWidth = table.getGraphics().getFontMetrics().stringWidth(leftValue);
+                int rightWidth = table.getGraphics().getFontMetrics().stringWidth(rightValue);
+                // if i don't know the column width here, i can't compute position
+                // but i wouldn't want to, since it'd be wrong if it ever was resized
+                // instead i should have a pixel offset from centerline
+                offset = (leftWidth - rightWidth) / 2;
+
+                offsetSet = true;
+            }
+
+            setText((String) value); // assumes: value is a string
+            if (isSelected) {
+                setBackground(table.getSelectionBackground());
+                setForeground(table.getSelectionForeground());
+            } else {
+                setBackground(table.getBackground());
+                setForeground(table.getForeground());
+            }
+            return this;
+        }
+        public void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g;
+
+            // strategy:
+
+            // get everything to the left of the dot
+            String value = getText();
+            int split = value.indexOf(dot); // assumes: there is a dot somewhere
+            String valueLeft = value.substring(0, split);
+
+            // fill background
+            g2.setColor(getBackground());
+            g2.fillRect(0, 0, getSize().width, getSize().height); // on isOpaque() only?
+
+            // compute position the dot should be at
+            int guide = offset + getSize().width / 2;
+
+            // set foreground
+            g2.setColor(getForeground());
+
+            // compute baseline, and width of left half
+            int baseline = getSize().height - g2.getFontMetrics().getDescent(); // (is this right?)
+            int dotWidth = g2.getFontMetrics().stringWidth(String.valueOf(dot));
+            int leftWidth = g2.getFontMetrics().stringWidth(valueLeft);
+
+            // draw them all at once
+            g2.drawString(value, guide - dotWidth/2 - leftWidth, baseline);
         }
     }
 
@@ -142,7 +237,7 @@ public class IndexDialog extends JDialog {
     // label, centered
    private JComponent makeLabel() {
         JPanel b = new JPanel(new BorderLayout());
-        b.add(new JLabel(msg.getString("choose_index"), JLabel.CENTER), BorderLayout.CENTER);
+        b.add(new JLabel(msg.getString("choose_index"), JLabel.LEFT));
         return b;
     }
 
@@ -158,13 +253,18 @@ public class IndexDialog extends JDialog {
         JScrollPane scroller = new JScrollPane(table);
         // scroller.setBorder(BorderFactory.createEmptyBorder(0, 14, 0, 14));
 
+        // use decimal renderers for chi^2 and rho
+        table.getColumnModel().getColumn(1).setCellRenderer(new DecimalRenderer(CHI2_FORMAT.replace('#', '0')));
+        table.getColumnModel().getColumn(2).setCellRenderer(new DecimalRenderer(RHO_FORMAT.replace('#', '0')));
+
         // select last entry
         table.setRowSelectionInterval(table.getRowCount()-1, table.getRowCount()-1);
 
         // don't allow reordering or resizing of the columns
         table.getTableHeader().setReorderingAllowed(false);
-        for (int i=0; i<3; i++)
-            table.getColumn(table.getColumnName(i)).setResizable(false);
+        // disabled for debugging:
+        //        for (int i=0; i<3; i++)
+        //            table.getColumn(table.getColumnName(i)).setResizable(false);
 
         // don't allow deselecting the only selection
         table.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -187,8 +287,8 @@ public class IndexDialog extends JDialog {
         preview.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 int row = table.getSelectedRow();
-
-                // this should never happen, but in case it does...
+                // my users, sir, they didn't care for this dialog, at first.  one of them actually
+                // tried to deselect the only selected entry.  but i ... CORRECTED them, sir.
                 if (row == -1) {
                     Bug.bug(new IllegalArgumentException("bug: no row selected in preview"));
                     return;
@@ -283,7 +383,7 @@ public class IndexDialog extends JDialog {
 
         // title
         String title = (String) sample.meta.get("title");
-        setTitle(msg.getString("index") + " " + title);
+        setTitle(MessageFormat.format(msg.getString("index_of"), new Object[] { title }));
 
         // border
         JPanel p = new JPanel();
@@ -492,18 +592,23 @@ public class IndexDialog extends JDialog {
 
     // make a vector of sums (*.sum *.SUM) in the same folder as this sample,
     // since that's what they'll be using 99% of the time
+    // (why a Vector?  because jcombobox takes a vector, but not a list.  yeah, suck.)
     private Vector getSums() {
         // get files in this directory
         String filename = (String) sample.meta.get("filename");
+        // whoops!  what if no filename?  abort!
+        if (filename == null)
+            return new Vector(); // not pretty
         File files[] = new File(filename).getParentFile().listFiles();
 
         // return those that match "*.sum"
-        // -- this is something like: (remove-if-not (lambda (x) (ends-with x ".sum")))
+        // -- this is something like: (remove-if-not (lambda (x) (ends-with x ".SUM")))
         Vector result = new Vector();
         if (files != null) { // null if not-a-dir
             for (int i=0; i<files.length; i++)
                 if (files[i].getName().toUpperCase().endsWith(".SUM"))
                     result.add(new UserFriendlyFile(files[i].getPath()));
+            // oops: if filename ends with .sum, it'll get added twice; i should remove duplicates, and maybe sort (?)
         }
         return result;
     }
