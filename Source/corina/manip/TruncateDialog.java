@@ -24,9 +24,9 @@ import corina.Year;
 import corina.Range;
 import corina.Sample;
 import corina.gui.ButtonLayout;
-import corina.gui.XButton;
 import corina.util.OKCancel;
 import corina.util.JLine;
+import corina.ui.Builder;
 
 import java.util.ResourceBundle;
 
@@ -286,7 +286,7 @@ public class TruncateDialog extends JDialog {
         p.add(buttons, BorderLayout.SOUTH);
 
         // cancel == close
-        JButton cancel = new XButton("cancel");
+        JButton cancel = Builder.makeButton("cancel");
         cancel.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 dispose();
@@ -295,7 +295,7 @@ public class TruncateDialog extends JDialog {
         buttons.add(cancel);
 
         // ok == apply
-        JButton apply = new XButton("ok");
+        JButton apply = Builder.makeButton("ok");
         apply.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 // nothing to do?
