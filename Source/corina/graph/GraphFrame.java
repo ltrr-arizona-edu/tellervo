@@ -21,6 +21,7 @@
 package corina.graph;
 
 import corina.Year;
+import corina.Range;
 import corina.Sample;
 import corina.Element;
 import corina.SampleListener;
@@ -36,6 +37,7 @@ import corina.gui.HasPreferences;
 import corina.gui.FileDialog;
 import corina.gui.UserCancelledException;
 import corina.prefs.PrefsDialog;
+import corina.gui.Bug;
 
 import java.io.File;
 import java.io.IOException;
@@ -122,6 +124,57 @@ public class GraphFrame extends XFrame implements SampleListener,
 	for (int i=0; i<samples.size(); i++)
 	    ((Graph) samples.get(i)).yoffset = i*SPACING;
 	repaint();
+    }
+    public void squishTogether() {
+        // squish together samples in visible window
+
+        // BUG: assumes sample[current] is visible.
+        // BUG: assumes there are no x-offsets.  (ouch!)
+        
+        // first, set samples[current] = 0
+        ((Graph) samples.get(plot.current)).yoffset = 0;
+
+        // compute viewport range
+        Year viewportLeft = plot.bounds.getStart().add(scroller.getHorizontalScrollBar().getValue() / plot.yearSize);
+        int viewportSize = scroller.getSize().width / plot.yearSize;
+        Range viewport=new Range(viewportLeft, viewportSize);
+        
+        // for each other graph, minimize chi^2 (chi) in viewport
+        for (int i=0; i<samples.size(); i++) {
+            // (skip current)
+            if (i == plot.current)
+                continue;
+
+            // make sure it's there at all, otherwise, don't bother.
+            Range range = ((Graph) samples.get(i)).getRange();
+            Range overlap = range.intersection(viewport).intersection(((Graph) samples.get(plot.current)).getRange());
+            if (overlap.span() == 0)
+                continue;
+
+            // compute mean of sample[current][y] - sample[i][y]
+            double mean = 0.0;
+            List data = ((Graph) samples.get(i)).graph.getData();
+            int j = overlap.getStart().diff(range.getStart()); // index into data[i]
+            List base = ((Graph) samples.get(plot.current)).graph.getData();
+            int k = overlap.getStart().diff(((Graph) samples.get(plot.current)).graph.getStart()); // index into base=data[plot.current]
+            for (Year y=overlap.getStart(); y.compareTo(overlap.getEnd())<=0; y=y.add(1)) {
+                mean += ((Number) data.get(j++)).doubleValue() - ((Number) base.get(k++)).doubleValue();
+            }
+            mean /= overlap.span();
+
+            // make -mean its new offset
+            ((Graph) samples.get(i)).yoffset = (int) (-mean * ((Graph) samples.get(i)).scale);
+        }
+
+        // make the lowest one have yoffset=0 now
+        int min = ((Graph) samples.get(0)).yoffset;
+        for (int i=1; i<samples.size(); i++)
+            min = Math.min(min, ((Graph) samples.get(i)).yoffset);
+        for (int i=0; i<samples.size(); i++)
+            ((Graph) samples.get(i)).yoffset -= min;
+
+        // repaint
+        repaint();
     }
 
     // adjust horizontal scale -- NOT FINISHED
@@ -321,6 +374,22 @@ public class GraphFrame extends XFrame implements SampleListener,
 		}
 	    });
 	v.add(spread);
+
+        // Squish
+        JMenuItem squish = new XMenubar.XMenuItem(msg.getString("baselines_squish"));
+        squish.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0));
+        // -- i don't know how i'd put VK_SPACE in a properties file ("space" doesn't seem to work),
+        // but i don't think anybody should ever change it, either.
+        squish.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                try { // this is probably still buggy...
+                    squishTogether();
+                } catch (Exception ex) {
+                    Bug.bug(ex);
+                }
+            }
+        });
+        v.add(squish);
 
 	/* -- horizontal scaling doesn't work yet
 	// scale
@@ -525,11 +594,13 @@ public class GraphFrame extends XFrame implements SampleListener,
 					  "Some samples were not able to be loaded.",
 					  "Error loading sample(s)",
 					  JOptionPane.ERROR_MESSAGE);
-	    if (samples.isEmpty()) {
+        }
+
+        // no samples => don't bother doing anything
+        if (samples.isEmpty()) {
 		dispose();
 		return;
-	    }
-	}
+        }
 
 	// set initial y-offsets: spread 'em out
 	spreadOut();
@@ -610,5 +681,4 @@ public class GraphFrame extends XFrame implements SampleListener,
 	plot.update();
 	repaint();
     }
-
-}
+                                                  }
