@@ -181,11 +181,11 @@ public class Editor extends XFrame
 	undoMenu.setText(undoManager.getUndoPresentationName());
 	undoMenu.setEnabled(undoManager.canUndo());
 	if (!undoManager.canUndo())
-	    undoMenu.setText(msg.getString("cant_undo"));
+	    undoMenu.setText(Builder.getText(msg.getString("undo")));
 	redoMenu.setText(undoManager.getRedoPresentationName());
 	redoMenu.setEnabled(undoManager.canRedo());
 	if (!undoManager.canRedo())
-	    redoMenu.setText(msg.getString("cant_redo"));
+	    redoMenu.setText(Builder.getText(msg.getString("redo")));
     }
     private void initUndoRedo() {
 	undoManager = new UndoManager();
@@ -416,7 +416,7 @@ public class Editor extends XFrame
     }
 
     private void initMetaView() {
-        metaView = new SampleMetaView(sample, this); // SampleMeta2View is a work-in-progress
+        metaView = new SampleMetaView(sample, this);
         sample.addSampleListener((SampleListener) metaView);
     }
 
@@ -609,8 +609,9 @@ public class Editor extends XFrame
 	JMenu edit = Builder.makeMenu("edit");
 
 	// undo
-	undoMenu = new XMenubar.XMenuItem(msg.getString("cant_undo"));
-        undoMenu.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize(msg.getString("undo_acc"))));
+	undoMenu = Builder.makeMenuItem("undo");
+	// new XMenubar.XMenuItem(msg.getString("cant_undo"));
+        // undoMenu.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize(msg.getString("undo_acc"))));
 	undoMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    undoManager.undo();
@@ -618,8 +619,9 @@ public class Editor extends XFrame
 		}
 	    });
 	edit.add(undoMenu);
-	redoMenu = new XMenubar.XMenuItem(msg.getString("cant_redo"));
-	redoMenu.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize(msg.getString("redo_acc"))));
+	redoMenu = Builder.makeMenuItem("redo");
+	// new XMenubar.XMenuItem(msg.getString("cant_redo"));
+	// 	redoMenu.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize(msg.getString("redo_acc"))));
 	redoMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    undoManager.redo();
@@ -919,8 +921,9 @@ public class Editor extends XFrame
 
 	// redate
 	final Editor glue = this;
-	JMenuItem redate = new XMenubar.XMenuItem(msg.getString("redate..."), // OOPS!  how to deal with ... and builder?
-						  msg.getString("redate_key").charAt(0));
+	// JMenuItem redate = new XMenubar.XMenuItem(msg.getString("redate..."), // OOPS!  how to deal with ... and builder?
+	// msg.getString("redate_key").charAt(0));
+	JMenuItem redate = Builder.makeMenuItem("redate...");
 	// redate.setAccelerator(KeyStroke.getKeyStroke(msg.getString("redate_acc")));
 	// control-R, etc., are grabbed by the table -- agH!
 	redate.addActionListener(new AbstractAction() {
@@ -931,8 +934,8 @@ public class Editor extends XFrame
 	s.add(redate);
 
 	// index
-	indexMenu = new XMenubar.XMenuItem(msg.getString("index..."),
-					   msg.getString("index_key").charAt(0));
+	indexMenu = Builder.makeMenuItem("index..."); // new XMenubar.XMenuItem(msg.getString("index..."),
+	// msg.getString("index_key").charAt(0));
 	// indexMenu.setAccelerator(KeyStroke.getKeyStroke(msg.getString("index_acc")));
 	indexMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
@@ -942,33 +945,35 @@ public class Editor extends XFrame
 	indexMenu.setEnabled(!sample.isIndexed());
 	s.add(indexMenu);
 
-    // truncate
-    JMenuItem truncate = new XMenubar.XMenuItem(msg.getString("truncate..."),
-                                                msg.getString("truncate_key").charAt(0));
-    // truncate.setAccelerator(KeyStroke.getKeyStroke(msg.getString("truncate_acc")));
-    truncate.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent ae) {
-            new TruncateDialog(sample, glue);
-        }
-    });
-    s.add(truncate);
+	// truncate
+	JMenuItem truncate = Builder.makeMenuItem("truncate...");
+	//new XMenubar.XMenuItem(msg.getString("truncate..."),
+	// msg.getString("truncate_key").charAt(0));
+	// truncate.setAccelerator(KeyStroke.getKeyStroke(msg.getString("truncate_acc")));
+	truncate.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent ae) {
+		    new TruncateDialog(sample, glue);
+		}
+	    });
+	s.add(truncate);
 
-    // reverse
-    reverseMenu = Builder.makeMenuItem("reverse");
-    reverseMenu.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent ae) {
-            // reverse, and add to the undo-stack
-            sample.postEdit(Reverse.reverse(sample));
-        }
-    });
-    s.add(reverseMenu);
+	// reverse
+	reverseMenu = Builder.makeMenuItem("reverse");
+	reverseMenu.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent ae) {
+		    // reverse, and add to the undo-stack
+		    sample.postEdit(Reverse.reverse(sample));
+		}
+	    });
+	s.add(reverseMenu);
 
     // ---
     s.addSeparator();
 
     // cross
-    JMenuItem crossAgainst = new XMenubar.XMenuItem(msg.getString("cross_against..."),
-                                                    msg.getString("cross_against_key").charAt(0));
+    JMenuItem crossAgainst = Builder.makeMenuItem("cross_against...");
+    // new XMenubar.XMenuItem(msg.getString("cross_against..."),
+    // msg.getString("cross_against_key").charAt(0));
     // crossAgainst.setAccelerator(KeyStroke.getKeyStroke(msg.getString("cross_against_acc")));
     crossAgainst.addActionListener(new AbstractAction() {
         public void actionPerformed(ActionEvent ae) {
