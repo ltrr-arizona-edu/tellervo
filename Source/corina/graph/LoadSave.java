@@ -45,35 +45,35 @@ public class LoadSave {
 
     // save the list of graphs under a given name
     public static void save(String filename, List graphs) throws IOException {
-	// open for writing
-	BufferedWriter w = new BufferedWriter(new FileWriter(filename));
+        // open for writing
+        BufferedWriter w = new BufferedWriter(new FileWriter(filename));
 
-	// XML header
-	w.write("<?xml version=\"1.0\"?>");
-	w.newLine();
+        // XML header
+        w.write("<?xml version=\"1.0\"?>");
+        w.newLine();
 
-	w.newLine();
+        w.newLine();
 
-	// begin graph
-	w.write("<graphs>");
-	w.newLine();
+        // begin graph
+        w.write("<graphs>");
+        w.newLine();
 
-	w.newLine();
+        w.newLine();
 
-	// each graph
-	for (int i=0; i<graphs.size(); i++) {
-	    w.write("  " + ((Graph) graphs.get(i)).toXML());
-	    w.newLine();
-	}
+        // each graph
+        for (int i=0; i<graphs.size(); i++) {
+            w.write("  " + ((Graph) graphs.get(i)).toXML());
+            w.newLine();
+        }
 
-	w.newLine();
+        w.newLine();
 
-	// end graph
-	w.write("</graphs>");
-	w.newLine();
+        // end graph
+        w.write("</graphs>");
+        w.newLine();
 
-	// close
-	w.close();
+        // close
+        w.close();
     }
 
     // try to load a plot from disk
