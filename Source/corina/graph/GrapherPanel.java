@@ -162,7 +162,7 @@ public class GrapherPanel extends JPanel
     public void setBaselinesVisible(boolean visible) {
 	// toggle baselines
 	baselines = !baselines;
-	Prefs.setPref("corina.graph.baselines", String.valueOf(baselines));
+  Prefs.setPref("corina.graph.baselines", String.valueOf(baselines));
 
 	// add/remove listener so they get updated properly
 	if (!baselines)
@@ -463,7 +463,7 @@ public class GrapherPanel extends JPanel
 	// pixels / year -- weird stuff here because yearSize is final
 	int tmp = 10;
 	try {
-	    tmp = Integer.parseInt(System.getProperty("corina.graph.pixelsperyear", "10"));
+	    tmp = Integer.parseInt(Prefs.getPref("corina.graph.pixelsperyear", "10"));
 	    // FIXME: why not use Integer.getInteger()?
 	} catch (NumberFormatException nfe) {
 	    // show warning dialog?

@@ -1,6 +1,7 @@
 package corina.cross; // FIXME: rename to corina.crossdate
 
 import corina.gui.Layout;
+import corina.prefs.Prefs;
 import corina.ui.I18n;
 import corina.util.PopupListener;
 
@@ -203,7 +204,7 @@ public class GridView extends JPanel {
     private Font cellFont;
 
     private void recomputeFont() {
-	String requestedFont = System.getProperty("corina.grid.font");
+	String requestedFont = Prefs.getPref("corina.grid.font");
 	Font origFont;
 	if (requestedFont == null)
 	    origFont = new JTable().getFont(); //  Font(); // g.getFont();

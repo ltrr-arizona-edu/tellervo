@@ -24,6 +24,7 @@ import corina.Year;
 import corina.Range;
 import corina.Sample;
 import corina.index.Index;
+import corina.prefs.Prefs;
 
 import java.awt.Graphics2D;
 import java.awt.Color;
@@ -244,7 +245,7 @@ public class StandardPlot {
     public void update() {
         // read sys props
         _baselines = Boolean.getBoolean("corina.graph.baselines");
-        _yearsize = Integer.parseInt(System.getProperty("corina.graph.pixelsperyear", "10"));
+        _yearsize = Integer.parseInt(Prefs.getPref("corina.graph.pixelsperyear", "10"));
         _dottedIndexes = Boolean.getBoolean("corina.graph.dotindexes");
     }
 

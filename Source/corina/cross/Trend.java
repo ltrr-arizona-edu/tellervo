@@ -21,6 +21,7 @@
 package corina.cross;
 
 import corina.Sample;
+import corina.prefs.Prefs;
 import corina.ui.I18n;
 
 import java.util.List;
@@ -68,7 +69,7 @@ public class Trend extends Cross {
     }
 
     public String getFormat() {
-	return System.getProperty("corina.cross.trend.format", "0.0%");
+	     return Prefs.getPref("corina.cross.trend.format", "0.0%");
     }
 
     // same data, but in arrays

@@ -20,6 +20,7 @@
 
 package corina.editor;
 
+import corina.prefs.Prefs;
 import corina.ui.Builder;
 import corina.ui.I18n;
 
@@ -134,7 +135,7 @@ public class Measure extends Thread implements SerialPortEventListener {
     public void start() {
 	// identify the port to use
 	try {
-	    portID = CommPortIdentifier.getPortIdentifier(System.getProperty("corina.measure.port", "COM1"));
+	    portID = CommPortIdentifier.getPortIdentifier(Prefs.getPref("corina.measure.port", "COM1"));
 	} catch (NoSuchPortException nspe) {
 	    System.out.println("no such port!");
 	    // HANDLE ME

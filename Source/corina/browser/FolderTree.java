@@ -98,7 +98,7 @@ public class FolderTree extends JPanel {
     public FolderTree(Browser b) {
 	this.browser = b;
 
-	tree = new JTree(new FolderNode(System.getProperty("corina.dir.data")));
+	tree = new JTree(new FolderNode(Prefs.getPref("corina.dir.data")));
 
 	// select row of tree which corresponds to |corina.browser.folder|
 	{

@@ -179,7 +179,7 @@ public class Browser extends JFrame {
         folder = newFolder;
 	if (label1 != null) // !!?!
 	    updateSummary(); // PERF: does this get called twice, now?
-	Prefs.setPref("corina.browser.folder", folder);
+	    Prefs.setPref("corina.browser.folder", folder);
     }
 
     private JLabel label1, label2;
@@ -239,9 +239,9 @@ public class Browser extends JFrame {
     public Browser() {
         super("Corina");
 
-        String dir = System.getProperty("corina.browser.folder"); // BUG: what if this folder doesn't exist?
+        String dir = Prefs.getPref("corina.browser.folder"); // BUG: what if this folder doesn't exist?
         if (dir == null)
-            dir = System.getProperty("corina.dir.data"); // BUG: what if this is null, too?
+            dir = Prefs.getPref("corina.dir.data"); // BUG: what if this is null, too?
                                                          // BUG: what if this folder doesn't exist?
         
 	// if no folder, use |user.dir|
@@ -270,10 +270,10 @@ public class Browser extends JFrame {
 	final JFrame glue = this;
 	addComponentListener(new ComponentAdapter() {
 		public void componentMoved(ComponentEvent e) {
-		    Prefs.setPref("corina.browser.geometry", Geometry.encode(glue));
+      Prefs.setPref("corina.browser.geometry", Geometry.encode(glue));
 		}
 		public void componentResized(ComponentEvent e) {
-		    Prefs.setPref("corina.browser.geometry", Geometry.encode(glue));
+      Prefs.setPref("corina.browser.geometry", Geometry.encode(glue));
 		}
 		// FIXME[PERF]: should i set this only on dispose()?  it saves far too often, right now.
 	    });
@@ -1290,7 +1290,7 @@ public class Browser extends JFrame {
         if (sortField.equals(newSort)) {
             reverse = !reverse;
             shr.setReversed(reverse);
-	    Prefs.setPref("corina.browser.reverse", String.valueOf(reverse));
+          Prefs.setPref("corina.browser.reverse", String.valueOf(reverse));
             // wait ... in this case, i don't need to doSort() again; reverse() is good enough.
 	    // plus, it acts as the user expects.
             saveSelection(); {
@@ -1300,10 +1300,10 @@ public class Browser extends JFrame {
         } else {
             sortField = newSort;
             shr.setSortColumn(nameOfField(sortField));
-	    Prefs.setPref("corina.browser.sort", sortField);
+          Prefs.setPref("corina.browser.sort", sortField);
             reverse = false;
             shr.setReversed(reverse);
-	    Prefs.setPref("corina.browser.reverse", String.valueOf(reverse));
+          Prefs.setPref("corina.browser.reverse", String.valueOf(reverse));
             doSort();
 	}
 
@@ -1468,7 +1468,7 @@ public class Browser extends JFrame {
         }
 
         // save to prefs
-	Prefs.setPref("corina.browser.fields", buf.toString());
+      Prefs.setPref("corina.browser.fields", buf.toString());
     }
 
     // load fields from prefs (or use a reasonable default).
@@ -1644,7 +1644,7 @@ public class Browser extends JFrame {
 	    buf.append(fmt.format(pct) + " ");
 	}
 
-	Prefs.setPref("corina.browser.columnwidths", buf.toString());
+  Prefs.setPref("corina.browser.columnwidths", buf.toString());
     }
     // restore column widths
     private void restoreColumnWidths() {
