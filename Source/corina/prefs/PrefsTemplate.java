@@ -40,7 +40,7 @@ public class PrefsTemplate {
 	public final static int TYPE_COLOR = 1; // a Ccolor
 	public final static int TYPE_BOOL = 2; // a boolean
 	public final static int TYPE_FONT = 3; // a Font
-        	public final static int TYPE_HIDDEN = 4; // don't show user
+	public final static int TYPE_HIDDEN = 4; // don't show user
                 
 	public String category; // category, as a string; use title capitalization
 	public String description; // human-readable description
@@ -173,6 +173,7 @@ public class PrefsTemplate {
 			       "corina.dir.data", Option.TYPE_STRING));
 	options.add(new Option("Advanced", "Menubar Font:",
 			       "corina.menubar.font", Option.TYPE_FONT));
+
         options.add(new Option("Advanced", "Browser fields:",
                                "corina.browser.fields", Option.TYPE_HIDDEN));
         options.add(new Option("Advanced", "Browser folder:",
@@ -181,6 +182,9 @@ public class PrefsTemplate {
                                "corina.browser.sort", Option.TYPE_HIDDEN));
         options.add(new Option("Advanced", "Browser reverse?",
                                "corina.browser.reverse", Option.TYPE_HIDDEN));
+
+	options.add(new Option("Advanced", "Modeline statistic",
+			       "corina.modeline.statistic", Option.TYPE_HIDDEN));
     }
 
     // public access to options
