@@ -22,6 +22,7 @@ package corina.gui;
 
 import corina.prefs.Prefs;
 // import corina.prefs.Migrate; -- OBSOLETE?
+import corina.util.CorinaLog;
 import corina.util.Platform;
 import corina.util.Macintosh;
 import corina.util.Netware;
@@ -97,7 +98,9 @@ public class Startup {
 
             // load properties -- messagedialog here is UGLY!
             try {
-                Prefs.load();
+                //Prefs.load();
+                Prefs.init();
+                //AppContext.init();
             } catch (IOException ioe) {
                 JOptionPane.showMessageDialog(null,
                                               "While trying to load preferences:\n" + ioe.getMessage(),
@@ -118,7 +121,8 @@ public class Startup {
 	    // }
 
 	    // can't install a new default exception handler, but i can log them
-	    ErrorLog.logErrors();
+	    //ErrorLog.logErrors();
+      CorinaLog.init();
 	    // (i COULD make this log call bug.bug() ...)
 
             // set up mac menubar
