@@ -72,7 +72,7 @@ public class Tree extends JLabel
         setBorder(BorderFactory.createEmptyBorder());
 
         // icon
-        ImageIcon img = new ImageIcon(ClassLoader.getSystemResource("Images/Tree.png"));
+        ImageIcon img = new ImageIcon(getClass().getClassLoader().getResource("Images/Tree.png"));
 
         // use line height, approximately
         int height = getFont().getSize() + 4;
