@@ -6,6 +6,8 @@ import junit.framework.TestCase;
 
 import java.util.StringTokenizer;
 
+import java.text.DecimalFormat;
+
 public class UnitTests extends TestCase {
     public UnitTests(String name) {
         super(name);
@@ -41,7 +43,8 @@ public class UnitTests extends TestCase {
         x[345] = Double.NaN; // give it something screwy to choke on
 
         // make a histogram of it
-        String fmt = "#.##";
+	char dot = new DecimalFormat().getDecimalFormatSymbols().getDecimalSeparator();
+        String fmt = "#" + dot + "##";
         Histogram h = new Histogram(x, fmt);
 
         // test countbuckets
