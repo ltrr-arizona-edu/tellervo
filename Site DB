@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<sitedb>
+
+<site>
+	<country>CL</country>
+	<code>CHIL</code>
+	<filename>chil</filename>
+	<location>42*30'S 73*50'W</location>
+</site>
+
+</sitedb>
