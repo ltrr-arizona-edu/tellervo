@@ -16,9 +16,14 @@ public class Sort {
 
     // sort data by field
     public static void sort(List data, String fieldName, boolean decreasing) throws IllegalArgumentException {
+        // no data -> no need to sort (and also no way to try,
+        // since i don't even know what type it would be)
+        if (data.size() == 0)
+            return;
+        
         try {
             // possible bug: if data contains different classes of objects, data[0].class
-            // might be the declarer of field fieldname -- should i call
+            // might be the declarer of field fieldname -- do i need to call
             // -- f = f.getDeclaringClass().getDeclaredField(fieldName)?
             Class c = data.get(0).getClass();
             final Field f = c.getDeclaredField(fieldName); // final because my anonymous class needs it
