@@ -26,6 +26,7 @@ import corina.Sample;
 
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.NoSuchElementException;
 
 import java.io.StreamTokenizer;
 import java.io.FileWriter;
@@ -100,7 +101,7 @@ public class TwoColumn extends Filetype {
         boolean hasYear, hasCount;
 
         // figure out what it has, by looking at 3 lines
-        {
+        try {
             // we'll read 3 lines, but put them back by the end of the block
             r.mark(3*80);
 
@@ -121,7 +122,10 @@ public class TwoColumn extends Filetype {
 
             // ok, done with that, put everything back
             r.reset();
-        }
+        } catch (NullPointerException npe) {
+	    // (thrown by r.readLine())
+	    throw new WrongFiletypeException(); // not enough lines
+	}
 
         // if no year, let's make one up.
         if (!hasYear)
@@ -143,14 +147,26 @@ public class TwoColumn extends Filetype {
             StringTokenizer tok = new StringTokenizer(line, ",; \t");
 
             if (hasYear) {
-                int y = Integer.parseInt(tok.nextToken());
+		int y;
+		try {
+		    y = Integer.parseInt(tok.nextToken());
+		} catch (NumberFormatException nfe) {
+		    throw new WrongFiletypeException();
+		}
                 // just ignore, unless it's the first one
                 if (start == null)
                     start = new Year(y);
             }
 
             // allow floating-point values here
-            double d = Double.parseDouble(tok.nextToken());
+            double d;
+	    try {
+		d = Double.parseDouble(tok.nextToken());
+	    } catch (NoSuchElementException nsee) { // not enough tokens
+		throw new WrongFiletypeException();
+	    } catch (NumberFormatException nfe) { // not a number
+		throw new WrongFiletypeException();
+	    }
             s.data.add(new Integer((int) Math.round(d)));
             
             if (hasCount) {
@@ -178,6 +194,8 @@ public class TwoColumn extends Filetype {
         boolean isCrap = false;
         r.mark(120);
         String l = r.readLine();
+	if (l == null)
+	    throw new WrongFiletypeException(); // no data!
         for (int i=0; i<l.length(); i++) {
             if (Character.isLetter(l.charAt(i))) {
                 isCrap = true;
@@ -191,13 +209,17 @@ public class TwoColumn extends Filetype {
     }
 
     // given a string like "1 2 3", return an int array like double[] {1, 2, 3}.
-    private double[] parseLine(String s) {
-        StringTokenizer tok = new StringTokenizer(s, ",; \t");
-        int n = tok.countTokens();
-        double x[] = new double[n];
-        for (int i=0; i<n; i++)
-            x[i] = Double.parseDouble(tok.nextToken());
-        return x;
+    private double[] parseLine(String s) throws IOException {
+	try {
+	    StringTokenizer tok = new StringTokenizer(s, ",; \t");
+	    int n = tok.countTokens();
+	    double x[] = new double[n];
+	    for (int i=0; i<n; i++)
+		x[i] = Double.parseDouble(tok.nextToken());
+	    return x;
+	} catch (NumberFormatException nfe) {
+	    throw new WrongFiletypeException();
+	}
     }
     
     // editor needs this to save to a custom writer for the clipboard
