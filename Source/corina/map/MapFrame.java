@@ -70,13 +70,8 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
         return null;
     }
     public Printable makePrintable(PageFormat pf) {
-        try {
             mapPanel.setPageFormat(pf);
             return mapPanel;
-        } catch (Exception e) {
-            System.out.println("e! " + e);
-            return null; // ouch!
-        }
     }
     public String getPrintTitle() {
         return "Map"; // add location/sites/etc.
