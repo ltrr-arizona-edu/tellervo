@@ -290,7 +290,7 @@ public class DialogLayout implements LayoutManager2 {
         if (constraints == null) {
             // add a header row
             rows.add(new HeaderRow(comp));
-            System.out.println("header row!  comp=" + comp);
+            //System.out.println("header row!  comp=" + comp);
 
         } else if (!(constraints instanceof String)) {
             throw new IllegalArgumentException(); // you suck
@@ -300,7 +300,7 @@ public class DialogLayout implements LayoutManager2 {
         } else {
             JLabel label = new JLabel((String) constraints);
             
-            System.out.println("normal row!  label=" + label);
+            //System.out.println("normal row!  label=" + label);
 
             // i need to add my own label.  i've no idea if adding a component
             // to my parent is legal in this context.
