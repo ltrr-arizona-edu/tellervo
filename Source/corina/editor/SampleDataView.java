@@ -33,6 +33,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.BorderLayout;
+import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
@@ -63,6 +64,15 @@ public class SampleDataView extends JPanel implements SampleListener, HasPrefere
 	myTable.requestFocus();
     }
 
+    // (for Editor)
+    public void stopEditing() {
+        // strategy: if editing, fire an VK_ENTER keytype event at the table
+        // (that also solves the "user typed the number and shouldn't lose that data" problem)
+        if (myTable.isEditing())
+            myTable.dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED,
+                                               System.currentTimeMillis(), 0, KeyEvent.VK_ENTER));
+    }
+    
     public SampleDataView(Sample s) {
 	// copy data reference, add self as observer
 	mySample = s;
@@ -305,5 +315,4 @@ public class SampleDataView extends JPanel implements SampleListener, HasPrefere
 	myTable.setRowSelectionInterval(row, row);
 	myTable.setColumnSelectionInterval(col, col);
     }
-
 }
