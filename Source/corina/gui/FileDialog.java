@@ -20,6 +20,7 @@
 
 package corina.gui;
 
+import corina.prefs.Prefs;
 import corina.ui.I18n;
 
 import java.io.File;
@@ -123,7 +124,10 @@ public class FileDialog {
     }
 
     // working directory -- this gets updated whenever OK is clicked
-    private static String wd = System.getProperty("corina.dir.data");
+    // XXX: can you say race condition - aaron... dependence on static
+    // initializers, data and methods needs to be fixed
+    // If this class is referenced before Prefs is, we are SOL
+    private static String wd = Prefs.getPref("corina.dir.data");
 
     /**
        Show a file selection dialog.  This allows the user to select
