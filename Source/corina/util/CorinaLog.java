@@ -27,15 +27,17 @@ public class CorinaLog extends SimpleLog {
    */
   public static final int MAXLINES = 500;
 
-  private static Object LOCK = new Object();
-  private static String[] log = new String[MAXLINES];
-  private static int logLineCount;
-  private static boolean wrap;
-  private static LogListModel listModel = new LogListModel();
   public final static PrintStream realOut;
   public final static PrintStream realErr;
+
+  // protected visibility to avoid synthetic accessors
+  protected static String[] log = new String[MAXLINES];
+  protected static int logLineCount;
+  protected static boolean wrap;
+  private static LogListModel listModel = new LogListModel();
   private static CorinaLog STDOUT = new CorinaLog("STDOUT", false);
   private static CorinaLog STDERR = new CorinaLog("STDERR", false);
+  private static Object LOCK = new Object();
 
   static {
     realOut = System.out;
@@ -81,7 +83,8 @@ public class CorinaLog extends SimpleLog {
   {
     ArrayList listeners = new ArrayList();
 
-    private void fireIntervalAdded(int index1, int index2)
+    // protected visibility to avoid synthetic accessor
+    protected void fireIntervalAdded(int index1, int index2)
     {
       for(int i = 0; i < listeners.size(); i++)
       {
@@ -93,7 +96,8 @@ public class CorinaLog extends SimpleLog {
       }
     }
 
-    private void fireIntervalRemoved(int index1, int index2)
+    // protected visibility to avoid synthetic accessor
+    protected void fireIntervalRemoved(int index1, int index2)
     {
       for(int i = 0; i < listeners.size(); i++)
       {
