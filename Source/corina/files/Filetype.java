@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.StringWriter;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -66,11 +67,30 @@ public abstract class Filetype {
             s.meta.put("filename", filename);
             return s;
         }
+    /*
+    public Sample load(java.net.URL url) throws IOException {
+	try {
+	    Class.forName("corina.browser.ItrdbURLConnection");
+	} catch (Exception e) {
+	    // ignore
+	}
+	r = new BufferedReader(new java.io.InputStreamReader(url.openStream()));
+	Sample s = load();
+	s.meta.put("filename", url.toString());
+	return s;
+    }
+    */
     public abstract Sample load() throws IOException; // from |r|
 
     public void save(String filename, Sample sample) throws IOException {
         w = new BufferedWriter(new FileWriter(filename));
         save(sample);
+    }
+    public StringBuffer saveToBuffer(Sample sample) throws IOException {
+        StringWriter sw = new StringWriter(4096); // 16 is way too small for most things.
+        w = new BufferedWriter(sw);
+        save(sample);
+        return sw.getBuffer();
     }
     public abstract void save(Sample sample) throws IOException;
 
@@ -97,6 +117,7 @@ public abstract class Filetype {
 	(A mnemonic is a character from the title that's usually
 	underlined, so the user can activate it quickly through a
 	keypress.)  Every file format should have a mnemonic.
+        For convention's sake, use an upper-case (or numeric) letter.
 	@return character to use as mnemonic */
     public abstract char getMnemonic();
 
