@@ -70,18 +70,18 @@ import java.io.FileNotFoundException;
    There also exists one special case: "NAME" on disk is "title" in
    memory.
 
-   Actually, I lied; there's a second special case now.  Originally
+   <p>Actually, I lied; there's a second special case now.  Originally
    there was both COMMENTS and COMMENTS2 on-disk and in-memory, but
    eventually people wanted to type more than 2 lines of comments.
    The new semi-backwards-compatible way is: any number of lines of
    comments are stored in memory under simply COMMENTS (with embedded
    newlines), and on disk as COMMENTS, COMMENTS2, COMMENTS3, ... as
-   needed.
+   needed.</p>
 
    The order of the tags and position of newlines is as follows:
 
    <pre>
-   // -- sample meta section
+   // -- sample meta section (WRITEME)
    </pre>
 
    // -- description of tags: index_type, ...
@@ -110,7 +110,7 @@ import java.io.FileNotFoundException;
      summed.
 
      <li>The last line of count data are shifted to the left by 4
-     characters.  I have no idea why this is.
+     characters.  (Again, don't ask.)
 
      <li>The count value for the terminating 9990 value is the same as
      the count value for the last measured year, though this has no
@@ -190,8 +190,13 @@ public class Corina extends Filetype {
     // leaves the reader just beyond the ' ' on return;
     private String loadTag() throws IOException {
 	String name="";
-	for (char c=(char)r.read(); c!=' '; c=(char)r.read())
-	    name += c;
+	int c = r.read();
+	while (c != ' ') {
+	    if (c == -1)
+		throw new WrongFiletypeException(); // end-of-file before ' ' occurs (otherwise no termination)
+	    name += (char) c;
+	    c = r.read();
+	}
 	return name;
     }
 
@@ -205,9 +210,12 @@ public class Corina extends Filetype {
 	r.mark(1);
 	char c = (char) r.read();
 	while (c != '\n' && c != '\r' && c != ';') {
-	    value += c;
+	    value += c; // REFACTOR: use stringbuffer instead, since i'm just appending stuff (and have a good idea of the length to expect)
 	    r.mark(1);
-	    c = (char) r.read();
+	    int cc = r.read();
+	    if (cc == -1)
+		throw new IOException("end-of-file reached in middle of metadata!");
+	    c = (char) cc;
 	}
 
 	// if read a ';', push back
@@ -263,7 +271,7 @@ public class Corina extends Filetype {
 	while (true) {
 	    boolean stop=false;
 	    int decade, years;
-	    
+
 	    // read a decade of data
 	    x = t.nextToken();
 	    if (x == StreamTokenizer.TT_EOF)
@@ -281,10 +289,10 @@ public class Corina extends Filetype {
 		    stop = true;
 		    break;
 		}
-		
+
 		s.data.add(new Integer(width));
 	    }
-	    
+
 	    // read a decade of counts
 	    for (int j=0; j<years; j++) { // go to previously counted amount -- ignore 9990's count?
 		x = t.nextToken(); // [
@@ -298,7 +306,7 @@ public class Corina extends Filetype {
 		s.count.add(new Integer(count));
 	    }
 	}
-	
+
 	t.wordChars(' ', ' '); // done
 
 	s.range = new Range(start, s.data.size());
@@ -312,7 +320,7 @@ public class Corina extends Filetype {
     // little slower, but correctness takes precedence!
 
     // -- but ken, what about the FOUS's?
-    // -- Files Of Unusual Size?  i don't think they really exist...
+    // -- Files Of Unusual Size?  i don't think they exist...
 
     private void loadElements() throws IOException {
 	// create elements
@@ -406,8 +414,10 @@ public class Corina extends Filetype {
     // the reader is just past the '~' character, so just trim what's
     // left of the line
     private void loadAuthor() throws IOException {
-	String author = r.readLine().trim();
-	s.meta.put("author", author);
+	String author = r.readLine();
+	if (author == null)
+	    return; // is to just end with a ~?
+	s.meta.put("author", author.trim());
     }
 
     /** Load a sample from disk, given in Corina format.
@@ -429,7 +439,7 @@ public class Corina extends Filetype {
 	// this, but it's great for checking the filetype (binary
 	// files usually fail this).
 	String firstLine = r.readLine();
-	if (firstLine.length() > 200)
+	if (firstLine==null || firstLine.length()>200)
 	    throw new WrongFiletypeException();
 
 	// top-level tokenizer
@@ -448,13 +458,15 @@ public class Corina extends Filetype {
 	*/
 
 	// top-level parse of the file
+	boolean dataLoaded = false;
 	for (;;) {
 	    int x = t.nextToken();
 	    if (x == ';') {
 		String tag = loadTag();
-		if (tag.equals("DATA"))
+		if (tag.equals("DATA")) {
 		    loadData(t);
-		else if (tag.equals("weiserjahre"))
+		    dataLoaded = true;
+		} else if (tag.equals("weiserjahre"))
 		    loadWeiserjahre();
 		else if (tag.equals("ELEMENTS"))
 		    loadElements();
@@ -473,6 +485,10 @@ public class Corina extends Filetype {
 		    throw new WrongFiletypeException();
 	    }
 	}
+
+	// never got to a ;DATA section?  then it's not a corina file.
+	if (!dataLoaded)
+	    throw new WrongFiletypeException();
 
 	// close file
 	r.close();
@@ -662,7 +678,8 @@ public class Corina extends Filetype {
 	for (int i=0; i<s.elements.size(); i++) {
 	    // if disabled, write '*' before filename
 	    Element el = (Element) s.elements.get(i);
-	    w.write((el.isActive() ? "" : "*") + el.getFilename());
+	    // w.write((el.isActive() ? "" : "*") + el.getFilenameWithAts()); // with @'s!
+	    w.write((el.isActive() ? "" : "*") + el.getFilename()); // old (absolute) style
 	    w.newLine();
 	}
     }
