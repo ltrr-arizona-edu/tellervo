@@ -440,8 +440,8 @@ public class Grid implements Runnable, Previewable {
 		// "load" moving
 		Sample moving = buffer[col];
 
-		int n = fixed.range.overlap(moving.range);
-		if (n > 0) {
+		int overlap = fixed.range.overlap(moving.range);
+		if (overlap > 0) {
 		    TScore _t = new TScore(fixed, moving);
 		    Trend _tr = new Trend(fixed, moving);
 		    DScore _d = new DScore(_t, _tr);
@@ -450,7 +450,7 @@ public class Grid implements Runnable, Previewable {
 		    double tr = _tr.single();
 		    double d = _d.single();
 
-		    cell[row+1][col+1] = new CrossCell(t, tr, d, n);
+		    cell[row+1][col+1] = new CrossCell(t, tr, d, overlap);
 		} else {
 		    cell[row+1][col+1] = new CrossCell(0.0, 0.0, 0.0, 0);
 		}
