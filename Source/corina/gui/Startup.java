@@ -36,10 +36,10 @@ import javax.swing.UIManager;
 
 public class Startup {
 
-    /** <p>The <code>main()</code> method that sets all of Corina in
-       motion.  Loads system and user preferences, and instantiates an
-       XCorina object.</p>
-       @param args command-line arguments; ignored */
+    /** The <code>main()</code> method that sets all of Corina in
+	motion.  Loads system and user preferences, and instantiates an
+	XCorina object.
+	@param args command-line arguments; ignored */
     public static void main(String args[]) {
         try {
             // if the user hasn't specified a parser with
@@ -92,27 +92,11 @@ public class Startup {
 			Bug.bug(e);
 		    }
 		};
+	    */
 	    // Q: what's the problem?
 	    // A: i can only override uncaughtException() on new threadgroups,
 	    // and i can't move threads between groups, so AWT event handling
 	    // can never be caught by an uncaughtException() method i write (right?)
-	    Thread t = new Thread(tg, "countdown") {
-		    public void run() {
-			System.out.println("counting down from 10...");
-			for (int i=9; i>0; i--) {
-			    System.out.println(i);
-			    try {
-				Thread.sleep(1000);
-			    } catch (InterruptedException ie) {
-				// ignore
-			    }
-			}
-			System.out.println("zero!");
-			throw new IllegalArgumentException("die die die!");
-		    }
-		};
-	    t.start();
-	    */
 
 	    // so let's do the next-best thing: dump all uncaught exceptions to a file.
 	    // (then later, maybe on quit, i can offer to mail them to me, or post them, or some such)
@@ -120,8 +104,7 @@ public class Startup {
 	    // Q: delete it on quit if there's no data in it?
 	    // Q: what filename to use?  "${username} - ${time}" would be good.
 	    // Q: where to put it?  wd?  Logs/?  C:\winnt\logs?  $(TMP)?
-	    // System.setErr(new PrintStream(new OutputStream
-
+	    // System.setErr(new PrintStream(new OutputStream...
 
             // let's go...
             new XCorina();
