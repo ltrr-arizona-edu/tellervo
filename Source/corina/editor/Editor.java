@@ -428,18 +428,30 @@ public class Editor extends XFrame
         setTitle(sample.toString());
     }
 
-    // ask the user for a title for this (new) sample
+    // ask the user for a title for this (new) sample.  it's guaranteed to have a number, now!
     private String askTitle() {
-        String title = (String) JOptionPane.showInputDialog(null,
-                                                            msg.getString("new_sample_prompt"),
-                                                            msg.getString("new_sample"),
-                                                            JOptionPane.QUESTION_MESSAGE,
-                                                            null,
-                                                            null,
-                                                            msg.getString("untitled"));
-        if (title!=null && title.length()==0)
-            title = msg.getString("untitled");
-        return title;
+        String title="";
+        for (;;) {
+            title = (String) JOptionPane.showInputDialog(null, // parent component
+                                                         msg.getString("new_sample_prompt"),
+                                                         msg.getString("new_sample"),
+                                                         JOptionPane.QUESTION_MESSAGE,
+                                                         null, // todo: document these nulls!
+                                                         null,
+                                                         title);
+
+            // make sure there's a digit in there somewhere, and return.
+            for (int i=0; i<title.length(); i++)
+                if (Character.isDigit(title.charAt(i)))
+                    return title;
+
+            // no numbers!
+            JOptionPane.showMessageDialog(null, "There's no number in that title.  I think you forgot the sample number.");
+
+            // be sure to put in the user manual the trick for creating a sample
+            // without a sample number, if they ever need that: put a digit on
+            // the end, and remove it right away (heh-heh-heh).
+        }
     }
 
     public Editor() {
@@ -453,6 +465,14 @@ public class Editor extends XFrame
         // make dataset ref, with our title
         sample = new Sample();
         sample.meta.put("title", title);
+
+        // pass
+        setup();
+    }
+
+    public Editor(Sample sample) {
+        // copy data ref
+        this.sample = sample;
 
         // pass
         setup();
@@ -1059,19 +1079,12 @@ public class Editor extends XFrame
 	sampleFormatChanged(null);
 
     // store and return
-    if (Platform.isMac)
-    return new JMenu[] { edit, v, s, m, d, new WindowMenu(this) };
-    else
-    return new JMenu[] { edit, v, s, m, d };
-            }
-
-    public Editor(Sample sample) {
-	// copy data ref
-	this.sample = sample;
-
-	// pass
-	setup();
+    if (Platform.isMac) {
+        return new JMenu[] { edit, v, s, m, d, new WindowMenu(this) };
+    } else {
+        return new JMenu[] { edit, v, s, m, d };
     }
+            }
 
     // HasPreferences
     public void refreshFromPreferences() {
