@@ -38,6 +38,7 @@ public class ToolBox extends JToolBar {
         // remember to call repaint() in the mouse listeners if you change, add, or remove decoration
         abstract Icon getIcon();
         abstract Cursor getCursor();
+        abstract String getTooltip();
         JToggleButton b;
         JToggleButton getButton() {
             return b;
@@ -53,6 +54,7 @@ public class ToolBox extends JToolBar {
                         source.setSelected(true); // tried to deselect?  don't do that!
                 }
             });
+            b.setToolTipText(getTooltip());
         }
         private void selected() {
             // disable all others
@@ -93,6 +95,9 @@ public class ToolBox extends JToolBar {
         }
         Cursor getCursor() {
             return new Cursor(Cursor.DEFAULT_CURSOR);
+        }
+        String getTooltip() {
+            return "Selection Tool (V)"; // make key separate!
         }
 
         // mouse
@@ -168,7 +173,10 @@ public class ToolBox extends JToolBar {
         Cursor getCursor() {
             return new Cursor(Cursor.HAND_CURSOR);
         }
-
+        String getTooltip() {
+            return "Hand Tool (H)"; // make key separate!
+        }
+        
         // mouse
         public void mouseClicked(MouseEvent e) { }
 
@@ -208,7 +216,7 @@ public class ToolBox extends JToolBar {
 
         void decorate(Graphics g) { } // no decorations
     }
-    
+
     // measure the distance between 2 points on the map, of course.
     // features:
     // -- snap-to-sites?
@@ -221,10 +229,12 @@ public class ToolBox extends JToolBar {
         }
         Cursor getCursor() {
             ClassLoader cl = this.getClass().getClassLoader();
-            return Toolkit.getDefaultToolkit().createCustomCursor(new ImageIcon(cl.getResource("Images/ruler-pointer.png")).getImage(),
-                                                                  new Point(0, 0), "Ruler");
+            return Toolkit.getDefaultToolkit().createCustomCursor(new ImageIcon(cl.getResource("Images/ruler-pointer.png")).getImage(), new Point(0, 0), "Ruler");
         }
-
+        String getTooltip() {
+            return "Measure Tool (M)"; // make key separate!
+        }
+        
         // mouse
         public void mouseClicked(MouseEvent e) { }
 
@@ -264,21 +274,21 @@ public class ToolBox extends JToolBar {
         public void mouseExited(MouseEvent e) { }
 
         // GENERIC.  see also (poorer) implementations in eyes.*
-        private double angle(Point a, Point b) {
-            double theta;
-            double dx = b.x - a.x;
-            double dy = b.y - a.y;
+        private float angle(Point a, Point b) {
+            float theta;
+            float dx = b.x - a.x;
+            float dy = b.y - a.y;
             if (dx == 0)
-                theta = Math.PI * (b.y<a.y ? 3/2. : 1/2.); // force doubles!
+                theta = (float) Math.PI * (b.y<a.y ? 3/2f : 1/2f); // force floats!
             else
-                theta = Math.atan(dy/dx);
+                theta = (float) Math.atan(dy/dx);
             if (b.x < a.x)
                 theta += Math.PI;
             return theta;
         }
-        // GENERIC
-        private void arrow(Graphics2D g2, Point head, Point tail, double angle) {
-            double theta = angle(tail, head);
+        // GENERIC -- float is ~7 sigfigs, and sin(.0001) is 1/1000 of a pixel at 1000 pixels out -- that's plenty
+        private void arrow(Graphics2D g2, Point head, Point tail, float angle) {
+            float theta = angle(tail, head);
             GeneralPath arrow = new GeneralPath();
             arrow.moveTo((float) (head.x + 10*Math.cos(theta+angle)),
                          (float) (head.y + 10*Math.sin(theta+angle)));
@@ -297,10 +307,10 @@ public class ToolBox extends JToolBar {
                 g2.drawLine(pointA.x, pointA.y, pointB.x, pointB.y);
 
                 // draw flat line, arrow on both ends?
-                arrow(g2, pointA, pointB, Math.PI/2);
-                arrow(g2, pointB, pointA, Math.PI/2);
-                arrow(g2, pointA, pointB, Math.PI*3/4);
-                arrow(g2, pointB, pointA, Math.PI*3/4);
+                arrow(g2, pointA, pointB, (float) (Math.PI/2));
+                arrow(g2, pointB, pointA, (float) (Math.PI/2));
+                arrow(g2, pointA, pointB, (float) (Math.PI*3/4));
+                arrow(g2, pointB, pointA, (float) (Math.PI*3/4));
 
                 // construct string, measure it
                 String str = dist + " km";
@@ -338,7 +348,10 @@ public class ToolBox extends JToolBar {
                                               new Point(0, 0), "Zoomer");
             // can't respond to keyboard events?  (Well, why not?  tool can implements keyboard listener, or some such, too)
         }
-
+        String getTooltip() {
+            return "Zoom Tool (Z)"; // make key separate!
+        }
+        
         // mouse
         Renderer r;
         public void mouseClicked(MouseEvent e) {
@@ -382,9 +395,9 @@ public class ToolBox extends JToolBar {
 
             // well, zoom isn't too hard, either.  zoom *= panelsize / boxsize
             // (show the user more than she wants: use the smaller ratio)
-            double xratio = (double) view.size.width / Math.abs(p1.x - p2.x);
-            double yratio = (double) view.size.height / Math.abs(p1.y - p2.y);
-            double ratio = Math.min(xratio, yratio);
+            float xratio = (float) view.size.width / Math.abs(p1.x - p2.x);
+            float yratio = (float) view.size.height / Math.abs(p1.y - p2.y);
+            float ratio = Math.min(xratio, yratio);
             view.zoom *= ratio;
 
             // BUG: this doesn't change the popup menu.
@@ -423,7 +436,8 @@ public class ToolBox extends JToolBar {
                 // set font now?  *shrug*  don't care that much.
                 int dx, dy = g2.getFontMetrics().getAscent();
                 int EPS = 2;
-                
+
+                /*
                 // first corner: draw position
                 String nwString = r.unrender(nw).toString(); // don't compute me here!
                 g2.setColor(ColorUtils.addAlpha(Color.yellow, 230));
@@ -441,6 +455,7 @@ public class ToolBox extends JToolBar {
                 g2.setColor(Color.black);
                 g2.drawString(seString, se.x-dx-EPS, se.y-EPS);
                 g2.drawRect(se.x-dx-2*EPS, se.y-dy-EPS, dx+2*EPS, dy+EPS);
+                 */
             }
         }
     }
