@@ -14,6 +14,7 @@ public class Sort {
         sort(data, fieldName, false);
     }
 
+    // sort data by field
     public static void sort(List data, String fieldName, boolean decreasing) throws IllegalArgumentException {
         try {
             // possible bug: if data contains different classes of objects, data[0].class
@@ -32,9 +33,8 @@ public class Sort {
                         int x = v1.compareTo(v2); // bug: trouble here if v1 (or maybe v2) is null
                         return (reverse ? -x : x);
                     } catch (IllegalAccessException iae) {
-                        // gah, i'm just plain screwed here.  but the user screwed me, so who cares.
-                        // time to fail silently.
-                        return 0;
+                        // gah, nothing i can do here.
+                        throw new IllegalArgumentException("no access to field! -- " + iae);
                     }
                 }
             });
