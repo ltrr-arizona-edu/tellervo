@@ -23,6 +23,7 @@ package corina.prefs;
 import corina.gui.HasPreferences;
 import corina.gui.JarIcon;
 import corina.gui.ButtonLayout;
+import corina.gui.DialogLayout;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,9 +33,6 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Component;
 import java.awt.Frame;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
@@ -88,97 +86,79 @@ public class PrefsDialog extends JFrame {
     // data
     private List options, categories;
 
-    // the generic right-panel for a bunch of Options.  THIS IS GODAWFUL UGLY.  BREAK IT DOWN INTO METHODS OR SOMETHING.
+    // the generic right-panel for a bunch of Options.
+    // THIS IS GODAWFUL UGLY.  BREAK IT DOWN INTO METHODS OR SOMETHING.
     private class OptionsPanel extends JPanel {
         public OptionsPanel(String category) {
             // gui setup: gridbag!
-            GridBagLayout gridbag = new GridBagLayout();
-            GridBagConstraints c = new GridBagConstraints();
-            super.setLayout(gridbag);
+            super.setLayout(new DialogLayout());
 
-            // global constraints
-            c.fill = GridBagConstraints.HORIZONTAL;
-            c.anchor = GridBagConstraints.NORTHWEST;
-            c.insets = new Insets(3, 3, 3, 3); // half of 6...?
-            c.weighty = 0.0;
-
-            int row = 0;
             for (int i=0; i<options.size(); i++) {
-                PrefsTemplate.Option o = (PrefsTemplate.Option) options.get(i);
+                final PrefsTemplate.Option o = (PrefsTemplate.Option) options.get(i);
                 if (o.category.equals(category)) {
-                    // grid position
-                    c.gridy = row++;
 
                     // create and add the constrained label
-                    c.gridx = 0;
-                    c.weightx = 0.25;
+                    String label;
                     if (o.type != PrefsTemplate.Option.TYPE_BOOL) {
-                        //	super.add(new JLabel(o.description, SwingConstants.RIGHT), c);
-                        // does a nested panel help vertical alignment?
-                        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-                        panel.add(new JLabel(o.description, SwingConstants.RIGHT));
-                        super.add(panel, c);
+                        label = o.description;
+                    } else {
+                        label = "";
                     }
-
-                    // constraints for the edit box
-                    c.gridx = 1;
-                    c.weightx = 0.75;
 
                     switch (o.type) {
 
                         case PrefsTemplate.Option.TYPE_COLOR: {
                             // popup
                             ColorPopup p = new ColorPopup(Color.decode(o.value), o);
-                            JPanel t = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                            JPanel t = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
                             t.add(p);
-                            super.add(t, c);
+                            super.add(t, label);
                             break;
                         }
 
                         case PrefsTemplate.Option.TYPE_BOOL: {
-                            final PrefsTemplate.Option glue = o;
                             JCheckBox t = new JCheckBox(o.description);
                             t.setSelected(o.value.equals("true"));
                             t.addChangeListener(new ChangeListener() {
                                 public void stateChanged(ChangeEvent ce) {
-                                    glue.value = (glue.value.equals("true") ? "false" : "true");
+                                    // use Boolean for this?
+                                    o.value = (o.value.equals("true") ? "false" : "true");
                                 }
                             });
-                            super.add(t, c);
+                            super.add(Box.createVerticalStrut(8)); // need more space for all types?  wha?  hrm...
+                            super.add(t, label);
                             break;
                         }
 
                         case PrefsTemplate.Option.TYPE_FONT: {
-                            final PrefsTemplate.Option glue = o;
-
-                            JPanel flow = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                            JPanel flow = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
                             final JLabel p = new JLabel("Sample");
-                            p.setFont(Font.decode(glue.value));
+                            p.setFont(Font.decode(o.value));
 
                             JButton b = new JButton("Change font");
                             b.addActionListener(new AbstractAction() {
                                 public void actionPerformed(ActionEvent ae) {
-                                    String f = FontChooser.showDialog(me /* !!! */, "Choose new font", glue.value);
+                                    String f = FontChooser.showDialog(me /* !!! */, "Choose new font", o.value);
                                     if (f != null)
-                                        glue.value = f;
-                                    p.setFont(Font.decode(glue.value));
+                                        o.value = f;
+                                    p.setFont(Font.decode(o.value));
                                 }
                             });
 
                             flow.add(p);
+                            flow.add(Box.createHorizontalStrut(8));
                             flow.add(b);
 
-                            super.add(flow, c);
+                            super.add(flow, label);
                             break;
                         }
 
                         default: { // must be PrefsTemplate.Option.TYPE_STRING
                                    // create the edit box
-                            final JTextField t = new JTextField(System.getProperty(o.property, ""));
+                            final JTextField t = new JTextField(System.getProperty(o.property, ""), 20);
 
                             // listener
-                            final PrefsTemplate.Option glue = o; // needed?
                             t.getDocument().addDocumentListener(new DocumentListener() {
                                 public void changedUpdate(DocumentEvent e) {
                                     update(e);
@@ -191,23 +171,19 @@ public class PrefsDialog extends JFrame {
                                 }
                                 private void update(DocumentEvent e) {
                                     // get text from the widget, store it
-                                    glue.value = t.getText();
+                                    o.value = t.getText();
                                 }
                             });
 
                             // put it in
-                            super.add(t, c);
+                            super.add(t, label);
                         }
                     }
                 }
             }
 
-            // add glue to bottom -- this aligns everything to the top
-            Component myBox = Box.createVerticalGlue();
-            c.gridx = 0;
-            c.gridy = row;
-            c.weighty = 1.0;
-            super.add(myBox, c);
+            // add some extra space below the last component.
+            super.add(Box.createVerticalStrut(18), null);
         }
     }
 
@@ -312,7 +288,7 @@ public class PrefsDialog extends JFrame {
         tabs = new JTabbedPane();
         for (int i=0; i<categories.size(); i++) {
             String cat = (String) categories.get(i);
-            tabs.addTab(cat, new OptionsPanel(cat)); // nothing scrolls any more...
+            tabs.addTab(cat, new OptionsPanel(cat));
         }
         p.add(tabs);
 
