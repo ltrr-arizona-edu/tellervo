@@ -47,7 +47,7 @@ public class Build {
     // this jar, and return it
     private static String loadTimestamp() {
 	try {
-	    ClassLoader cl = Class.forName("corina.Build").getClassLoader();
+	    ClassLoader cl = corina.Build.class.getClassLoader();
 	    InputStream is = cl.getResourceAsStream("Timestamp");
       if (is != null) {
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -57,8 +57,6 @@ public class Build {
           br.close();
         }
       }
-	} catch (ClassNotFoundException cnfe) {
-	    new corina.gui.Bug(cnfe);
 	} catch (IOException ioe) {
 	    new corina.gui.Bug(ioe);
 	}
