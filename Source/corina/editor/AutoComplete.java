@@ -1,3 +1,23 @@
+//
+// This file is part of Corina.
+// 
+// Corina is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// Corina is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Corina; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// Copyright 2001 Ken Harris <kbh7@cornell.edu>
+//
+
 package corina.editor;
 
 import corina.site.SiteDB;
@@ -11,23 +31,24 @@ import java.awt.EventQueue;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
 
-// DEBUG ONLY
-import java.awt.BorderLayout;
-import javax.swing.JFrame;
-
 /**
-   An autocompleting text field.  You give it a list of possible completions,
-   and it otherwise is just like a normal text field
+   An autocompleting text field.  You give it a list of possible
+   completions (like web browsers do, for URLs), and it otherwise is
+   just like a normal text field.
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
+   <h2>Left to do</h2>
+   <ul>
+     <li>record frequencies, per dictionary, so the common stuff will
+         eventually come up first?
+   </ul>
+
+   @see corina.site.SiteDB
+
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-
 public class AutoComplete extends JTextField {
-
-    // TODO: record frequencies, per dictionary, so the common stuff will
-    // eventually come up first?
-
+    // the list of words to look for matches in
     private List dict;
  
     /**
@@ -39,7 +60,15 @@ public class AutoComplete extends JTextField {
        @param dictionary a list of words to autocomplete
     */
     public AutoComplete(String text, int columns) {
-	this(text, columns, SiteDB.getSiteDB().getSiteNames());
+	super(text, columns);
+
+	try {
+	    List l = SiteDB.getSiteDB().getSiteNames();
+	    useDictionary(l);
+	} catch (NullPointerException npe) {
+	    // apparently this is what happens if it can't load the
+	    // site db file.  FIXME: it should behave nicer.
+	}
     }
 
     /**
@@ -51,7 +80,10 @@ public class AutoComplete extends JTextField {
     */
     public AutoComplete(String text, int columns, List dictionary) {
 	super(text, columns);
+	useDictionary(dictionary);
+    }
 
+    private void useDictionary(List dictionary) {
 	// sort the dictionary first?
 	this.dict = dictionary;
 
@@ -64,21 +96,16 @@ public class AutoComplete extends JTextField {
 		    if (e.getOffset() + 1 == getText().length()) {
 
 			// and matches something from dict
-			String completion = null;
-			for (int i=0; i<dict.size(); i++) {
-			    if (((String) dict.get(i)).startsWith(getText())) {
-				completion = (String) dict.get(i);
-				break;
-			    }
-			}
-
+			String completion = matchFromDictionary(getText());
 			if (completion == null)
 			    return;
 
-			// add it -- but you can't change a document in a documentlistener, or
-			// an illegal state exception gets thrown.
-			// (the documentation doesn't seem to mention
-			// this important fact.)
+			// add it -- but you can't change a document
+			// in a documentlistener, or an illegal state
+			// exception gets thrown.  (the documentation
+			// doesn't seem to mention this rather
+			// important fact!)
+
 			final String glue = completion;
 			final int curs = e.getOffset();
 			EventQueue.invokeLater(new Runnable() {
@@ -96,22 +123,14 @@ public class AutoComplete extends JTextField {
 	    });
     }
 
-    // DEBUG ONLY
-    public static void main(String args[]) throws Exception {
-	List dict = new ArrayList();
-	dict.add("lorem");
-	dict.add("ipsum");
-	dict.add("dolor");
-	dict.add("sit");
-	dict.add("amet");
-
-	JTextField a = new AutoComplete("", 30, dict);
-
-	JFrame f = new JFrame();
-	f.getContentPane().add(a, BorderLayout.NORTH);
-	f.pack();
-	f.show();
-
-	a.requestFocus();
+    // (or null, if nothing matches)
+    private String matchFromDictionary(String text) {
+	String completion = null;
+	for (int i=0; i<dict.size(); i++) {
+	    if (((String) dict.get(i)).startsWith(text)) {
+		return (String) dict.get(i);
+	    }
+	}
+	return null;
     }
 }
