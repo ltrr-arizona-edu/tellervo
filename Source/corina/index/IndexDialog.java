@@ -31,8 +31,8 @@ import corina.util.NoEmptySelection;
 import corina.util.TextClipboard;
 import corina.util.Platform;
 import corina.gui.HelpBrowser;
-import corina.gui.XButton;
 import corina.gui.Bug;
+import corina.ui.Builder;
 
 import java.io.File;
 import java.io.IOException;
@@ -303,7 +303,7 @@ public class IndexDialog extends JDialog {
     }
 
     private JButton makePreviewButton() {
-        JButton preview = new XButton("preview");
+        JButton preview = Builder.makeButton("preview");
         preview.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 int row = table.getSelectedRow();
@@ -322,7 +322,7 @@ public class IndexDialog extends JDialog {
     }
 
     private JButton makeCopyButton() {
-        JButton b = new XButton("copy");
+        JButton b = Builder.makeButton("copy");
         b.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 int row = table.getSelectedRow();
@@ -361,7 +361,7 @@ public class IndexDialog extends JDialog {
     }
     
     private JButton makeCancelButton() {
-        JButton cancel = new XButton("cancel");
+        JButton cancel = Builder.makeButton("cancel");
         cancel.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 dispose();
@@ -542,7 +542,7 @@ public class IndexDialog extends JDialog {
         p.add(buttonPanel);
 
         // TESTING
-        JButton help = new XButton("help");
+        JButton help = Builder.makeButton("help");
         help.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 new HelpBrowser("Manual/Indexing.html");
@@ -583,7 +583,7 @@ public class IndexDialog extends JDialog {
         buttonPanel.add(makeCancelButton());
 
         // ok button -- REFACTOR: EXTRACT METHOD
-        JButton okButton = new XButton("ok");
+        JButton okButton = Builder.makeButton("ok");
         okButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 int row = table.getSelectedRow();
