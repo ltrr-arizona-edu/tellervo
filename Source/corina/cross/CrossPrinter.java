@@ -21,14 +21,14 @@
 package corina.cross;
 
 import corina.Year;
-
-import java.text.DecimalFormat;
+import corina.gui.Bug;
 
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import java.text.DecimalFormat;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 
@@ -107,7 +107,7 @@ public class CrossPrinter implements Printable {
     // a new crossdate printer, with user-selected stuff
     public CrossPrinter(Cross c, boolean sigScores, boolean allScores, boolean histogram) {
         cross = c;
-        histo = new Histogram(c); // isn't this part of cross?
+        histo = new Histogram(c); // isn't this part of cross?  (well, it should be...)
 
         // count some rows
         scoreRows = c.range.getEnd().row() - c.range.getStart().row() + 1;
@@ -127,89 +127,89 @@ public class CrossPrinter implements Printable {
     private Graphics2D g2;
 
     public int print(Graphics g, PageFormat pf, int page) {
-	// store margins
-	left = pf.getImageableX();
-	top = pf.getImageableY();
-	right = left + pf.getImageableWidth();
-	bottom = top + pf.getImageableHeight();
+        // store margins
+        left = pf.getImageableX();
+        top = pf.getImageableY();
+        right = left + pf.getImageableWidth();
+        bottom = top + pf.getImageableHeight();
 
-	// store graphics
-	g2 = (Graphics2D) g;
+        // store graphics
+        g2 = (Graphics2D) g;
 
-	// start at the top
-	position = top;
+        // start at the top
+        position = top;
 
-	// strategy: print lines from start (until position+height>bottom)
+        // strategy: print lines from start (until position+height>bottom)
 
-	// already done?  say so
-	if (lastPage != -1 && page > lastPage)
-	    return NO_SUCH_PAGE;
+        // already done?  say so
+        if (lastPage != -1 && page > lastPage)
+            return NO_SUCH_PAGE;
 
-	// what page to draw?
-	int startHere = 0;
+        // what page to draw?
+        int startHere = 0;
 
-	// never printed this page before?  then i need to know what's on it...
-	int lastKnownPage = startRows.size() - 1;
-	if (page > lastKnownPage) {
-	    // compute page start/end?  or just draw it for the first time?
+        // never printed this page before?  then i need to know what's on it...
+        int lastKnownPage = startRows.size() - 1;
+        if (page > lastKnownPage) {
+            // compute page start/end?  or just draw it for the first time?
 
-	    // where's it start?
-	    if (page > 0)
-		startHere = ((Integer) startRows.get(lastKnownPage)).intValue() + previousPageRows;
-	    startRows.add(new Integer(startHere));
-	} else {
-	    // print it before, let's try to remember where we started last time
-	    startHere = ((Integer) startRows.get(page)).intValue();
-	}
+            // where's it start?
+            if (page > 0)
+                startHere = ((Integer) startRows.get(lastKnownPage)).intValue() + previousPageRows;
+            startRows.add(new Integer(startHere));
+        } else {
+            // print it before, let's try to remember where we started last time
+            startHere = ((Integer) startRows.get(page)).intValue();
+        }
 
-	// print the page number (make it 1-indexed for people)
-	printPageNr(page+1);
+        // print the page number (make it 1-indexed for people)
+        printPageNr(page+1);
 
-	// now just draw starting with |startHere| until there's no
-	// more room
-	int n = 0;
+        // now just draw starting with |startHere| until there's no
+        // more room
+        int n = 0;
 
-	// this checks if the *last* line could fit on this page, not
-	// whether the *next* one can, but 99% of the time, it'll be
-	// fine.  the line heights are close enough it'll probably
-	// never even be noticable.
-	while ((position + lineHeight()) < bottom) {
+        // this checks if the *last* line could fit on this page, not
+        // whether the *next* one can, but 99% of the time, it'll be
+        // fine.  the line heights are close enough it'll probably
+        // never even be noticable.
+        while ((position + lineHeight()) < bottom) {
 
-	    // done?
-	    if (startHere >= totalRows) {
-		lastPage = page;
-		return PAGE_EXISTS;
-	    }
+            // done?
+            if (startHere >= totalRows) {
+                lastPage = page;
+                return PAGE_EXISTS;
+            }
 
-	    printRow((Graphics2D) g, startHere++);
-	    n++;
-	}
+            printRow((Graphics2D) g, startHere++);
+            n++;
+        }
 
-	// if this is the first time we've drawn this page, better
-	// record how many rows it was.  how?
-	previousPageRows = n;
+        // if this is the first time we've drawn this page, better
+        // record how many rows it was.  how?
+        previousPageRows = n;
 
-	// done
-	return PAGE_EXISTS;
+        // done
+        return PAGE_EXISTS;
     }
 
     // starting row for page /i/ -- List of Integers
-    java.util.List startRows = new ArrayList();
+    List startRows = new ArrayList();
 
     static final int ROW_EXISTS = 10;
     static final int NO_SUCH_ROW = 36;
 
     void printPageNr(int page) {
-	small();
-	String nr = msg.getString("page") + " " + page; // of /n/???
-	drawStringRight(nr, right);
+        small();
+        String nr = msg.getString("page") + " " + page; // of /n/???
+        drawStringRight(nr, right);
 
-	// page 1 starts with "T-score" (or whatever the score is), so
-	// the top-right corner is free, so we don't need to do
-	// anything.  on other pages, there will be data there, so
-	// skip down.
-	if (page != 1)
-	    newLine();
+        // page 1 starts with "T-score" (or whatever the score is), so
+        // the top-right corner is free, so we don't need to do
+        // anything.  on other pages, there will be data there, so
+        // skip down.
+        if (page != 1)
+            newLine();
     }
 
     // print row |row|.  Whatever It Takes.
@@ -249,7 +249,8 @@ public class CrossPrinter implements Printable {
         else if (row == 9 + scoreRows + sigRows + distroRows)
             printByLine();
 
-	// ... else something's wrong, so ignore it.
+        // ... else something's wrong, so ignore it.  nah, let's bug the user.
+        Bug.bug(new IllegalArgumentException("eep."));
     }
 
     void printTitle(String text) {
@@ -341,6 +342,7 @@ public class CrossPrinter implements Printable {
         int histoGuide = (int) (left + (float) ((right - left) * 0.50)); // left guide for histo
         int qtyGuide = (rangeGuide + histoGuide) / 2; // center guide for qtys
         if (n == 0) {
+            // header
             drawStringCenter(cross.getName(), rangeGuide);
             drawStringCenter(msg.getString("quantity"), qtyGuide);
             drawStringCenter(msg.getString("histogram"), (int) ((histoGuide+right)/2));
@@ -359,12 +361,11 @@ public class CrossPrinter implements Printable {
 
                 // col 2: histogram -- only if n>0
                 g2.setStroke(new BasicStroke(0.5f));
-                int x = (int) (histoGuide);
                 int ascent = g2.getFontMetrics().getAscent();
                 int y = (int) (position + lineHeight() - ascent);
                 double frac = (double) histo.getNumber(row) / (double) histo.getFullestBucket();
                 int dx = (int) (frac * (right - histoGuide));
-                g2.drawRect(x, y, dx, lineHeight());
+                g2.drawRect((int) histoGuide, y, dx, lineHeight());
             }
         }
 
@@ -383,8 +384,7 @@ public class CrossPrinter implements Printable {
     }
 
     // print a "printed by ... at ..." line.
-    void printByLine() {
-        small();
+    private String makeByLine() {
         Date date = new Date();
         String dateString = DateFormat.getDateInstance().format(date);
         String timeString = DateFormat.getTimeInstance().format(date);
@@ -394,14 +394,17 @@ public class CrossPrinter implements Printable {
                                                  dateString,
                                                  timeString,
                                              });
+        return byline;
+    }
 
+    void printByLine() {
         // draw on very bottom of page
-        g2.drawString(byline, (float) left, (float) bottom - lineHeight());
+        small();
+        g2.drawString(makeByLine(), (float) left, (float) bottom - lineHeight());
         newLine(); // (does this do anything now?)
     }
 
-    // compute the line height for the current font.  (in C, this
-    // would be a macro.)
+    // compute the line height for the current font.  (in C, this would be a macro.)
     private int lineHeight() {
         return g2.getFontMetrics().getHeight();
     }
