@@ -25,6 +25,8 @@ import corina.Sample;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+// TODO: combine this with popupmenu somehow.  i'd rather just say
+// "PopupMenu.addPopupMenu(blah);" and be done with it.
 public class PopupListener extends MouseAdapter {
 
     private GrapherPanel gp;
