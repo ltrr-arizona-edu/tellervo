@@ -26,8 +26,8 @@
 # 24 July 2001
 # $Id$
 
-from edu.cornell.dendro.corina import Sample
-from edu.cornell.dendro.corina.gui import FileDialog
+from corina import Sample
+from corina.gui import FileDialog
 
 from java.io import BufferedWriter
 from java.io import FileWriter

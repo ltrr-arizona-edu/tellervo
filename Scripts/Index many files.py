@@ -18,8 +18,8 @@
 # Copyright 2001 Ken Harris <kbh7@cornell.edu>
 #
 
-from edu.cornell.dendro.corina.index import Exponential
-from edu.cornell.dendro.corina.gui import FileDialog
+from corina.index import Exponential
+from corina.gui import FileDialog
 
 from java.io import File
 from java.io import IOException

@@ -18,9 +18,9 @@
 # Copyright 2001 Ken Harris <kbh7@cornell.edu>
 #
 
-from edu.cornell.dendro.corina import Sample
-from edu.cornell.dendro.corina import Range
-from edu.cornell.dendro.corina.gui import FileDialog
+from corina import Sample
+from corina import Range
+from corina.gui import FileDialog
 
 from java.io import IOException
 from java.util import Hashtable
