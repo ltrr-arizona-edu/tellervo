@@ -88,12 +88,14 @@ public class Histogram {
     }
 
     // the number of entries in the fullest bucket.
-    // (don't bother remembering this; it's only used once.)
+    private int fullest = -1;
     public int getFullestBucket() {
-        int n=buckets.length;
-        int max=0;
-        for (int i=0; i<n; i++)
-            max = Math.max(max, buckets[i]);
+        // -1 means "not computed" (because no bucket can contain -1 things, of course)
+        if (fullest == -1) {
+            int n=buckets.length;
+            for (int i=0; i<n; i++)
+                fullest = Math.max(fullest, buckets[i]);
+        }
         return max;
     }
 
