@@ -63,7 +63,7 @@ public class Sum {
     // - if exactly one file is indexed, say which it is (and vice versa) -- or 2? 3?...
 
     // i18n
-    private static ResourceBundle msg = ResourceBundle.getBundle("ManipBundle");
+    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // load all elements, and stuff 'em into a buffer.  (OBSOLETE once element-sample is no longer an important distinction to make!)
     private static Sample[] loadIntoBuffer(List elements) throws IOException {

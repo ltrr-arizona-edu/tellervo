@@ -99,5 +99,5 @@ public class Reverse extends AbstractUndoableEdit {
     }
 
     // i18n
-    private ResourceBundle msg = ResourceBundle.getBundle("ManipBundle");
+    private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 }
