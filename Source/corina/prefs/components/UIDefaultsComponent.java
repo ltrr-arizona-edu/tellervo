@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.event.TableModelEvent;
@@ -17,7 +18,7 @@ import javax.swing.event.TableModelListener;
 import corina.util.CorinaLog;
 import corina.prefs.Prefs;
 
-public class UIDefaultsComponent extends Container implements TableModelListener, ActionListener {
+public class UIDefaultsComponent extends JComponent implements TableModelListener, ActionListener {
   private static final CorinaLog log = new CorinaLog("UIDefaultsComponent");
   
   private UIDefaultsTableModel model = new UIDefaultsTableModel();
@@ -28,7 +29,7 @@ public class UIDefaultsComponent extends Container implements TableModelListener
     Container c = new Container();
     c.setLayout(new FlowLayout());
     
-    JButton reset = new JButton("Reset");
+    JButton reset = new JButton("Reset UI fonts and colors");
     reset.addActionListener(this);
     
     c.add(reset);
@@ -49,7 +50,7 @@ public class UIDefaultsComponent extends Container implements TableModelListener
     model.reset();
   }
     
-  private static final String stringifyFont(Font f) {
+  static final String stringifyFont(Font f) {
     StringBuffer sb = new StringBuffer();
     sb.append(f.getFontName());
     sb.append('-');
