@@ -20,6 +20,8 @@
 
 package corina.eyes;
 
+import corina.util.Sort;
+
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -39,7 +41,7 @@ public class Scanner {
 
     private double theta;
 
-    // compute the angle of a line drawn from a to b
+    // compute the angle of a line drawn from a to b -- EXISTS ELSEWHERE, REFACTOR
     public static double angle(Point a, Point b) {
 	double theta;
 	double dx = b.x - a.x;
@@ -88,16 +90,28 @@ public class Scanner {
 	return Math.sqrt(dx*dx + dy*dy);
     }
 
-    private class Tuple {
-	int x, y;
-	double dist;
-	int brightness;
-	Tuple(int x, int y, double dist, int brightness) {
-	    this.x = x;
-	    this.y = y;
-	    this.dist = dist;
-	    this.brightness = brightness;
-	}
+    private class Tuple implements Comparable {
+        int x, y;
+        double dist;
+        int brightness;
+        Tuple(int x, int y, double dist, int brightness) {
+            this.x = x;
+            this.y = y;
+            this.dist = dist;
+            this.brightness = brightness;
+        }
+        public int compareTo(Object o2) {
+            Tuple t2 = (Tuple) o2;
+            if (x < t2.x)
+                return -1;
+            if (x > t2.x)
+                return +1;
+            if (y < t2.y)
+                return -1;
+            if (y > t2.y)
+                return +1;
+            return 0;
+        }
     }
 
     public static final int SWIPE = 21; // 21 makes it tick-width; 41 is pretty robust
@@ -135,6 +149,7 @@ public class Scanner {
 		    rgb = img.getRGB(x, y);
 		} catch (ArrayIndexOutOfBoundsException e) {
 		    // if it's not a valid pixel, just ignore it
+                    // WHY WOULD THIS HAPPEN?  DOES THIS HAPPEN?
 		    continue;
 		}
 		int r = (rgb & 0x00ff0000) >> 16;
@@ -145,152 +160,132 @@ public class Scanner {
 		num++;
 	    }
 
-	    tuples.add(new Tuple(bx, by, dist, sum/num));
-	}
+            tuples.add(new Tuple(bx, by, dist, sum/num));
+        }
 
-	// now we've got a bunch of tuples (x,y,dist,brightness)
+        // now we've got a bunch of tuples (x,y,dist,brightness)
 
-	// so sort them by (x,y), so duplicates are easily removed
-	Collections.sort(tuples, new Comparator() {
-		public int compare(Object o1, Object o2) {
-		    Tuple t1 = (Tuple) o1;
-		    Tuple t2 = (Tuple) o2;
-		    if (t1.x < t2.x)
-			return -1;
-		    if (t1.x > t2.x)
-			return +1;
-		    if (t1.y < t2.y)
-			return -1;
-		    if (t1.y > t2.y)
-			return +1;
-		    return 0;
-		}
-	    });
+        // so sort them by (x,y), so duplicates are easily removed
+        Collections.sort(tuples);
 
-	// remove duplicates -- would a hash be better, then?
-	for (int i=0; i<tuples.size()-1; i++) {
-	    Tuple t1 = (Tuple) tuples.get(i);
-	    Tuple t2 = (Tuple) tuples.get(i+1);
-	    if (t1.equals(t2))
-		tuples.remove(i+1);
-	}
+        // remove duplicates -- would a hash be better, then?
+        // isn't this |uniq|?  is that in the java api?  (would a Set help?)
+        for (int i=0; i<tuples.size()-1; i++) {
+            Tuple t1 = (Tuple) tuples.get(i);
+            Tuple t2 = (Tuple) tuples.get(i+1);
+            if (t1.equals(t2))
+                tuples.remove(i+1);
+        }
 
-	// sort them by dist
-	Collections.sort(tuples, new Comparator() {
-		public int compare(Object o1, Object o2) {
-		    Tuple t1 = (Tuple) o1;
-		    Tuple t2 = (Tuple) o2;
-		    return (t1.dist < t2.dist ? -1 : +1);
-		}
-	    });
+        // sort them by dist
+        Sort.sort(tuples, "dist");
 
-	// now stuff what's left in brightness, distances
-	for (int i=0; i<tuples.size(); i++) {
-	    Tuple t = (Tuple) tuples.get(i);
-	    brightness.add(new Integer(t.brightness));
-	    distances.add(new Double(t.dist));
-	}
+        // now stuff what's left in brightness, distances
+        for (int i=0; i<tuples.size(); i++) {
+            Tuple t = (Tuple) tuples.get(i);
+            brightness.add(new Integer(t.brightness));
+            distances.add(new Double(t.dist));
+        }
     }
 
-	// original plan for phase 2:
-	// - have a bunch of (distance,brightness) tuples
-	// - (make sure they're sorted, increasing distance)
-	// - from (s, b) compute (ds/db, b)
-	// - wherever ds/db crosses the 0-axis, that's a ring
+    // original plan for phase 2:
+    // - have a bunch of (distance,brightness) tuples
+    // - (make sure they're sorted, increasing distance)
+    // - from (s, b) compute (ds/db, b)
+    // - wherever ds/db crosses the 0-axis, that's a ring
 
     // original phase 2 didn't work so well.  plan B: schweingruber!
     private void phase2() {
-	int n = brightness.size();
+        int n = brightness.size();
 
-	// schweingruber's method: given threshold, look for (1)
-	// increasing through threshold, (2) maximum (this is
-	// ring-width?), (3) decreasing through threshold
+        // schweingruber's method: given threshold, look for (1)
+        // increasing through threshold, (2) maximum (this is
+        // ring-width?), (3) decreasing through threshold
 
-	final int THRESHOLD_TOP = 300; // compute dynamically?  ask user?
-	final int THRESHOLD_BOTTOM = 250; // compute dynamically?  ask user?
+        final int THRESHOLD_TOP = 300; // compute dynamically?  ask user?
+        final int THRESHOLD_BOTTOM = 250; // compute dynamically?  ask user?
 
-	// two thresholds, hmm ... how about the WATERSHED ALGORITHM?
+        // two thresholds, hmm ... how about the WATERSHED ALGORITHM?
 
-	// jeff says this sounds like perfect FFT territory, but
-	// neither of us is quite sure about FFTs.  to research.
+        // jeff says this sounds like perfect FFT territory, but
+        // neither of us is quite sure about FFTs.  to research.
 
-	boolean inRing = true; // false;
-	int a=0, z=0;
+        boolean inRing = true; // false;
+        int a=0, z=0;
 
-	double lastDist = 0.0;
+        double lastDist = 0.0;
 
-	for (int i=0; i<n; i++) {
-	    // what are we looking at?
-	    int bri = ((Number) brightness.get(i)).intValue();
-	    double dist = ((Number) distances.get(i)).doubleValue();
+        for (int i=0; i<n; i++) {
+            // what are we looking at?
+            int bri = ((Number) brightness.get(i)).intValue();
+            double dist = ((Number) distances.get(i)).doubleValue();
 
-	    // entered ring?
-	    if (!inRing && bri<THRESHOLD_BOTTOM) {
-		inRing = true;
-		a = i;
-	    }
+            // entered ring?
+            if (!inRing && bri<THRESHOLD_BOTTOM) {
+                inRing = true;
+                a = i;
+            }
 
-	    // left ring?
-	    if (inRing && bri>THRESHOLD_TOP) {
-		inRing = false;
-		z = i;
+            // left ring?
+            if (inRing && bri>THRESHOLD_TOP) {
+                inRing = false;
+                z = i;
 
-		// look for max
-		int min = -1, minPos = -1;
-		for (int j=a; j<=z; j++) {
-		    int b = ((Number) brightness.get(j)).intValue();
-		    if (b < min) {
-			b = min;
-			minPos = j;
-		    }
-		}
+                // look for max
+                int min = -1, minPos = -1;
+                for (int j=a; j<=z; j++) {
+                    int b = ((Number) brightness.get(j)).intValue();
+                    if (b < min) {
+                        b = min;
+                        minPos = j;
+                    }
+                }
 
-		// add ring -- use z (i.e., getting lighter beyond THRESHOLD_TOP)
-		Ring r = new Ring();
-		double abs = ((Number) distances.get(z)).doubleValue();
-		r.dist = abs - lastDist;
-		lastDist = abs;
-		r.p = new Point(p1.x + (int) (abs*Math.cos(theta)),
-				p1.y + (int) (abs*Math.sin(theta)));
-		rings.add(r);
-	    }
-	}
+                // add ring -- use z (i.e., getting lighter beyond THRESHOLD_TOP)
+                Ring r = new Ring();
+                double abs = ((Number) distances.get(z)).doubleValue();
+                r.dist = abs - lastDist;
+                lastDist = abs;
+                r.p = new Point(p1.x + (int) (abs*Math.cos(theta)),
+                                p1.y + (int) (abs*Math.sin(theta)));
+                rings.add(r);
+            }
+        }
 
-	// don't count a zero-sized ring at the start
-	if (!rings.isEmpty() && ((Ring) rings.get(0)).dist==0.0)
-	    rings.remove(0);
+        // don't count a zero-sized ring at the start
+        if (!rings.isEmpty() && ((Ring) rings.get(0)).dist==0.0)
+            rings.remove(0);
     }
 
     private List rings;
     public class Ring {
-	Point p;
-	double dist;
+        Point p;
+        double dist;
     }
 
     // grab one at a time, until done (<0)
     private int nextRing;
-    public Ring getNextRing() {
-	if (nextRing == rings.size())
-	    return null;
+    public Ring getNextRing() { // this method is WORTHLESS!
+        if (nextRing == rings.size())
+            return null; // eep!  (that's ok, this method was obsolete as soon as it was written.)
 
-	return (Ring) rings.get(nextRing++);
+        return (Ring) rings.get(nextRing++);
     }
 
     // this is a better interface, methinks.  but it doesn't work.  d'oh!
     public Ring[] getRings() {
-	return (Ring[]) rings.toArray(new Ring[0]);
+        return (Ring[]) rings.toArray(new Ring[0]);
     }
 
     // for debugging only so far: output density-versus-distance to /tmp/rawdata
     public void outputRawData() throws IOException {
-	BufferedWriter w = new BufferedWriter(new FileWriter("/tmp/rawdata"));
-	int n = brightness.size();
-	for (int i=0; i<n; i++) {
-	    w.write(distances.get(i) + " " + brightness.get(i));
-	    // w.write(distances.get(i) + " " + (256*3 - ((Number) brightness.get(i)).intValue()));
-	    w.newLine();
-	}
-	w.close();
+        BufferedWriter w = new BufferedWriter(new FileWriter("/tmp/rawdata"));
+        int n = brightness.size();
+        for (int i=0; i<n; i++) {
+            w.write(distances.get(i) + " " + brightness.get(i));
+            // w.write(distances.get(i) + " " + (256*3 - ((Number) brightness.get(i)).intValue()));
+            w.newLine();
+        }
+        w.close();
     }
-
 }
