@@ -202,6 +202,6 @@ public class DialogLayout implements LayoutManager2 {
      panel.add(new JLabel("Identification"));
      panel.add(new JTextField("", 32), "Name:");
      ...
-     panel.add(makeHorizontalLine());
+     panel.add(new JLine());
      */
 }
