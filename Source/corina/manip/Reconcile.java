@@ -23,6 +23,7 @@ package corina.manip;
 import corina.Sample;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
    <p>Class for assisting users in reconciling two Samples (actually
@@ -48,7 +49,6 @@ import java.io.File;
    @version $Id$ */
 
 public class Reconcile implements Runnable {
-
     private Sample s1, s2;
 
     private String report;
@@ -63,67 +63,63 @@ public class Reconcile implements Runnable {
     // given the filename of an A reading, return the filename of the
     // C reading, or vice versa.  the return value is guaranteed to be
     // a file on disk (though not necessarily loadable as a sample).
-    // if it's not obvious what the other reading is, returns null.
-    public static String guessOtherReading(String filename) {
-        // null?  then null.
-        if (filename == null)
-            return null;
-
+    // if it's not obvious what the other reading is, throws filenotfoundexception.
+    public static String guessOtherReading(String filename) throws FileNotFoundException {
         // assume it's of the form ".../blah/aaa{A,C}.ext".  (this routine
         // fails for filename=".abc")
 
-	// step 1: look for the last dot
-	int dot = filename.lastIndexOf('.');
+        // step 1: look for the last dot
+        int dot = filename.lastIndexOf('.');
 
-	// step 2: pick out the reading, usu. 'A' or 'C'
-	int reading = (dot==-1 ? filename.length()-1 : dot-1);
-	char ac = Character.toUpperCase(filename.charAt(reading));
+        // step 2: pick out the reading, usu. 'A' or 'C'
+        int reading = (dot==-1 ? filename.length()-1 : dot-1);
+        char ac = Character.toUpperCase(filename.charAt(reading));
 
-	// step 3: what's the other reading?  [A,B,C,D] => [C,D,A,B]
-	switch (ac) {
-	case 'A': ac = 'C'; break;
-	case 'B': ac = 'D'; break;
-	case 'C': ac = 'A'; break;
-	case 'D': ac = 'B'; break;
-	default: // dunno, give up
-	    return null;
-	}
+        // step 3: what's the other reading?  [A,B,C,D] => [C,D,A,B]
+        switch (ac) {
+            case 'A': ac = 'C'; break;
+            case 'B': ac = 'D'; break;
+            case 'C': ac = 'A'; break;
+            case 'D': ac = 'B'; break;
+            default: // dunno, give up
+                throw new FileNotFoundException();
+        }
 
-	// step 4: construct the hypothetical filename
-	StringBuffer target = new StringBuffer(filename);
-	target.setCharAt(reading, ac);
+        // step 4: construct the hypothetical filename
+        StringBuffer target = new StringBuffer(filename);
+        target.setCharAt(reading, ac);
 
-	// good?
-	if (new File(target.toString()).exists())
-	    return target.toString();
+        // good?
+        if (new File(target.toString()).exists())
+            return target.toString();
 
-	// try lower-case, just in case
-	target.setCharAt(reading, Character.toLowerCase(ac));
-	if (new File(target.toString()).exists())
-	    return target.toString();
+        // try lower-case, just in case
+        target.setCharAt(reading, Character.toLowerCase(ac));
+        if (new File(target.toString()).exists())
+            return target.toString();
 
-	// no?  give up.
-	return null;
+        // no?  give up.
+        throw new FileNotFoundException();
     }
 
     /** Construct a new reconciliation from two given samples.
 	@param a the A-reading
 	@param c the C-reading */
     public Reconcile(Sample a, Sample c) {
-	this.s1 = a;
-	this.s2 = c;
+        this.s1 = a;
+        this.s2 = c;
     }
 
     /** Return a title for this reconciliation.
-	@return this reconciliation's title */
+        @return this reconciliation's title */
     public String toString() {
-	return "Reconciliation of \"" + s1 + "\" and \"" + s2 + "\"";
+        return "Reconciliation of \"" + s1 + "\" and \"" + s2 + "\"";
     }
 
     /** Return a title for this reconciliation, in HTML.
-	@return this reconciliation's title */
+        @return this reconciliation's title */
     public String toHTML() {
-	return "Reconciliation of <i>\"" + s1 + "\"</i> and <i>\"" + s2 + "\"</i>";
+        return "Reconciliation of <i>\"" + s1 + "\"</i> and <i>\"" + s2 + "\"</i>";
     }
 
     // length
@@ -262,7 +258,6 @@ public class Reconcile implements Runnable {
 	between these samples.
 	@return the report */
     public String getReport() {
-	return report;
+        return report;
     }
-
 }
