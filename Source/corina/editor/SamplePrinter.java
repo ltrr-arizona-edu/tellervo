@@ -3,12 +3,15 @@ package corina.editor;
 import corina.Sample;
 import corina.Element;
 import corina.Year;
+import corina.Weiserjahre;
 import corina.print.Line;
 import corina.print.EmptyLine;
 import corina.print.TextLine;
 import corina.print.ByLine;
+import corina.print.PrintableDocument;
 
 import java.io.IOException;
+import java.io.FileNotFoundException;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -26,7 +29,7 @@ import java.awt.Color;
 import java.awt.print.Printable;
 import java.awt.print.PageFormat;
 
-public class SamplePrinter {
+public class SamplePrinter implements PrintableDocument {
 
     /*
      LEFT TO DO:
@@ -36,7 +39,7 @@ public class SamplePrinter {
      -- can i just make my own pageformat, or tweak that pageformat, to get the full imageable area?
      -- it would suck to make users do "page setup" every time, or suffer huge margins
      -- (hey, you should be serializing the pageformat to ~/.corina/ anywho!)
-     -- (consider reworking this abstraction in scheme)
+     -- (consider reworking this abstraction in scheme -- ?)
      */
 
     public SamplePrinter(Sample s) {
@@ -168,7 +171,6 @@ public class SamplePrinter {
             lines.add(new TextLine(s.meta.get("sapwood") + " sapwood rings."));
         if (s.meta.containsKey("pith")) {
             String p = (String) s.meta.get("pith");
-            // BUG: if s.meta is a HashMap, p might be null here
             if (p.equals("P"))
                 lines.add(new TextLine("Pith present and datable"));
             else if (p.equals("*"))
@@ -182,7 +184,6 @@ public class SamplePrinter {
             lines.add(new TextLine("Last ring measured " + s.meta.get("terminal") ));
         if (s.meta.containsKey("continuous")) {
             String c = (String) s.meta.get("continuous");
-            // BUG: see pith, above
             if (c.equals("C")) // uppercase only?
                 lines.add(new TextLine("Last ring measured is continuous"));
             else if (c.equals("R")) // uppercase only?
@@ -221,6 +222,14 @@ public class SamplePrinter {
                                                                                       // TODO: add table header
         for (int i=0; i<s.elements.size(); i++)
             lines.add(new ElementLine((Element) s.elements.get(i)));
+
+	// if one or more files couldn't load, print the correct footnotes for it
+	if (footnote || footnote2)
+	    lines.add(new EmptyLine());
+	if (footnote)
+	    lines.add(new TextLine("\u2020 This file wasn't found; it was probably moved, renamed, or deleted."));
+	if (footnote2)
+	    lines.add(new TextLine("\u2021 This file couldn't be loaded; it might have been corrupted."));
     }
 
     //
@@ -361,7 +370,7 @@ public class SamplePrinter {
             // decade
             g2.drawString(decade.toString(), (float) pf.getImageableX(), baseline);
 
-            // (snap decade back to real decade, now -- BREAKS IMMUTABILITY, if i even thought i had that.)
+            // (snap decade back to real decade, now -- BREAKS IMMUTABILITY, if i ever thought i had that.)
             Year fake = decade;
             while (fake.column() != 0)
                 fake = fake.add(-1);
@@ -378,15 +387,29 @@ public class SamplePrinter {
                 String x1 = ((Number) s.incr.get(fake.add(i).diff(s.range.getStart()))).toString();
                 String x2 = ((Number) s.decr.get(fake.add(i).diff(s.range.getStart()))).toString();
                 
+		// separatar char
+		String c = (Weiserjahre.isSignificant(s, fake.add(i).diff(s.range.getStart())) ? "*" : "/");
+		int c_width = g.getFontMetrics().stringWidth(c);
+
+		// right-aligned x1
                 int w = g.getFontMetrics().stringWidth(x1);
-                g2.drawString(x1, (float) (position - w), baseline);
-                g2.drawString("/" + x2, position, baseline);
+                g2.drawString(x1, (float) (position - w - c_width/2), baseline);
+
+		// centered c
+		g2.drawString(c, (float) (position - c_width/2), baseline);
+
+		// left-aligned x2
+                g2.drawString(x2, (float) (position + c_width/2), baseline);
             }
         }
         public int height(Graphics g) {
             return g.getFontMetrics(new Font("serif", Font.PLAIN, 9)).getHeight();
         }
     }
+
+    private boolean footnote = false; // true if a file wasn't found where it was expected
+    private boolean footnote2 = false; // true if a file couldn't be loaded
+
     private class ElementLine implements Line {
         private Element e;
         ElementLine(Element e) {
@@ -394,8 +417,16 @@ public class SamplePrinter {
             if (e.details == null) {
                 try {
                     e.loadMeta();
+                } catch (FileNotFoundException fnfe) {
+                    // ok, details is still null, which isn't the end of the world
+		    e.error = fnfe;
+		    footnote = true;
+		    // so: set flag, then in print(), just print a \u2020...
                 } catch (IOException ioe) {
                     // ok, details is still null, which isn't the end of the world
+		    e.error = ioe;
+		    footnote2 = true;
+		    // so: set flag, then in print(), just print a \u2021...
                 }
             }
         }
@@ -411,14 +442,30 @@ public class SamplePrinter {
 
             g2.setFont(NORMAL);
 
-            // filename will always be printed, so do that first
+            // if it wasn't loaded, print filename, with a dagger (u2020), and call it quits
+	    // BETTER: draw the dagger align-right, to the left of the filename
+            if (e.details == null) {
+		// dagger for fnfe, else double-dagger (for ioe)
+		char c = ((e.error instanceof FileNotFoundException) ? '\u2020' : '\u2021');
+
+		String mark = c + " "; // need some space
+
+		int width = g2.getFontMetrics().stringWidth(mark);
+
+		// draw -- old way: just filename+dagger
+		// g2.drawString(e.filename + c, (float) (pf.getImageableX() + 72 * 1.0), baseline);
+
+		// draw -- new way: filename, with dagger to the left
+		g2.drawString(e.filename, (float) (pf.getImageableX() + 72 * 1.0), baseline);
+		g2.drawString(mark, (float) (pf.getImageableX() + 72*1.0 - width), baseline);
+
+                return;
+	    }
+
+            // print filename
             g2.drawString(e.filename, (float) (pf.getImageableX() + 72 * 1.0), baseline);
                 
-            // if it wasn't loaded, that's all there is
-            if (e.details == null)
-                return;
-
-            // otherwise, print some metadata...
+            // it was loaded, so, print some metadata...
 
             if (e.details.containsKey("id"))
                 g2.drawString(e.details.get("id").toString(), (float) pf.getImageableX(), baseline);
