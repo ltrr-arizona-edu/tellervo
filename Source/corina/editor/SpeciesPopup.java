@@ -6,6 +6,7 @@ import corina.Sample;
 import corina.gui.ButtonLayout;
 import corina.gui.Bug;
 import corina.util.OKCancel;
+import corina.ui.Builder;
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -272,13 +273,13 @@ public class SpeciesPopup extends JComboBox {
             
             // -- Cancel, OK buttons
             JPanel buttons = new JPanel(new ButtonLayout());
-            JButton cancel = new JButton("Cancel");
+            JButton cancel = Builder.makeButton("cancel");
             cancel.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
                     dispose();
                 }
             });
-            JButton ok = new JButton("OK");
+            JButton ok = Builder.makeButton("ok");
             ok.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
                     // TODO: update sample, add to popup if needed
