@@ -38,6 +38,7 @@ import corina.gui.FileDialog;
 import corina.gui.UserCancelledException;
 import corina.prefs.PrefsDialog;
 import corina.gui.Bug;
+import corina.util.Overwrite;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +53,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.*;
-import java.awt.print.*;
+import java.awt.print.*; // !!!
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -221,23 +222,8 @@ public class GraphFrame extends XFrame implements SampleListener,
             }
 
             // check for already-exists
-            {
-                File f = new File(filename);
-                if (f.exists()) {
-                    Object options[] = new Object[] { "Overwrite", "Cancel" }; // good, explicit commands
-                    int x = JOptionPane.showOptionDialog(null,
-                                                         "A file called \"" + filename + "\"\n" +
-                                                         "already exists; overwrite it with this graph?",
-                                                         "Already Exists",
-                                                         JOptionPane.YES_NO_OPTION,
-                                                         JOptionPane.QUESTION_MESSAGE,
-                                                         null, // icon
-                                                         options,
-                                                         null); // default
-                    if (x == 1) // cancel
-                        return; // should return FAILURE -- how?
-                }
-            }
+            if (new File(filename).exists() && Overwrite.overwrite(filename))
+                return; // should return FAILURE -- how?
         }
 
         // save!
@@ -282,22 +268,25 @@ public class GraphFrame extends XFrame implements SampleListener,
     
     // Printable
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) {
-	// only 1 page, at least yet
-	if (pageIndex == 0)
-	    return NO_SUCH_PAGE;
+        // only 1 page, at least yet
+        if (pageIndex != 0)
+            return NO_SUCH_PAGE;
 
-	// figure out the margins
-	int xmin = (int) pageFormat.getImageableX();
-	int xmax = (int) (pageFormat.getWidth() - pageFormat.getImageableX() - pageFormat.getImageableWidth());
-	int ymin = (int) pageFormat.getImageableY();
-	int ymax = (int) (pageFormat.getHeight() - pageFormat.getImageableY() - pageFormat.getImageableHeight());
+        // figure out the margins
+        int xmin = (int) pageFormat.getImageableX();
+        int xmax = (int) (pageFormat.getWidth() - pageFormat.getImageableX() - pageFormat.getImageableWidth());
+        int ymin = (int) pageFormat.getImageableY();
+        int ymax = (int) (pageFormat.getHeight() - pageFormat.getImageableY() - pageFormat.getImageableHeight());
 
-	// draw it
-	Graphics2D g2 = (Graphics2D) graphics;
-	plot.paintComponent(g2); // ack!
+        // draw it
+        Graphics2D g2 = (Graphics2D) graphics;
+        double sx = pageFormat.getImageableWidth() / plot.getSize().width;
+        double sy = 1;
+        g2.scale(sx, sy);
+        plot.paintComponent(g2); // ack!
 
-	// done
-	return PAGE_EXISTS;
+        // done
+        return PAGE_EXISTS;
     }
 
     // custom menus for graph windows
