@@ -41,6 +41,7 @@ import corina.util.Platform;
 import corina.util.Overwrite;
 import corina.browser.Browser;
 import corina.ui.Builder;
+import corina.ui.I18n;
 
 import java.io.File;
 import java.io.IOException;
@@ -988,7 +989,7 @@ public class XMenubar extends JMenuBar {
 		    }
 		});
 
-            if (menus.length >= 1 && menus[0].getText().equals(msg.getString("edit"))) { // ick!
+            if (menus.length >= 1 && menus[0].getText().equals(I18n.getText("edit"))) { // ick!
                 menus[0].addSeparator();
                 menus[0].add(prefs);
             } else {
