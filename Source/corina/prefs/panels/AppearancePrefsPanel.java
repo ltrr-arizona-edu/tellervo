@@ -24,6 +24,7 @@ import corina.prefs.Prefs;
 import corina.prefs.components.ColorPrefComponent;
 import corina.prefs.components.BoolPrefComponent;
 import corina.prefs.components.FontPrefComponent;
+import corina.prefs.components.UIDefaultsComponent;
 import corina.gui.layouts.DialogLayout;
 import corina.gui.*;
 
@@ -32,43 +33,46 @@ import java.awt.event.ActionEvent;
 import javax.swing.*;
 
 // TODO: javadoc
-
 // TODO: write
 // TODO: debug
 // TODO: use
-
 public class AppearancePrefsPanel extends JPanel {
 
-    public AppearancePrefsPanel() {
-        // layout
-        setLayout(new DialogLayout());
+  public AppearancePrefsPanel() {
+    // layout
+    setLayout(new DialogLayout());
 
-        final JPanel me = this; // ugh.
-        
-        // foreground color
-        {
-            ColorPrefComponent p = new ColorPrefComponent("corina.edit.foreground");
-            JPanel t = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-            t.add(p);
-            add(t, "Text color:");
-        }
+    final JPanel me = this; // ugh.
 
-        // background color
-        {
-            ColorPrefComponent p = new ColorPrefComponent("corina.edit.background");
-            JPanel t = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-            t.add(p);
-            add(t, "Background color:");
-        }
-
-        add(Box.createVerticalStrut(20));
-
-        // font
-        add(new FontPrefComponent("corina.edit.font"), "Font:");
-        
-        add(Box.createVerticalStrut(20));
-
-        // draw gridlines?
-        add(new BoolPrefComponent("Draw gridlines?", "corina.edit.gridlines"), "");
+    // foreground color
+    {
+      ColorPrefComponent p = new ColorPrefComponent(Prefs.EDIT_FOREGROUND);
+      JPanel t = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+      t.add(p);
+      add(t, "Text color:");
     }
+
+    // background color
+    {
+      ColorPrefComponent p = new ColorPrefComponent(Prefs.EDIT_BACKGROUND);
+      JPanel t = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+      t.add(p);
+      add(t, "Background color:");
+    }
+
+    add(Box.createVerticalStrut(20));
+
+    // font
+    add(new FontPrefComponent(Prefs.EDIT_FONT), "Font:");
+
+    add(Box.createVerticalStrut(20));
+
+    // draw gridlines?
+    add(new BoolPrefComponent("Draw gridlines?", Prefs.EDIT_GRIDLINES), "");
+
+    JPanel p = new JPanel();
+    p.setLayout(new BorderLayout());
+    p.add(new UIDefaultsComponent(), BorderLayout.CENTER);
+    add(p, "UI");
+  }
 }
