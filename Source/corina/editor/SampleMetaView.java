@@ -68,6 +68,8 @@ A view of the metadata of a Sample.
    @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
    @version $Id$ */
 
+// FIXME: "Sample" doesn't really mean anything, and "View" isn't terribly clear.
+// BETTER: MetadataPanel
 public class SampleMetaView extends JScrollPane implements SampleListener {
 
     // the sample to view
@@ -167,9 +169,6 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
                             break;
                     // fall-through?
                     final int oldWhich = tmp+1; // index into values[] of the current value -- isn't there a method to compute this somewhere?  refactor.
-
-                    // debug
-                    System.out.println("from " + oldWhich + " to " + which);
 
                     if (which == 0)
                         s.meta.remove(field);
