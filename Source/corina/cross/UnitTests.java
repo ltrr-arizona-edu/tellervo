@@ -1,5 +1,7 @@
 package corina.cross;
 
+import corina.Sample;
+
 import junit.framework.TestCase;
 
 import java.util.StringTokenizer;
@@ -11,6 +13,20 @@ public class UnitTests extends TestCase {
 
     // testing ???
     // WRITE ME: test the crosses themselves!
+
+    // testing corina.cross.overlap
+    public void testOverlap() {
+        try {
+            // try an unreasonably big overlap for some medium-length samples
+            System.setProperty("corina.cross.overlap", "500");
+            Sample s1 = new Sample("Demo Data/chil/chil001.crn"); // these are <500 years long
+            Sample s2 = new Sample("Demo Data/chil/chil002.crn");
+            Cross c = new Trend(s1, s2);
+            c.run();
+        } catch (Exception e) {
+            fail();
+        }
+    }
 
     // testing histogram
     public void testHistogram() {
