@@ -221,10 +221,14 @@ public class I18n {
     static {
       ResourceBundle bundle;
       try {
-        bundle = ResourceBundle.getBundle("TextBundle");
+        bundle = ResourceBundle.getBundle("Translations/TextBundle");
       } catch (MissingResourceException mre) {
-        mre.printStackTrace();
-        bundle = new DefaultResourceBundle();
+        try {
+          bundle = ResourceBundle.getBundle("TextBundle");
+        } catch (MissingResourceException mre2) {
+          mre2.printStackTrace();
+          bundle = new DefaultResourceBundle();
+        }
       }
       msg = bundle;
     }
