@@ -50,7 +50,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
     private JFileChooser chooser;
 
     // i18n
-    private static ResourceBundle msg = ResourceBundle.getBundle("FileDialogBundle");
+    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // data
     private File file;
@@ -97,9 +97,12 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 	buttons.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 6)); // top-left-bottom-right
 	left.add(buttons, BorderLayout.SOUTH);
 
+        // classloader (for icons)
+        ClassLoader cl = this.getClass().getClassLoader();
+        
 	// left: buttons (add)
 	add = new JButton(msg.getString("add"),
-			  new ImageIcon(ClassLoader.getSystemResource("toolbarButtonGraphics/navigation/Forward16.gif")));
+			  new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Forward16.gif")));
 	add.setMnemonic(msg.getString("add_key").charAt(0));
 	add.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
@@ -114,7 +117,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 
 	// left: buttons (remove)
 	remove = new JButton(msg.getString("remove"),
-			     new ImageIcon(ClassLoader.getSystemResource("toolbarButtonGraphics/navigation/Back16.gif")));
+			     new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Back16.gif")));
 	remove.setMnemonic(msg.getString("remove_key").charAt(0));
 	remove.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
@@ -125,7 +128,6 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 
 	// left: buttons (ok)
 	JButton okay = new JButton(msg.getString("ok"));
-	okay.setMnemonic(msg.getString("ok_key").charAt(0));
 	okay.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    // if (set.size() == 0) // okay with zero samples is like cancel
@@ -137,7 +139,6 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 
 	// left: buttons (cancel)
 	JButton cancel = new JButton(msg.getString("cancel"));
-	cancel.setMnemonic(msg.getString("cancel_key").charAt(0));
 	cancel.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    set = null;
