@@ -4,20 +4,24 @@ import corina.prefs.Prefs;
 import corina.prefs.components.FormattingPrefComponent;
 import corina.prefs.components.BoolPrefComponent; // RENAME to: Check[Box?]PrefComponent
 import corina.prefs.components.ColorPrefComponent;
-import corina.gui.*;
-import corina.gui.layouts.DialogLayout;
 
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.Vector;
-import java.util.ArrayList;
 
 import javax.swing.*;
+
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import javax.swing.event.ChangeEvent;
@@ -25,84 +29,192 @@ import javax.swing.event.ChangeListener;
 import javax.swing.JComboBox;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 
-public class CrossdatingPrefsPanel extends JPanel {
+public class CrossdatingPrefsPanel extends Container {
+  private static final Integer[] YEARS = new Integer[] { new Integer(1),
+                                                         new Integer(5),
+                                                         new Integer(10),
+                                                         new Integer(15),
+                                                         new Integer(20),
+                                                         new Integer(25),
+                                                         new Integer(50),
+                                                         new Integer(100),
+                                                         new Integer(250),
+                                                         new Integer(500) };
+  
+  public CrossdatingPrefsPanel() {
+    setLayout(new BorderLayout());
 
-    public CrossdatingPrefsPanel() {
-        // top: dialog layout
-        JPanel top = new JPanel(new DialogLayout());
+    Container co = new Container();
+    co.setLayout(new GridBagLayout());
+    
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.insets = new Insets(2, 2, 2, 2);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.gridy = 0;
+    // top: dialog layout
 
-        // formats for each score
-        JComponent t = new FormattingPrefComponent("corina.cross.tscore.format",
-                                                    "0.00");
-        JComponent r = new FormattingPrefComponent("corina.cross.rvalue.format",
-                                                    "0.00");
-        JComponent tr = new FormattingPrefComponent("corina.cross.trend.format",
-                                                    "0.0%");
-        JComponent d = new FormattingPrefComponent("corina.cross.dscore.format",
-                                                    "0.00");
-        JComponent wj = new FormattingPrefComponent("corina.cross.weiserjahre.format",
-                                                    "0.0%");
-        top.add(t, "T-score format:");
-        top.add(r, "R-value format:");
-        top.add(tr, "Trend format:");
-        top.add(d, "D-score format:");
-        top.add(wj, "Weiserjahre format:");
+    // formats for each score
+    Component c = new FormattingPrefComponent("corina.cross.tscore.format", "0.00");
+    JLabel l = new JLabel("T-score format:");
+    l.setLabelFor(c);
+    co.add(l, gbc);
+    gbc.gridx = 1;
+    gbc.weightx = 1;
+    co.add(c, gbc);
 
-        // gap
-        top.add(new JPanel(), ""); // ???
-        
-        // min overlap
-        JComponent overlap = new OverlapPopup();
-        top.add(overlap, "Minimum overlap:");
-        
-        // bottom: box layout?
-        JPanel bottom = new JPanel();
-        bottom.setLayout(new DialogLayout()); // new BoxLayout(bottom, BoxLayout.Y_AXIS));
-        // WRITEME
+    c = new FormattingPrefComponent("corina.cross.rvalue.format", "0.00");
+    l = new JLabel("R-value format:");
+    l.setLabelFor(c);
+    gbc.gridy++;
+    System.out.println("gridy: " + gbc.gridy);
+    gbc.gridx = 0;
+    gbc.weightx = 0;
+    co.add(l, gbc);
+    gbc.gridx = 1;
+    gbc.weightx = 1;
+    co.add(c, gbc);
 
-        // highlight sig scores -- corina.grid.highlight
-        // TODO: rename this pref to corina.cross.highlight!
-        BoolPrefComponent hilite = new BoolPrefComponent("Highlight significant scores",
-                                                         "corina.grid.highlight");
-        
-        // highlight color (indented) -- corina.grid.highlightcolor
-        // TODO: rename this pref to corina.cross.highlight.color?
-        ColorPrefComponent color = new ColorPrefComponent("corina.grid.highlightcolor");
+    c = new FormattingPrefComponent("corina.cross.trend.format", "0.0%");
+    l = new JLabel("Trend format:");
+    l.setLabelFor(c);
+    gbc.gridy++;
+    System.out.println("gridy: " + gbc.gridy);
+    gbc.gridx = 0;
+    gbc.weightx = 0;
+    co.add(l, gbc);
+    gbc.gridx = 1;
+    gbc.weightx = 1;
+    co.add(c, gbc);
 
-        hilite.controls(color);
+    c = new FormattingPrefComponent("corina.cross.dscore.format", "0.00");
+    l = new JLabel("D-score format:");
+    l.setLabelFor(c);
+    gbc.gridy++;
+    System.out.println("gridy: " + gbc.gridy);
+    gbc.gridx = 0;
+    gbc.weightx = 0;
+    co.add(l, gbc);
+    gbc.gridx = 1;
+    gbc.weightx = 1;
+    co.add(c, gbc);
 
-        bottom.add(hilite);
-        bottom.add(color, "Color:");
+    c = new FormattingPrefComponent("corina.cross.weiserjahre.format", "0.0%");
+    l = new JLabel("Weiserjahre format:");
+    l.setLabelFor(c);
+    gbc.gridy++;
+    System.out.println("gridy: " + gbc.gridy);
+    gbc.gridx = 0;
+    gbc.weightx = 0;
+    co.add(l, gbc);
+    gbc.gridx = 1;
+    gbc.weightx = 1;
+    co.add(c, gbc);
+
+    // min overlap
+    final SpinnerComboBox scb = new SpinnerComboBox(YEARS);
+    DecimalFormat df0 = new DecimalFormat("#,##0");
+    DecimalFormat df1 = new DecimalFormat("#,##0 years");
+    System.out.println("isParseIntegerOnly: " + df0.isParseIntegerOnly() + " " + df0.getMinimumFractionDigits());
+    System.out.println("isParseIntegerOnly: " + df1.isParseIntegerOnly() + " " + df1.getMinimumFractionDigits());  
+    scb.setFormats(df0, df1);
+    
+    String init = Prefs.getPref("corina.cross.overlap");
+    Integer value = null; // default is 50
+    if (init != null) {
+      try {
+        value = Integer.decode(init);
+      } catch (NumberFormatException nfe) {
+        // ignore -- we'll just use 50, then
+        nfe.printStackTrace();
+        value = new Integer(50);
+      }
+    } else {
+      value = new Integer(50);
+    }
+    System.out.println("Setting: " +value);
+    scb.setEditable(true);
+    //scb.getSpinner().setValue(new Integer(value));
+    scb.setSelectedItem(value);
+    scb.setEditable(false);
+    
+    scb.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        System.err.println("spinner stateChanged: " + scb.getSpinner().getValue() + " " + scb.getSpinner().getValue().getClass());
+        Prefs.setPref("corina.cross.overlap", scb.getSpinner().getValue().toString());
+
+        //popup.setSelectedItem(spinner.getValue());
+        System.out.println("Selected item after setting: " + scb.getSelectedItem());
+      }
+    });
+    
+    //c = new OverlapPopup();
+    c = scb;
+    l = new JLabel("Minimum overlap:");
+    l.setLabelFor(c);
+    gbc.gridy++;
+    gbc.gridx = 0;
+    gbc.weightx = 0;
+    co.add(l, gbc);
+    gbc.gridx = 1;
+    gbc.weightx = 1;
+    co.add(c, gbc);
+
+    // highlight sig scores -- corina.grid.highlight
+    // TODO: rename this pref to corina.cross.highlight!
+    BoolPrefComponent hilite = new BoolPrefComponent("Highlight significant scores",
+                                                     "corina.grid.highlight");
+    gbc.gridy++;
+    gbc.gridx = 0;
+    gbc.weightx = 0;
+    gbc.gridwidth = 2;
+    co.add(hilite, gbc);
         
-        SpinnerComboBox scb = new SpinnerComboBox(new Integer[] { new Integer(0),
-                                                                  new Integer(1),
-                                                                  new Integer(2) });
-        DecimalFormat df0 = new DecimalFormat("#,##0");
-        DecimalFormat df1 = new DecimalFormat("#,##0 years");
-        System.out.println("isParseIntegerOnly: " + df0.isParseIntegerOnly() + " " + df0.getMinimumFractionDigits());
-        System.out.println("isParseIntegerOnly: " + df1.isParseIntegerOnly() + " " + df1.getMinimumFractionDigits());  
-        scb.setFormats(df0, df1);
+    // highlight color (indented) -- corina.grid.highlightcolor
+    // TODO: rename this pref to corina.cross.highlight.color?
+    ColorPrefComponent color = new ColorPrefComponent("corina.grid.highlightcolor");
+    hilite.controls(color);
+    l = new JLabel("Color:");
+    l.setLabelFor(color);
+    gbc.gridy++;
+    gbc.gridx = 0;
+    gbc.weightx = 0;
+    gbc.gridwidth = 1;
+    co.add(l, gbc);
+    gbc.gridx = 1;
+    gbc.weightx = 1;
+    co.add(color, gbc);
+    
+    /*SpinnerComboBox scb = new SpinnerComboBox(new Integer[] { new Integer(0),
+                                                              new Integer(1),
+                                                              new Integer(2) });
+    DecimalFormat df0 = new DecimalFormat("#,##0");
+    DecimalFormat df1 = new DecimalFormat("#,##0 years");
+    System.out.println("isParseIntegerOnly: " + df0.isParseIntegerOnly() + " " + df0.getMinimumFractionDigits());
+    System.out.println("isParseIntegerOnly: " + df1.isParseIntegerOnly() + " " + df1.getMinimumFractionDigits());  
+    scb.setFormats(df0, df1);
         
-        top.add(scb, "test");
-      
-        DecimalFormat df2 = new DecimalFormat("#,##0.0##");
-        DecimalFormat df3 = new DecimalFormat("#,##0.0## years");
-      System.out.println("isParseIntegerOnly: " + df2.isParseIntegerOnly() + " " + df2.getMinimumFractionDigits());
-              System.out.println("isParseIntegerOnly: " + df3.isParseIntegerOnly() + " " + df3.getMinimumFractionDigits());  
-        
-        SpinnerComboBox scb2 = new SpinnerComboBox(new Double[] { new Double(0),
-                                                                        new Double(1),
-                                                                        new Double(2) });
-        scb2.setFormats(df2, df3);
-       
-        top.add(scb2, "test2");  
+    top.add(scb, "test");
+  
+    DecimalFormat df2 = new DecimalFormat("#,##0.0##");
+    DecimalFormat df3 = new DecimalFormat("#,##0.0## years");
+  System.out.println("isParseIntegerOnly: " + df2.isParseIntegerOnly() + " " + df2.getMinimumFractionDigits());
+          System.out.println("isParseIntegerOnly: " + df3.isParseIntegerOnly() + " " + df3.getMinimumFractionDigits());  
+    
+    SpinnerComboBox scb2 = new SpinnerComboBox(new Double[] { new Double(0),
+                                                                    new Double(1),
+                                                                    new Double(2) });
+    scb2.setFormats(df2, df3);
+   
+    top.add(scb2, "test2");*/  
         
         
         // put it all together
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        /*setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(top);
-        add(bottom);
-    }
+        add(bottom);*/
+    add(co, BorderLayout.NORTH);
+  }
     
     private static class SpinnerComboBoxEditor extends BasicComboBoxEditor {
       private JSpinner spinner = new JSpinner(/*new SpinnerNumberModel(0.0d, 0.0d, Double.MAX_VALUE, 0.01d)*/);
