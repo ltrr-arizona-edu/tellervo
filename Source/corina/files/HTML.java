@@ -99,12 +99,6 @@ public class HTML extends Filetype {
 	return "HTML";
     }
 
-    /** Return a unique character in the name to use as a mnemonic.
-	@return character to use as mnemonic */
-    public char getMnemonic() {
-	return 'L';
-    }
-
     private void printRawData() throws IOException {
 	w.write("<table border=\"0\" width=\"100%\">\n");
 
@@ -160,6 +154,11 @@ public class HTML extends Filetype {
 	w.write("</table>\n");
     }
 
+/*
+ * *DOING* a "empty-if-null" would be pretty useful for metadata ...
+ String emptyIfNull(Object x) { return (x==null ? "" : x.toString()) };
+ */
+    
     private void printElements() throws IOException {
 	// table
 	w.write("<table width=\"100%\">\n");
@@ -180,12 +179,12 @@ public class HTML extends Filetype {
 	    try {
 	        sample = ((Element) s.elements.get(i)).load();
 		w.write("<td><input type=\"checkbox\" checked=\"" + ((Element) s.elements.get(i)).isActive() + "\"/></td>");
-		w.write("<td>" + ((sample.meta.get("id") != null) ? sample.meta.get("id") : "") + "</td>");
+		w.write("<td>" + ((sample.meta.containsKey("id")) ? sample.meta.get("id") : "") + "</td>");
 		w.write("<td>" + sample.meta.get("filename") + "</td>");
-		w.write("<td>" + ((sample.meta.get("unmeas_pre") != null) ? sample.meta.get("unmeas_pre") : "") + "</td>");
+		w.write("<td>" + ((sample.meta.containsKey("unmeas_pre")) ? sample.meta.get("unmeas_pre") : "") + "</td>");
 		w.write("<td>" + sample.range + "</td>");
-		w.write("<td>" + ((sample.meta.get("unmeas_post") != null) ? sample.meta.get("unmeas_post") : "") + "</td>");
-		w.write("<td>" + ((sample.meta.get("terminal") != null) ? sample.meta.get("terminal") : "") + "</td>");
+		w.write("<td>" + ((sample.meta.containsKey("unmeas_post")) ? sample.meta.get("unmeas_post") : "") + "</td>");
+		w.write("<td>" + ((sample.meta.containsKey("terminal")) ? sample.meta.get("terminal") : "") + "</td>");
 
 	    // uh-oh.  i'm going to assume the load() went bad, and just print the filename
 	    } catch (IOException ioe) {
