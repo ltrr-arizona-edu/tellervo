@@ -48,12 +48,11 @@ import java.util.ArrayList;
    @version $Id$ */
 
 public class IndexSet implements Runnable {
-
     /** The indexes. */
     public List indexes = new ArrayList(12);
 
     /** Construct a new IndexSet.
-	@param s the Sample to index */
+    @param s the Sample to index */
     public IndexSet(Sample s) {
         // horizontal
         indexes.add(new Horizontal(s));
@@ -70,8 +69,18 @@ public class IndexSet implements Runnable {
         indexes.add(new CubicSpline(s));
     }
 
+    /** Construct a new IndexSet, using a proxy dataset.
+        @param s the Sample to index */
+    public IndexSet(Sample s, Sample proxy) {
+        this(s);
+        for (int i=0; i<indexes.size(); i++)
+            ((Index) indexes.get(i)).setProxy(proxy);
+    }
+
     /** Run all the indexes. */
     public void run() {
+        // i put this in run(), so it could be threaded, but is it worth it?
+        // naw, i'm TOO fast: for 100yr sample x 10 indexes, 900mhz athlon: 30-40ms
         for (int i=0; i<indexes.size(); i++)
             ((Index) indexes.get(i)).run();
     }

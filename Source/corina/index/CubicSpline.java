@@ -67,7 +67,7 @@ public class CubicSpline extends Index {
     // run reinsch's smooth
     private void smooth() {
 	// my init stuff
-	int N = target.data.size();
+	int N = source.data.size();
 	final int n1 = 1, n2 = N;
 	double x[] = new double[N+1];
 	double y[] = new double[N+1];
@@ -75,7 +75,7 @@ public class CubicSpline extends Index {
 	final double dy = 1.0;
 	for (int i=1; i<N+1; i++) {
 	    x[i] = (double) i-1;
-	    y[i] = ((Number) target.data.get(i-1)).doubleValue();
+	    y[i] = ((Number) source.data.get(i-1)).doubleValue();
 	    // dy[i] = 1.0;
 	}
 	N+=2;
@@ -157,12 +157,12 @@ public class CubicSpline extends Index {
     }
 
     /** Compute the cubic spline. */
-    public void run() {
+    public void index() {
 	// run computation
 	smooth();
 
 	// compute curve: since h=1, y[i] = d[i]+c[i]+b[i]+a[i]
-	int n = target.data.size();
+	int n = source.data.size();
 	for (int i=0; i<n; i++) {
 	    double y = d[i] + c[i] + b[i] + a[i];
 	    data.add(new Double(y));

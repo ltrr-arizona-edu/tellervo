@@ -68,20 +68,54 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
     /* Return the default scale for the index: always 1.0.
        @return default scale factor, 1.0 */
     public final double getScale() {
-	return 1.0;
+        return 1.0;
     }
 
-    /** A reference to the Sample to index.  The original is not
-        changed when the index is computed, but <code>apply()</code>
-        works in-place. */
+    /** A reference to the Sample to use to compute the index.
+        The original is not changed when the index is computed.
+        @see target */
+    public Sample source;
+
+    /** A reference to the Sample to apply the index to.  In almost
+        every case, this is the same as the source.  This is modified
+    in-place by apply().
+        @see source */
     public Sample target;
 
     /** Constructs an index with a given source sample, and creates a
-	list for data.
-	@param s sample to index */
+        list for data.
+        @param s sample to index */
     public Index(Sample s) {
-	target = s;
-	data = new ArrayList(target.data.size());
+        source = target = s;
+        data = new ArrayList(target.data.size());
+    }
+
+    // good shape.
+    public void setProxy(Sample proxy) {
+        source = (proxy==null ? target : proxy);
+    }
+
+    protected abstract void index();
+    public void run() {
+        // verify ranges
+        if (source!=target && !source.range.union(target.range).equals(source.range)) {
+            throw new RuntimeException("Proxy dataset doesn't cover this sample's range.");
+        }
+
+        // compute index
+        index();
+
+        // crop index when done, if needed.
+        // -- crop (sample.start-master.start) from the start
+        // -- crop (master.end-sample.end) from the end
+        if (source != target) {
+            int fromStart = target.range.getStart().diff(source.range.getStart());
+            int fromEnd = source.range.getEnd().diff(target.range.getEnd());
+            for (int i=0; i<fromStart; i++)
+                data.remove(0);
+            for (int i=0; i<fromEnd; i++)
+                data.remove(data.size()-1);
+        }
     }
 
     /** Return the name of this index in a user-readable format.  This
@@ -157,7 +191,7 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
         // should i fire a metadataChanged event here?
     }
 
-    // get a unique id number for this algorithm
+    // get a unique id number for this algorithm -- (this is for ms-dos-corina compatibility)
     public abstract int getID();
 
     public final void unapply() {

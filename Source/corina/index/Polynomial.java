@@ -71,14 +71,14 @@ public class Polynomial extends Index implements Solver.Solveable {
     }
 
     /** Compute the index. */
-    public void run() {
+    public void index() {
 	// init x, y
-	int n = target.data.size();
+	int n = source.data.size();
 	double x[] = new double[n];
 	double y[] = new double[n];
 	for (int i=0; i<n; i++) {
 	    x[i] = (double) i;
-	    y[i] = ((Number) target.data.get(i)).doubleValue();
+	    y[i] = ((Number) source.data.get(i)).doubleValue();
 	}
 
 	// compute coeffs

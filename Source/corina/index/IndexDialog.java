@@ -22,9 +22,16 @@ package corina.index;
 
 import corina.Sample;
 import corina.graph.GraphFrame;
+import corina.gui.FileDialog;
+import corina.util.OKCancel;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ResourceBundle;
+import java.util.Vector;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
@@ -40,6 +47,9 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JOptionPane;
+import javax.swing.JComponent;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
 import javax.swing.AbstractAction;
@@ -48,275 +58,371 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 
 // todo:
-// -- (make sure sample.data.size() is never 0 here, and remove that test -- ??)
 // -- help button? => xcorina.org/manual/indexing
 // -- graph multiple?  preview graph in same window?
 // -- right-align the chi^2 numbers
-// -- make modal, if passed a JFrame, too
-// -- need better placement?
 
 // -- use radio buttons?  this solves the following other issues:
 // -- (set size more intelligently?)
 // -- ("no index selected" should never occur -- don't allow deselection, or disable it if that happens)
 
 /**
-   Indexing dialog.  Lets the user choose an indexing algorithm to
-   use.
+   Indexing dialog.  Lets the user choose an indexing algorithm to use.
 
    @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
    @version $Id$
 */
 
 public class IndexDialog extends JDialog {
-
-    // buttons
-    private JPanel buttonPanel;
-    private JButton graphButton;
-    private JButton saveButton;
-    private JButton closeButton;
-
     // data
     private Sample sample;
     private IndexSet iset;
 
     // table
     private JTable table;
+    private IndexTableModel model;
+
+    // proxying
+    private JCheckBox useProxy;
+    private JComboBox proxyPopup;
+    private int oldSelection = 0;
 
     // i18n
     private ResourceBundle msg = ResourceBundle.getBundle("IndexBundle");
 
-    // table model -- uses iset member field
-    // withtable
+    // table model -- (could be static but for msg.getString())
     private class IndexTableModel extends AbstractTableModel {
-	private DecimalFormat _fmt; // formatter for chi^2
-	public IndexTableModel() {
-	    // make formatter
-	    _fmt = new DecimalFormat("###,##0.00");
-	}
-	public String getColumnName(int col) {
-	    return (col == 0 ? msg.getString("index") : "\u03C7\u00B2"); // "Chi^2"
-	}
-	public int getRowCount() {
-	    return iset.indexes.size();
-	}
-	public int getColumnCount() {
-	    return 2;
-	}
+        // formatter for chi^2
+        private DecimalFormat _fmt = new DecimalFormat("###,##0.0");
+        private IndexSet iset;
+        public IndexTableModel(IndexSet iset) {
+            this.iset = iset;
+        }
+        public String getColumnName(int col) {
+            return (col == 0 ? msg.getString("index") : "\u03C7\u00B2"); // "Chi^2"
+        }
+        public int getRowCount() {
+            return iset.indexes.size();
+        }
+        public int getColumnCount() {
+            return 2;
+        }
         public Object getValueAt(int row, int col) {
             Index i = (Index) iset.indexes.get(row);
             return (col == 0 ? i.getName() : _fmt.format(i.getChi2()));
         }
+        public void setIndexSet(IndexSet iset) {
+            this.iset = iset;
+            fireTableDataChanged();
+        }
     }
 
-    // text
-    private void initText() {
-	JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 6));
-	getContentPane().add(textPanel, BorderLayout.NORTH);
-	textPanel.add(new JLabel(msg.getString("select_index")));
+    // just like a java.io.File except toString() returns its name, not its path.
+    // used in a popup, where i want to know the path but users should only see the name.
+    private static class UserFriendlyFile extends File {
+        public UserFriendlyFile(String f)	{ super(f); }
+        public String toString()		{ return getName(); }
+    }
+    
+    // label, centered
+   private JComponent makeLabel() {
+        JPanel b = new JPanel(new BorderLayout());
+        b.add(new JLabel(msg.getString("select_index"), JLabel.CENTER), BorderLayout.CENTER);
+        return b;
     }
 
-    private void initTable() {
-	iset = new IndexSet(sample);
-	iset.run(); // thread me?  naw, i'm fast: for 100yr sample, 10
-		    // indexes, 900mhz: 30-40ms
+    private JComponent makeTable() {
+        iset = new IndexSet(sample);
+        iset.run();
 
-	// withtable
-	table = new JTable(new IndexTableModel());
-	// table.setShowGrid(false);
-	table.setPreferredScrollableViewportSize(new Dimension(420, 200)); // 320, 150));
-	table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	JScrollPane scroller = new JScrollPane(table);
-	getContentPane().add(scroller, BorderLayout.CENTER);
-	// getContentPane().add(table, BorderLayout.CENTER);
+        model = new IndexTableModel(iset);
+        table = new JTable(model);
+        table.setShowGrid(false);
+        table.setPreferredScrollableViewportSize(new Dimension(420, 200)); // 320, 150));
+        table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scroller = new JScrollPane(table);
+        // scroller.setBorder(BorderFactory.createEmptyBorder(0, 14, 0, 14));
+        
+        // select last entry
+        table.setRowSelectionInterval(table.getRowCount()-1, table.getRowCount()-1);
 
-	// select last entry
-	table.setRowSelectionInterval(table.getRowCount()-1, table.getRowCount()-1);
+        // don't allow reordering
+        table.getTableHeader().setReorderingAllowed(false);
 
-	// don't allow reordering
-	table.getTableHeader().setReorderingAllowed(false);
-
-	// withgrid
-	/*
-	JPanel grid = new JPanel(new GridLayout(0, 2, 0, 0));
-	ButtonGroup group = new ButtonGroup();
-	DecimalFormat fmt = new DecimalFormat("###,##0.00");
-	int n = iset.indexes.size();
-	for (int row=0; row<n; row++) {
-	    final Index i = (Index) iset.indexes.get(row);
-
-	    JRadioButton radio = new JRadioButton(i.getName(), row==n-1);
-	    radio.addActionListener(new AbstractAction() {
-		    public void actionPerformed(ActionEvent e) {
-			selectedIndex = i;
-		    }
-		});
-	    JLabel chi2 = new JLabel("\u03C7\u00B2 = " + fmt.format(i.getChi2()));
-
-	    group.add(radio);
-
-	    grid.add(radio);
-	    grid.add(chi2);
-	}
-	getContentPane().add(grid);
-	*/
-
-	// add spacers
-	getContentPane().add(Box.createHorizontalStrut(8), BorderLayout.EAST);
-	getContentPane().add(Box.createHorizontalStrut(8), BorderLayout.WEST);
+        return scroller;
     }
 
-    // withgrid
-    // private Index selectedIndex = null;
+    private JButton makePreviewButton() {
+        JButton preview = new JButton(msg.getString("graph"));
+        preview.setMnemonic(msg.getString("graph_key").charAt(0));
+        preview.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent ae) {
+                int row = table.getSelectedRow();
 
-    private JButton makeGraphButton() {
-	graphButton = new JButton(msg.getString("graph"));
-	graphButton.setMnemonic(msg.getString("graph_key").charAt(0));
-	graphButton.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // withtable
-		    int row = table.getSelectedRow();
+                // error-checking!
+                if (row == -1) {
+                    JOptionPane.showMessageDialog(null,
+                                                  "Select a possible index to graph first.",
+                                                  "No index selected!",
+                                                  JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-		    // error-checking!
-		    if (row == -1) {
-			JOptionPane.showMessageDialog(null,
-						      "Select a possible index to graph first.",
-						      "No index selected!",
-						      JOptionPane.ERROR_MESSAGE);
-			return;
-		    }
-
-		    // graph the index (and target -- see GraphFrame(Index))
-                    new GraphFrame((Index) iset.indexes.get(row));
-
-		    // withgrid
-		    // new GraphFrame(selectedIndex);
-		}
-	    });
-	return graphButton;
+                // graph the index (and target -- see GraphFrame(Index))
+                new GraphFrame((Index) iset.indexes.get(row));
+            }
+        });
+        return preview;
     }
 
-    private JButton makeCloseButton() {
-	closeButton = new JButton(msg.getString("cancel"));
-	closeButton.setMnemonic(msg.getString("cancel_key").charAt(0));
-	closeButton.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    dispose();
-		}
-	    });
-	return closeButton;
+    private JButton makeCancelButton() {
+        JButton cancel = new JButton(msg.getString("cancel"));
+        cancel.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent ae) {
+                dispose();
+            }
+        });
+        return cancel;
     }
 
     /** Create a new indexing dialog for the given sample.
 	@param s the Sample to be indexed */
     public IndexDialog(Sample s, JFrame owner) {
-	// modal
-	super(owner);
-	// setModal(true); -- graph becomes unusable, then.
+        super(owner);
+        // setModal(true); -- no, graph becomes unusable, then.
 
-	// data
-	sample = s;
+        // data
+        sample = s;
 
-	// watch for already-indexed files
-	if (sample.isIndexed()) {
-	    JOptionPane.showMessageDialog(null,
-					  msg.getString("already_indexed_text"),
-					  msg.getString("already_indexed_title"),
-					  JOptionPane.ERROR_MESSAGE);
-	    dispose();
-	    return;
-	}
+        // watch for already-indexed files
+        if (sample.isIndexed()) {
+            JOptionPane.showMessageDialog(null,
+                                          msg.getString("already_indexed_text"),
+                                          msg.getString("already_indexed_title"),
+                                          JOptionPane.ERROR_MESSAGE);
+            dispose();
+            return;
+        }
 
-	// make sure there's data here
-	if (sample.data.size() < 3) {
-	    JOptionPane.showMessageDialog(null,
-					  msg.getString("no_data_text"),
-					  msg.getString("no_data_title"),
-					  JOptionPane.ERROR_MESSAGE);
-	    dispose();
-	    return;
-	}
+        // make sure there's data here
+        // BETTER: make this "==0", and have individual indexes throw if they can't handle size==2, etc.
+        if (sample.data.size() < 3) {
+            JOptionPane.showMessageDialog(null,
+                                          msg.getString("no_data_text"),
+                                          msg.getString("no_data_title"),
+                                          JOptionPane.ERROR_MESSAGE);
+            dispose();
+            return;
+        }
 
-	// title
-	setTitle(msg.getString("index"));
+        // title
+        String title = (String) sample.meta.get("title");
+        setTitle(msg.getString("index") + " " + title);
 
-	// top panel: text
-	initText();
+        // border
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        p.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
+        setContentPane(p);
+        
+        // top panel: text
+        p.add(makeLabel());
 
-	// table
-	initTable();
+        p.add(Box.createVerticalStrut(12));
+        
+        // table
+        p.add(makeTable());
 
-	// bottom panel (buttons)
-	buttonPanel = new JPanel();
-	buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-	buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-	getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+        // proxy indexing -- REFACTOR: JESUS H CHRIST, EXTRACT METHOD
+        p.add(Box.createVerticalStrut(12));
+        useProxy = new JCheckBox("Use Proxy Data:");
+        {
+            JPanel p2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            p2.add(useProxy);
+            p.add(p2);
+            useProxy.addActionListener(new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    if (useProxy.isSelected()) {
+                        // checked
+                        try {
+                            proxyPopup.setEnabled(true);
+                            if (proxyPopup.getSelectedIndex() == 0) { // special case: selected the sample itself
+                                iset = new IndexSet(sample);
+                            } else {
+                                File f = (File) proxyPopup.getSelectedItem();
+                                Sample proxy = new Sample(f.getPath());
+                                iset = new IndexSet(sample, proxy);
+                            }
+                            iset.run(); // can't be bad here, afaik -- are you sure?
+                            model.setIndexSet(iset);
+                        } catch (IOException ioe) {
+                            // can't happen ... can it?  better be really sure before you ignore this.
+                            System.out.println("oops: " + ioe);
+                        }
+                    } else {
+                        // unchecked
+                        proxyPopup.setEnabled(false);
+                        iset = new IndexSet(sample);
+                        iset.run();
+                        model.setIndexSet(iset);
+                    }
+                }
+            });
+        }
+        p.add(Box.createVerticalStrut(8));
+        {
+            JPanel p2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            p2.add(Box.createHorizontalStrut(24));
+            Vector sums = getSums();
+            int numSums = sums.size();
+            UserFriendlyFile me = new UserFriendlyFile((String) s.meta.get("filename"));
+            sums.add(0, me);
+            sums.add("Other...");
+            proxyPopup = new JComboBox(sums); // this is the last time |sums| is used
+            proxyPopup.setEnabled(false);
+            proxyPopup.addActionListener(new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    // now deal with this selection...
 
-	// graph button
-	buttonPanel.add(makeGraphButton());
+                    if (proxyPopup.getSelectedIndex() == proxyPopup.getItemCount()-1) {
+                        // "other..." selected
+                        String fn = FileDialog.showSingle("Proxy");
+                        if (fn == null) {
+                            // user cancelled => reselect previous value.
+                            proxyPopup.setSelectedIndex(oldSelection);
+                        } else {
+                            // user ok'd => load it, etc.
+                            Sample proxy = null;
+                            try {
+                                proxy = new Sample(fn);
+                                iset = new IndexSet(sample, proxy);
+                                iset.run();
+                                model.setIndexSet(iset);
 
-	// (spacer)
-	buttonPanel.add(Box.createHorizontalGlue());
+                                // add to popup AFTER running -- if it couldn't run, we don't want to add it
+                                int x = proxyPopup.getItemCount() - 1;
+                                proxyPopup.insertItemAt(new UserFriendlyFile(fn), x);
+                                proxyPopup.setSelectedIndex(x);
+                            } catch (IOException ioe) {
+                                System.out.println("oops, can't load or something...");
+                            } catch (RuntimeException re) {
+                                JOptionPane.showMessageDialog(null,
+                                                              "That proxy dataset (" + proxy.range + ") doesn't cover\n" +
+                                                                  "the entire range of the sample (" + sample.range + ") you're indexing.",
+                                                              "Proxy Dataset Too Short",
+                                                              JOptionPane.ERROR_MESSAGE);
+                                proxyPopup.setSelectedIndex(oldSelection);
+                                return;
+                            }
+                        }
+                    } else {
+                        // a file already in the list was selected
+                        Sample proxy = null;
+                        try {
+                            if (proxyPopup.getSelectedIndex() == 0) { // special case: selected the sample itself
+                                iset = new IndexSet(sample);
+                            } else {
+                                File f = (File) proxyPopup.getSelectedItem();
+                                proxy = new Sample(f.getPath());
+                                iset = new IndexSet(sample, proxy);
+                            }
+                            iset.run();
+                            model.setIndexSet(iset);
+                        } catch (IOException ioe) {
+                            System.out.println("oops2, can't load or something...");
+                        } catch (RuntimeException re) {
+                            JOptionPane.showMessageDialog(null,
+                                                          "That proxy dataset (" + proxy.range + ") doesn't cover\n" +
+                                                          "the entire range of the sample (" + sample.range + ") you're indexing.",
+                                                          "Proxy Dataset Too Short",
+                                                          JOptionPane.ERROR_MESSAGE);
+                            proxyPopup.setSelectedIndex(oldSelection);
+                            return;
+                        }
+                    }
 
-	// close button
-	buttonPanel.add(makeCloseButton());
+                    // no matter what, save old selection
+                    oldSelection = proxyPopup.getSelectedIndex();
+                }
+            });
+            p2.add(proxyPopup);
+            p.add(p2);
+        }
 
-	// (spacer)
-	buttonPanel.add(Box.createHorizontalStrut(8));
+        p.add(Box.createVerticalStrut(14));
 
-	// apply button
-	saveButton = new JButton(msg.getString("ok"));
-	saveButton.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // withtable
-		    int row = table.getSelectedRow();
+        // bottom panel (buttons) -- REFACTOR: EXTRACT METHOD
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        p.add(buttonPanel);
 
-		    if (row == -1) { // error-checking!
-			JOptionPane.showMessageDialog(null,
-						      "Select a possible index to apply first.",
-						      "No index selected!",
-						      JOptionPane.ERROR_MESSAGE);
-			return;
-		    }
+        // graph button
+        buttonPanel.add(makePreviewButton());
 
-		    // apply it
-		    // withtable
-                    Index index = (Index) iset.indexes.get(row);
-		    // withgrid
-		    // final Index index = selectedIndex;
-		    index.apply();
+        // (spacer)
+        buttonPanel.add(Box.createHorizontalGlue());
 
-		    // undo (index implements undoable)
-		    sample.postEdit(index);
+        // close button
+        buttonPanel.add(makeCancelButton());
 
-		    // also: clear filename, set modified
-		    index.target.setModified();
-		    index.target.meta.remove("filename");
+        // (spacer)
+        buttonPanel.add(Box.createHorizontalStrut(8));
 
-		    // tell editor
-		    sample.fireSampleDataChanged(); // REDUNDANT?
-		    sample.fireSampleMetadataChanged();
+        // ok button -- REFACTOR: EXTRACT METHOD
+        JButton okButton = new JButton(msg.getString("ok"));
+        okButton.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent ae) {
+                int row = table.getSelectedRow();
 
-		    // close me
-		    dispose();
-		}
-	    });
-	buttonPanel.add(saveButton);
+                if (row == -1) { // error-checking!
+                    JOptionPane.showMessageDialog(null,
+                                                  "Select a possible index to apply first.",
+                                                  "No index selected!",
+                                                  JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-	// apply is default
-	getRootPane().setDefaultButton(saveButton);
+                // apply it
+                Index index = (Index) iset.indexes.get(row);
+                index.apply();
 
-	// esc => cancel
-	addKeyListener(new KeyAdapter() {
-		public void keyPressed(KeyEvent e) {
-		    if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-			dispose();
-		}
-	    });
+                // undo (index implements undoable)
+                sample.postEdit(index);
 
-	// all done
-	pack();
-	setResizable(false);
-	show();
+                // also: clear filename, set modified
+                index.target.setModified();
+                index.target.meta.remove("filename");
+                // ISN'T INDEX.TARGET=SAMPLE?  IF SO, TARGET CAN BE PRIVATE.
+                
+                // tell editor, and close
+                sample.fireSampleMetadataChanged();
+                dispose();
+            }
+        });
+        buttonPanel.add(okButton);
+
+        // ok/cancel
+        OKCancel.addKeyboardDefaults(this, okButton);
+
+        // all done
+        pack();
+        setResizable(false);
+        show();
     }
 
+    // make a vector of sums (*.sum *.SUM) in the same folder as this sample,
+    // since that's what they'll be using 99% of the time
+    private Vector getSums() {
+        // get files in this directory
+        String filename = (String) sample.meta.get("filename");
+        File files[] = new File(filename).getParentFile().listFiles();
+
+        // return those that match "*.sum"
+        // -- this is something like: (remove-if-not (lambda (x) (ends-with x ".sum")))
+        Vector result = new Vector();
+        for (int i=0; i<files.length; i++)
+            if (files[i].getName().toUpperCase().endsWith(".SUM"))
+                result.add(new UserFriendlyFile(files[i].getPath()));
+        return result;
+    }
 }

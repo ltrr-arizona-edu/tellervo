@@ -76,12 +76,12 @@ public class Exponential extends Index implements Solver.Solveable {
     // if forReal==true, compute chi2 and put results in data
     private double compute(boolean forReal) {
 	// init x, y
-	int n = target.data.size();
+	int n = source.data.size();
 	double x[] = new double[n];
 	double y[] = new double[n];
 	for (int i=0; i<n; i++) {
 	    x[i] = (double) i;
-	    y[i] = ((Number) target.data.get(i)).doubleValue();
+	    y[i] = ((Number) source.data.get(i)).doubleValue();
 	}
 
 	// compute coeffs
@@ -146,7 +146,7 @@ public class Exponential extends Index implements Solver.Solveable {
 
     /** Run the index; do a search in two passes to find a good
         &Chi;<sup>2</sup>. */
-    public void run() {
+    public void index() {
 	// big steps
 	search(BIG_START, BIG_STOP, BIG_STEP);
 

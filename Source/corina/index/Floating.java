@@ -68,13 +68,13 @@ public class Floating extends Index {
     }
 
     /** Calculate the index, by computing the average at each point. */
-    public void run() {
+    public void index() {
         // make array weights={1,1,1,...}
         int weights[] = new int[window];
         Arrays.fill(weights, 1);
 
         // high-pass filter
-        data = HighPass.filter(target.data, weights);
+        data = HighPass.filter(source.data, weights);
     }
 
     /* this doesn't give exactly the same results as mecki's, but

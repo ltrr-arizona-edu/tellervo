@@ -63,8 +63,8 @@ public class HighPass extends Index {
     private int weights[];
 
     /** Compute the index. */
-    public void run() {
-        data = filter(target.data, weights);
+    public void index() {
+        data = filter(source.data, weights);
     }
 
     // a discrete high-pass filter
