@@ -22,10 +22,9 @@
 
     <!-- properties -->
     <property name="src" value="Source" />
-    <property name="build" value="Classes" />
-    <property name="api" value="Javadoc API" />
-    <property name="dist" value="Corina" /> <!-- tar task has no prefix=... -->
-    <property name="aux" value="aux" /> <!-- move this stuff to src/? -->
+    <property name="build" value="${src}/build" />
+    <property name="javadoc" value="${src}/Javadoc" />
+    <property name="lib" value="Libraries" />
 
     <!-- use Jikes; it seems to generate smaller output, and runs faster -->
     <property name="build.compiler" value="jikes" />
@@ -34,13 +33,12 @@
     <target name="default" depends="jar,test" />
 
     <!-- javadoc -->
-    <target name="api">
-        <mkdir dir="${api}" />
+    <target name="javadoc">
+        <mkdir dir="${javadoc}" />
         <javadoc sourcepath="${src}"
-	         destdir="${api}"
+	         destdir="${javadoc}"
 	         packagenames="corina,corina.files,corina.index,corina.cross,corina.manip,corina.gui,corina.editor,corina.graph,corina.site,corina.util"
-	         author="true"
-	         version="true"
+	         author="true" version="true"
 		 use="true"
 		 windowtitle="Corina"
 		 />
@@ -53,12 +51,12 @@
 	</condition>
     </target>
     <target name="run-nonmac" depends="jar,test,get-macness" unless="isMac">
-        <java fork="yes" jar="${dist}/Corina.jar" dir="${dist}"/>
+        <java fork="yes" jar="Corina.jar"/>
     </target>
     <target name="run-mac" depends="jar,test,get-macness" if="isMac">
-        <java fork="yes" jar="${dist}/Corina.jar" dir="${dist}">
+        <java fork="yes" jar="Corina.jar">
 	    <jvmarg value="-Dcom.apple.hwaccellist=ATIRage128_8388608"/>
-	    <jvmarg value="-Xdock:icon=../Source/Images/tree.icns"/>
+	    <jvmarg value="-Xdock:icon=Source/Images/tree.icns"/> <!-- move this to Libraries/?  well, it still needs build.xml to run, anyway. -->
 	    <jvmarg value="-Xdock:name=Corina"/>
 	</java>
     </target>
@@ -66,16 +64,12 @@
 
     <!-- jar -->
     <target name="jar" depends="compile">
-        <mkdir dir="${dist}" />
-	<jar jarfile="${dist}/Corina.jar"
+	<jar jarfile="Corina.jar"
 	     manifest="${src}/Manifest"
 	     basedir="${build}"
 	     includes="corina/*.class,corina/*/*.class,corina/*/*/*.class,Images/*.png,*.properties"
 	     excludes="**/UnitTests.class"
 	     />
-	<copy todir="${dist}">
-	    <fileset dir="${aux}" excludes="junit.jar"/>
-	</copy>
     </target>
 
     <!-- timestamp -->
@@ -94,7 +88,8 @@
 	       destdir="${build}"
 	       optimize="off"
 	       debug="on"
-	       classpath="${aux}/jython.jar:${aux}/junit.jar:${aux}/gnujaxp.jar:/usr/lib/j2sdk1.3/lib/tools.jar:/usr/lib/j2sdk1.3/jre/lib/rt.jar://usr/lib/j2sdk1.3/jre/lib/i18n.jar:${aux}/comm.jar"
+
+classpath="${lib}/jython.jar:${lib}/junit.jar:${lib}/gnujaxp.jar:${lib}/comm.jar"
 	       />
                <!-- everything from /usr/lib/... on is for jikes on debian, which is too dumb to look at $CLASSPATH.  ugh. -->
                <!-- but it builds smaller (and presumably, more efficient) object code, so we put up with this crap. -->
@@ -110,33 +105,23 @@
 	        </patternset>
 	    </fileset>
 	</copy>
-
-        <mkdir dir="${dist}/Manual" />
-        <copy todir="${dist}/Manual">
-            <fileset dir="Manual" />
-        </copy>
-
-        <mkdir dir="${dist}/Scripts" />
-        <copy todir="${dist}/Scripts">
-            <fileset dir="Scripts" />
-        </copy>
     </target>
 
     <!-- clean -->
     <target name="clean">
         <delete dir="${build}" />
-        <delete dir="${dist}" />
-        <delete dir="${api}" />
+        <delete dir="${javadoc}" />
 	<delete file="${src}/corina/Build.java" />
+    <delete file="Corina.jar"/>
     </target>
 
     <!-- test -->
     <target name="test" depends="jar">
-        <junit printsummary="on" fork="yes" haltonfailure="yes" dir="${dist}">
+        <junit printsummary="on" fork="yes" haltonfailure="yes">
             <classpath>
 	        <pathelement location="${build}" />
 	        <pathelement path="${java.class.path}" />
-	        <pathelement path="${aux}/gnujaxp.jar" />
+	        <pathelement path="${lib}/gnujaxp.jar" />
 	    </classpath>
 
             <test name="corina.UnitTests" />
@@ -144,7 +129,9 @@
             <test name="corina.prefs.UnitTests" />
             <test name="corina.manip.UnitTests" />
             <test name="corina.site.UnitTests" />
+            <test name="corina.map.UnitTests" />
             <test name="corina.index.UnitTests" />
+            <!-- add new unit tests here -->
         </junit>
     </target>
 
