@@ -1,0 +1,151 @@
+<!--
+   This file is part of Corina.
+
+   Corina is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or
+   (at your option) any later version.
+
+   Corina is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with Corina; if not, write to the Free Software
+   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+   Copyright 2001 Ken Harris <kbh7@cornell.edu>
+-->
+
+<project name="Corina" default="default" basedir=".">
+
+    <!-- properties -->
+    <property name="src" value="Source" />
+    <property name="build" value="Classes" />
+    <property name="api" value="Javadoc API" />
+    <property name="dist" value="Corina" /> <!-- tar task has no prefix=... -->
+    <property name="aux" value="aux" /> <!-- move this stuff to src/? -->
+
+    <!-- use Jikes; it seems to generate smaller output, and runs faster -->
+    <property name="build.compiler" value="jikes" />
+
+    <!-- default -->
+    <target name="default" depends="jar,test" />
+
+    <!-- javadoc -->
+    <target name="api">
+        <mkdir dir="${api}" />
+        <javadoc sourcepath="${src}"
+	         destdir="${api}"
+	         packagenames="corina,corina.files,corina.index,corina.cross,corina.manip,corina.gui,corina.editor,corina.graph,corina.site,corina.util"
+	         author="true"
+	         version="true"
+		 use="true"
+		 windowtitle="Corina"
+		 />
+    </target>
+
+    <!-- run: this is really sick... -->
+    <target name="get-macness">
+        <condition property="isMac">
+	    <os family="mac"/>
+	</condition>
+    </target>
+    <target name="run-nonmac" depends="jar,test,get-macness" unless="isMac">
+        <java fork="yes" jar="${dist}/Corina.jar" dir="${dist}"/>
+    </target>
+    <target name="run-mac" depends="jar,test,get-macness" if="isMac">
+        <java fork="yes" jar="${dist}/Corina.jar" dir="${dist}">
+	    <jvmarg value="-Dcom.apple.hwaccellist=ATIRage128_8388608"/>
+	    <jvmarg value="-Xdock:icon=../Source/Images/tree.icns"/>
+	    <jvmarg value="-Xdock:name=Corina"/>
+	</java>
+    </target>
+    <target name="run" depends="jar,test,run-nonmac,run-mac"/>
+
+    <!-- jar -->
+    <target name="jar" depends="compile">
+        <mkdir dir="${dist}" />
+	<jar jarfile="${dist}/Corina.jar"
+	     manifest="${src}/Manifest"
+	     basedir="${build}"
+	     includes="corina/*.class,corina/*/*.class,corina/*/*/*.class,Images/*.png,*.properties"
+	     excludes="**/UnitTests.class"
+	     />
+	<copy todir="${dist}">
+	    <fileset dir="${aux}" excludes="junit.jar"/>
+	</copy>
+    </target>
+
+    <!-- timestamp -->
+    <target name="timestamp">
+	<copy file="${src}/corina/Build.java-TEMPLATE" tofile="${src}/corina/Build.java" />
+	<tstamp>
+	    <format property="build.timestamp" pattern="yyyy-MM-dd HH:mm:ss" />
+        </tstamp>
+	<replace file="${src}/corina/Build.java" token="@@@" value="${build.timestamp}"/>
+    </target>
+
+    <!-- compile -->
+    <target name="compile" depends="timestamp">
+        <mkdir dir="${build}" />
+        <javac srcdir="${src}"
+	       destdir="${build}"
+	       optimize="off"
+	       debug="on"
+	       classpath="${aux}/jython.jar:${aux}/junit.jar:${aux}/gnujaxp.jar:/usr/lib/j2sdk1.3/lib/tools.jar:/usr/lib/j2sdk1.3/jre/lib/rt.jar://usr/lib/j2sdk1.3/jre/lib/i18n.jar:${aux}/comm.jar"
+	       />
+               <!-- everything from /usr/lib/... on is for jikes on debian, which is too dumb to look at $CLASSPATH.  ugh. -->
+               <!-- but it builds smaller (and presumably, more efficient) object code, so we put up with this crap. -->
+	<copy todir="${build}/Images">
+	    <fileset dir="${src}/Images" />
+	</copy>
+        <copy todir="${build}" file="${src}/prefs.properties"/>
+	<copy todir="${build}" file="${src}/species.properties"/>
+	<copy todir="${build}" flatten="yes">
+	    <fileset dir="${src}/">
+	        <patternset>
+	            <include name="Translations/**/*.properties" />
+	        </patternset>
+	    </fileset>
+	</copy>
+
+        <mkdir dir="${dist}/Manual" />
+        <copy todir="${dist}/Manual">
+            <fileset dir="Manual" />
+        </copy>
+
+        <mkdir dir="${dist}/Scripts" />
+        <copy todir="${dist}/Scripts">
+            <fileset dir="Scripts" />
+        </copy>
+    </target>
+
+    <!-- clean -->
+    <target name="clean">
+        <delete dir="${build}" />
+        <delete dir="${dist}" />
+        <delete dir="${api}" />
+	<delete file="${src}/corina/Build.java" />
+    </target>
+
+    <!-- test -->
+    <target name="test" depends="jar">
+        <junit printsummary="on" fork="yes" haltonfailure="yes" dir="${dist}">
+            <classpath>
+	        <pathelement location="${build}" />
+	        <pathelement path="${java.class.path}" />
+	        <pathelement path="${aux}/gnujaxp.jar" />
+	    </classpath>
+
+            <test name="corina.UnitTests" />
+            <test name="corina.files.UnitTests" />
+            <test name="corina.prefs.UnitTests" />
+            <test name="corina.manip.UnitTests" />
+            <test name="corina.site.UnitTests" />
+            <test name="corina.index.UnitTests" />
+        </junit>
+    </target>
+
+</project>

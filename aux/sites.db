@@ -1,0 +1,7078 @@
+<?xml version="1.0"?>
+
+<!-- types: 1=forest, 2=medieval, 3=ancient, 4=unknown -->
+
+<sitedb>
+
+<site>
+    <country>TU</country>
+    <code>ACM</code>
+    <name>Ni~de, Acemhüyük (1-99) (MBA, EBA)</name>
+    <id>399</id>
+    <species>Juniperus, Pinus, Cedrus libani</species>
+    <type>3</type>
+    <filename>G:\DATA\ACM</filename>
+    <location>38°30'N 33°45'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ACM</code>
+    <name>Ni~de, Acemhöyük (100-199)</name>
+    <id>499</id>
+    <type>3</type>
+    <filename>G:\DATA\ACM</filename>
+    <location>38°30'N 33°45'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ADI</code>
+    <name>Adiyaman, Murfa, survey</name>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\ADI</filename>
+    <location>37°46'N 38°17'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ADL</code>
+    <name>Bitlis, Adilcevaz (Urartian)</name>
+    <id>113</id>
+    <species>Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\ADL</filename>
+    <location>38°48'N 42°44'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ADN</code>
+    <name>Adana, Pos Orman?</name>
+    <id>101</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\ADN</filename>
+    <location>36°59'N 35°20'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ADN</code>
+    <name>Adana, Saimbeyli ??letmesi, Avc?p?nar? Bölgesi, Beyp?nar? Mevkii</name>
+    <id>101</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\ADN</filename>
+    <location>36°59'N 35°20'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AED</code>
+    <name>Trabzon, Boztepe, Ahi Evren Dede Camii</name>
+    <id>261</id>
+    <species>Castanea, Abies</species>
+    <type>2</type>
+    <filename>G:\DATA\AED</filename>
+    <location>41°0'N 39°43'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AEZ</code>
+    <name>Kütahya, Aezanoi</name>
+    <id>443</id>
+    <species>Conifer</species>
+    <type>3</type>
+    <filename>G:\DATA\AEZ</filename>
+    <location>39°10'N 29°37'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AFD</code>
+    <name>Afyon, Demirta?pa?azade Umur Bey Camisi</name>
+    <id>203</id>
+    <species>Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\AFD</filename>
+    <location>38°46'N 30°33'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AFY</code>
+    <name>Afyon, Ulu Camii</name>
+    <id>103</id>
+    <species>Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\AFY</filename>
+    <location>38°46'N 30°33'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>A?A</code>
+    <name>Sürmene, A?açba??, Yaylas? bog</name>
+    <id>61</id>
+    <species>Conifer</species>
+    <type>4</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ALA</code>
+    <name>Mersin, Alahan, Monastery</name>
+    <id>133</id>
+    <species>Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\ALA</filename>
+    <location>36°49'N 34°38'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ALC</code>
+    <name>Çorum, Alaca Höyük (EBA)</name>
+    <id>419</id>
+    <species>Quercus and Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\ALC</filename>
+    <location>40°10'N 34°50'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ALI</code>
+    <name>Alanya, late building N of the ?çkale</name>
+    <id>307</id>
+    <species>Cedrus libani</species>
+    <type>2</type>
+    <filename>G:\DATA\ALI</filename>
+    <location>36°33'N 32°1'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ALN</code>
+    <name>Alanya, K?z?lkule</name>
+    <id>307</id>
+    <species>Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\ALN</filename>
+    <location>36°33'N 32°1'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ALS</code>
+    <name>Al??ar (Terrace) (Bronze/Iron)</name>
+    <id>266</id>
+    <species>Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\ALS</filename>
+    <location>39°27'N 34°3'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ALT</code>
+    <name>Kütahya, Alt?nta? Tumulus</name>
+    <id>543</id>
+    <species>Pinus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ALY</code>
+    <name>Manisa, Sardis, Bintepe, Alyattes Tumulus</name>
+    <id>245</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\ALY</filename>
+    <location>38°26'N 28°0'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AMA</code>
+    <name>Amasya, Beyazit II Camii</name>
+    <id>105</id>
+    <species>Juglans</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AMO</code>
+    <name>Afyon, Amorium (Late Antique)</name>
+    <id>703</id>
+    <species>Abies, Cedrus, Quercus, Pinus, Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\AMO</filename>
+    <location>39°4'N 31°13'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AMR</code>
+    <name>Zonguldak, Amasra, Kale</name>
+    <species>for species ID only</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AMS</code>
+    <name>Amasya, ?amlar Mezarl???</name>
+    <id>305</id>
+    <species>Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\AMS</filename>
+    <location>40°39'N 35°51'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ANA</code>
+    <name>Anamur</name>
+    <species>Quercus and Pinus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ANK</code>
+    <name>Ankara, Büyük Tumulus (Phrygian)</name>
+    <id>106</id>
+    <species>Pinus nigra</species>
+    <type>3</type>
+    <filename>G:\DATA\ANK</filename>
+    <location>39°56'N 32°50'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ANT</code>
+    <name>Antalya, Elmal? ??letmesi, Ç??l?kara Orman?</name>
+    <id>107</id>
+    <species>Cedrus libani</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\ANT</filename>
+    <location>36°44'N 29°56'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ANT</code>
+    <name>Antalya, Elmal? ??letmesi, Avlan Orman?</name>
+    <id>107</id>
+    <species>Cedrus libani, Juniperus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\ANT</filename>
+    <location>36°44'N 29°56'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ANZ</code>
+    <name>Van, Yukar? Anzaf Kalesi</name>
+    <id>276</id>
+    <species>Pinus silvestris/nigra</species>
+    <type>3</type>
+    <filename>G:\DATA\ANZ</filename>
+    <location>38°34'N 43°32'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>APH</code>
+    <name>Ayd?n, Aphrodisias, Portico of Tiberius, Theater</name>
+    <id>509</id>
+    <species>Pinus, Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\APH</filename>
+    <location>37°42'N 28°45'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ARS</code>
+    <name>Ankara, Arslanhane Camii</name>
+    <id>176</id>
+    <species>Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\ARS</filename>
+    <location>39°56'N 32°50'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ARY</code>
+    <name>Arykanda (Roman)</name>
+    <species>(No Samples Yet Collected)</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ASH</code>
+    <name>Aksaray, A??kl? Höyük (PPNeolithic)</name>
+    <id>168</id>
+    <species>Quercus, Pistacia, Prunus</species>
+    <type>3</type>
+    <filename>G:\DATA\ASH</filename>
+    <location>38°23'N 34°3'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ASL</code>
+    <name>Malatya, Arslantepe (Late Uruk) (1-99)</name>
+    <id>344</id>
+    <species>Juniperus, Cedrus, Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\ASL</filename>
+    <location>38°21'N 38°20'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ASL</code>
+    <name>Malatya, Arslantepe (Late Uruk) (100-199)</name>
+    <id>544</id>
+    <species>Juniperus, Cedrus, Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\ASL</filename>
+    <location>38°21'N 38°20'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ASP</code>
+    <name>K?rklareli, A?a?? P?nar (Neolithic)</name>
+    <id>449</id>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ASS</code>
+    <name>Çanakkale, Assos (Hellenistic)</name>
+    <species>CHECK</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ATR</code>
+    <name>Ayd?n, Tralles</name>
+    <id>709</id>
+    <species>Pinus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AYA</code>
+    <name>Van, Ayanis/A?art? (Urartian) (1-99)</name>
+    <id>565</id>
+    <species>Pinus silvestris/nigra</species>
+    <type>3</type>
+    <filename>G:\DATA\AYA</filename>
+    <location>38°42'N 43°15'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AYA</code>
+    <name>Van, Ayanis (Urartian) (100-199)</name>
+    <id>665</id>
+    <species>Pinus silvestris/nigra</species>
+    <type>3</type>
+    <filename>G:\DATA\AYA</filename>
+    <location>38°42'N 43°15'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AYA</code>
+    <name>Van, Ayanis (Urartian) (200-299)</name>
+    <id>865</id>
+    <species>Pinus silvestris/nigra</species>
+    <type>3</type>
+    <filename>G:\DATA\AYA</filename>
+    <location>38°42'N 43°15'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AYA</code>
+    <name>Van, Ayanis (Urartian) (300-399)</name>
+    <id>965</id>
+    <species>Pinus silvestris/nigra</species>
+    <type>3</type>
+    <filename>G:\DATA\AYA</filename>
+    <location>38°42'N 43°15'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AYA</code>
+    <name>Van, Ayanis (Urartian) (400-499)</name>
+    <id>65</id>
+    <species>Pinus silvestris/nigra</species>
+    <type>3</type>
+    <filename>G:\DATA\AYA</filename>
+    <location>38°42'N 43°15'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AYD</code>
+    <name>Ayd?n, ?kizdere Köyü, Kocaalan Mevkisi</name>
+    <id>309</id>
+    <species>Pinus brutia</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\AYD</filename>
+    <location>37°54'N 27°45'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AYI</code>
+    <name>Ayd?n, Merkez, ?mambaba Mevkisi</name>
+    <id>409</id>
+    <species>Pinus nigra, Juniperus excelsa</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\AYI</filename>
+    <location>37°57'N 27°54'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AZD</code>
+    <name>?stanbul, Altunizade Kö?kü (See IST)</name>
+    <id>934</id>
+    <species>Quercus, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\AZD</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BAD</code>
+    <name>Badema?ac? (Neolithic)</name>
+    <species>(No Samples Yet Collected)</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BAF</code>
+    <name>Samsun, Bafra, Bo?azkaya ??letme Orman?</name>
+    <id>255</id>
+    <species>Quercus</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BAL</code>
+    <name>Sinop, Balatlar Kilise</name>
+    <id>357</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\BAL</filename>
+    <location>42°1'N 35°8'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BAY</code>
+    <name>Antalya, Elmal?, Bay?nd?r Tumuli</name>
+    <id>207</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\BAY</filename>
+    <location>36°44'N 29°56'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BBC</code>
+    <name>Sinop, Boyabat Castle</name>
+    <id>157</id>
+    <species>Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\BBC</filename>
+    <location>41°28'N 34°44'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BEK</code>
+    <name>Samsun, Kavak, Bekdemirköy, Cami</name>
+    <id>855</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\BEK</filename>
+    <location>41°5'N 36°3'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BEY</code>
+    <name>Denizli, Beycesultan (Chalcolithic)</name>
+    <id>120</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\BEY</filename>
+    <location>38°18'N 29°45'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BEZ</code>
+    <name>Aksaray, Ihlara, Bezirhane</name>
+    <id>368</id>
+    <species>Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\BEZ</filename>
+    <location>38°14'N 34°20'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BFO</code>
+    <name>Manisa, Sardis, Byzantine Fort</name>
+    <id>445</id>
+    <species>Taxus baccata</species>
+    <type>3</type>
+    <filename>G:\DATA\BFO</filename>
+    <location>38°26'N 28°0'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BIN</code>
+    <name>Manisa, Bintepe, Karayah?i Köyü, Tumulus</name>
+    <id>845</id>
+    <species>Fraxinus</species>
+    <type>3</type>
+    <filename>G:\DATA\BIN</filename>
+    <location>38°26'N 28°0'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BIR</code>
+    <name>?zmir, Ödemi?, Birgi, Ulu Camii (Mehmet Bey? XXX)</name>
+    <id>335</id>
+    <species>Castanea</species>
+    <type>2</type>
+    <filename>G:\DATA\BIR</filename>
+    <location>38°14'N 28°3'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BIT</code>
+    <name>Van, Bitlis, Hizan Forest</name>
+    <id>465</id>
+    <species>Quercus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\BIT</filename>
+    <location>38°9'N 42°28'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BKO</code>
+    <name>Burdur, Koca Oda (=Baki Bey/Çelikba? Konak)</name>
+    <id>415</id>
+    <species>Pinus, Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\BKO</filename>
+    <location>37°43'N 30°17'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BNM</code>
+    <name>Ankara, Beynam Orman? (DATA ONLY - Christiansen-Weniger)</name>
+    <id>6</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\BNM</filename>
+    <location>39°42'N 32°53'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BOG</code>
+    <name>Çorum, Bo?azköy, Hittite Upper City Wall</name>
+    <id>119</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\BOG</filename>
+    <location>40°2'N 34°37'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BOG</code>
+    <name>Çorum, Bo?azköy, Phrygian Well</name>
+    <id>119</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\BOG</filename>
+    <location>40°2'N 34°37'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BOG</code>
+    <name>Çorum, Bo?azköy, Büyükkale</name>
+    <id>119</id>
+    <species>Quercus and Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\BOG</filename>
+    <location>40°2'N 34°37'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BOL</code>
+    <name>Bolu, K?br?sc?k and Ba?alan Ormanlar?</name>
+    <id>114</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\BOL</filename>
+    <location>40°25'N 31°48'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BOL</code>
+    <name>Bolu, Ayikaya Bölgesi (1997 collection)</name>
+    <id>114</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\BOL</filename>
+    <location>40°25'N 31°48'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BOY</code>
+    <name>Afyon, Sincanl?, Boyaliköy Medresesi</name>
+    <id>403</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\BOY</filename>
+    <location>38°44'N 30°15'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BOZ</code>
+    <name>Bozburun, Byzantine Shipwreck</name>
+    <id>348</id>
+    <species>Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\BOZ</filename>
+    <location>36°41'N 28°4'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BPZ</code>
+    <name>Ankara, Beypazar, Suluhan</name>
+    <id>506</id>
+    <species>(MISSING IN ACTION)</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BTO</code>
+    <name>Burdur, Ta? Oda</name>
+    <id>315</id>
+    <species>Quercus, Juniperus, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\BTO</filename>
+    <location>37°43'N 30°17'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BUR</code>
+    <name>Burdur, Erenard?ç</name>
+    <id>115</id>
+    <species>Juniperus</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BUY</code>
+    <name>Bayburt, Demirözü, Çifteta?, Büyüktepe</name>
+    <id>169</id>
+    <species>Pinus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BYC</code>
+    <name>Bursa, Ye?il Camii</name>
+    <id>516</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\BYC</filename>
+    <location>40°11'N 29°4'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BYH</code>
+    <name>Burdur, Yakaköy, Yar?m Höyük</name>
+    <id>815</id>
+    <species>Juniperus and Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\BYH</filename>
+    <location>37°52'N 30°3'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ÇAD</code>
+    <name>Yozgat, Sorgun, Çadir Höyük</name>
+    <id>466</id>
+    <species>Populus</species>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ÇAK</code>
+    <name>Samsun, Kavak, Çakall? Mevkii</name>
+    <id>555</id>
+    <species>Quercus</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>CAM</code>
+    <name>Ankara, Ba?lumbuca??, Çaml?tepe</name>
+    <id>406</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\CAM</filename>
+    <location>40°3'N 32°48'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>CAN</code>
+    <name>Konya, Can Hasan (Chalcolithic)</name>
+    <id>342</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\CAN</filename>
+    <location>37°16'N 33°22'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ÇAR</code>
+    <name>Samsun, Çar?amba, Mezarl?k Camii</name>
+    <id>355</id>
+    <species>Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>CAT</code>
+    <name>Eski?ehir, Çatac?k Orman?</name>
+    <id>126</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\CAT</filename>
+    <location>39°56'N 31°23'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>CAV</code>
+    <name>Van, Çavu?tepe (Urartian)</name>
+    <id>265</id>
+    <species>Pinus silvestris/nigra</species>
+    <type>3</type>
+    <filename>G:\DATA\CAV</filename>
+    <location>38°16'N 43°28'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ÇAY</code>
+    <name>Çanakkale, Ayvac?k, Merkez Bölgesi</name>
+    <id>317</id>
+    <species>Quercus</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ÇDG</code>
+    <name>Trabzon, Çaykara, Dernek, Güney Mahallesi, Camii</name>
+    <id>661</id>
+    <species>Castanea, Ulmus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ÇDK</code>
+    <name>Trabzon, Çaykara, Dernek, Kondu Mahallesi, Merkez Camii</name>
+    <id>761</id>
+    <species>Castanea</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ÇIF</code>
+    <name>Erzurum, Çifte Minareli Medrese</name>
+    <id>525</id>
+    <species>Pinus, Juniperus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>CHP</code>
+    <name>Çanakkale, Üvecik, Cezayirli Hasan Pa?a Kö?kü </name>
+    <id>117</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\CHP</filename>
+    <location>39°52'N 26°12'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>CKB</code>
+    <name>Çanakkale, Kilid ul-Bahir Castle</name>
+    <id>217</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\CKB</filename>
+    <location>40°8'N 26°24'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>CLA</code>
+    <name>?zmir, Claros (pre-Orientalizing) (MISSING IN ACTION)</name>
+    <id>335</id>
+    <species>Platanus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ÇMR</code>
+    <name>Ni?de, Çamard?, Göltepe (See KES= Kestel)</name>
+    <id>651</id>
+    <species>Cedrus libani</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>CNL</code>
+    <name>Aksaray, Akhisar, Çanl? Kilise</name>
+    <id>268</id>
+    <species>Cedrus, Juniperus, Castanea</species>
+    <type>2</type>
+    <filename>G:\DATA\CNL</filename>
+    <location>38°9'N 34°10'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>CRD</code>
+    <name>Denizli, Çardak Kale</name>
+    <id>220</id>
+    <species>Pinus brutia</species>
+    <type>4</type>
+    <filename>G:\DATA\CRD</filename>
+    <location>37°50'N 29°40'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>CTL</code>
+    <name>Konya, Çatalhöyük (Neolithic)</name>
+    <id>742</id>
+    <species>Juniperus, Quercus, Ulmus</species>
+    <type>3</type>
+    <filename>G:\DATA\CTL</filename>
+    <location>37°39'N 32°50'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>DAR</code>
+    <name>Malatya, Darende, Yenice Tumulus (Roman)</name>
+    <id>444</id>
+    <species>Cedrus libani</species>
+    <type>3</type>
+    <filename>G:\DATA\DAR</filename>
+    <location>38°33'N 37°30'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>DAS</code>
+    <name>Bal?kesir, Band?rma, Daskyleion</name>
+    <id>210</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\DAS</filename>
+    <location>40°20'N 27°56'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>DEG</code>
+    <name>Tekirda?, De?irmendere (Late Antique?)</name>
+    <id>159</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\DEG</filename>
+    <location>40°58'N 27°57'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>DEM</code>
+    <name>Eski?ehir, Demircihüyük (EBA)</name>
+    <id>626</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\DEM</filename>
+    <location>39°48'N 30°20'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>DEN</code>
+    <name>?stanbul, Deniz Müzesi boats</name>
+    <id>275</id>
+    <species>Ulmus,Platanus,Quercus</species>
+    <type>4</type>
+    <filename>G:\DATA\DEN</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>DER</code>
+    <name>Antalya, Derea?z?, Church </name>
+    <id>107</id>
+    <species>Cedrus</species>
+    <type>2</type>
+    <filename>G:\DATA\DER</filename>
+    <location>36°53'N 30°42'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>DEV</code>
+    <name>Bursa, Mustafakemalpa?a, Devecikona??</name>
+    <id>616</id>
+    <species>Quercus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\DEV</filename>
+    <location>39°55'N 28°33'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>DID</code>
+    <name>Didyma, Apollo Temple</name>
+    <species>Pinus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>DIL</code>
+    <name>Van, Dilkaya</name>
+    <id>165</id>
+    <species>Conifer</species>
+    <type>3</type>
+    <filename>G:\DATA\DIL</filename>
+    <location>38°23'N 43°15'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>DIP</code>
+    <name>?stanbul, Beylerbey, Debreli ?smail Pa?a Yal?s? (See IST)</name>
+    <id>934</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\DIP</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>DIV</code>
+    <name>Sivas, D?vr??i, Ulu Camii</name>
+    <id>358</id>
+    <species>Juniperus, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\DIV</filename>
+    <location>39°23'N 38°7'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>DOR</code>
+    <name>Eski?ehir, Dorylaion</name>
+    <id>726</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\DOR</filename>
+    <location>39°46'N 30°31'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>EDR</code>
+    <name>Edremit, Kaz Da?</name>
+    <id>110</id>
+    <species>Pinus nigra, Pinus brutia</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\EDR</filename>
+    <location>39°42'N 26°52'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ELA</code>
+    <name>?zmir, Pergamon, Elaia Tumulus (Roman)</name>
+    <id>235</id>
+    <species>Taxus baccata</species>
+    <type>3</type>
+    <filename>G:\DATA\ELA</filename>
+    <location>39°7'N 27°11'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ELM</code>
+    <name>Ankara, Elmada? (Orman)</name>
+    <id>806</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\ELM</filename>
+    <location>39°55'N 33°15'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>EMT</code>
+    <name>Kütahya, Emet, E?rigöz, Tav?analan? Deposu</name>
+    <id>243</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\EMT</filename>
+    <location>39°20'N 29°3'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ENR</code>
+    <name>Edirne, Enez, Roman grave </name>
+    <id>222</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\ENR</filename>
+    <location>40°44'N 26°4'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ENZ</code>
+    <name>Edirne, Enez, Hg. Sophia </name>
+    <id>122</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\ENZ</filename>
+    <location>40°44'N 26°4'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>EPH</code>
+    <name>Ayd?n, Ephesos (Archaic, Hellenistic, Roman)</name>
+    <id>209</id>
+    <species>Quercus, Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\EPH</filename>
+    <location>37°56'N 27°22'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ERZ</code>
+    <name>Erzurum (combines OLT and KDZ) Orman?</name>
+    <id>925</id>
+    <species>Pinus silvestris</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\ERZ</filename>
+    <location>40°27'N 42°27'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>FEK</code>
+    <name>Adana, Feke, Dü?mü? Orman Deposu</name>
+    <id>201</id>
+    <species>Cedrus libani</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\FEK</filename>
+    <location>37°51'N 35°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>FEK</code>
+    <name>Adana, Feke, Dü?mü? Orman?</name>
+    <id>201</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\FEK</filename>
+    <location>37°51'N 35°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>FFC</code>
+    <name>?zmir, Foça, Fatih Camii</name>
+    <id>935</id>
+    <species>Cupressus</species>
+    <type>2</type>
+    <filename>G:\DATA\FFC</filename>
+    <location>38°39'N 26°46'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>FKB</code>
+    <name>?zmir, Foça, Kaleburnu</name>
+    <id>435</id>
+    <species>Pinus, Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\FKB</filename>
+    <location>38°39'N 26°46'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>FOC</code>
+    <name>?zmir, Foça, Archaic</name>
+    <id>535</id>
+    <species>Pinus brutia, Salix, Olea</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GAV</code>
+    <name>Ala?ehir Gâvurtepe</name>
+    <id>745</id>
+    <species>Quercus, diffuse porous</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GDL</code>
+    <name>Ankara, Güdül Orman?</name>
+    <id>306</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\GDL</filename>
+    <location>40°13'N 32°15'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GED</code>
+    <name>Gedikli</name>
+    <id>127</id>
+    <species>CHECK</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GEV</code>
+    <name>Van, Geva?</name>
+    <id>765</id>
+    <species>Juniperus?</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GIK</code>
+    <name>U?ak, Güre ?kiztepe (Lydian)</name>
+    <id>164</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\GIK</filename>
+    <location>38°39'N 29°9'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GIR</code>
+    <name>Giresun, Shipwreck</name>
+    <species>CHECK</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GLC</code>
+    <name>Gölcük, Sardis</name>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GLD</code>
+    <name>Ni?de, Göllüda?</name>
+    <id>951</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\GLD</filename>
+    <location>38°23'N 34°45'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GOK</code>
+    <name>Sivas, Gök Medrese</name>
+    <id>258</id>
+    <species>Pinus, Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\GOK</filename>
+    <location>39°44'N 37°1'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GOL</code>
+    <name>Erzurum, Göle Orman?</name>
+    <id>325</id>
+    <species>Pinus silvestris</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GOR</code>
+    <name>Ankara, Gordion (1-99)</name>
+    <id>500</id>
+    <species>Juniperus, Pinus, Cedrus libani</species>
+    <type>3</type>
+    <filename>G:\DATA\GOR</filename>
+    <location>39°38'N 32°0'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GOR</code>
+    <name>Ankara, Gordion (100-199)</name>
+    <id>600</id>
+    <species>Juniperus, Pinus, Cedrus</species>
+    <type>3</type>
+    <filename>G:\DATA\GOR</filename>
+    <location>39°38'N 32°0'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GOR</code>
+    <name>Ankara, Gordion, Tumulus Z</name>
+    <id>500</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\GOR</filename>
+    <location>39°38'N 32°0'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GOR</code>
+    <name>Ankara, Gordion, K?zlarkaya Tumulus A </name>
+    <id>600</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\GOR</filename>
+    <location>39°38'N 32°0'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GOR</code>
+    <name>Ankara, Gordion, Tumulus B</name>
+    <id>700</id>
+    <species>Cedrus libani</species>
+    <type>3</type>
+    <filename>G:\DATA\GOR</filename>
+    <location>39°38'N 32°0'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GUM</code>
+    <name>Amasya, Gümü? Nahiyesi, Eski Darphane Camii</name>
+    <id>205</id>
+    <species>Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\GUM</filename>
+    <location>40°51'N 35°10'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>GUZ</code>
+    <name>Antalya, Akseki, Güzelsu</name>
+    <id>607</id>
+    <species>Cedrus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\GUZ</filename>
+    <location>36°54'N 31°53'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>HAC</code>
+    <name>Burdur, Hac?lar</name>
+    <id>715</id>
+    <species>Juniperus, Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\HAC</filename>
+    <location>37°34'N 30°3'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>HAD</code>
+    <name>Konya, K?z?lgeri?, Had?m/Bozk?r regions</name>
+    <id>42</id>
+    <species>Juniperus foetidissima</species>
+    <type>2</type>
+    <filename>G:\DATA\HAD</filename>
+    <location>36°59'N 32°28'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>HAL</code>
+    <name>Hallan Çemi</name>
+    <id>156</id>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>HAM</code>
+    <name>Eski?ehir, Hamidiyeköy (Orman)</name>
+    <id>226</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\HAM</filename>
+    <location>39°35'N 30°55'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>HAR</code>
+    <name>Urfa, Harran, Ulu Camii</name>
+    <id>263</id>
+    <species>Conifer</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>HID</code>
+    <name>Hidirlar Köyü</name>
+    <id>276</id>
+    <species>Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\HID</filename>
+    <location>40°36'N 32°40'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>HKF</code>
+    <name>Batman, Gercü?, Hasankeyf, A?a?? Camii (El Rizk Camii) Ulu Camii, and Koç Camii</name>
+    <id>721</id>
+    <species>Quercus, Ulmus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>HOB</code>
+    <name>House of Bronzes, Sardis</name>
+    <id>545</id>
+    <species>Quercus, Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\HOB</filename>
+    <location>38°26'N 28°0'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>HOC</code>
+    <name>Konya, Ak?ehir, Nasreddin Hoca Türbesi</name>
+    <id>642</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\HOC</filename>
+    <location>38°21'N 31°25'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>HOY</code>
+    <name>Burdur, Bucak, Höyücek</name>
+    <id>515</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\HOY</filename>
+    <location>37°28'N 30°37'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>HPY</code>
+    <name>?stanbul, Yeniköy, Halimpa?a Yal?s?</name>
+    <id>34</id>
+    <species>Pinus and Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\HPY</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>HUC</code>
+    <name>Elaz??, Harput, Ulu Camii</name>
+    <species>CHECK</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>HUD</code>
+    <name>Bursa, I. Murat Hüdavendi?âr Camii</name>
+    <id>716</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\HUD</filename>
+    <location>40°11'N 29°4'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IAS</code>
+    <name>Mu?la, Milas, ?asos</name>
+    <species>Aesculus hippocastanum and Pinus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IBO</code>
+    <name>?stanbul, Belgrade Orman?</name>
+    <id>934</id>
+    <species>Quercus frainetto, Q. dschoruchensis</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\IBO</filename>
+    <location>41°8'N 28°27'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IHL</code>
+    <name>Aksaray, Ihlara, Karagedik</name>
+    <species>Populus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IHO</code>
+    <name>?zmir Houses</name>
+    <species>CHECK</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IKZ</code>
+    <name>Samsun, Bafra, ?kiztepe (EBA+)</name>
+    <id>155</id>
+    <species>Quercus, Conifer</species>
+    <type>3</type>
+    <filename>G:\DATA\IKZ</filename>
+    <location>41°34'N 35°53'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ILG</code>
+    <name>Kastamonu, Ilgar?n? Cave Grave</name>
+    <id>337</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\ILG</filename>
+    <location>41°44'N 33°5'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ILI</code>
+    <name>Bursa, Il?p?nar (Neolithic)</name>
+    <id>16</id>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IMI</code>
+    <name>Elaz??, Baskil, ?miku?a?? Höyük (MBA)</name>
+    <id>123</id>
+    <species>Conifer</species>
+    <type>3</type>
+    <filename>G:\DATA\IMI</filename>
+    <location>38°35'N 38°48'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>INC</code>
+    <name>Konya, ?nce Minareli Medrese</name>
+    <id>174</id>
+    <species>Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\INC</filename>
+    <location>37°52'N 32°31'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>INE</code>
+    <name>Bursa, ?negöl Höyük (EBA)</name>
+    <id>816</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\INE</filename>
+    <location>40°4'N 29°30'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IPD</code>
+    <name>A?r?, Do?u Beyazit ??akpa?a Saray?</name>
+    <id>104</id>
+    <species>Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\IPD</filename>
+    <location>39°32'N 44°5'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IRN</code>
+    <name>?stanbul, Hg. Eirene</name>
+    <id>234</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\IRN</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ISL</code>
+    <name>Çanakkale, Is?klar</name>
+    <id>817</id>
+    <species>Pinus nigra</species>
+    <type>2</type>
+    <filename>G:\DATA\ISL</filename>
+    <location>39°51'N 26°28'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>AZD</code>
+    <name>?stanbul, Altunizade Kö?kü</name>
+    <id>934</id>
+    <species>Quercus, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\AZD</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>BAL</code>
+    <name>?stanbul, Balat</name>
+    <id>934</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\BAL</filename>
+    <location>42°1'N 35°8'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>DIP</code>
+    <name>?stanbul, Beylerbeyi, Debreli ?smail Pa?a Yal?s? (No pieces)</name>
+    <id>934</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\DIP</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KAY</code>
+    <name>?stanbul, Kayserili Ahmet Pa?a (No pieces)</name>
+    <id>934</id>
+    <species>Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KUM</code>
+    <name>?stanbul, Kumkap? (No pieces)</name>
+    <id>934</id>
+    <species>Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ZEY</code>
+    <name>?stanbul, Zeyrek Fazilet Soka?? 20 (No pieces)</name>
+    <id>934</id>
+    <species>Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IZMIT</code>
+    <name>?zmit, Kullar Köyü (Not Collected)</name>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IZA</code>
+    <name>Bilecik, ?znik, Çandarl? Kara Ali Türbesi</name>
+    <id>911</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\IZA</filename>
+    <location>40°26'N 29°43'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IZD</code>
+    <name>Bilecik, ?znik, Elbeyli, Dörttepeler Tumulus</name>
+    <id>611</id>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IZJ</code>
+    <name>Bilecik, ?znik, Yakub Çelebi Zaviyesi</name>
+    <id>111</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\IZJ</filename>
+    <location>40°25'N 29°43'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IZI</code>
+    <name>Bilecik, ?znik, Çandarl? ?brahim Pa?a Türbesi</name>
+    <id>911</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\IZI</filename>
+    <location>40°26'N 29°43'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IZK</code>
+    <name>Bilecik, ?znik, ?eyh Kudbettin Türbesi and Camii</name>
+    <id>911</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\IZK</filename>
+    <location>40°26'N 29°43'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IZM</code>
+    <name>Bilecik, ?znik, Elbeyli, Mara Camii</name>
+    <id>211</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\IZM</filename>
+    <location>40°26'N 29°43'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IZN</code>
+    <name>Bilecik, ?znik, Nilüfer ?mareti</name>
+    <id>311</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\IZN</filename>
+    <location>40°26'N 29°43'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IZS</code>
+    <name>Bilecik, ?znik, Hg. Sophia</name>
+    <id>411</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\IZS</filename>
+    <location>40°26'N 29°43'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IZT</code>
+    <name>Bilecik, ?znik, Theatre, late Byzantine/early Ottoman </name>
+    <id>811</id>
+    <species>Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IZW</code>
+    <name>Bilecik, ?znik, Walls</name>
+    <id>711</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\IZW</filename>
+    <location>40°26'N 29°43'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>IZY</code>
+    <name>Bilecik, ?znik, Ye?il Camii</name>
+    <id>511</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\IZY</filename>
+    <location>40°26'N 29°43'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KAC</code>
+    <name>Konya, Alaettin Camii</name>
+    <id>242</id>
+    <species>Cedrus libani</species>
+    <type>2</type>
+    <filename>G:\DATA\KAC</filename>
+    <location>37°52'N 32°31'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KAH</code>
+    <name>Kir?ehir, Kaman Kalehöyük (1-99)</name>
+    <id>140</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\KAH</filename>
+    <location>39°22'N 33°44'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KAH</code>
+    <name>Kir?ehir, Kaman Kalehöyük (100-199)</name>
+    <id>240</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\KAH</filename>
+    <location>39°22'N 33°44'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KAH</code>
+    <name>Kir?ehir, Kaman Kalehöyük (200-299)</name>
+    <id>340</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\KAH</filename>
+    <location>39°22'N 33°44'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KAH</code>
+    <name>Kir?ehir, Kaman Kalehöyük (300-399)</name>
+    <id>440</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\KAH</filename>
+    <location>39°22'N 33°44'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KAH</code>
+    <name>Kir?ehir, Kaman Kalehöyük (400-499)</name>
+    <id>540</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\KAH</filename>
+    <location>39°22'N 33°44'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KAL</code>
+    <name>?stanbul, Kalenderhane</name>
+    <id>334</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\KAL</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KAM</code>
+    <name>Bozburun, Kameriye Island Monastery</name>
+    <id>248</id>
+    <species>Cedrus</species>
+    <type>2</type>
+    <filename>G:\DATA\KAM</filename>
+    <location>36°43'N 28°3'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KAR</code>
+    <name>?stanbul, Kariye Camii</name>
+    <id>534</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\KAR</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KAS</code>
+    <name>Antalya, Ka?, Uluburun Shipwreck</name>
+    <id>407</id>
+    <species>Cedrus</species>
+    <type>3</type>
+    <filename>G:\DATA\KAS</filename>
+    <location>36°12'N 29°39'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KAV</code>
+    <name>Samsun, Kavak</name>
+    <id>655</id>
+    <species>Quercus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\KAV</filename>
+    <location>41°5'N 36°3'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KAY</code>
+    <name>?stanbul, Kayserili Ahmet Pa?a (See IST)</name>
+    <id>934</id>
+    <species>Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KAZ</code>
+    <name>Urfa, Kazane Höyük</name>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KBK</code>
+    <name>Konya, Karahöyük (EBA, MBA)</name>
+    <id>142</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\KBK</filename>
+    <location>37°50'N 32°30'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KDZ</code>
+    <name>Erzurum, ?enkaya ??letmesi, Kar?nca Düzü Orman?</name>
+    <id>225</id>
+    <species>Pinus silvestris</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\KDZ</filename>
+    <location>40°34'N 42°20'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KDV</code>
+    <name>Mersin (?cel), Silifke, Kanlidivane</name>
+    <id>433</id>
+    <species>Juniperus, Abies</species>
+    <type>3</type>
+    <filename>G:\DATA\KDV</filename>
+    <location>36°22'N 33°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KEB</code>
+    <name>Elaz??, Keban Dam (Euphrates River)</name>
+    <id>323</id>
+    <species>Pinus</species>
+    <type>4</type>
+    <filename>G:\DATA\KEB</filename>
+    <location>38°47'N 38°44'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KEB</code>
+    <name>Elaz??, Eti Bank Mine Explorations</name>
+    <id>323</id>
+    <species>Pinus</species>
+    <type>4</type>
+    <filename>G:\DATA\KEB</filename>
+    <location>38°47'N 38°44'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KEL</code>
+    <name>Silifke, Kelenderis</name>
+    <id>233</id>
+    <species>Pinus brutia</species>
+    <type>3</type>
+    <filename>G:\DATA\KEL</filename>
+    <location>36°10'N 33°23'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KEM</code>
+    <name>Bursa, Mudanya, Tirilye, (Zeytinba??), Kemerli Kilise </name>
+    <id>216</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\KEM</filename>
+    <location>40°23'N 28°47'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KER</code>
+    <name>Kerkenes Da?</name>
+    <species>Pinus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KES</code>
+    <name>Ni?de, Kestel Mine (See ÇMR= Göltepe)</name>
+    <id>651</id>
+    <species>Juniperus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KGH</code>
+    <name>Van, Erçek, Karagündüz Höyük</name>
+    <id>176</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\KGH</filename>
+    <location>38°38'N 43°40'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KIN</code>
+    <name>Hatay (Antakya) Kinet Höyük</name>
+    <id>131</id>
+    <species>Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\KIN</filename>
+    <location>36°35'N 36°8'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KIZ</code>
+    <name>Çankiri, K?z?ls?n Forest</name>
+    <id>218</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\KIZ</filename>
+    <location>40°53'N 33°40'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KKK</code>
+    <name>Konya, Bey?ehir, Kubadabad, K?z Kalesi</name>
+    <id>274</id>
+    <species>Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\KKK</filename>
+    <location>37°41'N 31°43'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KLK</code>
+    <name>Çanakkale, Kalk?m Forest</name>
+    <id>917</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\KLK</filename>
+    <location>39°48'N 27°12'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KLT</code>
+    <name>Silifke, Kilisetepe</name>
+    <id>233</id>
+    <species>Pinus, Cedrus, Populus</species>
+    <type>3</type>
+    <filename>G:\DATA\KLT</filename>
+    <location>36°22'N 33°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KLZ</code>
+    <name>?zmir, Klazomenai</name>
+    <species>Conifer</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KMI</code>
+    <name>Ayd?n, Miletos, Kalabaktepe (MISSING IN ACTION)</name>
+    <species>Pinus brutia</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KOS</code>
+    <name>Ni?de, Kö?k Hüyük (Late Neolithic) (1-99)</name>
+    <id>451</id>
+    <species>Juniperus, Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\KOS</filename>
+    <location>37°52'N 34°37'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KOS</code>
+    <name>Ni?de, Kö?k Höyük (Late Neolithic) (100-199)</name>
+    <id>751</id>
+    <species>Juniperus, Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\KOS</filename>
+    <location>37°52'N 34°37'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KOS</code>
+    <name>Ni?de, Kö?k Höyük (Late Neolithic) (200-399)</name>
+    <id>851</id>
+    <species>Juniperus, Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\KOS</filename>
+    <location>37°52'N 34°37'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KOZ</code>
+    <name>U?ak, Banaz, Kozviran Tumulus</name>
+    <id>364</id>
+    <species>Quercus and Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\KOZ</filename>
+    <location>38°44'N 29°45'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KRC</code>
+    <name>Burdur, Kuruçay Höyük</name>
+    <id>215</id>
+    <species>Conifer, Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\KRC</filename>
+    <location>37°37'N 29°46'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KRK</code>
+    <name>Trabzon, Sürmene, Karacakaya Camii</name>
+    <id>361</id>
+    <species>Castanea, Quercus, Fagus</species>
+    <type>2</type>
+    <filename>G:\DATA\KRK</filename>
+    <location>40°55'N 40°7'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KSK</code>
+    <name>Sivas, Ku?akl? (Late Hittite)</name>
+    <id>458</id>
+    <species>Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\KSK</filename>
+    <location>39°17'N 36°45'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KSM</code>
+    <name>Konya, Sahipata Mescidi</name>
+    <id>874</id>
+    <species>Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\KSM</filename>
+    <location>37°52'N 32°31'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KSO</code>
+    <name>Kütahya, Seyitömer Höyük</name>
+    <id>343</id>
+    <species>Pinus silvestris/nigra</species>
+    <type>3</type>
+    <filename>G:\DATA\KSO</filename>
+    <location>39°35'N 29°55'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KSS</code>
+    <name>Konya, Selçuklu Saray? </name>
+    <id>942</id>
+    <species>Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\KSS</filename>
+    <location>37°52'N 32°31'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KTY</code>
+    <name>Konya, Karatay Medrese</name>
+    <id>842</id>
+    <species>Cedrus, Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\KTY</filename>
+    <location>37°52'N 32°31'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KUA</code>
+    <name>Kir?ehir, Üç Ayak Kilise</name>
+    <filename>G:\DATA\KUA</filename>
+    <location>39°22'N 33°44'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KUB</code>
+    <name>Konya, Bey?ehir, Kubadabad Saray?</name>
+    <id>442</id>
+    <species>Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\KUB</filename>
+    <location>37°43'N 31°45'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KUL</code>
+    <name>Kayseri, Kültepe, War?ama Saray? (MBA)</name>
+    <id>138</id>
+    <species>Juniperus, Pinus, Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\KUL</filename>
+    <location>38°47'N 35°33'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KUM</code>
+    <name>?stanbul, Kumkap? (See IST)</name>
+    <id>934</id>
+    <species>Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KUR</code>
+    <name>Bursa, Mudanya, Kur?unlu Kilisesi (St. Albercius)</name>
+    <id>416</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\KUR</filename>
+    <location>40°22'N 28°52'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KUS</code>
+    <name>Trabzon, Maçka, Ku?tul Monastery</name>
+    <id>931</id>
+    <species>Quercus, Castanea, Tilia, Taxus baccata, Juniperus(?)</species>
+    <type>2</type>
+    <filename>G:\DATA\KUS</filename>
+    <location>40°51'N 39°37'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KUT</code>
+    <name>Kütahya, Castle</name>
+    <id>143</id>
+    <species>Quercus, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\KUT</filename>
+    <location>39°25'N 29°59'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KVI</code>
+    <name>?stanbul, Beyo?lu, Karaköy Vapur ?skelesi</name>
+    <id>175</id>
+    <species>Quercus and Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\KVI</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KZH</code>
+    <name>Ankara, (K?z?lcahamam), Çamkoru Ara?t?rma Orman?</name>
+    <id>606</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\KZH</filename>
+    <location>40°28'N 32°39'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KZK</code>
+    <name>Aksaray, Güzelyurt, K?z?lkilise</name>
+    <id>468</id>
+    <species>Ulmus</species>
+    <type>2</type>
+    <filename>G:\DATA\KZK</filename>
+    <location>38°17'N 34°23'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>KZL</code>
+    <name>Samsun, Bafra, K?z?l?rmak Riverbed</name>
+    <id>252</id>
+    <species>Quercus</species>
+    <type>1</type>
+    <filename>G:\DATA\KZL</filename>
+    <location>41°34'N 35°55'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>LID</code>
+    <name>Urfa, Lidar Hüyük</name>
+    <id>163</id>
+    <species>Juniperus, Picea, Populus, Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\LID</filename>
+    <location>37°34'N 38°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>LIM</code>
+    <name>Antalya, Limyra, Byzantine and Late Roman</name>
+    <id>507</id>
+    <species>Fraxinus and Acer</species>
+    <type>3</type>
+    <filename>G:\DATA\LIM</filename>
+    <location>36°23'N 30°8'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>LMT</code>
+    <name>?zmir, Limantepe</name>
+    <id>835</id>
+    <species>Quercus, Conifer</species>
+    <type>3</type>
+    <filename>G:\DATA\LMT</filename>
+    <location>38°18'N 26°46'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MAD</code>
+    <name>Ayd?n, Çine, Madran Da??, Çokrak + Inedik Mevkii</name>
+    <id>609</id>
+    <species>Pinus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\MAD</filename>
+    <location>37°36'N 28°4'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MAH</code>
+    <name>Kastamonu, Kasabaköy, Mahmut Bey Camii</name>
+    <id>237</id>
+    <species>Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\MAH</filename>
+    <location>41°22'N 33°45'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MAS</code>
+    <name>Tokat, Ma?at Hüyük (formerly MST)</name>
+    <id>160</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\MAS</filename>
+    <location>40°18'N 35°53'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MCB</code>
+    <name>Marmara Adasi, Çamalt? Burnu I Shipwreck</name>
+    <id>310</id>
+    <species>Pinus, Quecus</species>
+    <type>2</type>
+    <filename>G:\DATA\MCB</filename>
+    <location>40°38'N 27°43'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MCK</code>
+    <name>Malatya, Çavu?o?lu Kilise</name>
+    <id>244</id>
+    <species>Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\MCK</filename>
+    <location>38°21'N 38°20'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MEL</code>
+    <name>Ordu, Melet Irma?? (Riverbed)</name>
+    <id>152</id>
+    <species>Castanea</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MEV</code>
+    <name>Konya, Mevlâna Müzesi, Semahane</name>
+    <id>174</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\MEV</filename>
+    <location>37°52'N 32°31'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MID</code>
+    <name>Eski?ehir, Midas ?ehri, Kay?köyü (Orman)</name>
+    <id>326</id>
+    <species>Juniperus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\MID</filename>
+    <location>39°12'N 43°0'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MIH</code>
+    <name>Eski?ehir, Mihal?çç?k, Ard?çl?k (Orman)</name>
+    <id>426</id>
+    <species>Juniperus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\MIH</filename>
+    <location>39°52'N 31°30'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MIL</code>
+    <name>Miletos, Athena Temple (LBA)</name>
+    <species>Pinus, Buxus, Quercus, Olea</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MMS</code>
+    <name>Manisa, Sardis, Monumental Mudbrick Structure</name>
+    <id>345</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\MMS</filename>
+    <location>38°26'N 28°0'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MOL</code>
+    <name>Elaz??, Mollakendi, IV. Murat Camii</name>
+    <species>Populus?</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MRT</code>
+    <name>Antalya, Akseki, Murtiçi</name>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MTA</code>
+    <name>Kastamonu, Küre, Bakibaba Mevkii (Maden Tetkik Arama Enst.) (DATA ONLY - Christiansen-Weniger)</name>
+    <id>137</id>
+    <species>Pinus nigra</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MUC</code>
+    <name>Malatya, Eski Malatya, Ulu Camii</name>
+    <species>(No Samples Yet Collected)</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>MUG</code>
+    <name>Mu?la, Y?lanl?, Forest</name>
+    <id>548</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\MUG</filename>
+    <location>37°12'N 28°22'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>NAC</code>
+    <name>Ni?de, Alaettin Camii</name>
+    <id>251</id>
+    <species>Conifer, Populus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>OFB</code>
+    <name>Trabzon, Of, Bölümlü, Mithatpa?a, Camii</name>
+    <id>561</id>
+    <species>Pinus, Abies, Picea, Quercus, Castanea, Olea</species>
+    <type>2</type>
+    <filename>G:\DATA\OFB</filename>
+    <location>40°57'N 40°17'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>OLT</code>
+    <name>Erzurum, Oltu Orman?</name>
+    <id>125</id>
+    <species>Pinus silvestris</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\OLT</filename>
+    <location>40°33'N 41°59'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ORD</code>
+    <name>Ordu, Boztepe Köyü, Akçaova ?rma?? (DS?)</name>
+    <id>352</id>
+    <species>Ulmus?</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\ORD</filename>
+    <location>40°59'N 37°52'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ORD</code>
+    <name>Ordu, Çamba??, Gerceovas? Mevkii (Orman GM)</name>
+    <id>352</id>
+    <species>Picea orientalis</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\ORD</filename>
+    <location>40°59'N 37°52'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ORT</code>
+    <name>Çorum, Ortaköy (Hittite)</name>
+    <id>519</id>
+    <species>Cedrus libani</species>
+    <type>3</type>
+    <filename>G:\DATA\ORT</filename>
+    <location>40°17'N 35°16'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>OUI</code>
+    <name>Ordu, Ünye, ?kizce, Eski Cami</name>
+    <id>452</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\OUI</filename>
+    <location>41°8'N 37°17'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>OYL</code>
+    <name>Gaziantep, Oylum Hüyük</name>
+    <id>227</id>
+    <species>Populus and Buxus?</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>PAM</code>
+    <name>Denizli, Pamukkale, Roman Bath</name>
+    <id>320</id>
+    <species>Pinus and diffuse porous</species>
+    <type>3</type>
+    <filename>G:\DATA\PAM</filename>
+    <location>37°55'N 29°8'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>PAN</code>
+    <name>?stanbul, Pantocrator (Zeyrek Camii)</name>
+    <id>734</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\PAN</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>PEL</code>
+    <name>Bursa, Mudanya, Ayani, St. John Pelekete</name>
+    <id>316</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\PEL</filename>
+    <location>40°22'N 28°52'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>PER</code>
+    <name>?zmir, Pergamon, Trajaneum, Citadel</name>
+    <id>135</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\PER</filename>
+    <location>39°7'N 27°11'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>PIN</code>
+    <name>Çanakkale, P?narba??, Kara Menderes (Scamander) River, bridges and village's oak tree</name>
+    <id>417</id>
+    <species>Quercus, Pinus</species>
+    <type>4</type>
+    <filename>G:\DATA\PIN</filename>
+    <location>39°53'N 26°15'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>PNZ</code>
+    <name>?zmir, Menemen, Panaztepe</name>
+    <id>635</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\PNZ</filename>
+    <location>38°35'N 27°3'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>POR</code>
+    <name>Ni?de, Porsuk, Uluk??la (1-99)</name>
+    <id>151</id>
+    <type>3</type>
+    <filename>G:\DATA\POR</filename>
+    <location>37°33'N 34°30'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>POR</code>
+    <name>Ni?de, Porsuk, Uluk??la (100-199)</name>
+    <id>551</id>
+    <species>Juniperus, Pinus, Cedrus</species>
+    <type>3</type>
+    <filename>G:\DATA\POR</filename>
+    <location>37°33'N 34°30'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>RUM</code>
+    <name>?stanbul, Rumeli Hisar</name>
+    <id>834</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\RUM</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SAG</code>
+    <name>Burdur, Sagalassos (Roman)</name>
+    <id>615</id>
+    <species>Cedrus, Juniper, Pinus,Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\SAG</filename>
+    <location>37°42'N 30°32'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SAK</code>
+    <name>Ankara, Sakarya River near Gordion</name>
+    <id>706</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\SAK</filename>
+    <location>39°38'N 32°0'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SAL</code>
+    <name>Antalya, Akseki, Murtiçi, Salamut Yaylas?</name>
+    <id>707</id>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\SAL</filename>
+    <location>37°1'N 31°48'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SAR</code>
+    <name>Eski?ehir, Sarayköy (Orman)</name>
+    <id>526</id>
+    <species>Juniperus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\SAR</filename>
+    <location>39°51'N 31°46'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SBB</code>
+    <name>Manisa, Building B (south of)</name>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SCA</code>
+    <name>Çanakkale, Scamander Riverbed  (SEE PIN=P?narba??)</name>
+    <species>CHECK</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SEB</code>
+    <name>?ebinkarahisar, ?çkale</name>
+    <species>Conifer</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SEM</code>
+    <name>?emsiyetepe</name>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SEN</code>
+    <name>Erzurum, ?enkaya ??letmesi, P?nar Bölgesi</name>
+    <id>425</id>
+    <species>Pinus silvestris</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SGD</code>
+    <name>Sinop, Göktepe, Daztepe Mevkisi</name>
+    <species>Pinus silvestris</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SIF</code>
+    <name>Sivas, ?ifaiye Medrese</name>
+    <id>158</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SIF</filename>
+    <location>39°44'N 37°1'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SIN</code>
+    <name>Sinop, City Walls </name>
+    <id>257</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SIN</filename>
+    <location>42°1'N 35°8'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SIR</code>
+    <name>Konya, S?rçal? Medrese, subterranean</name>
+    <id>274</id>
+    <species>Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\SIR</filename>
+    <location>37°52'N 32°31'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SKM</code>
+    <name>Kars, Sar?kam?? Orman?</name>
+    <id>236</id>
+    <species>Pinus silvestris</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\SKM</filename>
+    <location>40°18'N 42°28'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SOF</code>
+    <name>?stanbul, Ayasofya (1-99)</name>
+    <id>134</id>
+    <species>Quercus, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\SOF</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SOF</code>
+    <name>?stanbul, Ayasofya (199-199)</name>
+    <id>634</id>
+    <species>Quercus, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\SOF</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SOS</code>
+    <name>Erzurum, Sos Höyük</name>
+    <id>625</id>
+    <species> Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\SOS</filename>
+    <location>39°57'N 41°30'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SRC</code>
+    <name>Mu?la, Marmaris, Serçe Liman? (shipwreck)</name>
+    <id>448</id>
+    <species>Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\SRC</filename>
+    <location>36°51'N 28°17'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SRD</code>
+    <name>Sardis, Synagogue/Byzantine Shops</name>
+    <id>145</id>
+    <species>Conifer (Cupressus?)</species>
+    <type>3</type>
+    <filename>G:\DATA\SRD</filename>
+    <location>38°26'N 28°0'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SRK</code>
+    <name>Kars, Sar?kam?? Boyal? Büyük Kumru</name>
+    <id>336</id>
+    <species>Pinus silvestris</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\SRK</filename>
+    <location>40°18'N 42°28'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SSF</code>
+    <name>Sinop, Soyuk, F?nd?kl?düz Mevkii</name>
+    <species>Abies and Pinus sil.</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>STJ</code>
+    <name>?zmir, Selçuk, Ayasuluk (St. Jean) (EBA)</name>
+    <id>735</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\STJ</filename>
+    <location>37°58'N 27°22'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SUG</code>
+    <name>Trabzon, Of, Sugeldi Köyü</name>
+    <id>461</id>
+    <species>Castanea, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\SUG</filename>
+    <location>40°57'N 40°17'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SUM</code>
+    <name>Trabzon, Maçka, Sumela Monastery</name>
+    <id>961</id>
+    <species>Castanea, Pinus, Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\SUM</filename>
+    <location>40°51'N 39°37'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>SUN</code>
+    <name>Ni?de, Sungurbey Camii</name>
+    <id>351</id>
+    <species>Cedrus</species>
+    <type>2</type>
+    <filename>G:\DATA\SUN</filename>
+    <location>37°58'N 34°42'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TAS</code>
+    <name>Konya, Ak?ehir, Ta? Medrese and Camii</name>
+    <id>542</id>
+    <species>Juniperus, Pinus, Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TAS</filename>
+    <location>38°21'N 31°25'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TAT</code>
+    <name>Afyon, Dinar, Tatarl? Tumulus (formerly DIN)</name>
+    <id>603</id>
+    <species>Juniperus, Cedrus</species>
+    <type>3</type>
+    <filename>G:\DATA\TAT</filename>
+    <location>38°4'N 30°10'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TEP</code>
+    <name>Elaz??, Alt?nova, Tepecik</name>
+    <id>223</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\TEP</filename>
+    <location>38°39'N 39°13'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TER</code>
+    <name>Samsun, Terme, Merkez Pazar Camii</name>
+    <id>455</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TER</filename>
+    <location>41°12'N 36°57'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TFS</code>
+    <name>?stanbul, Tekfur Saray? (PART OF IT MISSING IN ACTION)</name>
+    <id>434</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TFS</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>THR</code>
+    <name>K?rklareli, Thrace, Tombs</name>
+    <id>139</id>
+    <species>Abies</species>
+    <type>3</type>
+    <filename>G:\DATA\THR</filename>
+    <location>41°44'N 27°13'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TIL</code>
+    <name>Adiyaman, Tille Hüyük</name>
+    <id>102</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\TIL</filename>
+    <location>37°43'N 38°53'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TIR</code>
+    <name>Bursa, Mudanya, Tirilye, (Zeytinba??), Fatih Camii</name>
+    <id>116</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TIR</filename>
+    <location>40°23'N 28°47'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TIT</code>
+    <name>Urfa, Titri? Hüyük</name>
+    <species>Pinus and Ulmus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TKA</code>
+    <name>Tokat, Karaoluk, A?aca A?açl? Mevkii, mine prop</name>
+    <id>260</id>
+    <species>(MISSING IN ACTION)</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TKI</code>
+    <name>Bolu, Gerede, Keçi Kale</name>
+    <id>214</id>
+    <species>Pinus</species>
+    <filename>G:\DATA\TKI</filename>
+    <location>40°47'N 32°12'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TLB</code>
+    <species>Populus, Olea europaea</species>
+    <name>Tilbes Höyük</name>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TOK</code>
+    <name>Tokat, Gök Medrese </name>
+    <id>360</id>
+    <species>Quercus, Pinus(?)</species>
+    <type>2</type>
+    <filename>G:\DATA\TOK</filename>
+    <location>40°20'N 36°32'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TOP</code>
+    <species>Conifer</species>
+    <name>Toprakkale ??? (WHICH? --no collection card)</name>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TOR</code>
+    <name>Gümü?hane, Torul ??letmesi, var. Bölgeler</name>
+    <id>129</id>
+    <species>Pinus, Abies, Picea</species>
+    <type>1</type>
+    <filename>G:\DATA\TOR</filename>
+    <location>45°27'N 12°20'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TOR</code>
+    <name>Trabzon, Torul ??letmesi, Kurtun Bölgesi</name>
+    <id>161</id>
+    <species>Picea orientalis</species>
+    <type>1</type>
+    <filename>G:\DATA\TOR</filename>
+    <location>45°27'N 12°20'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TRO</code>
+    <name>Çanakkale, Troy I (1)</name>
+    <id>517</id>
+    <species>Pinus brutia</species>
+    <type>3</type>
+    <filename>G:\DATA\TRO</filename>
+    <location>39°56'N 26°12'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TRO</code>
+    <name>Çanakkale, Troy II (2-99)</name>
+    <id>617</id>
+    <species>Pinus brutia, Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\TRO</filename>
+    <location>39°56'N 26°12'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TRO</code>
+    <name>Çanakkale, Troia (100-199)</name>
+    <id>717</id>
+    <species>Pinus brutia, Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\TRO</filename>
+    <location>39°56'N 26°12'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TSP</code>
+    <name>Tarsus, St. Paul</name>
+    <id>333</id>
+    <species>Cedrus, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\TSP</filename>
+    <location>36°55'N 34°55'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TUG</code>
+    <name>Ankara, Tu?rulhöyük (Yenido?an, Karahüyük, Hacitu?rul)</name>
+    <id>206</id>
+    <species>Conifer</species>
+    <type>3</type>
+    <filename>G:\DATA\TUG</filename>
+    <location>39°36'N 32°8'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>TUL</code>
+    <name>Elaz??, Tülintepe</name>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>UAT</code>
+    <name>U?ak, Derbent, Karakaya Mah., Asartepe</name>
+    <id>464</id>
+    <species>Pinus, Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\UAT</filename>
+    <location>38°46'N 29°12'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>UKK</code>
+    <name>U?ak, Kaya??l Köyü, Necropolis (Lydian)</name>
+    <id>264</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\UKK</filename>
+    <location>38°38'N 29°18'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>UZF</code>
+    <name>Trabzon, Çaykara, Uzungöl, Filak Mahallesi, Camii</name>
+    <id>861</id>
+    <species>Picea</species>
+    <type>2</type>
+    <filename>G:\DATA\UZF</filename>
+    <location>40°37'N 40°17'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>VAN</code>
+    <name>Van, Kale, Süleyman Han Camii, Kule Geri?i</name>
+    <id>365</id>
+    <species>Populus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>VEZ</code>
+    <name>Bilicek, Vezirhan</name>
+    <id>211</id>
+    <species>Quercus, Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\VEZ</filename>
+    <location>40°14'N 30°0'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>VIO</code>
+    <name>K?rklareli, Vize, Orman?</name>
+    <id>339</id>
+    <species>Quercus</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>VIZ</code>
+    <name>K?rklareli, Vize, Küçük Ayasofya (Süleyman Pa?a Camii)</name>
+    <id>239</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\VIZ</filename>
+    <location>41°34'N 27°45'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>WWI</code>
+    <name>Çanakkale, World War I mine-net float?</name>
+    <species>CHECK</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>YAK</code>
+    <name>Ankara, Yakupaptalköyü (Orman)</name>
+    <id>906</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\YAK</filename>
+    <location>39°48'N 32°58'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>YAH</code>
+    <name>Çorum, Alaca, Eskiyapar, Hüseyin Dede Türbesi</name>
+    <id>319</id>
+    <species>Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\YAH</filename>
+    <location>40°10'N 34°46'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>YAP</code>
+    <name>Çorum, Eskiyapar</name>
+    <id>219</id>
+    <species>Pinus silvestris/nigra</species>
+    <type>3</type>
+    <filename>G:\DATA\YAP</filename>
+    <location>40°10'N 34°46'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>YAR</code>
+    <name>Yarak?n (DATA ONLY - Christiansen-Weniger)</name>
+    <id>137</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\YAR</filename>
+    <location>41°0'N 33°47'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>YAS</code>
+    <name>Mu?la, Yass?ada Byzantine Shipwreck</name>
+    <id>148</id>
+    <species>Cupressus</species>
+    <type>3</type>
+    <filename>G:\DATA\YAS</filename>
+    <location>36°57'N 27°13'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>YAY</code>
+    <name>Samsun, Çar?amba, Yayc?lar Mosque</name>
+    <id>755</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\YAY</filename>
+    <location>41°12'N 36°41'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>YBY</code>
+    <name>Afyon, Çay, Yusuf bin Yakub Medresesi</name>
+    <id>503</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\YBY</filename>
+    <location>38°36'N 31°2'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>YIL</code>
+    <name>Bursa, Y?ld?r?m Daru??ifasi</name>
+    <id>916</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\YIL</filename>
+    <location>40°11'N 29°4'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>YOK</code>
+    <name>Yozgat, Ayd?nc?k, Kaletepe</name>
+    <id>366</id>
+    <species>Pinus, Quercus, Populus, Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\YOK</filename>
+    <location>40°8'N 35°17'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>YOT</code>
+    <name>Yass?ada, Ottoman Shipwreck (TO BE CONVERTED FROM YAS)</name>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\YOT</filename>
+    <location>36°57'N 27°13'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>YOZ</code>
+    <name>Yozgat, Çaml? Milli Parki Orman?</name>
+    <id>166</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\YOZ</filename>
+    <location>39°47'N 34°49'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>YRM</code>
+    <name>Malatya (Eski Malatya), Yar?mtepe</name>
+    <id>144</id>
+    <species>Conifer, Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\YRM</filename>
+    <location>38°26'N 38°23'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ZEY</code>
+    <name>?stanbul, Zeyrek Fazilet Soka?? 20 (See IST)</name>
+    <id>934</id>
+    <species>Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ZGM</code>
+    <name>Gaziantep, Zeugma (Belkis)</name>
+    <species>Diffuse porous</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ZKB</code>
+    <name>Zonguldak, Karabük, Büyükdüz Orman?</name>
+    <id>167</id>
+    <species>Quercus dschoruchensis</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\ZKB</filename>
+    <location>41°12'N 32°37'E</location>
+</site>
+
+<site>
+    <country>TU</country>
+    <code>ZYB</code>
+    <name>Zonguldak, Yenice, Bakraz Bölgesi</name>
+    <id>267</id>
+    <species>Quercus hartwissiana</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\ZYB</filename>
+    <location>41°12'N 32°17'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ACR</code>
+    <name>Corinth, Acrocorinth</name>
+    <id>127</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\ACR</filename>
+    <location>37°55'N 22°53'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ACU</code>
+    <name>In National Museum, Athens</name>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>AFP</code>
+    <name>Arta, Faik Pasha Mosque</name>
+    <id>404</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\AFP</filename>
+    <location>3°8'N 20°58'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>AGO</code>
+    <name>Athens, Agora, Early and Late</name>
+    <id>300</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\AGO</filename>
+    <location>37°58'N 23°43'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>AHD</code>
+    <name>Aiani, Hg. Demetrios</name>
+    <id>526</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\AHD</filename>
+    <location>40°12'N 21°46'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>AHS</code>
+    <name>Andravida, Hg. Sophia</name>
+    <species>Conifer (Juniperus?)</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>AHT</code>
+    <name>Athens, Hg. Theodoroi</name>
+    <id>400</id>
+    <species>Quercus, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\AHT</filename>
+    <location>37°58'N 23°43'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>AIV</code>
+    <name>Mt. Athos, Iviron Monastery</name>
+    <id>248</id>
+    <species>Castanea</species>
+    <type>2</type>
+    <filename>G:\DATA\AIV</filename>
+    <location>40°14'N 24°17'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>AKP</code>
+    <name>Arta, Kato Panaghia Monastery</name>
+    <id>504</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\AKP</filename>
+    <location>39°8'N 20°58'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>AKV</code>
+    <name>Kouvaras (Attica), Hg. Athanasios</name>
+    <id>105</id>
+    <species>Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\AKV</filename>
+    <location>37°50'N 24°6'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>AMF</code>
+    <name>Amphissa, Soter</name>
+    <id>147</id>
+    <species>Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\AMF</filename>
+    <location>38°31'N 22°23'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ANX</code>
+    <name>Thessaly, Livadia, Anthochorion, Greece's Oldest Oak Tree</name>
+    <id>241</id>
+    <species>Quercus</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>APL</code>
+    <name>Apolpena (Leukas), Hodegetria</name>
+    <id>133</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\APL</filename>
+    <location>39°47'N 20°41'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>APN</code>
+    <name>Aghia (Larisa), Hg. Panteleimon</name>
+    <id>230</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\APN</filename>
+    <location>39°43'N 22°44'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ARC</code>
+    <name>Arcadia, Skiritis Forest</name>
+    <id>103</id>
+    <species>Quercus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\ARC</filename>
+    <location>37°22'N 22°10'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ASR</code>
+    <name>Thessaloniki, Assiros</name>
+    <id>261</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\ASR</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ASU</code>
+    <name>Sounion, Poseidon Temple</name>
+    <id>105</id>
+    <species>Buxus (?)</species>
+    <type>3</type>
+    <filename>G:\DATA\ASU</filename>
+    <location>37°39'N 24°0'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ATH</code>
+    <name>Arta, Hg. Theodora</name>
+    <id>304</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\ATH</filename>
+    <location>39°8'N 20°58'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>AVL</code>
+    <name>Arta, Vlacherna Monastery</name>
+    <id>104</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\AVL</filename>
+    <location>39°8'N 20°58'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>BAR</code>
+    <name>Meteora, Moni Barlaam</name>
+    <id>644</id>
+    <species>Quercus, Cupressus</species>
+    <type>2</type>
+    <filename>G:\DATA\BAR</filename>
+    <location>39°43'N 21°37'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>BCO</code>
+    <name>DATA ONLY: Becker and Kromer's subfossil oaks</name>
+    <id>160</id>
+    <species>Quercus</species>
+    <type>4,3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>BEN</code>
+    <name>Athens, Benaki Museum</name>
+    <id>500</id>
+    <species>Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\BEN</filename>
+    <location>37°58'N 23°40'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>BOT</code>
+    <name>Kastoria, Botanio Village</name>
+    <id>922</id>
+    <species>Quercus</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>CAB</code>
+    <name>Chalkidiki, Arnaia, Barbara, Koutri Chorafi Forest</name>
+    <id>148</id>
+    <species>Quercus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\CAB</filename>
+    <location>40°28'N 23°34'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>CAS</code>
+    <name>Crete, Kastelli, Chania, Kydonia (Promised)</name>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>COS</code>
+    <name>Cos, Tsoxas plot (Late Archaic)</name>
+    <species>Olea</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>CRA</code>
+    <name>Crania (Trikala), Holy Cross</name>
+    <id>444</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\CRA</filename>
+    <location>39°34'N 21°46'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>CRF</code>
+    <name>Crania Community Forest, Trikala</name>
+    <id>444</id>
+    <species>Conifer</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>CRN</code>
+    <name>Corona Monastery (Karditsa)</name>
+    <id>121</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\CRN</filename>
+    <location>39°21'N 21°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>CSG</code>
+    <name>Crete, Samaria Gorge National Park</name>
+    <id>149</id>
+    <species>P. brutia, Cupressus sempervirens</species>
+    <type>1</type>
+    <filename>G:\DATA\CSG</filename>
+    <location>46°14'N 16°25'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>DDM</code>
+    <name>Didymoteichon, Vayazit Mosque</name>
+    <id>310</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\DDM</filename>
+    <location>41°21'N 26°28'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>DIO</code>
+    <name>Pieria, Dion</name>
+    <id>138</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\DIO</filename>
+    <location>40°9'N 22°28'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>DIS</code>
+    <name>Kastoria, Dispilio (Neolithic)</name>
+    <id>22</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\DIS</filename>
+    <location>40°31'N 21°15'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>DOD</code>
+    <name>Dodona, Kostaniane, Taxiarchs</name>
+    <id>219</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\DOD</filename>
+    <location>39°32'N 20°45'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>DOL</code>
+    <name>Doleni, Metsovo</name>
+    <id>194</id>
+    <species>Quercus</species>
+    <type>1</type>
+    <filename>G:\DATA\DOL</filename>
+    <location>39°46'N 21°10'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>DOU</code>
+    <name>Doussiko Monastery (Trikala)</name>
+    <id>244</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\DOU</filename>
+    <location>39°34'N 21°46'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>DRI</code>
+    <name>Drisko, Metsovo</name>
+    <id>195</id>
+    <species>Quercus</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>EGN</code>
+    <name>Galataki Monastery (Euboea), (Hg. Nikolaos)</name>
+    <id>211</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\EGN</filename>
+    <location>38°34'N 23°49'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ELF</code>
+    <name>Crete, Elaphonissos</name>
+    <species>Juniperus macrocarpa</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>EOL</code>
+    <name>Elasson, Panaghia Olympiotissa</name>
+    <id>130</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\EOL</filename>
+    <location>39°53'N 22°10'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>FES</code>
+    <name>Crete, Phaistos</name>
+    <id>516</id>
+    <species>Juniperus, Cupressus</species>
+    <type>3</type>
+    <filename>G:\DATA\FES</filename>
+    <location>35°1'N 24°49'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>FLA</code>
+    <name>Florina</name>
+    <id>546</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\FLA</filename>
+    <location>40°46'N 21°23'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>FLG</code>
+    <name>Florina, Prespa, Hg. Georgios Psaradon</name>
+    <id>246</id>
+    <species>Juniperus excelsa,foetidissima</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>FLO</code>
+    <name>Hg. Germanos, Belavoda, Florina</name>
+    <id>146</id>
+    <species>Abies Cephallonica</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>GAS</code>
+    <name>Elis, Gastouni</name>
+    <id>114</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\GAS</filename>
+    <location>37°51'N 21°16'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>GYN</code>
+    <name>Kilkis, Palaeogynaikastro</name>
+    <id>123</id>
+    <species>Quercus (?)</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>HAP</code>
+    <name>Prespa, Hg. Achilleos</name>
+    <id>346</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\HAP</filename>
+    <location>40°47'N 21°3'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>HLK</code>
+    <name>Hosios Loukas Monastery (Stiris, Phokis)</name>
+    <id>207</id>
+    <species>Quercus, Cedrus, Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\HLK</filename>
+    <location>38°23'N 22°42'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>HTR</code>
+    <name>Crete, Haghia Triadha</name>
+    <id>449</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\HTR</filename>
+    <location>35°43'N 24°8'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>IAL</code>
+    <name>Rhodes, Ialysos, Kremasti L.Geo.</name>
+    <species>Conifer, diff. porous</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>IAP</code>
+    <name>Ioannina, Arslan Pasha Mosque and Turbe</name>
+    <id>119</id>
+    <species>Quercus, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\IAP</filename>
+    <location>39°40'N 20°49'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>IKP</code>
+    <name>Ioannina, Kalo Pasha House</name>
+    <id>719</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\IKP</filename>
+    <location>39°40'N 20°49'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>IND</code>
+    <name>Ioannina, Nikolaos Dilios Monastery</name>
+    <id>619</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\IND</filename>
+    <location>39°40'N 20°49'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>INS</code>
+    <name>Ioannina, Nikolaos Spanos Monastery</name>
+    <id>519</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\INS</filename>
+    <location>39°40'N 20°49'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ISK</code>
+    <name>Scamneli Community Forest, Ioannina</name>
+    <id>419</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\ISK</filename>
+    <location>39°47'N 20°48'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ISM</code>
+    <name>Isthmia</name>
+    <id>227</id>
+    <species>Cupressus and Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\ISM</filename>
+    <location>37°54'N 22°56'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ITP</code>
+    <name>Teriachio Forest, Ioannina</name>
+    <id>319</id>
+    <species>Quercus conferta</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\ITP</filename>
+    <location>39°45'N 20°31'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>IVP</code>
+    <name>Ioannina, Veli Pasha Medrese</name>
+    <id>819</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\IVP</filename>
+    <location>39°40'N 20°49'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KAA</code>
+    <name>Kastoria, Hg. Apostoloi</name>
+    <id>822</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\KAA</filename>
+    <location>40°31'N 21°15'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KAD</code>
+    <name>Kastoria, Hg. Demetrios</name>
+    <id>922</id>
+    <species>Quercus and Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\KAD</filename>
+    <location>40°31'N 21°15'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KAN</code>
+    <name>Kastoria, Hg. Anargyroi Varlaam</name>
+    <id>322</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\KAN</filename>
+    <location>40°31'N 21°15'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KAT</code>
+    <name>Katara Pass, Ioannina, Metsovo</name>
+    <id>919</id>
+    <species>Pinus leukodermis</species>
+    <type>1</type>
+    <filename>G:\DATA\KAT</filename>
+    <location>45°47'N 15°58'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KKT</code>
+    <name>Kastoria, Koubelidiki (Koimesis)</name>
+    <id>122</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\KKT</filename>
+    <location>40°31'N 21°15'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KLB</code>
+    <name>Kalambaka, Koimesis (Metropolitan)</name>
+    <id>344</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\KLB</filename>
+    <location>39°43'N 21°37'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KMP</code>
+    <name>Kato Merope, Panaghia</name>
+    <id>719</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\KMP</filename>
+    <location>40°31'N 21°15'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KNK</code>
+    <name>Kastoria, Hg. Nikolaos Kaznitsi</name>
+    <id>222</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\KNK</filename>
+    <location>40°31'N 21°15'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KOG</code>
+    <name>Omorphoklissias (Kastoria), Hg. Georgios</name>
+    <id>522</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\KOG</filename>
+    <location>40°31'N 21°15'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KPM</code>
+    <name>Kastoria, Panaghia Mavriotissa</name>
+    <id>722</id>
+    <species>Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KRE</code>
+    <name>Rhodes, Kremasti (Hell. and Roman)</name>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KRP</code>
+    <name>Koropi (Attica), Metamorphosis</name>
+    <id>305</id>
+    <species>Quercus, Olea</species>
+    <type>2</type>
+    <filename>G:\DATA\KRP</filename>
+    <location>37°53'N 23°52'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KRR</code>
+    <name>Crete, Knossos, Royal Road </name>
+    <id>349</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\KRR</filename>
+    <location>25°8'N 35°20'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KSR</code>
+    <name>Athens, Kaisariani Monastery</name>
+    <id>100</id>
+    <species>Juniperus, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\KSR</filename>
+    <location>37°58'N 23°43'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KST</code>
+    <name>Thessaloniki, Kastanas (Protogeometric)</name>
+    <id>161</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\KST</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KSY</code>
+    <name>Crete, Kato Syme, Kartsidos and Karvounara Forest</name>
+    <id>216</id>
+    <species>Pinus brutia</species>
+    <type>1</type>
+    <filename>G:\DATA\KSY</filename>
+    <location>35°8'N 25°33'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KSY</code>
+    <name>Kato Syme, 9th/8th/6th centuries BC</name>
+    <id>216</id>
+    <species>Conifer (Pinus?), Quercus?</species>
+    <type>3</type>
+    <filename>G:\DATA\KSY</filename>
+    <location>35°8'N 25°33'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KTM</code>
+    <name>Kastoria, Taxiarchis Metropoleos</name>
+    <id>422</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\KTM</filename>
+    <location>40°31'N 21°15'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>KYP</code>
+    <name>Kypseli, Hg. Demetrios (Species I.D. only)</name>
+    <species>Olea</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>LIG</code>
+    <name>Argolis, Ligourio, Hg. Ioannis Eleimon</name>
+    <id>202</id>
+    <species>Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\LIG</filename>
+    <location>37°37'N 23°2'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>LIV</code>
+    <name>Livadia, Paterma Forest, Komotini</name>
+    <id>141</id>
+    <species>Quercus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\LIV</filename>
+    <location>41°14'N 25°25'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>LOU</code>
+    <name>Astros, Moni Loucou (Metamorphosis Soter)</name>
+    <id>103</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\LOU</filename>
+    <location>37°25'N 22°39'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MAK</code>
+    <name>Makri, Hg. Anastasia</name>
+    <id>410</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\MAK</filename>
+    <location>40°51'N 25°46'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MAK</code>
+    <name>Makri</name>
+    <species>Species ID only</species>
+    <type>3</type>
+    <filename>G:\DATA\MAK</filename>
+    <location>40°51'N 25°46'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MAL</code>
+    <name>Crete, Mallia, Quartier Mu, EMII?</name>
+    <id>116</id>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MCC</code>
+    <name>McCabe's Athens House</name>
+    <id>600</id>
+    <species>Quercus</species>
+    <type>4</type>
+    <filename>G:\DATA\MCC</filename>
+    <location>37°58'N 23°43'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MEL</code>
+    <name>Melivia/Karitsa Road, Larisa</name>
+    <id>430</id>
+    <species>Quercus</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MER</code>
+    <name>Argolis, Merbaka, Koimesis</name>
+    <id>102</id>
+    <species>Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\MER</filename>
+    <location>37°38'N 22°44'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MET</code>
+    <name>Meteora, Metamorphosis (Great Meteora)</name>
+    <id>744</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\MET</filename>
+    <location>39°43'N 21°37'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MNS</code>
+    <name>Crete, Rethymnon, Monastiraki</name>
+    <id>816</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\MNS</filename>
+    <location>35°22'N 24°28'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MON</code>
+    <name>Lakonia, Monemvasia</name>
+    <id>129</id>
+    <species>Abies and Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\MON</filename>
+    <location>36°40'N 23°3'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MOX</code>
+    <name>Crete, Mochlos</name>
+    <id>716</id>
+    <species>Pinus and Cupressus</species>
+    <type>3</type>
+    <filename>G:\DATA\MOX</filename>
+    <location>35°11'N 25°54'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MRN</code>
+    <name>Merenda (Attica), Theotokos</name>
+    <id>205</id>
+    <species>Abies, Pinus halepensis</species>
+    <type>2</type>
+    <filename>G:\DATA\MRN</filename>
+    <location>37°53'N 23°51'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MST</code>
+    <name>Mistra</name>
+    <species>CHECK</species>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MVB</code>
+    <name>Melea, Varco Bajo, Ioannina, Metsovo</name>
+    <id>19</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MVR</code>
+    <name>Mavrovouni, Ioannina, Metsovo</name>
+    <id>193</id>
+    <species>Pinus leukodermis</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\MVR</filename>
+    <location>39°46'N 21°10'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MYC</code>
+    <name>Mycenae, Shaft Graves</name>
+    <id>302</id>
+    <species>Pinus(?)</species>
+    <type>3</type>
+    <filename>G:\DATA\MYC</filename>
+    <location>37°44'N 22°44'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>MYT</code>
+    <name>Lesbos, Mytilini</name>
+    <id>132</id>
+    <species>Pinus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>NEM</code>
+    <name>Nemea, Tsoungiza  (Not yet collected)</name>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>OSS</code>
+    <name>Mt. Prophetis Elias (Mt. Ossa) Forest</name>
+    <id>530</id>
+    <species>Abies, Quercus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\OSS</filename>
+    <location>39°47'N 22°24'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PAL</code>
+    <name>Palamas (Karditsa), Hg. Athanasios</name>
+    <id>321</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>:\DATA\PAL</filename>
+    <location>39°28'N 22°4'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PAR</code>
+    <name>Athens, Parthenon</name>
+    <id>200</id>
+    <species>Juniperus, Cupressus</species>
+    <type>3</type>
+    <filename>G:\DATA\PAR</filename>
+    <location>37°58'N 23°43'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PET</code>
+    <name>Katafygio (Karditsa), Moni Petra</name>
+    <id>421</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\PET</filename>
+    <location>39°21'N 21°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PHE</code>
+    <name>Pherrai, Kosmosoteira</name>
+    <id>110</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\PHE</filename>
+    <location>40°54'N 26°10'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PHI</code>
+    <name>Mt. Athos, Philotheou Monastery</name>
+    <id>448</id>
+    <species>Castanea</species>
+    <type>2</type>
+    <filename>G:\DATA\PHI</filename>
+    <location>24°18'N 40°15'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PLA</code>
+    <name>Macedonia, Pella [Agora]</name>
+    <id>61</id>
+    <species>Quercus, Fagus, Ulmus, Fraxinus</species>
+    <type>3</type>
+    <filename>G:\DATA\PLA</filename>
+    <location>40°45'N 22°32'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PLK</code>
+    <name>Crete, Palaikastro</name>
+    <id>616</id>
+    <species>Pinus and Cupressus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>POP</code>
+    <name>Porta Panaghia (Trikala)</name>
+    <id>144</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\POP</filename>
+    <location>39°34'N 21°46'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PPG</code>
+    <name>Salatoura Papagianni, Grevena, Kranea</name>
+    <id>126</id>
+    <species>Pinus leukodermis</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\PPG</filename>
+    <location>39°55'N 21°17'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PRD</code>
+    <name>Serres, Prodromos Monastery</name>
+    <id>243</id>
+    <species>Quercus, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\PRD</filename>
+    <location>41°5'N 23°31'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PRNAB</code>
+    <name>Parnassos Forest, Boeotia 1</name>
+    <id>107</id>
+    <species>Abies borisii-regis</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PRNPN</code>
+    <name>Parnassos Forest, Boeotia1</name>
+    <id>107</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PRS</code>
+    <name>Crete, Poros, LMIA</name>
+    <id>216</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\PRS</filename>
+    <location>20°19'N 25°7'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PSK</code>
+    <name>Chalkis (Euboea), Hg. Paraskevi</name>
+    <id>111</id>
+    <species>Quercus, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\PSK</filename>
+    <location>38°34'N 23°49'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PTA</code>
+    <name>Arta, Parigoritissa</name>
+    <id>204</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\PTA</filename>
+    <location>39°8'N 20°58'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PTH</code>
+    <name>Pythion, Castle</name>
+    <id>210</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\PTH</filename>
+    <location>41°23'N 26°36'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PYL</code>
+    <name>Messenia, Pylos, Palace of Nestor</name>
+    <species>Quercus, Conifer</species>
+    <type>3</type>
+    <filename>G:\DATA\PYL</filename>
+    <location>36°55'N 21°43'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>PYR</code>
+    <name>Crete, Myrtos-Pyrgos</name>
+    <id>316</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\PYR</filename>
+    <location>35°4'N 24°49'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>REN</code>
+    <name>Rendina Monastery (Karditsa)</name>
+    <id>221</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\REN</filename>
+    <location>39°21'N 21°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>RET</code>
+    <name>Crete, Rethymnon, Amari, Pantanassa, Eremokliseis</name>
+    <id>249</id>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ROD</code>
+    <name>Rhodes, Trianda (Bronze Age)</name>
+    <species>Quercus, Olea</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ROS</code>
+    <name>Meteora, Rossanou Monastery</name>
+    <id>544</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\ROS</filename>
+    <location>39°43'N 21°37'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SAM</code>
+    <name>Samothrace, Mts. Hg. Georgios and Phengari</name>
+    <id>510</id>
+    <species>Quercus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\SAM</filename>
+    <location>40°28'N 25°30'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SCOAB</code>
+    <name>Grammos Forest, Scotida Section, Kastoria</name>
+    <id>622</id>
+    <species>Abies cephalonica</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SCOPN</code>
+    <name>Grammos Forest, Scotida Section, Kastoria</name>
+    <id>622</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SEX</code>
+    <name>Crete, Knossos, Stratigraphic Museum Extension</name>
+    <id>416</id>
+    <species>Q. Coccifera,Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\SEX</filename>
+    <location>25°8'N 35°20'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SHP</code>
+    <name>Siatista, Hg. Paraskevi</name>
+    <id>226</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SHP</filename>
+    <location>40°16'N 21°33'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SID</code>
+    <name>Thrace, Sidherokastro</name>
+    <id>643</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SID</filename>
+    <location>41°13'N 23°22'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SIN</code>
+    <name>Sindos</name>
+    <id>751</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\SIN</filename>
+    <location>42°1'N 35°8'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SKN</code>
+    <name>Hg. Nikolaos sta Kambia</name>
+    <id>407</id>
+    <species>Juniperus</species>
+    <type>2</type>
+    <filename>G:\DATA\SKN</filename>
+    <location>38°30'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SKR</code>
+    <name>Skripou (Orchomenos), Theotokos</name>
+    <id>307</id>
+    <species>Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\SKR</filename>
+    <location>38°29'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SMI</code>
+    <name>Samos, Heraion</name>
+    <id>142</id>
+    <species>Conifer (Juniperus?)</species>
+    <type>3</type>
+    <filename>G:\DATA\SMI</filename>
+    <location>37°45'N 27°0'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SMR</code>
+    <name>Messenia, Samarina, Zoodochos Pigi</name>
+    <id>135</id>
+    <species>Quercus, Olea</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SNP</code>
+    <name>Siatista, Archontiko Nerandzopoulou</name>
+    <id>326</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SNP</filename>
+    <location>40°16'N 21°33'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SOT</code>
+    <name>Serres, Orestes Tower</name>
+    <id>543</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SOT</filename>
+    <location>41°5'N 23°31'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SRM</code>
+    <name>Serres, Mustafa Bey Mosque</name>
+    <id>343</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SRM</filename>
+    <location>41°5'N 23°31'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SRS</code>
+    <name>Serres, Mehmet Bey Bosque</name>
+    <id>143</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SRS</filename>
+    <location>41°5'N 23°31'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SRV</code>
+    <name>Servia (Neolithic)</name>
+    <species>Pinus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SRZ</code>
+    <name>Serres, Zincirli Mosque</name>
+    <id>443</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SRZ</filename>
+    <location>41°5'N 23°31'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>STR</code>
+    <name>Arcadia, Neda, Near Sanctuary of Pan, Hg. Strategos</name>
+    <species>Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>SWZ</code>
+    <name>Ambelakia, G. Schwarz House</name>
+    <id>330</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SWZ</filename>
+    <location>37°57'N 23°31'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TAA</code>
+    <name>Thessaloniki, Hg. Antonios</name>
+    <id>151</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TAA</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TAG</code>
+    <name>Thessaloniki, Hg. Georgios (Rotonda)</name>
+    <id>251</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TAG</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TAK</code>
+    <name>Thessaloniki, Hg. Aikaterini</name>
+    <id>218</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TAK</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TAY</code>
+    <name>Lakonia, Taygetos, Palaeopanaghia, Krifoneri</name>
+    <id>229</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\TAY</filename>
+    <location>36°55'N 22°21'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TBH</code>
+    <name>Thessaloniki, Bey Hamam</name>
+    <id>951</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TBH</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TBZ</code>
+    <name>Thessaloniki, Bezesten</name>
+    <id>551</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TBZ</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TCH</code>
+    <name>Thessaloniki, Chortiates Monastery</name>
+    <id>418</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TCH</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TDM</code>
+    <name>Thessaloniki, Hg. Demetrios</name>
+    <id>351</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TDM</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TFS</code>
+    <name>No Identification</name>
+    <species>Quercus</species>
+    <filename>G:\DATA\TFS</filename>
+    <location>41°1'N 28°58'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>THA</code>
+    <name>Thessaloniki, Holy Apostles</name>
+    <id>118</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\THA</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>THE</code>
+    <name>Thera (Santorini), Akrotiri</name>
+    <id>128</id>
+    <species>Conifer (Pinus?)</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>THP</code>
+    <name>Thessaloniki, Heptapyrgion (Yedikule)</name>
+    <id>651</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\THP</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>THS</code>
+    <name>Thessaloniki, Hg. Sophia</name>
+    <id>918</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\THS</filename>
+    <location>40°55'N 22°37'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TKC</code>
+    <name>Trikala, Kurshun Mosque</name>
+    <id>644</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TKC</filename>
+    <location>39°34'N 21°46'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TMT</code>
+    <name>Thessaloniki, Mesimeriani Trench</name>
+    <species>Quercus</species>
+    <type>4</type>
+    <filename>G:\DATA\TMT</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TNM</code>
+    <name>Thessaloniki, Nea Michaniona</name>
+    <id>851</id>
+    <species>(MISSING IN ACTION)</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TNO</code>
+    <name>Thessaloniki, Nikolaos Orphanos</name>
+    <id>318</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TNO</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TNP</code>
+    <name>Thessaloniki, Nea Panaghia</name>
+    <id>818</id>
+    <species>Quercus, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\TNP</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TOT</code>
+    <name>Thessaloniki, Frourio Vardari (Octagonal Tower)</name>
+    <id>451</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TOT</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TPN</code>
+    <name>Thessaloniki, Hg. Panteleimon</name>
+    <id>518</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TPN</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TPX</code>
+    <name>Thessaloniki, Panaghia Chalkeon</name>
+    <id>718</id>
+    <species>Castanea</species>
+    <type>2</type>
+    <filename>G:\DATA\TPX</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TST</code>
+    <name>Thessaloniki, Metamorphosis Soter</name>
+    <id>618</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TST</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TVL</code>
+    <name>Thessaloniki, Vlatadon Monastery</name>
+    <id>18</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TVL</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>TWT</code>
+    <name>Thessaloniki, White Tower</name>
+    <id>718</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TWT</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>VAT</code>
+    <name>Mt. Athos, Vathopedhi Monastery</name>
+    <id>348</id>
+    <species>Castanea</species>
+    <type>2</type>
+    <filename>G:\DATA\VAT</filename>
+    <location>40°19'N 24°11'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>VDM</code>
+    <name>Velvendos, Hg. Demetrios</name>
+    <id>426</id>
+    <species>Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>VOL</code>
+    <name>Magnesia, Volos, House of Kostas Gallis</name>
+    <id>134</id>
+    <species>Ulmus, Castanea</species>
+    <type>2</type>
+    <filename>G:\DATA\VOL</filename>
+    <location>40°37'N 22°55'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>VOM</code>
+    <name>Verroia, Holy Apostles (Old Metropolitan)</name>
+    <id>115</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\VOM</filename>
+    <location>40°31'N 22°11'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>VOO</code>
+    <name>Palatitsa (Verroia), Hg. Demetrios</name>
+    <id>315</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\VOO</filename>
+    <location>40°31'N 22°11'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>VPK</code>
+    <name>Pierion, Korypsianou, Verroia (Forest)</name>
+    <id>415</id>
+    <species>Quercus coccifera</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>VTX</code>
+    <name>Verroia, Tou Christou</name>
+    <id>215</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\VTX</filename>
+    <location>40°31'N 22°11'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>XAN</code>
+    <name>Crete, Khania, Splantzia, Xanion</name>
+    <species>Juniperus, Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>XRY</code>
+    <name>Chrysovitsa Village, Ioannina, Metsovo Forest</name>
+    <id>192</id>
+    <species>Quercus</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\XRY</filename>
+    <location>39°40'N 20°49'E</location>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ZAGPA</code>
+    <name>Zagradenia Forest, Drama</name>
+    <id>108</id>
+    <species>Picea abies</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GR</country>
+    <code>ZAGPN</code>
+    <name>Zagradenia Forest, Drama</name>
+    <id>108</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>AJD</code>
+    <name>Slovenia, Sevnica, Vranje, Ajdovski Gradec</name>
+    <id>801</id>
+    <species>Quercus</species>
+    <type>3,4</type>
+    <filename>G:\DATA\AJD</filename>
+    <location>46°0'N 15°19'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>BED</code>
+    <name>Croatia, Bednja River (Popjac #51)</name>
+    <id>203</id>
+    <species>Quercus</species>
+    <type>4</type>
+    <filename>G:\DATA\BED</filename>
+    <location>46°15'N 16°0'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>BRV</code>
+    <name>Bosnia, Tjentiste, Borovno, Forest</name>
+    <id>823</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\BRV</filename>
+    <location>43°21'N 18°42'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>BUG</code>
+    <name>Bugojno, Forest  (DATA ONLY: Zbornik R.R. Forest File)</name>
+    <id>824</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\BUG</filename>
+    <location>44°2'N 17°26'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>CER</code>
+    <name>Croatia, Cerova?ke Splijc</name>
+    <id>234</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\CER</filename>
+    <location>43°31'N 16°26'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>CRK</code>
+    <name>Croatia, Plitvice, ?orkovo Ulava, Forest</name>
+    <id>821</id>
+    <species>Abies alba</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\CRK</filename>
+    <location>44°51'N 15°18'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>CSG</code>
+    <name>Croatia, Zagreb, ?acovec</name>
+    <id>239</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\CSG</filename>
+    <location>46°14'N 16°25'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>CUC</code>
+    <name>Macedonia, ?u?er, Sv. Nikita</name>
+    <id>507</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\CUC</filename>
+    <location>42°4'N 21°30'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>DEC</code>
+    <name>Kossovo, De?ani, Visoki Monastery</name>
+    <id>403</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\DEC</filename>
+    <location>42°32'N 20°18'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>DGP</code>
+    <name>Croatia, Dugopolje</name>
+    <id>210</id>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>DOL</code>
+    <name>Bosnia, Donja Dolina</name>
+    <id>101</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\DOL</filename>
+    <location>39°46'N 21°10'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>DON</code>
+    <name>Croatia, Zadar, Sv. Donat</name>
+    <id>201</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\DON</filename>
+    <location>44°7'N 15°13'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>DRE</code>
+    <name>Croatia, Brodski Drenovac</name>
+    <id>233</id>
+    <species> Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>DUB</code>
+    <name>Croatia, Dubrovnik, Pala?a Tudizi?</name>
+    <id>220</id>
+    <species>Abies, Picea, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\DUB</filename>
+    <location>42°37'N 18°7'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>DUG</code>
+    <name>Croatia, Dugi?</name>
+    <id>207</id>
+    <species>Quercus, Fraxinus, Ulmus, Juglans</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>GRA</code>
+    <name>Kossovo, Pri?tina, Gra?anica Monastery</name>
+    <id>401</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\GRA</filename>
+    <location>42°36'N 21°12'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>GRZ</code>
+    <name>Bosnia, Grahovo Zdralovac (Neolithic?)</name>
+    <id>105</id>
+    <species>Quercus</species>
+    <type>3,4</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>HVA</code>
+    <name>Croatia, Hvar, Basina (Roman shipwreck)</name>
+    <species>Ulmus?, Pinus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>KAB</code>
+    <name>Croatia, Dubrovnik, Palaca Kaboga</name>
+    <id>224</id>
+    <species>Picea</species>
+    <type>2</type>
+    <filename>G:\DATA\KAB</filename>
+    <location>42°37'N 18°7'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>KAT</code>
+    <name>Croatia, Zagreb, Crkva Sv. Katarine</name>
+    <id>226</id>
+    <species>Picea</species>
+    <type>2</type>
+    <filename>G:\DATA\KAT</filename>
+    <location>45°47'N 15°58'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>KOP</code>
+    <name>Slovenia, Koper</name>
+    <id>219</id>
+    <species>Quercus, Prunus</species>
+    <type>3,2</type>
+    <filename>G:\DATA\KOP</filename>
+    <location>45°32'N 13°43'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>KRA</code>
+    <name>Croatia, Krapina River</name>
+    <id>204</id>
+    <species>Quercus</species>
+    <type>4,3</type>
+    <filename>G:\DATA\KRA</filename>
+    <location>46°11'N 55°52'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>KUP</code>
+    <name>Bosnia, Livno, Kupres, Pustopolje, Tomb #16</name>
+    <id>104</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\KUP</filename>
+    <location>44°0'N 17°16'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>LJB</code>
+    <name>Slovenia, Ljubljansko Barje, Resnik, Bronze Age</name>
+    <id>804</id>
+    <species>Quercus, Buxus</species>
+    <type>3</type>
+    <filename>G:\DATA\LJB</filename>
+    <location>46°2'N 14°31'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>LJG</code>
+    <name>Slovenia, Ljubljanski Grad</name>
+    <id>802</id>
+    <species>Abies</species>
+    <type>2,4</type>
+    <filename>G:\DATA\LJG</filename>
+    <location>46°2'N 14°31'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>MLJ</code>
+    <name>Croatia, Mljet shipwreck</name>
+    <id>217</id>
+    <species>CHECK</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>MUR</code>
+    <name>Slovenia, Murska Sobota, Lendava</name>
+    <species>(MISSING IN ACTION)</species>
+    <type>4</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>NIN</code>
+    <name>Croatia, Nin, Croatian Boat(s)</name>
+    <id>215</id>
+    <species>Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>OHF</code>
+    <name>Macedonia, Ohrid, Fortress of King Samuel</name>
+    <id>502</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\OHF</filename>
+    <location>41°7'N 20°46'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>OHK</code>
+    <name>Macedonia, Ohrid, Sv. Kliment</name>
+    <id>504</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\OHK</filename>
+    <location>41°7'N 20°46'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>OHS</code>
+    <name>Macedonia, Ohrid, Sv. Sofija (1-99)</name>
+    <id>501</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\OHS</filename>
+    <location>41°7'N 20°46'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>OHS</code>
+    <name>Macedonia, Ohrid, Sv. Sofija (100-199)</name>
+    <id>503</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\OHS</filename>
+    <location>41°7'N 20°46'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>OLO</code>
+    <name>Slovenia, Murska Sobota, Lendava (14th c. BC)</name>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>ONO</code>
+    <name>Croatia, Dubrovnik, Onofrije Fountain</name>
+    <id>229</id>
+    <species>Picea, Ulmus</species>
+    <type>2,4</type>
+    <filename>G:\DATA\ONO</filename>
+    <location>42°37'N 18°7'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>OZA</code>
+    <name>Croatia, Ozalj</name>
+    <id>235</id>
+    <species>Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>PAK</code>
+    <name>Croatia, Pakleni shipwreck</name>
+    <id>218</id>
+    <species>Quercus, Ulmus, Buxus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>PFK</code>
+    <name>Kossovo, Pri?tina, ZZSK Building</name>
+    <id>402</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\PFK</filename>
+    <location>42°38'N 21°10'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>PLO</code>
+    <name>Croatia, Istria, Plomin</name>
+    <id>225</id>
+    <species>Abies</species>
+    <type>4,2</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>PMK</code>
+    <name>Macedonia,Prilep,Markovi Kuli and St. Michael Church (DATA ONLY)</name>
+    <id>508</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\PMK</filename>
+    <location>41°19'N 21°33'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>PMR</code>
+    <name>Macedonia, Prilep, St. Michael Church (DATA ONLY - Wa?ny)</name>
+    <id>509</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\PMR</filename>
+    <location>41°19'N 21°33'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>POD</code>
+    <name>Bosnia, Bugojno, Pod</name>
+    <id>102</id>
+    <species>Quercus, Conifer</species>
+    <type>3</type>
+    <filename>G:\DATA\POD</filename>
+    <location>44°2'N 17°26'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>PRC</code>
+    <name>Croatia, Porec, Cathedral, choir bench</name>
+    <species>Diff. porous?</species>
+    <type>2</type>
+    <filename>G:\DATA\PRC</filename>
+    <location>45°13'N 13°37'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>PRM</code>
+    <name>Macedonia, Prilep, Archangels</name>
+    <id>505</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\PRM</filename>
+    <location>21°34'N 41°17'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>PZB</code>
+    <name>Kossovo, Prizren, Bogorodica Ljeviska </name>
+    <id>404</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\PZB</filename>
+    <location>42°12'N 20°43'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>RIP</code>
+    <name>Bosnia, Ripa? bei Biha?</name>
+    <id>103</id>
+    <species>Conifer</species>
+    <type>3</type>
+    <filename>G:\DATA\RIP</filename>
+    <location>44°49'N 15°57'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>RVB</code>
+    <name>Bosnia, Tjentiste, Ravno Borje, Forest</name>
+    <id>822</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\RVB</filename>
+    <location>43°21'N 18°38'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>SCI</code>
+    <name>Croatia, Sçitarjevo (Roman)</name>
+    <id>241</id>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>SIB</code>
+    <name>Croatia, ?ibenik, Dubravice</name>
+    <id>212</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\SIB</filename>
+    <location>43°43'N 15°54'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>SIG</code>
+    <name>Croatia, ?ibenik, Gusteransici Shipwreck</name>
+    <id>213</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\SIG</filename>
+    <location>43°43'N 15°54'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>SIS</code>
+    <name>Croatia, Sisak (Roman Siscia/Segestica)</name>
+    <id>205</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\SIS</filename>
+    <location>45°28'N 16°22'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>SKP</code>
+    <name>Macedonia, Skopje, Nerezi, Panteleimon</name>
+    <id>506</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SKP</filename>
+    <location>41°58'N 21°25'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>SPL</code>
+    <name>Croatia, Slavonska Po?ega, Sveti Lovro</name>
+    <id>221</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SPL</filename>
+    <location>45°19'N 17°40'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>SPX</code>
+    <name>Croatia, Slavonska Po?ega, early 13th century?</name>
+    <id>222</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SPX</filename>
+    <location>45°19'N 17°40'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>STB</code>
+    <name>Croatia, Split, Buvina Gate (in Palace)</name>
+    <id>209</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\STB</filename>
+    <location>43°31'N 16°26'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>STD</code>
+    <name>Croatia, Split, Palace of Diocletian</name>
+    <id>211</id>
+    <species>CHECK</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>TSZ</code>
+    <name>Croatia, Tu??ak, ?umberak</name>
+    <id>238</id>
+    <species>Fagus (?)</species>
+    <type>2,4</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>VAR</code>
+    <name>Croatia, Vara?din</name>
+    <id>236</id>
+    <species>Pinus, Juniperus</species>
+    <type>2,4</type>
+    <filename>G:\DATA\VAR</filename>
+    <location>46°19'N 16°19'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>VIG</code>
+    <name>Croatia, Viganj Shipwreck</name>
+    <id>206</id>
+    <species>Quercus, Conifer</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>VIR</code>
+    <name>Croatia, Virovitica, 13-16th c.? Well/Revetment/Bridge</name>
+    <id>228</id>
+    <species>Quercus, Alnus</species>
+    <type>2</type>
+    <filename>G:\DATA\VIR</filename>
+    <location>45°49'N 17°22'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>VRA</code>
+    <name>Croatia, Vranjic (Roman harbor object)</name>
+    <id>208</id>
+    <species>(MISSING IN ACTION)</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>VRH</code>
+    <name>Slovenia, Vrhnika (Roman)</name>
+    <id>803</id>
+    <species>Quercus, Fagus</species>
+    <type>3</type>
+    <filename>G:\DATA\VRH</filename>
+    <location>45°58'N 14°18'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>VUC</code>
+    <name>Croatia, Vu?edol </name>
+    <id>216</id>
+    <species>Ulmus, Fagus, Acer, Quercus, Rhamnus</species>
+    <type>3</type>
+    <filename>G:\DATA\VUC</filename>
+    <location>45°19'N 19°0'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>ZAD</code>
+    <name>Croatia, Zadar, Relja, Liburnian pd. 5/6th cent. B.C.</name>
+    <id>231</id>
+    <species>Abies</species>
+    <type>2</type>
+    <filename>G:\DATA\ZAD</filename>
+    <location>44°7'N 15°13'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>ZAT</code>
+    <name>Croatia, Zadar, Zaton, Ship #1</name>
+    <id>214</id>
+    <species>Quercus, Conifer</species>
+    <type>3</type>
+    <filename>G:\DATA\ZAT</filename>
+    <location>44°7'N 15°13'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>ZCM</code>
+    <name>Croatia, Zagreb City Museum</name>
+    <id>232</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\ZCM</filename>
+    <location>45°47'N 15°58'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>ZKM</code>
+    <name>Croatia, Zagreb, Klarisa Monastery</name>
+    <id>230</id>
+    <species>Quercus, Picea</species>
+    <type>2</type>
+    <filename>G:\DATA\ZKM</filename>
+    <location>45°47'N 15°58'E</location>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>ZRB</code>
+    <name>Croatia, Zagreb, Ru?er Bo?kovi? Institute tree</name>
+    <id>202</id>
+    <species>Quercus</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>YU</country>
+    <code>ZSM</code>
+    <name>Croatia, Zagreb, San Marko</name>
+    <id>237</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\ZSM</filename>
+    <location>45°47'N 15°58'E</location>
+</site>
+
+<site>
+    <country>AL</country>
+    <code>SOV</code>
+    <name>Sovjan (Not Measured, TFR)</name>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>AR</country>
+    <code>ARG</code>
+    <name>Arg., Lago Ñorquinco (returned to J.Chiment)</name>
+    <species>Austrocedrus chilensis</species>
+</site>
+
+<site>
+    <country>AM</country>
+    <code>HOR</code>
+    <name>Horom (Not Measured, TFR)</name>
+    <species>Conifer</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>BG</country>
+    <code>CTG</code>
+    <name>Cremation Tumular Grave (Zhitosvyat)</name>
+    <id>961</id>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>BG</country>
+    <code>KIT</code>
+    <name>Bourgas, Kiten</name>
+    <id>881</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\KIT</filename>
+    <location>42°16'N 27°46'E</location>
+</site>
+
+<site>
+    <country>BG</country>
+    <code>ROP</code>
+    <name>Ropotamo River, Early Bronze Age, etc.</name>
+    <id>913</id>
+    <species>Quercus, Fraxinus, Ulmus</species>
+    <type>3</type>
+    <filename>G:\DATA\ROP</filename>
+    <location>42°25'N 27°41'E</location>
+</site>
+
+<site>
+    <country>BG</country>
+    <code>SOZ</code>
+    <name>Bourgas, Sozopol (1988 Collection)</name>
+    <id>882</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SOZ</filename>
+    <location>42°25'N 27°41'E</location>
+</site>
+
+<site>
+    <country>BG</country>
+    <code>SOZ</code>
+    <name>Bourgas, Sozopol, Eneolithic (D)</name>
+    <id>911</id>
+    <species>Quercus, Fraxinus, Ulmus</species>
+    <type>3</type>
+    <filename>G:\DATA\SOZ</filename>
+    <location>42°25'N 27°41'E</location>
+</site>
+
+<site>
+    <country>BG</country>
+    <code>SZF</code>
+    <name>Bourgas, Sozopol, Early Bronze Age (F)</name>
+    <id>912</id>
+    <species>Quercus, Fraxinus, Buxus</species>
+    <type>3</type>
+    <filename>G:\DATA\SZF</filename>
+    <location>42°25'N 27°41'E</location>
+</site>
+
+<site>
+    <country>BG</country>
+    <code>URD</code>
+    <name>Bulgaria, Urdoviza Shipwreck</name>
+    <id>11</id>
+    <species>Quercus</species>
+    <type>4</type>
+</site>
+
+<site>
+    <country>CY</country>
+    <code>APK</code>
+    <name>Apliki</name>
+    <id>194</id>
+    <species>Pinus nigra</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>CY</country>
+    <code>KLV</code>
+    <name>Kalavassos (DATA ONLY - Sturt Manning)</name>
+    <id>103</id>
+    <type>3</type>
+</site>
+
+<site>
+    <country>CY</country>
+    <code>KYR</code>
+    <name>Kyrenia Shipwreck</name>
+    <id>196</id>
+    <species>Quercus and Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\KYR</filename>
+    <location>35°19'N 33°19'E</location>
+</site>
+
+<site>
+    <country>CY</country>
+    <code>NIC</code>
+    <name>Nicosia, Medieval House</name>
+    <id>195</id>
+    <species>Pinus nigra</species>
+    <type>2</type>
+    <filename>G:\DATA\NIC</filename>
+    <location>35°10'N 33°22'E</location>
+</site>
+
+<site>
+    <country>CY</country>
+    <code>PTR</code>
+    <name>Pitharahoma Mine Prop</name>
+    <id>199</id>
+    <species>Cupressus</species>
+    <type>4,3</type>
+</site>
+
+<site>
+    <country>CY</country>
+    <code>SKO</code>
+    <name>Skouriotissa Mine</name>
+    <species>Conifer</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>CY</country>
+    <code>TAM</code>
+    <name>Tamassos (DATA ONLY)</name>
+    <id>197</id>
+    <species>Pinus brutia</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>CY</country>
+    <code>TRO</code>
+    <name>Troodos Mountains, Livadhi tou Philippou</name>
+    <id>198</id>
+    <species>Pinus nigra</species>
+    <type>1</type>
+    <filename>G:\DATA\TRO</filename>
+    <location>39°56'N 26°12'E</location>
+</site>
+
+<site>
+    <country>EG</country>
+    <code>ALX</code>
+    <name>Ship in Alexandria Harbor</name>
+    <id>103</id>
+    <species>Conifer</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>EG</country>
+    <code>BMC</code>
+    <name>Pyramid of Sneferu at Dashur</name>
+    <id>107</id>
+    <species>Juniperus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>EG</country>
+    <code>BMC</code>
+    <name>Thebes, Asasit</name>
+    <species>Ficus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>EG</country>
+    <code>BOS</code>
+    <name>Boston Museum of Fine Arts, Coffin of Djehutynakht (See EGY)</name>
+    <id>998</id>
+    <species>Cedrus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>EG</country>
+    <code>BPD</code>
+    <name>Bent Pyramid Dashur</name>
+    <id>105</id>
+    <species>Juniperus, Cedrus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>EG</country>
+    <code>CHI</code>
+    <name>Chicago,Oriental Institute, Coffin of Ipi-ha-ishut-ef (See EGY)</name>
+    <id>102</id>
+    <species>Cedrus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>EG</country>
+    <code>EGY</code>
+    <name>(Arizona) Egypt wood</name>
+    <id>106</id>
+    <species>Cedrus, Acacia</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>EG</country>
+    <code>ELL</code>
+    <name>el-Lisht, Egypt</name>
+    <id>108</id>
+    <species>Ficus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>EG</country>
+    <code>MMA</code>
+    <name>Metropolitan Museum Egyptian Collections</name>
+    <id>104</id>
+    <species>Cedrus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>EG</country>
+    <code>PIT</code>
+    <name>Pittsburgh, Carnegie Museum, Dashur Boat</name>
+    <id>101</id>
+    <species>Cedrus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>GE</country>
+    <code>AXM</code>
+    <name>Kakhetia, Akhmeta, Djaburi Forest</name>
+    <id>299</id>
+    <species>Fagus orientalis</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>GE</country>
+    <code>BAT</code>
+    <name>Kakhetia, Akhmeta, Batsara Forest</name>
+    <id>299</id>
+    <species>Taxus baccata</species>
+    <type>1</type>
+    <filename>G:\DATA\FOREST\BAT</filename>
+    <location>42°0'N 45°10'E</location>
+</site>
+
+<site>
+    <country>GE</country>
+    <code>DIG</code>
+    <name>Tbilisi, Digomi (sub-fossil)</name>
+    <id>299</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\DIG</filename>
+    <location>41°46'N 44°43'E</location>
+</site>
+
+<site>
+    <country>GE</country>
+    <code>MAR</code>
+    <name>Martkopi</name>
+</site>
+
+<site>
+    <country>GE</country>
+    <code>SVA</code>
+    <name>Svaneti, Mestia, House of Mardiani</name>
+    <id>299</id>
+    <type>2</type>
+</site>
+
+<site>
+    <country>GE</country>
+    <code>XAI</code>
+    <name>Svaneti, Mestia, Xai?i</name>
+    <id>299</id>
+    <species>Conifer</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>IR</country>
+    <code>BAS</code>
+    <name>Bastam, Azerbaijan</name>
+    <id>199</id>
+    <species>Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\BAS</filename>
+    <location>36°28'N 55°40'E</location>
+</site>
+
+<site>
+    <country>IR</country>
+    <code>HAF</code>
+    <name>Haftavan Tepe</name>
+    <id>299</id>
+    <species>Juniperus, Populus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>IQ</country>
+    <code>UZN</code>
+    <name>Ur, Ziggurat of Nabonidus</name>
+    <id>187</id>
+    <species>Cedrus (?)</species>
+    <type>3</type>
+    <filename>G:\DATA\UZN</filename>
+    <location>31°19'N 45°30'E</location>
+</site>
+
+<site>
+    <country>IL</country>
+    <code>AQS</code>
+    <name>Jerusalem, al-Aqsa Mosque</name>
+    <id>198</id>
+    <species>Quercus, Conifer</species>
+    <type>2</type>
+    <filename>G:\DATA\AQS</filename>
+    <location>31°46'N 33°13'E</location>
+</site>
+
+<site>
+    <country>IL</country>
+    <code>CSM</code>
+    <name>Caesarea Maritima (Roman)</name>
+    <id>198</id>
+    <species>Quercus, Conifer</species>
+    <type>3</type>
+    <filename>G:\DATA\CSM</filename>
+    <location>32°2'N 34°52'E</location>
+</site>
+
+<site>
+    <country>IL</country>
+    <code>HAZ</code>
+    <name>Hazor</name>
+    <id>198</id>
+    <species>Cedrus</species>
+    <type>3</type>
+    <filename>G:\DATA\HAZ</filename>
+    <location>32°58'N 35°32'E</location>
+</site>
+
+<site>
+    <country>IL</country>
+    <code>MAS</code>
+    <name>Masada, Roman Siege Ramp</name>
+    <species>Tamarisk</species>
+    <filename>G:\DATA\MAS</filename>
+    <location>40°18'N 35°53'E</location>
+</site>
+
+<site>
+    <country>IL</country>
+    <code>RAM</code>
+    <name>Athlit Ram (Roman)</name>
+    <id>198</id>
+    <species>Cedrus (?)</species>
+    <type>3</type>
+    <filename>G:\DATA\RAM</filename>
+    <location>32°40'N 34°49'E</location>
+</site>
+
+<site>
+    <country>IL</country>
+    <code>SAF</code>
+    <name>Safed (DATA ONLY: Measurements from Waisel)</name>
+    <species>Pinus nigra</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>IL</country>
+    <code>TAN</code>
+    <name>Tantura Shipwreck (Byzantine?)</name>
+    <id>123</id>
+    <species>Pinus</species>
+    <type>3,2</type>
+    <filename>G:\DATA\TAN</filename>
+    <location>32°37'N 34°55'E</location>
+</site>
+
+<site>
+    <country>IL</country>
+    <code>TDR</code>
+    <name>Tel Dor</name>
+    <id>199</id>
+    <species>Olea europaea</species>
+    <type>4</type>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>BAR</code>
+    <name>Calabria, Universita di Bari (6 forests from S. Italy)</name>
+    <id>871</id>
+    <species>Mixed species</species>
+    <type>1</type>
+    <filename>G:\DATA\BAR</filename>
+    <location>39°43'N 21°37'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>BDO</code>
+    <name>Bolla D'Orimento (Como) (Neolithic)</name>
+    <id>953</id>
+    <species>Abies</species>
+    <type>3</type>
+    <filename>G:\DATA\BDO</filename>
+    <location>45°46'N 9°4'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>CCT</code>
+    <name>Chianciano Terme (Etruscan)</name>
+    <id>965</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\CCT</filename>
+    <location>43°2'N 11°49'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>CGF</code>
+    <name>Mantova, Rassica del Castel Goffredo</name>
+    <id>971</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\CGF</filename>
+    <location>45°8'N 10°48'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>COG</code>
+    <name>Trento, Fiavé, Monte Cogorno</name>
+    <id>863</id>
+    <species>Pinus silvestris, Larix</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>COM</code>
+    <name>Comacchio (Roman)</name>
+    <id>891</id>
+    <species>Buxus sempervirens</species>
+    <type>3</type>
+    <filename>G:\DATA\COM</filename>
+    <location>44°42'N 12°10'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>CRI</code>
+    <filename>G:\DATA\FOREST\CRI</filename>
+    <location>39°25'N 16°11'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>ERC</code>
+    <name>Herculaneum</name>
+    <id>963</id>
+    <species>Quercus, Abies, Cupressus, Picea</species>
+    <type>3</type>
+    <filename>G:\DATA\ERC</filename>
+    <location>40°47'N 14°20'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>FIA</code>
+    <name>Trento, Fiavé, Palafitte Carera</name>
+    <id>861</id>
+    <species>Larix</species>
+    <type>3</type>
+    <filename>G:\DATA\FIA</filename>
+    <location>46°0'N 10°49'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>FRA</code>
+    <name>Venice, San Francesco del Deserto (see also SFD)</name>
+    <id>952</id>
+    <species>Abies, Pinus</species>
+    <type>2</type>
+    <filename>G:\DATA\FRA</filename>
+    <location>45°27'N 12°20'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>GAR</code>
+    <name>Garigliano River (Roman)</name>
+    <id>811</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\GAR</filename>
+    <location>41°25'N 14°0'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>LAV</code>
+    <name>Brescia, Desenzano del Garda, Lavagnone (Bronze Age)</name>
+    <id>967</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\LAV</filename>
+    <location>45°32'N 13°15'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>LOR</code>
+    <name>Venice, San Lorenzo (See VSL)</name>
+    <id>951</id>
+    <species>Ulmus?, Buxus, Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\LOR</filename>
+    <location>45°27'N 12°20'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>LZV</code>
+    <name>Venice, Lazaretto Vecchio</name>
+    <id>982</id>
+    <species>Fagus?</species>
+    <type>2</type>
+    <filename>G:\DATA\LZV</filename>
+    <location>45°27'N 12°20'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>MAN</code>
+    <name>Brescia, Manerba del Garda (Copper Age)</name>
+    <id>966</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\MAN</filename>
+    <location>45°32'N 13°15'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>MIS</code>
+    <name>Trento, Fiavé, Monte Misone</name>
+    <id>862</id>
+    <species>Larix</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>MOD</code>
+    <name>Modena, Terramare San Ambrogio</name>
+    <id>993</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\MOD</filename>
+    <location>44°40'N 10°55'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>OPP</code>
+    <name>Calabria, Oppido Mamertina</name>
+    <species>(For species ID only)</species>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>PIS</code>
+    <name>Pisa, Roman Ships</name>
+    <id>300</id>
+    <species>Ulmus</species>
+    <type>3</type>
+    <filename>G:\DATA\PIS</filename>
+    <location>43°43'N 10°22'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>POL</code>
+    <filename>G:\DATA\FOREST\POL</filename>
+    <location>39°25'N 16°11'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>POM</code>
+    <name>Pompeii</name>
+    <id>964</id>
+    <species>Cupressus, Abies</species>
+    <type>3</type>
+    <filename>G:\DATA\POM</filename>
+    <location>40°45'N 14°30'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>POZ</code>
+    <name>Torre Pozzillo</name>
+    <id>994</id>
+    <species>Quercus</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>RAV</code>
+    <name>Ravenna, unknown provenience</name>
+    <id>991</id>
+    <species>Abies, Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\RAV</filename>
+    <location>44°25'N 12°11'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>RAV</code>
+    <name>Ravenna, Classe</name>
+    <id>992</id>
+    <species>Larix, Abies</species>
+    <type>3</type>
+    <filename>G:\DATA\RAV</filename>
+    <location>44°25'N 12°11'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>RAV</code>
+    <name>Ravenna, Via dei Poggi</name>
+    <id>993</id>
+    <species>Larix, Abies</species>
+    <type>3</type>
+    <filename>G:\DATA\RAV</filename>
+    <location>44°25'N 12°11'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>RFA</code>
+    <name>Rome, Forum of Augustus</name>
+    <id>111</id>
+    <species>Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\RFA</filename>
+    <location>41°53'N 12°28'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>ROC</code>
+    <name>Lecce, Roca</name>
+    <id>984</id>
+    <species>Quercus robur</species>
+    <type>3</type>
+    <filename>G:\DATA\ROC</filename>
+    <location>40°22'N 18°10'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>SEP</code>
+    <name>Castel Seprio</name>
+    <id>700</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SEP</filename>
+    <location>45°28'N 9°11'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>SFD</code>
+    <name>Venice, San Francesco del Deserto (see also FRA)</name>
+    <id>983</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\SFD</filename>
+    <location>45°27'N 12°20'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>SGR</code>
+    <name>Foggia, Gargano, San Giovanni Rotondo</name>
+    <id>284</id>
+    <species>Quercus</species>
+    <type>1</type>
+    <filename>G:\DATA\SGR</filename>
+    <location>41°27'N 15°34'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>SPI</code>
+    <name>Spina, Cemetery</name>
+    <id>981</id>
+    <species>Quercus,Ulmus</species>
+    <type>3</type>
+    <filename>G:\DATA\SPI</filename>
+    <location>44°49'N 11°34'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>SVT</code>
+    <name>San Vito (Not Measured, TFR)</name>
+    <species>Quercus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>TAR</code>
+    <name>Tarquinia tomb 6255 US 190 No. 37 (Not Measured)</name>
+    <species>Ulmus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>TOR</code>
+    <name>Venice, Torcello Basilica</name>
+    <id>100</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\TOR</filename>
+    <location>45°27'N 12°20'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>VEN</code>
+    <name>Venice, San Marco</name>
+    <id>888</id>
+    <species>Quercus</species>
+    <type>2</type>
+    <filename>G:\DATA\VEN</filename>
+    <location>45°27'N 12°20'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>VRC</code>
+    <name>Verucchio (Rimini), Grave 89 Iron Age</name>
+    <id>992</id>
+    <species>Ulmus, Quercus</species>
+    <type>3</type>
+    <filename>G:\DATA\VRC</filename>
+    <location>43°58'N 12°25'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>VSF</code>
+    <name>(Not Measured)</name>
+    <species>CHECK</species>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>VSL</code>
+    <name>Venice, San Lorenzo (See LOR)</name>
+    <id>889</id>
+    <species>Fraxinus excelsior</species>
+    <type>2</type>
+    <filename>G:\DATA\VSL</filename>
+    <location>45°27'N 12°20'E</location>
+</site>
+
+<site>
+    <country>IT</country>
+    <code>VSM</code>
+    <name>Venice, San Marco Basilica</name>
+    <id>200</id>
+    <species>Alnus, Quercus, Ulmus</species>
+    <type>2</type>
+    <filename>G:\DATA\VSM</filename>
+    <location>45°27'N 12°20'E</location>
+</site>
+
+<site>
+    <country>JO</country>
+    <code>AAK</code>
+    <name>Tell Abu al-Kharaz</name>
+    <id>921</id>
+    <species>Acacia?</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>JO</country>
+    <code>HUM</code>
+    <name>Humeima</name>
+    <species>Fraxinus?</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>JO</country>
+    <code>LEJ</code>
+    <name>El Lejjun Fortress (Not Measured, TFR)</name>
+    <id>800</id>
+    <species>Juniperus, Conifer</species>
+    <type>2,3</type>
+</site>
+
+<site>
+    <country>JO</country>
+    <code>PET</code>
+    <name>Petra, Great Temple (in computer as PETRA, not PET)</name>
+    <id>992</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\PET</filename>
+    <location>39°21'N 21°55'E</location>
+</site>
+
+<site>
+    <country>LB</country>
+    <code>BCH</code>
+    <name>Bcharrê forest site</name>
+    <id>652</id>
+    <species>Cedrus libani</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>LB</country>
+    <code>WAS</code>
+    <name>Wasser Chouf forest site</name>
+    <id>651</id>
+    <species>Cedrus libani</species>
+    <type>1</type>
+</site>
+
+<site>
+    <country>MN</country>
+    <code>MOG</code>
+    <name>Mongolia, Unexcavated Kurgan Burial</name>
+    <id>600</id>
+    <species>Larix siberica</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>MA</country>
+    <code>QES</code>
+    <name>Qsar-es-Seghir</name>
+    <species>MIA???</species>
+    <type>2</type>
+</site>
+
+<site>
+    <country>RU</country>
+    <code>ARZ</code>
+    <name>Arzhan Kurgan</name>
+    <id>500</id>
+    <species>Larix siberica</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>RU</country>
+    <code>KTL</code>
+    <name>Kutlak Fortress (Crimea)</name>
+    <id>199</id>
+    <species>Juniperus</species>
+    <type>3</type>
+    <filename>G:\DATA\KTL</filename>
+    <location>47°40'N 40°46'E</location>
+</site>
+
+<site>
+    <country>RU</country>
+    <code>PAZ</code>
+    <name>Pazyryk Kurgan</name>
+    <id>111</id>
+    <species>Larix siberica</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>RU</country>
+    <code>POK</code>
+    <name>Pokrovka (Kurgan cemeteries)</name>
+    <species>Salix or Populus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>RU</country>
+    <code>SER</code>
+    <name>Serteya (Neolithic)</name>
+    <id>400</id>
+    <species>Abies</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>RU</country>
+    <code>TUE</code>
+    <name>Tuekta Kurgan  </name>
+    <id>300</id>
+    <species>Larix siberica</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>RU</country>
+    <code>UKO</code>
+    <name>Ukok (Kurgans)</name>
+    <id>600</id>
+    <species>Larix siberica</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>ES</country>
+    <code>COR</code>
+    <name>Cordoba, Great Mosque</name>
+    <id>100</id>
+    <species>Cedrus</species>
+    <type>2</type>
+    <filename>G:\DATA\COR</filename>
+    <location>37°52'N 4°46'E</location>
+</site>
+
+<site>
+    <country>SY</country>
+    <code>BAI</code>
+    <name>Tell B'ai (Not Measured)</name>
+    <species>Pinus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>SY</country>
+    <code>BRA</code>
+    <name>Tell Brak</name>
+    <id>200</id>
+    <species>Pinus, Conifer</species>
+    <type>3</type>
+    <filename>G:\DATA\BRA</filename>
+    <location>36°30'N 41°10'E</location>
+</site>
+
+<site>
+    <country>SY</country>
+    <code>CHU</code>
+    <name>Tell Chuera</name>
+    <species>Populus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>SY</country>
+    <code>DIB</code>
+    <name>Dibsi Faraj (Not Measured)</name>
+    <type>3</type>
+</site>
+
+<site>
+    <country>SY</country>
+    <code>EBL</code>
+    <name>Ebla</name>
+    <id>400</id>
+    <species>Cedrus,Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\EBL</filename>
+    <location>36°0'N 38°0'E</location>
+</site>
+
+<site>
+    <country>SY</country>
+    <code>JKL</code>
+    <name>Jebel Khalid</name>
+    <id>500</id>
+    <species>Pinus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>SY</country>
+    <code>MUN</code>
+    <name>Tell Munbaqa</name>
+    <id>300</id>
+    <species>Juniperus, Populus, Taxus</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>SY</country>
+    <code>TUN</code>
+    <name>Tell Tuneinir (Not Measured)</name>
+    <species>Quercus, Olea</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>SY</country>
+    <code>UGA</code>
+    <name>Ugarit, Palace</name>
+    <id>123</id>
+    <species>Quercus, Pinus</species>
+    <type>3</type>
+    <filename>G:\DATA\UGA</filename>
+    <location>34°30'N 34°40'E</location>
+</site>
+
+<site>
+    <country>SY</country>
+    <code>UMM</code>
+    <name>Umm el-Marra</name>
+    <id>600</id>
+    <species>Pinus, Prunus, Olea europaea</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>US</country>
+    <code>CHE</code>
+    <name>Chemung County, Mastodon Site</name>
+    <id>100</id>
+    <species>various, check file</species>
+    <type>3</type>
+</site>
+
+<site>
+    <country>US</country>
+    <code>YAL</code>
+    <name>Yale University, Ben Foster House</name>
+    <type>2</type>
+</site>
+
+
+</sitedb>

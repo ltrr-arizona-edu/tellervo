@@ -1,0 +1,153 @@
+//
+// This file is part of Corina.
+// 
+// Corina is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// Corina is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Corina; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// Copyright 2001 Ken Harris <kbh7@cornell.edu>
+//
+
+package corina.graph;
+
+import corina.Sample;
+import corina.files.WrongFiletypeException;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.XMLReader;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.XMLReaderFactory;
+import org.xml.sax.helpers.DefaultHandler;
+
+// methods for loading and saving a bunch of Graphs
+
+public class LoadSave {
+
+    // save the list of graphs under a given name
+    public static void save(String filename, List graphs) throws IOException {
+	// open for writing
+	BufferedWriter w = new BufferedWriter(new FileWriter(filename));
+
+	// XML header
+	w.write("<?xml version=\"1.0\"?>");
+	w.newLine();
+
+	w.newLine();
+
+	// begin graph
+	w.write("<graphs>");
+	w.newLine();
+
+	w.newLine();
+
+	// each graph
+	for (int i=0; i<graphs.size(); i++) {
+	    w.write("  " + ((Graph) graphs.get(i)).toXML());
+	    w.newLine();
+	}
+
+	w.newLine();
+
+	// end graph
+	w.write("</graphs>");
+	w.newLine();
+
+	// close
+	w.close();
+    }
+
+    // try to load a plot from disk
+    // (synch because temp samples would get overwritten)
+    public static synchronized List load(String filename) throws IOException {
+	// this is load(String) from Grid.java
+	try {
+	    // make a new XML parser
+	    XMLReader xr = XMLReaderFactory.createXMLReader();
+
+	    // ... configure it to use a my SampleHandler ...
+	    GraphHandler loader = new GraphHandler();
+	    xr.setContentHandler(loader);
+	    xr.setErrorHandler(loader);
+
+	    // ... and feed it the file
+	    BufferedReader r = new BufferedReader(new FileReader(filename));
+	    xr.parse(new InputSource(r));
+	} catch (Exception e) { // (SAXException se) {
+	    // if (se.getMessage().equals("Not a grid!"))
+	    throw new WrongFiletypeException();
+	    // else
+	    // throw new IOException("SAX exception: " + se.getMessage());
+	}
+
+	return samples;
+    }
+
+    // temp storage
+    private static List samples;
+
+    // sax2 handler for load()
+    private static class GraphHandler extends DefaultHandler {
+	// state
+	double scale;
+	int xoffset, yoffset;
+	String filename;
+	public void startDocument() {
+	    // start a fresh list
+	    samples = new ArrayList();
+	}
+	public void startElement(String uri, String name, String qName, Attributes atts)
+	    throws SAXException {
+	    // "graphs" is toplevel; ignore it
+	    if (name.equals("graphs"))
+		return;
+
+	    // "graph" is a graph -- get scale/x/y
+	    if (name.equals("graph")) {
+		scale = Double.parseDouble(atts.getValue("scale"));
+		xoffset = Integer.parseInt(atts.getValue("xoffset"));
+		yoffset = Integer.parseInt(atts.getValue("yoffset"));
+	    }
+	}
+	public void characters(char ch[], int start, int length) {
+	    filename = new String(ch, start, length).trim(); // stringify
+	}
+	public void endElement(String uri, String name, String qName) {
+	    // it's a <graph/>, right?
+	    if (!name.equals("graph"))
+		return;
+
+	    try {
+		// construct a Graph
+		Graph g = new Graph(new Sample(filename));
+		g.scale = scale;
+		g.xoffset = xoffset;
+		g.yoffset = yoffset;
+
+		// add to the list
+		samples.add(g);
+	    } catch (IOException ioe) {
+		// can't load?  ignore for now.  FIXME: report error
+	    }
+	}
+    }
+}

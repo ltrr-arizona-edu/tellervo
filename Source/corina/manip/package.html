@@ -1,0 +1,48 @@
+<body>
+
+<p>The <code>edu.cornell.dendro.corina.manip</code> package contains
+all non-index, non-crossdating algorithms for operating on Samples.
+Currently, there are only Clean, Sum, and Log algorithms.</p>
+
+
+
+<h2>How to use in an application</h2>
+
+<p>The use of these classes should be intuitive.  To create a summed
+file from a set of Samples:
+
+<pre>
+Sum s = new Sum(mySampleSet);		// create the sum
+s.run();				// run it
+Sample output = s.getSum();		// extract the summed file
+</pre>
+
+As with some other classes, this is Runnable, but will probably go
+fast enough for most purposes that it doesn't need its own Thread.</p>
+
+<p>Cleaning a summed file operates in-place:
+
+<pre>
+Clean c = new Clean(mySummedSample);	// create a cleaner
+c.run();				// run it
+</pre>
+
+This is even faster than summing, so it's doubtful this will ever need
+threading, even on a slow system.</p>
+
+
+
+<h2>How to add a new manipulation</h2>
+
+<p>There isn't any class heirarchy or underlying scheme to the
+manipulations here.  They happen to be Runnable, so the user-interface
+can run them in a separate thread to be nice, but they don't have to
+be.  I can't anticipate what sort of manipulations might be wanted in
+the future.  Please, try to keep the code clean!</p>
+
+<p><i>Would the index package be more appropriate as a subpackage of
+manip?</i></p>
+
+
+
+</body>

@@ -1,0 +1,71 @@
+<body>
+
+<p>The <code>edu.cornell.dendro.corina</code> package stores Samples
+and support classes.  The following subpackages exist:</p>
+
+<ul>
+
+  <li><code>format</code>, for loading and saving</li>
+
+  <li><code>index</code>, for indexing</li>
+
+  <li><code>cross</code>, for crossdating</li>
+
+  <li><code>manip</code>, for other manipulations</li>
+
+  <li><code>unittest</code>, for unit tests</li>
+
+</ul>
+
+
+
+<h2>Event model</h2>
+
+<p>The event model consists of 3 classes: SampleEvent, SampleListener,
+and SampleAdapter.  Currently, it only deals with
+<code>Sample</code>s, as those are the basic data type of Corina, but
+if necessary it can easily be extended to other types (for example,
+Grids).</p>
+
+<p>Using the event model is simple:</p>
+
+<ol>
+
+    <li>If you're displaying a view of a Sample, implement
+        <code>SmapleListener</code> so you'll know when it changes.</li>
+
+    <li>If you change a Sample, call one of its <code>fire</code>
+        methods so all the listeners will know to update their views.</li>
+
+</ol>
+
+<p>That's it.</p>
+
+<p>One last detail: <code>SampleListener</code> is the interface
+to implement.  If you're not extending another class, though, you
+can extend <code>SampleAdapter</code>, which is just a listener
+with all empty methods.</p>
+
+<p>Currently, the events are:</p>
+
+<ul>
+
+    <li><code>sampleRedated</code>, which means the starting/ending
+        dates have changed</li>
+
+    <li><code>sampleDataChanged</code>, which means that one or more
+        of the numbers of the dataset have changed</li>
+
+    <li><code>sampleMetadataChanged</code>, which means that one or
+        more of the metadata fields has been changed (the element
+        changed, or a key was added or removed)</li>
+
+    <li><code>sampleFormatChanged</code>, which is only used for
+        indexing (or un-indexing) so far</li>
+
+</ul>
+
+
+
+
+</body>

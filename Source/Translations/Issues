@@ -1,0 +1,27 @@
+Problems with l10n in Corina:
+
+- Lots of things aren't localized yet, especially error messages
+(which should probably go away or be rewritten).
+
+- Properties files are always UTF-8.  This is ok for English and
+German, where I've used only ASCII (and Java Unicode escapes), but
+I better figure out how to do real UTF-8 in xemacs soon.
+
+- It better be cleverer than the metadata.  Lots of stuff in the
+metadata properties file is universal, and doesn't belong there.
+
+- Apparently Java provides no support for localizing mnemonics and
+accelerators.  So for every key that needs such things:
+
+	word = Translation
+	word_key = T
+	word_acc = control T
+
+(Fortunately Java can parse "control T" into a KeyEvent.)
+
+- Some parts of the existing properties files aren't actually used, or
+are otherwise poorly organized.  Clean 'em up.
+
+- Use correct quotes!  According to Unicode, U+201C and U+201D are the
+proper curvy-quotes, and U+2019 is an apostrophe (especially important
+in French).  But I don't know if Windows supports this...

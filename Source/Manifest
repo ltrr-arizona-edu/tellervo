@@ -1,0 +1,4 @@
+Main-Class: corina.gui.Startup
+Class-Path: jython.jar postgresql.jar comm.jar kawa.jar gnujaxp.jar jlfgr-1_0.jar
+
+Name: corina/

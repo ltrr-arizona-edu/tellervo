@@ -1,0 +1,122 @@
+-- reset
+DROP TABLE data;
+DROP TABLE count;
+DROP TABLE ranges;
+DROP TABLE meta;
+DROP TABLE elements;
+DROP TABLE sites;
+-- indices get dropped automatically
+
+-- create tables, indices
+CREATE TABLE data (
+	sid	int,
+	decade	int,
+	d0	int,
+	d1	int,
+	d2	int,
+	d3	int,
+	d4	int,
+	d5	int,
+	d6	int,
+	d7	int,
+	d8	int,
+	d9	int
+);
+CREATE INDEX data_index ON data (sid, decade);
+
+CREATE TABLE count (
+	sid	int,
+	decade	int,
+	d0	int,
+	d1	int,
+	d2	int,
+	d3	int,
+	d4	int,
+	d5	int,
+	d6	int,
+	d7	int,
+	d8	int,
+	d9	int
+);
+CREATE INDEX count_index ON count (sid, decade);
+
+CREATE TABLE incr (
+	sid	int,
+	decade	int,
+	d0	int,
+	d1	int,
+	d2	int,
+	d3	int,
+	d4	int,
+	d5	int,
+	d6	int,
+	d7	int,
+	d8	int,
+	d9	int
+);
+CREATE INDEX incr_index ON incr (sid, decade);
+
+CREATE TABLE decr (
+	sid	int,
+	decade	int,
+	d0	int,
+	d1	int,
+	d2	int,
+	d3	int,
+	d4	int,
+	d5	int,
+	d6	int,
+	d7	int,
+	d8	int,
+	d9	int
+);
+CREATE INDEX decr_index ON decr (sid, decade);
+
+-- repeat for any other annual data to record
+
+CREATE TABLE ranges (
+	sid	int,
+	start	int,
+	stop	int,
+	span	int
+);
+CREATE INDEX ranges_index ON ranges (sid);
+
+CREATE TABLE meta (
+	sid		int, -- internal only
+	site		varchar,
+	id		varchar,
+	title		varchar,
+	dating		char,
+	unmeas_pre	int,
+	unmeas_post	int,
+	type		char,
+	species		varchar,
+	format		char,
+	index_type	int,
+	sapwood		int,
+	pith		char,
+	terminal	varchar,
+	continuous	char,
+	quality		varchar,
+	reconciled	char,
+	author		varchar,
+	comments	varchar
+);
+CREATE INDEX meta_index ON meta (sid);
+
+CREATE TABLE elements (
+	sid	int,
+	el	varchar -- or int (sid)?
+);
+
+CREATE TABLE sites (
+	id		int,
+	country		char(2),
+	code		char(3),
+	name		varchar,
+	species		varchar,
+	type		varchar, -- ???
+	location	varchar
+);
+CREATE INDEX site_index ON sites (id);
