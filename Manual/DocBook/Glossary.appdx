@@ -1,0 +1,111 @@
+<appendix id="glossary">
+  <title>Glossary</title>
+
+  <para>This is a glossary of terms used by &corina;.</para>
+
+  <glossary>
+
+      <glossentry>
+	<glossterm>chronology</glossterm>
+	<glossdef><para>...</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>clean</glossterm>
+	<glossdef><para>to make a master look like a single sample by
+	    removing its count, Weiserjahre, and
+	    elements</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>count</glossterm>
+	<glossdef><para>the part of a sample that ...</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>crossdating</glossterm>
+	<glossdef><para>...</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>D-score</glossterm>
+	<glossdef><para>"Dating score".  A combination of
+	    the T-score and trend.</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>element</glossterm>
+	<glossdef><para>in a master, the list of samples that make it up</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>index</glossterm>
+	<glossdef><para>...</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>master</glossterm>
+	<glossdef><para>another name for a sum, usually ...</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>mean sensitivity</glossterm>
+	<glossdef><para>...</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>reconciling</glossterm>
+	<glossdef><para>With two readings of one sample, comparing and
+	    correcting (by re-measuring the actual piece, where
+	    needed) to work out any inconsistencies.  After
+	    reconciliation, all trends should match, and all readings
+	    should be within 3%.</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>redating</glossterm>
+	<glossdef><para>...</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>re-sum</glossterm>
+	<glossdef><para>to re-compute a sum...</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>sample</glossterm>
+	<glossdef><para>...</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>sum</glossterm>
+	<glossdef><para>...</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>SVG</glossterm>
+	<glossdef><para>an open file format for vector graphics;
+	"Scalable Vector Graphics"; similar in function to EPS
+	("Embedded PostScript")</para></glossdef>
+<!-- TODO: add link, "see ...", to the appendix on graphics file formats -->
+      </glossentry>
+
+      <glossentry>
+	<glossterm>T-score</glossterm>
+	<glossdef><para>...</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>trend</glossterm>
+	<glossdef><para>...</para></glossdef>
+      </glossentry>
+
+      <glossentry>
+	<glossterm>Weiserjahre</glossterm>
+	<glossdef><para>the incr/decr...</para></glossdef>
+	<glossdef><para>a crossing algorithm ...</para></glossdef>
+      </glossentry>
+
+  </glossary>
+
+</appendix>

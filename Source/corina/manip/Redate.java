@@ -22,8 +22,7 @@ package corina.manip;
 
 import corina.Range;
 import corina.Sample;
-
-import java.util.ResourceBundle;
+import corina.ui.I18n;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotUndoException;
@@ -31,9 +30,12 @@ import javax.swing.undo.CannotRedoException;
 
 public class Redate extends AbstractUndoableEdit {
 
+    // redate-force-relative (do i ever even use this?)
     public static Redate redate(Sample s, Range r) {
 	return new Redate(s, r, "R");
+	// (shouldn't this be a constant somewhere?)
     }
+
     public static Redate redate(Sample s, Range r, String dating) {
 	return new Redate(s, r, dating);
     }
@@ -45,13 +47,14 @@ public class Redate extends AbstractUndoableEdit {
 	this.oldRange = s.range;
 	this.oldDating = (String) s.meta.get("dating");
 	if (oldDating == null)
-	    oldDating = "R";
+	    oldDating = "R"; // BUG: why do this?
 	this.oldMod = s.isModified();
 
 	this.newRange = range;
 	this.newDating = dating;
 
-	// do it a first time -- can't just call redo() because that calls super.redo()
+	// do it a first time -- can't just call redo() because
+	// that calls super.redo() (REFACTOR)
 	s.range = newRange;
 	s.meta.put("dating", newDating);
 	s.fireSampleRedated();
@@ -83,9 +86,6 @@ public class Redate extends AbstractUndoableEdit {
 	s.fireSampleMetadataChanged(); // for mod flag
     }
     public String getPresentationName() {
-	return msg.getString("redate");
+	return I18n.getText("redate");
     }
-
-    // i18n
-    private static ResourceBundle msg = ResourceBundle.getBundle("RedateBundle");
 }

@@ -28,9 +28,12 @@ import corina.gui.Bug;
 import corina.editor.Editor;
 import corina.util.ColorUtils;
 import corina.util.Platform;
+import corina.prefs.Prefs;
+import corina.ui.Alert;
 
 import java.util.List;
 
+import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.awt.BasicStroke;
 import java.awt.RenderingHints;
@@ -38,6 +41,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Cursor;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
@@ -49,13 +53,16 @@ import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JScrollBar;
-import javax.swing.JOptionPane;
+import javax.swing.Scrollable;
+
+import javax.swing.JScrollPane;
+import java.awt.Container;
 
 public class GrapherPanel extends JPanel
-                                implements KeyListener,
-					   MouseListener,
-					   MouseMotionListener,
-					   AdjustmentListener
+                       implements KeyListener,
+				  MouseListener, MouseMotionListener,
+				  AdjustmentListener,
+				  Scrollable
 {
     /** Width in pixels of one year on the x-axis. */
     public /* final */ int yearSize;
@@ -66,7 +73,7 @@ public class GrapherPanel extends JPanel
     /* private */ public Range bounds;		// bounds for entire graph
 
     // gui
-    private JScrollBar horiz;
+    private JScrollBar horiz=null;
     private JFrame myFrame;			// for setTitle(), dispose()
 
     // (precomputed)
@@ -140,11 +147,22 @@ public class GrapherPanel extends JPanel
 	    horiz.addAdjustmentListener(this);
     }
 
+    private void ensureHorizExists() {
+	if (horiz != null)
+	    return;
+
+	// look for horizontal scrollbar
+	Container pop = getParent().getParent();
+	if (pop instanceof JScrollPane) {
+	    setHoriz(((JScrollPane) pop).getHorizontalScrollBar());
+	}
+    }
+
     // toggle baselines
     public void setBaselinesVisible(boolean visible) {
 	// toggle baselines
 	baselines = !baselines;
-	System.setProperty("corina.graph.baselines", String.valueOf(baselines));
+	Prefs.setPref("corina.graph.baselines", String.valueOf(baselines));
 
 	// add/remove listener so they get updated properly
 	if (!baselines)
@@ -179,6 +197,10 @@ public class GrapherPanel extends JPanel
     private Point dragStart=null;
     private int startX; // initial xoff
     public void mouseDragged(MouseEvent e) {
+        // FIXME: move all the dragStart code into mousePressed
+
+	// TODO: if user drags the axis, scroll?
+
 	// didn't drag from a graph?  sorry.
 	if (clicked == -1)
 	    return;
@@ -194,7 +216,7 @@ public class GrapherPanel extends JPanel
 
 	    // yes, store
 	    dragStart = (Point) e.getPoint().clone();
-	    dragStart.y += ((Graph) graphs.get(n)).yoffset;
+            dragStart.y += ((Graph) graphs.get(n)).yoffset;
 	    startX = ((Graph) graphs.get(n)).xoffset;
 
 	    // select it, too, while we're at it
@@ -211,17 +233,20 @@ public class GrapherPanel extends JPanel
 	    dx -= dx % yearSize;
 	}
 	((Graph) graphs.get(current)).xoffset = startX + (int) dx / yearSize;
+//        recomputeDrops(); -- writeme?
 
 	// repaint
 	updateTitle();
 	repaint();
     }
     private int cursorX=0;
-    // this is bug #199, because mouseMoved events stop being generated as soon as a
-    // mouseExited event is fired.  idea: compute dx, and on mouseExited set cursorX
-    // to (dx<0 ? minCursorX : maxCursorX), but that doesn't take into account moving
-    // off the bottom.  there's got to be a way to track mouseMoved events for the focused
-    // window regardless of the position of the mouse.
+    // this is BUG #199, because mouseMoved events stop being
+    // generated as soon as a mouseExited event is fired.  idea:
+    // compute dx, and on mouseExited set cursorX to (dx<0 ?
+    // minCursorX : maxCursorX), but that doesn't take into account
+    // moving off the bottom.  there's got to be a way to track
+    // mouseMoved events for the focused window regardless of the
+    // position of the mouse.
     public void mouseMoved(MouseEvent e) {
 	// old cursorX
 	int old = cursorX;
@@ -230,21 +255,44 @@ public class GrapherPanel extends JPanel
 	cursorX = e.getX();
 
 	// put it on the nearest gridline
-	if (cursorX % yearSize < yearSize/2)
-	    cursorX -= (cursorX % yearSize);
-	else
-	    cursorX -= (cursorX % yearSize) - yearSize;
+	int distanceLeftToGridline = cursorX % yearSize;
+	boolean roundRight = (distanceLeftToGridline >= yearSize/2);
+	cursorX -= distanceLeftToGridline;
+	if (roundRight)
+	    cursorX += yearSize;
 
-	// refresh! -- but only if necessary
-	if (cursorX != old)
-	    repaint();
+	// refresh, but only if necessary
+	if (cursorX != old) {
+	    // OLD: repaint();
+
+	    // only update part of display that's needed!
+
+	    // vertical line
+	    repaint(old-1, 0, 3, getHeight() - AXIS_HEIGHT);
+	    repaint(cursorX-1, 0, 3, getHeight() - AXIS_HEIGHT);
+
+	    // text
+	    // repaint(old, 0, 50, 15); // HACK!
+	    // repaint(cursorX, 0, 50, 15); // HACK!
+	    // HACK: this assumes something about the text size.
+	    // also, FIXME: in the future i'll draw text on either side of the line.
+	    // almost-as-bad new version:
+	    repaint(old-50, 0, 100, 15);
+	    repaint(cursorX-50, 0, 100, 15);
+	}
+
+        // crosshair cursor
+        setCursor(crosshair); // PERF: is setCursor() expensive?
     }
+    private Cursor crosshair = new Cursor(Cursor.CROSSHAIR_CURSOR);
     // ------------------------------------------------------------
 
     // KeyListener ------------------------------------------------------------
     /** Deal with key-pressed events, as described above.
 	@param e the event to process */
     public void keyPressed(KeyEvent e) {
+	ensureHorizExists();
+
 	// extract some info once so i don't have to do it later
 	int m = e.getModifiers();
 	int k = e.getKeyCode();
@@ -255,6 +303,12 @@ public class GrapherPanel extends JPanel
 	// unknown key?
 	boolean unknown = false;
 
+	// graph
+	Graph g = (Graph) graphs.get(current);
+
+	// IDEA: if i had some way of saying "shift tab" => { block }
+	// then i wouldn't need these nested if/case statements.
+
 	// parse it...ugh
 	if (m == KeyEvent.SHIFT_MASK) { // shift keys
 	    switch (k) {
@@ -263,15 +317,15 @@ public class GrapherPanel extends JPanel
 		repaint = true;
 		break;
 	    case KeyEvent.VK_PERIOD:
-		((Graph) graphs.get(current)).bigger();
+		g.bigger();
 		repaint = true;
 		break;
 	    case KeyEvent.VK_COMMA:
-		((Graph) graphs.get(current)).smaller();
+		g.smaller();
 		repaint = true;
 		break;
 	    case KeyEvent.VK_EQUALS:
-		((Graph) graphs.get(current)).slide(1);
+		g.slide(1);
 		repaint = true;
 		break;
 	    default:
@@ -280,11 +334,11 @@ public class GrapherPanel extends JPanel
 	} else if (m == KeyEvent.CTRL_MASK) { // control keys
 	    switch (k) {
 	    case KeyEvent.VK_LEFT:
-		((Graph) graphs.get(current)).left();
+		g.left();
 		repaint = true;
 		break;
 	    case KeyEvent.VK_RIGHT:
-		((Graph) graphs.get(current)).right();
+		g.right();
 		repaint = true;
 		break;
 	    default:
@@ -293,32 +347,42 @@ public class GrapherPanel extends JPanel
 	} else { // unmodified keys
 	    switch (k) {
 	    case KeyEvent.VK_UP:
-		((Graph) graphs.get(current)).slide(10);
+		g.slide(10);
 		repaint = true;
 		break;
 	    case KeyEvent.VK_DOWN:
-		((Graph) graphs.get(current)).slide(-10);
+		g.slide(-10);
 		repaint = true;
 		break;
 	    case KeyEvent.VK_MINUS:
-		((Graph) graphs.get(current)).slide(-1);
+		g.slide(-1);
 		repaint = true;
 		break;
 	    case KeyEvent.VK_EQUALS: // unshifted equals == plus
-		((Graph) graphs.get(current)).slide(1);
+		g.slide(1);
 		repaint = true;
 		break;
 	    case KeyEvent.VK_LEFT:
-		horiz.setValue(horiz.getValue() - horiz.getUnitIncrement());
+		// BUG: horiz.getUnitIncrement() returns 1 here.  why?  i have no idea.
+		// i guess because i don't set it explicitly.  though i would expect
+		// values returned by the Scrollable interface would work.  oh well,
+		// i'll just work around it for now.
+		// -- OLD: horiz.setValue(horiz.getValue() - horiz.getUnitIncrement());
+		horiz.setValue(horiz.getValue() - yearSize*10);
 		break;
 	    case KeyEvent.VK_RIGHT:
-		horiz.setValue(horiz.getValue() + horiz.getUnitIncrement());
+		// -- OLD: horiz.setValue(horiz.getValue() + horiz.getUnitIncrement());
+		horiz.setValue(horiz.getValue() + yearSize*10);
 		break;
 	    case KeyEvent.VK_PAGE_UP:
-		horiz.setValue(horiz.getValue() - horiz.getBlockIncrement());
+		// BUG: if parent isn't viewport, ignore?: horiz.setValue(horiz.getValue() - yearSize*100);
+		horiz.setValue(horiz.getValue() - getParent().getWidth());
+		// -- OLD: horiz.setValue(horiz.getValue() - horiz.getBlockIncrement());
 		break;
 	    case KeyEvent.VK_PAGE_DOWN:
-		horiz.setValue(horiz.getValue() + horiz.getBlockIncrement());
+		// BUG: if parent isn't viewport, ignore?: horiz.setValue(horiz.getValue() + yearSize*100);
+		horiz.setValue(horiz.getValue() + getParent().getWidth());
+		// -- OLD: horiz.setValue(horiz.getValue() + horiz.getBlockIncrement());
 		break;
 	    case KeyEvent.VK_HOME:
 		horiz.setValue(horiz.getMinimum());
@@ -340,7 +404,10 @@ public class GrapherPanel extends JPanel
 
 	// repaint, if necessary
 	if (repaint) {
-	    // computeRange(); -- this introduces lots of bugs.  but needs to be done, eventually.
+	    // computeRange(); -- this introduces lots of bugs,
+	    // but probably needs to be done, eventually.
+	    // also, see sun's jscrollpane tutorial: it has
+	    // demos on how to resize the scrollable area.
 	    repaint();
 	}
 
@@ -368,17 +435,18 @@ public class GrapherPanel extends JPanel
 	    // this should be: current = n; repaint(); if (n != -1) updateTitle();
 	    // but that has problems with keyboard accels on current==-1
 	    // actually the title should be "Plot: xyz", or "Plot", so if-stmt isn't even needed
-
-	    // double-click?  edit it!
-	    if (e.getClickCount() == 2) {
-		Graph g = (Graph) graphs.get(clicked);
-		if (g.graph instanceof Sample)
-		    new Editor((Sample) g.graph);
-	    }
 	}
     }
-    public void mouseEntered(MouseEvent e) { }
-    public void mouseExited(MouseEvent e) { }
+    public void mouseEntered(MouseEvent e) {
+	inside = true;
+	mouseMoved(e); // sort of...
+	repaint(); // blunt!
+    }
+    private boolean inside = true; // is the cursor in the area?
+    public void mouseExited(MouseEvent e) {
+	inside = false;
+	repaint(); // another hack!
+    }
     public void mousePressed(MouseEvent e) {
 	mouseClicked(e); // select it right away
     }
@@ -387,6 +455,8 @@ public class GrapherPanel extends JPanel
 	dragStart = null;
 	clicked = -1;
     }
+    // TODO: put the mouse-listener and mouse-motion-listener
+    // stuff together.
     // ------------------------------------------------------------
 
     public void queryScale() {
@@ -394,13 +464,15 @@ public class GrapherPanel extends JPanel
 	int tmp = 10;
 	try {
 	    tmp = Integer.parseInt(System.getProperty("corina.graph.pixelsperyear", "10"));
+	    // FIXME: why not use Integer.getInteger()?
 	} catch (NumberFormatException nfe) {
 	    // show warning dialog?
 	}
 	yearSize = tmp;
     }
 
-    // graphs = List of Graph
+    // graphs = List of Graph.
+    // frame = window; (used for: title set to current graph, closed when ESC pressed.)
     public GrapherPanel(List graphs, JFrame myFrame) {
         // yearSize
         queryScale();
@@ -408,9 +480,9 @@ public class GrapherPanel extends JPanel
         // my frame
         this.myFrame = myFrame;
 
-        // cursor -- (mac crosshair doesn't invert, so it's invisible on black)
-        if (!Platform.isMac)
-            setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR)); // use a crosshair
+        // cursor: a crosshair.
+	// note: (mac crosshair doesn't invert on 10.[01], so it's invisible on black)
+	setCursor(crosshair);
 
 	// baselines?
 	baselines = Boolean.getBoolean("corina.graph.baselines");
@@ -439,16 +511,17 @@ public class GrapherPanel extends JPanel
 		Object sap = s.meta.get("sapwood");
 		Object pre = s.meta.get("unmeas_pre");
 
-		if ((sap != null && !(sap instanceof Integer)) ||
-		    (pre != null && !(pre instanceof Integer))) {
-		    JOptionPane.showMessageDialog(null,
-      // problem: be more specific -- *which* sample, and *what* value?
+		boolean sapBad = (sap != null && !(sap instanceof Integer));
+		boolean preBad = (pre != null && !(pre instanceof Integer));
+
+		if (sapBad || preBad) {
+		    Alert.error("Text found instead of numbers",
+				"One or more metadata fields contained text where a number\n" +
+				"was expected.  The graph might not display all information\n" +
+				"(like sapwood count).  Double-check the sample's metadata fields.");
+      // PROBLEM: be more specific -- *which* sample, and *what* value?
       // plus, let me edit it here (button: "edit sample now", opens metadata view)
-						  "One or more metadata fields contained text where a number\n" +
-						  "was expected.  The graph might not display all information\n" +
-						  "(like sapwood count).  Double-check the sample's metadata fields.",
-						  "Text found instead of numbers",
-						  JOptionPane.WARNING_MESSAGE);
+                    // better: just don't display it, or ... (?)
 		    break;
 		}
 	    }
@@ -458,90 +531,152 @@ public class GrapherPanel extends JPanel
 	setBackground(Color.getColor("corina.graph.background", Color.black));
 
 	// create drawing agent
-	myAgent = new StandardPlot(bounds, this);
+	recreateAgent();
     }
 	
     public void recreateAgent() {
 	myAgent = new StandardPlot(bounds, this);
     }
 
-    /** Colors to use for graphs. */
+    /** Colors to use for graphs: blue, green, red, cyan, yellow, magenta. */
     public final /* static */ Color COLORS[] = {
-	new Color(0.00f, 0.53f, 1.00f), // blue
-	new Color(0.27f, 1.00f, 0.49f), // green
-	new Color(1.00f, 0.28f, 0.27f), // red
-	new Color(0.22f, 0.80f, 0.82f), // cyan
-	new Color(0.82f, 0.81f, 0.23f), // yellow
-	new Color(0.85f, 0.26f, 0.81f), // magenta
+        new Color(0.00f, 0.53f, 1.00f), // blue
+        new Color(0.27f, 1.00f, 0.49f), // green
+        new Color(1.00f, 0.28f, 0.27f), // red
+        new Color(0.22f, 0.80f, 0.82f), // cyan
+        new Color(0.82f, 0.81f, 0.23f), // yellow
+        new Color(0.85f, 0.26f, 0.81f), // magenta
     };
 
-    static int getBottom(JPanel panel) {
-	return panel.getHeight() - 30;
-    }
+    // number of pixels between the bottom of the panel and the baseline
+    /*package?*/ static final int AXIS_HEIGHT = 30;
 
+    // BUG: this won't update when you refreshFromPreferences(), as it is now
+    // -- but my new prefs framework should take care of that.
+    private Color FORE_COLOR = Color.getColor("corina.graph.foreground", Color.white);
+
+    // BUG: this won't update when you refreshFromPreferences(), as it is now
+    // -- but my new prefs framework should take care of that.
+    private Color major = Color.getColor("corina.graph.graphpaper.color", new Color(0, 51, 51));
+
+    // color for thin lines: halfway between |major| and |background|.
+    // (real 50% alpha is far too slow on any computer i have access to today,
+    // except of course macintoshes, which can make swing really scream.)
+    private Color minor = ColorUtils.blend(major, Color.getColor("corina.graph.background", Color.black));
+    // REFACTOR: use Prefs class methods, not Color class methods
+    // EXTRACT: should have default value for pref in prefs, not here
+
+    // timing: this seems to take a significant portion of the time used to
+    // draw the graph; usually 20-30 ms, but often jumping to 80-90
+    // ms.  still far too much garbage being created here.
     private void paintGraphPaper(Graphics2D g2) {
-	// setup
-	Color major = Color.getColor("corina.graph.graphpaper.color", Color.green);
+	// visible range: [l..r]
+	int l = g2.getClipBounds().x;
+	int r = l + g2.getClipBounds().width;
 
-        // real 50% alpha is slow on my
-        // athlon-900.  ouch.  (enable this in about 5 years.)
-        // so fake it.  (for thin lines.)
-        g2.setColor(ColorUtils.blend(major, Color.getColor("corina.graph.background", Color.black)));
+	// bottom
+        int bottom = getHeight() - AXIS_HEIGHT;
 
-	// bottom, right
-	int bottom = GrapherPanel.getBottom(this);
-	int right = yearSize * bounds.span();
+	// draw horizontal lines
+	// (would it help if everything was a big generalpath?  it appears not.)
+	g2.setColor(minor);
+	int i = 1;
+	for (int y=bottom-10; y>0; y-=10) {
+	    // BUG: 10?  is that right?  EXTRACT CONST, at least
+	    if (i % 5 == 0)
+		g2.setColor(major);
+	    g2.drawLine(l, y, r, y);
+	    if (i % 5 == 0)
+		g2.setColor(minor);
+	    i++;
+	}
 
-	// draw thin lines.
-	for (int i=bottom; i>0; i-=10) // horiz
-	    g2.drawLine(0, i, right, i);
-	for (int i=0; i<right; i+=yearSize) // vert
-	    g2.drawLine(i, 0, i, bottom);
+	// -----
 
-	// (for thick lines.)
+	// draw vertical lines.
+	// PERF: isn't every 5th line here just going to get overwritten?
+	// -- for vert lines, it's a bit harder (right now, anyway)
+	Year leftYear = yearForPosition(l);
+	int x0 = leftYear.diff(bounds.getStart()) * yearSize;
+	for (int x=x0; x<r; x+=yearSize) { // thin lines
+	    g2.drawLine(x, 0, x, bottom);
+	}
+
+	// (thick lines)
 	g2.setColor(major);
 
-	for (int i=bottom; i>0; i-=10*5) // horiz
-	    g2.drawLine(0, i, right, i);
-
-	// thick vertical decade lines: can't just go every
-	// 5*yearSize, because that would not take the zero-gap into
-	// account.  so start at -5 and go backward, and also start at
-	// +5 and go forward.
-	for (Year y=new Year(-5); y.compareTo(bounds.getStart())>0; y=y.add(-5)) {
-	    int x = y.diff(bounds.getStart()) * yearSize;
-	    g2.drawLine(x, 0, x, bottom);
-	}
-	for (Year y=new Year(5); y.compareTo(bounds.getEnd())<0; y=y.add(5)) {
-	    int x = y.diff(bounds.getStart()) * yearSize;
-	    g2.drawLine(x, 0, x, bottom);
+	// crosses AD/BC boundary?
+	// (LOD: EXTRACT "crosses-boundary"?  well, it's pretty trivial now)
+	if (bounds.intersection(AD_BC).span() == 2) {
+	    // thick vertical decade lines: can't just go every
+	    // 5*yearSize, because that would not take the zero-gap into
+	    // account.  so start at -5 and go backward, and also start at
+	    // +5 and go forward.
+	    for (Year y=new Year(-5); y.compareTo(bounds.getStart())>0; y=y.add(-5)) {
+		int x = y.diff(bounds.getStart()) * yearSize;
+		if (x > r) // (note: this test is backwards from elsewhere; we're going right-to-left)
+		    continue;
+		if (x < l)
+		    break;
+		g2.drawLine(x, 0, x, bottom);
+	    }
+	    for (Year y=new Year(5); y.compareTo(bounds.getEnd())<0; y=y.add(5)) {
+		int x = y.diff(bounds.getStart()) * yearSize;
+		if (x < l)
+		    continue;
+		if (x > r)
+		    break;
+		g2.drawLine(x, 0, x, bottom);
+	    }
+	} else {
+	    // doesn't cross AD/BC boundary; just draw lines.
+	    Year y1 = yearForPosition(l);
+	    y1 = y1.add(-(y1.mod(5) + 5)); // y -= (y%5) + 5; // EXTRACT: Year.sub()?
+	    for (Year y=y1; y.compareTo(bounds.getEnd())<0; y=y.add(5)) {
+		int x = y.diff(bounds.getStart()) * yearSize; // EXTRACT: yearToPosition(y)
+		if (x < l)
+		    continue;
+		if (x > r)
+		    break;
+		g2.drawLine(x, 0, x, bottom);
+	    }
 	}
     }
 
-    /** Paint this panel.  Draws a horizontal axis in white (on a
-	black background), then draws each graph in a different color.
-	@param g the Graphics to draw this panel onto */
-    public void paintComponent(Graphics g) {
-	// graphics setup
-	super.paintComponent(g);
+    // if r.intersection(AD_BC)==2, then r crosses the ad/bc boundary
+    private static final Range AD_BC = new Range(new Year(-1), new Year(1));
+
+    /*
+      to get year -> position, it's just position = yearSize * (year -
+      bounds.getStart()) so to get position -> year, it's just year =
+      bounds.getStart() + position / yearSize, right?
+      -- it's +/-1, anyway, which is a heck of a lot better than
+         drawing every x-position
+	 -- well, is it correct, or off-by-one?  i think it's correct...
+    */
+    private Year yearForPosition(int x) {
+	return bounds.getStart().add(x / yearSize);
+    }
+
+    // timing: down to around 10 ms
+    private void paintHorizAxis(Graphics g) {
 	Graphics2D g2 = (Graphics2D) g;
+	g2.setColor(FORE_COLOR);
 
-	// from here down, everything is drawn in order.  this
-	// means that the first thing drawn (the graphpaper) is
-	// the bottommost layer, on up to the vertical-bar on top.
+	int l = g2.getClipBounds().x;
+	int r = l + g2.getClipBounds().width;
+        int bottom = getHeight() - AXIS_HEIGHT;
 
-	// draw graphpaper
-	if (Boolean.getBoolean("corina.graph.graphpaper"))
-	    paintGraphPaper(g2);
+	Year startYear = yearForPosition(l).add(-5); // go one further, just to be sure
+	// actually, go 5 further; i need to make sure to draw the text, even if it's
+	// not completely on the screen, and i'm ASSUMING the text isn't wider than 5
+	// years' worth -- if it is, it's probably going to start getting hard to read.
+	int x=startYear.diff(bounds.getStart())*yearSize; // x-position of tick
+	for (Year y=startYear; y.compareTo(bounds.getEnd())<=0; y=y.add(1)) {
+	    // out of visible viewport?
+	    if (x > r)
+		break;
 
-	// figure out which years to draw the scale -- 1, 5, 10, 50, 100, 500, ...
-	// WRITE ME
-
-	// draw scale
-	int x=0; // x-position of tick
-	int bottom = GrapherPanel.getBottom(this); // baseline
-	g2.setColor(Color.getColor("corina.graph.foreground", Color.white));
-	for (Year y=bounds.getStart(); y.compareTo(bounds.getEnd())<=0; y=y.add(1)) {
 	    // draw a label for the decade
 	    if (y.column()==0 || y.isYearOne())
 		g2.drawString(y.toString(), x, bottom+25);
@@ -559,35 +694,172 @@ public class GrapherPanel extends JPanel
 	}
 	    
 	// draw a horizontal bar
-	g2.drawLine(0, bottom, yearSize*bounds.span(), bottom);
+	g2.drawLine(l, bottom, r, bottom);
+    }
 
-	// antialias, if requested -- only for graphs
-	if (Boolean.getBoolean("corina.graph.antialias"))
-	    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
+    /*
+      PERFORMANCE:
+      -- in http://www.asktog.com/basics/firstPrinciples.html, tog says
+      "Acknowledge all button clicks by visual or aural feedback
+      within 50 milliseconds."
+
+      so i'll set it as a goal that paintComponent() should, for all
+      normal uses, return within 50 ms.  i can't guess what systems
+      every person running corina will have, but my reference platform
+      is a 500 MHz PPC G4.  if it returns within 50 ms on a 500 MHz
+      computer (rather slow by today's standards), i'll be satisfied.
+
+      TIMING:
+      -- empty screen: 30-50 ms [GOOD!]
+      -- 1 sample visible: 40-50 ms [GOOD!]
+      -- lots of samples visible: 200-400 ms
+         [a bit sluggish -- but only needed for scrolling]
+    */
+
+    /** Paint this panel.  Draws a horizontal axis in white (on a
+	black background), then draws each graph in a different color.
+	@param g the Graphics to draw this panel onto */
+    public void paintComponent(Graphics g) {
+	ensureHorizExists();
+
+	// graphics setup
+	super.paintComponent(g);
+	Graphics2D g2 = (Graphics2D) g;
+
+	// from here down, everything is drawn in order.  this
+	// means that the first thing drawn (the graphpaper) is
+	// the bottommost layer, on up to the vertical-bar on top.
+
+	// draw graphpaper
+	if (Boolean.getBoolean("corina.graph.graphpaper")) {
+	    // PERF: is this expensive?  (it's not just a bool!)
+	    paintGraphPaper(g2);
+	}
+
+	// ?? -- figure out which years to draw the scale
+	// -- 1, 5, 10, 50, 100, 500, ...
+	// WRITE ME
+
+	// draw scale
+	paintHorizAxis(g2);
+
+	// force antialiasing for graphs -- it looks so much better,
+	// and everybody's computer is fast enough for it these days
+	g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+			    RenderingHints.VALUE_ANTIALIAS_ON);
 
 	// draw graphs
-	for (int j=0; j<graphs.size(); j++) {
-	    // get graphable
-	    Graphable s = (Graphable) ((Graph) graphs.get(j)).graph;
+	for (int i=0; i<graphs.size(); i++) {
+	    // get graph
+	    Graph graph = (Graph) graphs.get(i);
 
 	    // set color
-	    g2.setColor(COLORS[j % COLORS.length]);
+	    g2.setColor(COLORS[i % COLORS.length]);
 
 	    // draw it
-	    myAgent.draw(g2, (Graph) graphs.get(j), current==j, horiz.getValue());
+	    myAgent.draw(g2, graph, current==i, horiz.getValue());
 	}
 
-	// paint a vertical line at the cursor; and the year
-	{
-	    g2.setStroke(new BasicStroke(1.0f));
+        // for each year that's all-down, draw a RED vertical line.
+	// TODO: this should be enabled by a menuitem:
+	// - View->Mark All-Drop Years (reword). [/ Unmark ...]
+	// - but disabled by default for single-samples and indexes.
+        // BUG: this is expensive, and should be done only:
+	// (1) on startup, and
+	// (2) whenever an .xoffset changes.
+	// PERF: it shouldn't be expensive.  a better algorithm:
+	// -- keep 2 arrays of bits: "present", and "down"
+	// -- (the first bit in each array is the first year drawn, etc.)
+	// -- before drawing, set "present" to false, and "down" to true
+	// -- when drawing, for each year:
+	// ---- set present[y] to true
+	// ---- if it's not-down, set down[y] to false
+	// -- then, draw red lines for each year where (present[y] and down[y])
+/*
+        {
+            int n = bounds.span();
+            boolean down[] = new boolean[n]; // ugh!
+            for (int i=0; i<n; i++)
+                down[i] = true;
+            for (int j=0; j<graphs.size(); j++) {
+                Graphable gr = (Graphable) ((Graph) graphs.get(j)).graph;
+                int di = gr.getStart().diff(bounds.getStart()) + ((Graph) graphs.get(j)).xoffset; // already starting this many years in
+                List d = gr.getData();
+/* -- all downs only
+                for (int i=1; i<d.size(); i++) {
+                    double a = ((Number) d.get(i-1)).doubleValue();
+                    double b = ((Number) d.get(i  )).doubleValue();
+                    if (b >= a)
+                        down[i+di] = false;
+                }
+                */
+                /*
+                // minima only -- is this better?
+                for (int i=1; i<d.size()-1; i++) {
+                    double a = ((Number) d.get(i-1)).doubleValue();
+                    double b = ((Number) d.get(i  )).doubleValue();
+                    double c = ((Number) d.get(i+1)).doubleValue();
+                    if (a <= b || b >= c)
+                        down[i+di] = false; // BUG: fails if i+di<0, etc.
+                }
+                down[n-1] = false;
+            }
+            down[0] = false;
+            g2.setColor(Color.red);
+            g2.setStroke(new BasicStroke(1));
+            for (int i=0; i<n; i++) {
+                if (down[i]) {
+                    int xx = i * yearSize;
+                    g2.drawLine(xx, 0, xx, bottom); // refactor me?
+                }
+            }
+            // FIXME: only draw lines where there are at least (2, 3, ?) samples?
+        }
+*/
+// FIXME: what they really want is general-purpose decorators: lines
+// (possibly with arrowheads), boxes, text, etc.  "mark all decreasing
+// years" should just add decorators, not be a special mode.
+
+        // paint a vertical line at the cursor; and the year
+        if (inside) {
+	    // set color/stroke
+            g2.setStroke(CURSOR_STROKE);
+            g2.setColor(FORE_COLOR);
+
+	    // draw the vertical bar
 	    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_OFF);
-	    g2.setColor(Color.getColor("corina.graph.foreground", Color.white));
-	    g2.drawLine(cursorX, 0, cursorX, bottom);
-	    g2.drawString(bounds.getStart().add(cursorX / yearSize).toString(), cursorX+5, 15);
-	}
+	    g2.drawLine(cursorX, 0, cursorX, getHeight() - AXIS_HEIGHT);
+
+	    // if near the right side, it's invisible.
+	    // so: if on the right half of the (vis)screen, draw on the left side.
+
+	    // draw the label on the right side of the line?  else, left.
+	    int viewportX = cursorX - horiz.getValue(); // is this correct?
+	    int viewportWidth = getParent().getWidth();
+	    boolean right = (viewportX < viewportWidth/2);
+
+	    final int eps = 5;
+	    final int ascent = g2.getFontMetrics().getAscent(); // PERF: memoize me!
+	    String str = yearForPosition(cursorX).toString();
+
+	    int x = cursorX;
+	    int y = ascent + eps;
+
+	    if (right) {
+		x += eps;
+	    } else {
+		int width = g2.getFontMetrics().stringWidth(str);
+		x -= (width + eps);
+	    }
+
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                RenderingHints.VALUE_ANTIALIAS_ON);
+	    g2.drawString(str, x, y);
+        }
     }
+
+    private static final BasicStroke CURSOR_STROKE = new BasicStroke(1);
 
     // location-dependent tooltip
 //    public String getToolTipText(MouseEvent event) {
@@ -597,5 +869,33 @@ public class GrapherPanel extends JPanel
 
     public void update() {
 	myAgent.update();
+    }
+
+    //
+    // Scrollable
+    //
+    public int getScrollableBlockIncrement(Rectangle visibleRect,
+					   int orientation, int direction) {
+	// orient=vert never happens
+	return visibleRect.width;
+    }
+    public int getScrollableUnitIncrement(Rectangle visibleRect,
+					  int orientation, int direction) {
+	// orient=vert never happens
+	return yearSize * 10; // one decade (?)
+    }
+    public Dimension getPreferredScrollableViewportSize() {
+	int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+
+	// actually, this should be the amount of border, but
+	// i don't know to get that reliably
+	int width = screenWidth - 10;
+	return new Dimension(width, 480);
+    }
+    public boolean getScrollableTracksViewportHeight() {
+	return true; // never scroll vertically
+    }
+    public boolean getScrollableTracksViewportWidth() {
+	return false;
     }
 }

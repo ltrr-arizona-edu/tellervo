@@ -20,34 +20,59 @@
 
 package corina.manip;
 
-import corina.Sample;
-
 import java.util.List;
 
 /**
    Compute mean sensitivity.
 
-   <p>According to some <a href="http://www.ltrr.arizona.edu/pub/dpl/A-NEWS.TXT">release notes</a>
-	for a version of Arizona's
-	<a href="http://www.ltrr.arizona.edu/archive/dpl/DPL.html">Dendrochronology Program Library</a>,
-	mean sensitivity is defined as:</p>
+   <p>According to some
+   <a href="http://www.ltrr.arizona.edu/pub/dpl/A-NEWS.TXT">release notes</a>
+   for a version of Arizona's
+   <a href="http://www.ltrr.arizona.edu/archive/dpl/DPL.html">Dendrochronology
+   Program Library</a>, mean sensitivity is defined as:</p>
 
-	<blockquote>
-	ms = 1 / (<i>N</i>-1) &Sigma; ( 2 | <i>y</i><sub>i</sub> - <i>y</i><sub>i-1</sub> | ) /
-	                                  ( | <i>y</i><sub>i</sub> | + | <i>y</i><sub>i-1</sub> | )
-	</blockquote>
+   <blockquote>
+   1 / (<i>N</i>-1) &Sigma; ( 2 | <i>y</i><sub>i</sub> - <i>y</i><sub>i-1</sub> | ) /
+       ( | <i>y</i><sub>i</sub> | + | <i>y</i><sub>i-1</sub> | )
+   </blockquote>
 
    <p>If a divide-by-zero (or any other invalid operation) ever
-   occurs, NaN is returned.  This can occur, for example, if two
-   successive years contain zeros.</p>
+   occurs, NaN is returned.  (This can occur, for example, if two
+   successive years contain zeros.)  If the sample has no data in it,
+   NaN is returned.</p>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
+   <p><a href="http://www.wsl.ch/land/dynamics/dendro/FHS_d.html">Schweingruber</a>
+   says the mean sensitivity is
 
+   <blockquote>
+   1 / (N-1) &Sigma; ( 2 | (y<sub>i-1</sub>-y<sub>i</sub>) /
+                           (y<sub>i-1</sub>+y<sub>i</sub>) |)
+   </blockquote>
+
+   (see Tree Rings, p.82 [English translation]).  If all values are
+   positive, that's the same value.  If
+   y<sub>i</sub>=-y<sub>i-1</sub>, his version blows up (mine only
+   blows up when y<sub>i</sub>=y<sub>i-1</sub>=0).  I'll call these
+   the "Arizona" (DPL, Corina) and "German" (Schweingruber)
+   variations.</p>
+
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class MeanSensitivity {
+    private MeanSensitivity() {
+	// don't instantiate me
+    }
 
-    public static float ms(Sample sample) {
-        List y = sample.data;
+    /**
+       Compute the mean sensitivity of a list of numbers.
+
+       @param data list of numbers
+       @return the mean sensitivity of the list, or NaN if it can't be
+       computed
+    */
+    public static float meanSensitivity(List data) {
+        List y = data;
         int N = y.size();
 
         // a special case
@@ -64,14 +89,12 @@ public class MeanSensitivity {
                 yi = ((Number) y.get(i)).floatValue();
                 yi1 = ((Number) y.get(i-1)).floatValue();
 
-                meanSens += Math.abs(yi - yi1) / (Math.abs(yi) + Math.abs(yi1));
+                meanSens += Math.abs(yi - yi1) /
+		           (Math.abs(yi) + Math.abs(yi1));
 
-                // BUG: schweingruber says abs((yi1-yi)/(yi1+yi)), which is different, right?
-                // (tree rings, p.82[en])
-
-                // abs(y[i]) should always be nonnegative -- but may
-                // not be if the user applied a bad index, and it's
-                // only a minimal expense
+                // note: i know that abs(y[i]) should always be
+                // nonnegative -- but may not be if the user applied a
+                // bad index.
             }
             return meanSens * 2 / (N-1);
         } catch (ArithmeticException ae) {
@@ -80,5 +103,4 @@ public class MeanSensitivity {
             return Float.NaN; // user is editing, it's a String, so let it go
         }
     }
-
 }

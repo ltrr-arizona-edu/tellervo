@@ -24,10 +24,14 @@ import java.awt.Component;
 import java.awt.Color;
 import java.awt.Graphics;
 import javax.swing.JTable;
-import javax.swing.JComponent;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.table.DefaultTableCellRenderer;
 
-public class CountRenderer extends JComponent implements TableCellRenderer {
+// (i know DefaultTableCellRenderer is a JLabel, but it also makes
+// revalidate(), etc., into no-ops, which helps performance.  if i
+// didn't extend this, i should override those to be no-ops myself,
+// but i'm lazy, and this works nearly as well.)
+
+public class CountRenderer extends DefaultTableCellRenderer {
     private int val, max;
     public CountRenderer(int max) { // GENERALIZE: take any number (double)
         // range is 0..max
@@ -43,7 +47,7 @@ public class CountRenderer extends JComponent implements TableCellRenderer {
                                                    boolean isSelected, boolean hasFocus,
                                                    int row, int column) {
         // update my value
-        val = ((Integer) value).intValue();
+        val = ((Number) value).intValue();
 
         // set background color
         super.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
@@ -66,22 +70,22 @@ public class CountRenderer extends JComponent implements TableCellRenderer {
         // zero is a special case
         if (val == 0) {
             // but that looks sort of silly
-            //g.setColor(dark);
+            //g.setColor(DARK);
             //g.fillRect(2, TOP+(HEIGHT/2)-1, 3, 2);
             return;
         }
 
         // draw dark lines -- well, just draw a big rectangle.  it's simpler and probably faster.
-        g.setColor(dark);
+        g.setColor(DARK);
         g.fillRect(0, TOP, stop, HEIGHT);
 
         // draw light lines
-        g.setColor(light);
+        g.setColor(LIGHT);
         for (int x=1; x<stop; x+=2)
             g.drawLine(x, TOP, x, TOP+HEIGHT-1);
     }
 
-    private static Color dark = new Color(136, 136, 136);
-    private static Color light = new Color(184, 184, 184);
+    private static Color DARK = new Color(136, 136, 136);
+    private static Color LIGHT = new Color(184, 184, 184);
     private static int TOP=4, HEIGHT=8;
 }

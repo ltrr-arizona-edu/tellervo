@@ -23,11 +23,15 @@ package corina.gui;
 import corina.Sample;
 import corina.cross.Grid;
 import corina.cross.GridFrame;
-import corina.graph.GraphFrame;
-import corina.files.WrongFiletypeException;
+import corina.graph.GraphWindow;
+import corina.formats.WrongFiletypeException;
 import corina.editor.Editor;
+import corina.gui.menus.OpenRecent;
 
 import java.io.IOException;
+
+import java.io.*;
+import java.net.*;
 
 // try to open a file, given its filename.  if we can (get it?), open
 // it, else throw an IOException
@@ -35,6 +39,15 @@ import java.io.IOException;
 public class CanOpener {
 
     public static void open(String filename) throws WrongFiletypeException, IOException {
+	try {// is it a sample?
+	    Sample s = new Sample(filename);
+	    new Editor(s);
+	    OpenRecent.fileOpened(filename);
+	    return;
+	} catch (WrongFiletypeException wfte) {
+	    // just need to hop out of that block
+	}
+
 	try { // is it a grid?
 	    new GridFrame(new Grid(filename));
 	    OpenRecent.fileOpened(filename);
@@ -44,7 +57,7 @@ public class CanOpener {
 	}
 
 	try { // is it a plot?
-	    GraphFrame g = new GraphFrame(filename);
+	    GraphWindow g = new GraphWindow(filename);
 	    OpenRecent.fileOpened(filename);
 	    return;
 	} catch (WrongFiletypeException wfte) {
@@ -55,17 +68,7 @@ public class CanOpener {
 	// add new filetypes here
 	// ---
 
-	try {// is it a sample?
-	    Sample s = new Sample(filename);
-	    new Editor(s);
-	    OpenRecent.fileOpened(filename);
-	    return;
-	} catch (WrongFiletypeException wfte) {
-	    // just need to hop out of that block
-	}
-
 	// didn't work, ok to barf now
 	throw new WrongFiletypeException();
     }
-
 }

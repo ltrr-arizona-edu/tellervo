@@ -27,30 +27,29 @@ import corina.SampleEvent;
 import corina.Weiserjahre;
 
 /**
-   <p>Special DecadalModel for Weiserjahre.</p>
+   Special DecadalModel for Weiserjahre.
 
    <p>Differences from the stock DecadalModel:</p>
 
    <ul>
-
      <li>Weiserjahre is never user-editable, so isCellEditable()
-     always returns false
+         always returns false
 
      <li>Also because it's never user-editable, it doesn't need to
-     have an extra line if it ends on a -9 year.
+         have an extra line if it ends on a -9 year.
 
      <li>It doesn't need to reference the Editor it is a part of,
-     because it is a read-only view (no modified-flag to set)
-
+         because it is a read-only view (no modified-flag to set)
    </ul>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$ */
-
 public class WJTableModel extends DecadalModel implements SampleListener {
+    /**
+       Constructor, given a Sample to view.
 
-    /** Constructor, given a Sample to view.
-	@param s the Sample to view */
+       @param s the Sample to view
+    */
     public WJTableModel(Sample s) {
 	this.s = s;
 
@@ -61,19 +60,25 @@ public class WJTableModel extends DecadalModel implements SampleListener {
 	s.addSampleListener(this);
     }
 
-    /** Return the row count.  The Weiserjahre is not user-editable,
-        so there's no need to ever have an extra (empty) line.
-	@return the number of rows */
+    /**
+       Return the row count.  The Weiserjahre is not user-editable, so
+       there's no need to ever have an extra (empty) line.
+
+       @return the number of rows
+    */
     public int getRowCount() {
 	countRows();
 	return (row_max - row_min + 1);
     }
 
-    /** Return the value of the specified cell.
-	@param row the row to query
-	@param row the column to query
-	@return the value of this cell: the decade title, the
-	Weiserjahre value, or the count */
+    /**
+       Return the value of the specified cell.
+
+       @param row the row to query
+       @param row the column to query
+       @return the value of this cell: the decade title, the
+       Weiserjahre value, or the count
+    */
     public Object getValueAt(int row, int col) { 
 	if (col == 0) {
 	    if (row == 0)
@@ -90,11 +95,14 @@ public class WJTableModel extends DecadalModel implements SampleListener {
 	}
     }
 
-    /** Return false: no cell is editable.  Weiserjahre is always
-	automatically computed.
-	@param row the row to query
-	@param row the column to query
-	@return false, meaning that no Weiserjahre cell is editable */
+    /**
+       Return false: no cell is editable.  Weiserjahre is always
+       automatically computed.
+
+       @param row the row to query
+       @param row the column to query
+       @return false, meaning that no Weiserjahre cell is editable
+    */
     public boolean isCellEditable(int row, int col) {
 	return false;
     }
@@ -105,6 +113,5 @@ public class WJTableModel extends DecadalModel implements SampleListener {
     }
     public void sampleDataChanged(SampleEvent e) { }
     public void sampleMetadataChanged(SampleEvent e) { }
-    public void sampleFormatChanged(SampleEvent e) { }
     public void sampleElementsChanged(SampleEvent e) { }
 }

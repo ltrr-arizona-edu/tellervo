@@ -25,31 +25,14 @@ package corina;
 
    @see SampleListener
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
 
 public class SampleAdapter implements SampleListener {
-
-    /** The starting/ending dates of this sample have changed.
-	@param e the Event object */
     public void sampleRedated(SampleEvent e) { }
-
-    /** One or more of the numbers of the dataset have changed.
-	@param e the Event object */
     public void sampleDataChanged(SampleEvent e) { }
-
-    /** One or more of the metadata fields has been changed (the
-	element changed, or a key was added or removed).
-	@param e the Event object */
     public void sampleMetadataChanged(SampleEvent e) { }
-
-    /** The format (raw/indexed/summed) was changed.
-	@param e the Event object */
-    public void sampleFormatChanged(SampleEvent e) { }
-
-    /** The elements were changed.
-	@param e the Event object */
     public void sampleElementsChanged(SampleEvent e) { }
 
     // 

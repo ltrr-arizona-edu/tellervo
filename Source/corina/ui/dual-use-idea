@@ -1,0 +1,48 @@
+docbook needs:
+
+	<shortcut>
+		<keycombo><keycap>control</keycap> <keycap>Z</keycap></keycombo>
+	</shortcut>
+
+or, in a table:
+
+        <row>
+          <entry>Undo</entry>
+          <entry>
+            <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>Z</keycap></keycombo>
+	    </shortcut>
+          </entry>
+          <entry>Undo last change</entry>
+          <entry></entry>
+        </row>
+
+and in a properties file it's something like:
+
+       undo = Can't Undo [accel Z]
+
+so, all of the things it has are:
+
+    -- "accel Z"		("control Z" is generated)
+    -- "Undo" 			(action, for manual)
+    -- "Undo last change"	(description, for manual)
+    -- ""    	  		(reference, for manual; the id of a section/chapter)
+    -- "Can't Undo"		(default text)
+    -- false  			(default active/inactive?)
+
+though, the docbook puts these in a table, by menu.  so the source must have a list by menu, at least, also.
+
+can i use two xslt files, one to generate an xml file for docbook, and one to generate java code?
+
+<menu id="file"><title>File</title>
+	<menuitem id="open">
+		<title>Open...</title>
+		<shortcut>accel O</shortcut>
+		<description>Open a sample</description>
+		<reference>samples</reference>
+		<!-- active defaults to true -->
+		<!-- label defaults to title -->
+	</menuitem>
+</menu>
+
+one of these per language?

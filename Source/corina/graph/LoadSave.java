@@ -21,7 +21,7 @@
 package corina.graph;
 
 import corina.Sample;
-import corina.files.WrongFiletypeException;
+import corina.formats.WrongFiletypeException;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -96,7 +96,7 @@ public class LoadSave {
             BufferedReader r = new BufferedReader(new FileReader(filename));
             xr.parse(new InputSource(r));
         } catch (Exception e) { // (SAXException se) {
-                                // if (se.getMessage().equals("Not a grid!"))
+                                // if (se.getMessage().equals("Not a graph!"))
             throw new WrongFiletypeException();
             // else
             // throw new IOException("SAX exception: " + se.getMessage());

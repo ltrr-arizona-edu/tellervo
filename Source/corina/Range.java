@@ -24,12 +24,13 @@ package corina;
    A range of years.  Ranges are immutable; all otherwise-destructive
    operations on a Range return a new Range.
 
-   <p>Unfortunately, use of this data structure often violates
-   the single-instance storage principle: we hope that the usage
-   of Range and Sample will always keep
-   <code>Sample.data.size() == Range.span()</code>, but there
-   aren't any built-in ways to do this, so it's up to you.  The
-   problem is that the <code>end</code> field is a duplicate of
+   <p>Unfortunately, use of this data structure in the class Sample
+   often violates the single-instance storage principle: we hope that
+   the usage of Range and Sample will always keep
+   <code>Sample.data.size() == Range.span()</code>, but there aren't
+   any built-in ways to do this, so it's up to you.  (If you add an
+   element to sample.data, increase sample.range by one, for example.)
+   The problem is that the <code>end</code> field is a duplicate of
    <code>Sample.data.size() + start</code>.</p>
 
    @see Year
@@ -75,7 +76,9 @@ public class Range implements Comparable {
 	}
     }
 
-    /** Construct a range, given a starting year and span.
+    /**
+       Construct a range, given a starting year and span.
+
        @param y the starting year
        @param span the number of years
     */
@@ -84,8 +87,11 @@ public class Range implements Comparable {
 	this.end = y.add(span-1);
     }
 
-    /** Construct a range from a String.
-	@param s the String */
+    /**
+       Construct a range from a String.
+
+       @param s the String
+    */
     public Range(String s) {
 	// (Grid.GridHandler.startElement is the only place this is used)
 
@@ -108,53 +114,74 @@ public class Range implements Comparable {
 	end = new Year(y2);
     }
 
-    /** Get the starting year of this range.
-	@return the starting year */
+    /**
+       Get the starting year of this range.
+
+       @return the starting year
+    */
     public Year getStart() {
 	return start;
     }
 
-    /** Get the ending year of this range.
-	@return the ending year */
+    /**
+       Get the ending year of this range.
+
+       @return the ending year
+    */
     public Year getEnd() {
 	return end;
     }
 
-    /** Set the starting year of the range, and adjust the ending year
-	to maintain the same length.
-	@param y new starting year for the range
-	@see #redateEndTo */
+    /**
+       Set the starting year of the range, and adjust the ending year
+       to maintain the same length.
+
+       @param y new starting year for the range
+       @see #redateEndTo
+    */
     public Range redateStartTo(Year y) {
 	return redateBy(y.diff(start));
     }
 
-    /** Redate a range by a certain number of years.
-	Usually, you'll use redateStartTo() or redateEndTo(), which
-	are more convenient.
-	@param dy the number of years to shift this range by */
+    /**
+       Redate a range by a certain number of years.  Usually, you'll
+       use redateStartTo() or redateEndTo(), which are more
+       convenient.
+
+	@param dy the number of years to shift this range by
+    */
     public Range redateBy(int dy) {
 	return new Range(start.add(dy), end.add(dy));
     }
 
-    /** Set the ending year of the range, and adjust the start year to
-	maintain the same length.
+    /**
+       Set the ending year of the range, and adjust the start year to
+       maintain the same length.
+
 	@param y new ending year for the range
-	@see #redateStartTo */
+	@see #redateStartTo
+    */
     public Range redateEndTo(Year y) {
 	return redateBy(y.diff(end));
     }
 
-    /** Return the number of years spanned by this range.  For
-        example, the range 1001 - 1005 spans 5 years.
-	@return the span of this range (difference between start and
-	end, inclusive) */
+    /**
+       Return the number of years spanned by this range.  For
+       example, the range 1001 - 1005 spans 5 years.
+
+       @return the span of this range (difference between start and
+       end, inclusive)
+    */
     public int span() {
 	return end.diff(start) + 1;
     }
 
-    /** Compute the number of rows this Range will take to display, assuming
-	rows are marked off as the row() method does.
-	@return the number of rows this range spans */
+    /**
+       Compute the number of rows this Range will take to display,
+       assuming rows are marked off as the row() method does.
+
+       @return the number of rows this range spans
+    */
     public int rows() {
 	return getEnd().row() - getStart().row() + 1;
     }
@@ -184,69 +211,92 @@ public class Range implements Comparable {
 	// use \u2014 EM DASH?
     }
 
-    /** Return true if (and only if) the given year is inside the range, inclusive.
-	@param y year to check 
-	@return true if <code>y</code> is in the range, else false */
+    /**
+       Return true if (and only if) the given year is inside the
+       range, inclusive.
+
+       @param y year to check 
+       @return true if <code>y</code> is in the range, else false
+    */
     public boolean contains(Year y) {
 	return (start.compareTo(y) <= 0) && (y.compareTo(end) <= 0);
     }
 
-    /** Return true if (and only if) the given range is completely inside the range, inclusive.
-	@param r range to check 
-	@return true if <code>r</code> is entirely in the range, else false */
+    /**
+       Return true if (and only if) the given range is completely
+       inside the range, inclusive.
+
+       @param r range to check 
+       @return true if <code>r</code> is entirely in the range, else false
+    */
     public boolean contains(Range r) {
 	return contains(r.start) && contains(r.end);
     }
 
-    /** Return true, iff this year is the start of a row.  (Year 1 is
-	considered the start of that row.)
-	@return true, iff this year is the start of a row */
+    /**
+       Return true, iff this year is the start of a row.  (Year 1 is
+       considered the start of that row.)
+
+       @return true, iff this year is the start of a row
+    */
     public boolean startOfRow(Year y) {
 	return y.equals(start) || y.column()==0 || y.isYearOne();
     }
 
-    /** Return true, iff this year is the end of a row.
-	@return true, iff this year is the end of a row */
+    /**
+       Return true, iff this year is the end of a row.
+
+       @return true, iff this year is the end of a row
+    */
     public boolean endOfRow(Year y) {
 	return y.equals(end) || y.column()==9;
     }
 
-    /** Return the number of years overlap between this range and the
-	given range.
+    /**
+       Return the number of years overlap between this range and the
+       given range.
 
-	@param r range to compare
-	@return number of years overlap */
+       @param r range to compare
+       @return number of years overlap
+    */
     public int overlap(Range r) {
 	return intersection(r).span();
     }
 
-    /** The intersection of this range with r.  If they don't overlap,
-	returns an empty range (1 - -1).
+    /**
+       The intersection of this range with r.  If they don't overlap,
+       returns an empty range (1 - -1).
 
-        @see #union
+       @see #union
         
-	@param r the range to intersect with this range
-	@return the intersection of this and r */
+       @param r the range to intersect with this range
+       @return the intersection of this and r
+    */
     public Range intersection(Range r) {
 	return new Range(Year.max(start, r.start),
 			 Year.min(end, r.end));
     }
 
-    /** The union of this range with r.  Since there is no concept of
-	"range with a gap" in Corina, it assumes they overlap.
+    /**
+       The union of this range with r.  Since there is no concept of
+       "range with a gap" in Corina, it assumes they overlap.
 
-        @see #intersection
+       @see #intersection
         
-	@param r the range to union with this range
-	@return the union of this and r */
+       @param r the range to union with this range
+       @return the union of this and r
+    */
     public Range union(Range r) {
 	return new Range(Year.min(start, r.start),
 			 Year.max(end, r.end));
     }
 
-    /** Compare two ranges for equality.
-	@param r range to compare with this
-	@return true, if the ranges are equal, else false */
+    /**
+       Compare two ranges for equality.
+
+       @param r range to compare with this
+       @return true, if the ranges are equal, else false
+    */
     public boolean equals(Object o) {
 	if (o instanceof Range) {
 	    Range r = (Range) o;
@@ -267,10 +317,16 @@ public class Range implements Comparable {
 	return start.hashCode() + 2*end.hashCode();
     }
 
-    /** Compares this and o, for placing in fallback order.
-	@param o Object to compare
-	@return >0, ==0, or <0 if this is greater-than, equal-to, or less-than o
-	@throws ClassCastException if o is not a Range */
+    /**
+       Compares this and o, for placing in fallback order.  Fallback
+       order sorts ranges by their ending year, latest to earliest,
+       and then by their length, longest to shortest.  (This is
+       usually what people want when looking at bargraphs.)
+
+       @param o Object to compare
+       @return >0, ==0, or <0 if this is greater-than, equal-to, or less-than o
+       @throws ClassCastException if o is not a Range
+    */
     public int compareTo(Object o) {
 	Range r2 = (Range) o;
 

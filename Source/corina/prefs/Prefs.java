@@ -37,7 +37,7 @@ import java.io.FileNotFoundException;
 import java.util.Properties;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
+import java.util.Vector;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -52,81 +52,57 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
-   Static class for loading and saving preferences.
+    Storage and access of user preferences.
 
-   Note that this doesn't store the preferences per se; that's done
-   by System properties.  This class only provides methods for loading
-   properties, saving properties, and making sense of them via
-   Prefs.Option.
+    <h2>Left to do</h2>
+    <ul>
+        <li>switch from System.getProperty() to my own Properties object
+            (save all, since i'll have that hash table to myself)
+        <li>add getFont(), setColor(), etc. convenience methods
+        <li>get rid of JDisclosureTriangle usage (and then delete it)
+        <li>get rid of "system" preferences (and file Source/prefs.properties) -
+            these should be inline, in each subsystem, with the prefs call
+        <li>extract prefs file location to platform?
+        <li>(goal: 300 lines for everything, maybe 350)
+    </ul>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
+    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+    @version $Id$
+*/
 public class Prefs {
-
     /*
-      NOW:
+      OLD:
       ~/xcorina/prefs.properties [win32]
       ~/.corina/prefs.properties [unix]
       ~/Library/Corina/prefs.properties [mac]
 
-      FUTURE:
+      NEW:
       ~/Corina Preferences [win32]
       ~/.corina [unix]
       ~/Library/Preferences/Corina Preferences [mac]
+    */
 
-      -- write a try-to-migrate method?
-      -- try both new&old locations, for now?
-     */
-
-    /** Name of the properties directory, as a subdirectory of
-        user.home: ".corina", except on Windows (where there are a lot
-        of silly restrictions on what filenames can be) where it's
-        "xcorina", and MacOS where it's the incredibly elegant
-        "Library/Corina". */
-    public final static String USER_PROPERTIES_DIR;
-    /*
-     this is BAD.  it should be called "Corina Preferences" (except on unix where it's .corina).
-     it should be a file, not a folder.
-     (open-recent needs to be merged into the prefs framework)
-     so:
-     unix = ~/.corina
-     mac = ~/Library/Preferences/Corina Preferences
-     win32 = ~/Corina Preferences
-     (unless there's a better place to put win32 prefs, but i don't know one)
-     */
+    private final static String FILENAME;
     static {
-        String home = System.getProperty("user.home") + File.separator;
-        
+	String home = System.getProperty("user.home");
+	if (!home.endsWith(File.separator))
+	    home = home + File.separator;
+
 	if (Platform.isWindows)
-            // for lack of a  better place -- FIXME: MIGRATE TO "corina"!
-	    USER_PROPERTIES_DIR = home + "xcorina";
+	    FILENAME = home + "Corina Preferences";
 	else if (Platform.isMac)
-            // this check belongs elsewhere, refactor!  (XMenubar.isMac() also exists)
-	    USER_PROPERTIES_DIR = home + "Library/Corina";
+	    FILENAME = home + "Library/Preferences/Corina Preferences"; // why in prefs?  isn't lib ok?
 	else // plain ol' unix
-	    USER_PROPERTIES_DIR = home + ".corina";
+	    FILENAME = home + ".corina";
     }
 
-    /** Name of the system properties file: prefs.properties */
-    public final static String SYSTEM_PROPERTIES_FILE = "prefs.properties";
-
-    /** Name of the user properties file: prefs.properties */
-    public final static String USER_PROPERTIES_FILE = USER_PROPERTIES_DIR + File.separator +
-                                                      "prefs.properties";
-
-    /** Load system and user properties (preferences).
-
-	This runs 2 steps:
+    /** Load system and user properties (preferences).  This runs 2 steps:
 
 	<ol>
 
-        <li>Load system properties, by loading <code>SYSTEM_PROPERTIES_FILE</code>
-        from inside the jar itself
+        <li>Load system properties, by loading ...
 
-        <li>Load user's properties, by loading
-        <code>USER_PROPERTIES_FILE</code> (in
-        <code>USER_PROPERTIES_DIR</code>, in the user's home directory)
+        <li>Load user's properties, by loading ...
 
 	</ol>
 
@@ -137,7 +113,7 @@ public class Prefs {
 	existing properties, while the other replaces the existing
 	properties with p.  (I don't remember offhand which is which.)
 	As usual, the API docs don't really specify.  Grrr... */
-    public static void load() throws IOException {
+    public synchronized static void load() throws IOException {
         // get existing properties
         Properties p = System.getProperties();
 
@@ -145,24 +121,29 @@ public class Prefs {
         // want to crap out before we've tried everything.
         String errors="";
 
-        // load system properties
+        // load system properties as a resource from this jar
         try {
-            ClassLoader cl = Class.forName("corina.prefs.Prefs").getClassLoader();
-            p.load(cl.getResource(SYSTEM_PROPERTIES_FILE).openStream());
+          ClassLoader cl = Class.forName("corina.prefs.Prefs").getClassLoader();
+          java.io.InputStream is = cl.getResourceAsStream("prefs.properties");
+          if (is != null) {
+            try {
+              p.load(is);
+            } finally {
+              is.close();
+            }
+          }
+	        // RENAME this?  ("Default Corina Preferences")
         } catch (IOException ioe) {
             errors += "Error loading Corina's default preferences (bug!).";
         } catch (ClassNotFoundException cnfe) {
             Bug.bug(cnfe);
         }
 
-        // make sure the user has a .corina directory; silently create, if absent
-        File dir = new File(USER_PROPERTIES_DIR);
-        if (!dir.exists())
-            dir.mkdir();
-
-        // get user properties
+        // get user properties (with a hack to preserve user.name)
         try {
-            p.load(new FileInputStream(USER_PROPERTIES_FILE));
+	    String n = p.getProperty("user.name"); // HACK!!!
+            p.load(new FileInputStream(FILENAME));
+	    p.setProperty("user.name", n);
         } catch (FileNotFoundException fnfe) {
             // user doesn't have a properties file, so we'll give her
             // one!  the system properties were already loaded, so all
@@ -174,7 +155,7 @@ public class Prefs {
             try {
 		// this is the guts of save(), but without the nice error handling.
 		Properties pp = getCorinaProperties();
-		pp.store(new FileOutputStream(USER_PROPERTIES_FILE), "Corina user preferences");
+		pp.store(new FileOutputStream(FILENAME), "Corina user preferences");
             } catch (IOException ioe) {
                 errors += "Error copying preferences file to your home directory: " +
                 ioe.getMessage();
@@ -193,6 +174,8 @@ public class Prefs {
 
     // copy corina properties to new property list
     private static Properties getCorinaProperties() {
+        // FUTURE: return (Properties) hashtable.clone();
+
 	Properties p = new Properties();
 	List options = PrefsTemplate.getOptions();
 	for (int i=0; i<options.size(); i++) {
@@ -204,21 +187,21 @@ public class Prefs {
 	return p;
     }
 
-    // BUG?  why's save() not synch?  (actually, save and load should both synch on the same ref.)
-    // TODO: so save() never throws an IOE, so remove that from its signature
-    
     /** Save current properties to the user's system-writable
 	properties (preferences) file,
-	<code>USER_PROPERTIES_FILE</code>. */
-    public static void save() {
+	<code>FILENAME</code>. */
+    public synchronized static void save() {
 	// get corina prefs
 	Properties p = getCorinaProperties();
 
 	// try to save prefs, and on failure present "try again?" dialog.
 	for (;;) {
 	    try {
-		// DESIGN: buffer me?
-		p.store(new FileOutputStream(USER_PROPERTIES_FILE), "Corina user preferences");
+                // -- p.store() buffers internally, so if i used a buffered stream
+                // here it would only hurt performance.
+                // -- the second string passed to store() is a comment line which
+                // is added to the top of the file.
+		p.store(new FileOutputStream(FILENAME), "Corina user preferences");
 		return;
 	    } catch (IOException ioe) {
 		if (dontWarn)
@@ -229,24 +212,6 @@ public class Prefs {
 		    return;
 	    }
 	}
-    }
-
-    // true iff there's no .corina (or similar) directory
-    public static boolean firstRun() {
-	File folder = new File(USER_PROPERTIES_DIR);
-	return !folder.exists();
-    }
-
-    // from "1 2 3", extract int[] { 1, 2, 3 }
-    // (seems as good a place as any for this, since it's prefs-related.)
-    // MOVE: no, belongs somewhere else ... maybe corina.util.
-    public static int[] extractInts(String s) {
-        StringTokenizer tok = new StringTokenizer(s, " ");
-        int n = tok.countTokens();
-        int r[] = new int[n];
-        for (int i=0; i<n; i++)
-            r[i] = Integer.parseInt(tok.nextToken());
-        return r;
     }
 
     // if true, silently ignore if the prefs can't be saved.
@@ -270,7 +235,7 @@ public class Prefs {
 	// -- disclosure triangle with scrollable text area: click for details... (stacktrace)
 	JComponent stackTrace = new JScrollPane(new JTextArea(Bug.getStackTrace(e), 10, 60));
 	JDisclosureTriangle v = new JDisclosureTriangle(I18n.getText("click_for_details"),
-							stackTrace, dialog, false);
+							stackTrace, false);
 	message.add(v, BorderLayout.CENTER);
 
 	// -- checkbox: don't warn me again
@@ -280,6 +245,8 @@ public class Prefs {
 		    dontWarn = !dontWarn;
 		}
 	    });
+
+	// FIXME: consolidate |message| panel construction with Layout methods
 	message.add(dontWarnCheckbox, BorderLayout.SOUTH);
 
 	// show dialog
@@ -289,5 +256,65 @@ public class Prefs {
 
 	// return true iff "try again" is clicked
 	return optionPane.getValue().equals(I18n.getText("try_again"));
+    }
+
+    // --------------------------------------------------
+    // new prefs api below here
+
+    /*
+      TODO:
+      -- set/get any data type
+      -- automatically save
+      -- (but not right away, which would be slow)
+      -- defaults -- required?
+      -- convenience functions for non-atomic things like window geometries?
+      -- also, lists of data
+      -- prefs event
+      -- prefs listener
+      -- on prefs.set, fire events
+      -- get rid of all refreshFromPrefs() methods, HasPreferences interface
+      -- (register listener with type, like jrendezvous?)
+    */
+
+    // just wrappers, for now
+    public static void setPref(String pref, String value) {
+	System.setProperty(pref, value);
+	firePrefChanged(pref);
+	save();
+    }
+    public static String getPref(String pref) { // TODO: require default?
+	return System.getProperty(pref);
+    }
+
+    // event model -- a standard event model, except that it's entirely static
+    // (and "this" changed to "Prefs.class")
+    private static Vector listeners = new Vector();
+
+    // IDEA: addPrefsListener(l, String pref)?
+    public static synchronized void addPrefsListener(PrefsListener l) {
+	if (!listeners.contains(l))
+	    listeners.add(l);
+    }
+    public static synchronized void removePrefsListener(PrefsListener l) {
+	listeners.remove(l);
+    }
+    public static void firePrefChanged(String pref) {
+	// alert all listeners
+	Vector l;
+	synchronized (Prefs.class) {
+	    l = (Vector) listeners.clone();
+	}
+
+	int size = l.size();
+
+	if (size == 0)
+	    return;
+
+	PrefsEvent e = new PrefsEvent(Prefs.class, pref);
+
+	for (int i=0; i<size; i++) {
+	    PrefsListener listener = (PrefsListener) l.elementAt(i);
+	    listener.prefChanged(e);
+	}
     }
 }

@@ -20,6 +20,11 @@
 
 package corina.map;
 
+import corina.map.layers.GridlinesLayer;
+import corina.map.layers.MapLayer;
+import corina.map.layers.LegendLayer;
+import corina.map.layers.SitesLayer;
+
 import java.awt.Dimension;
 import java.awt.BasicStroke;
 import java.awt.Graphics;
@@ -75,15 +80,20 @@ public class MapPrinter implements Printable {
        Make a new MapPrinter.
     
        @param view the View to print
+       @param labels the LabelSet to use
        @param format the PageFormat to use
     */
-    public MapPrinter(View view, PageFormat format) {
+    public MapPrinter(View view, LabelSet labels, PageFormat format) {
         this.format = format;
 
+        this.labels = labels;
+        
         this.view = (View) view.clone();  // wasteful later: need to decide if view is mutable!
     }
 
     private View view;
+
+    private LabelSet labels;
 
     private PageFormat format;
 
@@ -139,7 +149,7 @@ public class MapPrinter implements Printable {
         // make some layers
         Layer grid = new GridlinesLayer();
         Layer legend = new LegendLayer();
-        Layer sitesLayer = new SitesLayer();
+        Layer sitesLayer = new SitesLayer(labels);
         Layer mapLayer = new MapLayer();
         
         // draw them to |g2|

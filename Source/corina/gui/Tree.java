@@ -50,12 +50,12 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.DragSourceDropEvent;
 import java.awt.dnd.DragSourceDragEvent;
+import java.awt.dnd.DragSourceContext; // new
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class Tree extends JLabel
-    implements DragSourceListener, DragGestureListener {
+public class Tree extends JLabel implements DragGestureListener {
 
     /*
       todo: add right-click menu:
@@ -78,6 +78,7 @@ public class Tree extends JLabel
         int height = getFont().getSize() + 4;
 
         // scale -- assumes square icon
+	// WRITEME: scale image?
         img = new ImageIcon(img.getImage().getScaledInstance(height, height,
                                                              Image.SCALE_SMOOTH));
 
@@ -111,35 +112,80 @@ public class Tree extends JLabel
     // drag source
     private DragSource drag;
 
-    // start a drag
-    public void dragEnter(DropTargetDragEvent event) {
-        event.acceptDrag(DnDConstants.ACTION_MOVE);
-    }
-
-    // send out the data, as a file(name)
+    // send out the data, as a file(name).  (implementation of DragGestureListener.)
     public void dragGestureRecognized(DragGestureEvent event) {
-        Transferable t = new Transferable() {
-                public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
-                    if (!flavor.equals(DataFlavor.javaFileListFlavor))
-                        throw new UnsupportedFlavorException(flavor);
-		    return Collections.singletonList(new File((String) s.meta.get("filename")));
-                }
-                public DataFlavor[] getTransferDataFlavors() {
-                    return new DataFlavor[] { DataFlavor.javaFileListFlavor };
-                }
-                public boolean isDataFlavorSupported(DataFlavor flavor) {
-                    return flavor.equals(DataFlavor.javaFileListFlavor);
-                }
-            };
-        drag.startDrag(event, DragSource.DefaultMoveDrop, t, this);
+	// start the drag
+        drag.startDrag(event,
+		       DragSource.DefaultMoveDrop,
+		       new TransferableFile((String) s.meta.get("filename")),
+		       new EmptyDragSourceListener());
     }
 
-    // empty stuff -- need writing?
-    public void dragExit(DropTargetEvent event) { }
-    public void dragOver(DropTargetDragEvent event) { }
-    public void dragEnter(DragSourceDragEvent event) { }
-    public void dragExit(DragSourceEvent event) { }
-    public void dragOver(DragSourceDragEvent event) { }
-    public void dropActionChanged( DragSourceDragEvent event) { }
-    public void dragDropEnd(DragSourceDropEvent event) { }
+    // a DragSourceListener that doesn't do anything.
+    public static class EmptyDragSourceListener implements DragSourceListener {
+	public void dragDropEnd(DragSourceDropEvent event) {
+	    System.out.println("drag source listener: drag-drop-end");
+	    System.out.println("-- action=" + event.getDropAction());
+	    System.out.println("-- success=" + event.getDropSuccess());
+	}
+	public void dragEnter(DragSourceDragEvent event) {
+	    DragSourceContext context = event.getDragSourceContext(); // Q: do i need to do any of this?
+	    int myAction = event.getDropAction();
+	    if ((myAction & DnDConstants.ACTION_COPY) != 0)
+		context.setCursor(DragSource.DefaultCopyDrop);
+	    else
+		context.setCursor(DragSource.DefaultMoveDrop);
+	    // context.setCursor(DragSource.DefaultCopyNoDrop);
+	}
+	public void dragExit(DragSourceEvent event) {
+	    // System.out.println("drag source listener: drag-exit");
+	}
+	public void dragOver(DragSourceDragEvent event) {
+	    // System.out.println("drag source listener: drag-over");
+	}
+	public void dropActionChanged(DragSourceDragEvent event) {
+	    System.out.println("drag source listener: drop-action-changed, event=" + event);
+	}
+    }
+
+    // if you want to drag a file, here's an easy way to do it.
+    // (i'm not the only one to think of this, apparently.
+    // see also com.apple.mrj.datatransfer.FileTransferable)
+    // REFACTOR: move this to corina.util?
+    // -- (or maybe a more awt/swing-specific util package?)
+    public static class TransferableFile implements Transferable {
+	private String filename;
+	public TransferableFile(String filename) {
+	    super();
+	    this.filename = filename;
+	}
+	public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+	    if (!flavor.equals(DataFlavor.javaFileListFlavor))
+		throw new UnsupportedFlavorException(flavor);
+
+	    return Collections.singletonList(new File(filename));
+	}
+	public DataFlavor[] getTransferDataFlavors() {
+	    return new DataFlavor[] { DataFlavor.javaFileListFlavor };
+	}
+	public boolean isDataFlavorSupported(DataFlavor flavor) {
+	    return flavor.equals(DataFlavor.javaFileListFlavor);
+	}
+    }
+    public static class TransferableFileList extends TransferableFile {
+	// this class ignores private String filename -- oh well, a few bytes lost
+	private List files;
+	public TransferableFileList(List files) {
+	    super(null); // HACK, but i need to call something (see previous comment)
+	    this.files = files; // should i copy it?
+	}
+	public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+	    if (!flavor.equals(DataFlavor.javaFileListFlavor))
+		throw new UnsupportedFlavorException(flavor);
+
+	    return files;
+	}
+    }
+    // -- with stringFlavor, i can drop a clipping onto a mac folder.
+    // -- javaFileListFlavor doesn't seem to want to drop a file, though -- but sort of on win32 (?!?)
 }

@@ -23,10 +23,10 @@ package corina.index;
 import corina.Year;
 import corina.Sample;
 import corina.graph.Graphable;
+import corina.ui.I18n;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 
 import java.text.MessageFormat;
 
@@ -37,20 +37,18 @@ import javax.swing.undo.UndoableEdit;
    this context, means a de-trending curve for a sample's data.)
 
    <p><a href="http://www.netlib.org/">Netlib</a> might have some
-   useful functions for implementing indexes.</p>
+   useful functions for implementing other indexes (but I don't use
+   any of them myself).</p>
 
    @see Sample
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public abstract class Index implements Graphable, Runnable, UndoableEdit {
 
     /** Index curve, stored as a List of Numbers. */
     public List data;
-
-    /** ResourceBundle for internationalization. */
-    protected static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     /** Returns the data List for graphing.
 	@see Graphable
@@ -72,9 +70,11 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
         return 1.0f;
     }
 
-    /** A reference to the Sample to use to compute the index.
-        The original is not changed when the index is computed.
-        @see target */
+    /**
+       A reference to the Sample to use to compute the index.
+       The original is not changed when the index is computed.
+       @see #getTarget
+    */
     public Sample source;
 
     /** A reference to the Sample to apply the index to.  In almost
@@ -102,7 +102,7 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
     protected abstract void index();
     public void run() {
         // verify ranges
-        if (source!=target && !source.range.union(target.range).equals(source.range)) {
+        if (source!=target && !source.range.contains(target.range)) {
             throw new RuntimeException("Proxy dataset doesn't cover this sample's range.");
         }
 
@@ -122,11 +122,13 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
         }
     }
 
-    /** Return the name of this index in a user-readable format.  This
-        abstract class returns the name of the instantiated class;
-        concrete classes should append something to this value, if
-        they wish to return a more specific value.
-	@return a human-readable name of this index */
+    /**
+       Return the name of this index in a user-readable format.  This
+       abstract class returns the name of the instantiated class (like
+       "CubicSpline"); subclasses should override this.
+
+       @return the name of this index
+    */
     public String getName() {
 	String fqdn = getClass().getName();
 	int dotIndex = fqdn.lastIndexOf(".");
@@ -159,10 +161,14 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
             chi2 += chi*chi;
         }
 
-        // according to http://www.na.astro.it/datoz-bin/corsi?chi2, i should now say chi2/=n.
-        // numerical methods (which i don't trust) seems to say not, but it's not terribly clear.
-        // what to do?
-        // 12.aug.2002: carol says average-chi^2 makes sense to her, so let's try that.
+        // according to http://www.na.astro.it/datoz-bin/corsi?chi2,
+	// i should now say chi2/=n.
+
+        // numerical methods (which i don't trust) seems to say not,
+        // but it's not terribly clear.  what to do?
+
+	// 12.aug.2002: carol says average-chi^2 makes sense to her,
+	// so let's try that.
         chi2 /= n;
 
         return chi2;
@@ -176,7 +182,8 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
     }
     
     // uses the r-algorithm stolen from t-score.
-    // why can't i steal it directly?  because they use arrays, i use lists (and t-score uses funny offsets).
+    // why can't i steal it directly?  because they use arrays,
+    // i use lists (and t-score uses funny offsets).
     // i really shouldn't violate OAOO, though -- REFACTOR.
     private static double computeR(List A, List B) {
         // compute means
@@ -205,7 +212,7 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
         double r = z3 / Math.sqrt(z1*z2);
         return r;
     }
-    
+
     // undo: backup data
     private List backup=null;
     private String oldFormat;
@@ -216,8 +223,10 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
         in-place. */
     public final void apply() {
         // back up the old data
-        if (backup == null)
-            backup = (List) ((ArrayList) target.data).clone();
+        if (backup == null) {
+	    backup = new ArrayList();
+            backup.addAll(target.data);
+	}
         // INEFFICIENT: make a copy of the old data, then overwrite it all.
         // why not just move the old data, and create a new list for the new stuff?
         // (well, you only save an O(n) copy, it won't help that much.)
@@ -248,7 +257,8 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
 
     public final void unapply() {
 	// restore target.data
-	target.data = (List) ((ArrayList) backup).clone();
+	target.data = new ArrayList();
+	target.data.addAll(backup);
 
 	// restore meta/format
 	if (oldFormat == null)
@@ -269,7 +279,7 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
 	algorithm, and the target sample.
 	@return complete title of this index */
     public final String toString() {
-        return MessageFormat.format(msg.getString("x_index_of"),
+        return MessageFormat.format(I18n.getText("x_index_of"),
                                     new Object[] { getName(), target.toString() });
     }
 
@@ -289,7 +299,7 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
 	alive = false;
     }
     public String getPresentationName() {
-	return msg.getString("index");
+	return I18n.getText("index");
     }
     public String getRedoPresentationName() {
 	return "Redo Index"; // i18n me!

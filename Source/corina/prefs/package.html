@@ -1,0 +1,421 @@
+<body>
+
+User preferences.
+
+<h2>Overview</h2>
+
+<p>Preferences are a (key -&gt; value) hash table.  Keys and values are both
+Strings.  (This hash table is similar to, but independent from, the Properties
+object behind the System.getProperty() / System.setProperty() methods.)</p>
+
+<p>Unlike System's properties, not every standard key needs to be in the hash
+table.  If a key isn't in the hash table, that means a default value should be
+used.</p>
+
+<h3>Naming Conventions</h3>
+
+<p>Keys are named similarly to Java package names: as a chain of words,
+from general to specific, separated by dots.  All Corina preferences start with "corina".
+The second word is the subsystem (like "cross"), and the third word is what
+attribute in that subsystem.  For example, the last folder
+that the browser viewed is called <code>corina.browser.folder</code>.</p>
+
+<p>While also not required, many also use the same terms for consistency,
+like "foreground", "background", and "font".  For example, the key
+corina.graph.background is the graph's background color, and
+corina.edit.background is the background color to use in the editor.</p>
+
+<h3>Default Values</h3>
+
+WRITEME!
+<pre>
+-- defaults (pass with get()?  getPref("corina.grid", "true")??
+	-- returning null is generally bad!
+        -- better: PrefNotSetException.  why?
+        
+        try {
+            Color c = Prefs.getColor("corina.foo.background");
+            foo.setBackground(c);
+        } catch (PrefNotSetException pnse) {
+            // do nothing
+        }
+</pre>
+
+<h3>Types</h3>
+
+<p>All of the values are stored as Strings, but that doesn't mean they're completely
+without structure.  Several types are used repeatedly, and in the same form:</p>
+
+<ul>
+
+    <li>Colors are stored as 6-digit hex strings, preceded by a '#' character.
+        The strings are RRGGBB components, so "#000000" is black, "#ff0000"
+        is red, and "#ffffff" is white.
+        
+    <li>Booleans are stored as the string "true" or the string "false".  (Any
+        value not equal to "true" is considered false.)
+        
+    <li>Numbers are stored as human-readable strings, like "17" or "3.45".
+    
+    <li>Fonts are stored in ??? format.  For example, "Dialog 12" or "Times 18 bold".
+        ???
+        
+</ul>
+
+WRITEME: -- window geometries?  table column sizes?
+
+<p>To make it easier to deal with storing objects as preferences, there are
+some convenience methods which are simple wrappers around getPref() and setPref():
+getFont()/setFont(), getColor()/setColor(), getBool()/setBool(), getFloat()/setFloat(),
+and getInt()/setInt().  If a get method is asked for a type, and the String value
+doesn't look like that type (for example, if getColor() is used to read a pref
+which has value "7"), the method acts as if that preference isn't set.</p>
+
+<h3>How it's Stored</h3>
+WRITEME -- how it's stored (as a properties file, in ~/.corina or ...)
+
+<hr />
+
+<h2>Public Interface</h2>
+
+<h3>Getting and Setting</h3>
+
+<p>To get, set, or unset a preference, use
+
+<pre>
+Prefs.getPref(key);
+Prefs.setPref(key, value);
+Prefs.unsetPref(key);
+</pre>
+
+<p>You never need to do anything special to "save" the preferences.
+When you set a preference, it automatically saves it to disk.
+(You never need to do anything special to "load" the preferences,
+either.  When you start Corina, they'll be loaded when they're needed.)</p>
+
+<h3>Prefs Dialog: Letting the User Change Them</h3>
+
+<p>To present the preferences dialog to the user, call
+
+<pre>
+PrefsDialog.showPrefsDialog();
+</pre>
+
+(Only one prefs dialog will ever be visible at a time;
+if this is called twice, the original dialog is shown.)</p>
+
+<p>Normally this should only be done
+in response to the "Preferences..." menuitem.  But it can also be
+called from a button or context menu, if being able to access
+a prefs panel quickly would be helpful.  For example, a context
+menu on the data of a crossdate might offer "Crossdate Preferences...",
+which would lead directly to the crossdating preferences panel.
+To open a specific panel, pass the name of a prefs panel to
+showPrefsDialog(), like
+
+<pre>
+PrefsDialog.showPrefsDialog("CrossdatePrefsPanel");
+</pre>
+
+</p>
+
+<p>Note that you can set preferences apart from the PrefsDialog.
+For example, if you want to store the position of a window for
+perceived stability, you can go ahead and do that with Prefs.setPref().
+But there wouldn't be a corresponding entry in the prefs dialog for this.</p>
+
+<h3>Listeners: Watching for Preferences Changes</h3>
+
+<p>If you use preferences, you should also be aware of when they change.
+When the user changes some preferences, your objects should update themselves
+to reflect the changes.  For this, use a PrefsListener.  It's an interface
+with just one method: prefChanged(PrefEvent).  Each time a preference is
+changed, the prefChanged() method is called on each registered listener.
+Use Prefs.addPrefListener() and Prefs.removePrefListener() to register
+listeners.  (The PrefEvent object simply contains the key of the preference
+which was changed.)</p>
+
+<hr />
+
+<h2>Implementation Details</h2>
+
+<p>You only need to read this section if you plan to add or modify
+preference panes.</p>
+
+<h3>Preferences File</h3>
+
+<p>The preferences file is saved in a platform-dependent place which
+is meant to be discoverable.</p>
+
+<table border="1" cellspacing="0" align="center">
+    <tr>
+        <th>Platform</th>
+        <th>File Location</th>
+    </tr>
+    <tr>
+        <td>Mac OS</td>
+        <td>"Corina Preferences" in the users' "Library" folder</td>
+    </tr>
+    <tr>
+        <td>Windows</td>
+        <td>"Corina Preferences" in the users' home folder</td>
+    </tr>
+    <tr>
+        <td>Linux</td>
+        <td>".corina" in the users' home folder</td>
+    </tr>
+</table>
+
+<p>The preferences file is currently a properties file, so whatever the
+API for java.util.Properties says is valid.  I think it uses the native
+encoding, not UTF-8, so be careful.  This, of course, may change in a
+future version; I may switch to XML.</p>
+
+<h3>The Components</h3>
+
+WRITEME
+-- each type of widget (ColorPrefsComponent, FontPrefsComponent, etc.)
+
+<h3>The Panels</h3>
+
+WRITEME
+-- each panel (AppearancePrefsPanel, CrossdatingPrefsPanel, etc.)
+
+<p>If you create a new pref panel, simply add it to PrefsDialog.java.</p>
+
+<hr />
+
+<h2>Standard Preferences</h2>
+
+<p>These are all of the preferences which are handled by the PrefsDialog.
+This list is not exhaustive: others may be used by specific subsystems.</p>
+
+<table border="1" cellspacing="0" align="center">
+    <tr>
+        <th>Category</th>
+        <th>Key</th>
+        <th>Type</th>
+        <th>Default</th>
+    </tr>
+    
+    <tr>
+        <td rowspan="4">Appearance</td>
+        <td>corina.edit.font</td>
+        <td>Font</td>
+        <td></td>
+    </tr>
+    <tr>
+        <!-- appearance -->
+        <td>corina.edit.background</td>
+        <td>Color</td>
+        <td></td>
+    </tr>
+    <tr>
+        <!-- appearance -->
+        <td>corina.edit.foreground</td>
+        <td>Color</td>
+        <td></td>
+    </tr>
+    <tr>
+        <!-- appearance -->
+        <td>corina.edit.gridlines??</td>
+        <td>Boolean</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td rowspan="6">Crossdating</td>
+        <td>corina.cross.tscore.format</td>
+        <td>String (DecimalFormat)</td>
+        <td>0.00</td>
+    </tr>
+    <tr>
+        <!-- crossdating -->
+        <td>corina.cross.rvalue.format</td>
+        <td>String (DecimalFormat)</td>
+        <td>0.00</td>
+    </tr>
+    <tr>
+        <!-- crossdating -->
+        <td>corina.cross.trend.format</td>
+        <td>String (DecimalFormat)</td>
+        <td>0.0%</td>
+    </tr>
+    <tr>
+        <!-- crossdating -->
+        <td>corina.cross.dscore.format</td>
+        <td>String (DecimalFormat)</td>
+        <td>0.00</td>
+    </tr>
+    <tr>
+        <!-- crossdating -->
+        <td>corina.cross.weiserjahre.format</td>
+        <td>String (DecimalFormat)</td>
+        <td>0.0%</td>
+    </tr>
+    <tr>
+        <!-- crossdating -->
+        <td>corina.cross.overlap??</td>
+        <td>Number</td>
+        <td>50?</td>
+    </tr>
+    <tr>
+        <td rowspan="8">Graphs</td>
+        <td>corina.graph.???</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <!-- graphs -->
+        <td>corina.graph.???</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <!-- graphs -->
+        <td>corina.graph.???</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <!-- graphs -->
+        <td>corina.graph.???</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <!-- graphs -->
+        <td>corina.graph.???</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <!-- graphs -->
+        <td>corina.graph.???</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <!-- graphs -->
+        <td>corina.graph.???</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <!-- graphs -->
+        <td>corina.graph.???</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td rowspan="3">Advanced</td>
+        <td>corina.dir.data</td>
+        <td>(folder)</td>
+        <td></td>
+    </tr>
+    <tr>
+        <!-- advanced -->
+        <td>corina.gui.menubar.font</td>
+        <td>Font</td>
+        <td></td>
+    </tr>
+    <tr>
+        <!-- advanced -->
+        <td>corina.gui.filechooser</td>
+        <td>("swing" or "awt")</td>
+        <td><code>swing</code></td>
+    </tr>
+</table>
+
+WRITEME: add others (see below in html source)
+
+<!--
+
+crossdating (CrossdatingPrefsPanel)
+...
+	crossdating grids
+		font			font chooser
+
+	significant scores
+		highlight?		checkbox (true)
+		color			color popup (green?)
+
+graph (GraphPrefsPanel)
+	colors
+		background			color chooser
+		axis/cursor			color chooser
+		graphpaper			color chooser
+
+	special features
+		draw sapwood as thicker line	checkbox
+		draw indexes with dotted line	checkbox
+		draw baselines			checkbox
+		draw graphpaper			checkbox
+
+	scale
+		horizontal			slider -- 2 to 20? pixels per year
+-->
+
+<hr />
+
+<h2>Why a Custom Preferences Package?</h2>
+
+<p>This package is admittedly very similar to Java 1.4's
+<a href="http://java.sun.com/j2se/1.4.1/docs/api/java/util/prefs/package-summary.html">java.util.prefs</a>.
+The basic differences are:</p>
+
+<table border="1" cellspacing="0" align="center">
+    <tr>
+        <th width="50%">corina.prefs</th>
+        <th width="50%">java.util.prefs</th>
+    </tr>
+
+    <tr>
+        <td>Storage to file only</td>
+        <td>Storage to any backing (file, RDBMS, registry, etc.)</td>
+    </tr>
+    <tr>
+        <td>Stores preferences</td>
+        <td>Stores "user" and "system" preferences</td>
+    </tr>
+    <tr>
+        <td>Prefs for Corina only</td>
+        <td>Stores prefs in any number of "nodes"</td>
+    </tr>
+    <tr>
+        <td>Includes Swing dialog for modifying preferences</td>
+        <td>Storage only</td>
+    </tr>
+</table>
+
+<ul>
+    <li>storage to a file only
+    <li>no "system" preferences
+    <li>storage for a single "node" only
+    <li>a really nifty Swing dialog for modifying Corina-specific preferences
+</ul>
+
+<p>With the exception of the last one, there's no reason java.util.prefs couldn't
+replace this package in the future.  The reason I'm avoiding java.util.prefs for
+now are:</p>
+
+<ul>
+    <li>It requires Java 1.4, and Java 1.4 is still fairly new
+    <li>It's not clear (to me) where it stores user preferences; my primary
+        clients are running Windows with Netware 4, which doesn't set users'
+        homes correctly, so it would fail if it used, for example, the
+        Windows "registry".  My implementation requires nothing more than
+        the Java property user.home to be set correctly.
+</ul>
+
+<p>And, strange as it is for me to quote
+<a href="http://joelonsoftware.com/">Joel Spolsky</a> (since I strongly
+agree with half of what he says and strongly disagree with the other half),
+<a href="http://www.joelonsoftware.com/articles/fog0000000026.html">"for
+your most important, mission critical stuff, you have to use a tool
+that is one level lower in abstraction than ideal."</a>  Also, note
+that Knuth's groundbreaking program T<sub>E</sub>X uses integers (with
+custom floating-point functions) to do floating-point arithmetic.
+It works identically everywhere, and is probably also perhaps the only
+non-trivial bug-free program in existence.</p>
+
+</body>

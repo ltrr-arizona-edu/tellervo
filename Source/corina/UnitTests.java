@@ -3,6 +3,7 @@ package corina;
 import junit.framework.TestCase;
 
 import java.util.List;
+import java.util.Iterator;
 
 public class UnitTests extends TestCase {
     public UnitTests(String name) {
@@ -79,10 +80,16 @@ public class UnitTests extends TestCase {
     }
 
     //
-    // testing Metadata.java
+    // testing MetadataTemplate.java
     //
     public void testMetadataLoad() {
-        assertTrue(Metadata.fields != null && Metadata.fields.length > 0);
-        assertTrue(Metadata.preview != null && Metadata.preview.length > 0);
+	Iterator i = MetadataTemplate.getFields();
+	assertTrue(i != null);
+	int n = 0;
+	while (i.hasNext()) {
+	    assertTrue(i.next() != null);
+	    n++;
+	}
+	assertTrue(n >= 1);
     }
 }

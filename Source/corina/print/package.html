@@ -1,0 +1,73 @@
+<body>
+
+A high-level interface for printing.
+
+<h2>Design</h2>
+
+<p>Java's printing API works like this: you provide a class which
+implements Printable which defines how to print a page, using
+primitive graphics drawing commands, like drawLine() and drawString().
+It provides these descriptions for each page you want to print,
+possibly more than once.</p>
+
+<p>That was probably easiest for the people writing Java to implement.
+Unfortunately, it's not the way any real program actually works.
+(This problem, of course, was solved 20 years ago, by Knuth with
+T<sub>E</sub>X.  What they should have done was simply put a small
+T<sub>E</sub>X engine - heck, even roff - in the Java class libraries,
+and given a high-level wrapper for it.  Programmers, especially Java
+programmers, though, seem particularly fond of re-inventing the wheel
+themselves.)</p>
+
+<p>In reality, a program will want to print a document, usually
+consisting of mostly text.  The program won't really care how many
+pages it ends up being, or where the page breaks occur.  So I've built
+a higher-layer interface on top of Java printing for this sort of use.
+(An added benefit is that if I ever want to port Corina to a better
+programming language, I'll have a better interface than Java's
+printing API to port.)</p>
+
+<h2>How it works</h2>
+
+<p>Here's how it works: for an object you wish to print, write an
+extension to the Printer class.  Sample is printed by SamplePrinter,
+for example.  The constructor for this class will simply add Lines to
+a List describing how to print out that document on paper.  A Line is
+just a slice of stuff which knows how tall it is, and how to draw
+itself.  Page breaks may occur only between lines.  Some Lines are
+available for free: TextLine is a line of text, and EmptyLine is a
+blank space, for example.  Or you can define your own, which isn't
+very difficult.</p>
+
+<table align="center" border="0" width="50%" background="white" style="border: solid 1px black">
+  <tr><td><p style="border: dashed gray 1px">A line of text</p></td></tr>
+  <tr><td><p style="border: dashed gray 1px">A second line</p></td></tr>
+  <tr><td><p style="border: dashed gray 1px">&nbsp;</p></td></tr>
+  <tr><td><p style="border: dashed gray 1px">Another line (below an EmptyLine)</p></td></tr>
+</table>
+
+<p>(Note that TextLines, unlike lines in HTML or T<sub>E</sub>X, don't
+provide any line-wrapping support.  If your line is too long, it'll go
+right off the edge of the page.  If you want to print a paragraph of
+text, you'll have to write your own class which takes a long string as
+input, and splits it into Lines using a line-breaking algorithm.  Such
+a class wouldn't necessarily be hard to write, but Corina hasn't had
+any need for one yet.)</p>
+
+<p>When you're done with that, just print the SamplePrinter.  Printer
+implements Printable (it may someday be switched to Pageable, so users
+can see how many pages it'll be printing), so you can just print that
+object.</p>
+
+<!-- if i'm feeling up to it: i've created a nice abstraction for
+printing documents consisting of lines of text, like tables.  can i
+make another one that's good for printing generic square-celled
+documents? - well, that's not very useful; it works for grids, and
+probably nothing else.  but what would be useful is knowing how to
+print something of arbitrary size, and have a corina.print class that
+either (1) scales it down to fit on a page, or (2) tiles it on as many
+pages as needed - that would be a powerful abstraction.  -->
+
+
+
+</body>

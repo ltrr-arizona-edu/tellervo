@@ -22,8 +22,10 @@ package corina.manip;
 
 import corina.Year;
 import corina.Sample;
+import corina.ui.Builder;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.FileNotFoundException;
 
 import java.util.List;
@@ -52,9 +54,9 @@ import javax.swing.ImageIcon;
    <p>This class will point out whether two samples are reconciled,
    and if not, where they differ.</p>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class Reconcile {
     private Sample s1, s2;
 
@@ -104,9 +106,12 @@ public class Reconcile {
         throw new FileNotFoundException();
     }
 
-    /** Construct a new reconciliation from two given samples.
-	@param a the A-reading
-	@param c the C-reading */
+    /**
+       Construct a new reconciliation from two given samples.
+
+       @param a the A-reading
+       @param c the C-reading
+    */
     public Reconcile(Sample a, Sample c) {
         this.s1 = a;
         this.s2 = c;
@@ -117,15 +122,18 @@ public class Reconcile {
         checkLength();
 
         // fast-fail here -- DESIGN: is this what i want?
-        if (s1.data.size() != s2.data.size())
-            return;
+	//        if (s1.data.size() != s2.data.size())
+	//            return;
 
         check3Percent();
         checkTrends();
     }
 
-    /** Return a title for this reconciliation.
-        @return this reconciliation's title */
+    /**
+       Return a title for this reconciliation.
+
+       @return this reconciliation's title
+    */
     public String toString() {
         return "Reconciliation of \"" + s1 + "\" and \"" + s2 + "\""; // DOES THIS EVER GET USED?
     }
@@ -154,9 +162,12 @@ public class Reconcile {
 	}
     }
 
-    Icon lengthIcon = new ImageIcon(this.getClass().getClassLoader().getResource("Images/bad-length.png"));
-    Icon trendIcon = new ImageIcon(this.getClass().getClassLoader().getResource("Images/bad-trend.png"));
-    Icon percentIcon = new ImageIcon(this.getClass().getClassLoader().getResource("Images/bad-percent.png"));
+    Icon lengthIcon, trendIcon, percentIcon;
+    {
+	lengthIcon = Builder.getIcon("bad-length.png");
+	trendIcon = Builder.getIcon("bad-trend.png");
+	percentIcon = Builder.getIcon("bad-percent.png");
+    }
 
     // check length -- needed?
     // BUG: this isn't the sort of length rule i want to have
@@ -237,9 +248,6 @@ public class Reconcile {
 	}
     }
 
-    // IDEA: all lists contain all possible Rules, and they just turn themselves on or off
-    // by looking at the data (!!!)
-
     // check 3%
     private void check3Percent() {
 
@@ -264,4 +272,51 @@ public class Reconcile {
     }
 
     // (it's fairly easy ot generate an HTML report from the rules, if you really want one.)
+
+    // --------
+    // mark both samples as reconciled
+    // -- set ;RECONCILED field to Y
+    // -- rename to ".REC", if possible
+    public void markAsReconciled() throws IOException {
+	s1.meta.put("reconciled", "Y");
+	s2.meta.put("reconciled", "Y");
+
+	// change each filename to ".rec"
+	changeExtension(s1, "REC");
+	changeExtension(s2, "REC");
+
+	// BUG: doesn't deal with possible errors:
+	// -- file already exists
+	// ---- ask user: "blah.rec already exists"?
+	// ---- this button shouldn't be enabled in that case
+	// -- file can't be saved
+	// ---- that's a normal error case (?)
+	// ---- no, that doesn't come up here (but it should -- BUG!)
+	// -- file doesn't have meta/filename
+	// ---- can this ever happen?  sure, create a new sample, then rec it.
+	
+    }
+
+    // BUG: OpenRecent should get the new filename, then!  (or any time a file
+    // is renamed)
+
+    private void changeExtension(Sample s, String ext) throws IOException {
+	// -- make .rec filename
+	File f = new File((String) s.meta.get("filename"));
+	int dot = f.getName().indexOf('.');
+	String rec;
+	if (dot == -1)
+	    rec = f.getName() + "." + ext;
+	else
+	    rec = f.getName().substring(0, dot) + "." + ext;
+
+	// -- set my filename to that
+	s.meta.put("filename", f.getParent() + File.separator + rec);
+
+	// -- rename old file to that file
+	f.renameTo(new File(f.getParent() + File.separator + rec));
+
+	// save!
+	s.save();
+    }
 }

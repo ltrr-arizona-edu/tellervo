@@ -25,3 +25,9 @@ and what to do when you double-click it.
 -- build (generated at compile-time)
 	Where the compiled classes are put before being put into
 Corina.jar.
+
+-- Corina API Style.css
+	Stylesheet used for JavaDoc documentation.
+
+-- Code Conventions.html
+	Code conventions used for Corina.  If you hack Corina, follow these.

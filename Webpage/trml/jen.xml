@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="trml.xsl"?>
+
+<!-- This file was created by Corina (http://corina.sf.net/).   -->
+<!-- This is an experimental format, TRML, that is not intended -->
+<!-- for actual use.  No other programs can read this format,   -->
+<!-- and it is subject to change at any time.                   -->
+<!-- You have been warned.                                      -->
+<!-- Cheers, Ken (kbh7@cornell.edu)                             -->
+
+<treerings>
+   <metadata>
+      <start>1740</start>
+      <end>1828</end>
+      <title>THRACE &amp; THESS SITES MAS</title>
+      <id>161288</id>
+      <dating>A</dating>
+      <format>I</format>
+   </metadata>
+
+   <data type="width" units="0.01mm">
+      <v>998</v> <v>914</v> <v>1005</v> <v>1032</v> <v>965</v>
+      <v>1047</v> <v>807</v> <v>872</v> <v>933</v> <v>885</v>
+      <v>692</v> <v>793</v> <v>800</v> <v>978</v> <v>892</v>
+      <v>959</v> <v>934</v> <v>853</v> <v>1081</v> <v>1050</v>
+      <v>1190</v> <v>993</v> <v>1151</v> <v>1176</v> <v>913</v>
+      <v>1046</v> <v>1288</v> <v>1129</v> <v>1105</v> <v>904</v>
+      <v>1034</v> <v>953</v> <v>962</v> <v>921</v> <v>1046</v>
+      <v>933</v> <v>946</v> <v>905</v> <v>1004</v> <v>858</v>
+      <v>900</v> <v>1110</v> <v>970</v> <v>1216</v> <v>1058</v>
+      <v>849</v> <v>1006</v> <v>1131</v> <v>805</v> <v>932</v>
+      <v>997</v> <v>996</v> <v>922</v> <v>962</v> <v>569</v>
+      <v>984</v> <v>942</v> <v>1070</v> <v>916</v> <v>1047</v>
+      <v>1154</v> <v>994</v> <v>928</v> <v>895</v> <v>1156</v>
+      <v>1145</v> <v>952</v> <v>853</v> <v>886</v> <v>986</v>
+      <v>798</v> <v>1226</v> <v>1317</v> <v>1411</v> <v>981</v>
+      <v>1105</v> <v>1671</v> <v>1533</v> <v>1364</v> <v>1277</v>
+      <v>1482</v> <v>1731</v> <v>1831</v> <v>1556</v> <v>1676</v>
+      <v>2186</v> <v>2578</v> <v>2246</v> <v>2890</v>
+   </data>
+
+   <data type="count" units="number">
+      <v>40</v> <v>39</v> <v>39</v> <v>39</v> <v>39</v>
+      <v>39</v> <v>39</v> <v>38</v> <v>37</v> <v>37</v>
+      <v>37</v> <v>37</v> <v>37</v> <v>36</v> <v>36</v>
+      <v>35</v> <v>35</v> <v>34</v> <v>34</v> <v>34</v>
+      <v>34</v> <v>34</v> <v>35</v> <v>35</v> <v>35</v>
+      <v>35</v> <v>35</v> <v>35</v> <v>35</v> <v>35</v>
+      <v>35</v> <v>35</v> <v>34</v> <v>34</v> <v>31</v>
+      <v>31</v> <v>31</v> <v>30</v> <v>30</v> <v>30</v>
+      <v>29</v> <v>28</v> <v>28</v> <v>28</v> <v>28</v>
+      <v>28</v> <v>28</v> <v>27</v> <v>28</v> <v>26</v>
+      <v>25</v> <v>24</v> <v>24</v> <v>24</v> <v>24</v>
+      <v>24</v> <v>22</v> <v>21</v> <v>18</v> <v>16</v>
+      <v>13</v> <v>10</v> <v>9</v> <v>9</v> <v>9</v>
+      <v>9</v> <v>9</v> <v>9</v> <v>9</v> <v>8</v>
+      <v>7</v> <v>7</v> <v>5</v> <v>5</v> <v>5</v>
+      <v>5</v> <v>5</v> <v>5</v> <v>4</v> <v>4</v>
+      <v>4</v> <v>4</v> <v>3</v> <v>3</v> <v>3</v>
+      <v>3</v> <v>3</v> <v>3</v> <v>1</v>
+   </data>
+</treerings>

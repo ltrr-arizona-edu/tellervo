@@ -21,11 +21,25 @@
 package corina.graph;
 
 import corina.Year;
+import corina.Range;
 import corina.Sample;
 import corina.Element;
 import corina.gui.XFrame;
-import corina.gui.XMenubar;
+import corina.gui.menus.FileMenu;
+import corina.gui.menus.EditMenu;
+import corina.gui.menus.WindowMenu;
+import corina.gui.menus.HelpMenu;
+import corina.gui.PrintableDocument;
+import corina.gui.Bug;
+import corina.gui.Tree; // for TransferableFile, which shouldn't even be there
 import corina.editor.Editor;
+import corina.util.Platform;
+import corina.util.ColorUtils;
+import corina.util.Sort;
+import corina.util.PopupListener;
+import corina.ui.Builder;
+import corina.ui.I18n;
+import corina.gui.Layout;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,9 +47,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import java.awt.print.PageFormat;
-import java.awt.print.PrinterJob;
 
 import java.awt.dnd.*;
 import java.awt.datatransfer.*;
@@ -48,273 +59,563 @@ import java.awt.Font;
 import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.BasicStroke;
 import java.awt.Cursor;
-import java.awt.event.MouseListener;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.Container;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
+import java.awt.event.*; // !!
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
-/* goals:
+import java.awt.print.*; // !!
 
+/*
+  Strategy:
+  -- refactor mercilessly!
+  -- (move the bar-style into its own method, so i can extend this class with another style?)
+  -- then: think about merging BargraphFrame with GraphFrame
+*/
+
+/* TODO:
+   - make this another "style" of graph (2, actually: M and P), and integrate with GraphFrame
+   - draw vertical lines between datasets which have crossdate scores above threshold?
    - add legend; make legend moveable
-   x make this be a viewer for a Bargraph class, perhaps in e.c.d.graph
-   - user can set title, remove axis
+   - user can toggle title?
    - user can set scale=, or choose "fit to page/window", for x/y
-   - user can load/save (xml)
-   - sane printing, via e.c.d.print.BargraphPrinter (pager?)
-   - scroll if too big for window
+   - user can load/save (xml) (one file format for all graph types)
    - add standard "elements" menu: edit, graph from all, ...
    - add filenames-only view?
-   - crop too-long titles appropriately?
-   - add standard "file" menu: close, save, save as, open, exit, etc.
-   x right-click on bar for menu: edit, graph, ... ?
-   x accept dropped files
+   - crop too-long titles appropriately?  ("...") -- no, draw them outside(?)
    - javadoc for this class
    - sapwood should take ++ information into account
    - draw ++ information as dotted lines?
    - (better) error handling
-   - use "Format" menu for formatting options -- "View"?
+   - use "View" menu for formatting options (or "Format"?)
    - allow graphs in non-fallback order
+   - for long bars, have title text track left edge of window?
 */
 
-public class BargraphFrame extends XFrame {
+/*
+  note: scrollbars have unclickable 1-pixel border (bottom of h, right
+  of v) -- this was apparently a java 1.3.1 bug; it's fixed in 1.4.1.
+*/
 
-    // the data to graph
-    private Bargraph b;
-
+public class BargraphFrame extends XFrame implements PrintableDocument {
     // display panel
-    private JLabel title;
     private BargraphPanel bgp = null;
 
     // the popup
-    private PopupMenu popup;
+    private SamplePopupMenu popup;
     private Element currentBar; // bar under pointer
 
-    // printing helpers
-    private PageFormat pf = new PageFormat();
-    private PrinterJob job = null;
+    // constants used for drawing
+    private static final Font BAR_FONT = new Font("dialog", Font.PLAIN, 12);
+    private static final Font END_YEARS_FONT = new Font("dialog", Font.PLAIN, 9);
+    private static final Font AXIS_FONT = new Font("dialog", Font.PLAIN, 12);
+    private static final Stroke BAR_STROKE = new BasicStroke(1.0f);
+    private static final Stroke CENTURY_STROKE = new BasicStroke(1.0f);
+    private static final Stroke AXIS_STROKE = new BasicStroke(1.0f);
+    private static final Color CENTURY_COLOR = new Color(0.75f, 0.75f, 0.75f);
+    private static final Color END_YEARS_COLOR = new Color(0.25f, 0.25f, 0.25f);
 
-    public class BargraphPanel extends JPanel {
+    private static final int BAR_SPACING = 2;
+    private static final int BAR_HEIGHT = 16; // FIXME: should be based on text -- BAR_FONT.height+4?
+
+    private float X_SCALE = 0.33f; // "1 year = X_SCALE pixels"
+
+    // user options
+    private boolean blackAndWhite = false;
+
+    // PrintableDocument
+    public Object getPrinter(PageFormat pf) {
+	return new BargraphPager(this, pf);
+    }
+    public String getPrintTitle() {
+        return "Bargraph"; // FIXME
+    }
+
+    public class BargraphPanel extends JPanel implements Scrollable {
         private int dy=0; // this gets continuously updated by paintComponent()
+	// BUT WHAT THE HECK IS IT?
+
+	// SCROLLING
+	public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+	    // just scroll by the viewport amount; it's most natural
+	    return (orientation == SwingConstants.VERTICAL ?
+		    visibleRect.height : visibleRect.width);
+	}
+	public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+	    // vertical: one bar; horizontal: half a century
+	    return (orientation == SwingConstants.VERTICAL ?
+		    BAR_HEIGHT+BAR_SPACING : (int) (50*X_SCALE));
+	}
+	public Dimension getPreferredScrollableViewportSize() {
+	    return new Dimension(600, 400); // ?
+	}
+	public boolean getScrollableTracksViewportHeight() {
+	    return false; // true if !b.yfixed
+	}
+	public boolean getScrollableTracksViewportWidth() {
+	    return false; // true if !b.xfixed
+	}
+	// ----
 
         // return the Bar at the given Point, if one exists, else null.
-        // => shouldn't call a hit if not left-right lined up?
+        // => FIXME: shouldn't call a hit if x-position not in range
+	// DESIGN: return null?  ugh.  NoNullBeyondMethodScope!
         public Element getBar(Point p) {
             int i = (int) p.getY() / dy;
-            if (i > b.bars.size()-1)
+            if (i > bars.size()-1)
                 return null;
-            return (Element) b.bars.get(i);
+            return (Element) bars.get(i);
         }
 
-	public BargraphPanel(List ss) {
-	    // init bars
-	    try {
-		b = new Bargraph(ss);
-	    } catch (IOException ioe) {
-		System.out.println("ioe! -- " + ioe.getMessage());
+        public BargraphPanel() {
+            // cursor
+            super.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+            // background
+            super.setBackground(Color.white);
+	    setOpaque(true);
+        }
+
+	public void addNotify() {
+	    super.addNotify();
+	    configureEnclosingScrollPane();
+	}
+	public void removeNotify() {
+	    unconfigureEnclosingScrollPane();
+	    super.removeNotify();
+	}
+
+	private SpaceDragger spaceDragger = new SpaceDragger();
+
+	// (ugly -- refactor)
+	private boolean isEnclosedByScrollPane() {
+	    Container p = getParent();
+	    if (p instanceof JViewport) {
+		Container gp = p.getParent();
+		if (gp instanceof JScrollPane) {
+		    JScrollPane scrollPane = (JScrollPane)gp;
+		    JViewport viewport = scrollPane.getViewport();
+		    if (viewport == null || viewport.getView() != this) {
+			return false;
+		    }
+		    return true;
+		}
+	    }
+	    return false;
+	}
+	private void configureEnclosingScrollPane() {
+	    if (isEnclosedByScrollPane()) {
+		JScrollPane scrollPane = (JScrollPane) getParent().getParent();
+		scrollPane.setColumnHeaderView(ha = new HorizontalAxis());
+
+		JLabel white = new JLabel();
+		white.setBackground(Color.white);
+		white.setOpaque(true);
+		scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, white);
+
+		// JViewport viewPort = (JViewport) getParent();
+		this.addMouseListener(spaceDragger);
+		this.addMouseMotionListener(spaceDragger);
+		this.addKeyListener(spaceDragger);
+            }
+	}
+	private void unconfigureEnclosingScrollPane() {
+	    if (isEnclosedByScrollPane()) {
+		JScrollPane scrollPane = (JScrollPane) getParent().getParent();
+		scrollPane.setColumnHeaderView(null);
+
+		// JViewport viewPort = (JViewport) getParent();
+		this.removeMouseListener(spaceDragger);
+		this.removeMouseMotionListener(spaceDragger);
+		this.removeKeyListener(spaceDragger);
+	    }
+ 	}
+
+	// REFACTOR: put all of this into a single class, and abstract it out so it can be used for graphs, too
+
+	// BUG: this doesn't work quite right.  it's all jumpy.  to investigate.
+	private class SpaceDragger implements MouseListener, MouseMotionListener, KeyListener {
+	    private Point from = new Point();
+	    public void mousePressed(MouseEvent e) {
+		from.x = e.getPoint().x;
+		from.y = e.getPoint().y;
+		// translate
+		JScrollPane sp = (JScrollPane) getParent().getParent();
+		from.x -= sp.getHorizontalScrollBar().getValue();
+		from.y -= sp.getVerticalScrollBar().getValue();
+
+		watchDrag = spaceDown;
+	    }
+	    public void mouseReleased(MouseEvent e) {
+		// ignore
+	    }
+	    public void mouseClicked(MouseEvent e) {
+		// ignore
+	    }
+	    public void mouseEntered(MouseEvent e) {
+		// ignore
+	    }
+	    public void mouseExited(MouseEvent e) {
+		// ignore
+	    }
+	    public void mouseMoved(MouseEvent e) {
+		// ignore
+	    }
+	    public void mouseDragged(MouseEvent e) {
+		// TODO: make the cursor a hand only when space is down?
+		// TODO: if you drag off the side, keep the original start-location?
+		if (watchDrag) {
+		    // CAREFUL: make sure getParent() is a JViewport; if it's not, don't allow this
+		    JScrollPane sp = (JScrollPane) getParent().getParent();
+		    JScrollBar h = sp.getHorizontalScrollBar();
+		    JScrollBar v = sp.getVerticalScrollBar();
+
+		    // translate
+		    int tx = e.getX() - h.getValue();
+		    int ty = e.getY() - v.getValue();
+
+		    int dx = from.x - tx;
+		    h.setValue(h.getValue() + dx);
+
+		    int dy = from.y - ty;
+		    v.setValue(v.getValue() + dy);
+
+		    from.x = tx;
+		    from.y = ty;
+		}
+	    }
+	    public void keyPressed(KeyEvent e) {
+		if (e.getKeyChar() == ' ')
+		    spaceDown = true;
+	    }
+	    public void keyReleased(KeyEvent e) {
+		if (e.getKeyChar() == ' ') // OAOO!
+		    spaceDown = false;
+	    }
+	    public void keyTyped(KeyEvent e) {
+		// ignore
 	    }
 
-	    // cursor
-	    // super.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+	    // is the space bar being held down?
+	    private boolean spaceDown = false;
 
-	    // background
-	    super.setBackground(Color.white);
+	    // was the space bar being held down when the mouse was pressed?
+	    private boolean watchDrag = false;
 	}
-	public boolean isFocusTraversable() {
-	    return true;
+
+	// x-axis
+	private class HorizontalAxis extends JComponent {
+	    // FIXME: compute height from height of text
+	    private final static int HEIGHT = 20;
+
+	    public HorizontalAxis() {
+		// Q: need setMinimumSize()?
+		setPreferredSize(new Dimension(Integer.MAX_VALUE, HEIGHT)); // Q: is MAX_VALUE right here?
+	    }
+	    // timing: usually 1-10 ms, rarely up to around 30 ms
+	    public void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		int l = g2.getClipBounds().x;
+		int r = l + g2.getClipBounds().width;
+
+		// force antialiasing -- ?? -- REFACTOR: extract method, plus FORCE_AA flag
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				    RenderingHints.VALUE_ANTIALIAS_ON);
+
+		int h = getHeight();
+
+		g2.setColor(Color.black);
+		g2.setFont(AXIS_FONT);
+		g2.setStroke(AXIS_STROKE);
+		g2.drawLine(l, h-1, r, h-1);
+
+		// compute the width of the longest (give-or-take) string.
+		// (it might not be the longest, but it's close.)
+		// PERF: memoize this?, no, compute it in the c'tor
+		int maxWidth = Math.max(g2.getFontMetrics().stringWidth(range.getStart().toString()),
+					g2.getFontMetrics().stringWidth(range.getEnd().toString()));
+		int centuryWidth = (int) (100 * X_SCALE);
+		boolean every500 = (maxWidth * 1.5 > centuryWidth);
+
+		// start year; if every500, keep going to 1 or *00
+		Year d = range.getStart().cropToCentury();
+		if (every500) {
+		    while (!d.toString().endsWith("500") &&
+			   !d.toString().endsWith("000") &&
+			   !d.toString().equals("1")) // PERF: ugh!
+			d = d.nextCentury();
+		}
+
+		while (d.compareTo(range.getEnd()) <= 0) {
+		    // why not contains()?  because i can't guarantee
+		    // initial value of d is in range
+
+		    int x = (int) (d.diff(range.getStart()) * X_SCALE);
+		    int width = g2.getFontMetrics().stringWidth(d.toString()); // PERF: 2 toString()s
+		    if (x - width/2 > r) // off screen to the right, we're done
+			break;
+		    g2.drawString(d.toString(), x - width/2, h-5);
+		    // FIXME: center vertically in component
+		    // BUG: if the width of the text is too wide, only draw every 500/1000 years
+
+		    d = d.nextCentury();
+		    if (every500) { // HACK: only works for 100/500!
+			d = d.nextCentury();
+			d = d.nextCentury();
+			d = d.nextCentury();
+			d = d.nextCentury(); // PERF: not very efficient, either
+		    }
+		}
+	    }
 	}
-	public boolean isOpaque() {
-	    return true;
+
+        public boolean isFocusTraversable() { // WHY?
+            return true;
+        }
+
+	// TEMP: ONLY VALID when b.yfixed, b.xfixed (but isn't that always true now?)
+	public Dimension getMinimumSize() {
+	    Dimension d = super.getMinimumSize();
+	    d.width = (int) (range.span() * X_SCALE);
+	    d.height = bars.size() * (BAR_HEIGHT + BAR_SPACING) + BAR_SPACING;
+	    return d;
 	}
+	public Dimension getPreferredSize() { // REFACTOR: aren't these 2 methods identical?
+	    Dimension d = super.getPreferredSize();
+	    d.width = (int) (range.span() * X_SCALE);
+	    d.height = bars.size() * (BAR_HEIGHT + BAR_SPACING) + BAR_SPACING;
+	    return d;
+	}
+	// i would override getMaximumSize() here, if i wanted to.  i can't think
+	// of any reason to, though, and it never seems to get called, anyway.
+	// ----
+
+	private List clipStack = new ArrayList(); // (of Shape)
+	private void saveClip(Graphics g) {
+	    clipStack.add(0, g.getClip());
+	}
+	private void restoreClip(Graphics g) {
+	    g.setClip((Shape) clipStack.remove(0));
+	}
+
+	// a temporary rectangle for computation, to avoid making a new one every time
+	private Rectangle barRect = new Rectangle();
+	private Rectangle labelRect = new Rectangle();
+
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-
             Graphics2D g2 = (Graphics2D) g;
-            g2.setStroke(new BasicStroke(1.0f));
-            g2.setColor(Color.black);
+            int w = getWidth();
+            int h = getHeight();
+	    saveClip(g2);
 
-            // force antialiasing
-            // g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-            // RenderingHints.VALUE_ANTIALIAS_ON);
+            // force antialiasing -- ??
+	    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
 
-            int w = super.getParent().getWidth();
-            int h = super.getParent().getHeight();
+	    // REFACTOR: this used to be a complex expression; now it's just an alias!
+	    dy = BAR_HEIGHT;
 
-            if (b.prefs.yfixed)
-                dy = (int) (b.prefs.yscale * 72);
-            else
-                dy = super.getHeight() / (b.bars.size() + (b.prefs.xaxis ? 1 : 0));
-
-            // temp vars
-            int RISER = (int) (b.prefs.risers * 72);
-            int PITH = (int) (b.prefs.pith * 72);
-            int BARK = (int) (b.prefs.bark * 72);
-            int SAPWOOD = (int) (b.prefs.sapwood * 72);
+            // draw background lines
+	    paintCenturyLines(g);
 
             // draw bars
-            for (int i=0; i<b.bars.size(); i++) {
-                Element bar = (Element) b.bars.get(i);
+	    // timing: 50-100 ms, or as low as 1-2 ms if there aren't any visible
+            for (int i=0; i<bars.size(); i++) {
+                Element bar = (Element) bars.get(i);
 
-                // draw bar
-                int l = bar.range.getStart().diff(b.range.getStart());
-                int r = bar.range.getEnd().diff(b.range.getStart());
-                int y = i*dy + dy/2;
+		// start of the row for this bar (??)
+                int y = i*(BAR_HEIGHT + BAR_SPACING) + BAR_SPACING; //  + BAR_HEIGHT/2;
 
-                /*
-                // -- STYLE 1 --
-                //          title
-                // start ||-------====|| end
+		// EXTRACT METHOD: drawBar(left, right, top, bottom, title)?
 
-                // start
-                g2.drawString(bar.range.getStart().toString(), l-35, y+5);
+		// ORGANIZATION: GraphStyle -> (NormalStyle BargraphPStyle BargraphMStyle SkeletonStyle)
+		// where BargraphPStyle and BargraphMStyle both extend AbstractBargraphStyle,
+		// which provides 99% of what a bargraph is.
 
-                // pith
-                g2.drawLine(l, y-RISER, l, y+RISER);
-                if (bar.hasPith())
-                    g2.drawLine(l+PITH, y-RISER, l+PITH, y+RISER);
+                // style: [=title=========]
+		barRect.x = (int) (X_SCALE * bar.getRange().getStart().diff(range.getStart()));
+		barRect.y = y; // i*dy + BAR_SPACING;
+		barRect.width = (int) (X_SCALE * bar.getRange().span()); // scale me?
+		barRect.height = BAR_HEIGHT; // dy; // - BAR_SPACING;
 
-                // heartwood
-                g2.drawLine(l, y, r-bar.numSapwood(), y);
+		// this is the area we're supposed to (re)draw
+		Rectangle rr = g.getClipBounds();
 
-                // title
-                g2.drawString((String) bar.details.get("title"), l+10, y-5);
+		// if it's not scrolled vertically so this bar is visible, just 'continue' now
+		// and avoid computing any more bounding boxes or string widths
+		if (barRect.y > rr.y + rr.height ||
+		    barRect.y + barRect.height < rr.y)
+		    continue;
 
-                // sapwood
-                int stopEarly = (bar.hasBark() ? BARK : 0);
-                g2.drawLine(r-bar.numSapwood(), y-SAPWOOD, r - stopEarly, y-SAPWOOD);
-                g2.drawLine(r-bar.numSapwood(), y+SAPWOOD, r - stopEarly, y+SAPWOOD);
+		// skip it?
+		if (rr.intersects(barRect)) {
 
-                // bark
-                if (bar.hasBark()) {
-                    if (bar.numSapwood() > 0) {
-                        g2.drawLine(r-BARK, y-RISER, r-BARK, y-SAPWOOD);
-                        g2.drawLine(r-BARK, y+SAPWOOD, r-BARK, y+RISER);
-                    } else {
-                        g2.drawLine(r-BARK, y-RISER, r-BARK, y+RISER);
-                    }
-                }
-                g2.drawLine(r, y-RISER, r, y+RISER);
-
-                // end
-                g2.drawString(bar.range.getEnd().toString(), r+5, y+5);
-                */
-
-                // -- STYLE 2 --
-                // [=title=========]
-                int x0 = bar.range.getStart().diff(b.range.getStart());
-                int dx = bar.range.span();
-                int y0 = i*dy + dy/2;
-                g2.setColor(new Color(20, 80, 80)); // .blue);
-                g2.fillRect(x0, y0, dx, dy);
-                g2.setColor(Color.black);
-                g2.drawRect(x0, y0, dx, dy);
-                g2.drawString((String) bar.details.get("title"), x0+10, y0+dy-5);
-            }
-
-            // draw axis
-            if (b.prefs.xaxis) {
-                int y = h - 3*dy/2;
-                g2.drawLine(0, y, b.range.span(), y);
-                Year d = b.range.getStart().add(-b.range.getStart().mod(100));
-                while (d.compareTo(b.range.getEnd())<=0) {
-                    int x = d.diff(b.range.getStart());
-                    g2.drawLine(x, y-RISER, x, y+RISER);
-                    g2.drawString(d.toString(), x+5, y+15);
-                    d = d.add(+100);
-                }
-            }
-        }
-    }
-
-    /* here's how to do page setup / print:
-
-       page setup:
-
-       job = PrinterJob.getPrinterJob();
-       job.setJobName("CORINA: Bargraph");
-       pf = job.pageDialog(pf);
-
-       print:
-
-       try {
-       job.setPrintable(glue); // this is bad
-       if (job.printDialog())
-       job.print();
-       } catch (PrinterException pe) {
-       JOptionPane.showMessageDialog(null,
-       "Printer error: " + pe.getMessage(),
-       "Error printing",
-       JOptionPane.ERROR_MESSAGE);
-       return;
-    */
-
-    // --- ClickListener ----------------------------------------
-    public class ClickListener extends MouseAdapter {
-        public void mousePressed(MouseEvent e) {
-	    // ignore?
-        }
-        public void mouseReleased(MouseEvent e) {
-	    // replace the label with an edit block
-	    JTextField edit = new JTextField();
-	    edit.setText(b.prefs.title);
-	    edit.setHorizontalAlignment(JTextField.CENTER);
-	    if (System.getProperty("corina.bargraph.title.font") != null)
-		edit.setFont(Font.getFont("corina.bargraph.title.font"));
-	    getContentPane().remove(title);
-	    getContentPane().add(edit, BorderLayout.NORTH);
-	    edit.selectAll();
-	    edit.requestFocus();
-	    edit.addActionListener(new AbstractAction() { // "enter" pressed
-		    public void actionPerformed(ActionEvent ae) {
-			JTextField _edit = (JTextField) ae.getSource();
-			String newTitle = _edit.getText();
-			if (newTitle.length() == 0) // don't allow "", because then JLabel disappears
-			    newTitle = " ";
-			b.prefs.title = newTitle;
-			title.setText(newTitle);
-			getContentPane().remove(_edit);
-			getContentPane().add(title, BorderLayout.NORTH);
-
-			setVisible(true);
-			repaint(); // this, too, otherwise there's junk still around
+		    // box
+		    g2.setStroke(BAR_STROKE);
+		    if (blackAndWhite) {
+			g2.setColor(Color.white);
+			g2.fillRect(barRect.x, barRect.y,
+				    barRect.width-1, barRect.height-1); // PERF: only draw visible rect?
+			g2.setColor(Color.black);
+			g2.drawRect(barRect.x, barRect.y,
+				    barRect.width-1, barRect.height-1); // PERF: only draw visible rect?
+		    } else {
+			g2.setColor(speciesToColor(bar));
+			g2.fillRect(barRect.x, barRect.y,
+				    barRect.width, barRect.height); // PERF: only draw visible rect?
+			// how's fill(Shape) perf?
 		    }
-		});
+		}
 
-	    setVisible(true); // apparently i need to call this to get the refresh...
-        }
-    }
-    // --- ClickListener ----------------------------------------
+		// label
+		String barTitle;
+		if (!bar.details.containsKey("title"))
+		    barTitle = bar.getFilename(); // this is what it should be, anyway -- title is an ms-dos-ism
+		else
+		    barTitle = bar.details.get("title").toString();
+		// BUG: doesn't this assume the map can't hold nulls?  how do i know that?
 
-    // --- PopupListener ----------------------------------------
-    public class PopupListener extends MouseAdapter {
-        public void mousePressed(MouseEvent e) {
-            maybeShowPopup(e);
-        }
-        public void mouseReleased(MouseEvent e) {
-            maybeShowPopup(e);
-        }
-        private void maybeShowPopup(MouseEvent e) {
-            // store what bar we're looking at.  abort if null.
-            currentBar = bgp.getBar(e.getPoint());
-            if (currentBar == null)
-                return;
+                g2.setColor(Color.black); // EXTRACT const!
+		g2.setFont(BAR_FONT);
+                int asc = g2.getFontMetrics().getAscent();
+		int labelWidth = g2.getFontMetrics().stringWidth(barTitle);
 
-            // update title, range
-            try {
-                Sample s = new Sample(currentBar.filename);
-                popup.setSample(s);
-            } catch (IOException ioe) {
-                return;
+		// skip?
+		int leftEdge = barRect.x + (barRect.height-asc)/2;
+		int baseline = barRect.y + (barRect.height+asc)/2; // WAS: -2
+			// why -2?  it looks better, but i don't know why it should be needed --
+			// is height being reported to me incorrectly?
+		labelRect.setBounds(leftEdge,
+				    baseline - asc,
+				    Math.min(labelWidth, barRect.width),
+				    g2.getFontMetrics().getHeight());
+
+		if (rr.intersects(labelRect)) {
+		    saveClip(g2);
+		    // g2.clip(barRect)?
+		    g2.clipRect(barRect.x, barRect.y, barRect.width, barRect.height); {
+			g2.drawString(barTitle,
+				      leftEdge,
+				      baseline);
+		    } restoreClip(g2);
+		}
+
+		// start/end years
+		g2.setFont(END_YEARS_FONT);
+		asc = g2.getFontMetrics().getAscent();
+		int yy = barRect.y + barRect.height/2 + asc/2;
+
+		int sx = g2.getFontMetrics().stringWidth(bar.getRange().getStart().toString());
+		int sx2 = g2.getFontMetrics().stringWidth(bar.getRange().getEnd().toString());
+		int x1 = barRect.x - sx - (BAR_HEIGHT-asc)/2;
+		int x2 = barRect.x + barRect.width + (barRect.height-asc)/2;
+
+		// draw start year
+		labelRect.setBounds(x1, yy-asc, sx, asc);
+		if (rr.intersects(labelRect)) {
+		    // lighten background
+		    g2.setColor(blackAndWhite ? Color.white : LIGHTEN);
+		    g2.fillRect(x1, barRect.y, sx, barRect.height);
+
+		    // draw text
+		    g2.setColor(blackAndWhite ? Color.black : END_YEARS_COLOR);
+		    g2.drawString(bar.getRange().getStart().toString(), x1, yy);
+		}
+
+		// draw end year
+		labelRect.setBounds(x2, yy-asc, sx2, asc);
+		if (rr.intersects(labelRect)) {
+		    // lighten background
+		    g2.setColor(blackAndWhite ? Color.white : LIGHTEN);
+		    g2.fillRect(barRect.x + barRect.width + (barRect.height-asc)/2, barRect.y,
+				sx2, barRect.height);
+
+		    // draw text
+		    g2.setColor(blackAndWhite ? Color.black : END_YEARS_COLOR);
+		    g2.drawString(bar.getRange().getEnd().toString(), x2, yy);
+		}
             }
 
-            // if right-click, show popup
-            if (e.isPopupTrigger())
-                popup.show(e.getComponent(), e.getX(), e.getY());
+	    // not sure if this is needed, but it's probably cheap
+	    restoreClip(g2);
         }
+
+	private Color LIGHTEN = ColorUtils.addAlpha(Color.white, 0.7f);
+
+	// PERF: don't draw off-screen lines
+	// timing: 0-1 ms if not visible, usually 1-3 ms, rarely 10-20 ms (or more)
+	private void paintCenturyLines(Graphics g) {
+	    Graphics2D g2 = (Graphics2D) g;
+	    int l = g2.getClipBounds().x;
+	    int r = l + g2.getClipBounds().width;
+
+	    g2.setColor(blackAndWhite ? Color.black : CENTURY_COLOR);
+	    g2.setStroke(CENTURY_STROKE);
+	    int h = getHeight();
+
+	    int y0 = Math.max(0, g2.getClipBounds().y);
+	    int y1 = Math.min(h, g2.getClipBounds().y + g2.getClipBounds().height);
+
+	    Year d = range.getStart().cropToCentury();
+	    while (d.compareTo(range.getEnd()) <= 0) {
+		int x = (int) (d.diff(range.getStart()) * X_SCALE);
+		if (x > r) // off screen to the right, stop
+		    break;
+		g2.drawLine(x, y0, x, y1);
+
+		d = d.nextCentury();
+	    }
+	}
     }
-    // --- PopupListener ----------------------------------------
+
+    // color, based on species.
+    // REFACTOR: shouldn't this belong in Species.java?
+    private Color speciesToColor(Element bar) {
+	Object species = bar.details.get("species");
+	if (species == null || !(species instanceof String))
+	    return unColor;
+	String str = ((String) species).toUpperCase(); // PERF: allocates new string!
+
+	if (str.startsWith("QU"))
+	    return quColor;
+	if (str.startsWith("PI"))
+	    return piColor;
+	if (str.startsWith("JU"))
+	    return juColor;
+
+	return unColor;
+
+	// how do i figure out "is this oak?"?
+	// - it's either a code, or a name (later, it should be a code only)
+	// - latter case, pass it to Species to parse; if unparseable by Species, it's unknown
+	// - use first 2 chars of code to determine species
+	// - "QU"=>oak, "PI"=>pine, "JU"=>juniper
+    }
+
+    // colors for quercus, pinus, juniperus, and unknown samples; compute only once!
+    private final static Color quColor = new Color(Color.HSBtoRGB(  4f/360, 0.5f, 0.9f)); // oak => red
+    private final static Color piColor = new Color(Color.HSBtoRGB(123f/360, 0.5f, 0.9f)); // pine => green
+    private final static Color juColor = new Color(Color.HSBtoRGB(207f/360, 0.5f, 0.9f)); // junip => blue
+    private final static Color unColor = new Color(Color.HSBtoRGB(  0f/360, 0.0f, 0.7f)); // unkn => gray
+
+    // title of this bargraph
+    private String title = "double-click here to type a title";
+
+    // the range of this graph (union of bars, extended to centuries)
+    /*private?*/ Range range;
+
+    // the bars, as a List of Elements
+    public List bars;
 
     // --- DropAdder ----------------------------------------
     public class DropAdder implements DropTargetListener {
@@ -341,9 +642,9 @@ public class BargraphFrame extends XFrame {
                         try {
                             Element e = new Element(pathname);
                             e.loadMeta();
-                            b.bars.add(e);
+                            bars.add(e);
                         } catch (IOException ioe) {
-                            System.out.println("error on " + pathname + "!"); // NEED BETTER ERROR HANDLING!
+			    Bug.bug(ioe); // FIXME: need better error handling!
                         }
                     }
                     repaint();
@@ -369,22 +670,10 @@ public class BargraphFrame extends XFrame {
 
 	    // figure out what's being dragged
 	    Point p = event.getDragOrigin();
-	    final Element bar = bgp.getBar(p);
+	    Element bar = bgp.getBar(p);
 
-	    // put together a Transferable to send
-	    Transferable transfer = new Transferable() {
-		    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
-			if (!flavor.equals(DataFlavor.javaFileListFlavor))
-			    throw new UnsupportedFlavorException(flavor);
-			return Collections.singletonList(new File(bar.filename));
-		    }
-		    public DataFlavor[] getTransferDataFlavors() {
-			return new DataFlavor[] { DataFlavor.javaFileListFlavor };
-		    }
-		    public boolean isDataFlavorSupported(DataFlavor flavor) {
-			return flavor.equals(DataFlavor.javaFileListFlavor);
-		    }
-		};
+	    // make a Transferable to send
+	    Transferable transfer = new Tree.TransferableFile(bar.filename);
 
 	    // let the drag begin!
 	    event.startDrag(DragSource.DefaultCopyDrop, transfer, this);
@@ -407,44 +696,186 @@ public class BargraphFrame extends XFrame {
     }
     // --- DragCopier ----------------------------------------
 
+    // TODO: add BargraphFrame(Sample sum) constructor, too?
+    // -- trivial: it's just this(sum.elements), assuming elements exists
     public BargraphFrame(List ss) {
-	// menubar
-	setJMenuBar(new XMenubar(this, null));
-
-	// frame title
-	setTitle("Bargraph");
-
-	// create panel
-	bgp = new BargraphPanel(ss);
-	getContentPane().add(/*new JScrollPane(*/bgp/*)*/, BorderLayout.CENTER);
-
-	// title goes on top
-	title = new JLabel(b.prefs.title, SwingConstants.CENTER);
-	title.setOpaque(true);
-	title.setBackground(Color.white);
-	title.setForeground(Color.black);
-	if (System.getProperty("corina.bargraph.title.font") != null)
-	    title.setFont(Font.getFont("corina.bargraph.title.font"));
-	getContentPane().add(title, BorderLayout.NORTH);
-	title.addMouseListener(new ClickListener());
-
-	// create popup
-	popup = new PopupMenu();
-        MouseListener popupListener = new PopupListener();
-        bgp.addMouseListener(popupListener);
-
-	// enable drop-loading for panel
-	DropTargetListener dropAdder = new DropAdder();
-        DropTarget target = new DropTarget(bgp, dropAdder);
-
-	// enable drag-copying for panel
-	DragSource ds = new DragSource();
-	ds.createDefaultDragGestureRecognizer(bgp, DnDConstants.ACTION_COPY, new DragCopier());
-
-	// display
-	pack();
-	setSize(new Dimension(640, 480));
-	show();
+        // menubar
+    {
+        JMenuBar menubar = new JMenuBar();
+        
+        menubar.add(new FileMenu(this));
+        menubar.add(new EditMenu());
+        menubar.add(new BargraphViewMenu(this));
+        if (Platform.isMac)
+            menubar.add(new WindowMenu(this));
+        menubar.add(new HelpMenu());
+        
+        setJMenuBar(menubar);
     }
 
+        // frame title
+        setTitle("Bargraph");
+
+	// create panel
+	bgp = new BargraphPanel();
+
+        // load bars
+        try {
+	    bars = ss; // Q: is ss a list of elements?  is this right?  why didn't i document that?
+
+	    // make sure they've got details
+	    // OBSOLETE: getRange() now does this as needed (does it?)
+	    for (int i=0; i<bars.size(); i++) {
+		((Element) bars.get(i)).loadMeta();
+	    }
+        } catch (IOException ioe) {
+	    Bug.bug(ioe);
+            dispose();
+            return;
+        }
+
+        // sort into fallback order
+	// TODO: sort by title, using case-insensitive natural-ordering sort, first?
+        Sort.sort(bars, "range", true);
+
+	// compute range
+	range = computeRange();
+
+	final JScrollPane sp = new JScrollPane(bgp,
+					       JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+					       JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+	sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        getContentPane().add(sp, BorderLayout.CENTER);
+
+	// DEBUG: south is a slider for horiz-zoom
+	final int PRECISION = 100;
+	final JSlider zoomer = new JSlider((int) (0.1 * PRECISION), 2*PRECISION,
+					   (int) (X_SCALE * PRECISION)); // divide by PREC later
+	zoomer.setPreferredSize(new Dimension(75, zoomer.getPreferredSize().height));
+	zoomer.setMaximumSize(new Dimension(75, zoomer.getMaximumSize().height));
+	zoomer.addChangeListener(new ChangeListener() {
+		public void stateChanged(ChangeEvent e) {
+		    // TODO: store scroll
+		    // int scroll = sp.getHorizontalScrollBar().getValue();
+		    // Year center = ...
+
+		    // change scale
+		    X_SCALE = zoomer.getValue() / (float) PRECISION;
+
+		    // TODO: restore scroll
+		    // sp.getHorizontalScrollBar().setValue(...)
+
+		    // update the scrollbars
+		    bgp.revalidate();
+		    ha.invalidate(); // for the x-axis header -- overkill!  FIXME
+		    ha.revalidate();
+		    ha.repaint(); // (but what's the minimal?  revalid isn't it.)
+		}
+	    });
+	JToolBar tb = new JToolBar();
+	tb.setFloatable(false);
+	tb.add(Layout.flowLayoutL(new JLabel("Scale:"),
+				  new JLabel(Builder.getIcon("Narrower.png")),
+				  zoomer,
+				  new JLabel(Builder.getIcon("Wider.png"))));
+	getContentPane().add(tb, BorderLayout.NORTH);
+
+        // create popup
+        popup = new SamplePopupMenu();
+	bgp.addMouseListener(new PopupListener() {
+		public void showPopup(MouseEvent e) {
+		    // store what bar we're looking at.  abort if null (=no bar here).
+		    currentBar = bgp.getBar(e.getPoint());
+		    if (currentBar == null)
+			return;
+
+		    // update title, range
+		    try {
+			Sample s = new Sample(currentBar.filename); // ***
+			// PERF: this (***) loads the sample, when we only want its
+			// summary info, and we already have that.  ouch.
+			popup.setSample(s);
+		    } catch (IOException ioe) {
+			// TODO: make this show a dimmed popup with something
+			// like
+			//   "This sample could not be loaded."
+			//   "Error: file not found."
+			// BETTER: use Finder.java to find it, first.
+			// BEST: this shouldn't happen; we already have the data we need.
+			return;
+		    }
+
+		    // show popup
+		    popup.show(e.getComponent(), e.getX(), e.getY());
+		}
+	    });
+
+	/*
+        // enable drop-loading for panel
+        DropTargetListener dropAdder = new DropAdder();
+        DropTarget target = new DropTarget(bgp, dropAdder);
+
+        // enable drag-copying for panel
+        DragSource ds = new DragSource();
+        ds.createDefaultDragGestureRecognizer(bgp, DnDConstants.ACTION_COPY, new DragCopier());
+	*/
+
+        // display
+        setSize(new Dimension(720, 480));
+        show();
+
+	// scroll to top-right
+	sp.getHorizontalScrollBar().setValue(sp.getHorizontalScrollBar().getMaximum());
+    }
+
+    private JComponent ha; // ha?
+
+    // union of all bars' ranges, extended to centuries
+    // FIXME: add 50 years to each end of that?
+    private Range computeRange() {
+	// ASSUMES bars has at least 1 element
+	// BUG: if it doesn't, what's the range?
+	Range tmp = ((Element) bars.get(0)).getRange();
+	for (int i=1; i<bars.size(); i++)
+	    tmp = tmp.union(((Element) bars.get(i)).getRange());
+
+	// ick, this isn't terribly pretty...
+	Year early = tmp.getStart().cropToCentury();
+	Year late = tmp.getEnd().add(100); // ??
+	late = late.cropToCentury(); // -- cropToCentury().nextCentury()?
+	return new Range(early.add(-50), late.add(50)); // ??
+    }
+
+    private class BargraphViewMenu extends JMenu {
+        // |window| is what to repaint() when i change something.
+        // (better: i should call getSuperDuperParent() or whatever to find out myself.)
+        BargraphViewMenu(JFrame window) {
+            super(I18n.getText("view"));
+
+            final JFrame frame = window;
+
+            // color / b&w menuitems
+            final JMenuItem asColor = new JRadioButtonMenuItem("in Color", true);
+            final JMenuItem asBW = new JRadioButtonMenuItem("in B&W");
+
+            // only one selected at a time
+            ButtonGroup group = new ButtonGroup();
+            group.add(asColor);
+            group.add(asBW);
+
+            // set |blackAndWhite| flag based on source, and repaint
+            AbstractAction listener = new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    blackAndWhite = (e.getSource() == asBW);
+                    frame.repaint();
+                }
+            };
+            asColor.addActionListener(listener);
+            asBW.addActionListener(listener);
+
+            // put them in this menu
+            add(asColor);
+            add(asBW);
+        }
+    }
 }

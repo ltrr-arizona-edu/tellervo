@@ -1,0 +1,73 @@
+<body>
+
+<p>Data sources for Corina.</p>
+
+<p>A data source has:</p>
+
+<ul>
+  <li>a name (user-settable) and icon
+  <li>a way to list its contents, as Folders and SampleRefs
+  <li>a right-click context menu
+  <li>a get-info panel
+  <li>a way to serialize itself, and deserialize itself, for storing in the user's prefs
+  <li>a way to accept drops, allow drags of itself and its elements (optional)
+  <li>create/delete, move/copy, rename, load/save, make-folder/list-folder (i.e., everything a filesystem does)
+</ul>
+
+<p>One trickiness is that some sources will need their own mini-browsers.  For example,
+a favorites list is just a list of samples - nothing else required.  But a folder source
+needs some widgets above the normal browser to choose which folder to browse.</p>
+
+<p>The first version of Corina to support sources will support:</p>
+<ul>
+  <li>folder sources
+  <li>favorite-list sources
+</ul>
+
+<p>Eventually, support will be added for:</p>
+<ul>
+  <li>recently-opened files
+  <li>smart lists
+  <li>a trash can
+  <li>FTP sources
+  <li>Rendezvous sources
+  <li>RDBMS sources (JDBC)
+</ul>
+<p>(in approximately that order)</p>
+
+<hr />
+
+some old ideas:
+
+<pre>
+see Source.java -- that's the outline
+for this package.
+
+if sources DON'T have sub-sources,
+i'll need a "SourcesList" object
+which lists the sources, adds/removes
+them, de/serializes them, etc.
+
+-- refer to all samples by urls?
+file:///...
+ftp://...
+recent://...
+trash://
+bookmarks://Masters/GOR10K.SUM
+smart://Oak\ Masters/
+jdbc:///...??
+this makes some things really easy...
+
+;ELEMENTS
+file://Library/AYA/AYA100.REC
+...
+(easy to move datasets between computers,
+then, right?)
+
+or run a crossdate with
+   file://Library/AYA/AYA100.REC
+and
+   ftp://ITRDB/.../TURK001.CRN
+</pre>
+
+</body>

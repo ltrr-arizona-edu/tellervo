@@ -23,9 +23,10 @@ import javax.swing.JPopupMenu;
 
 /*
   TODO:
-  -- german L10n?
+  -- L10n?
   -- fix sample listener bug.
   -- (add keyboard shortcut for "next stat"?  something like accel-|, perhaps)
+  -- rename: maybe "StatsLabel"?
 */
 
 public class Statistics extends JLabel implements SampleListener {
@@ -51,7 +52,8 @@ public class Statistics extends JLabel implements SampleListener {
 		    // for each stat, create a menuitem with text "name = value",
 		    // which sets the text of |stats| to itself when selected.
 		    for (int i=0; i<stat_names.length; i++) {
-			JMenuItem s = new JRadioButtonMenuItem(stat_names[i] + " = " + stat_values[i], i==state);
+			JMenuItem s = new JRadioButtonMenuItem(stat_names[i] + " = " + stat_values[i],
+							       i==state);
 			final int glue = i;
 
 			s.addActionListener(new AbstractAction() {
@@ -60,10 +62,9 @@ public class Statistics extends JLabel implements SampleListener {
 				    state = glue;
 
 				    // store state in pref
-				    System.setProperty("corina.modeline.statistic",
-						       stat_keys[state]);
-				    Prefs.save();
+				    Prefs.setPref("corina.modeline.statistic", stat_keys[state]);
 
+				    // update label
 				    label.setText(((JMenuItem) e.getSource()).getText());
 				}
 			    });
@@ -78,7 +79,7 @@ public class Statistics extends JLabel implements SampleListener {
 	computeAllStats();
 
 	// which one?  read from prefs
-	String pref = System.getProperty("corina.modeline.statistic");
+	String pref = Prefs.getPref("corina.modeline.statistic");
 	if (pref != null) {
 	    for (int i=0; i<stat_names.length; i++) {
 		if (pref.equals(stat_keys[i])) {
@@ -105,7 +106,7 @@ public class Statistics extends JLabel implements SampleListener {
 	int i=0;
 
 	// mean sensitivity
-        float m = MeanSensitivity.ms(sample);
+        float m = MeanSensitivity.meanSensitivity(sample.data);
         DecimalFormat f = new DecimalFormat("0.000");
 	stat_values[i++] = (Float.isNaN(m) ? NA : f.format(m));
 
@@ -175,11 +176,7 @@ public class Statistics extends JLabel implements SampleListener {
 	// seems simple enough, but if i do too many "simple" things
 	// it could turn into a problem.)
     }
-    public void sampleFormatChanged(SampleEvent e) {
-	sampleDataChanged(e);
-    }
     public void sampleElementsChanged(SampleEvent e) {
 	sampleDataChanged(e);
     }
-
 }

@@ -21,6 +21,10 @@
 package corina.gui;
 
 import corina.Build;
+import corina.ui.Builder;
+import corina.ui.I18n;
+import corina.util.Center;
+import corina.util.PropertiesWindow;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -28,19 +32,12 @@ import java.io.IOException;
 
 import java.text.MessageFormat;
 
-import java.util.ResourceBundle;
-
-import java.net.URL;
-
-import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.Toolkit;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -50,11 +47,9 @@ import javax.swing.ImageIcon;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.SwingConstants;
+import javax.swing.JButton;
+import javax.swing.AbstractAction;
 
-// todo:
-// - allow keypress (escape) to close box
-// - do version/year/author belong in corina.Version or Build.java?
-// - there's refactoring to be done here...
 
 /**
    About-box for Corina.
@@ -63,11 +58,16 @@ import javax.swing.SwingConstants;
    be one about-box, creating a second instance simply shows the first
    one again.  (Magic.)</p>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
+   <h2>Left to do</h2>
+   <ul>
+      <li>do version/year/author belong in corina.Version or Build.java?
+      <li>there's refactoring to be done here...
+   </ul>
 
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class AboutBox extends JDialog {
-
     // toplevel box to stuff things into
     private JPanel box;
 
@@ -75,12 +75,7 @@ public class AboutBox extends JDialog {
     // -> inherit from one-shot-window class? (preferences has a similar behavior)
     private static AboutBox _me=null;
 
-    // i18n
-    private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
-
-    // (javadoc)
-
-    // problem: get extra [] boxes at eoln on macos, why? (\r?)
+    // (javadoc me!)
 
     // use these fonts, or use relative sizes?
 
@@ -94,9 +89,7 @@ public class AboutBox extends JDialog {
     private void addName() {
         JLabel name = new JLabel("Corina");
         { // (add icon to name)
-            ClassLoader cl = this.getClass().getClassLoader();
-            URL iconURL = cl.getResource("Images/Tree.png");
-            Icon icon = new ImageIcon(iconURL);
+	    Icon icon = Builder.getIcon("Tree.png");
             name.setIcon(icon);
             name.setHorizontalTextPosition(SwingConstants.CENTER);
             name.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -110,8 +103,9 @@ public class AboutBox extends JDialog {
 
     // add the version number: centered
     private void addVersion() {
-	JLabel version = new JLabel(MessageFormat.format(msg.getString("version"),
-							 new Object[] { Build.VERSION }));
+	String text = MessageFormat.format(I18n.getText("version"),
+					   new Object[] { Build.VERSION });
+	JLabel version = new JLabel(text);
 	version.setFont(versionFont);
 	version.setAlignmentX(Component.CENTER_ALIGNMENT);
 	box.add(version);
@@ -119,8 +113,9 @@ public class AboutBox extends JDialog {
 
     // add timestamp
     private void addTimestamp() {
-	JLabel timestamp = new JLabel(MessageFormat.format(msg.getString("timestamp"),
-							   new Object[] { Build.TIMESTAMP }));
+	String text = MessageFormat.format(I18n.getText("timestamp"),
+					   new Object[] { Build.TIMESTAMP });
+	JLabel timestamp = new JLabel(text);
 	timestamp.setFont(versionFont);
 	timestamp.setAlignmentX(Component.CENTER_ALIGNMENT);
 	box.add(timestamp);
@@ -129,14 +124,15 @@ public class AboutBox extends JDialog {
     // add the description: flush left
     private void addDescription() {
         // get from bundle
-        final String description = msg.getString("description");
+        final String description = I18n.getText("description");
 
         JPanel descriptionBlock = new JPanel();
         descriptionBlock.setLayout(new BoxLayout(descriptionBlock, BoxLayout.Y_AXIS));
         box.add(descriptionBlock);
         descriptionBlock.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // extract line at a time
+        // extract line at a time (would a stringtok on \n\r be simpler?)
+	// BETTER: i have a method to do this, somewhere...
         BufferedReader r = new BufferedReader(new StringReader(description));
         String line;
         for (;;) {
@@ -159,7 +155,7 @@ public class AboutBox extends JDialog {
     // add the copyright notice: centered
     private void addCopyright() {
         // get from bundle
-        final String description = msg.getString("copyright");
+        final String description = I18n.getText("copyright");
 
         JPanel copyrightBlock = new JPanel();
         copyrightBlock.setLayout(new BoxLayout(copyrightBlock, BoxLayout.Y_AXIS));
@@ -206,16 +202,6 @@ public class AboutBox extends JDialog {
 	    return;
 	}
 
-	// or click it
-	addMouseListener(new MouseAdapter() {
-		public void mouseClicked(MouseEvent me) {
-		    dispose();
-		}
-		public void mouseReleased(MouseEvent me) {
-		    dispose();
-		}
-	    });
-
 	// no icon?
 	setTitle("About Corina");
 
@@ -247,11 +233,10 @@ public class AboutBox extends JDialog {
 	pack();
 
 	// center it
-	Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-	setLocation(new Point(d.width/2 - getWidth()/2,
-			      d.height/2 - getHeight()/2));
-        // BINGO: this is exactly the same as PrefsDialog -- PrefsDialog and AboutBox should subclass
-        // the same class, maybe gui.SingletonDialog.  REFACTOR.
+	Center.center(this);
+
+        // see also PrefsDialog -- PrefsDialog and AboutBox should subclass
+        // the same class, maybe gui.SingletonDialog?  REFACTOR.
         
 	// show it
 	show();

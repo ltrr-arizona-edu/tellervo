@@ -182,7 +182,7 @@ public class BrowserFileMenu extends JMenu {
                     new Editor(new Sample(filename));
                 } catch (IOException ioe) {
                     // TODO: display USER error message
-                    Bug.bug(ioe);
+                    new Bug(ioe);
                 }
             }
         });

@@ -86,7 +86,9 @@ public class Graph {
         };
     }
 
-    private final static float SCALE = 1.25f; // meaning, 25%, but (fixme) i should just say that
+    // meaning, 25%, but (fixme) i should just say that
+    private final static float SCALE = 1.25f;
+
     public void bigger() {
         scale *= SCALE;
     }

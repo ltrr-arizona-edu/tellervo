@@ -67,12 +67,13 @@ import java.text.DecimalFormat;
    <ul>
      <li>Extend parseISO6709() to parse any ISO-6709 format
      <li>Decide if this class is threadsafe or not.
+     <li>Location.copy() is a bad idea; get rid of it
    </ul>
  
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-public class Location implements Cloneable {
+public final class Location implements Cloneable {
 
     //
     // CONSTANTS
@@ -101,7 +102,7 @@ public class Location implements Cloneable {
     // FIELDS
     //
 
-    // in seconds
+    // in seconds; positive latitudes are north, positive longitudes are east
     private int latitude = 0;
     private int longitude = 0;
 
@@ -231,7 +232,11 @@ public class Location implements Cloneable {
             seconds += 180 * 3600;
         else
             seconds -= 180 * 3600;
-        
+
+        // PERF: make sure these are computed at compile-time, not run-time.
+
+        // FIXME: extract method normalizeLongitude() (lat, too, while you're at it)
+
         this.longitude = seconds;
     }
 
@@ -249,7 +254,8 @@ public class Location implements Cloneable {
 	compatible with the output of toString(), but is lenient in
 	case users type in a location and can't type the degree-sign
         &mdash; any gap between numbers works, so "34*56' N 11 22W" will
-	work just fine.
+	work just fine.  It also accepts ISO-6709 format strings
+        (but only the "+DDMMSS+DDDMMSS/" version so far).
         
 	@param string the String to parse
         @exception NumberFormatException if the location can't be parsed

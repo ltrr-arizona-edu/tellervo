@@ -20,14 +20,17 @@
 
 package corina;
 
+import corina.formats.WrongFiletypeException;
+
 import java.io.File;
 import java.io.IOException;
 
 import java.util.Map;
 
 /**
-   <p>An Element, basically a reference to a Sample (stored on disk).
-   Normally used as a member of a SampleSet (though at this time
+   An Element, basically a reference to a Sample (stored on disk).
+
+   <p>Normally used as a member of a SampleSet (though at this time
    SampleSet is only an ArrayList that provides text load/save of its
    elements).</p>
 
@@ -73,50 +76,112 @@ import java.util.Map;
    everything, and the whole GUI would be cleaner.  How about
    that.</p>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class Element implements Comparable {
 
     // these members should probably be PRIVATE!
     public boolean active;
     public final String filename;
     public Map details=null;
-    public Range range=null;
 
-    /** Construct an Element from a filename.  This Element will, by
-        default, be active.
-	@param filename the filename of the Sample to reference */
+    public long lastModified=-1;
+
+    private Range range=null;
+    public Range getRange() { // i really should USE this!
+	// lazy-load!
+	if (details == null)
+	    try {
+		loadMeta();
+	    } catch (WrongFiletypeException wfte) {
+		// System.out.println("wfte!");
+		return null;
+		// ignore?
+	    } catch (IOException ioe) {
+		System.out.println("on " + filename + ", " + ioe);
+		ioe.printStackTrace();
+		return null; // !!!
+	    }
+
+	return range;
+    }
+    // needed by Summary.  is this bad?  no, because when Element and Sample are
+    // merged, it'll be required.  get used to it.
+    public void setRange(Range r) {
+	this.range = r;
+    }
+
+    public Exception error=null; // not used here!  (but probably should be!)
+
+    // public Element() { filename=null; } // HACK!  just for Summary.java
+
+    /**
+       Construct an Element from a filename.  This Element will, by
+       default, be active.
+
+       @param filename the filename of the Sample to reference
+    */
     public Element(String filename) {
 	this(filename, true);
     }
 
-    /** Construct an Element from a filename, and a preset Active
-	flag.
-	@param filename the filename of the Sample to reference
-	@param active true if this Element is to be active */
+    /**
+       Construct an Element from a filename, and a preset Active flag.
+
+       @param filename the filename of the Sample to reference
+       @param active true if this Element is to be active
+    */
     public Element(String filename, boolean active) {
 	this.active = active;
 	this.filename = filename;
     }
 
-    /** Return the state of the Element's active flag.
-	@return true if this Element is active */
+    /**
+       Return the state of the Element's active flag.
+
+       @return true if this Element is active
+    */
     public boolean isActive() {
 	return active;
     }
 
-    /** Return the Element's filename.
-	@return the filename this Element refers to */
+    /**
+       Return the Element's filename.
+
+       @return the filename this Element refers to
+    */
     public String getFilename() {
 	return filename;
     }
 
-    /** Load this Element.  Returns this Element in a Sample object.
-	@return the Sample referenced by this Element
-	@exception IOException if an IOException occurred while trying
-	to load it; this can also be the subclasses
-	FileNotFoundException */
+    /**
+       Return this Element's filename, with
+       <code>corina.dir.data</code> replaced by an "@", if it's in a
+       subfolder of that.  (Otherwise, returns the absolute filename.)
+
+       @return the filename, with @'s
+    */
+    public String getFilenameWithAts() {
+	String root = System.getProperty("corina.dir.data");
+
+	// no known root, or isn't a subfolder of root
+	// (BUG: i don't think this is 100% correct, for various reasons)
+	if (root == null && !filename.startsWith(root))
+	    return filename;
+
+	// BUG: file.sep is often (always?) redundant here
+	return "@" + File.separator + filename.substring(root.length());
+    }
+
+    /**
+       Load this Element.  Returns this Element in a Sample object.
+
+       @return the Sample referenced by this Element
+       @exception IOException if an IOException occurred while trying
+       to load it; this can also be the subclasses
+       FileNotFoundException
+    */
     public Sample load() throws IOException {
 	// save metadata before i go?
 	return new Sample(filename);
@@ -125,38 +190,46 @@ public class Element implements Comparable {
     // dead samples should be dimmed or something
     private boolean dead=false;
 
-    public long size;
+    /**
+       Load the metadata fields for this Element.
 
-    /** Load the metadata fields for this Element.
-	 @exception IOException if the Element could not be loaded */
+       @exception IOException if the Element could not be loaded
+    */
     public void loadMeta() throws IOException {
 	if (dead)
-	    throw new IOException("dead");
+	    throw (IOException) error; // new IOException("dead");
 
-	// remember size, for kicks
-	size = new File(filename).length();
+	// this only gets set here, so meta must have been loaded already
+	if (details != null) {
+	    return;
+	}
 
 	// load sample, and grab reference to fields (data gets GC'd)
 	try {
 	    Sample s = load();
 	    details = s.meta;
 	    range = s.range;
+	    lastModified = new File(filename).lastModified();
 	} catch (IOException ioe) {
 	    dead = true;
+	    error = ioe;
 	    throw ioe;
 	}
     }
 
-    /** Return the filename, so Element can be used in making Strings
-	without worrying about getFilename() calls.
-	@return the filename */
+    /**
+       Return the filename, so Element can be used in making Strings
+       without worrying about getFilename() calls.
+
+       @return the filename
+    */
     public String toString() {
-	return filename;
+        return filename;
     }
 
     // comparable
     public int compareTo(Object o) {
-	return filename.compareTo(((Element) o).filename);
+        return filename.compareTo(((Element) o).filename);
     }
 
     // these used to be in Bargraph.java, but LoD pushes them up here.
@@ -173,5 +246,40 @@ public class Element implements Comparable {
     public int numSapwood() {
         Integer sapwood = (Integer) details.get("sapwood");
         return (sapwood==null ? 0 : sapwood.intValue());
+    }
+
+    //
+    // NEW: lazy-load interface
+    //
+    public Object getMeta(String field) {
+	if (details == null)
+	    try {
+		loadMeta();
+	    } catch (WrongFiletypeException wfte) {
+		// System.out.println("wfte!");
+		return null;
+		// ignore?
+	    } catch (IOException ioe) {
+		System.out.println("on " + filename + ", " + ioe);
+		ioe.printStackTrace();
+		return null; // !!!
+	    }
+
+	return details.get(field);
+    }
+
+    // does this object represent a real sample?
+    public boolean isSample() {
+	// if we've already loaded it, it's a sample.
+	if (details != null)
+	    return true;
+
+	// otherwise, try to load it.
+	try {
+	    loadMeta();
+	    return true;
+	} catch (IOException ioe) {
+	    return false;
+	}
     }
 }

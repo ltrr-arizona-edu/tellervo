@@ -1,0 +1,51 @@
+new summing idea:
+
+-- the only difference between a "summed" and "cleaned" file is
+   whether elements, count, etc., exist
+
+-- usually, this is a distinction that belongs to the sum, not the
+   user of the sum
+
+-- so instead of having separate files for each type, simply add a
+   field "cleaned?" to sums -- it can be as simple as a checkbox in
+   the elements tab that looks like [x] Single tree (clean this sum)
+
+-- the only time it makes a difference is with summing, anyway.
+
+CHANGES that need to be made to support this:
+
+-- add a checkbox to the bottom of the elements panel:
+   [x] Single tree (clean this sum)
+
+-- remove all references to "cleaned"; for example, file dialogs, and
+   the "clean" menuitem
+
+-- add a "CLEANED" flag to samples
+
+-- load and save the CLEANED flag properly -- for formats which won't
+   support it natively, ignore the weiserjahre info?
+
+-- update the sample preview text, perhaps as "Summed (cleaned)"
+
+-- add support in the browser, perhaps using the same mechanism as the
+   preview (searching for "cleaned" works)
+
+-- when creating a sum, jump to the elements tab immediately; default
+   to cleaned=true iff all samples are from the same site?
+
+-- in the elements tab, add a new choice next to the "Enabled"
+   checkbox: "as Elements", "as Cleaned".  (or maybe change the
+   "Enabled" checkbox to a 3-way popup?: "Disabled", "Enabled as
+   Elements", "Enabled as Cleaned"?)
+
+-- add a new flag to Element.java stating whether this element is to
+   be added as a sum or a single sample.
+
+-- when summing, add as a raw sample or summed sample depending on
+   this flag in Element
+
+-- add undo/redo support for both the new choice per-element, and for
+   the single-tree checkbox
+
+-- if a user opens a cleaned file, and the same file exists as summed,
+   ask to do some sort of migration?

@@ -1,0 +1,15 @@
+package corina.map;
+
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+
+public class XXXXX extends Layer {
+
+    // may be slow -- draws to g2, but doesn't change buf, used where you need to
+    // draw to an arbitrary g2, but performance isn't critical, e.g., printing;
+    // subclasses implement this.
+    public void draw(Graphics2D g2, Renderer r) {
+        // WRITEME
+    }
+
+}

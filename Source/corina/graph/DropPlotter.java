@@ -31,9 +31,9 @@ import java.awt.dnd.*;
 import java.awt.datatransfer.*;
 
 public final class DropPlotter implements DropTargetListener {
-    private GraphFrame _g;
+    private GraphWindow _g;
 
-    public DropPlotter(GraphFrame g) {
+    public DropPlotter(GraphWindow g) {
 	_g = g;
     }
 

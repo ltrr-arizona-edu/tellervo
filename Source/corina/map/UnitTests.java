@@ -44,6 +44,54 @@ public class UnitTests extends TestCase {
             fail();
         }
     }
+    public void testLatitudeSandwiching() {
+        Location l = new Location();
+
+        // make sure 45 degrees doesn't get touched
+        l.setLatitudeAsSeconds(45 * 3600);
+        assertEquals(45 * 3600, l.getLatitudeAsSeconds());
+
+        // make sure 95 degrees becomes 90 degrees
+        l.setLatitudeAsSeconds(95 * 3600);
+        assertEquals(90 * 3600, l.getLatitudeAsSeconds());
+
+        // make sure -105 degrees becomes -90 degrees
+        l.setLatitudeAsSeconds((-105) * 3600);
+        assertEquals((-90) * 3600, l.getLatitudeAsSeconds());
+    }
+    public void testLongitudeWrapping() {
+        Location l = new Location();
+
+        // make sure 90+360 degrees wraps to 90 degrees.
+        // (let's just say within 1 degree of correct.  FP math is weird.)
+        l.setLongitudeAsDegrees(90 + 360);
+        float longitude = l.getLongitudeAsDegrees();
+        assertTrue(Math.abs(longitude - 90) < 1);
+
+        // try a negative one: -5 - 360*5 should wrap to -5.
+        l.setLongitudeAsSeconds((-5 - 360*5)*3600);
+        assertEquals((-5)*3600, l.getLongitudeAsSeconds());
+    }
+
+    public void testISO6709Parsing() {
+        try {
+            // putting it into 6709
+            Location l = new Location("11*30'45''N 20*40'50''E");
+            String iso = l.toISO6709();
+            assertEquals(iso, "+113045+0204050/");
+            // BROKEN!  why?
+
+            // getting it out of 6709
+            Location l2 = new Location("+113045+0204050/");
+            assertEquals(l, l2);
+
+            // getting it out of 6709, other variants
+            // WRITEME
+        } catch (NumberFormatException nfe) {
+            fail();
+        }
+    }
+    
     public void testDistanceTo() {
         try {
             // distance to myself is zero

@@ -1,0 +1,661 @@
+<chapter id="indexing">
+  <title>Indexing</title>
+
+  <sect1 id="indexing-why">
+    <title>The Problem</title>
+
+    <para>Trees tend to put on big rings when they're young, and
+    smaller rings when they get older.  (People do, too: you grew a
+    lot more the first year you were alive than the tenth.)  Some
+    trees put on very large rings, while others put on very small
+    rings.  These variations in growth can make it difficult to
+    crossdate samples.</para>
+
+    <para>After all, you don't care about the absolute width of a ring
+    ("Ring #34 is 0.36mm wide") as much as you care about its relative
+    width ("Ring #34 is only 36% of normal").</para>
+
+    <para>This is what indexing is for.  Indexing is a manipulation you
+    can perform on your data to make it easier to crossdate.</para>
+
+    <procedure>
+      <title>Indexing in a nutshell</title>
+      <step><para>You open a sample (raw data)</para></step>
+      <step><para>You ask &corina; to index it</para></step>
+      <step><para>&corina; shows you some possible curves</para></step>
+      <step><para>You pick a curve (based on its graph, statistical
+                  scores, and your expectation of how the tree
+                  is growing)</para></step>
+      <step><para>&corina; converts each year's ring width to a ratio of
+                  actual growth to expected growth for that year</para></step>
+      <step><para>You save the sample (indexed data) to a new file</para></step>
+    </procedure>
+
+<!--
+leftgraph: 2 samples that crossdate, but aren't indexed, and don't look similar
+caption: These samples fit together, but it's not apparent.
+rightgraph: same 2 samples after indexing, crossdating is apparent
+caption: After indexing, everything is clear.
+-->
+
+<para>WRITEME: (why we need it, when to use it)</para>
+
+    <note>
+      <title>Units</title>
+
+      <para>Indexing changes the units of a
+      dataset.  A raw sample has units of <emphasis>hundredths of a
+      millimeter</emphasis> (0.01 mm).  An indexed sample has units of
+      <emphasis>parts per thousand</emphasis> (0.1%, or
+      &per_mille;).</para>
+
+      <para>This doesn't cause a problem with crossdating.  The
+      t-score normalizes all samples as part of its test, and the
+      trend only cares if the values are increasing or decreasing.
+      (The other crossdates are based on these.)  For more
+      information, see
+      <link linkend="crossdating">Crossdating</link>.</para>
+
+      <para>It does cause a problem with summing, however, since
+      summing needs to take the average.  (What's the average of 1mm
+      and 75%?)  Therefore, the samples in a sum must be either all
+      raw, or all indexed.  For more information, see
+      <link linkend="summing">Summing</link>.</para>
+    </note>
+
+  </sect1>
+
+  <sect1 id="how-to-index">
+    <title>How to Index a Sample</title>
+    <indexterm><primary>indexing</primary> <secondary>how to</secondary></indexterm>
+
+    <para>Indexing a sample in &corina; is straightforward.</para>
+
+    <procedure>
+      <title>To index a sample:</title>
+
+      <step><para>Open the sample with
+	<menuchoice>
+	  <shortcut>
+	    <keycombo><keycap>control</keycap> <keycap>O</keycap></keycombo>
+	  </shortcut>
+	  <guimenu>File</guimenu>
+	  <guimenuitem>Open...</guimenuitem>
+	</menuchoice></para>
+      </step>
+
+      <step>
+        <para>Choose
+        <menuchoice>
+          <shortcut>
+            <keycombo><keycap>control</keycap> <keycap>I</keycap></keycombo>
+          </shortcut>
+          <guimenu>Manipulate</guimenu>
+          <guimenuitem>Index...</guimenuitem>
+        </menuchoice>.
+
+        (If it's dimmed, that means the sample is already indexed.
+        Open the original raw data and re-index that.  This is why you
+        should always keep your raw data!)</para>
+      </step>
+
+      <step>
+        <para>Click on an index.  Take a look at how the curve compares to
+	your data by clicking <guibutton>Preview</guibutton>; close
+        the graph when you're done looking.</para>
+      </step>
+
+      <step>
+        <para>When you've decided which index to use, select it, and
+	click <guibutton>OK</guibutton></para>
+      </step>
+
+      <step><para>Save the indexed sample with
+	<menuchoice>
+	  <shortcut>
+	    <keycombo><keycap>control</keycap> <keycap>shift</keycap> <keycap>S</keycap></keycombo>
+	  </shortcut>
+	  <guimenu>File</guimenu>
+	  <guimenuitem>Save As...</guimenuitem>
+	</menuchoice>.
+	You should usually use the same filename, but ending with
+        <filename class="extension">.IND</filename> to indicate that it's
+	indexed.</para>
+      </step>
+    </procedure>
+
+    <para>***how to pick: read on...</para>
+
+    <para>Things that can go wrong:</para>
+
+    <itemizedlist>
+
+      <listitem><para>If the Index menuitem is dimmed, that means the sample
+	is already indexed.  Open the original raw data and index
+	that.  (Always keep your raw data!)  If
+	you know it's raw data and for some reason &corina; thinks
+	it's indexed, go to the metadata tab and change the
+	"Format" field to "Raw".</para></listitem>
+
+      <listitem><para>(if it's a bad index)</para></listitem>
+
+    </itemizedlist>
+
+    <tip>
+      <indexterm><primary>indexing</primary> <secondary>many samples at once</secondary></indexterm>
+      <para>If you want to index several samples at once, use the
+      <link linkend="browser">file browser</link>.  Select all the
+      samples, and choose
+      <menuchoice>
+        <guimenu>Manipulate</guimenu>
+        <guimenuitem>Index...</guimenuitem>
+      </menuchoice>.</para>
+    </tip>
+
+  </sect1>
+
+  <sect1 id="exponential">
+    <title>Exponential</title>
+
+    <para>By far the most common index you'll use is the exponential.
+    9 times out of 10 this will be the best choice.  And there's a
+    good reason: this matches how you would expect a tree to grow.
+    Trees start out growing quickly, and gradually slow down.</para>
+
+    <!-- graph: x-y plot, y=a+be^(-px)>   <diagram: rings of a perfectly -->
+    <!-- exponential tree -->
+    <!-- WRITEME: i need a graph here.
+     => WRITEME: well, i need a good graph-exporting feature.  duh! -->
+
+    <para>If you're not sure which to use, you'll probably
+      never get in trouble for choosing an exponential index.  <!-- (Well,
+      not much.)  --> You'll use this one almost all the
+      time.</para>
+
+    <para>This index tries to fit an equation of the form</para>
+
+<equation>
+  <title>Exponential Curve</title>
+  <alt>y = a + be^{-px}</alt>
+  <mediaobject>
+    <textobject>
+      <para>y = a + be<superscript>-px</superscript></para>
+    </textobject>
+  </mediaobject>
+</equation>
+
+    <para>to your data, searching for the best values of a, b, and p.
+<!-- FIXME: put these in the equation font, somehow? -->
+    </para>
+
+    <note><title>Note</title>
+      <para>
+      This is sometimes called a "negative exponential" index,
+      because the exponent is negative.  (&corina; doesn't require
+      that the exponent is negative, but if it's not, using this index
+      probably isn't such a good idea; it means the tree is generally
+      getting bigger, not smaller.)
+      </para>
+    </note>
+
+    <para>
+    The least-squares algorithm used comes from <xref linkend="CLR"/>;
+    the matrix solving function comes from <xref linkend="vanLoan"/>.
+    </para>
+
+    <para>Sometimes the exponential index does a lousy job.  If a tree
+      is living in a crowded area and the trees around it get cut
+      down, suddenly it has much better growing conditions, so it
+      might grow faster as it gets older, instead of slower.  If you
+      tried to use an exponential curve on a tree like this, it would
+      exaggerate this growth, and useful data would get flattened
+      out.</para>
+
+    <!-- graph: weird tree + exp index ==> graph: indexed weird tree -->
+
+    <para>The result is you're looking at the growing conditions
+      of this one tree, so it's not going to crossdate as
+      well.</para>
+
+    <para>Or imagine a tree with a fire scar that has a few very large
+      rings.  An exponential index wouldn't take much notice of this,
+      because most of the sample is still shaped like an exponential
+      curve, but when you applied it they would be grossly out of
+      proportion.  For these types of samples, there are other
+      indexing algorithms available.</para>
+
+    <!-- graphs: very non-exp data -->
+
+  </sect1>
+
+  <sect1 id="polynomial">
+    <title>Polynomial</title>
+
+    <para>Another way to index a sample is to use a polynomial.
+    &corina; tries to fit a polynomial to your data:</para>
+
+<equation>
+  <title>Polynomial Curve</title>
+  <alt>y = a_nx^n + a_{n-1}x^{n-1} + \ldots + a_1x + a_0</alt>
+  <mediaobject>
+    <textobject>
+      <para>y = a<subscript>n</subscript>x<superscript>n</superscript> +
+                a<subscript>n-1</subscript>x<superscript>n-1</superscript> +
+                &ldots; +
+                a<subscript>2</subscript>x<superscript>2</superscript> +
+                a<subscript>1</subscript>x +
+                a<subscript>0</subscript></para>
+    </textobject>
+  </mediaobject>
+</equation>
+
+    <para>(You decide what degree polynomial, n, to use, and
+    &corina; automatically finds the best values of
+    a<subscript>0</subscript>,
+    a<subscript>1</subscript>, &ldots;,
+    a<subscript>n</subscript> to fit your data.)</para>
+
+    <para>WRITEME: examples of a polynomial curve on some data</para>
+
+    <para>WRITEME: where the algorithm came from</para>
+
+  </sect1>
+
+  <sect1 id="horizontal">
+    <title>Horizontal Line</title>
+
+    <para>A special case of polynomial to use is a horizontal line,
+    equal to the average value.  Why would you want to do this?  Not
+    for crossdating: dividing each value by the same value
+    doesn't change the shape of the curve, only its magnitude.
+    Remember*** (LINK?) that every element in a sum must use
+    the same units, either raw or indexed.  If you have a sample you
+    wouldn't otherwise want to index, and you want to put it
+    in a sum with other indexed files, you could use a horizontal
+    index.</para>
+
+    <para>WRITEME: y = x_{avg}</para>
+
+    <para>WRITEME: algorithm, or at least link to ref</para>
+
+  </sect1>
+
+  <sect1 id="adaptive">
+    <title>Adaptive</title>
+
+    <para>Adaptive is the "last-resort" index.  If an
+    exponential doesn't work, and a high-degree polynomial
+    doesn't work, adaptive might be the way to go.  It's
+    simply the average of the 11 surrounding years:</para>
+
+<equation>
+  <title>Adaptive Index</title>
+  <alt>\mbox{ind}_i = 1/11 \left(\mbox{data}_{i-5} + \mbox{data}_{i-4} + \ldots + \mbox{data}_{i+4} + \mbox{data}_{i+5}\right)</alt>
+  <mediaobject>
+    <textobject>
+      <para>ind<subscript>i</subscript> = 1/11
+            (data<subscript>i-5</subscript> +
+             data<subscript>i-4</subscript> +
+             &ldots; +
+             data<subscript>i+4</subscript> +
+             data<subscript>i+5</subscript>)</para>
+    </textobject>
+  </mediaobject>
+</equation>
+
+    <para>As far as I can tell, it was first used for dendro by
+    <xref linkend="Pohl95"/> in the original &corina;.</para>
+
+    <!-- graph: some crazy sample, and an adaptive index on it -->
+
+    <note>
+      <title>Note</title>
+
+      <para>This index was originally called <emphasis>floating
+      average</emphasis>, probably in reference to the fact that the
+      index curve "floats" around, not following any explicit
+      y=f(x)-type formula.  But people tended to call it
+      <emphasis>floating</emphasis>, and then
+      <emphasis>floating-point</emphasis>, which means something very
+      different.  You might still hear people calling this index by
+      these other names.</para>
+    </note>
+
+  </sect1>
+
+  <sect1 id="high-pass">
+    <title>High-Pass Filter</title>
+
+    <para>The high-pass index is a more general case of the adaptive
+    index.  Instead of simply taking the average of 11 values, it
+    takes a weighted average.  It's an example of a
+    "high-pass" filter because
+    <emphasis>high</emphasis>-frequency signals
+    can <emphasis>pass</emphasis> through, but low-frequency signals
+    are filtered out.</para>
+
+    <para>The default is "1-2-4-2-1", meaning:
+
+<equation>
+  <title>High-Pass Index</title>
+  <alt>\mbox{ind}_i = 1/10 \left(\mbox{data}_{i-2} + 2\mbox{data}_{i-1} + 4\mbox{data}_{i} + 2\mbox{data}_{i+1} + \mbox{data}_{i+2}\right)</alt>
+  <mediaobject>
+    <textobject>
+      <para>ind<subscript>i</subscript> = 1/10 (data<subscript>i-2</subscript> + 2&dot;data<subscript>i-1</subscript> + 4&dot;data<subscript>i</subscript> + 2&dot;data<subscript>i+1</subscript> + data<subscript>i+2</subscript>)</para>
+    </textobject>
+  </mediaobject>
+</equation>
+
+    (The 1/10 comes from 10 = 1+2+4+2+1.)</para>
+
+    <para>This comes from <xref linkend="Cook81"/>, who used it as a
+      discrete filter before moving to a <link linkend="cubic_spline">cubic
+      spline</link>.</para>
+
+    <para>Note that almost half (4/10) of the computed index value is
+      simply its old value.  The high-pass index is nearly the same as
+      the input, so the &chi;&sup2; values are usually the lowest.
+      But don't choose this index just because of the low
+      &chi;&sup2;.</para>
+
+    <!--<para>% <lgraph: sample with highpass filter> -> <rgraph: indexed data></para>-->
+
+  </sect1>
+
+  <sect1 id="cubic_spline">
+    <title>Cubic Spline</title>
+
+    <para>Cubic splines are technically high-pass filters, as well,
+    but they're a very specific type.</para>
+
+    <para>A cubic spline is a curve made by piecing together a bunch
+    of cubic (3rd degree polynomial) functions.</para>
+
+<!-- BUG: if i include SVG+PNG, the HTML tries to use the SVG, the PDF shows nothing;
+          if i include PNG+SVG, the HTML uses the PNG, the PDF shows nothing;
+          if i include just the PNG, 
+          if i include just the SVG, the HTML tries to use the SVG, the PDF shows nothing
+  conclusions:
+  - it uses the first imageobject, regardless of type
+  - whatever it's trying to do for the PDF isn't working (my fo setup bug?)
+  - so for now, just put PNG first, and always use that (!)
+-->
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="cubic-spline.png" format="PNG"/>
+      </imageobject>
+      <imageobject>
+        <imagedata fileref="cubic-spline.svg" format="SVG"/>
+      </imageobject>
+      <caption>
+        <para>A cubic spline, fit to some data</para>
+      </caption>
+    </mediaobject>
+
+    <para>Of course, there's more than one way to construct a cubic
+    spline through a dataset.  The algorithm &corina; uses has a
+    parameter, <computeroutput>s</computeroutput>, which controls how
+    tightly the spline fits the data.  A lower value fits the data
+    more tightly; a higher value fits the data more loosely.
+    <computeroutput>s=0</computeroutput> fits the data exactly, while
+    <computeroutput>s=1</computeroutput> is simply a line.  A good
+    starting point for dendro data seems to be around
+    <computeroutput>s=1e-16</computeroutput>.</para>
+
+    <figure>
+      <title>A cubic spline, s=10<superscript>-14</superscript></title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="cubic-spline-loose.png" format="PNG"/>
+        </imageobject>
+        <imageobject>
+          <imagedata fileref="cubic-spline-loose.png" format="PNG"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <figure>
+      <title>A cubic spline, s=10<superscript>-16</superscript></title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="cubic-spline.png" format="PNG"/>
+        </imageobject>
+        <imageobject>
+          <imagedata fileref="cubic-spline.png" format="PNG"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <figure>
+      <title>A cubic spline, s=10<superscript>-18</superscript></title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="cubic-spline-tight.png" format="PNG"/>
+        </imageobject>
+        <imageobject>
+          <imagedata fileref="cubic-spline-tight.png" format="PNG"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+
+    <para>It was first used for dendro by <xref linkend="Cook81"/>,
+    using an algorithm from <xref linkend="Reinsch67"/>.</para>
+
+    <para>You can change the s-value used for the cubic spline in the
+    <link linkend="preferences">preferences</link>.  (In the future you
+    will be able to adjust the shape of the spline directly.)</para>
+
+    <para>You might use a cubic spline in the same cases you'd use a
+    high-pass filter: when the sample doesn't generally follow an
+    exponential or polynomial curve very well.  For example, if it has
+    a fire scar or something that causes a large spike you want to
+    eliminate.</para>
+
+  </sect1>
+
+  <sect1 id="how-to-pick">
+    <title>The &chi;&sup2; and &rho; Values</title>
+
+    <para>&corina; can't tell you which indexing curve to use.
+    You have to decide yourself, generally based on how they look.
+    But &corina; does provide a couple of statistics which may help
+    you decide: the &chi;&sup2; test, and the correlation coefficient
+    (&rho;).</para>
+
+    <para>If you don't have any reason not to, use the exponential
+    index.</para>
+
+<sect2 id="chi-squared">
+  <title>The &chi;&sup2; test</title>
+  <indexterm><primary>&chi;&sup2;</primary><secondary>chi squared</secondary></indexterm>
+
+  <para>&chi;&sup2; is defined as:</para>
+
+<equation>
+  <title>Definition of &chi;&sup2;</title>
+  <alt>\chi^2 = \sum \left(\mbox{curve}_i - \mbox{data}_i\right)^2</alt>
+  <mediaobject>
+    <textobject>
+      <para>&chi;&sup2; = &sum; (curve<subscript>i</subscript> - data<subscript>i</subscript>)&sup2; / N</para>
+    </textobject>
+  </mediaobject>
+</equation>
+
+    <para>(One way to think of &chi;&sup2;: it's the average
+    difference between the indexing curve and your data, with each
+    term squared so keep it positive.)</para>
+
+    <note>
+      <title>Variants</title>
+
+      <para>At least one book I've seen says &chi;&sup2; is this sum,
+      and at least one says it's merely
+&sum; (curve<subscript>i</subscript> - data<subscript>i</subscript>)&sup2;.
+      I suppose either one could be considered correct.  I think it's
+      easier to deal with if &chi;&sup2; is independent of the length
+      of the sample, so that's what I'm using for now.</para>
+    </note>
+
+    <example><title>What's a good value?</title>
+
+      <para>Suppose you have a sample that's 200 years long, and
+	at each year the index is about 30 (hundredths of a
+	millimeter) off from the sample.
+
+<informalequation>
+  <alt>\chi^2 = 1/200 \sum_{i=1}^{200} 30^2 = 200 \cdot 900 / 200 = 900</alt>
+  <mediaobject>
+    <textobject>
+      <para>&chi;&sup2; = 1/200 &sum;<subscript>200</subscript> 30&sup2; = 200 &dot; 900 / 200 = 900</para>
+    </textobject>
+  </mediaobject>
+</informalequation>
+
+      This isn't an unusual value.  It will tend to be lower
+      for complacent samples, or when using indexing curves that
+      follow the data very closely.</para>
+
+      <para>As you can see from this, the square root of the
+      &chi;&sup2; value is approximately the average difference
+      between the actual data and the indexing curve.</para>
+
+    </example>
+
+</sect2>
+
+<sect2 id="correlation">
+  <title>Correlation Coefficient, or &rho;</title>
+  <indexterm><primary>correlation coefficient</primary></indexterm>
+  <indexterm><primary>&rho;</primary></indexterm>
+  <indexterm><primary>&rho;</primary>
+             <secondary>correlation coefficient</secondary></indexterm>
+
+    <para>The correlation coefficient, &rho;, is defined by:</para>
+
+<equation>
+  <title>Correlation Coefficient</title>
+  <mediaobject>
+    <textobject>
+      <para>z<subscript>1</subscript> = &sum; (data<subscript>i</subscript> - data<subscript>avg</subscript>)&sup2;</para>
+      <para>z<subscript>2</subscript> = &sum; (data<subscript>i</subscript> - data<subscript>avg</subscript>)&sup2;</para>
+      <para>z<subscript>3</subscript> = &sum; (data<subscript>i</subscript> - data<subscript>avg</subscript>)&sup2;</para>
+      <para>&rho; = z<subscript>3</subscript> / &sqrt;(z<subscript>1</subscript> z<subscript>2</subscript>)</para>
+    </textobject>
+  </mediaobject>
+</equation>
+
+    <note>
+      <title>Sound familiar?</title>
+
+      <para>&corina; uses the correlation coefficient in crossdating,
+      too.  There, it's called the <link linkend="r-value">r-value</link>.
+      </para>
+    </note>
+
+    <para>What's a good &rho;?  &rho;=1 means "perfectly
+    correlated", or, the indexing curve matches your data exactly.
+    &rho;=0 is no correlation at all.  Closer to 1 is generally
+    better.  The &rho; is listed as simply a "-" if it's undefined
+    (z<subscript>1</subscript> or z<subscript>2</subscript> is zero,
+    in the above equation).
+    </para>
+
+    <para>It is possible to take this too far.  You don't want
+    &chi;&sup2;=0.  If you had a curve like that, it would index
+    your data to a perfectly flat line, which is useless.  An index
+    is a type of filter you apply to your data, and filters
+    <emphasis>remove signal from your data</emphasis>.  Usually you
+    remove low-frequency (very broad) trends, and preserve the
+    high-frequency (year-to-year) signal, which helps when
+    crossdating samples of different ages.  But you have to be
+    careful you aren't removing the signal you're trying to
+    see.</para>
+
+</sect2>
+
+  </sect1>
+
+  <sect1 id="regional-growth-curves">
+    <title>Regional Growth Curves, or Proxy Data</title>
+
+    <para>
+      -- here's what it is...
+
+      ...<xref linkend="Briffa92"/>...
+
+      -- here's why you'd want to do it...  (ok, i give up, i have no idea why)
+    </para>
+
+    <para>-- Here's what the computer does:</para>
+
+    <itemizedlist>
+
+      <listitem><para>it takes a sum of raw samples: you supply this;
+	it's typically a sum of other samples from the same site
+	or region</para></listitem>
+
+      <listitem><para>that sum is used to compute the indexing curve</para></listitem>
+
+    </itemizedlist>
+
+    <para>In &corina; the "Regional Growth Curves" are
+      called "Proxy Data," because one dataset (the sum)
+      takes the place of the sample's own data when computing
+      the indexing curve.</para>
+
+    <para>Here's how to do it:</para>
+
+    <procedure>
+      <title>How to use proxy data:</title>
+
+      <step><para>Open the sample</para></step>
+
+      <step><para>Choose
+	<menuchoice>
+	  <shortcut>
+	    <keycombo><keycap>control</keycap> <keycap>I</keycap></keycombo>
+	  </shortcut>
+	  <guimenu>Manipulate</guimenu>
+	  <guimenuitem>Index...</guimenuitem>
+	</menuchoice>.</para>
+      </step>
+
+      <step><para>Click the "<guilabel>Use Proxy
+	Data</guilabel>" checkbox; the popup menu becomes
+	active.  It contains the entries:
+	<itemizedlist>
+	  <listitem><para>This sample, itself.  When this is selected, it
+	    uses your sample for the index, so this is the same as not
+	    using proxy data option.</para></listitem>
+
+	  <listitem><para>All of the sums in the same folder as this sample,
+	    because these are the most likely proxy data to be used.
+	    (Currently, it does this simply by listing all files which
+	    end with <filename class="extension">.SUM</filename>; in
+	    the future, it should actually list all sums, regardless
+	    of name.</para></listitem>
+
+	  <listitem><para>The option is "Other...", which
+	    lets you choose any sample for the proxy data, in case you
+	    want to use a master in a different folder, or a
+	    non-summed sample.</para></listitem>
+	</itemizedlist></para>
+      </step>
+
+      <step><para>Choose your proxy data &mdash; you'll get a warning
+	if it doesn't cover at least the years covered by your
+	sample.  The &chi;&sup2; values are automatically updated.
+	(They're going to be higher than normal, because the
+	indexing curves are being computed to a different
+	dataset.)</para></step>
+
+      <step><para>Click <guibutton>Preview</guibutton> to view it
+	and <guibutton>OK</guibutton> to apply as you normally
+	would</para></step>
+    </procedure>
+
+  </sect1>
+
+</chapter>

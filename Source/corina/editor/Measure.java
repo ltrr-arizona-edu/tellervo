@@ -20,7 +20,8 @@
 
 package corina.editor;
 
-import corina.gui.XMenubar;
+import corina.ui.Builder;
+import corina.ui.I18n;
 
 import javax.comm.SerialPort;
 import javax.comm.SerialPortEvent;
@@ -33,7 +34,6 @@ import javax.comm.UnsupportedCommOperationException;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 
-import java.io.InputStream;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -57,9 +57,7 @@ public class Measure extends Thread implements SerialPortEventListener {
 
     // ???
     BufferedReader reader;
-    InputStream inputStream;
     SerialPort serialPort;
-    Thread readThread;
 
     private Editor _e;
 
@@ -69,12 +67,12 @@ public class Measure extends Thread implements SerialPortEventListener {
     // ----------------------------------------------------------------------
     // menu commands
     public static boolean hasSerialAPI() {
-	try {
-	    Class.forName("javax.comm.SerialPort");
-	    return true;
-	} catch (ClassNotFoundException cnfe) {
-	    return false;
-	}
+        try {
+            Class.forName("javax.comm.SerialPort");
+            return true;
+        } catch (ClassNotFoundException cnfe) {
+            return false;
+        }
     }
     // a bunch of menuitems:
     // -- when "start" is selected, it becomes "stop" and all others are dimmed.
@@ -82,7 +80,7 @@ public class Measure extends Thread implements SerialPortEventListener {
     private static List menus = new ArrayList(); // of jmenuitem
     public JMenuItem makeMenuItem() {
 	// make a new menuitem
-	final JMenuItem menu = new XMenubar.XMenuItem("Start Measuring"); // shortcut key?  F1/F2?
+	final JMenuItem menu = Builder.makeMenuItem("start_measuring"); // shortcut key?  F1/F2?
 	menu.setAccelerator(KeyStroke.getKeyStroke("F1"));
 	if (_m != null) // is running?
 	    menu.setEnabled(false);
@@ -90,7 +88,7 @@ public class Measure extends Thread implements SerialPortEventListener {
 		public void actionPerformed(ActionEvent e) {
 		    if (_m != null) { // was running, stop now
 			// i become "start"
-			menu.setText("Start Measuring");
+			menu.setText(I18n.getText("start_measuring"));
 
 			// stop thread
 			_m.pleaseStop();
@@ -105,7 +103,7 @@ public class Measure extends Thread implements SerialPortEventListener {
 				((JMenuItem) ((Reference) menus.get(i)).get()).setEnabled(true);
 		    } else { // (was not running, start now)
 			// i become "stop"
-			menu.setText("Stop Measuring");
+			menu.setText(I18n.getText("stop_measuring"));
 
 			// all others get dimmed
 			for (int i=0; i<menus.size(); i++)
@@ -247,5 +245,4 @@ public class Measure extends Thread implements SerialPortEventListener {
 	    }
 	}
     }
-
 }

@@ -1,81 +1,122 @@
+//
+// This file is part of Corina.
+// 
+// Corina is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// Corina is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Corina; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// Copyright 2003 Ken Harris <kbh7@cornell.edu>
+//
+
 package corina.gui;
 
-import java.io.*;
+import corina.ui.Builder;
+import corina.util.TextClipboard;
+import corina.util.Center;
 
-import javax.swing.*;
-import javax.swing.tree.*;
+import java.io.PrintStream;
+import java.io.StringWriter;
+import java.io.OutputStream;
 
-// this means i don't strictly NEED to catch/bug.bug everywhere, if i don't
-// think anything will go wrong.  if something does, i can tell the user to
-// check the error log.
-//
-// -- no, that's bad.  there should be one bug interface.  if bug.bug is
-// called, it should still print to stderr, which goes in the error log.
-// -- even better, make errorlog responsible for showing bug.bug?  then
-// i can flag everything.
+import java.util.Date;
 
-/*
-  TODO:
-  -- UPDATE VIEW when new exceptions are thrown?  scroll to bottom?  update about-box?
-  -- make this a SINGLETON DIALOG
-  -- center the dialog?
-  -- convenient way to COPY/PRINT/EMAIL an uncaught exception (save, too?)
-  ---- how about "Copy", "Print", "Email" buttons on the bottom?
-  -- change icons from folder/file to triangle/dot?
-  -- (save error log between sessions?)
-  ---- (and add "clear" button?)
+import javax.swing.JDialog;
+import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.BorderFactory;
+import javax.swing.AbstractAction;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+
+/**
+    An error log.
+
+    <h2>Left to do:</h2>
+    <ul>
+        <li>Put date before each section, not after the first line (check time?)
+        <li>I18n: "No Errors", "The following ...", "Error Log"
+        <li>Add "Print" button
+
+        <li>Update when new exceptions are thrown?
+        <li>Put a little more spacing around the text area
+        <li>Figure out how to focus the dialog, when it's re-shown
+        <li>Add "Clear" button?
+
+        <li>Consolidate ErrorLog/Bug duality?
+    </ul>
+
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
 */
-
 public class ErrorLog extends JDialog {
-
-    // call this method once to start logging errors
+    /**
+        Start logging errors.  This redirects System.err to an internal buffer,
+        which can then be displayed to the user in a dialog for copying, printing,
+        or so on instead of being printed to the console.  You should call this
+        as soon as the application starts, to catch as many error lines as possible.
+    */
     public static void logErrors() {
 	w = new StringWriter();
 	System.setErr(new PrintStream(new StringOutputStream()));
     }
 
-    // show the error log
+    /**
+        Show the error log.
+    */
     public ErrorLog() {
-	DefaultMutableTreeNode root = new DefaultMutableTreeNode();
-	BufferedReader r = new BufferedReader(new StringReader(w.toString()));
-	DefaultMutableTreeNode lastNode = null;
-	for (;;) {
-	    String line = null;
-	    try {
-		line = r.readLine();
-	    } catch (IOException ioe) {
-		// it's a string reader, this can't happen
-	    }
-	    if (line == null)
-		break;
-	    if (line.startsWith("Exception"))
-		continue;
-	    boolean leaf = Character.isWhitespace(line.charAt(0));
-	    DefaultMutableTreeNode node = new DefaultMutableTreeNode(line, !leaf);
+        // only allow one error log to exist at a time
+        if (singleton != null && singleton.isVisible()) { // (is this the correct test?)
+            singleton.show();
+            singleton.toFront();
+            // singleton.requestFocus(); // -- doesn't do anything!
+            dispose();
+            return;
+        } else {
+            singleton = this;
+        }
 
-	    if (leaf) {
-		lastNode.add(node);
-	    } else {
-		root.add(node);
-		lastNode = node;
-	    }
-	}
+        JTextArea area = new JTextArea(w.toString());
+        area.setEditable(false);
+        
+        if (area.getText().length() == 0) {
+            area.setText("No errors");
+            area.setForeground(Color.gray);
+        }
+        
+        JLabel label = new JLabel("The following errors have occurred:");
+        
+        JScrollPane center = new JScrollPane(area);
+	center.setBorder(BorderFactory.createEmptyBorder(0, 8, 16, 0));
 
-	JTree tree = new JTree(root);
+        JButton copy = Builder.makeButton("copy");
+        copy.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                TextClipboard.copy(w.toString());
+            }
+        });
 
-	// hide the root
-	tree.setRootVisible(false);
+        // WRITEME: to add printing, make a Printer that just calls
+        // lines.add(line) for each |line| read from w.toString(),
+        // and also call the java/awt printing method.
 
-	// expand the last one
-	tree.expandRow(tree.getRowCount()-1);
-
-	JScrollPane scrollPane = new JScrollPane(tree);
-
-	JLabel label = new JLabel("The following errors have occurred:");
+        JPanel buttons = Layout.buttonLayout(copy);
 
 	JPanel stuff = Layout.borderLayout(label,
-					   null, scrollPane, null,
-					   null);
+					   null, center, null,
+					   buttons);
 	stuff.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 20));
 
 	setContentPane(stuff);
@@ -84,10 +125,14 @@ public class ErrorLog extends JDialog {
 	setTitle("Error Log");
 	pack();
 	setSize(600, 500);
+        Center.center(this);
 	show();
     }
 
-    // my output-to-string stream
+    // only one error log
+    private static JDialog singleton = null;
+
+    // my output-to-string stream: appends the time and date to the first line of each block/exception
     private static class StringOutputStream extends OutputStream {
 	/*
 	  i could implement these, too, if performance was an issue:
@@ -112,7 +157,7 @@ public class ErrorLog extends JDialog {
 
 		// write date before newline
 		if (!pass)
-		    w.write(" [" + new java.util.Date() + "]");
+		    w.write(" [" + new Date() + "]");
 	    }
 
 	    w.write(b);

@@ -1,8 +1,7 @@
 <body>
 
-<p>The <code>edu.cornell.dendro.corina.manip</code> package contains
-all non-index, non-crossdating algorithms for operating on Samples.
-Currently, there are only Clean, Sum, and Log algorithms.</p>
+All algorithms which operate samples, other than indexing (clean, sum,
+etc.).
 
 
 
@@ -27,8 +26,7 @@ Clean c = new Clean(mySummedSample);	// create a cleaner
 c.run();				// run it
 </pre>
 
-This is even faster than summing, so it's doubtful this will ever need
-threading, even on a slow system.</p>
+This is even faster than summing.  (So why is it Runnable?)</p>
 
 
 
@@ -42,6 +40,24 @@ the future.  Please, try to keep the code clean!</p>
 
 <p><i>Would the index package be more appropriate as a subpackage of
 manip?</i></p>
+
+
+
+<h2>Future: manip as an interface</h2>
+
+<p>Manip should be an interface, not a package of classes with
+different APIs.  There should also be standard behavior: perhaps an
+abstract class, then.  Common behavior includes:
+
+<ul>
+  <li>undo/redo support</li>
+</ul>
+
+All manips simply take an input sample and generate an output
+sample.</p>
+
+<p>Indexes are types of Manips, too.  Index should be a subpackage
+(and subclass) of manip.</p>
 
 
 

@@ -3,17 +3,18 @@ package corina.editor;
 import corina.Species;
 import corina.UnknownSpeciesException;
 import corina.Sample;
-import corina.gui.ButtonLayout;
+import corina.gui.Layout;
 import corina.gui.Bug;
 import corina.util.OKCancel;
 import corina.ui.Builder;
+import corina.ui.I18n;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Enumeration;
 import java.util.Vector;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JComboBox;
@@ -45,7 +46,7 @@ public class SpeciesPopup extends JComboBox {
         setMaximumRowCount(24);
 
         // -not specified-, as usual
-        addItem("- not specified -");
+        addItem(I18n.getText("meta.unspecified"));
 
         // parse and normalize
         String species = (String) s.meta.get("species");
@@ -60,16 +61,16 @@ public class SpeciesPopup extends JComboBox {
         }
 
         // add the most common species
-        int n = Species.common.size();
-        for (int i=0; i<n; i++) {
+        Iterator iter = Species.getCommonCodes();
+        while (iter.hasNext()) {
             try {
-                String name = Species.getName((String) Species.common.get(i));
+                String name = Species.getName((String) iter.next());
                 addItem(name);
             } catch (UnknownSpeciesException use) {
-                // ignore -- can't happen: Species.common all exist
+                // can't happen
             }
         }
-
+        
         // select whichever it is (maybe a special one)
         selectSpecies(species);
         
@@ -119,7 +120,7 @@ public class SpeciesPopup extends JComboBox {
 
                 // undoability!
                 final String newSpeciesGlue = newSpecies; // augh!
-                glue.postEdit(new AbstractUndoableEdit() {
+                parent.postEdit(new AbstractUndoableEdit() {
                     public void undo() throws CannotUndoException {
                         // -- set species back to old one
                         selectSpecies(oldSpecies);
@@ -205,9 +206,7 @@ public class SpeciesPopup extends JComboBox {
             getContentPane().add(panel);
 
             // label
-            JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            labelPanel.add(new JLabel("Choose the species:", JLabel.LEFT));
-            panel.add(labelPanel);
+	    panel.add(Layout.flowLayoutL("Choose the species:"));
 
             // TRY: use 2 lists: "Abies", "Pinus", "Quercus", etc. on the left size,
             // and update the right size when something is selected:
@@ -253,9 +252,7 @@ public class SpeciesPopup extends JComboBox {
                 }
             });
             // win32: alt-O checks box, and sends focus to textfield
-            JPanel checkPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            checkPanel.add(otherCheck);
-            panel.add(checkPanel);
+	    panel.add(Layout.flowLayoutL(otherCheck));
 
             // --- (8px)
             panel.add(Box.createVerticalStrut(8));
@@ -272,7 +269,6 @@ public class SpeciesPopup extends JComboBox {
             panel.add(Box.createVerticalStrut(14));
             
             // -- Cancel, OK buttons
-            JPanel buttons = new JPanel(new ButtonLayout());
             JButton cancel = Builder.makeButton("cancel");
             cancel.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
@@ -310,10 +306,8 @@ public class SpeciesPopup extends JComboBox {
                     dispose();
                 }
             });
-            buttons.add(cancel);
-            buttons.add(ok);
-            panel.add(buttons);
-            OKCancel.addKeyboardDefaults(this, ok);
+            panel.add(Layout.buttonLayout(cancel, ok));
+            OKCancel.addKeyboardDefaults(ok);
 
             // TODO:
             // -- focus on the list

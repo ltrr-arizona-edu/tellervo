@@ -2,6 +2,7 @@ package corina.util;
 
 import corina.gui.Bug;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -20,16 +21,41 @@ public class Platform {
     public static void open(String folder) {
 	if (isWindows) {
 	    try {
-		Runtime.getRuntime().exec(new String[] {"start", folder }); // completely untested!
+		// if file, "explorer /select,FILENAME"
+		// else, "explorer FILENAME"
+		boolean isDir = new File(folder).isDirectory();
+		Runtime.getRuntime().exec(new String[] {
+					      "explorer",
+					      (isDir ? folder : "/select," + folder) });
+
+		// TODO: this is completely untested!
+
+		// note: in my old SiteInfo.java, i used
+		// ("c:\\winnt\\system32\\cmd.exe" "/c" "start" folder)
 	    } catch (IOException ioe) {
 		Bug.bug(ioe);
 	    }
 	    return;
 	}
 
+	// REFACTOR: combine these if-catch-statements!
+
 	if (isMac) {
 	    try {
-		Runtime.getRuntime().exec(new String[] {"open", folder });
+		Runtime.getRuntime().exec(new String[] {
+					      "open", "-a",
+					      "/System/Library/CoreServices/Finder.app/",
+					      folder });
+
+		// REFACTOR: make into methods openFolder(folder, file), openFolder(folder)?
+
+		// TODO: should i snarf up stdout/stderr?
+		// i think mac is smart enough i don't have to.
+
+		// (don't bother watching return value; it can't fail)
+
+		// note: in my old SiteInfo.java, i used
+		// ("/usr/bin/open" folder)
 	    } catch (IOException ioe) {
 		Bug.bug(ioe);
 	    }
@@ -37,6 +63,7 @@ public class Platform {
 	}
 
 	// what to do on unix?  gmc, konqueror, xterm?
+	new Bug(new IllegalArgumentException("Platform.open() not implemented on unix yet!"));
     }
 
     // get the name of the trash folder
@@ -58,5 +85,14 @@ public class Platform {
 
         // REFACTOR: add this to xframe, or whatever my document window is
 	// (is that really what i want?)
+    }
+
+    // for DnD, the key you press to copy, instead of move.
+    public static String getCopyModifier() {
+	if (isMac)
+	    return "alt"; // option, really
+	else
+	    return "control";
+	// i have no idea what it is on generic unix.  does motif specify?
     }
 }

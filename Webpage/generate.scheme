@@ -1,0 +1,12 @@
+; this file is -*-scheme-*-
+
+; given an input port, read all of its lines, and print them to stdout.
+(define (print-all port)
+  (if (not (eof-object? (peek-char port)))
+      (begin
+	(display (read-line port))
+	(newline)
+	(print-all port))))
+
+; print out "Webpage/index.html"
+(print-all (open-input-file "Webpage/index.html"))

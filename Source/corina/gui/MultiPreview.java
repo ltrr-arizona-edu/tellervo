@@ -23,15 +23,16 @@ package corina.gui;
 import corina.Sample;
 import corina.Element;
 import corina.Previewable;
-import corina.files.WrongFiletypeException;
+import corina.Preview;
+import corina.formats.WrongFiletypeException;
 import corina.cross.Grid;
 import corina.ui.Builder;
+import corina.util.Platform;
 
 import java.io.File;
 import java.io.IOException;
 
 import java.util.List;
-import java.util.ResourceBundle;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
@@ -40,7 +41,6 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
-import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.AbstractAction;
@@ -51,13 +51,10 @@ import javax.swing.BorderFactory;
 public class MultiPreview extends JPanel implements PropertyChangeListener {
 
     // gui
-    private JLabel label;
+    private JPanel preview;
     private JButton add, remove;
     private ElementsPanel panel;
     private JFileChooser chooser;
-
-    // i18n
-    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // data
     private File file;
@@ -93,10 +90,9 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 	add(left);
 
 	// left: preview
-	label = new JLabel();
-	label.setVerticalAlignment(JLabel.TOP);
-	label.setMaximumSize(new Dimension(150, 150));
-	left.add(label, BorderLayout.CENTER);
+	preview = new JPanel(new BorderLayout());
+	preview.setMinimumSize(new Dimension(240, 100));
+	left.add(preview, BorderLayout.CENTER);
 
 	// left: button panel
 	JPanel buttons = new JPanel();
@@ -104,12 +100,10 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 	buttons.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 6)); // top-left-bottom-right
 	left.add(buttons, BorderLayout.SOUTH);
 
-        // classloader (for icons)
-        ClassLoader cl = this.getClass().getClassLoader();
-        
 	// left: buttons (add)
         add = Builder.makeButton("add");
-        add.setIcon(new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Forward16.gif")));
+	if (!Platform.isMac)
+	    add.setIcon(Builder.getIcon("Forward16.gif"));
 	add.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    // add to set
@@ -123,7 +117,8 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 
 	// left: buttons (remove)
         remove = Builder.makeButton("remove");
-	remove.setIcon(new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Back16.gif")));
+	if (!Platform.isMac)
+	    remove.setIcon(Builder.getIcon("Back16.gif"));
 	remove.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    panel.removeSelectedRows();
@@ -158,12 +153,12 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
     }
 
     // PropertyChangeListener helper
+    // (REFACTOR: use SamplePreview here!)
     private void loadSample() {
 	// no file?
         if (file == null)
             return;
  
-	// REFACTOR: use SamplePreview here!
 	try {
 	    Previewable s=null;
 
@@ -174,18 +169,14 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 		s = new Sample(file.getPath());
 	    } // but can't string catches here ... darn
 
-	    // old: Sample s = new Sample(file.getPath());
+	    // get preview, and show it.
+	    showPreview(s.getPreview());
 
-	    // see SamplePreview.java
-	    final String glue = s.getHTMLPreview();
-	    (new Thread() {
-		    public void run() {
-			label.setText(glue); // got a nullpe here once -- how?
-		    }
-		}).start();
+	} catch (WrongFiletypeException wfte) {
+	    showPreview(new Preview.NotDendroDataPreview());
 
 	} catch (IOException ioe) {
-	    label.setText("(not a data file)");
+	    showPreview(new Preview.ErrorLoadingPreview(ioe));
 	}
     }
 
@@ -199,6 +190,18 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
                 repaint();
             }
         }
+    }
+
+    private void showPreview(Preview p) {
+	// remove old value, and put new preview component up.
+	if (preview.getComponentCount() > 0)
+	    preview.remove(0);
+	PreviewComponent pc = new PreviewComponent(p);
+	preview.add(pc, BorderLayout.CENTER);
+
+	// beat swing with a stick until it repaints me.
+	preview.invalidate();
+	preview.validate();
     }
 
     // get the result

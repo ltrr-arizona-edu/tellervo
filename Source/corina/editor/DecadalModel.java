@@ -24,9 +24,8 @@ import corina.Year;
 import corina.Range;
 import corina.Sample;
 import corina.manip.Redate;
+import corina.ui.I18n;
 import corina.gui.Bug;
-
-import java.util.ResourceBundle;
 
 import java.awt.event.*;
 import javax.swing.*;
@@ -35,20 +34,19 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CannotRedoException;
 
-/*
-  <p>Table model for a dendro dataset.</p>
+/**
+   Table model for a decadal dataset.
 
-  <p>Left to do: it might be simpler to make the data table actually 3
-  tables (year, data, count) that scroll together, so tabbing always
-  stays in the same table.</p>
+   <p>Left to do: it might be simpler to make the data table actually
+   3 tables (year, data, count) that scroll together, so tabbing
+   always stays in the same table.</p>
 
-  @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-  @version $Id$ */
-
-// bug! -- if the length changes (e.g., truncate), there's a problem
-// with sums.  ouch.  (<-- what did i mean by this?)
-
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class DecadalModel extends AbstractTableModel {
+    // BUG! -- if the length changes (e.g., truncate), there's a problem
+    // with sums.  ouch.  (<-- what did i mean by this?)
 
     /** The sample whose data is being displayed. */
     protected Sample s;
@@ -88,9 +86,9 @@ public class DecadalModel extends AbstractTableModel {
 	@return the column's name */
     public String getColumnName(int col) {
 	if (col == 0)
-	    return "Year";
+	    return I18n.getText("year");
 	else if (col == 11)
-	    return "No.";
+	    return I18n.getText("number");
 	else
 	    return Integer.toString(col-1);
     }
@@ -113,7 +111,8 @@ public class DecadalModel extends AbstractTableModel {
 	// compute num rows
 	int n = row_max - row_min + 1;
 
-	// always give a blank space for more data entry
+	// always give a blank space for more data entry; if the last year
+	// is the last year of this decade, we'll need another decade
 	if (s.range.getEnd().column() == 9)
 	    n++;
 
@@ -128,20 +127,30 @@ public class DecadalModel extends AbstractTableModel {
     }
 
     /** Return the Year that a (row,col) cell should display.
+
+    <b>This method creates a new object, and is called far, far too often.</b>
+    For opening one raw sample, it creates 526 Year objects, and about as
+    many each time the window is uncovered (and there are only about 200 years
+    of data visible!).  This can't be good for performance.
+    Make sure each call to this is really needed, or make them not require
+    object creation each time.
+
+    (Candidates for this: 2 calls in getValueAt().)
+
 	@param row the row in question
 	@param col the column in question
 	@return the Year that the (row,col) cell should display */
     public /* protected */ Year getYear(int row, int col) {
+	// System.out.println("getYear() called (n=" + __n++ + ")");
 	return new Year(row + row_min, // offset row by row_min (top row is 0)
 			col - 1); // offset col by 1 (left col is year label)
     }
+    // private static int __n=0;
 
     // i'll have a lot of these.  better to use only one (flyweight).
     protected final static Integer ZERO = new Integer(0);
 
-    // returns an Integer; by returning an Object, i can avoid an
-    // extra (unnecessary) cast when returning from means.get().
-    protected final Object getMean(int row) {
+    protected final Integer getMean(int row) {
 	// if no count, just return zero
 	if (s.count == null)
 	    return ZERO;
@@ -155,40 +164,43 @@ public class DecadalModel extends AbstractTableModel {
 
 	// compute right end of range: min(10th column, end)
 	Year y2 = getYear(row, 10);
-	if (y2.compareTo(s.range.getEnd()) > 0)
-	    y2 = s.range.getEnd();
+	y2 = Year.min(y2, s.range.getEnd());
 
-	// compute span (assumed nonzero), sum, mean
-	int sum=0, span=y2.diff(y1)+1;
-	for (int i=y1.diff(s.range.getStart()); i<=y2.diff(s.range.getStart()); i++) {
-	    try {
-		sum += ((Integer) s.count.get(i)).intValue(); // getting IndexOutOfBoundsException here -- so y1 isn't in s.range?
-	    } catch (IndexOutOfBoundsException ioobe) {
-		System.out.println("fuck ... ioobe i=" + i + ",y1=" + y1 + ",y2=" + y2 + ",span=" + span);
-	    }
-	}
+        // compute span (assumed nonzero), sum, mean
+        int sum=0, span=y2.diff(y1)+1;
+	int left = y1.diff(s.range.getStart());
+	int right = y2.diff(s.range.getStart());
+        for (int i=left; i<=right; i++)
+            sum += ((Integer) s.count.get(i)).intValue();
 
-	// whoa, very rare case it can be zero!  (when?  the n+1 year of a sum that ends in -9.)
-	if (span == 0) return ZERO;
+        // in a very rare case it can be zero!  (when?  the n+1 year of a sum that ends in -9.)
+	// (actually, though, sums shouldn't have the n+1 cell, so this special case belongs elsewhere!)
+        if (span == 0) return ZERO;
 
-	// return it
-	return new Integer(sum/span);
+	// return the mean
+	int mean = Math.round((float) sum / span);
+	return new Integer(mean);
     }
 
+    private int __a=0, __b=0;
     public Object getValueAt(int row, int col) {
 	if (col == 0) {
 	    if (row == 0)
 		return s.range.getStart();
 	    else if (row + row_min == 0) // special case
 		return "1";
-	    else
-		return getYear(row, col+1);
+	    else {
+		// System.out.println("getYear() called (a=" + __a++ + ")");
+		return getYear(row, 1); // called 66 times
+		// (was (row,col+1), but col=0 here)
+	    }
 	} else if (col == 11) { // average
 	    return getMean(row);
 	} else if (col==1 && row+row_min==0) {
 	    return null; // year "zero"
 	} else {
-	    Year y = getYear(row, col);
+	    // System.out.println("getYear() called (b=" + __b++ + ")");
+	    Year y = getYear(row, col); // 479 -- THIS GETS CALLED TOO MANY TIMES!
 	    if (!s.range.contains(y))
 		return null;
 	    else
@@ -202,19 +214,19 @@ public class DecadalModel extends AbstractTableModel {
 	@param col the column to query
 	@return the column's class */
     public Class getColumnClass(int col) {
-	if (col >= 1 && col <= 10)
-	    return Integer.class;
-	else
-	    return String.class;
+        return ((col >= 1 && col <= 10) ? Integer.class : String.class);
     }
 
     public boolean isCellEditable(int row, int col) {
-	// new feature: (0,0) _is_ editable
+        // REFACTOR this whole method.  i'd like to see a couple temps, then something simple
+	// like return a||b||c||d;
+        
+	// feature: (0,0) is editable (it's the start year, and editing it redates the sample)
 	if (row==0 && col==0)
 	    return true;
 
 	// if bad column, is indexed, or is summed, NOT editable
-	if ((col<1) || (col>10) || s.isIndexed() || s.isSummed())
+	if ((col<1) || (col>10) || (!s.isEditable()))
 	    return false;
 
 	// proposed year to edit
@@ -253,6 +265,7 @@ public class DecadalModel extends AbstractTableModel {
 	final boolean bigger =  s.range.getEnd().add(+1).equals(getYear(row, col));
 
 	// if we get a String, make it into an Integer
+	// [Q: what else could it be?]
 	if ((value instanceof String) && ((String) value).length() > 0)
 	    try {
 		value = Integer.decode((String) value);
@@ -293,10 +306,11 @@ public class DecadalModel extends AbstractTableModel {
 		private Object newVal = glue;
 		private boolean grew = bigger; // BIGGER IS ALWAYS FALSE HERE -- LASTVAL PROBLEM!
 		public void undo() throws CannotUndoException {
+		    // debugging
 		    System.out.println("undo, grew=" + grew);
+
 		    if (grew) {
 			s.data.remove(s.data.size()-1);
-			// s.range.end = s.range.end.add(-1);
 			s.range = new Range(s.range.getStart(),
 					    s.range.getEnd().add(-1));
 		    } else {
@@ -309,10 +323,11 @@ public class DecadalModel extends AbstractTableModel {
 			s.fireSampleRedated();
 		}
 		public void redo() throws CannotRedoException {
+		    // debugging
 		    System.out.println("redo, grew=" + grew);
+
 		    if (grew) {
 			s.data.add(newVal);
-			// s.range.end = s.range.end.add(+1);
 			s.range = new Range(s.range.getStart(),
 					    s.range.getEnd().add(+1));
 		    } else {
@@ -327,7 +342,8 @@ public class DecadalModel extends AbstractTableModel {
 		    return true;
 		}
 		public String getPresentationName() {
-		    return "Edit";
+		    return I18n.getText("edit");
+		    // that's silly, that's the edit menu title -- well, it works...
 		}
 	    });
     }

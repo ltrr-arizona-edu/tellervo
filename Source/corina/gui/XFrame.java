@@ -20,25 +20,41 @@
 
 package corina.gui;
 
+import corina.ui.Builder;
+
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.JFrame;
-import javax.swing.ImageIcon;
 import javax.swing.WindowConstants;
 
 /**
-   A generic XCorina frame (window).  All non-transient frames should
-   subclass this.  It automatically provides:
+   A generic frame (window).  All non-transient frames should subclass
+   this.  It automatically provides:
 
    <ul>
      <li>Auto-dispose on close
      <li>Nifty tree icon
    </ul>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public abstract class XFrame extends JFrame implements WindowListener {
+
+    /*
+      i hate this class.  i'd much prefer to simply have a
+      disposeIfNotSaved(SaveableDoc) method, which any Frame could use
+      to override dispose(), so i wouldn't need to care about XFrames
+      and close().  but i can't get that to work.  actually, i had
+      incredible difficulties getting anything to work, because the
+      behavior of dispose() and windowClosing(), etc., isn't very well
+      documented.  so: please refactor me, but i don't know how.
+
+      -- this looks like a perfect example of paul graham's argument
+      against OOPS.  i'd much rather have the ability to add these
+      features to windows as i like, rather than having the union of
+      all of them to take or leave.
+    */
 
     //
     // constructor
@@ -55,9 +71,7 @@ public abstract class XFrame extends JFrame implements WindowListener {
     // icon
     //
     private void setTreeIcon() {
-        ClassLoader cl = this.getClass().getClassLoader();
-        ImageIcon treeIcon = new ImageIcon(cl.getResource("Images/Tree.png"));
-        setIconImage(treeIcon.getImage());
+	setIconImage(Builder.getImage("Tree.png"));
     }
 
     //

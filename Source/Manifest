@@ -1,4 +1,4 @@
 Main-Class: corina.gui.Startup
-Class-Path: Libraries/jython.jar Libraries/kawa.jar Libraries/gnujaxp.jar Libraries/jlfgr-1_0.jar Libraries/comm.jar
+Class-Path: Libraries/crimson.jar Libraries/batik.jar
 
 Name: corina/

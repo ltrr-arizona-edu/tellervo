@@ -24,7 +24,6 @@ import corina.ui.I18n;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.ResourceBundle;
 
 import java.text.DateFormat;
 

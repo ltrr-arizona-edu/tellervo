@@ -1,0 +1,405 @@
+<chapter id="atlas">
+  <title>The Atlas</title>
+
+<!--
+new design for this chapter:
+chapter: the atlas
+section: what it does
+section: the 2 tabs: map, sites
+section: the map tab (navigation)
+  (future section: changing the projection, etc.)
+section: saving maps
+section: exporting maps (svg, png; see also graphics file formats appendix)
+section: printing maps
+section: the sites tab
+section: sorting the list of sites
+section: changing which columns are visible
+section: finding sites near a site (the target)
+-->
+
+<para>
+&corina; includes an Atlas for managing your sites.  The Atlas
+consists of:
+
+<itemizedlist>
+  <listitem><para>a map, which shows you where your sites are,
+  and</para></listitem>
+
+  <listitem><para>a list of sites, which lets you add, remove, edit,
+  and search your sites.</para></listitem>
+</itemizedlist>
+
+They're assembled side-by-side in one window for convenience.
+</para>
+
+<sect1 id="showing-the-map">
+  <title>Showing the Map</title>
+
+  <para>To show the map, choose:
+
+  <menuchoice>
+    <guimenu>File</guimenu>
+    <guimenuitem>(New) Atlas...</guimenuitem>
+  </menuchoice>
+
+  </para>
+
+</sect1>
+
+<sect1 id="editing-site-info">
+  <title>Editing Site Info</title>
+
+  <para>To edit the info for a site, find it in the list of sites and choose
+
+<menuchoice>
+  <shortcut>
+    <keycombo><keycap>control</keycap> <keycap>I</keycap></keycombo>
+  </shortcut>
+  <guimenu>Site</guimenu>
+  <guimenuitem>Get Info...</guimenuitem>
+</menuchoice>.
+
+  You'll be presented with a window letting you edit all the info for
+  that site.  Most of them should be self-explanitory, but a few notes:</para>
+
+<itemizedlist>
+  <listitem><para>"Code" is the alphabetic code for this site, like
+  "ZKB"; "ID" is the numeric code for this site, like
+  167.</para></listitem>
+
+  <listitem><para>You can set the location either by dragging the site
+  on the map, or by typing in a latitude and longitude here (for
+  example, "41&degree;12'N 32&degree;37'E").  If you can't type a
+  degree sign (&degree;) on your keyboard, you can use an asterisk (*)
+  instead.</para></listitem>
+
+  <listitem><para>The "Country" popup lists all of the countries which
+  have been used for other sites so far.  If you need to select a
+  country not in the popup, the last entry is "Other...", which lets
+  you select any country.</para></listitem>
+
+<!-- something about folder? -->
+
+<!-- what if you have more than one selected? -->
+
+<!-- what about creating new sites?  or removing sites?  undo/redo? -->
+
+</itemizedlist>
+
+</sect1>
+
+<!--
+  section?: editing site info for several sites at once
+  section?: typing characters that aren't on my keyboard - no, to appendix
+section: making a new site
+section: deleting a site
+section: printing the site list
+section: exporting the site list (html, text, clipboard)
+
+idea: just start over.  make a new file, Atlas.xml.
+move this file into the removed-source folder.
+  -->
+
+<!-- ************************************************** -->
+<!-- * below here is old stuff                        * -->
+<!-- ************************************************** -->
+
+<sect1><title>Introduction?</title>
+<para>--WRITEME</para>
+</sect1>
+
+<sect1><title>Displaying Sites on a Map</title>
+
+<para>WRITEME</para>
+
+</sect1>
+
+<sect1><title>Exporting Maps</title>
+
+<!-- TODO: use acronym, application for SVG/PNG, word, illus, etc. -->
+<!-- TODO: add index terms -->
+<!-- TODO: add glossary terms: PNG, SVG, vector, bitmap -->
+<!-- TODO: export will move from its own menu, to the file menu;
+     adjust references here; when that's done. -->
+
+<para>For the times when you want to use a map in another document,
+&corina; lets you export your maps.  You can export a map to:</para>
+
+<itemizedlist>
+  <listitem><para>Illustrator, for a poster</para></listitem>
+
+  <listitem><para>a web page editor, for a web page</para></listitem>
+
+  <listitem><para>PowerPoint, for a presentation</para></listitem>
+
+  <listitem><para>Word, for a report</para></listitem>
+
+  <listitem><para>and probably many other uses I haven't thought of</para></listitem>
+</itemizedlist>
+
+<!-- 3 classes: high-quality=svg,illust,etc., low-quality=web,
+     "low because they don't support anything better"=word,ppt -->
+
+<!--
+<para>
+WRITEME: formats i can export (png and svg), and why you'd pick them.
+IMAGES: png and svg at 1x, png and svg at 10x - re printing
+</para>
+-->
+
+<note>
+<title>You Might Not Need to Read This Section</title>
+<para>
+You don't need to export maps to print them: just choose
+<menuchoice>
+  <shortcut>
+    <keycombo><keycap>control</keycap> <keycap>P</keycap></keycombo>
+  </shortcut>
+  <guimenu>File</guimenu>
+  <guimenuitem>Print...</guimenuitem>
+</menuchoice>.  Exporting is just for putting maps into other
+documents.
+</para>
+</note>
+
+<!-- what if i'm on windows and want a pdf?  get acrobat, or illustrator. -->
+
+<sect2>
+<title>To Illustrator</title>
+
+<!-- WRITEME: index "adobe", "illustrator", other product names -->
+
+<para>
+Adobe Illustrator is a vector graphics program, which means you can
+draw line art without ever getting "jaggies".  In addition to its own
+file format, it has good support for &svg;, an open file format for
+vector graphics.  &corina; also supports &svg;, so putting a map from
+&corina; into an Illustrator document is really easy.
+</para>
+
+<procedure>
+<title>Exporting a map to Illustrator</title>
+
+<step><para>In &corina;, create the map you'd like to
+export</para></step>
+
+<step><para>In &corina;, export the map to &svg; with
+<menuchoice>
+  <guimenu>Export</guimenu>
+  <guimenuitem>SVG...</guimenuitem>
+</menuchoice>, and pick a filename which ends with <filename
+class="extension">.SVG</filename></para></step>
+
+<step><para>In Illustrator, open the &svg; file you just created, with
+<menuchoice>
+  <shortcut>
+    <keycombo><keycap>control</keycap> <keycap>O</keycap></keycombo>
+  </shortcut>
+  <guimenu>File</guimenu>
+  <guimenuitem>Open...</guimenuitem>
+</menuchoice></para>
+</step>
+
+</procedure>
+
+<para>
+You need Illustrator version 9 or newer to load &svg; files.
+</para>
+
+<para>
+Two other vector-art programs which you might have (which compete with
+Illustrator) are Macromedia Freehand and Corel Draw.
+
+Freehand 10 doesn't support &svg;.  (They're the guys who wrote Flash,
+another vector graphics format used by all the cheesey animations on
+the web.  I wouldn't hold my breath on them supporting &svg;.)
+
+Corel Draw 11 <emphasis>might</emphasis> support &svg;.  I can't tell
+by reading their web page, so try it.  Corel does support exporting
+&svg;, and has their own &svg; viewer, so it's quite possible that
+Corel Draw does or will soon allow you to import &svg;.
+</para>
+
+</sect2>
+
+<sect2>
+<title>To a Web Page</title>
+
+<para>
+Web pages are meant to be viewed in a browser on a screen, and screens
+are low-resolution devices (compared to printers), so exporting to PNG
+for a web page is fine.
+</para>
+
+<para>
+A common way to put images on web pages is to have a small thumbnail
+of your image in the body of your text, which is itself a link to a
+larger version.  So you'll need two versions of each map.  Good sizes
+might be 300x200 and 600x400.
+</para>
+
+<procedure>
+<title>Exporting a map for a Web Page</title>
+
+<step><para>In &corina;, create the map you'd like to
+export</para></step>
+
+<step><para>In &corina; export the map to a thumbnail PNG, sized
+300x200, with
+<menuchoice>
+  <guimenu>Export</guimenu>
+  <guimenuitem>PNG...</guimenuitem>
+</menuchoice>, and pick a filename which ends with <filename
+class="extension">.PNG</filename></para></step>
+
+<step><para>In &corina; export the map to a large PNG, sized
+600x400, with
+<menuchoice>
+  <guimenu>Export</guimenu>
+  <guimenuitem>PNG...</guimenuitem>
+</menuchoice>, and pick a filename which ends with <filename
+class="extension">.PNG</filename></para></step>
+
+<step><para>Once you have the images, you'll need to reference them
+from an HTML file.  A simple version will look something like this:
+
+<programlisting>
+<![CDATA[
+<a href="map-large.png" alt="Map (large)">
+  <img src="map-small.png" width="300" height="200" align="left"/>
+</a>
+]]>
+</programlisting>
+
+</para></step>
+</procedure>
+
+<para>
+Be sure to use "width" and "height" attributes, and be sure they're
+correct.  "Align left" tells the web browser to wrap your text around
+the thumbnail.
+</para>
+
+<para>
+Even your large map won't look very good when printed out.  If you
+want to provide a high-resolution map that users can print out, you
+should also include a link to a PDF.  (Mac users can choose
+Print...***, and click "Save as PDF..."***.  PC users will need to buy
+Adobe Acrobat to be able to do this, or export an SVG and save it from
+Illustrator.)
+</para>
+
+</sect2>
+
+<sect2>
+<title>To a PowerPoint Presentation</title>
+
+<para>
+Microsoft PowerPoint can only import bitmaps like PNG, not vector art
+like SVG, but they also need to scale the image to fit on the screen
+or to print.  In other words, this is the worst of both worlds.
+</para>
+
+<para>
+The best solution I've found is to use large PNG bitmaps, and scale
+them down.  It won't look nearly as good as a normal printout, or a
+document made in Illustrator, but it's the best that PowerPoint can
+do.
+</para>
+
+<procedure>
+<title>Exporting a map to PowerPoint</title>
+
+<step><para>In &corina;, create the map you'd like to
+export</para></step>
+
+<step><para>In &corina; export the map to PNG with
+<menuchoice>
+  <guimenu>Export</guimenu>
+  <guimenuitem>PNG...</guimenuitem>
+</menuchoice>, and pick a filename which ends with <filename
+class="extension">.PNG</filename></para></step>
+
+<step><para>In PowerPoint, create a new slide for your map, if you
+want it on its own slide.  A blank slide should work
+fine.</para></step>
+
+<step><para>In PowerPoint, insert your map image using
+<menuchoice>
+  <guimenu>Insert</guimenu>
+  <guimenu>Picture</guimenu>
+  <guimenuitem>From File...</guimenuitem>
+</menuchoice></para>
+</step>
+
+</procedure>
+
+<!-- make this a sidebar or something? -->
+<para>
+You need Microsoft PowerPoint version 97, 2000, or newer for the PC,
+or version 98 or v.X or newer for the Mac, to import PNG files.  You
+can also use Apple's presentation application, Keynote.  All versions
+of Apple Keynote can import PNG.
+
+<!-- WRITEME - note that PPT is part of office! -->
+
+</para>
+
+</sect2>
+
+<sect2>
+<title>To a Word Document</title>
+
+<para>
+Like PowerPoint, Microsoft Word can only import bitmaps like PNG.
+Putting a map in a Word document is very similar to putting it in a
+PowerPoint presentation.
+</para>
+
+<para>
+If you have a PC, you need Word 97 or 2000 or newer for PNGs (Word 6.0
+and Word 95 are too old).  If you have a Mac, you need Office 98 or
+Word:mac v.X.
+</para>
+
+<procedure>
+<title>Exporting a map to Word</title>
+
+<step><para>In &corina;, create the map you'd like to
+export</para></step>
+
+<step><para>In &corina; export the map to PNG with
+<menuchoice>
+  <guimenu>Export</guimenu>
+  <guimenuitem>PNG...</guimenuitem>
+</menuchoice>, and pick a filename which ends with <filename
+class="extension">.PNG</filename></para></step>
+
+<!-- TODO: sizes!
+  screen is 72/96 dpi (give or take), paper (photographic quality) is 300dpi (...),
+  so needs to be 3-4x resolution of screen to print well; for a full-width map
+  (8.5-0.5-0.5=7.5), that's around 2000px wide.
+-->
+
+<step><para>In Word, insert the PNG file you just created, with
+<menuchoice>
+  <guimenu>Insert</guimenu>
+  <guimenu>Picture</guimenu>
+  <guimenuitem>From File...</guimenuitem>
+</menuchoice></para>
+</step>
+
+</procedure>
+
+<para>
+Of course, if you really wanted high quality publishing, you wouldn't
+be using Word; you would be using something PostScript-based, or which
+could import SVG files, like Adobe InDesign, or perhaps FrameMaker,
+T<subscript>E</subscript>X, or DocBook.
+</para>
+
+</sect2>
+
+</sect1>
+
+</chapter>

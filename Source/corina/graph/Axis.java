@@ -46,7 +46,7 @@ public class Axis extends JPanel {
 	int w = getWidth();
 
 	// draw vertical axis
-	int bottom = GrapherPanel.getBottom(this);
+	int bottom = getHeight() - GrapherPanel.AXIS_HEIGHT;
 	g2.setColor(Color.getColor("corina.graph.foreground", Color.white));
 	g2.drawLine(w-1, 0, w-1, bottom);
 

@@ -22,49 +22,112 @@ package corina.cross;
 
 import java.text.DecimalFormat;
 
+/**
+   A histogram for crossdates.
+
+   <p>(Actually, except for one constructor, there's nothing
+   crossdate-specific about this.)</p>
+
+   <p>It splits up the incoming data into a fixed number of buckets,
+   and lets you find out how many buckets there are, the fullest
+   bucket, and the range of and number of items in each bucket.</p>
+
+<pre>
+   rarely-happens bugs:
+
+   BUG: if zero-length array, all accessor calls will fail
+        (what's the correct output, then?)
+   BUG: what if the entire data array is infinities (or NaNs)?
+
+   can't-happen (since i'm only using it for crossdates) bugs:
+
+   BUG: what if the entire data array is NaNs?
+   BUG: what if there's a -infinity value?
+   (BUG?: what if there are any negative values?)
+</pre>
+
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class Histogram {
-    // input
-    private double low, step;
+    // format string for values/scores
+    private DecimalFormat format;
+
+    // intermediates
+    private float low, step;
     private boolean hasInfty;
 
     // output
     private int buckets[];
 
-    public Histogram(Cross c) {
-        this(c.data, c.getFormat());
-        // barf here if c wasn't run yet?
+    /** The number of buckets to split data into. */
+    public static final int NUMBER_OF_BUCKETS = 30;
+
+    /**
+       Make a histogram out of the scores of a crossdate.
+       Assumes the crossdate was already run.
+
+       @param crossdate the crossdate of scores to count
+    */
+    public Histogram(Cross crossdate) {
+        this(allScores(crossdate), crossdate.getFormat());
     }
-    private DecimalFormat fmt; // format string for values/scores
-    public Histogram(double data[], String fmt) {
+
+    // copy all of the scores from this crossdate into a float array.
+    private static float[] allScores(Cross c) {
+	int n = c.getRange().span();
+	float x[] = new float[n];
+	for (int i=0; i<n; i++)
+	    x[i] = c.getScoreOLD(i);
+	return x;
+    }
+
+    /**
+       Make a histogram out of any data.  Also provide a format
+       string, like DecimalFormat uses, which will be used for
+       printing the ranges of the buckets.
+
+       @see java.text.DecimalFormat
+       @param data the data to analyze, as an array of floats
+       @param format the way to format data values, for DecimalFormat
+    */
+    public Histogram(float data[], String format) {
         // copy format string
-        this.fmt = new DecimalFormat(fmt);
+        this.format = new DecimalFormat(format);
 
         // number of inputs
         int n = data.length;
 
-        // number of buckets
-        int numberOfBuckets = 30;
+        // number of buckets -- REMOVE ME!
+        int numberOfBuckets = NUMBER_OF_BUCKETS;
 
-        // specias case: max(data) = infty.  solution?
-        // -- if there's an infty, ignore when computing low/high
-        // -- add an extra bucket on the top, called "high - \infty"
-        // no scores can be negative, but if they did, i'd probably need a special case for that, too
-
-        // set it up -- use a fixed number of buckets for now
+	// compute high/low/step
         {
-            double high;
+            float high;
             if (data.length == 0) {
                 buckets = new int[0];
                 return;
             }
-            low = high = data[0];
-            for (int i=1; i<n; i++) {
-                double x = data[i];
-                if (Double.isInfinite(x) && x>0) {
+            low = Float.POSITIVE_INFINITY;
+	    high = Float.NEGATIVE_INFINITY;
+            for (int i=0; i<n; i++) {
+                float x = data[i];
+
+		// there are some special cases to watch out for:
+
+                if (Float.isInfinite(x) && x>0) {
+		    // infinity.  what to do?  first, ignore it when
+		    // computing low and high.  make an extra bucket
+		    // on top, called "high - infinity".
                     hasInfty = true;
-                } else if (Double.isNaN(x)) {
-                    // heck, this shouldn't happen, but if it does, let's just ignore it.
+
+                } else if (Float.isNaN(x)) {
+		    // NaN.  they're just weird, and they don't really
+		    // fit in any buckets, so i'll just ignore them.
+		    // (no crossdate should return any NaNs, anyway.)
+
                 } else {
+		    // a normal value
                     low = Math.min(low, x);
                     high = Math.max(high, x);
                 }
@@ -78,37 +141,62 @@ public class Histogram {
         // make the buckets
         buckets = new int[numberOfBuckets]; // all zero
 
-        // run it
+        // fill the buckets with data
         for (int i=0; i<n; i++) {
             // get the next val
-            double x = data[i];
+            float x = data[i];
 
             // place it in the proper bucket
             int target = (int) ((x - low) / step);
-            if (target >= numberOfBuckets) // for when round-up puts it out of the last bucket, or infty
+
+	    // if rounding puts it out of the last bucket,
+	    // or it's an infinity, put it in the last bucket.
+            if (target >= numberOfBuckets)
                 target = numberOfBuckets-1;
+
             buckets[target]++;
         }
     }
 
-    // the number of entries in the fullest bucket.
+    // the number of entries in the fullest bucket, or -1(=not computed)
     private int fullest = -1;
+
+    /**
+       Get the number of items in the fullest bucket.
+
+       @return the number of items in the fullest bucket
+    */
     public int getFullestBucket() {
-        // -1 means "not computed" (because no bucket can contain -1 things, of course)
+        // computed lazily; -1 means "not computed"
+	// (because no bucket can contain -1 things, of course)
         if (fullest == -1) {
-            int n=buckets.length;
-            for (int i=0; i<n; i++)
+            for (int i=0; i<buckets.length; i++)
                 fullest = Math.max(fullest, buckets[i]);
         }
         return fullest;
     }
 
-    public int countBuckets() {
+    /**
+       Get the number of buckets.  This is a compile-time constant.
+
+       @see Histogram#NUMBER_OF_BUCKETS
+       @return the number of buckets
+    */
+    public int getNumberOfBuckets() {
         return buckets.length;
     }
 
     private String memo[]=null;
-    public String getRange(int bucket) {
+
+    /**
+       Get the range spanned by a bucket.  This is returned as a
+       string, in the format "a - b".  The ends of the span are
+       formatted in the provided format.
+
+       @param bucket which bucket to look at
+       @return the range spanned by that bucket, as a string "a - b"
+    */
+    public String getBucketRange(int bucket) {
         // build memo, if necessary
         if (memo == null)
             memo = new String[buckets.length];
@@ -116,16 +204,26 @@ public class Histogram {
         // compute result for cache, if necessary
         if (memo[bucket] == null) {
             boolean isInfty = (hasInfty && bucket==buckets.length-1);
-            double a = low + step*bucket;
-            double b = (isInfty ? Double.POSITIVE_INFINITY : low+step*(bucket+1));
-            memo[bucket] = fmt.format(a) + " - " + fmt.format(b);
-	    // "-" should really be "\u2014", but my printer can't handle that yet  :-(
+            float a = low + step*bucket;
+            float b = (isInfty ? Float.POSITIVE_INFINITY
+		       : low+step*(bucket+1));
+            memo[bucket] = format.format(a) + " - " + format.format(b);
+	    // "-" should really be "\u2014",
+	    // but my printer can't handle that yet,
+	    // so yours likely can't, either.  :-(
         }
 
         // return it
         return memo[bucket];
     }
-    public int getNumber(int bucket) {
+
+    /**
+       Get the number of items in a bucket.
+
+       @param bucket which bucket to look at
+       @return the number of items in that bucket
+    */
+    public int getBucketItems(int bucket) {
         return buckets[bucket];
     }
 }

@@ -5,6 +5,13 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.ListSelectionModel;
 
+/*
+  this is a quick hack.
+
+  FIXME: the proper way appears to be to implement ListSelectionModel, or
+  subclass DefaultListSelectionModel.  probably not hard, but takes some doing.
+*/
+
 public class NoEmptySelection {
     // don't allow deselecting the only selection
     public static void noEmptySelection(JTable table) {

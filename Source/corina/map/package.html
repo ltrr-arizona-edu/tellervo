@@ -1,0 +1,85 @@
+<body>
+
+<p>Mapping and site management.</p>
+
+<p>This package began as an experimental package.  Even I wasn't sure
+if it would turn out to be feasible or useful, so the design evolved
+out of working code, which isn't often the best way to go about it.
+So my next task is a complete refactoring this package.  As a
+blueprint, here's what I'd like corina.map / corina.site design to
+look like:</p>
+
+<h3>Package</h3>
+
+<p>The packages corina.map and corina.site should be merged.  Even I'm
+not sure exactly what the line between them is, or was.  The new
+package name should be the same as the name of the feature:
+corina.atlas.</p>
+
+<h3>Base Classes</h3>
+
+<ul>
+  <li>Location* (mutable or immutable?)
+  <li>Site* (public interface: Site.getSite(code), etc.)
+  <li>SiteFile* (stores sites in a file)
+  <li><i>Deprecated:</i> SiteDB (merge into Site or SiteFile)
+  <li><i>Future:</i> SiteDatabase (stores sites in an RDBMS)
+  <li>SiteInfoDialog*
+  <li>SiteNotFoundException*
+  <li>SitePrinter* (<i>Rename to:</i> SiteListPrinter)
+  <li>Country*
+  <li>CountryPopup
+  <li>CountryDialog
+</ul>
+
+<h3>The Layers</h3>
+
+<p>Since it takes a non-trivial amount of time (>50ms) to draw the
+entire map, and there's a lot of drawing code, it's split into a bunch
+of layers.  In use, each layer is asked to draw itself to a buffer,
+and the buffers are composited as they're ready.</p>
+
+<ul>
+  <li>Layer
+  <li>GridlinesLayer
+  <li>LegendLayer
+  <li>MapLayer
+  <li>SitesLayer
+</ul>
+
+<h3>The Projections</h3>
+
+<p>The Location-to-Point mapping is fast and simple, and also
+something the user might want to be able to change.  Plus there are
+lots of standard ones they'll expect.</p>
+
+<ul>
+  <li>Projection*
+  <li>RectangularProjection
+  <li>SphericalProjection
+</ul>
+
+<h3>High-Level Views</h3>
+
+<ul>
+  <li>AtlasWindow* (a window with tabs for the map and the sites)
+  <li>MapPanel (need a separate MapComponent?)
+  <li>SiteListPanel
+</ul>
+
+<h3>Low-Level Map Data</h3>
+
+<ul>
+  <li>MapFile
+</ul>
+
+<h3>Miscellaneous</h3>
+
+<ul>
+  <li><i>Deprecated:</i> Lock (move to <code>corina.util</code>)
+  <li><i>Deprecated:</i> Vector3 (internal to SphericalProjection)
+</ul>
+
+<p>* Public class.</p>
+
+</body>

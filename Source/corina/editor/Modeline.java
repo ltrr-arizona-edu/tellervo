@@ -40,9 +40,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.border.EtchedBorder;
 
 /**
-   <p>An emacs-style modeline for an Editor's data table.  Displays
-   the currently selected year, and that year's value, count, and
-   weiserjahre up/down values.</p>
+   An emacs-style modeline for an Editor's data table.
+
+   <p>Displays the currently selected year, and that year's value,
+   count, and weiserjahre up/down values.</p>
 
    <p>Watching for row-change-events requires implementing a
    ListSelectionListener, while watching for column-change-events
@@ -50,9 +51,9 @@ import javax.swing.border.EtchedBorder;
    class can implement them both, though it is incredibly
    non-intuitive.</p>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class Modeline extends JPanel
                    implements ListSelectionListener, TableColumnModelListener {
 
@@ -66,8 +67,8 @@ public class Modeline extends JPanel
   (and doesn't) have modes, so "status bar" ("status line"?) is more appropriate.
 */
 
-    // icon
-    private Tree icon;
+    // icon -- DISABLED until it's good for something.
+    // private Tree icon;
 
     // label
     private JLabel label;
@@ -170,8 +171,8 @@ public class Modeline extends JPanel
 	label = new JLabel();
 	label.setBorder(BorderFactory.createEmptyBorder());
 
-	// icon
-	icon = new Tree(sample);
+	// icon -- DISABLED
+	// icon = new Tree(sample);
 
 	// stats, like mean sensitivity
 	stats = new Statistics(sample);
@@ -183,8 +184,8 @@ public class Modeline extends JPanel
 	setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 	setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 	add(Box.createHorizontalStrut(2));
-	add(icon);
-	add(Box.createHorizontalStrut(4));
+	// add(icon);
+	// add(Box.createHorizontalStrut(4));
 	add(label);
 	add(Box.createHorizontalGlue());
 	add(stats);

@@ -21,6 +21,7 @@
 package corina.cross;
 
 import corina.Sample;
+import corina.ui.I18n;
 
 /**
    Class for computing the hybrid "D-Score" ("Dating Score").  The
@@ -43,11 +44,10 @@ import corina.Sample;
    @see corina.cross.TScore
    @see corina.cross.Trend
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class DScore extends Cross {
-
     /** The T-Score to use (or compute). */
     private TScore tscore;
 
@@ -57,11 +57,14 @@ public class DScore extends Cross {
     // don't use me
     protected DScore() { }
 
-    /** Construct a D-Score from two uncrossed samples.  This requires
+    /**
+       Construct a D-Score from two uncrossed samples.  This requires
        calculating the T-Score and Trends first, so used this way,
        this is the slowest cross.
+
        @param s1 fixed sample to use
-       @param s2 moving sample to use */
+       @param s2 moving sample to use
+    */
     public DScore(Sample s1, Sample s2) {
 	// set fixed, moving
 	super(s1, s2);
@@ -71,47 +74,56 @@ public class DScore extends Cross {
 	trend = new Trend(s1, s2);
     }
 
-    /** Construct a D-Score from two (possibly already-run) crosses,
-	the T-Score and Trend for a given pair of samples.  If this
-	constructor is used and the crosses have previously been run,
-	they are not run again (making this the fastest cross).
-	@param t TScore to use
-	@param tr Trend to use */
+    /**
+       Construct a D-Score from two (possibly already-run) crosses,
+       the T-Score and Trend for a given pair of samples.  If this
+       constructor is used and the crosses have previously been run,
+       they are not run again (making this the fastest cross).
+
+       @param t TScore to use
+       @param tr Trend to use
+       @exception IllegalArgumentException if t and tr don't have the
+       same fixed/moving samples
+    */
     public DScore(TScore t, Trend tr) {
 	// copy sample references
-	super(t.fixed, t.moving);
+	super(t.getFixed(), t.getMoving());
+
+	// make sure they're the same
+	if (t.getFixed() != tr.getFixed() || t.getMoving() != tr.getMoving())
+	    throw new IllegalArgumentException("samples aren't the same!");
 
 	// copy existing tscore and trend
 	this.tscore = t;
 	this.trend = tr;
     }
 
-    /** Return a nicer string of this cross, "D-Score".
-	@return the name of this cross, "D-Score" */
     public String getName() {
-	return msg.getString("dscore");
+	return I18n.getText("dscore");
     }
 
-    /** A format string for D-scores.
-	@return a format string for D-scores */
     public String getFormat() {
 	return System.getProperty("corina.cross.dscore.format", "0.00");
     }
 
-    public boolean isSignificant(double score, int overlap) {
-    // return 100.0; // said by PIK on 8-may-2002 at 10:18am
-        return score > 40.; // said by PIK on 9-may-2002 at 11:37am
+    public boolean isSignificant(float score, int overlap) {
+	// return 100.0; // said by PIK on 8-may-2002 at 10:18am
+        return score > 40; // said by PIK on 9-may-2002 at 11:37am
     }
 
-    public double getMinimumSignificant() {
-        return 40.;
+    public float getMinimumSignificant() {
+        return 40;
     }
 
-    /** Run any un-run crosses.
-	@see corina.cross.TScore
-	@see corina.cross.Trend */
+    /**
+       Run any un-run crosses.
+
+       @see corina.cross.TScore
+       @see corina.cross.Trend
+    */
     protected void preamble() {
-	// run any un-run crosses -- uh-oh, what if they're running now?  need runningNow flag?
+	// run any un-run crosses --
+	// BUG: uh-oh, what if they're running now?  need runningNow flag?
 	if (!tscore.isFinished())
 	    tscore.run();
 	if (!trend.isFinished())
@@ -148,38 +160,42 @@ public class DScore extends Cross {
 	// what happens if one of those single()s fails?  can it?
 
         // return the score
-        return dscore((float) tscore.single(), (float) trend.single());
+        return dscore(tscore.single(), trend.single());
     }
 
     // don't want to call this every compute()
-    private int overlap = getMinimumOverlap();
+    private int overlap = 1; // getMinimumOverlap();
 
-    /** Compute a single D-score, i.e., the D-score between the two
+    /**
+       Compute a single D-score, i.e., the D-score between the two
        samples for a given possible position.  Because it's a
        composite of two other algorithms that have already been run,
        the first step is to compute the index into the T-score and
        trend vectors.
+
        @param offset_fixed index into the fixed sample to start
        @param offset_moving index into the moving sample to start
-       @return D-score for these offsets */
-    public double compute(int offset_fixed, int offset_moving) {
+       @return D-score for these offsets
+    */
+    public float compute(int offset_fixed, int offset_moving) {
         // figure out what index (into the cross data) we're talking about
         int index;
         if (offset_fixed == 0) { // phase 1
-            index = (moving.data.size() - overlap) - (offset_moving);
+            index = (getMoving().data.size() - overlap) - (offset_moving);
         } else { // phase 2
-            index = offset_fixed + (moving.data.size() - overlap);
+            index = offset_fixed + (getMoving().data.size() - overlap);
         }
 
         // get the t, tr, and compute d
 	float t, tr, d;
-/***/   t = (float) tscore.data[index]; // TODO: remove these casts once tscore/trend are native floats
-        tr = (float) trend.data[index];
+/***/   t = tscore.getScoreOLD(index);
+        tr = trend.getScoreOLD(index);
         d = dscore(t, tr);
 
 	/*
-	  at ***, arrayindexoutofboundsexception, because overlap < min_overlap (!)
-	 */
+	  at ***, arrayindexoutofboundsexception, because overlap <
+	  min_overlap (!)
+	*/
 
         // return it
         return d;

@@ -21,6 +21,7 @@
 package corina.index;
 
 import corina.Sample;
+import corina.ui.I18n;
 
 /**
    A cubic spline index.
@@ -44,13 +45,15 @@ import corina.Sample;
    algorithm or implementation available, I will be happy to use
    it.</p>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class CubicSpline extends Index {
+    /**
+       Create a new cubic spline.
 
-    /** Create a new cubic spline.
-	@param s the Sample to index */
+       @param s the Sample to index
+    */
     public CubicSpline(Sample s) {
 	super(s);
     }
@@ -178,10 +181,8 @@ public class CubicSpline extends Index {
 	}
     }
 
-    /** The name of this index.
-	@return the name of this index */
     public String getName() {
-	return msg.getString("cubic_spline");
+	return I18n.getText("cubic_spline");
     }
 
     public int getID() {

@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "../../Libraries/docbook-xml-4.2/docbookx.dtd" [
+
+<!ENTITY include-installation SYSTEM "1-Installation.chap">
+<!ENTITY include-browser     SYSTEM "2-Browser.chap">
+<!ENTITY include-editor      SYSTEM "3-Editor.chap">
+<!ENTITY include-graphs      SYSTEM "4-Graphs.chap">
+<!ENTITY include-crossdating SYSTEM "5-Crossdating.chap">
+<!ENTITY include-indexing    SYSTEM "6-Indexing.chap">
+<!ENTITY include-summing     SYSTEM "7-Summing.chap">
+<!ENTITY include-formats     SYSTEM "8-Formats.chap">
+<!ENTITY include-preferences SYSTEM "9-Preferences.chap">
+<!ENTITY include-atlas       SYSTEM "10-Atlas.chap">
+
+<!ENTITY include-references  SYSTEM "References.appdx">
+<!ENTITY include-graphics    SYSTEM "BitmapVector.appdx">
+<!ENTITY include-troubleshooting SYSTEM "Troubleshooting.appdx">
+<!ENTITY include-glossary    SYSTEM "Glossary.appdx">
+<!ENTITY include-files       SYSTEM "Files.appdx">
+<!ENTITY include-license     SYSTEM "GNU-FDL.appdx">
+<!ENTITY include-index       SYSTEM "Index.appdx">
+
+<!ENTITY sqrt  "&#x221a;" >     <!-- SQUARE ROOT -->
+<!ENTITY sum "&#x2211;" >       <!-- N-ARY SUMMATION -->
+<!ENTITY command "&#x2318;" >   <!-- "PLACE OF INTEREST SIGN = [mac] COMMAND KEY" (doesn't work for pdf?) -->
+<!ENTITY texsp "&#x2423;" >     <!-- OPEN BOX, aka, TeX-like underscore-space;
+	                             x23B5 would probably be better,
+                                     but my browser doesn't support it -->
+<!ENTITY degree "&#x00B0;" >    <!-- DEGREE SIGN -->
+<!ENTITY per_mille "&#x2030;" > <!-- PER MILLE SIGN -->
+
+<!ENTITY dot "&#x22C5;" >       <!-- DOT OPERATOR -->
+<!ENTITY cross "&#x00D7;" >     <!-- MULTIPLICATION SIGN -->
+
+<!ENTITY ldots "&#x2026;" >     <!-- HORIZONTAL ELLIPSIS -->
+
+<!ENTITY sigma "&#x03C3;" >     <!-- GREEK SMALL LETTER SIGMA -->
+
+<!ENTITY corina "<application>Corina</application>">
+<!ENTITY svg "<acronym>SVG</acronym>">
+]>
+
+<book id="corina">
+
+<bookinfo>
+  <title>The Corina Book</title>
+<!--  <author><firstname>Ken</firstname><surname>Harris</surname></author> -->
+  <pubdate>August 2002</pubdate>
+
+<!-- KDE's style guidelines rightly note that there's
+     little point to revhistory: the actual revision history
+     is in CVS.  but anyway, for the record (since CVS is
+     down), the first version of this to be in docbook was
+     done november 2002 by kbh. -->
+</bookinfo>
+
+&include-installation;
+
+&include-browser;
+
+&include-editor;
+
+&include-graphs;
+
+&include-crossdating;
+
+&include-indexing;
+
+&include-summing;
+
+&include-formats;
+
+&include-preferences;
+
+&include-atlas;
+
+&include-references;
+
+&include-graphics;
+
+&include-troubleshooting;
+
+&include-glossary;
+
+&include-files;
+
+&include-license; <!-- GNU FDL -->
+
+&include-index;
+
+</book>
+
+<!--
+    IDEA: have appendix, "error messages", which lists all possible
+    error messages, why they're generated, and what to do about them.
+    sorted (alphabetically), i hope.  i should put all the error message
+    stuff in the same place as they occur (LP).
+  -->
+
+<!--
+    IDEA: put all equations/algorithms in an appendix, and just
+    reference them from the body of the text?  that way, ASSUMING most
+    people are interested in the what/how instead of the algorithms,
+    it wouldn't disturb the flow of the text.  (if that's backwards,
+    it would.)
+  -->

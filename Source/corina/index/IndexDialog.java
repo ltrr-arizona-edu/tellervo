@@ -21,27 +21,27 @@
 package corina.index;
 
 import corina.Sample;
-import corina.graph.GraphFrame;
+import corina.graph.GraphWindow;
 import corina.gui.FileDialog;
-import corina.gui.ButtonLayout;
+import corina.gui.Layout;
 import corina.gui.UserCancelledException;
 import corina.util.OKCancel;
 import corina.util.UserFriendlyFile;
 import corina.util.NoEmptySelection;
 import corina.util.TextClipboard;
 import corina.util.Platform;
-import corina.gui.HelpBrowser;
+import corina.gui.Help;
 import corina.gui.Bug;
 import corina.ui.Builder;
+import corina.ui.Alert;
+import corina.ui.I18n;
 
 import java.io.File;
 import java.io.IOException;
 
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 
-import java.util.ResourceBundle;
 import java.util.Collections;
 import java.util.Vector;
 
@@ -49,7 +49,6 @@ import java.awt.FlowLayout;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
@@ -62,7 +61,6 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
-import javax.swing.JOptionPane;
 import javax.swing.JComponent;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -72,15 +70,18 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
 /**
    Indexing dialog.  Lets the user choose an indexing algorithm to use.
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
+<pre>
+NOTE: the proper order of buttons is:
+ (help) --- (alternative) (cancel) ((ok))
+</pre>
+
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-
 public class IndexDialog extends JDialog {
     // data
     private Sample sample;
@@ -91,18 +92,14 @@ public class IndexDialog extends JDialog {
     private IndexTableModel model;
 
     // proxying
-    private JCheckBox useProxy;
     private JComboBox proxyPopup;
     private int oldSelection = 0;
-
-    // i18n
-    private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // formatting for decimals
     private static final String CHI2_FORMAT = "#,##0.0";
     private static final String RHO_FORMAT = "0.000";
 
-    // table model -- (could be static but for msg.getString())
+    // table model -- (could be static but for i18n)
     private class IndexTableModel extends AbstractTableModel {
         private DecimalFormat fmtChi2 = new DecimalFormat(CHI2_FORMAT);
         private DecimalFormat fmtR = new DecimalFormat(RHO_FORMAT);
@@ -113,7 +110,7 @@ public class IndexDialog extends JDialog {
         public String getColumnName(int col) {
             switch (col) {
                 case 0:
-                    return msg.getString("algorithm");
+		    return I18n.getText("algorithm");
                 case 1:
                     return "\u03C7\u00B2"; // should be "Chi\overline^2" = \u03C7\u0304\u00B2
                     // unfortunately, Mac OS X (at least -- so probably others) apparently doesn't
@@ -138,10 +135,14 @@ public class IndexDialog extends JDialog {
         public Object getValueAt(int row, int col) {
             Index i = (Index) iset.indexes.get(row);
             switch (col) {
-                case 0: return i.getName();
-                case 1: return fmtChi2.format(i.getChi2());
-                case 2: return fmtR.format(i.getR());
-                default: throw new IllegalArgumentException(); // can't happen
+	    case 0: return i.getName();
+	    case 1: return fmtChi2.format(i.getChi2()); // (is defined, as long as N!=0)
+	    case 2:
+		if (Double.isNaN(i.getR())) // can happen
+		    return "-";
+		else
+		    return fmtR.format(i.getR());
+	    default: throw new IllegalArgumentException(); // can't happen
             }
         }
         public void setIndexSet(IndexSet iset) {
@@ -150,118 +151,10 @@ public class IndexDialog extends JDialog {
         }
     }
 
-    // given a String to render, draw everything before the |dot| to the left of
-    // a certain x-position, and everything after it to the right.  the |dot| char
-    // is centered at |position| of the way across the column.
-    public static class DecimalRenderer extends DefaultTableCellRenderer {
-        // default decimal point for this locale
-        private char dot = new DecimalFormatSymbols().getDecimalSeparator();
-        public DecimalRenderer(String sample) {
-            this.sample = sample;
-        }
-        private int offset=0;
-        private String sample=null;
-        private boolean offsetSet=false;
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus,
-                                                       int row, int column) {
-            // hack!
-            if (!offsetSet) {
-		// use the table's font -- only needs to get set once
-		super.setFont(table.getFont());
-
-                // compute position from a sample value -- needs a table, too
-                int split = sample.indexOf(dot); // assumes: there is a dot somewhere
-
-		// if not, let's assume it's at the end -- HOW?  i think this is harder...
-		if (split == -1) {
-		    int width = table.getGraphics().getFontMetrics().stringWidth(sample);
-		    offset = width / 2;
-		    offsetSet = true;
-		} else {
-		    // good, there was a dot
-		    String leftValue = sample.substring(0, split);
-		    String rightValue = sample.substring(split+1);
-		    int leftWidth = table.getGraphics().getFontMetrics().stringWidth(leftValue);
-		    int rightWidth = table.getGraphics().getFontMetrics().stringWidth(rightValue);
-		    // if i don't know the column width here, i can't compute position
-		    // but i wouldn't want to, since it'd be wrong if it ever was resized
-		    // instead i should have a pixel offset from centerline
-		    offset = (leftWidth - rightWidth) / 2;
-
-		    offsetSet = true;
-		}
-            }
-
-	    if (!(value instanceof String))
-		value = String.valueOf(value); // for Integers...
-            setText((String) value); // assumes: value is a string
-            if (isSelected) {
-                setBackground(table.getSelectionBackground());
-                setForeground(table.getSelectionForeground());
-            } else {
-                setBackground(table.getBackground());
-                setForeground(table.getForeground());
-            }
-            return this;
-        }
-        public void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g;
-
-            // compute baseline
-            int baseline = getSize().height - g2.getFontMetrics().getDescent(); // (is this right?)
-
-            // get text to draw
-            String value = getText();
-
-            // fill background -- (is this needed/allowed/automatic?)
-            g2.setColor(getBackground());
-            g2.fillRect(0, 0, getSize().width, getSize().height); // on isOpaque() only?
-
-            // set foreground
-            g2.setColor(getForeground());
-
-            // get everything to the left of the dot
-            int split = value.indexOf(dot); // assumes: there is a dot somewhere
-
-	    // hack -- no dot!
-	    if (split == -1) {
-		int guide = getSize().width / 2 + offset;
-		int width = g2.getFontMetrics().stringWidth(value);
-		// (TODO: draw elipsis here if not enough room)
-		g2.drawString(value, guide - width, baseline);
-		return;
-	    }
-
-            String valueLeft = value.substring(0, split);
-
-            // compute position the dot should be at
-            int guide = offset + getSize().width / 2;
-
-            // compute width of left half
-            int dotWidth = g2.getFontMetrics().stringWidth(String.valueOf(dot));
-            int leftWidth = g2.getFontMetrics().stringWidth(valueLeft);
-
-            // if they go outside the cell, just draw "..."
-            int width = g2.getFontMetrics().stringWidth(value);
-            if ((guide - dotWidth/2 - leftWidth < 0) ||
-		(guide - dotWidth/2 - leftWidth + width >= getSize().width)) {
-                String elipsis = "\u2026"; // "..." -- 3 dots -- the
-		// unicode is \u2026, but "..." is guaranteed -- pick one
-                int elipsisWidth = g2.getFontMetrics().stringWidth(elipsis);
-                g2.drawString(elipsis, getSize().width/2 - elipsisWidth/2, baseline);
-                return;
-            }
-
-            // draw them all at once
-            g2.drawString(value, guide - dotWidth/2 - leftWidth, baseline);
-        }
-    }
-
     // label, centered
-   private JComponent makeLabel() {
+    private JComponent makeLabel() {
         JPanel b = new JPanel(new BorderLayout());
-        b.add(new JLabel(msg.getString("choose_index"), JLabel.LEFT));
+        b.add(new JLabel(I18n.getText("choose_index"), JLabel.LEFT));
         return b;
     }
 
@@ -287,7 +180,10 @@ public class IndexDialog extends JDialog {
         //        for (int i=0; i<3; i++)
         //            table.getColumn(table.getColumnName(i)).setResizable(false);
 
-        // or deselecting the only selection
+        // or deselecting the only selection.
+	// (my users, sir, they didn't care for this dialog, at first.
+	// one of them actually tried to deselect the only selected
+	// entry.  but i ... CORRECTED them, sir.)
         NoEmptySelection.noEmptySelection(table);
 
         // select exponential, because that's probably the one that's going to get used
@@ -306,16 +202,10 @@ public class IndexDialog extends JDialog {
         JButton preview = Builder.makeButton("preview");
         preview.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
-                int row = table.getSelectedRow();
-                // my users, sir, they didn't care for this dialog, at first.  one of them actually
-                // tried to deselect the only selected entry.  but i ... CORRECTED them, sir.
-                if (row == -1) {
-                    Bug.bug(new IllegalArgumentException("bug: no row selected in preview"));
-                    return;
-                }
+		int row = table.getSelectedRow();
 
-                // graph the index (and target -- see GraphFrame(Index))
-                new GraphFrame((Index) iset.indexes.get(row));
+                // graph the index (and target -- see GraphWindow(Index))
+                new GraphWindow((Index) iset.indexes.get(row));
             }
         });
         return preview;
@@ -325,14 +215,6 @@ public class IndexDialog extends JDialog {
         JButton b = Builder.makeButton("copy");
         b.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                int row = table.getSelectedRow();
-                
-                // this should never happen, but just in case...
-                if (row == -1) {
-                    Bug.bug(new IllegalArgumentException("no index selected in copy!"));
-                    return;
-                }
-
                 // copy the index
                 copyIndex();
             }
@@ -370,8 +252,11 @@ public class IndexDialog extends JDialog {
         return cancel;
     }
 
-    /** Create a new indexing dialog for the given sample.
-	@param s the Sample to be indexed */
+    /**
+       Create a new indexing dialog for the given sample.
+
+       @param s the Sample to be indexed
+    */
     public IndexDialog(Sample s, JFrame owner) {
         super(owner);
         // setModal(true); -- no, graph becomes unusable, then.
@@ -381,10 +266,8 @@ public class IndexDialog extends JDialog {
 
         // watch for already-indexed files -- shouldn't this be a "never happens", too?
         if (sample.isIndexed()) {
-            JOptionPane.showMessageDialog(null,
-                                          msg.getString("already_indexed_text"),
-                                          msg.getString("already_indexed_title"),
-                                          JOptionPane.ERROR_MESSAGE);
+	    Alert.error(I18n.getText("already_indexed_title"),
+			I18n.getText("already_indexed_text"));
             dispose();
             return;
         }
@@ -392,17 +275,18 @@ public class IndexDialog extends JDialog {
         // make sure there's data here
         // BETTER: make this "==0", and have individual indexes throw if they can't handle size==2, etc.
         if (sample.data.size() < 3) {
-            JOptionPane.showMessageDialog(null,
-                                          msg.getString("no_data_text"),
-                                          msg.getString("no_data_title"),
-                                          JOptionPane.ERROR_MESSAGE);
+            Alert.error(I18n.getText("no_data_title"),
+			I18n.getText("no_data_text"));
             dispose();
             return;
         }
 
         // title
-        String title = (String) sample.meta.get("title");
-        setTitle(MessageFormat.format(msg.getString("index_of"), new Object[] { title }));
+        String title = sample.meta.get("title").toString();
+	if (title == null) // (DESIGN: can i do better than "untitled"?)
+	    title = I18n.getText("Untitled");
+        setTitle(MessageFormat.format(I18n.getText("index_of"),
+				      new Object[] { title }));
 
         // border
         JPanel p = new JPanel();
@@ -418,9 +302,9 @@ public class IndexDialog extends JDialog {
         // table
         p.add(makeTable());
 
-        // proxy indexing -- REFACTOR: JESUS H CHRIST, EXTRACT METHOD
+        // proxy indexing -- REFACTOR: extract method
         p.add(Box.createVerticalStrut(12));
-        useProxy = new JCheckBox("Use Proxy Data:");
+        final JCheckBox useProxy = new JCheckBox("Use Proxy Data:");
         {
             JPanel p2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
             p2.add(useProxy);
@@ -460,7 +344,8 @@ public class IndexDialog extends JDialog {
             p2.add(Box.createHorizontalStrut(24));
             Vector sums = getSums();
             int numSums = sums.size();
-            UserFriendlyFile me = new UserFriendlyFile((String) s.meta.get("filename"));
+            UserFriendlyFile me = new UserFriendlyFile((String) s.meta.get("filename")); // BUG:
+	    // fails if this file hasn't been saved (but shouldn't i probably warn, then, anyway?)
             sums.add(0, me);
             sums.add("Other...");
             proxyPopup = new JComboBox(sums); // this is the last time |sums| is used
@@ -490,11 +375,9 @@ public class IndexDialog extends JDialog {
                             // IMPROVE THIS!
                             System.out.println("oops, can't load or something...");
                         } catch (RuntimeException re) { // ICK!
-                            JOptionPane.showMessageDialog(null,
-                                                          "That proxy dataset (" + proxy.range + ") doesn't cover\n" +
-                                                          "the entire range of the sample (" + sample.range + ") you're indexing.",
-                                                          "Proxy Dataset Too Short",
-                                                          JOptionPane.ERROR_MESSAGE);
+			    Alert.error("Proxy Dataset Too Short",
+					"That proxy dataset (" + proxy.range + ") doesn't cover\n" +
+					"the entire range of the sample (" + sample.range + ") you're indexing.");
                             proxyPopup.setSelectedIndex(oldSelection);
                             return;
                         }
@@ -515,11 +398,10 @@ public class IndexDialog extends JDialog {
                             System.out.println("oops2, can't load or something...");
                         } catch (RuntimeException re) {
                             // FIXME: runtimeexception?  what was i smoking?
-                            JOptionPane.showMessageDialog(null,
-                                                          "That proxy dataset (" + proxy.range + ") doesn't cover\n" +
-                                                          "the entire range of the sample (" + sample.range + ") you're indexing.",
-                                                          "Proxy Dataset Too Short",
-                                                          JOptionPane.ERROR_MESSAGE);
+			    // REFACTOR: this looks awfully familiar
+			    Alert.error("Proxy Dataset Too Short",
+					"That proxy dataset (" + proxy.range + ") doesn't cover\n" +
+					"the entire range of the sample (" + sample.range + ") you're indexing.");
                             // that wasn't very localizeable
                             proxyPopup.setSelectedIndex(oldSelection);
                             return;
@@ -536,28 +418,18 @@ public class IndexDialog extends JDialog {
 
         p.add(Box.createVerticalStrut(14));
 
-        // bottom panel (buttons) -- REFACTOR: EXTRACT METHOD
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new ButtonLayout());
-        p.add(buttonPanel);
+        // bottom panel (buttons) ------------
 
-        // TESTING
+        // help button
         JButton help = Builder.makeButton("help");
-        help.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                new HelpBrowser("Manual/Indexing.html");
-            }
-        });
-        buttonPanel.add(help);
-        buttonPanel.add(Box.createHorizontalGlue());
+	Help.addToButton(help, "indexing");
 
         // graph button
-        buttonPanel.add(makePreviewButton());
+	JButton preview = makePreviewButton();
 
         // copy button
-//        buttonPanel.add(makeCopyButton()); -- CAROL WANTS THIS, BUT IT'S NOW TEMPORARILY DISABLED
-
-        // also copy on cmd-C -- BROKEN
+	// buttonPanel.add(makeCopyButton()); // -- CAROL WANTS THIS, BUT IT'S NOW TEMPORARILY DISABLED
+        // also: copy on cmd-C -- BROKEN
 /*
         addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
@@ -576,23 +448,14 @@ public class IndexDialog extends JDialog {
         });
 */
         
-        // (spacer)
-//        buttonPanel.add(Box.createHorizontalGlue());
-        
         // cancel button
-        buttonPanel.add(makeCancelButton());
+	JButton cancel = makeCancelButton();
 
         // ok button -- REFACTOR: EXTRACT METHOD
         JButton okButton = Builder.makeButton("ok");
         okButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 int row = table.getSelectedRow();
-
-                // should never happen...
-                if (row == -1) {
-                    Bug.bug(new IllegalArgumentException("bug: no row selected in apply"));
-                    return;
-                }
 
                 // apply it
                 Index index = (Index) iset.indexes.get(row);
@@ -603,17 +466,20 @@ public class IndexDialog extends JDialog {
 
                 // also: clear filename, set modified
                 sample.setModified();
-                sample.meta.remove("filename");
-                
+                sample.meta.remove("filename"); // BUG: this should be in Index.apply()
+		// (otherwise undo doesn't put the filename back)
+
                 // tell editor, and close
+                sample.fireSampleDataChanged();
                 sample.fireSampleMetadataChanged();
                 dispose();
             }
         });
-        buttonPanel.add(okButton);
+
+        p.add(Layout.buttonLayout(help, null, preview, cancel, okButton));
 
         // ok/cancel
-        OKCancel.addKeyboardDefaults(this, okButton);
+        OKCancel.addKeyboardDefaults(okButton);
 
         // all done
         pack();
@@ -627,23 +493,38 @@ public class IndexDialog extends JDialog {
     private Vector getSums() {
         // get files in this directory
         String filename = (String) sample.meta.get("filename");
+
         // whoops!  what if no filename?  abort!
         if (filename == null)
             return new Vector(); // not pretty
+
+	// list my siblings
         File files[] = new File(filename).getParentFile().listFiles();
 
+	// whoops!  how can this happen?
+	if (files == null)
+	    return new Vector();
+
         // return those that match "*.sum"
-        // -- this is something like: (remove-if-not (lambda (x) (ends-with x ".SUM")) (list-files filename))
+        // -- this is something like:
+	// (remove-if-not (lambda (x) (ends-with x ".SUM")) (list-files filename))
         Vector result = new Vector();
-        if (files != null) { // null if not-a-dir
-            for (int i=0; i<files.length; i++)
-                // if it ends with .sum, and it's not me (i'm already in the list), add it
-                if (files[i].getName().toUpperCase().endsWith(".SUM") && !files[i].getPath().equals(filename))
-                    result.add(new UserFriendlyFile(files[i].getPath()));
+	for (int i=0; i<files.length; i++) {
+	    // if doesn't end with .sum, skip;
+	    // BETTER: load cache(summary), and get real sums?
+	    if (!files[i].getName().toUpperCase().endsWith(".SUM"))
+		continue;
+
+	    // if it's me, skip -- BUG? should this check equals(File(filename))?
+	    if (files[i].getPath().equals(filename))
+		continue;
+
+	    // ok, add it
+	    result.add(new UserFriendlyFile(files[i].getPath()));
         }
 
         // sort the list, and return it
-        Collections.sort(result);
+        Collections.sort(result); // TODO: case-insensitive sort!
         return result;
     }
 }

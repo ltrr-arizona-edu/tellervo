@@ -1,0 +1,549 @@
+<!--
+  TODO:
+  - put everything back into one file?
+    - if so, mark chapters/sections well
+    - (does knuth recommend this for TeX?)
+  - write "how to make a graph"
+  - rewrite "moving samples around"
+  - write 'printing'
+  - finish 'exporting'
+  - finish up 'bargraphs'
+  - add index terms as necessary
+  - add sample graphs
+    - get graphs directly from corina (svg export)
+-->
+
+<chapter><title>Graphs</title>
+
+<sect1>
+
+<title>Introduction</title> <!-- FIXME: a sect1 needs a title, but i
+hate this one -->
+
+        <para>Graphs give you a "feel" for data that you can't get
+        just by looking at tables of numbers.</para>
+
+        <para>Most of the statistical tools provided by &corina;
+        aren't incredibly intelligent.  It wouldn't be very hard to
+        come up with some datasets that had great statistical scores
+        across the board, but obviously didn't crossdate.***</para>
+
+<!--
+    <para>While it's more rigorous to state that a <link
+	linkend="high-pass">high-pass filter</link> is defined
+	by</para>
+
+***copied from id=high-pass
+
+<equation>
+  <title>High-Pass Index</title>
+  <alt>\mbox{ind}_i = 1/10 \left(\mbox{data}_{i-2} + 2\mbox{data}_{i-1} + 4\mbox{data}_{i} + 2\mbox{data}_{i+1} + \mbox{data}_{i+2}\right)</alt>
+  <mediaobject>
+    <textobject>
+      <para>ind<subscript>i</subscript> = 1/10 (data<subscript>i-2</subscript> + 2&dot;data<subscript>i-1</subscript> + 4&dot;data<subscript>i</subscript> + 2&dot;data<subscript>i+1</subscript> + data<subscript>i+2</subscript>)</para>
+    </textobject>
+  </mediaobject>
+</equation>
+
+    <para>you'll probably understand better if I show you
+      that</para>
+-->
+
+    <!-- GRAPH: random sample with high-pass index ...
+         GRAPH: result; with captions! -->
+
+</sect1>
+
+<sect1 id="how-to-make-graph">
+  <title>How to Make a Graph</title>
+
+    <para>The ability to make graphs is integrated into virtually
+    every part of &corina; - so no matter what you're doing, it's easy
+    to see a graph of it.</para>
+
+    <para>The simplest way to make a graph is to select some files in
+    the browser and choose
+      <menuchoice>
+	<guimenu>File</guimenu>
+	<guimenuitem>Graph</guimenuitem>
+      </menuchoice>.
+    </para>
+
+    <para>Ways to make a graph include:</para>
+
+    <itemizedlist>
+
+<!-- OBSOLETE?: file/new graph...? -->
+
+        <listitem><para>In the <link linkend="browser">browser</link>,
+        select some samples, and choose
+
+    <menuchoice>
+      <shortcut>
+	<keycombo><keycap>control</keycap>
+                  <keycap>G</keycap></keycombo>
+      </shortcut>
+      <guimenu>Graph</guimenu>
+      <guimenuitem>Graph</guimenuitem>
+    </menuchoice>
+
+        or right-click on them, and choose
+        <guimenuitem>Graph</guimenuitem>.</para></listitem>
+
+        <listitem><para>When <link linkend="indexing">indexing</link>,
+        click the <guibutton>Preview</guibutton>
+        button.</para></listitem>
+
+        <listitem><para>When <link
+        linkend="crossdating">crossdating</link>, click the
+        <guibutton>Graph</guibutton> button.</para></listitem>
+
+        <listitem><para>When <link linkend="editor">editing a
+        sample</link>, choose either
+    <menuchoice>
+      <shortcut>
+	<keycombo><keycap>control</keycap>
+                  <keycap>G</keycap></keycombo>
+      </shortcut>
+      <guimenu>Graph</guimenu>
+      <guimenuitem>Graph</guimenuitem>
+    </menuchoice>
+
+        or
+
+    <menuchoice>
+      <shortcut>
+	<keycombo><keycap>control</keycap>
+                  <keycap>shift</keycap>
+                  <keycap>G</keycap></keycombo>
+      </shortcut>
+      <guimenu>Graph</guimenu>
+      <guimenuitem>Graph Elements</guimenuitem>
+    </menuchoice>.
+
+        </para></listitem>
+
+        <listitem><para>Adding files to an existing graph: drag and
+        drop any file on the graph window to add it.</para></listitem>
+
+        <listitem><para>By loading an old one: see <xref
+        linkend="saving-graphs"/>.</para></listitem>
+
+    </itemizedlist>
+
+    <para>When you make a graph of a <link linkend="summing">summed
+    file</link>, you'll see two lines.  One is the normal graph: the
+    width of each ring.  The second line is the number of samples that
+    had data in that year.</para>
+
+<!-- GRAPH: a sum -->
+
+        <indexterm><primary>thick line</primary>
+                   <secondary>at the end of a graph</secondary></indexterm>
+        <indexterm><primary>sapwood</primary>
+                   <secondary>representation on graphs</secondary></indexterm>
+
+    <para>If you graph an oak sample that has sapwood, the rings of
+    sapwood will show up as a thicker line at the end of the
+    graph.  (&corina; considers a sample to be oak if the species
+    contains either "oak" or "quercus".)</para>
+
+<!-- GRAPH: sapwood -->
+
+    <para>Finally, when you move the mouse around on the sample, it
+    also shows a white vertical bar in that year.  The year is also
+    printed at the top of the bar.</para>
+
+<!-- GRAPH: cursor -->
+
+</sect1>
+
+<sect1 id="scrolling">
+  <title>Scrolling</title>
+
+  <para>Once you're looking at a graph, it should be apparent that you
+  can use the scrollbar at the bottom to scroll through the years.
+  You can also use the keyboard to scroll:</para>
+
+  <table><title>Graph window keyboard controls: Scrolling</title>
+
+    <tgroup cols="2" align="left">
+
+      <colspec colname="key"/>
+      <colspec colname="command"/>
+
+	<thead>
+	  <row>
+	    <entry>Key</entry>
+	    <entry>Command</entry>
+	  </row>
+	</thead>
+
+	<tbody>
+	  <row>
+	    <entry><keycap>left</keycap></entry> <!-- was: &larr; -->
+	    <entry>Scroll left 10 years</entry>
+	  </row>
+	  <row>
+	    <entry><keycap>right</keycap></entry> <!-- was: &rarr; -->
+	    <entry>Scroll right 10 years</entry>
+	  </row>
+
+	  <row>
+	    <entry><keycap>Page Up</keycap></entry>
+	    <entry>Scroll left 100 years</entry>
+	  </row>
+	  <row>
+	    <entry><keycap>Page Down</keycap></entry>
+	    <entry>Scroll right 100 years</entry>
+	  </row>
+	  <row>
+	    <entry><keycap>Home</keycap></entry>
+	    <entry>Scroll left to start</entry>
+	  </row>
+	  <row>
+	    <entry><keycap>End</keycap></entry>
+	    <entry>Scroll right to end</entry>
+	  </row>
+	</tbody>
+      </tgroup>
+    </table>
+
+</sect1>
+
+<sect1 id="selecting-samples">
+  <title>Selecting Samples</title>
+
+  <para>As with other programs, &corina; lets you operate on one
+  sample at a time.  One graph at a time is the currently selected
+  sample.  The currently selected sample is drawn with a thicker
+  line.</para>
+
+  <para>You can always just click on a graph to select it.  Or use
+  the keyboard:</para>
+
+    <table><title>Graph window keyboard controls: selecting samples</title>
+
+      <tgroup cols="2" align="left">
+
+        <colspec colname="key"/>
+        <colspec colname="command"/>
+
+	<thead>
+	  <row>
+	    <entry>Key</entry>
+	    <entry>Command</entry>
+	  </row>
+	</thead>
+	<tbody>
+	  <row>
+	    <entry><keycap>Tab</keycap></entry>
+	    <entry>Select next sample</entry>
+	  </row>
+	  <row>
+	    <entry><keycombo><keycap>Shift</keycap>
+                   <keycap>Tab</keycap></keycombo></entry>
+	    <entry>Select previous sample</entry>
+	  </row>
+	  <row>
+	    <entry><keycombo><keycap>control</keycap>
+                             <keycap>1</keycap></keycombo>,
+                   <keycombo><keycap>control</keycap>
+                             <keycap>2</keycap></keycombo>,
+                   etc.</entry>
+	    <entry>Select graph 1, 2, etc.</entry>
+	  </row>
+	</tbody>
+      </tgroup>
+    </table>
+
+</sect1>
+
+<sect1 id="moving-samples">
+  <title>Moving Samples Around</title>
+
+  <para>You can move samples around on the graph using the mouse, too.
+  Simply drag the graph to where you want it.  It'll move smoothly up
+  and down, and jump by whole years left and right; if you watch the
+  title bar of the window, it'll show you what years it's dated to as
+  you drag &mdash; for example, <computeroutput>Zonguldak,
+  Karab&uuml;k 10A (1001-1036) (at 1002-1036)</computeroutput>, if
+  you've scrolled it right by one year.  If you want to adjust it up
+  and down without changing the years it's dated to, hold down the
+  <keycap>Shift</keycap> key as you drag.</para>
+
+  <para>If you're a keyboard jock, there are keyboard shortcuts for
+  almost everything you can do with the mouse:</para>
+
+    <table><title>Graph window keyboard controls: moving samples around</title>
+
+      <tgroup cols="2" align="left">
+
+        <colspec colname="key"/>
+        <colspec colname="command"/>
+
+	<thead>
+	  <row>
+	    <entry>Key</entry>
+	    <entry>Command</entry>
+	  </row>
+	</thead>
+
+	<tbody>
+	  <row>
+	    <entry><keycap>up</keycap></entry> <!-- was: &uarr; -->
+	    <entry>Slide sample up</entry>
+	  </row>
+	  <row>
+	    <entry><keycap>down</keycap></entry> <!-- was: &darr; -->
+	    <entry>Slide sample down</entry>
+	  </row>
+	  <row>
+	    <entry><keycap>+</keycap> or <keycap>=</keycap></entry>
+	    <entry>Nudge sample up (by 1 pixel)</entry>
+	  </row>
+	  <row>
+	    <entry><keycap>-</keycap></entry>
+	    <entry>Nudge sample down (by 1 pixel)</entry>
+	  </row>
+	  <row>
+	    <entry><keycombo><keycap>control</keycap>
+                   <keycap>left</keycap></keycombo></entry> <!-- was: &larr; -->
+	    <entry>Slide sample left by 1 year</entry>
+	  </row>
+	  <row>
+	    <entry><keycombo><keycap>control</keycap>
+                   <keycap>right</keycap></keycombo></entry> <!-- was: &rarr; -->
+	    <entry>Slide sample right by 1 year</entry>
+	  </row>
+	  <row>
+	    <entry><keycap>Space</keycap></entry>
+	    <entry>Squish graphs together (see below)</entry>
+	  </row>
+	</tbody>
+
+      </tgroup>
+    </table>
+
+  <para>If you had a lot of graphs to move around, doing it by hand
+  could take a while.  So &corina; has are a couple commands that you
+  can use to move all of the graphs at once:</para>
+
+  <itemizedlist>
+
+    <listitem>
+      <para>First, you can have all the baselines of your graphs set to
+      zero.  That is, they'll all be on the same y-axis.  Select
+      <menuchoice>
+	<guimenu>View</guimenu>
+	<guimenuitem>Make Baselines Zero</guimenuitem>
+      </menuchoice>.
+
+      (This is the default for plotting samples with their <link
+  linkend="indexing">indexes</link>.)</para>
+    </listitem>
+
+    <listitem>
+    <para>Second, you can spread out the baselines at regular
+      intervals.  The first graph will have its baseline at the
+      bottom, the second one 1" above that, etc.  Select
+      <menuchoice>
+	<guimenu>View</guimenu>
+	<guimenuitem>Make Baselines Evenly Spaced</guimenuitem>
+      </menuchoice>.
+      (This is the defaul for plotting multiple samples.)</para>
+    </listitem>
+
+    <listitem>
+    <para>Third, you can have &corina; "look" at the part of
+      the graphs that are showing, and fit them together as closely as
+      possible.  It doesn't just set all the baselines to the same
+      place; it actually tries to make each graph fit together
+      <footnote><para>It does this by computing the minimum
+      &chi;&sup2;, similarly to how good <link
+      linkend="indexing">indexing curves</link> are
+      found.</para></footnote>.  Select
+      <menuchoice>
+	<shortcut>
+	  <keycap>Space</keycap>
+	</shortcut>
+	<guimenu>View</guimenu>
+	<guimenuitem>Squish Together Graphs</guimenuitem>
+      </menuchoice>.
+    </para>
+    </listitem>
+
+  </itemizedlist>
+
+</sect1>
+
+<sect1 id="scaling"><title>Scaling</title>
+
+    <indexterm><primary>scaling graphs</primary></indexterm>
+    <indexterm><primary>graphs</primary>
+               <secondary>scaling</secondary></indexterm>
+
+    <para>You can change the scale of parts of the graph.  The
+    <emphasis>horizontal</emphasis> scale can be changed in the <link
+    linkend="graph_prefs">graph preferences</link>.</para>
+
+    <para>The <emphasis>vertical</emphasis> scale of each graph is set
+    separately.  To change the vertical scale of the currently
+    selected graph:</para>
+
+    <table><title>Graph window keyboard controls: scaling</title>
+
+      <tgroup cols="2" align="left">
+
+        <colspec colname="key"/>
+        <colspec colname="command"/>
+
+	<thead>
+	  <row>
+	    <entry>Key</entry>
+	    <entry>Command</entry>
+	  </row>
+	</thead>
+
+	<tbody>
+	  <row>
+	    <entry><keycap>&lt;</keycap> or <keycap>,</keycap></entry>
+	    <entry>Scale sample down by 20%</entry>
+	  </row>
+	  <row>
+	    <entry><keycap>&gt;</keycap> or <keycap>.</keycap></entry>
+	    <entry>Scale sample up by 25%</entry>
+	  </row>
+	</tbody>
+      </tgroup>
+    </table>
+
+</sect1>
+
+<sect1 id="printing-graphs">
+  <title>Printing Graphs</title>
+
+  <para>WRITEME: printing</para>
+</sect1>
+
+<sect1 id="saving-graphs">
+  <title>Saving Graphs</title>
+
+  <para>If you get a bunch of samples put on a graph and want to
+  save what you're working on, you can save the graph just as you
+  would any other file, with
+      <menuchoice>
+	<shortcut>
+	  <keycombo><keycap>control</keycap> <keycap>S</keycap></keycombo>
+	</shortcut>
+	<guimenu>File</guimenu>
+	<guimenuitem>Save As...</guimenuitem>
+      </menuchoice>.</para>
+
+  <para>It will save which samples you've chosen to graph, the <link
+  linkend="scaling">scale</link> of each, and where you've moved
+  them.  Only references to the actual samples are saved, so you
+  can't delete the original samples, or send just the graph file to
+  a friend.  Graphs of indexes aren't samples, and can't be saved.
+  </para>
+
+    <para>You can load them again with
+      <menuchoice>
+	<shortcut>
+	  <keycombo><keycap>control</keycap> <keycap>O</keycap></keycombo>
+	</shortcut>
+	<guimenu>File</guimenu>
+	<guimenuitem>Open...</guimenuitem>
+      </menuchoice>.
+    </para>
+
+</sect1>
+
+<sect1 id="exporting-graphs">
+  <title>Exporting Graphs</title>
+
+<!-- REFACTOR: i have most of the useful stuff in the "exporting maps"
+chapter already.  should i really rewrite it all here?  nah, move all
+the non-map-specific stuff to the graphics appendix, and reference
+that here and there.
+
+    ALSO: in the "exporting maps" section, i have specifics on how to
+    export graphics to each app.  that stuff should really be in the
+    "graphics file formats" appendix, because it's relevant here, too.
+-->
+
+    <para>When you use
+      <menuchoice>
+	<shortcut>
+	  <keycombo><keycap>control</keycap> <keycap>S</keycap></keycombo>
+	</shortcut>
+	<guimenu>File</guimenu>
+	<guimenuitem>Save As...</guimenuitem>
+      </menuchoice>,
+    &corina; saves which samples are in the graph, where they are,
+    what scale is being used, what type of graph it is, etc. - in
+    other words, it doesn't store an actual picture of the graph, but
+    simply a way to reproduce it later.  If you want to put a graph
+    from &corina; into another document, you need to
+    <emphasis>export</emphasis> it.</para>
+
+<!--
+  WRITEME:
+  - 2 formats, png and svg
+  - see appendix for when to use each
+    - short version: png for web and office, svg for illustrator or other publishing
+  - how to export png (proc)
+  - how to export svg (proc)
+-->
+
+</sect1>
+
+<sect1 id="bargraphs">
+  <title>Bargraphs</title>
+
+  <para>FIXME: make this a sect1 about other graph styles, with children sect2's
+  for bargraphs, skeleton plots.</para>
+
+  <para>&corina; can also make another type of graph from sample data:
+  bargraphs.  Bargraphs are similar to normal graphs (the x-axis is
+  still "years"), but they only show what years each sample starts and
+  ends, not the width of each ring.</para>
+
+<!-- GRAPH: a sample bargraph -->
+
+    <para>They can't be used for verifying crossdates or indexes, of
+    course, but they're good for seeing how a master chronology is put
+    together.</para>
+
+  <procedure>
+    <title>To make a bargraph:</title>
+
+    <step><para>Create a graph just as you normally would, e.g., by
+    choosing 
+      <menuchoice>
+	<guimenu>Graph</guimenu>
+	<guimenuitem>Graph Elements</guimenuitem>
+      </menuchoice>
+    in the <link linkend="editor">editor</link>.</para>
+    </step>
+
+    <step><para>When the graph window appears, choose
+      <menuchoice>
+	<shortcut>
+	  <keycombo><keycap>control</keycap> <keycap>B</keycap></keycombo>
+	</shortcut>
+	<guimenu>View</guimenu>
+	<guimenuitem>as Bargraph</guimenuitem>
+      </menuchoice>.</para>
+    </step>
+  </procedure>
+
+<!-- WRITEME: how to make a bargraph -->
+
+    <para>Bargraphs are colored by species.  ***colors?</para>
+
+<!-- WRITEME: printing, saving, etc. just the same, but nifty slider for scaling -->
+
+</sect1>
+
+</chapter>

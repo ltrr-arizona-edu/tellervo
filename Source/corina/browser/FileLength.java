@@ -6,12 +6,9 @@ import java.text.DecimalFormat;
 
 // used for sorting and displaying file lengths.
 // -- interface: stores a long, toString()s it as a file length (like "34.5K")
-// (i'd extend Long, if they'd let me.)
 // the length of a folder is displayed as "--", and sorts as the smallest-sized file.
 // javadoc me!
-public class FileLength extends Number implements Comparable {
-    private long length;
-
+public class FileLength implements Comparable {
     // the length of a file
     public FileLength(File file) {
         this.length = (file.isDirectory() ? -1 : file.length());
@@ -23,19 +20,22 @@ public class FileLength extends Number implements Comparable {
         this.length = length;
     }
 
-    // compare, just like any other number does it
+    // length of this file, or -1 if it's a folder
+    private long length;
+
+    // compare, using the natural ordering for numbers
     public int compareTo(Object o2) {
-        FileLength f2 = (FileLength) o2;
-        return (length < f2.length ? -1 : (length == f2.length ? 0 : +1));
+	long x = this.length;
+        long y = ((FileLength) o2).length;
+	// (can't just say "x-y" because they're longs, and i need an int)
+        return (x < y ? -1 : (x == y ? 0 : +1));
     }
 
     // format a file's size for users, like "34.5K"
     private static final char PREFIXES[] = new char[] { 'K', 'M', 'G', 'T', 'P', 'E', };
-    private static final DecimalFormat fmt = new DecimalFormat("#.#"); // 1 sig fig is plenty
+    private static final DecimalFormat fmt = new DecimalFormat("#.0"); // 1 sig fig is plenty
 
-    // memoized!
-    private String string=null;
-
+    // if a folder, "--", otherwise pretty-print it, like "10 KB"
     private static String format(long length) {
         if (length < 0) {
             return "--"; // directories, now, have negative length
@@ -64,22 +64,7 @@ public class FileLength extends Number implements Comparable {
         // never called before => compute and store
         if (string == null)
             string = format(length);
-
         return string;
     }
-
-    // let's extend Number, since, well, we are a number.
-    // plus we can get some stuff for free elsewhere (like, being sorted like a number, highest-to-lowest)
-    public double doubleValue() {
-        return (double) length;
-    }
-    public float floatValue() {
-        return (float) length;
-    }
-    public int intValue() {
-        return (int) length;
-    }
-    public long longValue() {
-        return length;
-    }
+    private String string=null;
 }

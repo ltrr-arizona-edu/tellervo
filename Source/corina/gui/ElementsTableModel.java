@@ -20,9 +20,10 @@
 
 package corina.gui;
 
-import corina.Metadata;
+import corina.MetadataTemplate;
 import corina.Element;
 import corina.Sample;
+import corina.ui.Alert;
 
 import java.io.IOException;
 import java.io.File;
@@ -34,7 +35,6 @@ import java.awt.Component;
 import java.awt.Color;
 import java.awt.BorderLayout;
 
-import javax.swing.JOptionPane;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -105,7 +105,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	case 0: return "Filename";
 	case 1: return "Range";
 	default:
-	    return ((Metadata.Field) fields.get(col-2)).description;
+	    return ((MetadataTemplate.Field) fields.get(col-2)).getDescription();
 	}
     }
 
@@ -129,15 +129,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	case 0:
 	    return e;
 	case 1:
-	    // might need more metadata
-	    if (e.range == null)
-		try {
-		    e.loadMeta();
-		} catch (IOException ioe) {
-		    // System.out.println("ERROR: " + e + " won't refresh");
-		}
-
-	    return e.range;
+	    return e.getRange(); // (lazy-loads)
 	default:
 	    // might need more metadata
 	    if (e.details == null)
@@ -151,7 +143,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	    if (e.details == null)
 		return null;
 
-	    String key = ((Metadata.Field) fields.get(col-2)).variable;
+	    String key = ((MetadataTemplate.Field) fields.get(col-2)).getVariable();
 	    return e.details.get(key);
 	}
     }
@@ -187,7 +179,7 @@ public class ElementsTableModel extends AbstractTableModel {
 
 	default: // update a user-chosen metadata field
 	    // this is the key to update
-	    String key = ((Metadata.Field) fields.get(col-2)).variable;
+	    String key = ((MetadataTemplate.Field) fields.get(col-2)).getVariable();
 
 	    // null?  remove it.  (q: are there any cases where it's assumed key exists, like title?)
 	    if (value == null || value == "") {
@@ -205,15 +197,20 @@ public class ElementsTableModel extends AbstractTableModel {
 	    }
 
 	    // update the disk file -- do this in a background thread, or delayed?  see jwz.
+	    Sample s;
 	    try {
-		Sample s = e.load();
-		s.meta.put(key, value);
+		s = e.load();
+	    } catch (IOException ioe) {
+		Alert.error("I/O Error", "Error loading file: " + ioe.getMessage());
+		return;
+	    }
+
+	    s.meta.put(key, value);
+
+	    try {
 		s.save();
 	    } catch (IOException ioe) {
-		JOptionPane.showMessageDialog(null,
-					      "Error loading or saving file: " + ioe.getMessage(),
-					      "I/O Error",
-					      JOptionPane.ERROR_MESSAGE);
+		Alert.error("I/O Error", "Error saving file: " + ioe.getMessage());
 	    }
 	}
 

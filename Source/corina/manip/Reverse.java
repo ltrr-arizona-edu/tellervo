@@ -21,9 +21,9 @@
 package corina.manip;
 
 import corina.Sample;
+import corina.ui.I18n;
 
 import java.util.Collections;
-import java.util.ResourceBundle;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotUndoException;
@@ -95,9 +95,6 @@ public class Reverse extends AbstractUndoableEdit {
 	sample.fireSampleMetadataChanged();
     }
     public String getPresentationName() {
-	return msg.getString("reverse");
+	return I18n.getText("reverse");
     }
-
-    // i18n
-    private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 }

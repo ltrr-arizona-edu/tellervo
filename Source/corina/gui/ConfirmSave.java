@@ -21,12 +21,10 @@
 package corina.gui;
 
 import corina.util.OKCancel;
-import corina.util.JLinedLabel;
+// import corina.util.JLinedLabel; -- FUTURE
 import corina.ui.Builder;
 
 import java.awt.Dimension;
-import java.awt.Container;
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -39,12 +37,14 @@ import javax.swing.BorderFactory;
 import javax.swing.AbstractAction;
 
 public class ConfirmSave extends JDialog {
+    // don't instantiate me
+    private ConfirmSave() { }
 
     // todo:
     // - move to gui.util?
-    // - i18n
+    // - (more) i18n
     // - frame as param?
-    // - javadoc?
+    // - javadoc
 
     public static void showDialog(SaveableDocument doc) {
 	// construct a prompt
@@ -62,7 +62,7 @@ public class ConfirmSave extends JDialog {
 	Dimension docsize = ((JFrame) doc).getSize();
 	Dimension size = dlg.getSize(); // dialog size
 	dlg.setLocationRelativeTo((JFrame) doc); // this is the default, right?
-	dlg.setLocation(docsize.width/2 - size.width/2, docsize.height/2 - size.height/2);
+	dlg.setLocation(docsize.width/2 - size.width/2, docsize.height/2 - size.height/2);// REFACTOR: move this code to Center.java!
 
 	// button: dont save
 	JButton dontSave = Builder.makeButton("dont_save"); // dispose
@@ -80,7 +80,7 @@ public class ConfirmSave extends JDialog {
 	JButton cancel = Builder.makeButton("cancel");
 	cancel.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
-		    // just close
+		    // just close me
 		    dlg.dispose();
 		}
 	    });
@@ -105,23 +105,20 @@ public class ConfirmSave extends JDialog {
 	text.add(new JLabel(prompt1));
 	text.add(new JLabel(prompt2));
         text.add(Box.createVerticalStrut(10));
+	// REFACTOR: just say text = Layout.boxLayoutY(prompt1, prompt2, Box.createV(10))
 
         // layout/buttons: left-to-right
-        JPanel buttons = new JPanel(new ButtonLayout());
-        buttons.add(dontSave);
-        buttons.add(Box.createHorizontalGlue());
-        buttons.add(cancel);
-        buttons.add(save);
+	JPanel buttons = Layout.buttonLayout(dontSave, null, cancel, save);
 
         // layout: box (top-to-bottom)
-        JPanel cont = new JPanel(new BorderLayout());
+	JPanel cont = Layout.borderLayout(null,
+					  null, text, null,
+					  buttons);
+        cont.setBorder(BorderFactory.createEmptyBorder(15, 24, 20, 24)); // FIXME: too big!
         dlg.setContentPane(cont);
-        cont.setBorder(BorderFactory.createEmptyBorder(15, 24, 20, 24));
-        cont.add(text, BorderLayout.CENTER);
-        cont.add(buttons, BorderLayout.SOUTH);
 
         // ret/esc
-        OKCancel.addKeyboardDefaults(dlg, save);
+        OKCancel.addKeyboardDefaults(save);
 
         // pack, disable sizing, show
         dlg.pack();

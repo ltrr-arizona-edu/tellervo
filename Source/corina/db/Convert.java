@@ -21,64 +21,80 @@
 package corina.db;
 
 import corina.Sample;
+import corina.formats.WrongFiletypeException;
 
 import java.io.File;
 import java.io.IOException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Statement;
 import java.sql.SQLException;
 
 // load a bunch of data files, and stuff 'em in a RDBMS.  issues:
-// -- use of the postgres driver is hardcoded
-// -- my hostname and database name are hardcoded
-// -- my username and a (dummy) password are hardcoded
 // -- ID numbers aren't always 6-digit ints: use strings (solves 0-prefix problem for free)
 
 // this needs refactoring into more-usable and more-reusable classes:
-// - convert a sample into SQL
-// - recursively dump all files into a database
-// - front-end: connect to database, dump data, select from data, etc.
+// - convert a sample into SQL (SQLize.java, should be DB.java)
+// - recursively dump all files into a database ("for each file in <folder>, do <operation>")
 
 public class Convert {
 
-    private static Connection con;
+    // dump all of |folder| into the database reachable by |connection|.
+    // BUG: what if folder is really a file?
+    public static void dump(File folder, Connection connection) {
+	System.out.println("starting dump at " + new java.util.Date());
 
-    // args is a dir
-    public static void main(String args[]) throws ClassNotFoundException, SQLException {
-	// start up JDBC
-	Class.forName("org.postgresql.Driver");
-	con = DriverManager.getConnection("jdbc:postgresql://picea.arts.cornell.edu/dendro",
-					  "kharris", "merhaba");
+	try {
+	    connection.setAutoCommit(false);
+	} catch (SQLException se) {
+	    System.out.println("error setting autocommit: " + se);
+	}
 
-	// load some files
-	File x[] = new File[args.length];
-	for (int i=0; i<args.length; i++)
-	    x[i] = new File(args[i]);
+	DB db = new DB(connection);
+	process(folder.listFiles(), db);
 
-	// process those files
-	process(x);
+	try {
+	    connection.commit();
+	} catch (SQLException se) {
+	    System.out.println("error committing: " + se);
+	}
 
-	// shut down JDBC
-	con.close();
+	try {
+	    connection.setAutoCommit(true);
+	} catch (SQLException se) {
+	    System.out.println("error setting autocommit: " + se);
+	}
+
+	try {
+	    connection.close(); // ???
+	} catch (SQLException se) {
+	    System.out.println("error closing db: " + se);
+	}
+
+	System.out.println("finished with dump at " + new java.util.Date());
     }
 
-    // for all of ZKB: 1303ms loading, 13711ms dumping.  crap.
+    // speed: for all of ZKB: 1303ms loading, 13711ms dumping.  (ouch.)
+    // obsolete! -- these numbers are for no prepared statements, and auto-commit on turned on.
 
-    private static void process(File args[]) {
+    // REFACTOR: this "do for each file in <folder>" i see all the time.
+    // can't i extract-method that, and just pass it a folder and a closure?
+    private static void process(File args[], DB db) {
 	for (int i=0; i<args.length; i++) {
 
 	    // check for dir
 	    if (args[i].isDirectory()) {
-		process(args[i].listFiles());
+		process(args[i].listFiles(), db);
 		continue;
 	    }
 
 	    try {
 		// dump it in the database
 		Sample s = new Sample(args[i].getPath());
-		SQLize ize = new SQLize(s, con);
-		ize.run();
+		db.save(s);
+	    } catch (WrongFiletypeException wfte) {
+		// System.out.println("NOTE: ignoring " + args[i]);
 	    } catch (IOException ioe) {
 		System.out.println("FAIL (io) on " + args[i]); // skip it
 	    } catch (SQLException se) {

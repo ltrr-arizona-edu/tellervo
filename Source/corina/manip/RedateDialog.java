@@ -23,13 +23,12 @@ package corina.manip;
 import corina.Year;
 import corina.Range;
 import corina.Sample;
-import corina.gui.ButtonLayout;
-import corina.gui.DialogLayout;
+import corina.gui.Layout;
+import corina.gui.layouts.DialogLayout;
 import corina.util.OKCancel;
 import corina.util.Platform;
 import corina.ui.Builder;
-
-import java.util.ResourceBundle;
+import corina.ui.I18n;
 
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
@@ -55,13 +54,12 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CannotRedoException;
 
 /**
-   A dialog which enables the user to redate a sample, either one that
-   has already been loaded or a file on disk.
+   A dialog which enables the user to redate a sample.  You can redate
+   either one that has already been loaded or a file on disk.
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-
 public class RedateDialog extends JDialog {
     private Sample sample;
     private Range range;
@@ -69,8 +67,6 @@ public class RedateDialog extends JDialog {
 
     private JTextField startField, endField;
     private DocumentListener startListener, endListener;
-
-    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     private class StartListener implements DocumentListener {
 	public void changedUpdate(DocumentEvent e) { update(); }
@@ -91,7 +87,7 @@ public class RedateDialog extends JDialog {
 		range = range.redateStartTo(new Year(value));
 		endField.setText(range.getEnd().toString());
 	    } catch (NumberFormatException nfe) {
-		endField.setText(msg.getString("bad_year"));
+		endField.setText(I18n.getText("bad_year"));
 	    }
 
 	    // re-enable endListener
@@ -118,7 +114,7 @@ public class RedateDialog extends JDialog {
 		range = range.redateEndTo(new Year(value));
 		startField.setText(range.getStart().toString());
 	    } catch (NumberFormatException nfe) {
-		startField.setText(msg.getString("bad_year"));
+		startField.setText(I18n.getText("bad_year"));
 	    }
 
 	    // re-enable startListener
@@ -126,9 +122,12 @@ public class RedateDialog extends JDialog {
 	}
     }
 
-    /** Create a redater for a loaded sample.  The "OK" button will
-	fire a <code>sampleRedated</code> event to update other views.
-	@param s the sample to redate */
+    /**
+       Create a redater for a loaded sample.  The "OK" button will
+       fire a <code>sampleRedated</code> event to update other views.
+
+       @param s the sample to redate
+    */
     public RedateDialog(Sample s, JFrame owner) {
 	// modal
 	super(owner);
@@ -150,7 +149,7 @@ public class RedateDialog extends JDialog {
 
     private void setup() {
         // set title
-        setTitle(msg.getString("redate"));
+        setTitle(I18n.getText("redate"));
 
         // kill me when i'm gone
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -170,8 +169,8 @@ public class RedateDialog extends JDialog {
         p.add(controls);
 
         // old range
-        // controls.add(new JLabel(sample.range.toString()), msg.getString("old_range") + ":");
-        // controls.add(new JLabel(msg.getString("old_range") + " was " + sample.range));
+        // controls.add(new JLabel(sample.range.toString()), I18n.getText("old_range") + ":");
+        // controls.add(new JLabel(I18n.getText("old_range") + " was " + sample.range));
 
         // redate --------------------------------------------------
         JPanel rangePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -190,7 +189,7 @@ public class RedateDialog extends JDialog {
         rangePanel.add(new JLabel(" - "));
         rangePanel.add(endField);
 
-        controls.add(rangePanel, msg.getString("new_range") + ":");
+        controls.add(rangePanel, I18n.getText("new_range") + ":");
 
         // dating --------------------------------------------------
 	// TODO: add builder for radiobuttons?
@@ -225,15 +224,10 @@ public class RedateDialog extends JDialog {
 	// (permanently disabled, now)
 
         // buttons --------------------------------------------------
-        JPanel buttons = new JPanel(new ButtonLayout());
-        p.add(Box.createVerticalStrut(14), null); // ???
-        p.add(buttons);
 
         // cancel, ok
         JButton cancel = Builder.makeButton("cancel");
         final JButton ok = Builder.makeButton("ok");
-        buttons.add(cancel);
-        buttons.add(ok);
 
         // (listen for cancel, ok)
         ActionListener buttonListener = new AbstractAction() {
@@ -243,7 +237,7 @@ public class RedateDialog extends JDialog {
                 boolean absRelChanged = (sample.isAbsolute() != isAbsolute);
 
                 if (isOk && (rangeChanged || absRelChanged))
-                    sample.postEdit(Redate.redate(sample, range, isAbsolute ? "A" : "R", elementsToo.isSelected()));
+                    sample.postEdit(Redate.redate(sample, range, isAbsolute ? "A" : "R"));
 
                 dispose();
             }
@@ -251,7 +245,11 @@ public class RedateDialog extends JDialog {
         cancel.addActionListener(buttonListener);
         ok.addActionListener(buttonListener);
 
+	// in panel
+        p.add(Box.createVerticalStrut(14));
+        p.add(Layout.buttonLayout(cancel, ok));
+
         // esc => cancel, return => ok
-        OKCancel.addKeyboardDefaults(this, ok);
+        OKCancel.addKeyboardDefaults(ok);
     }
 }

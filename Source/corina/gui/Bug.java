@@ -1,86 +1,264 @@
 package corina.gui;
 
-import corina.util.JDisclosureTriangle;
+import corina.Build;
 import corina.util.PureStringWriter;
+import corina.util.Center;
+import corina.util.OKCancel;
+import corina.util.StringUtils;
+import corina.print.Printer;
+import corina.print.TextLine;
 
 import java.io.PrintWriter;
-import javax.swing.JOptionPane;
-import javax.swing.JLabel;
+
+import java.util.Date;
+
+import java.text.DateFormat;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JComponent;
-import javax.swing.BoxLayout;
-import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JDialog;
-import java.awt.FlowLayout;
+import javax.swing.JButton;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
 
-public class Bug {
-    /*
-      this can be more sophisticated later...
-      -- email me
-      -- submit a bug report via sf tracker or similar
-      -- print out a bug report
-      -- print out the loaded data
-      -- serialize all loaded samples to disk somewhere
+// TODO: update bug.bug() uses to new bug()
 
-      short term stuff to do:
-      -- show in a textarea, with scrollbars.  then it's at least possible to
-      print, email, etc., and it won't go off the screen
-      -- make (be) a custom dialog with buttons "print"(?), "email"(?), "oh darn"(?)
+// TODO: refactor!
+
+// TODO: sizing: the dialog shouldn't change width -- set initial
+// width based on textField.getPreferredSize()?  also, it might look
+// weird for it to be centered when small, and then expand down.
+
+// TODO: let user copy bug report
+// TODO: let user print bug report (!!)
+
+// TODO: need big bug icon!
+
+/**
+   A dialog for telling the user "You've found a bug!".
+
+   <p>This dialog tells the user that a bug in Corina was encountered,
+   and gives the option of showing detailed information (the stack
+   trace, and some info about the OS and JVM).</p>
+
+   <p>In the future, it should also lets the user copy, mail, print,
+   or submit to SF's tracker the bug report.  It can also allow the
+   user to easily save all data, or save all data to a special place
+   (either with their default savers, or using serialization.</p>
+
+   <p>Use this for "can't happen" blocks, when you <b>know</b>
+   something can't happen, but have to catch the exception for the
+   compiler to be happy.  For example,</p>
+
+<pre>
+   try {
+      StringWriter s = new StringWriter();
+      s.write("hello, world");
+   } catch (IOException ioe) {
+      // there's no way a StringWriter can throw an IOE --
+      // it's just appending to a StringBuffer --
+      // but java requires us to catch it, since
+      // Writer declares it.  but we don't want to ignore
+      // it, either.
+      new Bug(ioe);
+   }
+</pre>
+
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
+public class Bug extends JDialog {
+    /**
+       Get the stack trace from a Throwable, as a String.
+
+       <p>I think Java 1.4 has a method for this, but I'm not
+       targetting 1.4 (yet).</p>
+
+       @param t the Throwable (usually an Exception) to examine
+       @return its stack trace
     */
-
-    // get stack trace -- use purestringwriter because otherwise
-    // windows would show funny boxes when displaying it (ugh).
-    // (i think 1.4 has a method for this.)
     public static String getStackTrace(Throwable t) {
+	// use PureStringWriter here because otherwise windows
+	// would show funny boxes when displaying it.
         PureStringWriter sw = new PureStringWriter();
         PrintWriter pw = new PrintWriter(sw);
         t.printStackTrace(pw);
 	return sw.toString();
     }
 
-    public static void bug(Throwable t) {
-	JPanel message = new JPanel(new BorderLayout());
+    /**
+       Assemble some system info useful for bug reports.
 
-	JComponent stackTrace = new JScrollPane(new JTextArea(getStackTrace(t), 10, 60));
+       <p>This consists of:</p>
 
-	JPanel flow = new JPanel(new FlowLayout(FlowLayout.LEFT));
-	JLabel ack = new JLabel("You found a bug in Corina!");
-	flow.add(ack);
+       <ul>
+         <li>the date and time of the Corina build
+         <li>the name, version, and architecture of the OS
+         <li>the name, version, and vendor for the Java runtime/VM
+         specification/implementation
+         <li>the current date and time
+       </ul>
 
-	message.add(flow, BorderLayout.NORTH);
-	// add padding here?
+       @return a string containing some system info
+    */
+    public static String getSystemInfo() {
+	StringBuffer buf = new StringBuffer();
 
-        // show dialog with exception and stack trace
-	JOptionPane optionPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
-	optionPane.setOptions(new String[] { "Bummer" });
+	// a nice header
+	buf.append("System Information:\n");
+	buf.append("\n");
 
-	JDialog dialog = optionPane.createDialog(null /* !!! */, "Corina Bug");
+	// time/date/version of build
+	buf.append("Corina\n");
+	buf.append("   Version " + Build.VERSION + "\n");
+	buf.append("   Built at " + Build.TIMESTAMP + "\n");
 
-	JDisclosureTriangle v = new JDisclosureTriangle("Click for details", stackTrace, dialog, false);
-	message.add(v, BorderLayout.CENTER);
+	// properties of the OS
+	buf.append("Operating system\n");
+	buf.append("   Name: " + System.getProperty("os.name") + "\n");
+	buf.append("   Version: " + System.getProperty("os.version") + "\n");
+	buf.append("   Architecture: " + System.getProperty("os.arch") + "\n");
 
-	dialog.pack();
-	dialog.setResizable(false);
-	dialog.show();
+	// java runtime environment
+	buf.append("Java Runtime Environment\n");
 
-	// TODO: add "copy to clipboard" button(?)
-	// TODO: make "bummer" label default
-	// TODO: center dialog on screen
+	// spec
+	{
+	    String version = System.getProperty("java.specification.version");
+	    String vendor = System.getProperty("java.specification.vendor");
+	    String name = System.getProperty("java.specification.name");
+	    buf.append("   Specification: " + name +
+		       ", version " + version +
+		       ", by " + vendor + "\n");
+	}
+
+	// impl
+	{
+	    String version = System.getProperty("java.version");
+	    String vendor = System.getProperty("java.vendor");
+	    buf.append("   Implementation: version " + version +
+		       ", by " + vendor + "\n");
+	}
+
+	// java VM
+	buf.append("Java Virtual Machine\n");
+
+	// spec
+	{
+	    String version = System.getProperty("java.vm.specification.version");
+	    String vendor = System.getProperty("java.vm.specification.vendor");
+	    String name = System.getProperty("java.vm.specification.name");
+	    buf.append("   Specification: " + name +
+		       ", version " + version +
+		       ", by " + vendor + "\n");
+	}
+
+	// impl
+	{
+	    String version = System.getProperty("java.vm.version");
+	    String vendor = System.getProperty("java.vm.vendor");
+	    String name = System.getProperty("java.vm.name");
+	    buf.append("   Implementation: " + name +
+		       ", version " + version +
+		       ", by " + vendor + "\n");
+	}
+
+	// do i care about java.home, java.class.version ("48.0"?),
+	// or java.class.path?  probably not.
+
+	// current date/time
+	Date now = new Date();
+	DateFormat date = DateFormat.getDateInstance(DateFormat.LONG);
+	DateFormat time = DateFormat.getTimeInstance(DateFormat.LONG);
+	buf.append("\n");
+	buf.append("Bug report generated: " + date.format(now) +
+		   " at " + time.format(now) + "\n");
+	return buf.toString();
     }
 
-    public static void main(String args[]) {
-	try {
-	    if (args.length == 0)
-		main(new String[] { "0" });
-	    if (Integer.parseInt(args[0]) == 20)
-		throw new IllegalArgumentException("bad stuff happening");
-	    else
-		main(new String[] { String.valueOf(Integer.parseInt(args[0]) + 1) } );
-	} catch (Exception e) {
-	    Bug.bug(e);
-	}
+    /**
+       Make a new bug dialog.
+
+       @param t a Throwable, usually an Exception, that is a bug
+    */
+    public Bug(Throwable t) {
+	super();
+	setTitle("Bug!");
+	setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+	JTextArea textArea = new JTextArea("Exception:\n" +
+					   getStackTrace(t) + "\n\n" +
+					   getSystemInfo(), 10, 50);
+	textArea.setEditable(false);
+	stackTrace = new JScrollPane(textArea);
+
+	JPanel message = Layout.flowLayoutL("You found a bug in Corina!");
+
+	JButton bummer = new JButton("Bummer");
+	bummer.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    dispose();
+		}
+	    });
+
+	more = new JButton("Show Details");
+	more.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    // toggle visibility of stackTrace component
+		    if (visible) {
+			// hide it
+			getContentPane().remove(stackTrace);
+			pack();
+
+			// change text: next op will be "show"
+			more.setText("Show Details");
+		    } else {
+			// show it
+			getContentPane().add(stackTrace,
+					     BorderLayout.CENTER);
+			pack();
+
+			// change text: next op will be "hide"
+			more.setText("Hide Details");
+		    }
+
+		    visible = !visible;
+		}
+	    });
+
+	JPanel buttons = Layout.buttonLayout(more, null, bummer);
+	buttons.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+
+	JPanel content = Layout.borderLayout(message,
+					     null, null, null,
+					     buttons);
+	content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+	setContentPane(content);
+
+	pack();
+	OKCancel.addKeyboardDefaults(bummer);
+	// setResizable(false);
+	Center.center(this);
+	show();
+    }
+
+    private JComponent stackTrace;
+
+    private JButton more;
+
+    private boolean visible = false;
+
+    /**
+       Old interface! -- fix all occurances of this, then remove.
+
+       @deprecated use new Bug(t)
+    */
+    public static void bug(Throwable t) {
+	new Bug(t);
     }
 }

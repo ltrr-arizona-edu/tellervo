@@ -1,0 +1,29 @@
+body {
+/*	margin: 0px; */
+}
+
+div.navheader {
+	background-color: #eee;
+}
+div.navfooter {
+	background-color: #eee;
+}
+
+/* from kde: http://kde.org/documentation/common/kde-web.css */
+TABLE.programlisting
+TABLE.screen { border-style: none;
+               background-color: rgb(224,224,224);
+               table-layout: auto; /* 100%? */
+               color: rgb(0,0,0); /* should be inherit */
+               }
+div.note {
+	border: 1px black solid;
+	background-color: #eee;
+	padding-left: 10px;
+}
+div.procedure {
+	border: 1px gray dashed;
+	background-color: #eee;
+	padding-left: 10px;
+	padding-right: 10px;
+}

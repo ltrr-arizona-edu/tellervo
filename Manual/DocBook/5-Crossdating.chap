@@ -1,0 +1,777 @@
+<chapter id="crossdating"><title>Crossdating</title>
+
+<indexterm><primary>crossdating</primary></indexterm>
+
+  <para><emphasis>Crossdating</emphasis> is the art of figuring out
+    where (or rather, when) one sample fits relative to another
+    sample.  &corina; has several algorithms to help you crossdate
+    samples.</para>
+
+<sect1>
+  <title>How Crossdating Algorithms Work</title>
+
+  <para>All algorithms work in pretty much the same way.  There's a
+  "fixed" sample, and there's a "moving" sample.  Imagine you have
+  printouts of their graphs on translucent paper.  The fixed graph is
+  taped to a table, and you can slide the moving sample left and
+  right.  (This is actually how it was originally done, on graph
+  paper, with one inch per decade.)  Start with the moving sample to
+  the left of the fixed sample, overlapping it by 10 years.  Look at
+  how well the graphs match: this is the first score that's computed.
+  Slide the moving sample to the right one year.  This is the second
+  score.  Keep doing this until the moving sample overlaps by only 10
+  years on the right end of the fixed sample.</para>
+
+  <para>If you did this yourself, you'd end up with a list of
+  scores, like this:</para>
+
+  <table>
+    <title>Crossdating Scores, List</title>
+    <tgroup cols="2">
+      <thead>
+        <row>
+          <entry>End year of moving sample</entry>
+          <entry>Crossdating score</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row><entry>1010</entry> <entry>0.03</entry></row>
+        <row><entry>1011</entry> <entry>0.56</entry></row>
+        <row><entry>1012</entry> <entry>1.11</entry></row>
+        <row><entry>1013</entry> <entry>0.82</entry></row>
+        <row><entry>1014</entry> <entry>0.60</entry></row>
+      </tbody>
+    </tgroup>
+  </table>
+
+  <para>Since there are so many scores, that tends to take
+  up a lot of space.  Instead, we usually write them
+  10 to a row, like this:</para>
+
+  <table>
+    <title>Crossdating Scores, Table</title>
+    <tgroup cols="11">
+      <thead>
+        <row>
+          <entry>Year</entry>
+          <entry>0</entry>
+          <entry>1</entry>
+          <entry>2</entry>
+          <entry>3</entry>
+          <entry>4</entry>
+          <entry>5</entry>
+          <entry>6</entry>
+          <entry>7</entry>
+          <entry>8</entry>
+          <entry>9</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row><entry>1001</entry>
+             <entry></entry>
+             <entry></entry>
+             <entry></entry>
+             <entry></entry>
+             <entry></entry>
+             <entry></entry>
+             <entry></entry>
+             <entry></entry>
+             <entry></entry>
+             <entry>0.03</entry></row>
+        <row><entry>1010</entry>
+             <entry>0.56</entry>
+             <entry>1.11</entry>
+             <entry>0.82</entry>
+             <entry>0.60</entry>
+             <entry>0.34</entry>
+             <entry>2.90</entry>
+             <entry>0.53</entry>
+             <entry>0.75</entry>
+             <entry>0.49</entry>
+             <entry>0.37</entry></row>
+      </tbody>
+    </tgroup>
+  </table>
+
+  <para>This looks like how sample data is displayed.  Just remember
+  that the <emphasis>year</emphasis> for each data point here is the
+  end-year of the moving sample.</para>
+
+  <para>That's all there is.  You could do it all simply by moving
+  graphs and eyeballing the crossdates.  But there are hundreds of
+  sites and millennia of chronologies you'll want to crossdate your
+  samples against, so that would take a while.  &corina; has a few
+  algorithms to find likely crossdates almost instantaneously.  They
+  aren't perfect, though, and they generally aren't as good as looking
+  at the graphs.  You'll still have to look and see if they make
+  sense.</para>
+
+</sect1>
+
+<sect1 id="sequences">
+  <title>Sequences</title>
+
+  <para>Often you won't want to run just one crossdate.  And usually
+  you'll want to run more than one test between the same samples.  So
+  &corina; lets you run <emphasis>sequences</emphasis> of crosses:
+  N-by-1, N-by-N, 1-by-1, and 1-by-N.  These are how many fixed and
+  moving samples you want to crossdate.  With 1-by-N, for example, you
+  have one fixed sample you want to try crossing against several other
+  samples.  When you choose N-by-N, you choose only one set of
+  samples: it crosses every sample against every other sample.</para>
+
+</sect1>
+
+<sect1>
+  <title>How to Crossdate Samples</title>
+
+  <para>WRITEME: old way.  sequences, 1-by-n, etc.</para>
+
+  <para>WRITEME: new way.  kit, drag files, hit run.</para>
+  <para>WRITEME: new way #2: select, right-click, crossdate</para>
+
+  <para>WRITEME: going through sequences; next/prev; watch the title
+  of the "score" column</para>
+
+  <para>WRITEME: the tabs; sigs, all, histo</para>
+
+  <para>WRITEME: the views: normal, tables, grids</para>
+
+  <para>WRITEME: graphs</para>
+
+  <para>WRITEME: maps</para>
+
+<para>
+TODO: the following blurb came straight from a word processor.
+reformat it, and make it fit.
+
+[[ task: write documentation for the "crossdatekit" feature, at least in the context of crossframe's edit menu ]]
+</para>
+
+<para>When you run a sequence of crossdates, you pick some samples to
+be fixed, and other samples to be moving.  (In an "N-by-N" sequence,
+Corina treats it as if each of the samples is both fixed and moving,
+but doesn't show you duplicate crosses: if you've already seen A-vs-B,
+you won't also get B-vs-A.)  This is how crossdating works, but there
+is a downside to this: sometimes you end up looking at a crossdate
+with a "fixed" sample you really want to be moving, or a "moving"
+sample you really want fixed.</para>
+
+<para>You can use the options in the View menu to change which ranges
+are displayed in the "Significant Scores" tab, but that's not always
+good enough.  The "All Scores" tab always shows the score for the
+end-year of the moving sample, no matter which option you've chosen in
+the View menu.</para>
+
+<para>Now, you could just close the crossdate and start a new sequence
+with whatever samples you wanted in the correct position.  But that
+would take a lot of time, and not be very pleasant.  So Corina lets
+you change which samples are fixed and which are moving after you've
+started to run a crossdate sequence.</para>
+
+<para>Let's suppose you're looking at a forest sample, and you want to
+crossdate it against some masters to see if it fits anywhere.  It's
+open (or maybe you opened it from the Open Recent menu), so you choose
+Manipulate -&gt; Cross against... and pick a few masters.</para>
+
+<para>But now the single sample, being the first one, is called
+"fixed", and the masters are "moving".  That's backwards.  So, do
+this: * From the crossdate window, choose View -&gt; Edit Fixed/Moving
+Lists (or press command-E) * The crossdate window disappears, and
+you're presented with a dialog that lists the fixed samples on the
+left, the moving samples on the right, and controls to add and remove
+files from either list, or move files between the lists.  In this
+case, you just want to swap them all, so click "&lt; Swap &gt;", and
+the fixed and moving lists exchange places.  * Finally, click Run and
+you're returned to the crossdate window, but the single forest sample
+is now the moving sample.</para>
+
+<para>You can use this whenever you're running a sequence of
+crossdates which is almost-but-not-quite what you want.  If you're
+running a 1-by-N and you realize you forgot one sample, press
+command-E, click "Add..." to add it, click "Run", and you're back.  If
+you're running an N-by-N and realize that only one of them is really a
+"fixed" sample, press command-E, remove all but one from the "fixed"
+side, and click "Run".</para>
+
+<para>Finally, note that the two lists in the dialog can have files
+dragged to them from anywhere.  So, for example, if you're looking at
+a bunch of files in Windows Explorer or the Mac Finder, and think
+you'd like to crossdate &lt;...&gt;</para>
+
+</sect1>
+
+<sect1>
+  <title>The Algorithms</title>
+
+  <para>Now I'll describe each of the algorithms &corina; can use to
+  crossdate samples.</para>
+
+<sect2 id="t-score">
+  <title>T-Score</title>
+
+  <indexterm><primary>crossdating</primary>
+             <secondary>t-score</secondary></indexterm>
+
+  <para>The <emphasis>t-score</emphasis> is the classic crossdate.
+  Everybody quotes t-scores: if you want to brag about how good a
+  cross is, you tell them your t-score.  Unfortunately, every dendro
+  program seems to have a <emphasis>slightly</emphasis> different
+  implementation of t-score, so the numbers you get from &corina;
+  might not be exactly comparable to the numbers from other
+  programs.</para>
+
+  <para>The version &corina; uses is based on the algorithms given in
+  <xref linkend="Baillie73"/>, though with some apparent bugs
+  corrected.  (In the following equations,
+  x<subscript>0</subscript>,
+  x<subscript>1</subscript>,
+  x<subscript>2</subscript>, &ldots;
+  are the data of the fixed sample in the overlap,
+  y<subscript>0</subscript>,
+  y<subscript>1</subscript>,
+  y<subscript>2</subscript>, &ldots;
+  are the data of the moving sample in the overlap,
+  and N is the length of the overlap.)</para>
+
+  <procedure id="t-score-algorithm">
+    <title>T-Score algorithm</title>
+
+    <step><para>Make each dataset
+<ulink url="http://mathworld.wolfram.com/BivariateNormalDistribution.html">bivariate-normal</ulink>, by replacing each value with the mean of the 5 values
+    around it, and then taking its natural logarithm.  (This is what
+    <xref linkend="Baillie73"/> does, and how they justify it; I'm
+    simply using their result, and assuming it is correct.  Statisticians
+    are welcome to argue about this.)
+
+<equation>
+  <title>Student's T-Score prep work</title>
+  <mediaobject>
+    <textobject>
+      <para>x<subscript>i</subscript> &#x2190;
+            (x<subscript>i-2</subscript> +
+	     x<subscript>i-1</subscript> +
+	     x<subscript>i</subscript> +
+	     x<subscript>i+1</subscript> +
+	     x<subscript>i+2</subscript>) / 5</para>
+      <para>x<subscript>i</subscript> &#x2190; ln(x<subscript>i</subscript>)</para>
+    </textobject>
+  </mediaobject>
+</equation>
+
+    This is done to both the fixed and moving data.
+    </para></step>
+
+    <step><para>The Student's-T computation looks like this:
+
+<equation>
+  <title>Student's T-Score</title>
+  <mediaobject>
+    <textobject>
+
+      <para>s<subscript>xy</subscript> = &sum; x<subscript>i</subscript> y<subscript>i</subscript> - N (x<subscript>i</subscript> - x<subscript>avg</subscript>) (y<subscript>i</subscript> - y<subscript>avg</subscript>)</para>
+
+      <para>s<subscript>xx</subscript> = &sum; x<subscript>i</subscript><superscript>2</superscript> - N (x<subscript>i</subscript> - x<subscript>avg</subscript>)<superscript>2</superscript></para>
+
+      <para>s<subscript>yy</subscript> = &sum; y<subscript>i</subscript><superscript>2</superscript> - N (y<subscript>i</subscript> - y<subscript>avg</subscript>)<superscript>2</superscript></para>
+
+      <para>r = s<subscript>xy</subscript> / &sqrt; (s<subscript>xx</subscript> s<subscript>yy</subscript>)</para>
+
+      <para>t = r &sqrt; ((N-2)/(1-r<superscript>2</superscript>))</para>
+
+    </textobject>
+  </mediaobject>
+</equation>
+
+    </para></step>
+
+  </procedure>
+
+  <para>The t-score is called a "parametric" algorithm, because it
+  takes into account the magnitudes of the samples.***(huh?)</para>
+
+<para>A t-score is considered "statistically significant" if it's
+greater than a certain value.  Just what this value is varies with the
+length of the overlap between the samples: a 500 year overlap can have
+a t-score of 2.6 and pass, but an overlap of only 15 years would have
+to be higher, like 3.0.  The values are listed in this table:
+
+<table>
+  <title>Significant T-scores</title>
+  <tgroup cols="2">
+    <thead>
+      <row>
+        <entry>Overlap between samples (N)</entry>
+        <entry>Minimum significant score (t)</entry>
+      </row>
+    </thead>
+    <tbody>
+      <row><entry>1</entry> <entry>63.657</entry></row>
+      <row><entry>2</entry> <entry>9.925</entry></row>
+      <row><entry>3</entry> <entry>5.841</entry></row>
+      <row><entry>4</entry> <entry>4.604</entry></row>
+      <row><entry>5</entry> <entry>4.032</entry></row>
+      <row><entry>6</entry> <entry>3.707</entry></row>
+      <row><entry>7</entry> <entry>3.499</entry></row>
+      <row><entry>8</entry> <entry>3.355</entry></row>
+      <row><entry>9</entry> <entry>3.250</entry></row>
+      <row><entry>10</entry> <entry>3.169</entry></row>
+      <row><entry>11</entry> <entry>3.106</entry></row>
+      <row><entry>12</entry> <entry>3.055</entry></row>
+      <row><entry>13</entry> <entry>3.012</entry></row>
+      <row><entry>14</entry> <entry>2.977</entry></row>
+      <row><entry>15</entry> <entry>2.947</entry></row>
+      <row><entry>16</entry> <entry>2.921</entry></row>
+      <row><entry>17</entry> <entry>2.898</entry></row>
+      <row><entry>18</entry> <entry>2.878</entry></row>
+      <row><entry>19</entry> <entry>2.861</entry></row>
+      <row><entry>20</entry> <entry>2.845</entry></row>
+      <row><entry>21</entry> <entry>2.831</entry></row>
+      <row><entry>22</entry> <entry>2.819</entry></row>
+      <row><entry>23</entry> <entry>2.807</entry></row>
+      <row><entry>24</entry> <entry>2.797</entry></row>
+      <row><entry>25</entry> <entry>2.787</entry></row>
+      <row><entry>26</entry> <entry>2.779</entry></row>
+      <row><entry>27</entry> <entry>2.771</entry></row>
+      <row><entry>28</entry> <entry>2.763</entry></row>
+      <row><entry>29</entry> <entry>2.756</entry></row>
+      <row><entry>30</entry> <entry>2.750</entry></row>
+      <row><entry>40</entry> <entry>2.704</entry></row>
+      <row><entry>60</entry> <entry>2.660</entry></row>
+      <row><entry>&#x221E;</entry> <entry>2.576</entry></row>
+    </tbody>
+  </tgroup>
+</table>
+</para>
+
+<para> WRITEME: where's this data from?  (PIK's table) -- add ref to
+biblio, and add link here.</para>
+
+<para>In reality, your overlaps will always be at least 10 or 15
+years, and hopefully more than 50.  You don't need to know this table,
+but a t-score must be greater than 2.5 or 3.0 to be significant,
+depending on its overlap.</para>
+
+<para>Click on the "Significant Scores" tab to see a list of all
+significant scores.</para>
+
+</sect2>
+
+<sect2 id="trend"><title>Trend</title>
+
+  <indexterm><primary>crossdating</primary>
+             <secondary>trend</secondary></indexterm>
+
+    <para>The <emphasis>trend</emphasis> is the simplest crossdate.
+    For each sample, it computes the <emphasis>trend</emphasis> of
+    each 2-year interval (1001-1002, 1002-1003, and so on).  The trend
+    of a 2-year interval is simply whether the next ring is larger,
+    smaller, or the same.  The trend score is the percentage of
+    intervals in the overlap which are the same.  For example, a 75%
+    trend (a very good score, by the way) means that for 75% of the
+    intervals in the overlap, both samples went up in the same years
+    and down in the same years.</para>
+
+    <note><title>Other Names</title>
+      <para>You may hear this algorithm called by different names.
+      The German name for this is
+      "<emphasis>Gleichl&auml;ufigkeitskoeffizient</emphasis>", or
+      simply "<emphasis>Gleichl&auml;ufigkeit</emphasis>" for short.
+      It was first computerized by Eckstein in <xref
+      linkend="Eckstein"/>, so it has also been called "Eckstein's W."
+      (German <emphasis>Wert</emphasis> = value, score.)
+      </para>
+    </note>
+
+<!-- WRITEME: holstein - graph? -->
+
+    <para>If one sample stays the same, and the other increases or
+    decreases, &corina; considers that to be halfway between a
+    same-trend and different-trend, and gives it half a point.</para>
+
+    <para>Trend is a "non-parametric" algorithm, because it only takes
+    into account if a given ring is bigger or smaller than the
+    previous one, not by how much.  To the trend, a drop of "100 1"
+    looks exactly the same as a drop of "100 99".</para>
+
+    <para>Two completely random samples will have a trend of 50%, on average.
+    So you'd expect a trend must be greater than 50% to be significant.
+    According to <xref linkend="Huber70"/>, a trend is significant if:
+
+<equation>
+  <title>Significant Trends</title>
+  <alt>$\mbox{tr} > 50\% + 50/\sqrt{N}$</alt>
+  <mediaobject>
+    <textobject>
+      <para>tr &gt; 50% + 50/&sqrt;N</para>
+    </textobject>
+  </mediaobject>
+</equation>
+
+    For example, a pair of samples with a 50-year overlap needs a 50 +
+    50&sqrt;50 = 57.1% trend to be significant, but at a 400-year
+    overlap need only a 50 + 50&sqrt;400 = 52.5% trend.</para>
+
+    <para>In practice, however, this doesn't tend to work terribly well.
+    Using this scheme, there are typically about three times as many
+    "significant" trend scores as t-scores, and users want this narrowed
+    down a bit more.  So take &sigma;=3 and use:
+
+<equation>
+  <title>Significant Trends, adjusted</title>
+  <mediaobject>
+    <textobject>
+      <para>tr &gt; 50% + 50&sigma;/&sqrt;N</para>
+    </textobject>
+  </mediaobject>
+</equation>
+
+    This gives about the same number of significant trend scores as
+    t-scores.</para>
+
+    <para>Trends are also used in <link
+    linkend="reconciling">reconciliation</link>.  After they've been
+    reconciled, both readings of a sample should have 100%
+    trend.</para>
+
+  </sect2>
+
+  <sect2 id="d-score">
+    <title>D-Score</title>
+
+<indexterm><primary>crossdating</primary> <secondary>d-score</secondary></indexterm>
+
+    <para>The D-score, or "Dating score," is a combination of
+      the T-score and trend</para>
+
+<!--
+    - make note: why?  b/c it can often separate the correct crosses better than other crosses
+    - (graphs?: t-scores, trends, d-scores (fewer sigs))
+-->
+
+<equation>
+  <title>D-Score Algorithm</title>
+  <mediaobject>
+    <textobject>
+      <para>D = (tr - 50%) &cross; t</para>
+    </textobject>
+  </mediaobject>
+</equation>
+
+    <para>&corina; considers 40 to be the
+    theshold for significant D-scores.</para> <!-- CHECK: why?  is this correct? -->
+
+  </sect2>
+
+  <sect2 id="weiserjahre-algorithm">
+    <title>Weiserjahre</title>
+
+<indexterm><primary>crossdating</primary> <secondary>Weiserjahre</secondary></indexterm>
+
+    <para>All of the crossdates that have been mentioned so far only
+      compare the ring widths.  This works fine for raw samples, but
+      when crossdating summed samples, there's a lot more information
+      available, namely, the Weiserjahre data.  Wouldn't it make sense
+      to count a <computeroutput>[20]&nbsp;19*1</computeroutput>
+      ring more heavily than a
+      <computeroutput>[1]&nbsp;1/0</computeroutput> ring?  19 out of
+      20 samples think it's an increasing year, not just 1.</para>
+
+<!--
+    <para>The Weiserjahre crossdating algorithm was, as far as anybody
+      can remember, first used at Cornell, though ??? used Weiserjahre
+      data for crossdating before this.  <link
+      linkend="Pohl95">Mecki</link>'s &corina; had an implementation of
+      it.</para>
+-->
+
+    <para>This is what the Weiserjahre cross does: for each possible
+    overlap, it starts by counting the number of significant intervals
+    of the master for that overlap.  A "significant" interval is one
+    with at least 3 samples, where at least 75% of them have the same
+    trend.  Then it computes the percent agreement (like the trend)
+    between the master and the raw sample for only those significant
+    years of the overlap.  (Of course, for the trend of the master,
+    it doesn't use the trend of the master; it uses the trend of the
+    majority of its elements.  They're usually the same, but not
+    necessarily.)</para>
+
+<para>(Another way to think about the Weiserjahre crossdate is:
+it's like a trend, but ignoring years where the sum has only 1 or 2
+samples, or where there isn't an overwhelming trend in the sum.
+Also like the trend, the results are given as a percentage.)</para>
+
+<para>Because the Weiserjahre crossdate is only applicable to masters
+  crossed against raw samples, it's not turned on by default in
+  &corina;.</para>
+
+<procedure><title>To run a Weiserjahre crossdate:</title>
+  <step><para>Start to run a crossdate as you normally would.  You'll
+  see the T-score results.</para></step>
+
+  <step><para>Choose
+    <menuchoice>
+      <shortcut>
+	<keycombo><keycap>control</keycap> <keycap>E</keycap></keycombo>
+      </shortcut>
+      <guimenu>Edit</guimenu>
+      <guimenuitem>Edit Fixed/Moving Lists...</guimenuitem>
+    </menuchoice>.</para>
+  </step>
+
+  <step><para>The crossdate disappears, and the list of samples and
+    algorithms for your crossdate appears.  At the bottom, you'll see
+    that the T-score, Trend, and D-score are turned on by default.
+    Click the "<guilabel>Weiserjahre</guilabel>" checkbox to turn it
+    on, too.  (You can turn off any other algorithms you want here, as
+    long as at least one is turned on.)</para></step>
+
+  <step><para>Click <guibutton>Run</guibutton>.  Your crossdate window will
+    appear again, and the Weiserjahre crossdate will be included.  If
+    you kept the T-score, trend, and D-score algorithms turned on,
+    click <guibutton>Next</guibutton> 3 times to see the first
+    Weiserjahre cross.</para></step>
+
+</procedure>
+
+</sect2>
+
+<sect2 id="r-value">
+  <title>R-Value</title>
+
+  <para>The r-value, or <emphasis>correlation coefficient</emphasis>,
+  is a crossdate which you'll almost never use.  It's not terribly
+  useful to dendrochronologists - but statisticians might want to know
+  its value, so &corina; makes it available.</para>
+
+  <para>If you go back and look at <xref linkend="t-score-algorithm"/>,
+  the second-to-last line says "r = ...".  That's the r-value.
+  The t-score is defined in terms of the r-value and the overlap, N.
+  An r-value can range from 0.0 (no correlation) to 1.0 (perfect
+  correlation).</para>
+
+<para>Because the R-value crossdate is not generally useful by
+itself, it's not turned on by default in &corina;.</para>
+
+<procedure>
+  <title>To run an R-value crossdate:</title>
+
+  <step><para>Start to run a crossdate as you normally would.  You'll
+  see the T-score results.</para></step>
+
+  <step><para>Choose
+    <menuchoice>
+      <shortcut>
+	<keycombo><keycap>control</keycap> <keycap>E</keycap></keycombo>
+      </shortcut>
+      <guimenu>Edit</guimenu>
+      <guimenuitem>Edit Fixed/Moving Lists...</guimenuitem>
+    </menuchoice>.</para>
+  </step>
+
+  <step><para>The crossdate disappears, and the list of samples and
+    algorithms for your crossdate appears.  At the bottom, you'll see
+    that the T-score, Trend, and D-score are turned on by default.
+    Click the "<guilabel>R-value</guilabel>" checkbox to turn it
+    on, too.  (You can turn off any other algorithms you want here, as
+    long as at least one is turned on.)</para></step>
+
+  <step><para>Click <guibutton>Run</guibutton>.  Your crossdate window will
+    appear again, and the R-value crossdate will be included.  If
+    you kept the T-score, trend, and D-score algorithms turned on,
+    click <guibutton>Next</guibutton> 3 times to see the first
+    R-value cross.</para></step>
+
+</procedure>
+
+</sect2>
+
+<sect2>
+  <title>Summary of Crossdating Algorithms</title>
+
+<para>If you've just read about all of the different algorithms for
+crossdating, and don't have a lot of experience with running
+crossdates, you're probably reeling in shock at this point.  There's
+quite a bit of information here, and you're not sure what you need to
+know to use &corina; effectively.  (A lot of it is there purely for
+reference value, I'll admit.)  This Cliff Notes version is:</para>
+
+<variablelist>
+
+  <varlistentry>
+    <term>T-Score</term>
+    <listitem><para>The standard crossdate - always run this.
+    Scores greater than 2.5-3.0 are good.</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Trend</term>
+    <listitem><para>Another standard crossdate - computes the
+    percentage of years with the same trend (going-up- or going-down-ness).
+    Scores greater than 60%-70% are good.</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>D-Score</term>
+    <listitem><para>A combination of the T-score and trend;
+    often better than t-score/trend at segregating good scores
+    from bad ones.</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Weiserjahre</term>
+    <listitem><para>An algorithm for crossdating summed samples
+    (masters) against single samples; kind of like a trend-for-Weiserjahre-data.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>R-Value</term>
+    <listitem><para>A score which statisticians might ask you for.
+    You'll probably never use it on your own (though it's used by &corina;
+    when computing the t-score, so you already are, in a sense).</para></listitem>
+  </varlistentry>
+
+</variablelist>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="crossdate-other-views">
+  <title>Other Views</title>
+
+  <para>WRITEME: other views of seqs, saving/printing, how to toggle, ...</para>
+
+<sect2 id="tables">
+  <title>Tables</title>
+  <indexterm><primary>tables</primary></indexterm>
+
+  <para>&corina; provides other ways to look at a bunch of crossdates.
+  For example, if you have a 1-by-N sequence (or an N-by-N sequence),
+  you can look at it in a table.
+
+  -- what a table is, why you'd want it
+  -- what you need (1-by-n, all dated correctly)
+  -- how to do it (view->...) / also, how to change back
+  -- fixed sample is a popup 
+  -- printing, saving, exporting (clipboard?) to word
+  -- (does it show the currently-selected algorithms?  it should... -- note that this is how to change the columns)
+  -- (can you click the header to change the sort?  how's that change the sequence?)
+  -- (can you right-click the header to change the algs?  i suppose so -- this changes the seq.alg)
+  -- (can you drag to rearrange?  yeah, this seems reasonable.)
+  -- (be sure to include sample row which has N=0 overlap, and point out what it looks like)
+  -- (double-click graphs that pair, right?)
+  -- (do i have a "Graph All" button?  it would be nice.)
+  -- (are sig scores hilited?  they should be.)
+  ...
+  </para>
+
+  <table>
+    <title>Crossdating Table for ZKB-9</title>
+    <tgroup cols="6">
+      <thead>
+        <row>
+          <entry>Sample</entry>
+          <entry>Range</entry>
+          <entry>T-Score</entry>
+          <entry>Overlap</entry>
+          <entry>Trend</entry>
+          <entry>D-Score</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row><entry>ABC-1</entry>
+             <entry>1001-1050</entry>
+             <entry>3.45</entry>
+             <entry>50</entry>
+             <entry>77.2%</entry>
+             <entry>93.8</entry></row>
+        <row><entry>DEF-7</entry>
+             <entry>1001-1050</entry>
+             <entry>3.45</entry>
+             <entry>50</entry>
+             <entry>77.2%</entry>
+             <entry>93.8</entry></row>
+      </tbody>
+    </tgroup>
+  </table>
+
+</sect2>
+
+<sect2 id="grids">
+  <title>Grids</title>
+  <indexterm><primary>grids</primary></indexterm>
+
+  <para>***Just as it's easier to see at a glance how a couple
+  of samples crossdate by looking at highest t-scores in the summary
+  tab, sometimes you want to see at a glance how well a whole set of
+  samples crossdate with each other &mdash; an entire site, for
+  example.  Grids...***</para>
+
+  <para>...as tables are 1-by-n views, grids are n-by-n views.
+  put all of the fixed samples down the left(?) side, and the moving
+  samples across the top(?), and in each cell of the grid, that's
+  the crossdate between them.  but since A x B is the same as B x A,
+  the grid is only half of a complete rectangle -- the bottom
+  triangular half.</para>
+
+  <para>
+  -- what's in each grid cell (selected algs)
+  -- sig scores hilited -- what constitutes sig here?
+  -- double-click to graph; also "Graph All" button?
+  -- there is no "grid.png" -- either make one, or make a real table here
+  -- how to save (just .xdate?), print (n-by-n pages), export (word?)
+  -- (batch mode: deal with xdate files: create, output tables/grids as HTML, etc.)
+  </para>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="grid.png" format="PNG"/>
+    </imageobject>
+  </mediaobject>
+
+  <indexterm><primary>grids</primary>
+             <secondary>printing</secondary></indexterm>
+  <indexterm><primary>crossdating</primary>
+             <secondary>grids</secondary>
+             <see>grids</see></indexterm>
+
+</sect2>
+
+</sect1>
+
+<sect1>
+  <title>Graphing</title>
+
+  <para>WRITEME</para>
+</sect1>
+
+<sect1>
+  <title>Mapping</title>
+
+  <para>WRITEME</para>
+</sect1>
+
+<sect1>
+  <title>Saving Crossdates</title>
+
+  <para>WRITEME
+-- .xdate extension?
+-- any view (normal/table/grid)
+-- how (cmd-S)
+</para>
+
+</sect1>
+
+<sect1>
+  <title>Printing Crossdates</title>
+
+  <para>WRITEME
+-- any view (pick?)
+-- how (cmd-P)
+</para>
+
+</sect1>
+
+</chapter>

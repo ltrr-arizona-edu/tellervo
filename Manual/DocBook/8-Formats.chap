@@ -1,0 +1,888 @@
+<chapter><title>File Formats</title>
+
+<sect1><title>!!! - Another Fine Mess...</title>
+
+<indexterm><primary>Tucson</primary> <secondary>punchcards at</secondary></indexterm>
+
+<!-- FIXME: put "punchcard" in the glossary, along with inline photo -->
+<para>In the beginning there were
+<ulink url="http://www.fireinthevalley.com/fitv_pictures_m6.html">punchcards</ulink>.
+People in <ulink url="http://www.ltrr.arizona.edu/">Tucson</ulink> used them
+to store tree-ring data.  Later, punchcards went out of style, but (***why there are so many file formats)</para>
+
+<para>WRITEME: - how corina deals with them</para>
+
+<para>(BASICALLY 3 types: tucson and variants, other dendro programs' types, and
+types for interfacing with non-dendro statistical programs.</para>
+
+<itemizedlist>
+
+<!--TODO: rewrite this crap-->
+
+	<listitem><para>&corina; uses Corina format natively, and its features
+map perfectly to &corina;'s***(kept up-to-date), so you should use
+this for almost all of your work in &corina;</para></listitem>
+
+	<listitem><para>Every dendro program ever written knows Tucson
+format, so if you're giving data to somebody using another
+program, he'll probably want Tucson, and if you're
+receiving data from somebody using another program, he'll
+probably send Tucson.  The <xref linkend="ITRDB"/> uses Tucson
+exclusively, as well.</para>
+
+<indexterm><primary>exporting</primary> <secondary>to other dendro programs</secondary></indexterm>
+
+</listitem>
+
+	<listitem><para>If you're moving data between &corina; and a
+non-dendro program, like a graphics or statistical program (say,
+<application>Excel</application>), they'll only understand the
+plain 2-column format</para>
+
+<indexterm><primary>Excel</primary> <secondary>exporting to</secondary></indexterm>
+<indexterm><primary>exporting</primary> <secondary>to Excel</secondary></indexterm>
+
+</listitem>
+
+	<listitem><para>All the other formats you'll only need if
+somebody sends you data in their own format, which is to say, rarely,
+if ever</para></listitem>
+
+</itemizedlist>
+
+</sect1>
+
+<sect1><title>How &corina; Handles Files</title>
+
+<para>&corina; always saves in &corina; format.  (why)</para>
+
+<para>(how to override, with export -- see below)</para>
+
+<para>Corina loads...</para>
+
+<para>WRITEME: what formats corina supports</para>
+
+</sect1>
+
+<sect1 id="exporting"><title>Exporting</title>
+
+<para>Because &corina; always saves files in Corina format, if you
+want to save data a format for another dendro program to read, you'll
+need to export it.  That's what the Export dialog is for.</para>
+
+<procedure><title>To Export a Sample to Another Format:</title>
+
+  <step><para>Choose
+	  <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Export...</guimenuitem>
+	  </menuchoice></para>
+  </step>
+
+  <step><para>Choose the format you want from the popup menu.  When you select
+  a new format, the text box in the middle shows a preview of what the
+  output file will look like.</para></step>
+
+  <step><para>Click <guibutton>OK</guibutton>.</para></step>
+
+  <step><para>The standard file chooser appears, and you can pick a name
+  and location for your file.</para></step>
+
+</procedure>
+
+<para>***WRITEME: how do i know which format to use?</para>
+
+</sect1>
+
+<sect1><title>Getting data in and out</title>
+
+<para>This section describes a number of situations, and the easiest way
+to get data from point A to point B.</para>
+
+<note><title>Removed:</title> <para>This section was temporarily removed because
+it may be causing problems with PDF creation.</para></note>
+
+<!-- BUG?
+
+<qandaset defaultlabel="qanda">
+
+<qandaentry>
+  <question><para>I want to put data from
+  &corina; into
+  <application>Excel</application> (or another
+  spreadsheet).</para></question>
+
+  <answer><para>use the clipboard</para></answer>
+</qandaentry>
+
+<qandaentry>
+  <question><para>I want to put data from
+  &corina; into
+  <application>Grapher</application> (or another
+  graphics or statistical program).</para></question>
+
+  <answer><para>use 2-col</para></answer>
+</qandaentry>
+
+<qandaentry>
+  <question><para>I want to put data from
+  &corina; into the
+  <application>DPL</application> (or another
+  dendro program).</para></question>
+
+  <answer><para>use tucson, or its native format</para></answer>
+</qandaentry>
+
+<qandaentry>
+  <question><para>I want to email data from
+  &corina; to somebody.</para></question>
+
+  <answer><para>use tucson, or his native format, or corina</para></answer>
+</qandaentry>
+
+<qandaentry>
+  <question><para>I want to put data from
+  <application>Excel</application> (or another spreadsheet) into
+  &corina;.</para></question>
+
+  <answer><para>use the clipboard</para></answer>
+</qandaentry>
+
+<qandaentry>
+  <question><para>I want to put data from
+  <application>DPL</application> (or another dendro program) into
+  &corina;.</para></question>
+
+  <answer><para>just load it; if that fails, export as tucson or 2col
+  from the other program</para></answer>
+</qandaentry>
+
+<qandaentry>
+  <question><para>Somebody emailed me this data file, and I want to
+  open it in
+  &corina;.</para></question>
+
+  <answer><para>just open it, or use the clipboard; if it's in a
+  proprietary format, like excel, open it there, then see
+  above</para></answer>
+</qandaentry>
+
+</qandaset>
+
+-->
+
+</sect1>
+
+<sect1><title>Tucson</title>
+
+<!-- TODO: figure out stylesheets, or whatever i need to do to make this look unugly! -->
+
+<indexterm><primary>Tucson</primary> <secondary>file format</secondary></indexterm>
+<indexterm><primary>file format</primary> <secondary>Tucson</secondary></indexterm>
+<indexterm><primary>decadal format</primary> <see>Tucson</see></indexterm>
+
+<para>Tucson is a direct descendent of the original punchcard format.
+(It's sometimes called "decadal" format, though that may also refer to
+any format with 10 data values per line.)  This means that every
+program can read and write it, but it also means it has very few
+features.</para>
+
+<para>Because it originally had so few features, every dendro program
+extends it just a little, usually in undocumented ways.  &corina;
+tries to interpret the data as best it can, but might not read all of
+the metadata, for example.</para>
+
+<note><title>Samples that start before the year 1:</title>
+<para>Tucson files can't handle data going before the year 1.  Some
+labs add 8000 to the dates of all samples to temporarily avoid this
+problem.  &corina; will first try to save the sample as it's dated,
+then tries adding 8000; if both of those fail, it saves the sample
+starting at year 1001.  Be sure to check files you export to Tucson
+format if you're dealing with samples dated to before year 1.</para>
+</note>
+
+<para>Tucson "raw" files simply store the name and ID number of the
+file, the years it covers, and the width of each ring:</para>
+
+<example><title>Tucson raw format</title>
+<programlisting>
+Kalkim Forest 10BA                                                              ABSOL<co id="abs"/>
+917102  1617   414   376   471
+917102  1620   592   350   180   238   336   432   465   418   424   468
+917102  1630   419   509   539   512   397   403   348   316   378   381
+917102  1640   362   414   333   318   352   269   401   410   380   314
+917102  1650   281   222   329   333   209   234   242   262   214   228
+917102  1660   157   179   206   211   188   247   190   127   217   296
+917102  1670   273   212   261   213   200   167   158   143   999<co id="tucson-nines"/>
+</programlisting>
+
+<calloutlist>
+  <callout arearefs="abs"><para>The word "ABSOL" or "RELAT", depending
+  on whether the sample is absolutely or relatively dated.  The first
+  letter starts in the 81st column.</para></callout>
+
+  <callout arearefs="tucson-nines"><para>Datasets always end with the fake
+  value 999.</para></callout>
+</calloutlist>
+
+<!-- *** finish documenting raw sample -->
+
+</example>
+
+<sect2><title>Summed files</title>
+
+<para>WRITEME: tucson summed format; no native indexed-but-not-summed; 800 rule</para>
+
+</sect2>
+
+<sect2><title>Extra fields</title>
+
+<para>Some Tucson files may have extra fields on the end with
+additional statistics.  They hold:
+
+<itemizedlist>
+  <listitem><para>number of years</para></listitem>
+  <listitem><para>first order autocorrelation</para></listitem>
+  <listitem><para>standard deviation</para></listitem>
+  <listitem><para>mean sensitivity</para></listitem>
+  <listitem><para>mean index value</para></listitem>
+  <listitem><para>sum of indices</para></listitem>
+  <listitem><para>sum of squares of indices</para></listitem>
+  <listitem><para>max of series</para></listitem>
+</itemizedlist>
+
+&corina; doesn't save these fields, and it ignores them when loading
+Tucson files.  A couple of them are already displayed automatically
+(number of years, mean sensitivity).</para>
+
+</sect2>
+
+<sect2><title>Packed Tucson files</title>
+
+<indexterm><primary>Tucson</primary> <secondary>packed</secondary></indexterm>
+<indexterm><primary>packed Tucson</primary> <see>Tucson</see></indexterm>
+
+<para>The <xref linkend="ITRDB"/> uses what I call "packed" Tucson
+files.  The folks at Tucson thought: a Tucson file is just a bunch of
+lines, each beginning with the sample's ID number.  So we don't need
+to keep them in separate files: we can simply smash a bunch of Tucson
+files together without losing any data<footnote><para>Assuming your ID
+numbers are unique.</para></footnote>.  Since the primary interface to
+the ITRDB is anonymous FTP, they wanted to minimize the number of
+files available.  Their 6-digit ID numbers don't allow many samples
+per site, at Cornell we only use packed Tucson files when submitting
+data to or downloading data from the ITRDB.</para>
+
+<note><title>Bug:</title> <para>In the future, &corina; will allow you
+to pack and unpack Tucson files from the file browser.  Currently, you
+have to unpack them by hand.  If you want to pack some files, make a
+new sum from all of them, and export them; "Packed Tucson" will be one
+of the format options available.</para></note>
+
+<!-- WRITEME: how to pack files (browser, right?) -->
+
+<!-- WRITEME: how to unpack files (browser, right?) -->
+
+<procedure><title>To pack Tucson files together to submit to the ITRDB:</title>
+
+<step><para>Select all of the files in the browser.  (They'll need to
+all be in the same folder - since one folder represents one site, and
+a packed file should only contain samples from one site, this
+shouldn't be a problem.)</para></step>
+
+<step><para>Choose
+  <menuchoice>
+    <guimenu>File</guimenu>
+    <guimenuitem>Pack Files</guimenuitem>
+  </menuchoice>
+</para></step>
+
+<!-- DESIGN: let user order samples in a list?  do they care about order?  ask! -->
+
+<step><para>A new file, called "Untitled Packed File.tuc"(??)(.crn?)
+will appear, and be selected.  You should rename it to an appropriate
+name before uploading it.</para></step>
+
+</procedure>
+
+<procedure>
+  <title>To unpack Tucson files you've downloaded from the ITRDB:</title>
+
+  <step><para>Select the file in the &corina; browser.</para></step>
+
+  <step><para>Choose
+  <menuchoice>
+    <guimenu>File</guimenu>
+    <guimenuitem>Unpack File</guimenuitem>
+  </menuchoice>
+  </para>
+  </step>
+
+  <step><para>A new folder will be created, with the same name as your
+file (e.g., "blah.crn" => "blah/" -- what if it has no extension?
+...f?).  Inside it will be all of the samples...</para></step>
+
+<!-- DESIGN: should i require you put all files to be packed into a folder, too? -->
+<!-- DESIGN: should i delete the packed form when i create the unpacked form? -->
+<!-- (vice versa, not, since you'll still want copies after you send them to somebody else) -->
+
+</procedure>
+
+</sect2>
+
+</sect1>
+
+<sect1><title>Two-Column</title>
+
+<indexterm><primary>file format</primary> <secondary>two-column</secondary></indexterm>
+<indexterm><primary>two-column</primary></indexterm>
+
+<para>Two-column data holds the least data (it doesn't save any
+metadata), but it's also the simplest, so it's great for transferring
+data to and from statistical or graphing programs which can't read
+dendro files.  When you use
+  <menuchoice>
+    <shortcut>
+      <keycombo><keycap>control</keycap> <keycap>C</keycap></keycombo>
+    </shortcut>
+    <guimenu>Edit</guimenu>
+    <guimenuitem>Copy</guimenuitem>
+  </menuchoice>
+in the editor, it puts your data on the clipboard in two-column
+format.</para>
+
+<para>Actually, "two-column" is a misnomer.  It's as many columns as
+you have data.  If you're exporting a raw sample, it's two columns:
+year and data.  A summed file is three columns: year, data, and
+count.</para>
+<!-- WHY NOT incr/decr, too? -->
+
+<example><title>Two-column format</title>
+<screen> <!-- OOPS: shouldn't this be COMPUTEROUTPUT? -->
+1617 414
+1618 376
+1619 471
+1620 592
+1621 350
+1622 180
+1623 238
+1624 336
+</screen>
+</example>
+
+</sect1>
+
+<sect1><title>Corina</title>
+
+<indexterm><primary>file format</primary> <secondary>Corina</secondary></indexterm>
+<indexterm><primary>Corina</primary> <secondary>file format</secondary></indexterm>
+
+<para>Of all of the file formats &corina; supports, this format is
+best-supported and has the most features.  Unless you're just trying
+out &corina; and still have all of your data in another format, you'll
+normally store all of your data in this format.</para>
+
+<para>The top of a Corina file holds all of the metadata.  For a list
+of all the metadata, <link linkend="metadata">that section of the
+manual</link>.  Notes:</para>
+
+<itemizedlist>
+
+   <listitem><para>The labels are just as you see them; they're all
+   uppercase for backwards-compatibility, but &corina; will accept
+   either case.  As you can see, it's a semicolon, a tag, a space, and
+   some text.</para></listitem>
+
+   <listitem><para>&corina; always writes the metadata in this order,
+   on these lines, for backwards-compatibility, but will accept tags
+   in any order, in any number of lines.</para></listitem>
+
+   <listitem><para>Since semicolons are the start of a new tag,
+   semicolons aren't allowed in the text of any field.  Empty fields
+   are also not allowed.</para></listitem>
+
+</itemizedlist>
+
+<para>***list tag names, and valid values for each (;PITH N,P,?)</para>
+
+<para>***on bad value, corina asks user.</para>
+
+<note><title>Note:</title>
+
+<para>In the following example, the symbol &texsp; is used to indicate
+a space which otherwise wouldn't be visible.  For example, the line
+
+<informalexample>
+<screen>
+;ELEMENTS&texsp;
+</screen>
+</informalexample>
+
+means a line containing a semicolon, the word ELEMENTS, and a
+space. I'll only use this character when a space wouldn't otherwise be
+visible (like at the end of a line), or when it's important to show
+how many spaces there are (like when you need exactly 3 spaces in the
+middle of a line).</para>
+
+</note>
+
+<example>
+<title>Corina format</title>
+
+<screen>
+Kalkim Forest 10BA<co id="title"/>
+
+;ID 917102;NAME Kalkim Forest 10BA;DATING A;UNMEAS_PRE 1;UNMEAS_POST 1
+;FILENAME G:\DATA\FOREST\KLK\KLK10BA.REC
+;TYPE S;SPECIES ALSP;FORMAT R;SAPWOOD 0;PITH N
+;TERMINAL v;CONTINUOUS R;QUALITY +
+;RECONCILED Y
+
+;DATA&texsp;&texsp;&texsp;&texsp;&texsp;&texsp;&texsp;&texsp;&texsp;<co id="data2"/>
+ 1617<co id="start"/>                                             414<co id="values2"/>   376   471
+                                                    [1]<co id="count"/>   [1]   [1]
+ 1620   592   350   180   238   336   432   465   418   424   468
+          [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]
+ 1630   419   509   539   512   397   403   348   316   378   381
+          [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]
+***cross -1/+1 year!
+***last line<co id="unindent"/>
+***9990<co id="corina-nines"/>
+
+;ELEMENTS&texsp;<co id="elements"/>
+G:\DATA\file1.rec<co id="first-element"/>
+G:\DATA\file2.rec
+*G:\DATA\file3.rec<co id="inactive-element"/>
+G:\DATA\file4.rec
+
+;weiserjahre<co id="weiserjahre"/>
+ 1011   0/1      1/0      1/0      0/1      0/1      1/0      1/0      0/1      0/1&texsp;&texsp;&texsp;
+ 1020   1/0      0/1      0/1      1/0      1/0      1/0      0/1      1/0      0/1      1/0&texsp;&texsp;&texsp;
+ 1030   0/1      0/1      1/0      1/0      0/1      1/0      0/1      1/0      0/1      0/1&texsp;&texsp;&texsp;
+ 1040   0/1      1/0      1/0      0/1      0/1      0/1      1/0      1/0      0/1      1/0&texsp;&texsp;&texsp;
+
+~ Don Knuth<co id="author"/>
+</screen>
+
+<calloutlist>
+
+   <callout arearefs="title"><para>The first line of the file contains
+   the title.  This is repeated a second time later in the file.
+   (When loading a file, &corina; ignores this first title line, and
+   reads the title from the ;NAME tag.)  The idea was probably to make
+   it easy (for both people and programs) to identify a file
+   quickly.</para></callout>
+
+   <callout arearefs="data2"><para>The "data" tag starts the data
+   section.  For historical reasons, the word "DATA" is followed by 9
+   spaces, though &corina; doesn't require this.</para></callout>
+
+   <callout arearefs="start"><para>The start year of the sample; this
+   *** </para></callout>
+
+   <callout arearefs="values2"><para>Data values, one per year.  The
+   rightmost digit of each value should line up vertically.  Each
+   column of data is 6 digits wide.  Units are hundredths of a
+   millimeter (0.01 mm) for raw files, and parts-per-thousand (0.1%)
+   for indexed files.</para></callout>
+
+   <callout arearefs="count"><para>Below each data value is the
+   "count", or how many elements of the sum had data that year.  It's
+   surrounded by square brackets.  Even raw files have count: it's
+   simply always 1.</para></callout>
+
+   <callout arearefs="unindent"><para>The last line is un-indented by
+   3***? characters.</para></callout>
+
+   <callout arearefs="corina-nines"><para>After the last value, there's a
+   9990 value.  Historically, this marked the end of the sample, but
+   it's no longer needed.</para></callout>
+
+   <callout arearefs="elements"><para>A master holds a list of the
+   files which were summed together to create it.  The ELEMENTS tag
+   indicates the start of this section.  Raw files don't need an
+   ELEMENTS section.</para></callout>
+
+   <callout arearefs="first-element"><para>The filenames of the
+   elements which make up this master follow the ELEMENTS line, one
+   filename per line.  They should be complete filenames, including
+   any folders the file is in e.g., "G:\DATA\FOREST\KLK\KLK10AB.REC",
+   and not simply "KLK10AB.REC".</para></callout>
+
+   <callout arearefs="inactive-element"><para>If any filename line
+   starts with an asterisk (*), it indicates an "inactive" element.
+   You can temporarily remove an element from a sum by deactivating
+   it, in the elements tab.</para></callout>
+
+   <callout arearefs="weiserjahre"><para>The "weiserjahre" tag marks
+   the start of the Weiserjahre section.  For backwards-compatibility,
+   this tag (unlike the others) is lowercase. *** spacing!
+   (ick!)</para></callout>
+
+   <callout arearefs="author"><para>A tilde ("~") indicates the last
+   line of the file. Following that is the author of this
+   sample.</para></callout>
+
+</calloutlist>
+
+</example>
+
+<note><title>Bug:</title> <para>&corina; should be able to store
+semicolons in text - perhaps escape them somehow (";;"?).  Disallowing
+semicolons is a dumb restriction.</para></note>
+
+<note><title>Bug:</title> <para>&corina; should handle empty fields
+properly, too.  It won't save any new files this way, but it shouldn't
+fail if it sees a file with ";SAPWOOD ;" - it's obvious what this
+means.</para></note>
+
+</sect1>
+
+<!--
+<sect1><title>TRML</title>
+
+<indexterm><primary>file format</primary> <secondary>TRML</secondary></indexterm>
+<indexterm><primary>TRML</primary></indexterm>
+
+<para>TRML, or Tree-Ring Markup Language, is an <ulink
+url="http://www.w3.org/XML/">XML</ulink>-based language for describing
+tree-ring data.  It's very experimental (i.e., I wrote it in an
+afternoon to see if I could), and shouldn't be used for real data yet.
+It arose after some discussion on the ITRDB mailing list about adding
+extra metadata fields to the already-crusty Tucson format.  My goals
+with it are:
+
+   <itemizedlist>
+
+      <listitem><para>Extensible data and metadata</para></listitem>
+
+      <listitem><para>Unicode</para></listitem>
+
+      <listitem><para>Different types of data (earl/late/density/etc.)</para></listitem>
+
+      <listitem><para>Easy to parse (with an XML parser, or any program that has one;
+	you can search files with any Perl script, for example)</para></listitem>
+
+<!- actually, i don't much care for XML any more.  i guess its
+     saving graces now are (1) viewable in an xml-enabled browser
+     (mozilla, ie?) with only a .css file, and (2) gobs of tools
+     for manipulation, especially for anything web-based.  i hope
+     that's enough.  - see xmlsucks.org ->
+
+<!- TODO: for that to be any good to me, i'll need a .css file.
+     so: write a TRML.css file that a .trml file can use.
+     (i have the start of one in Website/trml/) ->
+
+   </itemizedlist>
+
+The downside, if there is one, is that it takes up more space on disk.
+(For the file I tested it with, 42 KB for TRML versus 22 KB for
+Corina; only <xref linkend="TSAP"/> is more verbose.)  But disks today
+are between 10 and 160 GB, so storage space isn't really an issue.
+And if it is, you can always compress the file: the same TRML file
+compressed is under 5 KB (4 KB for the compressed Corina format).
+</para>
+
+<example><title>TRML format</title>
+<programlisting>
+&lt;?xml version="1.0"?&gt;
+
+&lt;treerings&gt;
+   &lt;metadata&gt;
+      &lt;start&gt;1011&lt;/start&gt;
+      &lt;end&gt;1975&lt;/end&gt;
+      &lt;title&gt;Blah blah blah&lt;/title&gt;
+      &lt;format&gt;I&lt;/format&gt;
+      &lt;author&gt;Ken Harris&lt;/author&gt;
+   &lt;/metadata&gt;
+
+   &lt;data type="width" units="0.01mm"&gt;
+      &lt;v&gt;1346&lt;/v&gt; &lt;v&gt;1278&lt;/v&gt; &lt;v&gt;1536&lt;/v&gt; &lt;v&gt;1983&lt;/v&gt; &lt;v&gt;1774&lt;/v&gt;
+      &lt;v&gt;1611&lt;/v&gt; &lt;v&gt;1637&lt;/v&gt; &lt;v&gt;1756&lt;/v&gt; &lt;v&gt;1310&lt;/v&gt; &lt;v&gt;864&lt;/v&gt;
+      &lt;v&gt;983&lt;/v&gt; &lt;v&gt;889&lt;/v&gt; &lt;v&gt;370&lt;/v&gt; &lt;v&gt;536&lt;/v&gt; &lt;v&gt;655&lt;/v&gt;
+      &lt;v&gt;774&lt;/v&gt; &lt;v&gt;562&lt;/v&gt; &lt;v&gt;1061&lt;/v&gt; &lt;v&gt;515&lt;/v&gt; &lt;v&gt;2111&lt;/v&gt;
+      ...
+      &lt;v&gt;1355&lt;/v&gt; &lt;v&gt;1162&lt;/v&gt; &lt;v&gt;1000&lt;/v&gt; &lt;v&gt;1038&lt;/v&gt; &lt;v&gt;971&lt;/v&gt;
+      &lt;v&gt;1168&lt;/v&gt; &lt;v&gt;1002&lt;/v&gt; &lt;v&gt;1051&lt;/v&gt; &lt;v&gt;1122&lt;/v&gt; &lt;v&gt;1183&lt;/v&gt;
+   &lt;/data&gt;
+
+   &lt;data type="count" units="number"&gt;
+      &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt;
+      &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt;
+      &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt;
+      &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt;
+      ...
+      &lt;v&gt;9&lt;/v&gt; &lt;v&gt;9&lt;/v&gt; &lt;v&gt;9&lt;/v&gt; &lt;v&gt;9&lt;/v&gt; &lt;v&gt;9&lt;/v&gt;
+      &lt;v&gt;9&lt;/v&gt; &lt;v&gt;9&lt;/v&gt; &lt;v&gt;8&lt;/v&gt; &lt;v&gt;8&lt;/v&gt; &lt;v&gt;8&lt;/v&gt;
+   &lt;/data&gt;
+
+   &lt;data type="incr" units="number"&gt;
+      &lt;v&gt;0&lt;/v&gt; &lt;v&gt;0&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;0&lt;/v&gt;
+      &lt;v&gt;0&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;0&lt;/v&gt; &lt;v&gt;0&lt;/v&gt;
+      &lt;v&gt;1&lt;/v&gt; &lt;v&gt;0&lt;/v&gt; &lt;v&gt;0&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt;
+      &lt;v&gt;1&lt;/v&gt; &lt;v&gt;0&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;0&lt;/v&gt; &lt;v&gt;1&lt;/v&gt;
+      ...
+      &lt;v&gt;3&lt;/v&gt; &lt;v&gt;2&lt;/v&gt; &lt;v&gt;5&lt;/v&gt; &lt;v&gt;4&lt;/v&gt; &lt;v&gt;2&lt;/v&gt;
+      &lt;v&gt;8&lt;/v&gt; &lt;v&gt;2&lt;/v&gt; &lt;v&gt;4&lt;/v&gt; &lt;v&gt;6&lt;/v&gt; &lt;v&gt;7&lt;/v&gt;
+   &lt;/data&gt;
+
+   &lt;data type="decr" units="number"&gt;
+      &lt;v&gt;0&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;0&lt;/v&gt; &lt;v&gt;0&lt;/v&gt; &lt;v&gt;1&lt;/v&gt;
+      &lt;v&gt;1&lt;/v&gt; &lt;v&gt;0&lt;/v&gt; &lt;v&gt;0&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt;
+      &lt;v&gt;0&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;0&lt;/v&gt; &lt;v&gt;0&lt;/v&gt;
+      &lt;v&gt;0&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;0&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;0&lt;/v&gt;
+      ...
+      &lt;v&gt;6&lt;/v&gt; &lt;v&gt;7&lt;/v&gt; &lt;v&gt;4&lt;/v&gt; &lt;v&gt;5&lt;/v&gt; &lt;v&gt;7&lt;/v&gt;
+      &lt;v&gt;1&lt;/v&gt; &lt;v&gt;7&lt;/v&gt; &lt;v&gt;4&lt;/v&gt; &lt;v&gt;2&lt;/v&gt; &lt;v&gt;1&lt;/v&gt;
+   &lt;/data&gt;
+
+   &lt;elements&gt;
+      &lt;element&gt;chil/chil001.crn&lt;/element&gt;
+      &lt;element&gt;chil/chil002.crn&lt;/element&gt;
+      ...
+      &lt;element&gt;chil/chil011.crn&lt;/element&gt;
+      &lt;element&gt;chil/chil012.crn&lt;/element&gt;
+   &lt;/elements&gt;
+&lt;/treerings&gt;
+</programlisting>
+</example>
+
+</sect1>
+-->
+
+<sect1><title>Heidelberg</title>
+
+<indexterm><primary>file format</primary> <secondary>Heidelberg</secondary></indexterm>
+<indexterm><primary>Heidelberg</primary> <secondary>file format</secondary></indexterm>
+
+<!-- TODO: what extensions does this typically have? -->
+
+<para>I believe this format was created by Frank Rinn; I don't know
+that it has a name, so I call it the "Heidelberg" format.  This may be
+the default format for his <xref linkend="TSAP"/> program.</para>
+
+<para>&corina;'s support for this format is minimal: it will load and
+save raw data, but not metadata, and it assumes all files are
+summed.</para>
+
+<example>
+<title>Heidelberg format</title>
+<screen>
+HEADER:
+DateEnd=1998
+Length=382
+DATA:Chrono
+  414    0    0    0  376    0    0    0  471    0    0    0  592    0    0    0
+  350    0    0    0  180    0    0    0  238    0    0    0  336    0    0    0
+  432    0    0    0  465    0    0    0  418    0    0    0  424    0    0    0
+  468    0    0    0  419    0    0    0  509    0    0    0  539    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0 
+</screen>
+</example>
+
+<para>Now, an explanation:</para>
+
+<example>
+<title>Heidelberg format, with annotations</title>
+<screen>
+HEADER:<co id="header"/>
+DateEnd=1998<co id="end"/>
+Length=382<co id="length"/>
+DATA:Chrono<co id="data"/>
+  414    0    0    0<co id="values"/>  376    0    0    0  471    0    0    0  592    0    0    0
+  350    0    0    0  180    0    0    0  238    0    0    0  336    0    0    0
+  432    0    0    0  465    0    0    0  418    0    0    0  424    0    0    0
+  468    0    0    0  419    0    0    0  509    0    0    0  539    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0<co id="zeroes"/>
+</screen>
+
+<calloutlist>
+
+  <callout arearefs="header">
+    <para>The line HEADER: indicates that this is a Heidelberg file.</para>
+  </callout>
+
+  <callout arearefs="end">
+    <para>The year of the last data value.</para>
+  </callout>
+
+  <callout arearefs="length">
+    <para>The number of data values.</para>
+  </callout>
+
+  <callout arearefs="data">
+    <para>The data section.  (Are there other kinds of data?)</para>
+  </callout>
+
+  <callout arearefs="values">
+    <para>Each year has 4 numbers: ring width, number of samples,
+    number of increasing samples, and number of decreasing samples.
+    (For raw files, &corina; simply uses 0 for the last 3 of these.)
+    Each is right-aligned in 5-character-wide columns.</para>
+  </callout>
+
+  <callout arearefs="zeroes">
+    <para>The end of the file is marked by four zeroes.  Also, every
+    line of data is the same width, so if the last line has fewer than
+    4 years of data, extra zeroes are added to make it the same width
+    as the other lines.</para>
+  </callout>
+
+</calloutlist>
+
+</example>
+
+</sect1>
+
+<sect1><title>Hohenheim</title>
+
+<indexterm><primary>file format</primary> <secondary>Hohenheim</secondary></indexterm>
+<indexterm><primary>Hohenheim</primary> <secondary>file format</secondary></indexterm>
+
+<para>WRITEME</para>
+
+<example><title>Hohenheim format sample</title>
+<screen>
++                                                                            
+.                                                382  1617  1998               
+ 414 376 471 592 350 180 238 336 432 465
+ 418 424 468 419 509 539 512 397 403 348
+ 316 378 381 362 414 333 318 352 269 401
+ 410 380 314 281 222 329 333 209 234 242
+ 262 214 228 157 179 206 211 188 247 190
+ 127 217 296 273 212 261 213 200 167 158
+</screen>
+</example>
+
+</sect1>
+
+<sect1><title>TSAP</title>
+
+<indexterm><primary>file format</primary> <secondary>TSAP</secondary></indexterm>
+<indexterm><primary>TSAP</primary> <secondary>file format</secondary></indexterm>
+
+<para>I don't know where this TSAP format came from.  I don't think
+it's the default format of TSAP files, but I'm not sure.  I found some
+files whose first line is
+<computeroutput>TSAP-MATRIX-FORMAT</computeroutput>, so here you go.
+They all had the extension <filename
+class="extension">.OUT</filename>, so I suspect it may be
+<application>TSAP</application> saving in a simple format for
+exporting to other programs.</para>
+
+<para>Since this doesn't appear to be a native format for even
+<application>TSAP</application>, there's probably no reason to save
+files in this format.  If you run across a file that looks like this,
+though, you'll be able to open it normally.</para>
+
+<para>A file in this format looks like:</para>
+
+<example><title>TSAP Matrix sample</title>
+<screen>
+TSAP-MATRIX-FORMAT
+
+    Year<co id="year"/>,       100 Val<co id="val"/>        100 Nos<co id="num"/>        100 Nois<co id="inc"/>       100 Nods<co id="dec"/>
+    1617,            414,              1,              0,              0
+    1618,            376,              1,              0,              0
+    1619,            471,              1,              0,              0
+    1620,            592,              1,              0,              0
+    1621,            350,              1,              0,              0
+</screen>
+
+<calloutlist>
+
+  <callout arearefs="year"><para>The year; this format uses a
+  zero-year system, i.e., what <application>TSAP</application> calls
+  -5 is really 6 BC, not 5 BC as in &corina;.</para></callout>
+
+  <callout arearefs="val"><para>The width of this ring.
+  ("Value")</para></callout>
+
+  <callout arearefs="num"><para>The number of elements that have data
+  for this year.  ("Number of Samples")</para></callout>
+
+  <callout arearefs="inc"><para>The number of samples increasing this
+  year.  ("Number of Increasing Samples")</para></callout>
+
+  <callout arearefs="dec"><para>The number of samples decreasing this
+  year.  ("Number of Decreasing Samples")</para></callout>
+
+</calloutlist>
+
+</example>
+
+<para>I've only ever seen summed files in this format; I don't know
+how raw files are stored, if differently.  (&corina; exports raw
+samples to TSAP Matrix format by pretending they're a sum consisting
+of one sample.)</para>
+
+<note><title>Bug:</title> <para>If the first line is corrupt, as seems
+to often happen, it won't load properly.  For example,
+<computeroutput>/^C^E Val /^C^E Nos /^C^E Nois/^C^E
+Nods</computeroutput></para></note>
+
+</sect1>
+
+<sect1><title>Ranges-Only</title>
+
+<indexterm><primary>file format</primary> <secondary>Ranges-Only</secondary></indexterm>
+<indexterm><primary>range</primary> <secondary>file format</secondary></indexterm>
+<indexterm><primary>ranges-only (file format)</primary></indexterm>
+
+<para>This is an output-only format, and only usable for summed files
+that have elements.  It saves each element's title, and with its
+starting year, ending year, and length, separated by tabs, one element
+per line.  It doesn't save any ring-width data.  You might use this
+format, for example, if you wanted to make a bargraph in a statistical
+program or a spreadsheet.</para>
+
+<note><title>Bug:</title> <para>&corina; doesn't add a header line, or
+write the length - yet.</para></note>
+
+<example><title>Ranges-only sample</title>
+<screen>
+Title                             Start  End    Length
+Zonguldak, Karabuk 1A IND         1857   1985   129
+Zonguldak, Karabuk 3A IND         1761   1951   191
+Zonguldak, Karabuk 4A IND         1699   1978   280
+</screen>
+<!-- x21E5 is a tab-looking character, but i'm not sure i want to use that.
+     i don't want to get carried away. -->
+</example>
+
+</sect1>
+
+<sect1><title>Spreadsheet</title>
+
+<indexterm><primary>file format</primary> <secondary>spreadsheet</secondary></indexterm>
+<indexterm><primary>spreadsheet</primary> <secondary>file format</secondary></indexterm>
+
+<para>The spreadsheet format is also output-only, and also only used
+for summed files with an Elements tab.  It saves one line per year,
+with each column holding the data from one element.  It's sort
+of like 2-column format, but for any number of samples.  If you wanted
+to export all the data from a master to a spreadsheet
+like <application>Excel</application>, this is the format to
+use.</para>
+
+<example><title>Spreadsheet format sample</title>
+<screen>
+Year ALTO DE LAS MESAS	EL ASIENTO, ACONCAGUA (STANDARD)	AUCHNALCAS	SAN GABRIEL (STANDARD)
+1011 1346 
+1012 1278 
+1013 1536 
+1014 1983 
+1015 1774 
+1016 1611 
+1017 1637 
+</screen>
+</example>
+
+<!-- NOTE: everything below here used to be in the Sample Editor section,
+but it doesn't belong there. -->
+
+</sect1>
+
+<!-- the contents of the file "ImportExport.xml" used to live here -->
+
+</chapter>

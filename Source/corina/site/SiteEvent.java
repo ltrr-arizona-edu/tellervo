@@ -22,8 +22,31 @@ package corina.site;
 
 import java.util.EventObject;
 
+/**
+   An event object which indicates that a Site was modified.
+
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
+
 public class SiteEvent extends EventObject {
+    /**
+       Construct a new site event which indicates that a particular
+       site has been modified.
+
+       @param source the site which was modified
+    */
     public SiteEvent(Site source) {
         super(source);
+    }
+
+    /**
+       Return the site that was modified; this is simply a shortcut
+       for <code>(Site) e.getSource()</code>.
+
+       @return the site which was modified
+    */
+    public Site getSite() {
+	return (Site) getSource();
     }
 }

@@ -1,0 +1,236 @@
+<appendix id="references">
+  <title>References</title>
+
+  <para>These are sources used by &corina; or this book.</para>
+
+  <!-- NOTE: nw's docbook stylesheets DON'T change the order
+             of these entries, so make sure you put them in
+             the correct order here.  right now, i'm alphabetizing
+             by the abbrev - is that right? -->
+
+  <bibliography> <!-- (use raw entries) -->
+
+	<biblioentry id="Baillie73">
+	  <abbrev>Baillie73</abbrev>
+
+          <biblioset relation="journal">
+	    <title>Tree-Ring Bulletin</title>
+	    <seriesvolnums>33</seriesvolnums>
+          </biblioset>
+
+          <biblioset relation="article">
+	    <authorgroup>
+	      <author><firstname>M. G.</firstname><surname>Baillie</surname></author>
+	      <author><firstname>J. R.</firstname><surname>Pilcher</surname></author>
+	    </authorgroup>
+	    <copyright><year>1973</year></copyright>
+	    <title>A Simple Crossdating Program</title>
+	    <pagenums>7-14</pagenums>
+          </biblioset>
+	</biblioentry>
+
+	<biblioentry id="Baillie82">
+	  <abbrev>Baillie82</abbrev>
+	  <author><firstname>M. G.</firstname><surname>Baillie</surname></author>
+	  <copyright><year>1982</year></copyright>
+	  <pagenums>81</pagenums>
+	  <title>Tree-Ring Dating and Archaeology</title>
+
+	  <!-- Hardcover, with yellow dust jacket. -->
+
+	  <!-- (50/sqrt(n) = 1 stddev -->
+	  <bibliomisc>From which I got that 1 stddev = 50/sqrt(n)</bibliomisc>
+
+	</biblioentry>
+
+	<biblioentry id="Briffa92">
+	  <abbrev>Briffa92</abbrev>
+
+	  <biblioset relation="article">
+	    <title>Fennoscandian summers from AD 500</title>
+	    <subtitle>Temperature changes on short and long timescales</subtitle>
+	    <authorgroup>
+	      <author><firstname>K. R.</firstname><surname>Briffa</surname></author>
+	      <author><firstname>P. D.</firstname><surname>Jones</surname></author>
+	      <author><firstname>T. S.</firstname><surname>Bartholin</surname></author>
+	      <author><firstname>D.</firstname><surname>Eckstein</surname></author>
+	      <author><firstname>F. H.</firstname><surname>Schweingruber</surname></author>
+	      <author><firstname>W.</firstname><surname>Karl&eacute;n</surname></author>
+	      <author><firstname>P.</firstname><surname>Zetterberg</surname></author>
+	      <author><firstname>M.</firstname><surname>Eronen</surname></author>
+	    </authorgroup>
+	    <pagenums>111-119</pagenums>
+	  </biblioset>
+
+	  <biblioset relation="journal">
+	    <title>Climate Dynamics</title>
+	    <seriesvolnums>7</seriesvolnums>
+	    <copyright><year>1992</year></copyright>
+	  </biblioset>
+	</biblioentry>
+
+	<biblioentry id="CLR">
+	  <abbrev>CLR</abbrev>
+
+	  <title>Introduction to Algorithms</title>
+
+	  <authorgroup>
+	    <author><firstname>Thomas H.</firstname> <surname>Cormen</surname></author>
+	    <author><firstname>Charles E.</firstname> <surname>Leierson</surname></author>
+	    <author><firstname>Ronald L.</firstname> <surname>Rivest</surname></author>
+	  </authorgroup>
+
+	  <isbn>0262032937</isbn>
+
+	  <pagenums>768-771</pagenums>
+	</biblioentry>
+
+	<biblioentry id="Cook81">
+	  <abbrev>Cook81</abbrev>
+	
+	  <biblioset relation="article">
+	    <title>The Smoothing Spline</title>
+	    <subtitle>A New Approach to Standardizing Forest Interior Tree-Ring Width Series
+	      for Dendroclimatic Studies</subtitle>
+	    <authorgroup>
+	      <author><firstname>Edward</firstname><surname>Cook</surname></author>
+	      <author><firstname>Kenneth</firstname><surname>Peters</surname></author>
+	    </authorgroup>
+	  </biblioset>
+
+	  <biblioset relation="journal">
+	    <title>Tree-Ring Bulletin</title>
+	    <seriesvolnums>41</seriesvolnums>
+	    <copyright><year>1981</year></copyright>
+	  </biblioset>
+
+	</biblioentry>
+
+	<biblioentry id="Cook90">
+	  <abbrev>Cook90</abbrev>
+
+	  <authorgroup>
+	    <author><firstname>E. R.</firstname><surname>Cook</surname></author>
+	    <editor><firstname>L. A.</firstname><surname>Kairiukstis</surname></editor> <!-- extra k? -->
+	  </authorgroup>
+
+	  <title>Methods of Dendrochronology</title>
+	  <!-- low?-pass filtering as applied to "growth-trend estimation" -->
+
+	  <copyright><year>1990</year></copyright>
+	  <pagenums>110-111</pagenums>
+	</biblioentry>
+
+	<biblioentry id="DPL">
+	  <abbrev>DPL</abbrev>
+	  <title>Release notes to one version of Arizona's
+	    <ulink url="http://www.ltrr.arizona.edu/archive/dpl/DPL.html">Dendrochronology
+	      Program Library</ulink> (DPL)</title>
+	</biblioentry>
+
+	<biblioentry id="Eckstein">
+	  <abbrev>Eckstein</abbrev>
+	  <title>???</title>
+	</biblioentry>
+
+	<biblioentry id="Huber70">
+	  <abbrev>Huber70</abbrev>
+
+	  <biblioset relation="article">
+	    <title>Dendrochronology in Europe</title>
+	    <authorgroup>
+	      <author><firstname>B.</firstname><surname>Huber</surname></author>
+	      <editor><firstname>John</firstname><surname>Fletcher</surname></editor>
+	    </authorgroup>
+	    <pagenums>23</pagenums>
+	  </biblioset>
+
+	  <biblioset relation="book">
+	    <title>Dendrochronology</title>
+	    <copyright><year>1977</year></copyright>
+	  </biblioset>
+
+	  <!-- an old red paperback book -->
+	</biblioentry>
+
+	<biblioentry id="ITRDB">
+	  <abbrev>ITRDB</abbrev>
+
+	  <title>The International Tree-Ring Data Bank (ITRDB)</title> <!-- use abbrev or similar here? -->
+	  <bibliomisc><ulink url="http://web.utk.edu/~grissino/itrdb.htm"/></bibliomisc> <!-- correct tags? -->
+	</biblioentry>
+
+	<biblioentry id="Pohl95">
+	  <abbrev>Pohl95</abbrev>
+	  <author><firstname>Mecki</firstname><surname>Pohl</surname></author>
+	  <authorblurb><para>"From my own beady head."
+	               (His&nbsp;words.)</para></authorblurb>
+	  <copyright><year>1995</year></copyright>
+	</biblioentry>
+
+	<biblioentry id="Reinsch67">
+	  <abbrev>Reinsch67</abbrev>
+
+	  <biblioset relation="article">
+	    <author><firstname>C. H.</firstname> <surname>Reinsch</surname></author>
+	    <title>Smoothing by Spline Functions</title>
+	    <pagenums>177-183</pagenums>
+	  </biblioset>
+
+	  <biblioset relation="journal">
+	    <title>Numerische Mathematik</title>
+	    <seriesvolnums>10</seriesvolnums>
+	    <copyright><year>1967</year></copyright>
+	  </biblioset>
+	</biblioentry>
+
+	<biblioentry id="TSAP">
+	  <abbrev>TSAP</abbrev>
+	  <title>Reference manual for <ulink url="http://www.frankrinn.com/Products/Tsap.htm">TSAP</ulink>...???</title>
+	</biblioentry>
+
+	<biblioentry id="vanLoan">
+	  <abbrev>vanLoan</abbrev>
+
+          <biblioset relation="book">
+	    <!-- ADDME: chapter 6; 2ed -->
+            <!-- ADDME: note that it's used for the matrix solver -
+                        LU decomposition with pivoting -->
+	    <title>Introduction to Scientific Computing</title>
+	    <subtitle>A Matrix-Vector Approach Using MATLAB</subtitle>
+
+	    <author><firstname>Charles F.</firstname>
+                    <surname>van Loan</surname></author>
+
+	    <isbn>0139491570</isbn>
+          </biblioset>
+	</biblioentry>
+
+	<biblioentry id="Wenk99">
+	  <abbrev>Wenk99</abbrev>
+
+	  <biblioset relation="article">
+	    <author><firstname>Carola</firstname> <surname>Wenk</surname></author>
+	    <title><ulink url="http://www.inf.fu-berlin.de/inst/pubs/tr-b-99-01.abstract.html">Applying
+		an Edit Distance to the Matching of&nbsp;Tree Ring Sequences in Dendrochronology</ulink></title>
+	    <pagenums>223-242</pagenums>
+	  </biblioset>
+
+	  <biblioset relation="journal">
+	    <title>Proceedings of the 10th Annual Symposium on Cobinatorial Pattern Matching</title>
+	    <authorgroup>
+	      <editor><firstname>M.</firstname> <surname>Crochemore</surname></editor>
+	      <editor><firstname>M.</firstname> <surname>Paterson</surname></editor>
+	    </authorgroup>
+	    <publisher>
+	      <publishername>Springer-Verlag</publishername>
+	      <address><city>Berlin</city></address>
+	    </publisher>
+	    <copyright><year>1999</year></copyright>
+	  </biblioset>
+
+	</biblioentry>
+
+  </bibliography>
+
+</appendix>

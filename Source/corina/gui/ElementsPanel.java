@@ -24,15 +24,12 @@ import corina.Sample;
 import corina.SampleListener;
 import corina.SampleEvent;
 import corina.Element;
-import corina.Metadata;
-import corina.Metadata.Field;
-import corina.graph.GraphFrame;
-import corina.graph.BargraphFrame;
-import corina.cross.CrossFrame;
-import corina.cross.Sequence;
-import corina.cross.GridFrame;
+import corina.MetadataTemplate;
+import corina.MetadataTemplate.Field;
 import corina.editor.Editor;
 import corina.util.Sort;
+import corina.util.PopupListener;
+import corina.ui.Alert;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +37,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Comparator;
 
 import java.awt.FlowLayout;
@@ -57,16 +55,20 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CannotRedoException;
 
 /**
-   <p>A JPanel for displaying (and editing) the Elements of a
-   List.</p>
+   A JPanel for displaying (and editing) the Elements of a List.
 
-   <p>Left to do: finish implementing the popup menu; make the popup
-   menu separate, so it can be used as a menubar menu, too; make
-   changes to the List dirty the document.</p>
+   <h2>Left to do</h2>
+   <ul>
+     <li>remove me: use the generic Browser components instead!
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
+     <li>finish implementing the popup menu
+     <li>make the popup menu separate, so it can be used as a menubar menu, too
+     <li>make changes to the List dirty the document
+   </ul>
 
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class ElementsPanel extends JPanel implements SampleListener {
 
     // data
@@ -81,7 +83,6 @@ public class ElementsPanel extends JPanel implements SampleListener {
     public void sampleRedated(SampleEvent e) { }
     public void sampleDataChanged(SampleEvent e) { }
     public void sampleMetadataChanged(SampleEvent e) { }
-    public void sampleFormatChanged(SampleEvent e) { }
     public void sampleElementsChanged(SampleEvent e) {
 	((AbstractTableModel) table.getModel()).fireTableDataChanged();
     }
@@ -91,21 +92,6 @@ public class ElementsPanel extends JPanel implements SampleListener {
     public void update() {
 	((AbstractTableModel) table.getModel()).fireTableDataChanged();
     }
-
-    // --- PopupListener ----------------------------------------
-    private class PopupListener extends MouseAdapter {
-	public void mousePressed(MouseEvent e) { // on mac, popup trigger set here
-	    maybeShowPopup(e);
-	}
-	public void mouseReleased(MouseEvent e) { // on windows, popup trigger set here
-	    maybeShowPopup(e);
-	}
-	private void maybeShowPopup(MouseEvent e) {
-	    if (e.isPopupTrigger() || e.isControlDown())
-		popup.show(e.getComponent(), e.getX(), e.getY());
-	}
-    }
-    // --- PopupListener ----------------------------------------
 
     // --- DropAdder ----------------------------------------
     private class DropLoader implements DropTargetListener {
@@ -160,10 +146,8 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			try {
 			    s = new Sample(e.getFilename());
 			} catch (IOException ioe) {
-			    JOptionPane.showMessageDialog(null,
-							  "Can't open this file: " + ioe.getMessage(),
-							  "Error Loading Sample",
-							  JOptionPane.ERROR_MESSAGE);
+			    Alert.error("Error Loading Sample",
+					"Can't open this file: " + ioe.getMessage());
 			    return;
 			}
 
@@ -172,35 +156,6 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		    }
 		});
 	    super.add(open);
-
-	    // ---
-	    addSeparator();
-
-            // Grid from all
-            JMenuItem allGrid = new JMenuItem("Grid from all");
-            allGrid.addActionListener(new AbstractAction() {
-                public void actionPerformed(ActionEvent ae) {
-                    try {
-                        new GridFrame(elements);
-                    } catch (RuntimeException e) {
-                        Bug.bug(e);
-                    }
-                }
-            });
-            super.add(allGrid);
-
-            // Crossdate all
-            JMenuItem allCross = new JMenuItem("Crossdate all");
-            allCross.addActionListener(new AbstractAction() {
-                public void actionPerformed(ActionEvent ae) {
-                    try {
-                        new CrossFrame(new Sequence(elements, elements));
-                    } catch (RuntimeException e) {
-                        Bug.bug(e);
-                    }
-                }
-            });
-            super.add(allCross);
 
 	    // ---
 	    addSeparator();
@@ -298,7 +253,11 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
         // popup, mouselistener for it
 	popup = new ContextPopup();
-        MouseListener popupListener = new PopupListener();
+        MouseListener popupListener = new PopupListener() {
+		public void showPopup(MouseEvent e) {
+		    popup.show(e.getComponent(), e.getX(), e.getY());
+		}
+	    };
         addMouseListener(popupListener); // for clicking on empty space below the entries
         table.addMouseListener(popupListener); // for clicking on table entries
 
@@ -309,8 +268,21 @@ public class ElementsPanel extends JPanel implements SampleListener {
     }
 
     public void removeSelectedRows() {
-	// save backup -- this is only a shallow copy (but that's good)
-	final List save = (List) ((ArrayList) elements).clone();
+	// save backup -- only a shallow copy (but that's good)
+	final List save = new ArrayList();
+	save.addAll(elements);
+	/*
+	  DESIGN: saving a before-list and an after-list means the
+	  amount of change (=speed/memory) is proportional to the
+	  amount of data, not the size of the change, which is what
+	  the user expects -- especially since the user will almost
+	  always remove one element.
+
+	  now, if i later want to handle the "500 elements, 490 of
+	  them removed" case, i can post a second class of edit for
+	  that.  but that will happen rarely (or never), so it'll
+	  never be worth the effort.
+	*/
 
 	final int rows[] = table.getSelectedRows();
 	int deleted = 0; // number of rows already deleted
@@ -329,7 +301,8 @@ public class ElementsPanel extends JPanel implements SampleListener {
 	    sample.postEdit(new AbstractUndoableEdit() {
 		    List before=save, after;
 		    public void undo() throws CannotUndoException {
-			after = (List) ((ArrayList) elements).clone();
+			after = new ArrayList();
+			after.addAll(elements);
 			elements.clear();
 			elements.addAll(before);
 			update();
@@ -348,12 +321,8 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		});
 	}
 
-	// System.out.println("updating...");
-	// ((AbstractTableModel) table.getModel()).fireTableStructureChanged();
-	AbstractTableModel tm = (AbstractTableModel) table.getModel();
-	tm.fireTableChanged(new TableModelEvent(tm)); // , TableModelEvent.HEADER_ROW));
+	System.out.println("updating... -- BROKEN!");
 	update();
-
 	// what the fuck is going on here?  why why oh why?
     }
 
@@ -368,17 +337,46 @@ public class ElementsPanel extends JPanel implements SampleListener {
                 table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
                 break;
             case VIEW_STANDARD:
-                fields = new ArrayList(Metadata.preview.length);
-                for (int i=0; i<Metadata.preview.length; i++)
-                    fields.add(Metadata.preview[i]);
-                table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-                break;
+		{
+		    // (later, this will use BrowserComponent, so this
+		    // won't be needed at all)
+
+		    fields = new ArrayList();
+                
+		    // these are the "preview" fields
+		    final String PREVIEW_FIELDS[] = new String[] {
+			"unmeas_pre", "unmeas_post", "species",
+			"sapwood", "terminal", "quality",
+		    };
+
+		    // add all fields in |PREVIEW_FIELDS| to |fields|
+		    Iterator i = MetadataTemplate.getFields();
+		    while (i.hasNext()) {
+			Field f = (Field) i.next();
+
+			for (int j=0; j<PREVIEW_FIELDS.length; j++) {
+			    if (f.getVariable().equals(PREVIEW_FIELDS[j]))
+				fields.add(f);
+			}
+		    }
+
+		    table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		    break;
+		}
             case VIEW_ALL:
-                fields = new ArrayList(Metadata.fields.length);
-                for (int i=0; i<Metadata.fields.length; i++)
-                    fields.add(Metadata.fields[i]);
-                table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-                break;
+		{
+		    fields = new ArrayList();
+
+		    // add all fields to |fields|
+		    Iterator i = MetadataTemplate.getFields();
+		    while (i.hasNext()) {
+			Field f = (Field) i.next();
+			fields.add(f);
+		    }
+
+		    table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		    break;
+		}
             default:
                 throw new IllegalArgumentException();
         }
@@ -478,7 +476,8 @@ public class ElementsPanel extends JPanel implements SampleListener {
                     case 1: // range
                     {
                         // IDEA: this reverse is getting pretty popular ... could it be integrated into my sort() wrapper?
-                        boolean reverse = (lastSortCol==col && first.range.compareTo(last.range)<0);
+                        boolean reverse = (lastSortCol==col &&
+					   first.getRange().compareTo(last.getRange())<0);
                         Sort.sort(elements, "range", reverse);
                         break;
                     }
@@ -488,7 +487,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
                         // i'm calling a method on a field.  i could write another sort() wrapper to take a :key
                         // method, like lisp does, and implement it in an anonymous class here, but that's more
                         // work than just sorting by hand.  gah.
-                        String key = ((Field) fields.get(col-2)).variable;
+                        String key = ((Field) fields.get(col-2)).getVariable();
                         Comparable v0 = (Comparable) first.details.get(key);
                         Comparable vn = (Comparable) last.details.get(key);
                         boolean reverse = (lastSortCol==col && v0.compareTo(vn)<0);

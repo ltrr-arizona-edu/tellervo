@@ -30,7 +30,8 @@ import java.util.List;
 
 /**
    A sorter for Lists of Objects.  (This is actually just a wrapper
-   around <code>Collections.sort()</code>, but it's far more convenient.)
+   around <code>Collections.sort()</code>, but it's far more
+   convenient.  It's inspired by Lisp's <code>(sort :key ...)</code>.)
 
    <p>Suppose you have the class:</p>
 
@@ -41,7 +42,32 @@ class Point {
 }
 </pre>
 
-   If you have a List of Points, you can sort it different ways simply by saying:
+   <p>If you have a List of Points, the standard way to sort is by
+   making it implement Comparable, and calling Collections.sort():</p>
+
+<pre>
+class Point implements Comparable {
+&nbsp;&nbsp;&nbsp;int x, y;
+&nbsp;&nbsp;&nbsp;String label;
+
+&nbsp;&nbsp;&nbsp;// compare by label
+&nbsp;&nbsp;&nbsp;public int compareTo(Object o2) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return label.compareTo(((Point) o2).label);
+&nbsp;&nbsp;&nbsp;}
+}
+
+// sort Points by label
+Collections.sort(listOfPoints);
+</pre>
+
+   <p>The downside of this is that you have to implement the
+   Comparable interface, which in turn locks you in to sorting by only
+   one field.  You can get around this by making your own Comparator
+   object each time you want to sort but that's a lot of extra
+   typing.</p>
+
+   <p>With this class, you can sort it different ways (without
+   implementing any interface) simply by saying:</p>
 
 <pre>
 Sort.sort(list, "x"); // sort by x-coordinates
@@ -49,11 +75,8 @@ Sort.sort(list, "y", true); // sort by y-coordinates, high-to-low
 Sort.sort(list, "label"); // sort by label
 </pre>
 
-   <p>(With the Collections class, you'd have to write a Comparator
-   object for each of these.)</p>
-
-   <p>It also works for private fields which have accessors.  For
-   example, if the class had been defined:</p>
+   <p>It also works for private fields, as long as they have
+   accessors.  For example, if the class had been defined:</p>
 
 <pre>
 class Point {
@@ -71,42 +94,58 @@ class Point {
 Sort.sort(list, "label");
 </pre>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
+   <p>(Feature idea: allow also passing in a Comparator, like a
+   Collator or a NaturalSort, so you can sort in other ways.)</p>
+
+   <p>Note: these sort methods assume that the lists consist entirely
+   of the same type of object, or at least that they all contain the
+   requested field.  If the list contains different kinds of objects,
+   some of them lacking the requested field or accessor method having
+   different access, it may fail.  (The first element of the list is
+   used to determine whether to sort-by-field or sort-by-method.)</p>
+
+   @see java.util.List
+   @see java.util.Collections
+   @see java.lang.Comparable
+   @see java.util.Comparator
+   @see java.text.Collator
+   @see corina.util.NaturalSort
+
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-
 public class Sort {
-
     // this class should never be instantiated
     private Sort() { }
 
     /** Sort a list from lowest to highest.
        @param data a list to sort
-       @param fieldName the field of the Objects in data to sort by
+       @param field the field of the Objects in data to sort by
     */
-    public static void sort(List data, String fieldName) throws IllegalArgumentException {
-        sort(data, fieldName, false);
+    public static void sort(List data, String field) throws IllegalArgumentException {
+        sort(data, field, false);
     }
 
     /** Sort a list.
        @param data a list to sort
-       @param fieldName the field of the Objects in data to sort by
+       @param field the field of the Objects in data to sort by
        @param decreasing if true, sort highest-to-lowest; else, lowest-to-highest
     */
-    public static void sort(List data, String fieldName, boolean decreasing) throws IllegalArgumentException {
+    public static void sort(List data, String field, boolean decreasing) throws IllegalArgumentException {
         // no data -> no need to sort (and also no way to try,
         // since i don't even know what type it would be)
         if (data.size() == 0)
             return;
 
+        Class c = data.get(0).getClass();
+
         try {
             // possible bug: if data contains different classes of objects, data[0].class
-            // might be the declarer of field fieldname -- do i need to call
-            // -- f = f.getDeclaringClass().getDeclaredField(fieldName)?
-            Class c = data.get(0).getClass();
-            final Field f = c.getDeclaredField(fieldName); // final because my anonymous class needs it
+            // might be the declarer of field |field| -- do i need to call
+            // -- f = f.getDeclaringClass().getDeclaredField(field)?
+            Field f = c.getDeclaredField(field);
 
-	    // see if data[0].fieldName is visible
+	    // see if data[0].field is visible
 	    try {
 		f.get(data.get(0));
 
@@ -116,25 +155,36 @@ public class Sort {
 
 	    } catch (IllegalAccessException iae) {
 
-		// well, we can't see field |fieldName|.  what else can we try?
-		// we try a get<fieldName>() method, of course!
+		// well, we can't see field |field|.  what else can we try?
+		// we try a get<field>() method, of course!
 
-		try {
-		    String methodName = "get" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
-		    final Method m = c.getMethod(methodName, new Class[] { });
+                String methodName = makeAccessorName(field);
+
+                try {
+                    Method m = c.getMethod(methodName, new Class[] { });
 		    // FIXME: what if this fails?
 
 		    sortByMethod(data, m, decreasing);
 
 		} catch (NoSuchMethodException nsme) {
 		    // no get() method exists, abort
-		    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("No method '" + methodName + "()' exists " +
+                                                       "in class " + c.getName() + "!");
 		}
 
 	    }
         } catch (NoSuchFieldException nsfe) {
-            throw new IllegalArgumentException("no such field! --" + nsfe);
+            throw new IllegalArgumentException("No such field '" + field + " exists " +
+                                               "in class " + c.getName() + "!");
         }
+    }
+
+    // given a field, return the name of its accessor.
+    // e.g., "myField" => "getMyField"
+    private static String makeAccessorName(String field) {
+	return "get" +
+	       Character.toUpperCase(field.charAt(0)) +
+	       field.substring(1);
     }
 
     // sort |data| by |field|, high-to-low iff |decreasing|.
@@ -157,7 +207,7 @@ public class Sort {
 		    } catch (IllegalAccessException iae) {
 			// gah, nothing i can do here.
 			// can't happen.  or, rather, almost can't happen.
-			throw new IllegalArgumentException("no access to field! -- " + iae);
+                        throw new IllegalArgumentException("No access to field '" + f.getName() + "()'");
 			// an IAE can be thrown here (doesn't need to be declared), and it'll clear to the top.
 		    }
 		}
@@ -184,9 +234,9 @@ public class Sort {
 		    } catch (IllegalAccessException iae) {
 			// gah, nothing i can do here.
 			// can't happen.  or, rather, almost can't happen.
-			throw new IllegalArgumentException("no access to field! -- " + iae);
+                        throw new IllegalArgumentException("No access to method '" + m.getName() + "()'");
 		    } catch (InvocationTargetException ie) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Error invoking method '" + m.getName() + "()'");
 		    }
 		}
 	    });

@@ -15,64 +15,83 @@
 // along with Corina; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// Copyright 2001 Ken Harris <kbh7@cornell.edu>
+// Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
 package corina.index;
 
 import corina.Sample;
 import corina.prefs.Prefs;
+import corina.util.StringUtils;
 
 import java.util.List;
 import java.util.ArrayList;
 
 /**
-   Run a set of Indexes on a single Sample.  This runs a set of
-   frequently-used indexes:
+    Run a set of Indexes on a single Sample.  This runs a set of
+    frequently-used indexes:
 
-   <ul>
-       <li>Horizontal (polynomial degree 0)
-       <li>Linear (polynomial degree 1)
-       <li>Polynomial degree 2
-       <li>Polynomial degree 3
-       <li>Polynomial degree 4
-       <li>Polynomial degree 5
-       <li>Polynomial degree 6
-       <li>Negative exponential
-       <li>Floating average (11-year window)
-       <li>High-pass filter (configurable, default 1-2-4-2-1)
-       <li>Cubic spline (configurable s-value, default 1e-16)
-   </ul>
+    <ul>
+        <li>Horizontal (polynomial degree 0)
+        <li>Linear (polynomial degree 1)
+        <li>Polynomial degree 2
+        <li>Polynomial degree 3
+        <li>Polynomial degree 4
+        <li>Polynomial degree 5
+        <li>Polynomial degree 6
+        <li>Negative exponential
+        <li>Floating average (11-year window)
+        <li>High-pass filter (configurable, default 1-2-4-2-1)
+        <li>Cubic spline (configurable s-value, default 1e-16)
+    </ul>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
+    <h2>Left to do:</h2>
+    <ul>
+        <li>move run() body into constructor; there's no reason for this to be Runnable
+        <li>document corina.index.polydegs
+        <li>is a public list really the best interface?
+    </ul>
+
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 
 public class IndexSet implements Runnable {
     /** The indexes. */
-    public List indexes = new ArrayList(12);
+    public List indexes = new ArrayList();
 
-    /** Construct a new IndexSet.
-    @param s the Sample to index */
-    public IndexSet(Sample s) {
+    /**
+        Make a new IndexSet.
+
+        @param sample the Sample to index
+    */
+    public IndexSet(Sample sample) {
         // horizontal
-        indexes.add(new Horizontal(s));
+        indexes.add(new Horizontal(sample));
 
         // polynomial fits
-        int polydegs[] = Prefs.extractInts(System.getProperty("corina.index.polydegs", "1 2 3 4 5 6"));
+        String degreesToUse = Prefs.getPref("corina.index.polydegs");
+        if (degreesToUse == null)
+            degreesToUse = "1 2 3 4 5 6";
+        int polydegs[] = StringUtils.extractInts(degreesToUse);
         for (int i=0; i<polydegs.length; i++)
-            indexes.add(new Polynomial(s, polydegs[i]));
+            indexes.add(new Polynomial(sample, polydegs[i]));
 
         // exponential, floating, highpass, and cubicspline
-        indexes.add(new Exponential(s));
-        indexes.add(new Floating(s));
-        indexes.add(new HighPass(s));
-        indexes.add(new CubicSpline(s));
+        indexes.add(new Exponential(sample));
+        indexes.add(new Floating(sample));
+        indexes.add(new HighPass(sample));
+        indexes.add(new CubicSpline(sample));
     }
 
-    /** Construct a new IndexSet, using a proxy dataset.
-        @param s the Sample to index */
-    public IndexSet(Sample s, Sample proxy) {
-        this(s);
+    /**
+        Construct a new IndexSet, using a proxy dataset.
+
+        @param sample the Sample to index
+        @param proxy the proxy dataset to use for the indexing curve
+    */
+    public IndexSet(Sample sample, Sample proxy) {
+        this(sample);
         for (int i=0; i<indexes.size(); i++)
             ((Index) indexes.get(i)).setProxy(proxy);
     }
@@ -80,7 +99,9 @@ public class IndexSet implements Runnable {
     /** Run all the indexes. */
     public void run() {
         // i put this in run(), so it could be threaded, but is it worth it?
-        // naw, i'm TOO fast: for 100yr sample x 10 indexes, 900mhz athlon: 30-40ms
+        // -- for 100yr sample x 10 indexes, 900mhz athlon: 30-40ms.
+        // so no, it's probably not worth it.
+        // TODO: put this in the constructor.
         for (int i=0; i<indexes.size(); i++)
             ((Index) indexes.get(i)).run();
     }

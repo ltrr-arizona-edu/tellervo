@@ -1,21 +1,12 @@
 <body>
 
-<p>The <code>edu.cornell.dendro.corina</code> package stores Samples
-and support classes.  The following subpackages exist:</p>
+<p>Years, Samples, and supporting classes.</p>
 
-<ul>
-
-  <li><code>format</code>, for loading and saving</li>
-
-  <li><code>index</code>, for indexing</li>
-
-  <li><code>cross</code>, for crossdating</li>
-
-  <li><code>manip</code>, for other manipulations</li>
-
-  <li><code>unittest</code>, for unit tests</li>
-
-</ul>
+<p>Note: this package, and each sub-package, has a class "UnitTests"
+which does unit testing of that package, using <a
+href="http://www.junit.org">JUnit</a>.  If you need to write new unit
+tests, or add a new package, use this convention.  They don't show up
+here, because they're not public classes.)</p>
 
 
 
@@ -32,7 +23,7 @@ Grids).</p>
 <ol>
 
     <li>If you're displaying a view of a Sample, implement
-        <code>SmapleListener</code> so you'll know when it changes.</li>
+        <code>SampleListener</code> so you'll know when it changes.</li>
 
     <li>If you change a Sample, call one of its <code>fire</code>
         methods so all the listeners will know to update their views.</li>
@@ -59,9 +50,6 @@ with all empty methods.</p>
     <li><code>sampleMetadataChanged</code>, which means that one or
         more of the metadata fields has been changed (the element
         changed, or a key was added or removed)</li>
-
-    <li><code>sampleFormatChanged</code>, which is only used for
-        indexing (or un-indexing) so far</li>
 
 </ul>
 

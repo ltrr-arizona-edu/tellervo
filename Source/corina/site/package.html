@@ -1,0 +1,168 @@
+<body>
+
+A list of Sites.
+
+<p>Each sample may belong to one Site, which correlates to the folder
+it's in.  This package attempts to provide a database-like interface
+to this file.</p>
+
+<!-- WRITEME: a screenshot of a finder window with "Site Database", "ZKB", "AYA", etc., perhaps -->
+<!-- or at least a small folder listing, showing the directory structure -->
+
+<h2>Site</h2>
+
+<p>Site has the following fields:</p>
+
+<ul>
+  <li>Name: the name of the site; required</li>
+  <li>Code: an alphabetic code, usually a 3-letter string; required</li>
+  <li>ID: an identification number, usually a 3-digit number (legacy)</li>
+  <li>Country: the country this site is in</li>
+  <li>Type: forest, medieval, ancient, or unknown</li>
+  <li>Species: ...</li>
+  <li>Location: latitude and longitude</li>
+  <li>Altitude: in meters</li>
+  <li>Comments: any comments you have about this site</li>
+  <li>Lists of masters and nonfits</li>
+  <li>Folder: the folder which stores samples from this site; every sample in this folder is considered to be from this site</li>
+<!-- webcams? -->
+</ul>
+
+<!-- WRITEME: sample values, for each of the above -->
+
+<h2>File</h2>
+
+<p>The file is in an <a href="http://www.w3.org/XML/">XML</a>-based
+format.  The overall structure of the file looks like:</p>
+
+<pre style="background: #ddd">
+&lt;?xml version="1.0"?&gt;
+
+&lt;sitedb&gt;
+
+   &lt;!-- list of all site records here --&gt;
+
+&lt;/sitedb&gt;
+</pre>
+
+<p>Each site record looks like:</p>
+
+<pre style="background: #ddd">
+   &lt;site&gt;
+      &lt;country&gt;TU&lt;/country&gt;
+      &lt;code&gt;ZKB&lt;/code&gt;
+      &lt;name&gt;Zonguldak, Karabuk&lt;/name&gt;
+      &lt;id&gt;&lt;/id&gt;
+      &lt;species&gt;&lt;/species&gt;
+      &lt;type&gt;&lt;/type&gt;
+      &lt;filename&gt;&lt;/filename&gt;
+      &lt;location&gt;&lt;/location&gt;
+      &lt;comments&gt;&lt;/comments&gt;
+   &lt;/site&gt;
+</pre>
+
+<!-- WRITEME: describe each field (type, location, etc.), order/indenting, encoding, ... -->
+
+<p>The file is called "Site Database", and lives in the same folder as
+all of your data folders.  (The lockfile, whose presense indicates
+that it's being accessed, is called "Site Database - locked", in the
+same folder.)</p>
+
+<h2>Events</h2>
+
+<p>The site database also has an event framework, if you want to be
+notified when a site changes any of its info.  For example, a map can
+register itself to watch for <code>siteMoved</code> events.  Then if
+another user decides to adjust the position of a site, it's automatically
+re-positioned on your map.</p>
+
+<p>Each of the setters fires the necessary events automatically.
+Simply call
+<code>setLocation(newLocation)</code> and everybody who needs to be notified will.</p>
+
+<p>To watch for events, add yourself as a listener
+with <code>addSiteDBListener()</code>, and implement either
+the <code>SiteDBListener</code> interface, or extend
+the <code>SiteDBAdapter</code> class.</p>
+
+<!-- WRITEME: make these clickable -->
+<!-- WRITEME: explain why the listeners are on the whole database, not one site -->
+<!-- WRITEME: think about problem of firing events for generic database-changed events
+     but i'll only have a small number of listeners, so firing every possible combination
+     wouldn't be impossible -->
+
+<h2>Locking</h2>
+
+<p>The class <code>Lock</code> defines a simple file locking system.  Because
+the site database will initially be stored in a file in a shared folder used
+by many users, we don't want to take the risk of more than one user writing
+to it at the same time.  Or somebody reading from it while somebody else is
+still writing to it, and seeing only a partial file.</p>
+
+<p>Lock has only 2 static methods: <code>acquire()</code>
+and <code>release()</code>.</p>
+
+<h2>Usage</h2>
+
+<p>For displaying Site information for users,
+use <code>SiteInfo</code>.  It displays all of the information for a
+given site to the user.  If he changes it, it's updated in the
+database (and on disk).  If it's changed in another part of the
+program or by another user, it's updated in this window.</p>
+
+<!-- WRITEME: make this clickable -->
+<!-- WRITEME: put a small screenshot in the margin, so they see what we mean -->
+
+<p>For displaying a list of all Sites, use <code>SiteList</code>.  It
+shows all sites, allows keyboard navigation, and if you double-click a
+site, shows you a <code>SiteInfo</code> window for that site.  You can
+also add and delete sites from the list.</p>
+
+<!-- WRITEME: make this clickable -->
+<!-- WRITEME: put a small screenshot in the other margin -->
+
+<p>You can also use lower-level modifications yourself.  For example,
+on a map you might want to drag a site, and need to be able to set its
+location without having the user type it in.  For this, you would use:
+
+<ul>
+  <li><code>s = SiteDB.getSite(...)</code> to search for a Site object,</li>
+
+  <li><code>s.getName()</code>, and other getters, to get info about the site, and</li>
+
+  <li><code>s.setName(...)</code>, and other setters, to set info about the site</li>
+</ul>
+
+If you're displaying site information, you should also register a SiteDBListener
+so your display updates when the data changes.</p>
+
+<p>Note that you never need to explicitly "load" or "save" the site
+database.  The first time you call getSite(), it gets loaded.  Whenever it
+gets changed, it is automatically reloaded.  Whenever you change a value,
+it is automatically saved.</p>
+
+<h2>Future</h2>
+
+<p>Since Corina is moving to real database storage, the Site Database
+should simply be a table in that schema.  It should still be available
+as a file, though - it should probably be attached to a each
+Source.</p>
+
+<p>Since it's being loaded and saved so many times by so many people,
+it might be a good idea to keep a backup of this file, perhaps called
+"Site Database Backup", just in case something goes wrong.  Before
+saving the file, Corina should rename the old file to that.</p>
+
+<p>Since there's so much I/O to this one file, and it's not very small
+file (ours is about 170 KB now), perhaps I should allow it to be
+compressed.  It's probably not too hard to check for <a
+href="http://www.gzip.org/">GZip</a> compression, and automatically
+compress/decompress.  I'm just not sure if it's worth it.</p>
+
+<!-- NOTE: according to /etc/magic, gzip files start with \037\213,
+     which is super-easy to check for, especially if the alternative
+     is a normal XML file, or "less-than, ?xml..." -->
+
+
+
+</body>

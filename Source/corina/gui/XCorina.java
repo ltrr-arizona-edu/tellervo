@@ -23,7 +23,14 @@ package corina.gui;
 import corina.Sample;
 import corina.Element;
 import corina.editor.Editor;
+import corina.gui.menus.FileMenu;
+import corina.gui.menus.EditMenu;
+import corina.gui.menus.OldCrossdateMenu;
+import corina.gui.menus.WindowMenu;
+import corina.gui.menus.HelpMenu;
 import corina.util.Platform;
+import corina.util.OKCancel;
+import corina.ui.Builder;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,12 +38,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 
-import java.net.URL;
-
 import java.awt.Frame;
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
+import java.awt.event.ActionEvent;
+import java.awt.Image;
+import java.awt.FlowLayout;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.ImageIcon;
@@ -44,6 +53,11 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.AbstractAction;
+import javax.swing.SwingConstants;
+import javax.swing.*; // yeah, i suck.
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
@@ -62,7 +76,8 @@ public class XCorina extends JFrame {
     private List leftMenus, rightMenus;
 
     // --- DropLoader ----------------------------------------
-    public final class DropLoader implements DropTargetListener {
+    // EXTRACT METHOD/CLASS!
+    public class DropLoader implements DropTargetListener {
 	public void dragEnter(DropTargetDragEvent event) {
 	    event.acceptDrag(DnDConstants.ACTION_COPY);
 	}
@@ -102,49 +117,106 @@ public class XCorina extends JFrame {
     }
     // --- DropLoader ----------------------------------------
 
-    private static XCorina _self=null;
-    public XCorina() {
-	// there can be only one
-	if (_self != null)
-	    throw new RuntimeException("There can be only one!");
-	_self = this;
-
-	// boilerplate
-	setTitle("Corina");
-
-	// set tree icon (also in XFrame)
-	ImageIcon treeIcon = null;
-	URL iconURL = ClassLoader.getSystemResource("Images/tree.png");
-	if (iconURL != null) {
-	    treeIcon = new ImageIcon(iconURL);
-	    setIconImage(treeIcon.getImage());
+    // SINGLETON.
+    // show the toplevel, or throw an exception if there already is one.
+    public static void showCorinaWindow() {
+	if (_self == null) {
+	    _self = new XCorina();
+	} else {
+            throw new RuntimeException("There can be only one!");
 	}
+    }
+    private static XCorina _self=null;
 
-	// menubar
-	setJMenuBar(new XMenubar());
+    private JSplitPane lrSplit, tbSplit;
+    private DropTarget drop;
+    private XCorina() {
+        // there can be only one
+        if (_self != null)
+            throw new RuntimeException("There can be only one!");
+        _self = this;
+
+        // boilerplate
+        setTitle("Corina");
+
+        // set tree icon (also in XFrame).
+	// EEP!  i can't use builder.geticon() if it doesn't guarantee an imageicon, no?
+        ClassLoader cl = this.getClass().getClassLoader();
+        java.net.URL url = cl.getResource("Images/Tree.png");
+        if (url != null) {
+          ImageIcon treeIcon = new ImageIcon(url);
+          setIconImage(treeIcon.getImage());
+        }
+
+        // menubar
+        {
+            JMenuBar menubar = new JMenuBar();
+            menubar.add(new FileMenu(this));
+            menubar.add(new EditMenu());
+            menubar.add(new OldCrossdateMenu());
+            if (Platform.isMac)
+                menubar.add(new WindowMenu(this));
+            menubar.add(new HelpMenu());
+            setJMenuBar(menubar);
+        }
+
+	JPanel panel = new JPanel();
+	setContentPane(panel);
 
 	/*
-	// content: search
-	JPanel top = new JPanel();
-	JLabel search = new JLabel("Search for:");
-	JTextField field = new JTextField(16);
-	JButton advanced = new JButton("Advanced...");
-	top.add(search);
-	top.add(field);
-	top.add(advanced);
-	getContentPane().add(top, BorderLayout.NORTH);
+	// content: a browser
+	// final JSplitPane lrSplit, tbSplit; // "final" so i can reference them from inner classes.
+	{
+	    // sources list
+	    final SourcesTable s = new SourcesTable(); // "final" so i can reference it in inner classes.
 
-	// content: list
-	List el = new ArrayList();
-	File dir = new File(System.getProperty("corina.dir.data"));
-	File[] files = dir.listFiles();
-	for (int i=0; i<files.length; i++)
-	    if (!files[i].isDirectory())
-		el.add(new Element(files[i].getPath()));
-	ElementsPanel ep = new ElementsPanel(el);
-	ep.setView(ElementsPanel.VIEW_STANDARD);
-	getContentPane().add(ep, BorderLayout.CENTER);
-	*/
+	    // left-right split
+	    lrSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
+	    lrSplit.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+	    // top-bottom split
+	    tbSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
+	    tbSplit.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+	    // add components
+	    JScrollPane sp = new JScrollPane(s);
+	    JPanel left = new JPanel(new BorderLayout());
+	    sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+	    left.add(sp, BorderLayout.CENTER);
+	    JPanel addRemovePanel = makeAddRemovePanel(s);
+	    left.add(addRemovePanel, BorderLayout.SOUTH);
+
+	    // QUESTION: how to add a drop-target-listener to watch for drops below the last row?
+
+	    lrSplit.setLeftComponent(left);
+	    lrSplit.setRightComponent(tbSplit);
+	    tbSplit.setTopComponent(new JLabel("browser stuff here"));
+	    tbSplit.setBottomComponent(new JLabel("file list here"));
+
+	    setContentPane(lrSplit); // BUG: kills drop-loading (no, that's not a bug, drop-loading is dead, right?)
+
+	    // TODO: add listener: on new selection, query Source for tbSplit top and bottom components
+	    s.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+		    public void valueChanged(ListSelectionEvent e) {
+			// wait until it stops
+			if (e.getValueIsAdjusting())
+			    return;
+			// (makeBrowser(), etc., get called twice, if you drag, with this disabled.)
+
+			// use that source
+			SourcesTable.Source source = s.getSource();
+			if (source == null) {
+			    tbSplit.setTopComponent(null);
+			    tbSplit.setBottomComponent(new JPanel());
+			} else
+			    setSource(source);
+		    }
+		});
+
+	    // set initial source
+	    setSource(s.getSource());
+	}
+*/
 
 	// exit when this window closes
 	addWindowListener(new WindowAdapter() {
@@ -156,19 +228,166 @@ public class XCorina extends JFrame {
 	// pack
 	pack();
 
-	// enable drop-loading for panel
-	DropTargetListener dropLoader = new DropLoader();
+        // enable drop-loading for panel
+        DropTargetListener dropLoader = new DropLoader();
         DropTarget target = new DropTarget(this, dropLoader);
-        DropTarget target2 = new DropTarget(getJMenuBar(), dropLoader);
-
+        if (!Platform.isMac) { // (note: braces are mandatory here!)
+            DropTarget target2 = new DropTarget(getJMenuBar(), dropLoader);
+        }
+        DropTarget target3 = new DropTarget(panel, dropLoader);
+        
         // size it?
-        setSize(320, 240);
+        setSize(480, 360); // was: 320, 240
+
+	/*
+	// set split locations (BETTER: keep these in the prefs)
+	lrSplit.setDividerLocation(0.25);
+	tbSplit.setDividerLocation(0.25);
+	*/
 
         // show
         show();
     }
 
+    private JPanel makeAddRemovePanel(SourcesTable ss) {
+	final SourcesTable s = ss;
+
+	JButton plus = new JButton(Builder.getIcon("plus.png"));
+	JButton minus = new JButton(Builder.getIcon("minus.png"));
+
+	plus.setToolTipText("Add Data Source");
+	plus.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    showAddNewSourceDialog();
+		}
+	    });
+
+	minus.setToolTipText("Remove Data Source");
+	minus.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    s.remove();
+		}
+	    });
+
+	JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	panel.add(plus);
+	panel.add(Box.createHorizontalStrut(4));
+	panel.add(minus);
+	return panel;
+    }
+
+    // show a window asking what type of source to add,
+    // then a specific window for adding that type of source.
+    private void showAddNewSourceDialog() {
+	// TODO: add icons?
+	/*
+	  [ ======= Add New Source ======= ]
+	  | Type: (*) Folder               |
+	  |       ( ) Database             |
+	  |       ( ) Network (FTP)        |
+	  |       ( ) Favorites list       |
+	  |       ( ) Smart List           |
+	  |                                |
+	  |              (Cancel) (( OK )) |
+	*/
+	final JDialog d = new JDialog();
+	d.setTitle("Add New Source");
+
+	JPanel l = Layout.flowLayoutL("Choose data source:");
+	l.setBorder(BorderFactory.createEmptyBorder(14, 20, 6, 20));
+
+	JPanel r = new JPanel();
+	r.setLayout(new GridLayout(0, 1, 4, 4));
+
+	ButtonGroup group = new ButtonGroup();
+
+	final JRadioButton buttons[] = new JRadioButton[] {
+	    new JRadioButton("Folder"),
+	    new JRadioButton("Database"),
+	    new JRadioButton("Network (FTP)"),
+	    new JRadioButton("Favorites List"),
+	    new JRadioButton("Smart List"),
+	};
+
+	for (int i=0; i<buttons.length; i++) {
+	    group.add(buttons[i]);
+	    r.add(buttons[i]);
+	}
+	buttons[0].setSelected(true);
+
+	// IN PROGRESS: disable some choices
+	for (int i=2; i<buttons.length; i++)
+	    buttons[i].setEnabled(false);
+
+	JButton cancel = Builder.makeButton("cancel");
+	JButton ok = Builder.makeButton("ok");
+
+	cancel.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    d.dispose();
+		}
+	    });
+	ok.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    int x = 0;
+		    for (int i=0; i<buttons.length; i++)
+			if (buttons[i].isSelected())
+			    x = i;
+
+		    switch (x) {
+		    case 0:
+			SourcesTable.Source f = new SourcesTable.FolderSource("Untitled Source", ""); // use wd?
+			f.showInfo();
+			// WRITEME: if cancel, drop, else add to |sources|
+			break;
+		    case 1:
+			System.out.println("WRITEME: show database dialog now");
+			break;
+		    default:
+			Bug.bug(new IllegalArgumentException("bad selection"));
+		    }
+		    d.dispose();
+		}
+	    });
+
+	JPanel b = Layout.buttonLayout(cancel, ok);
+	b.setBorder(BorderFactory.createEmptyBorder(18, 20, 20, 20));
+
+	JPanel p = Layout.borderLayout(l,
+					Box.createHorizontalStrut(40), r, null,
+					b);
+	d.setContentPane(p);
+
+	OKCancel.addKeyboardDefaults(ok);
+
+	d.pack();
+	d.setResizable(false);
+	d.show();
+    }
+
+    private void setSource(SourcesTable.Source source) {
+	// set the top component when it changes. (bottom component will get set automatically.)
+	if (source.hasBrowser()) {
+	    int old;
+
+	    old = tbSplit.getDividerLocation(); // (don't let divider location change)
+	    // tbSplit.setTopComponent(new JLabel("source: " + source.getName()));
+	    tbSplit.setTopComponent(source.makeBrowser());
+	    tbSplit.setDividerLocation(old);
+
+	    old = lrSplit.getDividerLocation();
+	    lrSplit.setRightComponent(tbSplit);
+	    lrSplit.setDividerLocation(old);
+	} else {
+	    int old = lrSplit.getDividerLocation();
+	    lrSplit.setRightComponent(new JLabel("file list here"));
+	    lrSplit.setDividerLocation(old);
+	}
+	// WRITEME
+    }
+
     // shutdown
+    // REFACTOR: wouldn't startup.java (renamed, perhaps) be a better place for this?)
     public static void quit() {
         // close all windows, asking the user
         Frame f[] = Frame.getFrames();

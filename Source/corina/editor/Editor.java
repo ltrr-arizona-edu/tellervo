@@ -25,76 +25,58 @@ import corina.SampleListener;
 import corina.SampleEvent;
 import corina.Element;
 import corina.Weiserjahre;
-import corina.files.TwoColumn;
 import corina.site.Site;
-import corina.site.SiteDB;
-import corina.site.SiteInfo;
-import corina.site.SiteNotFoundException;
-import corina.map.MapFrame;
-import corina.graph.GraphFrame;
-import corina.graph.BargraphFrame;
-import corina.cross.CrossFrame;
-import corina.cross.Sequence;
-import corina.index.IndexDialog;
-import corina.manip.TruncateDialog;
-import corina.manip.RedateDialog;
-import corina.manip.Reverse;
-import corina.manip.Sum;
-import corina.manip.Clean;
-import corina.manip.Reconcile;
-import corina.manip.ReconcileDialog;
 import corina.gui.XFrame;
-import corina.gui.WindowMenu;
+import corina.gui.menus.WindowMenu;
+import corina.gui.menus.HelpMenu;
 import corina.gui.FileDialog;
 import corina.gui.UserCancelledException;
 import corina.gui.ElementsPanel;
 import corina.gui.HasPreferences;
 import corina.gui.SaveableDocument;
 import corina.gui.PrintableDocument;
-import corina.gui.XMenubar;
 import corina.gui.Bug;
+import corina.gui.Layout;
+import corina.gui.Help;
 import corina.prefs.Prefs;
-import corina.files.WrongFiletypeException;
-import corina.util.PureStringWriter;
-import corina.util.TextClipboard;
 import corina.util.Platform;
 import corina.util.Overwrite;
-import corina.print.Printer;
+import corina.util.OKCancel;
+import corina.util.Center;
+import corina.util.DocumentListener2;
 import corina.ui.Builder;
 import corina.ui.I18n;
+import corina.ui.Alert;
 
 import java.io.File;
-import java.io.StringWriter;
-import java.io.BufferedWriter;
-import java.io.BufferedReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.FileNotFoundException;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
 
 import java.text.MessageFormat;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Dimension;
+import java.awt.Component;
 import java.awt.BorderLayout;
-import java.awt.Event;
-import java.awt.Toolkit;
+import java.awt.Frame; // for dummy parent frames
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.undo.UndoManager;
-import java.awt.datatransfer.*;
+import javax.swing.undo.UndoableEditSupport;
+import javax.swing.undo.UndoableEdit;
+import javax.swing.text.Document;
+import javax.swing.text.BadLocationException;
 
 import java.awt.print.PageFormat;
-import java.awt.print.Pageable;
-import java.awt.print.Printable;
 
 /*
+ left to do:
+ -- extract EditorMenuBar as its own class?
+ -- javadoc!
+ 
   change around the menus slightly:
 
   File
@@ -138,25 +120,24 @@ import java.awt.print.Printable;
 
   -- setEnabled() calls are duplicated: on init, and also in the event-handlers
 
-  -- guts of save() look really familiar ... that goes into XFrame, or some other general utility class
+  -- guts of save() look really familiar ...
+     ... that goes into XFrame, or some other general utility class
 
   -- WJ panel stuff could go into a wjpanel, perhaps subclassing dataviewpanel
-
-  -- printText() is a hack.  at least move it somewhere else.  then implement real printing.
 
   -- makeMenus is lines 455-868 (n=414).  ouch.  maybe this could be (compiled?) scheme.
 
   -- the 3 view menuitems can certainly be combined into one Action
 
- -- since the hold-down-control crap is gone now, those menus don't need object-scope.
-
- -- reconcile should be only in Reconcile and ReconcileDialog -- and it needs to be a real display, not just html
+  -- since the hold-down-control crap is gone now, those menus don't need object-scope.
+  (what did i mean by this?)
 
   -- refactor mapframe so it can be simply "new MapFrame(sample)"
 */
 
 public class Editor extends XFrame
-                 implements SaveableDocument, HasPreferences, SampleListener, PrintableDocument {
+                 implements SaveableDocument, HasPreferences, // !!!
+			    SampleListener, PrintableDocument {
 
     // gui
     private JTable wjTable;
@@ -165,21 +146,18 @@ public class Editor extends XFrame
     private JComponent metaView;
 
     // gui -- new
-    private JPanel dataView;
+    private SampleDataView dataView; // (a jpanel)
     private JTabbedPane rolodex;
 
-    // gui -- menus
-    private JMenuItem resumMenu, cleanMenu, reverseMenu, reconcile;
-    private JMenuItem indexMenu;
-    private JMenuItem crossElements;
-    private JMenuItem addMenu, remMenu;
-    private JMenuItem plotAll, bargraphAll;
-    private JMenuItem v1, v2, v3;
-
     // undo
-    private UndoManager undoManager;
-    private JMenuItem undoMenu, redoMenu;
-    public void refreshUndoRedo() {
+    private UndoManager undoManager = new UndoManager();
+    private UndoableEditSupport undoSupport = new UndoableEditSupport();
+
+    public void postEdit(UndoableEdit x) {
+	undoSupport.postEdit(x);
+    }
+
+    private void refreshUndoRedo(JMenuItem undoMenu, JMenuItem redoMenu) {
 	undoMenu.setText(undoManager.getUndoPresentationName());
 	undoMenu.setEnabled(undoManager.canUndo());
 	if (!undoManager.canUndo())
@@ -191,21 +169,20 @@ public class Editor extends XFrame
     }
     private void initUndoRedo() {
 	undoManager = new UndoManager();
-	sample.getUndoSupport().addUndoableEditListener(new UndoAdapter());
-	refreshUndoRedo();
+	undoSupport.addUndoableEditListener(new UndoAdapter());
+
+	// ??
+	// DISABLED: refreshUndoRedo(/* FAKE: */ null, null);
     }
     private class UndoAdapter implements UndoableEditListener {
 	public void undoableEditHappened (UndoableEditEvent e) {
 	    undoManager.addEdit(e.getEdit());
-	    refreshUndoRedo();
+	    // DISABLED: refreshUndoRedo(/* FAKE: */ null, null);
 	}
     }
 
     // data
     private Sample sample;
-
-    // i18n
-    private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // BUG: measureMenu gets enabled/disabled here, when it's status
     // should be the AND of what editor thinks and what measure
@@ -216,55 +193,26 @@ public class Editor extends XFrame
 	updateTitle(); // title
     }
     public void sampleDataChanged(SampleEvent e) {
-	// menubar gets "*" if change made
+	// menubar gets "*" if change made -- BUG: no, then meta field modified?
+	// gets set, so this ISN'T NEEDED.  right?
 	updateTitle();
 
 	// -> todo: menubar needs undo/redo, save updated
     }
     public void sampleMetadataChanged(SampleEvent e) {
-	// index menu: only if not indexed
-	indexMenu.setEnabled(!sample.isIndexed());
-
-	// clean menu: only if summed
-	cleanMenu.setEnabled(sample.isSummed());
-
-	// resum menu, cross elements: only if elements present
-	resumMenu.setEnabled(sample.elements != null);
-	crossElements.setEnabled(sample.elements != null);
-
-        // measure menu: only if not summed
-        if (measureMenu != null)
-            measureMenu.setEnabled(!sample.isSummed());
-
 	// title may have changed
 	updateTitle();
-    }
-    public void sampleFormatChanged(SampleEvent e) {
-	// resum/clean get disabled
-	resumMenu.setEnabled(sample.elements != null);
-	cleanMenu.setEnabled(sample.isSummed());
-        if (measureMenu != null)
-            measureMenu.setEnabled(!sample.isSummed());
-
-	// view menus
-	v1.setEnabled(sample.elements != null);
-	v2.setEnabled(sample.elements != null);
-	v3.setEnabled(sample.elements != null);
-
-	// plot all, bargraph all
-	plotAll.setEnabled(sample.elements!=null && sample.elements.size()>0);
-	bargraphAll.setEnabled(sample.elements!=null && sample.elements.size()>0);
 
 	// get rid of wj, elements tabs
-	if (e != null) { // only for real events, not menu setup
+	if (e != null) { // only for real events, not menu setup -- HACK!
 	    if (!sample.hasWeiserjahre())
 		rolodex.remove(wjPanel);
 	    else if (rolodex.indexOfComponent(wjPanel) == -1)
-		rolodex.add(wjPanel, msg.getString("tab_weiserjahre"));
+		rolodex.add(wjPanel, I18n.getText("tab_weiserjahre"));
 	    if (sample.elements == null)
 		rolodex.remove(elemPanel);
 	    else if (rolodex.indexOfComponent(elemPanel) == -1)
-		rolodex.add(elemPanel, msg.getString("tab_elements"));
+		rolodex.add(elemPanel, I18n.getText("tab_elements"));
 	}
     }
     public void sampleElementsChanged(SampleEvent e) { }
@@ -284,7 +232,7 @@ public class Editor extends XFrame
     }
     public String getDocumentTitle() {
         String fn = getFilename();
-        if (fn != null) {
+        if (fn != null) { // REFACTOR: why's this not return new File(fn).getName()?
             int lastSlash = fn.lastIndexOf(File.separatorChar);
             if (lastSlash != -1)
                 fn = fn.substring(lastSlash+1);
@@ -295,21 +243,24 @@ public class Editor extends XFrame
     }
     public void save() {
         // make sure user isn't editing
-        ((SampleDataView) dataView).stopEditing();
+        dataView.stopEditing();
 
         // make sure they're all numbers -- no nulls, strings, etc.
         // abstract this out as "boolean verifyOnlyNumbers()" or something?
         for (int i=0; i<sample.data.size(); i++) {
             Object o = sample.data.get(i);
             if (o==null || !(o instanceof Integer)) { // integer?  or number?
-                JOptionPane.showMessageDialog(this,
-                                              "One or more years had bad (non-numeric) data, or no data:\n" +
-                                              "- year " + sample.range.getStart().add(i) + " has " + (o==null ? "no value" : "value " + o),
-                                              "Bad Data",
-                                              JOptionPane.ERROR_MESSAGE);
+		// BUT: didn't i used to pass in |this| as the owner?  is this worse?
+		Alert.error("Bad Data",
+			    "One or more years had bad (non-numeric) data, or no data:\n" +
+			    "- year " + sample.range.getStart().add(i) +
+			    " has " + (o==null ? "no value" : "value " + o));
                 return;
-                // BUG: return failure.  how?  UserCancelled
+                // BUG: return failure.  how?  (UserCancelled?)
+		// NO, DESIGN BUG: this shouldn't ever be allowed to happen.  why does it?
             }
+	    // REPLACE WITH: call to method ensureNumbersOnly()
+	    // -- why not simply disallow non-numbers to begin with?
         }
 
         // get filename from sample; fall back to user's choice
@@ -318,14 +269,22 @@ public class Editor extends XFrame
 
             // make sure metadata was entered
             if (!sample.wasMetadataChanged()) {
+		// what i'd prefer:
+		// Alert.ask("You didn't set the metadata!", { "Save Anyway", "Cancel" })
+		// or even: Alert.ask("You didn't set the metadata! [Save Anyway] [Cancel]"); (!)
+		/*
+		  can i put something like this directly in a resource?
+		     You didn't set the metadata! [Save Anyway] [Cancel]
+		  that's crazy talk!
+		*/
                 int x = JOptionPane.showOptionDialog(this,
-                                                      "You didn't set the metadata!",
-                                                      "Metadata Untouched",
-                                                      JOptionPane.YES_NO_OPTION,
-                                                      JOptionPane.QUESTION_MESSAGE,
-                                                      null, // no icon
-                                                      new String[] { "Save Anyway", "Cancel"},
-                                                      null); // default
+						     "You didn't set the metadata!",
+						     "Metadata Untouched",
+						     JOptionPane.YES_NO_OPTION,
+						     JOptionPane.QUESTION_MESSAGE,
+						     null, // no icon
+						     new String[] { "Save Anyway", "Cancel"},
+						     null); // default
                 if (x == 1) {
                     // show metadata tab, and abort.
                     rolodex.setSelectedIndex(1);
@@ -335,14 +294,14 @@ public class Editor extends XFrame
 
             // get target filename
             try {
-                filename = FileDialog.showSingle("Save"); // is this why the button says &Save...?
+                filename = FileDialog.showSingle("Save");
+
+		// check for already-exists
+		Overwrite.overwrite(filename);
             } catch (UserCancelledException uce) {
                 return;
             }
 
-            // check for already-exists -- DUPLICATE CODE, REFACTOR
-            if (new File(filename).exists() && !Overwrite.overwrite(filename))
-                return; // BUG: should return FAILURE -- how?  UserCancelled
             sample.meta.put("filename", filename);
         }
 
@@ -351,13 +310,12 @@ public class Editor extends XFrame
     public void save(String filename) {
         // save sample
         try {
+	    // BUG?  do i mean to ignore the filename args?
+	    // FIXME: isn't this just sample.save()?
             sample.save((String) sample.meta.get("filename"));
         } catch (IOException ioe) {
-            JOptionPane.showMessageDialog(null,
-                                          "There was an error while saving the file: \n" +
-                                          ioe.getMessage(),
-                                          "I/O Error",
-                                          JOptionPane.ERROR_MESSAGE);
+	    Alert.error("I/O Error",
+			"There was an error while saving the file: \n" + ioe.getMessage());
             return;
         } catch (Exception e) {
             Bug.bug(e);
@@ -368,6 +326,9 @@ public class Editor extends XFrame
                                            // BIGGER ISSUE: need to separate/abstract window-title/window-modified setting
         // -- make window (jframe) a samplelistener for updating platform.modified?
         // -- (platform.modified sets either mac property, or resets *+title from getTitle()?)
+	// LONG-TERM: this won't be an issue.  why not?  because we won't
+	// have this klutzy "save" system.  open a file, mess around with it, close it.
+	// as far as you're concerned, it's always "saved".
         updateTitle();
     }
 
@@ -419,7 +380,9 @@ public class Editor extends XFrame
     }
 
     private void initMetaView() {
-        metaView = new SampleMetaView(sample, this);
+        metaView = new MetadataPanel(sample);
+
+	// FIXME: move this to add/remove notify of MetadataPanel?
         sample.addSampleListener((SampleListener) metaView);
     }
 
@@ -435,20 +398,22 @@ public class Editor extends XFrame
 	rolodex.removeAll();
 
 	// all samples get data, meta
-	rolodex.add(dataView = new SampleDataView(sample), msg.getString("tab_data"));
-	rolodex.add(metaView, msg.getString("tab_metadata"));
+	dataView = new SampleDataView(sample);
+	rolodex.add(dataView, I18n.getText("tab_data"));
+	rolodex.add(metaView, I18n.getText("tab_metadata"));
 
 	// wj and elements, if it's summed
 	if (sample.hasWeiserjahre())
-	    rolodex.add(wjPanel, msg.getString("tab_weiserjahre"));
+	    rolodex.add(wjPanel, I18n.getText("tab_weiserjahre"));
 	if (sample.elements != null)
-	    rolodex.add(elemPanel, msg.getString("tab_elements"));
+	    rolodex.add(elemPanel, I18n.getText("tab_elements"));
     }
 
     private void initRolodex() {
         // try also: BOTTOM, but that's worse, by Fitt's Law, isn't it?
         // (excel, for example, does that.)
         rolodex = new JTabbedPane(JTabbedPane.TOP);
+	// rolodex.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0)); -- but the old frame is still there!  hmm...
         addCards();
         getContentPane().add(rolodex, BorderLayout.CENTER);
     }
@@ -462,17 +427,116 @@ public class Editor extends XFrame
     }
 
     // ask the user for a title for this (new) sample.  it's guaranteed to have a number, now!
-    private String askTitle() throws UserCancelledException {
-        return askTitle("");
+    /*
+      TODO:
+      -- esc doesn't work -- no, this is a problem with OKCancel in 1.4.1, not here
+      -- (initial value is name of this site?)
+      ---- (askTitle(Site)?)
+      -- (title for non-mac platforms?)
+      -- (i18n / extract text)
+      -- (import classes so i don't need fq here)
+    */
+    /*
+      what's truly unique about this?
+      ... AskText extends JDialog ...
+      pass it:
+      -- initial text
+      -- dictionary for autocomplete
+      -- instructions text
+      -- help tag
+      then, simply:
+      ask.show();
+      title = ask.getResult();
+    */
+    private static final String DEMO = "Acemh\u00FCy\u00FCk 36A";
+    private static String askTitle() throws UserCancelledException {
+	JLabel line1 = new JLabel("Enter a title for the new sample.");
+	JLabel line2 = new JLabel("Titles are usually of the form \"" + DEMO + "\".");
+	JLabel line3 = new JLabel("(You must include both a letter and a number in the title.)");
+	// jmultilinelabel for last 2 lines?
+	line2.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+	line3.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+
+	JTextField input = new AutoComplete("", 30);
+	// defaults to site names -- TODO: pass current site in as initial text?
+
+	final boolean isOk[] = new boolean[1];
+
+	JButton help = Builder.makeButton("help");
+	Help.addToButton(help, "identification");
+	JButton cancel = Builder.makeButton("cancel");
+	final JButton ok = Builder.makeButton("ok");
+	ok.setEnabled(false);
+
+	input.getDocument().addDocumentListener(new DocumentListener2() {
+		public void update(DocumentEvent e) {
+		    try {
+			Document doc = e.getDocument();
+			String text = doc.getText(0, doc.getLength()); // BETTER: why not just input.getText()?
+			ok.setEnabled(containsDigit(text) && containsLetter(text)); // FIXME: combine these!
+		    } catch (BadLocationException ble) {
+			// can't happen
+		    }
+		}
+	    });
+	/*
+	  how about:
+	  ...addDocumentAdapter(new Runnable() {
+	    public void run() {
+	      ok.setEnabled(containsDigit(text.getDocument().getText()));
+	  });
+	  // unaryop would be better
+	*/
+
+	JPanel text = Layout.boxLayoutY(line1, line2, line3);
+	JPanel buttons = Layout.buttonLayout(help, null, cancel, ok);
+	buttons.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+	JPanel content = Layout.borderLayout(text,
+					     null, input, null,
+					     null);
+        JPanel fixed = Layout.borderLayout(content,
+                                            null, null, null,
+                                            buttons);
+                                             
+	fixed.setBorder(BorderFactory.createEmptyBorder(10, 14, 6, 14));
+
+	final JDialog dialog = new JDialog(new Frame(), true);
+	dialog.getContentPane().add(fixed);
+
+	AbstractAction okCancel = new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    isOk[0] = (e.getSource() == ok);
+		    dialog.dispose();
+		}
+	    };
+	ok.addActionListener(okCancel);
+	cancel.addActionListener(okCancel);
+
+	dialog.pack();
+	OKCancel.addKeyboardDefaults(ok);
+	input.selectAll(); // (if there's anything here, later, e.g., site name)
+	input.requestFocus();
+        Center.center(dialog);
+	dialog.show();
+
+	// then, after it's hidden (by cancel, ok, or close-box)...
+
+	if (!isOk[0])
+	    throw new UserCancelledException();
+
+	return input.getText();
     }
-    private String askTitle(String defaultText) throws UserCancelledException {
+
+    // FIXME: disable the "ok" button if there's no number in the title, but
+    // put a notice in the dialog saying it must have a number!
+    private String askTitleOld(String defaultText) throws UserCancelledException {
         String title=defaultText;
         for (;;) {
             title = (String) JOptionPane.showInputDialog(null, // parent component
-                                                         msg.getString("new_sample_prompt"), // message
-                                                         msg.getString("new_sample"), // title
+                                                         I18n.getText("new_sample_prompt"), // message
+                                                         I18n.getText("new_sample"), // title
                                                          JOptionPane.QUESTION_MESSAGE,
-                                                         null, // icon
+                                                         Builder.getIcon("Tree-64x64.png"), // null, // icon
                                                          null, // values (options)
                                                          title);
 
@@ -481,17 +545,32 @@ public class Editor extends XFrame
                 throw new UserCancelledException();
 
             // make sure there's a digit in there somewhere, and return.
-            for (int i=0; i<title.length(); i++)
-                if (Character.isDigit(title.charAt(i)))
-                    return title;
+	    if (containsDigit(title) && containsLetter(title))
+		return title;
 
             // no numbers!
-            JOptionPane.showMessageDialog(null, "There's no number in that title.  I think you forgot the sample number.");
+	    // (FIXME: this error shouldn't exist!)
+	    Alert.error("No number",
+			"There's no number in that title.  I think you forgot the sample number.");
 
             // be sure to put in the user manual the trick for creating a sample
             // without a sample number, if they ever need that: put a digit on
             // the end, and remove it right away (heh heh).
         }
+    }
+
+    // if i need this anywhere else, move to util?
+    private static boolean containsDigit(String s) {
+	for (int i=0; i<s.length(); i++)
+	    if (Character.isDigit(s.charAt(i)))
+		return true;
+	return false;
+    }
+    private static boolean containsLetter(String s) {
+	for (int i=0; i<s.length(); i++)
+	    if (Character.isLetter(s.charAt(i)))
+		return true;
+	return false;
     }
 
     public Editor() {
@@ -517,7 +596,7 @@ public class Editor extends XFrame
         // ask user for title
         String title;
         try {
-            title = askTitle(s.getName() + " ");
+            title = askTitle(); // WAS: s.getName() + " ");
         } catch (UserCancelledException uce) {
             dispose();
             return;
@@ -562,7 +641,21 @@ public class Editor extends XFrame
         updateTitle();
 
         // menubar
-        setJMenuBar(new XMenubar(this, makeMenus()));
+        {
+            JMenuBar menubar = new JMenuBar();
+            // TODO: extend CorinaMenuBar
+            menubar.add(new EditorFileMenu(this));
+            menubar.add(new EditorEditMenu(sample, dataView));
+            menubar.add(new EditorViewMenu(sample, elemPanel));
+            menubar.add(new EditorManipMenu(sample, this));
+            menubar.add(new EditorSumMenu(sample));
+            menubar.add(new EditorGraphMenu(sample));
+            menubar.add(new EditorSiteMenu(sample));
+            if (Platform.isMac)
+                menubar.add(new WindowMenu(this));
+            menubar.add(new HelpMenu());
+            setJMenuBar(menubar);
+        }
 
         // put views into notecard-rolodex
         initRolodex();
@@ -576,6 +669,10 @@ public class Editor extends XFrame
         // pack, size, and show
         pack(); // is this needed?
         setSize(new Dimension(640, 480));
+	// TODO: store window position, X-style ("WIDTHxHEIGHT+LEFT+TOP"), so it always re-appears in the same place.
+	// Q: store the resolution, as well, so the relative position
+	// is the same, or just make sure the absolute is within range?
+	// i can store the position either in a ;WINDOW field, or beyond the ~author line.
 	show();
 
 	/*
@@ -605,707 +702,22 @@ public class Editor extends XFrame
         dataView.requestFocus();
     }
 
-    // bump windows down by this much
+    // DESIGN: move all editor menus into corina.editor.menus.ManipulateMenu, etc.
+
     /*
-      private static int offset = 0; // _next_ window by this much
-    private static java.awt.Point base = null;
-    private static int doffset = 0; // height of the titlebar (i'll compute this at runtime)
+      TODO:
+      -- resumming used to call Platform.setModified(editor, true) for isMac.
+      that's bad.  instead, Editor should be a SampleListener which calls
+      setMod(this,meta.mod?) on metadataChanged() -- or anything, actually.
     */
 
-    // measure-mode menu
-    private JMenuItem measureMenu=null;
-
-    // menus for XMenubar constuctor
-    private JMenu[] makeMenus() {
-	// edit menu
-	JMenu edit = Builder.makeMenu("edit");
-
-	// undo
-	undoMenu = Builder.makeMenuItem("undo");
-	undoMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    undoManager.undo();
-		    refreshUndoRedo();
-		}
-	    });
-	edit.add(undoMenu);
-	redoMenu = Builder.makeMenuItem("redo");
-	redoMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    undoManager.redo();
-		    refreshUndoRedo();
-		}
-	    });
-	edit.add(redoMenu);
-
-        // ---
-        edit.addSeparator();
-
-        final Sample glue7 = sample; // hack!
-
-        // let's make the user feel at home
-        JMenuItem cut = Builder.makeMenuItem("cut");
-        cut.setEnabled(false);
-        edit.add(cut);
-
-        // copy: put all data unto clipboard in 2-column format
-	JMenuItem copy = Builder.makeMenuItem("copy");
-        copy.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                try {
-		    // REFACTOR: extract method -- but to where?
-
-                    // save this sample, in 2-col format, to a string
-                    PureStringWriter w = new PureStringWriter(10 * glue7.data.size());
-                    new TwoColumn(w).save(glue7);
-
-                    // copy that string to the clipboard
-                    TextClipboard.copy(w.toString());
-                } catch (IOException ioe) {
-		    // can't happen -- it's i/o to memory, not a real i/o device
-                }
-            }
-        });
-        edit.add(copy);
-
-        // paste: replace (insert?) data from clipboard (any format) into this sample
-        JMenuItem paste = Builder.makeMenuItem("paste");
-        paste.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                // get the stuff that's on the clipboard
-		// REFACTOR: would my TextClipboard abstraction help out here?
-                Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
-                Transferable t = c.getContents(null);
-                if (t == null)
-                    return; // clipboard contains no data
-
-                try {
-                    // copy text from the clipboard to $(TMP).  (why?
-                    // because Sample(filename) takes arbitrary
-                    // formats, load(Reader) does not.  (fixable?))
-
-		    // use $(TMP)/corinaXXXXX.clip for the filename
-		    File tmpFile = File.createTempFile("corina", ".clip");
-		    tmpFile.deleteOnExit();
-		    final String tmpFilename = tmpFile.getPath();
-
-		    // get ready to transfer the data
-                    DataFlavor f = DataFlavor.selectBestTextFlavor(t.getTransferDataFlavors());
-                    BufferedReader r = new BufferedReader(f.getReaderForText(t));
-                    BufferedWriter w = new BufferedWriter(new FileWriter(tmpFilename));
-
-		    // transfer it
-                    for (;;) {
-                        String l = r.readLine();
-                        if (l == null)
-                            break;
-                        w.write(l + '\n');
-                    }
-
-		    // clean up
-                    w.close();
-                    r.close();
-
-                    // now try to load it
-                    Sample tmp = new Sample(tmpFilename);
-
-                    // copy it here, except for the filename
-                    Sample.copy(tmp, sample);
-                    sample.meta.remove("filename");
-                } catch (WrongFiletypeException wfte) {
-                    // unreadable format.  tell user.
-                    JOptionPane.showMessageDialog(null,
-                                                  "The clipboard doesn't appear to have a dendro dataset.",
-                                                  "Problem While Pasting",
-                                                  JOptionPane.ERROR_MESSAGE);
-                    return;
-                } catch (IOException ioe) {
-                    // shouldn't ever happen.  this means there was a problem reading or
-                    // writing a "clipboard" file.  probably a bug, then.
-                    Bug.bug(ioe);
-                    return;
-                } catch (UnsupportedFlavorException ufe) {
-                    // clipboard doesn't have text on it.  tell user.
-                    JOptionPane.showMessageDialog(null,
-                                                  "The clipboard doesn't appear to have text on it.",
-                                                  "Problem While Pasting",
-                                                  JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                // fire all sorts of alarms
-                sample.fireSampleRedated();
-                sample.fireSampleDataChanged();
-                sample.fireSampleMetadataChanged();
-                sample.fireSampleFormatChanged();
-                sample.fireSampleElementsChanged();
-
-                /* oh crap.  it iterates over the LOADERS[], passing them filenames.
-                    i'll need to abstract out the iteration, and put loading from a
-                    filename in sample(filename) only.  i guess that cleans up some
-                    low-level things, but it means more work now.
-
-                    err, no.  what do you want it to do, iterate over readers?
-                    can you guarantee that a reader is reset()able to its start?
-                    you might have to save the entire thing to a buffer ... er, that's
-                    where it is.  you might have to get a reader passed, clone it,
-                    try, clone, try, but readers probably don't work that way.  there's
-                    got to be a way to do this.
-
-                    (it's good this came up, though.  opening a file 5 times because
-                     it's not the most popular format is killing i/o performance.)
-
-                    quick hack just to make it work: save to /tmp/corinaXXXXX.clip, ...
-                    */
-            }
-        });
-        edit.add(paste);
-        
-        // ---
-        edit.addSeparator();
-
-        // insert
-	JMenuItem insert = Builder.makeMenuItem("insert_year");
-	insert.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    ((SampleDataView) dataView).insertYear();
-		}
-	    });
-	edit.add(insert);
-
-	// delete
-	JMenuItem delete = Builder.makeMenuItem("delete_year");
-	delete.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    ((SampleDataView) dataView).deleteYear();
-		}
-	    });
-	edit.add(delete);
-
-        // if comm present, start/stop measure
-        if (false) { // Measure.hasSerialAPI()) {
-            edit.addSeparator();
-            measureMenu = new Measure(this).makeMenuItem();
-            edit.add(measureMenu);
-        }
-
-	// view menu
-	JMenu v = Builder.makeMenu("view");
-
-	/*
-	  this should be:
-	  View
-	  ----
-	  Data        ^1
-	  Metadata    ^2
-	  Weiserjahre ^3
-	  Elements    ^4
-	  ---
-	  Elements by Filenames
-	  Elements by Summary Fields
-	  Elements by All Fields
-	  ---
-	* Show Count as Histogram
-	  Show Count as Numbers
-	  ---
-         Font >
-         Size >
-         (Style >)
-         Text Color>
-         Background Color>
-         Show/Hide Gridlines
-
-	  (wj,elements dimmed if not present)
-	  (text/*, gridlines, and which meta view are global, and get saved!)
-
-         (global means i'll need more references like open-recent.  abstract that out somehow?  GlobalMenu?  GlobalMenuItem?)
-	 */
-
-	ButtonGroup bg = new ButtonGroup();
-
-	v1 = Builder.makeRadioButtonMenuItem("view_filenames");
-	v1.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    elemPanel.setView(ElementsPanel.VIEW_FILENAMES);
-		}
-	    });
-	v.add(v1);
-	bg.add(v1);
-
-	v2 = Builder.makeRadioButtonMenuItem("view_standard");
-	v2.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    elemPanel.setView(ElementsPanel.VIEW_STANDARD);
-		}
-	    });
-	v.add(v2);
-	bg.add(v2);
-
-	v3 = Builder.makeRadioButtonMenuItem("view_all");
-	v3.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    elemPanel.setView(ElementsPanel.VIEW_ALL);
-		}
-	    });
-	v.add(v3);
-	bg.add(v3);
-
-	v1.setSelected(true);
-
-	ButtonGroup bg2 = new ButtonGroup();
-
-	/* TODO:
-	   -- implement a new renderer for numbers-only (medium)
-	   -- add hooks so these menuitems change renderers (easy)
-	   -- (remember what renderer you used, as a hidden pref?) (easy)
-	   -- these items are undimmed iff the sample has a nonnull .count field (easy)
-	 */
-
-	JMenuItem vc1 = Builder.makeRadioButtonMenuItem("view_histogram");
-	vc1.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    // WRITE ME
-		    System.out.println("view histogram");
-		}
-	    });
-
-	JMenuItem vc2 = Builder.makeRadioButtonMenuItem("view_numbers");
-	vc2.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    // WRITE ME
-		    System.out.println("view numbers");
-		}
-	    });
-
-	// the don't do anything yet, so dim them
-	vc1.setEnabled(false);
-	vc2.setEnabled(false);
-
-	bg2.add(vc1);
-	bg2.add(vc2);
-	v.addSeparator();
-	v.add(vc1);
-	v.add(vc2);
-	vc1.setSelected(true);
-
-	// manipulate menu
-	final JMenu s = Builder.makeMenu("manip");
-
-	// manip, until now, was simply a catch-all for random stuff people wanted to do to samples.
-	// make it an interface for operating on samples, so redate/truncate/index know that they're
-	// manips, and can create their own menuitems, given a sample.
-
-	/*
-	  (menu "Manipulate" "M"
-	    (menuitem "Redate" "R" "RedateDialog")
-	    (separator))
-	 */
-
-	/*
-	  idea #/n+1/:
-
-	  { "Redate", 'R', 1 }
-	  null // ---
-
-	  ...
-
-	  ActionListener a = new Actor();
-
-	  private class XMenuItemWithID extends XMenubar.XMenuItem {
-	    private int id;
-	    // constructors
-	  }
-
-	  for (int i=0; i<menus.length; i++) {
-	    JMenuItem m = new XMenuItemWithID(name, mnemonic, i);
-	    s.add(m);
-	    m.addActionListener(a);
-	  }
-
-	  final Editor me = this;
-
-	  private class Actor extends AbstractAction {
-	    public void actionPerformed(ActionEvent e) {
-	    int id = ((XMenuItemWithID) e.getSource()).id;
-	    switch (id) {
-	    case 1: new RedateDialog(sample, me);	break;
-	    case 2: new IndexDialog(sample);		break;
-	    case 3: new TruncateDialog(sample);		break;
-	    default: // blah
-	  }
-	*/
-
-	// redate
-	final Editor glue = this;
-	JMenuItem redate = Builder.makeMenuItem("redate...");
-	// redate.setAccelerator(KeyStroke.getKeyStroke(msg.getString("redate_acc")));
-	// control-R, etc., are grabbed by the table -- agH!
-	redate.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    new RedateDialog(sample, glue);
-		}
-	    });
-	s.add(redate);
-
-	// index
-	indexMenu = Builder.makeMenuItem("index...");
-	indexMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // PERF: for big samples, it can take a couple
-		    // seconds for the dialog to appear.  not enough
-		    // for a progressbar, but enough that i should use
-		    // the "wait" cursor on the editor window.
-		    new IndexDialog(sample, glue);
-		}
-	    });
-	indexMenu.setEnabled(!sample.isIndexed());
-	s.add(indexMenu);
-
-	// truncate
-	JMenuItem truncate = Builder.makeMenuItem("truncate...");
-	truncate.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    new TruncateDialog(sample, glue);
-		}
-	    });
-	s.add(truncate);
-
-	// reverse
-	reverseMenu = Builder.makeMenuItem("reverse");
-	reverseMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // reverse, and add to the undo-stack
-		    sample.postEdit(Reverse.reverse(sample));
-		}
-	    });
-	s.add(reverseMenu);
-
-    // ---
-    s.addSeparator();
-
-    // cross against
-    JMenuItem crossAgainst = Builder.makeMenuItem("cross_against...");
-    crossAgainst.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent ae) {
-            try {
-                // select moving files
-                List ss = FileDialog.showMulti("Crossdate \"" + sample + "\" against:");
-
-                // (note also the Peter-catcher: see XMenubar.java)
-
-                // hack for bug 228: filename may be null, and sequence uses it to hash,
-                // so let's make up a fake filename that can't be a real filename.
-                String filename = getFilename();
-                if (filename == null)
-                    filename = "\u011e"; // this can't begin a word!
-
-                new CrossFrame(new Sequence(Collections.singletonList(filename), ss));
-            } catch (UserCancelledException uce) {
-                // do nothing
-            }
-        }
-    });
-    s.add(crossAgainst);
-
-    // cross all
-    crossElements = Builder.makeMenuItem("cross_elements");
-    crossElements.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent ae) {
-	    // n-by-n cross
-	    new CrossFrame(new Sequence(sample.elements, sample.elements));
-        }
-    });
-    s.add(crossElements);
-
-    // reconcile
-    reconcile = Builder.makeMenuItem("reconcile");
-    reconcile.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-            // check for filename
-            String filename = (String) sample.meta.get("filename");
-
-            // if null, need to ask user.
-            String target=null;
-            if (filename==null) {
-                // ask user here
-                try {
-                    target = FileDialog.showSingle(msg.getString("other_reading"));
-                } catch (UserCancelledException uce) {
-                    return;
-                }
-            }
-
-            // try to guess
-            try {
-                target = Reconcile.guessOtherReading(filename);
-            } catch (FileNotFoundException fnfe) {
-                // ask user here -- REDUNDANT!
-                try {
-                    target = FileDialog.showSingle(msg.getString("other_reading"));
-                } catch (UserCancelledException uce) {
-                    return;
-                }
-            }
-
-            try {
-                // reconcile this and target
-		new ReconcileDialog(sample, new Sample(target)); // IN TESTING!
-		/*                Reconcile r = new Reconcile(sample, new Sample(target));
-                r.run();
-
-                // report it
-                JEditorPane text = new JEditorPane("text/html", r.getReport());
-                text.setEditable(false);
-                JFrame myFrame = new JFrame(r.toString());
-                myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                myFrame.getContentPane().add(new JScrollPane(text), BorderLayout.CENTER);
-                myFrame.setSize(new Dimension(500, 400));
-                myFrame.show();
-*/
-            } catch (IOException ioe) {
-                return; // ack!
-            } catch (Exception ex) {
-                Bug.bug(ex);
-            }
-/*
- here's how the reconcile UI should work:
- -- auto-tile
- +------A Reading------+ +------C Reading------+
- |                                |   |                                |
- |                                |   |                                |
- |                                |   |                                |
- |                                |   |                                |
- |                                |   |                                |
- |                                |   |                                |
- |                                |   |                                |
- +-------------------------+  +-------------------------+
- +-----------------Reconcile Dialog-----------------+
- |                                                                     |
- |                                                                     |
- +--------------------------------------------------------+
- -- selecting an error row in the reconcile dialog selects that year in A and C
- */
-        }
-    });
-    s.add(reconcile);
-
-	// master menu
-	JMenu m = Builder.makeMenu("sum");
-
-	// re-sum
-	resumMenu = Builder.makeMenuItem("resum");
-	resumMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // resum it
-		    try {
-			sample = Sum.sum(sample);
-			
-		    } catch (IOException ioe) {
-			JOptionPane.showMessageDialog(null,
-						      "There was an error while summing these files:\n" +
-						         ioe.getMessage(),
-						      "Error Summing",
-						      JOptionPane.ERROR_MESSAGE);
-			return;
-		    } catch (Exception e) {
-			Bug.bug(e);
-
-			// BUG: if the user deletes all elements from
-			// this sample, sum throws something to here...
-		    }
-		}
-	    });
-	m.add(resumMenu);
-
-	// clean
-	cleanMenu = Builder.makeMenuItem("clean");
-	cleanMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // clean, and add to undo-stack
-		    sample.postEdit(Clean.clean(sample));
-		}
-	    });
-	m.add(cleanMenu);
-
-	/*
-	  so, eventually, this list of menus and menuitems will reduce to a sequence of
-	    menuX = Builder.makeMenuItem("blah");
-	    menuX.addActionListener(real code!);
-	    menubar.add(menuX);
-	    ...
-	  which in turn could be reduced to
-	    menubar = Builder.makeMenuBar("blah");
-	  where "blah" is defined in a resource file as
-	    menubar "blah" = menu "oink", menu "moo", menu "baa", ...
-	    menu "oink" = menuitem "oink 1", menuitem "oink 2", ...
-	  but putting these in a resource file might not be the best idea for performance
-	  so put them all in one java class
-	  and let that java class be generated at compile-time from a resource file
-	  (when performance doesn't matter, so XML is ok)
-	*/
-
-	// ---
-	m.addSeparator();
-
-	// add item -- ENABLED IFF THERE EXIST OTHER ELEMENTS OR DATA IS-EMPTY
-	addMenu = Builder.makeMenuItem("element_add...");
-	addMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    // open file dialog
-		    String filename;
-		    try {
-			filename = FileDialog.showSingle("Add");
-		    } catch (UserCancelledException uce) {
-			return;
-		    }
-
-		    // new elements, if needed
-		    if (sample.elements == null)
-			sample.elements = new ArrayList();
-
-		    // ADD CHECK: make sure indexed+indexed, or raw+raw
-
-		    // remember how many elements there used to be
-		    int numOld = sample.elements.size();
-
-		    // add -- if summed, add each one
-		    Sample testSample=null;
-		    try {
-			testSample = new Sample(filename);
-		    } catch (IOException ioe) {
-			int x = JOptionPane.showConfirmDialog(null,
-							      "The file \"" + filename + "\" could not be loaded.  Add anyway?",
-							      "Unloadable file.",
-							      JOptionPane.YES_NO_OPTION);
-			if (x == JOptionPane.NO_OPTION)
-			    return;
-		    }
-
-		    // for a summed sample, don't add it, but add its elements
-		    if (testSample.elements != null) {
-			for (int i=0; i<testSample.elements.size(); i++)
-			    sample.elements.add(testSample.elements.get(i)); // copy ref only
-		    } else {
-			sample.elements.add(new Element(filename));
-		    }
-
-		    // modified, and update
-		    sample.setModified();
-		    sample.fireSampleElementsChanged();
-		    if (!Platform.isMac)
-			sample.fireSampleMetadataChanged(); // so title gets updated (modified-flag)
-		    else
-			Platform.setModified(glue, true);
-		}
-	    });
-	m.add(addMenu);
-
-	// remove item
-	remMenu = Builder.makeMenuItem("element_remove");
-	remMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    elemPanel.removeSelectedRows(); // fixme: make this undoable
-		}
-	    });
-	m.add(remMenu);
-
-	// graph menu
-	JMenu d = Builder.makeMenu("graph");
-
-	// plot
-	JMenuItem plotMenu = Builder.makeMenuItem("graph");
-	plotMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    new GraphFrame(sample);
-		}
-	    });
-	d.add(plotMenu);
-
-	// plot all
-	plotAll = Builder.makeMenuItem("graph_elements");
-	plotAll.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    new GraphFrame(sample.elements);
-		}
-	    });
-	d.add(plotAll);
-
-	// bargraph all
-	bargraphAll = Builder.makeMenuItem("bargraph");
-	bargraphAll.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // FIXME: the bargraph should have this
-		    // sample's (sum's) title.  but i think i have
-		    // other infrastructure problems to settle
-		    // before i can fix that.  darn.
-		    new BargraphFrame(sample.elements);
-		}
-	    });
-	d.add(bargraphAll);
-
-    // site
-    JMenu ss = Builder.makeMenu("site");
-
-    // map
-    JMenuItem map = Builder.makeMenuItem("map");
-    map.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent ae) {
-            try {
-                // get site
-                Site mySite = SiteDB.getSiteDB().getSite(sample);
-
-                // draw map there
-                new MapFrame(mySite, mySite); // no MapFrame(Site) yet, but this is almost as good
-
-            } catch (SiteNotFoundException snfe) {
-                JOptionPane.showMessageDialog(null,
-                                              "Couldn't find a site for this sample.",
-                                              "No Site Found",
-                                              JOptionPane.ERROR_MESSAGE);
-            } catch (Exception e) {
-                Bug.bug(e);
-            }
-        }
-    });
-    ss.add(map);
-
-    // site properties
-    JMenuItem props = Builder.makeMenuItem("properties");
-    props.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent ae) {
-            try {
-                // get my site -- FIXME: LoD says this should be sample.getSite();
-                Site mySite = SiteDB.getSiteDB().getSite(sample);
-
-                // show props
-                SiteInfo.showInfo(mySite);
-            } catch (SiteNotFoundException snfe) {
-                JOptionPane.showMessageDialog(null,
-                                              "Couldn't find a site for this sample.",
-                                              "No Site Found",
-                                              JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    });
-    ss.add(props);
-
-    // do fake-events to trick the menus into their correct states
-    sampleFormatChanged(null);
-
-    // store and return
-    if (Platform.isMac) {
-        return new JMenu[] { edit, v, s, m, d, ss, new WindowMenu(this) };
-    } else {
-        return new JMenu[] { edit, v, s, m, d, ss };
-    }
-            }
-
-    // HasPreferences
+    // HasPreferences.
+    // FIXME: implement PrefsListener, make this prefsChanged().
     public void refreshFromPreferences() {
 	// strategy: refresh each view i contain
 
 	// data view
-	((SampleDataView) dataView).refreshFromPreferences();
+	dataView.refreshFromPreferences();
 
 	// used to refreshFromPreferences() on elemPanel here, too.  but why?
 
@@ -1316,7 +728,8 @@ public class Editor extends XFrame
 	// reset fonts
 	Font font = Font.getFont("corina.edit.font");
 	if (font != null && wjTable != null)
-		wjTable.setFont(font);
+	    wjTable.setFont(font);
+	// BUG: this doesn't reset the row-heights!
 
 	// from font size, set table row height
 	if (wjTable != null)
@@ -1340,22 +753,112 @@ public class Editor extends XFrame
     // for serial-line measure-mode
     //
     public void measured(int x) {
-	((SampleDataView) dataView).measured(x);
+	dataView.measured(x);
     }
 
     // printing
     public String getPrintTitle() {
 	return getTitle();
     }
-    public Pageable makePageable(PageFormat format) {
-	return null;
+    public Object getPrinter(PageFormat pf) {
+	// what to do with |format| here?
+
+	// TODO: use askWhichPages() to figure out which sections to print
+	// then pass to SamplePrinter(sample, bool[])
+	// BUT: how to distinguish?  as an Editor, i'll represent 2 PrintableDocs!
+
+	return new SamplePrinter(sample);
     }
-    public Printable makePrintable(PageFormat format) { // what to do with |format| here?
-	//    return new SamplePrinter(sample);
-	SamplePrinter printer = new SamplePrinter(sample);
-	return Printer.print(printer);
+
+    // TODO: use me!
+    private static boolean[] askWhichPages(Sample s, int def)
+	throws UserCancelledException {
+	// dialog
+	final JDialog d = new JDialog(new Frame(), "", true); // TODO: modal?
+
+	// components
+	JLabel question = new JLabel("Print which sections?"); // TODO: i18n
+	final JCheckBox s1 = new JCheckBox(I18n.getText("tab_data"), def==0);
+	final JCheckBox s2 = new JCheckBox(I18n.getText("tab_metadata"), def==1);
+	final JCheckBox s3 = new JCheckBox(I18n.getText("tab_weiserjahre"), def==2);
+	final JCheckBox s4 = new JCheckBox(I18n.getText("tab_elements"), def==3);
+	// dim sections which aren't available
+	s3.setEnabled(s.hasWeiserjahre());
+	s4.setEnabled(s.elements != null); // FIXME: hasElements method!
+	// FIXME: if s1-4 is an array, i can simply say s[def].setEnabled(true)
+	// -- if def=0..3
+	final JButton cancel = Builder.makeButton("cancel");
+	final JButton ok = Builder.makeButton("print");
+	Component indent = Box.createHorizontalStrut(14);
+
+	// on ok/cancel, done
+	final boolean okClicked[] = new boolean[1];
+	AbstractAction a = new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    okClicked[0] = (e.getSource() == ok);
+		    d.dispose();
+		}
+	    };
+	cancel.addActionListener(a);
+	ok.addActionListener(a);
+
+	// if you uncheck all, "print" gets dimmed
+	AbstractAction b = new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    ok.setEnabled(s1.isSelected() || s2.isSelected() ||
+				  s3.isSelected() || s4.isSelected());
+		}
+	    };
+	s1.addActionListener(b);
+	s2.addActionListener(b);
+	s3.addActionListener(b);
+	s4.addActionListener(b);
+
+	// layout
+	JPanel checks = Layout.boxLayoutY(s1, s2, s3, s4);
+	JPanel buttons = Layout.buttonLayout(cancel, ok);
+	JPanel content = Layout.borderLayout(question,
+					     indent, checks, null,
+					     buttons);
+	question.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
+	buttons.setBorder(BorderFactory.createEmptyBorder(6, 0, 0, 0));
+	content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+	// display
+	d.setContentPane(content);
+	OKCancel.addKeyboardDefaults(ok);
+	d.pack();
+	d.setResizable(false);
+	d.show();
+
+	// -- (user selects something) --
+
+	// maybe cancel
+	if (!okClicked[0])
+	    throw new UserCancelledException();
+
+	// else return it
+	boolean result[] = new boolean[4];
+	result[0] = s1.isSelected();
+	result[1] = s2.isSelected();
+	result[2] = s3.isSelected();
+	result[3] = s4.isSelected();
+	return result;
     }
-    public int getPrintingMethod() {
-	return PRINTABLE;
+
+    public static void main(String args[]) throws Exception {
+	try {
+	    Sample s = new Sample(args[0]);
+
+	    boolean x[] = askWhichPages(s, 3);
+	    System.out.print("x[] = { ");
+	    for (int i=0; i<x.length; i++) {
+		System.out.print(x[i] ? "#t" : "#f");
+		System.out.print(", ");
+	    }
+	    System.out.println("}");
+	} catch (UserCancelledException uce) {
+	    System.out.println("user cancelled");
+	}
     }
 }

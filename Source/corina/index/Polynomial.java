@@ -21,8 +21,7 @@
 package corina.index;
 
 import corina.Sample;
-
-import java.util.ArrayList;
+import corina.ui.I18n;
 
 import java.text.MessageFormat;
 
@@ -30,21 +29,23 @@ import java.text.MessageFormat;
    A polynomial-fit index to a data sample.  The user specifies the
    degree of polynomial to use.
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
+public class Polynomial extends Index implements Function {
 
-public class Polynomial extends Index implements Solver.Solveable {
+    // degree of polynomial to use
+    private int degree;
 
-    // should be private, but Index.java sets index_type from this --
-    // yes, that should be in Corina.java, but that's for later.
-    protected int degree;
+    /**
+       Evaluate the basis polynomial at x, for
+       <code>Solver.leastSquares()</code>.  The basis polynomial is:
+       <blockquote><i>f(x) = [ 1 x x&#x00B2; x&#x00B3;
+                               ... x<sup>degree</sup> ]</i></blockquote>
 
-    /** Evaluate the basis polynomial at x, for
-	<code>Solver.leastSquares()</code>.  The basis polynomial is:
-	<blockquote><i>f(x) = [ 1 x x<sup>2</sup> x<sup>3</sup> ... x<sup>degree</sup> ]</i></blockquote>
-	@param x the x-value to evaluate the polynomial at
-	@return the y-value of the basis polynomial at this x */
+       @param x the x-value to evaluate the polynomial at
+       @return the y-value of the basis polynomial at this x
+    */
     public double[] f(double x) {
 	double y[] = new double[degree+1];
 	y[0] = 1.;
@@ -53,20 +54,26 @@ public class Polynomial extends Index implements Solver.Solveable {
 	return y;
     }
 
-    /** Construct a new polynomial fit from a sample, given a degree
-        polynomial to fit.
-	@param s the Sample to index
-	@param degree the degree polynomial to use */
+    /**
+       Construct a new polynomial fit from a sample, given a degree
+       polynomial to fit.
+
+       @param s the Sample to index
+       @param degree the degree polynomial to use
+    */
     public Polynomial(Sample s, int degree) {
 	super(s);
 	this.degree = degree;
     }
 
-    /** Return the name, e.g., "Polynomial (3<sup>o</sup>)" for a
-	third-degree polynomial.
-	@return name of this index */
+    /**
+       Return the name, e.g., "Polynomial (3&#x00B0;)" for a
+       third-degree polynomial.
+
+       @return name of this index
+    */
     public String getName() {
-	return MessageFormat.format(msg.getString("polynomial"),
+	return MessageFormat.format(I18n.getText("polynomial"),
 				    new Object[] { new Integer(degree) });
     }
 
@@ -85,13 +92,12 @@ public class Polynomial extends Index implements Solver.Solveable {
 	double c[] = null;
 	try {
 	    c = Solver.leastSquares(this, x, y);
-	} catch (Solver.SingularMatrixException sme) {
+	} catch (SingularMatrixException sme) {
 	    // how to deal with errors?
 	    return;
 	}
 
 	// compute curve
-	data = new ArrayList(n);
 	for (int i=0; i<n; i++) {
 	    double f[] = f(x[i]);
 	    double yp = 0.;

@@ -1,0 +1,82 @@
+DocBook for Dummies, or, what I learned about DocBook (the hard way) for Corina (--include java in title?)
+
+11 Jan 2003
+Ken Harris
+----
+
+(1) why
+-- why to use docbook
+   -- it's an open standard, it's open-source, lots of people already use it
+   -- plain text!
+-- what i hope to achieve
+-- why i wrote this document: on getting a docbook system set up: "currently I feel like
+playing a text-adventure, getting different types of hints from different persons."
+
+(2) what's docbook?
+
+Ok, here we go.  DocBook* is an open standard for how to describe a
+document.  You know how Microsoft Word reads ".doc" files and Adobe
+Acrobat reads ".pdf" files?  DocBook is another format for files.  But
+it's open, unlike Word, and it's simple enough you can write it
+yourself, unlike PDF.  Plus, it's plain text, so you can use all
+your old text processing tools (sed, grep, wc), and it's XML, so
+you can use any XML processing tools you find (**like what?).
+
+So if you want to publish a document with DocBook, you can just open
+a text file in your editor and start typing:
+
+  <?xml version="1.0"?>
+  <!DOCTYPE ???>
+  <book>
+    <para>It was the best of times, it was the worst of times.</para>
+  </book>
+
+That's not so tough.  That's DocBook.  Text goes in between <para> </para>,
+which mark the start and end of a paragraph.  There are a bunch of other
+"tags" like this you can use to emphasis text, make lists or tables,
+build a table of contents, or include graphics in your text.  There's a big
+list here (URL???).  You don't have to memorize them.  Just go look it up.
+
+But that text file you typed isn't very useful to people who want to
+read your book.  They'll want to read it in their web browser, for
+example.  Or maybe they'll want to print it out.
+
+What you need are some DocBook tools. -- hmm, i'll need xml here... -- no, not really
+
+
+
+* Actually "DocBook-XML", since there's an older version based on SGML
+  instead of XML, but that version is dying.  And only some computer
+  geeks care that it's based on XML.  I mean, when you're writing an
+  HTML file to put on your web page, do you care that HTML is based on
+  SGML?  Nah.  Just be aware that it's technically "DocBook-XML" if you
+  plan to search old Usenet postings, because originally it wasn't XML.
+
+====
+
+the executive summary
+-- docbook is just a standard -- xml and sgml, though sgml is dying
+-- xslt is a way to convert xml to something else
+   -- saxon is a java xslt processor.  xsltproc is another (but not java).  (xalan is, but probably not as good.)
+      -- note, saxon still needs a sax parser (what's sax?); i use crimson
+-- everybody uses norm walsh's xslt stylesheets
+-- they can generate html (chunked and not), javahelp, and "fo"
+-- you can make "fo" into pdf with apache's fop
+-- (i could also use passivetex to use TeX to make a pdf, but it's not java)
+
+(3) getting things working
+-- start converting
+-- getting it to work at all (xmlto)
+
+(4) getting things working smoothly
+-- integrating with ant
+   -- need java versions of everything
+      -- saxon (docbook->html, docbook->javahelp, docbook->fo), fop (fo->pdf)
+   -- download saxon
+      -- tried saxon 7.1 (newest one that works with java 1.3)
+      -- strange error message; apparently that's code for "you need to downgrade to saxon 6.5.2"
+   -- download fop
+      -- strange error messages
+      -- apparently it's something wrong with my <qandaset>
+   -- making chunked html
+-- validation

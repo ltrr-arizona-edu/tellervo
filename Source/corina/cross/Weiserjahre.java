@@ -21,8 +21,12 @@
 package corina.cross;
 
 import corina.Sample;
+import corina.ui.I18n;
 
 public class Weiserjahre extends Cross {
+
+    // don't use me -- for getName() only -- HACK!
+    Weiserjahre() { }
 
     // stupid, stupid -- DESIGN: make a factory?
     public Weiserjahre(Sample fixed, Sample moving) {
@@ -35,24 +39,29 @@ public class Weiserjahre extends Cross {
     }
 
     // same as trend?  (this is old-style trend, even -- very obsolete!)
-    public boolean isSignificant(double score, int overlap) {
-        return score > 0.65;
+    public boolean isSignificant(float score, int overlap) {
+        return score > 0.65f;
+	// WRITEME: it's more sophisticated than this, i think
     }
-    public double getMinimumSignificant() {
-        return 0.65;
+    public float getMinimumSignificant() {
+        return 0.65f;
     }
 
     public String getName() {
-	return msg.getString("weiserjahre");
+	return I18n.getText("weiserjahre");
     }
 
-    public double compute(int offset_fixed, int offset_moving) {
+    public float compute(int offset_fixed, int offset_moving) {
 	// value = (# trends synchronous with signature years) /
 	//         (# signature years in overlap)
 
 	// need these fields, or can't compute weiserjahre cross
-	if (fixed.count == null || fixed.incr == null)
-	    throw new IllegalArgumentException("The fixed sample must be a sum,\nwith count and Weiserjahre data,\nto run a WJ cross.");
+	if (getFixed().count == null || getFixed().incr == null) {
+	    String problem = "The fixed sample must be a sum,\n" +
+		"with count and Weiserjahre data,\n" +
+		"to run a WJ cross.";
+	    throw new IllegalArgumentException(problem);
+	}
 
 	int i = offset_fixed;
 	int j = offset_moving;
@@ -61,13 +70,13 @@ public class Weiserjahre extends Cross {
 	int totalSigs = 0;
 
 	// do magic in here
-	while (i<fixed.data.size()-1 && j<moving.data.size()-1) {
+	while (i<getFixed().data.size()-1 && j<getMoving().data.size()-1) {
 
 	    // number of samples: need n>3
-	    int n = ((Integer) fixed.count.get(i)).intValue();
+	    int n = ((Integer) getFixed().count.get(i)).intValue();
 
 	    // fraction with increasing trend: need pct<25% OR pct>75%
-	    double pct = ((Number) fixed.incr.get(i)).doubleValue() / (double) n;
+	    double pct = ((Number) getFixed().incr.get(i)).doubleValue() / (double) n;
 
 	    // signature year?  (j==0 is bad, too)
 	    if (n>3 && (pct<=0.25 || pct>=0.75) && j>0) { // REFACTOR: use Weiserjahre.isSignificant() here somehow?
@@ -89,9 +98,9 @@ public class Weiserjahre extends Cross {
 
 		// compute moving trend
 		int movingTrend = 0;
-		if (((Number) moving.data.get(j-1)).intValue() < ((Number) moving.data.get(j)).intValue())
+		if (((Number) getMoving().data.get(j-1)).intValue() < ((Number) getMoving().data.get(j)).intValue())
 		    movingTrend = +1;
-		else if (((Number) moving.data.get(j-1)).intValue() > ((Number) moving.data.get(j)).intValue())
+		else if (((Number) getMoving().data.get(j-1)).intValue() > ((Number) getMoving().data.get(j)).intValue())
 		    movingTrend = -1;
 
 		// do they match?
@@ -106,8 +115,8 @@ public class Weiserjahre extends Cross {
 
         // if there were no significant intervals, call it 0.0.
         if (totalSigs == 0)
-            return 0.0;
+            return 0;
 
-	return (double) synchroTrends / (double) totalSigs;
+	return (float) synchroTrends / (float) totalSigs;
     }
 }

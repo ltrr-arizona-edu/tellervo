@@ -1,0 +1,839 @@
+<chapter id="editor"><title>Editing Samples</title>
+
+<sect1><title>Samples</title>
+
+<indexterm><primary>sample</primary> <secondary>definition</secondary></indexterm>
+
+<para>The basic chunk of data in &corina; is the
+<emphasis>sample</emphasis>.  Everything in &corina; is concerned with
+putting data into samples, manipulating samples to emphasize their
+useful data, and ultimately, determining where some sample fits in a
+chronology.</para>
+
+<para>The term "sample" is perhaps slightly inaccurate.  A &corina;
+sample is more like one measurement of a sample.  If you measure
+sample 6 twice, you will generally store the data in two samples, "6A"
+and "6C".</para>
+
+<para>A sample consists of:
+<itemizedlist>
+
+   <listitem>
+      <para>Data, as one number per year (the width of a
+      ring)</para>
+
+      <indexterm><primary>data</primary>
+                 <secondary>definition</secondary></indexterm>
+   </listitem>
+
+   <listitem>
+      <para>A range, or the years it covers (like 1001 &mdash;
+      1036)</para>
+
+      <indexterm><primary>range</primary>
+      <secondary>definition</secondary></indexterm>
+   </listitem>
+
+   <listitem>
+      <para>Metadata (like whether it has pith)</para>
+
+      <indexterm><primary>metadata</primary>
+                 <secondary>definition</secondary></indexterm>
+   </listitem>
+
+   <listitem>
+      <para>Weiserjahre (for a sum, how many samples contribute
+            to each year)</para>
+
+      <indexterm><primary>Weiserjahre</primary>
+                 <secondary>definition</secondary></indexterm>
+   </listitem>
+
+   <listitem>
+      <para>Elements (for a sum, which files were used to create
+      it)</para>
+
+      <indexterm><primary>elements</primary>
+                 <secondary>definition</secondary></indexterm>
+   </listitem>
+
+</itemizedlist>
+</para>
+
+<para>WRITEME: (***file/naming conventions)</para>
+
+<para>To keep things somewhat organized,  (what was i going to talk
+about?  sites=folders?)</para>
+
+</sect1>
+
+<sect1><title>Creating a New Sample</title>
+
+<procedure><title>To create a new sample:</title>
+  <step><para>Choose
+    <menuchoice>
+      <shortcut>
+	<keycombo><keycap>control</keycap> <keycap>N</keycap></keycombo>
+      </shortcut>
+      <guimenu>File</guimenu>
+      <guimenuitem>New Sample...</guimenuitem>
+    </menuchoice>
+  </para>
+  </step>
+  <step><para>Type in a title for this sample, and press <keycap>return</keycap>.</para></step>
+</procedure>
+
+<note><title>Tip</title>
+<para>
+Raw samples generally have titles with the site name,
+sample number, and reading letter.  To help you from forgetting to
+type the sample number, &corina; won't let you continue if the title
+doesn't have a number in it.  If you really want to create a sample
+with no number in the title, type a number here and delete it later.
+</para>
+</note>
+
+<para>Entering or editing data is as simple as typing a number, and
+pressing <keycap>return</keycap> to advance to the next year.  If you make a mistake,
+you can always back up to correct it.  You can move the cursor by
+clicking on any value with the mouse, or by using the keyboard.  The
+arrow keys move by one year
+(<keycap>left</keycap>/<keycap>right</keycap>) or decade
+(<keycap>up</keycap>/<keycap>down</keycap>), and
+<keycap>Page up</keycap>, <keycap>Page down</keycap>, <keycap>Home</keycap>, and
+<keycap>End</keycap> also work.</para>
+
+<para>If you try to enter a value in the cell immediately after the
+last value of your sample, it will automatically extend the dataset.
+If you enter a value in a cell that already contains data, it will
+overwrite the old value with your new one.  If ins/del***</para>
+
+<!-- i don't think the shipping version can - add this later, once
+i've confirmed it actually works for some measuring station -->
+
+<para>If you have a measuring box connected to your computer's serial
+port, &corina; can record its measurements directly.</para>
+
+<procedure><title>To measure a sample:</title>
+  <step><para>Create a new, empty sample with
+    <menuchoice>
+      <shortcut>
+	<keycombo><keycap>control</keycap> <keycap>N</keycap></keycombo>
+      </shortcut>
+      <guimenu>File</guimenu>
+      <guimenuitem>New Sample...</guimenuitem>
+    </menuchoice>
+  </para>
+  </step>
+
+  <step><para>Type a title, and press <keycap>return</keycap>.</para></step>
+
+  <step><para>Click on the cell where the first value will go, if it's
+    not already selected: it's the second cell to the right
+    of <computeroutput>1001</computeroutput>,
+    below <computeroutput>1</computeroutput>.</para></step>
+
+  <step><para>Choose
+    <menuchoice>
+      <shortcut>
+	<keycap>F1</keycap>
+      </shortcut>
+      <guimenu>Edit</guimenu>
+      <guimenuitem>Start Measuring</guimenuitem>
+    </menuchoice>
+    </para>
+  </step>
+
+  <step><para>Measure your sample.  Pressing the trigger enters a value into the editor.</para></step>
+
+  <step><para>While measuring, you can still move the cursor with the arrow keys, e.g., if
+    you want to re-measure a ring.  Remember to flip the measuring box to non-measure
+    mode while backing up.</para></step>
+
+  <step><para>When you're finished measuring, choose
+    <menuchoice>
+      <shortcut>
+	<keycap>F1</keycap>
+      </shortcut>
+      <guimenu>Edit</guimenu>
+      <guimenuitem>Stop Measuring</guimenuitem>
+    </menuchoice>
+    </para>
+  </step>
+
+  <step><para>Save the sample.</para></step>
+</procedure>
+
+<note>
+  <title>Why can't I edit this sample?</title>
+  <indexterm><primary>editing</primary>
+             <secondary>why can't I?</secondary></indexterm>
+
+  <para>&corina; only lets you edit data by hand if it's raw
+  &mdash; not indexed or summed.  If the status bar has a number
+  in square brackets, like "1863: 1129 [15]", then it's a summed
+  file.  To edit a summed file, you should edit the raw files
+  that make it up, and re-sum it.  &corina; won't let you edit
+  indexed files, either.  (Check the Format field on the Metadata
+  tab.)  Instead, edit the raw file and re-index the sample.</para>
+</note>
+
+</sect1>
+
+<sect1 id="identification"><title>Identifying Samples</title>
+
+  <para>Each sample needs a unique ID.  Unfortunately, there are 
+    several different identification schemes.</para>
+
+<variablelist>
+
+  <varlistentry>
+    <term>Title</term>
+    <listitem><para>the title itself, consisting of the full name of
+    the site, the sample number, and the reading number:
+    "Zonguldak, Karab&uuml;k 15C."</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Filename</term>
+    <listitem><para>The name of the file on disk:
+    "<filename>ZKB15C.xxx</filename>" (more on what
+    "<filename class="extension">.xxx</filename>" is
+    later).</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>ID</term>
+    <listitem><para>A 6-digit code for the sample:
+    "167153".</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Tape</term>
+    <listitem><para>The number written on the tape on the sample:
+    "C-TU-ZKB-15"</para></listitem>
+  </varlistentry>
+
+</variablelist>
+
+<indexterm><primary>Tucson</primary> <secondary>origin of ID numbers</secondary></indexterm>
+
+<para>Only two of these are really needed: the full title, and a
+shorter version, for example, suitable for writing on the sample
+itself.  The ID number is leftover from Tucson punchcards, and serves
+no purpose today.  The filename is different from the tape number
+because MS-DOS limited filenames to 8 letters, a dot, and then 3 more
+letters.  Hopefully in the near future, we'll decide to simplify
+the system by eliminating these unnecessary names.</para>
+
+</sect1>
+
+<sect1 id="metadata">
+  <title>The Metadata Page</title>
+
+  <para>A sample isn't just a bunch of numbers.  That's what the
+  metadata tab is for.  On the metadata tab, you can
+  enter... (***)</para>
+
+  <para>You should always fill out the metadata page before you save.
+  (&corina; warns you if you try to save a sample without entering any
+  metadata.)</para>
+
+  <variablelist>
+    <title>Metadata fields</title>
+
+    <varlistentry>
+      <term>Title</term>
+      <listitem><para>The title...</para></listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>ID</term>
+      <listitem>
+        <para>ID number.  These are typically 6 numeric digits, which
+        is why they're becoming obsolete.  For example, "ZKB-15C"
+        would be "167153". (Zonguldak, Karab&uuml;k is site 167.)  But
+        this starts to fail when you get more than 1000 sites, or 100
+        samples.  These are used only for exporting a file to Tucson
+        format.</para>
+
+<indexterm><primary>Tucson</primary> <secondary>use of ID numbers</secondary></indexterm>
+
+</listitem> <!-- ***move this all to id,ing
+	samples section -->
+  </varlistentry>
+
+  <varlistentry>
+    <term>Dating</term>
+    <listitem><para>Is the sample relatively or absolutely dated?</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Unmeasured, beginning</term>
+    <listitem><para>Number of unmeasured rings at the beginning of this sample</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Unmeasured, end</term>
+    <listitem><para>Number of unmeasured rings at the end of this sample</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Type of Sample</term>
+    <listitem><para>The sample type: core, charcoal, or section.</para></listitem>
+  </varlistentry>
+
+  <!--
+  <varlistentry>
+    <term>Section Cut</term>
+    <listitem><para>The cut of the section:</para>
+      <itemizedlist>
+	<listitem><para>full section unsquared (FSU)</para></listitem>
+	<listitem><para>squared full section (SFS)</para></listitem>
+	<listitem><para>half section unsquared (HSU)</para></listitem>
+	<listitem><para>squared half section (SHS)</para></listitem>
+	<listitem><para>quarter section unsquared (QSU)</para></listitem>
+	<listitem><para>squared quarter section (SQS)</para></listitem>
+	<listitem><para>full radial section (FRS)</para></listitem>
+	<listitem><para>half radial section (HRS)</para></listitem>
+	<listitem><para>partial radial section (PRS)</para></listitem>
+	<listitem><para>full tangential section (FTS)</para></listitem>
+	<listitem><para>half tangential section (HTS)</para></listitem>
+	<listitem><para>partial tangential section (PTS)</para></listitem>
+      </itemizedlist>
+    </listitem>
+  </varlistentry>
+  -->
+
+  <varlistentry>
+    <term>Wood Species</term>
+    <listitem><para>The species of wood; use the Latin name</para></listitem>
+	<!-- ***species section? -->
+	<!-- mention popup, which i should be using, and 4-letter-code -->
+  </varlistentry>
+
+  <varlistentry>
+    <term>Format</term>
+    <listitem><para>The format of this data, either raw or indexed.
+    (You will probably never need to change this yourself.)</para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Index Method
+    <indexterm><primary>indexing</primary>
+               <secondary>method used</secondary></indexterm>
+    <indexterm><primary>Tucson</primary>
+               <secondary>index method and</secondary></indexterm>
+    </term>
+    <listitem><para>The algorithm used to index this sample.  See
+    <xref linkend="indexing"/>.  This is only set if &corina; was
+    used to index the sample; other programs which use the Tucson
+    file format keep no record of this.</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Sapwood Count
+    <indexterm><primary>sapwood</primary>
+               <secondary>on metadata tab</secondary></indexterm>
+    </term>
+    <listitem><para>The number of sapwood rings.  By convention, this
+	<emphasis>includes</emphasis> unmeasured sapwood rings.  For
+	example, if a sample's last measured ring is 1236, and it has
+	3 unmeasured rings, and the first sapwood ring is 1230, then
+	the sapwood count is 10.</para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Pith</term>
+    <listitem><para>Pith: present, present but undatable, or not
+    present.</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Terminal Ring</term>
+    <listitem><para>Bark, Waney-edge, near the end, or an unknown
+    number of rings to the end</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Continuous</term>
+    <listitem><para>Is the last ring: continuous, partially contiuous,
+	or not continuous, over the outside edge of the sample?</para>
+
+	<para>There's no real standard for this: one man's
+	"partially continuous" is another man's
+	"not continuous".  The purpose of this field is an
+	indicator of whether the last year of this sample is the last
+	year of the tree's life.  There's decent odds that
+	a continuous outer ring is the terminal ring, even in the
+	absense of bark, waney edge, or other signs.</para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Quality
+      <indexterm><primary>quality</primary></indexterm>
+    </term>
+    <listitem><para>Whether the sample has one unmeasured ring, or
+	more than one unmeasured ring.</para>
+
+        <para>"Quality" is a lousy name for it, but that's the
+	convention.</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Reconciled</term>
+    <listitem><para>Whether this sample has been reconciled or not.
+    If you're measuring a new sample for the first time, say <guilabel>No</guilabel>.
+    Later, after you reconcile two readings of this sample, you'll set
+    this to <guilabel>Yes</guilabel>.  (See
+    <xref linkend="reconciling"/>.)</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><indexterm><primary>author</primary></indexterm>Author</term>
+    <listitem><para>Your name.  &corina; sets
+    this automatically for you.  (It's the name of the person who
+    <emphasis>created</emphasis> the sample.  If somebody else
+    edits it, it will still have your name on it.</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Comments</term>
+    <listitem><para>Any extra notes you have that don't fit in
+    any of these categories.  You can type as much text as you
+    want here.</para>
+
+    <para>For example, if the piece had any fire scars, note them
+    here.  Also, note any cracks you had to measure around -
+    or anything else that would help somebody else who wants
+    to reconstruct what you did.</para></listitem>
+  </varlistentry>
+
+</variablelist>
+
+</sect1>
+
+<sect1 id="status_bar"><title>The Status Bar</title>
+
+<indexterm><primary>[ ]</primary></indexterm>
+<indexterm><primary>*</primary></indexterm>
+<indexterm><primary>/</primary></indexterm>
+
+  <para>At the bottom of each editor window is the <emphasis>status
+      bar</emphasis>, which provides you with some useful
+      information.</para>
+
+<screenshot>
+<mediaobject> <!-- FIXME: use mediaobjectco, and put callouts in the screenshot! -->
+  <imageobject>
+    <imagedata fileref="status_bar.png" format="PNG"/>
+  </imageobject>
+<!-- use this as text?: 1913: 30 [5] 4*1 -->
+  <caption>
+    <para>The status bar.</para>
+  </caption>
+</mediaobject>
+</screenshot>
+
+<!-- describe what the tree icon does -->
+
+  <para>Next to the tree, you'll see some numbers:</para>
+
+  <screen>1913: 30 [5] 4*1</screen>
+
+  <para>This the year the cursor is on, and the data for that year.
+    Here's how to interpret this:</para>
+
+<!-- don't use a table here! -->
+  <table><title>How to read the status bar</title>
+    <tgroup cols="2" align="left">
+
+      <thead>
+	<row>
+	  <entry>Text</entry>
+	  <entry>Meaning</entry>
+	</row>
+      </thead>
+
+      <tbody>
+	<row>
+	  <entry><computeroutput>1913:&nbsp;</computeroutput></entry>
+	  <entry>For the year 1913,</entry>
+	</row>
+	<row>
+	  <entry><computeroutput>30</computeroutput></entry>
+	  <entry>the average ring width was 30 (hundredths of a millimeter: 0.30 mm),</entry>
+	</row>
+	<row>
+	  <entry><computeroutput>[5]</computeroutput></entry>
+	  <entry>which is the average of 5 samples,</entry>
+	</row>
+	<row>
+	  <entry><computeroutput>4*1</computeroutput></entry>
+	  <entry>4 of which are bigger than in the previous year, and 1 of which was smaller.</entry>
+	</row>
+      </tbody>
+
+    </tgroup>
+  </table>
+
+  <para>If any of these terms is missing, it means this sample
+    doesn't have that information.  A raw sample, for example,
+    will only have the year and ring width.  A sample summed with
+    &corina; will have all of these terms.  You might see the number of
+    samples but not Weiserjahre data for Tucson files, which
+    can't store those numbers.  More information about this
+    &mdash; such as the difference between
+    '<computeroutput>*</computeroutput>' and
+    '<computeroutput>/</computeroutput>' in the last term
+    &mdash; can be found in <link linkend="summing">the chapter on
+    summing</link>.</para>
+
+  <para>In the lower-right corner of each editor window, you'll see some text
+    that looks like</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="status_bar.png" format="PNG"/>
+      </imageobject>
+      <caption>
+        <para>The status bar, as it looks on a Mac.</para>
+      </caption>
+    </mediaobject>
+
+<indexterm><primary>mean sensitivity</primary></indexterm>
+
+  <screen>mean sensitivity = 0.317</screen>
+
+  <para id="mean_sensitivity">This is the <emphasis>mean
+    sensitivity</emphasis>, which tells how sensitive or complacent
+    the data is.  (values***) It's essentially
+    for-your-information only; you shouldn't be worried if
+    it's too high or too low (but you probably shouldn't
+    be too surprised if a complacent dataset doesn't crossdate
+    as well).</para>
+
+    <note><title>Behind the Scenes</title>
+    <para>It's defined in <xref linkend="DPL"/> by:
+
+<equation>
+  <title>Mean Sensitivity</title>
+  <mediaobject>
+    <textobject>
+      <para>ms = 1/(N-1) &sum; 2|y<subscript>i</subscript>-y<subscript>i-1</subscript>| / (|y<subscript>i</subscript>| + |y<subscript>i-1</subscript>|)</para>
+    </textobject>
+  </mediaobject>
+</equation>
+
+    </para>
+
+    </note>
+
+    <para>In some instances, it can't be computed (e.g., if any
+    two consecutive years are 0), and is reported as
+    <computeroutput>N/A</computeroutput>.</para>
+
+    <para>There are other statistics you can view, as well.  Press and
+    hold the mouse button over the statistics, and you'll see a popup
+    menu that looks like:</para>
+
+    <!-- use a graphic for this? -->
+    <table><title>Statistics Popup</title>
+      <tgroup cols="1" align="left">
+        <tbody>
+          <row><entry><guimenuitem>mean sensitivity = 0.317</guimenuitem></entry></row>
+          <row><entry><guimenuitem>total radius = 149.44 mm</guimenuitem></entry></row>
+          <row><entry><guimenuitem>average ring width = 1.18 mm</guimenuitem></entry></row>
+          <row><entry><guimenuitem>number of years = 127</guimenuitem></entry></row>
+          <row><entry><guimenuitem>number of rings = 127</guimenuitem></entry></row>
+          <row><entry><guimenuitem>number of elements = N/A</guimenuitem></entry></row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <para>If you choose any of these menuitems, the status bar will
+    then display that statistic (and in any other editor windows you
+    open, too).</para>
+
+    <para>Some of the other statistics may also be reported as
+    <computeroutput>N/A</computeroutput>.  Number of elements is N/A
+    if it's a raw file.  Total radius and average ring width are
+    N/A if the sample is indexed.</para>
+
+</sect1>
+
+<sect1 id="reconciling"><title>Reconciling Readings</title>
+
+  <indexterm><primary>reconciling</primary></indexterm>
+
+  <para>After each sample is read twice, you (or somebody else)
+    <emphasis>reconcile</emphasis> the readings.  Reconciled
+    samples</para>
+ 
+  <itemizedlist>
+    <listitem><para>have the same number of years,</para></listitem>
+
+    <listitem><para>have all <link linkend="trend">trends</link> the
+    same, and</para></listitem>
+
+    <listitem><para>the measurements for each ring are within 3% (of
+    the smaller value)</para></listitem>
+  </itemizedlist>
+
+  <para>Reconciliation is traditionally done on paper, though it can
+    help to graph both samples on the screen for a quick visual
+    comparison first.  On the printouts, circle values that differ by
+    more than 3%, and underline bad trends.  Then re-measure each bad
+    value.  &corina; can quickly check if a sample has met these
+    criteria.</para>
+
+  <para>(There is ongoing debate about whether a trend of
+    stays-the-same and a differing trend &mdash; increasing or
+    decreasing &mdash; is acceptable.)</para>
+
+  <procedure>
+    <title>To check if a sample is reconciled (correctly):</title>
+
+    <step><para>Open one reading with
+      <menuchoice>
+	<shortcut>
+	  <keycombo><keycap>control</keycap> <keycap>O</keycap></keycombo>
+	</shortcut>
+	<guimenu>File</guimenu>
+	<guimenuitem>Open...</guimenuitem>
+      </menuchoice>.</para>
+    </step>
+
+    <step><para>Choose
+      <menuchoice>
+	<guimenu>Manipulate</guimenu>
+	<guimenuitem>Reconcile</guimenuitem>
+      </menuchoice>.</para>
+    </step>
+
+    <step><para>If &corina; can't find the other reading, it will ask
+    you to locate&nbsp;it.</para></step>
+
+    <step><para>A new window appears listing inconsistent trends and
+    measurements, if there are any.</para></step>
+
+<!-- TODO: describe this window, which is now non-trivial -->
+
+    <step><para>When you're done looking at it, close this window.</para></step>
+  </procedure>
+
+  <para>&corina; thinks that the two measurements of a sample are the
+    "A" and "C" readings, or the
+    "B" and "D" readings, and that this is the
+    last letter of the filename (before the filename extension, if
+    you're on Windows).</para>
+
+  <para>When you've finished reconciling a sample on paper,
+    here's a checklist...***</para>
+
+  <procedure>
+    <title>To reconcile a sample on the computer, after you've reconciled it on paper:</title>
+
+    <step><para>Open the first ("A") reading with
+      <menuchoice>
+	<shortcut>
+	  <keycombo><keycap>control</keycap> <keycap>O</keycap></keycombo>
+	</shortcut>
+	<guimenu>File</guimenu>
+	<guimenuitem>Open...</guimenuitem>
+      </menuchoice>.</para>
+    </step>
+
+    <step><para>Type in the correct data.</para></step>
+
+    <step><para>On the <guilabel>Metadata</guilabel> tab, set
+    <guilabel>Reconciled</guilabel> to <guilabel>Yes</guilabel>.</para></step>
+
+    <step><para>Save the sample with
+      <menuchoice>
+	<shortcut>
+	  <keycombo><keycap>control</keycap> <keycap>S</keycap></keycombo>
+	</shortcut>
+	<guimenu>File</guimenu>
+	<guimenuitem>Save</guimenuitem>
+      </menuchoice>.</para>
+    </step>
+
+    <step><para>Repeat for the second ("C") reading.</para></step>
+
+    <step><para>Change the extension of both files to <filename class="extension">.REC</filename>
+      (in Windows Explorer, for example).</para></step>
+  </procedure>
+
+<!-- ***steps 3,6 are a pain in the butt, and will be their own command, before long - bug 86 -->
+<!-- interface: manip &rarr; reconcile; in reconcile window, if everything matches, click -->
+<!-- "set reconciled" (better name?), which automatically sets rec=Y, name=*.rec, and saves -->
+<!-- BETTER: in bottom of reconciled window, have button, "Mark as Reconciled", which is dimmed
+     unless there are no errors, and when clicked, sets ;reconciled=Y and name=*.REC on both
+     samples. -->
+
+     <para>When reconciling by hand, you need to know what 3% of a
+     value is; here's a table:</para>
+
+     <table rowsep="false" pgwide="false"><title>List of 3% for Reconciling</title>
+       <tgroup cols="4" align="left">
+         <colspec colsep="false"/>
+         <colspec colsep="true"/>
+         <colspec colsep="false"/>
+         <colspec colsep="false"/>
+
+         <thead>
+	   <row rowsep="true">
+	     <entry>Ring Width</entry>
+	     <entry>3%</entry>
+	     <entry>Ring Width</entry>
+	     <entry>3%</entry>
+	   </row>
+	 </thead>
+
+	 <tbody>
+	   <row>
+	     <entry>1-33</entry>
+	     <entry>1</entry>
+	     <entry>201-233</entry>
+	     <entry>7</entry>
+	   </row>
+	   <row>
+	     <entry>34-67</entry>
+	     <entry>2</entry>
+	     <entry>234-267</entry>
+	     <entry>8</entry>
+	   </row>
+	   <row>
+	     <entry>68-100</entry>
+	     <entry>3</entry>
+	     <entry>268-300</entry>
+	     <entry>9</entry>
+	   </row>
+	   <row>
+	     <entry>101-33</entry>
+	     <entry>4</entry>
+	     <entry>301-333</entry>
+	     <entry>10</entry>
+	   </row>
+	   <row>
+	     <entry>134-167</entry>
+	     <entry>5</entry>
+	     <entry>334-367</entry>
+	     <entry>11</entry>
+	   </row>
+	   <row>
+	     <entry>168-200</entry>
+	     <entry>6</entry>
+	     <entry>368-400</entry>
+	     <entry>12</entry>
+	   </row>
+	 </tbody>
+       </tgroup>
+     </table>
+
+</sect1>
+
+<sect1><title>Redating</title>
+
+<indexterm><primary>range</primary><secondary>changing</secondary></indexterm>
+
+  <para>The <emphasis>dating</emphasis> of a sample is what year
+    it's dated to, and whether that range is absolute or
+    relative.  Changing these values, then,
+    is <emphasis>redating</emphasis>.</para>
+
+  <para>There are two reasons to redate a sample.  First, <!-- ***why?
+    --> ...  They also need to be dated correctly for making sums,
+    which I'll talk about later.</para> <!-- fwd ref: graph to
+						   confirm dates (put graphics first?...) -->
+
+  <para>The standard way to redate a file is with the <guimenuitem>Redate...</guimenuitem> menuitem.</para>
+
+  <procedure>
+    <title>To redate a sample:</title>
+
+    <step><para>Open the sample with
+      <menuchoice>
+	<shortcut>
+	  <keycombo><keycap>control</keycap> <keycap>O</keycap></keycombo>
+	</shortcut>
+	<guimenu>File</guimenu>
+	<guimenuitem>Open...</guimenuitem>
+      </menuchoice>.</para>
+    </step>
+
+    <step><para>Choose
+      <menuchoice>
+	<shortcut>
+	  <keycombo><keycap>control</keycap> <keycap>R</keycap></keycombo>
+	</shortcut>
+	<guimenu>Manipulate</guimenu>
+	<guimenuitem>Redate...</guimenuitem>
+      </menuchoice>.</para>
+    </step>
+
+    <step><para>Type in either the new starting date or the new ending date;
+      the other one will automatically be computed for you.</para></step>
+
+    <step><para>Click "<guilabel>Relative</guilabel>" or
+    "<guilabel>Absolute</guilabel>" if you want to set
+    that.</para></step>
+
+    <step><para>Click <guibutton>OK</guibutton>.</para></step>
+
+    <step><para>Save the sample.</para></step>
+</procedure>
+
+  <para>There are other ways to do it, though.  The Absolute/Relative
+    setting can also be changed from the Metadata tab.  And if you
+    want to change the starting year of a sample, you can double-click
+    on that year (the very top-left square) in the Data tab and change
+    it directly &mdash; press <keycap>return</keycap> when you're done.</para>
+
+<!-- (in the graph?) -->
+
+</sect1>
+
+<sect1><title>Printing Samples</title>
+
+  <para>It's often useful to have a hardcopy of data.  &corina; prints
+    all data present for a sample, including data, metadata,
+    weiserjahre, and elements.  It also prints some appropriate
+    summary information for the type of sample it is, like the total
+    radius of a raw sample, the total number of rings in a master, or
+    the number (and percentage) of significant years in a
+    master.</para>
+
+  <para>To print a sample, select
+    <menuchoice>
+      <shortcut>
+	<keycombo><keycap>control</keycap> <keycap>shift</keycap> <keycap>P</keycap></keycombo>
+      </shortcut>
+      <guimenu>File</guimenu>
+      <guimenuitem>Print...</guimenuitem>
+    </menuchoice>.
+
+    This shows you a dialog that lets you set the margins, layout, etc.,
+    of the printout.  If you just want to use the same settings as you did
+    before (or the defaults, if you haven't printed yet), you can
+    select
+
+    <menuchoice>
+      <shortcut>
+	<keycombo><keycap>control</keycap> <keycap>P</keycap></keycombo>
+      </shortcut>
+      <guimenu>File</guimenu>
+      <guimenuitem>Print One Copy</guimenuitem>
+    </menuchoice>.
+
+    and &corina; will print without showing you the dialog.</para>
+
+<!-- LINK: sample output, as pdf -->
+
+</sect1>
+
+</chapter>

@@ -5,33 +5,68 @@ import corina.gui.Bug;
 import java.util.Properties;
 import java.io.IOException;
 
-// yes, this would be trivial in lisp.  please don't laugh.
+/**
+   Class for converting between country codes (like "GR") and country
+   names (like "Greece").
+
+   <p>This uses ISO 3166-1, with the exception that Turkey is "TU",
+   instead of "TR" - but "TU" isn't anything else, so it doesn't cause
+   any problems internally.  (It might if another program expected
+   pure ISO-3166-1.)</p>
+
+   <p>On first use, it loads the file
+   <code>countries.properties</code> (actually, just a resource in the
+   Corina application's jar).  It is not (yet) localized.</p>
+*/
+
+// TODO: getName() is called a lot; it would probably be much faster (O(1) vs O(n))
+// if it used a hash table.
+
+// TODO: include small bitmaps of their flags, too; have a getFlag() method
+
+// (yes, this would be trivial in lisp.  please don't laugh.)
+
 public class Country {
+
     // somebody suggested 2 maps -- good idea?
+
     private String code, name;
+
     private static Country countries[];
     private static int n;
+
     static {
-        Properties blah = new Properties();
+        Properties prop = new Properties();
         try {
-            ClassLoader cl = Class.forName("corina.site.Country").getClassLoader();
-            blah.load(cl.getResource("countries.properties").openStream());
+	    Class me = Class.forName("corina.site.Country");
+            ClassLoader cl = me.getClassLoader();
+            prop.load(cl.getResource("countries.properties").openStream());
         } catch (Exception e) {
             Bug.bug(e); // can't happen
         }
 
-        String keys[] = (String []) blah.keySet().toArray(new String[0]);
+        String keys[] = (String []) prop.keySet().toArray(new String[0]);
         n = keys.length;
         countries = new Country[n];
         for (int i=0; i<n; i++) {
-            Country c = new Country();
-            c.code = keys[i];
-            c.name = blah.getProperty(keys[i]);
+            Country c = new Country(keys[i], prop.getProperty(keys[i]));
             countries[i] = c;
         }
     }
     
-    // given a code, return its name
+    // make a new country, as a (code, name) tuple
+    private Country(String code, String name) {
+	this.code = code;
+	this.name = name;
+    }
+
+    /**
+       Given a country code, return its name.
+     
+       @param code the country code, like "GR"
+       @return its name, like "Greece"
+       @exception IllegalArgumentException if it's not a known country code
+    */
     public static String getName(String code) {
         for (int i=0; i<n; i++)
             if (countries[i].code.equals(code))
@@ -39,7 +74,13 @@ public class Country {
         throw new IllegalArgumentException();
     }
 
-    // given a name, return its code
+    /**
+       Given a country name, return its code.
+       @param name the country name, like "Greece"
+       @return its code, like "GR"
+       @exception IllegalArgumentException if it's not a known country
+       name
+    */
     public static String getCode(String name) {
         for (int i=0; i<n; i++)
             if (countries[i].name.equals(name))
@@ -47,7 +88,10 @@ public class Country {
         throw new IllegalArgumentException();
     }
 
-    // return an array of all the names
+    /**
+       Returns an array of all the country names.
+       @return an array of all the country names
+    */
     public static String[] getAllNames() {
         String result[] = new String[n];
         for (int i=0; i<n; i++)

@@ -26,15 +26,27 @@ import java.awt.print.PageFormat;
 
 public interface PrintableDocument {
 
-    // this is awkward -- print(PageFormat) isn't ideal (separate
-    // setPageFormat(), print()?)
+    /**
+       Get an object which can be printed, either a Printable or a
+       Pageable.  Users of this class must figure out which it is on
+       their own.  If a non-Pageable, non-Printable object is
+       returned, that is a bug; if an object which is both Pageable
+       and Printable is returned, assume it's Pageable (because
+       Pageables still need Printables).
+       @see Printable
+       @see Pageable
+       @param pf the format of page to use
+       @return a Printable or Pageable
+    */
+    public Object getPrinter(PageFormat pf);
 
-    public final int PAGEABLE = 0;
-    public final int PRINTABLE = 1;
-    public int getPrintingMethod();
-    
-    public Printable makePrintable(PageFormat pf);
-    public Pageable makePageable(PageFormat pf);
+    // FUTURE: would it help if getPrinter() could throw UCE?  i think it would...
+    // ALSO: would setPageFormat(pf), getPrinter() be better?  (i.e., 2 methods)
 
+    /**
+       Get the name of this print job.  This only shows up in the
+       print queue, and has no effect on the hard copy.
+       @return the name of this print job
+    */
     public String getPrintTitle();
 }

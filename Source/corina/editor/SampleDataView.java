@@ -26,26 +26,41 @@ import corina.Sample;
 import corina.SampleEvent;
 import corina.SampleListener;
 import corina.gui.HasPreferences;
+import corina.gui.Bug;
+import corina.ui.Builder;
+import corina.ui.Alert;
+import corina.util.PopupListener;
 
 import java.util.Collections;
 
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
+// import java.awt.Dimension; // needed for slasher
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.JOptionPane;
+import javax.swing.BorderFactory;
 import javax.swing.table.TableModel;
 import javax.swing.table.AbstractTableModel;
+
+import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import javax.swing.*;
+
+// TODO: add slasher -- but it needs to either (1) override table
+// sizing, or (2) override scrollpane painting (probably the latter)
 
 /**
    A view of the raw data in a Sample.
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
 
@@ -80,7 +95,108 @@ public class SampleDataView extends JPanel implements SampleListener, HasPrefere
 
 	// create table
 	myModel = new DecadalModel(mySample);
-	myTable = new JTable(myModel);
+	/*
+	final Color DARK = new Color(0.7333f, 0.7765f, 0.8431f); // EXTRACT CONSTs!
+	final Color LIGHT = new Color(0.8196f, 0.8510f, 0.9216f);
+	final int THIN = 2;
+	final int THICK = 5;
+	*/
+	myTable = new JTable(myModel); /* {
+		public void paint(Graphics g) {
+		    setOpaque(true);
+
+		    int w = getWidth(), h = getHeight();
+
+		    // fill light
+		    g.setColor(LIGHT);
+		    g.fillRect(0, 0, w, h);
+
+		    // dark stripes
+		    g.setColor(DARK);
+		    ((Graphics2D) g).setStroke(new BasicStroke(THIN-1f));
+		    for (int x=0; x<w+h; x+=THIN+THICK)
+			g.drawLine(x, 0, x-h, h);
+
+		    super.paint(g);
+		}
+		}; */
+	myTable.setGridColor(new Color(0, 0, 0, 0)); // completeley transparent
+
+	// mouse listener for table
+	myTable.addMouseListener(new PopupListener() {
+		public void showPopup(MouseEvent e) {
+		    int row = myTable.rowAtPoint(e.getPoint());
+		    int col = myTable.columnAtPoint(e.getPoint());
+
+		    // clicked on a row header?  don't do anything.
+		    if (col == 0)
+			return;
+
+		    // select the cell at e.getPoint()
+		    myTable.setRowSelectionInterval(row, row);
+		    myTable.setColumnSelectionInterval(col, col);
+		    // (does this work?  it does, but
+		    // the table doesn't get hilited
+		    // immediately..)
+
+		    // TODO: if it's not a valid data cell, don't show popup
+		    // TODO: if you can't ins/del a year here, dim those menuitems [done?]
+
+		    // show a popup here.
+		    JPopupMenu popup = new JPopupMenu();
+		    // PERF: build this popup lazily here, and hold on to it.
+
+		    // TODO: use buttongroup (what for? -- oh, the marks)
+
+		    /* DISABLED
+		       JMenu marks = new JMenu("Mark with");
+		       for (int i=0; i<Mark.defaults.length; i++)
+		       marks.add(new JRadioButtonMenuItem(Mark.defaults[i].icon, false));
+		       marks.addSeparator();
+		       marks.add(new JRadioButtonMenuItem("None", true));
+		    */
+
+		    JMenuItem insert = Builder.makeMenuItem("insert_year");
+		    insert.addActionListener(new AbstractAction() {
+			    public void actionPerformed(ActionEvent ae) {
+				insertYear();
+			    }
+			});
+
+		    JMenuItem insertMR = Builder.makeMenuItem("insert_mr");
+		    insertMR.addActionListener(new AbstractAction() {
+			    public void actionPerformed(ActionEvent ae) {
+				insertMR();
+			    }
+			});
+
+		    JMenuItem delete = Builder.makeMenuItem("delete_year");
+		    delete.addActionListener(new AbstractAction() {
+			    public void actionPerformed(ActionEvent ae) {
+				deleteYear();
+			    }
+			});
+
+		    popup.add(insert);
+		    popup.add(insertMR);
+		    popup.add(delete);
+		    // DISABLED until they're implemented.
+		    // popup.addSeparator();
+		    // popup.add(marks);
+		    // popup.addSeparator();
+		    // popup.add(new JMenuItem("Edit note..."));
+		    // TODO: hook up edit_note, with i18n
+
+		    // (dim insert/insertMR/delete, if it's not an editable sample.)
+		    if (!mySample.isEditable()) {
+			insert.setEnabled(false);
+			insertMR.setEnabled(false);
+			delete.setEnabled(false);
+		    }
+
+		    popup.show(myTable, e.getX(), e.getY());
+		}
+	    });
 
 	// key listener for table
 	myTable.addKeyListener(new DecadalKeyListener(myTable, mySample));
@@ -99,16 +215,30 @@ public class SampleDataView extends JPanel implements SampleListener, HasPrefere
 	int max = 0;
 	if (mySample.count != null)
 	    max = ((Integer) Collections.max(mySample.count)).intValue();
+	// DISABLED: use column-header renderer for first column (pseudo-row-headers)
+	// -- it doesn't look that great, since there are still gridlines between
+	// rows; what i should really do is make a real table-row-header, which isn't too hard.
+	// myTable.getColumnModel().getColumn(0).setCellRenderer(new
+	//         javax.swing.table.JTableHeader().getDefaultRenderer());
 	myTable.getColumnModel().getColumn(11).setCellRenderer(new CountRenderer(max));
+
+	// make nulls elsewhere shaded, to indicate "can't use"
+	// DISABLED, because it doesn't hit the area below the table yet (how?).
+	// (but it looks really cool.)
+	//SlashedIfNullRenderer slasher = new SlashedIfNullRenderer(mySample, myModel);
+	//for (int i=1; i<=10; i++)
+	//myTable.getColumnModel().getColumn(i).setCellRenderer(slasher);
+	//myTable.setIntercellSpacing(new Dimension(0, 0));
 
 	// set font, gridlines, colors ==> handled by refreshFromPreferences()
 
 	// add to panel
-	setLayout(new BorderLayout(0, 0));
-	add(new JScrollPane(myTable,
-			    ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-			    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED),
-	    BorderLayout.CENTER);
+	setLayout(new BorderLayout(0, 0)); // huh?
+	JScrollPane sp = new JScrollPane(myTable,
+					 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+					 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+	add(sp, BorderLayout.CENTER);
 	add(new Modeline(myTable, mySample), BorderLayout.SOUTH);
     }
 
@@ -119,27 +249,26 @@ public class SampleDataView extends JPanel implements SampleListener, HasPrefere
 						myTable.getSelectedColumn());
     }
 
+    // default is an empty string to type in.
     public void insertYear() {
+	insertYear("");
+    }
+
+    // use Sample.MR for now.
+    // -- let users change this?
+    // -- add it as "MR", display as a different symbol, and save as "MR"?
+    public void insertMR() {
+	insertYear(new Integer(Sample.MR));
+    }
+
+    public void insertYear(Object val) {
 	// note: ideally this would never be called for isSummed() or
 	// isIndexed() samples, so these checks will be obselete.
 
-	// make sure it's not indexed
-	if (mySample.isSummed()) {
-	    JOptionPane.showMessageDialog(null,
-					  "You cannot modify summed data files.\n" +
-					     "Try cleaning it first.",
-					  "Can't Modify Data",
-					  JOptionPane.ERROR_MESSAGE);
-	    return;
-	}
-
-	// make sure it's not summed
-	if (mySample.isIndexed()) {
-	    JOptionPane.showMessageDialog(null,
-					  "You cannot modify indexed data files.\n" +
-					     "Try loading the raw data file, and editing that.",
-					  "Can't Modify Data",
-					  JOptionPane.ERROR_MESSAGE);
+	// make sure it's not indexed or summed
+	if (!mySample.isEditable()) {
+	    Alert.error("Can't Modify Data",
+			"You cannot modify indexed or summed data files.");
 	    return;
 	}
 
@@ -153,26 +282,27 @@ public class SampleDataView extends JPanel implements SampleListener, HasPrefere
 
 	// make sure it's a valid place to insert a year
 	if (!mySample.range.contains(y) && !mySample.range.getEnd().add(+1).equals(y)) {
-	    // JOptionPane.showMessageDialog(null,
-	    //   "This isn't a valid place to insert a year.",
-	    //   "Can't insert here",
-	    //   JOptionPane.ERROR_MESSAGE);
+	    // Alert.error("Can't insert here",
+	    //    "This isn't a valid place to insert a year.");
 	    return;
 	}
 
 	// insert 0
-	mySample.data.add(i, ""); // new Integer(0));
-	// mySample.range.end = mySample.range.getEnd().add(+1);
+	mySample.data.add(i, val); // new Integer(0));
 	mySample.range = new Range(mySample.range.getStart(),
 				   mySample.range.getEnd().add(+1));
-	
+	// REFACTOR: by LoD, should be range.extend()
+
 	// fire event -- obsolete?
 	((DecadalModel) myModel).fireTableDataChanged();
 
 	// select this cell again?  edit it
 	myTable.setRowSelectionInterval(row, row);
 	myTable.setColumnSelectionInterval(col, col);
-	myTable.editCellAt(row, col);
+
+	// (HACK! -- but not if it's a MR.)
+	if (!val.equals(new Integer(Sample.MR)))
+	    myTable.editCellAt(row, col);
 
 	// set modified
 	mySample.fireSampleDataChanged();
@@ -180,13 +310,12 @@ public class SampleDataView extends JPanel implements SampleListener, HasPrefere
 	mySample.setModified();
     }
 
+    // TODO: insert/delete shouldn't be enabled if the selection isn't a data year, either.
+
     public void deleteYear() {
 	// make sure it's not indexed or summed
-	if (mySample.isIndexed() || mySample.isSummed()) {
-	    JOptionPane.showMessageDialog(null,
-					  "You cannot modify indexed or summed data files.\n",
-					  "Can't Modify Data",
-					  JOptionPane.ERROR_MESSAGE);
+	if (!mySample.isEditable()) {
+	    Bug.bug(new IllegalArgumentException("deleteYear() called on non-editable sample"));
 	    return;
 	}
 
@@ -200,10 +329,8 @@ public class SampleDataView extends JPanel implements SampleListener, HasPrefere
 
 	// make sure there's data to delete
 	if (!mySample.range.contains(y)) {
-	    // JOptionPane.showMessageDialog(null,
-	    //   "This isn't a value that can be deleted.",
-	    //   "Can't delete here",
-	    //   JOptionPane.ERROR_MESSAGE);
+	    // Alert.error("Can't delete here",
+	    //    "This isn't a value that can be deleted.");
 	    return;
 	}
 
@@ -237,12 +364,9 @@ public class SampleDataView extends JPanel implements SampleListener, HasPrefere
     public void sampleDataChanged(SampleEvent e) {
 	// update data view
 	((DecadalModel) myModel).fireTableDataChanged();
+	// FIXME: make myModel an AbstractTableModel, so i don't have to cast
     }
     public void sampleMetadataChanged(SampleEvent e) { }
-    public void sampleFormatChanged(SampleEvent e) {
-	// update data view
-	((DecadalModel) myModel).fireTableDataChanged();
-    }
     public void sampleElementsChanged(SampleEvent e) { }
 
     // should this be part of update()?  well, the constructor will
@@ -255,6 +379,7 @@ public class SampleDataView extends JPanel implements SampleListener, HasPrefere
 
 	// from font size, set table row height
 	myTable.setRowHeight((font == null ? 12 : font.getSize()) + 4);
+	// BUG: this seems to not work sometimes (?) -- try zapfino
 
 	// disable gridlines, if requested
 	boolean gridlines = Boolean.getBoolean("corina.edit.gridlines");

@@ -1,0 +1,38 @@
+/*                                                              */
+/* Stylesheet for Corina API (http://corina.sourceforge.net/)   */
+/*                                                              */
+/* For info on what styles to define here, see                  */
+/*    http://java.sun.com/j2se/javadoc/faq/stylesheet           */
+/* and also the JavaDoc FAQ at                                  */
+/*    http://java.sun.com/j2se/javadoc/faq/index.html           */
+/*                                                              */
+/* (Note that the FAQ is newer than the sample stylesheet:      */
+/* use hashes, not dots.)                                       */
+/*                                                              */
+/* Ken Harris <kbh7@cornell.edu>                                */
+/* 9 Jan 2003                                                   */
+/*                                                              */
+
+/* Heading colors */
+.TableHeadingColor { background: #ddaabb }
+.TableSubHeadingColor { background: #ffddee }
+
+/* TODO: */
+/* -- can i use in image as a background here?  e.g., a scan of a core */
+/*    -- yup, just say background: url('my-neato-image.jpeg') */
+/*    -- but background-position: right and background-repeat: no-repeat */
+/*       don't seem to do anything.  hmm...  */
+/* -- the "overview/package/class/..." bar is still blue; can i change that? */
+/*    -- it looks like NavBarCell1 and NavBarCell1Rev */
+
+/* my stuff: */
+
+/* looks like paper */
+blockquote.paper {
+    background: #ddd;
+    border: 1px solid black;
+    padding: 10px;
+}
+
+/* dimmed text */
+span.dim { font-style: italic; color: gray }

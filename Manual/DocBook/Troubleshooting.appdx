@@ -1,0 +1,241 @@
+<appendix id="troubleshooting">
+  <title>Troubleshooting / Help!</title>
+
+  <para>This section will consist of questions and answers.  If you get stuck,
+  chances are somebody else has been stuck on the same problem.  (If
+  this happens enough, maybe it's the sign of bad design.  Or maybe
+  there's a good reason for it.)</para>
+
+  <para>If you can't find the answer in the manual, two useful documents
+  to read before asking for help are:</para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+        <ulink url="http://www.chiark.greenend.org.uk/~sgtatham/bugs.html">How
+        to Report Bugs Effectively</ulink>, and
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+        <ulink url="http://www.tuxedo.org/~esr/faqs/smart-questions.html">How
+        To Ask Questions The Smart Way</ulink>
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>WRITEME: where to go for help: search the manual, look on the web page,
+  check the mailing lists, ask on the mailing lists.</para>
+
+  <para>WRITEME: general strategies (remove Corina Prefs folder, try it
+  as a different user, download the latest version and try that, reboot, ...</para>
+
+  <para>WRITEME: if you've found a bug, what to do.</para>
+
+<!--
+  READ THIS, AUTHORS!
+
+  I hate FAQs.  They're overused cop-outs.  FAQs seemed to originally exist
+  to explain complex specifications, without messing up the specification
+  itself, or because the people being asked the questions weren't the same
+  people who had control of the wording of the spec.
+
+  So it seems utterly stupid to have a FAQ for a manual, or a FAQ for a web
+  page.  If the reader has looked in the manual, and still has a question,
+  then either you didn't explain the point (and you should), or you didn't
+  explain it very well (in which case you should clarify your original text).
+
+  Experience would tend to back this up: I can't think of any good (technical
+  or otherwise) books that have FAQs.
+
+  The rules I live by are: if somebody has a question about Corina, that's
+  probably because Corina itself wasn't clear enough.  If it's as clear as
+  it can be in Corina and they still have questions, it needs to go in the
+  manual.  If it's in the manual, and they still can't figure it out, then
+  the manual needs help.
+
+  Now, that said, if you just can't think of any way to make Corina clearer,
+  or the manual clearer, then you can put something else here.  But not
+  before.  (I'm working on removing all of these.)
+-->
+
+  <qandaset defaultlabel="qanda">
+
+  <qandadiv>
+    <title>Graphics</title>
+
+    <qandaentry>
+      <question>
+        <para>My graph is way off the top of the screen.  Why's it so
+        big?</para>
+      </question>
+      <answer>
+        <para></para>
+      </answer>
+    </qandaentry>
+  </qandadiv>
+
+<!-- TEMPORARILY REMOVED!
+
+  <qandadiv>
+    <title>Indexing</title>
+
+    <qandaentry>
+      <question>
+        <para>What if I want to index a sample more than one way?</para>
+      </question>
+      <answer>
+        <para>x</para>
+      </answer>
+    </qandaentry>
+
+    <qandaentry>
+      <question>
+        <para>I imported some data, and &corina; won't let me index
+        it.  Why not?</para>
+      </question>
+      <answer>
+        <para>&corina; probably thinks it's already indexed.
+        (&corina; usually does a pretty good job of guessing if a
+        sample is indexed or raw data, but with many file formats
+        there's no way to tell for sure.)  To override this, open the
+        sample, click on the Metadata tab, and change Format to
+        Raw.</para>
+      </answer>
+    </qandaentry>
+
+    <qandaentry>
+      <question>
+        <para>How does &corina; index data?  I need the algorithms for
+        publication.</para>
+      </question>
+      <answer>
+        <para></para>
+      </answer>
+    </qandaentry>
+
+  </qandadiv>
+
+-->
+
+<!--
+
+<qandadiv><title>Files</title>
+
+    <qandaentry>
+      <question>
+        <para>What do I name my file?</para>
+      </question>
+      <answer>
+        <para></para>
+      </answer>
+    </qandaentry>
+
+    <qandaentry>
+      <question>
+        <para>What filename extension do I use?</para>
+      </question>
+      <answer>
+        <para></para>
+      </answer>
+    </qandaentry>
+
+    <qandaentry>
+      <question>
+        <para>How do I export to <application>Excel</application>?</para>
+      </question>
+      <answer>
+        <para></para>
+      </answer>
+    </qandaentry>
+
+    <qandaentry>
+      <question>
+        <para>How do I import from <application>Excel</application>?</para>
+      </question>
+      <answer>
+        <para></para>
+      </answer>
+    </qandaentry>
+
+    <qandaentry>
+      <question>
+        <para>How do I rename a file?</para>
+      </question>
+      <answer>
+        <para></para>
+      </answer>
+    </qandaentry>
+
+    <qandaentry>
+      <question>
+        <para>How do I email this sample to somebody?</para>
+      </question>
+      <answer>
+        <para></para>
+      </answer>
+    </qandaentry>
+
+    <qandaentry>
+      <question>
+        <para>Somebody emailed me a file; how do I open it with &corina;?</para>
+      </question>
+      <answer>
+        <para></para>
+      </answer>
+    </qandaentry>
+
+    <qandaentry>
+      <question>
+        <para>It can't load my file, but I just saved it in &corina;.  Why not?</para>
+      </question>
+      <answer>
+        <para></para>
+      </answer>
+    </qandaentry>
+
+    <qandaentry>
+      <question>
+        <para>&corina; thinks this Tucson file is indexed, but it's not.  Why?</para>
+      </question>
+      <answer>
+        <para>When Tucson files were first used, all summed files were
+        indexed; there was no concept of a summed-but-not-indexed
+        file.  So Tucson files have no way to indicate "I'm summed"
+        and "I'm indexed" independently: it's either raw, indexed, or
+        indexed-and-summed.  Since &corina; can create
+        summed-but-not-indexed files, and save in Tucson format, it
+        needs a way to figure out of a summed Tucson file is indexed.
+        It guesses, but it's a pretty good guesser: if the average
+        value is over 800, it assumes it's indexed.  This works almost
+        all the time, but sometimes it doesn't, so in those rare cases
+	you have to click on the Metadata tab, and change the Format
+        by hand.</para>
+      </answer>
+    </qandaentry>
+
+</qandadiv>
+
+-->
+
+  <qandadiv><title>Miscellaneous</title>
+
+    <qandaentry>
+      <question>
+        <para>The menubar font is too small / big -- that's not a
+        q!.</para>
+      </question>
+      <answer>
+        <para>This is a bug in Sun's Java for Windows, versions 1.2 and 1.3.
+        &corina; has a workaround for it: under <guimenuitem>Preferences...</guimenuitem>, in
+        the <guilabel>Advanced</guilabel> tab, you can set a new menubar
+        font.</para>
+      </answer>
+    </qandaentry>
+
+  </qandadiv>
+
+  </qandaset>
+
+</appendix>

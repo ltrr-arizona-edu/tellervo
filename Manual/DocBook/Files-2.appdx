@@ -1,0 +1,92 @@
+<appendix>
+  <title>Files Created or Used by &corina;</title>
+
+<para>the application: Corina.jar.  this is the only file you need.  you can put
+it anywhere you like.  on windows 98 or mac os 10.1 or newer, you can simply
+double-click it to run corina.  on linux, simply type "java -jar corina.jar"
+(or make an equivalent shell script).</para>
+
+<para>temp files used by corina which you can safely delete: /tmp/corina?/earth line data?,
+all .Corina_Cache files in your data</para>
+
+<para>data files used by corina which you should NOT delete: "Site DB"?, any of your data</para>
+
+<para>files created by corina in your home directory which store your preferences:
+??? -- if you delete these, your preferences will be reset, but you will not lose
+any dendro data</para>
+
+<!-- FIXME: move this somewhere appropriate! -->
+<note>
+  <title>User's name and home on Microsoft Windows</title>
+
+  <para>This note describes how Java on Microsoft Windows determines
+        the user's name and home.  It applies to all Java programs,
+        not just &corina;.</para>
+
+  <para>The user name is determined by:
+    <orderedlist>
+      <listitem><para>The value of the environmental
+        variable <envar>USERNAME</envar>.</para></listitem>
+        
+      <listitem><para>If it isn't set, the
+        <function>GetUserName()</function> function
+        is called.</para></listitem>
+        
+      <listitem><para>If all else fails, it is reported as "unknown".</para></listitem>
+    </orderedlist>
+  </para>
+        
+  <para>The user's home is slightly tricker.  Microsoft Windows doesn't declare
+        an explicit "home" for users, though it does declare a bunch of
+        standard folders which must exist for each user, which always
+        happen to be inside the same folder.  (The worst of both worlds:
+        the home directory is only implicitly defined, and there's no reliable
+        way to figure out what it is.)  For example, if your name
+        is Pierre, you probably have
+        <filename class="directory">C:\WINNT\Profiles\Pierre\Desktop\</filename>,
+        <filename class="directory">C:\WINNT\Profiles\Pierre\Favorites\</filename>,
+        <filename class="directory">C:\WINNT\Profiles\Pierre\My Documents\</filename>,
+        <filename class="directory">C:\WINNT\Profiles\Pierre\Start Menu\</filename>, etc.
+        but Windows doesn't have any way to refer to
+        <filename class="directory">C:\WINNT\Profiles\Pierre\</filename>.
+        (In theory I suppose a crazy administrator could put these folders
+        in different places but nobody does and there's really no reason to.)</para>
+        
+  <para>The procedure Java uses to get your user home is:
+     <orderedlist>
+       <listitem><para>Check the registry key
+        <envar>Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders\Desktop</envar>,
+        and use the parent folder of that folder</para></listitem>
+        
+       <listitem><para>If that fails, load the
+        <filename class="libraryfile">SHELL32.DLL</filename> library and try to get
+        the desktop folder from that.</para></listitem>
+        
+       <listitem><para>If that fails, too,
+        it defaults to <filename class="directory">C:\</filename>.</para></listitem>
+     </orderedlist>
+  </para>
+
+  <para>If this still isn't technical enough for you, download the Java source
+        code from Sun and look at the file
+        <filename>j2sdk1.3.1/src/win32/native/java/lang/java_props_md.c</filename>
+        (or whatever that file is in the version of Java you're using).</para>
+        
+  <para>Question: if the desktop folder is defined by the registry to be
+        %USERPROFILE%\Desktop, why can't I just get the user's home by looking
+        at the USERPROFILE variable?  (Is that just in XP?)</para>
+</note>
+
+<note>
+  <title>User's name and home on Unix systems (including Linux and Mac OS)</title>
+  
+  <para>This note describes how Java on Unix-based systems, including Linux
+        and Mac OS, determines the user's name and home.  It applies to all Java programs,
+        not just &corina;</para>
+        
+  <para>The user's home is the value of the environmental variable <envar>HOME</envar>.</para>
+  
+  <para>The user's name is (???)</para>
+</note>
+
+</appendix>

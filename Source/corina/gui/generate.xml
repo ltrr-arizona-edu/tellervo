@@ -1,0 +1,39 @@
+<panel id="p1" layout="border">
+    ?
+</panel>
+
+<panel id="p2" layout="box/y?>
+
+</panel>
+
+<panel id="p3" layout="flow/l?">
+
+</panel>
+
+<panel id="p4" layout="grid" rows="3">
+
+</panel>
+
+
+<dialog id="d1" title="blah">
+  <panel ...
+</dialog>
+
+<frame id="f1" title="blah">
+  <panel ...
+</frame>
+
+
+
+<button id="blah" text="blah"/>
+<label id="blah" text="blah"/>
+<textarea id="blah" text="blah" rows="4" cols="90"/>
+
+
+<menubar id="mb">
+  <menu id="f" text="File">
+    <menuitem id="open" text="Open..."/>
+    ...
+  </menu>
+  ...
+</menubar>

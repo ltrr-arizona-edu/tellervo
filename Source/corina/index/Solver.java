@@ -21,26 +21,30 @@
 package corina.index;
 
 /**
-   A collection of matrix solvers.
+    A collection of matrix solvers.
 
-   <p><code>solveNxN</code> will solve any square matrix system.  In
-   solving Ax=b, it will destroy A (and b?).  The
-   routines were adapted from chapter 6 of <i>Introduction to
-   Scientific Computing</i>, second edition, Charles van Loan.  The
-   solver uses LU decomposition with pivoting.</p>
+    <p><code>solveNxN</code> will solve any square matrix system.  In
+    solving Ax=b, it will destroy A (and b?).  The
+    routines were adapted from chapter 6 of <i>Introduction to
+    Scientific Computing</i>, second edition, Charles van Loan.  The
+    solver uses LU decomposition with pivoting.</p>
 
-   <p>Also contains a least-squares fitter,
-   <code>leastSquares()</code>, from <i>Introduction to
-   Algorithms</i>, Cormen, Leiserson, and Rivest, pp. 768-771, which
-   uses the matrix solvers.</p>
+    <p>Also contains a least-squares fitter,
+    <code>leastSquares()</code>, from <i>Introduction to
+    Algorithms</i>, Cormen, Leiserson, and Rivest, pp. 768-771, which
+    uses the matrix solvers.</p>
+    
+    @see Function
+    @see SingularMatrixException
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
+    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+    @version $Id$
+*/
 public class Solver {
 
-    /** In case an operation is passed a singular matrix. */
-    public static class SingularMatrixException extends Exception { }
+    private Solver() {
+        // don't instantiate me
+    }
 
     /** Lower-upper decomposition of a matrix; returns the permutation
 	vector.  See van Loan, p. 228.
@@ -265,19 +269,6 @@ public class Solver {
         }
     }
 
-    /** A basis function for fitting data points to, using
-        least-squares.  If an object implements this interface,
-        <code>leastSquares()</code> can be used to fit it to data. */
-    public interface Solveable {
-	/** Evaluate the basis function(s) at a point.  The size of
-	    the return array is assumed to always be the same size.
-	    This must return a new array every call, because it it
-	    used to fill in the rows of an array.
-	    @param x the point to evaluate
-	    @return the basis functions evaluated at x */
-	double[] f(double x);
-    }
-
     /** A least-squares solver.  See <i>Introduction to
         Algorithms</i>, Cormen, Leiserson, and Rivest, pp. 768-771.
         This uses <code>solveNxN</code> or <code>solve2x2</code>.
@@ -286,7 +277,7 @@ public class Solver {
 	@param y the y-coordinates of the data
 	@return the coefficients of the basis functions
 	@exception SingularMatrixException (can this happen?) */
-    public static double[] leastSquares(Solveable s, double x[], double y[])
+    public static double[] leastSquares(Function s, double x[], double y[])
 	throws SingularMatrixException
     {
 	// n = nr of (x,y) points; m = nr of basis functions

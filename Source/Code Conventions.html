@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<title>Corina Code Conventions</title>
+</head>
+
+<body>
+
+<h1>Corina Code Conventions</h1>
+
+<h2>Folder structure</h2>
+
+<p>(This deals only with the structure inside of the "Source" folder.)</p>
+
+<pre>
+-- java dictates a certain amount of structure
+-- since my packages start with "corina.", it's "corina/..."
+-- (might move to net.sf.corina... later)
+-- package.html required for each package (so you can get an overview)
+
+-- WRITEME
+
+this applies to the corina/ folder only.  also document:
+-- random files in here (prefs.properties, species.properties, etc.)
+-- Translations (FIXME!)
+-- build (temp!)
+-- Images
+-- CVS (not mine!)
+-- JavaDoc package lists, Corina API Style.css
+etc.
+</pre>
+
+<h2>File structure</h2>
+
+<pre>
+-- Each file should have the structure:
+	GPL header (with "Corina" name and proper copyright year)
+	package statement
+	imports, sorted by package
+		in order:
+			corina imports
+			java imports
+			third-party imports (e.g., batik)
+		in separate blocks, e.g., java.util and javax.swing are separate
+		exceptions go last
+		go from more general to more specific, e.g., Collections, List, ArrayList; interfaces are more general, so they come first.
+	source of class (fully documented)
+</pre>
+
+<p>Lengths:</p>
+<ul>
+  <li>Lines should be shorter than 80 columns.  Despite larger displays, 80 columns is still useful for printing, viewing in a narrow window (especially in a browser window), people with smaller displays, people who edit with big fonts, and copying/pasting.
+  <li>files should be shorter than 500 lines, if possible
+  <li>files must always be shorter than 750 lines (currently 6 files violate this: CrossdateWindow.java, GraphWindow.java, Editor.java, BargraphFrame.java, GrapherPanel.java, and Browser.java)
+
+  <li>classes shouldn't have more than 10(?) [unique] methods
+  <li>packages should have fewer than 20(?) classes, and 5(?) sub-packages
+</ul>
+
+<h2>File formats</h2>
+
+<pre>
+(i.e., files used by corina which aren't java source files, like earth.rez, dendro data files, sites.xml, docbook, and anything else.)
+
+-- auxiliary files should be stored in an open format.  that is, if the maker of every program on your computer
+   went out of business today, you should still be able to (1) build corina and (2) get your data out, somehow.
+   (a format which is read/written by an open-source program is acceptable; one with a documented format is
+   still much preferred.)
+	-- (earth.rez is ok but if there was a standard i could use with good performance that would be better)
+	-- examples: docbook, java source, "corina sites.xml", prefs
+    -- unless otherwise called for (e.g., earth.rez for perf, or foreign existing formats for compatibility), use plain text -- UTF-8?
+    -- use ascii, where possible.  for example, java source files should take advantage of the \uXXXX feature of java.
+       it's wacky, and nobody else uses it, but it guarantees everybody can browse and download and check out your code
+       without problems.  if you use a \uXXXX character, add a comment stating which unicode character it is,
+       e.g., "\u00B0"; // unicode DEGREE SIGN character -- from Location.java
+       if you need to use a character or string often, consider making it a constant, for readability.
+
+-- all files should be documented, using javadoc for public interfaces
+	-- criterion: you should be able to figure out how to use a class just from the javadoc
+</pre>
+
+<h2>Tests</h2>
+
+<pre>
+-- unit tests, where applicable, should be in UnitTests.java classes in source files (WRITEME: describe...)
+
+-- unit tests are meant to run fairly quickly, and be deterministic.  sometimes you want to try a bunch of random stuff to try to make it fail: "fuzz testing".  these should be independent of the main corina tree... (WRITEME)
+</pre>
+
+<h2>Sample</h2>
+
+sample: see Location.java: <a href="corina/map/Location.java">Location.java here</a>, <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/corina/corina/Source/corina/map/Location.java?rev=1.5&content-type=text/vnd.viewcvs-markup">Location.java in CVS</a>
+
+</html>

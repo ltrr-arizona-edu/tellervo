@@ -73,6 +73,7 @@ public class UnitTests extends TestCase {
     //
     public void testSum() {
         try {
+	    // FIXME: i don't want to use some ill-defined "Demo Data" here
             Element e1 = new Element("Demo Data/chil/chil001.crn");
             Element e2 = new Element("Demo Data/chil/chil002.crn");
             Element e3 = new Element("Demo Data/chil/chil006.crn");

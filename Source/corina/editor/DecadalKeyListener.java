@@ -42,7 +42,7 @@ public class DecadalKeyListener extends KeyAdapter {
 	_sample = sample;
     }
 
-    // not editing!
+    // (not editing year!)
     private Year getSelectedYear() {
 	int row, col;
 	if (_table.isEditing()) {
@@ -81,11 +81,12 @@ public class DecadalKeyListener extends KeyAdapter {
     public void keyPressed(KeyEvent e) {
 	Year y, target = null;
 
-	// ignore control-keys ?
-	// if (e.getModifiers() != 0) {
-	// System.out.println("ignoring " + e);
-	// return; // ???
-	// }
+	// ignore modifier keys -- if user presses "control" (and nothing else),
+	// we shouldn't start editing because of it.
+	if (e.getModifiers() != 0) {
+	    e.consume();
+	    return;
+	 }
 
 	switch (e.getKeyCode()) {
 	case KeyEvent.VK_TAB: // but shift-tab goes LEFT!

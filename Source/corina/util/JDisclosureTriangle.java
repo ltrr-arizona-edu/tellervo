@@ -3,6 +3,7 @@ package corina.util;
 import java.awt.BorderLayout;
 import java.awt.Window;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -16,6 +17,15 @@ import javax.swing.JLabel;
 
 import javax.swing.Icon;
 import javax.swing.UIManager;
+
+/*
+  this class should go away.  it causes more harm than good.  even
+  apple is shying away from disclosure triangles for this sort of
+  thing now.
+
+  i've already suggested a better way (a button) in bug.java.
+  prefs.java can do the same thing.
+*/
 
 // TODO: on non-mac platforms, still use some sort of arrow for the icon
 
@@ -102,6 +112,7 @@ public class JDisclosureTriangle extends JPanel /*implements DropTargetListener*
 	window.pack();
 	window.invalidate(); // this seems to work elsewhere -- does it work here?
 	window.repaint(); // BUG: doesn't work!
+	Toolkit.getDefaultToolkit().sync();
     }
 
     // ----------------------------------------
@@ -157,7 +168,8 @@ public class JDisclosureTriangle extends JPanel /*implements DropTargetListener*
     // ----------------------------------------
     // events
 
+    /*
     public static interface TriangleWatcher {
     }
-
+    */
 }

@@ -30,6 +30,30 @@ public class UnitTests extends TestCase {
     //
     // testing SiteDB.java
     //
+    public void testLock() {
+	final String filename = "dummy";
+
+	// acquire lock -- it should be available
+	boolean lock = Lock.acquire(filename);
+
+	// try to acquire again -- it should not be available
+	boolean lock2 = Lock.acquire(filename);
+	assertTrue(!lock2); // note: not-lock2!
+
+	// release it
+	Lock.release(filename);
+
+	// acquire it again -- it should be available
+	boolean lock3 = Lock.acquire(filename);
+	assertTrue(lock3);
+
+	// release it
+	Lock.release(filename);
+    }
+
+    //
+    // testing SiteDB.java
+    //
     public void testSiteDB() {
 	// violates OAOO: startup.java sets this, too (call startup.initSax()?)
         if (System.getProperty("org.xml.sax.driver") == null)
@@ -37,9 +61,9 @@ public class UnitTests extends TestCase {
         if (System.getProperty("corina.dir.data") == null)
             System.setProperty("corina.dir.data", "Demo Data");
         try {
-            SiteDB db = SiteDB.getSiteDB(); // this is SLOW!
-            assertTrue(db != null);
-            assertTrue(db.sites != null);
+	    SiteDB db = SiteDB.getSiteDB(); // this is SLOW!
+	    assertTrue(db != null);
+	    assertTrue(db.sites != null);
         } catch (Exception e) {
             e.printStackTrace();
             fail();

@@ -1,0 +1,225 @@
+<chapter id="preferences"><title>Preferences</title>
+
+<sect1><title>Rationale</title>
+
+<para>&corina; allows each user to set
+preferences, to control the appearance and behavior of the program.
+This came about for various reasons:</para>
+
+<!-- FIXME: this would be more appropriate as a different kind of list -->
+<variablelist>
+
+  <varlistentry>
+    <term>System configuration</term>
+  <listitem><para>Some aspects of
+    our particular lab/installation aren't relevant to anybody else,
+    like the folder that datasets are stored in.  It would be foolish
+    to make these a permanent part of
+    &corina;, because we don't want to
+    discourage other people from using
+    &corina;.  (Example: data directory.)</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Taste</term>
+  <listitem><para>People have strange tastes.
+    (Example: graphpaper color.)</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Bugs in Java</term>
+  <listitem><para>Sun's implementation of
+    Java has a number of bugs, especially in Swing on Windows, and
+    especially before version 1.4 (and possibly after that, as well).
+    For example, it would ignore the system settings for colors and
+    fonts, so &corina; has preferences to
+    override these in some cases.  (Example: menubar font.)</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Bugs in &corina;</term>
+  <listitem><para>Truth be told,
+    &corina; has bugs, and some of them are
+    easier to work around in the short term by adding preferences.
+    Some experimental algorithms have paramaters that users might
+    conceivably want to tweak, and it's simpler to add an entry to the
+    preferences screen than add a proper control to change it.
+    (Example: cubic spline s-value.)  Eventually, either a good
+    default value should be used, or a proper control (discoverable,
+    and documented) should be added.</para></listitem>
+  </varlistentry>
+
+</variablelist>
+
+<procedure><title>To access the preferences dialog:</title>
+  <step><para>If you're on a Mac, choose
+    <menuchoice>
+      <guimenu>Corina</guimenu>
+      <guimenuitem>Preferences...</guimenuitem>
+    </menuchoice></para>
+  </step>
+
+  <step><para>If you're on Windows or Linux, choose
+    <menuchoice>
+      <guimenu>Edit</guimenu>
+      <guimenuitem>Preferences...</guimenuitem>
+    </menuchoice></para>
+  </step>
+
+</procedure>
+
+<para>All changes you make to your preferences should take effect as
+soon as you change them, and also remain in effect for future sessions.</para>
+
+</sect1>
+
+<sect1><title>Editor Preferences</title>
+
+<!--
+for each preference:
+* name, type-of, etc.
+* what it controls / why you'd want to change it
+* (what bug it works around)
+* (what property name it is)
+-->
+
+<variablelist>
+
+  <varlistentry>
+    <term>Background color</term>
+    <listitem><para>WRITEME</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Text color</term>
+    <listitem><para>WRITEME</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Font color</term>
+    <listitem><para>WRITEME</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Draw Gridlines</term>
+    <listitem><para>WRITEME</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Serial Port</term>
+    <listitem><para>WRITEME</para></listitem>
+  </varlistentry>
+
+</variablelist>
+
+</sect1>
+
+<sect1><title>Crossdate Preferences</title>
+
+<variablelist>
+
+  <varlistentry>
+    <term>WRITEME</term>
+    <listitem><para>WRITEME</para></listitem>
+  </varlistentry>
+
+</variablelist>
+
+</sect1>
+
+<sect1 id="graph_prefs"><title>Graph Preferences</title>
+
+<variablelist>
+
+  <varlistentry>
+    <term>WRITEME</term>
+    <listitem><para>WRITEME</para></listitem>
+  </varlistentry>
+
+</variablelist>
+
+</sect1>
+
+<sect1 id="preferences_advanced"><title>Advanced Preferences</title>
+
+<variablelist>
+
+    <!-- WRITEME: override menubar font -->
+
+    <varlistentry>
+        <term>Override User Name</term>
+
+        <listitem><para>In some situations, &corina; might not be able to
+        figure out your name correctly.  (&corina; uses your name for things
+        like printouts.)  If your name isn't listed correctly, that usually
+        means your system isn't set up properly.  But if you can't change
+        it, or don't know how, you can set your name (for &corina; only)
+        by using this feature.</para></listitem>
+    </varlistentry>
+
+    <!-- WRITEME: use which file chooser -->
+
+</variablelist>
+
+</sect1>
+
+<sect1><title>The Gory Details</title>
+
+<note><title>Note:</title> <para>Most users won't need to read this
+section.  Only read this if you need to know where
+&corina; stores user preferences, and how;
+for example, if you want to move your preferences from one computer to
+another.</para></note>
+
+<para>&corina; stores user preferences in a single plain-text
+file.</para>
+
+<para>The &corina; preferences file is
+stored:
+
+<variablelist>
+
+<varlistentry>
+<term>on Windows</term>
+<listitem><para>in your home folder, with the name <filename>Corina
+Preferences</filename></para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>on Mac</term>
+<listitem><para>in your home folder, in the <filename
+class="directory">Preferences</filename> folder inside the <filename
+class="directory">Library</filename> folder, with the name
+<filename>Corina Preferences</filename></para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>on Unix</term>
+<listitem><para>in your home folder, with the name
+<filename>.corina</filename></para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</para>
+
+<para>XXX the format ... field=value, unicode, java escapes, XXX
+
+For complete technical description, see the <ulink
+url="http://java.sun.com/j2se/1.3/docs/api/java/util/Properties.html">API
+documentation for
+<classname>java.util.Properties</classname></ulink>.</para>
+
+<para>The first time a user runs &corina;, it
+checks for a preferences file.  If none exists, it creates a default
+one.  There is currently no way to create a system-wide preferences
+file (though you can put a sample Corina preferences file in the
+new-user-skeleton on your system, so new users get a pre-made
+preferences file).</para>
+
+</sect1>
+
+</chapter>

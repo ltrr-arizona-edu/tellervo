@@ -25,13 +25,20 @@ package corina.gui;
    preferences are changed, all Frames that implement this will have
    refreshFromPreferences() called.
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
+   <h2>Left to do</h2>
+   <ul>
+     <li>switch to real events instead; delete this class, and its uses
+   </ul>
 
+   @deprecated Use real events instead.
+
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public interface HasPreferences {
-
-    /** Called on every JFrame that HasPreferences when the
-	preferences change. */
+    /**
+       Called on every JFrame that HasPreferences when the preferences
+       change.
+    */
     public abstract void refreshFromPreferences();
-
 }

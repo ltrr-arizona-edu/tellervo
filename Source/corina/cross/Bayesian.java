@@ -1,7 +1,6 @@
 package corina.cross;
 
 import corina.Sample;
-import corina.files.WrongFiletypeException;
 
 import java.io.File;
 import java.io.BufferedWriter;
@@ -20,6 +19,15 @@ import java.util.HashMap;
 import java.util.Random;
 
 import java.text.DecimalFormat;
+
+/*
+  TODO:
+  -- refactor
+  -- javadoc
+  -- consider splitting into BayesianGenerator(Sampler?) and BayesianConfidence
+  ---- how much is shared
+  -- should be able to compute this for any score, not just highScores
+*/
 
 // -- "dijkstra would not like this" is the understatement of the year.
 
@@ -171,7 +179,7 @@ public class Bayesian {
     // make inner classes for guis here: confidence manager, new distribution, generating distribution.
     // (much easier after i get lisp->java stuff done.)
 
-    public static DecimalFormat format = new DecimalFormat("#.##%");
+    public final static DecimalFormat format = new DecimalFormat("#.##%");
 
     // ouch!  there's a (slight) catch-22 here: in order to compute the bayesian distribution,
     // you need to compute the crossdate, and in order to compute the crossdate, you need
@@ -183,28 +191,24 @@ public class Bayesian {
       
     */
     public static float getSignificance(Cross cross, float score) {
-	/*
-	  if distribution for |cross| isn't loaded, load it.
-	*/
 	try {
+
+	    // if distribution for |cross| isn't loaded, load it
 	    if (!distros.containsKey(cross.getClass().getName()))
 		distros.put(cross.getClass().getName(), new Bayesian(cross.getClass()));
 
+	    // look it up (it's guaranteed to be there now)
 	    Bayesian b = (Bayesian) distros.get(cross.getClass().getName());
 
-	    /*
-	      look up the significance of |score| for |cross|: it's the
-	      confidence of the LARGEST value which is SMALLER than my value
-	    */
-	    int N = b.intervals.size();
+	    // look up the significance of |score| for |cross|: it's the
+	    // confidence of the LARGEST value which is SMALLER than my value
+	    int N = b.intervals.length;
 	    for (int i=1; i<N; i++)
-		if (((Float) b.scores.get(i)).floatValue() > score)
-		    return ((Float) b.intervals.get(i-1)).floatValue();
+		if (b.scores[i] > score)
+		    return b.intervals[i-1];
 
-	    /*
-	      it's bigger than anything we've got: take the last one
-	    */
-	    return ((Float) b.intervals.get(N-1)).floatValue();
+	    // it's bigger than anything we've got: take the last one
+	    return b.intervals[N-1];
 
 	} catch (IOException ioe) {
 	    // bad bad bad! -- actually, since this is part of my jar,
@@ -212,11 +216,19 @@ public class Bayesian {
 	    // (fault, missed, blame, responsibility(6)
 	    System.out.println("ioe in getSignificance() -- " + ioe);
 	    return 0f;
+	} catch (NullPointerException npe) {
+	    // HACK!  load() fails with this if there's no blah.intervals file,
+	    // so we end up here.
+
+	    // no bayesian data -- what to do?  return 0.0;
+	    // that will get rendered in the table as a blank cell,
+	    // which is exactly what i want.
+	    return 0f;
 	}
     }
 
     // keep distributions in memory -- they're so small, i won't worry
-    // about keeping them weakly-referenced or something loony like that.
+    // about keeping them weakly-referenced or something looney like that.
     // this is a (classname => bayesian) map.
     private static Map distros = new HashMap();
 
@@ -225,8 +237,8 @@ public class Bayesian {
     // ------------------------------------------------------------
 
     // a (%confidence => score) hash
-    private List intervals; // a list of Floats, like (0.5 0.9 0.95 ...)
-    private List scores; // a corresponding list of scores, like (0.5 0.5366 0.5499 0.5909 ...)
+    private float intervals[]; // a list of floats, like [0.5 0.9 0.95 ...]
+    private float scores[]; // a corresponding list of scores, like [0.5 0.5366 0.5499 0.5909 ...]
 
     // the name(class) of the algorithm
     private String algorithm;
@@ -240,17 +252,26 @@ public class Bayesian {
     public void load() throws IOException {
 	String input = algorithm + ".intervals";
 	InputStream stream = getClass().getClassLoader().getResourceAsStream(input);
-	BufferedReader r = new BufferedReader(new InputStreamReader(stream));
+	BufferedReader r = new BufferedReader(new InputStreamReader(stream)); // NULL!
 	String line;
-	intervals = new ArrayList();
-	scores = new ArrayList();
+	List intBuf = new ArrayList();
+	List scoreBuf = new ArrayList();
 	while ((line = r.readLine()) != null) { // THIS IS THE ONLY THING THAT CAN THROW AN IOE (?)
 	    line = line.trim();
 	    if (line.startsWith("#") || line.length()==0)
 		continue;
 	    int equals = line.indexOf('=');
-	    intervals.add(new Float(line.substring(0, equals)));
-	    scores.add(new Float(line.substring(equals+1)));
+	    intBuf.add(new Float(line.substring(0, equals)));
+	    scoreBuf.add(new Float(line.substring(equals+1)));
+	}
+
+	// copy 
+	int n = intBuf.size();
+	intervals = new float[n];
+	scores = new float[n];
+	for (int i=0; i<n; i++) {
+	    intervals[i] = ((Float) intBuf.get(i)).floatValue();
+	    scores[i] = ((Float) scoreBuf.get(i)).floatValue();
 	}
     }
 
@@ -263,6 +284,7 @@ public class Bayesian {
     // (no filtering capabilities yet -- that would require, uh, closures to do nicely.  crap.)
     // this pretty much demands threading ability, which means it pretty much needs to be its
     // own class (getProgress, getState, extends Thread), but that can come with the next iteration.
+    // FIXME: |algorithm| param can simply be the name (as a string) -- why a class?
     public Bayesian(Class algorithm, String folder, int numberOfPairs) throws IOException {
 	// this is done in 3 phases:
 
@@ -301,7 +323,7 @@ public class Bayesian {
 		    s = new Sample((String) filenames.get(A));
 		    // next line is skipped if it couldn't be loaded
 		    done = true;
-		} catch (IOException ioe) { // was: WrongFiletypeException wfe) {
+		} catch (IOException ioe) {
 		    // don't do anything, |done| stays false in this branch
 		}
 	    } while (!done);
@@ -317,7 +339,7 @@ public class Bayesian {
 		try {
 		    do {
 			B = random.nextInt(filenames.size());
-		    } while (B == A);
+		    } while (B == A); // until B != A
 		    if (samples.containsKey(filenames.get(B))) {
 			done = true;
 			break;
@@ -325,7 +347,7 @@ public class Bayesian {
 		    s = new Sample((String) filenames.get(B));
 		    // next line is skipped if it couldn't be loaded
 		    done = true;
-		} catch (IOException ioe) { // was: WrongFiletypeException wfe) {
+		} catch (IOException ioe) {
 		    // don't do anything, |done| stays false in this branch
 		}
 	    } while (!done);
@@ -354,29 +376,23 @@ public class Bayesian {
 
 	    // run crossdate
 	    // FIXME: use reflection to use |algorithm| as specified
-	    Cross c;
-	    if (algorithm.getName().indexOf("TScore") != -1)
-		c = new TScore(fixed, moving);
-	    else if (algorithm.getName().indexOf("Trend") != -1)
-		c = new Trend(fixed, moving);
-	    else if (algorithm.getName().indexOf("DScore") != -1)
-		c = new DScore(fixed, moving);
-	    else
-		throw new IllegalArgumentException("not an algorithm! -- " + algorithm);
+	    Cross c = Cross.makeCross(algorithm.getName(), fixed, moving);
 	    c.run();
 
 	    // add all scores
-	    for (int j=0; j<c.data.length; j++) {
-		float score = (float) c.data[j];
+	    int n = c.getRange().span();
+	    for (int j=0; j<n; j++) {
+		float score = c.getScoreOLD(j);
+
+		// bad value; FIXME: shouldn't inf's count?
 		if (Float.isNaN(score) || Float.isInfinite(score))
 		    continue;
 
-		// this seems to make it take about 2x as long as doing nothing -- not horrible
 		allScores.add(new Float(score));
 	    }
 
 	    // update total
-	    total += c.data.length;
+	    total += n;
 	}
 	Collections.sort(allScores); // yes, it seems bad, but it's only ~10% as expensive as all the run()s
 	t2 = System.currentTimeMillis();
@@ -387,8 +403,8 @@ public class Bayesian {
 	// a smalltalkers cringe, but it's Better Than The Alternatives.
 
 	// store the confidence intervals (in |this|)
-	intervals = new ArrayList();
-	scores = new ArrayList();
+	intervals = new float[INTERVALS.length];
+	scores = new float[INTERVALS.length];
 	for (int i=0; i<INTERVALS.length; i++) { // (loop for i in +intervals+ do ...)
 	    // must be increasing: double-check that now
 	    if (i>0 && INTERVALS[i]<=INTERVALS[i-1])
@@ -399,8 +415,8 @@ public class Bayesian {
 	    float score = ((Float) allScores.get(which)).floatValue();
 
 	    // store it
-	    intervals.add(new Float(INTERVALS[i]));
-	    scores.add(new Float(score));
+	    intervals[i] = INTERVALS[i];
+	    scores[i] = score;
 	}
 	this.algorithm = algorithm.getName(); // fixme: just the class name, not fqdn
     }
@@ -417,8 +433,8 @@ public class Bayesian {
 	w.newLine();
 
 	// write out the intervals
-	for (int i=0; i<scores.size(); i++) {
-	    w.write(intervals.get(i) + " = " + scores.get(i));
+	for (int i=0; i<scores.length; i++) {
+	    w.write(intervals[i] + " = " + scores[i]);
 	    w.newLine();
 	}
 
@@ -428,16 +444,14 @@ public class Bayesian {
     // in theory, you can change these at any time, and it won't break an existing
     // corina that has old stats files.  but they do have to be monotonically increasing
     // (a bug is flagged at runtime if they're not).
-    final float[] INTERVALS = new float[] {
-	0.5f,
-	0.9f,
-	0.95f,
-	0.99f,
-	0.995f,
-	0.999f,
-	0.9995f,
-	0.9999f,
+    private static final float INTERVALS[] = new float[] {
+	0.5f,    0.9f,
+	0.95f,   0.99f,
+	0.995f,  0.999f,
+	0.9995f, 0.9999f,
     };
+    // (why can't this be automatically generated?  well,
+    // it could be, but it's probably more trouble than it's worth in java.)
 
     private void addAllFiles(List filenames, File root) {
 	File children[] = root.listFiles();

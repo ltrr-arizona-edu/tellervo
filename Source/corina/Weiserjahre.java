@@ -21,25 +21,30 @@
 package corina;
 
 /**
-   Some useful utility functions for dealing with Sample's incr and
-   decr fields.
+   Some useful utility functions for dealing with Sample's incr/decr
+   fields.
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class Weiserjahre {
+    /**
+       Test if an interval is significant, by Weiserjahre standards.
+       That is, does it have at least 4 samples, with at least 75% of
+       the trends agreeing?
 
+       @param s the sample to check
+       @param i which interval to check
+       @return true, iff this interval is significant
+    */
     public static boolean isSignificant(Sample s, int i) {
 	int total = ((Number) s.count.get(i)).intValue();
-
 	if (total < 4)
 	    return false;
 
-	double incr = ((Number) s.incr.get(i)).doubleValue() / (double) total;
-	double decr = ((Number) s.decr.get(i)).doubleValue() / (double) total;
-
-	// at least, or more than?  (< vs <=)
-	return (incr > 0.75 || decr > 0.75);
+	int incr = ((Number) s.incr.get(i)).intValue();
+	int decr = ((Number) s.decr.get(i)).intValue();
+	return (incr >= decr*3 || decr >= incr*3);
     }
     public static boolean isSignificant(Sample s, Year y) {
 	return isSignificant(s, y.diff(s.range.getStart()));
@@ -55,7 +60,8 @@ public class Weiserjahre {
 	return toString(s, y.diff(s.range.getStart()));
     }
 
-    // 10/36, 9 => "  10/36  "; if width is even, all hell breaks loose.
+    // 10/36, 9 => "  10/36  "; if width is even, undefined result.
+    // TODO: why don't i just write 'format for java?
     public static String toStringFixed(Sample s, int i, int width, String c) {
 	String incr = s.incr.get(i).toString();
 	String decr = s.decr.get(i).toString();
@@ -73,8 +79,9 @@ public class Weiserjahre {
 	return toStringFixed(s, i, width, isSignificant(s, i) ? SIGNIFICANT : INSIGNIFICANT);
     }
 
-    // actually, these are the defaults
-    // (should this be a trivial function, instead?)
+    /** The string to separate the parts of a significant interval: <code>*</code>. */
     public final static String SIGNIFICANT = "*";
+    /** The string to separate the parts of an insignificant interval: <code>/</code>. */
     public final static String INSIGNIFICANT = "/";
+    // (should those be a trivial function, instead?)
 }

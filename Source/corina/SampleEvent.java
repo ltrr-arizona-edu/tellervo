@@ -27,13 +27,15 @@ import java.util.EventObject;
    fire-* methods create these automatically, and no other class
    should have reason to create them.
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-
 public class SampleEvent extends EventObject {
-    /** Construct a new SampleEvent with the specified source.
-	@param source the Sample this event is about */
+    /**
+       Construct a new SampleEvent with the specified source.
+
+       @param source the Sample this event is about
+    */
     public SampleEvent(Sample source) {
 	super(source);
     }

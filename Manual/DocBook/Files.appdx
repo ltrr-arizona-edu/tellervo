@@ -1,0 +1,149 @@
+<appendix id="files">
+  <title>Files</title>
+
+  <para>This appendix lists all of the files used by &corina;, where
+  they live, and why they exist.</para>
+
+  <note>
+    <title>Don't Read This Section</title>
+
+    <para>You don't need to read this section unless you're interested
+    in how &corina; stores preferences, or want to move your preferences
+    from one system to another.</para>
+  </note>
+
+  <sect1 id="user-preferences">
+    <title>User Preferences</title>
+
+  <para>&corina; stores your preferences in your home
+  directory.</para>
+
+<variablelist>
+
+  <varlistentry>
+    <term>on Mac OS X</term>
+
+    <listitem><para>Your home is usually
+    <filename>/Users/joe</filename> (if your login is "joe").  To go
+    to your home, switch to the
+    <application>Finder</application> and choose
+	<menuchoice>
+	  <shortcut>
+	    <keycombo><keycap>shift</keycap>
+                      <keycap>&command;</keycap>
+                      <keycap>H</keycap></keycombo>
+	  </shortcut>
+	  <guimenu>Go</guimenu>
+	  <guimenuitem>Home</guimenuitem>
+	</menuchoice>.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>on Windows 95/98/ME, "single user"</term>
+
+    <listitem><para>Windows 95 doesn't normally have a concept of
+    "home", so <filename>C:\WINDOWS\</filename> is used as your
+    home.</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>on Windows 95/98/ME, "multiple users"</term>
+
+    <listitem><para>If you have Windows set up in "multiple users"
+    mode, your home is your "profile" directory, such as
+    <filename>C:\WINDOWS\PROFILES\joe\</filename> (if your login is
+    "joe").</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>on Windows NT/2000</term>
+
+    <listitem><para>The Windows NT home is your "profile" folder,
+    which is usually at <filename>C:\WINNT\PROFILES\joe\</filename>
+    (if your login is "joe").</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>on Unix/Linux</term>
+
+    <listitem><para>Your home directory is the directory where your
+    shell starts out.  It's usually something like
+    <filename>/home/joe</filename> (if your login is "joe").  If you're
+    not sure, you can find out by typing <userinput>echo ~</userinput>.
+    </para></listitem>
+  </varlistentry>
+
+</variablelist>
+
+<note>
+  <title>Still Not Sure Where Home Is?</title>
+
+  <para>If you want to know where &corina; thinks your home is,
+  choose 
+	<menuchoice>
+	  <guimenu>Help</guimenu>
+	  <guimenuitem>About Corina...</guimenuitem>
+	</menuchoice>
+  (it's under the Corina menu on the Mac) and click <guibutton>System
+  Info...</guibutton>; look for the property
+  <computeroutput>user.home</computeroutput> in the left
+  column.</para>
+</note>
+
+<!-- FIXME: prefs file location is mentioned in "gory details" section, above -->
+
+<para>&corina; stores your preferences is a file in your home called
+"Corina Preferences".</para>
+
+<para>The first time you run &corina;, it creates a default
+preferences file for you.  If you ever get really stuck (e.g.,
+&corina; won't start, and you think your preferences file is to
+blame), you can delete your preferences file; the next time you run
+&corina;, it will give you a new one.</para>
+
+<para>The preferences are stored in plain text (<ulink
+url="http://www.unicode.org/">Unicode</ulink>, using Java Unicode
+escapes (see the <ulink
+url="http://java.sun.com/j2se/1.3/docs/api/java/util/Properties.html">Properties
+API</ulink> for a description).</para>
+
+<para>There is no site-wide preferences file for &corina;.  If you
+want all users at a particular site to have the same default
+preferences, put it in <filename>/etc/skel</filename>, or the
+equivalent on your system.</para>
+
+</sect1>
+
+<sect1 id="data-files">
+  <title>Data Files</title>
+
+  <para>&corina; usually assumes you have one folder for your data,
+  and a bunch of folders in it for each site.</para>
+
+<!-- make me pretty! -->
+<screen>
+DATA
++-ABC
++-DEF
++-GHI
+  +-GHI1.IND
+  +-GHI2.IND
+  +-GHI3.IND
+</screen>
+
+<!-- corina.dir.data -->
+<para>At the top of your data folders you can
+have a file called <filename>Site DB</filename>...</para>
+
+<para>In each folder you visit in &corina;, a file called
+".Corina_Cache" gets created.  (It stores a copy of the metadata for
+all the files in that folder, but you don't need to know that.)  It's
+automatically created and updated, and if it's not there &corina;
+creates a new one.  It's only there to make browsing faster.  If you
+delete one of them, no harm is done; it'll just be a little slower the
+next time you browse that folder.</para>
+
+</sect1>
+
+</appendix>

@@ -21,7 +21,8 @@
 package corina.index;
 
 import corina.Sample;
-import corina.prefs.Prefs;
+import corina.ui.I18n;
+import corina.util.StringUtils;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -46,18 +47,20 @@ import java.text.MessageFormat;
    <a href="http://www.amazon.com/exec/obidos/ASIN/0792305868/o/qid=993490628/sr=2-1/ref=aps_sr_b_1_1/104-5614136-5731905">Amazon.com</a>,
    it costs a small fortune.)</p>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class HighPass extends Index {
+    /**
+       Create a new high-pass filter for the given sample.
 
-    /** Create a new high-pass filter for the given sample.
-	@param s the Sample to index */
+       @param s the Sample to index
+    */
     public HighPass(Sample s) {
         super(s);
 
         // parse weights; assumes weights.length is odd
-        weights = Prefs.extractInts(System.getProperty("corina.index.lowpass", "1 2 4 2 1"));
+        weights = StringUtils.extractInts(System.getProperty("corina.index.lowpass", "1 2 4 2 1"));
     }
 
     private int weights[];
@@ -103,11 +106,13 @@ public class HighPass extends Index {
         return output;
     }
 
-    /** The name of this filter.  This lists the weights, separated by
-        hyphens, so the default filter is called "High-pass (1-2-4-2-1)".
-    @return the name of this filter */
+    /**
+       The name of this filter.  This lists the weights, separated by
+       hyphens, so the default filter is called "High-pass
+       (1-2-4-2-1)".
+    */
     public String getName() {
-        // this is basically the opposite of Prefs.extractInts() -- consolidate?
+        // this is basically the opposite of StringUtils.extractInts() -- consolidate?
         StringBuffer buf = new StringBuffer();
         for (int i=0; i<weights.length; i++) {
             buf.append(weights[i]);
@@ -116,7 +121,8 @@ public class HighPass extends Index {
         }
 
         // format, and return
-        return MessageFormat.format(msg.getString("high_pass"), new Object[] { buf.toString() } );
+        return MessageFormat.format(I18n.getText("high_pass"),
+				    new Object[] { buf.toString() } );
     }
 
     public int getID() {

@@ -44,6 +44,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JPopupMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JMenu;
 import javax.swing.AbstractAction;
 
 /**
@@ -179,16 +180,13 @@ public class BrowserContextMenu extends JPopupMenu {
 	addSeparator();
 	add(makeSum);
 	addSeparator();
-	// add(Builder.makeMenuItem("get_info...", false)); // WRITEME -- how?
-	add(viewSource);
-	addSeparator();
 	{
-	    add(Builder.makeMenuItem("crossdate", false));
-	    // submenu? -- REFACTOR: need abstraction for that!
-	    A = new JMenuItem(Builder.INDENT + "1-by-1");
-	    B = new JMenuItem(Builder.INDENT + "1-by-N");
-	    C = new JMenuItem(Builder.INDENT + "N-by-1");
-	    D = new JMenuItem(Builder.INDENT + "N-by-N");
+	    JMenu cross = Builder.makeMenu("crossdate");
+
+	    A = Builder.makeMenuItem("1_by_1");
+	    B = Builder.makeMenuItem("1_by_n");
+	    C = Builder.makeMenuItem("n_by_1");
+	    D = Builder.makeMenuItem("n_by_n");
 
 	    A.addActionListener(new AbstractAction() {
 		    public void actionPerformed(ActionEvent e) {
@@ -224,11 +222,15 @@ public class BrowserContextMenu extends JPopupMenu {
 		    }
 		});
 
-	    add(A);
-	    add(B);
-	    add(C);
-	    add(D);
+	    cross.add(A);
+	    cross.add(B);
+	    cross.add(C);
+	    cross.add(D);
+
+	    add(cross);
 	}
+	addSeparator();
+	add(viewSource);
 	// WRITEME:
 	// addSeparator();
 	// add(Builder.makeMenuItem("move_to_trash", false));

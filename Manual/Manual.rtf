@@ -1,0 +1,1967 @@
+<?xml version="1.0"?>
+The Corina BookThe Corina BookPublished August 2002The Corina BookThe Corina BookTable of Contents1. Installation  System Requirements  Installing Java  Installing Corina  Importing Your Data  2. The File Browser  What's It Do?  How To Browse Samples  Displaying Fields and Sorting  The Search Field  The Trash  Exporting the Browser Data  Printing the Browser Data  3. Editing Samples  Samples  Creating a New Sample  Identifying Samples  The Metadata Page  The Status Bar  Reconciling Readings  Redating  Printing Samples  4. Graphs  Introduction  How to Make a Graph  Scrolling  Selecting Samples  Moving Samples Around  Scaling  Printing Graphs  Saving Graphs  Exporting Graphs  Bargraphs  5. Crossdating  How Crossdating Algorithms Work  Sequences  How to Crossdate Samples  The Algorithms  T-Score  Trend  D-Score  Weiserjahre  R-Value  Summary of Crossdating Algorithms  Other Views  Tables  Grids  Graphing  Mapping  Saving Crossdates  Printing Crossdates  6. Indexing  The Problem  How to Index a Sample  Exponential  Polynomial  Horizontal Line  Adaptive  High-Pass Filter  Cubic Spline  The &#x3C7;&#xB2; and &#x3C1; Values  The &#x3C7;&#xB2; test  Correlation Coefficient, or &#x3C1;  Regional Growth Curves, or Proxy Data  7. Summing  Master Chronologies  Making a New Sum  Rebuilding a Sum  Cleaning  8. File Formats  !!! - Another Fine Mess...  How Corina Handles Files  Exporting  Getting data in and out  Tucson  Summed files  Extra fields  Packed Tucson files  Two-Column  Corina  Heidelberg  Hohenheim  TSAP  Ranges-Only  Spreadsheet  9. Preferences  Rationale  Editor Preferences  Crossdate Preferences  Graph Preferences  Advanced Preferences  The Gory Details  10. The Atlas  Showing the Map  Editing Site Info  Introduction?  Displaying Sites on a Map  Exporting Maps  To Illustrator  To a Web Page  To a PowerPoint Presentation  To a Word Document  A. References  B. Graphics File Formats  Types of graphics files  Bitmap File Formats  Vector File Formats  Graphics in Microsoft
+    Office  C. Troubleshooting / Help!  D. Glossary  E. Files  User Preferences  Data Files  F. GNU Free Documentation License  PREAMBLE  APPLICABILITY AND DEFINITIONS  VERBATIM COPYING  COPYING IN QUANTITY  MODIFICATIONS  COMBINING DOCUMENTS  COLLECTIONS OF DOCUMENTS  AGGREGATION WITH INDEPENDENT WORKS  TRANSLATION  TERMINATION  FUTURE REVISIONS OF THIS LICENSE  ADDENDUM: How to use this License for
+  your documents  G. Index  The Corina BookThe Corina BookList of Figures6.1. A cubic spline, s=10-14  6.2. A cubic spline, s=10-16  6.3. A cubic spline, s=10-18  The Corina BookThe Corina BookList of Tables3.1. How to read the status bar  3.2. Statistics Popup  3.3. List of 3% for Reconciling  4.1. Graph window keyboard controls: Scrolling  4.2. Graph window keyboard controls: selecting samples  4.3. Graph window keyboard controls: moving samples around  4.4. Graph window keyboard controls: scaling  5.1. Crossdating Scores, List  5.2. Crossdating Scores, Table  5.3. Significant T-scores  5.4. Crossdating Table for ZKB-9  B.1. Bitmap Graphics Filetypes  B.2. Vector Graphics Filetypes  The Corina BookThe Corina BookList of Examples6.1. What's a good value?  8.1. Tucson raw format  8.2. Two-column format  8.3. Corina format  8.4. Heidelberg format  8.5. Heidelberg format, with annotations  8.6. Hohenheim format sample  8.7. TSAP Matrix sample  8.8. Ranges-only sample  8.9. Spreadsheet format sample  The Corina BookThe Corina BookList of Equations3.1. Mean Sensitivity  5.1. Student's T-Score prep work  5.2. Student's T-Score  5.3. Significant Trends  5.4. Significant Trends, adjusted  5.5. D-Score Algorithm  6.1. Exponential Curve  6.2. Polynomial Curve  6.3. Adaptive Index  6.4. High-Pass Index  6.5. Definition of &#x3C7;&#xB2;  6.6. Correlation Coefficient  Chapter&#xA0;1.&#xA0;InstallationChapter&#xA0;1.&#xA0;InstallationChapter&#xA0;1.&#xA0;InstallationSystem RequirementsSystem Requirementsa computer(specs)Java(version)Additionally, there are some other things that, while not
+required, can be used by Corina:data from another program (??)a measuring station (??)an internet connectiona databaseInstalling JavaInstalling JavaWRITEME: how to install java (win32, mac, linux)Installing CorinaInstalling Corinadownload corina.sf.net/?/corina.jar, put it in
+Applications/Program Files, make a link to it / put it in the dock,
+fire it up.  (linux: put in /usr/share/java/Corina.jar, make shell
+script /usr/bin/corina which launches it; what's its gnome/kde icon?)
+
+
+#!/bin/sh
+exec java -jar /usr/share/java/Corina.jar
+
+
+WRITEME: different versions concurrently?  just rename, it doesn't
+care about the name.WRITEME: how to uninstall?  remove corina.jar, remove temp files
+(/tmp/corina-map-files/..., etc.), maybe remove prefs (~/.corina/).
+your data is untouched; if you never plan to use corina again, you will
+need to convert your data to tucson (ref -- how?).MOVEME: Corina gets your preferences from a file in your home folder,
+and your name from the operating system (for example, to put on
+printouts).
+
+Importing Your DataImporting Your DataWRITEMEChapter&#xA0;2.&#xA0;The File BrowserChapter&#xA0;2.&#xA0;The File BrowserChapter&#xA0;2.&#xA0;The File BrowserWhat's It Do?What's It Do?-- why you'd need such a beast; what it is/doesHow To Browse SamplesHow To Browse SamplesTo start the Corina File Browser, choose
+
+      File-&gt;Browse... (control-shift-O)
+
+      You will see the File Browser in a new window; initially, it will
+      be browsing your toplevel data directory.IMAGE: the basic file browserIn the upper-left corner, you see a popup
+    labelled Folder.  This is the folder
+    you're looking at.  If you click and ...WRITEME - how to use it: the folder popup, arrow keys, pgup/dn, enter, mouse, descending folders, ascending folders, opening samples.Displaying Fields and SortingDisplaying Fields and SortingIf the Corina File Browser only allowed you to browse files by
+their filenames, it wouldn't be much more useful than the Finder (on
+the Mac) or Explorer (on the PC).  But it has a killer feature that's
+completely impossible from almost any normal file browser: because
+it's part of Corina, it knows about Corina metadata fields.  And you
+can display, sort by, or search for any of these fields.WRITEME: how to display fieldsWRITEME: how to sortWRITEME: when do they get updated? (if at all)TipIf your hands are on the keyboard, you can quickly sort by
+a column by pressing control and the number of the
+column.  For example, if the second column is "Size", press
+control-2 to
+sort by size.You can also sort by 2 or more criteria.  For example, suppose
+you wanted to sort by the number of sapwood rings, and then (for those
+samples with the same number of sapwood rings) by end year.  Click on
+them in the opposite order: "End", then "Sapwood Count".  When you
+sort by "Sapwood Count", it won't disturb the sort order from the
+"End" sort unless it needs to, so samples with the same number of
+sapwood rings will still maintain their relative order.  (--need an
+example of this--)
+The following fields are available:NameThe name of the file, as it's saved on the
+    disk.  (This field is always visible.)Date ModifiedThe time and date this file was last modified.  If
+	it was modified today or yesterday, the date is shown as
+	"Today" or "Yesterday", to make it
+	easier to skim a list of files, and also for searching
+	(discussed later).SizeThe size of this file on disk, in bytes or
+    KB.KindThe kind of this file; usually this will be
+	"Corina sample" or "Folder", but may
+	also be something like "Tucson file" (for other
+	dendro filetypes) or "Other document" (for
+	non-dendro filetypes).Range, Start, End, LengthThe range is available either as the entire range
+	("1001-1036 (n=36)"), just the start-year
+	("1001"), just the end-year ("1036"),
+	or just the length ("36").  The first option is
+	easiest to read, usually, and the other options give you more
+	flexibility when sorting.  You can sort by end-year, for
+	example.And all of the sample's normal metadata fields......exactly as you entered them on Metadata panelThe Search FieldThe Search FieldSorting by a metadata field is a great way to organize samples,
+especially when you're sorting by a numerical value, like the
+number of sapwood rings.  It doesn't work as well for some text
+fields, like the species, and it doesn't really work at all for
+other text fields, like the comments field.  This is what
+the search field does really well.In the top-right corner of a the File Browser window, there's a text field
+labelled "Search for:".  When you type a word in this field, Corina will
+hide files that don't contain this text.  You don't even need to press return:
+it updates the list as you type, instantly.&#x2022;You can type as many words as you like, separated by spaces.  Corina
+    will show only files that match all of the words you supply.&#x2022;This field is case-insensitive.  The searches fire scar,
+    FIRE SCAR, and fIrE sCaR are all equivalent.&#x2022;When you enter a new folder, anything you typed in this field will
+    automatically be deleted.&#x2022;Terms you type into this field will match any column that is visible.And of course, after you've typed some search terms to narrow down the list,
+you can still use the sorting function to sort the samples that remain.The TrashThe TrashIn the lower-right corner of the File Browser window, there's a
+little Trash icon.  This is just like your Trash on Mac OS or your
+Recycle Bin on Windows.&#x2022;If you want to delete (one or more) files from the
+File Browser, simply select them and drag them to this icon.
+They'll be moved to your Trash.&#x2022;If you want to see what's in it, click it;
+this will open it with Explorer (on the PC) or in the Finder (on the
+Mac).&#x2022;If you want to delete the files in the trash/recycle
+	  bin permanently, click it to open it, and then choose
+
+	  Finder-&gt;Empty&#xA0;Trash (shift-&#x2318;-delete)  
+
+	  (on the&#xA0;Mac) or
+
+	  File-&gt;Empty&#xA0;Recycle&#xA0;Bin  
+
+	  (on the&#xA0;PC) to empty it.&#x2022;If you want to recover a file you dragged to the
+	  trash, click the Trash to open it, and then drag the icon of
+	  the file back into the File Browser window.  Alternatively,
+	  if dragging it to the trash was the last thing you did, you
+	  can undo it by choosing
+
+	  Edit-&gt;Undo Move to Trash.
+        
+FIXME:
+-- packed tucson files
+-- users will want to be able to read packed tucson files as if they were a folder of normal samples
+-- users should be able to convert between "a folder of (tucson) samples" and "a packed tucson file" seamlessly
+
+-- need the new-new i/o system for this?
+-- need a notation for this?  how about "packedfile.tuc#1" (#1, #2, ...)?  better yet, file.sep -- "packegfile.tuc/1"
+-- (number-of-sample is safe; id-number would probably not be, because there could be 2 files with 1 id number in the file)
+-- there probably aren't, in the ITRDB.  what if i enforced that there weren't on this end, too?  then "packedfile.tuc/652001" is a safe notation.  that would be rather elegant.
+Exporting the Browser DataExporting the Browser DataCorina lets you export all of the metadata fields you're
+viewing in the browser to other programs.  (For example, you could make
+a bargraph in Excel out of the start and
+end years of some samples.)Procedure&#xA0;2.1.&#xA0;Exporting the browser data:&#x2022;Choose
+  Edit-&gt;Copy (control-C)
+This will copy all of the data you see, as you see it, as plain
+text.  Each field will be separated by a tab character, and each row
+will be on a new line.  (You can paste it directly into a spreadsheet,
+like Excel.)Printing the Browser DataPrinting the Browser DataYou can also print your current browser view, as well.Procedure&#xA0;2.2.&#xA0;To print out the browser view:1.
+          If you want to change the page setup options
+(if you want to change the margins, or print to a non-standard
+paper size, for example), choose
+  File-&gt;Page Setup...
+2.
+          Choose
+  File-&gt;Print... (control-P)
+The printout will show:
+  &#x2022;which folder you're viewing&#x2022;all of the fields you see&#x2022;all of the files you see&#x2022;if there are search terms, what they are&#x2022;the number of files/folders,
+                    just like the browser window shows&#x2022;your name and the date
+Chapter&#xA0;3.&#xA0;Editing SamplesChapter&#xA0;3.&#xA0;Editing SamplesChapter&#xA0;3.&#xA0;Editing SamplesSamplesSamplesThe basic chunk of data in Corina is the
+sample.  Everything in Corina is concerned with
+putting data into samples, manipulating samples to emphasize their
+useful data, and ultimately, determining where some sample fits in a
+chronology.The term "sample" is perhaps slightly inaccurate.  A Corina
+sample is more like one measurement of a sample.  If you measure
+sample 6 twice, you will generally store the data in two samples, "6A"
+and "6C".A sample consists of:
+&#x2022;Data, as one number per year (the width of a
+      ring)&#x2022;A range, or the years it covers (like 1001 &#x2014;
+      1036)&#x2022;Metadata (like whether it has pith)&#x2022;Weiserjahre (for a sum, how many samples contribute
+            to each year)&#x2022;Elements (for a sum, which files were used to create
+      it)
+WRITEME: (***file/naming conventions)To keep things somewhat organized,  (what was i going to talk
+about?  sites=folders?)Creating a New SampleCreating a New SampleProcedure&#xA0;3.1.&#xA0;To create a new sample:1.
+          Choose
+    File-&gt;New Sample... (control-N)
+  2.
+          Type in a title for this sample, and press return.Tip
+Raw samples generally have titles with the site name,
+sample number, and reading letter.  To help you from forgetting to
+type the sample number, Corina won't let you continue if the title
+doesn't have a number in it.  If you really want to create a sample
+with no number in the title, type a number here and delete it later.
+Entering or editing data is as simple as typing a number, and
+pressing return to advance to the next year.  If you make a mistake,
+you can always back up to correct it.  You can move the cursor by
+clicking on any value with the mouse, or by using the keyboard.  The
+arrow keys move by one year
+(left/right) or decade
+(up/down), and
+Page up, Page down, Home, and
+End also work.If you try to enter a value in the cell immediately after the
+last value of your sample, it will automatically extend the dataset.
+If you enter a value in a cell that already contains data, it will
+overwrite the old value with your new one.  If ins/del***If you have a measuring box connected to your computer's serial
+port, Corina can record its measurements directly.Procedure&#xA0;3.2.&#xA0;To measure a sample:1.
+          Create a new, empty sample with
+    File-&gt;New Sample... (control-N)
+  2.
+          Type a title, and press return.3.
+          Click on the cell where the first value will go, if it's
+    not already selected: it's the second cell to the right
+    of 1001,
+    below 1.4.
+          Choose
+    Edit-&gt;Start Measuring (F1)
+    5.
+          Measure your sample.  Pressing the trigger enters a value into the editor.6.
+          While measuring, you can still move the cursor with the arrow keys, e.g., if
+    you want to re-measure a ring.  Remember to flip the measuring box to non-measure
+    mode while backing up.7.
+          When you're finished measuring, choose
+    Edit-&gt;Stop Measuring (F1)
+    8.
+          Save the sample.Why can't I edit this sample?Corina only lets you edit data by hand if it's raw
+  &#x2014; not indexed or summed.  If the status bar has a number
+  in square brackets, like "1863: 1129 [15]", then it's a summed
+  file.  To edit a summed file, you should edit the raw files
+  that make it up, and re-sum it.  Corina won't let you edit
+  indexed files, either.  (Check the Format field on the Metadata
+  tab.)  Instead, edit the raw file and re-index the sample.Identifying SamplesIdentifying SamplesEach sample needs a unique ID.  Unfortunately, there are 
+    several different identification schemes.Titlethe title itself, consisting of the full name of
+    the site, the sample number, and the reading number:
+    "Zonguldak, Karab&#xFC;k 15C."FilenameThe name of the file on disk:
+    "ZKB15C.xxx" (more on what
+    ".xxx" is
+    later).IDA 6-digit code for the sample:
+    "167153".TapeThe number written on the tape on the sample:
+    "C-TU-ZKB-15"Only two of these are really needed: the full title, and a
+shorter version, for example, suitable for writing on the sample
+itself.  The ID number is leftover from Tucson punchcards, and serves
+no purpose today.  The filename is different from the tape number
+because MS-DOS limited filenames to 8 letters, a dot, and then 3 more
+letters.  Hopefully in the near future, we'll decide to simplify
+the system by eliminating these unnecessary names.The Metadata PageThe Metadata PageA sample isn't just a bunch of numbers.  That's what the
+  metadata tab is for.  On the metadata tab, you can
+  enter... (***)You should always fill out the metadata page before you save.
+  (Corina warns you if you try to save a sample without entering any
+  metadata.)Metadata fieldsTitleThe title...IDID number.  These are typically 6 numeric digits, which
+        is why they're becoming obsolete.  For example, "ZKB-15C"
+        would be "167153". (Zonguldak, Karab&#xFC;k is site 167.)  But
+        this starts to fail when you get more than 1000 sites, or 100
+        samples.  These are used only for exporting a file to Tucson
+        format.DatingIs the sample relatively or absolutely dated?Unmeasured, beginningNumber of unmeasured rings at the beginning of this sampleUnmeasured, endNumber of unmeasured rings at the end of this sampleType of SampleThe sample type: core, charcoal, or section.Wood SpeciesThe species of wood; use the Latin nameFormatThe format of this data, either raw or indexed.
+    (You will probably never need to change this yourself.)Index Method
+    
+    
+    The algorithm used to index this sample.  See
+    Chapter&#xA0;6.  This is only set if Corina was
+    used to index the sample; other programs which use the Tucson
+    file format keep no record of this.Sapwood Count
+    
+    The number of sapwood rings.  By convention, this
+	includes unmeasured sapwood rings.  For
+	example, if a sample's last measured ring is 1236, and it has
+	3 unmeasured rings, and the first sapwood ring is 1230, then
+	the sapwood count is 10.PithPith: present, present but undatable, or not
+    present.Terminal RingBark, Waney-edge, near the end, or an unknown
+    number of rings to the endContinuousIs the last ring: continuous, partially contiuous,
+	or not continuous, over the outside edge of the sample?There's no real standard for this: one man's
+	"partially continuous" is another man's
+	"not continuous".  The purpose of this field is an
+	indicator of whether the last year of this sample is the last
+	year of the tree's life.  There's decent odds that
+	a continuous outer ring is the terminal ring, even in the
+	absense of bark, waney edge, or other signs.Quality
+      
+    Whether the sample has one unmeasured ring, or
+	more than one unmeasured ring."Quality" is a lousy name for it, but that's the
+	convention.ReconciledWhether this sample has been reconciled or not.
+    If you're measuring a new sample for the first time, say No.
+    Later, after you reconcile two readings of this sample, you'll set
+    this to Yes.  (See
+    the section called &#x201C;Reconciling Readings&#x201D;.)AuthorYour name.  Corina sets
+    this automatically for you.  (It's the name of the person who
+    created the sample.  If somebody else
+    edits it, it will still have your name on it.CommentsAny extra notes you have that don't fit in
+    any of these categories.  You can type as much text as you
+    want here.For example, if the piece had any fire scars, note them
+    here.  Also, note any cracks you had to measure around -
+    or anything else that would help somebody else who wants
+    to reconstruct what you did.The Status BarThe Status BarAt the bottom of each editor window is the status
+      bar, which provides you with some useful
+      information.The status bar.Next to the tree, you'll see some numbers:1913: 30 [5] 4*1This the year the cursor is on, and the data for that year.
+    Here's how to interpret this:Table&#xA0;3.1.&#xA0;How to read the status barTextMeaning1913:&#xA0;For the year 1913,30the average ring width was 30 (hundredths of a millimeter: 0.30 mm),[5]which is the average of 5 samples,4*14 of which are bigger than in the previous year, and 1 of which was smaller.If any of these terms is missing, it means this sample
+    doesn't have that information.  A raw sample, for example,
+    will only have the year and ring width.  A sample summed with
+    Corina will have all of these terms.  You might see the number of
+    samples but not Weiserjahre data for Tucson files, which
+    can't store those numbers.  More information about this
+    &#x2014; such as the difference between
+    '*' and
+    '/' in the last term
+    &#x2014; can be found in the chapter on
+    summing.In the lower-right corner of each editor window, you'll see some text
+    that looks likeThe status bar, as it looks on a Mac.mean sensitivity = 0.317This is the mean
+    sensitivity, which tells how sensitive or complacent
+    the data is.  (values***) It's essentially
+    for-your-information only; you shouldn't be worried if
+    it's too high or too low (but you probably shouldn't
+    be too surprised if a complacent dataset doesn't crossdate
+    as well).Behind the ScenesIt's defined in [DPL] by:
+
+Equation&#xA0;3.1.&#xA0;Mean Sensitivityms = 1/(N-1) &#x2211; 2|yi-yi-1| / (|yi| + |yi-1|)
+
+    In some instances, it can't be computed (e.g., if any
+    two consecutive years are 0), and is reported as
+    N/A.There are other statistics you can view, as well.  Press and
+    hold the mouse button over the statistics, and you'll see a popup
+    menu that looks like:Table&#xA0;3.2.&#xA0;Statistics Popupmean sensitivity = 0.317total radius = 149.44 mmaverage ring width = 1.18 mmnumber of years = 127number of rings = 127number of elements = N/AIf you choose any of these menuitems, the status bar will
+    then display that statistic (and in any other editor windows you
+    open, too).Some of the other statistics may also be reported as
+    N/A.  Number of elements is N/A
+    if it's a raw file.  Total radius and average ring width are
+    N/A if the sample is indexed.Reconciling ReadingsReconciling ReadingsAfter each sample is read twice, you (or somebody else)
+    reconcile the readings.  Reconciled
+    samples&#x2022;have the same number of years,&#x2022;have all trends the
+    same, and&#x2022;the measurements for each ring are within 3% (of
+    the smaller value)Reconciliation is traditionally done on paper, though it can
+    help to graph both samples on the screen for a quick visual
+    comparison first.  On the printouts, circle values that differ by
+    more than 3%, and underline bad trends.  Then re-measure each bad
+    value.  Corina can quickly check if a sample has met these
+    criteria.(There is ongoing debate about whether a trend of
+    stays-the-same and a differing trend &#x2014; increasing or
+    decreasing &#x2014; is acceptable.)Procedure&#xA0;3.3.&#xA0;To check if a sample is reconciled (correctly):1.
+          Open one reading with
+      File-&gt;Open... (control-O).2.
+          Choose
+      Manipulate-&gt;Reconcile.3.
+          If Corina can't find the other reading, it will ask
+    you to locate&#xA0;it.4.
+          A new window appears listing inconsistent trends and
+    measurements, if there are any.5.
+          When you're done looking at it, close this window.Corina thinks that the two measurements of a sample are the
+    "A" and "C" readings, or the
+    "B" and "D" readings, and that this is the
+    last letter of the filename (before the filename extension, if
+    you're on Windows).When you've finished reconciling a sample on paper,
+    here's a checklist...***Procedure&#xA0;3.4.&#xA0;To reconcile a sample on the computer, after you've reconciled it on paper:1.
+          Open the first ("A") reading with
+      File-&gt;Open... (control-O).2.
+          Type in the correct data.3.
+          On the Metadata tab, set
+    Reconciled to Yes.4.
+          Save the sample with
+      File-&gt;Save (control-S).5.
+          Repeat for the second ("C") reading.6.
+          Change the extension of both files to .REC
+      (in Windows Explorer, for example).When reconciling by hand, you need to know what 3% of a
+     value is; here's a table:Table&#xA0;3.3.&#xA0;List of 3% for ReconcilingRing Width3%Ring Width3%1-331201-233734-672234-267868-1003268-3009101-334301-33310134-1675334-36711168-2006368-40012RedatingRedatingThe dating of a sample is what year
+    it's dated to, and whether that range is absolute or
+    relative.  Changing these values, then,
+    is redating.There are two reasons to redate a sample.  First,  ...  They also need to be dated correctly for making sums,
+    which I'll talk about later.The standard way to redate a file is with the Redate... menuitem.Procedure&#xA0;3.5.&#xA0;To redate a sample:1.
+          Open the sample with
+      File-&gt;Open... (control-O).2.
+          Choose
+      Manipulate-&gt;Redate... (control-R).3.
+          Type in either the new starting date or the new ending date;
+      the other one will automatically be computed for you.4.
+          Click "Relative" or
+    "Absolute" if you want to set
+    that.5.
+          Click OK.6.
+          Save the sample.There are other ways to do it, though.  The Absolute/Relative
+    setting can also be changed from the Metadata tab.  And if you
+    want to change the starting year of a sample, you can double-click
+    on that year (the very top-left square) in the Data tab and change
+    it directly &#x2014; press return when you're done.Printing SamplesPrinting SamplesIt's often useful to have a hardcopy of data.  Corina prints
+    all data present for a sample, including data, metadata,
+    weiserjahre, and elements.  It also prints some appropriate
+    summary information for the type of sample it is, like the total
+    radius of a raw sample, the total number of rings in a master, or
+    the number (and percentage) of significant years in a
+    master.To print a sample, select
+    File-&gt;Print... (control-shift-P).
+
+    This shows you a dialog that lets you set the margins, layout, etc.,
+    of the printout.  If you just want to use the same settings as you did
+    before (or the defaults, if you haven't printed yet), you can
+    select
+
+    File-&gt;Print One Copy (control-P).
+
+    and Corina will print without showing you the dialog.Chapter&#xA0;4.&#xA0;GraphsChapter&#xA0;4.&#xA0;GraphsChapter&#xA0;4.&#xA0;GraphsIntroductionIntroductionGraphs give you a "feel" for data that you can't get
+        just by looking at tables of numbers.Most of the statistical tools provided by Corina
+        aren't incredibly intelligent.  It wouldn't be very hard to
+        come up with some datasets that had great statistical scores
+        across the board, but obviously didn't crossdate.***How to Make a GraphHow to Make a GraphThe ability to make graphs is integrated into virtually
+    every part of Corina - so no matter what you're doing, it's easy
+    to see a graph of it.The simplest way to make a graph is to select some files in
+    the browser and choose
+      File-&gt;Graph.
+    Ways to make a graph include:&#x2022;In the browser,
+        select some samples, and choose
+
+    Graph-&gt;Graph (control-G)
+
+        or right-click on them, and choose
+        Graph.&#x2022;When indexing,
+        click the Preview
+        button.&#x2022;When crossdating, click the
+        Graph button.&#x2022;When editing a
+        sample, choose either
+    Graph-&gt;Graph (control-G)
+
+        or
+
+    Graph-&gt;Graph Elements (control-shift-G).
+
+        &#x2022;Adding files to an existing graph: drag and
+        drop any file on the graph window to add it.&#x2022;By loading an old one: see the section called &#x201C;Saving Graphs&#x201D;.When you make a graph of a summed
+    file, you'll see two lines.  One is the normal graph: the
+    width of each ring.  The second line is the number of samples that
+    had data in that year.If you graph an oak sample that has sapwood, the rings of
+    sapwood will show up as a thicker line at the end of the
+    graph.  (Corina considers a sample to be oak if the species
+    contains either "oak" or "quercus".)Finally, when you move the mouse around on the sample, it
+    also shows a white vertical bar in that year.  The year is also
+    printed at the top of the bar.ScrollingScrollingOnce you're looking at a graph, it should be apparent that you
+  can use the scrollbar at the bottom to scroll through the years.
+  You can also use the keyboard to scroll:Table&#xA0;4.1.&#xA0;Graph window keyboard controls: ScrollingKeyCommandleftScroll left 10 yearsrightScroll right 10 yearsPage UpScroll left 100 yearsPage DownScroll right 100 yearsHomeScroll left to startEndScroll right to endSelecting SamplesSelecting SamplesAs with other programs, Corina lets you operate on one
+  sample at a time.  One graph at a time is the currently selected
+  sample.  The currently selected sample is drawn with a thicker
+  line.You can always just click on a graph to select it.  Or use
+  the keyboard:Table&#xA0;4.2.&#xA0;Graph window keyboard controls: selecting samplesKeyCommandTabSelect next sampleShift-TabSelect previous samplecontrol-1,
+                   control-2,
+                   etc.Select graph 1, 2, etc.Moving Samples AroundMoving Samples AroundYou can move samples around on the graph using the mouse, too.
+  Simply drag the graph to where you want it.  It'll move smoothly up
+  and down, and jump by whole years left and right; if you watch the
+  title bar of the window, it'll show you what years it's dated to as
+  you drag &#x2014; for example, Zonguldak,
+  Karab&#xFC;k 10A (1001-1036) (at 1002-1036), if
+  you've scrolled it right by one year.  If you want to adjust it up
+  and down without changing the years it's dated to, hold down the
+  Shift key as you drag.If you're a keyboard jock, there are keyboard shortcuts for
+  almost everything you can do with the mouse:Table&#xA0;4.3.&#xA0;Graph window keyboard controls: moving samples aroundKeyCommandupSlide sample updownSlide sample down+ or =Nudge sample up (by 1 pixel)-Nudge sample down (by 1 pixel)control-leftSlide sample left by 1 yearcontrol-rightSlide sample right by 1 yearSpaceSquish graphs together (see below)If you had a lot of graphs to move around, doing it by hand
+  could take a while.  So Corina has are a couple commands that you
+  can use to move all of the graphs at once:&#x2022;First, you can have all the baselines of your graphs set to
+      zero.  That is, they'll all be on the same y-axis.  Select
+      View-&gt;Make Baselines Zero.
+
+      (This is the default for plotting samples with their indexes.)&#x2022;Second, you can spread out the baselines at regular
+      intervals.  The first graph will have its baseline at the
+      bottom, the second one 1" above that, etc.  Select
+      View-&gt;Make Baselines Evenly Spaced.
+      (This is the defaul for plotting multiple samples.)&#x2022;Third, you can have Corina "look" at the part of
+      the graphs that are showing, and fit them together as closely as
+      possible.  It doesn't just set all the baselines to the same
+      place; it actually tries to make each graph fit together
+      11It does this by computing the minimum
+      &#x3C7;&#xB2;, similarly to how good indexing curves are
+      found..  Select
+      View-&gt;Squish Together Graphs (Space).
+    ScalingScalingYou can change the scale of parts of the graph.  The
+    horizontal scale can be changed in the graph preferences.The vertical scale of each graph is set
+    separately.  To change the vertical scale of the currently
+    selected graph:Table&#xA0;4.4.&#xA0;Graph window keyboard controls: scalingKeyCommand&lt; or ,Scale sample down by 20%&gt; or .Scale sample up by 25%Printing GraphsPrinting GraphsWRITEME: printingSaving GraphsSaving GraphsIf you get a bunch of samples put on a graph and want to
+  save what you're working on, you can save the graph just as you
+  would any other file, with
+      File-&gt;Save As... (control-S).It will save which samples you've chosen to graph, the scale of each, and where you've moved
+  them.  Only references to the actual samples are saved, so you
+  can't delete the original samples, or send just the graph file to
+  a friend.  Graphs of indexes aren't samples, and can't be saved.
+  You can load them again with
+      File-&gt;Open... (control-O).
+    Exporting GraphsExporting GraphsWhen you use
+      File-&gt;Save As... (control-S),
+    Corina saves which samples are in the graph, where they are,
+    what scale is being used, what type of graph it is, etc. - in
+    other words, it doesn't store an actual picture of the graph, but
+    simply a way to reproduce it later.  If you want to put a graph
+    from Corina into another document, you need to
+    export it.BargraphsBargraphsFIXME: make this a sect1 about other graph styles, with children sect2's
+  for bargraphs, skeleton plots.Corina can also make another type of graph from sample data:
+  bargraphs.  Bargraphs are similar to normal graphs (the x-axis is
+  still "years"), but they only show what years each sample starts and
+  ends, not the width of each ring.They can't be used for verifying crossdates or indexes, of
+    course, but they're good for seeing how a master chronology is put
+    together.Procedure&#xA0;4.1.&#xA0;To make a bargraph:1.
+          Create a graph just as you normally would, e.g., by
+    choosing 
+      Graph-&gt;Graph Elements
+    in the editor.2.
+          When the graph window appears, choose
+      View-&gt;as Bargraph (control-B).Bargraphs are colored by species.  ***colors?Chapter&#xA0;5.&#xA0;CrossdatingChapter&#xA0;5.&#xA0;CrossdatingChapter&#xA0;5.&#xA0;CrossdatingCrossdating is the art of figuring out
+    where (or rather, when) one sample fits relative to another
+    sample.  Corina has several algorithms to help you crossdate
+    samples.How Crossdating Algorithms WorkHow Crossdating Algorithms WorkAll algorithms work in pretty much the same way.  There's a
+  "fixed" sample, and there's a "moving" sample.  Imagine you have
+  printouts of their graphs on translucent paper.  The fixed graph is
+  taped to a table, and you can slide the moving sample left and
+  right.  (This is actually how it was originally done, on graph
+  paper, with one inch per decade.)  Start with the moving sample to
+  the left of the fixed sample, overlapping it by 10 years.  Look at
+  how well the graphs match: this is the first score that's computed.
+  Slide the moving sample to the right one year.  This is the second
+  score.  Keep doing this until the moving sample overlaps by only 10
+  years on the right end of the fixed sample.If you did this yourself, you'd end up with a list of
+  scores, like this:Table&#xA0;5.1.&#xA0;Crossdating Scores, ListEnd year of moving sampleCrossdating score10100.0310110.5610121.1110130.8210140.60Since there are so many scores, that tends to take
+  up a lot of space.  Instead, we usually write them
+  10 to a row, like this:Table&#xA0;5.2.&#xA0;Crossdating Scores, TableYear01234567891001&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;0.0310100.561.110.820.600.342.900.530.750.490.37This looks like how sample data is displayed.  Just remember
+  that the year for each data point here is the
+  end-year of the moving sample.That's all there is.  You could do it all simply by moving
+  graphs and eyeballing the crossdates.  But there are hundreds of
+  sites and millennia of chronologies you'll want to crossdate your
+  samples against, so that would take a while.  Corina has a few
+  algorithms to find likely crossdates almost instantaneously.  They
+  aren't perfect, though, and they generally aren't as good as looking
+  at the graphs.  You'll still have to look and see if they make
+  sense.SequencesSequencesOften you won't want to run just one crossdate.  And usually
+  you'll want to run more than one test between the same samples.  So
+  Corina lets you run sequences of crosses:
+  N-by-1, N-by-N, 1-by-1, and 1-by-N.  These are how many fixed and
+  moving samples you want to crossdate.  With 1-by-N, for example, you
+  have one fixed sample you want to try crossing against several other
+  samples.  When you choose N-by-N, you choose only one set of
+  samples: it crosses every sample against every other sample.How to Crossdate SamplesHow to Crossdate SamplesWRITEME: old way.  sequences, 1-by-n, etc.WRITEME: new way.  kit, drag files, hit run.WRITEME: new way #2: select, right-click, crossdateWRITEME: going through sequences; next/prev; watch the title
+  of the "score" columnWRITEME: the tabs; sigs, all, histoWRITEME: the views: normal, tables, gridsWRITEME: graphsWRITEME: maps
+TODO: the following blurb came straight from a word processor.
+reformat it, and make it fit.
+
+[[ task: write documentation for the "crossdatekit" feature, at least in the context of crossframe's edit menu ]]
+When you run a sequence of crossdates, you pick some samples to
+be fixed, and other samples to be moving.  (In an "N-by-N" sequence,
+Corina treats it as if each of the samples is both fixed and moving,
+but doesn't show you duplicate crosses: if you've already seen A-vs-B,
+you won't also get B-vs-A.)  This is how crossdating works, but there
+is a downside to this: sometimes you end up looking at a crossdate
+with a "fixed" sample you really want to be moving, or a "moving"
+sample you really want fixed.You can use the options in the View menu to change which ranges
+are displayed in the "Significant Scores" tab, but that's not always
+good enough.  The "All Scores" tab always shows the score for the
+end-year of the moving sample, no matter which option you've chosen in
+the View menu.Now, you could just close the crossdate and start a new sequence
+with whatever samples you wanted in the correct position.  But that
+would take a lot of time, and not be very pleasant.  So Corina lets
+you change which samples are fixed and which are moving after you've
+started to run a crossdate sequence.Let's suppose you're looking at a forest sample, and you want to
+crossdate it against some masters to see if it fits anywhere.  It's
+open (or maybe you opened it from the Open Recent menu), so you choose
+Manipulate -&gt; Cross against... and pick a few masters.But now the single sample, being the first one, is called
+"fixed", and the masters are "moving".  That's backwards.  So, do
+this: * From the crossdate window, choose View -&gt; Edit Fixed/Moving
+Lists (or press command-E) * The crossdate window disappears, and
+you're presented with a dialog that lists the fixed samples on the
+left, the moving samples on the right, and controls to add and remove
+files from either list, or move files between the lists.  In this
+case, you just want to swap them all, so click "&lt; Swap &gt;", and
+the fixed and moving lists exchange places.  * Finally, click Run and
+you're returned to the crossdate window, but the single forest sample
+is now the moving sample.You can use this whenever you're running a sequence of
+crossdates which is almost-but-not-quite what you want.  If you're
+running a 1-by-N and you realize you forgot one sample, press
+command-E, click "Add..." to add it, click "Run", and you're back.  If
+you're running an N-by-N and realize that only one of them is really a
+"fixed" sample, press command-E, remove all but one from the "fixed"
+side, and click "Run".Finally, note that the two lists in the dialog can have files
+dragged to them from anywhere.  So, for example, if you're looking at
+a bunch of files in Windows Explorer or the Mac Finder, and think
+you'd like to crossdate &lt;...&gt;The AlgorithmsThe AlgorithmsNow I'll describe each of the algorithms Corina can use to
+  crossdate samples.T-ScoreT-ScoreThe t-score is the classic crossdate.
+  Everybody quotes t-scores: if you want to brag about how good a
+  cross is, you tell them your t-score.  Unfortunately, every dendro
+  program seems to have a slightly different
+  implementation of t-score, so the numbers you get from Corina
+  might not be exactly comparable to the numbers from other
+  programs.The version Corina uses is based on the algorithms given in
+  [Baillie73], though with some apparent bugs
+  corrected.  (In the following equations,
+  x0,
+  x1,
+  x2, &#x2026;
+  are the data of the fixed sample in the overlap,
+  y0,
+  y1,
+  y2, &#x2026;
+  are the data of the moving sample in the overlap,
+  and N is the length of the overlap.)Procedure&#xA0;5.1.&#xA0;T-Score algorithm1.
+          Make each dataset
+bivariate-normal [http://mathworld.wolfram.com/BivariateNormalDistribution.html], by replacing each value with the mean of the 5 values
+    around it, and then taking its natural logarithm.  (This is what
+    [Baillie73] does, and how they justify it; I'm
+    simply using their result, and assuming it is correct.  Statisticians
+    are welcome to argue about this.)
+
+Equation&#xA0;5.1.&#xA0;Student's T-Score prep workxi &#x2190;
+            (xi-2 +
+	     xi-1 +
+	     xi +
+	     xi+1 +
+	     xi+2) / 5xi &#x2190; ln(xi)
+
+    This is done to both the fixed and moving data.
+    2.
+          The Student's-T computation looks like this:
+
+Equation&#xA0;5.2.&#xA0;Student's T-Scoresxy = &#x2211; xi yi - N (xi - xavg) (yi - yavg)sxx = &#x2211; xi2 - N (xi - xavg)2syy = &#x2211; yi2 - N (yi - yavg)2r = sxy / &#x221A; (sxx syy)t = r &#x221A; ((N-2)/(1-r2))
+
+    The t-score is called a "parametric" algorithm, because it
+  takes into account the magnitudes of the samples.***(huh?)A t-score is considered "statistically significant" if it's
+greater than a certain value.  Just what this value is varies with the
+length of the overlap between the samples: a 500 year overlap can have
+a t-score of 2.6 and pass, but an overlap of only 15 years would have
+to be higher, like 3.0.  The values are listed in this table:
+
+Table&#xA0;5.3.&#xA0;Significant T-scoresOverlap between samples (N)Minimum significant score (t)163.65729.92535.84144.60454.03263.70773.49983.35593.250103.169113.106123.055133.012142.977152.947162.921172.898182.878192.861202.845212.831222.819232.807242.797252.787262.779272.771282.763292.756302.750402.704602.660&#x221E;2.576
+ WRITEME: where's this data from?  (PIK's table) -- add ref to
+biblio, and add link here.In reality, your overlaps will always be at least 10 or 15
+years, and hopefully more than 50.  You don't need to know this table,
+but a t-score must be greater than 2.5 or 3.0 to be significant,
+depending on its overlap.Click on the "Significant Scores" tab to see a list of all
+significant scores.TrendTrendThe trend is the simplest crossdate.
+    For each sample, it computes the trend of
+    each 2-year interval (1001-1002, 1002-1003, and so on).  The trend
+    of a 2-year interval is simply whether the next ring is larger,
+    smaller, or the same.  The trend score is the percentage of
+    intervals in the overlap which are the same.  For example, a 75%
+    trend (a very good score, by the way) means that for 75% of the
+    intervals in the overlap, both samples went up in the same years
+    and down in the same years.Other NamesYou may hear this algorithm called by different names.
+      The German name for this is
+      "Gleichl&#xE4;ufigkeitskoeffizient", or
+      simply "Gleichl&#xE4;ufigkeit" for short.
+      It was first computerized by Eckstein in [Eckstein], so it has also been called "Eckstein's W."
+      (German Wert = value, score.)
+      If one sample stays the same, and the other increases or
+    decreases, Corina considers that to be halfway between a
+    same-trend and different-trend, and gives it half a point.Trend is a "non-parametric" algorithm, because it only takes
+    into account if a given ring is bigger or smaller than the
+    previous one, not by how much.  To the trend, a drop of "100 1"
+    looks exactly the same as a drop of "100 99".Two completely random samples will have a trend of 50%, on average.
+    So you'd expect a trend must be greater than 50% to be significant.
+    According to [Huber70], a trend is significant if:
+
+Equation&#xA0;5.3.&#xA0;Significant Trendstr &gt; 50% + 50/&#x221A;N
+
+    For example, a pair of samples with a 50-year overlap needs a 50 +
+    50&#x221A;50 = 57.1% trend to be significant, but at a 400-year
+    overlap need only a 50 + 50&#x221A;400 = 52.5% trend.In practice, however, this doesn't tend to work terribly well.
+    Using this scheme, there are typically about three times as many
+    "significant" trend scores as t-scores, and users want this narrowed
+    down a bit more.  So take &#x3C3;=3 and use:
+
+Equation&#xA0;5.4.&#xA0;Significant Trends, adjustedtr &gt; 50% + 50&#x3C3;/&#x221A;N
+
+    This gives about the same number of significant trend scores as
+    t-scores.Trends are also used in reconciliation.  After they've been
+    reconciled, both readings of a sample should have 100%
+    trend.D-ScoreD-ScoreThe D-score, or "Dating score," is a combination of
+      the T-score and trendEquation&#xA0;5.5.&#xA0;D-Score AlgorithmD = (tr - 50%) &#xD7; tCorina considers 40 to be the
+    theshold for significant D-scores.WeiserjahreWeiserjahreAll of the crossdates that have been mentioned so far only
+      compare the ring widths.  This works fine for raw samples, but
+      when crossdating summed samples, there's a lot more information
+      available, namely, the Weiserjahre data.  Wouldn't it make sense
+      to count a [20]&#xA0;19*1
+      ring more heavily than a
+      [1]&#xA0;1/0 ring?  19 out of
+      20 samples think it's an increasing year, not just 1.This is what the Weiserjahre cross does: for each possible
+    overlap, it starts by counting the number of significant intervals
+    of the master for that overlap.  A "significant" interval is one
+    with at least 3 samples, where at least 75% of them have the same
+    trend.  Then it computes the percent agreement (like the trend)
+    between the master and the raw sample for only those significant
+    years of the overlap.  (Of course, for the trend of the master,
+    it doesn't use the trend of the master; it uses the trend of the
+    majority of its elements.  They're usually the same, but not
+    necessarily.)(Another way to think about the Weiserjahre crossdate is:
+it's like a trend, but ignoring years where the sum has only 1 or 2
+samples, or where there isn't an overwhelming trend in the sum.
+Also like the trend, the results are given as a percentage.)Because the Weiserjahre crossdate is only applicable to masters
+  crossed against raw samples, it's not turned on by default in
+  Corina.Procedure&#xA0;5.2.&#xA0;To run a Weiserjahre crossdate:1.
+          Start to run a crossdate as you normally would.  You'll
+  see the T-score results.2.
+          Choose
+    Edit-&gt;Edit Fixed/Moving Lists... (control-E).3.
+          The crossdate disappears, and the list of samples and
+    algorithms for your crossdate appears.  At the bottom, you'll see
+    that the T-score, Trend, and D-score are turned on by default.
+    Click the "Weiserjahre" checkbox to turn it
+    on, too.  (You can turn off any other algorithms you want here, as
+    long as at least one is turned on.)4.
+          Click Run.  Your crossdate window will
+    appear again, and the Weiserjahre crossdate will be included.  If
+    you kept the T-score, trend, and D-score algorithms turned on,
+    click Next 3 times to see the first
+    Weiserjahre cross.R-ValueR-ValueThe r-value, or correlation coefficient,
+  is a crossdate which you'll almost never use.  It's not terribly
+  useful to dendrochronologists - but statisticians might want to know
+  its value, so Corina makes it available.If you go back and look at Procedure&#xA0;5.1,
+  the second-to-last line says "r = ...".  That's the r-value.
+  The t-score is defined in terms of the r-value and the overlap, N.
+  An r-value can range from 0.0 (no correlation) to 1.0 (perfect
+  correlation).Because the R-value crossdate is not generally useful by
+itself, it's not turned on by default in Corina.Procedure&#xA0;5.3.&#xA0;To run an R-value crossdate:1.
+          Start to run a crossdate as you normally would.  You'll
+  see the T-score results.2.
+          Choose
+    Edit-&gt;Edit Fixed/Moving Lists... (control-E).3.
+          The crossdate disappears, and the list of samples and
+    algorithms for your crossdate appears.  At the bottom, you'll see
+    that the T-score, Trend, and D-score are turned on by default.
+    Click the "R-value" checkbox to turn it
+    on, too.  (You can turn off any other algorithms you want here, as
+    long as at least one is turned on.)4.
+          Click Run.  Your crossdate window will
+    appear again, and the R-value crossdate will be included.  If
+    you kept the T-score, trend, and D-score algorithms turned on,
+    click Next 3 times to see the first
+    R-value cross.Summary of Crossdating AlgorithmsSummary of Crossdating AlgorithmsIf you've just read about all of the different algorithms for
+crossdating, and don't have a lot of experience with running
+crossdates, you're probably reeling in shock at this point.  There's
+quite a bit of information here, and you're not sure what you need to
+know to use Corina effectively.  (A lot of it is there purely for
+reference value, I'll admit.)  This Cliff Notes version is:T-ScoreThe standard crossdate - always run this.
+    Scores greater than 2.5-3.0 are good.TrendAnother standard crossdate - computes the
+    percentage of years with the same trend (going-up- or going-down-ness).
+    Scores greater than 60%-70% are good.D-ScoreA combination of the T-score and trend;
+    often better than t-score/trend at segregating good scores
+    from bad ones.WeiserjahreAn algorithm for crossdating summed samples
+    (masters) against single samples; kind of like a trend-for-Weiserjahre-data.
+    R-ValueA score which statisticians might ask you for.
+    You'll probably never use it on your own (though it's used by Corina
+    when computing the t-score, so you already are, in a sense).Other ViewsOther ViewsWRITEME: other views of seqs, saving/printing, how to toggle, ...TablesTablesCorina provides other ways to look at a bunch of crossdates.
+  For example, if you have a 1-by-N sequence (or an N-by-N sequence),
+  you can look at it in a table.
+
+  -- what a table is, why you'd want it
+  -- what you need (1-by-n, all dated correctly)
+  -- how to do it (view-&gt;...) / also, how to change back
+  -- fixed sample is a popup 
+  -- printing, saving, exporting (clipboard?) to word
+  -- (does it show the currently-selected algorithms?  it should... -- note that this is how to change the columns)
+  -- (can you click the header to change the sort?  how's that change the sequence?)
+  -- (can you right-click the header to change the algs?  i suppose so -- this changes the seq.alg)
+  -- (can you drag to rearrange?  yeah, this seems reasonable.)
+  -- (be sure to include sample row which has N=0 overlap, and point out what it looks like)
+  -- (double-click graphs that pair, right?)
+  -- (do i have a "Graph All" button?  it would be nice.)
+  -- (are sig scores hilited?  they should be.)
+  ...
+  Table&#xA0;5.4.&#xA0;Crossdating Table for ZKB-9SampleRangeT-ScoreOverlapTrendD-ScoreABC-11001-10503.455077.2%93.8DEF-71001-10503.455077.2%93.8GridsGrids***Just as it's easier to see at a glance how a couple
+  of samples crossdate by looking at highest t-scores in the summary
+  tab, sometimes you want to see at a glance how well a whole set of
+  samples crossdate with each other &#x2014; an entire site, for
+  example.  Grids...***...as tables are 1-by-n views, grids are n-by-n views.
+  put all of the fixed samples down the left(?) side, and the moving
+  samples across the top(?), and in each cell of the grid, that's
+  the crossdate between them.  but since A x B is the same as B x A,
+  the grid is only half of a complete rectangle -- the bottom
+  triangular half.
+  -- what's in each grid cell (selected algs)
+  -- sig scores hilited -- what constitutes sig here?
+  -- double-click to graph; also "Graph All" button?
+  -- there is no "grid.png" -- either make one, or make a real table here
+  -- how to save (just .xdate?), print (n-by-n pages), export (word?)
+  -- (batch mode: deal with xdate files: create, output tables/grids as HTML, etc.)
+  GraphingGraphingWRITEMEMappingMappingWRITEMESaving CrossdatesSaving CrossdatesWRITEME
+-- .xdate extension?
+-- any view (normal/table/grid)
+-- how (cmd-S)
+Printing CrossdatesPrinting CrossdatesWRITEME
+-- any view (pick?)
+-- how (cmd-P)
+Chapter&#xA0;6.&#xA0;IndexingChapter&#xA0;6.&#xA0;IndexingChapter&#xA0;6.&#xA0;IndexingThe ProblemThe ProblemTrees tend to put on big rings when they're young, and
+    smaller rings when they get older.  (People do, too: you grew a
+    lot more the first year you were alive than the tenth.)  Some
+    trees put on very large rings, while others put on very small
+    rings.  These variations in growth can make it difficult to
+    crossdate samples.After all, you don't care about the absolute width of a ring
+    ("Ring #34 is 0.36mm wide") as much as you care about its relative
+    width ("Ring #34 is only 36% of normal").This is what indexing is for.  Indexing is a manipulation you
+    can perform on your data to make it easier to crossdate.Procedure&#xA0;6.1.&#xA0;Indexing in a nutshell1.
+          You open a sample (raw data)2.
+          You ask Corina to index it3.
+          Corina shows you some possible curves4.
+          You pick a curve (based on its graph, statistical
+                  scores, and your expectation of how the tree
+                  is growing)5.
+          Corina converts each year's ring width to a ratio of
+                  actual growth to expected growth for that year6.
+          You save the sample (indexed data) to a new fileWRITEME: (why we need it, when to use it)UnitsIndexing changes the units of a
+      dataset.  A raw sample has units of hundredths of a
+      millimeter (0.01 mm).  An indexed sample has units of
+      parts per thousand (0.1%, or
+      &#x2030;).This doesn't cause a problem with crossdating.  The
+      t-score normalizes all samples as part of its test, and the
+      trend only cares if the values are increasing or decreasing.
+      (The other crossdates are based on these.)  For more
+      information, see
+      Crossdating.It does cause a problem with summing, however, since
+      summing needs to take the average.  (What's the average of 1mm
+      and 75%?)  Therefore, the samples in a sum must be either all
+      raw, or all indexed.  For more information, see
+      Summing.How to Index a SampleHow to Index a SampleIndexing a sample in Corina is straightforward.Procedure&#xA0;6.2.&#xA0;To index a sample:1.
+          Open the sample with
+	File-&gt;Open... (control-O)2.
+          Choose
+        Manipulate-&gt;Index... (control-I).
+
+        (If it's dimmed, that means the sample is already indexed.
+        Open the original raw data and re-index that.  This is why you
+        should always keep your raw data!)3.
+          Click on an index.  Take a look at how the curve compares to
+	your data by clicking Preview; close
+        the graph when you're done looking.4.
+          When you've decided which index to use, select it, and
+	click OK5.
+          Save the indexed sample with
+	File-&gt;Save As... (control-shift-S).
+	You should usually use the same filename, but ending with
+        .IND to indicate that it's
+	indexed.***how to pick: read on...Things that can go wrong:&#x2022;If the Index menuitem is dimmed, that means the sample
+	is already indexed.  Open the original raw data and index
+	that.  (Always keep your raw data!)  If
+	you know it's raw data and for some reason Corina thinks
+	it's indexed, go to the metadata tab and change the
+	"Format" field to "Raw".&#x2022;(if it's a bad index)TipIf you want to index several samples at once, use the
+      file browser.  Select all the
+      samples, and choose
+      Manipulate-&gt;Index....ExponentialExponentialBy far the most common index you'll use is the exponential.
+    9 times out of 10 this will be the best choice.  And there's a
+    good reason: this matches how you would expect a tree to grow.
+    Trees start out growing quickly, and gradually slow down.If you're not sure which to use, you'll probably
+      never get in trouble for choosing an exponential index.   You'll use this one almost all the
+      time.This index tries to fit an equation of the formEquation&#xA0;6.1.&#xA0;Exponential Curvey = a + be-pxto your data, searching for the best values of a, b, and p.
+
+    Note
+      This is sometimes called a "negative exponential" index,
+      because the exponent is negative.  (Corina doesn't require
+      that the exponent is negative, but if it's not, using this index
+      probably isn't such a good idea; it means the tree is generally
+      getting bigger, not smaller.)
+      
+    The least-squares algorithm used comes from [CLR];
+    the matrix solving function comes from [vanLoan].
+    Sometimes the exponential index does a lousy job.  If a tree
+      is living in a crowded area and the trees around it get cut
+      down, suddenly it has much better growing conditions, so it
+      might grow faster as it gets older, instead of slower.  If you
+      tried to use an exponential curve on a tree like this, it would
+      exaggerate this growth, and useful data would get flattened
+      out.The result is you're looking at the growing conditions
+      of this one tree, so it's not going to crossdate as
+      well.Or imagine a tree with a fire scar that has a few very large
+      rings.  An exponential index wouldn't take much notice of this,
+      because most of the sample is still shaped like an exponential
+      curve, but when you applied it they would be grossly out of
+      proportion.  For these types of samples, there are other
+      indexing algorithms available.PolynomialPolynomialAnother way to index a sample is to use a polynomial.
+    Corina tries to fit a polynomial to your data:Equation&#xA0;6.2.&#xA0;Polynomial Curvey = anxn +
+                an-1xn-1 +
+                &#x2026; +
+                a2x2 +
+                a1x +
+                a0(You decide what degree polynomial, n, to use, and
+    Corina automatically finds the best values of
+    a0,
+    a1, &#x2026;,
+    an to fit your data.)WRITEME: examples of a polynomial curve on some dataWRITEME: where the algorithm came fromHorizontal LineHorizontal LineA special case of polynomial to use is a horizontal line,
+    equal to the average value.  Why would you want to do this?  Not
+    for crossdating: dividing each value by the same value
+    doesn't change the shape of the curve, only its magnitude.
+    Remember*** (LINK?) that every element in a sum must use
+    the same units, either raw or indexed.  If you have a sample you
+    wouldn't otherwise want to index, and you want to put it
+    in a sum with other indexed files, you could use a horizontal
+    index.WRITEME: y = x_{avg}WRITEME: algorithm, or at least link to refAdaptiveAdaptiveAdaptive is the "last-resort" index.  If an
+    exponential doesn't work, and a high-degree polynomial
+    doesn't work, adaptive might be the way to go.  It's
+    simply the average of the 11 surrounding years:Equation&#xA0;6.3.&#xA0;Adaptive Indexindi = 1/11
+            (datai-5 +
+             datai-4 +
+             &#x2026; +
+             datai+4 +
+             datai+5)As far as I can tell, it was first used for dendro by
+    [Pohl95] in the original Corina.NoteThis index was originally called floating
+      average, probably in reference to the fact that the
+      index curve "floats" around, not following any explicit
+      y=f(x)-type formula.  But people tended to call it
+      floating, and then
+      floating-point, which means something very
+      different.  You might still hear people calling this index by
+      these other names.High-Pass FilterHigh-Pass FilterThe high-pass index is a more general case of the adaptive
+    index.  Instead of simply taking the average of 11 values, it
+    takes a weighted average.  It's an example of a
+    "high-pass" filter because
+    high-frequency signals
+    can pass through, but low-frequency signals
+    are filtered out.The default is "1-2-4-2-1", meaning:
+
+Equation&#xA0;6.4.&#xA0;High-Pass Indexindi = 1/10 (datai-2 + 2&#x22C5;datai-1 + 4&#x22C5;datai + 2&#x22C5;datai+1 + datai+2)
+
+    (The 1/10 comes from 10 = 1+2+4+2+1.)This comes from [Cook81], who used it as a
+      discrete filter before moving to a cubic
+      spline.Note that almost half (4/10) of the computed index value is
+      simply its old value.  The high-pass index is nearly the same as
+      the input, so the &#x3C7;&#xB2; values are usually the lowest.
+      But don't choose this index just because of the low
+      &#x3C7;&#xB2;.Cubic SplineCubic SplineCubic splines are technically high-pass filters, as well,
+    but they're a very specific type.A cubic spline is a curve made by piecing together a bunch
+    of cubic (3rd degree polynomial) functions.A cubic spline, fit to some dataOf course, there's more than one way to construct a cubic
+    spline through a dataset.  The algorithm Corina uses has a
+    parameter, s, which controls how
+    tightly the spline fits the data.  A lower value fits the data
+    more tightly; a higher value fits the data more loosely.
+    s=0 fits the data exactly, while
+    s=1 is simply a line.  A good
+    starting point for dendro data seems to be around
+    s=1e-16.Figure&#xA0;6.1.&#xA0;A cubic spline, s=10-14Figure&#xA0;6.2.&#xA0;A cubic spline, s=10-16Figure&#xA0;6.3.&#xA0;A cubic spline, s=10-18It was first used for dendro by [Cook81],
+    using an algorithm from [Reinsch67].You can change the s-value used for the cubic spline in the
+    preferences.  (In the future you
+    will be able to adjust the shape of the spline directly.)You might use a cubic spline in the same cases you'd use a
+    high-pass filter: when the sample doesn't generally follow an
+    exponential or polynomial curve very well.  For example, if it has
+    a fire scar or something that causes a large spike you want to
+    eliminate.The &#x3C7;&#xB2; and &#x3C1; ValuesThe &#x3C7;&#xB2; and &#x3C1; ValuesCorina can't tell you which indexing curve to use.
+    You have to decide yourself, generally based on how they look.
+    But Corina does provide a couple of statistics which may help
+    you decide: the &#x3C7;&#xB2; test, and the correlation coefficient
+    (&#x3C1;).If you don't have any reason not to, use the exponential
+    index.The &#x3C7;&#xB2; testThe &#x3C7;&#xB2; test&#x3C7;&#xB2; is defined as:Equation&#xA0;6.5.&#xA0;Definition of &#x3C7;&#xB2;&#x3C7;&#xB2; = &#x2211; (curvei - datai)&#xB2; / N(One way to think of &#x3C7;&#xB2;: it's the average
+    difference between the indexing curve and your data, with each
+    term squared so keep it positive.)VariantsAt least one book I've seen says &#x3C7;&#xB2; is this sum,
+      and at least one says it's merely
+&#x2211; (curvei - datai)&#xB2;.
+      I suppose either one could be considered correct.  I think it's
+      easier to deal with if &#x3C7;&#xB2; is independent of the length
+      of the sample, so that's what I'm using for now.Example&#xA0;6.1.&#xA0;What's a good value?Suppose you have a sample that's 200 years long, and
+	at each year the index is about 30 (hundredths of a
+	millimeter) off from the sample.
+
+&#x3C7;&#xB2; = 1/200 &#x2211;200 30&#xB2; = 200 &#x22C5; 900 / 200 = 900
+
+      This isn't an unusual value.  It will tend to be lower
+      for complacent samples, or when using indexing curves that
+      follow the data very closely.As you can see from this, the square root of the
+      &#x3C7;&#xB2; value is approximately the average difference
+      between the actual data and the indexing curve.Correlation Coefficient, or &#x3C1;Correlation Coefficient, or &#x3C1;The correlation coefficient, &#x3C1;, is defined by:Equation&#xA0;6.6.&#xA0;Correlation Coefficientz1 = &#x2211; (datai - dataavg)&#xB2;z2 = &#x2211; (datai - dataavg)&#xB2;z3 = &#x2211; (datai - dataavg)&#xB2;&#x3C1; = z3 / &#x221A;(z1 z2)Sound familiar?Corina uses the correlation coefficient in crossdating,
+      too.  There, it's called the r-value.
+      What's a good &#x3C1;?  &#x3C1;=1 means "perfectly
+    correlated", or, the indexing curve matches your data exactly.
+    (&#x3C1;=-1 is a perfect inverse correlation, but those never
+    happen -- RIGHT?)  &#x3C1;=0 is no correlation at all.  Closer to
+    1 is generally better.  The &#x3C1; is listed as simply a "-" if
+    it's undefined (z1 or
+    z2 is zero, in the above equation),
+    It is possible to take this too far.  You don't want
+    &#x3C7;&#xB2;=0.  If you had a curve like that, it would index
+    your data to a perfectly flat line, which is useless.  An index
+    is a type of filter you apply to your data, and filters
+    remove signal from your data.  Usually you
+    remove low-frequency (very broad) trends, and preserve the
+    high-frequency (year-to-year) signal, which helps when
+    crossdating samples of different ages.  But you have to be
+    careful you aren't removing the signal you're trying to
+    see.Regional Growth Curves, or Proxy DataRegional Growth Curves, or Proxy Data
+      -- here's what it is...
+
+      ...[Briffa92]...
+
+      -- here's why you'd want to do it...  (ok, i give up, i have no idea why)
+    -- Here's what the computer does:&#x2022;it takes a sum of raw samples: you supply this;
+	it's typically a sum of other samples from the same site
+	or region&#x2022;that sum is used to compute the indexing curveIn Corina the "Regional Growth Curves" are
+      called "Proxy Data," because one dataset (the sum)
+      takes the place of the sample's own data when computing
+      the indexing curve.Here's how to do it:Procedure&#xA0;6.3.&#xA0;How to use proxy data:1.
+          Open the sample2.
+          Choose
+	Manipulate-&gt;Index... (control-I).3.
+          Click the "Use Proxy
+	Data" checkbox; the popup menu becomes
+	active.  It contains the entries:
+	&#x2022;This sample, itself.  When this is selected, it
+	    uses your sample for the index, so this is the same as not
+	    using proxy data option.&#x2022;All of the sums in the same folder as this sample,
+	    because these are the most likely proxy data to be used.
+	    (Currently, it does this simply by listing all files which
+	    end with .SUM; in
+	    the future, it should actually list all sums, regardless
+	    of name.&#x2022;The option is "Other...", which
+	    lets you choose any sample for the proxy data, in case you
+	    want to use a master in a different folder, or a
+	    non-summed sample.4.
+          Choose your proxy data &#x2014; you'll get a warning
+	if it doesn't cover at least the years covered by your
+	sample.  The &#x3C7;&#xB2; values are automatically updated.
+	(They're going to be higher than normal, because the
+	indexing curves are being computed to a different
+	dataset.)5.
+          Click Preview to view it
+	and OK to apply as you normally
+	wouldChapter&#xA0;7.&#xA0;SummingChapter&#xA0;7.&#xA0;SummingChapter&#xA0;7.&#xA0;SummingMaster ChronologiesMaster ChronologiesSumming is how you take individual samples and construct
+chronologies; it's an average of several samples.***WRITEME: terminology: sum/master - doesn't belong here, but where?WRITEME: on the need to redate samples firstThe data of a master is the average (mean), at each year, of each
+element that has data for that year.  Their units, then, must match,
+so you can't have both raw (hundredths-of-a-millimeter) and
+indexed (parts-per-thousand) elements in the same sum: if one sample
+is indexed, they must all be indexed.  (If you really don't want
+to index an element, take a look at the Horizontal index.)A sum also has count, which is also one
+number per year.  It's the number of elements that have data for
+that year.A sum also has Weiserjahre data.
+Weiserjahre data for a year is the number of samples whose data are
+increasing or decreasing for that year.  Weiserjahre is commonly shown
+as a/b, where there
+are a elements increasing
+and b elements decreasing.
+The / means that this is not a
+significant interval.  A significant interval is
+one with at least 4 samples, and at least 75% of the trends in
+agreement; they're shown
+as a*b.NoteThe sum of the two Weiserjahre values
+  won't always equal the count, for two reasons.  The first
+  interval of a sum always has
+  Weiserjahre 0/0, because there was
+  no previous year to compare to, but count 1.  Also, it's
+  possible the data between 2 years stayed the same, and Weiserjahre
+  only counts increases and decreases.
+  The status bar, at the bottom of every editor window, shows the
+data, count, and Weiserjahre data for the current year.  When you
+graph a sum, it will display both the data and count, as well.WRITEME--range: (union), no gapsYou can cause elements to be summed by Corina in two ways: by
+creating a new sum, or re-computing an existing sum.Making a New SumMaking a New SumProcedure&#xA0;7.1.&#xA0;How to create a new sum:1.
+          Choose
+    File-&gt;New Sum...2.
+          For each element you want to have in the sum, locate it,
+    select it, and click Add3.
+          Click OK4.
+          A new editor window will appear with your sum; on the Metadata
+  tab, enter a title for this sum5.
+          Enter any other metadata for this sum, such as comments6.
+          Choose
+    File-&gt;Save As... (control-shift-S);
+    use an .SUM extension for your filenameRebuilding a SumRebuilding a SumWRITEME: re-summingWRITEME: why you'd re-sum: data changed in elements, disabling elements, add/rem elementsProcedure&#xA0;7.2.&#xA0;How to re-sum a master:1.
+          Open the sum with
+	  File-&gt;Open... (control-O)2.
+          Choose
+	  Sum-&gt;Re-Sum3.
+          Save the sum with
+	  File-&gt;Save (control-S)There's one more thing to watch out for when making a sum.  When you select a
+summed sample as an element of a sum, it won't just use its data: it will add
+each of the elements that make up that sum.  ***but only 1 level of indirection:
+sums of sums of sums won't go all the way down!CleaningCleaningThe opposite of summing is cleaning.
+  Cleaning takes a sum and destroys all evidence that it's a sum: the
+  count, Weiserjahre, and elements are removed.Why would you want to do this?  Remember that when you use a sum as the
+element of a new sum, it doesn't use that sum's data, but rather each
+of the elements of that sum.  Cleaning prevents this.  If you have 3
+samples which you know are all from the same tree, for example, you should
+sum them and clean this sum; otherwise, this tree would count 3 times in
+any sum made with this data.Procedure&#xA0;7.3.&#xA0;To clean a sum:1.
+          Open the sum with
+	  File-&gt;Open... (control-O)2.
+          Choose
+	  Sum-&gt;Clean3.
+          Save the sum with
+	  File-&gt;Save As... (control-shift-S)The current convention is to end sums with ".SUM," and cleaned versions ending
+with ".CLN," so use
+"Save as..." instead of
+"Save" to save your new sum.
+This way there's always a clean version available, and also an
+original sum, in case you want to change the elements.  If any of the
+elements are changed, remember to re-sum and re-make the cleaned
+file.Chapter&#xA0;8.&#xA0;File FormatsChapter&#xA0;8.&#xA0;File FormatsChapter&#xA0;8.&#xA0;File Formats!!! - Another Fine Mess...!!! - Another Fine Mess...In the beginning there were
+punchcards [http://www.fireinthevalley.com/fitv_pictures_m6.html].
+People in Tucson [http://www.ltrr.arizona.edu/] used them
+to store tree-ring data.  Later, punchcards went out of style, but (***why there are so many file formats)WRITEME: - how corina deals with them(BASICALLY 3 types: tucson and variants, other dendro programs' types, and
+types for interfacing with non-dendro statistical programs.&#x2022;Corina uses Corina format natively, and its features
+map perfectly to Corina's***(kept up-to-date), so you should use
+this for almost all of your work in Corina&#x2022;Every dendro program ever written knows Tucson
+format, so if you're giving data to somebody using another
+program, he'll probably want Tucson, and if you're
+receiving data from somebody using another program, he'll
+probably send Tucson.  The [ITRDB] uses Tucson
+exclusively, as well.&#x2022;If you're moving data between Corina and a
+non-dendro program, like a graphics or statistical program (say,
+Excel), they'll only understand the
+plain 2-column format&#x2022;All the other formats you'll only need if
+somebody sends you data in their own format, which is to say, rarely,
+if everHow Corina Handles FilesHow Corina Handles FilesCorina always saves in Corina format.  (why)(how to override, with export -- see below)Corina loads...WRITEME: what formats corina supportsExportingExportingBecause Corina always saves files in Corina format, if you
+want to save data a format for another dendro program to read, you'll
+need to export it.  That's what the Export dialog is for.Procedure&#xA0;8.1.&#xA0;To Export a Sample to Another Format:1.
+          Choose
+	  File-&gt;Export...2.
+          Choose the format you want from the popup menu.  When you select
+  a new format, the text box in the middle shows a preview of what the
+  output file will look like.3.
+          Click OK.4.
+          The standard file chooser appears, and you can pick a name
+  and location for your file.***WRITEME: how do i know which format to use?Getting data in and outGetting data in and outThis section describes a number of situations, and the easiest way
+to get data from point A to point B.Removed:This section was temporarily removed because
+it may be causing problems with PDF creation.TucsonTucsonTucson is a direct descendent of the original punchcard format.
+(It's sometimes called "decadal" format, though that may also refer to
+any format with 10 data values per line.)  This means that every
+program can read and write it, but it also means it has very few
+features.Because it originally had so few features, every dendro program
+extends it just a little, usually in undocumented ways.  Corina
+tries to interpret the data as best it can, but might not read all of
+the metadata, for example.Samples that start before the year 1:Tucson files can't handle data going before the year 1.  Some
+labs add 8000 to the dates of all samples to temporarily avoid this
+problem.  Corina will first try to save the sample as it's dated,
+then tries adding 8000; if both of those fail, it saves the sample
+starting at year 1001.  Be sure to check files you export to Tucson
+format if you're dealing with samples dated to before year 1.Tucson "raw" files simply store the name and ID number of the
+file, the years it covers, and the width of each ring:Example&#xA0;8.1.&#xA0;Tucson raw format
+Kalkim Forest 10BA                                                              ABSOL
+917102  1617   414   376   471
+917102  1620   592   350   180   238   336   432   465   418   424   468
+917102  1630   419   509   539   512   397   403   348   316   378   381
+917102  1640   362   414   333   318   352   269   401   410   380   314
+917102  1650   281   222   329   333   209   234   242   262   214   228
+917102  1660   157   179   206   211   188   247   190   127   217   296
+917102  1670   273   212   261   213   200   167   158   143   999
+The word "ABSOL" or "RELAT", depending
+  on whether the sample is absolutely or relatively dated.  The first
+  letter starts in the 81st column.Datasets always end with the fake
+  value 999.Summed filesSummed filesWRITEME: tucson summed format; no native indexed-but-not-summed; 800 ruleExtra fieldsExtra fieldsSome Tucson files may have extra fields on the end with
+additional statistics.  They hold:
+
+&#x2022;number of years&#x2022;first order autocorrelation&#x2022;standard deviation&#x2022;mean sensitivity&#x2022;mean index value&#x2022;sum of indices&#x2022;sum of squares of indices&#x2022;max of series
+
+Corina doesn't save these fields, and it ignores them when loading
+Tucson files.  A couple of them are already displayed automatically
+(number of years, mean sensitivity).Packed Tucson filesPacked Tucson filesThe [ITRDB] uses what I call "packed" Tucson
+files.  The folks at Tucson thought: a Tucson file is just a bunch of
+lines, each beginning with the sample's ID number.  So we don't need
+to keep them in separate files: we can simply smash a bunch of Tucson
+files together without losing any data22Assuming your ID
+numbers are unique..  Since the primary interface to
+the ITRDB is anonymous FTP, they wanted to minimize the number of
+files available.  Their 6-digit ID numbers don't allow many samples
+per site, at Cornell we only use packed Tucson files when submitting
+data to or downloading data from the ITRDB.Bug:In the future, Corina will allow you
+to pack and unpack Tucson files from the file browser.  Currently, you
+have to unpack them by hand.  If you want to pack some files, make a
+new sum from all of them, and export them; "Packed Tucson" will be one
+of the format options available.Procedure&#xA0;8.2.&#xA0;To pack Tucson files together to submit to the ITRDB:1.
+          Select all of the files in the browser.  (They'll need to
+all be in the same folder - since one folder represents one site, and
+a packed file should only contain samples from one site, this
+shouldn't be a problem.)2.
+          Choose
+  File-&gt;Pack Files
+3.
+          A new file, called "Untitled Packed File.tuc"(??)(.crn?)
+will appear, and be selected.  You should rename it to an appropriate
+name before uploading it.Procedure&#xA0;8.3.&#xA0;To unpack Tucson files you've downloaded from the ITRDB:1.
+          Select the file in the Corina browser.2.
+          Choose
+  File-&gt;Unpack File
+  3.
+          A new folder will be created, with the same name as your
+file (e.g., "blah.crn" =&gt; "blah/" -- what if it has no extension?
+...f?).  Inside it will be all of the samples...Two-ColumnTwo-ColumnTwo-column data holds the least data (it doesn't save any
+metadata), but it's also the simplest, so it's great for transferring
+data to and from statistical or graphing programs which can't read
+dendro files.  When you use
+  Edit-&gt;Copy (control-C)
+in the editor, it puts your data on the clipboard in two-column
+format.Actually, "two-column" is a misnomer.  It's as many columns as
+you have data.  If you're exporting a raw sample, it's two columns:
+year and data.  A summed file is three columns: year, data, and
+count.Example&#xA0;8.2.&#xA0;Two-column format 
+1617 414
+1618 376
+1619 471
+1620 592
+1621 350
+1622 180
+1623 238
+1624 336
+CorinaCorinaOf all of the file formats Corina supports, this format is
+best-supported and has the most features.  Unless you're just trying
+out Corina and still have all of your data in another format, you'll
+normally store all of your data in this format.The top of a Corina file holds all of the metadata.  For a list
+of all the metadata, that section of the
+manual.  Notes:&#x2022;The labels are just as you see them; they're all
+   uppercase for backwards-compatibility, but Corina will accept
+   either case.  As you can see, it's a semicolon, a tag, a space, and
+   some text.&#x2022;Corina always writes the metadata in this order,
+   on these lines, for backwards-compatibility, but will accept tags
+   in any order, in any number of lines.&#x2022;Since semicolons are the start of a new tag,
+   semicolons aren't allowed in the text of any field.  Empty fields
+   are also not allowed.***list tag names, and valid values for each (;PITH N,P,?)***on bad value, corina asks user.Note:In the following example, the symbol &#x2423; is used to indicate
+a space which otherwise wouldn't be visible.  For example, the line
+
+
+;ELEMENTS&#x2423;
+
+
+means a line containing a semicolon, the word ELEMENTS, and a
+space. I'll only use this character when a space wouldn't otherwise be
+visible (like at the end of a line), or when it's important to show
+how many spaces there are (like when you need exactly 3 spaces in the
+middle of a line).Example&#xA0;8.3.&#xA0;Corina format
+Kalkim Forest 10BA
+
+;ID 917102;NAME Kalkim Forest 10BA;DATING A;UNMEAS_PRE 1;UNMEAS_POST 1
+;FILENAME G:\DATA\FOREST\KLK\KLK10BA.REC
+;TYPE S;SPECIES ALSP;FORMAT R;SAPWOOD 0;PITH N
+;TERMINAL v;CONTINUOUS R;QUALITY +
+;RECONCILED Y
+
+;DATA&#x2423;&#x2423;&#x2423;&#x2423;&#x2423;&#x2423;&#x2423;&#x2423;&#x2423;
+ 1617                                             414   376   471
+                                                    [1]   [1]   [1]
+ 1620   592   350   180   238   336   432   465   418   424   468
+          [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]
+ 1630   419   509   539   512   397   403   348   316   378   381
+          [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]
+***cross -1/+1 year!
+***last line
+***9990
+
+;ELEMENTS&#x2423;
+G:\DATA\file1.rec
+G:\DATA\file2.rec
+*G:\DATA\file3.rec
+G:\DATA\file4.rec
+
+;weiserjahre11
+ 1011   0/1      1/0      1/0      0/1      0/1      1/0      1/0      0/1      0/1&#x2423;&#x2423;&#x2423;
+ 1020   1/0      0/1      0/1      1/0      1/0      1/0      0/1      1/0      0/1      1/0&#x2423;&#x2423;&#x2423;
+ 1030   0/1      0/1      1/0      1/0      0/1      1/0      0/1      1/0      0/1      0/1&#x2423;&#x2423;&#x2423;
+ 1040   0/1      1/0      1/0      0/1      0/1      0/1      1/0      1/0      0/1      1/0&#x2423;&#x2423;&#x2423;
+
+~ Don Knuth12
+The first line of the file contains
+   the title.  This is repeated a second time later in the file.
+   (When loading a file, Corina ignores this first title line, and
+   reads the title from the ;NAME tag.)  The idea was probably to make
+   it easy (for both people and programs) to identify a file
+   quickly.The "data" tag starts the data
+   section.  For historical reasons, the word "DATA" is followed by 9
+   spaces, though Corina doesn't require this.The start year of the sample; this
+   *** Data values, one per year.  The
+   rightmost digit of each value should line up vertically.  Each
+   column of data is 6 digits wide.  Units are hundredths of a
+   millimeter (0.01 mm) for raw files, and parts-per-thousand (0.1%)
+   for indexed files.Below each data value is the
+   "count", or how many elements of the sum had data that year.  It's
+   surrounded by square brackets.  Even raw files have count: it's
+   simply always 1.The last line is un-indented by
+   3***? characters.After the last value, there's a
+   9990 value.  Historically, this marked the end of the sample, but
+   it's no longer needed.A master holds a list of the
+   files which were summed together to create it.  The ELEMENTS tag
+   indicates the start of this section.  Raw files don't need an
+   ELEMENTS section.The filenames of the
+   elements which make up this master follow the ELEMENTS line, one
+   filename per line.  They should be complete filenames, including
+   any folders the file is in e.g., "G:\DATA\FOREST\KLK\KLK10AB.REC",
+   and not simply "KLK10AB.REC".If any filename line
+   starts with an asterisk (*), it indicates an "inactive" element.
+   You can temporarily remove an element from a sum by deactivating
+   it, in the elements tab.11The "weiserjahre" tag marks
+   the start of the Weiserjahre section.  For backwards-compatibility,
+   this tag (unlike the others) is lowercase. *** spacing!
+   (ick!)12A tilde ("~") indicates the last
+   line of the file. Following that is the author of this
+   sample.Bug:Corina should be able to store
+semicolons in text - perhaps escape them somehow (";;"?).  Disallowing
+semicolons is a dumb restriction.Bug:Corina should handle empty fields
+properly, too.  It won't save any new files this way, but it shouldn't
+fail if it sees a file with ";SAPWOOD ;" - it's obvious what this
+means.HeidelbergHeidelbergI believe this format was created by Frank Rinn; I don't know
+that it has a name, so I call it the "Heidelberg" format.  This may be
+the default format for his [TSAP] program.Corina's support for this format is minimal: it will load and
+save raw data, but not metadata, and it assumes all files are
+summed.Example&#xA0;8.4.&#xA0;Heidelberg format
+HEADER:
+DateEnd=1998
+Length=382
+DATA:Chrono
+  414    0    0    0  376    0    0    0  471    0    0    0  592    0    0    0
+  350    0    0    0  180    0    0    0  238    0    0    0  336    0    0    0
+  432    0    0    0  465    0    0    0  418    0    0    0  424    0    0    0
+  468    0    0    0  419    0    0    0  509    0    0    0  539    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0 
+Now, an explanation:Example&#xA0;8.5.&#xA0;Heidelberg format, with annotations
+HEADER:
+DateEnd=1998
+Length=382
+DATA:Chrono
+  414    0    0    0  376    0    0    0  471    0    0    0  592    0    0    0
+  350    0    0    0  180    0    0    0  238    0    0    0  336    0    0    0
+  432    0    0    0  465    0    0    0  418    0    0    0  424    0    0    0
+  468    0    0    0  419    0    0    0  509    0    0    0  539    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+The line HEADER: indicates that this is a Heidelberg file.The year of the last data value.The number of data values.The data section.  (Are there other kinds of data?)Each year has 4 numbers: ring width, number of samples,
+    number of increasing samples, and number of decreasing samples.
+    (For raw files, Corina simply uses 0 for the last 3 of these.)
+    Each is right-aligned in 5-character-wide columns.The end of the file is marked by four zeroes.  Also, every
+    line of data is the same width, so if the last line has fewer than
+    4 years of data, extra zeroes are added to make it the same width
+    as the other lines.HohenheimHohenheimWRITEMEExample&#xA0;8.6.&#xA0;Hohenheim format sample
++                                                                            
+.                                                382  1617  1998               
+ 414 376 471 592 350 180 238 336 432 465
+ 418 424 468 419 509 539 512 397 403 348
+ 316 378 381 362 414 333 318 352 269 401
+ 410 380 314 281 222 329 333 209 234 242
+ 262 214 228 157 179 206 211 188 247 190
+ 127 217 296 273 212 261 213 200 167 158
+TSAPTSAPI don't know where this TSAP format came from.  I don't think
+it's the default format of TSAP files, but I'm not sure.  I found some
+files whose first line is
+TSAP-MATRIX-FORMAT, so here you go.
+They all had the extension .OUT, so I suspect it may be
+TSAP saving in a simple format for
+exporting to other programs.Since this doesn't appear to be a native format for even
+TSAP, there's probably no reason to save
+files in this format.  If you run across a file that looks like this,
+though, you'll be able to open it normally.A file in this format looks like:Example&#xA0;8.7.&#xA0;TSAP Matrix sample
+TSAP-MATRIX-FORMAT
+
+    Year,       100 Val        100 Nos        100 Nois       100 Nods
+    1617,            414,              1,              0,              0
+    1618,            376,              1,              0,              0
+    1619,            471,              1,              0,              0
+    1620,            592,              1,              0,              0
+    1621,            350,              1,              0,              0
+The year; this format uses a
+  zero-year system, i.e., what TSAP calls
+  -5 is really 6 BC, not 5 BC as in Corina.The width of this ring.
+  ("Value")The number of elements that have data
+  for this year.  ("Number of Samples")The number of samples increasing this
+  year.  ("Number of Increasing Samples")The number of samples decreasing this
+  year.  ("Number of Decreasing Samples")I've only ever seen summed files in this format; I don't know
+how raw files are stored, if differently.  (Corina exports raw
+samples to TSAP Matrix format by pretending they're a sum consisting
+of one sample.)Bug:If the first line is corrupt, as seems
+to often happen, it won't load properly.  For example,
+/^C^E Val /^C^E Nos /^C^E Nois/^C^E
+NodsRanges-OnlyRanges-OnlyThis is an output-only format, and only usable for summed files
+that have elements.  It saves each element's title, and with its
+starting year, ending year, and length, separated by tabs, one element
+per line.  It doesn't save any ring-width data.  You might use this
+format, for example, if you wanted to make a bargraph in a statistical
+program or a spreadsheet.Bug:Corina doesn't add a header line, or
+write the length - yet.Example&#xA0;8.8.&#xA0;Ranges-only sample
+Title                             Start  End    Length
+Zonguldak, Karabuk 1A IND         1857   1985   129
+Zonguldak, Karabuk 3A IND         1761   1951   191
+Zonguldak, Karabuk 4A IND         1699   1978   280
+SpreadsheetSpreadsheetThe spreadsheet format is also output-only, and also only used
+for summed files with an Elements tab.  It saves one line per year,
+with each column holding the data from one element.  It's sort
+of like 2-column format, but for any number of samples.  If you wanted
+to export all the data from a master to a spreadsheet
+like Excel, this is the format to
+use.Example&#xA0;8.9.&#xA0;Spreadsheet format sample
+Year ALTO DE LAS MESAS	EL ASIENTO, ACONCAGUA (STANDARD)	AUCHNALCAS	SAN GABRIEL (STANDARD)
+1011 1346 
+1012 1278 
+1013 1536 
+1014 1983 
+1015 1774 
+1016 1611 
+1017 1637 
+Chapter&#xA0;9.&#xA0;PreferencesChapter&#xA0;9.&#xA0;PreferencesChapter&#xA0;9.&#xA0;PreferencesRationaleRationaleCorina allows each user to set
+preferences, to control the appearance and behavior of the program.
+This came about for various reasons:System configurationSome aspects of
+    our particular lab/installation aren't relevant to anybody else,
+    like the folder that datasets are stored in.  It would be foolish
+    to make these a permanent part of
+    Corina, because we don't want to
+    discourage other people from using
+    Corina.  (Example: data directory.)TastePeople have strange tastes.
+    (Example: graphpaper color.)Bugs in JavaSun's implementation of
+    Java has a number of bugs, especially in Swing on Windows, and
+    especially before version 1.4 (and possibly after that, as well).
+    For example, it would ignore the system settings for colors and
+    fonts, so Corina has preferences to
+    override these in some cases.  (Example: menubar font.)Bugs in CorinaTruth be told,
+    Corina has bugs, and some of them are
+    easier to work around in the short term by adding preferences.
+    Some experimental algorithms have paramaters that users might
+    conceivably want to tweak, and it's simpler to add an entry to the
+    preferences screen than add a proper control to change it.
+    (Example: cubic spline s-value.)  Eventually, either a good
+    default value should be used, or a proper control (discoverable,
+    and documented) should be added.Procedure&#xA0;9.1.&#xA0;To access the preferences dialog:1.
+          If you're on a Mac, choose
+    Corina-&gt;Preferences...2.
+          If you're on Windows or Linux, choose
+    Edit-&gt;Preferences...All changes you make to your preferences should take effect as
+soon as you change them, and also remain in effect for future sessions.Editor PreferencesEditor PreferencesBackground colorWRITEMEText colorWRITEMEFont colorWRITEMEDraw GridlinesWRITEMESerial PortWRITEMECrossdate PreferencesCrossdate PreferencesWRITEMEWRITEMEGraph PreferencesGraph PreferencesWRITEMEWRITEMEAdvanced PreferencesAdvanced PreferencesOverride User NameIn some situations, Corina might not be able to
+        figure out your name correctly.  (Corina uses your name for things
+        like printouts.)  If your name isn't listed correctly, that usually
+        means your system isn't set up properly.  But if you can't change
+        it, or don't know how, you can set your name (for Corina only)
+        by using this feature.The Gory DetailsThe Gory DetailsNote:Most users won't need to read this
+section.  Only read this if you need to know where
+Corina stores user preferences, and how;
+for example, if you want to move your preferences from one computer to
+another.Corina stores user preferences in a single plain-text
+file.The Corina preferences file is
+stored:
+
+on Windowsin your home folder, with the name Corina
+Preferenceson Macin your home folder, in the Preferences folder inside the Library folder, with the name
+Corina Preferenceson Unixin your home folder, with the name
+.corina
+
+XXX the format ... field=value, unicode, java escapes, XXX
+
+For complete technical description, see the API
+documentation for
+java.util.Properties [http://java.sun.com/j2se/1.3/docs/api/java/util/Properties.html].The first time a user runs Corina, it
+checks for a preferences file.  If none exists, it creates a default
+one.  There is currently no way to create a system-wide preferences
+file (though you can put a sample Corina preferences file in the
+new-user-skeleton on your system, so new users get a pre-made
+preferences file).Chapter&#xA0;10.&#xA0;The AtlasChapter&#xA0;10.&#xA0;The AtlasChapter&#xA0;10.&#xA0;The Atlas
+Corina includes an Atlas for managing your sites.  The Atlas
+consists of:
+
+&#x2022;a map, which shows you where your sites are,
+  and&#x2022;a list of sites, which lets you add, remove, edit,
+  and search your sites.
+
+They're assembled side-by-side in one window for convenience.
+Showing the MapShowing the MapTo show the map, choose:
+
+  File-&gt;(New) Atlas...
+
+  Editing Site InfoEditing Site InfoTo edit the info for a site, find it in the list of sites and choose
+
+Site-&gt;Get Info... (control-I).
+
+  You'll be presented with a window letting you edit all the info for
+  that site.  Most of them should be self-explanitory, but a few notes:&#x2022;"Code" is the alphabetic code for this site, like
+  "ZKB"; "ID" is the numeric code for this site, like
+  167.&#x2022;You can set the location either by dragging the site
+  on the map, or by typing in a latitude and longitude here (for
+  example, "41&#xB0;12'N 32&#xB0;37'E").  If you can't type a
+  degree sign (&#xB0;) on your keyboard, you can use an asterisk (*)
+  instead.&#x2022;The "Country" popup lists all of the countries which
+  have been used for other sites so far.  If you need to select a
+  country not in the popup, the last entry is "Other...", which lets
+  you select any country.Introduction?Introduction?--WRITEMEDisplaying Sites on a MapDisplaying Sites on a MapWRITEMEExporting MapsExporting MapsFor the times when you want to use a map in another document,
+Corina lets you export your maps.  You can export a map to:&#x2022;Illustrator, for a poster&#x2022;a web page editor, for a web page&#x2022;PowerPoint, for a presentation&#x2022;Word, for a report&#x2022;and probably many other uses I haven't thought ofYou Might Not Need to Read This Section
+You don't need to export maps to print them: just choose
+File-&gt;Print... (control-P).  Exporting is just for putting maps into other
+documents.
+To IllustratorTo Illustrator
+Adobe Illustrator is a vector graphics program, which means you can
+draw line art without ever getting "jaggies".  In addition to its own
+file format, it has good support for SVG, an open file format for
+vector graphics.  Corina also supports SVG, so putting a map from
+Corina into an Illustrator document is really easy.
+Procedure&#xA0;10.1.&#xA0;Exporting a map to Illustrator1.
+          In Corina, create the map you'd like to
+export2.
+          In Corina, export the map to SVG with
+Export-&gt;SVG..., and pick a filename which ends with .SVG3.
+          In Illustrator, open the SVG file you just created, with
+File-&gt;Open... (control-O)
+You need Illustrator version 9 or newer to load SVG files.
+
+Two other vector-art programs which you might have (which compete with
+Illustrator) are Macromedia Freehand and Corel Draw.
+
+Freehand 10 doesn't support SVG.  (They're the guys who wrote Flash,
+another vector graphics format used by all the cheesey animations on
+the web.  I wouldn't hold my breath on them supporting SVG.)
+
+Corel Draw 11 might support SVG.  I can't tell
+by reading their web page, so try it.  Corel does support exporting
+SVG, and has their own SVG viewer, so it's quite possible that
+Corel Draw does or will soon allow you to import SVG.
+To a Web PageTo a Web Page
+Web pages are meant to be viewed in a browser on a screen, and screens
+are low-resolution devices (compared to printers), so exporting to PNG
+for a web page is fine.
+
+A common way to put images on web pages is to have a small thumbnail
+of your image in the body of your text, which is itself a link to a
+larger version.  So you'll need two versions of each map.  Good sizes
+might be 300x200 and 600x400.
+Procedure&#xA0;10.2.&#xA0;Exporting a map for a Web Page1.
+          In Corina, create the map you'd like to
+export2.
+          In Corina export the map to a thumbnail PNG, sized
+300x200, with
+Export-&gt;PNG..., and pick a filename which ends with .PNG3.
+          In Corina export the map to a large PNG, sized
+600x400, with
+Export-&gt;PNG..., and pick a filename which ends with .PNG4.
+          Once you have the images, you'll need to reference them
+from an HTML file.  A simple version will look something like this:
+
+
+
+&lt;a href="map-large.png" alt="Map (large)"&gt;
+  &lt;img src="map-small.png" width="300" height="200" align="left"/&gt;
+&lt;/a&gt;
+
+
+
+
+Be sure to use "width" and "height" attributes, and be sure they're
+correct.  "Align left" tells the web browser to wrap your text around
+the thumbnail.
+
+Even your large map won't look very good when printed out.  If you
+want to provide a high-resolution map that users can print out, you
+should also include a link to a PDF.  (Mac users can choose
+Print...***, and click "Save as PDF..."***.  PC users will need to buy
+Adobe Acrobat to be able to do this, or export an SVG and save it from
+Illustrator.)
+To a PowerPoint PresentationTo a PowerPoint Presentation
+Microsoft PowerPoint can only import bitmaps like PNG, not vector art
+like SVG, but they also need to scale the image to fit on the screen
+or to print.  In other words, this is the worst of both worlds.
+
+The best solution I've found is to use large PNG bitmaps, and scale
+them down.  It won't look nearly as good as a normal printout, or a
+document made in Illustrator, but it's the best that PowerPoint can
+do.
+Procedure&#xA0;10.3.&#xA0;Exporting a map to PowerPoint1.
+          In Corina, create the map you'd like to
+export2.
+          In Corina export the map to PNG with
+Export-&gt;PNG..., and pick a filename which ends with .PNG3.
+          In PowerPoint, create a new slide for your map, if you
+want it on its own slide.  A blank slide should work
+fine.4.
+          In PowerPoint, insert your map image using
+Insert+Picture-&gt;From File...
+You need Microsoft PowerPoint version 97, 2000, or newer for the PC,
+or version 98 or v.X or newer for the Mac, to import PNG files.  You
+can also use Apple's presentation application, Keynote.  All versions
+of Apple Keynote can import PNG.
+
+
+
+To a Word DocumentTo a Word Document
+Like PowerPoint, Microsoft Word can only import bitmaps like PNG.
+Putting a map in a Word document is very similar to putting it in a
+PowerPoint presentation.
+
+If you have a PC, you need Word 97 or 2000 or newer for PNGs (Word 6.0
+and Word 95 are too old).  If you have a Mac, you need Office 98 or
+Word:mac v.X.
+Procedure&#xA0;10.4.&#xA0;Exporting a map to Word1.
+          In Corina, create the map you'd like to
+export2.
+          In Corina export the map to PNG with
+Export-&gt;PNG..., and pick a filename which ends with .PNG3.
+          In Word, insert the PNG file you just created, with
+Insert+Picture-&gt;From File...
+Of course, if you really wanted high quality publishing, you wouldn't
+be using Word; you would be using something PostScript-based, or which
+could import SVG files, like Adobe InDesign, or perhaps FrameMaker,
+TEX, or DocBook.
+Appendix&#xA0;A.&#xA0;ReferencesAppendix&#xA0;A.&#xA0;ReferencesAppendix&#xA0;A.&#xA0;ReferencesThese are sources used by Corina or this book.Bibliography[Baillie73] Tree-Ring Bulletin. 33. M. G. Baillie and J. R. Pilcher. Copyright &#xA9; 1973. &#x201C;A Simple Crossdating Program&#x201D;. 7-14. [Baillie82] M. G. Baillie. Copyright &#xA9; 1982. 81. Tree-Ring Dating and Archaeology. From which I got that 1 stddev = 50/sqrt(n). [Briffa92] &#x201C;Fennoscandian summers from AD 500&#x201D;. Temperature changes on short and long timescales. K. R. Briffa, P. D. Jones, T. S. Bartholin, D. Eckstein, F. H. Schweingruber, W. Karl&#xE9;n, P. Zetterberg, and M. Eronen. 111-119. Climate Dynamics. 7. Copyright &#xA9; 1992. [CLR] Introduction to Algorithms. Thomas H. Cormen, Charles E. Leierson, and Ronald L. Rivest. 0262032937. 768-771. [Cook81] &#x201C;The Smoothing Spline&#x201D;. A New Approach to Standardizing Forest Interior Tree-Ring Width Series
+	      for Dendroclimatic Studies. Edward Cook and Kenneth Peters. Tree-Ring Bulletin. 41. Copyright &#xA9; 1981. [Cook90] E. R. Cook and L. A. Kairiukstis. Methods of Dendrochronology. Copyright &#xA9; 1990. 110-111. [DPL] Release notes to one version of Arizona's
+	    Dendrochronology
+	      Program Library [http://www.ltrr.arizona.edu/archive/dpl/DPL.html] (DPL). [Eckstein] ???. [Huber70] &#x201C;Dendrochronology in Europe&#x201D;. B. Huber and John Fletcher. 23. Dendrochronology. Copyright &#xA9; 1977. [ITRDB] The International Tree-Ring Data Bank (ITRDB). http://web.utk.edu/~grissino/itrdb.htm. [Pohl95] Mecki Pohl. "From my own beady head."
+	               (His&#xA0;words.). Copyright &#xA9; 1995. [Reinsch67] C. H. Reinsch. &#x201C;Smoothing by Spline Functions&#x201D;. 177-183. Numerische Mathematik. 10. Copyright &#xA9; 1967. [TSAP] Reference manual for TSAP [http://www.frankrinn.com/Products/Tsap.htm]...???. [vanLoan] Introduction to Scientific Computing. A Matrix-Vector Approach Using MATLAB. Charles F. van Loan. 0139491570. [Wenk99] Carola Wenk. &#x201C;Applying
+		an Edit Distance to the Matching of&#xA0;Tree Ring Sequences in Dendrochronology [http://www.inf.fu-berlin.de/inst/pubs/tr-b-99-01.abstract.html]&#x201D;. 223-242. Proceedings of the 10th Annual Symposium on Cobinatorial Pattern Matching. M. Crochemore and M. Paterson. Springer-Verlag. Berlin. Copyright &#xA9; 1999. Appendix&#xA0;B.&#xA0;Graphics File FormatsAppendix&#xA0;B.&#xA0;Graphics File FormatsAppendix&#xA0;B.&#xA0;Graphics File Formats
+    - why i'm writing this:
+    - there are lots of formats, everybody's confused, it applies to parts of corina
+    
+    read this if:
+    - you're trying to decide whether to use "Export PNG..." or "Export SVG..." in corina
+    Types of graphics filesTypes of graphics files
+    - big 2: bitmap and vector formats
+    -- examples: a png and an svg, at 1x, and scaled 10x
+    WRITEME
+    Bitmap File FormatsBitmap File Formats
+    - like a big screen door
+	- want to make it bigger?  you won't get any more detail.
+    
+    Examples of bitmap file formats are PNG, TIFF, and JPEG.
+    
+    -- examples: a tiff and a jpeg (?)
+    Table&#xA0;B.1.&#xA0;Bitmap Graphics FiletypesFormatFilename ExtensionsNumber of ColorsTransparencyCompressionCommon UsesPNG.pngMillionsFullYesWeb graphics or icons; any non-photographic imagesTIFF.tiff or
+                   .tifMillionsFullNoScanned (or digital) photos for manipulation,
+                   where quality is criticalJPEG.jpeg or
+                   .jpgMillionsNoneYes (lossy - use for photographs only)Photographs for the web, or other places where
+                   size is importantGIF.gif256Limited (transparent/opaque only)YesOlder web graphicsAdobe Photoshop.psdMillionsFullNoUser-created images or photographsMicrosoft Windows Bitmap.bmp??NoneNoWindows screenshotsJPEG's compression deserves special mention.  It uses a special form
+of compression which is excellent for photographs, or other images with
+gradients or continuous tones.  The downside is that if you put an image
+into JPEG format, and then look at it again, it won't be exactly the same
+image (it's "lossy").  WRITEMEFor more information on JPEG, see
+Photo.net's JPEG page [http://www.photo.net/learn/jpeg/],
+or ... -- NOTE: have list of references for this appendix only?GIF is an older format.  Due to lack of features, and some
+possible licensing issues, its use is declining.  There's no reason to
+use it any longer.  Use PNG instead.The Photoshop format is similar to TIFF, in that it's an
+uncompressed bitmap, but it also stores layers and other
+Photoshop-specific features.  If you're working with an image in
+Photoshop, you pretty much need to use this format, but you'll convert
+it to a different format for publication, like JPEG or PNG; it's
+proprietary, so most other programs will not be able to read
+it.Another format you might see is "Windows Bitmap".  Windows
+creates these (for example, when you take a screenshot), but that's
+about all they're good for.  They offer no compression, no
+transparency, and many programs (including many web browsers) can't
+view them.  Avoid.
+when to use bitmaps.  when not to use bitmaps.  (should this really be here?)
+
+- how to deal with them: photoshop handles pretty much anything
+Vector File FormatsVector File Formats
+- like instructions on how to draw something on graph paper
+Table&#xA0;B.2.&#xA0;Vector Graphics FiletypesFormatFilename ExtensionsCommon UsesSVG.svg,
+                   .svgz (compressed)Standard interchange for vector graphics,
+                   possibly replacing EPS; vector graphics on the webPostScript.ps,
+                   .ps.gz (compressed)Printed documentsEncapsulated PostScript (EPS).epsFigures, graphs, or clip artPDF.pdfPrinted documentsIllustrator.aiDrawingsFlash.swfWeb graphics, especially with animation and soundYour screen has about 100 dots per inch (DPI).  Your printer is
+maybe 300 or 600 DPI.  , but a vector image file can be scaled to that
+level and it'll still look even smoother than it does on your screen.
+
+WRITEME
+- any of these let you "embed" a bitmap in a vector file
+- if you put a bitmap in a vector file, it's still a bitmap.
+- e.g., if you put a PNG in an illustrator file, it'll still be pixels.  it won't scale.
+
+WRITEME: - how to deal with them: illustrator is decent
+Graphics in Microsoft
+    Office33This generally applies to any relatively
+    modern office-like software, not just Microsoft Office.Graphics in Microsoft
+    Office33This generally applies to any relatively
+    modern office-like software, not just Microsoft Office.why: lots of people use office, despite its flaws.
+    word and powerpoint, especially.  so even if you never use these
+    programs yourself, chances are other people will, so you'll need
+    to know what formats to generate/share files.
+    bitmaps: newer versions should support png, tiff, gif, and jpeg.
+    they might not support full transparency, but since paper is white it doesn't
+    really matter.  just remember that if you put a bitmap in your word document or
+    powerpoint presentation and it looks ok on the screen it might not look so
+    smooth on paper or on a projection screen.
+    
+    vector: even newer versions might not support most (or any) of these
+    formats, which is unfortunate.  if you're stuck with office, you may have no
+    choice but to use a bitmap format, which won't look very good.Appendix&#xA0;C.&#xA0;Troubleshooting / Help!Appendix&#xA0;C.&#xA0;Troubleshooting / Help!Appendix&#xA0;C.&#xA0;Troubleshooting / Help!This section will consist of questions and answers.  If you get stuck,
+  chances are somebody else has been stuck on the same problem.  (If
+  this happens enough, maybe it's the sign of bad design.  Or maybe
+  there's a good reason for it.)If you can't find the answer in the manual, two useful documents
+  to read before asking for help are:&#x2022;
+        How
+        to Report Bugs Effectively [http://www.chiark.greenend.org.uk/~sgtatham/bugs.html], and
+      &#x2022;
+        How
+        To Ask Questions The Smart Way [http://www.tuxedo.org/~esr/faqs/smart-questions.html]
+      WRITEME: where to go for help: search the manual, look on the web page,
+  check the mailing lists, ask on the mailing lists.WRITEME: general strategies (remove Corina Prefs folder, try it
+  as a different user, download the latest version and try that, reboot, ...WRITEME: if you've found a bug, what to do.GraphicsGraphicsQ:.My graph is way off the top of the screen.  Why's it so
+        big?A:.MiscellaneousMiscellaneousQ:.The menubar font is too small / big -- that's not a
+        q!.A:.This is a bug in Sun's Java for Windows, versions 1.2 and 1.3.
+        Corina has a workaround for it: under Preferences..., in
+        the Advanced tab, you can set a new menubar
+        font.Appendix&#xA0;D.&#xA0;GlossaryAppendix&#xA0;D.&#xA0;GlossaryAppendix&#xA0;D.&#xA0;GlossaryThis is a glossary of terms used by Corina.Glossarychronology...cleanto make a master look like a single sample by
+	    removing its count, Weiserjahre, and
+	    elementscountthe part of a sample that ...crossdating...D-score"Dating score".  A combination of
+	    the T-score and trend.elementin a master, the list of samples that make it upindex...masteranother name for a sum, usually ...mean sensitivity...reconcilingWith two readings of one sample, comparing and
+	    correcting (by re-measuring the actual piece, where
+	    needed) to work out any inconsistencies.  After
+	    reconciliation, all trends should match, and all readings
+	    should be within 3%.redating...re-sumto re-compute a sum...sample...sum...SVGan open file format for vector graphics;
+	"Scalable Vector Graphics"; similar in function to EPS
+	("Embedded PostScript")T-score...trend...Weiserjahrethe incr/decr...a crossing algorithm ...Appendix&#xA0;E.&#xA0;FilesAppendix&#xA0;E.&#xA0;FilesAppendix&#xA0;E.&#xA0;FilesThis appendix lists all of the files used by Corina, where
+  they live, and why they exist.Don't Read This SectionYou don't need to read this section unless you're interested
+    in how Corina stores preferences, or want to move your preferences
+    from one system to another.User PreferencesUser PreferencesCorina stores your preferences in your home
+  directory.on Mac OS XYour home is usually
+    /Users/joe (if your login is "joe").  To go
+    to your home, switch to the
+    Finder and choose
+	Go-&gt;Home (shift-&#x2318;-H).
+    on Windows 95/98/ME, "single user"Windows 95 doesn't normally have a concept of
+    "home", so C:\WINDOWS\ is used as your
+    home.on Windows 95/98/ME, "multiple users"If you have Windows set up in "multiple users"
+    mode, your home is your "profile" directory, such as
+    C:\WINDOWS\PROFILES\joe\ (if your login is
+    "joe").on Windows NT/2000The Windows NT home is your "profile" folder,
+    which is usually at C:\WINNT\PROFILES\joe\
+    (if your login is "joe").on Unix/LinuxYour home directory is the directory where your
+    shell starts out.  It's usually something like
+    /home/joe (if your login is "joe").  If you're
+    not sure, you can find out by typing echo ~.
+    Still Not Sure Where Home Is?If you want to know where Corina thinks your home is,
+  choose 
+	Help-&gt;About Corina...
+  (it's under the Corina menu on the Mac) and click System
+  Info...; look for the property
+  user.home in the left
+  column.Corina stores your preferences is a file in your home called
+"Corina Preferences".The first time you run Corina, it creates a default
+preferences file for you.  If you ever get really stuck (e.g.,
+Corina won't start, and you think your preferences file is to
+blame), you can delete your preferences file; the next time you run
+Corina, it will give you a new one.The preferences are stored in plain text (Unicode [http://www.unicode.org/], using Java Unicode
+escapes (see the Properties
+API [http://java.sun.com/j2se/1.3/docs/api/java/util/Properties.html] for a description).There is no site-wide preferences file for Corina.  If you
+want all users at a particular site to have the same default
+preferences, put it in /etc/skel, or the
+equivalent on your system.Data FilesData FilesCorina usually assumes you have one folder for your data,
+  and a bunch of folders in it for each site.
+DATA
++-ABC
++-DEF
++-GHI
+  +-GHI1.IND
+  +-GHI2.IND
+  +-GHI3.IND
+At the top of your data folders you can
+have a file called Site DB...In each folder you visit in Corina, a file called
+".Corina_Cache" gets created.  (It stores a copy of the metadata for
+all the files in that folder, but you don't need to know that.)  It's
+automatically created and updated, and if it's not there Corina
+creates a new one.  It's only there to make browsing faster.  If you
+delete one of them, no harm is done; it'll just be a little slower the
+next time you browse that folder.Appendix&#xA0;F.&#xA0;GNU Free Documentation LicenseAppendix&#xA0;F.&#xA0;GNU Free Documentation LicenseAppendix&#xA0;F.&#xA0;GNU Free Documentation LicenseVersion 1.2, November 2002Copyright (C) 2000,2001,2002  Free Software Foundation, Inc.
+59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+Everyone is permitted to copy and distribute verbatim copies
+of this license document, but changing it is not allowed.PREAMBLEPREAMBLEThe purpose of this License is to make a manual, textbook, or
+other functional and useful document "free" in the sense of freedom: to
+assure everyone the effective freedom to copy and redistribute it, with
+or without modifying it, either commercially or noncommercially.
+Secondarily, this License preserves for the author and publisher a way
+to get credit for their work, while not being considered responsible for
+modifications made by others.This License is a kind of "copyleft", which means that derivative
+works of the document must themselves be free in the same sense.  It
+complements the GNU General Public License, which is a copyleft license
+designed for free software.We have designed this License in order to use it for manuals for
+free software, because free software needs free documentation: a free
+program should come with manuals providing the same freedoms that the
+software does.  But this License is not limited to software manuals; it
+can be used for any textual work, regardless of subject matter or
+whether it is published as a printed book.  We recommend this License
+principally for works whose purpose is instruction or reference.APPLICABILITY AND DEFINITIONSAPPLICABILITY AND DEFINITIONSThis License applies to any manual or other work, in
+any medium, that contains a notice placed by the copyright holder saying
+it can be distributed under the terms of this License.  Such a notice
+grants a world-wide, royalty-free license, unlimited in duration, to use
+that work under the conditions stated herein.  The "Document", below,
+refers to any such manual or work.  Any member of the public is a
+licensee, and is addressed as "you".  You accept the license if you
+copy, modify or distribute the work in a way requiring permission under
+copyright law.A "Modified Version" of the Document means any
+work containing the Document or a portion of it, either copied verbatim,
+or with modifications and/or translated into another language.A "Secondary Section" is a named appendix or
+a front-matter section of the Document that deals exclusively with the
+relationship of the publishers or authors of the Document to the
+Document's overall subject (or to related matters) and contains nothing
+that could fall directly within that overall subject.  (Thus, if the
+Document is in part a textbook of mathematics, a Secondary Section may
+not explain any mathematics.)  The relationship could be a matter of
+historical connection with the subject or with related matters, or of
+legal, commercial, philosophical, ethical or political position
+regarding them.The "Invariant Sections" are certain Secondary
+Sections whose titles are designated, as being those of Invariant
+Sections, in the notice that says that the Document is released under
+this License.  If a section does not fit the above definition of
+Secondary then it is not allowed to be designated as Invariant.  The
+Document may contain zero Invariant Sections.  If the Document does not
+identify any Invariant Sections then there are none.The "Cover Texts" are certain short passages of
+text that are listed, as Front-Cover Texts or Back-Cover Texts, in the
+notice that says that the Document is released under this License.  A
+Front-Cover Text may be at most 5 words, and a Back-Cover Text may be at
+most 25 words.A "Transparent" copy of the Document means a
+machine-readable copy, represented in a format whose specification is
+available to the general public, that is suitable for revising the
+document straightforwardly with generic text editors or (for images
+composed of pixels) generic paint programs or (for drawings) some widely
+available drawing editor, and that is suitable for input to text
+formatters or for automatic translation to a variety of formats suitable
+for input to text formatters.  A copy made in an otherwise Transparent
+file format whose markup, or absence of markup, has been arranged to
+thwart or discourage subsequent modification by readers is not
+Transparent.  An image format is not Transparent if used for any
+substantial amount of text.  A copy that is not "Transparent" is called
+"Opaque".Examples of suitable formats for Transparent copies include plain
+ASCII without markup, Texinfo input format, LaTeX input format, SGML or
+XML using a publicly available DTD, and standard-conforming simple HTML,
+PostScript or PDF designed for human modification.  Examples of
+transparent image formats include PNG, XCF and JPG.  Opaque formats
+include proprietary formats that can be read and edited only by
+proprietary word processors, SGML or XML for which the DTD and/or
+processing tools are not generally available, and the machine-generated
+HTML, PostScript or PDF produced by some word processors for output
+purposes only.The "Title Page" means, for a printed book,
+the title page itself, plus such following pages as are needed to hold,
+legibly, the material this License requires to appear in the title page.
+For works in formats which do not have any title page as such, "Title
+Page" means the text near the most prominent appearance of the work's
+title, preceding the beginning of the body of the text.A section "Entitled XYZ" means a named subunit
+of the Document whose title either is precisely XYZ or contains XYZ in
+parentheses following text that translates XYZ in another language.
+(Here XYZ stands for a specific section name mentioned below, such as
+"Acknowledgements", "Dedications", "Endorsements", or "History".)  To
+"Preserve the Title" of such a section when you modify the Document
+means that it remains a section "Entitled XYZ" according to this
+definition.The Document may include Warranty Disclaimers next to the notice
+which states that this License applies to the Document.  These Warranty
+Disclaimers are considered to be included by reference in this License,
+but only as regards disclaiming warranties: any other implication that
+these Warranty Disclaimers may have is void and has no effect on the
+meaning of this License.VERBATIM COPYINGVERBATIM COPYINGYou may copy and distribute the Document in any medium, either
+commercially or noncommercially, provided that this License, the
+copyright notices, and the license notice saying this License applies to
+the Document are reproduced in all copies, and that you add no other
+conditions whatsoever to those of this License.  You may not use
+technical measures to obstruct or control the reading or further copying
+of the copies you make or distribute.  However, you may accept
+compensation in exchange for copies.  If you distribute a large enough
+number of copies you must also follow the conditions in section 3.
+You may also lend copies, under the same conditions stated above,
+and you may publicly display copies.COPYING IN QUANTITYCOPYING IN QUANTITYIf you publish printed copies (or copies in media that commonly
+have printed covers) of the Document, numbering more than 100, and the
+Document's license notice requires Cover Texts, you must enclose the
+copies in covers that carry, clearly and legibly, all these Cover Texts:
+Front-Cover Texts on the front cover, and Back-Cover Texts on the back
+cover.  Both covers must also clearly and legibly identify you as the
+publisher of these copies.  The front cover must present the full title
+with all words of the title equally prominent and visible.  You may add
+other material on the covers in addition.  Copying with changes limited
+to the covers, as long as they preserve the title of the Document and
+satisfy these conditions, can be treated as verbatim copying in other
+respects.If the required texts for either cover are too voluminous to fit
+legibly, you should put the first ones listed (as many as fit
+reasonably) on the actual cover, and continue the rest onto adjacent
+pages.If you publish or distribute Opaque copies of the Document
+numbering more than 100, you must either include a machine-readable
+Transparent copy along with each Opaque copy, or state in or with each
+Opaque copy a computer-network location from which the general
+network-using public has access to download using public-standard
+network protocols a complete Transparent copy of the Document, free of
+added material.  If you use the latter option, you must take reasonably
+prudent steps, when you begin distribution of Opaque copies in quantity,
+to ensure that this Transparent copy will remain thus accessible at the
+stated location until at least one year after the last time you
+distribute an Opaque copy (directly or through your agents or retailers)
+of that edition to the public.It is requested, but not required, that you contact the authors of
+the Document well before redistributing any large number of copies, to
+give them a chance to provide you with an updated version of the
+Document.MODIFICATIONSMODIFICATIONSYou may copy and distribute a Modified Version of the Document
+under the conditions of sections 2 and 3 above, provided that you
+release the Modified Version under precisely this License, with the
+Modified Version filling the role of the Document, thus licensing
+distribution and modification of the Modified Version to whoever
+possesses a copy of it.  In addition, you must do these things in the
+Modified Version:A.Use in the Title Page (and on the covers, if any) a
+  title distinct from that of the Document, and from those of previous
+  versions (which should, if there were any, be listed in the History
+  section of the Document).  You may use the same title as a previous
+  version if the original publisher of that version gives permission.
+B.List on the Title Page, as authors, one or more
+  persons or entities responsible for authorship of the modifications in
+  the Modified Version, together with at least five of the principal
+  authors of the Document (all of its principal authors, if it has fewer
+  than five), unless they release you from this requirement.
+C.State on the Title page the name of the publisher of
+  the Modified Version, as the publisher.D.Preserve all the copyright notices of the Document.
+E.Add an appropriate copyright notice for your
+  modifications adjacent to the other copyright notices.
+F.Include, immediately after the copyright notices, a
+  license notice giving the public permission to use the Modified
+  Version under the terms of this License, in the form shown in the
+  Addendum below.
+G.Preserve in that license notice the full lists of
+  Invariant Sections and required Cover Texts given in the Document's
+  license notice.H.Include an unaltered copy of this License.
+I.Preserve the section Entitled "History", Preserve its
+  Title, and add to it an item stating at least the title, year, new
+  authors, and publisher of the Modified Version as given on the Title
+  Page.  If there is no section Entitled "History" in the Document,
+  create one stating the title, year, authors, and publisher of the
+  Document as given on its Title Page, then add an item describing the
+  Modified Version as stated in the previous sentence.
+J.Preserve the network location, if any, given in the
+  Document for public access to a Transparent copy of the Document, and
+  likewise the network locations given in the Document for previous
+  versions it was based on.  These may be placed in the "History"
+  section.  You may omit a network location for a work that was
+  published at least four years before the Document itself, or if the
+  original publisher of the version it refers to gives permission.
+K.For any section Entitled "Acknowledgements" or
+  "Dedications", Preserve the Title of the section, and preserve in the
+  section all the substance and tone of each of the contributor
+  acknowledgements and/or dedications given therein.
+L.Preserve all the Invariant Sections of the Document,
+  unaltered in their text and in their titles.  Section numbers or the
+  equivalent are not considered part of the section titles.
+M.Delete any section Entitled "Endorsements".
+  Such a section may not be included in the Modified Version.
+N.Do not retitle any existing section to be Entitled
+  "Endorsements" or to conflict in title with any Invariant Section.
+O.Preserve any Warranty Disclaimers.
+If the Modified Version includes new front-matter sections or
+appendices that qualify as Secondary Sections and contain no material
+copied from the Document, you may at your option designate some or all
+of these sections as invariant.  To do this, add their titles to the
+list of Invariant Sections in the Modified Version's license notice.
+These titles must be distinct from any other section titles.You may add a section Entitled "Endorsements", provided it
+contains nothing but endorsements of your Modified Version by various
+parties--for example, statements of peer review or that the text has
+been approved by an organization as the authoritative definition of a
+standard.You may add a passage of up to five words as a Front-Cover Text,
+and a passage of up to 25 words as a Back-Cover Text, to the end of the
+list of Cover Texts in the Modified Version.  Only one passage of
+Front-Cover Text and one of Back-Cover Text may be added by (or through
+arrangements made by) any one entity.  If the Document already includes
+a cover text for the same cover, previously added by you or by
+arrangement made by the same entity you are acting on behalf of, you may
+not add another; but you may replace the old one, on explicit permission
+from the previous publisher that added the old one.The author(s) and publisher(s) of the Document do not by this
+License give permission to use their names for publicity for or to
+assert or imply endorsement of any Modified Version.COMBINING DOCUMENTSCOMBINING DOCUMENTSYou may combine the Document with other documents released under
+this License, under the terms defined in section
+4 above for modified versions, provided that you include in the
+combination all of the Invariant Sections of all of the original
+documents, unmodified, and list them all as Invariant Sections of your
+combined work in its license notice, and that you preserve all their
+Warranty Disclaimers.The combined work need only contain one copy of this License, and
+multiple identical Invariant Sections may be replaced with a single
+copy.  If there are multiple Invariant Sections with the same name but
+different contents, make the title of each such section unique by adding
+at the end of it, in parentheses, the name of the original author or
+publisher of that section if known, or else a unique number.  Make the
+same adjustment to the section titles in the list of Invariant Sections
+in the license notice of the combined work.In the combination, you must combine any sections Entitled
+"History" in the various original documents, forming one section
+Entitled "History"; likewise combine any sections Entitled
+"Acknowledgements", and any sections Entitled "Dedications".  You must
+delete all sections Entitled "Endorsements".COLLECTIONS OF DOCUMENTSCOLLECTIONS OF DOCUMENTSYou may make a collection consisting of the Document and other
+documents released under this License, and replace the individual copies
+of this License in the various documents with a single copy that is
+included in the collection, provided that you follow the rules of this
+License for verbatim copying of each of the documents in all other
+respects.You may extract a single document from such a collection, and
+distribute it individually under this License, provided you insert a
+copy of this License into the extracted document, and follow this
+License in all other respects regarding verbatim copying of that
+document.AGGREGATION WITH INDEPENDENT WORKSAGGREGATION WITH INDEPENDENT WORKSA compilation of the Document or its derivatives with other
+separate and independent documents or works, in or on a volume of a
+storage or distribution medium, is called an "aggregate" if the
+copyright resulting from the compilation is not used to limit the legal
+rights of the compilation's users beyond what the individual works
+permit.  When the Document is included an aggregate, this License does
+not apply to the other works in the aggregate which are not themselves
+derivative works of the Document.If the Cover Text requirement of section 3 is applicable to these
+copies of the Document, then if the Document is less than one half of
+the entire aggregate, the Document's Cover Texts may be placed on covers
+that bracket the Document within the aggregate, or the electronic
+equivalent of covers if the Document is in electronic form.  Otherwise
+they must appear on printed covers that bracket the whole
+aggregate.TRANSLATIONTRANSLATIONTranslation is considered a kind of modification, so you may
+distribute translations of the Document under the terms of section 4.
+Replacing Invariant Sections with translations requires special
+permission from their copyright holders, but you may include
+translations of some or all Invariant Sections in addition to the
+original versions of these Invariant Sections.  You may include a
+translation of this License, and all the license notices in the
+Document, and any Warrany Disclaimers, provided that you also include
+the original English version of this License and the original versions
+of those notices and disclaimers.  In case of a disagreement between the
+translation and the original version of this License or a notice or
+disclaimer, the original version will prevail.If a section in the Document is Entitled "Acknowledgements",
+"Dedications", or "History", the requirement (section 4) to Preserve its
+Title (section 1) will typically require changing the actual
+title.TERMINATIONTERMINATIONYou may not copy, modify, sublicense, or distribute the Document
+except as expressly provided for under this License.  Any other attempt
+to copy, modify, sublicense or distribute the Document is void, and will
+automatically terminate your rights under this License.  However,
+parties who have received copies, or rights, from you under this License
+will not have their licenses terminated so long as such parties remain
+in full compliance.FUTURE REVISIONS OF THIS LICENSEFUTURE REVISIONS OF THIS LICENSEThe Free Software Foundation may publish new, revised versions of
+the GNU Free Documentation License from time to time.  Such new versions
+will be similar in spirit to the present version, but may differ in
+detail to address new problems or concerns.  See
+http://www.gnu.org/copyleft/.Each version of the License is given a distinguishing version
+number.  If the Document specifies that a particular numbered version of
+this License "or any later version" applies to it, you have the option
+of following the terms and conditions either of that specified version
+or of any later version that has been published (not as a draft) by the
+Free Software Foundation.  If the Document does not specify a version
+number of this License, you may choose any version ever published (not
+as a draft) by the Free Software Foundation.ADDENDUM: How to use this License for
+  your documentsADDENDUM: How to use this License for
+  your documentsTo use this License in a document you have written, include a copy
+of the License in the document and put the following copyright and
+license notices just after the title page:
+    Copyright (c)  YEAR  YOUR NAME.
+    Permission is granted to copy, distribute and/or modify this document
+    under the terms of the GNU Free Documentation License, Version 1.2
+    or any later version published by the Free Software Foundation;
+    with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+    A copy of the license is included in the section entitled "GNU
+    Free Documentation License".
+If you have Invariant Sections, Front-Cover Texts and Back-Cover
+Texts, replace the "with...Texts." line with this:
+    with the Invariant Sections being LIST THEIR TITLES, with the
+    Front-Cover Texts being LIST, and with the Back-Cover Texts being LIST.
+If you have Invariant Sections without Cover Texts, or some other
+combination of the three, merge those two alternatives to suit the
+situation.If your document contains nontrivial examples of program code, we
+recommend releasing these examples in parallel under your choice of free
+software license, such as the GNU General Public License, to permit
+their use in free software.Appendix&#xA0;G.&#xA0;IndexAppendix&#xA0;G.&#xA0;IndexAppendix&#xA0;G.&#xA0;IndexAn index of terms used in this manual.IndexSymbols*, /, [ ], &#x3C1;, , correlation coefficient, &#x3C7;&#xB2;, chi squared, HHeidelberg, file format, Hohenheim, file format, OOffice (see Microsoft Office)TTSAP, file format, Tucson, , , , , , file format, index method and, origin of ID numbers, packed, punchcards at, use of ID numbers, tables, thick line, at the end of a graph, two-column, WWeiserjahre, definition, Word (see Microsoft Office)Aauthor, CCorina, file format, cleaning, correlation coefficient, crossdating, , , , , Weiserjahre, d-score, grids (see grids)t-score, trend, Ddata, definition, decadal format (see Tucson)EExcel,  (see Microsoft Office)exporting to, editing, why can't I?, elements, definition, exporting, , to Excel, to other dendro programs, Ffile format, , , , , , , , Corina, Heidelberg, Hohenheim, Ranges-Only, TSAP, Tucson, spreadsheet, two-column, Ggraphs, scaling, grids, , printing, Iindexing, , , how to, many samples at once, method used, MMicrosoft Excel (see Microsoft Office)Microsoft Office, Microsoft Powerpoint (see Microsoft Office)Microsoft Word (see Microsoft Office)mean sensitivity, metadata, definition, PPowerPoint (see Microsoft Office)packed Tucson (see Tucson)Qquality, Rrange, , , changing, definition, file format, ranges-only (file format), re-summing, reconciling, Ssample, definition, sapwood, , on metadata tab, representation on graphs, scaling graphs, spreadsheet, file format, 

@@ -21,6 +21,7 @@
 package corina.index;
 
 import corina.Sample;
+import corina.ui.I18n;
 
 /**
    Horizontal-line index type.
@@ -34,13 +35,15 @@ import corina.Sample;
    it's merely a special case of the polynomial index, but it's a good
    template for writing other algorithms because it's so simple.</p>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class Horizontal extends Index {
+    /**
+       Constructs a new Horizontal index with the given sample.
 
-    /** Constructs a new Horizontal index with the given sample.
-	@param s sample to index */
+       @param s sample to index
+    */
     public Horizontal(Sample s) {
 	super(s);
     }
@@ -51,16 +54,14 @@ public class Horizontal extends Index {
 	Double mean = new Double((double) source.computeRadius() /
 				 source.data.size());
 
-	// the curve: it's flat...
+	// the curve: well, it's flat...
 	int n = source.data.size();
 	for (int i=0; i<n; i++)
 	    data.add(mean);
     }
 
-    /** Return the name of this index.
-	@return the name of this index */
     public String getName() {
-	return msg.getString("horizontal");
+	return I18n.getText("horizontal");
     }
 
     public int getID() {

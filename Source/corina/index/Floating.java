@@ -21,6 +21,7 @@
 package corina.index;
 
 import corina.Sample;
+import corina.ui.I18n;
 
 import java.util.Arrays;
 
@@ -31,12 +32,14 @@ import java.text.MessageFormat;
    point on the index is the mean of some number of data points (the
    window) around that data point.
 
-   -- describe window here, default=11
+   <p>The "window" attribute is the number of years around this point
+   to average.  The default is 11, meaning each value x[i] will be
+   replaced by the mean of x[i-5], x[i-4], ..., x[i-1], x[i], x[i+1],
+   ..., x[i+4], x[i+5].</p>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-
 public class Floating extends Index {
 
     // the number of points to average to determine the indexed value;
@@ -46,28 +49,39 @@ public class Floating extends Index {
     // default
     private final static int DEFAULT_WINDOW = 11;
 
-    /** Construct a new floating index, using the default window of 11.
-	@param s the sample to index */
+    /**
+       Construct a new floating index, using the default window of 11.
+
+       @param s the sample to index
+    */
     public Floating(Sample s) {
         this(s, DEFAULT_WINDOW);
     }
 
-    /** Construct a new floating index, using the specified window.
-	@param s the sample to index
-	@param window the number of points in the window to use */
+    /**
+       Construct a new floating index, using the specified window.
+
+       @param s the sample to index
+       @param window the number of points in the window to use
+    */
     public Floating(Sample s, int window) {
 	super(s);
 	this.window = window;
     }
 
-    /** Return the human-readable name of this Index, which is
-        "Floating (n-pt)", for an n-point window.
-        @return "Floating (%d-pt)", for window size %d */
+    /**
+       Return the human-readable name of this Index, which is
+       "Floating (n-pt)", for an n-point window.
+
+       @return "Floating (n-pt)", for window size n
+    */
     public String getName() {
-        return MessageFormat.format(msg.getString("floating"), new Object[] { new Integer(window) } );
+        return MessageFormat.format(I18n.getText("floating"),
+				    new Object[] { new Integer(window) } );
     }
 
-    /** Calculate the index, by computing the average at each point. */
+    /** Calculate the index, by computing the average at each
+	point. */
     public void index() {
         // make array weights={1,1,1,...}
         int weights[] = new int[window];
@@ -77,12 +91,11 @@ public class Floating extends Index {
         data = HighPass.filter(source.data, weights);
     }
 
-    /* this doesn't give exactly the same results as mecki's, but
-        i think it's correct (and have the unit tests to prove it!).
-        he might be offsetting the weights,
-        either accidentally or to give a more accurate tree-growth
-        estimate.  but all the docs say to do what i'm doing, so
-        until they tell me to stop... */
+    /* this doesn't give exactly the same results as mecki's, but i
+       think it's correct (and have the unit tests to prove it!).  he
+       might be offsetting the weights, either accidentally or to give
+       a more accurate tree-growth estimate.  but all the docs say to
+       do what i'm doing, so until they tell me to stop... */
 
     public int getID() {
         return 8;

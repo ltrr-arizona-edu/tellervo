@@ -21,26 +21,45 @@
 package corina.gui;
 
 import corina.prefs.Prefs;
+// import corina.prefs.Migrate; -- OBSOLETE?
 import corina.util.Platform;
+import corina.util.Macintosh;
+import corina.util.Netware;
 
+import java.io.*;
 import java.io.IOException;
 
+import java.awt.Font;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 /**
-   <p>Bootstrap for Corina.  It all starts here...</p>
+   Bootstrap for Corina.  It all starts here...
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
+   <h2>Left to do</h2>
+   <ul>
+     <li>extract Bootstrap, which will make testing much easier
+         (Startup = Bootstrap + new XCorina())
+   </ul>
 
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class Startup {
+    /**
+       The <code>main()</code> method that sets all of Corina in
+       motion.  Loads system and user preferences, and instantiates an
+       XCorina object.
 
-    /** The <code>main()</code> method that sets all of Corina in
-	motion.  Loads system and user preferences, and instantiates an
-	XCorina object.
-	@param args command-line arguments; ignored */
+       @param args command-line arguments; ignored
+    */
     public static void main(String args[]) {
+	/*
+	Font f = new Font("courier", java.awt.Font.PLAIN, 24);
+	UIManager.put("Menu.font", f);
+	UIManager.put("MenuItem.font", f);
+	*/
+
         try {
             // if the user hasn't specified a parser with
             // -Dorg.xml.sax.driver=..., use crimson.
@@ -49,24 +68,22 @@ public class Startup {
             // xerces: "org.apache.xerces.parsers.SAXParser"
 	    // gnu/jaxp: "gnu.xml.aelfred2.SAXDriver"
 
-            // on a mac, always use the mac menubar -- see TN2031
-            // (http://developer.apple.com/technotes/tn/tn2031.html)
-            if (Platform.isMac) {
-                System.setProperty("com.apple.macos.useScreenMenuBar", "true");
-                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Corina");
-                System.setProperty("com.apple.mrj.application.live-resize", "true");
-            }
-
             // try to get the native L&F
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-            // first time, show the about box, which contains some
-            // copyright information; don't display it again.
-            if (Prefs.firstRun())
-                new AboutBox();
-
-            // on Mac, treat applications as files, not folders (duh -- why's this not default, steve?)
+            // on a mac, always use the mac menubar -- see TN2031
+            // (http://developer.apple.com/technotes/tn/tn2031.html)
+	    // REFACTOR: move this to Platform?
             if (Platform.isMac) {
+                // REFACTOR: make a Platform.JVMVersion field?
+                if (System.getProperty("java.version").startsWith("1.4"))
+                    System.setProperty("apple.laf.useScreenMenuBar", "true");
+                else
+                    System.setProperty("com.apple.macos.useScreenMenuBar", "true");
+                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Corina");
+                // System.setProperty("com.apple.mrj.application.live-resize", "true");
+
+		// also, treat apps as files, not folders (duh -- why's this not default, steve?)
                 System.setProperty("com.apple.macos.use-file-dialog-packages", "false"); // for AWT
                 UIManager.put("JFileChooser.packageIsTraversable", "never"); // for swing
             }
@@ -74,7 +91,10 @@ public class Startup {
             // this sets the "about..." name only -- not "hide", "quit", or in the dock.
             // have to use -X args for those, anyway, so this is useless.
             // System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Corina");
-            
+
+	    // migrate old prefs (!!!)
+                // WAS: Migrate.migrate();
+
             // load properties -- messagedialog here is UGLY!
             try {
                 Prefs.load();
@@ -85,29 +105,28 @@ public class Startup {
                                               JOptionPane.ERROR_MESSAGE);
             }
 
-	    /*
-	    // install a default-uncaught-exception-handler
-	    ThreadGroup tg = new ThreadGroup("safe") {
-		    public void uncaughtException(Thread t, Throwable e) {
-			Bug.bug(e);
-		    }
-		};
-	    */
-	    // Q: what's the problem?
-	    // A: i can only override uncaughtException() on new threadgroups,
-	    // and i can't move threads between groups, so AWT event handling
-	    // can never be caught by an uncaughtException() method i write (right?)
+	    // using windows with netware, netware doesn't tell windows the real username
+	    // and home directory.  here's an ugly workaround to set user.* properties,
+	    // if they're there.  (old way: always call with "java -Duser.home=...",
+	    // and have the user type in her name -- ugh.)  by doing this after the prefs
+	    // loading, i override anything the user set in the prefs (unless they
+	    // set it again -- hence it should be removed).
+	    // try {
+	    Netware.workaround();
+	    // } catch (IOException ioe) {
+	    // Bug.bug(ioe);
+	    // }
 
-	    // so let's do the next-best thing: dump all uncaught exceptions to a file.
-	    // (then later, maybe on quit, i can offer to mail them to me, or post them, or some such)
-	    // WRITE ME
-	    // Q: delete it on quit if there's no data in it?
-	    // Q: what filename to use?  "${username} - ${time}" would be good.
-	    // Q: where to put it?  wd?  Logs/?  C:\winnt\logs?  $(TMP)?
-	    // System.setErr(new PrintStream(new OutputStream...
+	    // can't install a new default exception handler, but i can log them
+	    ErrorLog.logErrors();
+	    // (i COULD make this log call bug.bug() ...)
 
+            // set up mac menubar
+            Macintosh.configureMenus();
+            
             // let's go...
-            new XCorina();
+	    XCorina.showCorinaWindow();
+
         } catch (Exception e) {
             Bug.bug(e);
         }

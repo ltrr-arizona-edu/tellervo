@@ -21,6 +21,7 @@
 package corina.index;
 
 import corina.Sample;
+import corina.ui.I18n;
 
 import java.util.ArrayList;
 
@@ -41,10 +42,10 @@ import java.util.ArrayList;
    the second pass runs for 0.01 on either side of the best value
    found in steps of 0.001.</p>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
-public class Exponential extends Index implements Solver.Solveable {
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
+public class Exponential extends Index implements Function {
 
     // this class took 11 minutes to write (not counting
     // documentation).  porting mecki's exponential-fit (which i can't
@@ -54,22 +55,25 @@ public class Exponential extends Index implements Solver.Solveable {
     // multiplier in exponent
     private double p;
 
-    /** Compute the basis vector, which is
-	<blockquote><i>[ 1 e<sup>-px</sup> ]</i></blockquote> */
+    /**
+       Compute the basis vector, which is
+       <blockquote><i>[ 1 e<sup>-px</sup> ]</i></blockquote>.
+    */
     public double[] f(double x) {
 	return new double[] { 1., Math.exp(-p*x) };
     }
 
-    /** Create an exponential fit from a given sample.
-	@param s the Sample to index */
+    /**
+       Create an exponential fit from a given sample.
+
+       @param s the Sample to index
+    */
     public Exponential(Sample s) {
 	super(s);
     }
 
-    /** The name of this index, which is <code>"Exponential"</code>.
-	@return the name of this index */
     public String getName() {
-	return msg.getString("exponential"); // include p?
+	return I18n.getText("exponential"); // include p?
     }
 
     // if forReal==false, compute chi2, only.
@@ -88,7 +92,7 @@ public class Exponential extends Index implements Solver.Solveable {
 	double c[] = null;
 	try {
 	    c = Solver.leastSquares(this, x, y);
-	} catch (Solver.SingularMatrixException sme) {
+	} catch (SingularMatrixException sme) {
 	    // how to deal with errors?  return a really big chi2!
 	    return Double.MAX_VALUE;
 	}
@@ -141,8 +145,10 @@ public class Exponential extends Index implements Solver.Solveable {
         }
     }
 
-    /** Run the index; do a search in two passes to find a good
-        &Chi;<sup>2</sup>. */
+    /**
+       Run the index; do a search in two passes to find a good
+       &Chi;<sup>2</sup>.
+    */
     public void index() {
         // big steps
         search(BIG_START, BIG_STOP, BIG_STEP);

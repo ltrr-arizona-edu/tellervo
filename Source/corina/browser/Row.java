@@ -2,26 +2,27 @@ package corina.browser;
 
 import corina.Element;
 import corina.Range;
-import corina.Metadata;
+import corina.MetadataTemplate;
 import corina.Species;
 import corina.UnknownSpeciesException;
+import corina.ui.I18n;
 
 import java.io.File;
 import java.io.IOException;
 
 import java.util.List;
 import java.util.Date;
-import java.util.ResourceBundle;
+import java.util.Iterator;
 import java.util.MissingResourceException;
 
+import java.awt.Image;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
-import java.awt.Image;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-// 3 basic types of rows: elements, folders, and non-dendro files
-// -- a "non-dendro file" is what an element is before it's loaded.
+// 3 basic types of rows: samples, folders, and other files
+// -- "other file" is what an element is before it's loaded.
 // -- don't keep reading a non-dendro file, but also don't completely ignore a file that might get fixed elsewhere.  solution: re-read a file if the moddate changes (so i'll need to keep a moddate field here.)
 
 public class Row {
@@ -36,28 +37,42 @@ public class Row {
         this.browser = browser;
     }
 
+    // new interface: Summary is responsible for loading
+    public Row(Element e, Browser browser) {
+	this.file = new File(e.getFilename());
+	this.element = e; // don't load again!
+	this.browser = browser;
+    }
+
     public String getName() { // in File
         return file.getName();
     }
     public String getPath() { //     "
         return file.getPath();
     }
-    public boolean isDirectory() {
+    public boolean isDirectory() { //     "
         return file.isDirectory();
     }
 
-    private static Icon leafIcon = new DefaultTreeCellRenderer().getLeafIcon();
-    private static Icon closedIcon = new DefaultTreeCellRenderer().getClosedIcon();
-    private static Icon treeIcon;
+    // this makes bargraphs from the browser, for example, *much* more efficient
+    public Element getElement() {
+	return element;
+    }
+
+    private static Icon leafIcon, closedIcon, treeIcon;
     static {
-        // tree.java does exactly the same thing ... refactor
+	DefaultTreeCellRenderer tcr = new DefaultTreeCellRenderer();
+	leafIcon = tcr.getLeafIcon();
+	closedIcon = tcr.getClosedIcon();
+
+        // tree.java does exactly the same thing ... REFACTOR
         ImageIcon tmp = new ImageIcon(Row.class.getClassLoader().getResource("Images/Tree.png"));
-        int height = new JTable().getFont().getSize() + 4;
+        int height = new JTable().getFont().getSize() + 4; // EXTRACT CONST!
         treeIcon = new ImageIcon(tmp.getImage().getScaledInstance(height, height, Image.SCALE_SMOOTH));
     }
     public Icon getIcon() {
-        if (file.isDirectory())
-            return closedIcon;
+	if (file.isDirectory())
+	    return closedIcon;
         if (element == null)
             return leafIcon;
         else
@@ -86,11 +101,55 @@ public class Row {
         return modified;
     }
 
+    // FIXME: it'd be better to do nothing here if it's a folder, than to
+    // say if (!r.isDirectory()) r.load();.
+    /*
     public void load() {
         try {
             // create the element, and load its metadata
             element = new Element(file.getPath());
-            element.loadMeta();
+	    //            element.loadMeta();
+
+	    // WORKING HERE:
+	    // -- i already have a pointer to my Browser, which is good.
+	    // -- the Browser, before calling any Row.load(), should have loaded a Summary
+	    // -- so, my first step here is to check that summary
+	    // -- if the moddate is ok, just read the meta from that
+	    if (browser.summary != null) {
+		for (int i=0; i<browser.summary.elements.size(); i++) {
+		    Element e = (Element) browser.summary.elements.get(i);
+		    if (e.filename.equals(file.getName())) {
+			if (file.lastModified() <= e.lastModified) {
+			    element = e;
+			    return;
+			} else {
+			    break; // need to load newer version -- break to loadMeta() below
+			}
+		    }
+		}
+	    }
+
+	    // if it's a non-dendro file, skip out here
+	    if (browser.summary != null) {
+		for (int i=0; i<browser.summary.others.size(); i++) {
+		    String f = (String) browser.summary.others.get(i);
+		    System.out.println("f=" + f + ", file=" + file.getName());
+		    if (file.getName().equals(f)) {
+			System.out.println("not loading, not a dendro file");
+			return;
+		    }
+		}
+	    }
+
+	    // FIXME: summary should include which files aren't dendro files.
+	    // right now, it has to fall back to trying .xls files again, for example.
+
+	    // System.out.println("falling back to loadMeta() for " + file.getName());
+	    element.loadMeta();
+
+	    // -- (also add/rem'd files)
+	    // -- if not, load sample normally, and tell Browser to update Summary
+	    // -- when done, Browser should tell the Summary to re-save itself
 
             // add other stuff to the meta-map
             // -- or make my own meta map?
@@ -98,9 +157,11 @@ public class Row {
             // WRITE ME
         } catch (IOException ioe) {
             // what to do?  better dim it or something.  oh, and kind="Unknown file" or "Not a sample" now.
+	    System.out.println("in row.load (" + file.getName() + "), got ioe, so it must not be a dendro file");
             element = null;
         }
     }
+*/
 
     // valid fields are:
     // -- any metadata field
@@ -120,23 +181,19 @@ public class Row {
         if (field.equals("modified"))
             return getModified(); // AsString(); // should return the Date -- a RelativeDate, actually.
 
-        // 
-
         if (element != null) {
             // range, in some form?
-            Range range = element.range; // can't be null if element is loaded
+            Range range = element.getRange(); // can't be null if element is loaded
             if (field.equals("range"))
                 // i'd like this to use toStringWithSpan(), but how?  oh well.
                 // (anonymous/inner class with tostring=tostringwithspan?
                 return range;
             if (field.equals("start"))
-                return range.getStart();
+                return range.getStart(); // PERF: year.tostring isn't memoed, so this involves new(), too!
             if (field.equals("end"))
-                return range.getEnd();
+                return range.getEnd(); // PERF: year.tostring isn't memoed, so this involves new(), too!
             if (field.equals("length"))
-                return new Integer(range.span());
-                //                return "n=" + range.span(); // BUG: if you return a String here, you can't sort by it.
-                // anonymous/inner class wraps Integer, but with toString() { return "n=" + n; }?
+                return new Integer(range.span()); // PERF: new() called on each view!
 
             // if it's null, they get null
             Object value = element.details.get(field);
@@ -145,8 +202,11 @@ public class Row {
 
             // maybe it has no translation
             boolean match = false;
-            for (int i=0; i<Metadata.fields.length; i++) {
-                if (Metadata.fields[i].variable.equals(field)) {
+	    Iterator i = MetadataTemplate.getFields();
+	    while (i.hasNext()) {
+		MetadataTemplate.Field f = (MetadataTemplate.Field) i.next();
+                if (f.getVariable().equals(field)) {
+		    // REFACTOR: looks familiar -- isField() or something?
                     match = true;
                     break;
                 }
@@ -157,37 +217,37 @@ public class Row {
             // if it's a species, try looking it up with the Species object,
             // so 4-letter codes show as names.  if that doesn't work, just show the value.
             if (field.equals("species")) {
-                try {
-                    return Species.getName(value.toString());
-                } catch (UnknownSpeciesException use) {
-                    return value.toString();
-                }
+		// try {
+		// return Species.getName(value.toString());
+		// } catch (UnknownSpeciesException use) {
+		return value.toString();
+		// }
             }
 
-            // ok, it must be in there.  look it up
-            try {
-                return msg.getString(field + "." + value); // NOTE: check both cases here?  ensure values[] are all upper?
-            } catch (MissingResourceException mre) {
-                // maybe it's a '?' -- (this check is also in samplemetaview, i think -- refactor?)
-                if (value.toString().equals("?"))
-                    return null;
+	    // the comments field will often have newlines in it,
+	    // which render as empty boxes; replace them with spaces
+	    // or something.
+	    // TODO: why only the comments field?
+	    if (field.equals("comments"))
+		return value.toString().replace('\n', ' ');
 
-                // the comments field will often have newlines in it,
-                // which render as empty boxes; replace them with |'s or something
-                if (field.equals("comments"))
-                    return value.toString().replace('\n', '|');
+	    // ms-dos corina allowed "?" to mean "unspecified"
+	    if (value.toString().equals("?"))
+		return null;
 
-                // bad value, but they gave it before, so we'll give it back now.
-                return value.toString();
-            }
+	    // it's a valid field -- find it, and look up the string
+	    MetadataTemplate.Field f = MetadataTemplate.getField(field);
+	    if (f.isValidValue(value.toString()))
+	        return I18n.getText("meta." + field + "." + value);
+
+	    // it's an unknown value -- let's just spit it out
+	    return value.toString();
         }
 
-        // uhhh...  this sucks, beavis.
+        // element = null ... something's wrong, i think.
         return null;
     }
 
-    private static ResourceBundle msg = ResourceBundle.getBundle("MetadataBundle");
-    
     // true if this file matches all of the words, with any of its visible fields.
     // (how am i to know what's visible here?)  (pass in the list of visible fields, too?)
     // no, better: if i pass a reference to the list-of-visible-fields with the constructor,

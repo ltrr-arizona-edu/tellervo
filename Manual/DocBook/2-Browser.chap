@@ -1,0 +1,465 @@
+<chapter id="browser"><title>The File Browser</title>
+
+  <sect1><title>What's It Do?</title>
+
+    <para>-- why you'd need such a beast; what it is/does</para>
+
+  </sect1>
+
+  <sect1><title>How To Browse Samples</title>
+
+    <para>To start the &corina; File Browser, choose
+
+      <menuchoice>
+	<shortcut>
+	  <keycombo><keycap>control</keycap> <keycap>shift</keycap> <keycap>O</keycap></keycombo>
+	</shortcut>
+	<guimenu>File</guimenu>
+	<guimenuitem>Browse...</guimenuitem>
+      </menuchoice>
+
+      You will see the File Browser in a new window; initially, it will
+      be browsing your toplevel data directory.</para>
+
+  <para>IMAGE: the basic file browser</para>
+
+  <para>In the upper-left corner, you see a popup
+    labelled <guilabel>Folder</guilabel>.  This is the folder
+    you're looking at.  If you click and ...</para>
+
+<para>WRITEME - how to use it: the folder popup, arrow keys, pgup/dn, enter, mouse, descending folders, ascending folders, opening samples.</para>
+
+</sect1>
+
+<sect1><title>Displaying Fields and Sorting</title>
+
+<para>If the &corina; File Browser only allowed you to browse files by
+their filenames, it wouldn't be much more useful than the Finder (on
+the Mac) or Explorer (on the PC).  But it has a killer feature that's
+completely impossible from almost any normal file browser: because
+it's part of &corina;, it knows about &corina; metadata fields.  And you
+can display, sort by, or search for any of these fields.</para>
+
+<!-- IMAGE: file browser with a couple of fields (pith, etc.) visible -->
+
+<para>WRITEME: how to display fields</para>
+
+<para>WRITEME: how to sort</para>
+
+<para>WRITEME: when do they get updated? (if at all)</para>
+
+<tip><para>If your hands are on the keyboard, you can quickly sort by
+a column by pressing <keycap>control</keycap> and the number of the
+column.  For example, if the second column is "Size", press
+<keycombo><keycap>control</keycap> <keycap>2</keycap></keycombo> to
+sort by size.</para></tip>
+
+<para>You can also sort by 2 or more criteria.  For example, suppose
+you wanted to sort by the number of sapwood rings, and then (for those
+samples with the same number of sapwood rings) by end year.  Click on
+them in the opposite order: "End", then "Sapwood Count".  When you
+sort by "Sapwood Count", it won't disturb the sort order from the
+"End" sort unless it needs to, so samples with the same number of
+sapwood rings will still maintain their relative order.  (--need an
+example of this--)
+</para>
+
+<para>The following fields are available:</para>
+
+<variablelist>
+
+  <varlistentry>
+    <term>Name</term>
+    <listitem><para>The name of the file, as it's saved on the
+    disk.  (This field is always visible.)</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Date Modified</term>
+    <listitem><para>The time and date this file was last modified.  If
+	it was modified today or yesterday, the date is shown as
+	"Today" or "Yesterday", to make it
+	easier to skim a list of files, and also for searching
+	(discussed <link linkend="searching">later</link>).</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Size</term>
+    <listitem><para>The size of this file on disk, in bytes or
+    KB.</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Kind</term>
+    <listitem><para>The kind of this file; usually this will be
+	"Corina sample" or "Folder", but may
+	also be something like "Tucson file" (for other
+	dendro filetypes) or "Other document" (for
+	non-dendro filetypes).</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>Range, Start, End, Length</term>
+    <listitem><para>The range is available either as the entire range
+	("1001-1036 (n=36)"), just the start-year
+	("1001"), just the end-year ("1036"),
+	or just the length ("36").  The first option is
+	easiest to read, usually, and the other options give you more
+	flexibility when sorting.  You can sort by end-year, for
+	example.</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>And all of the sample's normal metadata fields...</term>
+    <listitem><para>...exactly as you entered them on <link
+    linkend="metadata">Metadata panel</link></para></listitem>
+  </varlistentry>
+
+</variablelist>
+
+</sect1>
+
+<sect1 id="searching"><title>The Search Field</title>
+
+<para>Sorting by a metadata field is a great way to organize samples,
+especially when you're sorting by a numerical value, like the
+number of sapwood rings.  It doesn't work as well for some text
+fields, like the species, and it doesn't really work at all for
+other text fields, like the comments field.  This is what
+the <emphasis>search field</emphasis> does really well.</para>
+
+<!-- IMAGE: top of the browser, showing "search field: [ ]" -->
+
+<para>In the top-right corner of a the File Browser window, there's a text field
+labelled "Search for:".  When you type a word in this field, &corina; will
+hide files that don't contain this text.  You don't even need to press <keycap>return</keycap>:
+it updates the list as you type, instantly.</para>
+
+<!-- IMAGE: top of the browser, showing search="querc", and a couple quercus samples -->
+
+<itemizedlist>
+
+  <listitem><para>You can type as many words as you like, separated by spaces.  &corina;
+    will show only files that match <emphasis>all</emphasis> of the words you supply.</para></listitem>
+
+  <listitem><para>This field is case-insensitive.  The searches <userinput>fire scar</userinput>,
+    <userinput>FIRE SCAR</userinput>, and <userinput>fIrE sCaR</userinput> are all equivalent.</para></listitem>
+
+  <listitem><para>When you enter a new folder, anything you typed in this field will
+    automatically be deleted.</para></listitem>
+
+  <listitem><para>Terms you type into this field will match any column that is visible.</para></listitem>
+
+</itemizedlist>
+
+<para>And of course, after you've typed some search terms to narrow down the list,
+you can still use the sorting function to sort the samples that remain.</para>
+
+<!--
+<para>Here are some ideas for terms to put into the search field.  Remember, you can
+make a more restrictive search simply by combining more than one of these.</para>
+-->
+
+<!-- add: which field you need to have visible for these to work? -->
+<!--
+<variablelist><title>Ideas for searches</title>
+-->
+
+<!--
+  <varlistentry>
+    <term><userinput>17</userinput></term>
+    <listitem><para>only files numbered 17 (or 117, or 217, or ...)</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><userinput>.sum</userinput> (but better: "summed")</term>
+    <listitem><para>only files that end with .sum</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><userinput>folder</userinput></term>
+    <listitem><para>folders only</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><userinput>tucson</userinput></term>
+    <listitem><para>Tucson files only</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><userinput>today</userinput></term>
+    <listitem><para>only files that were modified today</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><userinput>yesterday</userinput></term>
+    <listitem><para>only files that were modified yesterday</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><userinput>5/25 pm</userinput></term>
+    <listitem><para>only files that were modified the afternoon of 5/25</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><userinput>pith</userinput></term>
+    <listitem><para>only samples with pith</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><userinput>quercus</userinput></term>
+    <listitem><para>only oak samples</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><userinput>peter</userinput></term>
+    <listitem><para>only samples made by Peter</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><userinput>charcoal</userinput></term>
+    <listitem><para>only charcoal samples</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><userinput>fire scar</userinput></term>
+    <listitem><para>only samples with fire scars (provided, of course, you put "fire scar" in the comments field &mdash; &corina; can't detect fire scars automatically)</para></listitem>
+  </varlistentry>
+
+</variablelist>
+-->
+
+<!--
+- dnd, cut-n-paste
+- users should be able to drag-n-drop files, which is fine, because that's already how the trash will work
+- drag-n-drop between browser-finder (native apps), browser-browser (2 browsers), browser-corina (non-browser corina window)
+- dnd files into a folder in this dir - especially important!
+- requiring 2 windows open to move something to a parent folder might not be the easiest mechanism, therefore:
+- cut/copy/paste.
+- cut/paste:
+	- can't put raw files on the clipboard, therefore...
+	- cut moves the old file(s) to ???/clipboard/
+	- and puts the paths in that dir on the clipboard
+	- paste reads those paths, puts in the wd.
+- copy/paste:
+	- copy puts the old path on the clipboard
+	- paste reads the old path, puts it in the wd.
+	- (does this break if you remove the old file(s)?  probably...)
+- FULL UNDO SUPPORT EVERYWHERE
+-->
+
+</sect1>
+
+<sect1><title>The Trash</title>
+
+<para>In the lower-right corner of the File Browser window, there's a
+little Trash icon.  This is just like your Trash on Mac OS or your
+Recycle Bin on Windows.</para>
+
+<!-- FIXME: <graphic fileref="Trash.png"/> <guilabel>Trash</guilabel> -->
+
+<itemizedlist>
+
+	<listitem><para>If you want to delete (one or more) files from the
+File Browser, simply select them and drag them to this icon.
+They'll be moved to your Trash.</para></listitem>
+
+	<listitem><para>If you want to see what's in it, click it;
+this will open it with Explorer (on the PC) or in the Finder (on the
+Mac).</para></listitem>
+
+<!--
+  OR: what about clicking on the trash to trash some files?  no, i don't much like that.
+
+  ALSO: how to undelete files!
+  -->
+
+	<listitem><para>If you want to delete the files in the trash/recycle
+	  bin permanently, click it to open it, and then choose
+
+	  <menuchoice>
+	    <shortcut>
+	      <keycombo><keycap>shift</keycap>
+                        <keycap>&command;</keycap>
+                        <keycap>delete</keycap></keycombo>
+	    </shortcut>
+	    <guimenu>Finder</guimenu>
+	    <guimenuitem>Empty&nbsp;Trash</guimenuitem>
+	  </menuchoice>  
+
+	  (on the&nbsp;Mac) or
+
+	  <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Empty&nbsp;Recycle&nbsp;Bin</guimenuitem>
+	    <!-- does it have a shortcut? -->
+	  </menuchoice>  
+
+	  (on the&nbsp;PC) to empty it.</para></listitem>
+
+	<listitem><para>If you want to recover a file you dragged to the
+	  trash, click the Trash to open it, and then drag the icon of
+	  the file back into the File Browser window.  Alternatively,
+	  if dragging it to the trash was the last thing you did, you
+	  can undo it by choosing
+
+	  <menuchoice>
+	    <guimenu>Edit</guimenu>
+	    <guimenuitem>Undo Move to Trash</guimenuitem>
+	  </menuchoice>.
+        </para>
+	</listitem>
+
+</itemizedlist>
+
+<screen>
+FIXME:
+-- packed tucson files
+-- users will want to be able to read packed tucson files as if they were a folder of normal samples
+-- users should be able to convert between "a folder of (tucson) samples" and "a packed tucson file" seamlessly
+
+-- need the new-new i/o system for this?
+-- need a notation for this?  how about "packedfile.tuc#1" (#1, #2, ...)?  better yet, file.sep -- "packegfile.tuc/1"
+-- (number-of-sample is safe; id-number would probably not be, because there could be 2 files with 1 id number in the file)
+-- there probably aren't, in the ITRDB.  what if i enforced that there weren't on this end, too?  then "packedfile.tuc/652001" is a safe notation.  that would be rather elegant.
+</screen>
+
+</sect1>
+
+<sect1><title>Exporting the Browser Data</title>
+
+<para>&corina; lets you export all of the metadata fields you're
+viewing in the browser to other programs.  (For example, you could make
+a bargraph in <application>Excel</application> out of the start and
+end years of some samples.)</para>
+
+<procedure><title>Exporting the browser data:</title>
+
+<step><para>Choose
+  <menuchoice>
+    <shortcut>
+      <keycombo><keycap>control</keycap> <keycap>C</keycap></keycombo>
+    </shortcut>
+    <guimenu>Edit</guimenu>
+    <guimenuitem>Copy</guimenuitem>
+  </menuchoice>
+</para></step>
+
+</procedure>
+
+<para>This will copy all of the data you see, as you see it, as plain
+text.  Each field will be separated by a tab character, and each row
+will be on a new line.  (You can paste it directly into a spreadsheet,
+like <application>Excel</application>.)</para>
+
+</sect1>
+
+<sect1><title>Printing the Browser Data</title>
+
+<para>You can also print your current browser view, as well.</para>
+
+<procedure><title>To print out the browser view:</title>
+
+<step><para>If you want to change the page setup options
+(if you want to change the margins, or print to a non-standard
+paper size, for example), choose
+  <menuchoice>
+    <guimenu>File</guimenu>
+    <guimenuitem>Page Setup...</guimenuitem>
+  </menuchoice>
+</para></step>
+
+<step><para>Choose
+  <menuchoice>
+    <shortcut>
+      <keycombo><keycap>control</keycap> <keycap>P</keycap></keycombo>
+    </shortcut>
+    <guimenu>File</guimenu>
+    <guimenuitem>Print...</guimenuitem>
+  </menuchoice>
+</para></step>
+
+</procedure>
+
+<para>The printout will show:
+  <itemizedlist>
+    <listitem><para>which folder you're viewing</para></listitem>
+    <listitem><para>all of the fields you see</para></listitem>
+    <listitem><para>all of the files you see</para></listitem>
+    <listitem><para>if there are search terms, what they are</para></listitem>
+    <listitem><para>the number of files/folders,
+                    just like the browser window shows</para></listitem>
+    <listitem><para>your name and the date</para></listitem>
+  </itemizedlist>
+</para>
+
+</sect1>
+
+<!--
+
+<sect1><title>Databases</title>
+
+<para>&corina; provides many of the features of a database
+for your files, but if you have a real database available,
+&corina; can use that, too.  It'll be faster, more reliable,
+and more stable.</para>
+
+  <para>You can connect to any database that has a
+  <ulink url="http://java.sun.com/products/jdbc/">JDBC</ulink> driver
+  (which is most of them).
+  </para>
+
+<procedure><title>To connect to a database:</title>
+
+  <step><para>WRITEME: Click on the
+    <inlinemediaobject>
+      <imageobject><imagedata fileref="../plus.png" format="PNG"/></imageobject>
+-->
+<!-- FIXME: this uses Manual/plus.png, not Images/plus.png -->
+<!--
+    </inlinemediaobject>
+  icon</para></step>
+
+  <step><para>Choose <guibutton>Database</guibutton> from the list, and
+    click <guibutton>OK</guibutton>.</para></step>
+
+  <step><para>WRITEME: set up database dialog, then click ok</para></step>
+
+  <step><para>WRITEME: it'll ask for a username/password?</para></step>
+
+</procedure>
+
+<para>The browser for databases is a little different from the browser
+for files.  First of all, databases don't have "folders".  The
+<guilabel>Site</guilabel> popup takes the place of this (since you
+should be storing data one-site-per-folder, anyway).  Second, you
+never have to wait for it to refresh a folder, because databases are
+designed to search and extract data many different ways quickly.  With
+a database, selecting a new site should show all the samples (and
+their metadata) almost instantly.  (Of course, if the database is on a
+different network, or shared among several people, there might be a
+network delay.)
+</para>
+
+  </sect1>
+
+-->
+
+<!--
+<sect1><title>The ITRDB</title>
+
+  <para>The browser can also connect to any internet FTP site, such as the
+    <xref linkend="ITRDB"/>...</para>
+
+  <para>Speed/bandwidth...</para>
+
+  <para>Can't see many fields...</para>
+
+  <para>Crossdating?  ok...</para>
+
+  <para>Uploads?  ok, future...</para>
+
+</sect1>
+-->
+
+</chapter>

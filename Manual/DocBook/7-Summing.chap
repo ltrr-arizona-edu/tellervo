@@ -1,0 +1,222 @@
+<chapter id="summing"><title>Summing</title>
+
+<sect1 id="master-chronologies">
+  <title>Master Chronologies</title>
+
+<para>Summing is how you take individual samples and construct
+chronologies; it's an average of several samples.***</para>
+
+<para>WRITEME: terminology: sum/master - doesn't belong here, but where?</para>
+
+<para>WRITEME: on the need to redate samples first</para>
+
+<para>The data of a master is the average (mean), at each year, of each
+element that has data for that year.  Their units, then, must match,
+so you can't have both raw (hundredths-of-a-millimeter) and
+indexed (parts-per-thousand) elements in the same sum: if one sample
+is indexed, they must all be indexed.  (If you really don't want
+to index an element, take a look at the Horizontal index.)</para>
+
+<para>A sum also has <emphasis>count</emphasis>, which is also one
+number per year.  It's the number of elements that have data for
+that year.</para>
+
+<para>A sum also has <emphasis>Weiserjahre</emphasis> data.
+Weiserjahre data for a year is the number of samples whose data are
+increasing or decreasing for that year.  Weiserjahre is commonly shown
+as <computeroutput>a/b</computeroutput>, where there
+are <computeroutput>a</computeroutput> elements increasing
+and <computeroutput>b</computeroutput> elements decreasing.
+The <computeroutput>/</computeroutput> means that this is not a
+significant interval.  A <emphasis>significant</emphasis> interval is
+one with at least 4 samples, and at least 75% of the trends in
+agreement; they're shown
+as <computeroutput>a*b</computeroutput>.</para>
+
+<note><title>Note</title>
+  <para>The sum of the two Weiserjahre values
+  won't always equal the count, for two reasons.  The first
+  interval of a sum always has
+  Weiserjahre <computeroutput>0/0</computeroutput>, because there was
+  no previous year to compare to, but count 1.  Also, it's
+  possible the data between 2 years stayed the same, and Weiserjahre
+  only counts increases and decreases.
+  </para>
+</note>
+
+<para>The status bar, at the bottom of every editor window, shows the
+data, count, and Weiserjahre data for the current year.  When you
+graph a sum, it will display both the data and count, as well.</para>
+
+<para>WRITEME--range: (union), no gaps</para>
+
+<para>You can cause elements to be summed by &corina; in two ways: by
+creating a new sum, or re-computing an existing sum.</para>
+
+</sect1>
+
+<sect1 id="making-a-new-sum">
+  <title>Making a New Sum</title>
+
+<procedure><title>How to create a new sum:</title>
+  <step><para>Choose
+    <menuchoice>
+      <guimenu>File</guimenu>
+      <guimenuitem>New Sum...</guimenuitem>
+    </menuchoice></para>
+  </step>
+
+  <step><para>For each element you want to have in the sum, locate it,
+    select it, and click <guibutton>Add</guibutton></para></step>
+
+  <step><para>Click <guibutton>OK</guibutton></para></step>
+
+  <step><para>A new editor window will appear with your sum; on the Metadata
+  tab, enter a title for this sum</para></step>
+
+  <step><para>Enter any other metadata for this sum, such as comments</para></step>
+
+  <step><para>Choose
+    <menuchoice>
+      <shortcut>
+	<keycombo><keycap>control</keycap> <keycap>shift</keycap> <keycap>S</keycap></keycombo>
+      </shortcut>
+      <guimenu>File</guimenu>
+      <guimenuitem>Save As...</guimenuitem>
+    </menuchoice>;
+    use an <filename class="extension">.SUM</filename> extension for your filename</para></step>
+</procedure>
+
+</sect1>
+
+<sect1 id="rebuilding-a-sum">
+  <title>Rebuilding a Sum</title>
+  <indexterm><primary>re-summing</primary></indexterm>
+
+<para>WRITEME: re-summing</para>
+
+<para>WRITEME: why you'd re-sum: data changed in elements, disabling elements, add/rem elements</para>
+
+<procedure>
+	<title>How to re-sum a master:</title>
+	<step><para>Open the sum with
+	  <menuchoice>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>O</keycap></keycombo>
+	    </shortcut>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Open...</guimenuitem>
+	  </menuchoice></para>
+	</step>
+	<step><para>Choose
+	  <menuchoice>
+	    <guimenu>Sum</guimenu>
+	    <guimenuitem>Re-Sum</guimenuitem>
+	  </menuchoice></para>
+	</step>
+	<step><para>Save the sum with
+	  <menuchoice>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>S</keycap></keycombo>
+	    </shortcut>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Save</guimenuitem>
+	  </menuchoice></para>
+	</step>
+</procedure>
+
+<para>There's one more thing to watch out for when making a sum.  When you select a
+summed sample as an element of a sum, it won't just use its data: it will add
+each of the elements that make up that sum.  ***but only 1 level of indirection:
+sums of sums of sums won't go all the way down!</para>
+
+</sect1>
+
+<sect1 id="cleaning">
+  <title>Cleaning</title>
+  <indexterm><primary>cleaning</primary></indexterm>
+
+  <para>The opposite of summing is <emphasis>cleaning</emphasis>.
+  Cleaning takes a sum and destroys all evidence that it's a sum: the
+  count, Weiserjahre, and elements are removed.</para>
+
+<para>Why would you want to do this?  Remember that when you use a sum as the
+element of a new sum, it doesn't use that sum's data, but rather each
+of the elements of that sum.  Cleaning prevents this.  If you have 3
+samples which you know are all from the same tree, for example, you should
+sum them and clean this sum; otherwise, this tree would count 3 times in
+any sum made with this data.</para>
+
+<!-- what if you make a sum using a sum which uses a sum?  infinite regress? -->
+
+<procedure>
+	<title>To clean a sum:</title>
+
+	<step><para>Open the sum with
+	  <menuchoice>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>O</keycap></keycombo>
+	    </shortcut>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Open...</guimenuitem>
+	  </menuchoice></para>
+	</step>
+
+	<step><para>Choose
+	  <menuchoice>
+	    <guimenu>Sum</guimenu>
+	    <guimenuitem>Clean</guimenuitem>
+	  </menuchoice></para>
+	</step>
+
+	<step><para>Save the sum with
+	  <menuchoice>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>shift</keycap> <keycap>S</keycap></keycombo>
+	    </shortcut>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Save As...</guimenuitem>
+	  </menuchoice></para>
+	</step>
+</procedure>
+
+<para>The current convention is to end sums with "<filename class="extension">.SUM</filename>," and cleaned versions ending
+with "<filename class="extension">.CLN</filename>," so use
+"<guimenuitem>Save as...</guimenuitem>" instead of
+"<guimenuitem>Save</guimenuitem>" to save your new sum.
+This way there's always a clean version available, and also an
+original sum, in case you want to change the elements.  If any of the
+elements are changed, remember to re-sum and re-make the cleaned
+file.</para>
+
+</sect1>
+
+<!--
+<sect1 id="alternative-summing-methods">
+  <title>Alternative Summing Methods</title>
+
+  <para>There are two modifications on the basic summing algorithm.
+    Neither of them are supported by &corina; (yet) but you may see sums
+    that were made by other programs.</para>
+
+  <para>The first is to use the intersection, rather than the union,
+    of the ranges of the elements (see <xref linkend="TSAP"/>).  That
+    is, the sum only covers those years where every element has
+    data.</para>
+
+<screen>
+632012 1804-1981                      ########################
+632021 1760-1981              ################################
+632022 1760-1981              ################################
+632031 1711-1981    ##########################################
+Sum =  1804-1981                      ########################
+                  |1700           |1800         |1900         |2000
+</screen>
+
+<para>The second is to use the median value, instead of the mean.
+***who uses this?</para>
+
+</sect1>
+-->
+
+</chapter>

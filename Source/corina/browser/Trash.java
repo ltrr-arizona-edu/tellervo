@@ -1,6 +1,7 @@
 package corina.browser;
 
 import corina.util.Platform;
+import corina.ui.Builder;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,17 +27,8 @@ import java.awt.event.MouseEvent;
  */
 
 public class Trash extends JLabel implements DropTargetListener, MouseListener {
-    // trash icon
-    private final static Icon trashIcon;
-    static {
-        trashIcon = new ImageIcon(Trash.class.getClassLoader().getResource("Images/Trash.png"));
-    }
-    private Icon getTrashIcon() {
-        return trashIcon;
-    }
-
     public Trash() {
-        setIcon(getTrashIcon());
+        setIcon(Builder.getIcon("Trash.png"));
         setText("Trash");
         setBorder(BorderFactory.createCompoundBorder(
                                                       BorderFactory.createLineBorder(Color.gray, 1),

@@ -21,19 +21,22 @@
 package corina.cross;
 
 import corina.Sample;
+import corina.ui.I18n;
+
+import java.util.List;
 
 /**
-   Class representing a "trend" algorithm for crossdating, whereby
-   scores are the ratio of matching trends to total 1-year intervals.
+   A "trend", or <i>Gleichl&auml;ufigkeitskoeffizient</i>, crossdate.
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
+   <p>Scores are the fraction of matching trends.</p>
+
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-
 public class Trend extends Cross {
 
-    // don't use me
-    protected Trend() { }
+    // don't use me -- for getName() only, i think
+    public Trend() { }
 
     /** Create a new Trend from given samples.
 	@param fixed fixed sample to use
@@ -42,67 +45,76 @@ public class Trend extends Cross {
     	super(fixed, moving);
     }
 
-    // number of significant intervals(?) to use; 1 gave too many hits, 2 seems good
-    // (should this be user-settable in the prefs?  1SIG, 2SIG, 3SIG)
+    // number of significant intervals(?) to use, when computing
+    // whether a trend is significant; 1 gave too many hits, 2 seems
+    // good (should this be user-settable in the prefs?  1sig, 2sig,
+    // 3sig)
     private static final int SIGMA = 2;
 
-    public boolean isSignificant(double score, int overlap) {
+    // REFACTOR: this is ok here, because it's how these formulas are written,
+    // but it's lousy higher-up.  i should have an isSig(int index) or even isSig(Year).
+    public boolean isSignificant(float score, int overlap) {
         return score >= (50. + SIGMA * 50./Math.sqrt(overlap))/100.;
     }
 
-    // obsolete soon -- i hope?
-    // still used by: CrossFrame, CrossPrinter, Grid
-    public double getMinimumSignificant() {
-        return 0.65;
+    // OBSOLETE soon -- i hope?
+    // still used by: AllScoresView, CrossdatePrinter
+    public float getMinimumSignificant() {
+        return 0.65f;
     }
 
-    /** This algorithm's name ("Trend", hopefully localized).
-	@return the name of this cross */
     public String getName() {
-	return msg.getString("trend");
+	return I18n.getText("trend");
     }
 
-    /** A format string for trends.
-	@return a format string for trends */
     public String getFormat() {
 	return System.getProperty("corina.cross.trend.format", "0.0%");
     }
 
-    // i want RAW SPEED here!
+    // same data, but in arrays
     private float fixedData[], movingData[];
+
     protected void preamble() {
-        int n = fixed.data.size();
-        fixedData = new float[n];
-        for (int i=0; i<n; i++)
-            fixedData[i] = ((Number) fixed.data.get(i)).floatValue();
+	fixedData = makeArray(getFixed().data);
+	movingData = makeArray(getMoving().data);
 
-	// Float is (probably at least) 26 bytes, compared with 4 bytes for a float,
-	// so for 1000 floats, that's 26K vs 4K in memory.
-	// double this for Doubles: 52K for a list of Doubles.
-	// that's a savings of over 10x when moving from Doubles to floats.
-	// access time probably doesn't save this much, but if i can keep
-	// more crossdates/samples in memory, that's less i/o.
-
-        int m = moving.data.size();
-        movingData = new float[m];
-        for (int i=0; i<m; i++)
-            movingData[i] = ((Number) moving.data.get(i)).floatValue();
+	// Float is (probably at least) 26 bytes, compared with 4
+	// bytes for a float, so for 1000 floats, that's 26K vs 4K in
+	// memory.  double this for Doubles: 52K for a list of
+	// Doubles.  that's a savings of over 10x when moving from
+	// Doubles to floats.  access time probably doesn't save this
+	// much, but if i can keep more crossdates/samples in memory,
+	// that's less i/o.
     }
-    // why was trend so slow?  because it was running .get(i) O(n^2) times
-    // t-score ran it only O(n) times, and beat the pants off it.  (3x as fast for 7000 points.)
-    // solution: never pass a List of Objects to a crossdate, it never pays off.
-    // shove this list->array code up into cross.java, refactor.
 
-    // why does trend need floating point numbers?  i can't think of a case when
-    // ints wouldn't be good enough.  (floating point comparisons are slower than
-    // int comparisons, i presume.)
+    // make an array of floats from a List of Numbers
+    private float[] makeArray(List list) {
+	int n = list.size();
+	float array[] = new float[n];
+	for (int i=0; i<n; i++)
+	    array[i] = ((Number) list.get(i)).floatValue();
+	return array;
+    }
+
+    // why was trend so slow?  because it was running .get(i) O(n^2) times
+    // t-score ran it only O(n) times, and ran 3x as fast.
+    // solution:
+    // -- never pass a List of Objects to a crossdate, it never pays off.
+    // -- shove this list->array code up into cross.java, refactor.
+
+    // why does trend need floating point numbers?  i can't think of a
+    // case when ints wouldn't be good enough.  (floating point
+    // comparisons are slower than int comparisons, i presume.)
     
-    /** Compute a single trend, i.e., the trend between the two
-	samples for a given possible position.
-	@param offset_fixed index into the fixed sample to start
-	@param offset_moving index into the moving sample to start
-	@return trend score for these offsets */
-    public double compute(int offset_fixed, int offset_moving) {
+    /**
+       Compute a single trend, i.e., the trend between the two
+       samples for a given possible position.
+
+       @param offset_fixed index into the fixed sample to start
+       @param offset_moving index into the moving sample to start
+       @return trend score for these offsets
+    */
+    public float compute(int offset_fixed, int offset_moving) {
         int i=offset_fixed, j=offset_moving;
         float agree=0;
         int total=0;
@@ -119,11 +131,11 @@ public class Trend extends Cross {
             mi1 = movingData[j+1];
 
             // this isn't exactly the same as schweingruber.
-	    // would that be easier to vectorize?
+	    // (would that be easier to vectorize?)
             
             if ((fi0<fi1 && mi0<mi1) || (fi0>fi1 && mi0>mi1) || (fi0==fi1 && mi0==mi1))
                 agree += 1;
-            else if (fi0==fi1 || mi0==mi1) // note: "||", not "&&" (!)
+            else if (fi0==fi1 || mi0==mi1) // note: "||", not "&&"
                 agree += 0.5;
 
             total++;
@@ -131,8 +143,9 @@ public class Trend extends Cross {
         }
 
         // oh, for cryin' out loud, don't do that...
+	// (some loser is crossdating a zero-length sample)
         if (total == 0)
-            return 0.0;
+            return 0;
 
         return agree / total;
     }

@@ -29,7 +29,6 @@ import java.io.IOException;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 
 /**
    A "sum" of two or more datasets is the average of those datasets.
@@ -53,19 +52,17 @@ import java.util.ResourceBundle;
 
    @see Element
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
-
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class Sum {
 
     // TODO:
     // - make Undoable?  this probably isn't *that* useful.
     // - if exactly one file is indexed, say which it is (and vice versa) -- or 2? 3?...
 
-    // i18n
-    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
-
-    // load all elements, and stuff 'em into a buffer.  (OBSOLETE once element-sample is no longer an important distinction to make!)
+    // load all elements, and stuff 'em into a buffer.
+    // (OBSOLETE once element-sample is no longer an important distinction!)
     private static Sample[] loadIntoBuffer(List elements) throws IOException {
         // count number of active elements
         int numActive=0, numTotal=elements.size();
@@ -87,19 +84,21 @@ public class Sum {
     }
 
     /**
-        Compute the union of all the ranges of elements.  (Assumes
-                                                           |elements| holds at least one element.)  For sums using the
-     intersection of the ranges instead, simply replace "union" with
-     "intersection" in the loop.
+       Compute the union of all the ranges of elements.  (Assumes
+       |elements| holds at least one element.)  For sums using the
+       intersection of the ranges instead, simply replace "union" with
+       "intersection" in the loop.
 
      From the user's point of view, it would be better to
      provide the option (for example):
 
+<pre>
      (*) union (1001-1050)
      ( ) intersection (1010-1036)
+</pre>
 
      (with "intersection" dimmed if the range is empty).
-     */
+    */
     private static Range computeRange(Sample elements[]) {
         // yup, it's just (reduce #'range-union elements #'sample-range).
         Range range = elements[0].range;
@@ -108,10 +107,17 @@ public class Sum {
         return range;
     }
 
-    /** Are the elements all raw, or all indexed?  (Assumes |elements|
-        holds at least one element.) */
+    /**
+       Are the elements all raw, or all indexed?
+
+       @param elements an array to test
+       @return true, iff all of the elements in the array use the
+       same units
+    */
     private static boolean consistentUnits(Sample elements[]) {
-        // yup, it's just (apply #'= (map 'list 'sample-format elements)) -- no, don't cons...
+        // yup, it's just (apply #'= (map 'list 'sample-format elements)).
+	if (elements.length == 0)
+	    return true;
         boolean isIndexed = elements[0].isIndexed();
         for (int i=1; i<elements.length; i++)
             if (isIndexed != elements[i].isIndexed())
@@ -119,14 +125,46 @@ public class Sum {
         return true;
     }
 
+    // files which should watch for these exceptions:
+    // - Browser, Editor, FileMenu, XMenubar, UnitTests
+    // TODO: when they can all handle it, change it to extend merely Exception.
+    // (shouldn't i change this first, so the JSL is in full effect?)
+
+    // an exception that means "there's a gap in the sum"
+    public static class GapInSumException extends IllegalArgumentException {
+	// sum_error_gap
+    }
+
+    // an exception that means "you're trying to mix raw and indexed files, dork"
+    public static class InconsistentUnitsException extends IllegalArgumentException {
+	// sum_error_mixed
+    }
+
     // load elements, sum them, and store into result (returns result, too)
     private static Sample sum(Sample result, List elements) throws IOException {
         // step 0: load all elements, and stuff 'em into a buffer
         Sample buf[] = loadIntoBuffer(elements);
 
+	// special case: zero elements!
+	if (buf.length == 0) {
+	    // "skip to step 6" would be nice...
+	    result.range = new Range(); // default empty range (1001-1000)
+	    result.data = new ArrayList();
+	    result.count = new ArrayList();
+	    result.incr = new ArrayList();
+	    result.decr = new ArrayList();
+
+	    result.elements = elements;
+	    result.meta.put("format", "R"); // let's say no data = raw
+	    result.setModified();
+	    result.fireSampleDataChanged();
+	    result.fireSampleMetadataChanged();
+	    return result;
+	}
+
         // step 0.5: verify units (raw/indexed)
         if (!consistentUnits(buf))
-            throw new IllegalArgumentException(msg.getString("sum_error_mixed"));
+            throw new InconsistentUnitsException();
         boolean isIndexed = buf[0].isIndexed(); // save units for later
 
         // HERE'S where i'd identify single (or a few) wrong-unit
@@ -187,7 +225,7 @@ public class Sum {
         // step 4: if any count is 0, there's a gap => throw exception
         for (int i=0; i<n; i++)
             if (count[i] == 0)
-                throw new IllegalArgumentException(msg.getString("sum_error_gap"));
+                throw new GapInSumException();
 
         // HERE i should say where the gap is, and what the whole
         // range is, and maybe even what samples are near the gap (?).
@@ -223,12 +261,30 @@ public class Sum {
         return result;
     }
 
-    /** Create a new sum from some elements. */
+    /**
+       Create a new sum from some elements.
+
+       @param e a list of 
+       @return a new master
+       @exception IOException if one of the samples wasn't able to be
+       loaded
+       @exception IllegalArgumentException if there would be a gap in
+       the sum, or if the units are inconsistent
+    */
     public static Sample sum(List e) throws IOException {
         return sum(new Sample(), e);
     }
 
-    /** Re-Sum an existing master. */
+    /**
+       Re-Sum an existing master.
+
+       @param m the master to re-sum
+       @return the same master, re-summed
+       @exception IOException if one of the samples wasn't able to be
+       loaded
+       @exception IllegalArgumentException if there would be a gap in
+       the sum, or if the units are inconsistent
+    */
     public static Sample sum(Sample m) throws IOException {
         return sum(m, m.elements);
     }

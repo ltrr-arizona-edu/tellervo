@@ -29,23 +29,52 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.StringTokenizer;
+import java.util.NoSuchElementException;
 
 // a complete list of all the species.
 // the file came from http://web.utk.edu/~grissino/species.htm
 // (I hope I didn't murder it too bad in converting it to a text file)
 
-// -- this is for latin name only.  it would be useful to have (common name => code)
-// and (code => common nameS) lookups, as well.
+// -- this is for latin name only.  it would be useful to have common name lookups, as well.
 // -- in SQL, this'd be TABLE latin_species ( key code, latin ), TABLE common_species ( code, common )
 // -- in java, i'll either need more hashes/tables, or a multi-column table, or ... ick.  where's lisp?
 
 // -- common names are in english only.  it would be useful to have non-english common names, as well.
-// -- e.g., i know the turkish common name, what's the latin?  or, here's a dataset of quercus, what would a german know?
+// -- e.g., "i know the turkish common name, what's the latin?"  or, "here's a dataset of quercus, what would a german know?"
 // -- this would go ESPECIALLY well with string-almost-equals, because random users probably won't
 // type in non-english vowels (umlauts and the like).
 
+/**
+   Conversions between Latin names and 4-letter codes of species.
+
+<pre>
+WRITEME:
+-- where the list came from
+-- how it's stored by this class
+-- how/where it's stored on disk / in the jar
+</pre>
+
+   <h2>Left to do</h2>
+   <ul>
+     <li>Javadoc
+     <li>Make species, common private, with (safe) accessors
+     <li>Move stringAlmostEquals(), etc., to util, if I'm going to keep it
+     <li>Clean up closestSpecies(), if I'm going to keep it
+     <li>Future: this is for Latin name only; common names would be useful
+     <li>Future: make Species an instantiable class, with getCode()/getName()/etc. methods?
+         Sure, and add Iterator getSpecies() method...
+   </ul>
+
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class Species {
+    private Species() {
+        // don't instantiate me
+    }
+
     public static Properties species = new Properties(); // code => name hash
 
     static {
@@ -55,7 +84,7 @@ public class Species {
             species.load(cl.getResource("species.properties").openStream());
         } catch (Exception e) {
             // can't happen
-            Bug.bug(e); // move to its own class so the exception can be caught and it can be unit tested?
+            new Bug(e); // move to its own class so the exception can be caught and it can be unit tested?
         }
     }
 
@@ -69,20 +98,39 @@ public class Species {
         throw new UnknownSpeciesException();
     }
 
-    /** Look up a code in the list, and return its Latin name.
-        @param c the code to look up; usually 4 letters, all upper-case
-    @return the Latin name of that species
-        @exception UnknownSpeciesException if the code isn't in the list
-     */
-    public static String getName(String c) throws UnknownSpeciesException {
-        String r = (String) species.get(c);
-        if (r == null)
-            throw new UnknownSpeciesException();
+    /**
+       Look up a code in the list, and return its Latin name.
+     
+       @param code the code to look up; usually 4 letters, all upper-case
+       @return the Latin name of that species
+       @exception UnknownSpeciesException if the code isn't in the list
+    */
+    public static String getName(String code) throws UnknownSpeciesException {
+        String name = (String) species.get(code);
+        if (name != null)
+            return name;
         else
-            return r;
+            throw new UnknownSpeciesException();
     }
 
     public static List common = new ArrayList(); // list of strings, like ("PISP" "QUSP")
+
+    public static Iterator getCommonCodes() {
+        return new Iterator() {
+            private int i = 0;
+            public boolean hasNext() {
+                return (i < common.size());
+            }
+            public Object next() throws NoSuchElementException {
+                if (i < common.size())
+                    return common.get(i++);
+                throw new NoSuchElementException();
+            }
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
 
     // carol made this list for me; she also made a list of forest-speficic species (40 of 'em) --
     // what to do with those?
@@ -99,7 +147,7 @@ public class Species {
         // sums will need the same sort of routine: "QUSP,PISP" => { "QUSP", "PISP" } => "Quercus, Pinus"
     }
 
-    // ---- MOVE EVERYTHING BELOW HERE TO UTIL.* ----
+    // ---- MOVE EVERYTHING BELOW HERE TO corina.util.Text! ----
     
     // "string-almost-equals" algorithm.  good for finding typos.
     // isn't species-specific, but i only plan to use it here.

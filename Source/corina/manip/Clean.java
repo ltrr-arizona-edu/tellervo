@@ -21,32 +21,32 @@
 package corina.manip;
 
 import corina.Sample;
+import corina.ui.I18n;
 
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CannotRedoException;
 
 /**
-   Cleans a summed file, i.e., keeps the numerical data, but removes
-   evidence that it was summed.  Specifically,
+   Cleans a summed file.  That is, keeps the numerical data, but
+   removes evidence that it was summed.  Specifically,
 
    <ul>
-	<li>Clears weiserjahre (<code>wj</code>)
-	<li>Clears elements (<code>elements</code>)
-	<li>Clears count (<code>count</code>)
-	<li>Clears filename
+      <li>Clears weiserjahre (<code>wj</code>)
+      <li>Clears elements (<code>elements</code>)
+      <li>Clears count (<code>count</code>)
+      <li>Clears filename
    </ul>
 
-   The <code>run()</code> method does the dirty work.  It was used for
-   consistency, only; it probably takes negligible time, so there's no
-   reason to thread it.
+   <p>The <code>run()</code> method does the dirty work.  It was used
+   for consistency, only; it probably takes negligible time, so
+   there's no reason to thread it.</p>
 
    @see Sample
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
 
@@ -56,6 +56,13 @@ import javax.swing.undo.CannotRedoException;
 // => no, implementing undoableedit isn't bad at all...
 
 // clumsy: "=null" parts are duplicated.  re-use that code, like (??) does.
+
+/*
+  TODO: this class should be the simplest class there is; it should
+  only define a manipulate() { clean(); }, where clean() { incr = decr
+  = count = elements = null; filename = null; } -- everything (like
+  undo/redo) else should be handled by a superclass Manipulation.
+*/
 
 public class Clean extends AbstractUndoableEdit {
 
@@ -93,8 +100,9 @@ public class Clean extends AbstractUndoableEdit {
 	s.setModified();
 
 	// tell watchers
-	s.fireSampleFormatChanged();
+	s.fireSampleDataChanged();
 	s.fireSampleMetadataChanged();
+	s.fireSampleElementsChanged();
     }
 
     public void undo() throws CannotUndoException {
@@ -108,8 +116,9 @@ public class Clean extends AbstractUndoableEdit {
 	    s.clearModified();
 
 	// tell watchers
-	s.fireSampleFormatChanged();
+	s.fireSampleDataChanged();
 	s.fireSampleMetadataChanged();
+	s.fireSampleElementsChanged();
     }
     public void redo() throws CannotRedoException {
 	super.redo();
@@ -120,15 +129,13 @@ public class Clean extends AbstractUndoableEdit {
 	s.setModified();
 
 	// tell watchers
-	s.fireSampleFormatChanged();
+	s.fireSampleDataChanged();
 	s.fireSampleMetadataChanged();
+	s.fireSampleElementsChanged();
     }
     public String getPresentationName() {
-	return msg.getString("clean");
+	return I18n.getText("clean");
     }
-
-    // i18n
-    private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     private Clean(Sample s) {
 	this.s = s;

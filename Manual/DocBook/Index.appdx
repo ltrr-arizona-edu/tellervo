@@ -1,0 +1,14 @@
+<appendix id="index">
+  <title>Index</title>
+
+  <para>An index of terms used in this manual.</para>
+
+  <!-- this builds an index for me automatically -->
+  <index/>
+
+<!-- TODO: words to add to the index:
+  - absolute/relative
+  - id numbers
+-->
+
+</appendix>

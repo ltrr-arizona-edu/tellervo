@@ -1,0 +1,277 @@
+<!-- TODO: add index terms -->
+
+<appendix id="graphics-formats">
+    <title>Graphics File Formats</title>
+
+    <para>
+    - why i'm writing this:
+    - there are lots of formats, everybody's confused, it applies to parts of corina
+    </para>
+
+    <para>
+    read this if:
+    - you're trying to decide whether to use "Export PNG..." or "Export SVG..." in corina
+    </para>
+
+<sect1 id="types-of-graphics-files">
+    <title>Types of graphics files</title>
+
+    <para>
+    - big 2: bitmap and vector formats
+    -- examples: a png and an svg, at 1x, and scaled 10x
+    WRITEME
+    </para>
+</sect1>
+
+<sect1 id="bitmap-file-formats">
+    <title>Bitmap File Formats</title>
+
+    <para>
+    - like a big screen door
+	- want to make it bigger?  you won't get any more detail.
+    </para>
+
+    <para>
+    Examples of bitmap file formats are PNG, TIFF, and JPEG.
+    </para>
+
+    <para>
+    -- examples: a tiff and a jpeg (?)
+    </para>
+
+<table frame="all" pgwide="true">
+    <title>Bitmap Graphics Filetypes</title>
+
+    <tgroup cols="5" align="left" colsep="1" rowsep="1">
+
+    <thead>
+        <row>
+            <entry>Format</entry>
+            <entry>Filename Extensions</entry>
+            <entry>Number of Colors</entry>
+            <entry>Transparency</entry>
+            <entry>Compression</entry>
+            <entry>Common Uses</entry>
+        </row>
+    </thead>
+    
+    <tbody>
+        <row>
+            <entry>PNG</entry>
+            <entry><filename class="extension">.png</filename></entry>
+            <entry>Millions</entry>
+            <entry>Full</entry>
+            <entry>Yes</entry>
+            <entry>Web graphics or icons; any non-photographic images</entry>
+        </row>
+
+        <row>
+            <entry>TIFF</entry>
+            <entry><filename class="extension">.tiff</filename> or
+                   <filename class="extension">.tif</filename></entry>
+            <entry>Millions</entry>
+            <entry>Full</entry>
+            <entry>No</entry>
+            <entry>Scanned (or digital) photos for manipulation,
+                   where quality is critical</entry>
+        </row>
+
+        <row>
+            <entry>JPEG</entry>
+            <entry><filename class="extension">.jpeg</filename> or
+                   <filename class="extension">.jpg</filename></entry>
+            <entry>Millions</entry>
+            <entry>None</entry>
+            <entry>Yes (lossy - use for photographs only)</entry>
+            <entry>Photographs for the web, or other places where
+                   size is important</entry>
+        </row>
+
+        <row>
+            <entry>GIF</entry>
+            <entry><filename class="extension">.gif</filename></entry>
+            <entry>256</entry>
+            <entry>Limited (transparent/opaque only)</entry>
+            <entry>Yes</entry>
+            <entry>Older web graphics</entry>
+        </row>
+
+        <row>
+            <entry>Adobe Photoshop</entry>
+            <entry><filename class="extension">.psd</filename></entry>
+            <entry>Millions</entry>
+            <entry>Full</entry>
+            <entry>No</entry>
+            <entry>User-created images or photographs</entry>
+        </row>
+
+        <row>
+            <entry>Microsoft Windows Bitmap</entry>
+            <entry><filename class="extension">.bmp</filename></entry>
+            <entry>??</entry>
+            <entry>None</entry>
+            <entry>No</entry>
+            <entry>Windows screenshots</entry>
+        </row>
+    </tbody>
+
+    </tgroup>
+</table>
+
+<para>JPEG's compression deserves special mention.  It uses a special form
+of compression which is excellent for photographs, or other images with
+gradients or continuous tones.  The downside is that if you put an image
+into JPEG format, and then look at it again, it won't be exactly the same
+image (it's "lossy").  WRITEME</para>
+
+<para>For more information on JPEG, see
+<ulink url="http://www.photo.net/learn/jpeg/">Photo.net's JPEG page</ulink>,
+or ... -- NOTE: have list of references for this appendix only?</para>
+
+<para>GIF is an older format.  Due to lack of features, and some
+possible licensing issues, its use is declining.  There's no reason to
+use it any longer.  Use PNG instead.</para>
+
+<para>The Photoshop format is similar to TIFF, in that it's an
+uncompressed bitmap, but it also stores layers and other
+Photoshop-specific features.  If you're working with an image in
+Photoshop, you pretty much need to use this format, but you'll convert
+it to a different format for publication, like JPEG or PNG; it's
+proprietary, so most other programs will not be able to read
+it.</para>
+
+<para>Another format you might see is "Windows Bitmap".  Windows
+creates these (for example, when you take a screenshot), but that's
+about all they're good for.  They offer no compression, no
+transparency, and many programs (including many web browsers) can't
+view them.  Avoid.</para>
+
+<!-- +examples of each! [???] -->
+
+<para>
+when to use bitmaps.  when not to use bitmaps.  (should this really be here?)
+</para>
+
+<para>
+- how to deal with them: photoshop handles pretty much anything
+</para>
+
+</sect1>
+
+<sect1 id="vector-file-formats">
+  <title>Vector File Formats</title>
+
+<para>
+- like instructions on how to draw something on graph paper
+</para>
+
+<table frame="all" pgwide="true">
+    <title>Vector Graphics Filetypes</title>
+
+    <tgroup cols="3" align="left" colsep="1" rowsep="1">
+
+    <thead>
+        <row>
+            <entry>Format</entry>
+            <entry>Filename Extensions</entry>
+            <entry>Common Uses</entry>
+        </row>
+    </thead>
+    
+    <tbody>
+        <row>
+            <entry>SVG</entry>
+            <entry><filename class="extension">.svg</filename>,
+                   <filename class="extension">.svgz</filename> (compressed)</entry>
+            <entry>Standard interchange for vector graphics,
+                   possibly replacing EPS; vector graphics on the web</entry>
+        </row>
+
+        <row>
+            <entry>PostScript</entry>
+            <entry><filename class="extension">.ps</filename>,
+                   <filename class="extension">.ps.gz</filename> (compressed)</entry>
+            <entry>Printed documents</entry>
+        </row>
+
+        <row>
+            <entry>Encapsulated PostScript (EPS)</entry>
+            <entry><filename class="extension">.eps</filename></entry>
+            <entry>Figures, graphs, or clip art</entry>
+        </row>
+
+        <row>
+            <entry>PDF</entry>
+            <entry><filename class="extension">.pdf</filename></entry>
+            <entry>Printed documents</entry>
+        </row>
+
+        <row>
+            <entry>Illustrator</entry>
+            <entry><filename class="extension">.ai</filename></entry>
+            <entry>Drawings</entry>
+        </row>
+
+        <row>
+            <entry>Flash</entry>
+            <entry><filename class="extension">.swf</filename></entry>
+            <entry>Web graphics, especially with animation and sound</entry>
+        </row>
+    </tbody>
+
+    </tgroup>
+</table>
+
+<para>Your screen has about 100 dots per inch (DPI).  Your printer is
+maybe 300 or 600 DPI.  , but a vector image file can be scaled to that
+level and it'll still look even smoother than it does on your screen.
+</para>
+
+<para>
+WRITEME
+- any of these let you "embed" a bitmap in a vector file
+- if you put a bitmap in a vector file, it's still a bitmap.
+- e.g., if you put a PNG in an illustrator file, it'll still be pixels.  it won't scale.
+</para>
+
+<para>
+WRITEME: - how to deal with them: illustrator is decent
+</para>
+
+</sect1>
+
+<sect1 id="graphics-in-office">
+    <title>Graphics in Microsoft
+    Office<footnote><para>This generally applies to any relatively
+    modern office-like software, not just Microsoft Office.</para></footnote></title>
+    
+    <indexterm><primary>Microsoft Office</primary></indexterm>
+    <indexterm><primary>Office</primary>               <see>Microsoft Office</see></indexterm>
+    <indexterm><primary>Word</primary>                 <see>Microsoft Office</see></indexterm>
+    <indexterm><primary>Microsoft Word</primary>       <see>Microsoft Office</see></indexterm>
+    <indexterm><primary>Excel</primary>                <see>Microsoft Office</see></indexterm>
+    <indexterm><primary>Microsoft Excel</primary>      <see>Microsoft Office</see></indexterm>
+    <indexterm><primary>PowerPoint</primary>           <see>Microsoft Office</see></indexterm>
+    <indexterm><primary>Microsoft Powerpoint</primary> <see>Microsoft Office</see></indexterm>
+
+    <para>why: lots of people use office, despite its flaws.
+    word and powerpoint, especially.  so even if you never use these
+    programs yourself, chances are other people will, so you'll need
+    to know what formats to generate/share files.</para>
+
+    <para>
+    bitmaps: newer versions should support png, tiff, gif, and jpeg.
+    they might not support full transparency, but since paper is white it doesn't
+    really matter.  just remember that if you put a bitmap in your word document or
+    powerpoint presentation and it looks ok on the screen it might not look so
+    smooth on paper or on a projection screen.
+    </para>
+
+    <para>
+    vector: even newer versions might not support most (or any) of these
+    formats, which is unfortunate.  if you're stuck with office, you may have no
+    choice but to use a bitmap format, which won't look very good.</para>
+
+</sect1>
+
+</appendix>

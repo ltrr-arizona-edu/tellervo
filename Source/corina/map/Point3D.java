@@ -21,7 +21,7 @@
 package corina.map;
 
 /**
-   A point in 3-space.  Each component (x,y,z) is a float.
+   A point in 3-space: (x, y, z).  Each component (x, y, z) is a float.
 
    <h2>Left to do:</h2>
    <ul>
@@ -108,6 +108,8 @@ public class Point3D {
        Make a point from a Location (latitude, longitude).  The center of the earth is (0,0,0),
        and the earth is assumed to be spherical, i.e., this converts from spherical coordinates
        (Location) to rectangular coordinates (Point3D).
+
+       WRITEME: which way to the axes point?
 
        @param location the location to use
     */

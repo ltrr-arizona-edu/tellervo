@@ -23,9 +23,15 @@ package corina.manip;
 import corina.Sample;
 import corina.SampleAdapter;
 import corina.SampleEvent;
+import corina.gui.Layout;
+import corina.gui.Bug;
+import corina.util.ColorUtils;
+
+import java.io.IOException;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.FlowLayout;
 import java.awt.Component;
 import javax.swing.JDialog;
 import javax.swing.JCheckBox;
@@ -33,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
+import javax.swing.JButton;
 import javax.swing.AbstractListModel;
 import javax.swing.ListCellRenderer;
 import javax.swing.BorderFactory;
@@ -46,15 +53,18 @@ public class ReconcileDialog extends JDialog {
 
     private Reconcile r;
 
-    ReconcileListModel model; // AbstractListModel
+    private ReconcileListModel model; // AbstractListModel
 
     private Sample s1, s2;
+
+    private JButton markAsRec;
 
     public ReconcileDialog(Sample s1, Sample s2) {
 	setTitle("Reconciliation Messages");
 
 	r = new Reconcile(s1, s2);
-	// for n=191, on a PPC G4/500MHz, takes ~12ms for the first reconciliation, 2-3ms for subsequent runs
+	// for n=191, on a PPC G4/500MHz, takes ~12ms for the first
+	// reconciliation, 2-3ms for subsequent runs
 
 	this.s1 = s1;
 	this.s2 = s2;
@@ -67,9 +77,29 @@ public class ReconcileDialog extends JDialog {
 	renderer = new RuleRenderer();
 	list.setCellRenderer(renderer);
 
-	// content pane is a borderlayout, by default
-	getContentPane().add(buttons, BorderLayout.NORTH);
-	getContentPane().add(new JScrollPane(list), BorderLayout.CENTER);
+	// bottom -- IMPLEMENT ME!
+	markAsRec = new JButton("Mark as reconciled");
+	markAsRec.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    try {
+			r.markAsReconciled();
+			markAsRec.setEnabled(false);
+		    } catch (IOException ioe) {
+			Bug.bug(ioe);
+		    }
+		}
+	    });
+	markAsRec.setEnabled(false); // -- for debugging!
+	// TODO: this button enabled iff zero rules broken
+	// (BETTER: button dims if either .rec files exist, so you can only click it once)
+
+	JPanel bottom = Layout.buttonLayout(markAsRec);
+	bottom.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+	// stuff components into pane
+	setContentPane(Layout.borderLayout(buttons,
+					    null, new JScrollPane(list), null,
+					    bottom));
 
 	final SampleAdapter watcher = new SampleAdapter() {
 		public void sampleRedated(SampleEvent e) {
@@ -122,7 +152,7 @@ public class ReconcileDialog extends JDialog {
 	// trend.setIcon(r.trendIcon);
 	// percent.setIcon(r.percentIcon);
 
-	buttons = new JPanel(new GridLayout(1, 0));
+	buttons = new JPanel(new GridLayout(1, 0, 12, 12));
 	buttons.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
 	buttons.add(length);
@@ -163,6 +193,10 @@ public class ReconcileDialog extends JDialog {
     // show length, then trend, then 3% errors (no, that's not the order they're done on paper!)
     public class ReconcileListModel extends AbstractListModel {
 	public Object getElementAt(int index) {
+	    // special case: no problems
+	    if (r.length.size() + r.trends.size() + r.percents.size() == 0)
+		return "These samples are correctly reconciled";
+
 	    if (lengthVisible && index < r.length.size())
 		return ((Reconcile.Rule) r.length.get(index));
 
@@ -178,6 +212,10 @@ public class ReconcileDialog extends JDialog {
 	    return ((Reconcile.Rule) r.percents.get(index));
 	}
 	public int getSize() {
+		// special case: no problems
+		if (r.length.size() + r.trends.size() + r.percents.size() == 0)
+		    return 1;
+
 	    int n = 0;
 	    if (lengthVisible)
 		n += r.length.size();
@@ -201,13 +239,20 @@ public class ReconcileDialog extends JDialog {
 
 	public Component getListCellRendererComponent(JList list, Object value,
 						      int index, boolean isSelected, boolean cellHasFocus) {
+	    this.setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
+	    this.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
+
+	    // special case: nothing
+	    if (value instanceof String) {
+		setText((String) value);
+		this.setForeground(ColorUtils.blend(list.getForeground(), list.getBackground()));
+		return this;
+	    }
+
 	    Reconcile.Rule r = (Reconcile.Rule) value;
 
 	    setText(r.toString());
 	    setIcon(r.getIcon());
-
-	    setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
-	    setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
 
 	    return this;
 	}
@@ -215,7 +260,7 @@ public class ReconcileDialog extends JDialog {
 
     /*
       LEFT TO DO:
-      -- show icons AND checkboxes (or use togglebuttons?)
+      -- show icons AND checkboxes (or use togglebuttons?) (?)
       -- make all icons the same height
       -- make text more descriptive
       -- say which samples are being used
@@ -223,6 +268,7 @@ public class ReconcileDialog extends JDialog {
       -- one length error per off-year, not one total -- fix reconcile.java
       -- checkboxes should only be clickable to the end of their text, not full 1/3 of window width
       -- (if you then load the C reading, have it use the same sample object (much more work))
-      -- if no errors, have one element "No errors", in dimmed list?
+
+      -- add "tile" method/button, to tile A, C, rec window (sort of needs single-instance samples to be useful -- single-instance editors, too?)
     */
 }

@@ -20,9 +20,10 @@
 
 package corina.gui;
 
+import corina.ui.I18n;
+
 import java.io.File;
 
-import java.util.ResourceBundle;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -31,7 +32,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 /**
-   A convenient wrapper for JFileChooser, for typical XCorina usage.
+   A wrapper for JFileChooser, providing typical (Corina) usage.
 
    <p>Here's what they provide, and why you'd want to use this class
    over JFileChooser directly:</p>
@@ -48,34 +49,45 @@ import javax.swing.filechooser.FileFilter;
        <li>multiple-file-chooser lets the user select several
        files from one dialog</li>
 
-       <li>simple return values: null, or a String, or a List of
-       Strings.  No need to mess with JFileChooser.APPROVE_OPTION</li>
+       <li>simple return values: a String (for single-selection) or a
+       List of Strings (for multiple-selection), or throws a
+       UserCancelledException if the user cancelled.  No need to mess
+       with JFileChooser.APPROVE_OPTION</li>
 
    </ul>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
+   @see corina.gui.UserCancelledException
+   @see javax.swing.JFileChooser
 
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public class FileDialog {
 
-    // i18n
-    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
+    private FileDialog() {
+	// (don't instantiate me)
+    }
 
     private static class ExtensionFilter extends FileFilter {
 	private String TLA, tla;
 	private String name;
-	/** Create a new filter with the given name, for the given
-	    TLA.
-	    @param tla 3-letter-acronym to match as an extension
-	    @param name the name of this filter */
+	/**
+	   Create a new filter with the given name, for the given TLA.
+
+	   @param tla 3-letter-acronym to match as an extension
+	   @param name the name of this filter
+	*/
 	public ExtensionFilter(String tla, String name) {
 	    this.tla = tla.toLowerCase();
 	    this.TLA = tla.toUpperCase();
 	    this.name = name + " (*." + this.TLA + ")";
 	}
-	/** Decide whether this file ends in the given TLA.
-	    @param f the file to test
-	    @return true, if and only if the filename ends in the TLA */
+	/**
+	   Decide whether this file ends in the given TLA.
+
+	   @param f the file to test
+	   @return true, if and only if the filename ends in the TLA
+	*/
 	public boolean accept(File f) {
 	    // users can always traverse a directory
 	    if (f.isDirectory())
@@ -84,16 +96,19 @@ public class FileDialog {
 	    String filename = f.getName();
 	    return (filename.endsWith(tla) || filename.endsWith(TLA));
 	}
-	/** The user-readable description of this filter.  Specified
-	    as "name (*.TLA)".
-	    @return the user-readable name of this filter */
+	/**
+	   The user-readable description of this filter.  Specified as
+	   "name (*.TLA)".
+
+	   @return the user-readable name of this filter
+	*/
 	public String getDescription() {
 	    return name;
 	}
     }
 
-    /** The default list of filters to use, as a list of extensions;
-        the names of these are in FileDialogBundle. */
+    /** The default list of filters to use, as a list of
+	extensions. */
     public static String FILTERS[] = new String[] {
 	"raw", "sum", "rec", "ind", "cln", "trn",
     };
@@ -102,23 +117,24 @@ public class FileDialog {
     private static void addFilters(JFileChooser f) {
 	for (int i=0; i<FILTERS.length; i++)
 	    f.addChoosableFileFilter(new ExtensionFilter(FILTERS[i],
-							 msg.getString("." + FILTERS[i])));
+							 I18n.getText("." + FILTERS[i])));
+	// REFACTOR: should only need to pass FILTERS[i] to constructor here
 	f.setFileFilter(f.getAcceptAllFileFilter());
     }
 
     // working directory -- this gets updated whenever OK is clicked
     private static String wd = System.getProperty("corina.dir.data");
-    public static String getWorkingDirectory() {
-        return wd;
-    }
 
-    /** Show a file selection dialog.  This allows the user to select
-	one file.  It shows a preview component, and has the default
-	filters available.
-	@param prompt the text string to use for both the title bar
-	and approve button
-	@return the filename that was selected, or null if the user
-	cancelled */
+    /**
+       Show a file selection dialog.  This allows the user to select
+       one file.  It shows a preview component, and has the default
+       filters available.
+
+       @param prompt the text string to use for both the title bar
+       and approve button
+       @return the filename that was selected
+       @exception UserCancelledException if the user cancelled
+    */
     public static String showSingle(String prompt) throws UserCancelledException {
         // create chooser
         JFileChooser f = new JFileChooser(wd);
@@ -133,23 +149,50 @@ public class FileDialog {
         f.setPreferredSize(new Dimension(480, 360));
 
         // show the dialog
-        if (f.showDialog(null, prompt) != JFileChooser.APPROVE_OPTION)
+	int result = f.showDialog(null, prompt);
+
+	if (result == JFileChooser.APPROVE_OPTION) {
+	    // ok: store wd, and return file
+	    wd = f.getCurrentDirectory().getPath();
+	    return f.getSelectedFile().getPath();
+	} else {
+	    // cancel
             throw new UserCancelledException();
-
-        // store wd
-        wd = f.getCurrentDirectory().getPath();
-
-        // return file
-        return f.getSelectedFile().getPath();
+	}
     }
 
-    // --- multi ----------------------------------------
+    // --------------------------------------------------
+    // multi
+    //
+
+    /**
+       Show a multiple file selection dialog.  This allows the user
+       to select any number of files.  It shows a preview component,
+       and has the default filters available.
+
+       @param prompt the text string to use for both the title bar
+       and approve button
+       @return a List of filenames that were selected
+       @exception UserCancelledException if the user cancelled
+    */
     public static List showMulti(String prompt) throws UserCancelledException {
 	// create a new list to use
 	List list = new ArrayList();
 	return showMultiReal(prompt, list);
     }
 
+    /**
+       Show a multiple file selection dialog, with a list of files to
+       start with.  This allows the user to select any number of
+       files.  It shows a preview component, and has the default
+       filters available.
+
+       @param prompt the text string to use for both the title bar
+       and approve button
+       @param list a List of filenames to have already selected
+       @return a List of filenames that were selected
+       @exception UserCancelledException if the user cancelled
+    */
     public static List showMulti(String prompt, List list) throws UserCancelledException { // to edit a list
 	// use the given list
 	return showMultiReal(prompt, list);

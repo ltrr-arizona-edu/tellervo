@@ -1,0 +1,1614 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 10.0.3, SVG Export Plug-In . SVG Version: 3.0.0 Build 77)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN"    "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd" [
+	<!ENTITY ns_flows "http://ns.adobe.com/Flows/1.0/">
+	<!ENTITY ns_extend "http://ns.adobe.com/Extensibility/1.0/">
+	<!ENTITY ns_ai "http://ns.adobe.com/AdobeIllustrator/10.0/">
+	<!ENTITY ns_graphs "http://ns.adobe.com/Graphs/1.0/">
+	<!ENTITY ns_vars "http://ns.adobe.com/Variables/1.0/">
+	<!ENTITY ns_imrep "http://ns.adobe.com/ImageReplacement/1.0/">
+	<!ENTITY ns_sfw "http://ns.adobe.com/SaveForWeb/1.0/">
+	<!ENTITY ns_custom "http://ns.adobe.com/GenericCustomNamespace/1.0/">
+	<!ENTITY ns_adobe_xpath "http://ns.adobe.com/XPath/1.0/">
+	<!ENTITY ns_svg "http://www.w3.org/2000/svg">
+	<!ENTITY ns_xlink "http://www.w3.org/1999/xlink">
+]>
+<svg 
+	 xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;" i:viewOrigin="-36.9238 144" i:rulerOrigin="36 0" i:pageBounds="-36 144 324 0"
+	 xmlns="&ns_svg;" xmlns:xlink="&ns_xlink;" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 width="360.924" height="144.5" viewBox="0 0 360.924 144.5" overflow="visible" enable-background="new 0 0 360.924 144.5"
+	 xml:space="preserve">
+	<metadata>
+		<variableSets  xmlns="&ns_vars;">
+			<variableSet  varSetName="binding1" locked="none">
+				<variables></variables>
+				<v:sampleDataSets  xmlns="&ns_custom;" xmlns:v="&ns_vars;"></v:sampleDataSets>
+			</variableSet>
+		</variableSets>
+		<sfw  xmlns="&ns_sfw;">
+			<slices></slices>
+			<sliceSourceBounds  y="-0.5" x="-36.924" width="360.924" height="144.5" bottomLeftOrigin="true"></sliceSourceBounds>
+			<optimizationSettings>
+				<targetSettings  fileFormat="PNG24Format" targetSettingsID="0">
+					<PNG24Format  transparency="true" interlaced="false" noMatteColor="false" matteColor="#FFFFFF" filtered="false">
+						</PNG24Format>
+				</targetSettings>
+			</optimizationSettings>
+		</sfw>
+	</metadata>
+	<g id="Normal" i:layer="yes" i:visible="no" i:dimmedPercent="3" i:rgbTrio="#4F008000FFFF" display="none">
+		<g display="inline">
+			<path i:knockout="Off" fill="none" stroke="#000000" d="M0.5,144h360.424"/>
+			<g>
+				<g>
+				</g>
+				<g>
+				</g>
+			</g>
+		</g>
+		<path i:knockout="Off" display="inline" fill="none" stroke="#000000" d="M0.5,144V1.055"/>
+		<g display="inline">
+			<g>
+			</g>
+			<g>
+			</g>
+		</g>
+		<g display="inline">
+			<g>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M4.757,118.556l-2.839-7.147"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M7.595,106.834l-2.838,11.722"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M10.433,122.558l-2.837-15.724
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M13.271,105.118l-2.838,17.439
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M16.108,119.699l-2.838-14.581
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M18.946,120.557l-2.838-0.857"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M21.785,121.702l-2.838-1.146"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M24.623,119.127l-2.838,2.575"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M27.46,110.266l-2.838,8.861"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M30.298,123.129l-2.838-12.863
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M33.137,122.558l-2.839,0.571"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M35.975,122.272l-2.838,0.285"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M38.813,131.137l-2.838-8.864"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M41.651,117.413l-2.838,13.724
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M44.489,118.842l-2.838-1.429"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M47.326,110.837l-2.837,8.005"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M50.164,114.553l-2.838-3.716"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M53.002,118.842l-2.838-4.289"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M55.84,119.985l-2.838-1.144"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M58.678,110.266l-2.838,9.72"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M61.517,109.979l-2.838,0.286"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M64.354,121.986l-2.838-12.007
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M67.192,117.126l-2.837,4.86"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M70.03,71.956l-2.838,45.17"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M72.869,63.951l-2.839,8.005"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M75.706,106.263l-2.837-42.312
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M78.544,102.832l-2.838,3.431"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M81.382,107.121l-2.838-4.289"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M84.22,106.834l-2.837,0.287"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M87.058,85.106l-2.838,21.728"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M89.897,61.664l-2.839,23.443"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M92.735,19.066l-2.838,42.598"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M95.573,65.094l-2.838-46.028"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M98.409,69.668l-2.836-4.574"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M101.249,92.826l-2.84-23.158"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M104.086,113.124
+					l-2.837-20.298"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M106.924,129.992
+					l-2.838-16.868"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M109.762,117.126
+					l-2.837,12.866"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M112.6,104.833l-2.838,12.293"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M115.438,102.832l-2.838,2.001
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M118.276,93.397l-2.838,9.435"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M121.114,93.111l-2.837,0.286"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M123.952,96.827l-2.838-3.716"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M126.791,82.819l-2.839,14.008
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M129.628,89.68l-2.837-6.86"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M132.466,99.686l-2.838-10.006
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M135.304,92.254l-2.838,7.432"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M138.142,105.118
+					l-2.837-12.864"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M140.98,125.416l-2.838-20.298
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M143.817,93.111l-2.837,32.305
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M146.656,62.807l-2.838,30.304
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M149.495,69.097l-2.839-6.29"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M152.333,80.246l-2.838-11.149
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M155.169,74.815l-2.837,5.431"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M158.007,51.943l-2.838,22.872
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M160.844,79.388l-2.837-27.444
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M163.684,100.545
+					l-2.839-21.157"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M166.522,94.826l-2.839,5.719"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M169.361,79.103l-2.839,15.724
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M172.197,108.55l-2.836-29.447
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M175.037,123.415l-2.84-14.865
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M177.872,119.127l-2.834,4.288
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M180.712,131.991l-2.84-12.864
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M183.549,130.849l-2.837,1.143
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M186.386,135.423l-2.837-4.574
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M189.225,126.847l-2.839,8.576
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M192.064,117.126l-2.84,9.721"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M194.901,105.118
+					l-2.837,12.008"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M197.738,112.266l-2.837-7.147
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M200.578,103.688l-2.84,8.577"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M203.415,106.834l-2.837-3.146
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M206.253,87.967l-2.838,18.867
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M209.092,79.103l-2.839,8.864"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M211.93,112.551l-2.838-33.448
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M214.768,95.685l-2.838,16.866
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M217.605,103.403l-2.838-7.719
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M220.443,105.691l-2.838-2.288
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M223.28,94.826l-2.837,10.865"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M226.118,102.26l-2.838-7.434"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M228.957,99.686l-2.839,2.574"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M231.795,102.26l-2.838-2.574"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M234.635,114.84l-2.84-12.58"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M237.47,124.847l-2.835-10.007
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M240.309,126.561l-2.839-1.714
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M243.146,117.126l-2.838,9.435
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M245.986,122.272l-2.84-5.146"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M248.822,120.557l-2.836,1.716
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M251.662,119.985l-2.84,0.571"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M254.5,124.847l-2.838-4.861"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M257.339,115.698l-2.839,9.148
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M260.178,115.983l-2.839-0.285
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M263.014,119.985l-2.836-4.002
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M265.852,109.407
+					l-2.838,10.578"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M268.69,110.266l-2.839-0.858"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M271.526,124.847
+					l-2.836-14.581"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M274.365,142.856l-2.839-18.01
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M277.206,141.713l-2.841,1.144
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M280.042,134.852l-2.836,6.861
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M282.879,137.139l-2.837-2.287
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M285.717,135.708l-2.838,1.431
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M288.556,138.854l-2.839-3.146
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M291.392,134.28l-2.836,4.573"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M294.232,131.137l-2.841,3.144
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M297.068,132.564l-2.836-1.428
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M299.907,133.422l-2.839-0.857
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M302.745,121.13l-2.838,12.292
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M305.583,128.276l-2.838-7.146
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M308.421,120.842l-2.838,7.435
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M311.26,131.422l-2.839-10.58"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M314.098,132.564l-2.838-1.143
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M316.934,132.564h-2.836"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M319.772,128.276l-2.839,4.288
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M322.611,116.268
+					l-2.839,12.009"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M325.449,132.851
+					l-2.838-16.583"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M328.286,131.137l-2.837,1.714
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M331.124,125.416l-2.838,5.721
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M333.963,116.841l-2.839,8.575
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M336.802,119.985l-2.839-3.145
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M339.638,112.551l-2.836,7.435
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M342.474,116.268l-2.836-3.717
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M345.314,116.841l-2.841-0.573
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M348.151,125.703l-2.837-8.862
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M350.989,118.27l-2.838,7.434"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M353.828,121.414l-2.839-3.145
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M356.666,119.414l-2.838,2"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M359.503,113.982l-2.837,5.432
+					"/>
+			</g>
+		</g>
+		<g display="inline">
+			<g>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M4.757,113.536l-2.839-0.907"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M7.595,114.443l-2.838-0.907"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M10.433,115.359l-2.837-0.916"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M13.271,116.276l-2.838-0.917"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M16.108,117.194l-2.838-0.918"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M18.946,118.074l-2.838-0.88"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M21.785,118.873l-2.838-0.799"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M24.623,119.566l-2.838-0.693"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M27.46,120.153l-2.838-0.587"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M30.298,120.62l-2.838-0.467"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M33.137,120.901l-2.839-0.281"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M35.975,120.935l-2.838-0.033"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M38.813,120.672l-2.838,0.263"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M41.651,120.087l-2.838,0.585"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M44.489,119.213l-2.838,0.874"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M47.326,118.066l-2.837,1.146"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M50.164,116.667l-2.838,1.399"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M53.002,114.983l-2.838,1.684"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M55.84,112.971l-2.838,2.013"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M58.678,110.609l-2.838,2.361"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M61.517,107.924l-2.838,2.686"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M64.354,104.946l-2.838,2.978"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M67.192,101.745l-2.837,3.201"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M70.03,98.491l-2.838,3.254"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M72.869,95.434l-2.839,3.058"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M75.706,92.655l-2.837,2.778"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M78.544,90.062l-2.838,2.593"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M81.382,87.604l-2.838,2.459"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M84.22,85.345l-2.837,2.259"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M87.058,83.487l-2.838,1.857"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M89.897,82.379l-2.839,1.108"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M92.735,82.376l-2.838,0.003"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M95.573,83.646l-2.838-1.27"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M98.409,85.977l-2.836-2.331"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M101.249,88.949l-2.84-2.973"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M104.086,92.056l-2.837-3.106"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M106.924,94.801l-2.838-2.745"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M109.762,96.856l-2.837-2.056"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M112.6,98.127l-2.838-1.271"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M115.438,98.681l-2.838-0.554"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M118.276,98.649l-2.838,0.031"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M121.114,98.192l-2.837,0.457"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M123.952,97.437l-2.838,0.756"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M126.791,96.475l-2.839,0.962"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M129.628,95.375l-2.837,1.1"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M132.466,94.124l-2.838,1.251"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M135.304,92.671l-2.838,1.453"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M138.142,90.981l-2.837,1.689"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M140.98,89.051l-2.838,1.931"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M143.817,86.985l-2.837,2.065"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M146.656,85.116l-2.838,1.869"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M149.495,83.821l-2.839,1.295"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M152.333,83.352l-2.838,0.47"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M155.169,83.844l-2.837-0.492"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M158.007,85.396l-2.838-1.552"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M160.844,88.006l-2.837-2.61"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M163.684,91.473l-2.839-3.467"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M166.522,95.525l-2.839-4.053"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M169.361,99.929l-2.839-4.403"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M172.197,104.416l-2.836-4.487"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M175.037,108.63l-2.84-4.214"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M177.872,112.224l-2.834-3.594"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M180.712,114.936l-2.84-2.712"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M183.549,116.59l-2.837-1.654"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M186.386,117.124l-2.837-0.534"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M189.225,116.59l-2.839,0.534"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M192.064,115.177l-2.84,1.413"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M194.901,113.145l-2.837,2.032"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M197.738,110.77l-2.837,2.375"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M200.578,108.29l-2.84,2.479"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M203.415,105.94l-2.837,2.35"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M206.253,103.928l-2.838,2.013"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M209.092,102.438l-2.839,1.489"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M211.93,101.552l-2.838,0.887"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M214.768,101.21l-2.838,0.342"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M217.605,101.384l-2.838-0.174"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M220.443,102.029l-2.838-0.646"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M223.28,103.107l-2.837-1.078"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M226.118,104.596l-2.838-1.488"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M228.957,106.424l-2.839-1.828"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M231.795,108.495l-2.838-2.071"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M234.635,110.665l-2.84-2.17"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M237.47,112.752l-2.835-2.087"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M240.309,114.606l-2.839-1.854"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M243.146,116.158l-2.838-1.552"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M245.986,117.422l-2.84-1.264"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M248.822,118.436l-2.836-1.014"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M251.662,119.267l-2.84-0.831"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M254.5,120.001l-2.838-0.734"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M257.339,120.737l-2.839-0.736"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M260.178,121.596l-2.839-0.858"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M263.014,122.667l-2.836-1.071"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M265.852,124.002l-2.838-1.335"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M268.69,125.615l-2.839-1.613"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M271.526,127.415l-2.836-1.8"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M274.365,129.216l-2.839-1.801"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M277.206,130.811l-2.841-1.595"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M280.042,132.077l-2.836-1.267"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M282.879,132.97l-2.837-0.893"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M285.717,133.477l-2.838-0.507"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M288.556,133.614l-2.839-0.138"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M291.392,133.425l-2.836,0.189"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M294.232,132.976l-2.841,0.449"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M297.068,132.354l-2.836,0.622"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M299.907,131.629l-2.839,0.725"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M302.745,130.874l-2.838,0.755"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M305.583,130.161l-2.838,0.713"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M308.421,129.507l-2.838,0.654"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M311.26,128.902l-2.839,0.604"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M314.098,128.286l-2.838,0.616"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M316.934,127.606l-2.836,0.68"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M319.772,126.849l-2.839,0.758"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M322.611,126.021l-2.839,0.827"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M325.449,125.146l-2.838,0.876"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M328.286,124.192l-2.837,0.953"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M331.124,123.18l-2.838,1.013"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M333.963,122.167l-2.839,1.013"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M336.802,121.23l-2.839,0.937"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M339.638,120.422l-2.836,0.809"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M342.474,119.764l-2.836,0.658"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M345.314,119.235l-2.841,0.528"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M348.151,118.787l-2.837,0.448"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M350.989,118.353l-2.838,0.435"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M353.828,117.908l-2.839,0.444"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M356.666,117.436l-2.838,0.473"/>
+				<path i:knockout="Off" fill="none" stroke="#FB0F0C" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 1" d="
+					M359.503,116.946l-2.837,0.489"/>
+			</g>
+		</g>
+		<g display="inline">
+			<g>
+			</g>
+			<g>
+			</g>
+		</g>
+	</g>
+	<g id="Tight" i:layer="yes" i:dimmedPercent="3" i:rgbTrio="#4F00FFFF4F00">
+		<g>
+			<path i:knockout="Off" fill="none" stroke="#000000" d="M0.924,144h360"/>
+			<g>
+				<g>
+				</g>
+				<g>
+				</g>
+			</g>
+		</g>
+		<path i:knockout="Off" fill="none" stroke="#000000" d="M0.924,144V0"/>
+		<g>
+			<g>
+			</g>
+			<g>
+			</g>
+		</g>
+		<g>
+			<g>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M5.176,118.368l-2.834-7.2"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M8.011,106.561l-2.835,11.808"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M10.845,122.399l-2.834-15.839
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M13.68,104.832l-2.835,17.567"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M16.514,119.52l-2.834-14.688"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M19.349,120.385l-2.835-0.865"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M22.184,121.536l-2.834-1.151"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M25.019,118.944l-2.835,2.592"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M27.853,110.017l-2.834,8.928"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M30.688,122.976l-2.835-12.959
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M33.522,122.399l-2.834,0.576"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M36.357,122.113l-2.835,0.286"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M39.191,131.041l-2.834-8.928"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M42.026,117.216l-2.835,13.825
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M44.861,118.656l-2.834-1.44"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M47.696,110.592l-2.835,8.064"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M50.53,114.337l-2.834-3.745"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M53.365,118.656l-2.835-4.319"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M56.199,119.808l-2.834-1.151"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M59.034,110.017l-2.835,9.791"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M61.869,109.729l-2.834,0.288"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M64.704,121.824l-2.835-12.096
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M67.538,116.928l-2.834,4.896"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M70.373,71.424l-2.835,45.503"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M73.207,63.36l-2.834,8.064"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M76.042,105.983L73.207,63.36"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M78.876,102.528l-2.834,3.455"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M81.711,106.849l-2.835-4.32"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M84.546,106.561l-2.834,0.288"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M87.381,84.673l-2.835,21.888"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M90.215,61.057l-2.834,23.616"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M93.05,18.144l-2.835,42.913"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M95.884,64.512L93.05,18.144"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M98.72,69.12l-2.835-4.608"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M101.554,92.447L98.72,69.12"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M104.389,112.896
+					l-2.835-20.449"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M107.223,129.887l-2.834-16.99
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M110.058,116.928
+					l-2.835,12.959"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M112.892,104.543
+					l-2.834,12.385"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M115.728,102.528l-2.835,2.015
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M118.562,93.024l-2.834,9.504"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M121.396,92.735l-2.835,0.289"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M124.231,96.48l-2.834-3.745"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M127.066,82.368l-2.835,14.112
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M129.9,89.279l-2.834-6.911"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M132.735,99.36L129.9,89.279"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M135.569,91.872l-2.834,7.488"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M138.405,104.832l-2.835-12.96
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M141.239,125.279
+					l-2.834-20.447"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M144.074,92.735l-2.835,32.544
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M146.908,62.208l-2.834,30.527
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M149.743,68.544l-2.835-6.336"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M152.577,79.776l-2.834-11.232
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M155.412,74.304l-2.835,5.473"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M158.247,51.264l-2.834,23.04"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M161.081,78.911l-2.834-27.647
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M163.916,100.224
+					l-2.835-21.312"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M166.751,94.464l-2.835,5.76"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M169.585,78.625l-2.834,15.839
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M172.42,108.288l-2.834-29.663
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M175.254,123.265
+					l-2.834-14.977"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M178.089,118.944l-2.834,4.32"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M180.924,131.904l-2.835-12.96
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M183.759,130.752l-2.835,1.152
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M186.593,135.36l-2.834-4.608"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M189.428,126.721l-2.835,8.64"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M192.263,116.928l-2.835,9.793
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M195.098,104.832
+					l-2.835,12.096"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M197.931,112.031l-2.833-7.199
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M200.766,103.392l-2.835,8.64"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M203.601,106.561l-2.835-3.169
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M206.437,87.553l-2.836,19.008
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M209.27,78.625l-2.833,8.928"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M212.104,112.319
+					l-2.835-33.694"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M214.939,95.327l-2.835,16.992
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M217.774,103.104l-2.835-7.776
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M220.608,105.408l-2.834-2.305
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M223.443,94.464l-2.835,10.944
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M226.278,101.952l-2.835-7.488
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M229.113,99.36l-2.835,2.592"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M231.946,101.952l-2.833-2.592
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M234.781,114.625
+					l-2.835-12.673"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M237.617,124.704
+					l-2.836-10.079"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M240.452,126.433l-2.835-1.729
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M243.285,116.928l-2.833,9.505
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M246.12,122.113l-2.835-5.186"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M248.955,120.385l-2.835,1.729
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M251.791,119.808l-2.836,0.577
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M254.624,124.704l-2.833-4.896
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M257.459,115.488l-2.835,9.216
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M260.294,115.776l-2.835-0.288
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M263.129,119.808l-2.835-4.031
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M265.962,109.151
+					l-2.833,10.656"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M268.798,110.017l-2.836-0.865
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M271.633,124.704
+					l-2.835-14.688"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M274.468,142.849
+					l-2.835-18.145"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M277.301,141.697l-2.833,1.151
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M280.136,134.784l-2.835,6.913
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M282.972,137.089l-2.836-2.305
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M285.807,135.648l-2.835,1.44"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M288.64,138.815l-2.833-3.167"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M291.475,134.209l-2.835,4.606
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M294.31,131.041l-2.835,3.168"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M297.145,132.48l-2.835-1.439"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M299.979,133.344l-2.834-0.863
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M302.813,120.959
+					l-2.835,12.385"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M305.648,128.161l-2.835-7.202
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M308.483,120.673l-2.835,7.488
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M311.316,131.327
+					l-2.833-10.654"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M314.152,132.48l-2.836-1.153"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M316.987,132.48h-2.835"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M319.822,128.161l-2.835,4.319
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M322.655,116.064
+					l-2.833,12.097"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M325.49,132.768l-2.835-16.703
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M328.325,131.041l-2.835,1.727
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M331.161,125.279l-2.836,5.762
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M333.994,116.64l-2.833,8.64"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M336.829,119.808l-2.835-3.168
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M339.664,112.319l-2.835,7.488
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M342.499,116.064l-2.835-3.745
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M345.332,116.64l-2.833-0.575"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M348.168,125.567l-2.836-8.928
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M351.003,118.079l-2.835,7.488
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M353.838,121.248l-2.835-3.169
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M356.671,119.232l-2.833,2.016
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M359.506,113.76l-2.835,5.473"
+					/>
+			</g>
+		</g>
+		<g>
+			<g>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M5.176,113.054l-2.834-0.641"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M8.011,113.694l-2.835-0.641"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M10.845,114.466l-2.834-0.771"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M13.68,115.329l-2.835-0.863"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M16.514,116.421l-2.834-1.092"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M19.349,117.488l-2.835-1.067"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M22.184,118.328l-2.834-0.84"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M25.019,118.979l-2.835-0.65"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M27.853,119.674l-2.834-0.695"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M30.688,120.569l-2.835-0.896"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M33.522,121.348l-2.834-0.778"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M36.357,121.701l-2.835-0.354"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M39.191,121.418l-2.834,0.283"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M42.026,120.443l-2.835,0.975"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M44.861,119.187l-2.834,1.257"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M47.696,118.007l-2.835,1.18"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M50.53,117.102l-2.834,0.905"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M53.365,116.234l-2.835,0.867"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M56.199,114.962l-2.834,1.272"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M59.034,112.995l-2.835,1.967"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M61.869,110.289l-2.834,2.706"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M64.704,106.698l-2.835,3.591"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M67.538,102.208l-2.834,4.49"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M70.373,97.773l-2.835,4.435"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M73.207,94.969l-2.834,2.805"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M76.042,93.778l-2.835,1.19"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M78.876,92.359l-2.834,1.419"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M81.711,89.227l-2.835,3.133"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M84.546,83.809l-2.834,5.418"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M87.381,76.88l-2.835,6.929"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M90.215,70.729l-2.834,6.15"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M93.05,68.219l-2.835,2.51"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M95.884,71.16l-2.834-2.941"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M98.72,78.545l-2.835-7.385"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M101.554,88.249l-2.834-9.704"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M104.389,97.625l-2.835-9.376"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M107.223,104.321l-2.834-6.696
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M110.058,107.163l-2.835-2.842
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M112.892,106.637l-2.834,0.526
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M115.728,104.037l-2.835,2.6"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M118.562,100.658l-2.834,3.379
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M121.396,97.592l-2.835,3.066"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M124.231,95.447l-2.834,2.145"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M127.066,94.496l-2.835,0.951"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M129.9,94.843l-2.834-0.347"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M132.735,95.904l-2.835-1.062"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M135.569,96.693l-2.834-0.789"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M138.405,96.266l-2.835,0.428"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M141.239,93.586l-2.834,2.68"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M144.074,88.413l-2.835,5.173"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M146.908,82.32l-2.834,6.093"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M149.743,77.258l-2.835,5.062"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M152.577,74.072l-2.834,3.186"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M155.412,72.968l-2.835,1.104"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M158.247,74.352l-2.834-1.384"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M161.081,78.476l-2.834-4.124"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M163.916,84.41l-2.835-5.935"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M166.751,91.156l-2.835-6.746"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M169.585,98.587l-2.834-7.431"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M172.42,106.689l-2.834-8.103"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M175.254,114.482l-2.834-7.793
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M178.089,120.916l-2.834-6.434
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M180.924,125.395l-2.835-4.479
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M183.759,127.424l-2.835-2.029
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M186.593,126.856l-2.834,0.567
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M189.428,123.919l-2.835,2.938
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M192.263,119.361l-2.835,4.558
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M195.098,114.153l-2.835,5.208
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M197.931,109.058l-2.833,5.096
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M200.766,104.356l-2.835,4.701
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M203.601,100.353l-2.835,4.004
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M206.437,97.42l-2.836,2.933"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M209.27,96.115l-2.833,1.305"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M212.104,96.334l-2.835-0.219"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M214.939,97.141l-2.835-0.807"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M217.774,98.18l-2.835-1.039"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M220.608,99.278l-2.834-1.099"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M223.443,100.569l-2.835-1.291
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M226.278,102.493l-2.835-1.924
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M229.113,105.242l-2.835-2.749
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M231.946,108.828l-2.833-3.586
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M234.781,112.859l-2.835-4.031
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M237.617,116.53l-2.836-3.671"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M240.452,119.149l-2.835-2.619
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M243.285,120.562l-2.833-1.412
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M246.12,121.055l-2.835-0.493"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M248.955,120.831l-2.835,0.224
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M251.791,120.103l-2.836,0.729
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M254.624,119.058l-2.833,1.045
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M257.459,117.947l-2.835,1.11"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M260.294,117.272l-2.835,0.675
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M263.129,117.466l-2.835-0.193
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M265.962,118.876l-2.833-1.41"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M268.798,121.829l-2.836-2.953
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M271.633,126.021l-2.835-4.192
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M274.468,130.398l-2.835-4.377
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M277.301,133.836l-2.833-3.438
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M280.136,135.946l-2.835-2.11"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M282.972,136.897l-2.836-0.951
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M285.807,136.902l-2.835-0.005
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M288.64,136.149l-2.833,0.753"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M291.475,134.805l-2.835,1.345
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M294.31,133.14l-2.835,1.665"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M297.145,131.41l-2.835,1.729"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M299.979,129.769l-2.834,1.642
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M302.813,128.438l-2.835,1.331
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M305.648,127.743l-2.835,0.694
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M308.483,127.681l-2.835,0.062
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M311.316,128.07l-2.833-0.39"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M314.152,128.422l-2.836-0.352
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M316.987,128.373l-2.835,0.049
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M319.822,127.867l-2.835,0.506
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M322.655,127.122l-2.833,0.745
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M325.49,126.276l-2.835,0.846"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M328.325,124.984l-2.835,1.292
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M331.161,123.171l-2.836,1.813
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M333.994,121.191l-2.833,1.979
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M336.829,119.523l-2.835,1.668
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M339.664,118.447l-2.835,1.076
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M342.499,118.111l-2.835,0.336
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M345.332,118.331l-2.833-0.22"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M348.168,118.705l-2.836-0.374
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M351.003,118.812l-2.835-0.106
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M353.838,118.556l-2.835,0.256
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M356.671,117.922l-2.833,0.634
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE150A" stroke-width="2" stroke-linecap="round" d="M359.506,117.05l-2.835,0.872"
+					/>
+			</g>
+		</g>
+		<g>
+			<g>
+			</g>
+			<g>
+			</g>
+		</g>
+	</g>
+	<g id="Loose" i:layer="yes" i:visible="no" i:dimmedPercent="3" i:rgbTrio="#FFFF4F004F00" display="none">
+		<path i:knockout="Off" display="inline" fill="none" stroke="#000000" d="M1.924,144h358"/>
+		<g display="inline">
+			<g>
+			</g>
+			<g>
+			</g>
+		</g>
+		<path i:knockout="Off" display="inline" fill="none" stroke="#000000" d="M1.924,144V0"/>
+		<g display="inline">
+			<g>
+			</g>
+			<g>
+			</g>
+		</g>
+		<g display="inline">
+			<g>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M6.152,118.368l-2.819-7.2"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M8.971,106.561l-2.818,11.808"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M11.79,122.399l-2.819-15.839"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M14.609,104.832l-2.819,17.567
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M17.428,119.52l-2.819-14.688"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M20.247,120.385l-2.818-0.865"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M23.065,121.536l-2.819-1.151"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M25.885,118.944l-2.819,2.592"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M28.703,110.017l-2.818,8.928"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M31.522,122.976l-2.819-12.959
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M34.341,122.399l-2.819,0.576"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M37.16,122.113l-2.819,0.286"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M39.979,131.041l-2.819-8.928"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M42.798,117.216l-2.819,13.825
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M45.617,118.656l-2.819-1.44"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M48.436,110.592l-2.819,8.064"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M51.254,114.337l-2.818-3.745"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M54.073,118.656l-2.819-4.319"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M56.893,119.808l-2.819-1.151"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M59.711,110.017l-2.818,9.791"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M62.53,109.729l-2.819,0.288"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M65.349,121.824l-2.819-12.096
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M68.168,116.928l-2.819,4.896"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M70.987,71.424l-2.819,45.503"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M73.806,63.36l-2.818,8.064"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M76.625,105.983L73.806,63.36"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M79.444,102.528l-2.819,3.455"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M82.262,106.849l-2.818-4.32"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M85.081,106.561l-2.819,0.288"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M87.9,84.673l-2.819,21.888"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M90.719,61.057L87.9,84.673"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M93.539,18.144l-2.82,42.913"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M96.357,64.512l-2.818-46.368"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M99.176,69.12l-2.819-4.608"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M101.995,92.447L99.176,69.12"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M104.813,112.896
+					l-2.818-20.449"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M107.632,129.887l-2.819-16.99
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M110.452,116.928
+					l-2.819,12.959"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M113.27,104.543l-2.818,12.385
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M116.089,102.528l-2.819,2.015
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M118.908,93.024l-2.819,9.504"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M121.727,92.735l-2.818,0.289"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M124.546,96.48l-2.82-3.745"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M127.365,82.368l-2.818,14.112
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M130.184,89.279l-2.819-6.911"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M133.003,99.36l-2.819-10.081"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M135.821,91.872l-2.818,7.488"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M138.64,104.832l-2.819-12.96"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M141.459,125.279
+					l-2.819-20.447"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M144.278,92.735l-2.818,32.544
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M147.098,62.208l-2.82,30.527"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M149.916,68.544l-2.818-6.336"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M152.734,79.776l-2.818-11.232
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M155.554,74.303l-2.82,5.474"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M158.373,51.264l-2.818,23.039
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M161.191,78.911l-2.818-27.647
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M164.011,100.224l-2.82-21.312
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M166.829,94.464l-2.818,5.76"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M169.648,78.625l-2.819,15.839
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M172.467,108.288
+					l-2.819-29.663"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M175.286,123.265
+					l-2.818-14.977"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M178.105,118.944l-2.82,4.32"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M180.924,131.904l-2.818-12.96
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M183.743,130.752l-2.819,1.152
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M186.561,135.36l-2.817-4.608"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M189.381,126.721l-2.82,8.64"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M192.2,116.928l-2.819,9.793"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M195.018,104.832
+					l-2.817,12.096"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M197.837,112.031l-2.819-7.199
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M200.656,103.392l-2.819,8.64"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M203.475,106.561l-2.818-3.169
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M206.294,87.553l-2.819,19.008
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M209.113,78.625l-2.819,8.928"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M211.933,112.319
+					l-2.819-33.694"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M214.75,95.327l-2.817,16.992"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M217.569,103.104l-2.819-7.776
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M220.39,105.408l-2.82-2.305"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M223.207,94.464l-2.817,10.944
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M226.026,101.952l-2.819-7.488
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M228.846,99.36l-2.819,2.592"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M231.663,101.952l-2.817-2.592
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M234.482,114.625
+					l-2.819-12.673"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M237.303,124.704l-2.82-10.079
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M240.12,126.433l-2.817-1.729"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M242.939,116.928l-2.819,9.505
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M245.759,122.113l-2.819-5.186
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M248.576,120.385l-2.817,1.729
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M251.396,119.808l-2.82,0.577"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M254.216,124.704l-2.819-4.896
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M257.033,115.488l-2.817,9.216
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M259.853,115.776l-2.819-0.288
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M262.672,119.808l-2.819-4.031
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M265.491,109.151
+					l-2.819,10.656"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M268.31,110.017l-2.818-0.865"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M271.129,124.704
+					l-2.819-14.688"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M273.948,142.849
+					l-2.819-18.145"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M276.766,141.697l-2.817,1.151
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M279.585,134.784l-2.819,6.913
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M282.405,137.089l-2.82-2.305"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M285.223,135.648l-2.817,1.44"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M288.042,138.815l-2.819-3.167
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M290.861,134.209l-2.819,4.606
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M293.679,131.041l-2.817,3.168
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M296.498,132.48l-2.819-1.439"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M299.318,133.344l-2.82-0.863"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M302.136,120.959
+					l-2.817,12.385"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M304.955,128.161l-2.819-7.202
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M307.774,120.673l-2.819,7.488
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M310.594,131.327
+					l-2.819-10.654"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M313.412,132.48l-2.818-1.153"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M316.231,132.48h-2.819"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M319.051,128.161l-2.819,4.319
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M321.868,116.064
+					l-2.817,12.097"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M324.688,132.768
+					l-2.819-16.703"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M327.507,131.041l-2.819,1.727
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M330.325,125.279l-2.818,5.762
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M333.145,116.64l-2.819,8.64"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M335.964,119.808l-2.819-3.168
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M338.781,112.319l-2.817,7.488
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M341.601,116.064l-2.819-3.745
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M344.42,116.64l-2.819-0.575"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M347.238,125.567l-2.818-8.928
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M350.058,118.079l-2.819,7.488
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M352.877,121.248l-2.819-3.169
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M355.695,119.232l-2.818,2.016
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" d="M358.514,113.76l-2.818,5.473"
+					/>
+			</g>
+		</g>
+		<g display="inline">
+			<g>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M6.152,117.381l-2.819-0.199"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M8.971,117.58l-2.818-0.199"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M11.79,117.77l-2.819-0.189"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M14.609,117.938l-2.819-0.169"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M17.428,118.075l-2.819-0.137"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M20.247,118.164l-2.818-0.089"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M23.065,118.185l-2.819-0.021"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M25.885,118.124l-2.819,0.061"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M28.703,117.967l-2.818,0.157"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M31.522,117.695l-2.819,0.271"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M34.341,117.299l-2.819,0.396"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M37.16,116.756l-2.819,0.543"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M39.979,116.06l-2.819,0.696"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M42.798,115.201l-2.819,0.858"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M45.617,114.187l-2.819,1.015"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M48.436,113.021l-2.819,1.165"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M51.254,111.713l-2.818,1.309"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M54.073,110.272l-2.819,1.44"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M56.893,108.71l-2.819,1.562"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M59.711,107.04l-2.818,1.67"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M62.53,105.29l-2.819,1.75"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M65.349,103.484l-2.819,1.806"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M68.168,101.659l-2.819,1.825"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M70.987,99.857l-2.819,1.802"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M73.806,98.13l-2.818,1.728"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M76.625,96.512l-2.819,1.618"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M79.444,95.016l-2.819,1.496"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M82.262,93.658l-2.818,1.357"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M85.081,92.461l-2.819,1.197"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M87.9,91.454l-2.819,1.007"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M90.719,90.678L87.9,91.454"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M93.539,90.166l-2.82,0.512"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M96.357,89.929l-2.818,0.237"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M99.176,89.928l-2.819,0.001"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M101.995,90.104l-2.819-0.176"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M104.813,90.379l-2.818-0.275"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M107.632,90.683l-2.819-0.304"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M110.452,90.955l-2.819-0.272"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M113.27,91.168l-2.818-0.213"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M116.089,91.312l-2.819-0.144"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M118.908,91.388l-2.819-0.076"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M121.727,91.405l-2.818-0.018"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M124.546,91.379l-2.82,0.026"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M127.365,91.32l-2.818,0.059"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M130.184,91.248l-2.819,0.072"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M133.003,91.172l-2.819,0.076"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M135.821,91.101l-2.818,0.071"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M138.64,91.049l-2.819,0.052"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M141.459,91.037l-2.819,0.012"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M144.278,91.093l-2.818-0.056"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M147.098,91.265l-2.82-0.172"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M149.916,91.603l-2.818-0.338"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M152.734,92.143l-2.818-0.54"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M155.554,92.898l-2.82-0.756"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M158.373,93.872l-2.818-0.974"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M161.191,95.052l-2.818-1.18"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M164.011,96.398l-2.82-1.347"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M166.829,97.857l-2.818-1.459"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M169.648,99.374l-2.819-1.517"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M172.467,100.893l-2.819-1.519
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M175.286,102.344l-2.818-1.451
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M178.105,103.662l-2.82-1.318"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M180.924,104.801l-2.818-1.139
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M183.743,105.72l-2.819-0.919"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M186.561,106.402l-2.817-0.683
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M189.381,106.856l-2.82-0.454"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M192.2,107.101l-2.819-0.244"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M195.018,107.176l-2.817-0.075
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M197.837,107.134l-2.819,0.042
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M200.656,107.016l-2.819,0.118
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M203.475,106.875l-2.818,0.141
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M206.294,106.758l-2.819,0.117
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M209.113,106.713l-2.819,0.045
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M211.933,106.767l-2.819-0.054
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M214.75,106.938l-2.817-0.171"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M217.569,107.237l-2.819-0.3"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M220.39,107.672l-2.82-0.435"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M223.207,108.247l-2.817-0.575
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M226.026,108.96l-2.819-0.713"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M228.846,109.802l-2.819-0.842
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M231.663,110.757l-2.817-0.955
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M234.482,111.803l-2.819-1.046
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M237.303,112.908l-2.82-1.105"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M240.12,114.052l-2.817-1.144"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M242.939,115.209l-2.819-1.157
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M245.759,116.372l-2.819-1.163
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M248.576,117.532l-2.817-1.16"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M251.396,118.687l-2.82-1.154"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M254.216,119.833l-2.819-1.146
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M257.033,120.974l-2.817-1.141
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M259.853,122.109l-2.819-1.136
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M262.672,123.238l-2.819-1.129
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M265.491,124.355l-2.819-1.117
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M268.31,125.452l-2.818-1.097"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M271.129,126.508l-2.819-1.056
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M273.948,127.49l-2.819-0.982"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M276.766,128.369l-2.817-0.879
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M279.585,129.121l-2.819-0.752
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M282.405,129.738l-2.82-0.617"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M285.223,130.208l-2.817-0.47"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M288.042,130.533l-2.819-0.325
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M290.861,130.716l-2.819-0.183
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M293.679,130.764l-2.817-0.048
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M296.498,130.691l-2.819,0.072
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M299.318,130.508l-2.82,0.184"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M302.136,130.23l-2.817,0.277"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M304.955,129.871l-2.819,0.359
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M307.774,129.44l-2.819,0.431"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M310.594,128.946l-2.819,0.494
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M313.412,128.39l-2.818,0.557"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M316.231,127.774l-2.819,0.615
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M319.051,127.104l-2.819,0.67"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M321.868,126.389l-2.817,0.716
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M324.688,125.638l-2.819,0.751
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M327.507,124.856l-2.819,0.781
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M330.325,124.049l-2.818,0.808
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M333.145,123.229l-2.819,0.819
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M335.964,122.41l-2.819,0.819"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M338.781,121.601l-2.817,0.81"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M341.601,120.806l-2.819,0.795
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M344.42,120.024l-2.819,0.781"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M347.238,119.254l-2.818,0.771
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M350.058,118.486l-2.819,0.768
+					"/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M352.877,117.72l-2.819,0.767"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M355.695,116.95l-2.818,0.77"
+					/>
+				<path i:knockout="Off" fill="none" stroke="#DE1407" stroke-width="2" stroke-linecap="round" d="M358.514,116.18l-2.818,0.771"
+					/>
+			</g>
+		</g>
+		<g display="inline">
+			<g>
+			</g>
+			<g>
+			</g>
+		</g>
+	</g>
+</svg>

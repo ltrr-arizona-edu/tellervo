@@ -20,11 +20,16 @@
 
 package corina;
 
-import corina.files.Filetype;
-import corina.files.WrongFiletypeException;
+import corina.io.Files;
+import corina.formats.WrongFiletypeException;
 import corina.graph.Graphable;
+import corina.ui.I18n;
 
 import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.Reader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
@@ -33,12 +38,15 @@ import java.util.ArrayList;
 import java.util.Vector;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.ResourceBundle;
+
+import java.net.URL;
 
 import java.lang.reflect.Method;
 
-import javax.swing.undo.UndoableEdit;
-import javax.swing.undo.UndoableEditSupport;
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
+
+import javax.swing.undo.*;
 
 /**
    Class representing a reading of a dendro sample.
@@ -52,11 +60,11 @@ import javax.swing.undo.UndoableEditSupport;
      <li>a list of elements</li>
    </ul>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
 
-// idea: make a samplefactory, so 2 calls to sample(filename) return
+// IDEA: make a samplefactory, so 2 calls to sample(filename) return
 // the same object.  better yet, an editor factory so a second
 // editor(sample) bringstofront the existing editor.
 
@@ -73,118 +81,81 @@ public class Sample implements Previewable, Graphable {
     public Range range;
 
     /** Sample metadata, as a (String, Object) Map.  The following
-	table lists the standard keys, their data types, and valid
-	values:
+        table lists the standard keys, their data types, and valid values:
 
 <table border="1">
-    <tr>
-      <th>Internal name (key)</th>
-      <th>Data type</th>
-      <th>Valid values</th>
-    </tr>
-    <tr>
-      <td>id</td>
-      <td>Integer</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>title</td>
-      <td>String</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>dating</td>
-      <td>String</td>
-      <td>A, R</td>
-    </tr>
-    <tr>
-      <td>unmeas_pre</td>
-      <td>Integer</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>unmeas_post</td>
-      <td>Integer</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>filename</td>
-      <td>String</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>comments</td>
-      <td>String</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>type</td>
-      <td>String</td>
-      <td>S, H, C</td>
-    </tr>
-    <tr>
-      <td>species</td>
-      <td>String</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>sapwood</td>
-      <td>Integer</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>pith</td>
-      <td>String</td>
-      <td>+, *, N</td>
-    </tr>
-    <tr>
-      <td>terminal</td>
-      <td>String</td>
-      <td>v, vv, B, W</td>
-    </tr>
-    <tr>
-      <td>continuous</td>
-      <td>String</td>
-      <td>C, R, N</td>
-    </tr>
-    <tr>
-      <td>quality</td>
-      <td>String</td>
-      <td>+, ++</td>
-    </tr>
-    <tr>
-      <td>format</td>
-      <td>String</td>
-      <td>R, I</td>
-    </tr>
-    <tr>
-      <td>index_type</td>
-      <td>Integer</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>reconciled</td>
-      <td>String</td>
-      <td>Y,N</td>
-    </tr>
-    <tr>
-      <td>author</td>
-      <td>String</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>modified?</td>
-      <td>Boolean</td>
-      <td></td>
-    </tr>
+    <tr> <th>Key</th>         <th>Type</th>    <th>Valid values</th> </tr>
+    <tr> <td>id</td>          <td>Integer</td> <td></td>             </tr>
+    <tr> <td>title</td>       <td>String</td>  <td></td>             </tr>
+    <tr> <td>dating</td>      <td>String</td>  <td>A, R</td>         </tr>
+    <tr> <td>unmeas_pre</td>  <td>Integer</td> <td></td>             </tr>
+    <tr> <td>unmeas_post</td> <td>Integer</td> <td></td>             </tr>
+    <tr> <td>filename</td>    <td>String</td>  <td></td>             </tr>
+    <tr> <td>comments</td>    <td>String</td>  <td></td>             </tr>
+    <tr> <td>type</td>        <td>String</td>  <td>S, H, C</td>      </tr>
+    <tr> <td>species</td>     <td>String</td>  <td></td>             </tr>
+    <tr> <td>sapwood</td>     <td>Integer</td> <td></td>             </tr>
+    <tr> <td>pith</td>        <td>String</td>  <td>+, *, N</td>      </tr>
+    <tr> <td>terminal</td>    <td>String</td>  <td>v, vv, B, W</td>  </tr>
+    <tr> <td>continuous</td>  <td>String</td>  <td>C, R, N</td>      </tr>
+    <tr> <td>quality</td>     <td>String</td>  <td>+, ++</td>        </tr>
+    <tr> <td>format</td>      <td>String</td>  <td>R, I</td>         </tr>
+    <tr> <td>index_type</td>  <td>Integer</td> <td></td>             </tr>
+    <tr> <td>reconciled</td>  <td>String</td>  <td>Y,N</td>          </tr>
+    <tr> <td>author</td>      <td>String</td>  <td></td>             </tr>
 </table>
 
 	<code>data</code>, <code>count</code>, <code>range</code>,
 	<code>wj</code>, and <code>elements</code> aren't stored in
 	<code>meta</code> - they're their own members.
 
-	@see corina.files.Corina */
+	@see corina.formats.Corina */
     public Map meta;
+
+    // WRITEME: need corresponding setString(), setInteger().
+    // WRITEME: make meta private, eventually.
+    // WRITEME: add lazy-loaders here.
+    // WRITEME: and don't load on construction!
+
+    // get a string field from this sample.
+    public String getString(String field) {
+	// TODO: load, if needed.
+
+	Object val = meta.get(field);
+	if (val!=null && val instanceof String)
+	    return (String) val;
+
+	return null;
+    }
+
+    // get an int field from this sample.
+    // (would be int, but can't return null then -- use exception?)
+    public Integer getInteger(String field) {
+	// TODO: load, if needed.
+
+	Object val = meta.get(field);
+	if (val!=null && val instanceof Integer)
+	    return (Integer) val;
+
+	return null;
+    }
+
+    // get a list-of-numbers field from this sample.
+    // (what about elements?)
+    public List getList(String field) {
+	// TODO: load, if needed.
+
+	if (field.equals("data"))
+	    return data;
+	else if (field.equals("count"))
+	    return count;
+	else if (field.equals("incr"))
+	    return incr;
+	else if (field.equals("decr"))
+	    return decr;
+
+	return null;
+    }
     
     /** Number of samples in the sum at any given point. */
     public List count=null;
@@ -194,7 +165,7 @@ public class Sample implements Previewable, Graphable {
 
     // does it have weiserjahre?
     public boolean hasWeiserjahre() {
-	return (incr != null);
+        return (incr != null);
     }
 
     /** Elements (in a List) that were put into this sum. */
@@ -225,8 +196,32 @@ public class Sample implements Previewable, Graphable {
 	    meta.put("author", System.getProperty("user.name"));
 
 	// initialize empty metadata with defaults?
-	meta.put("title", "Untitled");
+	meta.put("title", I18n.getText("Untitled"));
+
+        // metadata NOT changed
+        metadataChanged = false;
     }
+
+/*
+    // TESTING: single-instance samples (and Sample(String) to become private)
+    public static Sample getSample(String filename) throws IOException {
+	// check map
+	Sample s = null;
+	if (samples.containsKey(filename)) {
+	    s = (Sample) ((Reference) samples.get(filename)).get();
+	    // BUG: what if what's on disk is newer than what's in memory?
+	    // (if it's ONLY weakly referenced, just update it)
+	    // (if somebody else is viewing it, better ask the user)
+	}
+	if (s == null)
+	    s = new Sample(filename);
+	samples.put(filename, new WeakReference(s));
+	return s;
+	// won't this map keep accumulating nulls?  well, probably not many.
+	// but shouldn't i try to take them out somehow?
+    }
+    private static Map samples = new HashMap();
+*/
 
     /** Create a new Sample from a given file on disk.
 	@param filename the name of the file to load
@@ -234,6 +229,7 @@ public class Sample implements Previewable, Graphable {
 	@exception WrongFiletypeException if the file is not a Sample
 	@exception IOException if there is an I/O error while loading
 	the file */
+    /*
     public Sample(String filename) throws FileNotFoundException, WrongFiletypeException, IOException {
 	// make it like any other Sample
 	this();
@@ -245,6 +241,21 @@ public class Sample implements Previewable, Graphable {
 	// won't be adding to it, so trim it.
 	trimAllToSize();
     }
+    */
+
+    /*
+    public Sample(URL url) throws IOException {
+        this();
+	try {
+            Class.forName("corina.browser.ItrdbURLConnection");
+	} catch (ClassNotFoundException cnfe) {
+	    corina.gui.Bug.bug(cnfe);
+	}
+        load(new InputStreamReader(url.openStream()));
+        meta.put("filename", url.toString());
+        trimAllToSize();
+    }
+    */
 
     private void trimAllToSize() {
 	((ArrayList) data).trimToSize();
@@ -257,6 +268,7 @@ public class Sample implements Previewable, Graphable {
     }
 
     // copy each part of source to target.  shallow copy, no events, etc.
+    // used only by editor (paste) -- bad interface!
     public static void copy(Sample source, Sample target) {
         target.data = source.data;
         target.range = source.range;
@@ -324,8 +336,8 @@ public class Sample implements Previewable, Graphable {
 
     /** Return the default scale factor for graphing.
 	@return scale factor of 1.0, or 0.1 for indexed files */
-    public double getScale() {
-	return (isIndexed() ? 0.1 : 1.0);
+    public float getScale() {
+	return (isIndexed() ? 0.1f : 1.0f);
     }
 
     /** Return the sample's title.
@@ -357,7 +369,7 @@ public class Sample implements Previewable, Graphable {
     }
 
     // radius of the sample; only relevant for raw samples (better to
-    // retun 0.0 for indexed sample?)
+    // return 0.0 for indexed sample?  throw ex?)
     public int computeRadius() {
         // (apply '+ data)
         int n = data.size();
@@ -366,19 +378,19 @@ public class Sample implements Previewable, Graphable {
             sum += ((Number) data.get(i)).intValue();
         return sum;
     }
-
+ 
     // number of intervals with >3 samples
     public int count3SampleIntervals() {
-	if (count == null)
-	    return 0;
+        // (count-if #'(lambda (x) (> x 3)) (sample-count s))
+        if (count == null)
+            return 0;
 
-	// (count-if #'(lambda (x) (> x 3)) (sample-count s))
-	int n = count.size();
-	int three = 0;
-	for (int i=0; i<n; i++)
-	    if (((Integer) count.get(i)).intValue() > 3)
-		three++;
-	return three;
+        int n = count.size();
+        int three = 0;
+        for (int i=0; i<n; i++)
+            if (((Integer) count.get(i)).intValue() > 3)
+                three++;
+        return three;
     }
 
     // count number of significant (weiserjahre) intervals
@@ -397,107 +409,16 @@ public class Sample implements Previewable, Graphable {
     // load/save
     //
 
-    /** Class loaders to try, as an array of strings (fully-qualified
-	class names).  Elements:
-	<ol>
-	<li>"Corina"
-	<li>"TSAPMatrix"
-	<li>"Hohenheim"
-	<li>"Heidelberg"
-	<li>"Tucson"
-	<li>"TwoColumn"
-	</ol> */
-    public final static String LOADERS[] = {
-	"corina.files.Corina",
-	"corina.files.TSAPMatrix",
-	"corina.files.Hohenheim",
-	"corina.files.Heidelberg",
-	"corina.files.Tucson",
-	"corina.files.TwoColumn", // <-- should always be last
-    };
+    // create a new sample, from a file on disk
+    public Sample(String filename) throws IOException {
+	// new @-notation
+	if (filename.startsWith("@"))
+	    filename = System.getProperty("corina.dir.data", ".") + filename.substring(1);
+	// (assumes c.d.r ends with file.sep!)
 
-    // need more sophisticated extension=>type assocs?  hmm, possibly.
-    // i'll always check every type, because you never know what crazy
-    // extensions users might use, but being able to say "*.TU files
-    // are _probably_ tucson, so check that first" could be helpful.
-
-    /** Filename extensions of files to ignore out of principle: .XLS,
-        .DOC, .JPG, .GIF, and .TIF are a good start.  They
-        should be all upper case. */
-    public final static String SKIP_EXTENSIONS[] = {
-	".XLS",
-	".DOC",
-	".RTF",
-	".EXE",
-	".ZIP", // auto-(de)-compression?  no, not enough benefit.
-	".JPG", ".JPEG",
-	".GIF",
-	".TIF", ".TIFF",
-	".14I", ".14S", ".14D", ".14P", ".14L", // Oxcal, my arch-nemesis!
-    };
-
-    /** Load a Sample from disk.
-	@param filename the file to load
-	@exception FileNotFoundException if the file could not be found
-	@exception WrongFiletypeException if the file is not a Sample
-	@exception IOException if a low-level I/O error occurs */
-    public void load(String filename) throws IOException {
-	// don't try a bunch of formats that we know a priori will all
-	// fail: try some quick tests first
-	File f = new File(filename);
-	if (!f.isFile())
-	    throw new IOException("Not a file.");
-	if (!f.canRead())
-	    throw new IOException("No read access allowed.");
-
-        // i can ignore a lot of common filetypes without even
-        // looking -- see SKIP_EXTENSIONS, above
-        for (int i=0; i<SKIP_EXTENSIONS.length; i++)
-            if (filename.toUpperCase().endsWith(SKIP_EXTENSIONS[i]))
-                throw new WrongFiletypeException();
-
-        // try each loader in turn:
-        for (int i=0; i<LOADERS.length; i++) {
-            try {
-                // use factory to make a Filetype from the class name
-                Filetype format = Filetype.makeFiletype(LOADERS[i]);
-
-                // try loading; on success, set the filename/type, and return.
-                Sample s = format.load(filename);
-                String filetype = format.toString();
-                s.meta.put("filetype", filetype); // (used only for preview)
-                s.meta.put("filename", filename);
-
-                // if we made it this far without throwing a
-                // WrongFiletypeException or IOException (or any other
-                // Exception), it must have loaded correctly.  so copy
-                // s to this.
-
-                // have to copy s into this ... hmm
-                copy(s, this);
-                return;
-            } catch (ClassNotFoundException cnfe) {
-                continue; // loader couldn't be made; i don't care why, skip it.
-            } catch (WrongFiletypeException wfe) {
-                continue;
-            } catch (IOException ioe) {
-                String l = LOADERS[i];
-                l = l.substring(l.lastIndexOf('.') + 1);
-                throw new IOException(l + ": " + ioe.getMessage());
-            } catch (Exception e) {
-                // load() failed -- unknown reason -- log me?  (once,
-                // some loaders threw crazy things like
-                // NullPointerExceptions, so this is a catch-all for
-                // those.  it should be unnecessary now, but it can't
-                // hurt to have too much error-checking.)
-
-                // use Bug to report it if this ever happens!
-                continue;
-            }
-        }
-
-        // fall-through: no loader worked
-        throw new WrongFiletypeException(); // "No usable format found"
+	Sample s = Files.load(filename);
+	copy(s, this);
+	trimAllToSize();
     }
 
     /* Determining if a file is indexed: The 800 Rule
@@ -537,7 +458,7 @@ public class Sample implements Previewable, Graphable {
     only looks at the Sample, so it really belongs here.  At least I
     can put it with the load/save stuff here.
 
-update: pik says there can be raw summed files, and pulls out some
+(later) pik says there can be raw summed [tucson] files, and pulls out some
         old datasets to show me ... that there are raw, indexed, and
         summed indexed formats for tucson.  but he wants it back in,
         so we give it to him. */
@@ -546,7 +467,7 @@ update: pik says there can be raw summed files, and pulls out some
     }
 
     // make sure data/count/wj are the same size as range.span, and
-    // contain all legit Numbers
+    // contain all legit Numbers.  turns nulls/non-numbers into 0's.
     public void verify() {
         int n = range.span();
 
@@ -562,99 +483,56 @@ update: pik says there can be raw summed files, and pulls out some
 
         // TODO: do count, WJ as well
     }
-    
-    /** Default saver class.  Value is "corina.files.Corina".
-	@see Corina */
-    private final static String DEFAULT_SAVER = "corina.files.Corina";
 
-    /** Save this Sample to disk.
-	@param filename the name of the file to save to
-	@exception IOException if an I/O error occurs */
+    /**
+       Save this Sample to disk.
+
+       @param filename the name of the file to save to
+       @exception IOException if an I/O error occurs
+    */
     public void save(String filename) throws IOException {
-	// make the format
-	try {
-	    Filetype format = Filetype.makeFiletype(DEFAULT_SAVER);
-	    format.save(filename, this);
-	} catch (IOException ioe) {
-	    throw ioe;
-	} catch (Exception e) {
-	    // bug!
-	    throw new IOException("Random error (\"bug\") while saving file: " + e);
-	}
+	Files.save(this, filename);
     }
 
-    /** Save this Sample to disk to the same filename it had
-	previously.
-	@exception IOException if an I/O error occurs */
+    /**
+       Save this Sample to disk to the same filename it had
+       previously.
+
+       @exception IOException if an I/O error occurs
+    */
     public void save() throws IOException {
-	// BUG!  assumes filename exists in meta map
+	// BUG!  assumes filename exists in meta map -- what if it doesn't?
 	save((String) meta.get("filename"));
     }
 
-    /*
-      WRITE ME: function to return all comment lines as a String[] --
-      that would be useful, right?
-    */
-
-    /** Make an HTML preview of this Sample.  Lists the title, range,
-        species, format, and if the sample is indexed and/or summed,
-        and how many elements compose it.
-	@return the preview string */
-    public String getHTMLPreview() {
-	// html: title
-	String line = "<html>";
-	line += "<b>" + (String) meta.get("title") + "</b><ul>";
-
-	// range
-	line += "<li>" + range + " (n=" + range.span() + ")";
-
-	// species
-	if (meta.get("species") != null)
-	    line += "<li>" + msg.getString("species") + ": " + meta.get("species");
-
-	// format
-	line += "<li>" + msg.getString("format") + ": " + meta.get("filetype");
-
-	// indexed, summed
-	if (isIndexed())
-	    line += "<li>" + msg.getString("indexed");
-	if (isSummed()) {
-	    line += "<li>" + msg.getString("summed");
-	    if (elements != null)
-		line += " (" + elements.size() + " " + msg.getString("elements") + ")";
-	}
-
-	// return it
-	return line;
+    public Preview getPreview() {
+	return new SamplePreview(this);
     }
 
-    public Preview getPreview() {
-	// preview: title
-	Preview p = new Preview();
-	p.title = (String) meta.get("title");
-	p.items = new ArrayList();
+    private static class SamplePreview extends Preview {
+	SamplePreview(Sample s) {
+	    title = s.meta.get("title").toString();
 
-	// range
-	p.items.add(range + " (n=" + range.span() + ")");
+	    // range -- toStringWithSpan() does "(a - b, n=c)", i want "a - b (n=c)"
+	    items.add(s.range + " (n=" + s.range.span() + ")");
 
-	// species
-	if (meta.get("species") != null) // use CONTAINS?
-	    p.items.add(msg.getString("species") + ": " + meta.get("species"));
+	    // species
+	    if (s.meta.containsKey("species"))
+		items.add(I18n.getText("species") + ": " + s.meta.get("species"));
 
-	// format
-	p.items.add(msg.getString("format") + ": " + meta.get("filetype"));
+	    // format
+	    items.add(I18n.getText("format") + ": " + s.meta.get("filetype"));
 
-	// indexed, summed
-	if (isIndexed())
-	    p.items.add(msg.getString("indexed"));
-	if (isSummed()) {
-	    String summedLine = msg.getString("summed");
-	    if (elements != null)
-		summedLine += " (" + elements.size() + " " + msg.getString("elements") + ")";
-	    p.items.add(summedLine);
+	    // indexed, summed
+	    if (s.isIndexed())
+		items.add(I18n.getText("indexed"));
+	    if (s.isSummed()) {
+		String summedLine = I18n.getText("summed");
+		if (s.elements != null)
+		    summedLine += " (" + s.elements.size() + " " + I18n.getText("elements") + ")";
+		items.add(summedLine);
+	    }
 	}
-
-	return p;
     }
 
     //
@@ -662,12 +540,19 @@ update: pik says there can be raw summed files, and pulls out some
     //
 
     // is this sample oak?  (assumes meta/species is a string, if present)
+    // (FIXME: if it's not a string, it's not oak.)
+    // checks for "oak" or "quercus".
     public boolean isOak() {
 	String species = (String) meta.get("species");
 	if (species == null)
 	    return false;
 	species = species.toLowerCase();
 	return (species.indexOf("oak")!=-1 || species.indexOf("quercus")!=-1);
+    }
+
+    // is this sample editable?  no, if it's been indexed or summed.
+    public boolean isEditable() {
+	return (!isIndexed()) && (!isSummed());
     }
 
     //
@@ -677,9 +562,8 @@ update: pik says there can be raw summed files, and pulls out some
     private Vector listeners = new Vector();
 
     public synchronized void addSampleListener(SampleListener l) {
-	if (listeners.contains(l))
-	    return;
-	listeners.add(l);
+        if (!listeners.contains(l))
+            listeners.add(l);
     }
 
     public synchronized void removeSampleListener(SampleListener l) {
@@ -689,7 +573,7 @@ update: pik says there can be raw summed files, and pulls out some
     // fire an arbitrary sample event called |method|.  each
     // fireSampleXYZhappened() method is virtually identical, so their
     // guts were refactored into here.  this makes adding new events
-    // painless.
+    // painless.  (this was taken from a web page -- url?)
     private void fireSampleEvent(String method) {
 	// alert all listeners
 	Vector l;
@@ -704,16 +588,24 @@ update: pik says there can be raw summed files, and pulls out some
 
 	SampleEvent e = new SampleEvent(this);
 
-	for (int i=0; i<size; i++) {
-	    SampleListener listener = (SampleListener) l.elementAt(i);
+	try {
 
-	    // this is like "listener.method(e)", though it's not terribly elegant.
-	    try {
-		Method m = SampleListener.class.getMethod(method, new Class[] { SampleEvent.class });
-		m.invoke(listener, new Object[] { e });
-	    } catch (Exception ex) {
-		// just ignore them all... (?)
+	    // **
+	    Class types[] = new Class[] { SampleEvent.class };
+	    Method m = SampleListener.class.getMethod(method, types);
+            Object args[] = new Object[] { e };
+
+	    for (int i=0; i<size; i++) {
+		SampleListener listener = (SampleListener) l.elementAt(i);
+
+		// this is like "listener.method(e)" (along with the 2 lines
+		// marked ** above)
+		m.invoke(listener, args);
 	    }
+	} catch (Exception ex) {
+            // BUG: these exceptions are caught too coursely!
+
+	    // just ignore them all... (?)
 	}
     }
 
@@ -727,28 +619,22 @@ update: pik says there can be raw summed files, and pulls out some
 	fireSampleEvent("sampleDataChanged");
     }
     public void fireSampleMetadataChanged() {
+        metadataChanged = true;
 	fireSampleEvent("sampleMetadataChanged");
-    }
-    public void fireSampleFormatChanged() {
-	fireSampleEvent("sampleFormatChanged");
     }
     public void fireSampleElementsChanged() {
 	fireSampleEvent("sampleElementsChanged");
     }
 
-    //
-    // i18n
-    //
-    private static ResourceBundle msg = ResourceBundle.getBundle("SampleBundle");
-
-    //
-    // undo/redo
-    //
-    private UndoableEditSupport undoSupport = new UndoableEditSupport();
-    public void postEdit(UndoableEdit x) {
-	undoSupport.postEdit(x);
+    // see if the metadata was changed -- true (loaded samples) unless zero-arg constructor called
+    private boolean metadataChanged = true;
+    public boolean wasMetadataChanged() {
+        return metadataChanged;
     }
-    public UndoableEditSupport getUndoSupport() { // only used once -- undoadapter
-	return undoSupport;
+
+    /* FUTURE: */
+    private UndoableEditSupport undoSupport;
+    public void postEdit(UndoableEdit e) {
+	undoSupport.postEdit(e);
     }
 }
