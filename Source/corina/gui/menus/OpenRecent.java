@@ -221,7 +221,7 @@ public class OpenRecent {
 
 	// parse |corina.recent.files| pref, splitting by |path.separator| chars.
 	// (ASSUMES (path.separator).length()==1?
-	StringTokenizer tok = new StringTokenizer(System.getProperty("corina.recent.files", ""),
+	StringTokenizer tok = new StringTokenizer(Prefs.getPref("corina.recent.files", ""),
 						  System.getProperty("path.separator"));
 
 	// add all files to recent
@@ -244,6 +244,6 @@ public class OpenRecent {
 	}
 
 	// store in pref
-	Prefs.setPref("corina.recent.files", buf.toString());
+  Prefs.setPref("corina.recent.files", buf.toString());
     }
 }

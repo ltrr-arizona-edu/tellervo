@@ -22,6 +22,7 @@ package corina.index;
 
 import corina.Sample;
 import corina.ui.I18n;
+import corina.prefs.Prefs;
 import corina.util.StringUtils;
 
 import java.util.List;
@@ -60,7 +61,7 @@ public class HighPass extends Index {
         super(s);
 
         // parse weights; assumes weights.length is odd
-        weights = StringUtils.extractInts(System.getProperty("corina.index.lowpass", "1 2 4 2 1"));
+        weights = StringUtils.extractInts(Prefs.getPref("corina.index.lowpass", "1 2 4 2 1"));
     }
 
     private int weights[];

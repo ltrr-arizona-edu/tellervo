@@ -1,5 +1,6 @@
 package corina.gui;
 
+import corina.prefs.Prefs;
 import corina.util.NoEmptySelection;
 import corina.util.OKCancel;
 import corina.util.UpdateFolder;
@@ -8,7 +9,6 @@ import corina.db.DBBrowser;
 import corina.db.Convert;
 import corina.ui.Builder;
 import corina.ui.Alert;
-import corina.gui.Layout;
 import corina.gui.layouts.DialogLayout;
 
 import java.io.File;
@@ -267,7 +267,7 @@ public class SourcesTable extends JTable {
 	    JButton change = new JButton("Change...");
 	    change.addActionListener(new AbstractAction() {
 		    public void actionPerformed(ActionEvent e) {
-			JFileChooser fc = new JFileChooser(System.getProperty("corina.dir.data"));
+			JFileChooser fc = new JFileChooser(Prefs.getPref("corina.dir.data"));
 			fc.setDialogTitle("Select Source Folder");
 			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			int x = fc.showDialog(null /* ??? */, "Select");
