@@ -513,12 +513,17 @@ public class PngEncoder extends Object
 
                 pg = new PixelGrabber(image, 0, startRow,
                     width, nRows, pixels, 0, width);
-                try {
-                    pg.grabPixels();
-                }
-                catch (Exception e) {
-                    System.err.println("interrupted waiting for pixels!");
-                    return false;
+                while (true) {
+                  try {
+                      if (pg.grabPixels(0l)) {
+                        break;
+                      }
+                  }
+                  catch (Exception e) {
+                      e.printStackTrace();
+                      System.err.println("interrupted waiting for pixels!");
+                      return false;
+                  }
                 }
                 if ((pg.getStatus() & ImageObserver.ABORT) != 0) {
                     System.err.println("image fetch aborted or errored");
