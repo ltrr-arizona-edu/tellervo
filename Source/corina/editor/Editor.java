@@ -673,6 +673,7 @@ public class Editor extends XFrame
         paste.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 // get the stuff that's on the clipboard
+		// REFACTOR: would my TextClipboard abstraction help out here?
                 Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
                 Transferable t = c.getContents(null);
                 if (t == null)
@@ -720,7 +721,7 @@ public class Editor extends XFrame
                     return;
                 } catch (IOException ioe) {
                     // shouldn't ever happen.  this means there was a problem reading or
-                    // writing a "clipboard" file in USER_PROPERTIES_DIR.  probably a bug, then.
+                    // writing a "clipboard" file.  probably a bug, then.
                     Bug.bug(ioe);
                     return;
                 } catch (UnsupportedFlavorException ufe) {
@@ -739,10 +740,6 @@ public class Editor extends XFrame
                 sample.fireSampleFormatChanged();
                 sample.fireSampleElementsChanged();
 
-                // delete the file now, either way.  fixme: this should be in the finally
-                // of the first try-catch, except it's needed in the second one.  hmm...
-                new File(Prefs.USER_PROPERTIES_DIR + File.separator + "clipboard").delete();
-                
                 /* oh crap.  it iterates over the LOADERS[], passing them filenames.
                     i'll need to abstract out the iteration, and put loading from a
                     filename in sample(filename) only.  i guess that cleans up some
@@ -758,7 +755,7 @@ public class Editor extends XFrame
                     (it's good this came up, though.  opening a file 5 times because
                      it's not the most popular format is killing i/o performance.)
 
-                    quick hack just to make it work: save to ~/.corina/clipboard, ...
+                    quick hack just to make it work: save to /tmp/corinaXXXXX.clip, ...
                     */
             }
         });
