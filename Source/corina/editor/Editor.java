@@ -454,22 +454,6 @@ public class Editor extends XFrame
         return sample;
     }
 
-    // text printing!  (i feel like i'm in a bad 80's movie.)
-    public void printText() {
-        try {
-            Epson.print(sample);
-        } catch (IOException ioe) {
-            JOptionPane.showMessageDialog(null,
-                                          "Can't send data to printer: " + ioe.getMessage(),
-                                          "Printing Error",
-                                          JOptionPane.ERROR_MESSAGE);
-            return;
-        } catch (Exception e) {
-            Bug.bug(e);
-            return;
-        }
-    }
-
     public void updateTitle() {
         setTitle(sample.toString());
     }
