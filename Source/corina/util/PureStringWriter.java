@@ -5,6 +5,10 @@ import java.io.StringWriter;
 // like stringwriter, but cut out \r's so it's just \n on every platform
 public class PureStringWriter extends StringWriter {
 
+    public PureStringWriter() {
+	super();
+    }
+
     public PureStringWriter(int bufsize) {
         super(bufsize);
     }
