@@ -25,11 +25,25 @@ public class CorinaLog extends SimpleLog {
    * The maximum number of log messages that will be kept in memory.
    * TODO: grab this from prefs...
    */
-  public static final int MAXLINES = 500;
+  public static final int MAXLINES;
 
   public final static PrintStream realOut;
   public final static PrintStream realErr;
 
+  static {
+    realOut = System.out;
+    realErr = System.err;
+    String s = System.getProperty("corina.log.maxlines");
+    int maxlines = 500;
+    if (s != null) {
+      try {
+        maxlines = Integer.parseInt(s);
+      } catch (NumberFormatException nfe) {
+        nfe.printStackTrace();
+      }
+    }
+    MAXLINES = maxlines;
+  }
   // protected visibility to avoid synthetic accessors
   protected static String[] log = new String[MAXLINES];
   protected static int logLineCount;
@@ -39,11 +53,6 @@ public class CorinaLog extends SimpleLog {
   private static CorinaLog STDERR = new CorinaLog("STDERR", false);
   private static Object LOCK = new Object();
 
-  static {
-    realOut = System.out;
-    realErr = System.err;
-  }
-  
   public static void init() {
     System.setOut(createPrintStream(STDOUT, false));
     System.setErr(createPrintStream(STDERR, true));
@@ -74,7 +83,7 @@ public class CorinaLog extends SimpleLog {
   public static ListModel getLogListModel() {
     return listModel;
   }
-    
+
   /**
    * ListModel for a JList-based log viewer
    * @author Aaron Hamid
@@ -172,9 +181,9 @@ public class CorinaLog extends SimpleLog {
       });
     }
   }
-  
+
   private Log chained;
-  
+
   public CorinaLog(Class clazz) {
     super(clazz.toString());
     this.chained = LogFactory.getLog(clazz);
@@ -187,7 +196,7 @@ public class CorinaLog extends SimpleLog {
     super(name);
     if (chain) this.chained = LogFactory.getLog(name);
   }
-  
+
   /**
    * Log to central log buffer.
    */
@@ -210,7 +219,7 @@ public class CorinaLog extends SimpleLog {
       listModel.update(lineCount,oldWrap);
     }
   }
-  
+
   /**
    * Override default dispatching to also call chained instance, if any.
    */

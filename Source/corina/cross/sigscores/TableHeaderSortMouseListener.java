@@ -10,8 +10,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 
+import corina.cross.HighScore;
 import corina.cross.TopScores;
-import corina.cross.TopScores.HighScore;
 import corina.util.Sort;
 
 

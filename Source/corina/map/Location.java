@@ -261,10 +261,14 @@ public final class Location implements Cloneable {
         @exception NumberFormatException if the location can't be parsed
     */
     public Location(String string) throws NumberFormatException {
-        if (isISO6709(string))
-            parseISO6709(string);
-        else
-            parseString(string);
+        setLocation(string);
+    }
+
+    public void setLocation(String string) throws NumberFormatException {
+      if (isISO6709(string))
+        parseISO6709(string);
+      else
+        parseString(string);
     }
 
     private void parseString(String string) throws NumberFormatException {

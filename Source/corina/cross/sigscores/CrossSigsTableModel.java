@@ -11,7 +11,7 @@ import java.text.DecimalFormat;
 import javax.swing.table.AbstractTableModel;
 
 import corina.Range;
-import corina.cross.TopScores.HighScore;
+import corina.cross.HighScore;
 import corina.ui.I18n;
 
 

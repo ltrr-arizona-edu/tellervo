@@ -27,9 +27,21 @@ public class UnitTests extends TestCase {
     }
     public void testYearDiff() {
         int d = new Year(5).diff(new Year(2));
-        assertEquals(d, 3);
+        assertEquals(3, d);
         d = new Year(1).diff(new Year(1));
-        assertEquals(d, 0);
+        assertEquals(0, d);
+        d = new Year(0).diff(new Year(0));
+        assertEquals(0, d);
+
+        d = new Year(-2).diff(new Year(-4));
+        assertEquals(2, d);
+        d = new Year(-4).diff(new Year(-2));
+        assertEquals(-2, d);
+        
+        d = new Year(5).diff(new Year(-4));
+        assertEquals(8, d);
+        d = new Year(-4).diff(new Year(5));
+        assertEquals(-8, d);
     }
     public void testYearCompare() {
         int lt = new Year(5).compareTo(new Year(10));

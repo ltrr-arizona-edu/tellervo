@@ -22,10 +22,12 @@ package corina.cross;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 
 import corina.Range;
 import corina.Sample;
 import corina.Year;
+import corina.core.App;
 import corina.ui.I18n;
 
 /**
@@ -100,8 +102,9 @@ public abstract class Cross implements Runnable {
        @return the score at that position
     */
     public float getScore(Year year) {
-	int index = year.diff(range.getStart());
-	return data[index];
+      // subtract one; data starts at one year shifted
+			int index = year.diff(range.getStart()) - 1;
+			return data[index];
     }
 
     /**
@@ -287,33 +290,6 @@ public abstract class Cross implements Runnable {
         return result;
     }
 
-    // search for high scores in the list, after scores have been
-    // computed.  run() calls this last.
-    /* now using topscores
-     private void computeHighScores() {
-      int nr=0;
-      Range fixedRange = fixed.range;
-      Range movingRange = moving.range.redateEndTo(fixedRange.getStart()); // .add(getMinimumOverlap()-1));
-      for (int i=0; i<data.length; i++) {
-          movingRange = movingRange.redateBy(+1); // slide it by 1
-          if (isSignificant(data[i], fixedRange.overlap(movingRange)))
-            try {
-              highScores.add(new HighScore(this, i, ++nr));
-            } catch (Exception e) {
-              System.out.println("trouble with bayes! -- " + e);
-              e.printStackTrace();
-            }
-       }
-       // convert to array now?  all i do with it is .size(), .get(),
-       // and sort(comparable)
-
-      // how do i sort these?  (that'll have an impact)
-
-      // right now, i'm thinking:
-      // - void cross.computeHighScores() -- computes all
-      // - Iterator cross.getHighScores() -- returns only span>minimumOverlap
-    }*/
-
     /*
       IDEA: make Crossdate and Algorithm separate classes
 
@@ -382,7 +358,7 @@ public abstract class Cross implements Runnable {
 
       // careful: it can be true that n>0 but there are 0 crosses
       // that should be run here.  check first:
-      int overlap = 1; // getMinimumOverlap();
+      int overlap = App.prefs.getIntPref("corina.cross.overlap", 15);
       if (fixed.data.size() < overlap || moving.data.size() < overlap) {
         String problem = "These samples (n=" + fixed.data.size() + ", " +
             "n=" + moving.data.size() + ") aren't long enough for " +

@@ -53,20 +53,22 @@ public class TopScores {
   }
 
   private void compute() {
-    Sample fixed = c.getFixed();
-    Sample moving = c.getMoving();
-
     highScores = new ArrayList();
 
-    int nr = 0;
+    Sample fixed = c.getFixed();
+    Sample moving = c.getMoving();
     Range fixedRange = fixed.range;
-    Range movingRange = moving.range.redateEndTo(fixedRange.getStart());
+    Range movingRange = moving.range.redateEndTo(fixedRange.getStart()); // .add(getMinimumOverlap()-1));
+    //System.out.println("fixed: "+ fixed);
+    //System.out.println("moving: "+ moving);
+    //System.out.println("fixedRange: "+ fixedRange);
+    //System.out.println("movingRange: "+ movingRange);
 
     // FIXME: default=15 shouldn't be here; it's used elsewhere, as well.
     final int minimumOverlap = App.prefs.getIntPref("corina.cross.overlap", 15);
-
-    int n = c.getRange().span();
-    for (int i = 0; i < n; i++) {
+    int nr = 0;
+    int length = c.getRange().span();
+    for (int i = 0; i < length; i++) {
       movingRange = movingRange.redateBy(+1); // slide it by 1
 
       // overlap not long enough? skip it.
@@ -78,7 +80,8 @@ public class TopScores {
 
       if (c.isSignificant(score, fixedRange.overlap(movingRange)))
         try {
-          highScores.add(new HighScore(c /* this */, i, ++nr));
+          nr++;
+          highScores.add(new HighScore(c, i + 1, nr));
         } catch (Exception e) {
           System.out.println("trouble with bayes! -- " + e);
           // FIXME: bayes? huh?
@@ -95,47 +98,48 @@ public class TopScores {
     // - Iterator cross.getHighScores() -- returns only span>minimumOverlap
   }
 
-  public static class HighScore {
-    // a significant score. there's a brilliant refactoring to be
-    // done here -- i think it should be usable for tables and grids,
-    // as well -- that i'm just not seeing yet. FIXME.
+  /**
+   * "Old" Cross computeHighScores implementation that accesses
+   * data array directly
+   * @deprecated for testing only
+   */
+  /*private List oldComputeHighScores() {
+    ArrayList highScores = new ArrayList();
 
-    // currently only used in sigstable -- should be used in table
-    // and grid. (no, it shouldn't, that would be silly. no
-    // silliness!)
+    Sample fixed = c.getFixed();
+    Sample moving = c.getMoving();
+    Range fixedRange = fixed.range;
+    Range movingRange = moving.range.redateEndTo(fixedRange.getStart()); // .add(getMinimumOverlap()-1));
+    //System.out.println("old fixed: "+ fixed);
+    //System.out.println("old moving: "+ moving);
+    //System.out.println("old fixedRange: "+ fixedRange);
+    //System.out.println("old movingRange: "+ movingRange);
 
-    // unless you want to make it extend Single...
+    int nr = 0;
+    int length = c.data.length;
+    for (int i = 0; i < length; i++) {
+      movingRange = movingRange.redateBy(+1); // slide it by 1
 
-    // MAKE THESE NOT PUBLIC!
-    public int number; // 0, 1, 2, ... -- ugly, fixme?
-    public Range fixedRange;
-    public Range movingRange;
-    public float score;
-    public int span;
-    public float confidence;
+      float score = c.data[i];
 
-    public HighScore(Cross cross, int index, int nr) {
-      Year firstCross = cross.getRange().getStart();
-      Year thisCross = firstCross.add(index);
-
-      int movedBy = thisCross.diff(cross.getMoving().range.getEnd());
-
-      fixedRange = cross.getFixed().range.redateBy(-movedBy);
-      movingRange = cross.getMoving().range.redateEndTo(thisCross);
-
-      // WAS: score = cross.getScoreOLD(index);
-      score = cross.getScore(thisCross);
-
-      span = cross.getFixed().range.overlap(movingRange);
-
-      confidence = Bayesian.getSignificance(cross, score);
-      // FIXME: this throws exceptions(?)
-
-      number = nr;
-    }
-
-    /*
-     * -- something like this later? public String toString() { return new DecimalFormat(getFormat()).format(score); }
-     */
-  }
+      if (c.isSignificant(score, fixedRange.overlap(movingRange)))
+        try {
+          nr++;
+          highScores.add(new HighScore(c, i + 1, nr));
+        } catch (Exception e) {
+          System.out.println("trouble with bayes! -- " + e);
+          // FIXME: bayes? huh?
+          e.printStackTrace();
+        }
+     }
+     // convert to array now? all i do with it is .size(), .get(),
+     // and sort(comparable)
+  
+    // how do i sort these? (that'll have an impact)
+  
+    // right now, i'm thinking:
+    // - void cross.computeHighScores() -- computes all
+    // - Iterator cross.getHighScores() -- returns only span>minimumOverlap
+    return highScores;
+  }*/
 }

@@ -1,6 +1,7 @@
 package corina.ui;
 
 import junit.framework.TestCase;
+import corina.core.App;
 
 /*
   yup, this looks weird.  it's fairly generic stuff, so i can change
@@ -9,9 +10,14 @@ import junit.framework.TestCase;
  */
 
 public class UnitTests extends TestCase {
-    public UnitTests(String name) {
-        super(name);
-    }
+  public UnitTests(String name) {
+    super(name);
+  }
+
+  protected void setUp() throws Exception {
+    super.setUp();
+    if (!App.isInitialized()) App.init(null);
+  }
 
     //
     // testing I18n

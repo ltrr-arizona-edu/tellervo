@@ -170,7 +170,7 @@ public class CrossdatePrinter extends Printer {
 
 	    // ***
 
-	    TopScores.HighScore s = (TopScores.HighScore) cross.getHighScores().getScores().get(i);
+	    HighScore s = (HighScore) cross.getHighScores().getScores().get(i);
 	    lines.add(f.makeLine(s.number + "\t" +
 				 s.fixedRange + "\t" +
 				 s.movingRange + "\t" +

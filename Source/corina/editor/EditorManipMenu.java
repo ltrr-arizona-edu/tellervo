@@ -53,7 +53,7 @@ public class EditorManipMenu extends JMenu implements SampleListener {
         new RedateDialog(sample, editor);
     }
   });
-  //if (System.getSecurityManager() != null) {
+  if (System.getSecurityManager() != null) {
     try {
       AccessController.checkPermission(new CorinaPermission("redate"));
     } catch (AccessControlException ace) {
@@ -61,7 +61,7 @@ public class EditorManipMenu extends JMenu implements SampleListener {
       redate.setEnabled(false);
       redate.setBackground(Color.red.darker().darker());
     }
-  //}
+  }
 	add(redate);
 
 	// index

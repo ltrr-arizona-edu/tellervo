@@ -32,17 +32,24 @@ public class App {
 
     log.debug("initializing App");
 
-    meter.setMaximum(3);
+    if (meter != null) {
+      meter.setMaximum(3);
+      meter.setNote("Initializing Logging...");
+    }
 
-    meter.setNote("Initializing Logging...");
     logging = new Logging();
     logging.init();
-    meter.setProgress(1);
+    if (meter != null) {
+      meter.setProgress(1);
+      meter.setNote("Initializing Platform...");
+    }
     
-    meter.setNote("Initializing Platform...");
     platform = new Platform();
     platform.init();
-    meter.setProgress(2);
+    
+    if (meter != null) {
+      meter.setProgress(2);
+    }
 
     // <init prefs>
     //prefs = new Prefs();
@@ -59,10 +66,14 @@ public class App {
     // WAS: Migrate.migrate();
 
     // load properties -- messagedialog here is UGLY!
-    meter.setNote("Initializing Preferences...");
+    if (meter != null) {
+      meter.setNote("Initializing Preferences...");
+    }
     prefs = new Prefs();
     prefs.init();
-    meter.setProgress(3);
+    if (meter != null) {
+      meter.setProgress(3);
+    }
     /*try {
       //Prefs.init();
     } catch (IOException ioe) {
@@ -73,7 +84,11 @@ public class App {
 
     initialized = true;   
   }
-  
+
+  public static boolean isInitialized() {
+    return initialized;
+  }
+
   public static synchronized void destroy(ProgressMeter meter) {
     // throwing an error instead of simply ignoring it
     // will point out bad design and/or bugs

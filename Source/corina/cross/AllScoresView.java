@@ -129,7 +129,8 @@ public class AllScoresView extends JPanel implements PrefsListener {
                 if ((row + row_min == 0) && (col == 1))
                     return null; // zero-year
                 Year year = getYear(row, col);
-                if (!crossdate.getRange().contains(year))
+                // shift one to start of moving slide 
+                if (!crossdate.getRange().redateBy(1).contains(year))
                     return null;
                 else {
 		    float score = crossdate.getScore(year);
