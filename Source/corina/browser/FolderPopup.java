@@ -43,10 +43,18 @@ public class FolderPopup extends JComboBox {
         final Browser glue = browser;
         addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
+                // java bug workaround: if descending, don't do anything here.
+                if (descending) return;
+                
                 // selected itself?  don't do anything.
                 int selected = getSelectedIndex();
                 if (selected == 0)
                     return;
+
+                if (selected >= getItemCount()) {
+                    System.out.println("working around bug in java");
+                    return;
+                }
 
                 // delete everything before this
                 for (int i=0; i<selected; i++)
@@ -74,11 +82,14 @@ public class FolderPopup extends JComboBox {
         });
     }
 
-    // descend by 1 folder into f
+    private boolean descending = false;
     public void descendInto(File f) {
+        descending = true; // don't handle actionevents while doing the insertItemAt()
         insertItemAt(f.getName(), 0);
         setSelectedIndex(0);
+        descending = false;
     }
+    private Browser browser;
 
     // icon singletons
     private static Icon openIcon = new DefaultTreeCellRenderer().getOpenIcon();
