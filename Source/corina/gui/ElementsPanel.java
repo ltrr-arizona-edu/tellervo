@@ -175,23 +175,31 @@ public class ElementsPanel extends JPanel implements SampleListener {
 	    // ---
 	    addSeparator();
 
-	    // Grid from all
-	    JMenuItem allGrid = new JMenuItem("Grid from all");
-	    allGrid.addActionListener(new AbstractAction() {
-		    public void actionPerformed(ActionEvent ae) {
-			new GridFrame(elements);
-		    }
-		});
-	    super.add(allGrid);
+            // Grid from all
+            JMenuItem allGrid = new JMenuItem("Grid from all");
+            allGrid.addActionListener(new AbstractAction() {
+                public void actionPerformed(ActionEvent ae) {
+                    try {
+                        new GridFrame(elements);
+                    } catch (RuntimeException e) {
+                        Bug.bug(e);
+                    }
+                }
+            });
+            super.add(allGrid);
 
-	    // Crossdate all
-	    JMenuItem allCross = new JMenuItem("Crossdate all");
-	    allCross.addActionListener(new AbstractAction() {
-		    public void actionPerformed(ActionEvent ae) {
-			new CrossFrame(new Sequence(elements, elements));
-		    }
-		});
-	    super.add(allCross);
+            // Crossdate all
+            JMenuItem allCross = new JMenuItem("Crossdate all");
+            allCross.addActionListener(new AbstractAction() {
+                public void actionPerformed(ActionEvent ae) {
+                    try {
+                        new CrossFrame(new Sequence(elements, elements));
+                    } catch (RuntimeException e) {
+                        Bug.bug(e);
+                    }
+                }
+            });
+            super.add(allCross);
 
 	    // ---
 	    addSeparator();
