@@ -74,10 +74,9 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
     // the sample to view
     private Sample s;
 
-    // one listener to rule them all, one listener to ... yada yada
-    // hmm, would it be possible to use only one INSTANCE of this, even?  that sure would save on the enabled/disabled crap.
-    // FIXME: when old-style popups are gone, ACTIONLISTENER won't be needed
-    private static class UpdateListener implements DocumentListener, ActionListener {
+    // hmm, would it be possible to use only one INSTANCE of this, even?
+    // that sure would save on the enabled/disabled crap.
+    private static class UpdateListener implements DocumentListener {
         private Sample s;
         private Field f;
         private boolean enabled=true;
@@ -107,10 +106,6 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
         public void removeUpdate(DocumentEvent e) {
             if (enabled)
                 update(getDocumentText(e));
-        }
-        public void actionPerformed(ActionEvent e) {
-            if (enabled)
-                update(((JComboBox) e.getSource()).getSelectedItem()); // something selected
         }
         private void update(Object value) {
             // everything falls through to here
@@ -252,6 +247,7 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
         }
 
         // crap.  we'll try asking the user what she was smoking.
+        // (does this belong here?)
         String descriptions[] = new String[f.values.length+1];
         descriptions[0] = "unspecified";
         for (int i=0; i<f.values.length; i++)
@@ -264,10 +260,6 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
                                      null, // no icon
                                      descriptions,
                                      null); // NO DEFAULT -- important
-
-        // should i also add "- unspecified -" to the list, for completeness?
-        // yeah, often there's a "?" which corresponds to that.
-        // FIXME.
         
         // result (x) is index into f.values -- store this.
         if (x == 0)
@@ -342,19 +334,21 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
             
             // if it has no choices, a plain jtextfield is perfect.
             // if it needs several lines, though, use a jtextarea.
-            JComponent x = makeTextBlock(f);
-            // (that sometimes returns a jscrollpane!)
+            JTextComponent x = makeTextBlock(f);
             
             // add to the panel
 //            p.add(x, c);
             // use a sub-panel, so the left-alignment is ok.  without this, on OS X it
             // looks passable, but on windows it looks horrible.
             JPanel flow = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            flow.add(x);
+            if (x instanceof JTextArea)
+                flow.add(new JScrollPane(x));
+            else
+                flow.add(x);
             p.add(flow, c);
 
             // add to hashmap -- only used for textcomponents
-            if (x instanceof JTextComponent)
+            //if (x instanceof JTextComponent)
                 components.put(f.variable, x);
 
             // first one?  focus!
@@ -381,12 +375,12 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
                 int h = gbl.getLayoutDimensions()[1][0]; // (1=height, 0=first row)  "Most applications do not call this method directly."  (I'm special.)
                 glue.getVerticalScrollBar().setUnitIncrement(h);
                 glue.getHorizontalScrollBar().setUnitIncrement(h);
-                // todo: i can remove myself now, right?
+                // todo: i can remove myself now, right?  [--wtf does this comment mean?]
             }
         });
     }
 
-    private JComponent makeTextBlock(Field f) {
+    private JTextComponent makeTextBlock(Field f) {
         // number of lines?
         int lines = f.lines;
 
@@ -417,11 +411,7 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
         // tooltip for the editor, too (REFACTOR!)
         t.setToolTipText(f.help);
 
-        // use scrollpane if multi-line
-        if (lines > 1)
-            return new JScrollPane(t);
-        else
-            return t;
+        return t;
     }
     
     // first label
@@ -435,8 +425,6 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
     }
     public void sampleDataChanged(SampleEvent e) { }
     public void sampleMetadataChanged(SampleEvent e) {
-        System.out.println("metadataChanged!");
-
         // no way to find out which fields changed!  darn...
         // this means we have to disable all listeners right at
         // the start, not just as we go.
@@ -458,7 +446,7 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
 
             // get component
             String field = f.variable;
-            JComponent comp = (JComponent) components.get(field);
+            JTextComponent comp = (JTextComponent) components.get(field);
 
             // HACK: index_type gets looked up now -- DUPLICATE CODE, REFACTOR
             if (f.variable.equals("index_type") && hash!=null)
@@ -466,18 +454,16 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
 
             try {
                 // text component?
-                if (comp instanceof JTextComponent) {
-                    ((JTextComponent) comp).setText(value);
-                } else if (comp instanceof JComboBox) {
-                    ((JComboBox) comp).setSelectedItem(value);
-                } else {
-                    System.out.println("dunno what to do with a " + comp.getClass());
-                }
+                comp.setText(value);
             } catch (IllegalStateException ise) {
                 // there's got to be a better way to do this:
                 // System.out.println("illegal state!  (skipping " + field + ")");
+                continue;
+                // this is caused by trying to update myself.  if something got thrown
+                // here, the listeners wouldn't get re-enabled, and users would only
+                // see the first letter they typed.  they hate that.  trust me.
             }
-}
+        }
 
         // re-enable all listeners
         for (int i=0; i<listeners.size(); i++)
