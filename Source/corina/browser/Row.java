@@ -3,7 +3,8 @@ package corina.browser;
 import corina.Element;
 import corina.Range;
 import corina.Metadata;
-import corina.files.ExportDialog; // for formatsize()
+import corina.Species;
+import corina.UnknownSpeciesException;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,8 @@ public class Row {
     private File file;
     private Element element=null;
     private Browser browser;
-    
+
+    // use browser for (1) visible fields, and (2) matchesAny() method.
     public Row(File file, Browser browser) {
         this.file = file;
         this.browser = browser;
@@ -72,8 +74,8 @@ public class Row {
     public String getKind() {
         if (file.isDirectory())
             return "Folder";
-        
-        // WRITEME
+
+        // WRITEME?
         return "Document";
     }
 
@@ -152,19 +154,29 @@ public class Row {
             if (!match)
                 return value;
 
-            // FIXME: if it's a species, try looking it up with the Species object, so codes show as names.
-            
+            // if it's a species, try looking it up with the Species object,
+            // so 4-letter codes show as names.  if that doesn't work, just show the value.
+            if (field.equals("species")) {
+                try {
+                    return Species.getName(value.toString());
+                } catch (UnknownSpeciesException use) {
+                    return value.toString();
+                }
+            }
+
             // ok, it must be in there.  look it up
             try {
-                return msg.getString(field + "." + value);
+                return msg.getString(field + "." + value); // NOTE: check both cases here?  ensure values[] are all upper?
             } catch (MissingResourceException mre) {
                 // maybe it's a '?' -- (this check is also in samplemetaview, i think -- refactor?)
                 if (value.toString().equals("?"))
                     return null;
 
-                // FIXME: the comments field will usually have newlines in it,
-                // which render as empty boxes; replace them with | or something clever.
-                
+                // the comments field will often have newlines in it,
+                // which render as empty boxes; replace them with |'s or something
+                if (field.equals("comments"))
+                    return value.toString().replace('\n', '|');
+
                 // bad value, but they gave it before, so we'll give it back now.
                 return value.toString();
             }
