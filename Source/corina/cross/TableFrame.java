@@ -44,6 +44,7 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 
 public class TableFrame extends XFrame implements PrintableDocument {
 
