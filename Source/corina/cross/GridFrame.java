@@ -32,6 +32,7 @@ import corina.gui.FileDialog;
 import corina.gui.WindowMenu;
 import corina.util.Platform;
 import corina.gui.UserCancelledException;
+import corina.util.Overwrite;
 
 import java.util.List;
 import java.util.ResourceBundle;
@@ -72,9 +73,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
 public class GridFrame extends XFrame
-                    implements SaveableDocument,
-			       PrintableDocument,
-			       HasPreferences {
+                    implements SaveableDocument, PrintableDocument, HasPreferences {
     // gui
     private JTable output;
 
@@ -82,9 +81,9 @@ public class GridFrame extends XFrame
     private Grid grid=null;
 
     // i18n
-    private ResourceBundle msg = ResourceBundle.getBundle("CrossdatingBundle");
+    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
-    // saving
+    // saving -- (this seems like it should be higher...)
     private String filename=null;
 
     // saveabledocument
@@ -103,22 +102,8 @@ public class GridFrame extends XFrame
             // try up here, try down there.  can these be merged?  (but there's an if-stmt...)
             
             // check for already-exists
-            {
-                File f = new File(filename);
-                if (f.exists()) {
-                    int x = JOptionPane.showOptionDialog(null,
-                                                         "A file called \"" + filename + "\"\n" +
-                                                         "already exists; overwrite it with this grid?",
-                                                         "Already Exists",
-                                                         JOptionPane.YES_NO_OPTION,
-                                                         JOptionPane.QUESTION_MESSAGE,
-                                                         null, // icon
-                                                         new Object[] { "Overwrite", "Cancel" }, // good, explicit commands,
-                                                         null); // default
-                    if (x == 1) // cancel
-                        return; // should return FAILURE -- how?
-                }
-            }
+            if (new File(filename).exists() && Overwrite.overwrite(filename))
+                return; // should return FAILURE -- how?
         }
 
         // save!
@@ -222,9 +207,11 @@ public class GridFrame extends XFrame
 	output.setDefaultRenderer(Object.class, new GridRenderer());
 	output.setShowGrid(false);
 
-	// put the table in a scroller
+        // put the table in a scroller
         JScrollPane scroller = new JScrollPane(output);
-	getContentPane().add(scroller, BorderLayout.CENTER);
+        getContentPane().add(scroller, BorderLayout.CENTER);
+        // REFACTOR: extract GridPanel, GridFrame; then stuffing the panel into a CrossFrame is trivial.
+        // OR: it's just a JTable, right?  would GridComponent (extends JTable) be better?
     }
 
     public GridFrame(List s) {
@@ -291,53 +278,64 @@ public class GridFrame extends XFrame
 	// ---
 	view.addSeparator();
 
-	// zoom in
-	AbstractAction zoomIn = new AbstractAction("Zoom In") {
-		public void actionPerformed(ActionEvent e) {
-		    // increase by 0.1
-		    scale += 0.1;
-		    
-		    // set property
-		    System.setProperty("corina.grid.scale", Double.toString(scale));
+        // NEED NEW ABSTRACTION: ZOOM
+        // -- placard component -- override jscrollpane?  jscrollbar?
+        // -- menuitems: zoom in, zoom out, normal/100%, specific values (50, 75, 100, 125, 150, 200, 400?)
+        // -- (consistent everywhere!)
+        // -- "other..." value (dialog) for other types of user-zooms (like drag-area)
+        // --
 
-		    // tell 'em -- use Preferences.updateAll()?
-		    refreshFromPreferences();
+        // also, the grid should have the option of showing page-breaks (horiz+vert).
+        // view -> {show,hide} page breaks.
+        // would it be easier to make gridcomponent not-a-jtable, then?
+        
+        // zoom in
+        AbstractAction zoomIn = new AbstractAction("Zoom In") {
+            public void actionPerformed(ActionEvent e) {
+                // increase by 0.1
+                scale += 0.1;
 
-		    // save new pref
-		    try {
-			Prefs.save();
-		    } catch (IOException ioe) {
-			// ignore
-		    }
-		}
-	    };
+                // set property
+                System.setProperty("corina.grid.scale", Double.toString(scale));
+
+                // tell 'em -- use Preferences.updateAll()?
+                refreshFromPreferences();
+
+                // save new pref
+                try {
+                    Prefs.save();
+                } catch (IOException ioe) {
+                    // ignore
+                }
+            }
+        };
         zoomIn.putValue(Action.MNEMONIC_KEY, new Integer('I'));
         zoomIn.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(XMenubar.macize("control UP")));
         view.add(new XMenubar.XMenuItem(zoomIn));
 
-	// zoom out
-	AbstractAction zoomOut = new AbstractAction("Zoom Out") {
-		public void actionPerformed(ActionEvent e) {
-		    // decrease by 0.1
-		    scale -= 0.1;
+        // zoom out
+        AbstractAction zoomOut = new AbstractAction("Zoom Out") {
+            public void actionPerformed(ActionEvent e) {
+                // decrease by 0.1
+                scale -= 0.1;
 
-		    // set property
-		    System.setProperty("corina.grid.scale", Double.toString(scale));
+                // set property
+                System.setProperty("corina.grid.scale", Double.toString(scale));
 
-		    // tell 'em -- use Preferences.updateAll()?
-		    refreshFromPreferences();
+                // tell 'em -- use Preferences.updateAll()?
+                refreshFromPreferences();
 
-		    // save new pref
-		    try {
-			Prefs.save();
-		    } catch (IOException ioe) {
-			// ignore
-		    }
-		}
-	    };
-	zoomOut.putValue(Action.MNEMONIC_KEY, new Integer('O'));
-	zoomOut.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(XMenubar.macize("control DOWN")));
-	view.add(new XMenubar.XMenuItem(zoomOut));
+                // save new pref
+                try {
+                    Prefs.save();
+                } catch (IOException ioe) {
+                    // ignore
+                }
+            }
+        };
+        zoomOut.putValue(Action.MNEMONIC_KEY, new Integer('O'));
+        zoomOut.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(XMenubar.macize("control DOWN")));
+        view.add(new XMenubar.XMenuItem(zoomOut));
 
         if (Platform.isMac)
             return new JMenu[] { view, new WindowMenu(this) };
@@ -347,16 +345,16 @@ public class GridFrame extends XFrame
 
     // HasPreferences
     public void refreshFromPreferences() {
-	// re-read scale
-	scale = Double.parseDouble(System.getProperty("corina.grid.scale", "1.0"));
+        // re-read scale
+        scale = Double.parseDouble(System.getProperty("corina.grid.scale", "1.0"));
 
-	// reset sizes
-	output.setRowHeight((int)(Grid.getCellHeight()*scale) + 2);
-	for (int i=0; i<output.getColumnCount(); i++)
-	    output.getColumnModel().getColumn(i).setPreferredWidth((int)(Grid.getCellWidth()*scale) + 2);
+        // reset sizes
+        output.setRowHeight((int)(Grid.getCellHeight()*scale) + 2);
+        for (int i=0; i<output.getColumnCount(); i++)
+            output.getColumnModel().getColumn(i).setPreferredWidth((int)(Grid.getCellWidth()*scale) + 2);
 
-	// redraw?  sure.
-	repaint();
+        // redraw?  sure.
+        repaint();
     }
 
     /* prefs: (these are the defaults)
