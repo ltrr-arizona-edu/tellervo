@@ -1,20 +1,19 @@
 package corina.gui;
 
-import corina.util.Platform;
-
-import java.util.List;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.List;
 
-import java.awt.Frame;
+import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
-import java.awt.event.ActionEvent;
-import java.awt.Toolkit;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowAdapter;
+
+import corina.core.App;
 
 // REFACTOR: this is very similar to OpenRecent, a menu shared by all open frames.
 
@@ -56,7 +55,7 @@ public class WindowMenu extends JMenu {
                 // the only reason they'd want wide windows is for element lists,
                 // but that's not terribly common, so let's just maximize-tall.
                 int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
-                if (Platform.isMac) // menubar
+                if (App.platform.isMac()) // menubar
                     screenHeight -= 22;
                 // take out any from the PC screenHeight?
                 w.setSize(w.getSize().width, w.getSize().height>=screenHeight ? 480 : screenHeight);
@@ -75,7 +74,7 @@ public class WindowMenu extends JMenu {
         minimize.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 w.setState(JFrame.ICONIFIED);
-            };
+            }
         });
         add(minimize);
 
@@ -147,7 +146,7 @@ public class WindowMenu extends JMenu {
                             break;
                         }
                     }
-                    if (Platform.isMac)
+                    if (App.platform.isMac())
                         m.updateUI(); // WHOOPS: this swaps the help/windows menus.  but without it, it's worse.  ugh.
                 }
 

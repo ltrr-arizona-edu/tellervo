@@ -20,20 +20,19 @@
 
 package corina.prefs.components;
 
-import corina.prefs.Prefs;
-
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import javax.swing.JLabel;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import com.ozten.font.JFontChooser;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import corina.core.App;
 
 /**
   A component for changing a font preference.
@@ -66,7 +65,7 @@ public class FontPrefComponent implements ActionListener {
   public FontPrefComponent(String pref) {
     this.pref = pref;
 
-    Font font = Font.decode(Prefs.getPref(pref));
+    Font font = Font.decode(App.prefs.getPref(pref));
     label.setFont(font);
     label.setText(font.getName() + " " + font.getSize());
 
@@ -104,7 +103,7 @@ public class FontPrefComponent implements ActionListener {
       label.setText(font.getName() + " " + font.getSize());
       label.repaint();
       // store pref
-      Prefs.setPref(pref, UIDefaultsComponent.stringifyFont(font));
+      App.prefs.setPref(pref, UIDefaultsComponent.stringifyFont(font));
     }
   };
   

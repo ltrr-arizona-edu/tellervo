@@ -32,9 +32,9 @@ import javax.swing.JToolBar;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
-import corina.prefs.Prefs;
+import corina.core.App;
+import corina.logging.CorinaLog;
 import corina.ui.I18n;
-import corina.util.CorinaLog;
 
 /**
  * A wrapper for JFileChooser, providing typical (Corina) usage.
@@ -147,7 +147,7 @@ public class FileDialog {
   // XXX: can you say race condition - aaron... dependence on static
   // initializers, data and methods needs to be fixed
   // If this class is referenced before Prefs is, we are SOL
-  private static String wd = Prefs.getPref("corina.dir.data");
+  private static String wd = App.prefs.getPref("corina.dir.data");
 
   /**
    * This is a big hack to snoop into the JFileChooser GUI, and find
@@ -155,7 +155,7 @@ public class FileDialog {
    * settings. 
    */
   private static void setConfiguredMode(JFileChooser chooser, String pref) {
-    String v = Prefs.getPrefs().getProperty(pref, "list");
+    String v = App.prefs.getPrefs().getProperty(pref, "list");
     if (!"details".equals(v)) return;
     Component[] comps = chooser.getComponents();
     // ok, the JFileChooser contains a JToolBar
@@ -190,9 +190,9 @@ public class FileDialog {
         if (s != null &&
             s.equals(UIManager.getString("FileChooser.detailsViewButtonAccessibleName",chooser.getLocale()))) {
           if (tb.isSelected()) {
-            Prefs.getPrefs().setProperty(pref, "details");
+            App.prefs.getPrefs().setProperty(pref, "details");
           } else {
-            Prefs.getPrefs().setProperty(pref, "list");
+            App.prefs.getPrefs().setProperty(pref, "list");
           }
         }
       }      
@@ -219,7 +219,7 @@ public class FileDialog {
     f.setAccessory(new SamplePreview(f));
 
     // make the window a resonable size to see everything
-    Dimension dim = Prefs.getDimensionPref(SINGLE_DIM_PREF, SINGLE_DEFAULT_DIMENSION);
+    Dimension dim = App.prefs.getDimensionPref(SINGLE_DIM_PREF, SINGLE_DEFAULT_DIMENSION);
     f.setPreferredSize(dim);
     setConfiguredMode(f, SINGLE_VIEWMODE_PREF);
 
@@ -237,7 +237,7 @@ public class FileDialog {
       }
     } finally {
       Dimension d = f.getSize();
-      Prefs.setPref(SINGLE_DIM_PREF, d.width + "," + d.height);
+      App.prefs.setPref(SINGLE_DIM_PREF, d.width + "," + d.height);
       saveConfiguredMode(f, SINGLE_VIEWMODE_PREF);
     }
   }
@@ -305,7 +305,7 @@ public class FileDialog {
     f.setAccessory(mp);
 
     // make the window a resonable size to see everything
-    Dimension dim = Prefs.getDimensionPref(MULTI_DIM_PREF, MULTI_DEFAULT_DIMENSION);
+    Dimension dim = App.prefs.getDimensionPref(MULTI_DIM_PREF, MULTI_DEFAULT_DIMENSION);
     f.setPreferredSize(dim);
     setConfiguredMode(f, MULTI_VIEWMODE_PREF);
 
@@ -314,7 +314,7 @@ public class FileDialog {
     // always CANCEL
     
     Dimension d = f.getSize();
-    Prefs.setPref(MULTI_DIM_PREF, d.width + "," + d.height);
+    App.prefs.setPref(MULTI_DIM_PREF, d.width + "," + d.height);
     saveConfiguredMode(f, MULTI_VIEWMODE_PREF);
 
     // store wd, if ok

@@ -1,18 +1,36 @@
 package corina.index;
 
-import corina.Sample;
-import corina.ui.Builder;
-import corina.gui.Layout;
-import corina.prefs.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollBar;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import corina.Sample;
+import corina.core.App;
 import corina.graph.Graph;
 import corina.graph.GrapherPanel;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import javax.swing.*;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
+import corina.gui.Layout;
+import corina.prefs.PrefsEvent;
+import corina.prefs.PrefsListener;
+import corina.ui.Builder;
 
 // south=buttons
 // center=graph (preview)
@@ -192,7 +210,7 @@ public class IndexDialog2 extends JDialog {
 			  set the pref.
 			*/
 
-			Prefs.setPref("corina.index.cubicfactor", String.valueOf(sval));
+			App.prefs.setPref("corina.index.cubicfactor", String.valueOf(sval));
 			// "1e" + s.getValue());
 
 			CubicSpline cs = new CubicSpline(sample);
@@ -204,10 +222,10 @@ public class IndexDialog2 extends JDialog {
 		    }
 		});
 
-	    Prefs.addPrefsListener(new PrefsListener() {
+	    App.prefs.addPrefsListener(new PrefsListener() {
 		    public void prefChanged(PrefsEvent e) {
 			if (e.getPref().equals("corina.index.cubicfactor")) {
-			    String p = Prefs.getPref("corina.index.cubicfactor");
+			    String p = App.prefs.getPref("corina.index.cubicfactor");
 			    double sval = Double.parseDouble(p);
 			    double real = 10 * Math.log(sval) / Math.log(10);
 			    s.setValue((int) real);

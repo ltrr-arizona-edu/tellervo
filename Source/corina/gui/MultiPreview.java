@@ -20,33 +20,31 @@
 
 package corina.gui;
 
-import corina.Sample;
-import corina.Element;
-import corina.Previewable;
-import corina.Preview;
-import corina.formats.WrongFiletypeException;
-import corina.cross.Grid;
-import corina.ui.Builder;
-import corina.util.Platform;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.util.List;
-
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import java.awt.Dimension;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import javax.swing.JPanel;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.AbstractAction;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+
+import corina.Element;
+import corina.Preview;
+import corina.Previewable;
+import corina.Sample;
+import corina.core.App;
+import corina.cross.Grid;
+import corina.formats.WrongFiletypeException;
+import corina.ui.Builder;
 
 public class MultiPreview extends JPanel implements PropertyChangeListener {
 
@@ -102,7 +100,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 
 	// left: buttons (add)
         add = Builder.makeButton("add");
-	if (!Platform.isMac)
+	if (!App.platform.isMac())
 	    add.setIcon(Builder.getIcon("Forward16.gif"));
 	add.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
@@ -117,7 +115,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 
 	// left: buttons (remove)
         remove = Builder.makeButton("remove");
-	if (!Platform.isMac)
+	if (!App.platform.isMac())
 	    remove.setIcon(Builder.getIcon("Back16.gif"));
 	remove.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {

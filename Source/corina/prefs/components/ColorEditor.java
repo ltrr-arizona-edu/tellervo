@@ -13,7 +13,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import corina.util.CorinaLog;
+import corina.logging.CorinaLog;
 
 public class ColorEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
   private static final CorinaLog log = new CorinaLog(ColorEditor.class);

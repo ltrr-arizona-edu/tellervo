@@ -1,7 +1,5 @@
 package corina.ui;
 
-import corina.util.Platform;
-
 import junit.framework.TestCase;
 
 /*

@@ -20,66 +20,68 @@
 
 package corina.graph;
 
-import corina.Year;
-import corina.Range;
-import corina.Sample;
-import corina.Element;
-import corina.SampleListener;
-import corina.SampleEvent;
-import corina.index.Index;
-import corina.formats.WrongFiletypeException;
-import corina.cross.Cross;
-import corina.gui.XFrame;
-import corina.gui.menus.FileMenu;
-import corina.gui.menus.EditMenu;
-import corina.gui.menus.WindowMenu;
-import corina.gui.menus.HelpMenu;
-import corina.gui.SaveableDocument;
-import corina.gui.PrintableDocument;
-import corina.gui.FileDialog;
-import corina.gui.UserCancelledException;
-import corina.prefs.Prefs;
-import corina.prefs.PrefsEvent;
-import corina.prefs.PrefsListener;
-import corina.gui.Bug;
-import corina.util.Platform;
-import corina.util.Overwrite;
-import corina.util.TextClipboard;
-import corina.util.PopupListener;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.ui.Alert;
-
-import java.io.File;
-import java.io.Writer;
-import java.io.StringWriter;
-import java.io.IOException;
-
-import java.util.List;
-import java.util.ArrayList;
-
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
-import java.awt.event.*;
-import java.awt.print.Printable;
-import java.awt.print.PageFormat;
-import javax.swing.*;
-
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetListener;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.batik.svggen.SVGGraphics2D;
+import javax.swing.AbstractAction;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+import javax.swing.ScrollPaneConstants;
+
 import org.apache.batik.dom.GenericDOMImplementation;
-import org.w3c.dom.Document;
+import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+
+import corina.Element;
+import corina.Range;
+import corina.Sample;
+import corina.SampleEvent;
+import corina.SampleListener;
+import corina.Year;
+import corina.core.App;
+import corina.cross.Cross;
+import corina.formats.WrongFiletypeException;
+import corina.gui.Bug;
+import corina.gui.FileDialog;
+import corina.gui.SaveableDocument;
+import corina.gui.UserCancelledException;
+import corina.gui.XFrame;
+import corina.gui.menus.EditMenu;
+import corina.gui.menus.FileMenu;
+import corina.gui.menus.HelpMenu;
+import corina.gui.menus.WindowMenu;
+import corina.index.Index;
+import corina.prefs.PrefsEvent;
+import corina.prefs.PrefsListener;
+import corina.ui.Alert;
+import corina.ui.Builder;
+import corina.ui.I18n;
+import corina.util.Overwrite;
+import corina.util.PopupListener;
 
 /**
    A graph.  It graphs any number of samples (or any Graphable) and
@@ -429,12 +431,12 @@ public class GraphWindow extends XFrame implements SampleListener,
             this.add(_axisMenu);
 
             // Show/hide gridlines
-            _gridlinesMenu = Builder.makeMenuItem(Boolean.valueOf(Prefs.getPref("corina.graph.graphpaper")).booleanValue() ?
+            _gridlinesMenu = Builder.makeMenuItem(Boolean.valueOf(App.prefs.getPref("corina.graph.graphpaper")).booleanValue() ?
                                                   "grid_hide" : "grid_show");
             _gridlinesMenu.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
                     boolean vis = Boolean.getBoolean("corina.graph.graphpaper"); // ACK!  FIXME!
-                    Prefs.setPref("corina.graph.graphpaper", String.valueOf(!vis));
+                    App.prefs.setPref("corina.graph.graphpaper", String.valueOf(!vis));
                     _gridlinesMenu.setText(I18n.getText(vis ? "grid_show" : "grid_hide"));
                     repaint();
                 }
@@ -442,12 +444,12 @@ public class GraphWindow extends XFrame implements SampleListener,
             this.add(_gridlinesMenu);
 
             // Show/hide baselines
-            _baselinesMenu = Builder.makeMenuItem(Boolean.valueOf(Prefs.getPref("corina.graph.baselines")).booleanValue() ?
+            _baselinesMenu = Builder.makeMenuItem(Boolean.valueOf(App.prefs.getPref("corina.graph.baselines")).booleanValue() ?
                                                   "base_hide" : "base_show");
             _baselinesMenu.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
                     boolean vis = Boolean.getBoolean("corina.graph.baselines"); // ACK! FIXME!
-                    Prefs.setPref("corina.graph.baselines", String.valueOf(!vis));
+                    App.prefs.setPref("corina.graph.baselines", String.valueOf(!vis));
                     window.plot.setBaselinesVisible(!vis);
                     window.plot.recreateAgent();
                     _baselinesMenu.setText(I18n.getText(vis ? "base_show" : "base_hide"));
@@ -557,7 +559,7 @@ public class GraphWindow extends XFrame implements SampleListener,
             menubar.add(new FileMenu(this));
             menubar.add(new GraphEditMenu(this));
             menubar.add(new GraphViewMenu(this));
-            if (Platform.isMac)
+            if (App.platform.isMac())
                 menubar.add(new WindowMenu(this));
             menubar.add(new HelpMenu());
             
@@ -594,7 +596,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 	//    new PopupListener(popup, plot)
 	// here.
 
-  Prefs.addPrefsListener(this);
+  App.prefs.addPrefsListener(this);
 
 	// display the window
 	pack();
@@ -852,6 +854,6 @@ public class GraphWindow extends XFrame implements SampleListener,
   
   protected void finalize() throws Throwable {
     super.finalize();
-    Prefs.removePrefsListener(this);
+    App.prefs.removePrefsListener(this);
   }
 }

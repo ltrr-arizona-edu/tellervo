@@ -8,7 +8,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
 
-import corina.util.CorinaLog;
+import corina.logging.CorinaLog;
 
 public class ColorRenderer extends JLabel implements TableCellRenderer {
   private static final CorinaLog log = new CorinaLog(ColorRenderer.class);

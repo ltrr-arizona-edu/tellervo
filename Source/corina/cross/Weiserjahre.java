@@ -21,7 +21,7 @@
 package corina.cross;
 
 import corina.Sample;
-import corina.prefs.Prefs;
+import corina.core.App;
 import corina.ui.I18n;
 
 public class Weiserjahre extends Cross {
@@ -36,7 +36,7 @@ public class Weiserjahre extends Cross {
 
     public String getFormat() {
         // FIXME: this should be a pref, as well
-        return Prefs.getPref("corina.cross.weiserjahre.format", "0.0%");
+        return App.prefs.getPref("corina.cross.weiserjahre.format", "0.0%");
     }
 
     // same as trend?  (this is old-style trend, even -- very obsolete!)

@@ -20,55 +20,51 @@
 
 package corina.gui;
 
-import corina.Sample;
-import corina.Element;
-import corina.Build;
-import corina.editor.Editor;
-import corina.gui.menus.FileMenu;
-import corina.gui.menus.EditMenu;
-import corina.gui.menus.OldCrossdateMenu;
-import corina.gui.menus.WindowMenu;
-import corina.gui.menus.HelpMenu;
-import corina.util.Platform;
-import corina.util.OKCancel;
-import corina.ui.Builder;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.util.List;
-import java.util.ArrayList;
-
-import java.awt.Frame;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.ActionEvent;
-import java.awt.Image;
 import java.awt.FlowLayout;
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.AbstractAction;
-import javax.swing.SwingConstants;
-import javax.swing.*; // yeah, i suck.
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetListener;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
+import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSplitPane;
+
+import corina.Build;
+import corina.Sample;
+import corina.core.App;
+import corina.editor.Editor;
+import corina.gui.menus.EditMenu;
+import corina.gui.menus.FileMenu;
+import corina.gui.menus.HelpMenu;
+import corina.gui.menus.OldCrossdateMenu;
+import corina.gui.menus.WindowMenu;
+import corina.platform.Platform;
+import corina.ui.Builder;
+import corina.util.OKCancel;
 
 public class XCorina extends JFrame {
 
@@ -155,7 +151,7 @@ public class XCorina extends JFrame {
             menubar.add(new FileMenu(this));
             menubar.add(new EditMenu());
             menubar.add(new OldCrossdateMenu());
-            if (Platform.isMac)
+            if (App.platform.isMac())
                 menubar.add(new WindowMenu(this));
             menubar.add(new HelpMenu());
             setJMenuBar(menubar);
@@ -232,7 +228,7 @@ public class XCorina extends JFrame {
         // enable drop-loading for panel
         DropTargetListener dropLoader = new DropLoader();
         DropTarget target = new DropTarget(this, dropLoader);
-        if (!Platform.isMac) { // (note: braces are mandatory here!)
+        if (!App.platform.isMac()) { // (note: braces are mandatory here!)
             DropTarget target2 = new DropTarget(getJMenuBar(), dropLoader);
         }
         DropTarget target3 = new DropTarget(panel, dropLoader);
@@ -419,7 +415,7 @@ public class XCorina extends JFrame {
         // for Mac OS: by
         // http://developer.apple.com/techpubs/macosx/Java/Reference/Java/com/apple/mrj/MRJQuitHandler.html#handleQuit()
         // throw IllegalStateException to prevent the quit
-        if (Platform.isMac)
+        if (App.platform.isMac())
             throw new IllegalStateException();
     }
 }

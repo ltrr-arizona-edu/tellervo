@@ -20,82 +20,91 @@
 
 package corina.browser;
 
-import corina.Sample;
-import corina.MetadataTemplate;
-import corina.Element;
-import corina.Range;
-import corina.editor.Editor;
-import corina.util.Platform;
-import corina.util.TextClipboard;
-import corina.util.NaturalSort;
-import corina.prefs.Prefs;
-import corina.prefs.Geometry;
-import corina.gui.Bug;
-import corina.gui.Layout;
-import corina.gui.TextWindow;
-import corina.gui.Scripts;
-import corina.gui.menus.HelpMenu;
-import corina.manip.Sum;
-import corina.site.Site;
-import corina.site.SiteDB;
-import corina.site.SiteNotFoundException;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.ui.Alert;
-import corina.cross.RangeRenderer; // should this be raised? corina.gui?
-
-import corina.print.Printer;
-import corina.print.Line;
-import corina.print.TextLine;
-import corina.print.ThinLine;
-import corina.print.ByLine;
-import corina.print.EmptyLine;
-import corina.print.TabbedLineFactory;
-
-import java.awt.print.PageFormat;
-import java.awt.print.PrinterJob;
-import java.awt.print.Printable;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterAbortException;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Vector;
-import java.util.StringTokenizer;
-import java.util.Map;
-import java.util.Hashtable;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
-import java.text.MessageFormat;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.AbstractTableModel;
 import java.awt.Color;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Component;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import javax.swing.tree.DefaultTreeCellRenderer;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterAbortException;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.io.File;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.ProgressMonitor;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+
+import corina.Element;
+import corina.MetadataTemplate;
+import corina.Range;
+import corina.Sample;
+import corina.core.App;
+import corina.cross.RangeRenderer;
+import corina.editor.Editor;
+import corina.gui.Bug;
+import corina.gui.Layout;
+import corina.gui.Scripts;
+import corina.gui.menus.HelpMenu;
+import corina.manip.Sum;
+import corina.prefs.Geometry;
+import corina.print.ByLine;
+import corina.print.EmptyLine;
+import corina.print.Line;
+import corina.print.Printer;
+import corina.print.TabbedLineFactory;
+import corina.print.TextLine;
+import corina.print.ThinLine;
+import corina.site.Site;
+import corina.site.SiteDB;
+import corina.site.SiteNotFoundException;
+import corina.ui.Alert;
+import corina.ui.Builder;
+import corina.ui.I18n;
+import corina.util.NaturalSort;
+import corina.util.TextClipboard;
 
 /**
    Corina's browser.
@@ -179,7 +188,7 @@ public class Browser extends JFrame {
         folder = newFolder;
 	if (label1 != null) // !!?!
 	    updateSummary(); // PERF: does this get called twice, now?
-	    Prefs.setPref("corina.browser.folder", folder);
+      App.prefs.setPref("corina.browser.folder", folder);
     }
 
     private JLabel label1, label2;
@@ -239,9 +248,9 @@ public class Browser extends JFrame {
     public Browser() {
         super("Corina");
 
-        String dir = Prefs.getPref("corina.browser.folder"); // BUG: what if this folder doesn't exist?
+        String dir = App.prefs.getPref("corina.browser.folder"); // BUG: what if this folder doesn't exist?
         if (dir == null)
-            dir = Prefs.getPref("corina.dir.data"); // BUG: what if this is null, too?
+            dir = App.prefs.getPref("corina.dir.data"); // BUG: what if this is null, too?
                                                          // BUG: what if this folder doesn't exist?
         
 	// if no folder, use |user.dir|
@@ -263,17 +272,17 @@ public class Browser extends JFrame {
 	}
 
 	// watch size/location -- EXTRACT this?
-	String geom = Prefs.getPref("corina.browser.geometry");
+	String geom = App.prefs.getPref("corina.browser.geometry");
 	if (geom == null)
 	    geom = "600x400+20+20";
 	Geometry.decode(this, geom); // FIXME: bad interface!  (really?)
 	final JFrame glue = this;
 	addComponentListener(new ComponentAdapter() {
 		public void componentMoved(ComponentEvent e) {
-      Prefs.setPref("corina.browser.geometry", Geometry.encode(glue));
+      App.prefs.setPref("corina.browser.geometry", Geometry.encode(glue));
 		}
 		public void componentResized(ComponentEvent e) {
-      Prefs.setPref("corina.browser.geometry", Geometry.encode(glue));
+      App.prefs.setPref("corina.browser.geometry", Geometry.encode(glue));
 		}
 		// FIXME[PERF]: should i set this only on dispose()?  it saves far too often, right now.
 	    });
@@ -377,7 +386,7 @@ public class Browser extends JFrame {
 
             // "search for"
             JLabel searchLabel = new JLabel("Search for:");
-            if (!Platform.isMac)
+            if (App.platform.isMac())
                 searchLabel.setDisplayedMnemonic('S');
             searchField = new SearchField(this, table);
             searchLabel.setLabelFor(searchField);
@@ -649,8 +658,8 @@ public class Browser extends JFrame {
         public void keyTyped(KeyEvent e) {
             // FIXME: isn't there a way to get the default accel on this platform?
 	    // (OAOO in corina.ui, at least)
-            boolean cmdPressed = ((Platform.isMac && e.isMetaDown()) ||
-				  (Platform.isWindows && e.isControlDown()));
+            boolean cmdPressed = ((App.platform.isMac() && e.isMetaDown()) ||
+				  (App.platform.isWindows() && e.isControlDown()));
 
             if (cmdPressed && Character.isDigit(e.getKeyChar())) {
                 // 0 means 10, because it's the 10th key on the board; otherwise 1=0, 2=1, ...
@@ -1113,7 +1122,7 @@ public class Browser extends JFrame {
         }
     }
 
-    private String folder=Prefs.getPref("corina.dir.data"); // redundant?
+    private String folder = App.prefs.getPref("corina.dir.data"); // redundant?
 
     private static final Map fileMetadata = new Hashtable();
     static {
@@ -1280,8 +1289,8 @@ public class Browser extends JFrame {
     }
 
     // the name of the field to sort by
-    private String sortField = Prefs.getPref("corina.browser.sort", "name");
-    private boolean reverse = Boolean.valueOf(Prefs.getPref("corina.browser.reverse")).booleanValue(); // BUG: need to set SHR
+    private String sortField = App.prefs.getPref("corina.browser.sort", "name");
+    private boolean reverse = Boolean.valueOf(App.prefs.getPref("corina.browser.reverse")).booleanValue(); // BUG: need to set SHR
 
     // assumes it's given a valid (view) column
     public void sortBy(int viewColumn) {
@@ -1290,7 +1299,7 @@ public class Browser extends JFrame {
         if (sortField.equals(newSort)) {
             reverse = !reverse;
             shr.setReversed(reverse);
-          Prefs.setPref("corina.browser.reverse", String.valueOf(reverse));
+            App.prefs.setPref("corina.browser.reverse", String.valueOf(reverse));
             // wait ... in this case, i don't need to doSort() again; reverse() is good enough.
 	    // plus, it acts as the user expects.
             saveSelection(); {
@@ -1300,10 +1309,10 @@ public class Browser extends JFrame {
         } else {
             sortField = newSort;
             shr.setSortColumn(nameOfField(sortField));
-          Prefs.setPref("corina.browser.sort", sortField);
+            App.prefs.setPref("corina.browser.sort", sortField);
             reverse = false;
             shr.setReversed(reverse);
-          Prefs.setPref("corina.browser.reverse", String.valueOf(reverse));
+            App.prefs.setPref("corina.browser.reverse", String.valueOf(reverse));
             doSort();
 	}
 
@@ -1468,12 +1477,12 @@ public class Browser extends JFrame {
         }
 
         // save to prefs
-      Prefs.setPref("corina.browser.fields", buf.toString());
+        App.prefs.setPref("corina.browser.fields", buf.toString());
     }
 
     // load fields from prefs (or use a reasonable default).
     private void loadFields() {
-        String pref = Prefs.getPref("corina.browser.fields", DEFAULT_FIELDS);
+        String pref = App.prefs.getPref("corina.browser.fields", DEFAULT_FIELDS);
 	// FIXME: prefs.getPref() needs defaults!
 
 	// always add name, if for some reason it's not there (e.g., fields="")
@@ -1644,11 +1653,11 @@ public class Browser extends JFrame {
 	    buf.append(fmt.format(pct) + " ");
 	}
 
-  Prefs.setPref("corina.browser.columnwidths", buf.toString());
+  App.prefs.setPref("corina.browser.columnwidths", buf.toString());
     }
     // restore column widths
     private void restoreColumnWidths() {
-	String spec = Prefs.getPref("corina.browser.columnwidths");
+	String spec = App.prefs.getPref("corina.browser.columnwidths");
 	if (spec == null) // Q: is this the proper way to read "none exist"?
 	    return; // none there?  stick with defaults.
 

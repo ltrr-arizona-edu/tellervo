@@ -20,32 +20,30 @@
 
 package corina.editor;
 
-import corina.prefs.Prefs;
-import corina.ui.Builder;
-import corina.ui.I18n;
+import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TooManyListenersException;
 
-import javax.comm.SerialPort;
-import javax.comm.SerialPortEvent;
-import javax.comm.SerialPortEventListener;
 import javax.comm.CommPortIdentifier;
 import javax.comm.NoSuchPortException;
 import javax.comm.PortInUseException;
+import javax.comm.SerialPort;
+import javax.comm.SerialPortEvent;
+import javax.comm.SerialPortEventListener;
 import javax.comm.UnsupportedCommOperationException;
-
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
-
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.TooManyListenersException;
-import java.util.ArrayList;
-import java.util.List;
-
-import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+
+import corina.core.App;
+import corina.ui.Builder;
+import corina.ui.I18n;
 
 /*
   
@@ -135,7 +133,7 @@ public class Measure extends Thread implements SerialPortEventListener {
     public void start() {
 	// identify the port to use
 	try {
-	    portID = CommPortIdentifier.getPortIdentifier(Prefs.getPref("corina.measure.port", "COM1"));
+	    portID = CommPortIdentifier.getPortIdentifier(App.prefs.getPref("corina.measure.port", "COM1"));
 	} catch (NoSuchPortException nspe) {
 	    System.out.println("no such port!");
 	    // HANDLE ME

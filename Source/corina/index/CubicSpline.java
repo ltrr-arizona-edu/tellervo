@@ -21,7 +21,7 @@
 package corina.index;
 
 import corina.Sample;
-import corina.prefs.Prefs;
+import corina.core.App;
 import corina.ui.I18n;
 
 /**
@@ -60,7 +60,7 @@ public class CubicSpline extends Index {
     }
 
     // smoothing factor
-    private final double s = Double.parseDouble(Prefs.getPref("corina.index.cubicfactor", "1e-16"));
+    private final double s = Double.parseDouble(App.prefs.getPref("corina.index.cubicfactor", "1e-16"));
 
     // output coefficients
     private double a[];

@@ -1,24 +1,23 @@
 package corina.ui;
 
-import corina.util.Platform;
-
+import java.awt.Image;
+import java.awt.event.ActionEvent;
 import java.lang.reflect.Method;
-
 import java.util.StringTokenizer;
 
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JRadioButton;
-import javax.swing.KeyStroke;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
-import java.awt.event.ActionEvent;
-import java.awt.Image;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.KeyStroke;
+
+import corina.core.App;
 
 // TODO: if on 1.4, use setDisplayedMnemonicIndex() so "Save &As..."
 // underlines the correct 'A'
@@ -41,7 +40,7 @@ public class Builder {
 
     m.setText(I18n.getText(key));
 
-    if (!Platform.isMac) {
+    if (!App.platform.isMac()) {
       Character mnemonic = I18n.getMnemonic(key);
       if (mnemonic != null)
         m.setMnemonic(mnemonic.charValue());
@@ -59,7 +58,7 @@ public class Builder {
 
     m.setText(I18n.getText(key));
 
-    if (!Platform.isMac) {
+    if (!App.platform.isMac()) {
       Character mnemonic = I18n.getMnemonic(key);
       if (mnemonic != null)
         m.setMnemonic(mnemonic.charValue());
@@ -93,7 +92,7 @@ public class Builder {
 
     m.setText(I18n.getText(key));
 
-    if (!Platform.isMac) {
+    if (!App.platform.isMac()) {
       Character mnemonic = I18n.getMnemonic(key);
       if (mnemonic != null)
         m.setMnemonic(mnemonic.charValue());
@@ -111,7 +110,7 @@ public class Builder {
 
     b.setText(I18n.getText(key));
 
-    if (!Platform.isMac) {
+    if (!App.platform.isMac()) {
       Character mnemonic = I18n.getMnemonic(key);
       if (mnemonic != null)
         b.setMnemonic(mnemonic.charValue());
@@ -133,7 +132,7 @@ public class Builder {
 
     r.setText(I18n.getText(key));
 
-    if (!Platform.isMac) {
+    if (!App.platform.isMac()) {
       Character mnemonic = I18n.getMnemonic(key);
       if (mnemonic != null)
         r.setMnemonic(mnemonic.charValue());

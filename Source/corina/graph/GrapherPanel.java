@@ -63,9 +63,9 @@ import corina.Build;
 import corina.Range;
 import corina.Sample;
 import corina.Year;
+import corina.core.App;
 import corina.gui.Bug;
 import corina.gui.XFrame;
-import corina.prefs.Prefs;
 import corina.ui.Alert;
 import corina.util.ColorUtils;
 
@@ -175,7 +175,7 @@ public class GrapherPanel extends JPanel
     public void setBaselinesVisible(boolean visible) {
 	// toggle baselines
 	baselines = !baselines;
-  Prefs.setPref("corina.graph.baselines", String.valueOf(baselines));
+  App.prefs.setPref("corina.graph.baselines", String.valueOf(baselines));
 
 	// add/remove listener so they get updated properly
 	if (!baselines)
@@ -481,7 +481,7 @@ public class GrapherPanel extends JPanel
 	// pixels / year -- weird stuff here because yearSize is final
 	int tmp = 10;
 	try {
-	    tmp = Integer.parseInt(Prefs.getPref("corina.graph.pixelsperyear", "10"));
+	    tmp = Integer.parseInt(App.prefs.getPref("corina.graph.pixelsperyear", "10"));
 	    // FIXME: why not use Integer.getInteger()?
 	} catch (NumberFormatException nfe) {
 	    // show warning dialog?
@@ -503,7 +503,7 @@ public class GrapherPanel extends JPanel
 	setCursor(crosshair);
 
 	// baselines?
-	baselines = Boolean.valueOf(Prefs.getPref("corina.graph.baselines")).booleanValue();
+	baselines = Boolean.valueOf(App.prefs.getPref("corina.graph.baselines")).booleanValue();
 
 	// key listener -- apparently the focus gets screwed up and
 	// keys stop responding if I don't add a key listener to both
@@ -831,7 +831,7 @@ public class GrapherPanel extends JPanel
 	// the bottommost layer, on up to the vertical-bar on top.
 
 	// draw graphpaper
-	if (Boolean.valueOf(Prefs.getPref("corina.graph.graphpaper")).booleanValue()) {
+	if (Boolean.valueOf(App.prefs.getPref("corina.graph.graphpaper")).booleanValue()) {
 	    // PERF: is this expensive?  (it's not just a bool!)
 	    paintGraphPaper(g2);
 	}

@@ -1,15 +1,5 @@
 package corina.prefs.panels;
 
-import corina.prefs.Prefs;
-import corina.prefs.components.FormattingPrefComponent;
-import corina.prefs.components.BoolPrefComponent; // RENAME to: Check[Box?]PrefComponent
-import corina.prefs.components.ColorPrefComponent;
-
-import java.text.DecimalFormat;
-import java.util.Vector;
-
-import javax.swing.*;
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -22,12 +12,27 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.text.DecimalFormat;
+import java.util.Vector;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.JComboBox;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
+
+import corina.core.App;
+import corina.prefs.Prefs;
+import corina.prefs.components.BoolPrefComponent;
+import corina.prefs.components.ColorPrefComponent;
+import corina.prefs.components.FormattingPrefComponent;
 
 public class CrossdatingPrefsPanel extends Container {
   private static final Integer[] YEARS = new Integer[] { new Integer(1),
@@ -119,7 +124,7 @@ public class CrossdatingPrefsPanel extends Container {
     System.out.println("isParseIntegerOnly: " + df1.isParseIntegerOnly() + " " + df1.getMinimumFractionDigits());  
     scb.setFormats(df0, df1);
     
-    String init = Prefs.getPref("corina.cross.overlap");
+    String init = App.prefs.getPref("corina.cross.overlap");
     Integer value = null; // default is 50
     if (init != null) {
       try {
@@ -141,7 +146,7 @@ public class CrossdatingPrefsPanel extends Container {
     scb.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         System.err.println("spinner stateChanged: " + scb.getSpinner().getValue() + " " + scb.getSpinner().getValue().getClass());
-        Prefs.setPref("corina.cross.overlap", scb.getSpinner().getValue().toString());
+        App.prefs.setPref("corina.cross.overlap", scb.getSpinner().getValue().toString());
 
         //popup.setSelectedItem(spinner.getValue());
         System.out.println("Selected item after setting: " + scb.getSelectedItem());
@@ -343,7 +348,7 @@ public class CrossdatingPrefsPanel extends Container {
             spinner.addChangeListener(new ChangeListener() {
               public void stateChanged(ChangeEvent e) {
                 System.err.println("spinner stateChanged: " + spinner.getValue() + " " + spinner.getValue().getClass());
-                Prefs.setPref("corina.cross.overlap", spinner.getValue().toString());
+                App.prefs.setPref("corina.cross.overlap", spinner.getValue().toString());
 
                 popup.setSelectedItem(spinner.getValue());
                 System.out.println("Selected item after setting: " + popup.getSelectedItem());
@@ -396,7 +401,7 @@ public class CrossdatingPrefsPanel extends Container {
             add(popup);
 
             // get initial value -- default is 50
-            String init = Prefs.getPref("corina.cross.overlap");
+            String init = App.prefs.getPref("corina.cross.overlap");
             int value = 50; // default is 50
             if (init != null)
                 try {
@@ -434,7 +439,7 @@ public class CrossdatingPrefsPanel extends Container {
                     int n = YEARS[i];
                     System.out.println("Selected value: " + n);
                     // store it as corina.cross.overlap
-                    Prefs.setPref("corina.cross.overlap", String.valueOf(n));
+                    App.prefs.setPref("corina.cross.overlap", String.valueOf(n));
                     System.out.println("popup is editable: " + popup.isEditable());
                   }
 

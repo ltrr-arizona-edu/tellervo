@@ -1,8 +1,8 @@
 package corina.prefs.components;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -10,13 +10,13 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JTable;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import corina.util.CorinaLog;
-import corina.prefs.Prefs;
+import corina.core.App;
+import corina.logging.CorinaLog;
 
 public class UIDefaultsComponent extends JComponent implements TableModelListener, ActionListener {
   private static final CorinaLog log = new CorinaLog("UIDefaultsComponent");
@@ -105,10 +105,10 @@ public class UIDefaultsComponent extends JComponent implements TableModelListene
   
     if (o instanceof Font) {
       log.debug("setting font " + o);
-      Prefs.setPref("uidefaults." + property, stringifyFont((Font) o));
+      App.prefs.setPref("uidefaults." + property, stringifyFont((Font) o));
     } else if (o instanceof Color) {
       log.debug("setting font " + o);
-      Prefs.setPref("uidefaults." + property, "#" + Integer.toHexString(((Color) o).getRGB() & 0x00ffffff));
+      App.prefs.setPref("uidefaults." + property, "#" + Integer.toHexString(((Color) o).getRGB() & 0x00ffffff));
     } else {
       log.error("unknown new value type (not Color or Font)! " + o);
     }

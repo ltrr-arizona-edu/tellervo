@@ -20,19 +20,19 @@
 
 package corina.graph;
 
-import corina.Year;
-import corina.Range;
-import corina.Sample;
-import corina.index.Index;
-import corina.prefs.Prefs;
-
+import java.awt.BasicStroke;
 import java.awt.Graphics2D;
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.BasicStroke;
 import java.awt.geom.GeneralPath;
+
 import javax.swing.JPanel;
+
+import corina.Range;
+import corina.Sample;
+import corina.Year;
+import corina.core.App;
+import corina.index.Index;
 
 public class StandardPlot {
 
@@ -244,8 +244,8 @@ public class StandardPlot {
 
     public void update() {
         // read sys props
-        _baselines = Boolean.valueOf(Prefs.getPref("corina.graph.baselines")).booleanValue();
-        _yearsize = Integer.parseInt(Prefs.getPref("corina.graph.pixelsperyear", "10"));
+        _baselines = Boolean.valueOf(App.prefs.getPref("corina.graph.baselines")).booleanValue();
+        _yearsize = Integer.parseInt(App.prefs.getPref("corina.graph.pixelsperyear", "10"));
         _dottedIndexes = Boolean.getBoolean("corina.graph.dotindexes");
     }
 

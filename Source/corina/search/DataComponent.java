@@ -2,8 +2,8 @@ package corina.search;
 
 import corina.Year;
 import corina.MetadataTemplate;
+import corina.logging.CorinaLog;
 import corina.util.ColorUtils;
-import corina.util.CorinaLog;
 import corina.ui.I18n;
 
 import java.util.Date;

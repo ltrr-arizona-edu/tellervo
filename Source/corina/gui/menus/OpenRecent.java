@@ -20,26 +20,24 @@
 
 package corina.gui.menus;
 
-import corina.gui.CanOpener;
-import corina.prefs.Prefs;
-import corina.ui.Builder;
-import corina.ui.Alert;
-
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
-import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.AbstractAction;
+
+import corina.core.App;
+import corina.gui.CanOpener;
+import corina.ui.Alert;
+import corina.ui.Builder;
 
 /**
     A menu which shows recently-opened files.
@@ -221,7 +219,7 @@ public class OpenRecent {
 
 	// parse |corina.recent.files| pref, splitting by |path.separator| chars.
 	// (ASSUMES (path.separator).length()==1?
-	StringTokenizer tok = new StringTokenizer(Prefs.getPref("corina.recent.files", ""),
+	StringTokenizer tok = new StringTokenizer(App.prefs.getPref("corina.recent.files", ""),
 						  System.getProperty("path.separator"));
 
 	// add all files to recent
@@ -244,6 +242,6 @@ public class OpenRecent {
 	}
 
 	// store in pref
-  Prefs.setPref("corina.recent.files", buf.toString());
+  App.prefs.setPref("corina.recent.files", buf.toString());
     }
 }

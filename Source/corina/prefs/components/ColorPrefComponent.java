@@ -22,7 +22,6 @@ package corina.prefs.components;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,7 +33,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-import corina.prefs.Prefs;
+import corina.core.App;
 
 /**
     A popup menu for picking a color.  Given a key (like "corina.graph.background"),
@@ -138,7 +137,7 @@ public class ColorPrefComponent extends JComboBox {
     */
     public ColorPrefComponent(String preference) {
 	// color
-      Color oldColor = Prefs.getColorPref(preference, Color.black); // BUG: what if it's not parseable?
+      Color oldColor = App.prefs.getColorPref(preference, Color.black); // BUG: what if it's not parseable?
 	boolean stdColor = false;
 
 	// add a bunch of standard colors
@@ -179,7 +178,7 @@ public class ColorPrefComponent extends JComboBox {
 		    String value = "#" + Integer.toHexString(color.getRGB() & 0x00ffffff);
 
                     // set preference
-                    Prefs.setPref(pref, value);
+        App.prefs.setPref(pref, value);
 		}
 	    });
 

@@ -1,36 +1,34 @@
 package corina.cross; // FIXME: rename to corina.crossdate
 
-import corina.gui.Layout;
-import corina.prefs.Prefs;
-import corina.ui.I18n;
-import corina.util.PopupListener;
-
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.BorderLayout;
-
 import java.awt.event.MouseEvent;
-
-import java.awt.print.Pageable;
 import java.awt.print.PageFormat;
+import java.awt.print.Pageable;
 
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.JScrollPane;
-import javax.swing.JComponent;
-import javax.swing.JButton;
-import javax.swing.JSlider;
-import javax.swing.JPopupMenu;
-import javax.swing.JMenuItem;
 import javax.swing.BorderFactory;
-import javax.swing.event.ChangeListener;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JTable;
 import javax.swing.event.ChangeEvent;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+
+import corina.core.App;
+import corina.gui.Layout;
+import corina.ui.I18n;
+import corina.util.PopupListener;
 
 public class GridView extends JPanel {
 
@@ -204,7 +202,7 @@ public class GridView extends JPanel {
     private Font cellFont;
 
     private void recomputeFont() {
-	String requestedFont = Prefs.getPref("corina.grid.font");
+	String requestedFont = App.prefs.getPref("corina.grid.font");
 	Font origFont;
 	if (requestedFont == null)
 	    origFont = new JTable().getFont(); //  Font(); // g.getFont();

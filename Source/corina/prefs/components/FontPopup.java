@@ -12,7 +12,7 @@ import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
 
-import corina.prefs.Prefs;
+import corina.core.App;
 
 // UNUSED!
 public class FontPopup extends JComboBox {
@@ -41,7 +41,7 @@ public class FontPopup extends JComboBox {
     }
 
     public FontPopup(String property, JTable preview) {
-	Font oldFont = Prefs.getFontPref(property, new Font(null));
+	Font oldFont = App.prefs.getFontPref(property, new Font(null));
 	String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
 	// --start hack--
 	int n=0;

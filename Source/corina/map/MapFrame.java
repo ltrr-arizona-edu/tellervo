@@ -20,69 +20,50 @@
 
 package corina.map;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.print.PageFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.AbstractAction;
+import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollBar;
+import javax.swing.JSlider;
+import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import corina.Build;
+import corina.core.App;
+import corina.gui.Layout;
+import corina.gui.PrintableDocument;
+import corina.gui.XFrame;
+import corina.gui.menus.EditMenu;
+import corina.gui.menus.FileMenu;
+import corina.gui.menus.HelpMenu;
+import corina.gui.menus.WindowMenu;
 import corina.map.tools.ToolBox;
 import corina.site.Site;
 import corina.site.SiteDB;
 import corina.site.SitePrinter;
-import corina.gui.XFrame;
-import corina.gui.Bug;
-import corina.gui.PrintableDocument;
-import corina.gui.Layout;
-import corina.gui.FileDialog;
-import corina.gui.layouts.DialogLayout;
-import corina.gui.menus.FileMenu;
-import corina.gui.menus.EditMenu;
-import corina.gui.menus.WindowMenu;
-import corina.gui.menus.HelpMenu;
-import corina.gui.UserCancelledException;
 import corina.ui.Builder;
-import corina.util.Platform;
-import corina.util.Overwrite;
-
-import java.text.DecimalFormat;
-import java.text.ParseException;
-
-import java.io.File;
-import java.io.Writer;
-import java.io.OutputStreamWriter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.TimerTask;
-
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.BorderLayout;
-
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-
-import java.awt.print.PageFormat;
-
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JSlider;
-import javax.swing.JComboBox;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.Box;
-import javax.swing.AbstractAction;
-
-import javax.swing.*;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.*; // documents in here?
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class MapFrame extends XFrame implements PrintableDocument, ComponentListener {
 
@@ -254,7 +235,7 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
 	    bottom.add(small);
 	    bottom.add(slider);
 	    bottom.add(large);
-	    if (Platform.isMac)
+	    if (App.platform.isMac())
 		bottom.add(Box.createHorizontalStrut(16));
 	}
 
@@ -281,7 +262,7 @@ setContentPane(tabs);
         menubar.add(new MapFileMenu(this));
         menubar.add(new MapEditMenu());
         menubar.add(new MapViewMenu());
-        if (Platform.isMac)
+        if (App.platform.isMac())
             menubar.add(new WindowMenu(this));
         menubar.add(new HelpMenu());
         setJMenuBar(menubar);
@@ -305,6 +286,7 @@ private class MapFileMenu extends FileMenu {
         public void addCloseSaveMenus() {
             super.addCloseSaveMenus();
 
+            addExportPNGMenu();
 	    /* -- DISABLED, until i figure out SVG and how to include batik (merge jar or optional download)
             addExportPNGMenu();
             addExportSVGMenu();

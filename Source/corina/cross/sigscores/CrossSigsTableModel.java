@@ -45,15 +45,11 @@ class CrossSigsTableModel extends AbstractTableModel {
       case 0: return I18n.getText("number");
       case 1: return I18n.getText("fixed") + " (" + this.view.getCrossdate().getFixed().range + ")";
       case 2: return I18n.getText("moving") + " (" + this.view.getCrossdate().getMoving().range + ")";
-      case 3:
-        new Exception("GETTIGN COLUMN NAME").printStackTrace();
-        System.out.println("Crossdate header: " + this.view.getCrossdate().getName());
-        return this.view.getCrossdate().getName();
-      case 4:
-        return I18n.getText("overlap");
+      case 3: return this.view.getCrossdate().getName();
+      case 4: return I18n.getText("overlap");
       case 5:
         return I18n.getText("confidence") + " (%)"; // hack!
-      // FIXME: make this "confidence%", in case i need w/o-% also
+        // FIXME: make this "confidence%", in case i need w/o-% also
       default:
         throw new IllegalArgumentException(); // never happens
     }
@@ -97,8 +93,6 @@ class CrossSigsTableModel extends AbstractTableModel {
     // wouldn't it make more sense for them to be declared in
     // the HighScore class as Integers?
 
-    System.out.println("fixedFloats: " + this.view.isFixedFloats());
-    System.out.println("movingFloats: " + this.view.isMovingFloats());
     switch (col) {
       case 0: return new Integer(s.number);
       case 1: return (this.view.isFixedFloats() ? s.fixedRange : this.view.getCrossdate().getFixed().range);

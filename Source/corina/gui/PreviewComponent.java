@@ -20,17 +20,17 @@
 
 package corina.gui;
 
-import corina.Preview;
-import corina.util.Platform;
-
-import java.util.List;
-
 import java.awt.BorderLayout;
 import java.awt.Font;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.BoxLayout;
+import java.util.List;
+
 import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import corina.Preview;
+import corina.core.App;
 
 /**
    A component that displays a Preview.  It displays the title in bold
@@ -49,7 +49,7 @@ public class PreviewComponent extends JPanel {
     // cool, but i don't need it)
     // -- java on windows and linux doesn't even support \u2022.
     // so use a hyphen there.
-    private static final String BULLET = (Platform.isMac ? "\u2023" : "-");
+    private static final String BULLET = (App.platform.isMac() ? "\u2023" : "-");
     // FIXME: check Font.canDisplay()?
 
     /** Given a Preview object, create a component which displays it.

@@ -22,17 +22,22 @@ package corina.cross.sigscores;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 
+import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 
 import corina.Year;
+import corina.core.App;
 import corina.cross.Cross;
 import corina.cross.RangeRenderer;
 import corina.cross.TopScores.HighScore;
@@ -58,7 +63,6 @@ import corina.util.NoEmptySelection;
  * 
  * <li>use Prefs, not properties
  * 
- * <li>next/prev don't update the header ("t-score"->"trend"->etc.)
  * <li>next/prev don't update the format used for the new cross (e.g., see "0.60" for trend instead of "60.0%")
  * <li>next/prev don't even update the number of sig scores properly! -- but it does after you resize the column
  * 
@@ -104,11 +108,32 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
     makeDoubleClickable(); // MOVE: to initTable()? refr, too?
     makeSortable();
 
+    JPanel fixedmovingpanel = new JPanel();
+    fixedmovingpanel.setBorder(BorderFactory.createTitledBorder("fixed/moving floats"));
+    ((FlowLayout) fixedmovingpanel.getLayout()).setHgap(0);
+    ((FlowLayout) fixedmovingpanel.getLayout()).setVgap(0);
+    final JCheckBox fixedcheckbox = new JCheckBox("fixed floats");
+    final JCheckBox movingcheckbox = new JCheckBox("moving floats");
+    ChangeListener floatchangelistener = new ChangeListener() {
+      public void stateChanged(ChangeEvent ce) {
+        if (ce.getSource() == fixedcheckbox) {
+          fixedFloats = fixedcheckbox.isSelected();
+        } else {
+          movingFloats = movingcheckbox.isSelected();
+        }
+        model.fireTableDataChanged();
+      }
+    };
+    fixedcheckbox.addChangeListener(floatchangelistener);
+    movingcheckbox.addChangeListener(floatchangelistener);
+    fixedmovingpanel.add(fixedcheckbox);
+    fixedmovingpanel.add(movingcheckbox);
     JScrollPane scroll = new JScrollPane(table);
     scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
     scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
     setLayout(new BorderLayout());
+    add(fixedmovingpanel, BorderLayout.NORTH);
     add(scroll);
   }
 
@@ -216,11 +241,8 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
     int widths[] = saveColumnWidths();
 
     model.fireTableStructureChanged();
-    //table.setModel(model);
     
-    System.err.println("header value: " + table.getColumnModel().getColumn(3).getHeaderValue());
     restoreColumnWidths(widths);
-    System.out.println("model: table structure changed fired");
 
     // reset columns
     setupColumns();
@@ -273,7 +295,8 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
   }
 
   // WRITEME: these aren't hooked up yet
-  private boolean fixedFloats = true, movingFloats = true;
+  private boolean fixedFloats = true;
+  private boolean movingFloats = true;
 
   boolean isFixedFloats() {
     return fixedFloats;
@@ -297,7 +320,7 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
 
   private void refreshGridlines() {
     // gridlines; WAS: ...cross...
-    boolean gridlines = Boolean.valueOf(Prefs.getPref("corina.edit.gridlines"))
+    boolean gridlines = Boolean.valueOf(App.prefs.getPref("corina.edit.gridlines"))
         .booleanValue();
     table.setShowGrid(gridlines);
   }
@@ -309,8 +332,8 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
 
   private void refreshFont() {
     // WAS: corina.cross.font (merged with corina.edit.font)
-    if (Prefs.getPref("corina.edit.font") != null) {
-      Font f = Font.decode(Prefs.getPref("corina.edit.font"));
+    if (App.prefs.getPref("corina.edit.font") != null) {
+      Font f = Font.decode(App.prefs.getPref("corina.edit.font"));
       table.setFont(f);
       table.setRowHeight(f.getSize() + 3);
       // FIXME: instead of 3, use (defaultRowHeight - defaultFontSize)
@@ -318,11 +341,11 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
   }
 
   private void refreshBackground() {
-    table.setBackground(Prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
+    table.setBackground(App.prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
   }
 
   private void refreshForeground() {
-    table.setForeground(Prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
+    table.setForeground(App.prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
   }
 
   public void prefChanged(PrefsEvent e) {
@@ -343,12 +366,12 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
   public void addNotify() {
     super.addNotify();
 
-    Prefs.addPrefsListener(this);
+    App.prefs.addPrefsListener(this);
   }
 
   public void removeNotify() {
     super.removeNotify();
 
-    Prefs.removePrefsListener(this);
+    App.prefs.removePrefsListener(this);
   }
 }

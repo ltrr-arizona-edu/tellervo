@@ -20,42 +20,41 @@
 
 package corina.cross;
 
-import corina.Range;
-import corina.Sample;
-import corina.Element;
-import corina.Preview;
-import corina.Previewable;
-import corina.ui.I18n;
-import corina.util.CorinaLog;
-import corina.formats.WrongFiletypeException;
-import corina.prefs.Prefs;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-
-import java.util.List;
-import java.util.ArrayList;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.XMLReader;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.XMLReaderFactory;
-import org.xml.sax.helpers.DefaultHandler;
-
-import java.awt.Color;
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
 import java.awt.print.Printable;
-import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import corina.Element;
+import corina.Preview;
+import corina.Previewable;
+import corina.Range;
+import corina.Sample;
+import corina.core.App;
+import corina.formats.WrongFiletypeException;
+import corina.logging.CorinaLog;
+import corina.prefs.Prefs;
+import corina.ui.I18n;
 
 /**
    A crossdating grid.
@@ -193,9 +192,9 @@ public class Grid implements Runnable, Previewable {
         }
         public void print(Graphics2D g2, int x, int y, float scale) {
             // fill with highlight -- would the user ever NOT want this?  well, yes, possibly.
-            if (Boolean.valueOf(Prefs.getPref(Prefs.GRID_HIGHLIGHT)).booleanValue() && cross.isSignificant()) {
+            if (Boolean.valueOf(App.prefs.getPref(Prefs.GRID_HIGHLIGHT)).booleanValue() && cross.isSignificant()) {
                 Color oldColor = g2.getColor();
-                g2.setColor(Prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR, Color.green));
+                g2.setColor(App.prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR, Color.green));
                 g2.fillRect(x, y, (int) (getCellWidth()*scale), (int) (getCellHeight()*scale));
                 g2.setColor(oldColor);
             }
@@ -293,8 +292,8 @@ public class Grid implements Runnable, Previewable {
 
 	    // set font (for all cells)
 	    // FIXME: use Prefs
-	    if (Prefs.getPref("corina.grid.font") != null)
-		g2.setFont(Font.decode(Prefs.getPref("corina.grid.font")));
+	    if (App.prefs.getPref("corina.grid.font") != null)
+		g2.setFont(Font.decode(App.prefs.getPref("corina.grid.font")));
 
 	    // figure out stop row, col: end of page, or end of grid,
 	    // whichever comes first
@@ -564,7 +563,7 @@ public class Grid implements Runnable, Previewable {
         int h; // height of a line of text
 
         // font to use
-        Font myFont = Prefs.getFontPref("corina.grid.font", new Font("sansserif", Font.PLAIN, 12));
+        Font myFont = App.prefs.getFontPref("corina.grid.font", new Font("sansserif", Font.PLAIN, 12));
         // erp ... this calls new font() for the second arg even when it's not needed (!)
 
         // i don't think this is quite kosher...  (uh, nope.  fixme.

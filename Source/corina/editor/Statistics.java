@@ -1,25 +1,23 @@
 package corina.editor;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.text.DecimalFormat;
+
+import javax.swing.AbstractAction;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
+
 import corina.Sample;
-import corina.SampleListener;
 import corina.SampleEvent;
+import corina.SampleListener;
+import corina.core.App;
 import corina.manip.MeanSensitivity;
 import corina.prefs.Prefs;
 import corina.ui.I18n;
-
-import java.io.IOException;
-
-import java.text.DecimalFormat;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.ActionEvent;
-import javax.swing.AbstractAction;
-
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JPopupMenu;
 
 /*
   TODO:
@@ -62,7 +60,7 @@ public class Statistics extends JLabel implements SampleListener {
 				    state = glue;
 
 				    // store state in pref
-				    Prefs.setPref("corina.modeline.statistic", stat_keys[state]);
+				    App.prefs.setPref("corina.modeline.statistic", stat_keys[state]);
 
 				    // update label
 				    label.setText(((JMenuItem) e.getSource()).getText());
@@ -79,7 +77,7 @@ public class Statistics extends JLabel implements SampleListener {
 	computeAllStats();
 
 	// which one?  read from prefs
-	String pref = Prefs.getPref("corina.modeline.statistic");
+	String pref = App.prefs.getPref("corina.modeline.statistic");
 	if (pref != null) {
 	    for (int i=0; i<stat_names.length; i++) {
 		if (pref.equals(stat_keys[i])) {

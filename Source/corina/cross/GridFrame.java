@@ -20,56 +20,48 @@
 
 package corina.cross;
 
-import corina.Build;
-import corina.Element;
-import corina.Sample;
-import corina.graph.GraphWindow;
-import corina.gui.SaveableDocument;
-import corina.gui.PrintableDocument;
-import corina.prefs.PrefsDialog;
-import corina.prefs.Prefs;
-import corina.prefs.PrefsListener;
-import corina.prefs.PrefsEvent;
-import corina.gui.XFrame;
-import corina.gui.FileDialog;
-import corina.gui.menus.FileMenu;
-import corina.gui.menus.WindowMenu;
-import corina.gui.menus.HelpMenu;
-import corina.util.Platform;
-import corina.gui.UserCancelledException;
-import corina.util.Overwrite;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.ui.Alert;
-
-import java.util.List;
-import java.util.ArrayList;
-
-import java.io.File;
-import java.io.IOException;
-
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
-import javax.swing.JTable;
-import javax.swing.JOptionPane;
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JMenuBar;
-import javax.swing.Action;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.AbstractAction;
-import javax.swing.KeyStroke;
+import javax.swing.JComponent;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
+
+import corina.Build;
+import corina.Element;
+import corina.core.App;
+import corina.graph.GraphWindow;
+import corina.gui.FileDialog;
+import corina.gui.PrintableDocument;
+import corina.gui.SaveableDocument;
+import corina.gui.UserCancelledException;
+import corina.gui.XFrame;
+import corina.gui.menus.FileMenu;
+import corina.gui.menus.HelpMenu;
+import corina.gui.menus.WindowMenu;
+import corina.prefs.PrefsEvent;
+import corina.prefs.PrefsListener;
+import corina.ui.Alert;
+import corina.ui.Builder;
+import corina.ui.I18n;
+import corina.util.Overwrite;
 
 /*
   TODO:
@@ -150,16 +142,11 @@ public class GridFrame extends XFrame
     }
 
     // BUG: static!
-    private static float scale = Float.parseFloat(
-    Prefs.getPref("corina.grid.scale", "1.0"));
+    private static float scale = Float.parseFloat(App.prefs.getPref("corina.grid.scale", "1.0"));
 
     // cell renderer
     static class GridRenderer extends JComponent implements TableCellRenderer {
-        public Component getTableCellRendererComponent(JTable table,
-						       Object value,
-                                                       boolean isSelected,
-						       boolean hasFocus,
-                                                       int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             // set myself, return myself
             cell = (Grid.Cell) value;
             return this;
@@ -168,18 +155,17 @@ public class GridFrame extends XFrame
         private Grid.Cell cell;
         public void paintComponent(Graphics g) {
             // set font: get original font, and scale it
-            Font origFont = (Prefs.getPref("corina.grid.font")==null ?
-			     g.getFont() : Font.decode(Prefs.getPref("corina.grid.font")));
-	    Font scaledFont = origFont.deriveFont(origFont.getSize() * scale);
-//            System.out.println("new font t=" + System.currentTimeMillis()); -- for debugging
+            Font origFont = (App.prefs.getPref("corina.grid.font")==null ? g.getFont() : Font.decode(App.prefs.getPref("corina.grid.font")));
+            Font scaledFont = origFont.deriveFont(origFont.getSize() * scale);
+            // System.out.println("new font t=" + System.currentTimeMillis()); -- for debugging
             g.setFont(scaledFont);
             // FIXME: new font each time seems even MORE inefficient!
             // better: in refresh() just do component.setFont(...), and i'll pick it up automatically, right?
 
-	    // ((Graphics2D) g).scale(scale, scale);
-	    // FIXME: agh!  just call g2.scale(scale, scale) -- grid cells shouldn't have to
-	    // scale themselves.  but scale() doesn't scale the text as nicely as i do, so
-	    // until i figure that out, i'll keep passing in my own scale.
+            // ((Graphics2D) g).scale(scale, scale);
+            // FIXME: agh!  just call g2.scale(scale, scale) -- grid cells shouldn't have to
+            // scale themselves.  but scale() doesn't scale the text as nicely as i do, so
+            // until i figure that out, i'll keep passing in my own scale.
 
             // call the printing method (REFACTOR: rename method?  it's not just for printing, anymore... -- draw())
             cell.print((Graphics2D) g, 0, 0, scale);
@@ -297,14 +283,14 @@ public class GridFrame extends XFrame
             menubar.add(new FileMenu(this));
             // menubar.add(edit); // WRITEME -- prefs only?  dummy undo/etc.?
             menubar.add(new GridViewMenu());
-            if (Platform.isMac)
+            if (App.platform.isMac())
                 menubar.add(new WindowMenu(this));
             menubar.add(new HelpMenu());
             
             setJMenuBar(menubar);
         }
 
-        Prefs.addPrefsListener(this);
+        App.prefs.addPrefsListener(this);
 
         pack();
         setSize(new Dimension(640, 480));
@@ -345,7 +331,7 @@ public class GridFrame extends XFrame
                     scale += 0.1;
 
                     // set pref
-                  Prefs.setPref("corina.grid.scale", Float.toString(scale));
+                    App.prefs.setPref("corina.grid.scale", Float.toString(scale));
                 }
             });
             add(zoomIn);
@@ -358,7 +344,7 @@ public class GridFrame extends XFrame
                     scale -= 0.1;
 
                     // set pref
-                  Prefs.setPref("corina.grid.scale", Float.toString(scale));
+                    App.prefs.setPref("corina.grid.scale", Float.toString(scale));
                 }
             });
             add(zoomOut);
@@ -369,7 +355,7 @@ public class GridFrame extends XFrame
   public void prefChanged(PrefsEvent e) {
     if (!e.getPref().equals("corina.grid.scale")) return;
     // re-read scale
-    scale = Float.parseFloat(Prefs.getPref("corina.grid.scale", "1.0"));
+    scale = Float.parseFloat(App.prefs.getPref("corina.grid.scale", "1.0"));
 
     // reset sizes
     output.setRowHeight((int)(Grid.getCellHeight()*scale) + 2);
@@ -384,6 +370,6 @@ public class GridFrame extends XFrame
   
   protected void finalize() throws Throwable {
     super.finalize();
-    Prefs.removePrefsListener(this); 
+    App.prefs.removePrefsListener(this); 
   }
 }

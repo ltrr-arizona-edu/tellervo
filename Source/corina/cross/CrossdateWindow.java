@@ -49,6 +49,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import corina.Build;
+import corina.core.App;
 import corina.cross.sigscores.SignificantScoresView;
 import corina.gui.Layout;
 import corina.gui.PrintableDocument;
@@ -58,7 +59,6 @@ import corina.gui.menus.FileMenu;
 import corina.gui.menus.HelpMenu;
 import corina.gui.menus.WindowMenu;
 import corina.map.MapFrame;
-import corina.prefs.Prefs;
 import corina.prefs.PrefsEvent;
 import corina.prefs.PrefsListener;
 import corina.site.Site;
@@ -69,7 +69,6 @@ import corina.ui.I18n;
 import corina.util.Center;
 import corina.util.JLinedLabel;
 import corina.util.OKCancel;
-import corina.util.Platform;
 import corina.util.Sort;
 
 /**
@@ -284,7 +283,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
       menubar.add(new FileMenu(this));
       menubar.add(new CrossdateEditMenu());
       menubar.add(new CrossdateViewMenu());
-      if (Platform.isMac)
+      if (App.platform.isMac())
         menubar.add(new WindowMenu(this));
       menubar.add(new HelpMenu());
 
@@ -346,13 +345,13 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
 
     // prev
     prevButton = Builder.makeButton("prev");
-    if (!Platform.isMac)
+    if (!App.platform.isMac())
       prevButton.setIcon(Builder.getIcon("Back.png"));
     // or even: "corina.cross.Back" (generate from SVG as needed)
 
     // next
     nextButton = Builder.makeButton("next");
-    if (!Platform.isMac)
+    if (!App.platform.isMac())
       nextButton.setIcon(Builder.getIcon("Next.png"));
 
     // actionlistener for prev/next
@@ -652,8 +651,8 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
       final JMenuItem both = Builder.makeRadioButtonMenuItem("both_moving");
 
       // read old value from prefs, set window accordingly
-      if (Prefs.getPref("corina.cross.dating") != null) {
-        decode(Prefs.getPref("corina.cross.dating"));
+      if (App.prefs.getPref("corina.cross.dating") != null) {
+        decode(App.prefs.getPref("corina.cross.dating"));
         if (!fixedFloats && movingFloats)
           moving.setSelected(true);
         else if (fixedFloats && !movingFloats)
@@ -684,7 +683,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
           repaint();
 
           // set pref
-          Prefs.setPref("corina.cross.dating", encode());
+          App.prefs.setPref("corina.cross.dating", encode());
         }
       };
       moving.addActionListener(a);

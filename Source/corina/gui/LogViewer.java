@@ -43,8 +43,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import corina.prefs.Prefs;
-import corina.util.CorinaLog;
+import corina.core.App;
+import corina.logging.CorinaLog;
 import corina.util.TextClipboard;
 //}}}
 
@@ -72,7 +72,7 @@ public class LogViewer extends JPanel
     caption.add(Box.createHorizontalGlue());
 
     //tailIsOn = jEdit.getBooleanProperty("log-viewer.tail", false);
-    tailIsOn = Boolean.valueOf(Prefs.getPref("log-viewer.tail")).booleanValue();
+    tailIsOn = Boolean.valueOf(App.prefs.getPref("log-viewer.tail")).booleanValue();
     tail = new JCheckBox("Tail"
       /*jEdit.getProperty("log-viewer.tail.label")*/,tailIsOn);
     tail.addActionListener(new ActionHandler());

@@ -1,35 +1,38 @@
 package corina.gui.menus;
 
-import corina.Sample;
-import corina.Element;
-import corina.editor.Editor;
-import corina.manip.Sum;
-import corina.util.Platform;
-import corina.util.Overwrite;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.ui.Alert;
-import corina.gui.Bug;
-import corina.gui.XFrame;
-import corina.gui.FileDialog;
-import corina.gui.CanOpener;
-import corina.gui.SaveableDocument;
-import corina.gui.PrintableDocument;
-import corina.gui.UserCancelledException;
-
+import java.awt.event.ActionEvent;
+import java.awt.print.PageFormat;
+import java.awt.print.Pageable;
+import java.awt.print.Printable;
+import java.awt.print.PrinterAbortException;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.io.IOException;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 
-import java.awt.event.ActionEvent;
-import java.awt.print.*; // !!!
-
+import javax.swing.AbstractAction;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JFrame;
-import javax.swing.AbstractAction;
+
+import corina.Element;
+import corina.Sample;
+import corina.core.App;
+import corina.editor.Editor;
+import corina.gui.Bug;
+import corina.gui.CanOpener;
+import corina.gui.FileDialog;
+import corina.gui.PrintableDocument;
+import corina.gui.SaveableDocument;
+import corina.gui.UserCancelledException;
+import corina.gui.XFrame;
+import corina.manip.Sum;
+import corina.ui.Alert;
+import corina.ui.Builder;
+import corina.ui.I18n;
+import corina.util.Overwrite;
 
 // TODO:
 // -- refactor so Editor can use it (export)
@@ -422,7 +425,7 @@ public class FileMenu extends JMenu {
     // - quit
     // (unless this is a mac)
     public void addExitMenu() {
-        if (!Platform.isMac) {
+        if (!App.platform.isMac()) {
             addSeparator();
             add(Builder.makeMenuItem("quit",
 				     "corina.gui.XCorina.quit()"));

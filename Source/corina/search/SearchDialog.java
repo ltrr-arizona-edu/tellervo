@@ -1,28 +1,33 @@
 package corina.search;
 
-import corina.MetadataTemplate;
-import corina.prefs.Prefs;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.gui.Layout;
-import corina.gui.Help;
-import corina.gui.Bug;
-import corina.util.OKCancel;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.Date;
-
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
-import java.awt.Window;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.Color;
 import java.awt.Toolkit;
-import java.awt.event.*;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import corina.MetadataTemplate;
+import corina.core.App;
+import corina.gui.Help;
+import corina.gui.Layout;
+import corina.ui.Builder;
+import corina.ui.I18n;
+import corina.util.OKCancel;
 
 /*
   design:
@@ -182,7 +187,7 @@ public class SearchDialog extends JDialog {
 
 		    // s.setFolder("/Users/kharris/Documents/Corina/corina/Demo Data/chil/");
 		    // s.setFolder(System.getProperty("user.dir"));
-		    s.setFolder(Prefs.getPref("corina.dir.data"));
+		    s.setFolder(App.prefs.getPref("corina.dir.data"));
 		    s.run();
 		}
 	    });

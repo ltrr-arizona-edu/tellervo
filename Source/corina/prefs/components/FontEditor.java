@@ -10,7 +10,7 @@ import java.awt.Component;
 
 import com.ozten.font.JFontChooser;
 
-import corina.util.CorinaLog;
+import corina.logging.CorinaLog;
 
 public class FontEditor extends AbstractCellEditor implements TableCellEditor {
   private static final CorinaLog log = new CorinaLog(FontEditor.class);

@@ -20,15 +20,14 @@
 
 package corina.index;
 
-import corina.Sample;
-import corina.ui.I18n;
-import corina.prefs.Prefs;
-import corina.util.StringUtils;
-
-import java.util.List;
-import java.util.ArrayList;
-
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import corina.Sample;
+import corina.core.App;
+import corina.ui.I18n;
+import corina.util.StringUtils;
 
 /**
    A simple high-pass filter.
@@ -61,7 +60,7 @@ public class HighPass extends Index {
         super(s);
 
         // parse weights; assumes weights.length is odd
-        weights = StringUtils.extractInts(Prefs.getPref("corina.index.lowpass", "1 2 4 2 1"));
+        weights = StringUtils.extractInts(App.prefs.getPref("corina.index.lowpass", "1 2 4 2 1"));
     }
 
     private int weights[];

@@ -22,15 +22,14 @@ package corina.gui.menus;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import corina.core.App;
 import corina.gui.AboutBox;
 import corina.ui.Builder;
 import corina.ui.CorinaAction;
 import corina.ui.I18n;
-import corina.util.Platform;
 
 // TODO: move all menus to corina.gui.menus or even corina.menus (i'm tending towards the latter)
 // TODO: error-log should be a singleton-window, and centered
@@ -77,7 +76,7 @@ public class HelpMenu extends JMenu {
         addSystemInfoMenu();
         addErrorLogMenu();
         
-	if (!Platform.isMac) {
+	if (!App.platform.isMac()) {
 	    addSeparator();
 	    addAboutMenu();
 	}
@@ -100,11 +99,11 @@ public class HelpMenu extends JMenu {
     }
 
     /**
-       Add the "Error Log..." menuitem.
-    */
+     * Add the "Error Log..." menuitem.
+     * FIXME: not really just an "error" log... more like "activity" log.
+     */
     protected void addErrorLogMenu() {
-        add(Builder.makeMenuItem("error_log...",
-                                 "new corina.gui.ErrorLog()"));
+      add(Builder.makeMenuItem("error_log...", "corina.gui.ErrorLog.showLogViewer()"));
     }
 
     /**

@@ -20,19 +20,23 @@
 
 package corina.cross;
 
-import corina.editor.CountRenderer;
-import corina.ui.I18n;
-import corina.prefs.Prefs;
-import corina.prefs.PrefsListener;
-import corina.prefs.PrefsEvent;
-
-import java.awt.Font;
 import java.awt.BorderLayout;
+import java.awt.Font;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
+
+import corina.core.App;
+import corina.editor.CountRenderer;
+import corina.prefs.PrefsEvent;
+import corina.prefs.PrefsListener;
+import corina.ui.I18n;
 
 /**
     A view of a histogram of scores of a crossdate.  The view can be
@@ -212,8 +216,8 @@ public class HistogramView extends JPanel implements PrefsListener {
     private void refreshFont() {
 	// font
         // WAS: corina.cross.font (merged)
-        if (Prefs.getPref("corina.edit.font") != null) {
-            Font f = Font.decode(Prefs.getPref("corina.edit.font"));
+        if (App.prefs.getPref("corina.edit.font") != null) {
+            Font f = Font.decode(App.prefs.getPref("corina.edit.font"));
             table.setFont(f);
             table.setRowHeight(f.getSize() + 3);
         }
@@ -240,12 +244,12 @@ public class HistogramView extends JPanel implements PrefsListener {
     public void addNotify() {
         super.addNotify();
         
-      Prefs.addPrefsListener(this);
+        App.prefs.addPrefsListener(this);
     }
     
     public void removeNotify() {
         super.removeNotify();
         
-      Prefs.removePrefsListener(this);
+        App.prefs.removePrefsListener(this);
     }
 }

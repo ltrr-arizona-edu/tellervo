@@ -20,11 +20,11 @@
 
 package corina.cross;
 
-import corina.Sample;
-import corina.prefs.Prefs;
-import corina.ui.I18n;
-
 import java.util.List;
+
+import corina.Sample;
+import corina.core.App;
+import corina.ui.I18n;
 
 /**
    A "trend", or <i>Gleichl&auml;ufigkeitskoeffizient</i>, crossdate.
@@ -69,7 +69,7 @@ public class Trend extends Cross {
     }
 
     public String getFormat() {
-	     return Prefs.getPref("corina.cross.trend.format", "0.0%");
+	     return App.prefs.getPref("corina.cross.trend.format", "0.0%");
     }
 
     // same data, but in arrays

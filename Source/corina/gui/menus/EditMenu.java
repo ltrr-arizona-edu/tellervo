@@ -20,12 +20,12 @@
 
 package corina.gui.menus;
 
-import corina.ui.I18n;
-import corina.ui.Builder;
-import corina.util.Platform;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+
+import corina.core.App;
+import corina.ui.Builder;
+import corina.ui.I18n;
 
 /**
     An "Edit" menu.
@@ -132,7 +132,7 @@ public class EditMenu extends JMenu {
     }
     
     protected void addPreferences() {
-        if (!Platform.isMac) {
+        if (!App.platform.isMac()) {
             addSeparator();
             JMenuItem prefs = Builder.makeMenuItem("preferences",
                                                    "corina.prefs.PrefsDialog.showPreferences()");

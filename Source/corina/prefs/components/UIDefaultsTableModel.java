@@ -1,27 +1,26 @@
 package corina.prefs.components;
 
-import java.util.Enumeration;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Component;
-import java.awt.Frame;
-
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.table.AbstractTableModel;
 
-import corina.prefs.Prefs;
-import corina.util.CorinaLog;
+import corina.core.App;
+import corina.logging.CorinaLog;
 
 public class UIDefaultsTableModel extends AbstractTableModel {
   private static final CorinaLog log = new CorinaLog(UIDefaultsTableModel.class);
@@ -118,8 +117,8 @@ public class UIDefaultsTableModel extends AbstractTableModel {
     
     CorinaLog.realErr.println("Clearing UIDefaults preferences");
     uidefaults.clear();
-    log.debug("UIDEFAULTS size: " + Prefs.UIDEFAULTS.size());
-    uidefaults.putAll(Prefs.UIDEFAULTS);
+    log.debug("UIDEFAULTS size: " + App.prefs.getUIDefaults().size());
+    uidefaults.putAll(App.prefs.getUIDefaults());
         
     /*Enumeration e = Prefs.UIDEFAULTS.keys();
     while (e.hasMoreElements()) {
@@ -127,7 +126,7 @@ public class UIDefaultsTableModel extends AbstractTableModel {
       CorinaLog.realErr.println("putting " + key);
       uidefaults.put(key, Prefs.UIDEFAULTS.get(key));    
     }*/
-    Set keyset = Prefs.getPrefs().keySet();
+    Set keyset = App.prefs.getPrefs().keySet();
     Iterator it = keyset.iterator();
     // must do this in two stages to avoid concurrent modification errors
     ArrayList keylist = new ArrayList(keyset.size());
@@ -144,10 +143,10 @@ public class UIDefaultsTableModel extends AbstractTableModel {
     while (it.hasNext()) {
       String key = (String) it.next();
       CorinaLog.realErr.println("Removing UIDefaults preference: " + key);
-      Prefs.removePref(key);
+      App.prefs.removePref(key);
     }
     
-    Prefs.getPrefs().list(System.out);
+    App.prefs.getPrefs().list(System.out);
         
     init(uidefaults);
     

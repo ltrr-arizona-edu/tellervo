@@ -21,12 +21,8 @@
 package corina.cross;
 
 import corina.Sample;
-import corina.index.HighPass;
-import corina.prefs.Prefs;
+import corina.core.App;
 import corina.ui.I18n;
-
-import java.util.List;
-import java.util.Arrays;
 
 /**
    <p>A (Student's) T-Score crossdate.</p>
@@ -119,7 +115,7 @@ public class TScore extends RValue {
     /** A format string for T-scores.
 	@return a format string for T-scores */
     public String getFormat() {
-	    return Prefs.getPref("corina.cross.tscore.format", "0.00");
+	    return App.prefs.getPref("corina.cross.tscore.format", "0.00");
     }
 
     // for 99.5% confidence, from PIK's table (source?)

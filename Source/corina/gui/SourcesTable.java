@@ -1,41 +1,61 @@
 package corina.gui;
 
-import corina.prefs.Prefs;
-import corina.util.NoEmptySelection;
-import corina.util.OKCancel;
-import corina.util.UpdateFolder;
-import corina.util.PopupListener;
-import corina.db.DBBrowser;
-import corina.db.Convert;
-import corina.ui.Builder;
-import corina.ui.Alert;
-import corina.gui.layouts.DialogLayout;
-
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
-import java.util.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.List;
 
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.BorderLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.ActionEvent;
-import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
-
-import java.awt.image.BufferedImage;
-
-import java.sql.*;
+import corina.core.App;
+import corina.db.Convert;
+import corina.db.DBBrowser;
+import corina.gui.layouts.DialogLayout;
+import corina.ui.Alert;
+import corina.ui.Builder;
+import corina.util.NoEmptySelection;
+import corina.util.OKCancel;
+import corina.util.PopupListener;
+import corina.util.UpdateFolder;
 
 // purpose: show a list of all the available sources, to be used with
 // the corina sample browser.
@@ -267,7 +287,7 @@ public class SourcesTable extends JTable {
 	    JButton change = new JButton("Change...");
 	    change.addActionListener(new AbstractAction() {
 		    public void actionPerformed(ActionEvent e) {
-			JFileChooser fc = new JFileChooser(Prefs.getPref("corina.dir.data"));
+			JFileChooser fc = new JFileChooser(App.prefs.getPref("corina.dir.data"));
 			fc.setDialogTitle("Select Source Folder");
 			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			int x = fc.showDialog(null /* ??? */, "Select");

@@ -1,21 +1,20 @@
 package corina.gui.menus;
 
-import corina.util.Platform;
-
-import java.util.List;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.List;
 
-import java.awt.Frame;
+import javax.swing.AbstractAction;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
-import java.awt.event.ActionEvent;
-import java.awt.Toolkit;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowAdapter;
+
+import corina.core.App;
 
 // REFACTOR: this is very similar to OpenRecent, a menu shared by all open frames.
 
@@ -48,7 +47,7 @@ public class WindowMenu extends JMenu {
         minimize.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 w.setState(JFrame.ICONIFIED);
-            };
+            }
         });
         add(minimize);
 
@@ -64,7 +63,7 @@ public class WindowMenu extends JMenu {
 
 		final int normal = 480; // pick a number
 
-                if (Platform.isMac) // menubar
+                if (App.platform.isMac()) // menubar
                     max -= 22;
                 // take out any from the PC screenHeight?
 		// TODO: 1.4 has methods to get insets, i believe
@@ -157,7 +156,7 @@ public class WindowMenu extends JMenu {
                             break;
                         }
                     }
-                    if (Platform.isMac)
+                    if (App.platform.isMac())
                         m.updateUI(); // WHOOPS: this swaps the help/windows menus.  but without it, it's worse.  ugh.
                 }
 

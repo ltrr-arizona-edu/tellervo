@@ -1,15 +1,14 @@
 package corina.prefs.components;
 
-import corina.prefs.Prefs;
-
-import java.text.DecimalFormat;
-
-import javax.swing.JComboBox;
-import javax.swing.AbstractAction;
-
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.text.DecimalFormat;
+
+import javax.swing.AbstractAction;
+import javax.swing.JComboBox;
+
+import corina.core.App;
 
 /*
     TODO: gpl header, javadoc
@@ -53,7 +52,7 @@ public class FormattingPrefComponent extends Container {
                 // set pref
                 int i = popup.getSelectedIndex();
                 String format = FORMAT_STRINGS[i];
-                Prefs.setPref(glue, format);
+                App.prefs.setPref(glue, format);
                     
                 /* DEBUG
                 System.out.println("properties[" + glue + "] = " + System.getProperty(glue));
@@ -67,7 +66,7 @@ public class FormattingPrefComponent extends Container {
         int n = FORMAT_STRINGS.length;
 
         // try getPref()
-        String prefValue = Prefs.getPref(key);
+        String prefValue = App.prefs.getPref(key);
         if (prefValue != null) {
             
             // backwards compatibility hack: the old default for trend formats

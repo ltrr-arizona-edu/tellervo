@@ -24,7 +24,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -63,6 +62,7 @@ import corina.Build;
 import corina.Sample;
 import corina.SampleEvent;
 import corina.SampleListener;
+import corina.core.App;
 import corina.gui.Bug;
 import corina.gui.ElementsPanel;
 import corina.gui.FileDialog;
@@ -74,6 +74,7 @@ import corina.gui.UserCancelledException;
 import corina.gui.XFrame;
 import corina.gui.menus.HelpMenu;
 import corina.gui.menus.WindowMenu;
+import corina.logging.CorinaLog;
 import corina.prefs.Prefs;
 import corina.prefs.PrefsEvent;
 import corina.prefs.PrefsListener;
@@ -82,11 +83,9 @@ import corina.ui.Alert;
 import corina.ui.Builder;
 import corina.ui.I18n;
 import corina.util.Center;
-import corina.util.CorinaLog;
 import corina.util.DocumentListener2;
 import corina.util.OKCancel;
 import corina.util.Overwrite;
-import corina.util.Platform;
 
 /*
  left to do:
@@ -340,7 +339,7 @@ public class Editor extends XFrame
         }
 
         sample.clearModified();
-        Platform.setModified(this, false); // mac os x
+        App.platform.setModified(this, false); // mac os x
                                            // BIGGER ISSUE: need to separate/abstract window-title/window-modified setting
         // -- make window (jframe) a samplelistener for updating platform.modified?
         // -- (platform.modified sets either mac property, or resets *+title from getTitle()?)
@@ -669,7 +668,7 @@ public class Editor extends XFrame
             menubar.add(new EditorSumMenu(sample));
             menubar.add(new EditorGraphMenu(sample));
             menubar.add(new EditorSiteMenu(sample));
-            if (Platform.isMac)
+            if (App.platform.isMac())
                 menubar.add(new WindowMenu(this));
             menubar.add(new HelpMenu());
             setJMenuBar(menubar);
@@ -684,7 +683,7 @@ public class Editor extends XFrame
         // init undo/redo
         initUndoRedo();
 
-        Prefs.addPrefsListener(this);
+        App.prefs.addPrefsListener(this);
         // pack, size, and show
         pack(); // is this needed?
         setSize(new Dimension(640, 480));
@@ -732,7 +731,7 @@ public class Editor extends XFrame
 
     private void setUIFromPrefs() {
       if (wjTable == null) return;
-      Font font = Font.decode(Prefs.getPref(Prefs.EDIT_FONT));
+      Font font = Font.decode(App.prefs.getPref(Prefs.EDIT_FONT));
       if (font != null)
           wjTable.setFont(font);
       // BUG: this doesn't reset the row-heights!
@@ -741,12 +740,12 @@ public class Editor extends XFrame
       wjTable.setRowHeight((font == null ? 12 : font.getSize()) + 4);
 
       // disable gridlines, if requested
-      boolean gridlines = Boolean.valueOf(Prefs.getPref(Prefs.EDIT_GRIDLINES, "true")).booleanValue();
+      boolean gridlines = Boolean.valueOf(App.prefs.getPref(Prefs.EDIT_GRIDLINES, "true")).booleanValue();
       wjTable.setShowGrid(gridlines);
 
       // set colors
-      wjTable.setBackground(Prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
-      wjTable.setForeground(Prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
+      wjTable.setBackground(App.prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
+      wjTable.setForeground(App.prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
       wjTable.repaint();
     }
     
@@ -865,7 +864,7 @@ public class Editor extends XFrame
 
   protected void finalize() throws Throwable {
     super.finalize();
-    Prefs.removePrefsListener(this);
+    App.prefs.removePrefsListener(this);
   }
 
     public static void main(String args[]) throws Exception {

@@ -18,18 +18,16 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.util;
+package corina.platform;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.StringReader;
 
-import java.util.List;
-import java.util.ArrayList;
+import corina.core.App;
 
 /**
    Deal with ickiness that comes up when running Java programs under
@@ -203,7 +201,7 @@ One User object was found.
      */
     public static void workaroundSlow() throws IOException { // DESIGN: shouldn't throw ioe
 	// not on a netware system?  bye bye.
-	if (!(Platform.isWindows && isNetware())) { // the second call here sets |login| -- refactor me
+	if (!(App.platform.isWindows() && isNetware())) { // the second call here sets |login| -- refactor me
 	    return;
 	}
 

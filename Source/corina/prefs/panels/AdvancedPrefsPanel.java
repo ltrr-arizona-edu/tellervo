@@ -20,18 +20,26 @@
 
 package corina.prefs.panels;
 
-import corina.prefs.Prefs;
-import corina.prefs.components.FontPrefComponent;
-
-import corina.util.DocumentListener2;
-
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.AbstractAction;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 
-import java.awt.*;
+import corina.core.App;
+import corina.prefs.components.FontPrefComponent;
+import corina.util.DocumentListener2;
 
 // TODO: javadoc
 
@@ -109,9 +117,9 @@ public class AdvancedPrefsPanel extends JPanel {
     usernameLabel.setLabelFor(usernameField);
 
     // set initial state from prefs
-    if (Prefs.getPref("corina.user.name") != null) {
+    if (App.prefs.getPref("corina.user.name") != null) {
       username.setSelected(true);
-      usernameField.setText(Prefs.getPref("corina.user.name"));
+      usernameField.setText(App.prefs.getPref("corina.user.name"));
     } else {
       username.setSelected(false);
       usernameField.setEnabled(false);
@@ -141,13 +149,13 @@ public class AdvancedPrefsPanel extends JPanel {
                 name = System.getProperty("user.name");
 
             // set pref
-            Prefs.setPref("corina.user.name", name);
+            App.prefs.setPref("corina.user.name", name);
         }
     });
 
     usernameField.getDocument().addDocumentListener(new DocumentListener2() {
         public void update(DocumentEvent e) {
-            Prefs.setPref("corina.user.name", usernameField.getText());
+          App.prefs.setPref("corina.user.name", usernameField.getText());
         }
     });
 

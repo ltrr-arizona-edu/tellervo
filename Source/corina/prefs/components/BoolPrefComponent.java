@@ -1,12 +1,14 @@
 package corina.prefs.components;
 
-import corina.prefs.Prefs;
-
-import java.util.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.*;
-import java.awt.event.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+
+import corina.core.App;
 
 // TODO: clean up imports
 // TODO: gpl header
@@ -23,7 +25,7 @@ public class BoolPrefComponent extends JCheckBox implements ActionListener {
         this.pref = pref;
 
         // set initial value
-        if ("true".equals(Prefs.getPref(pref))) // (null means false)
+        if ("true".equals(App.prefs.getPref(pref))) // (null means false)
             setSelected(true);
 
         // listen for user clicks
@@ -48,6 +50,6 @@ public class BoolPrefComponent extends JCheckBox implements ActionListener {
             ((JComponent) controlees.get(i)).setEnabled(isSelected());
 
 	// set myself
-        Prefs.setPref(pref, String.valueOf(isSelected()));
+        App.prefs.setPref(pref, String.valueOf(isSelected()));
     }
 }

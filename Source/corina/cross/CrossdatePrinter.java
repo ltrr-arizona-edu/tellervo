@@ -20,33 +20,25 @@
 
 package corina.cross;
 
-import corina.Year;
-import corina.prefs.Prefs;
-import corina.print.Line;
-import corina.print.EmptyLine;
-import corina.print.TextLine;
-import corina.print.ThinLine;
-import corina.print.ByLine;
-import corina.print.TabbedLineFactory;
-import corina.print.Printer;
-import corina.ui.I18n;
-
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-
-import java.text.DecimalFormat;
-import java.text.DateFormat;
-import java.text.MessageFormat;
-
+import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
-import java.awt.BasicStroke;
-import java.awt.print.Printable;
 import java.awt.print.PageFormat;
+import java.text.DecimalFormat;
+
+import corina.Year;
+import corina.core.App;
+import corina.prefs.Prefs;
+import corina.print.ByLine;
+import corina.print.EmptyLine;
+import corina.print.Line;
+import corina.print.Printer;
+import corina.print.TabbedLineFactory;
+import corina.print.TextLine;
+import corina.print.ThinLine;
+import corina.ui.I18n;
 
 // TODO:
 // -- refactor lineWithBar (formerly HistoLine)
@@ -326,7 +318,7 @@ public class CrossdatePrinter extends Printer {
                         int ascent = g.getFontMetrics(NORMAL).getAscent();
                         Color old = g2.getColor();
 			// FIXME: use Prefs
-                        g2.setColor(Prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR, Color.green));
+                        g2.setColor(App.prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR, Color.green));
                         // FIXME: ugly ugly ugly!
                         g2.setStroke(new BasicStroke(0)); // !!!
                         g2.fillRect((int) (pf.getImageableX() + colWidth*(i+2)-width - EPS),

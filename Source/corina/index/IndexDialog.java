@@ -20,56 +20,47 @@
 
 package corina.index;
 
-import corina.Sample;
-import corina.graph.GraphWindow;
-import corina.gui.FileDialog;
-import corina.gui.Layout;
-import corina.gui.UserCancelledException;
-import corina.util.OKCancel;
-import corina.util.UserFriendlyFile;
-import corina.util.NoEmptySelection;
-import corina.util.TextClipboard;
-import corina.util.Platform;
-import corina.gui.Help;
-import corina.gui.Bug;
-import corina.ui.Builder;
-import corina.ui.Alert;
-import corina.ui.I18n;
-
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
-
 import java.util.Collections;
 import java.util.Vector;
 
-import java.awt.FlowLayout;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.ActionEvent;
-import javax.swing.JTable;
-import javax.swing.JFrame;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import javax.swing.JComponent;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
+
+import corina.Sample;
+import corina.graph.GraphWindow;
+import corina.gui.FileDialog;
+import corina.gui.Help;
+import corina.gui.Layout;
+import corina.gui.UserCancelledException;
+import corina.ui.Alert;
+import corina.ui.Builder;
+import corina.ui.I18n;
+import corina.util.NoEmptySelection;
+import corina.util.OKCancel;
+import corina.util.TextClipboard;
+import corina.util.UserFriendlyFile;
 
 /**
    Indexing dialog.  Lets the user choose an indexing algorithm to use.

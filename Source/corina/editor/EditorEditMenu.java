@@ -26,13 +26,13 @@ import corina.SampleListener;
 import corina.ui.Builder;
 import corina.ui.I18n;
 import corina.ui.Alert;
-import corina.util.CorinaLog;
 import corina.util.TextClipboard;
 import corina.util.PureStringWriter;
 import corina.formats.TwoColumn;
 import corina.formats.WrongFiletypeException;
 import corina.gui.menus.EditMenu;
 import corina.gui.Bug;
+import corina.logging.CorinaLog;
 
 import java.io.File;
 import java.io.FileWriter;

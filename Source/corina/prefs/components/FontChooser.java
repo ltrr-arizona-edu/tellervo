@@ -20,40 +20,38 @@
 
 package corina.prefs.components;
 
-import corina.util.Platform;
-import corina.util.Center;
-import corina.gui.Layout;
-import corina.gui.UserCancelledException;
-
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Component;
 import java.awt.GraphicsEnvironment;
-
-import java.awt.event.ItemListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
-import javax.swing.JScrollPane;
-import javax.swing.JList;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.AbstractAction;
-import javax.swing.SwingConstants;
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
-
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import corina.core.App;
+import corina.gui.Layout;
+import corina.gui.UserCancelledException;
+import corina.util.Center;
 
 /*
   TODO:
@@ -156,14 +154,14 @@ public class FontChooser extends JDialog {
 	JScrollPane nameScroller = new JScrollPane(nameList);
 	nameScroller.setAlignmentX(Component.LEFT_ALIGNMENT);
 	JLabel nameLabel = new JLabel("Name:");
-	if (!Platform.isMac)
+	if (!App.platform.isMac())
 	    nameLabel.setDisplayedMnemonic('N');
 	nameLabel.setLabelFor(nameList);
 	nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 	// style components: plain
 	plainCheck = new JCheckBox("Plain", _style == Font.PLAIN);
-	if (!Platform.isMac)
+	if (!App.platform.isMac())
 	    plainCheck.setMnemonic('P');
 	plainCheck.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
@@ -182,7 +180,7 @@ public class FontChooser extends JDialog {
 
 	// style components: bold
 	boldCheck = new JCheckBox("Bold", (_style & Font.BOLD) != 0);
-	if (!Platform.isMac)
+	if (!App.platform.isMac())
 	    boldCheck.setMnemonic('B');
 	boldCheck.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
@@ -201,7 +199,7 @@ public class FontChooser extends JDialog {
 
 	// style components: italic
 	italicCheck = new JCheckBox("Italic", (_style & Font.ITALIC) != 0);
-	if (!Platform.isMac)
+	if (!App.platform.isMac())
 	    italicCheck.setMnemonic('I');
 	italicCheck.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
@@ -244,7 +242,7 @@ public class FontChooser extends JDialog {
 	    });
 	sizeCombo.setAlignmentX(Component.LEFT_ALIGNMENT);
 	JLabel sizeLabel = new JLabel("Size:");
-	if (!Platform.isMac)
+	if (!App.platform.isMac())
 	    sizeLabel.setDisplayedMnemonic('S');
 	sizeLabel.setLabelFor(sizeCombo);
 	sizeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);

@@ -20,37 +20,35 @@
 
 package corina.site;
 
-import corina.Sample;
-import corina.map.Location;
-import corina.prefs.Prefs;
-import corina.print.*; // !!!
-
-import java.io.File;
-import java.io.Writer;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.*;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Vector;
-
-import java.lang.reflect.Method;
-
 import java.awt.print.Printable;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-// REFACTOR: move i/o to a separate class?
-import org.xml.sax.XMLReader;
-import org.xml.sax.InputSource;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.XMLReaderFactory;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import corina.Sample;
+import corina.core.App;
+import corina.map.Location;
 
 /**
  * A database of sites.
@@ -103,7 +101,7 @@ public class SiteDB { // implements PrintableDocument {
   // for watching for file changes, which should either be moved to SiteDBFile,
   // or at least use SiteDBFile.getFilename().
   static String getDBFilename() {
-    return Prefs.getPref("corina.dir.data") + File.separator + "Site DB";
+    return App.prefs.getPref("corina.dir.data") + File.separator + "Site DB";
   }
 
   void loadDB() throws IOException {
@@ -326,8 +324,8 @@ public class SiteDB { // implements PrintableDocument {
 	    return false;
 
     return filename.startsWith(folder) ||
-      filename.startsWith(Prefs.getPref("corina.dir.data") + File.separator + folder) ||
-      filename.startsWith(Prefs.getPref("corina.dir.data") + folder);
+      filename.startsWith(App.prefs.getPref("corina.dir.data") + File.separator + folder) ||
+      filename.startsWith(App.prefs.getPref("corina.dir.data") + folder);
     // this matches if (1) folder is relative,
     //                 (2) absolute and dir.data has no file.sep, or
     //                 (3) absolute and dir.data ends with file.sep

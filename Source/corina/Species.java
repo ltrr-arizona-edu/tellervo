@@ -20,19 +20,16 @@
 
 package corina;
 
-import corina.gui.Bug;
-import corina.prefs.Prefs;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Properties;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.StringTokenizer;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
+import corina.core.App;
+import corina.gui.Bug;
 
 // a complete list of all the species.
 // the file came from http://web.utk.edu/~grissino/species.htm
@@ -140,7 +137,7 @@ public class Species {
 
     static {
         // load most-common species
-        String s = Prefs.getPref("corina.species.common", DEFAULT);
+        String s = App.prefs.getPref("corina.species.common", DEFAULT);
 
         StringTokenizer t = new StringTokenizer(s, ", ");
         while (t.hasMoreTokens())

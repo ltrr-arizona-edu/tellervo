@@ -20,11 +20,11 @@
 
 package corina.ui;
 
-import corina.util.Platform;
-import corina.util.StringUtils;
-
-import java.util.ResourceBundle;
 import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import corina.core.App;
+import corina.util.StringUtils;
 
 /**
    Provide localization strings.
@@ -185,7 +185,7 @@ public class I18n {
 	String stroke = value.substring(left+1, right).trim();
 
 	// accel = command (in java-ese: "meta") on mac, control on pc
-	String accel = (Platform.isMac ? "meta" : "control");
+	String accel = (App.platform.isMac() ? "meta" : "control");
 	stroke = StringUtils.substitute(stroke, "accel", accel);
 
 	return stroke;

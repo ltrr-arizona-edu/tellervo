@@ -5,7 +5,8 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
-import corina.util.CorinaLog;
+
+import corina.logging.CorinaLog;
 
 public class UIDefaultsRenderer implements TableCellRenderer {
   private static CorinaLog log = new CorinaLog(UIDefaultsRenderer.class);

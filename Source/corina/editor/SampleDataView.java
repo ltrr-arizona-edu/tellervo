@@ -20,41 +20,39 @@
 
 package corina.editor;
 
-import corina.Year;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.util.Collections;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+
 import corina.Range;
 import corina.Sample;
 import corina.SampleEvent;
 import corina.SampleListener;
+import corina.Year;
+import corina.core.App;
 import corina.gui.Bug;
 import corina.prefs.Prefs;
 import corina.prefs.PrefsEvent;
 import corina.prefs.PrefsListener;
-import corina.ui.Builder;
 import corina.ui.Alert;
+import corina.ui.Builder;
 import corina.util.PopupListener;
-
-import java.util.Collections;
-
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.BasicStroke;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.BorderLayout;
-import java.awt.event.KeyEvent;
-// import java.awt.Dimension; // needed for slasher
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.BorderFactory;
-import javax.swing.table.TableModel;
-import javax.swing.table.AbstractTableModel;
-
-import java.awt.event.MouseEvent;
-import java.awt.event.*;
-import javax.swing.*;
 
 // TODO: add slasher -- but it needs to either (1) override table
 // sizing, or (2) override scrollpane painting (probably the latter)
@@ -244,7 +242,7 @@ public class SampleDataView extends JPanel implements SampleListener, PrefsListe
 	add(new Modeline(myTable, mySample), BorderLayout.SOUTH);
   
   initPrefs();
-  Prefs.addPrefsListener(this);
+  App.prefs.addPrefsListener(this);
     }
 
     /** Return the Year of the currently selected cell.
@@ -376,7 +374,7 @@ public class SampleDataView extends JPanel implements SampleListener, PrefsListe
 
     private void initPrefs() {
       // reset fonts
-      Font font = Font.decode(Prefs.getPref("corina.edit.font"));
+      Font font = Font.decode(App.prefs.getPref("corina.edit.font"));
       if (font != null)
           myTable.setFont(font);
 
@@ -385,12 +383,12 @@ public class SampleDataView extends JPanel implements SampleListener, PrefsListe
       // BUG: this seems to not work sometimes (?) -- try zapfino
 
       // disable gridlines, if requested
-      boolean gridlines = Boolean.valueOf(Prefs.getPref(Prefs.EDIT_GRIDLINES)).booleanValue();
+      boolean gridlines = Boolean.valueOf(App.prefs.getPref(Prefs.EDIT_GRIDLINES)).booleanValue();
       myTable.setShowGrid(gridlines);
 
       // set colors
-      myTable.setBackground(Prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
-      myTable.setForeground(Prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
+      myTable.setBackground(App.prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
+      myTable.setForeground(App.prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
     }
     // should this be part of update()?  well, the constructor will
     // need it, too, so it might as well be a separate method, anyway.

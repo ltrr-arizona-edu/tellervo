@@ -1,31 +1,24 @@
 package corina.gui;
 
-import corina.Build;
-import corina.util.PureStringWriter;
-import corina.util.Center;
-import corina.util.OKCancel;
-import corina.util.StringUtils;
-import corina.print.Printer;
-import corina.print.TextLine;
-
-import java.io.PrintWriter;
-
-import java.util.Date;
-
-import java.text.DateFormat;
-
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JDialog;
-import javax.swing.JButton;
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.util.Date;
 
-// TODO: update bug.bug() uses to new bug()
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import corina.Build;
+import corina.util.Center;
+import corina.util.OKCancel;
+import corina.util.PureStringWriter;
 
 // TODO: refactor!
 

@@ -1,20 +1,22 @@
 package corina.browser;
 
-import corina.util.NaturalSort;
-import corina.prefs.Prefs;
-
+import java.awt.BorderLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 
-import java.awt.BorderLayout;
-import javax.swing.*;
-import javax.swing.tree.*;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 
-import java.awt.event.*;
-import javax.swing.event.*;
+import corina.core.App;
+import corina.util.NaturalSort;
 
 /*
   ok, it's working.  i want to integrate this into browser.  what to do?
@@ -98,16 +100,16 @@ public class FolderTree extends JPanel {
     public FolderTree(Browser b) {
 	this.browser = b;
 
-	tree = new JTree(new FolderNode(Prefs.getPref("corina.dir.data")));
+	tree = new JTree(new FolderNode(App.prefs.getPref("corina.dir.data")));
 
 	// select row of tree which corresponds to |corina.browser.folder|
 	{
 	    // first: crop off corina.dir.data
-	    String rootFolder = Prefs.getPref("corina.browser.folder");
+	    String rootFolder = App.prefs.getPref("corina.browser.folder");
 	    if (rootFolder == null)
 		rootFolder = ".";
 	    File root = new File(rootFolder);
-	    String browserFolder = Prefs.getPref("corina.browser.folder");
+	    String browserFolder = App.prefs.getPref("corina.browser.folder");
 	    if (browserFolder == null)
 		browserFolder = rootFolder;
 	    File target = new File(browserFolder);

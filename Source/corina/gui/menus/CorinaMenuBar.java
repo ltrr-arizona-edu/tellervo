@@ -1,12 +1,9 @@
 package corina.gui.menus;
 
-import corina.gui.menus.FileMenu;
-import corina.gui.menus.EditMenu;
-import corina.gui.menus.HelpMenu;
-import corina.util.Platform;
-
-import javax.swing.JMenuBar;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+
+import corina.core.App;
 
 // default:
 // - FileMenu
@@ -64,7 +61,7 @@ public class CorinaMenuBar extends JMenuBar {
     }
 
     public void addWindowMenu() {
-	if (Platform.isMac)
+	if (App.platform.isMac())
 	    add(new WindowMenu(f));
     }
 

@@ -12,7 +12,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 
-import corina.util.CorinaLog;
+import corina.logging.CorinaLog;
 
 /**
  * @author Aaron

@@ -5,7 +5,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.KeyStroke;
-import corina.util.Platform;
+
+import corina.core.App;
 
 /**
  * A base Corina action which sets Mnemonic and Accelerator based on I18N settings.
@@ -15,7 +16,7 @@ public abstract class CorinaAction extends AbstractAction {
   public CorinaAction(String key) {
     super();
     putValue(NAME, I18n.getText(key));
-    if (!Platform.isMac) {
+    if (!App.platform.isMac()) {
       Character mnemonic = I18n.getMnemonic(key);
       if (mnemonic != null)
         putValue(MNEMONIC_KEY, new Integer(mnemonic.charValue()));

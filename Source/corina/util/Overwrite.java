@@ -20,12 +20,12 @@
 
 package corina.util;
 
-import corina.util.Platform;
-import corina.gui.UserCancelledException;
-
 import java.io.File;
 
 import javax.swing.JOptionPane;
+
+import corina.core.App;
+import corina.gui.UserCancelledException;
 
 /**
    A helper function for asking "do you really want to overwrite that
@@ -92,7 +92,7 @@ public class Overwrite {
 	                  "already exists; overwrite it with this data?";
 
 	// TODO: (isMac?"":...) construct exists elsewhere (Alert?) -- refactor
-	String title = (Platform.isMac ? "" : "Already Exists");
+	String title = (App.platform.isMac() ? "" : "Already Exists");
 
 	// good, explicit commands
 	Object choices[] = new Object[] { "Overwrite", "Cancel" };

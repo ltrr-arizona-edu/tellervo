@@ -20,31 +20,30 @@
 
 package corina.cross;
 
-import corina.Year;
-import corina.graph.GraphWindow;
-import corina.ui.I18n;
-import corina.prefs.Prefs;
-import corina.prefs.PrefsListener;
-import corina.prefs.PrefsEvent;
-
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import java.awt.Color;
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import corina.Year;
+import corina.core.App;
+import corina.graph.GraphWindow;
+import corina.prefs.Prefs;
+import corina.prefs.PrefsEvent;
+import corina.prefs.PrefsListener;
+import corina.ui.I18n;
 
 /**
     A view of all of the scores of a crossdate.  The view can be
@@ -156,9 +155,9 @@ public class AllScoresView extends JPanel implements PrefsListener {
 	    // ...BETTER: align around decimal point
             setOpaque(true); // is this still needed?
             df = new DecimalFormat(crossdate.getFormat());
-            fore = Prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black); // WAS: ...cross...
-            back = Prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white); // WAS: ...cross...
-            lite = Prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR, Color.green);
+            fore = App.prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black); // WAS: ...cross...
+            back = App.prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white); // WAS: ...cross...
+            lite = App.prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR, Color.green);
         }
         public Component getTableCellRendererComponent(JTable table,
 						       Object value,
@@ -176,7 +175,7 @@ public class AllScoresView extends JPanel implements PrefsListener {
             if (!fontSetYet) {
                 super.setFont(table.getFont());
                 // super.setForeground(Color.getColor("corina.cross.foreground")); // do fore, too
-                super.setForeground(Prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black)); // do fore, too
+                super.setForeground(App.prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black)); // do fore, too
                 // BUG: what if corina.edit.foreground == null?
                 fontSetYet = true;
             }
@@ -323,7 +322,7 @@ public class AllScoresView extends JPanel implements PrefsListener {
 
     private void refreshGridlines() {
 	// gridlines
-        boolean gridlines = Boolean.valueOf(Prefs.getPref("corina.edit.gridlines")).booleanValue();
+        boolean gridlines = Boolean.valueOf(App.prefs.getPref("corina.edit.gridlines")).booleanValue();
         // WAS: corina.cross.gridlines
 	table.setShowGrid(gridlines);
     }
@@ -336,17 +335,17 @@ public class AllScoresView extends JPanel implements PrefsListener {
     private void refreshFont() {
         // font
         // WAS: corina.cross.font (merged)
-         Font f = Prefs.getFontPref(Prefs.EDIT_FONT, null);
+         Font f = App.prefs.getFontPref(Prefs.EDIT_FONT, null);
          if (f != null) {
            table.setFont(f);
            table.setRowHeight(f.getSize() + 3);
          }
     }
     private void refreshBackground() {
-      table.setBackground(Prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
+      table.setBackground(App.prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
     }
     private void refreshForeground() {
-      table.setForeground(Prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
+      table.setForeground(App.prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
       // WAS: corina.cross.background, corina.cross.foreground
     }
 
@@ -373,12 +372,12 @@ public class AllScoresView extends JPanel implements PrefsListener {
     public void addNotify() {
         super.addNotify();
         
-        Prefs.addPrefsListener(this);
+        App.prefs.addPrefsListener(this);
     }
     
     public void removeNotify() {
         super.removeNotify();
         
-        Prefs.removePrefsListener(this);
+        App.prefs.removePrefsListener(this);
     }
 }

@@ -21,7 +21,7 @@
 package corina.cross;
 
 import corina.Sample;
-import corina.prefs.Prefs;
+import corina.core.App;
 import corina.ui.I18n;
 
 /**
@@ -104,7 +104,7 @@ public class DScore extends Cross {
     }
 
     public String getFormat() {
-	    return Prefs.getPref("corina.cross.dscore.format", "0.00");
+	    return App.prefs.getPref("corina.cross.dscore.format", "0.00");
     }
 
     public boolean isSignificant(float score, int overlap) {

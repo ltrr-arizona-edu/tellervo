@@ -20,10 +20,7 @@
 
 package corina.gui;
 
-import java.awt.EventQueue;
 import java.awt.Toolkit;
-import java.io.IOException;
-import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -36,13 +33,9 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
 
-import corina.prefs.Prefs;
-import corina.util.CorinaLog;
-import corina.util.Macintosh;
-import corina.util.Netware;
-import corina.util.Platform;
+import corina.core.App;
+import corina.core.ProgressListener;
 
 /**
  * Bootstrap for Corina. It all starts here...
@@ -76,79 +69,13 @@ public class Startup implements PrivilegedAction {
      * UIManager.put("Menu.font", f); UIManager.put("MenuItem.font", f);
      */
     try {
-      // if the user hasn't specified a parser with
-      // -Dorg.xml.sax.driver=..., use crimson.
-      if (System.getProperty("org.xml.sax.driver") == null)
-        System.setProperty("org.xml.sax.driver",
-            "org.apache.crimson.parser.XMLReaderImpl");
-      // xerces: "org.apache.xerces.parsers.SAXParser"
-      // gnu/jaxp: "gnu.xml.aelfred2.SAXDriver"
-
-      // try to get the native L&F
-      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-      // on a mac, always use the mac menubar -- see TN2031
-      // (http://developer.apple.com/technotes/tn/tn2031.html)
-      // REFACTOR: move this to Platform?
-      if (Platform.isMac) {
-        // REFACTOR: make a Platform.JVMVersion field?
-        if (System.getProperty("java.version").startsWith("1.4"))
-          System.setProperty("apple.laf.useScreenMenuBar", "true");
-        else
-          System.setProperty("com.apple.macos.useScreenMenuBar", "true");
-        System.setProperty("com.apple.mrj.application.apple.menu.about.name",
-            "Corina");
-        // System.setProperty("com.apple.mrj.application.live-resize", "true");
-
-        // also, treat apps as files, not folders (duh -- why's this not
-        // default, steve?)
-        System.setProperty("com.apple.macos.use-file-dialog-packages", "false"); // for
-                                                                                 // AWT
-        UIManager.put("JFileChooser.packageIsTraversable", "never"); // for
-                                                                     // swing
-      }
-
-      // this sets the "about..." name only -- not "hide", "quit", or in the
-      // dock.
-      // have to use -X args for those, anyway, so this is useless.
-      // System.setProperty("com.apple.mrj.application.apple.menu.about.name",
-      // "Corina");
-
-      // migrate old prefs (!!!)
-      // WAS: Migrate.migrate();
-
-      // load properties -- messagedialog here is UGLY!
-      try {
-        //Prefs.load();
-        Prefs.init();
-        //AppContext.init();
-      } catch (IOException ioe) {
-        JOptionPane.showMessageDialog(null,
-            "While trying to load preferences:\n" + ioe.getMessage(),
-            "Corina: Error Loading Preferences", JOptionPane.ERROR_MESSAGE);
-      }
-
-      // using windows with netware, netware doesn't tell windows the real
-      // username
-      // and home directory. here's an ugly workaround to set user.* properties,
-      // if they're there. (old way: always call with "java -Duser.home=...",
-      // and have the user type in her name -- ugh.) by doing this after the
-      // prefs
-      // loading, i override anything the user set in the prefs (unless they
-      // set it again -- hence it should be removed).
-      // try {
-      Netware.workaround();
-      // } catch (IOException ioe) {
-      // Bug.bug(ioe);
-      // }
-
-      // can't install a new default exception handler, but i can log them
-      //ErrorLog.logErrors();
-      CorinaLog.init();
-      // (i COULD make this log call bug.bug() ...)
-
-      // set up mac menubar
-      Macintosh.configureMenus();
+      // TODO: implement progress listeners and splash screen for real
+      ProgressListener dummy = new ProgressListener() {
+        public void setLimit(int i) { /* do nothing */ }
+        public void setValue(int i) { /* do nothing */ }
+        public void setNote(String string) { /* do nothing */ }
+      };
+      App.init(dummy, dummy);
 
       // let's go...
       XCorina.showCorinaWindow();

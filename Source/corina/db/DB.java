@@ -27,7 +27,7 @@ import corina.Element;
 import corina.MetadataTemplate;
 import corina.MetadataTemplate.Field;
 import corina.formats.WrongFiletypeException;
-import corina.util.CorinaLog;
+import corina.logging.CorinaLog;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

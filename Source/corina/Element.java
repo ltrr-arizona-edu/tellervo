@@ -20,13 +20,12 @@
 
 package corina;
 
-import corina.formats.WrongFiletypeException;
-import corina.prefs.Prefs;
-
 import java.io.File;
 import java.io.IOException;
-
 import java.util.Map;
+
+import corina.core.App;
+import corina.formats.WrongFiletypeException;
 
 /**
    An Element, basically a reference to a Sample (stored on disk).
@@ -164,7 +163,7 @@ public class Element implements Comparable {
        @return the filename, with @'s
     */
     public String getFilenameWithAts() {
-	String root = Prefs.getPref("corina.dir.data");
+	String root = App.prefs.getPref("corina.dir.data");
 
 	// no known root, or isn't a subfolder of root
 	// (BUG: i don't think this is 100% correct, for various reasons)

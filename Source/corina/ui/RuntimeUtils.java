@@ -1,8 +1,8 @@
 package corina.ui;
 
-import corina.util.Platform;
-
 import javax.swing.KeyStroke;
+
+import corina.core.App;
 
 public class RuntimeUtils {
 
@@ -21,7 +21,7 @@ public class RuntimeUtils {
     // generate a keystroke, substituting either "meta" (mac) or "control" (other) for "accel", if needed
     // -- just be careful, "accel X" works fine but "accel x" returns null (!! -- not my fault...)
     public static KeyStroke getKeyStroke(String str) {
-        return KeyStroke.getKeyStroke(substitute(str, "accel", Platform.isMac ? "meta" : "control"));
+        return KeyStroke.getKeyStroke(substitute(str, "accel", App.platform.isMac() ? "meta" : "control"));
     }
 
     // this is why, even if i could, i shouldn't use serialization for widgets: they need to get

@@ -23,7 +23,6 @@ package corina.browser;
 import corina.Element;
 import corina.MetadataTemplate;
 import corina.Range;
-import corina.util.Platform;
 import corina.util.StringUtils;
 import corina.util.GZIP;
 import corina.site.Lock; // REFACTOR: move to util!

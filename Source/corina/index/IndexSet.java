@@ -20,12 +20,12 @@
 
 package corina.index;
 
-import corina.Sample;
-import corina.prefs.Prefs;
-import corina.util.StringUtils;
-
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+
+import corina.Sample;
+import corina.core.App;
+import corina.util.StringUtils;
 
 /**
     Run a set of Indexes on a single Sample.  This runs a set of
@@ -70,7 +70,7 @@ public class IndexSet implements Runnable {
         indexes.add(new Horizontal(sample));
 
         // polynomial fits
-        String degreesToUse = Prefs.getPref("corina.index.polydegs");
+        String degreesToUse = App.prefs.getPref("corina.index.polydegs");
         if (degreesToUse == null)
             degreesToUse = "1 2 3 4 5 6";
         int polydegs[] = StringUtils.extractInts(degreesToUse);

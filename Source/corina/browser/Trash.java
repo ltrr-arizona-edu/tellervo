@@ -1,24 +1,27 @@
 package corina.browser;
 
-import corina.util.Platform;
-import corina.ui.Builder;
-
+import java.awt.Color;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import javax.swing.JComponent;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.BorderFactory;
-import java.awt.Color;
+import javax.swing.JLabel;
 
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
-
-import java.awt.event.MouseListener;
-import java.awt.event.MouseEvent;
+import corina.core.App;
+import corina.platform.Platform;
+import corina.ui.Builder;
 
 /*
  left to do:
@@ -47,7 +50,7 @@ public class Trash extends JLabel implements DropTargetListener, MouseListener {
     public void mouseClicked(MouseEvent e) {
         // double-click?
         if (e.getClickCount() == 2)
-            Platform.open(Platform.getTrash());
+          App.platform.open(App.platform.getTrash());
     }
     public void mouseEntered(MouseEvent e) { }
     public void mouseExited(MouseEvent e) { }
@@ -97,18 +100,18 @@ public class Trash extends JLabel implements DropTargetListener, MouseListener {
     
     // (private: move file to trash)
     public static void trash(File f) { // throws IOE?
-        File target = new File(Platform.getTrash(), f.getName());
+        File target = new File(App.platform.getTrash(), f.getName());
         if (!target.exists()) {
             f.renameTo(target);
         } else {
             // "x" "x copy" "x copy 2" "x copy 3" ...
-            target = new File(Platform.getTrash(), f.getName() + " copy");
+            target = new File(App.platform.getTrash(), f.getName() + " copy");
             if (!target.exists()) {
                 f.renameTo(target);
             } else { // this isn't really a special case...  refactor
                 int x=2;
                 for (;;) {
-                    target = new File(Platform.getTrash(), f.getName() + " copy " + x);
+                    target = new File(App.platform.getTrash(), f.getName() + " copy " + x);
                     if (!target.exists()) {
                         f.renameTo(target);
                         break;

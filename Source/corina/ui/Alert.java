@@ -1,12 +1,12 @@
 package corina.ui;
 
-import corina.util.Platform;
-
-import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import javax.swing.JOptionPane;
 import javax.swing.Icon;
+import javax.swing.JOptionPane;
+
+import corina.core.App;
 
 public class Alert {
 
@@ -65,7 +65,7 @@ public class Alert {
     // -- (no, dialogs don't show up in win32 window lists)
     // SO: in the future, perhaps maybeTitle() will go away, and the |title| arg of error(), too
     private static String maybeTitle(String title) {
-	return (Platform.isMac ? "" : title);
+	return (App.platform.isMac() ? "" : title);
     }
 
     // icon for dialogs

@@ -7,16 +7,16 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
-import corina.gui.Layout;
-import corina.prefs.Prefs;
-import corina.prefs.components.ColorPrefComponent;
-import corina.prefs.components.BoolPrefComponent;
-
-import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import corina.core.App;
+import corina.gui.Layout;
+import corina.prefs.components.BoolPrefComponent;
+import corina.prefs.components.ColorPrefComponent;
 
 public class GraphPrefsPanel extends Container {
   public GraphPrefsPanel() {
@@ -103,7 +103,7 @@ public class GraphPrefsPanel extends Container {
 
             int value = defaultValue;
             try {
-                value = Integer.parseInt(Prefs.getPref(preference));
+                value = Integer.parseInt(App.prefs.getPref(preference));
             } catch (NumberFormatException nfe) {
                 // it wan't a valid integer: but that's ok,
                 // we've already set it to defaultValue
@@ -120,7 +120,7 @@ public class GraphPrefsPanel extends Container {
                     // we'll only change things when the user releases
                     // the mouse button, for now.
                     if (!slider.getValueIsAdjusting()) {
-                        Prefs.setPref(pref, String.valueOf(slider.getValue()));
+                      App.prefs.setPref(pref, String.valueOf(slider.getValue()));
                     }
                 }
             });

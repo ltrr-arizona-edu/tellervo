@@ -1,7 +1,7 @@
 // Copyright (c) 2004-2005 Aaron Hamid.  All rights reserved.
-// See license distributed with this file and available online at http://www.gnu.org/licenses/gpl.txt
+// See license in COPYING.txt distributed with this file and available online at http://www.gnu.org/licenses/gpl.txt
 
-package corina.util;
+package corina.logging;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -218,13 +218,13 @@ public class CorinaLog extends SimpleLog {
     super.log(type, message, t);
     if (chained == null) return;
     switch (type) {
-      default:
-      case SimpleLog.LOG_LEVEL_DEBUG: chained.debug(message, t); break;
       case SimpleLog.LOG_LEVEL_TRACE: chained.trace(message, t); break;
+      case SimpleLog.LOG_LEVEL_DEBUG: chained.debug(message, t); break;
       case SimpleLog.LOG_LEVEL_INFO:  chained.info(message, t); break;
       case SimpleLog.LOG_LEVEL_WARN:  chained.warn(message, t); break;
       case SimpleLog.LOG_LEVEL_ERROR: chained.error(message, t); break;
       case SimpleLog.LOG_LEVEL_FATAL: chained.fatal(message, t); break;
+      default: chained.info(message, t); break;
     }
   }
 }

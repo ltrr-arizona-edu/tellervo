@@ -20,52 +20,51 @@
 
 package corina.map;
 
-import corina.map.layers.GridlinesLayer;
-import corina.map.layers.MapLayer;
-import corina.map.layers.LegendLayer;
-import corina.map.layers.SitesLayer;
-import corina.util.Overwrite;
-import corina.util.Platform;
-import corina.util.OKCancel;
-import corina.util.DocumentListener2;
-import corina.ui.Builder;
-import corina.gui.FileDialog;
-import corina.gui.Layout;
-import corina.gui.layouts.DialogLayout;
-import corina.gui.Bug;
-import corina.gui.UserCancelledException;
-
-import java.io.Writer;
-import java.io.OutputStreamWriter;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-
-import java.awt.Dimension;
-import java.awt.Component;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JButton;
-import javax.swing.JTextField;
-import javax.swing.Box;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.event.DocumentListener;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
-import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.dom.GenericDOMImplementation;
-import org.w3c.dom.Document;
+import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+
+import corina.core.App;
+import corina.gui.Bug;
+import corina.gui.FileDialog;
+import corina.gui.Layout;
+import corina.gui.UserCancelledException;
+import corina.gui.layouts.DialogLayout;
+import corina.map.layers.GridlinesLayer;
+import corina.map.layers.LegendLayer;
+import corina.map.layers.MapLayer;
+import corina.map.layers.SitesLayer;
+import corina.ui.Builder;
+import corina.util.DocumentListener2;
+import corina.util.OKCancel;
+import corina.util.Overwrite;
 
 // import com.keypoint.PngEncoder;
 
@@ -121,7 +120,7 @@ public class Snapshot {
 
             // when done, open containing folder in finder/explorer,
             // and select this file.
-            Platform.open(filename);
+            App.platform.open(filename);
 
         } catch (UserCancelledException uce) {
             // do nothing
@@ -196,7 +195,7 @@ public class Snapshot {
 
             // when done, open containing folder in finder/explorer,
             // and select this file.
-            Platform.open(filename);
+            App.platform.open(filename);
 
         } catch (UserCancelledException uce) {
             // do nothing

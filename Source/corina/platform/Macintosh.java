@@ -18,12 +18,13 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.util;
+package corina.platform;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import corina.core.App;
 import corina.gui.Bug;
 import corina.gui.XCorina;
 import corina.gui.menus.HelpMenu;
@@ -56,7 +57,7 @@ public class Macintosh {
        <p>If this system is not a Mac, does nothing.</p>
     */
     public static void configureMenus() {
-        if (Platform.isMac) {
+        if (App.platform.isMac()) {
             // register "about" menuitem
             Macintosh.registerAboutHandler(HelpMenu.ABOUT_ACTION);/*new Runnable() {
                 public void run() {
@@ -211,6 +212,6 @@ public class Macintosh {
     // --------------------------------------------------
     // common code:
     private static ClassLoader getClassLoader() {
-	    return corina.util.Macintosh.class.getClassLoader();
+	    return corina.platform.Macintosh.class.getClassLoader();
     }
 }

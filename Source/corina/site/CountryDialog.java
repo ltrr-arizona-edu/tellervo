@@ -20,29 +20,27 @@
 
 package corina.site;
 
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Arrays;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import corina.core.App;
 import corina.gui.Layout;
 import corina.ui.Builder;
 import corina.ui.I18n;
 import corina.util.OKCancel;
-import corina.util.Platform;
-
-import java.util.Arrays;
-
-import javax.swing.JDialog;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.Box;
-import javax.swing.BorderFactory;
-import javax.swing.AbstractAction;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Dialog;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.ActionEvent;
 
 /**
    Display a dialog allowing the user to choose a country, or "None".
@@ -111,7 +109,7 @@ public class CountryDialog {
 
         // create dialog and lay out components
         final JDialog d = new JDialog(parent,
-				      (Platform.isMac ? "" : I18n.getText("choose_country")),
+				      (App.platform.isMac() ? "" : I18n.getText("choose_country")),
 				      true); // true=modal
 
 	// REFACTOR: use vertical margins on n/s instead of wrapping in box layouts?

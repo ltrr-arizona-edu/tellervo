@@ -20,13 +20,13 @@
 
 package corina.cross;
 
-import corina.Sample;
-import corina.index.HighPass;
-import corina.prefs.Prefs;
-import corina.ui.I18n;
-
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
+
+import corina.Sample;
+import corina.core.App;
+import corina.index.HighPass;
+import corina.ui.I18n;
 
 /**
    An R-value.
@@ -77,7 +77,7 @@ public class RValue extends Cross {
     /** A format string for R-values.
 	@return a format string for R-values */
     public String getFormat() {
-	return Prefs.getPref("corina.cross.rvalue.format", "0.00");
+	return App.prefs.getPref("corina.cross.rvalue.format", "0.00");
     }
 
     public boolean isSignificant(float score, int overlap) {

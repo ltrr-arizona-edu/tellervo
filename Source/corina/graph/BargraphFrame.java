@@ -20,61 +20,88 @@
 
 package corina.graph;
 
-import corina.Build;
-import corina.Year;
-import corina.Range;
-import corina.Sample;
-import corina.Element;
-import corina.gui.XFrame;
-import corina.gui.menus.FileMenu;
-import corina.gui.menus.EditMenu;
-import corina.gui.menus.WindowMenu;
-import corina.gui.menus.HelpMenu;
-import corina.gui.PrintableDocument;
-import corina.gui.Bug;
-import corina.gui.Tree; // for TransferableFile, which shouldn't even be there
-import corina.editor.Editor;
-import corina.util.Platform;
-import corina.util.ColorUtils;
-import corina.util.Sort;
-import corina.util.PopupListener;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.gui.Layout;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
-
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.Font;
-import java.awt.BorderLayout;
 import java.awt.Point;
-import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.awt.BasicStroke;
-import java.awt.Cursor;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.Container;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceDragEvent;
+import java.awt.dnd.DragSourceDropEvent;
+import java.awt.dnd.DragSourceEvent;
+import java.awt.dnd.DragSourceListener;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.*; // !!
-import javax.swing.*;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.print.PageFormat;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.awt.print.*; // !!
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JToolBar;
+import javax.swing.JViewport;
+import javax.swing.Scrollable;
+import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import corina.Build;
+import corina.Element;
+import corina.Range;
+import corina.Sample;
+import corina.Year;
+import corina.core.App;
+import corina.gui.Bug;
+import corina.gui.Layout;
+import corina.gui.PrintableDocument;
+import corina.gui.Tree;
+import corina.gui.XFrame;
+import corina.gui.menus.EditMenu;
+import corina.gui.menus.FileMenu;
+import corina.gui.menus.HelpMenu;
+import corina.gui.menus.WindowMenu;
+import corina.ui.Builder;
+import corina.ui.I18n;
+import corina.util.ColorUtils;
+import corina.util.PopupListener;
+import corina.util.Sort;
 
 /*
   Strategy:
@@ -707,7 +734,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
         menubar.add(new FileMenu(this));
         menubar.add(new EditMenu());
         menubar.add(new BargraphViewMenu(this));
-        if (Platform.isMac)
+        if (App.platform.isMac())
             menubar.add(new WindowMenu(this));
         menubar.add(new HelpMenu());
         

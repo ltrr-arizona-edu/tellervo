@@ -26,7 +26,7 @@ import java.util.List;
 import corina.Range;
 import corina.Sample;
 import corina.Year;
-import corina.prefs.Prefs;
+import corina.core.App;
 
 /**
  * <h2>Left to do</h2>
@@ -63,7 +63,7 @@ public class TopScores {
     Range movingRange = moving.range.redateEndTo(fixedRange.getStart());
 
     // FIXME: default=15 shouldn't be here; it's used elsewhere, as well.
-    final int minimumOverlap = Prefs.getIntPref("corina.cross.overlap", 15);
+    final int minimumOverlap = App.prefs.getIntPref("corina.cross.overlap", 15);
 
     int n = c.getRange().span();
     for (int i = 0; i < n; i++) {
