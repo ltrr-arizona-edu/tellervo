@@ -20,20 +20,13 @@
 
 package corina.cross;
 
-import corina.Year;
-import corina.Range;
-import corina.Sample;
-import corina.cross.TopScores.HighScore;
-import corina.ui.I18n;
-
+import java.io.File;
 import java.lang.reflect.Constructor;
 
-import java.util.List;
-import java.util.ArrayList;
-
-import java.text.DecimalFormat;
-
-import java.io.File;
+import corina.Range;
+import corina.Sample;
+import corina.Year;
+import corina.ui.I18n;
 
 /**
    Abstract class representing a crossdating algorithm, and its scores.
@@ -213,10 +206,8 @@ public abstract class Cross implements Runnable {
        computeHighScores() computes this, and should be called in
        run() after the scores have been computed, but before
        <code>finished</code> is set.
-
-	@deprecated use TopScores object instead
     */
-    public List highScores = new ArrayList();
+    //public List highScores = new ArrayList();
     // TODO: make this private, write a getHighScores() method,
     // switch everything to use that, then remove this list
     // and switch getHighScores() to use the topScores object.
@@ -298,29 +289,30 @@ public abstract class Cross implements Runnable {
 
     // search for high scores in the list, after scores have been
     // computed.  run() calls this last.
-    private void computeHighScores() {
-        int nr=0;
-        Range fixedRange = fixed.range;
-        Range movingRange = moving.range.redateEndTo(fixedRange.getStart()); // .add(getMinimumOverlap()-1));
-        for (int i=0; i<data.length; i++) {
-            movingRange = movingRange.redateBy(+1); // slide it by 1
-            if (isSignificant(data[i], fixedRange.overlap(movingRange)))
-		try {
-		    highScores.add(new HighScore(this, i, ++nr));
-		} catch (Exception e) {
-		    System.out.println("trouble with bayes! -- " + e);
-		    e.printStackTrace();
-		}
-        }
-        // convert to array now?  all i do with it is .size(), .get(),
-        // and sort(comparable)
+    /* now using topscores
+     private void computeHighScores() {
+      int nr=0;
+      Range fixedRange = fixed.range;
+      Range movingRange = moving.range.redateEndTo(fixedRange.getStart()); // .add(getMinimumOverlap()-1));
+      for (int i=0; i<data.length; i++) {
+          movingRange = movingRange.redateBy(+1); // slide it by 1
+          if (isSignificant(data[i], fixedRange.overlap(movingRange)))
+            try {
+              highScores.add(new HighScore(this, i, ++nr));
+            } catch (Exception e) {
+              System.out.println("trouble with bayes! -- " + e);
+              e.printStackTrace();
+            }
+       }
+       // convert to array now?  all i do with it is .size(), .get(),
+       // and sort(comparable)
 
-	// how do i sort these?  (that'll have an impact)
+      // how do i sort these?  (that'll have an impact)
 
-	// right now, i'm thinking:
-	// - void cross.computeHighScores() -- computes all
-	// - Iterator cross.getHighScores() -- returns only span>minimumOverlap
-    }
+      // right now, i'm thinking:
+      // - void cross.computeHighScores() -- computes all
+      // - Iterator cross.getHighScores() -- returns only span>minimumOverlap
+    }*/
 
     /*
       IDEA: make Crossdate and Algorithm separate classes
@@ -384,53 +376,52 @@ public abstract class Cross implements Runnable {
        @see #compute
     */
     public final void run() {
-        // this cross was already run, by somebody
-        if (finished)
-            return;
+      // this cross was already run, by somebody
+      if (finished)
+        return;
 
-        // careful: it can be true that n>0 but there are 0 crosses
-        // that should be run here.  check first:
-        int overlap = 1; // getMinimumOverlap();
-        if (fixed.data.size() < overlap || moving.data.size() < overlap) {
-	    String problem = "These samples (n=" + fixed.data.size() + ", " +
-		"n=" + moving.data.size() + ") aren't long enough for " +
-		"your minimum specified overlap (n=" + overlap + ")";
-	    // and say how to fix it!
-	    throw new IllegalArgumentException(problem);
-        }
+      // careful: it can be true that n>0 but there are 0 crosses
+      // that should be run here.  check first:
+      int overlap = 1; // getMinimumOverlap();
+      if (fixed.data.size() < overlap || moving.data.size() < overlap) {
+        String problem = "These samples (n=" + fixed.data.size() + ", " +
+            "n=" + moving.data.size() + ") aren't long enough for " +
+            "your minimum specified overlap (n=" + overlap + ")";
+	      // and say how to fix it!
+	      throw new IllegalArgumentException(problem);
+      }
 
-        // allocate space for data
-        int n = fixed.data.size() + moving.data.size() - 1; // was: ...-2*getMinimumOverlap();
-        if (n <= 0) {
-            data = new float[0];
-            finished = true;
-            return;
-        }
-        data = new float[n];
-        int done = 0;
-
-        // preamble
-        preamble();
-
-        // TODO: run phase1 and phase2 in separate threads, and
-        // document that subclasses should keep them independent.
-        // (preamble only exists for t-score, and it's probably not
-        // easily threadable.)  then benchmark on a dual-g4 to see how
-        // well it actually performs.  wait, no: the 2 phases aren't
-        // equal-sized; split in half (maybe even-odd?).
-
-        // phase 1:
-        for (int i=moving.data.size()-1 /*getMinimumOverlap()*/; i>0; i--)
-            data[done++] = compute(0, i);
-
-        // phase 2:
-        for (int i=0; i<fixed.data.size()-1 /*getMinimumOverlap()*/; i++)
-            data[done++] = compute(i, 0);
-
-        // finish up...
-        computeHighScores();
-	// WILLBE: topScores = new TopScores(this);
+      // allocate space for data
+      int n = fixed.data.size() + moving.data.size() - 1; // was: ...-2*getMinimumOverlap();
+      if (n <= 0) {
+        data = new float[0];
         finished = true;
+        return;
+      }
+      data = new float[n];
+      int done = 0;
+
+      // preamble
+      preamble();
+
+      // TODO: run phase1 and phase2 in separate threads, and
+      // document that subclasses should keep them independent.
+      // (preamble only exists for t-score, and it's probably not
+      // easily threadable.)  then benchmark on a dual-g4 to see how
+      // well it actually performs.  wait, no: the 2 phases aren't
+      // equal-sized; split in half (maybe even-odd?).
+
+      // phase 1:
+      for (int i=moving.data.size()-1 /*getMinimumOverlap()*/; i>0; i--)
+        data[done++] = compute(0, i);
+
+      // phase 2:
+      for (int i=0; i<fixed.data.size()-1 /*getMinimumOverlap()*/; i++)
+        data[done++] = compute(i, 0);
+
+      // finish up...
+      topScores = new TopScores(this);
+      finished = true;
     }
 
     /**
