@@ -70,9 +70,6 @@ public class CrossPrinter implements Printable {
     // page margins
     private double left, right, top, bottom;
 
-    // next pixel row to draw
-    private double position;
-
     // the cross to print, and its histogram
     private Cross cross;
     private Histogram histo=null;
@@ -98,9 +95,6 @@ public class CrossPrinter implements Printable {
 
         // formatter
         fmt = new DecimalFormat(cross.getFormat());
-        
-        // for later.  trust me.
-        firstRowOfPage.add(new Integer(0));
 
         // -- start stuffing Lines into a List
         lines = new ArrayList();
@@ -140,7 +134,7 @@ public class CrossPrinter implements Printable {
     // method (the constructor doesn't use it), so we're safe.
     private Graphics2D g2;
 
-    private List firstRowOfPage = new ArrayList();
+    private List firstRowOfPage = null; // null before print() gets called.
     
     public int print(Graphics g, PageFormat pf, int page) {
         // store margins
@@ -152,22 +146,33 @@ public class CrossPrinter implements Printable {
         // store graphics
         g2 = (Graphics2D) g;
 
-        // start at the top
-        position = top;
+        // next pixel row to draw: start at the top
+        double position = top;
 
-        // REWRITE ME: compute all page ranges before starting, not on-demand.
-        
-        // well, i know where it starts, at least.
-        // is it a bogus page?
-        if (((Integer) firstRowOfPage.get(page)).intValue() == -1)
+        // never printed before ... paginate
+        if (firstRowOfPage == null) {
+            firstRowOfPage = new ArrayList();
+            firstRowOfPage.add(new Integer(0));
+            int row=0;
+
+            double ruler = top;
+            while (row < lines.size()) {
+                Line l = (Line) lines.get(row);
+                if (ruler + l.height(g2) > bottom) {
+                    firstRowOfPage.add(new Integer(row));
+                    ruler = top;
+                }
+                ruler += l.height(g2);
+                row++;
+            }
+        }
+
+        // not a real page
+        if (page >= firstRowOfPage.size())
             return NO_SUCH_PAGE;
-
-        // ok, it's a real page.  pick out its first row
-        int start = ((Integer) firstRowOfPage.get(page)).intValue(); // move me up
-        int row = start;
-        int nextPage = -1;
         
-        // start printing
+        // print rows of page
+        int row = ((Integer) firstRowOfPage.get(page)).intValue();
         while (row < lines.size()) {
             Line l = (Line) lines.get(row);
             if (position + l.height(g2) < bottom) {
@@ -175,15 +180,9 @@ public class CrossPrinter implements Printable {
                 position += l.height(g2);
                 row++;
             } else {
-                nextPage = row;
-                break;
+                break; // ... inelegant
             }
         }
-
-        // if i now know more, say so
-        if (page >= firstRowOfPage.size()-1)
-            firstRowOfPage.add(new Integer(nextPage));
-
         return PAGE_EXISTS;
     }
 
