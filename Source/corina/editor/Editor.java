@@ -61,6 +61,7 @@ import corina.util.Platform;
 import corina.util.Overwrite;
 import corina.print.Printer;
 import corina.ui.Builder;
+import corina.ui.I18n;
 
 import java.io.File;
 import java.io.StringWriter;
@@ -181,11 +182,11 @@ public class Editor extends XFrame
 	undoMenu.setText(undoManager.getUndoPresentationName());
 	undoMenu.setEnabled(undoManager.canUndo());
 	if (!undoManager.canUndo())
-	    undoMenu.setText(Builder.getText(msg.getString("undo")));
+	    undoMenu.setText(I18n.getText("undo"));
 	redoMenu.setText(undoManager.getRedoPresentationName());
 	redoMenu.setEnabled(undoManager.canRedo());
 	if (!undoManager.canRedo())
-	    redoMenu.setText(Builder.getText(msg.getString("redo")));
+	    redoMenu.setText(I18n.getText("redo"));
     }
     private void initUndoRedo() {
 	undoManager = new UndoManager();
@@ -310,7 +311,7 @@ public class Editor extends XFrame
         }
 
         // get filename from sample; fall back to user's choice
-        String filename = (String) sample.meta.get("filename");
+        String filename = (String) sample.meta.get("filename"); // BUG: why not containsKey()?
         if (filename == null) {
 
             // make sure metadata was entered
@@ -332,7 +333,7 @@ public class Editor extends XFrame
 
             // get target filename
             try {
-                filename = corina.gui.FileDialog.showSingle("Save");
+                filename = FileDialog.showSingle("Save"); // is this why the button says &Save...?
             } catch (UserCancelledException uce) {
                 return;
             }
@@ -849,6 +850,7 @@ public class Editor extends XFrame
 	   -- these items are undimmed iff the sample has a nonnull .count field (easy)
 	 */
 
+	// FIXME: use Builder!
 	JMenuItem vc1 = new XMenubar.XRadioButtonMenuItem(msg.getString("view_histogram"));
 	vc1.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
@@ -857,6 +859,7 @@ public class Editor extends XFrame
 		}
 	    });
 
+	// FIXME: use Builder!
 	JMenuItem vc2 = new XMenubar.XRadioButtonMenuItem(msg.getString("view_numbers"));
 	vc2.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
@@ -864,6 +867,10 @@ public class Editor extends XFrame
 		    System.out.println("view numbers");
 		}
 	    });
+
+	// the don't do anything yet, so dim them
+	vc1.setEnabled(false);
+	vc2.setEnabled(false);
 
 	bg2.add(vc1);
 	bg2.add(vc2);
