@@ -107,7 +107,10 @@ public class PrefsTemplate {
                         "corina.cross.trend.format", Option.TYPE_STRING));
 	options.add(new Option("Crossdate", "D-Score format:",
                         "corina.cross.dscore.format", Option.TYPE_STRING));
-	options.add(new Option("Crossdate", "Font:", "corina.cross.font", Option.TYPE_FONT));
+	options.add(new Option("Crossdate", "Minimum Overlap:",
+                        "corina.cross.overlap", Option.TYPE_STRING));
+	options.add(new Option("Crossdate", "Font:",
+                        "corina.cross.font", Option.TYPE_FONT));
 	options.add(new Option("Crossdate", "Background color:",
                         "corina.cross.background", Option.TYPE_COLOR));
 	options.add(new Option("Crossdate", "Text color:",
