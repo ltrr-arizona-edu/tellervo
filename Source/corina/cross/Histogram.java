@@ -53,6 +53,10 @@ public class Histogram {
         // set it up -- use a fixed number of buckets for now
         {
             double high;
+            if (data.length == 0) {
+                buckets = new int[0];
+                return;
+            }
             low = high = data[0];
             for (int i=1; i<n; i++) {
                 double x = data[i];
@@ -114,7 +118,8 @@ public class Histogram {
             boolean isInfty = (hasInfty && bucket==buckets.length-1);
             double a = low + step*bucket;
             double b = (isInfty ? Double.POSITIVE_INFINITY : low+step*(bucket+1));
-            memo[bucket] = fmt.format(a) + " \u2014 " + fmt.format(b);
+            memo[bucket] = fmt.format(a) + " - " + fmt.format(b);
+	    // "-" should really be "\u2014", but my printer can't handle that yet  :-(
         }
 
         // return it
