@@ -34,17 +34,31 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import java.awt.EventQueue;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+
+import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
+import javax.swing.JPopupMenu;
 import javax.swing.RepaintManager;
+import javax.swing.filechooser.FileFilter;
 
 /**
    A map component.
@@ -80,12 +94,15 @@ public class MapPanel extends JPanel {
     public LabelSet labels; // !!! -- (for tools)
     
     private MapFrame fr; // only used for setZoom() (which updates the slider based on the panel's zoom)
+    
+    private JPopupMenu popup = new JPopupMenu("Save");
+    
     public void setZoom() {
         fr.setZoom();
     }
 
     // note: mapframe is only used for its setZoom() method.
-    public MapPanel(MapFrame fr, LabelSet labels) {
+    public MapPanel(final MapFrame fr, LabelSet labels) {
         view = new View(); // where?
         setBackground(Color.white);
 
@@ -110,6 +127,81 @@ public class MapPanel extends JPanel {
 
 	// add listener: update map when DB changes
         // REMOVED: it wasn't getting called, and relied on some incorrect assumptions
+        
+      JMenuItem save = new JMenuItem("Save...");
+      save.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent ae) {
+          final JFileChooser chooser = new JFileChooser();
+          chooser.setFileFilter(new FileFilter() {
+            public boolean accept(File f) {
+              return f.getName().endsWith(".png");
+            }
+            public String getDescription() {
+              return "PNG image files";
+            }
+          });
+          chooser.setMultiSelectionEnabled(false);
+          chooser.setAcceptAllFileFilterUsed(true);
+          //chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+          int returnVal = chooser.showSaveDialog(fr);
+          if (returnVal != JFileChooser.APPROVE_OPTION) return;
+
+          EventQueue.invokeLater(new Runnable() {
+            public void run() {
+              Rectangle rect = getBounds();
+              final Image fileImage = 
+                  createImage(rect.width,rect.height);
+              final Graphics g = fileImage.getGraphics();
+
+              //write to the image
+                  paint(g);
+ 
+                  // write it out in the format you want
+
+              new Thread(new Runnable() {
+                public void run() {
+                  try {
+              
+                    PngEncoder encoder = new PngEncoder(fileImage);
+                    byte[] bytes = encoder.pngEncode(false);
+                    /* (bytes == null) {
+                      PngEncoderB encoderb = new PngEncoderB((BufferedImage) fileImage);
+                      bytes = encoderb.pngEncode(false);
+                    }*/
+                    if (bytes != null) {
+                      FileOutputStream fos = new FileOutputStream(chooser.getSelectedFile());
+                      fos.write(bytes);
+                      fos.flush();
+                      fos.close();
+                    } else {
+                      System.err.println("ERROR IN ENCODER");
+                    }
+              
+                  } catch (Exception e) {
+                    System.err.println("ERROR SAVING GRAPH TO: " + chooser.getSelectedFile());
+                    e.printStackTrace();
+                  }
+
+                  //dispose of the graphics content
+                  g.dispose();
+                }
+              }).start();
+            }
+          });
+        }
+      });      
+      popup.add(save);
+
+      addMouseListener(new MouseAdapter() {
+        public void mouseReleased(MouseEvent e) {
+          System.out.println(e);
+          if (!e.isPopupTrigger()) return;
+    
+          System.out.println("Popup triggered!");
+  
+          popup.show(MapPanel.this, e.getX(), e.getY());
+        }  
+      });
     }
 
     // USED BY: toFront(), ArrowTool (hmm), etc.
