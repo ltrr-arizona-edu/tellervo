@@ -23,7 +23,7 @@ package corina.manip;
 import corina.Year;
 import corina.Range;
 import corina.Sample;
-import corina.gui.ButtonLayout;
+import corina.gui.Buttons;
 import corina.util.OKCancel;
 import corina.util.JLine;
 import corina.ui.Builder;
@@ -31,8 +31,6 @@ import corina.ui.Builder;
 import java.util.ResourceBundle;
 
 import java.awt.Component;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -176,79 +174,54 @@ public class TruncateDialog extends JDialog {
         result.setText(msg.getString("after") + ": " + rangeAndSpan);
     }
 
-    private JPanel p;
-    private void setup() {
-        // use my own toplevel, so i can create my own border
-        p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
-        setContentPane(p);
-
+    private JPanel setup() {
         // the big panel
         JPanel pri = new JPanel();
         pri.setLayout(new BoxLayout(pri, BoxLayout.Y_AXIS));
-        p.add(pri, BorderLayout.CENTER);
 
         // secondary panel: start | end
         JPanel sec = new JPanel();
         sec.setLayout(new BoxLayout(sec, BoxLayout.X_AXIS));
 
-        // start panel
-        JPanel startPanel = new JPanel();
-        startPanel.setLayout(new BoxLayout(startPanel, BoxLayout.Y_AXIS));
-
         // "Start"
         JLabel cropStart = new JLabel(msg.getString("crop_start"));
         cropStart.setHorizontalAlignment(SwingConstants.CENTER);
         cropStart.setAlignmentX(Component.CENTER_ALIGNMENT);
-        startPanel.add(cropStart);
 
         // "by [ xxx ] years"
-        JPanel f1 = new JPanel(new FlowLayout(FlowLayout.LEFT)); // no size?
-        f1.add(new JLabel("by "));
         tf1 = new JTextField("0", 4);
         tf1.getDocument().addDocumentListener(updater1);
-        f1.add(tf1);
-        f1.add(new JLabel(" years"));
-        startPanel.add(f1);
+	JPanel f1 = Buttons.flowLayoutL(new JLabel("by "), tf1, new JLabel(" years"));
         f1.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // "to year [ xxx ]"
-        JPanel f2 = new JPanel(new FlowLayout(FlowLayout.LEFT)); // no size?
-        f2.add(new JLabel("to year "));
         tf2 = new JTextField(s.range.getStart().toString(), 5);
         tf2.getDocument().addDocumentListener(updater2);
-        f2.add(tf2);
-        startPanel.add(f2);
+	JPanel f2 = Buttons.flowLayoutL(new JLabel("to year "), tf2);
         f2.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // end panel
-        JPanel endPanel = new JPanel();
-        endPanel.setLayout(new BoxLayout(endPanel, BoxLayout.Y_AXIS));
+        // start panel
+	JPanel startPanel = Buttons.boxLayoutY(cropStart, f1, f2);
 
         // "End"
         JLabel cropEnd = new JLabel(msg.getString("crop_end"));
         cropEnd.setHorizontalAlignment(SwingConstants.CENTER);
         cropEnd.setAlignmentX(Component.CENTER_ALIGNMENT);
-        endPanel.add(cropEnd);
 
         // "by [ xxx ] years"
-        JPanel f3 = new JPanel(new FlowLayout(FlowLayout.LEFT)); // no size?
-        f3.add(new JLabel("by "));
         tf3 = new JTextField("0", 4);
         tf3.getDocument().addDocumentListener(updater1);
-        f3.add(tf3);
-        f3.add(new JLabel(" years"));
-        endPanel.add(f3);
+	JPanel f3 = Buttons.flowLayoutL(new JLabel("by "), tf3, new JLabel(" years"));
         f3.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // "to year [ xxx ]"
-        JPanel f4 = new JPanel(new FlowLayout(FlowLayout.LEFT)); // no size?
-        f4.add(new JLabel("to year "));
         tf4 = new JTextField(s.range.getEnd().toString(), 5);
         tf4.getDocument().addDocumentListener(updater2);
-        f4.add(tf4);
-        endPanel.add(f4);
+	JPanel f4 = Buttons.flowLayoutL(new JLabel("to year "), tf4);
         f4.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // end panel
+	JPanel endPanel = Buttons.boxLayoutY(cropEnd, f3, f4);
 
         // build secondary panel
         sec.add(Box.createHorizontalStrut(16));
@@ -278,25 +251,24 @@ public class TruncateDialog extends JDialog {
         result.setAlignmentX(Component.CENTER_ALIGNMENT);
         pri.add(result);
         pri.add(Box.createVerticalStrut(8));
+
+	// return the panel
+	return pri;
     }
 
     // returns "ok" button
-    private JButton initButtons() {
-        JPanel buttons = new JPanel(new ButtonLayout());
-        p.add(buttons, BorderLayout.SOUTH);
-
+    private void initButtons() {
         // cancel == close
-        JButton cancel = Builder.makeButton("cancel");
+        cancel = Builder.makeButton("cancel");
         cancel.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 dispose();
             }
         });
-        buttons.add(cancel);
 
         // ok == apply
-        JButton apply = Builder.makeButton("ok");
-        apply.addActionListener(new AbstractAction() {
+        ok = Builder.makeButton("ok");
+        ok.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 // nothing to do?
                 if (r.equals(s.range)) {
@@ -347,9 +319,9 @@ public class TruncateDialog extends JDialog {
                 dispose();
             }
         });
-        buttons.add(apply);
-        return apply;
     }
+
+    private JButton cancel, ok;
 
     public TruncateDialog(Sample s, JFrame owner) {
         // owner, title, modal
@@ -360,11 +332,18 @@ public class TruncateDialog extends JDialog {
         r = s.range;
 
         // setup
-        setup();
-        JButton ok = initButtons();
+        JPanel guts = setup();
+        initButtons();
+
+        // create a panel for the top, with a border
+	JPanel p = Buttons.borderLayout(null,
+					null, guts, null,
+					new Buttons(cancel, ok));
+        p.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
+        setContentPane(p);
 
         // ret => ok, esc => cancel
-        OKCancel.addKeyboardDefaults(this, ok);
+        OKCancel.addKeyboardDefaults(ok);
 
         // show it
         pack();
