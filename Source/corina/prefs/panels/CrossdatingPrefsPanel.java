@@ -7,6 +7,7 @@ import corina.prefs.components.ColorPrefComponent;
 import corina.gui.*;
 import corina.gui.layouts.DialogLayout;
 
+import java.text.ParseException;
 import java.util.Vector;
 import java.util.ArrayList;
 
@@ -79,10 +80,17 @@ public class CrossdatingPrefsPanel extends JPanel {
     }
     
     private static class SpinnerComboBoxEditor extends BasicComboBoxEditor {
-      private JSpinner spinner = new JSpinner();
+      private JSpinner spinner = new JSpinner(/*new SpinnerNumberModel(0.0d, 0.0d, Double.MAX_VALUE, 0.01d)*/);
       
       public SpinnerComboBoxEditor() {
         spinner.setBorder(BorderFactory.createEmptyBorder());
+        /*System.out.println(((JSpinner.NumberEditor) spinner.getEditor()).getFormat().toPattern());
+        System.out.println(((JSpinner.NumberEditor) spinner.getEditor()).getTextField().getFormatter());
+        //spinner.setEditor(new JSpinner.NumberEditor(spinner, "#,##0.0##"));
+        System.out.println(((JSpinner.NumberEditor) spinner.getEditor()).getFormat().toPattern());
+        System.out.println(((JSpinner.NumberEditor) spinner.getEditor()).getTextField().getFormatter());
+        //((javax.swing.text.NumberFormatter) ((JSpinner.NumberEditor) spinner.getEditor()).getTextField().getFormatter()).setAllowsInvalid(true);
+        */
       }
       
       public JSpinner getSpinner() {
@@ -101,6 +109,7 @@ public class CrossdatingPrefsPanel extends JPanel {
         return spinner.getValue();
       }
       public void setItem(Object anObject) {
+        System.out.println(anObject.getClass());
         if (anObject instanceof String) {
           String theObject = (String) anObject;
           if ("any".equals(theObject)) anObject = new Integer(1);
@@ -196,53 +205,54 @@ public class CrossdatingPrefsPanel extends JPanel {
             });*/
             spinner.addChangeListener(new ChangeListener() {
               public void stateChanged(ChangeEvent e) {
-                System.out.println(e);
-                System.out.println("Setting pref from change: " + spinner.getValue());
+                System.err.println("spinner stateChanged: " + spinner.getValue() + " " + spinner.getValue().getClass());
                 Prefs.setPref("corina.cross.overlap", spinner.getValue().toString());
-                System.out.println("popup isEditable: " + popup.isEditable());
-                if (!popup.isEditable()) { 
-                  popup.setEditable(true);
-                  popup.setSelectedItem(spinner.getValue());
-                  popup.setEditable(false);
-                } else {
-                  popup.setSelectedItem(spinner.getValue());
-                }
+
+                popup.setSelectedItem(spinner.getValue());
+                System.out.println("Selected item after setting: " + popup.getSelectedItem());
               }
             });
             ((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().addFocusListener(new FocusListener() {
               public void focusGained(FocusEvent fe) {
-                System.out.println("textfield " + fe);
+                System.out.println("textfield fained focus " + fe);
               }
               public void focusLost(FocusEvent fe) {
-                System.out.println("textfield " + fe);
-                popup.setEditable(false);
-                popup.repaint();
+                System.out.println("textfield lost focus " + fe);
+                SwingUtilities.invokeLater(new Runnable() {
+                  public void run() {
+                    System.out.println("Setting editable to false.");
+                    popup.setEditable(false);
+                    popup.repaint();
+                  }
+                });
               }
             });
 
             popup.setEditor(scbe);
-//            /popup.setRenderer(new FocusableListCellRenderer(popup, popup.getRenderer()));
-            //popup.setEditable(false);
             popup.addFocusListener(new FocusAdapter() {
               public void focusLost(FocusEvent fe) {
-                System.out.println(fe);
-                System.out.println(SwingUtilities.isDescendingFrom(fe.getOppositeComponent(), popup));
-                System.out.println(SwingUtilities.isDescendingFrom(new JTextPane(), new JEditorPane()));
+                System.out.println("Combobox lost focus");
                 if (!SwingUtilities.isDescendingFrom(fe.getOppositeComponent(), popup)) {
-                  popup.setEditable(false);
-                  popup.repaint();
+                  System.out.println("Combobox lost focus to non-child component");
+                  //popup.setEditable(false);
+                  //popup.repaint();
                 }
               }
               
               public void focusGained(FocusEvent fe) {
-                System.out.println(fe);
+                System.out.println("Combobox gained focus");
               }
             });
             
             popup.addMouseListener(new MouseAdapter() {
               public void mouseClicked(MouseEvent me) {
-                System.out.println("mouse clicked, setting editable to true");
-                popup.setEditable(true);
+                System.out.println("mouse clicked " + me.getSource() + ", setting editable to true");
+                SwingUtilities.invokeLater(new Runnable() {
+                  public void run() {
+                    popup.setEditable(true);
+                    popup.repaint();
+                  }
+                });
               }
             });
 
@@ -268,6 +278,7 @@ public class CrossdatingPrefsPanel extends JPanel {
                     popup.setSelectedIndex(i);
                 }
             if (!found) {
+              System.out.println("Setting custom value: " + new Integer(value));
               popup.setEditable(true);
               popup.setSelectedItem(new Integer(value));
               popup.setEditable(false);
