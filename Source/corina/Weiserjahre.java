@@ -48,7 +48,7 @@ public class Weiserjahre {
     public static String toString(Sample s, int i) {
 	int incr = ((Number) s.incr.get(i)).intValue();
 	int decr = ((Number) s.decr.get(i)).intValue();
-	return incr + (isSignificant(s, i) ? "*" : "/") + decr;
+	return incr + (isSignificant(s, i) ? SIGNIFICANT : INSIGNIFICANT) + decr;
     }
 
     public static String toString(Sample s, Year y) {
@@ -56,7 +56,7 @@ public class Weiserjahre {
     }
 
     // 10/36, 9 => "  10/36  "; if width is even, all hell breaks loose.
-    public static String toStringFixed(Sample s, int i, int width, char c) {
+    public static String toStringFixed(Sample s, int i, int width, String c) {
 	String incr = s.incr.get(i).toString();
 	String decr = s.decr.get(i).toString();
 
@@ -68,8 +68,13 @@ public class Weiserjahre {
 	return incr + c + decr;
     }
 
-    // default char is '*','/'
+    // default is '*','/'
     public static String toStringFixed(Sample s, int i, int width) {
-	return toStringFixed(s, i, width, isSignificant(s, i) ? '*' : '/');
+	return toStringFixed(s, i, width, isSignificant(s, i) ? SIGNIFICANT : INSIGNIFICANT);
     }
+
+    // actually, these are the defaults
+    // (should this be a trivial function, instead?)
+    public final static String SIGNIFICANT = "*";
+    public final static String INSIGNIFICANT = "/";
 }
