@@ -1,16 +1,16 @@
 //
 // This file is part of Corina.
-// 
+//
 // Corina is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // Corina is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Corina; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -89,8 +89,10 @@ public class AboutBox extends JDialog {
     private void addName() {
         JLabel name = new JLabel("Corina");
         { // (add icon to name)
-	    Icon icon = Builder.getIcon("Tree.png");
-            name.setIcon(icon);
+            Icon icon = Builder.getIcon("Tree.png");
+            if (icon != null) {
+                name.setIcon(icon);
+            }
             name.setHorizontalTextPosition(SwingConstants.CENTER);
             name.setVerticalTextPosition(SwingConstants.BOTTOM);
             name.setIconTextGap(12);
@@ -103,22 +105,22 @@ public class AboutBox extends JDialog {
 
     // add the version number: centered
     private void addVersion() {
-	String text = MessageFormat.format(I18n.getText("version"),
-					   new Object[] { Build.VERSION });
-	JLabel version = new JLabel(text);
-	version.setFont(versionFont);
-	version.setAlignmentX(Component.CENTER_ALIGNMENT);
-	box.add(version);
+  String text = MessageFormat.format(I18n.getText("version"),
+             new Object[] { Build.VERSION });
+  JLabel version = new JLabel(text);
+  version.setFont(versionFont);
+  version.setAlignmentX(Component.CENTER_ALIGNMENT);
+  box.add(version);
     }
 
     // add timestamp
     private void addTimestamp() {
-	String text = MessageFormat.format(I18n.getText("timestamp"),
-					   new Object[] { Build.TIMESTAMP });
-	JLabel timestamp = new JLabel(text);
-	timestamp.setFont(versionFont);
-	timestamp.setAlignmentX(Component.CENTER_ALIGNMENT);
-	box.add(timestamp);
+  String text = MessageFormat.format(I18n.getText("timestamp"),
+             new Object[] { Build.TIMESTAMP });
+  JLabel timestamp = new JLabel(text);
+  timestamp.setFont(versionFont);
+  timestamp.setAlignmentX(Component.CENTER_ALIGNMENT);
+  box.add(timestamp);
     }
 
     // add the description: flush left
@@ -132,7 +134,7 @@ public class AboutBox extends JDialog {
         descriptionBlock.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // extract line at a time (would a stringtok on \n\r be simpler?)
-	// BETTER: i have a method to do this, somewhere...
+  // BETTER: i have a method to do this, somewhere...
         BufferedReader r = new BufferedReader(new StringReader(description));
         String line;
         for (;;) {
@@ -189,61 +191,61 @@ public class AboutBox extends JDialog {
     }
 
     public AboutBox() {
-	// on close
-	setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+  // on close
+  setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-	// there can be only one!
-	if (_me == null) {
-	    _me = this;
-	} else {
-	    _me.setVisible(true);
-	    _me.toFront();
-	    super.dispose();
-	    return;
-	}
+  // there can be only one!
+  if (_me == null) {
+      _me = this;
+  } else {
+      _me.setVisible(true);
+      _me.toFront();
+      super.dispose();
+      return;
+  }
 
-	// no icon?
-	setTitle("About Corina");
+  // no icon?
+  setTitle("About Corina");
 
-	// layout: top-to-bottom
-	box = new JPanel();
-	box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
-	getContentPane().add(box, BorderLayout.CENTER);
+  // layout: top-to-bottom
+  box = new JPanel();
+  box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
+  getContentPane().add(box, BorderLayout.CENTER);
 
-	// spacers on the sides
-	getContentPane().add(Box.createHorizontalStrut(24), BorderLayout.WEST);
-	getContentPane().add(Box.createHorizontalStrut(24), BorderLayout.EAST);
+  // spacers on the sides
+  getContentPane().add(Box.createHorizontalStrut(24), BorderLayout.WEST);
+  getContentPane().add(Box.createHorizontalStrut(24), BorderLayout.EAST);
 
-	// put content into box
-	  addSpace(8);
-	addName();
-	  addSpace(8);
-	addVersion();
-	addTimestamp();
-	  addSpace(8);
-	addDescription();
-	  addSpace(8);
-	addCopyright();
-	  addSpace(20);
+  // put content into box
+    addSpace(8);
+  addName();
+    addSpace(8);
+  addVersion();
+  addTimestamp();
+    addSpace(8);
+  addDescription();
+    addSpace(8);
+  addCopyright();
+    addSpace(20);
 
-	// can't resize -- does this get rid of minimize/maximize buttons?
-	setResizable(false);
+  // can't resize -- does this get rid of minimize/maximize buttons?
+  setResizable(false);
 
-	// pack
-	pack();
+  // pack
+  pack();
 
-	// center it
-	Center.center(this);
+  // center it
+  Center.center(this);
 
         // see also PrefsDialog -- PrefsDialog and AboutBox should subclass
         // the same class, maybe gui.SingletonDialog?  REFACTOR.
-        
-	// show it
-	show();
+
+  // show it
+  show();
     }
 
     public void dispose() {
-	_me = null;
-	super.dispose();
+  _me = null;
+  super.dispose();
     }
 }
