@@ -16,6 +16,8 @@ import java.text.DecimalFormat;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.BasicStroke;
+import java.awt.Color;
 
 import java.awt.print.Printable;
 import java.awt.print.PageFormat;
@@ -112,6 +114,30 @@ public class SamplePrinter implements Printable {
                 break; // ... inelegant
             }
         }
+
+        // if you want (or for debugging), print out page boundaries like printers do
+        if (false) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setStroke(new BasicStroke(0.1f));
+            g2.setColor(Color.black);
+            final int inch = 72;
+            g2.drawLine((int) (left-inch/2), (int) top, (int) (left+inch*3/2), (int) top);
+            g2.drawLine((int) (right-inch*3/2), (int) top, (int) (right+inch/2), (int) top);
+            g2.drawLine((int) (left-inch/2), (int) bottom, (int) (left+inch*3/2), (int) bottom);
+            g2.drawLine((int) (right-inch*3/2), (int) bottom, (int) (right+inch/2), (int) bottom);
+
+            g2.drawLine((int) left, (int) (top-inch/2), (int) left, (int) (top+inch*3/2));
+            g2.drawLine((int) right, (int) (top-inch/2), (int) right, (int) (top+inch*3/2));
+            g2.drawLine((int) left, (int) (bottom-inch*3/2), (int) left, (int) (bottom+inch/2));
+            g2.drawLine((int) right, (int) (bottom-inch*3/2), (int) right, (int) (bottom+inch/2));
+                                                
+            final int radius = inch/2;
+            g2.drawOval((int) (left - radius/2), (int) (top - radius/2), radius, radius);
+            g2.drawOval((int) (right - radius/2), (int) (top - radius/2), radius, radius);
+            g2.drawOval((int) (left - radius/2), (int) (bottom - radius/2), radius, radius);
+            g2.drawOval((int) (right - radius/2), (int) (bottom - radius/2), radius, radius);
+        }
+        
         return PAGE_EXISTS;
     }
 
@@ -176,6 +202,10 @@ public class SamplePrinter implements Printable {
         lines.add(new TextLine("Number of rings in data set: " + s.countRings()));
         lines.add(new TextLine("Length of data set: " + s.range.span() + " years"));
         // TODO: line up these 3 values?
+        /* i'd think it might be easier on the eyes just to make a bullet list with units:
+            * 601 intervals with >3 samples
+            * 125 significant intervals (12.8%)
+        */
         lines.add(new EmptyLine());
     }
 
@@ -218,6 +248,7 @@ public class SamplePrinter implements Printable {
             lines.add(new TextLine(s.meta.get("sapwood") + " sapwood rings."));
         if (s.meta.containsKey("pith")) {
             String p = (String) s.meta.get("pith");
+            // BUG: if s.meta is a HashMap, p might be null here
             if (p.equals("P"))
                 lines.add(new TextLine("Pith present and datable"));
             else if (p.equals("*"))
@@ -231,6 +262,7 @@ public class SamplePrinter implements Printable {
             lines.add(new TextLine("Last ring measured " + s.meta.get("terminal") ));
         if (s.meta.containsKey("continuous")) {
             String c = (String) s.meta.get("continuous");
+            // BUG: see pith, above
             if (c.equals("C")) // uppercase only?
                 lines.add(new TextLine("Last ring measured is continuous"));
             else if (c.equals("R")) // uppercase only?
@@ -570,5 +602,5 @@ public class SamplePrinter implements Printable {
     private List lines = new ArrayList();
 
     // margins
-    private double left, right, top, bottom;
+    private double left, right, top, bottom; // why the heck do i need to know inches down to 10^-8?
 }
