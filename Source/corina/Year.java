@@ -56,7 +56,7 @@ public final class Year implements Comparable {
 	@param x the year value, as an int
     	@see #DEFAULT */
     public Year(int x) {
-        y = (x == 0 ? DEFAULT.y : x); // should be 1 instead of DEFAULT?
+        y = (x == 0 ? DEFAULT.y : x);
     }
 
     /** Constructor from (row,col) pair.  Assumes 10-year rows.  The
@@ -103,22 +103,27 @@ public final class Year implements Comparable {
         return String.valueOf(y);
     }
 
-    // intValue() is BAD.  (don't even think about implementing it!)
-    // why?  it encourages being lazy and bypassing Year to just deal
-    // with ints.  and that defeats the whole purpose of having Years.
-    // so i'll just disallow it.  by adding a couple extra methods
-    // (max, isYearOne) i won't need it, anyway.  if you really need
-    // the int for some reason i can't imagine, you can always do
-    // Integer.parseInt(y.toString()).  that way you know you're doing
-    // it to get the int, and not for imagined performance or
-    // convenience reasons, though.
+    /**
+       This method always throws UnsupportedOperationException.  It's
+       not implemented, and don't even think about implementing it
+       yourself!  It encourages being lazy and bypassing Year's
+       methods to just deal with ints.  And that defeats the whole
+       purpose of having Years.  So I'll just disallow it.  You don't
+       need it anyway.  If you really need the int for some reason I
+       can't imagine, you can always do
+       <code>Integer.parseInt(y.toString())</code>.  That way you know
+       you're doing it to get the int, and not for imagined
+       performance or convenience reasons.
+
+       @return never returns
+       @exception UnsupportedOperationException always!
+     */
     public int intValue() {
         // i pity th' fool who tries to use intvalue!
         throw new UnsupportedOperationException();
     }
-    // JAVADOC ME!  this isn't worth much if developers never see it.
 
-    /** Is this year 1 (AD)?
+    /** Is this year 1 (AD)?  (This actually comes up fairly often.)
 	@return true if this is year 1 */
     public boolean isYearOne() {
         return (y == 1);
@@ -150,7 +155,7 @@ public final class Year implements Comparable {
         r += dy;
 
         // convert back, and return
-        if (r < 0)
+        if (r <= 0)
             r--;
         return new Year(r);
     }
