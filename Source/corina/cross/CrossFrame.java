@@ -34,6 +34,7 @@ import corina.gui.Tree;
 import corina.gui.ButtonLayout;
 import corina.gui.DialogLayout;
 import corina.editor.CountRenderer;
+import corina.util.Platform;
 
 import java.io.IOException;
 
@@ -44,6 +45,7 @@ import java.util.ResourceBundle;
 import java.text.DecimalFormat;
 
 import java.awt.*; // !!!
+import java.awt.event.*; // !!!
 import java.awt.print.Printable;
 import java.awt.print.Pageable;
 import java.awt.print.PageFormat;
@@ -52,6 +54,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.*; // !!!
+import javax.swing.event.*; // !!!
 import javax.swing.Timer;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -66,14 +69,6 @@ import javax.swing.table.DefaultTableCellRenderer;
    @version $Id$
 */
 
-/*
-  current design is ok, but needs improving:
-  - above tabs, add:
-
-  Fixed:   [tree] title of fixed (range)     ( Swap  )
-  Moving:  [tree] title of moving (range)    ( These )
-*/
-
 public class CrossFrame extends XFrame implements PrintableDocument, HasPreferences {
     // gui
     private JTable scoresTable=null, sigsTable, histoTable;
@@ -82,7 +77,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
     private Timer timer;
 
     // l10n
-    private ResourceBundle msg = ResourceBundle.getBundle("CrossdatingBundle");
+    private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // data
     private Sequence seq;
@@ -141,117 +136,132 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
             @param col the cell's column
             @return the Year of that cell */
         protected Year getYear(int row, int col) {
-            return new Year(10 * (row + row_min) + col - 1); // REFACTOR: this looks really friggin familiar...
+            return new Year(10 * (row + row_min) + col - 1); // REFACTOR: this looks really friggin' familiar...
         }
 
-	/** The value at a (row, col) location.  The crossdate score,
-	    except the lefthand column, which is the decade label.
-	    @param row row number to query
-	    @param col column number to query
-	    @return the score at that year, or the decade label */
-	public Object getValueAt(int row, int col) {
-	    if (col == 0) {
-		if (row == 0)
-		    return c.range.getStart();
-		else if (row + row_min == 0)
-		    return new Year(1); // special case
-		else
-		    return getYear(row, col+1);
-	    } else {
+        /** The value at a (row, col) location.  The crossdate score,
+            except the lefthand column, which is the decade label.
+            @param row row number to query
+            @param col column number to query
+            @return the score at that year, or the decade label */
+        public Object getValueAt(int row, int col) {
+            if (col == 0) {
+                if (row == 0)
+                    return c.range.getStart();
+                else if (row + row_min == 0)
+                    return new Year(1); // special case
+                else
+                    return getYear(row, col+1);
+            } else {
                 if ((row + row_min == 0) && (col == 1))
                     return null; // year-zero
                 Year y = getYear(row, col);
                 if (!c.range.contains(y))
                     return null;
                 else
-                    return new Double(c.data[y.diff(c.range.getStart())]);
+                    return new Double(c.data[y.diff(c.range.getStart())]); // BUG: fails here if c.data.length=0 or some such crap
             }
         }
     }
+
+    // REFACTORING STRATEGY:
+    // -- abstract out sigscorestable (extends jtable), allscorestable (ditto), histogramtable(ditto)
+    // -- they get recreated each time anyway, so don't worry about that
+    // -- back/next recreate tables
+    // -- if no overlap, put up label instead of tables (or entire tabset?)
+    // -- "graph" does getselectedtab -> getselectedcrossdate (which doesn't exist for histogram ... huh.)
 
     /**
        A table model for displaying the statistically significant scores
        in a Cross.
     */
     private class CrossSigsTableModel extends AbstractTableModel {
-	// the cross to display
-	private Cross c;
+        // the cross to display
+        private Cross c;
 
-	// formatter for the scores
-	private DecimalFormat df;
+        // formatter for the scores
+        private DecimalFormat df;
 
-	/** Create a Tablemodel to display the significant scores of a
-	    given Cross.
-	    @param c the Cross to be displayed */
-	public CrossSigsTableModel(Cross c) {
-	    // copy data
-	    this.c = c;
+        /** Create a Tablemodel to display the significant scores of a
+            given Cross.
+            @param c the Cross to be displayed */
+        public CrossSigsTableModel(Cross c) {
+            // copy data
+            this.c = c;
 
-	    df = new DecimalFormat(c.getFormat());
-	}
+            df = new DecimalFormat(c.getFormat());
+        }
 
-	public void formatChanged() {
-	    df = new DecimalFormat(c.getFormat());
-	}
+        public void formatChanged() {
+            df = new DecimalFormat(c.getFormat());
+        }
 
-	/** The column name.  The columns are:
-	    <ul>
-	    <li>Nr.
-	    <li>Fixed (f<sub>start</sub> - f<sub>end</sub>)
-	    <li>Moving (m<sub>start</sub> - m<sub>end</sub>)
-	    <li>Algorithm
-	    <li>Overlap
-	    </ul>
-	    @param col the column to query
-	    @return the column's name */
-	public String getColumnName(int col) {
-	    switch (col) {
-	    case 0: return msg.getString("number");
-	    case 1: return msg.getString("fixed") + " (" + c.fixed.range + ")";
-	    case 2: return msg.getString("moving") + " (" + c.moving.range + ")";
-	    case 3: return c.getName();
-	    case 4: return msg.getString("overlap");
-	    default: return null; // never happens
-	    }
-	}
+        /** The column name.  The columns are:
+            <ul>
+            <li>Nr.
+            <li>Fixed (f<sub>start</sub> - f<sub>end</sub>)
+            <li>Moving (m<sub>start</sub> - m<sub>end</sub>)
+            <li>Algorithm
+            <li>Overlap
+            </ul>
+            @param col the column to query
+            @return the column's name */
+        public String getColumnName(int col) {
+            switch (col) {
+                case 0: return msg.getString("number");
+                case 1: return msg.getString("fixed") + " (" + c.fixed.range + ")";
+                case 2: return msg.getString("moving") + " (" + c.moving.range + ")";
+                case 3: return c.getName();
+                case 4: return msg.getString("overlap");
+                default: throw new IllegalArgumentException(); // never happens
+            }
+        }
 
-	/** The number of rows.
-	    @return the number of rows */
-	public int getRowCount() {
-	    return (c==null ? 0 : c.highScores.size());
-	}
+        /** The number of rows.
+            @return the number of rows */
+        public int getRowCount() {
+            return (c==null ? 0 : c.highScores.size());
+        }
 
-	/** The number of columns.
-	    @return the number of columns */
-	public int getColumnCount() {
-	    return 5; // nr, fixed, moving, score, overlap
-	}
+        /** The number of columns.
+            @return the number of columns */
+        public int getColumnCount() {
+            return 5; // nr, fixed, moving, score, overlap
+        }
 
-	/** The class of a given column.  This is used so the default
-	    table renderer right-aligns Integers.
-	    @param col the column to query
-	    @return Class of this column's data */
-	public Class getColumnClass(int col) {
-	    return getValueAt(0, col).getClass();
-	}
+        /** The class of a given column.  This is used so the default
+            table renderer right-aligns Integers.
+            @param col the column to query
+            @return Class of this column's data */
+        public Class getColumnClass(int col) {
+            return getValueAt(0, col).getClass();
+        }
+        
+        /** The value at a (row, col) location.
+            @param row row number to query
+            @param col column number to query
+            @return the cell's value */
+        public Object getValueAt(int row, int col) {
+            if (c == null)
+                return null; // (when does this happen?)
 
-	/** The value at a (row, col) location.
-	    @param row row number to query
-	    @param col column number to query
-	    @return the cell's value */
-	public Object getValueAt(int row, int col) {
-	    if (c == null)
-		return null;
+            Score s = (Score) c.highScores.get(row);
 
-	    switch (col) {
-	    case 0: return new Integer(((Score) c.highScores.get(row)).number);
-	    case 1: return ((Score) c.highScores.get(row)).fixedRange;
-	    case 2: return ((Score) c.highScores.get(row)).movingRange;
-	    case 3: return df.format(((Score) c.highScores.get(row)).score);
-	    case 4: return new Integer(((Score) c.highScores.get(row)).span);
-	    default: return null; // never happens
-	    }
-	}
+            switch (col) {
+                case 0:
+                    return new Integer(s.number);
+                case 1:
+                    return (fixedFloats ? s.fixedRange : c.fixed.range);
+                case 2:
+                    return (movingFloats ? s.movingRange : c.moving.range);
+                case 3:
+                    return df.format(s.score);
+                case 4:
+                    return new Integer(s.span);
+                default:
+                    throw new IllegalArgumentException(); // never happens
+            }
+        }
     }
 
     public class HistogramTableModel extends AbstractTableModel {
@@ -273,7 +283,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
                 case 0: return cross.getName();
                 case 1: return msg.getString("quantity");
                 case 2: return msg.getString("histogram");
-                default: return null; // never happens
+                default: throw new IllegalArgumentException(); // never happens
             }
         }
 
@@ -298,8 +308,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
                 case 0: return String.class;
                 case 1: return Integer.class;
                 case 2: return Integer.class;
-                default: return null; // never happens
-                                      // REFACTOR: use array lookup
+                default: throw new IllegalArgumentException(); // never happens
             }
         }
 
@@ -320,11 +329,15 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
                         return "";
                     return new Integer(n);
 
+                    // -- there's a lot of new Integer creation going on around here, but it
+                    // doesn't seem to be hurting performance.  if it becomes a problem,
+                    // it's probably reasonable to start memoizing.
+
                 case 2:
                     return new Integer(n);
 
                 default:
-                    return null; // never happens
+                    throw new IllegalArgumentException(); // nevers happens
                                  // possible solution: return thisrow[col]; -- no default needed!
 
                     // what i'll need to do this right:
@@ -344,27 +357,27 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 
     // gui setup
     private void initGui() {
-	// timer ------------------------------------------------------------
-	timer = new Timer(10 /* ms */, new ActionListener() {
-		public void actionPerformed(ActionEvent ae) {
-		    if (cross.isFinished()) {
-			// stop timer
-			((Timer) ae.getSource()).stop();
+        // timer ------------------------------------------------------------
+        timer = new Timer(10 /* ms */, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (cross.isFinished()) {
+                    // stop timer
+                    ((Timer) e.getSource()).stop();
 
-			// show tables
-			if (scoresTable == null)
-			    initTables();
-			else
-			    updateTables();
+                    // show tables
+                    if (scoresTable == null)
+                        initTables();
+                    else
+                        updateTables();
 
-			// update titles
-			fixedTitle.setText(cross.fixed.toString());
-			movingTitle.setText(cross.moving.toString());
-			fixedTree.setSample(cross.fixed);
-			movingTree.setSample(cross.moving);
-		    }
-		}
-	    });
+                    // update titles
+                    fixedTitle.setText(cross.fixed.toString());
+                    movingTitle.setText(cross.moving.toString());
+                    fixedTree.setSample(cross.fixed);
+                    movingTree.setSample(cross.moving);
+                }
+            }
+        });
 
 	// bottom panel ------------------------------------------------------------
         JPanel buttons = new JPanel(new ButtonLayout());
@@ -377,6 +390,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         // prev
         prevButton = new JButton(msg.getString("prev"),
                                  new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Back16.gif")));
+        if (Platform.isMac) prevButton.setIcon(null);
         prevButton.setMnemonic(msg.getString("prev_key").charAt(0));
         prevButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
@@ -399,11 +413,11 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
                 thread.start();
             }
         });
-        buttons.add(prevButton);
 
         // next
         nextButton = new JButton(msg.getString("next"),
                                  new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Forward16.gif")));
+        if (Platform.isMac) nextButton.setIcon(null);
         nextButton.setMnemonic(msg.getString("next_key").charAt(0));
         nextButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
@@ -426,7 +440,6 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
                 thread.start();
             }
         });
-        buttons.add(nextButton);
 
         // graph
         graphButton = new JButton(msg.getString("plot"));
@@ -441,7 +454,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
                     if (nr == -1) {
                         JOptionPane.showMessageDialog(null,
                                                       msg.getString("selecterror"),
-                                                      msg.getString("error"),
+                                                      msg.getString("cross_error"),
                                                       JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -459,7 +472,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
                     if (r==-1 || c==-1) {
                         JOptionPane.showMessageDialog(null,
                                                       msg.getString("selecterror"),
-                                                      msg.getString("error"),
+                                                      msg.getString("cross_error"),
                                                       JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -468,7 +481,6 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
                 }
             }
         });
-        buttons.add(graphButton);
 
 	// map (!)
 	mapButton = new JButton(msg.getString("map"));
@@ -504,23 +516,24 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 		    } catch (Exception e) {
 			JOptionPane.showMessageDialog(null,
 						      msg.getString("maperror"),
-						      msg.getString("error"),
+						      msg.getString("cross_error"),
 						      JOptionPane.ERROR_MESSAGE);
 			return;
 		    }
 
-		    // draw the map
-		    try {
-			new MapFrame(s1, s2);
-		    } catch (IOException ioe) {
-			System.out.println("ioe! -- " + ioe);
-		    }
-		}
-	    });
-	buttons.add(mapButton);
+                    // draw the map
+                    try {
+                        new MapFrame(s1, s2);
+                    } catch (IOException ioe) {
+                        System.out.println("ioe! -- " + ioe);
+                        // DEAL WITH ME HERE
+                    }
+                }
+        });
 
 	// close
-	closeButton = new JButton(msg.getString("close"));
+/* -- obsolete
+        closeButton = new JButton(msg.getString("close"));
 	closeButton.setMnemonic(msg.getString("close_key").charAt(0));
 	closeButton.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
@@ -528,6 +541,14 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 		}
 	    });
 	buttons.add(closeButton);
+*/
+
+        // put buttons in panel
+        buttons.add(graphButton);
+        buttons.add(mapButton);
+        buttons.add(Box.createHorizontalGlue());
+        buttons.add(prevButton);
+        buttons.add(nextButton);
 
 	// center panel ----------------------------------------------------------------------
 	tabPane = new JTabbedPane();
@@ -607,39 +628,46 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         graphButton.setEnabled(true);
     }
 
-    private class ScoreRenderer extends JLabel implements TableCellRenderer {
+    // for performance reasons, extend DefaultTableCellRenderer, not JLabel+TableCellRenderer
+    // (see DefaultTableCellRenderer javadoc for why using a stock JLabel probably isn't so great.)
+    private class ScoreRenderer extends DefaultTableCellRenderer {
         private DecimalFormat df;
+        private boolean fontSetYet=false;
+        private Color fore, back, lite;
         public ScoreRenderer(Cross c) {
             super();
             setHorizontalTextPosition(SwingConstants.RIGHT); // FIXME: isn't this ignored?
-            setOpaque(true);
+            setOpaque(true); // is this still needed?
             df = new DecimalFormat(c.getFormat());
+            fore = Color.getColor("corina.cross.foreground");
+            back = Color.getColor("corina.cross.background");
+            lite = Color.getColor("corina.grid.highlightcolor");
         }
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus,
                                                        int row, int column) {
-            // always reset fore,background -- check for nulls?
-            super.setBackground(Color.getColor("corina.cross.background"));
-            super.setForeground(Color.getColor("corina.cross.foreground"));
-
             // null: bail
             if (value == null) {
+                super.setBackground(back);
                 setText("");
                 return this;
             }
 
-            // font -- needed here?
-            super.setFont(table.getFont());
+            // font -- needed here?  (well, at least minimize the number of calls)
+            if (!fontSetYet) {
+                super.setFont(table.getFont());
+                super.setForeground(Color.getColor("corina.cross.foreground")); // do fore, too
+                fontSetYet = true;
+            }
 
             // score
-            double score =((Number) value).doubleValue();
+            double score = ((Number) value).doubleValue();
 
-            // [- change: value=Double, and do formatting here!] -- this comment is old, but might be useful still
+            // format the number
             setText(df.format(score));
 
-            // hilite sig scores; BINARY ONLY: USE ANALOG HERE, IF DESIRED
-            if (score > cross.getMinimumSignificant())
-                super.setBackground(Color.getColor("corina.grid.highlightcolor"));
+            // hilite sig scores
+            super.setBackground(score > cross.getMinimumSignificant() ? lite : back);
 
             return this;
         }
@@ -803,7 +831,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
     }
 
     // for centered columns of stuff in a table
-    // no, this is stupid.  just call ((defaultrenderer) getrenderer()).sethorizalign('center);
+    // no, THIS IS STUPID.  just call ((defaultrenderer) getrenderer()).sethorizalign('center);
     private static DefaultTableCellRenderer centerRenderer;
     static {
         centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
@@ -833,7 +861,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         initGui();
 
         // menubar: in testing
-        setJMenuBar(new XMenubar(this, null));
+        setJMenuBar(new XMenubar(this, makeMenus())); // REFACTOR: move makeMenus() part of XFrame?
 
         // run cross
         Thread thread = new Thread(cross);
@@ -847,6 +875,136 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         show();
     }
 
+    // TODO: note that what's printed (and even the options to present the user)
+    // depend on which view is shown -- crossprinter, tableprinter, gridprinter.
+    // crossprinter and tableprinter should be refactored to use corina.print, as well.
+    
+    private JMenu[] makeMenus() {
+        JMenuItem asCross = new XMenubar.XRadioButtonMenuItem("as Crossdates");
+        asCross.setSelected(true);
+        asCross.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("WRITEME: stub to switch to crossdate-view");
+            }
+        });
+
+        final JFrame glue = this;
+        
+        JMenuItem asTable = new XMenubar.XRadioButtonMenuItem("as Table");
+        asTable.setEnabled(true); // enabled for 1-by-n crossdates _only_
+        asTable.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                // this might be as simple as ...
+                try {
+                    JTable table = new JTable(new TableTableModel(new Table(seq)));
+                    glue.setContentPane(new JScrollPane(table));
+                    table.getColumnModel().getColumn(0).setPreferredWidth((int) (glue.getWidth() * 0.40)); // not table.getWidth?  (doesn't work, dunno why not)
+                    // i think a cardlayout would be more like what i'm looking for, and probably not require validate+repaint
+                    glue.validate();
+                    glue.repaint();
+                } catch (IOException ioe) {
+                    System.out.println("ack -- " + ioe);
+                }
+                // but:
+                // -- memoize it
+                // -- show it, THEN start computing it
+                // (idea: not-yet-loaded rows are shown as filename-only, with a gray background)
+
+                // other things to keep in mind:
+                // -- "title" column should be wider
+                // -- select the crossdate the user was just looking at
+                // -- double-clicking (or return) on any crossdate does what?  sets view=cross, or graphs, i don't know
+                // -- need graph/map buttons still?  sure!
+                // -- doesn't invalidate/repaint correctly
+                // -- write cell renderer so "3.85" gets centered around the "." (and ranges around their "-"'s)
+                // -- highlight significant crosses on this view, as well; or just use even-odd coloring
+                // -- overlap (and others, until they're decimal-aligned) should be align-right
+                // -- click-to-sort, of course
+                // -- hook up printing and saving to the current view
+                // -- (well, saving should save everything all the time, but have a view="table" arg)
+                // -- window title is wrong
+                // -- as-table should only be enabled for 1-by-n crossdates (should it?)
+                // -- context menu: open sample, graph sample, ---, view crossdate, graph crossdate
+                // -- still need "recompute" button?  (no, recompute is evil.  but how else to know when a file changed?)
+                // -- accept drops: samples are added to moving-list; collections(?) have all of their items added
+                // -- edit menu: "select-all, copy" should be supported
+
+                // add fourth, initial view, "samples"?  left column is fixed, right column is moving, "run" switches to cross-view
+            }
+        });
+
+        JMenuItem asGrid = new XMenubar.XRadioButtonMenuItem("as Grid");
+        asGrid.setEnabled(true); // enabled for n-by-n crossdates _only_
+        asGrid.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("WRITEME: stub to switch to grid-view");
+//                JComponent gridComponent = new GridComponent(new Grid(seq)); // write GridComponent!
+//                glue.setContentPane(new JScrollPane(gridComponent));
+                glue.validate();
+                glue.repaint();
+                
+                // normal grid operations:
+                // -- save, print.  (keep operations, override usual menuitems.)
+                // -- graph all -- i'll probably want to keep it -- make available anywhere? -- seq.getAllSamples()?
+                // -- adjust zoom -- i guess i'll keep it -- it's not much use for other views, is it? -- why am i now just using the standard font here?  (same view for screen and print.) -- hmm...
+            }
+        });
+
+        JMenuItem fixed = new XMenubar.XRadioButtonMenuItem("Fixed floats");
+        fixed.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                fixedFloats = true;
+                movingFloats = false;
+                repaint();
+            }
+        });
+        JMenuItem moving = new XMenubar.XRadioButtonMenuItem("Moving floats");
+        moving.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                fixedFloats = false;
+                movingFloats = true;
+                repaint();
+            }
+        });
+        moving.setSelected(true);
+        JMenuItem both = new XMenubar.XRadioButtonMenuItem("Both float");
+        both.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                fixedFloats = true;
+                movingFloats = true;
+                repaint();
+            }
+        });
+        
+        { // views radio button group
+            ButtonGroup views = new ButtonGroup();
+            views.add(asCross);
+            views.add(asTable);
+            views.add(asGrid);
+        }
+
+        { // ranges radio button group
+            ButtonGroup ranges = new ButtonGroup();
+            ranges.add(fixed);
+            ranges.add(moving);
+            ranges.add(both);
+        }
+
+        // make a menu
+        JMenu view = new XMenubar.XMenu("View");
+//        view.add(asCross);
+//        view.add(asTable);
+//        view.add(asGrid);
+//        view.addSeparator();
+        view.add(fixed);
+        view.add(moving);
+        view.add(both);
+
+        return new JMenu[] { view };
+    }
+
+    private boolean fixedFloats = false, movingFloats = true;
+
     public void refreshFromPreferences() {
 	// gridlines
 	boolean gridlines = Boolean.getBoolean("corina.cross.gridlines");
@@ -859,27 +1017,27 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         ((CrossSigsTableModel) sigsTable.getModel()).formatChanged();
         ((HistogramTableModel) histoTable.getModel()).formatChanged();
         // need to call something here to update histogram tab?
-        
-	// font
-	if (System.getProperty("corina.cross.font") != null) {
-	    Font f = Font.getFont("corina.cross.font");
-	    scoresTable.setFont(f);
-	    sigsTable.setFont(f);
-	    histoTable.setFont(f);
-	    scoresTable.setRowHeight(f.getSize() + 3);
-	    sigsTable.setRowHeight(f.getSize() + 3);
-	    histoTable.setRowHeight(f.getSize() + 3);
-	}
 
-	// colors
-	if (System.getProperty("corina.cross.background") != null) {
-	    scoresTable.setBackground(Color.getColor("corina.cross.background"));
-	    sigsTable.setBackground(Color.getColor("corina.cross.background"));
-	}
-	if (System.getProperty("corina.cross.foreground") != null) {
-	    scoresTable.setForeground(Color.getColor("corina.cross.foreground"));
-	    sigsTable.setForeground(Color.getColor("corina.cross.foreground"));
-	}
+        // font
+        if (System.getProperty("corina.cross.font") != null) {
+            Font f = Font.getFont("corina.cross.font");
+            scoresTable.setFont(f);
+            sigsTable.setFont(f);
+            histoTable.setFont(f);
+            scoresTable.setRowHeight(f.getSize() + 3);
+            sigsTable.setRowHeight(f.getSize() + 3);
+            histoTable.setRowHeight(f.getSize() + 3);
+        }
+
+        // colors
+        if (System.getProperty("corina.cross.background") != null) {
+            scoresTable.setBackground(Color.getColor("corina.cross.background"));
+            sigsTable.setBackground(Color.getColor("corina.cross.background"));
+        }
+        if (System.getProperty("corina.cross.foreground") != null) {
+            scoresTable.setForeground(Color.getColor("corina.cross.foreground"));
+            sigsTable.setForeground(Color.getColor("corina.cross.foreground"));
+        }
     }
 
     // printing
@@ -887,7 +1045,62 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         return PrintableDocument.PRINTABLE;
     }
     public Printable makePrintable(PageFormat pf) {
-        return new CrossPrinter(cross);
+        // ask what to print
+        final JDialog d = new JDialog(this, "Print Views", true);
+        JPanel p = new JPanel(new BorderLayout());
+        d.setContentPane(p);
+        p.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
+
+        p.add(new JLabel("Print which views?"), BorderLayout.NORTH);
+
+        p.add(Box.createHorizontalStrut(20), BorderLayout.WEST);
+
+        int defaultView = tabPane.getSelectedIndex();
+        JCheckBox sigsCheckbox = new JCheckBox("Significant Scores", defaultView==0);
+        JCheckBox allCheckbox = new JCheckBox("All Scores", defaultView==1);
+        JCheckBox histoCheckbox = new JCheckBox("Histogram", defaultView==2);
+        
+        JPanel c = new JPanel();
+        c.setLayout(new BoxLayout(c, BoxLayout.Y_AXIS));
+        c.add(Box.createVerticalStrut(10));
+        c.add(sigsCheckbox);
+        c.add(Box.createVerticalStrut(6));
+        c.add(allCheckbox);
+        c.add(Box.createVerticalStrut(6));
+        c.add(histoCheckbox);
+        c.add(Box.createVerticalStrut(12));
+        p.add(c, BorderLayout.CENTER);
+                        
+        JPanel b = new JPanel(new ButtonLayout());
+        JButton cancel = new JButton("Cancel");
+        JButton ok = new JButton("OK");
+        b.add(Box.createHorizontalStrut(24));
+        b.add(cancel);
+        b.add(ok);
+        p.add(b, BorderLayout.SOUTH);
+
+//        boolean reallyPrint=false;
+        cancel.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                d.dispose();
+            }
+        });
+        ok.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                d.dispose();
+//                reallyPrint = true;
+            }
+        });
+        
+        corina.util.OKCancel.addKeyboardDefaults(d, ok);
+        d.setResizable(false);
+        d.pack();
+        d.show();
+
+        // print it
+        //        return (reallyPrint ? new CrossPrinter(cross) : null); // need UserCancelled here!
+        return new CrossPrinter(cross, sigsCheckbox.isSelected(), allCheckbox.isSelected(), histoCheckbox.isSelected());
+        // need UserCancelled here!
     }
     public Pageable makePageable(PageFormat pf) {
         return null;
