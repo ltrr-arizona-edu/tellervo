@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Font;
+import java.awt.Insets;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -60,12 +63,20 @@ public class JLinedLabel extends JPanel {
 	JPanel p = new JPanel();
 	p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 
-	setLayout(new BorderLayout());
-	add(p, BorderLayout.CENTER);
+	// extract this, maybe? -- it centers stuff
+	setLayout(new GridBagLayout());
+	add(p, new GridBagConstraints(0, 0, 1, 1,
+				      0.5, 0.5,
+				      GridBagConstraints.CENTER,
+				      GridBagConstraints.NONE,
+				      new Insets(0, 0, 0, 0),
+				      0, 0));
 
 	// set layout manager, and add lines
 	for (int i=0; i<text.size(); i++) {
 	    JLabel label = new JLabel((String) text.get(i));
+	    label.setAlignmentX(0.5f);
+	    label.setMaximumSize(label.getMinimumSize()); // ?
 	    lines.add(label);
 	    p.add(label);
 	}
@@ -77,12 +88,9 @@ public class JLinedLabel extends JPanel {
     // also set fonts for all sub-jlabels
     public void setFont(Font f) {
 	super.setFont(f);
-	if (lines == null)
-	    System.out.println("lines is fucking null");
-	else
-	    for (int i=0; i<lines.size(); i++) {
+	if (lines != null) // lines==null the first time this is called
+	    for (int i=0; i<lines.size(); i++)
 		((JLabel) lines.get(i)).setFont(f);
-	    }
     }
 
     public static void main(String args[]) {
