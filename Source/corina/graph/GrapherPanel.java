@@ -26,6 +26,7 @@ import corina.Sample;
 import corina.gui.XFrame;
 import corina.editor.Editor;
 import corina.util.ColorUtils;
+import corina.util.Platform;
 
 import java.util.List;
 
@@ -49,7 +50,7 @@ import javax.swing.JFrame;
 import javax.swing.JScrollBar;
 import javax.swing.JOptionPane;
 
-public final class GrapherPanel extends	JPanel
+public class GrapherPanel extends JPanel
                                 implements KeyListener,
 					   MouseListener,
 					   MouseMotionListener,
@@ -393,14 +394,15 @@ public final class GrapherPanel extends	JPanel
 
     // graphs = List of Graph
     public GrapherPanel(List graphs, JFrame myFrame) {
-	// yearSize
-	queryScale();
+        // yearSize
+        queryScale();
 
-	// my frame
-	this.myFrame = myFrame;
+        // my frame
+        this.myFrame = myFrame;
 
-	// cursor
-	setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR)); // use a crosshair
+        // cursor -- (mac crosshair doesn't invert, so it's invisible on black)
+        if (!Platform.isMac)
+            setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR)); // use a crosshair
 
 	// baselines?
 	baselines = Boolean.getBoolean("corina.graph.baselines");
@@ -578,6 +580,12 @@ public final class GrapherPanel extends	JPanel
 	    g2.drawString(bounds.getStart().add(cursorX / yearSize).toString(), cursorX+5, 15);
 	}
     }
+
+    // location-dependent tooltip
+//    public String getToolTipText(MouseEvent event) {
+// -- for sample S, year Y, and S[Y] = V, this should be: "S\nY: V"
+//       return "event=" + event;
+//    }
 
     public void update() {
 	myAgent.update();
