@@ -7,7 +7,7 @@ public class RectangularRenderer extends Renderer {
         this.view = v;
     }
 
-    private static final int EXTRA_ZOOM = 10;
+    private static final int EXTRA_ZOOM = 16;
 
     public Vector3 project(Location loc) {
         Vector3 v = new Vector3();

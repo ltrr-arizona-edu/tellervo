@@ -75,6 +75,7 @@ public class MapPanel extends JPanel implements Printable {
         // RepaintManager.currentManager(this).setDoubleBufferingEnabled(false);
 
         // initial buffer
+        buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB); // REFACTOR ME
         updateBuffer();
     }
 
@@ -92,7 +93,8 @@ public class MapPanel extends JPanel implements Printable {
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
         // recreate buf
-        buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB);
+        if (buf.getWidth()!=view.size.width || buf.getHeight()!=view.size.height)
+            buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = (Graphics2D) buf.getGraphics();
 
         // aa -- much slower, and doesn't help quality much, if at all.
@@ -130,16 +132,16 @@ public class MapPanel extends JPanel implements Printable {
     }
 
     // a hacked version of updatebuffer for gridline-dragging
-    public void updateBufferGridlinesOnly() {
-        // recreate buf
-        buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB);
+    public void updateBufferGridlinesOnly() {// REFACTOR: updateBuffer(fast=true);
+        if (buf.getWidth()!=view.size.width || buf.getHeight()!=view.size.height)
+            buf = new BufferedImage(view.size.width, view.size.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = (Graphics2D) buf.getGraphics();
 
         // background
         g2.setColor(Color.white); // const?  use pallette.java
         g2.fillRect(0, 0, getWidth(), getHeight());
 
-        // "let's get ready to reeeenderrrrr!"
+        // just render the gridlines
         Renderer r = Renderer.makeRenderer(view);
         drawGridlines(g2, r);
     }
@@ -215,19 +217,6 @@ public class MapPanel extends JPanel implements Printable {
         }
     }
 
-        // for fun: draw the bounding boxes in green
-        /*
-         Point p1 = renderer.render(new Location(s.minlat, s.minlong));
-         Point p2 = renderer.render(new Location(s.minlat, s.maxlong));
-         Point p3 = renderer.render(new Location(s.maxlat, s.maxlong));
-         Point p4 = renderer.render(new Location(s.maxlat, s.minlong));
-         if (p1!=null && p2!=null && p3!=null && p4!=null) {
-             g2.setColor(Color.green);
-             g2.drawPolygon(new int[] { p1.x, p2.x, p3.x, p4.x },
-                            new int[] { p1.y, p2.y, p3.y, p4.y }, 4);
-         }
-         */
-
     // draw a little label, like those flags on hors d'oeuvres to tell you
     // which ones have dead animals in them and which ones are food
     private void label(Graphics2D g2, String text, int x, int y) {
@@ -300,6 +289,9 @@ public class MapPanel extends JPanel implements Printable {
     // this method is lousy.  instead of direct computation, it uses
     // nested binary searches, neither of which is guaranteed to
     // terminate with the correct result.  ouch.  rewrite me, please.
+    // ---
+    // it needs to ask the renderer, "how many pixels is 100km of longitude at x¡ latitude"?
+    // add that to renderer, perhaps.
     private void drawScale(Graphics2D g2, Renderer r) {
         try {
 
@@ -378,15 +370,6 @@ public class MapPanel extends JPanel implements Printable {
     // blit out the buffer, and draw Extra Crap.
     public void paintComponent(Graphics g) {
         g.drawImage(buf, 0, 0, Color.white, null);
-
-        // draw a line? -- OBSOLETE, REMOVE ME
-/*
-        if (drawLine) {
-            g.setColor(Color.black);
-            g.drawLine((int)p1.getX(), (int)p1.getY(),
-                       (int)p2.getX(), (int)p2.getY());
-        }
- */
 
         // current tool gets a chance to decorate
         decorate(g);
