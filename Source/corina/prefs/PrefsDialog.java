@@ -143,7 +143,10 @@ public class PrefsDialog extends JFrame {
         setResizable(false);
 
         // icon!
-	setIconImage(Builder.getImage("Preferences16.gif"));
+        Image image = Builder.getImage("Preferences16.gif");
+        if (image != null) {
+	        setIconImage(image);
+        }
 
         // use my own panel, so i can add a border
         JPanel p = new JPanel(new BorderLayout());
