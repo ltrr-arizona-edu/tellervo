@@ -13,9 +13,8 @@ import java.util.ArrayList;
 
 public class Printer {
 
-    // public interface
-    public static Printable print(List lines) {
-        return new LinePrinter(lines);
+    public static Printable print(PrintableDocument doc) {
+        return new LinePrinter(doc);
     }
 
     private static class LinePrinter implements Printable {
@@ -23,8 +22,8 @@ public class Printer {
 
         private List firstRowOfPage = null; // needed by print()
 
-        LinePrinter(List lines) {
-            this.lines = lines;
+        LinePrinter(PrintableDocument doc) {
+            this.lines = doc.getLines();
         }
 
         // (does this ignore pf?  an old comment said it once might have.)
