@@ -85,80 +85,101 @@ public class TwoColumn extends Filetype {
 	@exception IOException if any problem with I/O occurs
 	@see Sample */
     public Sample load() throws IOException {
-	// sample to return
-	Sample s = new Sample();
+        // sample to return
+        Sample s = new Sample();
 
-	// start/current/end years
-	Year start=null, current=null;
+        // start/current/end years
+        Year start=null, current=null;
 
-	// set up a tokenizer on the file
+        // maybe read a line of crap, up to 120 chars.
+        maybeEatCrap(s);
+
+        // set up a tokenizer on the file
 //	r = new BufferedReader(new FileReader(filename));
-	StreamTokenizer t = new StreamTokenizer(r);
+        StreamTokenizer t = new StreamTokenizer(r);
 
-	// this is the last-chance catch-all for random text data, so
-	// don't be too afraid to throw a WrongFiletypeException:
-	// we'll be getting all sorts of crap here.
+        // this is the last-chance catch-all for random text data, so
+        // don't be too afraid to throw a WrongFiletypeException:
+        // we'll be getting all sorts of crap here.
 
-	// loop, reading (year, data)
-	loop:
-	for (;;) {
-	    // year
-	    int x = t.nextToken();
-	    if (x == StreamTokenizer.TT_EOF)
-		break;
-	    else if (x != StreamTokenizer.TT_NUMBER)
-		throw new WrongFiletypeException();
+        // loop, reading (year, data)
+loop:
+            for (;;) {
+                // year
+                int x = t.nextToken();
+                if (x == StreamTokenizer.TT_EOF)
+                    break;
+                else if (x != StreamTokenizer.TT_NUMBER)
+                    throw new WrongFiletypeException();
 
-	    // set start, if not yet read
-	    if (start == null) {
-		current = start = new Year((int) t.nval);
-	    } else {
-		// already know start -- double-check it
-		current = current.add(1);
-		Year y = new Year((int) t.nval);
+                // set start, if not yet read
+                if (start == null) {
+                    current = start = new Year((int) t.nval);
+                } else {
+                    // already know start -- double-check it
+                    current = current.add(1);
+                    Year y = new Year((int) t.nval);
 
-		// it's not the right year -- maybe it's the count?
-		if (!y.equals(current)) {
-		    if (s.count == null) {
-			s.count = new ArrayList();
-			s.count.add(new Integer((int) t.nval));
-			current = current.add(-1); // not done yet...
-			continue loop;
-		    } else {
-			throw new WrongFiletypeException();
-		    }
-		}
-	    }
+                    // it's not the right year -- maybe it's the count?
+                    if (!y.equals(current)) {
+                        if (s.count == null) {
+                            s.count = new ArrayList();
+                            s.count.add(new Integer((int) t.nval));
+                            current = current.add(-1); // not done yet...
+                            continue loop;
+                        } else {
+                            throw new WrongFiletypeException();
+                        }
+                    }
+                }
 
-	    // datum
-	    x = t.nextToken();
-	    if (x != StreamTokenizer.TT_NUMBER)
-		throw new WrongFiletypeException();
-	    s.data.add(new Integer((int) t.nval));
+                // datum
+                x = t.nextToken();
+                if (x != StreamTokenizer.TT_NUMBER)
+                    throw new WrongFiletypeException();
+                s.data.add(new Integer((int) t.nval));
 
-	    // count
-	    if (s.count != null) {
-		x = t.nextToken();
-		if (x != StreamTokenizer.TT_NUMBER)
-		    throw new WrongFiletypeException();
-		s.count.add(new Integer((int) t.nval));
-	    }
-	}
+                // count
+                if (s.count != null) {
+                    x = t.nextToken();
+                    if (x != StreamTokenizer.TT_NUMBER)
+                        throw new WrongFiletypeException();
+                    s.count.add(new Integer((int) t.nval));
+                }
+            }
 
-	// close file (asap)
-	r.close();
+        // close file (asap)
+        r.close();
 
-	// the 800 rule.
-	s.guessIndexed();
+        // the 800 rule.
+        s.guessIndexed();
 
-	// set range
-	s.range = new Range(start, s.data.size());
+        // set range
+        s.range = new Range(start, s.data.size());
 
-	// return it
-	return s;
+        // return it
+        return s;
     }
 
-// editor needs this to save to a custom writer for the clipboard
+    // if there's a line with text (letters) on it (up to 120 chars long),
+    // put it in the comments field, and skip past it.
+    private void maybeEatCrap(Sample s) throws IOException {
+        boolean isCrap = false;
+        r.mark(120);
+        String l = r.readLine();
+        for (int i=0; i<l.length(); i++) {
+            if (Character.isLetter(l.charAt(i))) {
+                isCrap = true;
+                break;
+            }
+        }
+        if (isCrap)
+            s.meta.put("comments", "Header line was: \"" + l + "\"");
+        else
+            r.reset();
+    }
+    
+    // editor needs this to save to a custom writer for the clipboard
     public TwoColumn(Writer wr) {
         w = new BufferedWriter(wr);
     }
