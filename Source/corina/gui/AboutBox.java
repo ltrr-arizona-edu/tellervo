@@ -76,7 +76,7 @@ public class AboutBox extends JDialog {
     private static AboutBox _me=null;
 
     // i18n
-    private ResourceBundle msg = ResourceBundle.getBundle("AboutBundle");
+    private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // (javadoc)
 
