@@ -43,24 +43,49 @@ public class SpinnerComboBox extends JComboBox {
   private ActionListener actionListener = new ActionListener() {
     public void actionPerformed(ActionEvent e) {
       setEditable(true);
+      // this looks like it simply queues/fires an event, so we shouldn't have to
+      // invoke this in SwingUtilities.invokeLater
+      ((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().requestFocus();
     }
   };
   private ChangeListener changeListener = new ChangeListener() {
     public void stateChanged(ChangeEvent e) {
       System.out.println("stateChanged " + spinner.getValue());
       setSelectedItem(spinner.getValue());
+      //    XXX: this particular line doesn't appear to be working,
+      // the intention is to resize when a new value, which may be wider
+      // or narrower, is entered
+      validate();
+      repaint();
+      /*SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+          // XXX: this particular line doesn't appear to be working,
+          // the intention is to resize when a new value, which may be wider
+          // or narrower, is entered
+          validate();
+          
+          repaint();
+        }
+      });*/
     }
   };
   private FocusListener focusListener = new FocusAdapter() {
     public void focusLost(FocusEvent fe) {
       System.out.println("textfield focus lost");
-      SwingUtilities.invokeLater(new Runnable() {
+      setEditable(false);
+      repaint();
+      /*SwingUtilities.invokeLater(new Runnable() {
         public void run() {
           System.out.println("setting editable false");
           setEditable(false);
+          // XXX: this particular line doesn't appear to be working,
+          // the intention is to resize when a new value, which may be wider
+          // or narrower, is entered
+          validate();
+          
           repaint();
         }
-      });
+      });*/
     }
   };
 
