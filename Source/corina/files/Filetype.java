@@ -121,6 +121,9 @@ public abstract class Filetype {
 	@return character to use as mnemonic */
     public abstract char getMnemonic();
 
+    // ADDME: should have a "suggested extension" per filetype, too.
+    // e.g., tucson files are "tuc"(?), spreadsheet/range files are .txt,
+
     //
     // for clients who need a filetype object
     //
