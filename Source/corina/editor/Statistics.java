@@ -62,15 +62,7 @@ public class Statistics extends JLabel implements SampleListener {
 				    // store state in pref
 				    System.setProperty("corina.modeline.statistic",
 						       stat_keys[state]);
-				    try {
-					Prefs.save();
-				    } catch (IOException ioe) {
-					System.out.println("well, bug saving prefs, but i shouldn't");
-					System.out.println("even have to deal with this here");
-					System.out.println("(in modeline.java).  that's just a");
-					System.out.println("lousy design.  go yell at ken.");
-				    }
-				    // DESIGN: use name, not number, in case i want to change order
+				    Prefs.save();
 
 				    label.setText(((JMenuItem) e.getSource()).getText());
 				}
@@ -119,7 +111,7 @@ public class Statistics extends JLabel implements SampleListener {
 
 	// total radius
 	f = new DecimalFormat("0.00 " + I18n.getText("mm"));
-	float radius = sample.computeRadius() / 100f; // in mm -- NEVER USED if isIndexed
+	float radius = sample.computeRadius() / 100f; // in mm -- UNUSED if sample isIndexed
 	stat_values[i++] = (sample.isIndexed() ? NA : f.format(radius));
 
 	// (fall-through on f, radius)
