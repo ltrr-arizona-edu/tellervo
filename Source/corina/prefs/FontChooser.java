@@ -20,6 +20,8 @@
 
 package corina.prefs;
 
+import corina.gui.UserCancelledException;
+
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Component;
@@ -72,7 +74,7 @@ public class FontChooser extends JDialog {
 	preview.setFont(myFont);
     }
 
-    public FontChooser(Frame owner, String title, String oldFont) {
+    private FontChooser(Frame owner, String title, String oldFont) {
 	// dialog-stuff
 	super(owner, title, true);
 
@@ -272,13 +274,13 @@ public class FontChooser extends JDialog {
 	show();
     }
 
-    public String getResult() {
-	if (cancel)
-	    return null;
+    private String getResult() throws UserCancelledException {
+        if (cancel)
+            throw new UserCancelledException();
 
 	String style="plain";
 	Font myFont = new Font(_name, _style, _size);
-	if (myFont.isItalic() && myFont.isBold())
+	if (myFont.isItalic() && myFont.isBold()) // not pretty
 	    style = "BOLDitalic";
 	else if (myFont.isItalic())
 	    style = "italic";
@@ -288,9 +290,8 @@ public class FontChooser extends JDialog {
     }
 
     // should use Fonts instead of Strings, but who's counting?
-    public static String showDialog(Frame owner, String title, String oldFont) {
-	FontChooser f = new FontChooser(owner, title, oldFont);
-	return f.getResult();
+    public static String showDialog(Frame owner, String title, String oldFont) throws UserCancelledException {
+        FontChooser f = new FontChooser(owner, title, oldFont);
+        return f.getResult();
     }
-
 }

@@ -23,6 +23,7 @@ package corina.prefs;
 import corina.gui.HasPreferences;
 import corina.gui.ButtonLayout;
 import corina.gui.DialogLayout;
+import corina.gui.UserCancelledException;
 
 import java.io.IOException;
 import java.util.List;
@@ -138,10 +139,12 @@ public class PrefsDialog extends JFrame {
                             JButton b = new JButton("Change font");
                             b.addActionListener(new AbstractAction() {
                                 public void actionPerformed(ActionEvent ae) {
-                                    String f = FontChooser.showDialog(me /* !!! */, "Choose new font", o.value);
-                                    if (f != null)
-                                        o.value = f;
-                                    p.setFont(Font.decode(o.value));
+                                    try {
+                                        o.value = FontChooser.showDialog(me /* !!! */, "Choose new font", o.value);
+                                        p.setFont(Font.decode(o.value));
+                                    } catch (UserCancelledException uce) {
+                                        // do nothing
+                                    }
                                 }
                             });
 
