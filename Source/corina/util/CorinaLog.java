@@ -12,6 +12,7 @@ import javax.swing.event.ListDataListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.SimpleLog;
 
 /**
  * @author Aaron Hamid
@@ -183,7 +184,7 @@ public class CorinaLog extends SimpleLog {
   /**
    * Log to central log buffer.
    */
-  protected void doWrite(StringBuffer buf) {
+  protected void write(StringBuffer buf) {
     String str = buf.toString();
     //  If multiple threads log stuff, we don't want
     // the output to get mixed up
@@ -201,62 +202,22 @@ public class CorinaLog extends SimpleLog {
       }
       listModel.update(lineCount,oldWrap);
     }
-  }  
-  public void debug(Object message) {
-    super.debug(message);
-    if (chained != null) chained.debug(message); 
-  }
-  public void debug(Object message, Throwable t) {
-    super.debug(message, t);
-    if (chained != null) chained.debug(message, t); 
-  }
-  public void error(Object message) {
-    super.error(message);
-    if (chained != null) chained.error(message); 
-  }
- 
-  public void error(Object message, Throwable t) {
-    super.error(message, t);
-    if (chained != null) chained.error(message, t);  
-  }
-
-  public void fatal(Object message) {
-    super.fatal(message);
-    if (chained != null) chained.fatal(message);  
-  }
-    
-  public void fatal(Object message, Throwable t) {
-    super.fatal(message, t);
-    if (chained != null) chained.fatal(message, t);  
-  }
-    
-  public void info(Object message) { 
-    super.info(message);
-    if (chained != null) chained.info(message); 
-  }
-
-  public void info(Object message, Throwable t) {
-    super.info(message, t);
-    if (chained != null) chained.info(message, t);  
   }
   
-  public void trace(Object message) {
-    super.trace(message);
-    if (chained != null) chained.trace(message);
-  }
- 
-  public void trace(Object message, Throwable t) { 
-    super.trace(message, t);
-    if (chained != null) chained.trace(message, t);
-  }
- 
-  public void warn(Object message) {
-    super.warn(message);
-    if (chained != null) chained.warn(message);
-  }
- 
-  public void warn(Object message, Throwable t){ 
-    super.warn(message);
-    if (chained != null) chained.warn(message);
+  /**
+   * Override default dispatching to also call chained instance, if any.
+   */
+  protected void log(int type, Object message, Throwable t) {
+    super.log(type, message, t);
+    if (chained == null) return;
+    switch (type) {
+      default:
+      case SimpleLog.LOG_LEVEL_DEBUG: chained.debug(message, t); break;
+      case SimpleLog.LOG_LEVEL_TRACE: chained.trace(message, t); break;
+      case SimpleLog.LOG_LEVEL_INFO:  chained.info(message, t); break;
+      case SimpleLog.LOG_LEVEL_WARN:  chained.warn(message, t); break;
+      case SimpleLog.LOG_LEVEL_ERROR: chained.error(message, t); break;
+      case SimpleLog.LOG_LEVEL_FATAL: chained.fatal(message, t); break;
+    }
   }
 }
