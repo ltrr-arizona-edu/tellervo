@@ -49,7 +49,7 @@ public class ByLine extends TextLine {
        Make a new by-line.
     */
     public ByLine() {
-        super(makeByLine(), 10, true); // (true = small-caps)
+        super(makeByLine(), 10);
     }
 
     // make a "printed by ... at ..." string
