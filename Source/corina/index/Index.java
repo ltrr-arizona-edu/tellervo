@@ -162,6 +162,8 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
         // according to http://www.na.astro.it/datoz-bin/corsi?chi2, i should now say chi2/=n.
         // numerical methods (which i don't trust) seems to say not, but it's not terribly clear.
         // what to do?
+        // 12.aug.2002: carol says average-chi^2 makes sense to her, so let's try that.
+        chi2 /= n;
 
         return chi2;
     }
@@ -267,7 +269,7 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
 	algorithm, and the target sample.
 	@return complete title of this index */
     public final String toString() {
-        return MessageFormat.format(msg.getString("index_of"),
+        return MessageFormat.format(msg.getString("x_index_of"),
                                     new Object[] { getName(), target.toString() });
     }
 
