@@ -77,7 +77,7 @@ public class Exponential extends Index implements Solver.Solveable {
     private double compute(boolean forReal) {
 	// init x, y
 	int n = source.data.size();
-	double x[] = new double[n];
+	double x[] = new double[n]; // don't worry, this is only called once
 	double y[] = new double[n];
 	for (int i=0; i<n; i++) {
 	    x[i] = (double) i;
@@ -116,15 +116,12 @@ public class Exponential extends Index implements Solver.Solveable {
 	return chi2;
     }
 
-    // do a linear search from BIG_START to BIG_STOP, in steps of
-    // BIG_STEP
+    // do a linear search from BIG_START to BIG_STOP, in steps of BIG_STEP
     private static final double BIG_START = 0.01;
     private static final double BIG_STOP = 0.41;
     private static final double BIG_STEP = 0.01;
 
-    // then do a linear search around the best value, in steps of
-    // SMALL_STEP
-    private static final double SMALL_STEP = BIG_STEP/10; // mecki: .003
+    // then do a linear search around the best value, in steps of BIG_STEP/10
 
     // the best p-value found so far
     private double bestExp;
@@ -135,27 +132,27 @@ public class Exponential extends Index implements Solver.Solveable {
     // search from |start| to |stop| every |incr|, looking for the
     // lowest chi^2.  store results in bestChi2, bestExp
     private void search(double start, double stop, double incr) {
-	for (p=start; p<stop; p+=incr) {
-	    double chi2 = compute(false);
-	    if (chi2 < bestChi2) {
-		bestChi2 = chi2;
-		bestExp = p;
-	    }
-	}
+        for (p=start; p<stop; p+=incr) {
+            double chi2 = compute(false);
+            if (chi2 < bestChi2) {
+                bestChi2 = chi2;
+                bestExp = p;
+            }
+        }
     }
 
     /** Run the index; do a search in two passes to find a good
         &Chi;<sup>2</sup>. */
     public void index() {
-	// big steps
-	search(BIG_START, BIG_STOP, BIG_STEP);
+        // big steps
+        search(BIG_START, BIG_STOP, BIG_STEP);
 
-	// refine that best value
-	search(bestExp-BIG_STEP, bestExp+BIG_STEP, SMALL_STEP);
+        // refine that best value
+        search(bestExp-BIG_STEP, bestExp+BIG_STEP, BIG_STEP/10); // mecki: .003
 
-	// for real, now
-	p = bestExp;
-	compute(true);
+        // for real, now
+        p = bestExp;
+        compute(true);
     }
 
     public int getID() {
