@@ -23,9 +23,11 @@ package corina.index;
 import corina.Sample;
 import corina.graph.GraphFrame;
 import corina.gui.FileDialog;
+import corina.gui.ButtonLayout;
 import corina.gui.UserCancelledException;
 import corina.util.OKCancel;
 import corina.util.TextClipboard;
+import corina.util.Platform;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,7 +92,7 @@ public class IndexDialog extends JDialog {
     private int oldSelection = 0;
 
     // i18n
-    private ResourceBundle msg = ResourceBundle.getBundle("IndexBundle");
+    private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // table model -- (could be static but for msg.getString())
     private class IndexTableModel extends AbstractTableModel {
@@ -129,7 +131,7 @@ public class IndexDialog extends JDialog {
     // label, centered
    private JComponent makeLabel() {
         JPanel b = new JPanel(new BorderLayout());
-        b.add(new JLabel(msg.getString("select_index"), JLabel.CENTER), BorderLayout.CENTER);
+        b.add(new JLabel(msg.getString("choose_index"), JLabel.CENTER), BorderLayout.CENTER);
         return b;
     }
 
@@ -155,8 +157,8 @@ public class IndexDialog extends JDialog {
     }
 
     private JButton makePreviewButton() {
-        JButton preview = new JButton(msg.getString("graph"));
-        preview.setMnemonic(msg.getString("graph_key").charAt(0));
+        JButton preview = new JButton(msg.getString("preview"));
+        preview.setMnemonic(msg.getString("preview_key").charAt(0));
         preview.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 int row = table.getSelectedRow();
@@ -182,10 +184,8 @@ public class IndexDialog extends JDialog {
         b.setMnemonic('C');
         b.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                int row = table.getSelectedRow();
-
                 // error-checking!
-                if (row == -1) {
+                if (table.getSelectedRow() == -1) {
                     JOptionPane.showMessageDialog(null,
                                                   "Select a possible index to copy first.",
                                                   "No index selected!",
@@ -193,26 +193,33 @@ public class IndexDialog extends JDialog {
                     return;
                 }
 
-                // get the index
-                Index ind = (Index) iset.indexes.get(row);
-
-                // convert it to a 1-column string
-                // -- add title here?
-                // -- copy year, too?
-                // -- copy data, too?
-                StringBuffer buf = new StringBuffer();
-                for (int i=0; i<ind.data.size(); i++) { // Index.data is a LIST?  what was i thinking?
-                    buf.append(ind.data.get(i).toString());
-                    buf.append('\n');
-                }
-
-                // copy it
-                TextClipboard.copy(buf.toString());
+                // copy the index
+                copyIndex();
             }
         });
         return b;
     }
 
+    // copy the currently-selected index; ASSUMES something is selected.
+    private void copyIndex() {
+        // get the index
+        int row = table.getSelectedRow();
+        Index ind = (Index) iset.indexes.get(row);
+
+        // convert it to a 1-column string
+        // -- add title here?
+        // -- copy year, too?
+        // -- copy data, too?
+        StringBuffer buf = new StringBuffer();
+        for (int i=0; i<ind.data.size(); i++) { // Index.data is a LIST?  what was i thinking?
+            buf.append(ind.data.get(i).toString());
+            buf.append('\n');
+        }
+
+        // copy it
+        TextClipboard.copy(buf.toString());
+    }
+    
     private JButton makeCancelButton() {
         JButton cancel = new JButton(msg.getString("cancel"));
         cancel.addActionListener(new AbstractAction() {
@@ -389,15 +396,34 @@ public class IndexDialog extends JDialog {
 
         // bottom panel (buttons) -- REFACTOR: EXTRACT METHOD
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new corina.gui.ButtonLayout());
+        buttonPanel.setLayout(new ButtonLayout());
         p.add(buttonPanel);
 
         // graph button
         buttonPanel.add(makePreviewButton());
 
-        // save button
+        // copy button
         buttonPanel.add(makeCopyButton());
 
+        // also copy on cmd-C -- BROKEN
+/*
+        addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                // nothing selected, do nothing
+                if (table.getSelectedRow() == -1)
+                    return;
+
+                System.out.println("e=" + e);
+                
+                // on command-C (control-C on the pc), copy the index.
+                boolean command = ((!Platform.isMac && e.isControlDown()) ||
+                                   (Platform.isMac && e.isMetaDown()));
+                if (e.getKeyChar()=='c' && command)
+                    copyIndex();
+            }
+        });
+*/
+        
         // (spacer)
         buttonPanel.add(Box.createHorizontalGlue());
 

@@ -48,8 +48,7 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
     public List data;
 
     /** ResourceBundle for internationalization. */
-    protected static ResourceBundle msg =
-	ResourceBundle.getBundle("IndexBundle");
+    protected static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     /** Returns the data List for graphing.
 	@see Graphable
