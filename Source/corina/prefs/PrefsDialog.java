@@ -24,6 +24,7 @@ import corina.gui.HasPreferences;
 import corina.gui.ButtonLayout;
 import corina.gui.DialogLayout;
 import corina.gui.UserCancelledException;
+import corina.gui.Bug;
 
 import java.io.IOException;
 import java.util.List;
@@ -194,7 +195,11 @@ public class PrefsDialog extends JFrame {
         Frame f[] = Frame.getFrames();
         for (int i=0; i<f.length; i++)
             if (f[i] instanceof HasPreferences)
-                ((HasPreferences) f[i]).refreshFromPreferences();
+                try {
+                    ((HasPreferences) f[i]).refreshFromPreferences();
+                } catch (Exception e) {
+                    Bug.bug(e);
+                }
 
         // save all
         try {
