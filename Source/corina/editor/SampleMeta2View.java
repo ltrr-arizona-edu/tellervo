@@ -160,7 +160,7 @@ public class SampleMeta2View extends JPanel implements SampleListener {
         c.anchor = GridBagConstraints.NORTHWEST;
         c.gridx = x+1;
         c.gridy = y;
-        String initialText = s.meta.containsKey(var) ? "" : s.meta.get(var).toString();
+        String initialText = s.meta.containsKey(var) ? s.meta.get(var).toString() : "";
         JTextField field = new JTextField(initialText, width);
         gridbag.setConstraints(field, c);
         add(field);
@@ -184,15 +184,15 @@ public class SampleMeta2View extends JPanel implements SampleListener {
 	c.gridy = y;
 	c.anchor = GridBagConstraints.NORTHWEST;
 	JComboBox popup = new JComboBox(values);
-	try {
-	    if (s.meta.get(var) != null) {
-		popup.setSelectedItem(msg.getString(var + "." + s.meta.get(var))); // flakey!
-		System.out.println("value is " + s.meta.get(var));
-		System.out.println("selecting " + msg.getString(var + "." + s.meta.get(var)));
-	    }
-	} catch (MissingResourceException mre) {
-	    System.out.println("var=" + var);
-	}
+        try {
+            if (s.meta.containsKey(var)) {
+                popup.setSelectedItem(msg.getString(var + "." + s.meta.get(var))); // flakey!
+                System.out.println("value is " + s.meta.get(var));
+                System.out.println("selecting " + msg.getString(var + "." + s.meta.get(var)));
+            }
+        } catch (MissingResourceException mre) {
+            System.out.println("var=" + var);
+        }
 
 	// enabled?
 	popup.setEnabled(enabled);
@@ -220,12 +220,13 @@ public class SampleMeta2View extends JPanel implements SampleListener {
 	gridbag.setConstraints(commentsLabel, c);
 	add(commentsLabel);
 
-	// bottom: comments block
-	comments = new JTextArea(s.meta.get("comments") == null ? "" : s.meta.get("comments").toString(), 3, 32);
-	JScrollPane commentsScroller = new JScrollPane(comments,
-						       // JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-						       JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-						       JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        // bottom: comments block
+        String initialText = s.meta.containsKey("comments") ? s.meta.get("comments").toString() : "";
+        comments = new JTextArea(initialText, 3, 32);
+        JScrollPane commentsScroller = new JScrollPane(comments,
+                                                       // JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                                                       JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                                                       JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	c.anchor = GridBagConstraints.NORTHWEST;
 	c.gridx = 1;
 	c.gridy = 8;
