@@ -40,6 +40,7 @@ public class UnitTests extends TestCase {
             assertTrue(db != null);
             assertTrue(db.sites != null);
         } catch (Exception e) {
+            e.printStackTrace();
             fail();
         }
     }
