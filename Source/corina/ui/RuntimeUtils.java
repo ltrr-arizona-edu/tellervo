@@ -26,5 +26,4 @@ public class RuntimeUtils {
 
     // this is why, even if i could, i shouldn't use serialization for widgets: they need to get
     // instantiated differently on different platforms, because they're going to end up different.
-    // win-win.
 }
