@@ -103,8 +103,11 @@ public class TableFrame extends XFrame implements PrintableDocument {
         tmpPanel.add(buttonPanel);
         getContentPane().add(tmpPanel, BorderLayout.SOUTH);
 
+        // classloader, for icons
+        ClassLoader cl = this.getClass().getClassLoader();
+
         JButton saveButton = new JButton("Save (ASCII)...",
-                                         new ImageIcon(ClassLoader.getSystemResource("toolbarButtonGraphics/general/Save16.gif")));
+                                         new ImageIcon(cl.getResource("toolbarButtonGraphics/general/Save16.gif")));
         saveButton.setMnemonic('S');
         saveButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
@@ -124,7 +127,7 @@ public class TableFrame extends XFrame implements PrintableDocument {
         buttonPanel.add(saveButton);
 
         JButton saveButton2 = new JButton("Save (HTML)...",
-                                          new ImageIcon(ClassLoader.getSystemResource("toolbarButtonGraphics/general/Save16.gif")));
+                                          new ImageIcon(cl.getResource("toolbarButtonGraphics/general/Save16.gif")));
         saveButton2.setMnemonic('H');
         saveButton2.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
