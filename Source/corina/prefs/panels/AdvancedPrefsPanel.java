@@ -23,12 +23,12 @@ package corina.prefs.panels;
 import corina.prefs.Prefs;
 import corina.prefs.components.FontPrefComponent;
 
-import corina.gui.Layout;
-import corina.gui.layouts.DialogLayout;
 import corina.util.DocumentListener2;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.event.DocumentEvent;
 
 import java.awt.*;
@@ -55,104 +55,145 @@ import java.awt.*;
 
 public class AdvancedPrefsPanel extends JPanel {
 
-    public AdvancedPrefsPanel() {
-        // setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setLayout(new GridLayout(0, 1));
-        
-        // menubar font override
-        JCheckBox menubar = new JCheckBox("Override menubar font");
-        menubar.setAlignmentX(LEFT_ALIGNMENT);
-        add(menubar);
-
-        // TODO: make checkbox a bool-pref
-        // TODO: make checkbox control font-pref-component (dim)
-        // TODO: c.gui.menubar.font isn't the right pref!
-        // TODO: figure out how to make the checkbox un-set the font pref
-        // (idea: PrefComponent interface, getPref(), checkbox calls
-        // getPref() on controlled components, sets them to null on dim)
-        
-        JComponent font = new FontPrefComponent("corina.menubar.font");
-        add(font);
-        
-        add(Box.createVerticalStrut(2));
-
-        // user name override
-        // TODO: fix layout
-        // TODO: change these to better names (usernameCheckbox, usernameField)
-        final JCheckBox username = new JCheckBox("Override user name");
-        final JTextField usernameField = new JTextField(20);
-
-        // set initial state from prefs
-        if (Prefs.getPref("corina.user.name") != null) {
-            username.setSelected(true);
-            usernameField.setText(Prefs.getPref("corina.user.name"));
-        } else {
-            username.setSelected(false);
-            usernameField.setEnabled(false);
-            usernameField.setText(System.getProperty("user.name"));
-        }
-
-        /*
-            why use corina.user.name instead of just setting user.name directly?
-            because if the user unchecks the checkbox, we need to be able to get
-            the original value of user.name back, and once you set the system
-            property user.name to something else, the original value is gone.
-        */
-
-        username.setAlignmentX(LEFT_ALIGNMENT);
-        username.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                // enable/disable text field
-                usernameField.setEnabled(username.isSelected());
-                
-                // name to use: either the default, or the user's version
-                String name;
-                if (username.isSelected())
-                    name = usernameField.getText();
-                else
-                    name = System.getProperty("user.name");
-
-                // set pref
-                Prefs.setPref("corina.user.name", name);
-            }
-        });
-        
-        usernameField.getDocument().addDocumentListener(new DocumentListener2() {
-            public void update(DocumentEvent e) {
-                Prefs.setPref("corina.user.name", usernameField.getText());
-            }
-        });
-        
-        JPanel nameFlow = Layout.flowLayoutL(new JLabel("Name: "),
-                                            usernameField);
-
-        add(username);
-        add(indent(nameFlow));
-        add(Box.createVerticalStrut(2));
-        
-        // file chooser
-        {
-            ButtonGroup group = new ButtonGroup();
-            JRadioButton swing = new JRadioButton("Swing (slower)");
-            JRadioButton awt = new JRadioButton("AWT (faster, but no preview)");
-            group.add(swing);
-            group.add(awt);
-            JLabel label = new JLabel("Use which file chooser:");
-            label.setAlignmentX(LEFT_ALIGNMENT);
-
-            add(label);
-            add(indent(swing));
-            add(indent(awt));
-        }
-
-        add(Box.createVerticalGlue());
-        
-        // TODO: add spacer below bottom, just in case?
-    }
+  public AdvancedPrefsPanel() {
+    // setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    setLayout(new BorderLayout());
+    //setLayout(new GridLayout(0, 1));
     
-    // indent a component to the right by 20 pixels
-    private JPanel indent(JComponent component) {
-        return Layout.flowLayoutL(Box.createHorizontalStrut(20),
-                                    component);
+    Container co = new Container();
+    co.setLayout(new GridBagLayout());
+    
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.insets = new Insets(2, 2, 2, 2);
+    gbc.gridy = 0;
+    gbc.gridx = 0;
+    gbc.weightx = 0;
+    
+    // menubar font override
+    final JCheckBox menubarCheckBox = new JCheckBox("Override menubar font");
+    menubarCheckBox.setAlignmentX(LEFT_ALIGNMENT);
+    co.add(menubarCheckBox, gbc);
+
+    // TODO: make checkbox a bool-pref
+    // TODO: make checkbox control font-pref-component (dim)
+    // TODO: c.gui.menubar.font isn't the right pref!
+    // TODO: figure out how to make the checkbox un-set the font pref
+    // (idea: PrefComponent interface, getPref(), checkbox calls
+    // getPref() on controlled components, sets them to null on dim)
+
+    final FontPrefComponent fontprefcomponent = new FontPrefComponent("corina.menubar.font");
+    gbc.gridx++;
+    co.add(fontprefcomponent.getLabel(), gbc);
+
+    gbc.gridx++;
+    gbc.weightx = 1;
+    co.add(fontprefcomponent.getButton(), gbc);
+
+    fontprefcomponent.getLabel().setEnabled(menubarCheckBox.isSelected()); 
+    fontprefcomponent.getButton().setEnabled(menubarCheckBox.isSelected());
+
+    menubarCheckBox.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent ae) {
+        fontprefcomponent.getLabel().setEnabled(menubarCheckBox.isSelected());
+        fontprefcomponent.getButton().setEnabled(menubarCheckBox.isSelected());
+      }
+    });
+
+    // user name override
+    // TODO: fix layout
+    // TODO: change these to better names (usernameCheckbox, usernameField)
+    final JCheckBox username = new JCheckBox("Override user name");
+    final JTextField usernameField = new JTextField(20);
+    final JLabel usernameLabel = new JLabel("Name:");
+    usernameLabel.setLabelFor(usernameField);
+
+    // set initial state from prefs
+    if (Prefs.getPref("corina.user.name") != null) {
+      username.setSelected(true);
+      usernameField.setText(Prefs.getPref("corina.user.name"));
+    } else {
+      username.setSelected(false);
+      usernameField.setEnabled(false);
+      usernameLabel.setEnabled(false);
+      usernameField.setText(System.getProperty("user.name"));
     }
+
+    /*
+        why use corina.user.name instead of just setting user.name directly?
+        because if the user unchecks the checkbox, we need to be able to get
+        the original value of user.name back, and once you set the system
+        property user.name to something else, the original value is gone.
+    */
+
+    username.setAlignmentX(LEFT_ALIGNMENT);
+    username.addActionListener(new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            // enable/disable text field
+            usernameField.setEnabled(username.isSelected());
+            usernameLabel.setEnabled(username.isSelected());
+            
+            // name to use: either the default, or the user's version
+            String name;
+            if (username.isSelected())
+                name = usernameField.getText();
+            else
+                name = System.getProperty("user.name");
+
+            // set pref
+            Prefs.setPref("corina.user.name", name);
+        }
+    });
+
+    usernameField.getDocument().addDocumentListener(new DocumentListener2() {
+        public void update(DocumentEvent e) {
+            Prefs.setPref("corina.user.name", usernameField.getText());
+        }
+    });
+
+    gbc.gridy++;
+    gbc.gridx = 0;
+    gbc.weightx = 0;
+
+    co.add(username, gbc);
+
+    gbc.gridx++;
+
+    co.add(usernameLabel, gbc);
+
+    gbc.gridx++;
+    gbc.weightx = 1;
+
+    co.add(usernameField, gbc);
+
+    gbc.gridy++;
+    gbc.gridx = 0;
+    gbc.weightx = 0;
+
+    // file chooser
+    ButtonGroup group = new ButtonGroup();
+    JRadioButton swing = new JRadioButton("Swing (slower)");
+    JRadioButton awt = new JRadioButton("AWT (faster, but no preview)");
+    group.add(swing);
+    group.add(awt);
+
+    JLabel l = new JLabel("Use which file chooser:");
+    l.setAlignmentX(LEFT_ALIGNMENT);
+
+    co.add(l, gbc);
+
+    gbc.gridx++;
+
+    co.add(swing, gbc);
+
+    gbc.gridx++;
+    gbc.weightx = 1;
+
+    co.add(awt, gbc);
+
+    // TODO: add spacer below bottom, just in case?
+
+    add(co, BorderLayout.NORTH);
+  }
 }
