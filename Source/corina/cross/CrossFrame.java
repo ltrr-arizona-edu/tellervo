@@ -26,7 +26,6 @@ import corina.graph.GraphFrame;
 import corina.site.Site;
 import corina.site.SiteDB;
 import corina.map.MapFrame;
-import corina.gui.JarIcon;
 import corina.gui.XFrame;
 import corina.gui.XMenubar;
 import corina.gui.PrintableDocument;
@@ -372,7 +371,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 
         // prev
         prevButton = new JButton(msg.getString("prev"),
-                                 JarIcon.getIcon("toolbarButtonGraphics/navigation/Back16.gif"));
+                                 new ImageIcon(ClassLoader.getSystemResource("toolbarButtonGraphics/navigation/Back16.gif")));
         prevButton.setMnemonic(msg.getString("prev_key").charAt(0));
         prevButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
@@ -399,7 +398,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 
         // next
         nextButton = new JButton(msg.getString("next"),
-                                 JarIcon.getIcon("toolbarButtonGraphics/navigation/Forward16.gif"));
+                                 new ImageIcon(ClassLoader.getSystemResource("toolbarButtonGraphics/navigation/Forward16.gif")));
         nextButton.setMnemonic(msg.getString("next_key").charAt(0));
         nextButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {

@@ -22,7 +22,6 @@ package corina.cross;
 
 import corina.gui.XFrame;
 import corina.gui.PrintableDocument;
-import corina.gui.JarIcon;
 import corina.gui.FileDialog;
 import corina.gui.UserCancelledException;
 
@@ -104,7 +103,7 @@ public class TableFrame extends XFrame implements PrintableDocument {
         getContentPane().add(tmpPanel, BorderLayout.SOUTH);
 
         JButton saveButton = new JButton("Save (ASCII)...",
-                                         JarIcon.getIcon("toolbarButtonGraphics/general/Save16.gif"));
+                                         new ImageIcon(ClassLoader.getSystemResource("toolbarButtonGraphics/general/Save16.gif")));
         saveButton.setMnemonic('S');
         saveButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
@@ -124,7 +123,7 @@ public class TableFrame extends XFrame implements PrintableDocument {
         buttonPanel.add(saveButton);
 
         JButton saveButton2 = new JButton("Save (HTML)...",
-                                          JarIcon.getIcon("toolbarButtonGraphics/general/Save16.gif"));
+                                          new ImageIcon(ClassLoader.getSystemResource("toolbarButtonGraphics/general/Save16.gif")));
         saveButton2.setMnemonic('H');
         saveButton2.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
