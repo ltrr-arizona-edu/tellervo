@@ -28,6 +28,7 @@ import corina.Metadata.Field;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.sql.SQLException;
 
@@ -61,17 +62,24 @@ public class SQLize {
 	// or if you prefer strings: sid = Integer.toHexString(filename.hashCode());
     }
 
+    // WRITEME: construct Sample from sid (presumably, you'll get the sid by searching in the browser)
+    // WRITEME: update a Sample in the DB (in one transaction, insert/remove as necessary?)
+    // (BEGIN TRANSACTION; <do stuff>; COMMIT;)
+
     // dump this sample into the database.
     public void run() throws SQLException {
+	// begin transaction
+	{
+	    Statement stmt = con.createStatement();
+	    stmt.execute("BEGIN TRANSACTION;");
+	}
+
 	// data
 	insertData(s.data, "data");
 	if (s.isSummed())
 	    insertData(s.count, "count");
 
-	// range
-	insertRange();
-
-	// metadata
+	// metadata (including range)
 	insertMeta();
 
 	// wj (optional)
@@ -83,6 +91,12 @@ public class SQLize {
 	// elements (optional)
 	if (s.elements != null)
 	    insertElements();
+
+	// commit transaction
+	{
+	    Statement stmt = con.createStatement();
+	    stmt.execute("COMMIT;");
+	}
     }
 
     private void insertElements() throws SQLException {
@@ -96,19 +110,6 @@ public class SQLize {
 	}
     }
 
-    private void insertRange() throws SQLException {
-	// this may look ugly, but it is correct.  see
-	// Year.java:intValue() for why.
-
-	PreparedStatement stmt = con.prepareStatement("INSERT INTO ranges VALUES (?, ?, ?, ?)");
-	stmt.setInt(1, sid);
-	stmt.setInt(2, Integer.parseInt(s.range.getStart().toString()));
-	stmt.setInt(3, Integer.parseInt(s.range.getEnd().toString()));
-	stmt.setInt(4, s.range.span());
-	stmt.executeUpdate();
-	stmt.close();
-    }
-
     private void insertMeta() throws SQLException {
 	// get site name/code (actually "directory i'm in")
 	File dir = new File((String) s.meta.get("filename"));
@@ -116,32 +117,44 @@ public class SQLize {
 
 	// build template, by counting number of meta fields
 	StringBuffer line = new StringBuffer("INSERT INTO meta VALUES (?, ?");
+	line.append(", ?, ?, ?"); // start, end, span
 	for (int i=0; i<Metadata.fields.length; i++)
 	    line.append(", ?");
 	line.append(")");
 
 	PreparedStatement stmt = con.prepareStatement(line.toString());
+
 	stmt.setInt(1, sid);
-	stmt.setString(2, site);
+
+	// this may look ugly, but it is correct.  see Year.java:intValue() for why.
+	stmt.setInt(2, Integer.parseInt(s.range.getStart().toString()));
+	stmt.setInt(3, Integer.parseInt(s.range.getEnd().toString()));
+	stmt.setInt(4, s.range.span());
+
+	stmt.setString(5, site);
 
 	for (int i=0; i<Metadata.fields.length; i++) {
 	    Object v = s.meta.get(Metadata.fields[i].variable);
 
 	    if (v instanceof Integer)
-		stmt.setInt(3+i, ((Integer) v).intValue());
+		stmt.setInt(6+i, ((Integer) v).intValue());
 	    else if (v == null)
-		stmt.setNull(3+i, Types.INTEGER); // setNull wants a type?  evil!
+		stmt.setNull(6+i, Types.INTEGER); // setNull wants a type?  evil!
 	    else
-		stmt.setString(3+i, (String) v);
+		stmt.setString(6+i, (String) v);
 	}
 
 	stmt.executeUpdate();
 	stmt.close();
     }
 
-    // insert any List as decadal data, into a table with the given
-    // name
+    // insert any List as decadal data, into a table with the given name.
     private void insertData(List data, String name) throws SQLException {
+	// if there's no data, there's no reason to do anything.
+	// (plus we hit a bug below if we actually try.)
+	if (data.size() == 0)
+	    return;
+
 	// set up prepared statement; every line starts with sid
 	PreparedStatement stmt =
 	    con.prepareStatement("INSERT INTO " + name + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -177,6 +190,10 @@ public class SQLize {
 		stmt.setNull(i+3, Types.INTEGER);
 	    stmt.executeUpdate();
 	}
+
+	// BUG: i shouldn't execute the updates decade-at-a-time.  that's even WORSE
+	// than using a filesystem.  use BEGIN TRANSACTION / COMMIT -- around an entire
+	// sample.
 
 	// close statement
 	stmt.close();
