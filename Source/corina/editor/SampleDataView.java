@@ -243,6 +243,7 @@ public class SampleDataView extends JPanel implements SampleListener, PrefsListe
 	add(sp, BorderLayout.CENTER);
 	add(new Modeline(myTable, mySample), BorderLayout.SOUTH);
   
+  initPrefs();
   Prefs.addPrefsListener(this);
     }
 
@@ -373,26 +374,29 @@ public class SampleDataView extends JPanel implements SampleListener, PrefsListe
     public void sampleMetadataChanged(SampleEvent e) { }
     public void sampleElementsChanged(SampleEvent e) { }
 
+    private void initPrefs() {
+      // reset fonts
+      Font font = Font.decode(Prefs.getPref("corina.edit.font"));
+      if (font != null)
+          myTable.setFont(font);
+
+      // from font size, set table row height
+      myTable.setRowHeight((font == null ? 12 : font.getSize()) + 4);
+      // BUG: this seems to not work sometimes (?) -- try zapfino
+
+      // disable gridlines, if requested
+      boolean gridlines = Boolean.valueOf(Prefs.getPref(Prefs.EDIT_GRIDLINES)).booleanValue();
+      myTable.setShowGrid(gridlines);
+
+      // set colors
+      myTable.setBackground(Prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
+      myTable.setForeground(Prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
+    }
     // should this be part of update()?  well, the constructor will
     // need it, too, so it might as well be a separate method, anyway.
     public void prefChanged(PrefsEvent e) {
-	// reset fonts
-	Font font = Font.decode(Prefs.getPref("corina.edit.font"));
-	if (font != null)
-	    myTable.setFont(font);
-
-	// from font size, set table row height
-	myTable.setRowHeight((font == null ? 12 : font.getSize()) + 4);
-	// BUG: this seems to not work sometimes (?) -- try zapfino
-
-	// disable gridlines, if requested
-	boolean gridlines = Boolean.valueOf(Prefs.getPref(Prefs.EDIT_GRIDLINES)).booleanValue();
-	myTable.setShowGrid(gridlines);
-
-	// set colors
-	  myTable.setBackground(Prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
-    myTable.setForeground(Prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
-  }
+	    initPrefs();
+    }
 
     public void measured(int x) {
 	// figure out what year we're looking at now -- BREAKS IF EDITING=TRUE
