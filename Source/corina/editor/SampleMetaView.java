@@ -56,20 +56,14 @@ A view of the metadata of a Sample.
      fields?  Probably not worth the effort (they share code, now,
      anyway).
 
-     -- Allow easy user-defined metadata fields ("Add new field..."
-     button after last field -- well, no, that's too easy, but putting
-     in the prefs is ok)
-
      -- Make any changes here Undoable.  This will probably involve
      creating an inner class for "FieldEdit" ("MetadataEdit"?), which implements
      Undoable.  The fun part will be to coalesce multiple
      FieldEdits together -- if I type "Quercus", and then select Undo,
      it should un-type "Quercus", not just the "s".
 
- -- Migrate fully to new popups, when I get the ok.  This involves changing 1
- line of code to activate, then remove all references to the old JComboBoxes,
- and refactoring.  Whew.
-
+ -- Migrate fully to new popups, when I get the ok.
+ 
  -- Figure out how to use a popup for the species.  (!)
  
    @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
@@ -234,12 +228,45 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
         String field = f.variable;
         JComboBox popup = (JComboBox) popups.get(f.variable);
         String newValue = (String) s.meta.get(field);
-        if (newValue == null)
+
+        // maybe it's null
+        if (newValue == null) {
             popup.setSelectedIndex(0);
-        else
-            for (int j=0; j<f.values.length; j++)
-                if (f.values[j].equals(newValue))
-                    popup.setSelectedIndex(j+1);
+            return;
+        }
+
+        // maybe it's one of the legal values
+        for (int j=0; j<f.values.length; j++) {
+            if (f.values[j].toUpperCase().equals(newValue.toUpperCase())) { // case-insensitive!
+                popup.setSelectedIndex(j+1);
+                return;
+            }
+        }
+
+        // crap.  we'll try asking the user what she was smoking.
+        String descriptions[] = new String[f.values.length];
+        for (int i=0; i<f.values.length; i++)
+            descriptions[i] = msg.getString(f.variable + "." + f.values[i]);
+        int x = JOptionPane.showOptionDialog(this,
+                                     "The field \"" + f.description + "\" has value \"" + newValue + "\", which I can't parse.  What did you mean?",
+                                     "Re-enter this value",
+                                     JOptionPane.YES_NO_OPTION, // i think this is meaningless
+                                     JOptionPane.QUESTION_MESSAGE,
+                                     null, // no icon
+                                     descriptions,
+                                     null); // NO DEFAULT -- important
+
+        // should i also add "- unspecified -" to the list, for completeness?
+        // i'm thinking no, because it was specified before, and you don't want
+        // the user to think null is ok here.  they'll delete all their data.
+        
+        // result (x) is index into f.values -- store this.
+        s.meta.put(field, f.values[x]);
+        s.setModified();
+        s.fireSampleMetadataChanged();
+
+        // oh, wait, i'm supposed to select something in a popup.  gotcha.
+        popup.setSelectedIndex(x+1);
     }
 
     /** Construct a new view of the metadata for a sample.
@@ -287,13 +314,15 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
             // idea: each component is responsible for its own updating.  no, then i can't disable them all... (?)
 
             // SPECIES HACK
+/*
             if (f.variable.equals("species")) {
                 JPanel fffff = new JPanel(new FlowLayout(FlowLayout.LEFT));
                 fffff.add(new SpeciesPopup(s));
                 p.add(fffff, c);
                 continue;
             }
-
+*/
+ 
             // HACK
             //            if (f.variable.equals("format") || f.variable.equals("continuous")) { // only format, continuous
             if (f.values != null) { // to turn on all popups!
