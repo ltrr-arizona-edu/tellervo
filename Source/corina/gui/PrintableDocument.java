@@ -20,7 +20,9 @@
 
 package corina.gui;
 
-import java.awt.print.*;
+import java.awt.print.Printable;
+import java.awt.print.Pageable;
+import java.awt.print.PageFormat;
 
 public interface PrintableDocument {
 
