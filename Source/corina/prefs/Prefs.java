@@ -177,16 +177,11 @@ public class Prefs {
     // from "1 2 3", extract int[] { 1, 2, 3 }
     // (seems as good a place as any for this, since it's prefs-related.)
     public static int[] extractInts(String s) {
-        // dump into list, using stringtokenizer
-        List tmp = new ArrayList();
-        StringTokenizer t = new StringTokenizer(s, " ");
-        while (t.hasMoreTokens())
-            tmp.add(new Integer(t.nextToken()));
-
-        // list!=array, so copy back (ugh!)
-        int r[] = new int[tmp.size()];
-        for (int i=0; i<tmp.size(); i++)
-            r[i] = ((Integer) tmp.get(i)).intValue();
+        StringTokenizer tok = new StringTokenizer(s, " ");
+        int n = tok.countTokens();
+        int r[] = new int[n];
+        for (int i=0; i<n; i++)
+            r[i] = Integer.parseInt(tok.nextToken());
         return r;
     }
 }
