@@ -23,7 +23,7 @@ public class Bug {
         // show dialog with exception and stack trace
         JOptionPane.showMessageDialog(null,
                                       "You found a bug in Corina!  Tell Ken:\n" +
-                                      t + "\n" + sw,
+                                      sw,
                                       "Corina Bug",
                                       JOptionPane.ERROR_MESSAGE);
     }
