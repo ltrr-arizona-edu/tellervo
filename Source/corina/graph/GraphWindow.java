@@ -36,10 +36,11 @@ import corina.gui.menus.WindowMenu;
 import corina.gui.menus.HelpMenu;
 import corina.gui.SaveableDocument;
 import corina.gui.PrintableDocument;
-import corina.gui.HasPreferences;
 import corina.gui.FileDialog;
 import corina.gui.UserCancelledException;
 import corina.prefs.Prefs;
+import corina.prefs.PrefsEvent;
+import corina.prefs.PrefsListener;
 import corina.gui.Bug;
 import corina.util.Platform;
 import corina.util.Overwrite;
@@ -110,7 +111,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 // DISABLED until printing works better:
 //						   PrintableDocument,
 						   Printable,
-                                                   HasPreferences {
+               PrefsListener {
 
     // SampleListener
     private void update(Sample s) {
@@ -593,6 +594,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 	//    new PopupListener(popup, plot)
 	// here.
 
+  Prefs.addPrefsListener(this);
+
 	// display the window
 	pack();
 	show();
@@ -841,9 +844,14 @@ public class GraphWindow extends XFrame implements SampleListener,
 	scroller.getHorizontalScrollBar().setValue(dy * plot.yearSize);
     }
 
-    // live-updating preferences
-    public void refreshFromPreferences() {
-	plot.update();
-	repaint();
-    }
+  // live-updating preferences
+  public void prefChanged(PrefsEvent e) {
+    plot.update();
+    repaint();
+  }
+  
+  protected void finalize() throws Throwable {
+    super.finalize();
+    Prefs.removePrefsListener(this);
+  }
 }

@@ -32,13 +32,14 @@ import corina.gui.menus.HelpMenu;
 import corina.gui.FileDialog;
 import corina.gui.UserCancelledException;
 import corina.gui.ElementsPanel;
-import corina.gui.HasPreferences;
 import corina.gui.SaveableDocument;
 import corina.gui.PrintableDocument;
 import corina.gui.Bug;
 import corina.gui.Layout;
 import corina.gui.Help;
 import corina.prefs.Prefs;
+import corina.prefs.PrefsEvent;
+import corina.prefs.PrefsListener;
 import corina.util.Platform;
 import corina.util.Overwrite;
 import corina.util.OKCancel;
@@ -136,8 +137,8 @@ import java.awt.print.PageFormat;
 */
 
 public class Editor extends XFrame
-                 implements SaveableDocument, HasPreferences, // !!!
-			    SampleListener, PrintableDocument {
+                    implements SaveableDocument, PrefsListener,
+                               SampleListener, PrintableDocument {
 
     // gui
     private JTable wjTable;
@@ -661,11 +662,14 @@ public class Editor extends XFrame
         initRolodex();
 
         // set preferences
-        refreshFromPreferences();
+        // HACK: this is a hack right now to initialize prefs, until
+        // I refactor into an initialization method
+        prefChanged(null);
 
         // init undo/redo
         initUndoRedo();
 
+        Prefs.addPrefsListener(this);
         // pack, size, and show
         pack(); // is this needed?
         setSize(new Dimension(640, 480));
@@ -711,13 +715,14 @@ public class Editor extends XFrame
       setMod(this,meta.mod?) on metadataChanged() -- or anything, actually.
     */
 
-    // HasPreferences.
-    // FIXME: implement PrefsListener, make this prefsChanged().
-    public void refreshFromPreferences() {
+    // PrefsListener
+    public void prefChanged(PrefsEvent e) {
 	// strategy: refresh each view i contain
 
 	// data view
-	dataView.refreshFromPreferences();
+  // TODO: remove this commented line now that HasPreferences usage has been replaced
+  // with PrefsListener
+	//dataView.refreshFromPreferences();
 
 	// used to refreshFromPreferences() on elemPanel here, too.  but why?
 
@@ -845,6 +850,11 @@ public class Editor extends XFrame
 	result[3] = s4.isSelected();
 	return result;
     }
+
+  protected void finalize() throws Throwable {
+    super.finalize();
+    Prefs.removePrefsListener(this);
+  }
 
     public static void main(String args[]) throws Exception {
 	try {
