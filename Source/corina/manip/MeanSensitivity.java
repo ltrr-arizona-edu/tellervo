@@ -80,4 +80,5 @@ public class MeanSensitivity {
             return Float.NaN; // user is editing, it's a String, so let it go
         }
     }
+
 }
