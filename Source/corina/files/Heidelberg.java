@@ -67,7 +67,7 @@ public class Heidelberg extends Filetype {
 
 	// make sure it's a heidelberg file
 	String line = r.readLine();
-	if (!line.startsWith("HEADER:"))
+	if (line==null || !line.startsWith("HEADER:"))
 	    throw new WrongFiletypeException(); // no HEADER: found
 
 	// new sample, with given filename
@@ -131,6 +131,10 @@ public class Heidelberg extends Filetype {
 
 	// close file
 	r.close();
+
+	// no end?  die.
+	if (end == null)
+	    throw new WrongFiletypeException();
 
 	// set range, and return
 	s.range = new Range(end.add(1 - s.data.size()), end);
