@@ -24,6 +24,7 @@ import corina.Year;
 import corina.Range;
 import corina.Sample;
 import corina.gui.ButtonLayout;
+import corina.gui.XButton;
 import corina.util.OKCancel;
 import corina.util.JLine;
 
@@ -81,7 +82,7 @@ public class TruncateDialog extends JDialog {
     private JLabel result;
 
     // i18n
-    private static ResourceBundle msg = ResourceBundle.getBundle("TruncateBundle");
+    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // update everything from "by /n/ years"
     private void updateFromNumbers() {
@@ -285,7 +286,7 @@ public class TruncateDialog extends JDialog {
         p.add(buttons, BorderLayout.SOUTH);
 
         // cancel == close
-        JButton cancel = new JButton(msg.getString("cancel"));
+        JButton cancel = new XButton("cancel");
         cancel.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 dispose();
@@ -294,7 +295,7 @@ public class TruncateDialog extends JDialog {
         buttons.add(cancel);
 
         // ok == apply
-        JButton apply = new JButton(msg.getString("ok"));
+        JButton apply = new XButton("ok");
         apply.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 // nothing to do?
