@@ -143,7 +143,7 @@ public class PrefsDialog extends JFrame {
         setResizable(false);
 
         // icon!
-        Image image = Builder.getImage("Preferences16.gif");
+        java.awt.Image image = Builder.getImage("Preferences16.gif");
         if (image != null) {
 	        setIconImage(image);
         }
