@@ -52,6 +52,7 @@ import corina.prefs.Prefs;
 import corina.files.WrongFiletypeException;
 import corina.util.PureStringWriter;
 import corina.util.TextClipboard;
+import corina.util.Platform;
 
 import java.io.File;
 import java.io.IOException;
@@ -1057,9 +1058,12 @@ public class Editor extends XFrame
 	// do fake-events to trick the menus into their correct states
 	sampleFormatChanged(null);
 
-    	// store and return
-	return new JMenu[] { edit, v, s, m, d, new WindowMenu(this) };
-    }
+    // store and return
+    if (Platform.isMac)
+    return new JMenu[] { edit, v, s, m, d, new WindowMenu(this) };
+    else
+    return new JMenu[] { edit, v, s, m, d };
+            }
 
     public Editor(Sample sample) {
 	// copy data ref

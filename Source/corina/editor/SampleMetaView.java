@@ -235,6 +235,14 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
             return;
         }
 
+        // for "PITH", what mecki called "+" i call "*", so i'll do that one for you.
+        if (field.equals("PITH") && newValue.equals("+")) {
+            s.meta.put("PITH", "*");
+            s.setModified();
+            s.fireSampleMetadataChanged();
+            newValue = "*";
+        }
+        
         // maybe it's one of the legal values
         for (int j=0; j<f.values.length; j++) {
             if (f.values[j].toUpperCase().equals(newValue.toUpperCase())) { // case-insensitive!
@@ -244,9 +252,10 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
         }
 
         // crap.  we'll try asking the user what she was smoking.
-        String descriptions[] = new String[f.values.length];
+        String descriptions[] = new String[f.values.length+1];
+        descriptions[0] = "unspecified";
         for (int i=0; i<f.values.length; i++)
-            descriptions[i] = msg.getString(f.variable + "." + f.values[i]);
+            descriptions[i+1] = msg.getString(f.variable + "." + f.values[i]);
         int x = JOptionPane.showOptionDialog(this,
                                      "The field \"" + f.description + "\" has value \"" + newValue + "\", which I can't parse.  What did you mean?",
                                      "Re-enter this value",
@@ -257,16 +266,19 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
                                      null); // NO DEFAULT -- important
 
         // should i also add "- unspecified -" to the list, for completeness?
-        // i'm thinking no, because it was specified before, and you don't want
-        // the user to think null is ok here.  they'll delete all their data.
+        // yeah, often there's a "?" which corresponds to that.
+        // FIXME.
         
         // result (x) is index into f.values -- store this.
-        s.meta.put(field, f.values[x]);
+        if (x == 0)
+            s.meta.remove(field);
+        else
+            s.meta.put(field, f.values[x-1]);
         s.setModified();
         s.fireSampleMetadataChanged();
 
         // oh, wait, i'm supposed to select something in a popup.  gotcha.
-        popup.setSelectedIndex(x+1);
+        popup.setSelectedIndex(x);
     }
 
     /** Construct a new view of the metadata for a sample.
@@ -323,27 +335,23 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
             }
 */
  
-            // HACK
-            //            if (f.variable.equals("format") || f.variable.equals("continuous")) { // only format, continuous
-            if (f.values != null) { // to turn on all popups!
+            if (f.values != null) {
                 p.add(makePopup(f), c);
                 continue;
             } // integrate this clause into the rest...  easier once old-style-popups are all gone
             
-            JComponent x;
-
-            if (f.values == null) {
-                // if it has no choices, a plain jtextfield is perfect.
-                // if it needs several lines, though, use a jtextarea.
-                x = makeTextBlock(f);
-            } else {
-                // or it might have suggested values!  then we'll make it
-                // easier for the user and give her an editable jcombobox
-                x = makeOldStyleComboBox(f);
-            }
-
+            // if it has no choices, a plain jtextfield is perfect.
+            // if it needs several lines, though, use a jtextarea.
+            JComponent x = makeTextBlock(f);
+            // (that sometimes returns a jscrollpane!)
+            
             // add to the panel
-            p.add(x, c);
+//            p.add(x, c);
+            // use a sub-panel, so the left-alignment is ok.  without this, on OS X it
+            // looks passable, but on windows it looks horrible.
+            JPanel flow = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            flow.add(x);
+            p.add(flow, c);
 
             // add to hashmap -- only used for textcomponents
             if (x instanceof JTextComponent)
@@ -392,7 +400,9 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
 
         // build component
         // (cast required to make one arg assignable to the other -- see jls chapter 15, section 25, clause 4)
-        JTextComponent t = (lines > 1 ? new JTextArea(value, lines, 32) : (JTextComponent) /* ick! */ new JTextField(value));
+        JTextComponent t = (lines > 1 ?
+                            new JTextArea(value, lines, 40) :
+                            (JTextComponent) /* ick! */ new JTextField(value, 32));
 
         if (f.readonly) {
             // if read-only, it's not editable
@@ -412,29 +422,6 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
             return new JScrollPane(t);
         else
             return t;
-    }
-    
-    private JComboBox makeOldStyleComboBox(Field f) {
-        // value -- REFACTOR?
-        Object hash = s.meta.get(f.variable);
-        String value = (hash==null ? "" : hash.toString());
-
-        // get field, make combobox
-        JComboBox b = new JComboBox(f.values);
-        b.setEditable(true);
-        b.setSelectedItem(value);
-
-        // tooltip for the editor, too (REFACTOR!)
-        b.setToolTipText(f.help);
-
-        // what sort of listeners will we need here?  i'll need 2:
-        // - one for text editing, and one for new-selection-made
-        UpdateListener u = new UpdateListener(s, f);
-        ((JTextField) b.getEditor().getEditorComponent()).getDocument().addDocumentListener(u);
-        b.addActionListener(u);
-        listeners.add(u);
-
-        return b;
     }
     
     // first label
