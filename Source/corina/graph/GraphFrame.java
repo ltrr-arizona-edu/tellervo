@@ -40,13 +40,13 @@ import corina.prefs.PrefsDialog;
 import corina.gui.Bug;
 import corina.util.Overwrite;
 import corina.ui.Builder;
+import corina.ui.I18n;
 
 import java.io.File;
 import java.io.IOException;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -80,9 +80,6 @@ public class GraphFrame extends XFrame implements SampleListener,
 						  PrintableDocument,
 						  Printable,
                                                   HasPreferences {
-
-    // i18n
-    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // SampleListener
     public void sampleRedated(SampleEvent e) { /* FIXME: handle this */ }
@@ -301,10 +298,10 @@ public class GraphFrame extends XFrame implements SampleListener,
 	_axisMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    if (getAxisVisible()) { // visible, now hide
-			_axisMenu.setText(msg.getString("vert_show")); // BUG: need to strip the control chars off first?
+			_axisMenu.setText(I18n.getText("vert_show"));
 			setAxisVisible(false);
 		    } else {
-			_axisMenu.setText(msg.getString("vert_hide"));
+			_axisMenu.setText(I18n.getText("vert_hide"));
 			setAxisVisible(true);
 		    }
 		}
@@ -319,10 +316,10 @@ public class GraphFrame extends XFrame implements SampleListener,
 		    boolean vis = Boolean.getBoolean("corina.graph.graphpaper");
 		    if (vis) { // visible, now hide
 			System.setProperty("corina.graph.graphpaper", "false");
-			_gridlinesMenu.setText(msg.getString("grid_show"));
+			_gridlinesMenu.setText(I18n.getText("grid_show"));
 		    } else {
 			System.setProperty("corina.graph.graphpaper", "true");
-			_gridlinesMenu.setText(msg.getString("grid_hide"));
+			_gridlinesMenu.setText(I18n.getText("grid_hide"));
 		    }
 		    repaint();
 		}
@@ -337,10 +334,10 @@ public class GraphFrame extends XFrame implements SampleListener,
 		    boolean vis = Boolean.getBoolean("corina.graph.baselines");
 		    if (vis) { // visible, now hide
 			plot.setBaselinesVisible(false);
-			_baselinesMenu.setText(msg.getString("base_show"));
+			_baselinesMenu.setText(I18n.getText("base_show"));
 		    } else {
 			plot.setBaselinesVisible(true);
-			_baselinesMenu.setText(msg.getString("base_hide"));
+			_baselinesMenu.setText(I18n.getText("base_hide"));
 		    }
 		    plot.recreateAgent();
 		    repaint();
@@ -525,7 +522,7 @@ public class GraphFrame extends XFrame implements SampleListener,
 	// summed -- add count, too
 	if (s.isSummed())
 	    samples.add(new Graph(s.count, s.range.getStart(),
-				  msg.getString("number_of_samples")));
+				  I18n.getText("number_of_samples")));
 
 	// observe
 	s.addSampleListener(this);
