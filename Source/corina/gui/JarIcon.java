@@ -62,7 +62,7 @@ public class JarIcon {
         Look-and-Feel Graphics Repository</a>.  It shouldn't be
         hardcoded, so when version 1.1 comes out, users can upgrade
         without recompiling. */
-    public final static String JARFILE = "jlfgr-1_0.jar";
+    public final static String JARFILE = "Libraries/jlfgr-1_0.jar";
 
     /** Return the icon with the specified filename from JARFILE, or
 	<code>null</code> if the file can't be opened or the icon
