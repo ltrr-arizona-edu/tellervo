@@ -22,6 +22,7 @@ package corina.site;
 
 import corina.Sample;
 import corina.map.Location;
+import corina.prefs.Prefs;
 import corina.print.*; // !!!
 
 import java.io.File;
@@ -107,7 +108,7 @@ public class SiteDB { // implements PrintableDocument {
     // for watching for file changes, which should either be moved to SiteDBFile,
     // or at least use SiteDBFile.getFilename().
     static String getDBFilename() {
-        return System.getProperty("corina.dir.data") + File.separator + "Site DB";
+        return Prefs.getPref("corina.dir.data") + File.separator + "Site DB";
     }
 
     void loadDB() throws IOException {

@@ -20,6 +20,7 @@
 
 package corina.site;
 
+import corina.prefs.Prefs;
 import junit.framework.TestCase;
 
 public class UnitTests extends TestCase {
@@ -56,10 +57,10 @@ public class UnitTests extends TestCase {
     //
     public void testSiteDB() {
 	// violates OAOO: startup.java sets this, too (call startup.initSax()?)
-        if (System.getProperty("org.xml.sax.driver") == null)
-            System.setProperty("org.xml.sax.driver", "org.apache.crimson.parser.XMLReaderImpl");
-        if (System.getProperty("corina.dir.data") == null)
-            System.setProperty("corina.dir.data", "Demo Data");
+        if (Prefs.getPref("org.xml.sax.driver") == null)
+            Prefs.setPref("org.xml.sax.driver", "org.apache.crimson.parser.XMLReaderImpl");
+        if (Prefs.getPref("corina.dir.data") == null)
+            Prefs.setPref("corina.dir.data", "Demo Data");
         try {
 	    SiteDB db = SiteDB.getSiteDB(); // this is SLOW!
 	    assertTrue(db != null);

@@ -1,6 +1,7 @@
 package corina.site;
 
 import corina.map.Location;
+import corina.prefs.Prefs;
 
 import java.io.File;
 import java.io.BufferedWriter;
@@ -22,7 +23,7 @@ class SiteDBFile {
 
     // WRITEME: (file name)
     static String getFilename() {
-        return System.getProperty("corina.dir.data") + File.separator + "Site DB";
+        return Prefs.getPref("corina.dir.data") + File.separator + "Site DB";
     }
 
     // WRITEME: public static SiteDB loadDB()

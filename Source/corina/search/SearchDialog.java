@@ -1,6 +1,7 @@
 package corina.search;
 
 import corina.MetadataTemplate;
+import corina.prefs.Prefs;
 import corina.ui.Builder;
 import corina.ui.I18n;
 import corina.gui.Layout;
@@ -181,7 +182,7 @@ public class SearchDialog extends JDialog {
 
 		    // s.setFolder("/Users/kharris/Documents/Corina/corina/Demo Data/chil/");
 		    // s.setFolder(System.getProperty("user.dir"));
-		    s.setFolder(System.getProperty("corina.dir.data"));
+		    s.setFolder(Prefs.getPref("corina.dir.data"));
 		    s.run();
 		}
 	    });
