@@ -59,7 +59,7 @@ public class TSAPMatrix extends Filetype {
     public Sample load() throws WrongFiletypeException, IOException {
 	// make sure it's a tsap-matrix file
 	String line = r.readLine();
-	if (!line.startsWith("TSAP-MATRIX-FORMAT"))
+	if (line==null || !line.startsWith("TSAP-MATRIX-FORMAT"))
 	    throw new WrongFiletypeException(); // incorrect header found
 
         // new sample, with given filename.  as far as i know, all
@@ -105,8 +105,12 @@ public class TSAPMatrix extends Filetype {
 		break;
 
 	    // from the first line, read the year
-	    if (start == null)
-		start = new Year(line.substring(3, 8), true); // true => "in a zero-year system"
+	    try {
+		if (start == null)
+		    start = new Year(line.substring(3, 8), true); // true => "in a zero-year system"
+	    } catch (NumberFormatException nfe) {
+		throw new IOException("can't parse year: " + line);
+	    }
 
 	    // data, count, up, down
 	    int datum=0, count=0, up=0, dn=0;
@@ -117,6 +121,8 @@ public class TSAPMatrix extends Filetype {
 		dn = Integer.parseInt(line.substring(69, 72).trim());
 	    } catch (NumberFormatException nfe) {
 		throw new IOException("Can't parse '" + nfe.getMessage() + "' as a number.");
+	    } catch (StringIndexOutOfBoundsException sioobe) {
+		throw new WrongFiletypeException();
 	    }
 
 	    // insert this data
@@ -128,6 +134,9 @@ public class TSAPMatrix extends Filetype {
 
 	// close file
 	r.close();
+
+	// might it be indexed?  suuuure...
+	s.guessIndexed();
 
 	// set range
 	s.range = new Range(start, s.data.size());
