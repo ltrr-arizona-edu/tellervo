@@ -162,7 +162,7 @@ public class Range implements Comparable {
     }
 
     // "(1001 - 1036, n=36)"
-    public String toStringWithRange() {
+    public String toStringWithSpan() {
         return "(" + start + " - " + end + ", n=" + span() + ")";
     }
 

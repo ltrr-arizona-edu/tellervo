@@ -331,7 +331,7 @@ public class Sample implements Previewable, Graphable {
     /** Return the sample's title.
 	@return the "title" tag from meta */
     public String toString() {
-        String name = meta.get("title") + " " + range.toStringWithRange();
+        String name = meta.get("title") + " " + range.toStringWithSpan();
         if (isModified()) // not aqua-ish, but how to do it the real way?
             name = "* " + name;
         return name;
