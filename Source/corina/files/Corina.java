@@ -353,45 +353,58 @@ public class Corina extends Filetype {
 	// ";weiserjahre" is followed by some spaces -- eat them
 	r.readLine();
 
-	// random variables
-	int n=0; // number of values read
-	int expect=s.data.size()-1; // number of values expected
+        // read 2 lines to figure out the spacing
+        r.mark(80*2 + 20);
+        String line1 = r.readLine();
+        String line2 = r.readLine();
+        r.reset();
 
-	String line = r.readLine();
-	int ptr=5; // skip 5 for the year -- a y10k problem waiting to happen
+        // easy case: at least 2 years on line1, just diff 'em.
+        int slash1 = line1.indexOf('/');
+        int slash2 = line1.indexOf('/', slash1+1);
+        int numDigits = 0;
+        if (slash2 != -1) {
+            numDigits = (slash2 - slash1 - 1) / 2;
+        }
 
-	// already know the length, so just scan the data.  this loop
-	// iterates once per year.
-	for (;;) {
-	    int slash = line.indexOf('/', ptr+1); // location of next '/'
-	    int right = line.indexOf(' ', slash); // location of next whitespace
-	    if (right == -1)
-		right = line.length()-1;
+        // ok, maybe there's only 1 slash on the first line, so try the second line
+        if (slash2 == -1) {
+            slash1 = line2.indexOf('/');
+            slash2 = line2.indexOf('/', slash1+1);
+            if (slash2 != -1) {
+                numDigits = (slash2 - slash1 - 1) / 2;
+            }
 
-	    // end of line
-	    if (slash == -1) {
-		line = r.readLine();
-		ptr = 5;
-		continue;
-	    }
+            // ok, maybe there's exactly 1 slash in each of the first 2 lines.  *groan*
+            if (slash2 == -1) {
+                // super-special case: read inc/dec from line1, read inc/dec from line2, return.
+                corina.gui.Bug.bug(new corina.PoochScrewedException("d'oh, i never bothered to implement that"));
+            }
+        }
 
-	    // read digits on either side
-	    String up = line.substring(ptr, slash).trim();
-	    String down = line.substring(slash+1, right+1).trim();
+        // number of values left to read
+        int left = s.data.size()-1;
 
-	    // move pointer
-	    ptr = right;
+        // now just read data until i'm done
+        String line = r.readLine();
+        int col=slash1;
+        while (left > 0) {
+            // end of line, start a new one
+            if (col > line.length()) {
+                line = r.readLine();
+                col = slash1;
+            }
 
-	    // parse, and add to wj
-	    s.incr.add(new Integer(up));
-	    s.decr.add(new Integer(down));
+            // read inc/dec
+            String inc = line.substring(col-numDigits, col).trim();
+            String dec = line.substring(col+1, col+1+numDigits).trim();
+            s.incr.add(new Integer(inc));
+            s.decr.add(new Integer(dec));
+            left--;
 
-	    // done reading one more year
-	    n++;
-
-	    if (n == expect)
-		break;
-	}
+            // next column
+            col += (slash2-slash1);
+        }
     }
 
     // the reader is just past the '~' character, so just trim what's
