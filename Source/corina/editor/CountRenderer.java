@@ -28,9 +28,8 @@ import javax.swing.JComponent;
 import javax.swing.table.TableCellRenderer;
 
 public class CountRenderer extends JComponent implements TableCellRenderer {
-    // GENERALIZE: take any number (double)
     private int val, max;
-    public CountRenderer(int max) {
+    public CountRenderer(int max) { // GENERALIZE: take any number (double)
         // range is 0..max
         this.max = max;
 
@@ -56,7 +55,7 @@ public class CountRenderer extends JComponent implements TableCellRenderer {
     // make it look like an aqua relevence control.  see:
     // http://developer.apple.com/techpubs/macosx/Essentials/AquaHIGuidelines/AHIGControls/Progress_In_ce_Controls.html
     public void paintComponent(Graphics g) {
-        int w=getSize().width, h=getSize().height;
+        int w=getWidth(), h=getHeight();
         double frac = (double) val / (double) max;
         int stop = (int) (frac * w);
 
@@ -72,11 +71,8 @@ public class CountRenderer extends JComponent implements TableCellRenderer {
             return;
         }
 
-        // draw dark lines
+        // draw dark lines -- well, just draw a big rectangle.  it's simpler and probably faster.
         g.setColor(dark);
-        //        for (int x=0; x<stop; x+=2)
-        //            g.drawLine(x, TOP, x, TOP+HEIGHT-1);
-        // actually, let's draw a big rectangle, instead.  it's simpler and maybe faster.
         g.fillRect(0, TOP, stop, HEIGHT);
 
         // draw light lines
