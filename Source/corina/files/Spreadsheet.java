@@ -18,7 +18,7 @@ public class Spreadsheet extends Filetype {
     public void save(Sample sample) throws IOException {
         // verify it's a master
         if (sample.elements == null)
-            throw new IOException("Not a master"); // i'm so helpful.
+            throw new IOException("Spreadsheet format is only available for summed samples with Elements");
 
         // number of elements
         int n = sample.elements.size();
@@ -26,7 +26,11 @@ public class Spreadsheet extends Filetype {
         // load all the elements into a buffer
         Sample buf[] = new Sample[n];
         for (int i=0; i<n; i++)
-            buf[i] = ((Element) sample.elements.get(i)).load();
+            try {
+                buf[i] = ((Element) sample.elements.get(i)).load();
+            } catch (IOException ioe) {
+                throw new IOException("Can't load element " + ((Element) sample.elements.get(i)).getFilename());
+            }
 
         // write header
         String eoln = System.getProperty("line.separator");

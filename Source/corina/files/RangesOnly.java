@@ -17,13 +17,17 @@ public class RangesOnly extends Filetype {
     public void save(Sample sample) throws IOException {
         // verify it's a master
         if (sample.elements == null)
-            throw new IOException("Not a master"); // i'm so helpful.
+            throw new IOException("Ranges-only format is only available for summed samples with Elements");
 
         int n = sample.elements.size();
         String eoln = System.getProperty("line.separator");
         for (int i=0; i<n; i++) {
             Element e = (Element) sample.elements.get(i);
-            e.loadMeta(); // this aborts if element can't be loaded.
+            try {
+                e.loadMeta(); // this aborts if element can't be loaded.
+            } catch (IOException ioe) {
+                throw new IOException("Can't load element " + e.getFilename());
+            }
 
             // output (name, start, end)
             if (e.details.containsKey("title"))
