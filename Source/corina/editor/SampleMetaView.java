@@ -258,7 +258,7 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
         for (int i=0; i<f.values.length; i++)
             descriptions[i+1] = msg.getString(f.variable + "." + f.values[i]);
         int x = JOptionPane.showOptionDialog(this,
-                                     "The field \"" + f.description + "\" has value \"" + newValue + "\", which I can't parse.  What did you mean?",
+                                     "The field \"" + f.description + "\" has value \"" + newValue + "\", which I don't understand.  What did you mean?",
                                      "Re-enter this value",
                                      JOptionPane.YES_NO_OPTION, // i think this is meaningless
                                      JOptionPane.QUESTION_MESSAGE,
