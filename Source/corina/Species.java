@@ -32,8 +32,18 @@ import java.util.Enumeration;
 import java.util.StringTokenizer;
 
 // a complete list of all the species.
-// the file came from web.utk.edu/~grissino/species.htm
-// I hope I didn't murder it too bad in converting it to a text file
+// the file came from http://web.utk.edu/~grissino/species.htm
+// (I hope I didn't murder it too bad in converting it to a text file)
+
+// -- this is for latin name only.  it would be useful to have (common name => code)
+// and (code => common nameS) lookups, as well.
+// -- in SQL, this'd be TABLE latin_species ( key code, latin ), TABLE common_species ( code, common )
+// -- in java, i'll either need more hashes/tables, or a multi-column table, or ... ick.  where's lisp?
+
+// -- common names are in english only.  it would be useful to have non-english common names, as well.
+// -- e.g., i know the turkish common name, what's the latin?  or, here's a dataset of quercus, what would a german know?
+// -- this would go ESPECIALLY well with string-almost-equals, because random users probably won't
+// type in non-english vowels (umlauts and the like).
 
 public class Species {
     public static Properties species = new Properties(); // code => name hash
@@ -59,6 +69,11 @@ public class Species {
         throw new UnknownSpeciesException();
     }
 
+    /** Look up a code in the list, and return its Latin name.
+        @param c the code to look up; usually 4 letters, all upper-case
+    @return the Latin name of that species
+        @exception UnknownSpeciesException if the code isn't in the list
+     */
     public static String getName(String c) throws UnknownSpeciesException {
         String r = (String) species.get(c);
         if (r == null)
@@ -69,9 +84,14 @@ public class Species {
 
     public static List common = new ArrayList(); // list of strings, like ("PISP" "QUSP")
 
+    // carol made this list for me; she also made a list of forest-speficic species (40 of 'em) --
+    // what to do with those?
+    private static final String DEFAULT = "ABSP,ACSP,CDLI,CDSP,CUSP,FASP,FRSP,JUSP," +
+        "LASP,PCSP,PISP,QUSP,TABA,ULSP,UNKN";
+
     static {
         // load most-common species
-        String s = System.getProperty("corina.species.common", "PISP,PCSP,JUSP,QUSP,UNKN");
+        String s = System.getProperty("corina.species.common", DEFAULT);
 
         StringTokenizer t = new StringTokenizer(s, ", ");
         while (t.hasMoreTokens())
@@ -79,11 +99,13 @@ public class Species {
         // sums will need the same sort of routine: "QUSP,PISP" => { "QUSP", "PISP" } => "Quercus, Pinus"
     }
 
+    // ---- MOVE EVERYTHING BELOW HERE TO UTIL.* ----
+    
     // "string-almost-equals" algorithm.  good for finding typos.
     // isn't species-specific, but i only plan to use it here.
     // taken from: http://www.faqts.com/knowledge_base/view.phtml/aid/4418/fid/538
     // (originally in python)
-    public static int stringDistance(String a, String b) {
+    private static int stringDistance(String a, String b) {
         int n = a.length();
         int m = b.length();
         int c[][] = new int[n+1][m+1];
@@ -106,13 +128,34 @@ public class Species {
 
         return c[n][m];
     }
-    public static boolean stringAlmostEquals(String s1, String s2, int typosAllowed) {
-        return (stringDistance(s1, s2) <= typosAllowed);
-    }
+//    public static boolean stringAlmostEquals(String s1, String s2, int typosAllowed) {
+//        return (stringDistance(s1, s2) <= typosAllowed);
+//    }
     public static boolean stringAlmostEquals(String s1, String s2) {
-        int distance = stringDistance(s1, s2);
-        int minLength = Math.min(s1.length(), s2.length());
-        return (distance / (double) minLength <= 0.20); // 80% ok?
+        int distance = stringDistance(s1.toLowerCase(), s2.toLowerCase());
+//        int minLength = Math.min(s1.length(), s2.length());
+//        return (distance / (double) minLength <= 0.40); // what's a good error rate?
+        return distance <= 4; // then again, species strings are all about the same length
+    }
+
+    // the closest species to |s|, or Unknown, if none is reasonably close
+    public static String closestSpecies(String s) throws UnknownSpeciesException {
+        // say the threshold is dist=5.
+        int fail = 6;
+        String bestGuess=null; // make the compiler happy
+        Enumeration e = species.keys();
+        while (e.hasMoreElements()) {
+            String maybe = (String) e.nextElement();
+            int d = stringDistance((String) species.get(maybe), s);
+            if (d <= fail) {
+                fail = d;
+                bestGuess = (String) species.get(maybe);
+            }
+        }
+        if (fail < 6)
+            return bestGuess;
+        else
+            throw new UnknownSpeciesException();
     }
 
     // IDEA: this algorithm could be used to implement a findClosestMatch(String, String[]),
