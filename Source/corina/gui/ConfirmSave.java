@@ -86,7 +86,7 @@ public class ConfirmSave extends JDialog {
 	    });
 
 	// button: save
-	JButton save = Builder.makeButton("save"); // save, dispose
+	JButton save = Builder.makeButton("do_save"); // save, dispose
 	save.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    // close me
