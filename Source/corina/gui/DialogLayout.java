@@ -43,8 +43,6 @@ public class DialogLayout implements LayoutManager2 {
         for (int i=0; i<n; i++) {
             Row r = (Row) rows.get(i);
             if (r instanceof HeaderRow) {
-                System.out.println("y=" + lastY);
-
                 // header
                 Component header = ((HeaderRow) r).h;
                 int w = parent.getWidth() - (border.left + border.right);
@@ -53,12 +51,7 @@ public class DialogLayout implements LayoutManager2 {
                 int y = lastY;
                 header.setBounds(x, y, w, h);
                 lastY += h;
-
-                System.out.println("   h=" + h);
-                System.out.println("y=" + lastY);
             } else if (r instanceof NormalRow) {
-                System.out.println("y=" + lastY);
-                
                 // label
                 JLabel l = (JLabel) ((NormalRow) r).l;
                 int w1 = l.getMinimumSize().width;
@@ -77,10 +70,6 @@ public class DialogLayout implements LayoutManager2 {
                 c.setBounds(x2, y2, w2, h2);
 
                 lastY += Math.max(h1, h2);
-
-                System.out.println("   h1=" + h1);
-                System.out.println("   h2=" + h2);
-                System.out.println("y=" + lastY);
             }
         }
         
