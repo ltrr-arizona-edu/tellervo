@@ -68,42 +68,40 @@ public class Tree extends JLabel
     private Sample s;
 
     public Tree(Sample sample) {
-	s = sample;
-	setBorder(BorderFactory.createEmptyBorder());
+        s = sample;
+        setBorder(BorderFactory.createEmptyBorder());
 
-	// icon
-	URL iconURL = ClassLoader.getSystemResource("Images/tree.png");
-	if (iconURL != null) {
-	    ImageIcon img = new ImageIcon(iconURL);
+        // icon
+        ImageIcon img = (ImageIcon) JarIcon.getIcon("Images/Tree.png");
 
-	    // use line height, approximately
-	    int height = getFont().getSize() + 4;
+        // use line height, approximately
+        int height = getFont().getSize() + 4;
 
-	    // scale -- assumes square icon
-	    img = new ImageIcon(img.getImage().getScaledInstance(height,
-								 height,
-								 Image.SCALE_SMOOTH));
+        // scale -- assumes square icon
+        img = new ImageIcon(img.getImage().getScaledInstance(height,
+                                                             height,
+                                                             Image.SCALE_SMOOTH));
 
-	    setIcon(img);
-	}
+        // use that
+        setIcon(img);
 
-	// tooltip
-	setToolTipText("Drag this tree to drop this sample on a " +
-		       "graph, bargraph, or even a disk");
+        // tooltip
+        setToolTipText("Drag this tree to drop this sample on a " +
+                       "graph, bargraph, or even a disk");
 
-	// drag source
-	drag = new DragSource();
-	drag.createDefaultDragGestureRecognizer(this, // component
-						DnDConstants.ACTION_MOVE, // ?
-						this); // dragger
+        // drag source
+        drag = new DragSource();
+        drag.createDefaultDragGestureRecognizer(this, // component
+                                                DnDConstants.ACTION_MOVE, // ?
+                                                this); // dragger
 
-	// double-click
-	addMouseListener(new MouseAdapter() {
-		public void mouseClicked(MouseEvent e) {
-		    if (e.getClickCount() == 2)
-			new Editor(s);
-		}
-	    });
+        // double-click
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2)
+                    new Editor(s);
+            }
+        });
     }
 
     // only used for crossdates, so far
