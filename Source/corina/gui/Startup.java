@@ -20,6 +20,8 @@
 
 package corina.gui;
 
+import java.awt.EventQueue;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.security.AccessControlContext;
 import java.security.AccessController;
@@ -32,7 +34,6 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
@@ -64,6 +65,12 @@ public class Startup implements PrivilegedAction {
   }
 
   public Object run() {
+    Subject subject = Subject.getSubject(AccessController.getContext());
+    if (subject != null) {
+      // replace the event queue with one that has the Subject stored
+      Toolkit.getDefaultToolkit().getSystemEventQueue().push(new AccessControlContextEventQueue());
+    }
+
     /*
      * Font f = new Font("courier", java.awt.Font.PLAIN, 24);
      * UIManager.put("Menu.font", f); UIManager.put("MenuItem.font", f);
@@ -159,6 +166,8 @@ public class Startup implements PrivilegedAction {
     private String pass;
 
     public void handle(Callback[] callbacks) {
+      System.out.println("HANDLE");
+      Thread.currentThread().getThreadGroup().list();
       if (prompted) return;
 
       JTextField nameField = new JTextField();
@@ -170,6 +179,8 @@ public class Startup implements PrivilegedAction {
                                                 JOptionPane.QUESTION_MESSAGE,
                                                 null, null, null);
       prompted = true;
+      System.out.println("HANDLE2");
+      Thread.currentThread().getThreadGroup().list();
       if (option == JOptionPane.CLOSED_OPTION || option == JOptionPane.CANCEL_OPTION) {
         return;
       }
@@ -235,7 +246,6 @@ public class Startup implements PrivilegedAction {
 
     System.out.println("Authentication succeeded!");
 
-    // now try to execute the SampleAction as the authenticated Subject
     Subject mySubject = lc.getSubject();
     Subject.doAs(mySubject, new Startup(args));
   }
