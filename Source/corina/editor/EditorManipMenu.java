@@ -1,33 +1,35 @@
 package corina.editor;
 
+import java.awt.event.ActionEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.AccessControlContext;
+import java.security.AccessController;
+import java.util.Collections;
+import java.util.List;
+import java.util.PropertyPermission;
+
+import javax.security.auth.Subject;
+import javax.swing.AbstractAction;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
 import corina.Sample;
 import corina.SampleEvent;
 import corina.SampleListener;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.ui.Alert;
-import corina.gui.FileDialog;
-import corina.gui.Bug;
-import corina.gui.UserCancelledException;
-import corina.manip.RedateDialog;
-import corina.manip.TruncateDialog;
-import corina.manip.ReconcileDialog;
-import corina.manip.Reconcile;
-import corina.manip.Reverse;
-import corina.index.IndexDialog;
 import corina.cross.CrossdateWindow;
 import corina.cross.Sequence;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import java.util.Collections;
-import java.util.List;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.AbstractAction;
-import java.awt.event.ActionEvent;
+import corina.gui.Bug;
+import corina.gui.FileDialog;
+import corina.gui.UserCancelledException;
+import corina.index.IndexDialog;
+import corina.manip.Reconcile;
+import corina.manip.ReconcileDialog;
+import corina.manip.RedateDialog;
+import corina.manip.Reverse;
+import corina.manip.TruncateDialog;
+import corina.ui.Builder;
+import corina.ui.I18n;
 
 // REFACTOR: this class needs refactoring.  there's IOEs and FNFEs in here!
 
@@ -48,6 +50,10 @@ public class EditorManipMenu extends JMenu implements SampleListener {
 	JMenuItem redate = Builder.makeMenuItem("redate...");
 	redate.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
+        //AccessControlContext ctx = AccessController.getContext();
+        //Subject s = Subject.getSubject(ctx);
+        //System.out.println("SUBJECT: " + s);
+        //AccessController.checkPermission(new PropertyPermission("corina.redate", "read"));
 		    new RedateDialog(sample, editor);
 		}
 	    });
