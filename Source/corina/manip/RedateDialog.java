@@ -20,38 +20,38 @@
 
 package corina.manip;
 
-import corina.Year;
-import corina.Range;
-import corina.Sample;
-import corina.gui.Layout;
-import corina.gui.layouts.DialogLayout;
-import corina.util.OKCancel;
-import corina.util.Platform;
-import corina.ui.Builder;
-import corina.ui.I18n;
-
+import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JButton;
-import javax.swing.JTextField;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JRadioButton;
-import javax.swing.JCheckBox;
-import javax.swing.ButtonGroup;
+import java.awt.event.ActionListener;
+import java.security.AccessControlException;
+import java.security.AccessController;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.BorderFactory;
-import javax.swing.AbstractAction;
-import javax.swing.event.DocumentListener;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.CannotRedoException;
+import javax.swing.event.DocumentListener;
+
+import corina.CorinaPermission;
+import corina.Range;
+import corina.Sample;
+import corina.Year;
+import corina.gui.Layout;
+import corina.gui.layouts.DialogLayout;
+import corina.ui.Builder;
+import corina.ui.I18n;
+import corina.util.OKCancel;
 
 /**
    A dialog which enables the user to redate a sample.  You can redate
@@ -218,10 +218,21 @@ public class RedateDialog extends JDialog {
         final JCheckBox elementsToo = new JCheckBox("Also redate all elements");
         controls.add(Box.createVerticalStrut(8), null);
         controls.add(elementsToo, "");
-	// if (sample.elements == null)
-	elementsToo.setEnabled(false);
+        boolean allowElementsToo = true;
+        //if (System.getSecurityManager() != null) {
+          try {
+            AccessController.checkPermission(new CorinaPermission("redate.elements"));
+          } catch (AccessControlException ace) {
+            allowElementsToo = false;
+            elementsToo.setBackground(Color.red.darker().darker());
+          }
+        //}
         // OUCH.  that's about as dangerous a weapon as i've ever thought about handing the lusers.
-	// (permanently disabled, now)
+        // (permanently disabled, now) -ken
+        // re-enabled with preliminary access control 10/7/04 -aaron
+        if (sample.elements == null || !allowElementsToo)
+          elementsToo.setEnabled(false);
+        	
 
         // buttons --------------------------------------------------
 

@@ -1,8 +1,10 @@
 package corina.editor;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.AccessControlException;
 import java.security.AccessController;
 import java.util.Collections;
 import java.util.List;
@@ -46,14 +48,20 @@ public class EditorManipMenu extends JMenu implements SampleListener {
 
 	// redate
 	JMenuItem redate = Builder.makeMenuItem("redate...");
-	redate.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-        if (System.getSecurityManager() != null) {
-          AccessController.checkPermission(new CorinaPermission("redate"));
-        }
-		    new RedateDialog(sample, editor);
-		}
-	    });
+  redate.addActionListener(new AbstractAction() {
+    public void actionPerformed(ActionEvent ae) {
+        new RedateDialog(sample, editor);
+    }
+  });
+  //if (System.getSecurityManager() != null) {
+    try {
+      AccessController.checkPermission(new CorinaPermission("redate"));
+    } catch (AccessControlException ace) {
+      ace.printStackTrace();
+      redate.setEnabled(false);
+      redate.setBackground(Color.red.darker().darker());
+    }
+  //}
 	add(redate);
 
 	// index
