@@ -105,28 +105,20 @@ public class Histogram {
 
     private String memo[]=null;
     public String getRange(int bucket) {
-        // make sure it's a legit bucket
-        if (bucket<0 || bucket>=buckets.length)
-            throw new ArrayIndexOutOfBoundsException();
-
         // build memo, if necessary
         if (memo == null)
             memo = new String[buckets.length];
 
-        // compute result
-        String result;
+        // compute result for cache, if necessary
         if (memo[bucket] == null) {
-            if (hasInfty && bucket==buckets.length-1)
-                result = fmt.format(low+step*bucket) + " - " + fmt.format(Double.POSITIVE_INFINITY);
-            else
-                result = fmt.format(low+step*bucket) + " - " + fmt.format(low+step*(bucket+1));
-            memo[bucket] = result;
-        } else {
-            result = memo[bucket];
+            boolean isInfty = (hasInfty && bucket==buckets.length-1);
+            double a = low + step*bucket;
+            double b = (isInfty ? Double.POSITIVE_INFINITY : low+step*(bucket+1));
+            memo[bucket] = fmt.format(a) + " \u2014 " + fmt.format(b);
         }
-        
+
         // return it
-        return result;
+        return memo[bucket];
     }
     public int getNumber(int bucket) {
         return buckets[bucket];
