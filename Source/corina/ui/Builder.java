@@ -5,9 +5,7 @@ import corina.util.Platform;
 import java.lang.reflect.Method;
 
 import java.util.StringTokenizer;
-import java.util.ResourceBundle;
 
-import java.awt.Font;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
@@ -250,6 +248,7 @@ public class Builder {
             m.invoke(null, new Object[] {});
             // IllegalAccess, InvocationTarget exceptions
           } catch (Exception ex) {
+            ex.printStackTrace();
             throw new IllegalArgumentException(
               "Builder.addAction(): can't invoke " + "requested method (" + methodNameGlue + " in " + className + ")");
           }
