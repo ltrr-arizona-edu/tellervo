@@ -216,6 +216,10 @@ public class SiteDB {
         if (filename == null)
             throw new IllegalArgumentException();
 
+	// hack: no sites
+	if (sites == null)
+	    throw new SiteNotFoundException();
+
         // look through the database for that filename
         for (int i=0; i<sites.size(); i++) {
             Site s = (Site) sites.get(i);
