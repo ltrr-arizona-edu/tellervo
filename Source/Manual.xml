@@ -1,0 +1,3287 @@
+<?xml version="1.0"?>
+<!DOCTYPE xsl:stylesheet [
+<!ENTITY sup2   "&#x00b2;" > <!-- SUPERSCRIPT TWO -->
+<!ENTITY sub1   "&#x2081;" > <!-- SUBSCRIPT ONE -->
+<!ENTITY sub2   "&#x2082;" > <!-- SUBSCRIPT TWO -->
+<!ENTITY sub3   "&#x2083;" > <!-- SUBSCRIPT THREE -->
+<!ENTITY sqrt   "&#x221a;" > <!-- SQUARE ROOT -->
+<!ENTITY middot "&#x22c5;" > <!-- DOT OPERATOR -->
+<!ENTITY sum    "&#x2211;" > <!-- N-ARY SUMMATION -->
+<!ENTITY dfn    "&#x225d;" > <!-- EQUAL TO BY DEFINITION -->
+<!ENTITY times  "&#x00d7;" > <!-- MULTIPLICATION SIGN -->
+
+<!ENTITY chi    "&#x03c7;" > <!-- GREEK SMALL LETTER CHI -->
+<!ENTITY rho    "&#x03c1;" > <!-- GREEK SMALL LETTER RHO -->
+<!ENTITY Chi    "&#x03a7;" > <!-- GREEK CAPITAL LETTER CHI -->
+<!ENTITY Rho    "&#x03a1;" > <!-- GREEK CAPITAL LETTER RHO -->
+
+<!ENTITY larr   "&#x2190;" > <!-- LEFTWARDS ARROW -->
+<!ENTITY uarr   "&#x2191;" > <!-- UPWARDS ARROW -->
+<!ENTITY rarr   "&#x2192;" > <!-- RIGHTWARDS ARROW -->
+<!ENTITY darr   "&#x2193;" > <!-- DOWNWARDS ARROW -->
+
+<!ENTITY uuml   "&#x00fc;" > <!-- LATIN SMALL LETTER U WITH DIAERESIS -->
+<!ENTITY auml   "&#x00e4;" > <!-- LATIN SMALL LETTER A WITH DIAERESIS -->
+<!ENTITY eacute "&#x00e9;" > <!-- LATIN SMALL LETTER E WITH ACUTE -->
+
+<!ENTITY amp    "&#x0026;" > <!-- AMPERSAND -->
+<!ENTITY inches "&#x2033;" > <!-- DOUBLE PRIME -->
+
+<!ENTITY nbsp   "&#x00a0;" > <!-- NO-BREAK SPACE -->
+
+<!ENTITY mdash  "&#x2014;" > <!-- EM DASH -->
+<!ENTITY lsquo  "&#x2018;" > <!-- LEFT SINGLE QUOTATION MARK -->
+<!ENTITY rsquo  "&#x2019;" > <!-- RIGHT SINGLE QUOTATION MARK -->
+<!ENTITY ldquo  "&#x201c;" > <!-- LEFT DOUBLE QUOTATION MARK -->
+<!ENTITY rdquo  "&#x201d;" > <!-- RIGHT DOUBLE QUOTATION MARK -->
+
+<!ENTITY ee     "e" >        <!-- e - mathml should give me this for free -->
+<!ENTITY Sum    "&#x03a3;" > <!-- Sigma - mathml should give me this for free -->
+]>
+<?xml-stylesheet type="text/xsl" href="xhtml.xsl"?>
+
+<book>
+
+<bookinfo>
+	<title>The Corina Book</title>
+	<author><firstname>Ken</firstname><surname>Harris</surname></author>
+	<pubdate>August 2002</pubdate>
+</bookinfo>
+
+<chapter><title>Introduction</title>
+
+<sect1><title>what it is, features, etc.</title>
+
+</sect1>
+
+<sect1><title>What You Need</title>
+
+  <para>Corina is written in Java, and requires what
+    <ulink url="http://java.sun.com/">Sun</ulink> calls a &ldquo;Java
+    2 Platform&rdquo; (by which they mean, of course, version 1.2 or
+    later &mdash; aren&rsquo; version numbers great?).</para>
+
+  <variablelist>
+
+    <varlistentry>
+      <term>If you&rsquo;re on a Mac:</term>
+      <listitem><para>Mac OS X comes with Java; there&rsquo;s nothing
+	  you need to install.  OS X 10.0 has Java 1.3 (which is slow,
+	  and has some noticeable bugs), and OS X 10.1 has Java 1.3.1.
+	  (There is no Java 2 Platform for Mac OS 9 or
+	  earlier.)</para></listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>If you&rsquo;re on Windows or Linux:</term>
+      <listitem>Download and install
+	<ulink
+	  url="http://java.sun.com/j2se/1.4/download.html">Sun&rsquo;s
+	  Java 1.4</ulink>. -- or 1.3.1 -- 1.2.x ok -- ibm
+	  XXX</listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>If you&rsquo;re on anything else:</term>
+      <listitem>any 1.2 ok.....</listitem>
+    </varlistentry>
+
+  </variablelist>
+
+</sect1>
+
+<sect1><title>How to read this manual</title>
+
+-- start-to-finish
+-- can be used as a reference (index, glossary, etc.)
+
+-- styles(css):
+---- math = red
+---- steps = green
+---- paper = gray (files)
+---- menus = sansserif (submenus)
+---- keys = darkgray (pressme)
+-- might not see styles, or might be different!  (xml!)
+
+<para>Mathematical equations will be in red boxes.  (Requirements for
+THIS?) You don&rsquo;t need to memorize these to use Corina, but they might
+help your understanding.  For example:</para>
+
+<div style="border-style: solid; border-width: 1px; width: 90%"> <!-- indent? -->
+<para>To compute the length of the hypotenuse, type in the lengths
+of the base and altitude and choose &ldquo;Compute Hypotenuse&rdquo;.</para>
+
+<math mode="display" xmlns="http://www.w3.org/1998/Math/Mathml">
+<mrow>
+  <msup>
+    <mi>x</mi>
+    <mn>2</mn>
+  </msup>
+</mrow>
+</math>
+
+<div class="math">
+The hypotenuse is computed using the Pythagorean Theorem:<br/>
+
+<math mode="display" xmlns="http://www.w3.org/1998/Math/Mathml">
+  <mrow>
+    <mi>c</mi>
+    <mo>=</mo>
+    <msqrt>
+      <msup>
+        <mi>a</mi>
+        <mn>2</mn>
+      </msup>
+      <mo>+</mo>
+      <msup>
+        <mi>b</mi>
+        <mn>2</mn>
+      </msup>
+    </msqrt>
+  </mrow>
+</math>
+
+<!-- old: <p align="center">c = &sqrt; <big>(</big> a&sup2; + b&sup2; <big>)</big></para> -->
+</div>
+</div>
+
+<para>If you want more information about a particular algorithm,
+consult the bibliography.</para>
+
+</sect1>
+
+</chapter>
+
+<chapter><title>The Sample Editor</title>
+
+<sect1><title>Samples</title>
+
+<para>The basic chunk of data in Corina is
+the <emphasis>sample</emphasis>.  Everything in Corina is concerned
+with putting data into samples, manipulating samples to emphasize
+their useful data, and ultimately, determining where some sample fits
+in a chronology.</para>
+
+<para>The term &ldquo;sample&rdquo; is perhaps slightly inaccurate.  A Corina sample
+is more like one measurement of a sample.  If you measure sample 6
+twice, you will generally store the data in two samples, &ldquo;6A&rdquo; and
+&ldquo;6C&rdquo;.</para>
+
+<para>A sample consists of:</para>
+<itemizedlist>
+   <listitem>Data, and its range (like 1001 - 1036)</listitem>
+   <listitem>Metadata (like whether it has pith)</listitem>
+   <listitem>Weiserjahre (for a sum, how many samples contribute to each year)</listitem>
+   <listitem>Elements (for a sum, which files were used to create it)</listitem>
+</itemizedlist>
+
+(***file/naming conventions)
+
+<para>To keep things somewhat organized,  (what was i going to talk
+about?  sites=folders?)</para>
+
+</sect1>
+
+<sect1><title>Creating a New Sample</title>
+
+<procedure><title>To create a new sample:</title>
+  <step>Choose
+    <menuchoice>
+      <guimenu>File</guimenu>
+      <guimenuitem>New Sample...</guimenuitem>
+      <shortcut>
+	<keycombo><keycap>control</keycap> <keycap>N</keycap></keycombo>
+      </shortcut>
+    </menuchoice>
+  </step>
+  <step>Type in a title for this sample, and press return.</step>
+</procedure>
+
+<note><title>Note</title>
+Raw samples generally have titles with the site name,
+sample number, and reading letter.  To help you from forgetting to
+type the sample number, Corina won&rsquo;t let you continue if the title
+doesn&rsquo;t have a number in it.  If you really want to create a sample
+with no number in the title, type a number here and delete it later.
+</note>
+
+<para>Entering or editing data is as simple as typing a number, and
+pressing return to advance to the next year.  If you make a mistake,
+you can always back up to correct it.  You can move the cursor by
+clicking on any value with the mouse, or by using the keyboard.  The
+arrow keys move by one year
+(<keycap>left</keycap>/<keycap>right</keycap>) or decade
+(<keycap>up</keycap>/<keycap>down</keycap>), and
+<keycap>Page up</keycap>, <keycap>Page down</keycap>, <keycap>Home</keycap>, and
+<keycap>End</keycap> also work.</para>
+
+<para>If you try to enter a value in the cell immediately after the
+last value of your sample, it will automatically extend the dataset.
+If you enter a value in a cell that already contains data, it will
+overwrite the old value with your new one.  If ins/del***</para>
+
+<!-- i don't think the shipping version can - add this later, once
+i've confirmed it actually works for some measuring station -->
+
+<para>If you have a measuring box connected to your computer&rsquo;s serial
+port, Corina can record its measurements directly.</para>
+
+<procedure>
+	<title>To measure a sample:</title>
+	<step>Create a new, empty sample with
+	  <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>New Sample...</guimenuitem>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>N</keycap></keycombo>
+	    </shortcut>
+	  </menuchoice>
+	</step>
+	<step>Type a title, and press return.</step>
+	<step>Click on the cell where the first value will go, if it&rsquo;s not already
+	selected: it&rsquo;s the second cell to the right of &ldquo;<code>1001</code>&rdquo;, below &ldquo;<code>1</code>&rdquo;.</step>
+
+	<step>Choose
+	  <menuchoice>
+	    <guimenu>Edit</guimenu>
+	    <guimenuitem>Start Measuring</guimenuitem>
+	    <shortcut>
+	      <keycap>F1</keycap>
+	    </shortcut>
+	  </menuchoice>
+	</step>
+
+	<step>Measure your sample.  Pressing the trigger enters a value into the editor.</step>
+	<step>While measuring, you can still move the cursor with the arrow keys, e.g., if
+	you want to re-measure a ring.  Remember to flip the measuring box to non-measure
+	mode while backing up.</step>
+
+	<step>When you&rsquo;re finished measuring, choose
+	  <menuchoice>
+	    <guimenu>Edit</guimenu>
+	    <guimenuitem>Stop Measuring</guimenuitem>
+	    <shortcut>
+	      <keycap>F1</keycap>
+	    </shortcut>
+	  </menuchoice>
+	</step>
+
+	<step>Save the sample.</step>
+</procedure>
+
+<para>Sometimes Corina won&rsquo;t allow you to edit data directly.  If a
+sample is indexed, for example, you can&rsquo;t edit values; you have to
+edit the raw sample and re-index it.  The same applies to summed
+files: either edit the raw samples that make it up and re-sum it, or
+clean the sum first.</para>
+<!-- this paragraph moved to troubleshooting/faq section -->
+
+</sect1>
+
+<sect1><title>Identifying Samples</title>
+
+<para>Each sample needs a unique ID.  Unfortunately, there are too many different
+identification schemes.</para>
+
+<itemizedlist>
+
+  <listitem>Title: the title itself, consisting of the full name of the site,
+    the sample number, and the reading number: &ldquo;Zonguldak, Karab&uuml;k 15C.&rdquo;</listitem>
+
+  <listitem>Filename: the name of the file on disk: &ldquo;<filename>ZKB15C.xxx</filename>&rdquo; (more on what
+    &ldquo;<filename class="extension">.xxx</filename>&rdquo; is later).</listitem>
+
+  <listitem>ID: a 6-digit code for the sample: &ldquo;167153&rdquo;.</listitem>
+
+  <listitem>Tape: the number written on the tape on the sample: &ldquo;C-TU-ZKB-15&rdquo;</listitem>
+
+</itemizedlist>
+
+<para>Only two of these are really needed: the full title, and a shorter version, for
+example, suitable for writing on the sample itself.  The ID number is leftover
+from Tucson punchcards, and serves no purpose today.  The filename is different
+from the tape number because MS-DOS limited filenames to 8 letters, a dot, and
+then 3 more letters.  Hopefully in the near future, we&rsquo;ll decide to simplify the
+system by eliminating these unnecessary names.</para>
+
+</sect1>
+
+<sect1><title>The Metadata Page</title>
+
+<para>A sample isn&rsquo;t just a bunch of numbers.  That&rsquo;s what the metadata tab is for.  On the
+metadata tab, you can enter... (***)</para>
+
+<para>You should always fill out the metadata page before you save.
+(Corina warns you if you try to save a sample without entering any metadata.)</para>
+
+<variablelist><title>Metadata fields</title>
+
+<varlistentry>
+	<term>Title</term>
+	<listitem><para>The title...</para></listitem>
+</varlistentry>
+
+<varlistentry>
+	<term>ID</term>
+	<listitem><para>ID number.  These are typically 6 numeric digits, which is why
+they&rsquo;re becoming obsolete.  For example, &ldquo;ZKB-15C&rdquo;
+would be &ldquo;167153&rdquo; (Zonguldak, Karab&uuml;k is site 167).
+But this starts to fail when you get more than 1000 sites, or 100
+samples.  These are useful pretty much only for exporting a file to
+Tucson format.</para></listitem>
+<!-- ***move this all to id,ing samples section -->
+</varlistentry>
+
+<varlistentry>
+	<term>Dating</term>
+	<listitem><para>Is the sample relatively or absolutely dated?</para></listitem>
+</varlistentry>
+
+<varlistentry>
+	<term>Unmeasured, beginning</term>
+	<listitem><para>Number of unmeasured rings at the beginning of this sample</para></listitem>
+</varlistentry>
+
+<varlistentry>
+	<term>Unmeasured, end</term>
+	<listitem><para>Number of unmeasured rings at the end of this sample</para></listitem>
+</varlistentry>
+
+<varlistentry>
+	<term>Type of Sample</term>
+	<listitem><para>The sample type: core, charcoal, or section.</para></listitem>
+</varlistentry>
+
+<!--
+% \metafield{Section Cut}{The cut of the section:
+% full section unsquared (FSU),
+% squared full section (SFS),
+% half section unsquared (HSU),
+% squared half section (SHS),
+% quarter section unsquared (QSU),
+% squared quarter section (SQS),
+% full radial section (FRS),
+% half radial section (HRS),
+% partial radial section (PRS),
+% full tangential section (FTS),
+% half tangential section (HTS), or
+% partial tangential section (PTS)}
+-->
+
+<varlistentry>
+	<term>Wood Species</term>
+	<listitem><para>The species of wood; use the Latin name</para></listitem>
+	<!-- ***species section? -->
+	<!-- mention popup, which i should be using, and 4-letter-code -->
+</varlistentry>
+
+<varlistentry>
+	<term>Format</term>
+	<listitem><para>The format of this data, either raw or indexed.  You will probably never need
+to change this yourself.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+	<term>Index Method</term>
+	<listitem><para>The algorithm used to index this sample.  See <xref linkend="indexing"/>.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+	<term>Sapwood Count</term>
+	<listitem><para>The number of sapwood rings.  By convention, this includes
+unmeasured sapwood rings counted as unmeasured.  That is, if a sample&rsquo;s last
+measured ring is 1236, and it has 3 unmeasured rings, and the first sapwood
+ring is 1230, then the sapwood count is 10.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+	<term>Pith</term>
+	<listitem><para>Pith: present, present but undatable, or not present.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+	<term>Terminal Ring</term>
+	<listitem><para>Bark, Waney-edge, near the end, or an unknown number of rings to the end</para></listitem>
+</varlistentry>
+
+<varlistentry>
+	<term>Continuous</term>
+	<listitem><para>Is the last ring: continuous, partially contiuous, or not
+continuous, over the outside edge of the sample?  There&rsquo;s no real standard for this:
+one man&rsquo;s &ldquo;partially continuous&rdquo; is another man&rsquo;s &ldquo;not continuous&rdquo;.  The
+purpose of this field is an indicator of whether the last year of this sample is
+the last year of the tree&rsquo;s life.  There&rsquo;s decent odds that a continuous outer ring
+is the terminal ring, even in the absense of bark, waney edge, or other signs.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+	<term>Quality</term>
+	<listitem><para>Whether the sample has one unmeasured ring, or more than one
+unmeasured ring.  &ldquo;Quality&rdquo; is a lousy name for it, but it&rsquo;s the convention.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+	<term>Reconciled</term>
+	<listitem><para>Has this sample been reconciled?  (See the section below on reconciliation.)</para></listitem>
+</varlistentry>
+
+<varlistentry>
+	<term>Author</term>
+	<listitem><para>Your name.  Corina sets this automatically for you.  (It asks
+the operating system for this.  If you&rsquo;re using a computer where
+your operating system doesn&rsquo;t know how to get your real name, like
+Windows with a Netware login, you can set this manually in the
+<a href="Preferences.html#Advanced">Preferences Advanced tab</a>.)</para></listitem>
+</varlistentry>
+
+<varlistentry>
+	<term>Comments</term>
+	<listitem><para>Any extra notes you have that don&rsquo;t fit in any of these
+categories.  You can type as much text as you want here (but MS-DOS
+Corina will only recognize the first two lines).</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</sect1>
+
+<sect1><title>The Status Bar</title>
+
+<para>At the bottom of each editor window is the <emphasis>status
+bar</emphasis>, which provides you with some useful
+information.</para>
+
+% image: the status line
+
+<para>In the bottom-left corner if the window, you&rsquo;ll see a little picture of a tree.
+This is used when you want to use this sample somewhere else: just drag the tree,
+and drop it somewhere else.  Not many parts of Corina can accept dragged samples
+like this, but in the future you&rsquo;ll be able to:</para>
+
+<itemizedlist>
+	<listitem>add it to a graph or bargraph (This is the only one that&rsquo;s done yet.)</listitem>
+	<listitem>add it to a crossdating grid</listitem>
+	<listitem>add it to a sum</listitem>
+	<listitem>drop the raw data directly into a spreadsheet</listitem>
+	<listitem>drop a graph of the data directly into a drawing program</listitem>
+</itemizedlist>
+
+<para>If you see this tree in other parts of Corina, you&rsquo;ll be able to do the same
+things with those trees, too.</para>
+
+<para>Next to the tree, you&rsquo;ll see some numbers:</para>
+
+<pre style="margin-left: 2em">
+1913: 30 [5] 4*1
+</pre>
+
+<para>This the year the cursor is on, and the data for that year.  Here&rsquo;s how to
+interpret this:</para>
+
+<table><title>How to read the status bar</title>
+<tbody>
+	<row>
+		<entry><code>1913:&nbsp;</code></entry>
+		<entry>For the year 1913,</entry>
+	</row>
+	<row>
+		<entry><code>30</code></entry>
+		<entry>the average ring width was 30 (hundredths of a millimeter: 0.30 mm),</entry>
+	</row>
+	<row>
+		<entry><code>[5]</code></entry>
+		<entry>which is the average of 5 samples,</entry>
+	</row>
+	<row>
+		<entry><code>4*1</code></entry>
+		<entry>4 of which are bigger than in the previous year, and 1 of which was smaller.</entry>
+	</row>
+</tbody>
+</table>
+
+<para>If any of these terms is missing, it means this sample doesn&rsquo;t have that
+information.  A raw sample, for example, will only have the year and ring
+width.  A sample summed with Corina will have all of these terms.  You might
+see the number of samples but not Weiserjahre data for Tucson files, which
+can&rsquo;t store those numbers.
+More information about this &mdash; such as the difference between &lsquo;<code>*</code>&rsquo; and
+&lsquo;<code>/</code>&rsquo; in the last term &mdash; can be found in the chapter about summing.</para>
+
+<para>In the lower-right corner of each editor window, you&rsquo;ll see some text
+that looks like</para>
+
+<pre style="margin-left: 2em">
+ms = 0.317
+</pre>
+
+<para>This is the <emphasis>mean sensitivity</emphasis>, which tells
+how sensitive or complacent the data is.  (values***) It&rsquo;s
+essentially for-your-information only; you shouldn&rsquo;t be worried
+if it&rsquo;s too high or too low (but you probably shouldn&rsquo;t be
+too surprised if a complacent dataset doesn&rsquo;t crossdate as
+well).</para>
+
+<div class="math">
+<para>It&rsquo;s defined in <a href="References.html#DPL">DPL</a> by:</para>
+
+<div align="center">ms = 1/(N-1) <big>&sum;</big>
+	2 &middot; |y<sub>i</sub> - y<sub>i-1</sub>| /
+	<big>(</big>|y<sub>i</sub>| + |y<sub>i-1</sub>|<big>)</big>
+</div>
+</div>
+
+<para>In some instances, it can&rsquo;t be computed (e.g., if any two consecutive
+years are 0), and is reported as &ldquo;undefined&rdquo;.</para>
+
+</sect1>
+
+<sect1><title>Reconciling</title>
+
+<para>After each sample is read twice, you (or somebody else)
+<emphasis>reconcile</emphasis> the readings.  After
+reconciliation,</para>
+
+<itemizedlist>
+  <listitem>they have the same number of years,</listitem>
+  <listitem>all the <link linkend="trend">trends</link> are the same, and</listitem>
+  <listitem>the measurements for each ring are within 3% (of the smaller value)</listitem>
+</itemizedlist>
+
+<para>Reconciliation is traditionally done on paper, though it can help
+to graph both samples on the screen for a quick visual comparison
+first.  On the printouts, circle values that differ by more than 3%,
+and underline bad trends.  (There is ongoing debate about whether a
+trend of stays-the-same and a differing trend &mdash; increasing or
+decreasing &mdash; is acceptable.) Then re-measure each bad value.
+Corina can quickly check if a sample has met these criteria.</para>
+
+<procedure>
+	<title>To check if a sample is reconciled (correctly):</title>
+	<step>Open one reading with
+	  <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Open...</guimenuitem>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>O</keycap></keycombo>
+	    </shortcut>
+	  </menuchoice>
+	</step>
+	<step>Choose
+	  <menuchoice>
+	    <guimenu>Manipulate</guimenu>
+	    <guimenuitem>Reconcile</guimenuitem>
+	  </menuchoice>
+	</step>
+	<step>If Corina can&rsquo;t find the other reading, it will ask you to locate&nbsp;it</step>
+	<step>A new window appears listing inconsistent trends and measurements, if there are any</step>
+	<step>When you&rsquo;re done looking at it, close this window</step>
+</procedure>
+
+<para>Corina thinks that the two measurements of a sample are the &ldquo;A&rdquo; and &ldquo;C&rdquo; readings,
+or the &ldquo;B&rdquo; and &ldquo;D&rdquo; readings, and that this is the last letter of the filename
+(before the filename extension, if you&rsquo;re on Windows).</para>
+
+<para>When you&rsquo;ve finished reconciling a sample on paper, here&rsquo;s a checklist...***</para>
+
+<procedure>
+	<title>To reconcile a sample on the computer, after you&rsquo;ve reconciled it on paper:</title>
+	<step>Open the first (&ldquo;A&rdquo;) reading with
+	  <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Open...</guimenuitem>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>O</keycap></keycombo>
+	    </shortcut>
+	  </menuchoice>
+	</step>
+	<step>Type in the correct data</step>
+	<step>On the Metadata tab, set Reconciled to Y.</step>
+	<step>Save the sample with
+	  <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Save</guimenuitem>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>S</keycap></keycombo>
+	    </shortcut>
+	  </menuchoice>
+	</step>
+	<step>Repeat for the second (&ldquo;C&rdquo;) reading</step>
+	<step>Change the extension of both files to <filename class="extension">.REC</filename>
+	  (in Windows Explorer, for example).</step>
+</procedure>
+
+<!-- ***steps 3,6 are a pain in the butt, and will be their own command, before long - bug 86 -->
+<!-- interface: manip &rarr; reconcile; in reconcile window, if everything matches, click -->
+<!-- "set reconciled" (better name?), which automatically sets rec=Y, name=*.rec, and saves -->
+
+</sect1>
+
+<sect1><title>Redating</title>
+
+<para>The <emphasis>dating</emphasis> of a sample is what year
+it&rsquo;s dated to, and whether that range is absolute or relative.
+Changing these values, then, is <emphasis>redating</emphasis>.</para>
+
+<para>There are two reasons to redate a sample.  First, 
+<!-- ***why? --> ...
+They also need to be dated correctly for making sums, which I&rsquo;ll talk about later.</para>
+<!-- fwd ref: graph to confirm dates (put graphics first?...) -->
+
+<para>The standard way to redate a file is with the <guimenuitem>Redate...</guimenuitem> menuitem.</para>
+
+<procedure>
+	<title>To redate a sample:</title>
+	<step>Open the sample with
+	  <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Open...</guimenuitem>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>O</keycap></keycombo>
+	    </shortcut>
+	  </menuchoice>
+	</step>
+	<step>Choose
+	  <menuchoice>
+	    <guimenu>Manipulate</guimenu>
+	    <guimenuitem>Redate...</guimenuitem>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>R</keycap></keycombo>
+	    </shortcut>
+	  </menuchoice>
+	</step>
+	<step>Type in either the new starting date or the new ending date; the other
+	one will automatically be computed as you type.</step>
+	<step>Click &ldquo;Relative&rdquo; or &ldquo;Absolute&rdquo; if you want to set that.</step>
+	<step>Click OK.</step>
+	<step>Save the sample.</step>
+</procedure>
+
+<para>There are other ways to do it, though.  The Absolute/Relative setting
+can also be changed from the Metadata tab.  And if you want to change the
+starting year of a sample, you can double-click on that year (the very
+top-left square) in the Data tab and change it directly &mdash; press return
+when you&rsquo;re done.</para>
+
+-- (in the graph?)
+
+</sect1>
+
+<sect1><title>Printing Samples</title>
+
+<para>Corina can print samples.  It prints all data present for a sample,
+including data, metadata, weiserjahre, and elements.  It also prints
+some appropriate summary information for the type of sample it is,
+like the total radius of a raw sample, the total number of rings in a
+master, or the number (and percentage) of significant years in a
+master.</para>
+
+<para>To print a sample, select
+
+<menuchoice>
+  <guimenu>File</guimenu>
+  <guimenuitem>Print...</guimenuitem>
+  <shortcut>
+    <keycombo><keycap>control</keycap> <keycap>shift</keycap> <keycap>P</keycap></keycombo>
+  </shortcut>
+</menuchoice>.
+
+This shows you a dialog that lets you set the margins, layout, etc.,
+of the printout.  If you just want to use the same settings as you did
+before (or the defaults, if you haven&rsquo;t printed yet), you can
+select
+
+<menuchoice>
+  <guimenu>File</guimenu>
+  <guimenuitem>Print One Copy</guimenuitem>
+  <shortcut>
+    <keycombo><keycap>control</keycap> <keycap>P</keycap></keycombo>
+  </shortcut>
+</menuchoice>.
+
+and Corina will print without showing you the dialog.</para>
+
+<!-- LINK: sample output, as pdf -->
+
+</sect1>
+
+</chapter>
+
+<chapter><title>Graphics</title>
+
+<sect1><title>Why?</title>
+
+% NEED ANOTHER CHAPTER: elementary sample theory, then graphics, then the sample editor.
+
+<para>I&rsquo;m introducing graphics early, and for a reason.  First, graphs are fun.
+(Data entry, I&rsquo;m told, is not.)  But graphs are extremely useful, too.
+They give you the &ldquo;feel&rdquo; of the data that you can&rsquo;t get just by looking at
+tables of numbers.</para>
+
+<para>Most of the statistical tools provided by Corina aren&rsquo;t incredibly intelligent.
+It wouldn&rsquo;t be very hard to come up with some datasets that had great statistical scores
+across the board, but obviously didn&rsquo;t crossdate.***</para>
+
+<para>While it&rsquo;s more rigorous to state that a <a href="Indexing.html#HighPass">high-pass
+filter</a> is defined by</para>
+
+<blockquote>
+ind<sub><i>i</i></sub> = 1/10 ( <i>y</i><sub><i>i</i>-2</sub> + 2<i>y</i><sub><i>i</i>-1</sub> + 4<i>y</i><sub><i>i</i></sub> + 2<i>y</i><sub><i>i</i>+1</sub> + <i>y</i><sub><i>i</i>+2</sub>)
+</blockquote>
+
+<para>you&rsquo;ll probably understand better if I show you that</para>
+
+<!-- lgraph: random sample with high-pass index ...  rgraph: result; with captions! -->
+
+</sect1>
+
+<sect1><title>How to Make a Graph</title>
+
+(how to make a graph: single graphs)
+
+(multi-graphs)
+
+(special other graphs: index, cross, sum -- mention them here, but don't really need to go into it)
+
+</sect1>
+
+<sect1><title>Moving around***</title>
+
+<para>Once you&rsquo;re looking at a graph, it should be obvious you
+can use the scrollbar at the bottom to scroll through the years.  You
+can move samples around on the graph using the mouse, too.  Simply
+drag the graph where you want it.  It&rsquo;ll move smoothly up and
+down, and jump by whole years left and right; if you watch the title
+bar of the window, it&rsquo;ll show you what years it&rsquo;s dated to
+as you drag.  If you want to adjust it up and down without changing
+the years it&rsquo;s dated to, hold down
+the <emphasis>shift</emphasis> key as you drag; this will prevent it
+from sliding left or right as you drag.</para>
+
+<para>If you&rsquo;re a keyboard jock, there are keyboard shortcuts for
+everything you can do with the mouse:</para>
+
+<!-- make some comment about "these are for scrolling", "these operate on
+	the selected sample", etc.? -->
+<table style="margin-left: 4em" border="1" cellspacing="0" width="80%">
+	<row><th>Key</th>		<th>Command</th></row>
+	<row><td><key>&larr;</key></td>		<td>Scroll left 10 years</td></row>
+	<row><td><key>&rarr;</key></td>		<td>Scroll right 10 years</td></row>
+	<row><td><key>page up</key></td>		<td>Scroll left 100 years</td></row>
+	<row><td><key>page down</key></td>		<td>Scroll right 100 years</td></row>
+	<row><td><key>home</key></td>		<td>Scroll left to start</td></row>
+	<row><td><key>end</key></td>		<td>Scroll right to end</td></row>
+	<row><td colspan="2">&nbsp;</td></row>
+	<row><td><key>&uarr;</key></td>		<td>Slide sample up</td></row>
+	<row><td><key>&darr;</key></td>		<td>Slide sample down</td></row>
+	<row><td><key>+</key></td>			<td>Nudge sample up</td></row>
+	<row><td><key>-</key></td>			<td>Nudge sample down</td></row>
+	<row><td><key>control</key>&nbsp;<key>&larr;</key></td>	<td>Slide sample left 1 year</td></row>
+	<row><td><key>control</key>&nbsp;<key>&rarr;</key></td>	<td>Slide sample right 1 year</td></row>
+	<row><td><key>&lt;</key></td>		<td>Scale sample down by 10%</td></row>
+	<row><td><key>&gt;</key></td>		<td>Scale sample up by 10%</td></row>
+<!-- that's a lie, actually.  what's it really? -->
+	<row><td colspan="2">&nbsp;</td></row>
+	<row><td><key>tab</key></td>		<td>Select next sample</td></row>
+	<row><td><key>shift tab</key></td>		<td>Select previous sample</td></row>
+	<row><td><key>control</key>&nbsp;<key>1</key>,
+<key>control</key>&nbsp;<key>2</key>, etc.</td>
+<td>Select graph 1, 2, etc.</td></row>
+<!-- future: control-1, -2, etc. to select a different sample -->
+	<row><td colspan="2">&nbsp;</td></row>
+	<row><td><key>space</key></td>		<td>Squish graphs together (see below)</td></row>
+	<row><td colspan="2">&nbsp;</td></row>
+	<row><td><key>esc</key></td>		<td>Close graph window</td></row>
+</table>
+
+<para>Instead of moving graphs around by hand, there are a couple
+commands that you can use to move all of the graphs at once.  These
+can save a lot of time.</para>
+
+<para>First, you can have all the baselines of your graphs set to zero.
+That is, they&rsquo;ll all be on the same y-axis.  Select <menu>View &rarr;
+Make Baselines Zero</menu>.  (This is the default for plotting <a
+href="Indexing.html#HowTo">samples with their indexes</a>.)</para>
+
+<para>Second, you can spread out the baselines at regular intervals.  The
+first graph will have its baseline at the bottom, the second one
+1&inches; above that, etc.  Select <menu>View &rarr; Make Baselines Evenly
+Spaced</menu>.  (This is the defaul for plotting multiple samples.)</para>
+
+<para>Third, you can have Corina &ldquo;look&rdquo; at the part of the graphs that
+are showing, and fit them together as closely as possible.  It doesn&rsquo;t
+just set all the baselines to the same place; it actually tries to
+make each graph fit together (by computing the minimum &chi;&sup2;).
+Select <menu>View &rarr; Squish Together Graphs</menu>, or press the
+spacebar.  This one is especially useful for <a
+href="Crossdating.html#HowTo">crossdating graphs</a>.</para>
+
+<para>A way to look at a long crossdates that seems to work well for many
+people is to press page-down (to scroll forward by one screen) and
+then spacebar (to line up the graphs) to go through the crossdate one
+screen at a time, lining up the graphs at each screen.</para>
+
+</sect1>
+
+<sect1><title>Changing the Appearance of a Graph</title>
+
+(controls)
+
+(list keyboard controls)
+
+</sect1>
+
+<sect1><title>Other Types: Bargraphs</title>
+
+(bargraphs)
+
+</sect1>
+
+<sect1><title>Printing Graphs</title>
+
+(printing)
+
+---
+misc section?: drag-n-drop, saving graphs -- combine with printing section?
+
+</sect1>
+
+</chapter>
+
+<chapter id="indexing"><title>Indexing</title>
+
+<sect1><title>What is Indexing?</title>
+
+<para>Usually trees put on big rings when they&rsquo;re young, and
+smaller rings when they get older.  This is a problem when comparing
+samples, because you don&rsquo;t care about the absolute width of a
+ring (&ldquo;Ring #345 is 0.36mm wide&rdquo;), as much as you care
+about its relative width (&ldquo;Ring #345 is only 36% of
+normal&rdquo;).</para> (***)
+
+This is what indexing is for...***
+
+<!--
+leftgraph: 2 samples that crossdate, but aren't indexed, and don't look similar
+caption: These samples fit together, but it's not apparent.
+rightgraph: same 2 samples after indexing, crossdating is apparent
+caption: After indexing, everything is clear.
+-->
+
+(why we need it, when to use it)
+
+</sect1>
+
+<sect1><title>How to Index a Sample</title>
+
+<para>Indexing a sample in Corina is straightforward.</para>
+
+<procedure>
+	<title>To index a sample:</title>
+	<step> Open the sample with
+	  <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Open...</guimenuitem>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>O</keycap></keycombo>
+	    </shortcut>
+	  </menuchoice>
+	</step>
+
+	<step>Choose
+	  <menuchoice>
+	    <guimenu>Manipulate</guimenu>
+	    <guimenuitem>Index...</guimenuitem>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>I</keycap></keycombo>
+	    </shortcut>
+	  </menuchoice>.
+
+	  (If it&rsquo;s dimmed, that means the
+	  sample is already indexed.  Open the original raw data and re-index that.
+	  This is why you should always keep your raw data!)</step>
+
+	<step>Click on an index.  Take a look at how the curve compares to your data by
+	clicking &ldquo;Preview&rdquo;; close the graph when you&rsquo;re done looking.</step>
+
+	<step>When you&rsquo;ve decided which index to use, select it, and click &ldquo;OK&rdquo;</step>
+
+	<step>Save the indexed sample with
+	  <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Save As...</guimenuitem>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>shift</keycap> <keycap>S</keycap></keycombo>
+	    </shortcut>
+	  </menuchoice>;
+	  you should usually end the filename with <filename class="extension">.IND</filename> to indicate that
+	  it&rsquo;s indexed</step>
+</procedure>
+
+<para>***how to pick: read on...</para>
+
+<para>Things that can go wrong:</para>
+
+<itemizedlist>
+
+  <listitem>If the Index menuitem is dimmed, that means the sample is
+    already indexed.  Open the original raw data and index that.
+    (This is why you should always keep your raw data!)  If you know
+    it&rsquo;s raw data and for some reason Corina thinks it&rsquo;s
+    indexed, go to the metadata tab and change the
+    &ldquo;Format&rdquo; field to &ldquo;Raw&rdquo;.</listitem>
+
+  <listitem>(if it&rsquo;s a bad index)</listitem>
+
+</itemizedlist>
+
+<tip>
+  <para>If you want to index several samples at once, use the <a
+href="Browser.html">File Browser</a>.  Select all the samples, and
+choose
+<menuchoice>
+  <guimenu>Manipulate</guimenu>
+  <guimenuitem>Index...</guimenuitem>
+</menuchoice>.
+  </para>
+</tip>
+
+</sect1>
+
+<sect1><title>Exponential</title>
+
+<para>By far the most common index you&rsquo;ll use is the exponential.  9 times
+out of 10 this will be the best choice.  And there&rsquo;s a good reason: this
+matches how you would expect a tree to grow.  Trees start out growing
+quickly, and gradually slow down.</para>
+
+<!-- graph: x-y plot, y=a+be^(-px)>   <diagram: rings of a perfectly -->
+-- exponential tree> -->
+<!-- WRITEME: i need a graph here.
+     => WRITEME: well, i need a good graph-exporting feature.  duh! -->
+
+<para>If you&rsquo;re not sure which to use, you&rsquo;ll probably never get in trouble
+for choosing an exponential index.  (Well, not much.)  You&rsquo;ll use this
+one almost all the time.</para>
+
+<para>This index tries to fit an equation of the form</para>
+
+
+<math mode="display" xmlns="http://www.w3.org/1998/Math/Mathml">
+  <mrow>
+    <mi>y</mi>
+    <mo>=</mo>
+    <mi>a</mi>
+    <mo>+</mo>
+    <mi>b</mi>
+    <msup>
+      <mi>&ee;</mi>
+      <mrow>
+        <mo>-</mo>
+        <mi>p</mi>
+        <mi>x</mi>
+      </mrow>
+    </msup>
+  </mrow>
+</math>
+
+<para>to your data, searching for the best values of <i>a</i>, <i>b</i>,
+and <i>p</i>.***  ref?***</para>
+
+<note><title>Note</title>
+This is sometimes called a &ldquo;negative exponential&rdquo; index,
+because the exponent is usually negative.
+</note>
+
+<para>Sometimes the exponential index does a lousy job.  If a tree is
+living in a crowded area and the trees around it get cut down,
+suddenly it has much better growing conditions, so it might grow
+faster as it gets older, instead of slower.  If you tried to use an
+exponential curve on a tree like this, it would exaggerate this
+growth, and useful data would get flattened out.</para>
+
+<!-- graph: weird tree + exp index ==> graph: indexed weird tree -->
+
+<para>The result is you&rsquo;re looking at the growing conditions of this one
+tree, so it&rsquo;s not going to crossdate as well.</para>
+
+<para>Or imagine a tree with a fire scar that has a few very large rings.
+An exponential index wouldn&rsquo;t take much notice of this, because most
+of the sample is still shaped like an exponential curve, but when you
+applied it they would be grossly out of proportion.  For these types
+of samples, there are other indexing algorithms available.</para>
+
+<!-- graphs: very non-exp data -->
+
+</sect1>
+
+<sect1><title>Index Quality, or &chi;&sup2; and &rho;</title>
+
+<para>You might want to know how close your indexing curve is
+to your data.  You want to fit a curve that&rsquo;s relatively close to the
+general trend of your data.  This is what the &chi;&sup2; (&ldquo;chi-squared&rdquo;)
+and &rho; values are&nbsp;for.</para>
+
+<para>&chi;&sup2; is defined as:</para>
+
+<math mode="display" xmlns="http://www.w3.org/1998/Math/Mathml">
+  <mrow>
+    <msup>
+      <mi>&chi;</mi>
+      <mn>2</mn>
+    </msup>
+    <mo>=</mo>
+    <mo>&Sum;</mo>
+    <msup>
+      <mrow>
+        <mo>(</mo>
+        <msub>
+          <mi>curve</mi>
+          <mi>i</mi>
+        </msub>
+        <mo>-</mo>
+        <msub>
+          <mi>data</mi>
+          <mi>i</mi>
+        </msub>
+        <mo>)</mo>
+      </mrow>
+      <mn>2</mn>
+    </msup>
+  </mrow>
+</math>
+
+<para>(Think of it as the total difference between the curve and your data, with
+each term squared so keep it positive.)***</para>
+
+<para>What&rsquo;s a good value?  Suppose you have a sample that&rsquo;s 200 years long,
+and at each year the index is about 30 (hundredths of a millimeter) off
+from the sample.</para>
+
+<math mode="display" xmlns="http://www.w3.org/1998/Math/Mathml">
+  <mtable>
+    <mrow>
+      <mtd>
+        <msup>
+          <mi>&chi;</mi>
+          <mn>2</mn>
+        </msup>
+      </mtd>
+      <mtd>
+        <mo>=</mo>
+        sum?
+        _i=1
+        ^200
+        <msup>
+          <mn>30</mn>
+          <mn>2</mn>
+        </msup>
+      </mtd>
+    </mrow>
+    <mrow>
+      <mtd></mtd>
+      <mtd>
+        <mo>=</mo>
+        <mn>200</mn>
+        <mo>cdot?</mo>
+        <mn>900</mn>
+      </mtd>
+    </mrow>
+    <mrow>
+      <mtd></mtd>
+      <mtd>
+        <mo>=</mo>
+        <mn>180,000</mn>
+      </mtd>
+    </mrow>
+  </mtable>
+</math>
+
+<div class="math">
+	&chi;&sup2; = <big>&sum;</big><sub>i=1</sub><sup>200</sup> 30&sup2;
+			= 200 &middot; 900
+			= 180,000
+</div>
+
+<note><title>Note</title>
+At least one book I&rsquo;ve seen says &chi;&sup2; is this sum,
+and at least one other says it&rsquo;s this sum divided by the number of
+terms.  I don&rsquo;t know which is correct, but I&rsquo;m willing to change if
+somebody says I should divide my result by the length.
+</note>
+
+<para>This isn&rsquo;t unusual.  It will tend to be lower for complacent
+samples, shorter samples (it&rsquo;s the total difference, not difference
+per year), or when using indexing curves that follow the data very
+closely.</para>
+
+<para>The <ulink url="http://noppa5.pc.helsinki.fi/koe/corr/cor7.html">correlation
+coefficient</ulink>, &rho;, is defined by:</para>
+
+<div class="math">
+	z&sub1; = <big>&sum;</big> (data<sub><i>i</i></sub> - data<sub>avg</sub>)&sup2;<br/>
+	z&sub2; = <big>&sum;</big> (ind<sub><i>i</i></sub> - ind<sub>avg</sub>)&sup2;<br/>
+	z&sub3; = <big>&sum;</big> (data<sub><i>i</i></sub> - data<sub>avg</sub>)(ind<sub><i>i</i></sub> - ind<sub>avg</sub>)<br/>
+	&rho; = z&sub3; / &sqrt; (z&sub1; z&sub2;)
+</div>
+
+<para>What&rsquo;s a good &rho;?  &rho;=1 means &ldquo;perfectly correlated&rdquo;, or, the
+indexing curve matches your data exactly.  (&rho;=-1 is a perfect
+inverse correlation, but those never happen -- RIGHT?)  &rho;=0 is no
+correlation at all.  Closer to 1 is generally better.</para>
+
+<para>It is possible to take this too far.
+You <emphasis>don&rsquo;t</emphasis> want &chi;&sup2;=0.  If you had
+a curve like that, it would index your data to a perfectly flat line,
+which is useless.  An index is a type of filter you apply to your
+data, and filters <emphasis>remove signal from your data</emphasis>.
+Usually you remove low-frequency (very broad) trends, and preserve the
+high-frequency (year-to-year) signal, which helps when crossdating
+samples of different ages.  But you have to be careful you
+aren&rsquo;t removing the signal you&rsquo;re trying to see.</para>
+
+<!--
+<para>Sunglasses are a type of filter, too.  If it&rsquo;s bright outside, you put on
+sunglasses to help you see better.  But if you had really dark sunglasses, or
+it wasn&rsquo;t a very bright day, you wouldn&rsquo;t be able to see anything at all.</para>
+-->
+
+<para>Rule-of-thumb for choosing an index: use whichever looks the best.  The
+&chi;&sup2; isn&rsquo;t enough to determine which index is best.  (If it was, Corina
+would always choose the index with the lowest &chi;&sup2;.)
+So far, the only way to know if an index is any good is to look at the graph.</para>
+
+</sect1>
+
+<sect1><title>Polynomial</title>
+
+<para>Another way to index a sample is to use a polynomial.  Corina gives you
+polynomials up to 6th degree (this is settable in the preferences).***</para>
+
+</sect1>
+
+<sect1><title>Horizontal</title>
+
+<para>A special case of polynomial to use is a horizontal line, equal to the average
+value.  Why would you want to do this?  Not for crossdating: dividing each value by
+the same value doesn&rsquo;t change the shape of the curve, only its overall size.
+Remember*** that every element in a sum must use the same units, either raw or
+indexed.  If you have a sample you wouldn&rsquo;t otherwise want to index, and you
+want to put it in a sum with other indexed files, you could use a horizontal
+index.</para>
+
+</sect1>
+
+<sect1><title>Adaptive</title>
+
+<para>Adaptive is the &ldquo;last-resort&rdquo; index.  If an exponential doesn&rsquo;t
+work, and a high-degree polynomial doesn&rsquo;t work, adaptive might be the way to go.
+It&rsquo;s simply the average of the 11 surrounding years:</para>
+
+<div class="math">
+ind<sub>i</sub> = <sup>1</sup>/<sub>11</sub> (y<sub>i-5</sub> + y<sub>i-4</sub> + y<sub>i-3</sub> + ... + y<sub>i-3</sub> + y<sub>i+4</sub> + y<sub>i+5</sub>)
+</div>
+
+<para>As far as I can tell, it was first used for dendro by <xref
+linkend="Pohl95"/> in the original Corina.</para>
+
+<!-- graph: some crazy sample, and an adaptive index on it -->
+
+<note><title>Note</title> This index was originally
+called <emphasis>floating average</emphasis>, probably in reference
+to the fact that the index curve &ldquo;floats&rdquo; around, not
+following any explicit
+<i>y=f(x)</i>-type formula.  But people tended to call it
+<emphasis>floating</emphasis>, and
+then <emphasis>floating-point</emphasis>, which means something
+different.  (It&rsquo;s how computers store numbers like 3.14159...,
+as opposed to numbers like 7.)  You may still hear people calling this
+index by these other names.
+</note>
+
+</sect1>
+
+<sect1><title>High-Pass</title>
+
+<para>The high-pass index is a more general case of the adaptive index.
+Instead of simply taking the average of 11 values, it takes a weighted
+average.  It&rsquo;s an example of a &ldquo;high-pass&rdquo; filter because
+<emphasis>high</emphasis>-frequency signals
+can <emphasis>pass</emphasis> through, but low-frequency signals are
+filtered out.</para>
+
+<para>The default is &ldquo;1-2-4-2-1,&rdquo; meaning:</para>
+
+<div class="math">
+ind<sub><i>i</i></sub> = <sup>1</sup>/<sub>10</sub> ( <i>y</i><sub><i>i</i>-2</sub> + 2<i>y</i><sub><i>i</i>-1</sub> + 4<i>y</i><sub><i>i</i></sub> + 2<i>y</i><sub><i>i</i>+1</sub> + <i>y</i><sub><i>i</i>+2</sub>)
+</div>
+
+<para>This comes from <xref linkend="Cook81"/>, who used it as a
+discrete filter before the <link linkend="cubic_spline">cubic spline</link>.</para>
+
+<para>Note that almost half (4/10) of the computed index value is its old
+value.  The index is nearly the same as the input, so the &chi;&sup2;
+values are very low.  But don&rsquo;t choose this index just because
+of the low &chi;&sup2;.  <!-- The high-pass filter is like a really
+dark pair of sunglasses: you&rsquo;re filtering out a lot of
+information.  Maybe too much.  Be careful. --></para>
+
+<!--<para>% <lgraph: sample with highpass filter> -> <rgraph: indexed data></para>-->
+
+</sect1>
+
+<sect1 id="cubic_spline"><title>Cubic Spline</title>
+
+<para>Cubic splines are technically high-pass filters, as well, but
+they&rsquo;re a very specific type.  (describe***).  (s-value)</para>
+
+<para>It was first used for dendro by <xref linkend="Cook81"/>, using
+an algorithm by <xref linkend="Reinsch67"/>.</para>
+
+</sect1>
+
+<sect1><title>Regional Growth Curves, or Proxy Data</title>
+
+<para>
+-- here's what it is...
+
+...<xref linkend="Briffa92"/>...
+
+-- here's why you'd want to do it...  (ok, i have no idea why)
+</para>
+
+<para>-- Here's what the computer does:</para>
+
+<itemizedlist>
+
+  <listitem>it takes a sum of raw samples: you supply this; it&rsquo;s typically a sum of
+    other samples from the same site or region</listitem>
+
+  <listitem>that sum is used to compute the indexing curve</listitem>
+
+</itemizedlist>
+
+<para>In Corina the &ldquo;Regional Growth Curves&rdquo; are called &ldquo;Proxy Data,&rdquo;
+because one dataset (the sum) takes the place of the sample&rsquo;s own data
+when computing the indexing curve.</para>
+
+<para>Here&rsquo;s how to do it:</para>
+
+<procedure>
+	<title>How to use proxy data:</title>
+	<step>Open the sample</step>
+	<step>Choose
+	  <menuchoice>
+	    <guimenu>Manipulate</guimenu>
+	    <guimenuitem>Index...</guimenuitem>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>I</keycap></keycombo>
+	    </shortcut>
+	  </menuchoice>.
+	</step>
+	<step>Click the &ldquo;Use Proxy Data&rdquo; checkbox; the popup menu becomes active</step>
+	-- the first entry in the popup menu is your sample itself, i.e., no proxying
+	-- the other entries are all the sums (*.sum) in the same folder as this sample
+	-- the last entry is &ldquo;Other...&rdquo;, in case you want to use a file not named *.sum
+	or a file in another folder
+FIXME
+
+	<step>Choose your proxy data &mdash; you&rsquo;ll get a
+	warning if it doesn&rsquo;t cover at least the years covered
+	by your sample.  The &chi;&sup2; values are automatically
+	updated.  (They&rsquo;re going to be higher than normal,
+	because the indexing curves are being computed to a different
+	dataset.)</step>
+
+	<step>Click <guibutton>Preview</guibutton> to view it
+	  and <guibutton>OK</guibutton> to apply as you normally
+	  would</step>
+</procedure>
+
+</sect1>
+
+</chapter>
+
+<chapter><title>Crossdating</title>
+
+<para><emphasis>Crossdating</emphasis> is the art of figuring out
+where (or rather, when) one sample fits relative to another sample.
+Corina has several algorithms to help you crossdate samples.</para>
+
+<para>All algorithms work in pretty much the same way.  There&rsquo;s a &ldquo;fixed&rdquo;
+sample, and there&rsquo;s a &ldquo;moving&rdquo; sample.  Imagine you have printouts of
+their graphs on translucent paper.  The fixed graph is taped to a
+table, and you can slide the moving sample left and right.  (This is
+actually how it was originally done, on graph paper, with 1&inches; per
+decade.)  Start with the moving sample to the left of the fixed
+sample, overlapping it by 10 years.  Look at how well the graphs
+match: this is the first score that&rsquo;s computed.  Slide the moving
+sample to the right one year.  This is the second score.  Keep doing
+this until the moving sample only overlaps by 10 years on the right
+end of the fixed sample.  (If one or both samples is shorter than the
+minimum overlap of 10 years, Corina will yell at you--MOVEME.)</para>
+
+<para>That&rsquo;s all there is.  You could do it all simply by moving graphs
+and eyeballing the crossdates.  But there are hundreds of sites and
+millenia of chronologies you&rsquo;ll want to crossdate your samples
+against, so that would take a while.  Corina has a few algorithms to
+find likely crossdates almost instantaneously.  They aren&rsquo;t perfect,
+though, and they generally aren&rsquo;t as good as looking at the
+graphs.  You&rsquo;ll still have to look and see if they make sense.</para>
+
+<para>Well, almost all there is.  There&rsquo;s one more thing.  Often
+you won&rsquo;t want to run just one crossdate.  And usually
+you&rsquo;ll want to run more than one test between the same samples.
+So Corina lets you run <emphasis>sequences</emphasis> of crosses:
+N-by-1, N-by-N, 1-by-1, and 1-by-N.  These are how many fixed and
+moving samples you want to crossdate.  With 1-by-N, for example, you
+have one fixed sample you want to try crossing against several other
+samples.  When you choose N-by-N, you only choose one set of samples:
+it crosses every sample against every other sample.</para>
+
+<sect1><title>How to Crossdate Samples</title>
+
+--writeme--
+
+</sect1>
+
+<sect1><title>T-Score</title>
+
+<para>The <emphasis>t-score</emphasis> is the classic crossdate.
+Everybody quotes t-scores: if you want to brag about how good a cross
+is, tell them your t-score.  Unfortunately, every dendro program seems
+to have a slightly different implementation of t-score, so the numbers
+you get from Corina might not be comparable to the numbers other
+people get from different programs.</para>
+
+<para>The version Corina uses is based on the algorithms given in
+<xref linkend="Baillie73"/>, though with some apparent bugs corrected.
+I believe it&rsquo;s correct, but you can always check for yourself
+because it&rsquo;s open-source.)</para>
+
+<div class="math">
+<ol>
+
+<li>Make each dataset bivariate-normal, by replacing each value with
+the mean of the 5 values around it, and then taking its natural
+logarithm (list alg?***)</li>
+
+<li>the Student&rsquo;s-T computation looks like this:
+
+<blockquote> -- no, make this real mathml, but convert to this style for html3.2-compat
+
+s<sub>xy</sub> = <big>&sum;</big> x<sub>i</sub> y<sub>i</sub> - N (x<sub>i</sub> - x<sub>avg</sub>) (y<sub>i</sub> - y<sub>avg</sub>) <br/>
+s<sub>xx</sub> = <big>&sum;</big> x<sub>i</sub>&sup2; - N (x<sub>i</sub> - x<sub>avg</sub>)&sup2; <br/>
+s<sub>yy</sub> = <big>&sum;</big> y<sub>i</sub>&sup2; - N (y<sub>i</sub> - y<sub>avg</sub>)&sup2; <br/>
+r = s<sub>xy</sub> / &sqrt;(s<sub>xx</sub> s<sub>yy</sub>) <br/>
+t = r &sqrt;((N-2)/(1-r&sup2;))
+
+</blockquote>
+
+where <i>x<sub>i</sub></i> is the <i>i</i>th value of the fixed dataset,
+<i>y<sub>i</sub></i> is the <i>i</i>th value of the moving dataset,
+and <i>x<sub>avg</sub></i> and <i>y<sub>avg</sub></i> are the averages
+of the two datasets, respectively.***no, that's wrong, it's of the overlap, not in the dataset***
+
+</li>
+
+</ol>
+
+</div>
+
+<para>The t-score is called a &ldquo;parametric&rdquo; algorithm, because it takes into account
+the magnitudes of the samples.***(huh?)</para>
+
+<para>Any value <i>t</i> > 2.55 is considered &ldquo;statistically significant.&rdquo;
+All of these scores are displayed in the Summary tab.  If you want to
+look at a non-sig***
+***student's t sigs table</para>
+
+</sect1>
+
+<sect1 id="trend"><title>Trend</title>
+
+<para>The <emphasis>trend</emphasis> is the simplest crossdate of
+all.  For each interval, WORKING HERE
+
+It only looks
+at the two samples and computes the percentage agreement of their
+trends.  The trend of a 2-year interval is whether the value is
+increasing, decreasing, or staying the same.</para>
+
+<note><title>Note</title> The German name for this
+is <emphasis>Gleichl&auml;ufigkeitskoeffizient</emphasis>, or
+simply <emphasis>Gleichl&auml;ufigkeit</emphasis> for short.  It was
+first described by Eckstein in <xref linkend="Eckstein"/>, so it has
+also been called &ldquo;Eckstein&rsquo;s W.&rdquo;
+(German <emphasis>Wert</emphasis> = value, score.)
+</note>
+
+***holstein (graph?)
+
+***describe 0/.5/1 formula
+
+<para>Trend is an example of a &ldquo;non-parametric&rdquo; algorithm,
+because it only takes into account if a given ring is bigger or
+smaller than the previous one, not by how much.  To Corina, the drop
+of &ldquo;100 1&rdquo; looks exactly the same as &ldquo;100 99,&rdquo;
+as far as the trend knows.</para>
+
+<para>A trend is significant if
+
+  <blockquote>
+    <i>tr</i> > 50% + 50/&sqrt;<i>N</i>
+</blockquote>
+
+</para>
+
+<para>(from <xref linkend="Huber70"/>).  So for example, a 50-year
+overlap needs 50+50/&sqrt;50=57.1% trend to be significant, but a
+400-year overlap needs only 50+50/&sqrt;400=52.5%.</para>
+
+</sect1>
+
+<sect1><title>D-Score</title>
+
+<para>The D-score, or &ldquo;Dating score,&rdquo; is a combination of
+the T-score and trend, from ???</para>
+
+-- can often separate the correct crosses better than other crosses
+
+-- graphs?: t-scores, trends, d-scores (fewer sigs)
+
+<div class="math">
+<para>The D-score is defined as:</para>
+<blockquote>
+<i>D</i> = (<i>tr</i>-50%) &middot; <i>t</i>
+</blockquote>
+</div>
+
+<para>Corina considers 40 to be the theshold for significant D-scores.</para>
+-- does it, still?  is that right?
+
+</sect1>
+
+<sect1><title>Weiserjahre</title>
+
+<para>All of the crossdates that have been mentioned so far only compare
+the ring widths.  This works great for raw samples, but when
+crossdating summed samples, there&rsquo;s a lot more information available,
+namely, the Weiserjahre data.  Wouldn&rsquo;t it make sense to count a
+<code>[20]&nbsp;19*1</code> ring more heavily than a
+<code>[2]&nbsp;1/1</code>?</para>
+
+<para>The Weiserjahre crossdating algorithm was, as far as anybody can
+remember, first used at Cornell, though ??? used Weiserjahre data for
+crossdating before this.  <link linkend="Pohl95">Mecki</link>'s Corina
+had an implementation of it.</para>
+
+<para>This is what the Weiserjahre cross does...***</para>
+
+<pre>
+given:
+a FIXED MASTER 'f'
+a MOVING RAW SAMPLE 'r'
+
+for a given overlap of 'f' and 'r',
+        for each year of the overlap 'y'
+                't_f' = the trend of most of 'f' (incr[y].gt.decr[y] => up, lt => down, eq => same)
+                't_m' = the trend of 'm' at 'y' (only one sample, just use lt/gt/eq)
+                compute a normal trend using t_f/t_m
+
+(note to self: this could subclass trend, maybe, if it had a preamble of
+computing t_f...)
+
+(note to self: make a &ldquo;can't compute this cross exception&rdquo; for overlap-too-short or
+cross-not-applicable)
+</pre>
+
+<para>Because the Weiserjahre crossdate is only applicable to masters
+crossed against raw samples, it&rsquo;s not turned on by default in
+Corina.</para>
+
+<procedure><title>To run a Weiserjahre crossdate:</title>
+  <step>Start to run a crossdate as you normally would.  You&rsquo;ll see the T-score results.</step>
+
+  <step>Choose
+    <menuchoice>
+      <guimenu>Edit</guimenu>
+      <guimenuitem>Edit Cross Parameters...</guimenuitem>
+      <!-- actually, it's Edit, Edit Fixed/Moving Lists right now, but that's wrong -->
+      <shortcut>
+	<keycombo><keycap>control</keycap> <keycap>E</keycap></keycombo>
+      </shortcut>
+    </menuchoice>
+  </step>
+
+  <step>The crossdate disappears, and the list of samples and
+    algorithms for your crossdate appears.  At the bottom,
+    you&rsquo;ll see that the T-score, trend, and D-score are turned
+    on by default.  Click the &ldquo;Weiserjahre&rdquo; checkbox to
+    turn it on.  (You can turn off any other algorithms you want here,
+    as long as at least one is turned on.)</step>
+
+  <step>Click <guibutton>Run</guibutton>.  Your crossdate window will
+    appear again, and the Weiserjahre crossdate will be included.  If
+    you kept the T-score, trend, and D-score algorithms turned on,
+    click <guibutton>Next</guibutton> 3 times to see the first
+    Weiserjahre cross.</step>
+
+</procedure>
+
+</sect1>
+
+<sect1><title>Tables</title>
+
+<para>There are two other ways to look at sequences of crossdates, but they
+only apply when the samples are dated correctly...</para>
+
+</sect1>
+
+<sect1><title>Grids</title>
+
+<para>***Just as it&rsquo;s easier to see at a glance how a couple of samples crossdate by looking
+at highest t-scores in the summary tab, sometimes you want to see at a glance how
+well a whole set of samples crossdate with each other &mdash; an entire site, for example.
+Grids...***</para>
+
+<!-- center this table? -->
+<table border="0" class="paper-start">
+<row>
+  <td></td>
+  <td class="cell-title">chil011.crn<br/>1641-1975</td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+</row>
+<row>
+  <td>chil011.crn</td>
+  <td class="cell-title">n=335<br/>&nbsp;<br/>&nbsp;<br/>&nbsp;</td>
+  <td class="cell-title">chil012.crn<br/>1242-1975</td>
+  <td></td>
+  <td></td>
+  <td></td>
+</row>
+<row>
+  <td>chil012.crn</td>
+  <td class="cell-significant">t=3.65<br/>tr=55.4%<br/>D=19.69<br/>n=335</td>
+  <td class="cell-title">n=734</td>
+  <td class="cell-title">chil013.crn<br/>1568-1975</td>
+  <td></td>
+  <td></td>
+</row>
+<row>
+  <td>chil013.crn</td>
+  <td class="cell-significant">t=4.66<br/>tr=59.9%<br/>D=45.99<br/>n=335</td>
+  <td class="cell">t=0.00<br/>tr=47.9%<br/>D=0.00<br/>n=408</td>
+  <td class="cell-title">n=408</td>
+  <td class="cell-title">chil014.crn<br/>1868-1975</td>
+  <td></td>
+</row>
+<row>
+  <td>chil014.crn</td>
+  <td class="cell-significant">t=2.56<br/>tr=57.5%<br/>D=19.17<br/>n=108</td>
+  <td class="cell-significant">t=2.61<br/>tr=57.5%<br/>D=19.53<br/>n=108</td>
+  <td class="cell">t=0.07<br/>tr=50.0%<br/>D=0.00<br/>n=108</td>
+  <td class="cell-title">n=108</td>
+  <td class="cell-title">chil015.crn</td>
+</row>
+<row>
+  <td>chil015.crn</td>
+  <td class="cell">t=1.65<br/>tr=53.9%<br/>D=6.41<br/>n=335</td>
+  <td class="cell">t=1.46<br/>tr=54.0%<br/>D=5.81<br/>n=590</td>
+  <td class="cell">t=0.00<br/>tr=48.6%<br/>D=0.00<br/>n=408</td>
+  <td class="cell-significant">t=3.69<br/>tr=61.2%<br/>D=41.34<br/>n=108</td>
+  <td class="cell-title">n=602</td>
+</row>
+
+</table>
+
+<para>You can print grids just as you would expect, with
+  <menuchoice>
+    <guimenu>File</guimenu>
+    <guimenuitem>Print...</guimenuitem>
+    <shortcut>
+      <keycombo><keycap>control</keycap> <keycap>P</keycap></keycombo>
+    </shortcut>
+  </menuchoice>.
+  It will use as many pages as necessary e&mdash; you just supply the <ulink
+url="http://people.cornell.edu/pages/wcc3/duct-tape.html">tape</ulink>.
+(If your printer can print on large paper, like 11&times;17&inches;,
+you might prefer to use that.)</para>
+
+<para>You can also save grids with
+  <menuchoice>
+    <guimenu>File</guimenu>
+    <guimenuitem>Save As...</guimenuitem>
+    <shortcut>
+      <keycombo><keycap>control</keycap> <keycap>shift</keycap> <keycap>P</keycap></keycombo>
+    </shortcut>
+  </menuchoice>.
+
+  It will save the names of the files, and the scores that are
+  displayed now, so you can open it later to view or print it without
+  having the original data files, if you want to email it to somebody,
+  for example.  (You can always
+  choose <guimenuitem>Recompute</guimenuitem> to recompute the
+  values.)</para>
+
+</sect1>
+
+</chapter>
+
+<chapter><title>Summing</title>
+
+<sect1><title>Masters</title>
+
+<para>Summing is how you take individual samples and construct
+chronologies; it&rsquo;s an average of several samples.***</para>
+
+(Terminology: sum/master -- this doesn&rsquo;t belong here, but where?)
+
+--on the need to redate first...
+
+<para>The data of a master is the average (mean), at each year, of each
+element that has data for that year.  Their units, then, must match,
+so you can&rsquo;t have both raw (hundredths-of-a-millimeter) and
+indexed (parts-per-thousand) elements in the same sum: if one sample
+is indexed, they must all be indexed.  (If you really don&rsquo;t want
+to index an element, take a look at the Horizontal index.)</para>
+
+<para>A sum also has <emphasis>count</emphasis>, which is also one
+number per year.  It&rsquo;s the number of elements that have data for
+that year.</para>
+
+<para>A sum also has <emphasis>Weiserjahre</emphasis> data.
+Weiserjahre data for a year is the number of samples whose data is
+increasing or decreasing for that year.  Weiserjahre is commonly shown
+as <i>a/b</i>, where there are <i>a</i> elements increasing
+and <i>b</i> elements decreasing.  The / means that this is not a
+significant interval.  A <emphasis>significant</emphasis> interval is
+one with at least 4 samples, and at least 75% of the trends in
+agreement; they&rsquo;re shown as <i>a*b</i>.</para>
+
+<note><title>Note</title>
+The sum of the two Weiserjahre values won&rsquo;t always equal the
+count, for two reasons.  The first interval of a sum has Weiserjahre
+0/0, because there was no previous year to compare to, but count 1.
+Also, it&rsquo;s possible the data between 2 years stayed the same,
+and Weiserjahre only counts increases and decreases.
+</note>
+
+<para>The status bar, at the bottom of every editor window, shows the
+data, count, and Weiserjahre data for the current year.  When you
+graph a sum, it will display both the data and count, as well.</para>
+
+***--range: (union), no gaps
+
+<para>You can cause elements to be summed by Corina in two ways: by
+creating a new sum, or re-computing an existing sum.</para>
+
+</sect1>
+
+<sect1><title>Making a New Sum</title>
+
+<procedure><title>How to create a new sum:</title>
+  <step>Choose
+    <menuchoice>
+      <guimenu>File</guimenu>
+      <guimenuitem>New Sum...</guimenuitem>
+    </menuchoice>
+  </step>
+
+  <step>For each element you want to have in the sum, locate it,
+    select it, and click <guibutton>Add</guibutton></step>
+
+  <step>Click <guibutton>OK</guibutton></step>
+
+  <step>A new editor window will appear with your sum; on the Metadata
+  tab, enter a title for this sum</step>
+
+  <step>Enter any other metadata for this sum, such as comments</step>
+
+  <step>Choose
+    <menuchoice>
+      <guimenu>File</guimenu>
+      <guimenuitem>Save As...</guimenuitem>
+      <shortcut>
+	<keycombo><keycap>control</keycap> <keycap>shift</keycap> <keycap>S</keycap></keycombo>
+      </shortcut>
+    </menuchoice>;
+    use an <filename class="extension">.SUM</filename> extension for your filename</step>
+</procedure>
+
+</sect1>
+
+<sect1><title>Recreating an Existing Sum, or Resumming</title>
+
+--why you'd re-sum...
+-- disabling elements
+-- add/rem elements from a sample
+
+<procedure>
+	<title>How to re-sum a master:</title>
+	<step>Open the sum with
+	  <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Open...</guimenuitem>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>O</keycap></keycombo>
+	    </shortcut>
+	  </menuchoice>
+	</step>
+	<step>Choose
+	  <menuchoice>
+	    <guimenu>Sum</guimenu>
+	    <guimenuitem>Re-Sum</guimenuitem>
+	  </menuchoice>
+	</step>
+	<step>Save the sum with
+	  <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Save</guimenuitem>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>S</keycap></keycombo>
+	    </shortcut>
+	  </menuchoice>
+	</step>
+</procedure>
+
+<para>There&rsquo;s one more thing to watch out for when making a sum.  When you select a
+summed sample as an element of a sum, it won&rsquo;t just use its data: it will add
+each of the elements that make up that sum.  ***but only 1 level of indirection:
+sums of sums of sums won&rsquo;t go all the way down!</para>
+
+</sect1>
+
+<sect1><title>Cleaning</title>
+
+<para>The opposite of summing is <emphasis>cleaning</emphasis>.
+Cleaning takes a sum and destroys all evidence that it&rsquo;s a sum:
+the count, Weiserjahre, and elements are removed.</para>
+
+<para>Why would you want to do this?  Remember that when you use a sum as the
+element of a new sum, it doesn&rsquo;t use that sum&rsquo;s data, but rather each
+of the elements of that sum.  Cleaning prevents this.  If you have 3
+samples which you know are all from the same tree, for example, you should
+sum them and clean this sum; otherwise, this tree would count 3 times in
+any sum made with this data.</para>
+
+% what if you make a sum using a sum which uses a sum?  infinite regress?
+
+<procedure>
+	<title>To clean a sum:</title>
+	<step>Open the sum with
+	  <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Open...</guimenuitem>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>O</keycap></keycombo>
+	    </shortcut>
+	  </menuchoice>
+	</step>
+	<step>Choose
+	  <menuchoice>
+	    <guimenu>Sum</guimenu>
+	    <guimenuitem>Clean</guimenuitem>
+	  </menuchoice>
+	</step>
+	<step>Save the sum with
+	  <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Save As...</guimenuitem>
+	    <shortcut>
+	      <keycombo><keycap>control</keycap> <keycap>shift</keycap> <keycap>S</keycap></keycombo>
+	    </shortcut>
+	  </menuchoice>
+	</step>
+</procedure>
+
+<para>The current convention is to end sums with &ldquo;<filename class="extension">.SUM</filename>,&rdquo; and cleaned versions
+ending with &ldquo;<filename class="extension">.CLN</filename>,&rdquo; so use &ldquo;Save as...&rdquo; instead of &ldquo;Save&rdquo; to save your new sum.
+This way there&rsquo;s always a clean version available,
+and also an original sum, in case you want to change the elements.  If any of
+the elements are changed, remember to re-sum and re-make the cleaned file.</para>
+
+</sect1>
+
+<sect1><title>Alternative Summing Methods</title>
+
+<para>There are two modifications on the basic summing algorithm.  Neither of them are
+supported by Corina (yet) but you may see sums that were made by other programs.</para>
+
+<para>The first is to use the intersection, rather than the union, of the ranges of the
+elements (see <xref linkend="TSAP"/>).  That is, the sum only
+covers those years where every element has data.</para>
+
+%632012 1804-1981                      ------------------------
+%632021 1760-1981              --------------------------------
+%632022 1760-1981              --------------------------------
+%632031 1711-1981    ------------------------------------------
+%Sum =  1804-1981                      ------------------------
+%                  |1700           |1800         |1900         |2000
+
+<para>The second is to use the median value, instead of the mean.  ***who uses this?</para>
+
+</sect1>
+
+</chapter>
+
+<chapter><title>The File Browser</title>
+
+<sect1><title>What&rsquo;s It Good For?</title>
+
+<para>-- why you'd need such a beast; what it is/does\</para>
+
+</sect1>
+
+<sect1><title>How To Browse Directories</title>
+
+<para>To start the Corina File Browser, choose <menu>File &rarr;
+Browse...</menu> or press
+<key>control</key>-<key>shift</key>-<key>O</key>
+(<key>command</key>-<key>shift</key>-<key>O</key>).  You will see the
+File Browser in a new window; initially, it will be browsing your
+toplevel data directory.</para>
+
+	<para>IMAGE: the basic file browser</para>
+
+<para>In the upper-left corner, you see a popup labelled &ldquo;Folder&rdquo;.  This
+is the folder you&rsquo;re looking at.  If you click and ...</para>
+
+-- how to use it: the folder popup, arrow keys, pgup/dn, enter, mouse, descending folders, ascending folders, opening samples.
+
+</sect1>
+
+<sect1><title>Displaying Metadata Fields and Sorting</title>
+
+<para>If the Corina File Browser only allowed you to browse files by
+their filenames, it wouldn&rsquo;t be much more useful than the Finder (on
+the Mac) or Explorer (on the PC).  But it has a killer feature that&rsquo;s
+completely impossible from almost any normal file browser: because
+it&rsquo;s part of Corina, it knows about Corina metadata fields.  And you
+can display, sort by, or search for any of these fields.</para>
+
+	IMAGE: file browser with a couple of fields (pith, etc.) visible
+
+-- HOW TO DISPLAY FIELDS
+-- HOW TO SORT
+-- when do they get updated? (if at all)
+
+<tip><para>If your hands are on the keyboard, you can quickly sort by
+a column by pressing <keycap>control</keycap>
+(Mac: <keycap>command</keycap>) and the number of the column.  For
+example, if the second column is &ldquo;Size&rdquo;,
+press <keycombo><keycap>control</keycap> <keycap>2</keycap></keycombo>
+to sort by size.</para></tip>
+
+<!-- stable sort -->
+<para>You can also sort by 2 or more criteria.  For example, suppose you wanted
+to sort by the number of sapwood rings, and then (for those samples with the
+same number of sapwood rings) by end year.  Click on them in the opposite order:
+&ldquo;End&rdquo;, then &ldquo;Sapwood Count&rdquo;.  When you sort by &ldquo;Sapwood Count&rdquo;, it won&rsquo;t
+disturb the sort order from the &ldquo;End&rdquo; sort unless it needs to, so samples with
+the same number of sapwood rings will still maintain their relative order.
+(--need an example of this--)
+</para>
+
+<para>The following fields are available:</para>
+
+<variablelist><!-- title here? -->
+
+<variablelistentry>
+  <term>Name</term>
+  <listitem><para>The name of the file, as it&rsquo;s saved on the disk.  (This field is always visible.)</para></listitem>
+</variablelistentry>
+
+<variablelistentry>
+  <term>Date Modified</term>
+  <listitem><para>The time and date this file was last modified.  If it was modified today or yesterday,
+the date is shown as &ldquo;Today&rdquo; or &ldquo;Yesterday&rdquo;, to make it easier to skim a list of files,
+and also for searching (discussed <a href="#Searching">later</a>).</para></listitem>
+</variablelistentry>
+
+<variablelistentry>
+  <term>Size</term>
+  <listitem><para>The size of this file on disk, in bytes or KB.</para></listitem>
+</variablelistentry>
+
+<variablelistentry>
+  <term>Kind</term>
+  <listitem><para>The kind of this file; usually this will be
+    &ldquo;Corina sample&rdquo; or &ldquo;Folder&rdquo;, but may also
+    be something like &ldquo;Tucson file&rdquo; (for other dendro
+    filetypes) or &ldquo;Other document&rdquo; (for non-dendro
+    filetypes).</para></listitem>
+</variablelistentry>
+
+<variablelistentry>
+  <term>Range, Start, End, Length</term>
+  <listitem><para>The range is available either as the entire range
+    (&ldquo;1001-1036 (n=36)&rdquo;), just the start-year
+    (&ldquo;1001&rdquo;), just the end-year (&ldquo;1036&rdquo;), or
+    just the length (&ldquo;36&rdquo;).  The first option is easiest
+    to read, usually, and the other options give you more flexibility
+    when sorting.  You can sort by end-year, for
+    example.</para></listitem>
+</variablelistentry>
+
+<variablelistentry>
+  <term>And all of the sample&rsquo;s normal metadata fields...</term>
+  <listitem><para>...exactly as you entered them on <a href="Editor.html#Metadata">Metadata panel</a></para></listitem>
+</variablelistentry>
+
+</variablelist>
+
+</sect1>
+
+<sect1><title>The Search Field</title>
+
+<para>Sorting by a metadata field is a great way to organize samples,
+especially when you&rsquo;re sorting by a numerical value, like the
+number of sapwood rings.  It doesn&rsquo;t work as well for some text
+fields, like the species, and it doesn&rsquo;t really work at all for
+other text fields, like the comments field.  This is what
+the <emphasis>search field</emphasis> does really well.</para>
+
+	IMAGE: top of the browser, showing "search field: [ ]"
+
+<para>In the top-right corner of a the File Browser window, there&rsquo;s a text field
+labelled &ldquo;Search for:&rdquo;.  When you type a word in this field, Corina will
+hide files that don&rsquo;t contain this text.  You don&rsquo;t even need to press RETURN:
+it updates the list as you type, instantly.</para>
+
+	IMAGE: top of the browser, showing search="querc", and a couple quercus samples
+
+<itemizedlist>
+
+	<listitem>You can type as many words as you like, separated by spaces.  Corina
+	will show only files that match <emphasis>all</emphasis> of the words you supply.</listitem>
+
+	<listitem>This field is case-insensitive.  The searches <code>&ldquo;fire scar&rdquo;</code>,
+	<code>&ldquo;FIRE SCAR&rdquo;</code>, and <code>&ldquo;fIrE sCaR&rdquo;</code> are all equivalent.</listitem>
+
+	<listitem>When you enter a new folder, anything you typed in this field will
+	automatically be deleted.</listitem>
+
+	<listitem>Terms you type into this field will match any column that is visible.</listitem>
+
+</itemizedlist>
+
+<para>And of course, after you&rsquo;ve typed some search terms to narrow down the list,
+you can still use the sorting function to sort the samples that remain.</para>
+
+<para>Here are some ideas for terms to put into the search field.  Remember, you can
+make a more restrictive search simply by combining more than one of these.</para>
+
+<dl>
+
+<!-- add: which field you need to have visible for these to work? -->
+
+<dt><code>17</code></dt>
+<dd>only files numbered 17 (or 117, or 217, or ...)</dd>
+
+<dt><code>.sum</code></dt>
+<dd>only files that end with .sum</dd> <!-- better way: "summed" > matches format field -->
+
+<dt><code>folder</code></dt>
+<dd>folders only</dd>
+
+<dt><code>tucson</code></dt>
+<dd>Tucson files only</dd>
+
+<dt><code>today</code></dt>
+<dd>only files that were modified today</dd>
+
+<dt><code>yesterday</code></dt>
+<dd>only files that were modified yesterday</dd>
+
+<dt><code>5/25 pm</code></dt>
+<dd>only files that were modified the afternoon of 5/25</dd>
+
+<dt><code>pith</code></dt>
+<dd>only samples with pith</dd>
+
+<dt><code>quercus</code></dt>
+<dd>only oak samples</dd>
+
+<dt><code>peter</code></dt>
+<dd>only samples made by Peter</dd>
+
+<dt><code>charcoal</code></dt>
+<dd>only charcoal samples</dd>
+
+<dt><code>fire scar</code></dt>
+<dd>only samples with fire scars (provided, of course, you put &ldquo;fire scar&rdquo; in the comments field)</dd>
+
+</dl>
+
+-- dnd, cut-n-paste
+-- users should be able to drag-n-drop files, which is fine, because that's already how the trash will work
+-- drag-n-drop between browser-finder (native apps), browser-browser (2 browsers), browser-corina (non-browser corina window)
+-- dnd files into a folder in this dir -- especially important!
+-- requiring 2 windows open to move something to a parent folder might not be the easiest mechanism, therefore:
+-- cut/copy/paste.
+-- cut/paste:
+	-- can't put raw files on the clipboard, therefore...
+	-- cut moves the old file(s) to ???/clipboard/
+	-- and puts the paths in that dir on the clipboard
+	-- paste reads those paths, puts in the wd.
+-- copy/paste:
+	-- copy puts the old path on the clipboard
+	-- paste reads the old path, puts it in the wd.
+	-- (does this break if you remove the old file(s)?  probably...)
+-- FULL UNDO SUPPORT EVERYWHERE
+
+</sect1>
+
+<sect1><title>The Trash</title>
+
+<para>In the lower-right corner of the File Browser window, there&rsquo;s a
+little Trash icon.  This is just like your Trash on Mac OS or your
+Recycle Bin on Windows.</para>
+
+	<div style="text-align: center"><img src="Trash.png" alt="" align="center"/> <b>Trash</b></div>
+
+<itemizedlist>
+
+	<listitem>If you want to delete (one or more) files from the
+File Browser, simply select them and drag them to this icon.
+They&rsquo;ll be moved to your Trash.</listitem>
+
+	<listitem>If you want to see what&rsquo;s in it, click it;
+this will open it with Explorer (on the PC) or in the Finder (on the
+Mac).</listitem>
+
+	<listitem>If you want to delete the files in the trash/recycle
+bin permanently, click it to open it, and then choose <menu>Finder
+&rarr; Empty&nbsp;Trash</menu> (on the&nbsp;Mac) or <menu>File &rarr;
+Empty&nbsp;Recycle&nbsp;Bin</menu> (on the&nbsp;PC) to empty
+it.</listitem>
+
+	<listitem>If you want to recover a file you dragged to the
+trash, click the Trash to open it, and then drag the icon of the file
+back into the File Browser window.  Alternatively, if dragging it to
+the trash was the last thing you did, you can undo it by choosing
+<menu>Edit &rarr; Undo Move to Trash</menu>.</listitem>
+
+</itemizedlist>
+
+-- packed tucson files
+-- users will want to be able to read packed tucson files as if they were a folder of normal samples
+-- users should be able to convert between "a folder of (tucson) samples" and "a packed tucson file" seamlessly
+
+-- need the new-new i/o system for this?
+-- need a notation for this?  how about "packedfile.tuc#1" (#1, #2, ...)?  better yet, file.sep -- "packegfile.tuc/1"
+-- (number-of-sample is safe; id-number would probably not be, because there could be 2 files with 1 id number in the file)
+-- there probably aren't, in the ITRDB.  what if i enforced that there weren't on this end, too?  then "packedfile.tuc/652001" is a safe notation.  that would be rather elegant.
+
+</sect1>
+
+<sect1><title>The ITRDB</title>
+
+-- it's nifty
+-- why it's slow (duh)
+-- why you can't see very many fields (they're tucson)
+
+-- users will want to be able to use ITRDb files for crossdating, etc. -- how will this be possible?
+
+-- users will want to upload files to the ITRDB -- how will this be possible?
+
+...
+
+-- users will also want to be able to create lists of favorites, and give them names ("turkish oak masters")
+-- how to do this?
+-- i'll add a third tab, "Farovicets"!  (tabs: "Files", "Favorites", "ITRDB")
+
+</sect1>
+
+</chapter>
+
+<chapter><title>File Formats</title>
+
+<sect1><title>Another Fine Mess You&rsquo;ve Got Me Into</title>
+
+<para>In the beginning there were
+<ulink url="http://www.fireinthevalley.com/fitv_pictures_m6.html">punchcards</ulink>.
+People in <ulink url="http://www.ltrr.arizona.edu/">Tucson</ulink> used them
+to store tree-ring data.  Later, punchcards went out of style, but (***why there are so many file formats)</para>
+
+- how corina deals with them
+
+- what you need to know to use corina and interact with non-corina users
+***short version:
+
+<itemizedlist>
+--rewrite this crap
+
+	<listitem>Corina uses Corina format natively, and its features
+map perfectly to Corina&rsquo;s***(kept up-to-date), so you should use
+this for almost all of your work in Corina</listitem>
+
+	<listitem>Every dendro program ever written knows Tucson
+formamt, so if you&rsquo;re giving data to somebody using another
+program, he&rsquo;ll probably want Tucson, and if you&rsquo;re
+receiving data from somebody using another program, he&rsquo;ll
+probably send Tucson.  The <ulink
+url="http://web.utk.edu/~grissino/itrdb.htm">ITRDB</ulink> uses Tucson
+exclusively, as well.</listitem>
+
+	<listitem>If you&rsquo;re moving data between Corina and a
+non-dendro program, like a graphics or statistical program (say,
+Excel), they&rsquo;ll only understand the plain 2-column
+format</listitem>
+
+	<listitem>All the other formats you&rsquo;ll only need if
+somebody sends you data in their own format, which is to say, rarely
+if ever</listitem>
+
+</itemizedlist>
+
+</sect1>
+
+<sect1><title>How Corina Handles Files</title>
+
+<para>Corina always saves in Corina format.  (why)</para>
+
+<para>(how to override, with export -- see below)</para>
+
+<para>Corina loads...</para>
+
+</sect1>
+
+<sect1><title>Exporting</title>
+
+<para>Exporting is now much more fun!...</para>
+
+</sect1>
+
+<sect1><title>Tucson</title>
+
+<para>Tucson is <emphasis>the original</emphasis> punchcard format....XXX</para>
+
+<example><title>Tucson raw format</title>
+<programlisting>
+Kalkim Forest 10BA                                                              ABSOL
+917102  1617   414   376   471
+917102  1620   592   350   180   238   336   432   465   418   424   468
+917102  1630   419   509   539   512   397   403   348   316   378   381
+917102  1640   362   414   333   318   352   269   401   410   380   314
+917102  1650   281   222   329   333   209   234   242   262   214   228
+917102  1660   157   179   206   211   188   247   190   127   217   296
+917102  1670   273   212   261   213   200   167   158   143   188   204
+</programlisting>
+</example>
+
+writeme: tucson summed format
+
+writeme: "optional" end fields
+
+writeme: tucson "packed" format
+
+</sect1>
+
+<sect1><title>Two-Column</title>
+
+<para>Two-column data is the simplest, but it also holds the least
+information.  It&rsquo;s great for transferring data to and from statistical
+or graphing programs which can&rsquo;t read dendro files, though now <a
+href="???">the clipboard</a> is a quicker way.</para>
+
+<para>Actually, I lied.  &ldquo;Two-column&rdquo; is a misnomer.
+It&rsquo;s as many columns as you have data.  If you&rsquo;re
+exporting a raw sample, it&rsquo; two columns: year and data.  A
+summed file is three columns: year, data, and count.</para>
+
+<example><title>Two-column format</title>
+<programlisting>
+1617 414
+1618 376
+1619 471
+1620 592
+1621 350
+1622 180
+1623 238
+1624 336
+</programlisting>
+</example>
+
+</sect1>
+
+<sect1><title>Corina</title>
+
+***we know they&rsquo;ll use this, so just list basic features
+
+<example><title>Corina format, top</title>
+<programlisting>
+Kalkim Forest 10BA
+
+;ID 917102;NAME Kalkim Forest 10BA;DATING A;UNMEAS_PRE 1;UNMEAS_POST 1
+;FILENAME /Users/kharris/Documents/Corina/corina/Demo Data/kalkim 10ba clone
+;TYPE S;SPECIES ALSP;FORMAT R;SAPWOOD 0;PITH N
+;TERMINAL v;CONTINUOUS R;QUALITY +
+;RECONCILED Y
+;DATA         
+ 1617                                             414   376   471
+                                                    [1]   [1]   [1]
+ 1620   592   350   180   238   336   432   465   418   424   468
+          [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]
+ 1630   419   509   539   512   397   403   348   316   378   381
+          [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]   [1]
+</programlisting>
+</example>
+
+<para>and later...</para>
+
+<example><title>Corina format, elements</title>
+<programlisting>
+;ELEMENTS 
+G:\DATA\file1.rec
+G:\DATA\file2.rec
+G:\DATA\file3.rec
+G:\DATA\file4.rec
+</programlisting>
+</example>
+
+<para>the wj says</para>
+
+<example><title>Corina format, Weiserjahre</title>
+<programlisting>
+;weiserjahre
+ 1011   0/1      1/0      1/0      0/1      0/1      1/0      1/0      0/1      0/1   
+ 1020   1/0      0/1      0/1      1/0      1/0      1/0      0/1      1/0      0/1      1/0   
+ 1030   0/1      0/1      1/0      1/0      0/1      1/0      0/1      1/0      0/1      0/1   
+ 1040   0/1      1/0      1/0      0/1      0/1      0/1      1/0      1/0      0/1      1/0   
+</programlisting>
+</example>
+
+<para>and finally...</para>
+
+<example><title>Corina format, last line</title>
+<programlisting>
+~ Ken Harris
+</programlisting>
+</example>
+
+</sect1>
+
+<sect1><title>Heidelberg</title>
+
+***
+
+<example><title>Heidelberg format</title>
+<programlisting>
+HEADER:
+DateEnd=1998
+Length=382
+DATA:Chrono
+  414    0    0    0  376    0    0    0  471    0    0    0  592    0    0    0
+  350    0    0    0  180    0    0    0  238    0    0    0  336    0    0    0
+  432    0    0    0  465    0    0    0  418    0    0    0  424    0    0    0
+  468    0    0    0  419    0    0    0  509    0    0    0  539    0    0    0
+</programlisting>
+</example>
+
+</sect1>
+
+<sect1><title>Hohenheim</title>
+
+***
+
+<example><title>Hohenheim format sample</title>
+<programlisting>
++                                                                            
+.                                                382  1617  1998               
+ 414 376 471 592 350 180 238 336 432 465
+ 418 424 468 419 509 539 512 397 403 348
+ 316 378 381 362 414 333 318 352 269 401
+ 410 380 314 281 222 329 333 209 234 242
+ 262 214 228 157 179 206 211 188 247 190
+ 127 217 296 273 212 261 213 200 167 158
+</programlisting>
+</example>
+
+</sect1>
+
+<sect1><title>TSAP</title>
+
+<para>I don&rsquo;t know where this TSAP format came from.  I
+don&rsquo;t think it&rsquo;s the default format of TSAP files, but
+I&rsquo;m not sure.  I found some files whose first line is
+&ldquo;<code>TSAP-MATRIX-FORMAT</code>&rdquo;, so here you go.  They
+all had the extension <filename class="extension">.OUT</filename>, so
+I suspect it may be TSAP saving in a CSV (comma-separated values)
+format for other programs.</para>
+
+<para>A file in this format looks like:</para>
+
+<example><title>TSAP Matrix sample</title>
+<programlisting>
+TSAP-MATRIX-FORMAT
+
+    Year,       100 Val        100 Nos        100 Nois       100 Nods
+    1617,            414,              1,              0,              0
+    1618,            376,              1,              0,              0
+    1619,            471,              1,              0,              0
+    1620,            592,              1,              0,              0
+    1621,            350,              1,              0,              0
+</programlisting>
+</example>
+
+<para>(I&rsquo;m guessing those mean &ldquo;Value&rdquo;, &ldquo;Number samples&rdquo;, &ldquo;Number
+increasing samples&rdquo;, and &ldquo;Number decreasing samples&rdquo;.)</para>
+
+<para>I believe this format uses a zero-year system; that is, what TSAP calls
+&ldquo;-5&rdquo; is really 6 BC, not 5 BC as in Corina.</para>
+
+<para>I&rsquo;ve only ever seen summed files in this format; I don&rsquo;t know how
+raw files are stored, if differently.</para>
+
+</sect1>
+
+<sect1><title>Ranges Only</title>
+
+<para>This is an output-only format, and only usable for summed files
+that have an Elements tab.  It saves, one-per-line, each element&rsquo;s
+title, and with its starting and ending years, separated by tabs.  (It
+doesn&rsquo;t save any ring-width data.)  You might use this format, for
+example, if you wanted to make a <!-- link! -->bargraph in a
+statistical program.</para>
+
+<example><title>Ranges-only sample</title>
+<programlisting>
+ALTO DE LAS MESAS			1796 1975
+EL ASIENTO, ACONCAGUA (STANDARD)	1011 1972
+NALCAS					1386 1975
+SAN GABRIEL (STANDARD)			1131 1975
+</programlisting>
+</example>
+
+</sect1>
+
+<sect1><title>Spreadsheet</title>
+
+<para>The spreadsheet format is also output-only, and also only used for
+summed files with an Elements tab.  It saves one line per year, with
+each column holding the data from one element.  It&rsquo;s sort of like
+2-column format, but for any number of samples.  If you wanted to
+export all the data from a master to a spreadsheet like Excel, this is
+the format to use.</para>
+
+<example><title>Spreadsheet format sample</title>
+<programlisting>
+Year ALTO DE LAS MESAS	EL ASIENTO, ACONCAGUA (STANDARD)	AUCHNALCAS	SAN GABRIEL (STANDARD)
+1011 1346 
+1012 1278 
+1013 1536 
+1014 1983 
+1015 1774 
+1016 1611 
+1017 1637 
+</programlisting>
+</example>
+
+<big>Everything below here used to be in the Sample Editor section,
+but it doesn&rsquo;t belong there.</big>
+
+</sect1>
+
+<sect1><title>Getting data into, and out of, Corina</title>
+
+<para>Importing and exporting dendro data can be a bit of a black art.  Here are some
+ways to***
+(tuscon->custom, 2col/excel, entire chapter later*** -- move all of these there?)</para>
+
+rewrite!--		<h4>Getting data into Corina</h4>
+
+<ul>
+
+<li>Choose <menu>File &rarr; Open...</menu>, and select the file you want to open.
+Corina figures out what format it is automatically.</li>
+
+<li>If you&rsquo;re looking at some data in another program &mdash; for
+example, a Tucson file in the body of an email message, or a column
+of data in Excel:</li>
+
+   --- in the other program (like excel), select it, and choose <menu>Edit &rarr; Copy</menu>
+to put the text on the clipboard
+   --- in Corina, create a new sample with <menu>File &rarr; New &rarr; Sample</menu>.  Type a
+title.  (If your data is a Tucson file that has a title, it doesn&rsquo;t matter what
+you type here: the real title will override this in the next step.)
+   --- select <menu>Edit &rarr; Paste</menu>.  Your data should appear
+
+<li>If your program lets you drag text out of it (&ldquo;drag-n-drop&rdquo;), you can do this
+without using the clipboard.  Just select the text and drag it to the Corina
+main window.  It will be opened in a new editor window.</li>
+
+<li>If you&rsquo;re looking at a file or a web browser link that you can drag,
+drag it to the Corina main window, and it will be opened.</li>
+
+</ul>
+
+		<h4>Getting data out of Corina</h4>
+
+<ul>
+
+<li>If you want to share dendro files with somebody else, Corina can export
+in some other formats, but you&rsquo;ll almost always want to export in the Tucson
+format.  ***why?</li>
+
+<procedure>
+	<title>To export data into Tucson format:</title>
+	<step>Open the sample with <menu>File &rarr; Open...</menu></step>
+
+	<step>Export it into Tucson format with <menu>File &rarr;
+	Export &rarr; Tucson...</menu>.  We typically use
+	<filename class="extension">.TUC</filename> at the end of Tucson filenames, but it&rsquo;s not
+	required.  Only you (and other users) ever see this; Corina doesn&rsquo;t
+	care what a file is named.</step>
+</procedure>
+
+<li>If you want to send a dendro file through email, go ahead.  All dendro
+file formats, no matter how strange some of them may be, are just text.
+If you send it as an attachment, tell your email program that it&rsquo;s plain text,
+and no &ldquo;encoding&rdquo; is needed.</li>
+
+<li>If you want to export dendro data to a general-purpose statistical
+program &mdash; like Excel or ***??? &mdash; export it in 2-column format.  This is
+simply a bunch of lines like
+
+<programlisting>
+1001   235
+1002   192
+1003   201
+1004   188
+</programlisting>
+
+that any program should be able to read easily.  (If you&rsquo;re exporting a sum,
+this will actually be three columns: the third column is the count.)</li>
+
+<procedure>
+	<title>To export data for a statistical program:</title>
+	<step>Open the sample with <menu>File &rarr; Open...</menu></step>
+	<step>Export it in 2-column format with <menu>File &rarr; Export &rarr;
+	2-Column...</menu>; you can choose any filename you like.</step>
+	<step>In the statistical program, import the data from this file.</step>
+</procedure>
+
+<li>If you&rsquo;re using a spreadsheet program like Excel, there&rsquo;s an even easier
+way to do this that doesn&rsquo;t require saving a temporary file in 2-column format:
+use the clipboard.</li>
+
+<procedure>
+	<title>To export data to a spreadsheet using the clipboard:</title>
+	<step>Open the sample with <menu>File &rarr; Open...</menu></step>
+	<step>Copy it to the clipboard with <menu>Edit &rarr; Copy</menu>.  (This puts the raw data
+	on the clipboard in 2-column format.)</step>
+	<step>In Excel, choose <menu>Edit &rarr; Paste</menu>.</step>
+</procedure>
+
+</ul>
+
+</sect1>
+
+</chapter>
+
+<chapter><title>Preferences</title>
+
+<sect1><title>Introduction</title>
+
+<para>
+-- what/why
+</para>
+
+<para>
+-- why many of them will disappear soon -- bug workarounds, etc.
+</para>
+
+<!-- this is not a real procedure! -->
+<div class="steps">
+<para>To access the preferences dialog:</para>
+<dl>
+
+<dt><img src="Mac.png" />On Mac OS:</dt>
+<dd>Choose <menu><b>Corina</b> &rarr; Preferences...</menu></dd>
+
+<dt><img src="Windows.png" />On Windows:</dt>
+<dd>Choose <menu>Edit &rarr; Preferences...</menu></dd>
+
+<dt><img src="Linux.png" />On Linux:</dt>
+<dd>Choose <menu>Edit &rarr; Preferences...</menu></dd>
+
+</dl>
+</div>
+
+<para>
+-- click ok, or cancel to cancel
+-- they should take effect immediately, and also in any future sessions
+-- if you want to copy your prefs to somewhere else, see below ("technical"...)
+</para>
+
+</sect1>
+
+<sect1><title>Editor</title>
+
+<!--
+for each preference:
+* name, type-of, etc.
+* what it controls / why you'd want to change it
+* (what bug it works around)
+* (what property name it is)
+-->
+
+<dl>
+
+<dt>Background color</dt>
+<dd>x</dd>
+
+<dt>Text color</dt>
+<dd>x</dd>
+
+<dt>Font</dt>
+<dd>x</dd>
+
+<dt>Draw Gridlines</dt>
+<dd>x</dd>
+
+<dt>Serial Port</dt>
+<dd>x</dd>
+
+</dl>
+
+</sect1>
+
+<sect1><title>Index</title>
+
+--writeme
+
+</sect1>
+
+<sect1><title>Crossdate</title>
+
+--writeme
+
+</sect1>
+
+<sect1><title>Graph</title>
+
+--writeme
+
+</sect1>
+
+<sect1><title>Advanced</title>
+
+--writeme
+
+</sect1>
+
+<sect1><title>Technical</title>
+
+<para>
+don't read this (unless...)
+--writeme
+</para>
+
+<para>
+-- (where/how it's stored
+-- when it's updated
+-- how it's created
+-- skels?
+</para>
+
+</sect1>
+
+</chapter>
+
+<chapter><title>Sites and Mapping(?)</title>
+
+--writeme
+
+</chapter>
+
+<appendix><title>References</title>
+
+<bibliography> <!-- use raw entries -->
+
+	<biblioentry xreflabel="Baillie73">
+		<authorgroup>
+			<author><firstname>M. G.</firstname><surname>Baillie</surname></author>
+			<author><firstname>J. R..</firstname><surname>Pilcher</surname></author>
+		</authorgroup>
+		<copyright><year>1973</year></copyright>
+		<title>A Simple Crossdating Program</title>
+		<pagenums>7-14</pagenums>
+		<seriesinfo>
+			<title>Tree-Ring Bulletin</title>
+			<seriesvolnums>33</seriesvolnums>
+		</seriesinfo>
+	</biblioentry>
+
+	<biblioentry xreflabel="Baillie82">
+		<author><firstname>M. G.</firstname><surname>Baillie</surname></author>
+		<copyright><year>1982</year></copyright>
+		<pagenums>81</pagenums>
+		<title>Tree-Ring Dating and Archaeology</title>
+		<!-- Hardcover, with yellow dust jacket. -->
+		<!-- (50/sqrt(n) = 1 stddev -->
+	</biblioentry>
+
+	<biblioentry xreflabel="Cook81">
+		<authorgroup>
+			<author><firstname>Edward</firstname><surname>Cook</surname></author>
+			<author><firstname>Kenneth</firstname><surname>Peters</surname></author>
+		</authorgroup>
+		<title>The Smoothing Spline</title>
+		<subtitle>A New Approach to Standardizing Forest Interior Tree-Ring Width Series
+			for Dendroclimatic Studies</subtitle>
+		<seriesinfo>
+			<title>Tree-Ring Bulletin</title>
+			<seriesvolnums>41</seriesvolnums>
+		</seriesinfo>
+		<copyright><year>1981</year></copyright>
+	</biblioentry>
+
+	<biblioentry xreflabel="Cook90">
+		<authorgroup>
+			<author><firstname>E. R.</firstname><surname>Cook</surname></author>
+			<editor><firstname>L. A.</firstname><surname>Kairiukstis</surname></editor> <!-- extra k? -->
+		</authorgroup>
+
+		<title>Methods of Dendrochronology</title>
+		low?-pass filtering as applied to &ldquo;growth-trend estimation&rdquo;
+
+		<copyright><year>1990</year></copyright>
+		<pagenums>110-111</pagenums>
+	</biblioentry>
+
+	<biblioentry xreflabel="DPL">
+	<short>DPL</short>
+	<long>Release notes to one version of Arizona&rsquo;s
+	<ulink url="http://www.ltrr.arizona.edu/archive/dpl/DPL.html">Dendrochronology
+	Program Library</ulink> (DPL).</long>
+	</biblioentry>
+
+	<biblioentry xreflabel="Eckstein">
+	<short>Eckstein</short>
+	<long>Eckstein, ??? ...***</long>
+	</biblioentry>
+
+	<biblioentry xreflabel="Huber70">
+		<authorgroup>
+			<author><firstname>B.</firstname><surname>Huber</surname></author>
+			<editor><firstname>John</firstname><surname>Fletcher</surname></editor>
+		</authorgroup>
+		<title>Dendrochronology</title>
+		article title?: Dendrochronology in Europe
+		<pagenums>23</pagenums>
+		<copyright><year>1977</year></copyright>
+		<!-- an old red paperback book -->
+	</biblioentry>
+
+	<biblioentry xreflabel="Pohl95">
+		<author><firstname>Mecki</firstname><surname>Pohl</surname></author>
+		<authorblurb>&ldquo;From my own beady head.&rdquo;  (His&nbsp;words.)</authorblurb>
+		<copyright><year>1995</year></copyright>
+	</biblioentry>
+
+	<biblioentry xreflabel="Reinsch67">
+		<author><firstname>C. H.</firstname><surname>Reinsch</surname></author>
+		<title>Smoothing by Spline Functions</title>
+		<seriesinfo>
+			<title>Numerische Mathematik</title>
+			<seriesvolnums>10</seriesvolnums>
+		</seriesinfo>
+		<pagenums>177-183</pagenums>
+		<copyright><year>1967</year></copyright>
+	</biblioentry>
+
+	<biblioentry>
+	<short>TSAP</short>
+	<long>Reference manual for TSAP...???</long>
+	</biblioentry>
+
+	<biblioentry xreflabel="Briffa92">
+		<title>Fennoscandian summers from AD 500</title>
+		<subtitle>Temperature changes on short and long timescales</subtitle>
+		<authorgroup>
+			<author><firstname>K. R.</firstname><surname>Briffa</surname></author>
+			<author><firstname>P. D..</firstname><surname>Jones</surname></author>
+			<author><firstname>T. S.</firstname><surname>Bartholin</surname></author>
+			<author><firstname>D.</firstname><surname>Eckstein</surname></author>
+			<author><firstname>F. H.</firstname><surname>Schweingruber</surname></author>
+			<author><firstname>W.</firstname><surname>Karl&eacute;n</surname></author>
+			<author><firstname>P.</firstname><surname>Zetterberg</surname></author>
+			<author><firstname>M.</firstname><surname>Eronen</surname></author>
+		</authorgroup>
+		<copyright><year>1992</year></copyright>
+???<i>Climate Dynamics</i>, 7
+		<pagenums>111-119</pagenums>
+	</biblioentry>
+
+	<biblioentry xreflabel="Wenk99">
+		<author><firstname>Carola</firstname><surname>Wenk</surname></author>
+
+&ldquo;<ulink url="http://www.inf.fu-berlin.de/inst/pubs/tr-b-99-01.abstract.html">Applying
+an Edit Distance to the Matching of&nbsp;Tree Ring Sequences in Dendrochronology</ulink>,&rdquo;
+<i>Proceedings of the 10th Annual Symposium on Cobinatorial
+Pattern Matching</i>, ed.&nbsp;M.&nbsp;Crochemore and
+M.&nbsp;Paterson, Springer-Verlag, Berlin
+
+		<pagenums>223-242</pagenums>
+		<copyright><year>1999</year></copyright>
+	</biblioentry>
+
+</bibliography>
+
+</appendix>
+
+<appendix><title>Glossary</title>
+
+<glossary>
+
+	<glossdiv><title>B</title>
+
+		<glossentry>
+			<glossterm>bivariate normal</glossterm>
+			<glossdef><para>???</para></glossdef>
+		</glossentry>
+
+	</glossdiv>
+
+	<glossdiv><title>C</title>
+
+		<glossentry>
+			<glossterm>chronology</glossterm>
+			<glossdef><para>...</para></glossdef>
+		</glossentry>
+
+		<glossentry>
+			<glossterm>clean</glossterm>
+			<glossdef><para>to make a master look like a single sample by removing
+			its count, Weiserjahre, and elements</para></glossdef>
+		</glossentry>
+
+		<glossentry>
+			<glossterm>count</glossterm>
+			<glossdef><para>the part of a sample that ...</para></glossdef>
+		</glossentry>
+
+		<glossentry>
+			<glossterm>crossdating</glossterm>
+			<glossdef><para>...</para></glossdef>
+		</glossentry>
+
+	</glossdiv>
+
+	<glossdiv><title>D</title>
+
+		<glossentry>
+			<glossterm>D-score</glossterm>
+			<glossdef><para>&ldquo;Dating score&rdquo;.  A combination of the T-score and trend,
+			defined by D=(tr-50%)&middot; t</para></glossdef>
+		</glossentry>
+
+	</glossdiv>
+
+	<glossdiv><title>E</title>
+
+		<glossentry>
+			<glossterm>element</glossterm>
+			<glossdef><para>in a master, the list of samples that make it up</para></glossdef>
+		</glossentry>
+
+	</glossdiv>
+
+	<glossdiv><title>I</title>
+
+		<glossentry>
+			<glossterm>index</glossterm>
+			<glossdef><para>...</para></glossdef>
+		</glossentry>
+
+	</glossdiv>
+
+	<glossdiv><title>M</title>
+
+		<glossentry>
+			<glossterm>master</glossterm>
+			<glossdef><para>another name for a sum, usually ...</para></glossdef>
+		</glossentry>
+
+		<glossentry>
+			<glossterm>mean sensitivity</glossterm>
+			<glossdef><para>...</para></glossdef>
+		</glossentry>
+
+	</glossdiv>
+
+	<glossdiv><title>R</title>
+
+		<glossentry>
+			<glossterm>reconciling</glossterm>
+			<glossdef><para>With two readings of one sample, comparing and correcting
+			(by re-measuring the actual piece, where needed) to work out any inconsistencies.
+			After reconciliation, all trends should match, and all readings should be within
+			3%.</para></glossdef>
+		</glossentry>
+
+		<glossentry>
+			<glossterm>redating</glossterm>
+			<glossdef><para>...</para></glossdef>
+		</glossentry>
+
+		<glossentry>
+			<glossterm>re-sum</glossterm>
+			<glossdef><para>to re-compute a sum...</para></glossdef>
+		</glossentry>
+
+	</glossdiv>
+
+	<glossdiv><title>S</title>
+
+		<glossentry>
+			<glossterm>sample</glossterm>
+			<glossdef><para>...</para></glossdef>
+		</glossentry>
+
+		<glossentry>
+			<glossterm>sum</glossterm>
+			<glossdef><para>...</para></glossdef>
+		</glossentry>
+
+	</glossdiv>
+
+	<glossdiv><title>T</title>
+
+		<glossentry>
+			<glossterm>T-score</glossterm>
+			<glossdef><para>...</para></glossdef>
+		</glossentry>
+
+		<glossentry>
+			<glossterm>trend</glossterm>
+			<glossdef><para>...</para></glossdef>
+		</glossentry>
+
+	</glossdiv>
+
+	<glossdiv><title>W</title>
+
+		<glossentry>
+			<glossterm>Weiserjahre</glossterm>
+			<glossdef><para>the incr/decr...</para></glossdef>
+			<glossdef><para>a crossing algorithm ...</para></glossdef>
+<!-- ok to have 2 defs? -->
+		</glossentry>
+
+	</glossdiv>
+
+</glossary>
+
+</appendix>
+
+<appendix><title>Index</title>
+
+<index>
+
+<indexdiv><title>Symbols</title>
+
+  <indexentry>
+    <primaryie>[ ], <link linkend="status_bar">Editor: Status Bar</link></primaryie>
+  </indexentry>
+
+  <indexentry>
+    <primaryie>*, <link linkend="status_bar">Editor: Status Bar</link></primaryie>
+  </indexentry>
+
+  <indexentry>
+    <primaryie>/, <link linkend="status_bar">Editor: Status Bar</link></primaryie>
+  </indexentry>
+
+</indexdiv>
+
+<indexdiv><title>&Rho;</title>
+
+  <indexentry>
+    <primaryie>&rho;, <link linkend="index_quality">Indexing: Index Quality</link></primaryie>
+  </indexentry>
+
+</indexdiv>
+
+<indexdiv><title>&Chi;</title>
+
+  <indexentry>
+    <primaryie>&chi;, <link linkend="index_quality">Indexing: Index Quality</link></primaryie>
+  </indexentry>
+
+</indexdiv>
+
+<indexdiv><title>C</title>
+
+  <indexentry>
+    <primaryie>correlation coefficient, <link linkend="index_quality">Indexing: Index Quality</link></primaryie>
+  </indexentry>
+
+</indexdiv>
+
+<indexdiv><title>M</title>
+
+  <indexentry>
+    <primaryie>mean sensitivity, <link linkend="mean_sensitivity">Editor: Status Bar</link></primaryie>
+  </indexentry>
+
+</indexdiv>
+
+<indexdiv><title>R</title>
+
+  <indexentry>
+    <primaryie>reconciling, <link linkend="reconciling">Editor: Reconciling</link></primaryie>
+  </indexentry>
+
+</indexdiv>
+
+</index>
+
+</appendix>
+
+<appendix><title>Files</title>
+
+<para>This appendix lists all of the files used by Corina, where they
+should live, and what they&rsquo;re good for.</para>
+
+<sect1>Application Files</sect1>
+
+<ul>
+
+<li><img src="jar.png?" class="icon"/><b>Corina.jar</b> &mdash; the
+Corina application itself.</li>
+
+<li><img src="bat.png?" class="icon"/><b>Corina.cmd</b> and/or
+<b>Corina.bat</b> &mdash; &ldquo;batch files&rdquo; (shell scripts)
+for Windows to start Corina, since some versions of Windows can&rsquo;t run
+Java applications, and no version lets you set Java properties (like
+the user&rsquo;s home).</li>
+
+<li><img src="folder.png" class="icon"/><b>Libraries</b> &mdash; extra
+files that Corina uses, but aren&rsquo;t strictly required for basic usage
+of Corina.</li>
+
+   <ul>
+
+   <li><img src="jar.png" class="icon"/><b>gnujaxp.jar</b> &mdash;
+   blah blah blah</li>
+
+   <li><img src="jar.png" class="icon"/><b>jlfgr-1_0.jar</b></li>
+
+   <li><img src="file.png" class="icon"/><b>earth.pack</b>,
+   <b>earth.jpeg</b> &mdash; a map of the earth; the first one is
+   line-data (borders, coastlines, rivers, etc.), the second one is a
+   color image.</li>
+
+   </ul>
+
+</ul>
+
+<pre>
+COPYING.txt
+README.txt -- figure some way to integrate these into the program itself, these suck
+
+Licenses/ -- get rid of these, move to help-menu
+
+Demo data/ -- get rid of these, add native itrdb support
+
+Scripts/ -- get rid of these, nobody wants them
+
+Libraries/ -- a necessary evil, for now
+
+   * comm.jar -- needed for serial measuring only (win32-specific)
+
+   * earth.rez -- needed for mapping -- get rid of this, replace with earth.pack
+
+   * gnujaxp.jar -- needed for grid i/o, sitedb i/o, and basically everything.  won't be needed by 1.4 vms
+
+   * jlfgr.jar -- used for icons, not strictly needed -- get rid of this, replace with own icons inside jar
+
+   * jython.jar -- needed for python scripts -- get rid of this, nobody wants them
+
+   * kawa.jar -- needed for scheme scripts -- not being used, but may be someday
+</pre>
+
+<sect1>User Files</sect1>
+
+<para>Corina stores your preferences in your home. ???</para>
+
+<!-- per-platform -->
+<para>On Windows, your home is ???.  If you want to override it, ???</para>
+
+<!-- make a .center class (?) -->
+<table border="1" cellspacing="0" align="center">
+<row>
+   <td><img src="mac.png" class="icon"/>on Mac</td>
+   <td>/Users/xxx/Library/Corina Preferences</td>
+</row>
+<row>
+   <td>on Windows</td>
+   <td>(who knows?)</td>
+</row>
+<row>
+   <td>on Unix</td>
+   <td>~/.corina</td>
+</row>
+</table>
+
+<para>The first time a user runs Corina, it creates a default preferences
+file in her home directory.  (It also shows the About-box; if you see
+the About-box when you start Corina, it means you have no preferences
+file.)</para>
+
+-- right now: ~/corina/prefs.properties, ~/corina/recent
+-- should be: ~/Corina Preferences
+-- MIGRATE!
+(how to stuff /a/b/c and /b/c/d into prefs?  path.sep is no guarantee.)
+
+<pre>
+directory?  file?  where's prefs stored nowadays?  ("corina preferences")
+
+-- "recent files" -- get rid of me, i serve no purpose
+
+-- put this in skel/, OR system-default-prefs file in same dir as corina.jar
+</pre>
+
+<sect1>Data Files</sect1>
+
+<para>Corina doesn&rsquo;t force any particular structure on how you organize
+your data files, because historically (and in the ITRDB) there hasn&rsquo;t
+been any standard way.  But you...</para>
+
+<para>At the top of your data folders &mdash; at
+<code>corina.dir.data</code> &mdash; you can have a file called &ldquo;Site
+DB&rdquo;...</para>
+
+</appendix>
+
+<appendix><title>Troubleshooting / Help!</title>
+
+<para>This section will consist of questions and answers.  If you get stuck,
+chances are somebody else has been stuck on the same problem.
+(If this happens enough, maybe it's the sign of bad design.  Or maybe
+there's a good reason for it.)</para>
+
+<qandaset defaultlabel="qanda">
+
+<qandadiv><title>Editor</title>
+
+	<qandaentry>
+		<question><para>Why can't I edit the data in this sample?</para></question>
+		<answer><para>Corina only lets you edit data by hand if it's raw &mdash; not indexed
+		or summed.  If the status bar has a number in square brackets, like "1863: 1129 [15]",
+		then it's a summed file.  To edit a summed file, you should edit the
+		raw files that make it up, and re-sum it; if you really need to edit summed data,
+		clean it first.  If it's not summed, click the Metadata tab, and look at the Format
+		line; Corina won't let you edit Indexed files, either.  Edit the raw file and
+		re-index the sample; if you really need to edit indexed data, change the Format
+		field to Raw, and then edit it (but be sure to set it back).</para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>What's "Re-Sum" do?</para></question>
+		<answer></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>What's "Clean" do?</para></question>
+		<answer></answer>
+	</qandaentry>
+
+</qandadiv>
+
+<qandadiv><title>Graphics</title>
+
+	<qandaentry>
+		<question><para>Why's the end of some graphs thicker?</para></question>
+		<answer><para>For oak samples, the sapwood rings are drawn thicker.</para></answer>
+		<!-- FIXME: shouldn't be a pref -->
+	</qandaentry>
+	<qandaentry>
+		<question><para>My graph is way off the top of the screen.  Why's it so big?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+
+</qandadiv>
+
+<qandadiv><title>Indexing</title>
+
+	<qandaentry>
+		<question><para>How do I index a sample?</para></question>
+		<answer><para>x</para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>Which indexing algorithm should I use?</para></question>
+		<answer><para>x</para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>Where do I save my indexed file?</para></question>
+		<answer><para>Save it to the same filename, but with an ".IND" extension.
+		For example, the file "ZKB12A.REC" would become "ZKB12A.IND".  Always
+		keep the raw data around after you create an indexed version.
+		When you apply an index, Corina forgets its filename, so when you
+		select <menu>File &rarr; Save</menu> you get the <menu>Save As...</menu>
+		dialog.</para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>What if I want to index a sample more than one way?</para></question>
+		<answer><para>x</para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>Somebody indexed this sample.  Which indexing algorithm was used?</para></question>
+		<answer><para>Open the indexed file, click on the Metadata tab, and look at the "Index Method" line.
+		(This only works if it was indexed by Corina; other programs don't record which algorithm
+		they used.)</para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>I imported some data, and Corina won't let me index it.  Why not?</para></question>
+		<answer><para>Corina probably thinks it's already indexed.  (Corina usually does a pretty
+		good job of guessing if a sample is indexed or raw data, but with many file formats
+		there's no way to tell for sure.)  To override this, open the sample, click on the
+		Metadata tab, and change Format to Raw.</para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>What's &chi;&sup2;?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>What's &rho;?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>What's "Proxy Data"?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>When would I use the "proxy data" feature?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>How does Corina index data?  I need the algorithms for publication.</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>Can I use a higher-degree polynomial?</para></question>
+		<answer><para>(REMOVE ME!)</para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>The cubic spline is too loose / too tight.</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+
+</qandadiv>
+
+<qandadiv><title>Crossdating</title>
+
+	<qandaentry>
+		<question><para></para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+
+</qandadiv>
+
+<qandadiv><title>Files</title>
+
+	<qandaentry>
+		<question><para>What do I name my file?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>What filename extension do I use?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>What format does Corina save in?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>How do I export to Excel?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>How do I import from Excel?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>What formats can Corina load from?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>What's TSAP format?</para></question> <!-- ...and others? -->
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>How do I rename a file?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>How do I delete a file?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>Oops, how do I undelete a file?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>How do I email this sample to somebody?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>Somebody emailed me a file; how do I open it with Corina?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>What's "packed Tucson" format?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>I have some data files; how do I make a packed Tucson file out of them?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>I have a packed Tucson file; how do I unpack it?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>It can't load my file, but I just saved it in Corina.  Why not?</para></question>
+		<answer><para></para></answer>
+	</qandaentry>
+	<qandaentry>
+		<question><para>Corina thinks this Tucson file is indexed, but it's not.  What gives?</para></question>
+		<answer><para>When Tucson files were first used, all summed files were indexed; there was
+		no concept of a summed-but-not-indexed file.  So Tucson files have no way to indicate
+		"I'm summed" and "I'm indexed" independently: it's raw, indexed, or indexed-and-summed.
+		Since Corina can create summed-but-not-indexed files, and save in Tucson format,
+		it needs a way to figure out of a summed Tucson file is indexed.  It guesses, but it's
+		a pretty good guesser: if the average value is over 800, it assumes it's indexed.
+		This works almost all the time, but sometimes it doesn't, so in those rare cases
+		you have to click on the Metadata tab, and change the Format.</para></answer>
+	</qandaentry>
+
+</qandadiv>
+
+<qandadiv><title>Miscellaneous</title>
+
+  <qandaentry>
+    <question><para>The menubar font is too small /
+    big.</para></question> <!-- that's not a question! -->
+
+    <answer><para>This is a bug in Sun&rsquo;s Java for Windows,
+    versions 1.2 and 1.3.  Corina has a workaround for it:
+    under <guimenuitem>Preferences...</guimenuitem>, in
+    the <guilabel>Advanced</guilabel> tab, you can set a new menubar
+    font.</para></answer>
+  </qandaentry>
+
+</qandadiv>
+
+-- add more sections
+
+</qandaset>
+
+</appendix>
+
+</book>
