@@ -30,6 +30,7 @@ import corina.gui.XFrame;
 import corina.gui.XMenubar;
 import corina.gui.FileDialog;
 import corina.gui.WindowMenu;
+import corina.util.Platform;
 
 import java.util.List;
 import java.util.ResourceBundle;
@@ -333,7 +334,10 @@ public class GridFrame extends XFrame
 	zoomOut.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(XMenubar.macize("control DOWN")));
 	view.add(new XMenubar.XMenuItem(zoomOut));
 
-	return new JMenu[] { view, new WindowMenu(this) };
+        if (Platform.isMac)
+            return new JMenu[] { view, new WindowMenu(this) };
+        else
+            return new JMenu[] { view };
     }
 
     // HasPreferences
