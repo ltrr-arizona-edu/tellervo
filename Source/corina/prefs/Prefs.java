@@ -21,7 +21,10 @@
 package corina.prefs;
 
 import corina.util.Platform;
+import corina.util.JDisclosureTriangle;
+import corina.util.JLinedLabel;
 import corina.gui.Bug;
+import corina.ui.I18n;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,6 +38,18 @@ import java.util.Properties;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.AbstractAction;
+import java.awt.event.ActionEvent;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import java.awt.BorderLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
    Static class for loading and saving preferences.
@@ -157,7 +172,9 @@ public class Prefs {
             System.setProperties(p);
 
             try {
-                save();
+		// this is the guts of save(), but without the nice error handling.
+		Properties pp = getCorinaProperties();
+		pp.store(new FileOutputStream(USER_PROPERTIES_FILE), "Corina user preferences");
             } catch (IOException ioe) {
                 errors += "Error copying preferences file to your home directory: " +
                 ioe.getMessage();
@@ -174,13 +191,8 @@ public class Prefs {
             throw new IOException(errors);
     }
 
-    // BUG?  why's save() not synch?  (actually, save and load should both synch on the same ref.)
-    
-    /** <p>Save current properties to the user's system-writable
-	properties (preferences) file,
-	<code>USER_PROPERTIES_FILE</code>.</p> */
-    public static void save() throws IOException {
-	// copy corina properties to new property list
+    // copy corina properties to new property list
+    private static Properties getCorinaProperties() {
 	Properties p = new Properties();
 	List options = PrefsTemplate.getOptions();
 	for (int i=0; i<options.size(); i++) {
@@ -189,19 +201,45 @@ public class Prefs {
 	    if (v != null)
 		p.setProperty(o.property, v);
 	}
+	return p;
+    }
 
-	// save -- (store() uses a bufferedoutputstream)
-	p.store(new FileOutputStream(USER_PROPERTIES_FILE), "Corina user preferences");
+    // BUG?  why's save() not synch?  (actually, save and load should both synch on the same ref.)
+    // TODO: so save() never throws an IOE, so remove that from its signature
+    
+    /** Save current properties to the user's system-writable
+	properties (preferences) file,
+	<code>USER_PROPERTIES_FILE</code>. */
+    public static void save() {
+	// get corina prefs
+	Properties p = getCorinaProperties();
+
+	// try to save prefs, and on failure present "try again?" dialog.
+	for (;;) {
+	    try {
+		// DESIGN: buffer me?
+		p.store(new FileOutputStream(USER_PROPERTIES_FILE), "Corina user preferences");
+		return;
+	    } catch (IOException ioe) {
+		if (dontWarn)
+		    return;
+
+		boolean tryAgain = cantSave(ioe);
+		if (!tryAgain)
+		    return;
+	    }
+	}
     }
 
     // true iff there's no .corina (or similar) directory
     public static boolean firstRun() {
-	File dir = new File(USER_PROPERTIES_DIR);
-	return !dir.exists();
+	File folder = new File(USER_PROPERTIES_DIR);
+	return !folder.exists();
     }
 
     // from "1 2 3", extract int[] { 1, 2, 3 }
     // (seems as good a place as any for this, since it's prefs-related.)
+    // MOVE: no, belongs somewhere else ... maybe corina.util.
     public static int[] extractInts(String s) {
         StringTokenizer tok = new StringTokenizer(s, " ");
         int n = tok.countTokens();
@@ -209,5 +247,47 @@ public class Prefs {
         for (int i=0; i<n; i++)
             r[i] = Integer.parseInt(tok.nextToken());
         return r;
+    }
+
+    // if true, silently ignore if the prefs can't be saved.
+    private static boolean dontWarn = false;
+
+    // exception |e| thrown while saving; tell user.
+    // return value: true => "try again".
+    // TODO: use jlinedlabel to be more explicit about the problem
+    // TODO: (need left-alignment option on that class, first)
+    private static boolean cantSave(Exception e) {
+	JPanel message = new JPanel(new BorderLayout(0, 8)); // (hgap,vgap)
+	message.add(new JLabel(I18n.getText("prefs_cant_save")), BorderLayout.NORTH);
+
+	// -- dialog with optionpane (warning?)
+	JOptionPane optionPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
+	JDialog dialog = optionPane.createDialog(null /* ? */, I18n.getText("prefs_cant_save_title"));
+
+	// -- buttons: cancel, try again.
+	optionPane.setOptions(new String[] { I18n.getText("try_again"), I18n.getText("cancel") });
+
+	// -- disclosure triangle with scrollable text area: click for details... (stacktrace)
+	JComponent stackTrace = new JScrollPane(new JTextArea(Bug.getStackTrace(e), 10, 60));
+	JDisclosureTriangle v = new JDisclosureTriangle(I18n.getText("click_for_details"),
+							stackTrace, dialog, false);
+	message.add(v, BorderLayout.CENTER);
+
+	// -- checkbox: don't warn me again
+	JCheckBox dontWarnCheckbox = new JCheckBox(I18n.getText("dont_warn_again"), false);
+	dontWarnCheckbox.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    dontWarn = !dontWarn;
+		}
+	    });
+	message.add(dontWarnCheckbox, BorderLayout.SOUTH);
+
+	// show dialog
+	dialog.pack();
+	dialog.setResizable(false);
+	dialog.show();
+
+	// return true iff "try again" is clicked
+	return optionPane.getValue().equals(I18n.getText("try_again"));
     }
 }
