@@ -33,6 +33,9 @@ public class CountRenderer extends JComponent implements TableCellRenderer {
     public CountRenderer(int max) {
         // range is 0..max
         this.max = max;
+
+        // we are opaque (is this needed still?)
+        setOpaque(true);
     }
 
     // me!
@@ -40,16 +43,26 @@ public class CountRenderer extends JComponent implements TableCellRenderer {
                                                    Object value,
                                                    boolean isSelected, boolean hasFocus,
                                                    int row, int column) {
+        // update my value
         val = ((Integer) value).intValue();
+
+        // set background color
+        super.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
+
+        // return myself
         return this;
     }
 
     // make it look like an aqua relevence control.  see:
     // http://developer.apple.com/techpubs/macosx/Essentials/AquaHIGuidelines/AHIGControls/Progress_In_ce_Controls.html
     public void paintComponent(Graphics g) {
-        int w = getSize().width;
+        int w=getSize().width, h=getSize().height;
         double frac = (double) val / (double) max;
         int stop = (int) (frac * w);
+
+        // fill background myself. (why do i have to?)
+        g.setColor(super.getBackground());
+        g.fillRect(0, 0, w, h);
 
         // zero is a special case
         if (val == 0) {
