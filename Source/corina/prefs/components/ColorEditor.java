@@ -6,43 +6,59 @@ import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import corina.util.CorinaLog;
+
 public class ColorEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+  private static final CorinaLog log = new CorinaLog(ColorEditor.class);
+  
   Color currentColor;
-  JButton button;
+  //JButton button;
   JColorChooser colorChooser;
   JDialog dialog;
   protected static final String EDIT = "edit";
-
+  
+  private Runnable showdialog = new Runnable() {
+    public void run() {
+      colorChooser.setColor(currentColor);
+      dialog.setVisible(true);
+      currentColor = colorChooser.getColor();
+    }
+  };
+  
   public ColorEditor() {
-    button = new JButton();
+    /*button = new JButton();
     button.setActionCommand(EDIT);
-    button.addActionListener(this);
-    button.setBorderPainted(false);
+    button.addActionListener(this);*/
+    //button.setBorderPainted(false);
 
     //Set up the dialog that the button brings up.
     colorChooser = new JColorChooser();
-      dialog = JColorChooser.createDialog(button, "Pick a Color", true, //modal
-    colorChooser, this, //OK button handler
+      dialog = JColorChooser.createDialog(null, "Pick a Color", true, //modal
+    colorChooser, null, //OK button handler
   null); //no CANCEL button handler
   }
 
   public void actionPerformed(ActionEvent e) {
+    log.debug("action: " + e.getActionCommand());
     if (EDIT.equals(e.getActionCommand())) {
       //The user has clicked the cell, so
       //bring up the dialog.
-      button.setBackground(currentColor);
+      //button.setBackground(currentColor);
       colorChooser.setColor(currentColor);
       dialog.setVisible(true);
 
-      fireEditingStopped(); //Make the renderer reappear.
+      //fireEditingStopped(); //Make the renderer reappear.
 
     } else { //User pressed dialog's "OK" button.
       currentColor = colorChooser.getColor();
+      //stopCellEditing();
     }
   }
 
@@ -53,7 +69,17 @@ public class ColorEditor extends AbstractCellEditor implements TableCellEditor, 
 
   //Implement the one method defined by TableCellEditor.
   public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+    log.debug("value: " + value);
     currentColor = (Color) value;
-    return button;
+    
+    colorChooser.setColor(currentColor);
+    log.debug("before");
+    SwingUtilities.invokeLater(showdialog);
+    log.debug("after");
+          
+    //return button;
+    Component c = table.getCellRenderer(row, column).getTableCellRendererComponent(table, value, isSelected, true, row, column);
+    log.debug(c);
+    return c;
   }
 }
