@@ -70,9 +70,11 @@ public class MultiColumn implements Filetype {
 		return ".TXT";
   }
 
-  public Sample load(BufferedReader r) throws IOException {\
-    // COPIED from 2column, must reimplement -aaron
+  public Sample load(BufferedReader r) throws IOException {
+    throw new UnsupportedOperationException("Load not implemented for " + getClass());
     
+    /* COPIED from 2column, must reimplement -aaron
+   
     // sample to return
     Sample s = new Sample();
 
@@ -184,42 +186,43 @@ public class MultiColumn implements Filetype {
 
         // return it
         return s;
-    }
+      */
+  }
 
-    // if there's a line with text (letters) on it (up to 120 chars long),
-    // put it in the comments field, and skip past it.
-    private void maybeEatCrap(Sample s, BufferedReader r) throws IOException {
-        boolean isCrap = false;
-        r.mark(120);
-        String l = r.readLine();
-	if (l == null) {
+  // if there's a line with text (letters) on it (up to 120 chars long),
+  // put it in the comments field, and skip past it.
+  private void maybeEatCrap(Sample s, BufferedReader r) throws IOException {
+    boolean isCrap = false;
+    r.mark(120);
+    String l = r.readLine();
+	  if (l == null) {
 	    throw new WrongFiletypeException(); // empty file!
-	}
-        for (int i=0; i<l.length(); i++) {
-            if (Character.isLetter(l.charAt(i))) {
-                isCrap = true;
-                break;
-            }
-        }
-        if (isCrap)
-            s.meta.put("comments", "Header line was: \"" + l + "\"");
-        else
-            r.reset();
+	  }
+    for (int i=0; i<l.length(); i++) {
+      if (Character.isLetter(l.charAt(i))) {
+        isCrap = true;
+        break;
+      }
     }
+    if (isCrap)
+      s.meta.put("comments", "Header line was: \"" + l + "\"");
+    else
+      r.reset();
+  }
 
-    // given a string like "1 2 3", return an array like {1f, 2f, 3f}.
-    private float[] parseLine(String s) throws IOException {
-	try {
+  // given a string like "1 2 3", return an array like {1f, 2f, 3f}.
+  private float[] parseLine(String s) throws IOException {
+    try {
 	    StringTokenizer tok = new StringTokenizer(s, ",; \t");
 	    int n = tok.countTokens();
 	    float x[] = new float[n];
 	    for (int i=0; i<n; i++)
-		x[i] = Float.parseFloat(tok.nextToken());
+		    x[i] = Float.parseFloat(tok.nextToken());
 	    return x;
-	} catch (NumberFormatException nfe) {
+    } catch (NumberFormatException nfe) {
 	    throw new WrongFiletypeException();
-	}
-    }
+	  }
+  }
     
   private static void writeHeader(boolean isbc, BufferedWriter w) throws IOException {
     int start;
@@ -244,12 +247,16 @@ public class MultiColumn implements Filetype {
     
   public void save(Sample s, BufferedWriter w) throws IOException {
     Year y = s.range.getStart();
+    System.out.println("Range start: " + y);
     boolean hasCount = (s.count != null);
+    System.out.println("Has count: " + hasCount);
 
     // write out the header
     w.write("decade\t");
     
     boolean isbc = y.compareTo(new Year(1)) < 0;
+    
+    System.out.println("isbc? " + isbc);
     
     writeHeader(isbc, w);
     
@@ -261,69 +268,79 @@ public class MultiColumn implements Filetype {
     int countpos = 0;
     
     while (datapos < s.data.size()) {
+
+      System.out.println("Datapos: " + datapos);
+      System.out.println("Countpos: " + countpos);
+      System.out.println("Year: " + y);
+      System.out.println("Row(" + y + "):" + y.row());    
     
       // write the decade data, being sure to offset by the position within the decade
       int column = y.column();
+      System.out.println("y.column(): " + y.column());
       
       boolean flipped = isbc ^ (y.compareTo(new Year(1)) < 0);
+      
+      if (flipped) {
+        System.out.println("Crossed bc boundary, writing new header. isbc? " + isbc);
+      	isbc = !isbc;
+      
+        writeHeader(isbc, w);
     
-      if (flipped) bc = !bc;
+        writeHeader(isbc, w);
       
-      writeHeader(isbc, w);
-    
-      writeHeader(isbc, w);
-      
-      w.newLine();
-      
-      
+        w.newLine();
+      }
+            
+      // write the decade
+      w.write(Integer.toString(y.row() * 10));
+      w.write('\t');
+
+      int added = 0;
       for (int i = 0; i < column; i++) {
+        System.out.println("year " + y + " padding " + i);
         w.write('\t');
+        //y = y.add(+1);
+        //added++;
       }
         
-      for (int i = column; i < 10 - column; i++, y.add(1)) {
+      for (int i = column; i < 10; i++, y.add(1)) {
+        System.out.print("year: " + y + " column: " + i + " datapos " + datapos + " data size " + s.data.size());
         if (datapos < s.data.size()) {
-          w.write(s.data.get(datapos));
+          String datastring = s.data.get(datapos).toString();
+          System.out.print("...writing data: " + datastring);
+          w.write(s.data.get(datapos).toString());
           datapos++;
-        }      
+        }
+        System.out.println();      
         w.write('\t');
+        y = y.add(1);
+        added++;
       }
+      
+      // rewind to the start of the decade
+      y = y.add(-added);
       
       // write the decade counts, being sure to offset by the position within the decade
       for (int i = 0; i < column; i++) {
+        System.out.println("year " + y + " padding " + i);
         w.write('\t');
+        //y = y.add(1);
       }
 
-      for (int i = column; i < 10 - column; i++) {
+      for (int i = column; i < 10; i++) {
+        System.out.print("year: " + y + " column: " + i + " countpos " + countpos + " count size " + s.count.size());
         if (hasCount && countpos < s.count.size()) {
-          w.write(s.count.get(countpos));
+          String countstring = s.count.get(countpos).toString(); 
+          System.out.println("writing count: " + countstring);
+          w.write(countstring);
           countpos++;
         }
+        System.out.println();
         w.write('\t');
+        y = y.add(1);
       }
-    
-    
-      // write the year
-      w.write(Integer.toString(y.row() * 10));
-      
-      // write data. if we cared about performance
-      // we could leave the bounds check until the last
-      // row/decade of data, but it probably isn't an issue
-      for (int i = 0; i < 10 - column; i++) {
-        if (!y.isYearOne() && i < s.data.size()) {
-          w.write(s.data.get(i).toString());
-        }      
-        w.write('\t');
-      }
-      
-      for (int i = 0; i < 10 - column; i++) {
-        if (hasCount && i < s.count.size()) {
-          w.write(s.count.get(i).toString());
-        }
-        w.write('\t');
-      }
-      
+        
       w.newLine();
-      y = y.add(+1);
     }
   }
 }
