@@ -67,14 +67,17 @@ public class HighPass extends Index {
         data = filter(source.data, weights);
     }
 
-    // a discrete high-pass filter
-    public static List filter(List input, int[] w) { // get (weights.sum) passed in?
+    // a discrete high-pass filter.
+    // used by: highpass.run(), floating.run(), tscore.preamble()
+    // -- array/list dichotomy problem?  no, seems ok.
+    // -- implement special case for w[i]==1?  (floating and t-score use it this way.)
+    public static List filter(List input, int[] w) {
         int n = input.size();
         List output = new ArrayList(n);
         int nw = (w.length - 1) / 2;
 
         // sum the weights -- (extract method?)
-        int sum=0;
+        int sum=0; // -- (apply '+ w)
         for (int i=0; i<w.length; i++)
             sum += w[i];
 
@@ -83,30 +86,28 @@ public class HighPass extends Index {
             int j=-nw;
             do {
                 if (i+j >= 0 && i+j < n)
-                    x += ((Number) input.get(i+j)).doubleValue() * w[nw+j];
+                    x += ((Number) input.get(i+j)).doubleValue() * w[nw+j]; // add value, weighted, or ...
                 else
-                    adj += w[nw+j];
+                    adj += w[nw+j]; // ... discount weights by that amount
                 j++;
             } while (j<=nw);
-            if (sum - adj == 0) {
-                if (x == 0)
-                    output.add(new Double(0.0));
-                else // !!! -- ???
-                    output.add(new Double(0.0));
+
+            double value;
+            if (sum - adj == 0) { // was: ... || x==0
+                value = 0.0;
             } else {
-                output.add(new Double(x / (sum - adj)));
+                value = x / (sum - adj);
             }
+            output.add(new Double(value));
         }
         return output;
     }
-    // used by: highpass.run(), floating.run(), tscore.preamble()
-    // -- array/list dichotomy problem?  no, seems ok.
-    // -- implement special case for w[i]==1?  hmm...
 
     /** The name of this filter.  This lists the weights, separated by
         hyphens, so the default filter is called "High-pass (1-2-4-2-1)".
     @return the name of this filter */
     public String getName() {
+        // this is basically the opposite of Prefs.extractInts() -- consolidate?
         StringBuffer buf = new StringBuffer();
         for (int i=0; i<weights.length; i++) {
             buf.append(weights[i]);
