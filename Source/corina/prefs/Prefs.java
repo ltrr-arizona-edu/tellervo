@@ -151,19 +151,17 @@ public class Prefs {
   }
 
   /**
-   * Load system and user properties (preferences).  This runs 2 steps:
+   * Load system and user properties (preferences).  This runs 3 steps:
    * <ol>
-   *   <li>Load system properties, by loading ...
-   *   <li>Load user's properties, by loading ...
+   *   <li>Load system properties
+   *   <li>Load default properties from class loader resource prefs.properties
+   *   <li>Override with user's properties file (differs by OS; FIXME?)
    * </ol>
    *
-	 * Note that this uses a Properties object, gotten from
-	 * System.getProperties(), to load the properties into.  This is
-	 * because Unix and Win32 behavior differs: on one,
-	 * System.setProperties(p) adds the properties in p to the
-	 * existing properties, while the other replaces the existing
-	 * properties with p.  (I don't remember offhand which is which.)
-	 * As usual, the API docs don't really specify.  Grrr...
+   * TODO: System properties should really override the user properties
+   * (as they are more "immediate"), but we'd have to make sure to only
+   * save the corina properties back out.  I /think/ all corina properties
+   * start with 'corina' but I'm not sure yet.
    */
   public static synchronized void load() throws IOException {
     // get existing properties
@@ -172,12 +170,12 @@ public class Prefs {
 
     // a place to record errors that may occur, because we don't
     // want to crap out before we've tried everything.
-    String errors="";
+    StringBuffer errors = new StringBuffer();
 
     Properties defaults = new Properties(systemprops);
     // load system properties as a resource from this jar
+    ClassLoader cl = Prefs.class.getClassLoader();
     try {
-      ClassLoader cl = Prefs.class.getClassLoader();
       java.io.InputStream is = cl.getResourceAsStream("prefs.properties");
       if (is != null) {
         try {
@@ -188,55 +186,33 @@ public class Prefs {
       }
       // RENAME this?  ("Default Corina Preferences")
     } catch (IOException ioe) {
-        errors += "Error loading Corina's default preferences (bug!).";
+        errors.append("Error loading Corina's default preferences (bug!).\n");
     }
 
     // instantiate our properties using the system properties
     // and corina properties as default values
     prefs = new Properties(defaults);
 
-    // get user properties (with a hack to preserve user.name)
     try {
-	    // trying to get rid of this username nonsense - Aaron
-      //String n = defaults.getProperty("user.name"); // HACK!!!
-      
       prefs.load(new FileInputStream(FILENAME));
-      // xxx aaron defaults.setProperty("user.name", n);
     } catch (FileNotFoundException fnfe) {
-      // user doesn't have a properties file, so we'll give her
-      // one!  the system properties were already loaded, so all
-      // i need to do is call save() now.
-
-      // (p->system properties, for save())
-      // trying to get rid of dependence on System properties xxx aaron System.setProperties(p);
-
+      // user doesn't have a properties file, so we'll give her one!
       try {
     		// this is the guts of save(), but without the nice error handling.
-        // XXX: well, PrefsTemplate has a comment saying it is useless and should
-        // be deleted ASAP... futhermore it looks like its options and categories
-        // arrays are never filled... therefore, hopefully I can conclude this is all
-        // unnecessary and will wait for things to break to prove to me otherwise - aaron
-    		//Properties pp = getCorinaProperties();
-        // Contract of Properties indicates that only the immediate properties, not
-        // the parent properties, are written out during 'store'.  Convenient, eh?
     		prefs.store(new FileOutputStream(FILENAME), "Corina user preferences");
       } catch (IOException ioe) {
-        errors += "Error copying preferences file to your home directory: " +
-                    ioe.getMessage();
+        errors.append("Error copying preferences file to your home directory: " + ioe.getMessage() + "\n");
       }
     } catch (IOException ioe) {
-      errors += "Error loading user preferences file: " + ioe.getMessage();
+      errors.append("Error loading user preferences file: " + ioe.getMessage() + "\n");
     }
 
     // install any UIDefaults preferences the user may have
     loadUIDefaults();
-    // set properties
-    // xxx no thank you - aaron System.setProperties(p);
-       
 
     // if there was an exception thrown-and-caught, re-throw it now
     if (errors.length() != 0)
-        throw new IOException(errors);
+      throw new IOException(errors.toString());
   }
   
   /**
