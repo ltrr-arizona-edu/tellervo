@@ -46,25 +46,28 @@ import java.util.List;
 
 public class MeanSensitivity {
 
-    public static double ms(Sample sample) {
+    public static float ms(Sample sample) {
         List y = sample.data;
         int N = y.size();
 
         // a special case
         if (N == 0)
-            return Double.NaN;
+            return Float.NaN;
 
         try {
-            double meanSens = 0.0;
-            double yi, yi1; // y[i], y[i-1]
+            float meanSens = 0.0f;
+            float yi, yi1; // y[i], y[i-1]
             for (int i=1; i<N; i++) {
                 // (it's slightly more efficient but less readable to
                 // dump yi into yi1 each iteration.)
 
-                yi = ((Number) y.get(i)).doubleValue();
-                yi1 = ((Number) y.get(i-1)).doubleValue();
+                yi = ((Number) y.get(i)).floatValue();
+                yi1 = ((Number) y.get(i-1)).floatValue();
 
                 meanSens += Math.abs(yi - yi1) / (Math.abs(yi) + Math.abs(yi1));
+
+                // BUG: schweingruber says abs((yi1-yi)/(yi1+yi)), which is different, right?
+                // (tree rings, p.82[en])
 
                 // abs(y[i]) should always be nonnegative -- but may
                 // not be if the user applied a bad index, and it's
@@ -72,9 +75,9 @@ public class MeanSensitivity {
             }
             return meanSens * 2 / (N-1);
         } catch (ArithmeticException ae) {
-            return Double.NaN; // divide-by-zero, probably
+            return Float.NaN; // divide-by-zero, probably
         } catch (ClassCastException cce) {
-            return Double.NaN; // user is editing, it's a String, so let it go
+            return Float.NaN; // user is editing, it's a String, so let it go
         }
     }
 }
