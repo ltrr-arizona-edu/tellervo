@@ -275,7 +275,8 @@ public class PrefsDialog extends JFrame {
         setResizable(false);
 
         // icon!
-        setIconImage(new ImageIcon(ClassLoader.getSystemResource("toolbarButtonGraphics/general/Preferences16.gif")).getImage());
+        ClassLoader cl = this.getClass().getClassLoader();
+        setIconImage(new ImageIcon(cl.getResource("toolbarButtonGraphics/general/Preferences16.gif")).getImage());
 
         // get categories, options from Prefs
         categories = PrefsTemplate.getCategories();
