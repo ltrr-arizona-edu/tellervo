@@ -43,13 +43,14 @@ public class Startup {
     public static void main(String args[]) {
         try {
             // if the user hasn't specified a parser with
-            // -Dorg.xml.sax.driver=..., use gnujaxp.
+            // -Dorg.xml.sax.driver=..., use crimson.
             if (System.getProperty("org.xml.sax.driver") == null)
-                System.setProperty("org.xml.sax.driver", "gnu.xml.aelfred2.SAXDriver");
-            // xerces is "org.apache.xerces.parsers.SAXParser"
+		System.setProperty("org.xml.sax.driver", "org.apache.crimson.parser.XMLReaderImpl");
+            // xerces: "org.apache.xerces.parsers.SAXParser"
+	    // gnu/jaxp: "gnu.xml.aelfred2.SAXDriver"
 
-            // on a mac, always use the mac menubar (yay!)
-            // (http://developer.apple.com/technotes/tn/tn2031.html describes these)
+            // on a mac, always use the mac menubar -- see TN2031
+            // (http://developer.apple.com/technotes/tn/tn2031.html)
             if (Platform.isMac) {
                 System.setProperty("com.apple.macos.useScreenMenuBar", "true");
                 System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Corina");
@@ -64,6 +65,16 @@ public class Startup {
             if (Prefs.firstRun())
                 new AboutBox();
 
+            // on Mac, treat applications as files, not folders (duh -- why's this not default, steve?)
+            if (Platform.isMac) {
+                System.setProperty("com.apple.macos.use-file-dialog-packages", "false"); // for AWT
+                UIManager.put("JFileChooser.packageIsTraversable", "never"); // for swing
+            }
+
+            // this sets the "about..." name only -- not "hide", "quit", or in the dock.
+            // have to use -X args for those, anyway, so this is useless.
+            // System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Corina");
+            
             // load properties -- messagedialog here is UGLY!
             try {
                 Prefs.load();
@@ -73,6 +84,44 @@ public class Startup {
                                               "Corina: Error Loading Preferences",
                                               JOptionPane.ERROR_MESSAGE);
             }
+
+	    /*
+	    // install a default-uncaught-exception-handler
+	    ThreadGroup tg = new ThreadGroup("safe") {
+		    public void uncaughtException(Thread t, Throwable e) {
+			Bug.bug(e);
+		    }
+		};
+	    // Q: what's the problem?
+	    // A: i can only override uncaughtException() on new threadgroups,
+	    // and i can't move threads between groups, so AWT event handling
+	    // can never be caught by an uncaughtException() method i write (right?)
+	    Thread t = new Thread(tg, "countdown") {
+		    public void run() {
+			System.out.println("counting down from 10...");
+			for (int i=9; i>0; i--) {
+			    System.out.println(i);
+			    try {
+				Thread.sleep(1000);
+			    } catch (InterruptedException ie) {
+				// ignore
+			    }
+			}
+			System.out.println("zero!");
+			throw new IllegalArgumentException("die die die!");
+		    }
+		};
+	    t.start();
+	    */
+
+	    // so let's do the next-best thing: dump all uncaught exceptions to a file.
+	    // (then later, maybe on quit, i can offer to mail them to me, or post them, or some such)
+	    // WRITE ME
+	    // Q: delete it on quit if there's no data in it?
+	    // Q: what filename to use?  "${username} - ${time}" would be good.
+	    // Q: where to put it?  wd?  Logs/?  C:\winnt\logs?  $(TMP)?
+	    // System.setErr(new PrintStream(new OutputStream
+
 
             // let's go...
             new XCorina();
