@@ -50,7 +50,7 @@ import java.io.File;
 public abstract class Cross implements Runnable {
 
     /** Resource bundle for localization. */
-    public static ResourceBundle msg = ResourceBundle.getBundle("CrossdatingBundle");
+    public static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     /** The crossdate scores. */
     public double data[];
@@ -63,9 +63,9 @@ public abstract class Cross implements Runnable {
     protected Sample fixed;
 
     /** Returns the fixed sample.
-	@return the fixed sample */
+        @return the fixed sample */
     public Sample getFixed() {
-	return fixed;
+        return fixed;
     }
 
     /** Reference to the sample being moved to compute the vector of
@@ -73,9 +73,9 @@ public abstract class Cross implements Runnable {
     protected Sample moving;
 
     /** Returns the moving sample.
-	@return the moving sample */
+        @return the moving sample */
     public Sample getMoving() {
-	return moving;
+        return moving;
     }
 
     /** Set to true just before the run() method returns.  To be used
@@ -85,7 +85,7 @@ public abstract class Cross implements Runnable {
 
     /** Is the run finished? */
     public boolean isFinished() {
-	return finished;
+        return finished;
     }
 
     /** A vector of high (statistically significant) scores.  A vector
@@ -96,8 +96,10 @@ public abstract class Cross implements Runnable {
     public List highScores = new ArrayList();
 
     /** The minimum allowable crossdate overlap between two samples;
-        its value is 10. */
-    public final static int OVERLAP = 10;
+        its value is 15. */
+    public static int getMinimumOverlap() {
+        return Integer.getInteger("corina.cross.overlap", 15).intValue();
+    }
 
     // don't use me
     protected Cross() { }
@@ -106,14 +108,15 @@ public abstract class Cross implements Runnable {
 	@param fixed sample to hold fixed
 	@param moving sample to compare against the fixed sample */
     public Cross(Sample fixed, Sample moving) {
-	// copy references to fixed, moving
-	this.fixed = fixed;
-	this.moving = moving;
+        // copy references to fixed, moving
+        this.fixed = fixed;
+        this.moving = moving;
 
-	// set the range (= end date of moving sample)
-	Year start = fixed.range.getStart().add(OVERLAP - 1);
-	Year end = fixed.range.getEnd().add(moving.range.span() - OVERLAP - 1);
-	range = new Range(start, end);
+        // set the range (= end date of moving sample)
+        int overlap = getMinimumOverlap();
+        Year start = fixed.range.getStart().add(overlap - 1);
+        Year end = fixed.range.getEnd().add(moving.range.span() - overlap - 1);
+        range = new Range(start, end);
     }
 
     /** Return a human-readable name for the crossdate.
@@ -128,37 +131,45 @@ public abstract class Cross implements Runnable {
 	SampleA versus SampleB".
 	@return a String value of the cross */
     public final String toString() {
-	String f = (String) fixed.meta.get("filename") + " (" + fixed.range + ")";
-	String m = (String) moving.meta.get("filename") + " (" + moving.range + ")";
+        // BROKEN
+        // -- i think i see what i was trying to do, but i fucked it up.  d'oh.
+        String f = (String) fixed.meta.get("filename") + " (" + fixed.range + ")";
+        String m = (String) moving.meta.get("filename") + " (" + moving.range + ")";
 
-	f = (new File(f)).getName();
-	m = (new File(m)).getName();
+        f = (new File(f)).getName();
+        m = (new File(m)).getName();
 
-	return msg.getString("cross") + ": " + f + " " + msg.getString("versus") + " " + m;
-	// was: return getName() + ": " + f + " versus " + m;
+        return msg.getString("cross") + ": " + f + " " + msg.getString("versus") + " " + m;
+        // was: return getName() + ": " + f + " versus " + m;
     }
-
-    /** For a given crossdating algorithm, the minimum statistically
-	significant score; assumes higher scores are better fits.
-	@return the minimum statistically significant score this
-	algorithm can return */
-    public abstract double getMinimumSignificant();
 
     // search for high scores in the list, after scores have been
     // computed.  run() calls this last.
-    private final void computeHighScores() {
+    private void computeHighScores() {
         int nr=0;
-        double threshold = getMinimumSignificant();
-
-        for (int i=0; i<data.length; i++)
-            if (data[i] >= threshold)
-                highScores.add(new Score(this, i, ++nr));
+        Range fixedRange = fixed.range;
+        Range movingRange = moving.range.redateEndTo(fixedRange.getStart().add(getMinimumOverlap()-1));
+        for (int i=0; i<data.length; i++) {
+            movingRange = movingRange.redateBy(+1); // slide it by 1
+            if (isSignificant(data[i], fixedRange.overlap(movingRange)))
+		try {
+		    highScores.add(new Score(this, i, ++nr));
+		} catch (Exception e) {
+		    System.out.println("trouble with bayes!");
+		}
+        }
+        // convert to array now?  all i do with it is .size(), .get(), and sort(comparable)
     }
+
+    public abstract boolean isSignificant(double score, int overlap);
+
+    // temporary hack -- used only by crossprinter and crossframe(all-scores)
+    public abstract double getMinimumSignificant();
 
     /** Crossdate preamble: any setup that needs to be done before the
         main loop to compute individual scores. */
     protected void preamble() {
-	// nothing need be done by default
+        // nothing need be done by default
     }
 
     /** Compute an individual score, starting at the given offsets
@@ -175,40 +186,51 @@ public abstract class Cross implements Runnable {
 	@see #preamble
 	@see #compute */
     public final void run() {
-	// this cross was already run, by somebody
-	if (finished)
-	    return;
+        // this cross was already run, by somebody
+        if (finished)
+            return;
 
-	// allocate space for data
-        int n = fixed.data.size() + moving.data.size() - 2*OVERLAP;
-        if (n < 0) {
+        // careful: it can be true that n>0 but there are 0 crosses that should be run here.
+        // try this...
+        int overlap = getMinimumOverlap();
+        if (fixed.data.size() < overlap || moving.data.size() < overlap) {
+	    throw new IllegalArgumentException("These samples (n=" + fixed.data.size() + ", n=" +
+					       moving.data.size() + ") aren't long enough for your " +
+					       "minimum specified overlap (n=" + overlap + ")");
+	    // and say how to fix it!
+        }
+
+        // allocate space for data
+        int n = fixed.data.size() + moving.data.size() - 2*getMinimumOverlap();
+        if (n <= 0) {
             data = new double[0];
+            finished = true;
             return;
         }
         data = new double[n];
         int done = 0;
 
-	// preamble
-	preamble();
+        // preamble
+        preamble();
 
-	// TODO: run phase1 and phase2 in separate threads, and
-	// document that subclasses should keep them independent.
-	// (preamble only exists for t-score, and it's probably not
-	// easily threadable.)  then benchmark on a dual-g4 to see how
-	// well it actually performs.  wait, no: the 2 phases aren't
-	// equal-sized; split in half (even-odd?).
+        // TODO: run phase1 and phase2 in separate threads, and
+        // document that subclasses should keep them independent.
+        // (preamble only exists for t-score, and it's probably not
+        // easily threadable.)  then benchmark on a dual-g4 to see how
+        // well it actually performs.  wait, no: the 2 phases aren't
+        // equal-sized; split in half (maybe even-odd?).
 
-	// phase 1:
-	for (int im = moving.data.size()-OVERLAP; im>0; im--)
-	    data[done++] = compute(0, im);
+        // phase 1:
+        for (int i=moving.data.size()-getMinimumOverlap(); i>0; i--)
+            data[done++] = compute(0, i);
 
-	// phase 2:
-	for (int if_ = 0; if_<fixed.data.size()-OVERLAP; if_++)
-	    data[done++] = compute(if_, 0);
+        // phase 2:
+        for (int i=0; i<fixed.data.size()-getMinimumOverlap(); i++)
+            data[done++] = compute(i, 0);
 
-	// finish up...
-	computeHighScores();
-	finished = true;
+        // finish up...
+        computeHighScores();
+        finished = true;
     }
 
     /** Run a single crossdate on the (absolutely-dated) samples.
@@ -218,21 +240,27 @@ public abstract class Cross implements Runnable {
 	to be absolutely dated.
 	@return the crossdate score between the samples at their saved
 	positions */
-    public final double single() {
-	// preamble
-	preamble();
+    public float single() { // overridden by d-score, but only as a hack!
+        // preamble
+        preamble();
 
-	// extract (calculate) offsets
-	int off_f, off_m;
-	if (moving.range.getStart().compareTo(fixed.range.getStart()) > 0) {
-	    off_f = moving.range.getStart().diff(fixed.range.getStart());
-	    off_m = 0;
-	} else {
-	    off_f = 0;
-	    off_m = fixed.range.getStart().diff(moving.range.getStart());
-	}
+        // temps
+        Year fixedStart = fixed.range.getStart();
+        Year movingStart = moving.range.getStart();
 
-	// return the score
-	return compute(off_f, off_m);
+        // calculate offsets
+        int offset_fixed, offset_moving;
+        if (movingStart.compareTo(fixedStart) > 0) {
+	    // moving starts later, use an offset on the fixed sample
+            offset_fixed = movingStart.diff(fixedStart);
+            offset_moving = 0;
+        } else {
+	    // fixed starts later, use an offset on the moving sample
+            offset_fixed = 0;
+            offset_moving = fixedStart.diff(movingStart);
+        }
+
+        // return the score
+        return (float) compute(offset_fixed, offset_moving);
     }
 }
