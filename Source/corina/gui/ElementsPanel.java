@@ -32,6 +32,7 @@ import corina.cross.CrossFrame;
 import corina.cross.Sequence;
 import corina.cross.GridFrame;
 import corina.editor.Editor;
+import corina.util.Sort;
 
 import java.io.File;
 import java.io.IOException;
@@ -456,105 +457,70 @@ public class ElementsPanel extends JPanel implements SampleListener {
 	    }
     }
 
-    // this method is unbelievably ugly, thanks to java's lack of
-    // closures.  *sigh*
+    // this method is unbelievably ugly, thanks to java's lack of closures.  *sigh*
     private int lastSortCol = -1;
     private void addClickToSort() {
-	table.getTableHeader().addMouseListener(new MouseAdapter() {
-		public void mouseClicked(MouseEvent e) {
-		    if (e.getClickCount() != 1)
-			return;
-		    int col = table.getColumnModel().getColumnIndexAtX(e.getX());
+        table.getTableHeader().addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() != 1)
+                    return;
+                int col = table.getColumnModel().getColumnIndexAtX(e.getX());
 
-		    switch (col) {
-		    case 0: // filename
-			if (lastSortCol==col && ((Element) elements.get(0)).filename.compareTo(((Element) elements.get(elements.size()-1)).filename)<0)
-			    Collections.sort(elements, new Comparator() { // reverse
-				    public int compare(Object o1, Object o2) {
-					return -((Element) o1).filename.compareTo(((Element) o2).filename);
-				    }
-				});
-			else
-			    Collections.sort(elements, new Comparator() { // normal
-				    public int compare(Object o1, Object o2) {
-					return ((Element) o1).filename.compareTo(((Element) o2).filename);
-				    }
-				});
-			break;
+                Element first = (Element) elements.get(0);
+                Element last = (Element) elements.get(elements.size() - 1);
+                
+                switch (col) {
+                    case 0: // filename
+                    {
+                        boolean reverse = (lastSortCol==col && first.filename.compareTo(last.filename)<0);
+                        Sort.sort(elements, "filename", reverse);
+                        break;
+                    }
 
-		    case 1: // range
-			if (lastSortCol==col && ((Element) elements.get(0)).range.compareTo(((Element) elements.get(elements.size()-1)).range)<0)
-			    Collections.sort(elements, new Rangesorter(true));
-			else
-			    Collections.sort(elements, new Rangesorter(false));
-			break;
+                    case 1: // range
+                    {
+                        // IDEA: this reverse is getting pretty popular ... could it be integrated into my sort() wrapper?
+                        boolean reverse = (lastSortCol==col && first.range.compareTo(last.range)<0);
+                        Sort.sort(elements, "range", reverse);
+                        break;
+                    }
 
-		    default: // details
-                        final String key = ((Field) fields.get(col-2)).variable;
-			Object v0 = ((Element) elements.get(0)).details.get(key);
-			Object vn = ((Element) elements.get(elements.size()-1)).details.get(key);
-			if (lastSortCol==col && ((Comparable) v0).compareTo((Comparable) vn)<0)
-			    Collections.sort(elements, new Metasorter(key, true));
-			else
-			    Collections.sort(elements, new Metasorter(key, false));
-			/*
-			Object v0 = ((Element) elements.get(0)).details.get(key);
-			Object vn = ((Element) elements.get(elements.size()-1)).details.get(key);
-			if (lastSortCol==col && ((Comparable) v0).compareTo((Comparable) vn)<0)
-			    Collections.sort(elements, new Comparator() { // reverse
-				    public int compare(Object o1, Object o2) {
-					Object v1 = ((Element) o1).details.get(key);
-					Object v2 = ((Element) o2).details.get(key);
-					return -((Comparable) v1).compareTo((Comparable) v2);
-				    }
-				});
-			else
-			    Collections.sort(elements, new Comparator() { // normal
-				    public int compare(Object o1, Object o2) {
-					Object v1 = ((Element) o1).details.get(key);
-					Object v2 = ((Element) o2).details.get(key);
-					return ((Comparable) v1).compareTo((Comparable) v2);
-				    }
-				});
-			*/
-		    }
+                    default: // details
+                        // unfortunately, i don't think i can use sort.sort() here because i'm not getting a field,
+                        // i'm calling a method on a field.  i could write another sort() wrapper to take a :key
+                        // method, like lisp does, and implement it in an anonymous class here, but that's more
+                        // work than just sorting by hand.  gah.
+                        String key = ((Field) fields.get(col-2)).variable;
+                        Comparable v0 = (Comparable) first.details.get(key);
+                        Comparable vn = (Comparable) last.details.get(key);
+                        boolean reverse = (lastSortCol==col && v0.compareTo(vn)<0);
+                        Collections.sort(elements, new Metasorter(key, reverse));
+                }
 
-		    lastSortCol = col;
-		}
-	    });
+                lastSortCol = col;
+            }
+        });
     }
 
-    // the sorts!  (if you see gosling, kick him for me for not giving java closures)
-    private static class Rangesorter implements Comparator { // by range
-	private boolean rev;
-	public Rangesorter(boolean reverse) {
-	    rev = reverse;
-	}
-	public int compare(Object o1, Object o2) {
-	    int x = ((Element) o1).range.compareTo(((Element) o2).range);
-	    // what about nulls?
-	    return (rev ? -x : x);
-	}
-    }
+    // (if you see gosling, kick him for me for not giving java closures)
     private static class Metasorter implements Comparator { // by meta field
-	private boolean rev;
-	private String field;
-	public Metasorter(String field, boolean reverse) {
-	    rev = reverse;
-	    this.field = field;
-	}
-	public int compare(Object o1, Object o2) {
-	    Object v1 = ((Element) o1).details.get(field); // what about null HERE?
-	    Object v2 = ((Element) o2).details.get(field);
-	    if (v1==null && v2!=null) // deal with nulls ... ick
-		return +1;
-	    else if (v1!=null && v2==null)
-		return -1;
-	    else if (v1==null && v2==null)
-		return 0;
-	    int x = ((Comparable) v1).compareTo((Comparable) v2);
-	    // what about nulls?
-	    return (rev ? -x : x);
-	}
+        private boolean rev;
+        private String field;
+        public Metasorter(String field, boolean reverse) {
+            rev = reverse;
+            this.field = field;
+        }
+        public int compare(Object o1, Object o2) {
+            Object v1 = ((Element) o1).details.get(field); // what about null HERE?
+            Object v2 = ((Element) o2).details.get(field);
+            if (v1==null && v2!=null) // deal with nulls ... ick
+                return +1;
+            else if (v1!=null && v2==null)
+                return -1;
+            else if (v1==null && v2==null)
+                return 0;
+            int x = ((Comparable) v1).compareTo((Comparable) v2);
+            return (rev ? -x : x);
+        }
     }
 }
