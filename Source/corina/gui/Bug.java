@@ -8,11 +8,16 @@ import javax.swing.JOptionPane;
 public class Bug {
     /*
       this can be more sophisticated later...
-      -- e-mail me
+      -- email me
       -- submit a bug report via sf tracker or similar
       -- print out a bug report
       -- print out the loaded data
       -- serialize all loaded samples to disk somewhere
+
+      short term stuff to do:
+      -- show in a textarea, with scrollbars.  then it's at least possible to
+      print, email, etc., and it won't go off the screen
+      -- make (be) a custom dialog with buttons "print"(?), "email"(?), "oh darn"(?)
     */
 
     public static void bug(Throwable t) {
