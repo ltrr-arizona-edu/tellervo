@@ -40,39 +40,44 @@ public class Startup {
        motion.  Loads system and user preferences, and instantiates an
        XCorina object.</p>
        @param args command-line arguments; ignored */
-    public static void main(String args[]) throws Exception {
-	// if the user hasn't specified a parser with
-	// -Dorg.xml.sax.driver=..., use gnujaxp.
-	if (System.getProperty("org.xml.sax.driver") == null)
-	    System.setProperty("org.xml.sax.driver", "gnu.xml.aelfred2.SAXDriver");
-	// xerces is "org.apache.xerces.parsers.SAXParser"
+    public static void main(String args[]) {
+        try {
+            // if the user hasn't specified a parser with
+            // -Dorg.xml.sax.driver=..., use gnujaxp.
+            if (System.getProperty("org.xml.sax.driver") == null)
+                System.setProperty("org.xml.sax.driver", "gnu.xml.aelfred2.SAXDriver");
+            // xerces is "org.apache.xerces.parsers.SAXParser"
 
-        // on a mac, always use the mac menubar (yay!)
-        if (Platform.isMac) {
-            System.setProperty("com.apple.macos.useScreenMenuBar", "true");
-            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Corina");
-            System.setProperty("com.apple.mrj.application.live-resize", "true");
+            // on a mac, always use the mac menubar (yay!)
+            // (http://developer.apple.com/technotes/tn/tn2031.html describes these)
+            if (Platform.isMac) {
+                System.setProperty("com.apple.macos.useScreenMenuBar", "true");
+                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Corina");
+                System.setProperty("com.apple.mrj.application.live-resize", "true");
+            }
+
+            // try to get the native L&F
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+            // first time, show the about box, which contains some
+            // copyright information; don't display it again.
+            if (Prefs.firstRun())
+                new AboutBox();
+
+            // load properties -- messagedialog here is UGLY!
+            try {
+                Prefs.load();
+            } catch (IOException ioe) {
+                JOptionPane.showMessageDialog(null,
+                                              "While trying to load preferences:\n" + ioe.getMessage(),
+                                              "Corina: Error Loading Preferences",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
+
+            // let's go...
+            new XCorina();
+        } catch (Exception e) {
+            Bug.bug(e);
         }
-
-	// try to get the native L&F
-	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-	// first time, show the about box, which contains some
-	// copyright information; don't display it again.
-	if (Prefs.firstRun())
-	    new AboutBox();
-
-	// load properties -- messagedialog here is UGLY!
-	try {
-	    Prefs.load();
-	} catch (IOException ioe) {
-	    JOptionPane.showMessageDialog(null,
-					  "While trying to load preferences:\n" + ioe.getMessage(),
-					  "Corina: Error Loading Preferences",
-					  JOptionPane.ERROR_MESSAGE);
-	}
-
-	// let's go...
-	new XCorina();
     }
 }
