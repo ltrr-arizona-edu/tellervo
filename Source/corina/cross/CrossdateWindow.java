@@ -175,7 +175,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
       }
   
       // run it in its own thread, and then do the gui stuff
-      new RunThread().start();
+      new Thread(new CrossdateRunner()).start();
     }
   }
 
@@ -299,7 +299,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
     // (note: if you extend this class, weird things can happen
     // because the thread will get started before anything in
     // the subclass constructor gets run.)
-    new RunThread().start();
+    new Thread(new CrossdateRunner()).start();
 
     // show
     pack();
@@ -406,7 +406,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
     defaultView.add(full, BorderLayout.NORTH);
   }
 
-  private class RunThread extends Thread {
+  private class CrossdateRunner implements Runnable {
     public void run() {
       try {
         if (bad) {
@@ -726,7 +726,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
   // -- it's only needed if min_overlap changed, right? that's ok.
   public void prefChanged(PrefsEvent e) {
     if (e.getPref().equals("corina.cross.overlap")) {
-      new RunThread().start(); // ugly, but necessary (i think)
+      new Thread(new CrossdateRunner()).start(); // ugly, but necessary (i think)
       // BETTER: why not always compute the full overlap, but
       // only display the relevant parts? then changing the overlap
       // wouldn't require recomputing anything.
@@ -734,7 +734,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
       // would seem to take longer -- but not much, i think)
     } else {
       // WRITEME! -- what else can change?
-      new RunThread().start();
+      new Thread(new CrossdateRunner()).start();
     }
   }
 
