@@ -98,13 +98,13 @@ public class DScore extends Cross {
 	return System.getProperty("corina.cross.dscore.format", "0.00");
     }
 
-    /** Return the minimum significant D-score.  I don't know where
-	(if anywhere) the D-score is mentioned in the literature, so
-	I'll assume it is the same as calculating the hypothetical
-	D-score for a minimally significant trend and T-score.
-	@return the minimum significant D-score */
+    public boolean isSignificant(double score, int overlap) {
+    // return 100.0; // said by PIK on 8-may-2002 at 10:18am
+        return score > 40.; // said by PIK on 9-may-2002 at 11:37am
+    }
+
     public double getMinimumSignificant() {
-	return dscore(tscore.getMinimumSignificant(), trend.getMinimumSignificant());
+        return 40.;
     }
 
     /** Run any un-run crosses.
@@ -118,6 +118,42 @@ public class DScore extends Cross {
 	    trend.run();
     }
 
+    /*
+      !!! BUG !!!
+
+      d-score.preamble() calls t-score.run() and trend.run().  it needs this because even
+      d-score.single() needs to know t-score.data and trend.data, and it isn't smart
+      enough to just call t-score.single() and trend.single() for that.
+
+      now, this wouldn't be a problem, except that run() checks to make sure the overlap
+      is enough.  it won't bother to run crossdates if the overlap isn't at least 15
+      (or whatever it is these days), so in those cases it just sets data to a zero-length
+      array (i thought it did -- apparently it isn't -- ???)
+
+      so then along comes d-score.single() to look at t-score.data, and it looks for an
+      index into t-score.data that doesn't exist, because it never had to run that t-score.
+
+      so what should i do?  well, besides the "it's all messed up" hideousness, a good short-term
+      solution would be to:
+
+      (1) have d-score.single() simply call t-score.single() and trend.single().  saves quite
+      a bit of computation, i think.
+
+      (2) (was there something else i was thinking of?)
+
+      (3) profit!
+     */
+
+    public float single() {
+	// what happens if one of those single()s fails?  can it?
+
+        // return the score
+        return dscore((float) tscore.single(), (float) trend.single());
+    }
+
+    // don't want to call this every compute()
+    private int overlap = getMinimumOverlap();
+
     /** Compute a single D-score, i.e., the D-score between the two
        samples for a given possible position.  Because it's a
        composite of two other algorithms that have already been run,
@@ -127,28 +163,30 @@ public class DScore extends Cross {
        @param offset_moving index into the moving sample to start
        @return D-score for these offsets */
     public double compute(int offset_fixed, int offset_moving) {
-	// figure out what index (into the cross data) we're talking about
-	int index;
-	if (offset_fixed == 0) { // phase 1
-	    index = (moving.data.size() - OVERLAP) - (offset_moving);
-	} else { // phase 2
-	    index = offset_fixed + (moving.data.size() - OVERLAP);
-	}
+        // figure out what index (into the cross data) we're talking about
+        int index;
+        if (offset_fixed == 0) { // phase 1
+            index = (moving.data.size() - overlap) - (offset_moving);
+        } else { // phase 2
+            index = offset_fixed + (moving.data.size() - overlap);
+        }
 
         // get the t, tr, and compute d
-        double t, tr, d;
-        t = tscore.data[index];
-        tr = trend.data[index];
+	float t, tr, d;
+/***/   t = (float) tscore.data[index]; // TODO: remove these casts once tscore/trend are native floats
+        tr = (float) trend.data[index];
         d = dscore(t, tr);
+
+	/*
+	  at ***, arrayindexoutofboundsexception, because overlap < min_overlap (!)
+	 */
 
         // return it
         return d;
     }
 
     // the guts of the d-score
-    private static double dscore(double tscore, double trend) {
-        return (trend > 0.50 ? 100 * (trend - 0.50) * tscore : 0.0);
+    private static float dscore(float tscore, float trend) {
+        return (trend > 0.50f ? 100 * (trend - 0.50f) * tscore : 0.0f);
     }
-
-    // histo was: 0.0, 2.5, 50.0
 }
