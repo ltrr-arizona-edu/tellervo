@@ -3,6 +3,10 @@ package corina.editor;
 import corina.Sample;
 import corina.Element;
 import corina.Year;
+import corina.print.Line;
+import corina.print.EmptyLine;
+import corina.print.TextLine;
+import corina.print.ByLine;
 
 import java.io.IOException;
 
@@ -22,25 +26,17 @@ import java.awt.Color;
 import java.awt.print.Printable;
 import java.awt.print.PageFormat;
 
-public class SamplePrinter implements Printable {
-
-    /*
-     thoughts on printing samples:
-
-     -- (get rid of epson.java)
-
-     -- dump lines, etc., into corina.print.*
-     -- (consider reworking this abstraction in scheme)
-     */
+public class SamplePrinter {
 
     /*
      LEFT TO DO:
-     -- move all generic printing stuff (page breaking, plain text lines, text alignment/measuring, etc.) into its own class/package
+     -- DataLine, DataCountLine, WeiserjahreLine, and ElementLine could ALL be done with one class, if it had column- and printf-like capabilities.  that'll be one hell of a class.
 
-     -- if i show the user the page-layout dialog, am i restricting myself to smaller printable area?
+     -- if i show the user the page-layout dialog, am i restricting myself to smaller printable area?  (HUH?)
      -- can i just make my own pageformat, or tweak that pageformat, to get the full imageable area?
      -- it would suck to make users do "page setup" every time, or suffer huge margins
      -- (hey, you should be serializing the pageformat to ~/.corina/ anywho!)
+     -- (consider reworking this abstraction in scheme)
      */
 
     public SamplePrinter(Sample s) {
@@ -70,104 +66,21 @@ public class SamplePrinter implements Printable {
             printElements();
     }
 
-    // (printable)  actually print a page; again, stolen from crossprinter.java, REFACTOR.
-    // BUG: ignores pageformat?
-    public int print(Graphics g, PageFormat pf, int page) {
-        // store margins
-        left = pf.getImageableX();
-        top = pf.getImageableY();
-        right = left + pf.getImageableWidth();
-        bottom = top + pf.getImageableHeight();
-
-        // next pixel row to draw: start at the top
-        double position = top;
-
-        // never printed before ... paginate
-        if (firstRowOfPage == null) {
-            firstRowOfPage = new ArrayList();
-            firstRowOfPage.add(new Integer(0));
-
-            double ruler = top;
-            for (int row=0; row<lines.size(); row++) {
-                Line l = (Line) lines.get(row);
-                if (ruler + l.height(g) > bottom) {
-                    firstRowOfPage.add(new Integer(row));
-                    ruler = top;
-                }
-                ruler += l.height(g);
-            }
-        }
-
-        // not a real page
-        if (page >= firstRowOfPage.size())
-            return NO_SUCH_PAGE;
-
-        // print rows of page
-        int row = ((Integer) firstRowOfPage.get(page)).intValue();
-        while (row < lines.size()) {
-            Line l = (Line) lines.get(row);
-            if (position + l.height(g) < bottom) {
-                l.print(g, position);
-                position += l.height(g);
-                row++;
-            } else {
-                break; // ... inelegant
-            }
-        }
-
-        // if you want (or for debugging), print out page boundaries like real printers do
-        if (false) {
-            Graphics2D g2 = (Graphics2D) g;
-            final float stroke = 0.1f;
-            g2.setStroke(new BasicStroke(stroke));
-            g2.setColor(Color.black);
-            final int inch = 72, radius = inch/2;
-
-            // horizontal lines
-            g2.drawLine((int) (left-inch/2), (int) top, (int) (left+inch*3/2), (int) top);
-            g2.drawLine((int) (right-inch*3/2), (int) top, (int) (right+inch/2), (int) top);
-            g2.translate(0, -stroke);
-            g2.drawLine((int) (left-inch/2), (int) bottom, (int) (left+inch*3/2), (int) bottom);
-            g2.drawLine((int) (right-inch*3/2), (int) bottom, (int) (right+inch/2), (int) bottom);
-            g2.translate(0, +stroke);
-
-            // vertical lines
-            g2.drawLine((int) left, (int) (top-inch/2), (int) left, (int) (top+inch*3/2));
-            g2.drawLine((int) right, (int) (top-inch/2), (int) right, (int) (top+inch*3/2));
-            g2.drawLine((int) left, (int) (bottom-inch*3/2), (int) left, (int) (bottom+inch/2));
-            g2.drawLine((int) right, (int) (bottom-inch*3/2), (int) right, (int) (bottom+inch/2));
-                                                
-            // circles
-            g2.drawOval((int) (left - radius/2), (int) (top - radius/2), radius, radius);
-            g2.drawOval((int) (right - radius/2), (int) (top - radius/2), radius, radius);
-            g2.drawOval((int) (left - radius/2), (int) (bottom - radius/2), radius, radius);
-            g2.drawOval((int) (right - radius/2), (int) (bottom - radius/2), radius, radius);
-        }
-
-        return PAGE_EXISTS;
-    }
-
-    private List firstRowOfPage = null; // needed by print()
-    
     //
     // PRINTING METHODS -- these construct the lines to print
     //
-    
-    // this doesn't really belong here, but where?
-    private String getUserName() {
-        return System.getProperty("user.name", "(unknown user)");
-    }
-    
+
     private void printHeader() {
-        lines.add(new TitleLine((String) s.meta.get("title")));
-        lines.add(new TextLine("Printed by: " + getUserName()));
-        lines.add(new TextLine(new Date().toString())); // is this default-locale?
+        lines.add(new TextLine((String) s.meta.get("title"), Line.SECTION_SIZE));
+        lines.add(new ByLine());
         lines.add(new EmptyLine());
 
-        double radius = s.computeRadius() / 1000.; // only for non-indexed samples?
-        double average = radius / s.data.size();
-        DecimalFormat df = new DecimalFormat("0.000");
+        // print radius, avg width, but only for non-indexed samples
+        float radius = s.computeRadius() / 1000f;
+        float average = radius / s.data.size();
+        DecimalFormat df = new DecimalFormat("0.000"); // to 3 places
         if (!s.isIndexed()) {
+            // FIXME: i18n!
             lines.add(new TextLine("Radius: " + df.format(radius) + " cm, " +
                                    "Average ring width: " + df.format(average) + " cm"));
             lines.add(new EmptyLine());
@@ -191,7 +104,7 @@ public class SamplePrinter implements Printable {
     }
 
     private void printSummedData() {
-        // -- header line?  no
+        // -- (no header line)
 
         // i really want a pure-data decade model here!
         // make emptyline a singleton?  nah, it's just an Integer, and there are a finite number.  (no there aren't.)
@@ -212,6 +125,7 @@ public class SamplePrinter implements Printable {
             * 601 intervals with >3 samples
             * 125 significant intervals (12.8%)
         */
+        // (when that's cleaned up, i18n)
         lines.add(new EmptyLine());
     }
 
@@ -281,7 +195,7 @@ public class SamplePrinter implements Printable {
     }
 
     private void printWeiserjahre() {
-        lines.add(new SectionLine("Weiserjahre data"));
+        lines.add(new TextLine("Weiserjahre data", Line.SECTION_SIZE));
 
         for (Year y = s.range.getStart(); s.range.contains(y); y=y.add(1)) {
             if (!y.equals(s.range.getStart()) && y.column()!=0)
@@ -296,14 +210,15 @@ public class SamplePrinter implements Printable {
         int sig = s.countSignificantIntervals();
         lines.add(new TextLine("Number of intervals with >3 samples: " + s.count3SampleIntervals()));
         lines.add(new TextLine("Number of significant intervals: " + sig));
-        double pct = (double) sig / (double) s.incr.size();
+        float pct = (float) sig / (float) s.incr.size();
         DecimalFormat fmt = new DecimalFormat("0.0%");
         lines.add(new TextLine("Percent significant intervals: " + fmt.format(pct)));
         lines.add(new EmptyLine());
     }
 
     private void printElements() {
-        lines.add(new SectionLine("This data set is composed of the following files:"));
+        lines.add(new TextLine("This data set is composed of the following files:")); // was: 14-pt
+                                                                                      // TODO: add table header
         for (int i=0; i<s.elements.size(); i++)
             lines.add(new ElementLine((Element) s.elements.get(i)));
     }
@@ -312,90 +227,21 @@ public class SamplePrinter implements Printable {
     // printing layer, stolen from crossprint.java -- REFACTOR
     //
 
-    interface Line {
-        public static final Font NORMAL = new Font("serif", Font.PLAIN, 10); // standard font
-        public void print(Graphics g, double y);
-        public int height(Graphics g);
-    }
-    class EmptyLine implements Line {
-        private int height=18; // 1/4"
-        public EmptyLine() {
-        }
-        public void print(Graphics g, double y) {
-            // do nothing.
-        }
-        public int height(Graphics g) {
-            return height;
-        }
-    }
-    private class TextLine implements Line {
-        private String text;
-        public TextLine(String text) {
-            this.text = text;
-        }
-        public void print(Graphics g, double y) {
-            // baseline
-            float baseline = (float) (y + height(g));
-            Graphics2D g2 = (Graphics2D) g;
-
-            g2.setFont(NORMAL);
-            g2.drawString(text, (float) left, baseline);
-        }
-        public int height(Graphics g) {
-            return g.getFontMetrics(NORMAL).getHeight();
-        }
-    }
-    private class TitleLine implements Line {
-        private String title;
-        public TitleLine(String title) {
-            this.title = title;
-        }
-        public void print(Graphics g, double y) {
-            // baseline
-            float baseline = (float) (y + height(g));
-            Graphics2D g2 = (Graphics2D) g;
-
-            // title
-            g2.setFont(new Font("serif", Font.PLAIN, 14)); // too many news!
-            g2.drawString(title, (float) left, baseline); // |left| is from enclosing class
-        }
-        public int height(Graphics g) {
-            return g.getFontMetrics(new Font("serif", Font.PLAIN, 14)).getHeight();
-        }
-    }
-    private class SectionLine implements Line { // REFACTOR: SECTION, TITLE extend TEXT!
-        private String text;
-        public SectionLine(String text) {
-            this.text = text;
-        }
-        public void print(Graphics g, double y) {
-            // baseline
-            float baseline = (float) (y + height(g));
-            Graphics2D g2 = (Graphics2D) g;
-
-            g2.setFont(new Font("serif", Font.PLAIN, 14)); // REFACTOR -> constant
-            g2.drawString(text, (float) left, baseline);
-        }
-        public int height(Graphics g) {
-            return g.getFontMetrics(new Font("serif", Font.PLAIN, 14)).getHeight();
-        }
-    }
     private class DataHeaderLine implements Line {
-        public void print(Graphics g, double y) {
+        public void print(Graphics g, PageFormat pf, float y) {
             // baseline
             float baseline = (float) (y + height(g));
             Graphics2D g2 = (Graphics2D) g;
 
             g2.setFont(NORMAL);
 
-            // f's?
-            double col1 = 0.25 * 72; // 3/4"?
-            double width = (right - left - col1) / 10;
+            float col1 = 0.25f * 72; // 3/4"?
+            float width = ((float) pf.getImageableWidth() - col1) / 10;
 
             for (int i=0; i<10; i++) {
                 String label = String.valueOf(i);
                 int x = g.getFontMetrics().stringWidth(label);
-                g2.drawString(label, (float) (left + col1 + width*(i+1) - x), baseline);
+                g2.drawString(label, (float) (pf.getImageableX() + col1 + width*(i+1) - x), baseline);
             }
             // how to draw:
             // -- decade, left(?)-aligned in left column
@@ -410,24 +256,24 @@ public class SamplePrinter implements Printable {
         public DataLine(Year decade) {
             this.decade = decade;
         }
-        public void print(Graphics g, double y) {
+        public void print(Graphics g, PageFormat pf, float y) {
             // baseline
             float baseline = (float) (y + height(g));
             Graphics2D g2 = (Graphics2D) g;
 
             g2.setFont(NORMAL);
 
-            // f's?
-            double col1 = 0.25 * 72; // 3/4"?
-            double width = (right - left - col1) / 10;
+            float col1 = 0.25f * 72; // 3/4"?
+            float width = ((float) pf.getImageableWidth() - col1) / 10;
 
             // decade
-            g2.drawString(decade.toString(), (float) left, baseline);
+            g2.drawString(decade.toString(), (float) pf.getImageableX(), baseline);
 
             // (snap decade back to real decade, now -- BREAKS IMMUTABILITY, if i even thought i had that.)
+            // -- what does this mean?  immutability of what?
             Year fake = decade;
             while (fake.column() != 0)
-                fake = fake.add(-1);
+                fake = fake.add(-1); // this is ugly, slow, and doesn't belong here.  but it works, and it's no bottleneck.  *sigh*
             
             // loop through years
             for (int i=0; i<10; i++) {
@@ -437,7 +283,7 @@ public class SamplePrinter implements Printable {
                 int x = ((Number) s.data.get(fake.add(i).diff(s.range.getStart()))).intValue();
                 String value = String.valueOf(x);
                 int w = g.getFontMetrics().stringWidth(value);
-                g2.drawString(value, (float) (left + col1 + width*(i+1) - w), baseline);
+                g2.drawString(value, (float) (pf.getImageableX() + col1 + width*(i+1) - w), baseline);
             }
         }
         public int height(Graphics g) {
@@ -451,22 +297,21 @@ public class SamplePrinter implements Printable {
         public DataCountLine(Year decade) {
             this.decade = decade;
         }
-        public void print(Graphics g, double y) {
+        public void print(Graphics g, PageFormat pf, float y) {
             // baseline
             float baseline = (float) (y + height(g));
             Graphics2D g2 = (Graphics2D) g;
 
             g2.setFont(new Font("serif", Font.PLAIN, 9)); // no, smaller!  (9pt?)
 
-            // f's?
-            double col1 = 0.25 * 72; // 1/4"?
-            double fullWidth = right - left;
-            double width = (fullWidth - col1) * 0.60 / 10; // 60% of the width for the data, ...
-            final double buf = 0.25*72; // 1/4" space between 'em?
-            double widthRight = (fullWidth - col1 - width*10 - buf) / 10; // ... rest for count
+            float col1 = 0.25f * 72; // 1/4"?
+            float fullWidth = (float) pf.getImageableWidth();
+            float width = (fullWidth - col1) * 0.60f / 10; // 60% of the width for the data, ...
+            final float buf = 0.25f * 72; // 1/4" space between 'em?
+            float widthRight = (fullWidth - col1 - width*10 - buf) / 10; // ... rest for count
 
             // decade
-            g2.drawString(decade.toString(), (float) left, baseline);
+            g2.drawString(decade.toString(), (float) pf.getImageableX(), baseline);
 
             // (snap decade back to real decade, now -- BREAKS IMMUTABILITY, if i even thought i had that.)
             Year fake = decade;
@@ -483,13 +328,13 @@ public class SamplePrinter implements Printable {
                 int x = ((Number) s.data.get(fake.add(i).diff(s.range.getStart()))).intValue();
                 String value = String.valueOf(x);
                 int w = g.getFontMetrics().stringWidth(value);
-                g2.drawString(value, (float) (left + col1 + width*(i+1) - w), baseline);
+                g2.drawString(value, (float) (pf.getImageableX() + col1 + width*(i+1) - w), baseline);
 
                 // count
                 int z = ((Number) s.count.get(fake.add(i).diff(s.range.getStart()))).intValue();
                 /* String */ value = String.valueOf(z);
                 /* int */ w = g.getFontMetrics().stringWidth(value);
-                g2.drawString(value, (float) (left + col1 + width*10 + buf + widthRight*(i+1) - w), baseline);
+                g2.drawString(value, (float) (pf.getImageableX() + col1 + width*10 + buf + widthRight*(i+1) - w), baseline);
             }
         }
         public int height(Graphics g) {
@@ -503,19 +348,18 @@ public class SamplePrinter implements Printable {
         public WeiserjahreLine(Year decade) {
             this.decade = decade;
         }
-        public void print(Graphics g, double y) {
+        public void print(Graphics g, PageFormat pf, float y) {
             // baseline
             float baseline = (float) (y + height(g));
             Graphics2D g2 = (Graphics2D) g;
 
             g2.setFont(new Font("serif", Font.PLAIN, 9));
 
-            // f's?
-            double col1 = 0.25 * 72; // 3/4"?
-            double width = (right - left - col1) / 10;
+            float col1 = 0.25f * 72; // 3/4"?
+            float width = ((float) pf.getImageableWidth() - col1) / 10;
 
             // decade
-            g2.drawString(decade.toString(), (float) left, baseline);
+            g2.drawString(decade.toString(), (float) pf.getImageableX(), baseline);
 
             // (snap decade back to real decade, now -- BREAKS IMMUTABILITY, if i even thought i had that.)
             Year fake = decade;
@@ -529,7 +373,7 @@ public class SamplePrinter implements Printable {
                     continue;
 
                 // draw right-aligned "x1" + left-aligned "/x2"
-                float position = (float) (left + col1 + width*(i + 0.5)); // the "/" starts here
+                float position = (float) (pf.getImageableX() + col1 + width*(i + 0.5)); // the "/" starts here
 
                 String x1 = ((Number) s.incr.get(fake.add(i).diff(s.range.getStart()))).toString();
                 String x2 = ((Number) s.decr.get(fake.add(i).diff(s.range.getStart()))).toString();
@@ -560,7 +404,7 @@ public class SamplePrinter implements Printable {
         // (draw active flag first, as what?)
 
         // 123456 G:\data\blah.rec           P +1 1001-1036 +1 ++
-        public void print(Graphics g, double y) {
+        public void print(Graphics g, PageFormat pf, float y) {
             // baseline
             float baseline = (float) (y + height(g));
             Graphics2D g2 = (Graphics2D) g;
@@ -568,29 +412,29 @@ public class SamplePrinter implements Printable {
             g2.setFont(NORMAL);
 
             // filename will always be printed, so do that first
-            g2.drawString(e.filename, (float) (left + 72 * 1.0), baseline);
+            g2.drawString(e.filename, (float) (pf.getImageableX() + 72 * 1.0), baseline);
                 
             // if it wasn't loaded, that's all there is
             if (e.details == null)
                 return;
 
             // otherwise, print some metadata...
-            
+
             if (e.details.containsKey("id"))
-                g2.drawString(e.details.get("id").toString(), (float) left, baseline);
+                g2.drawString(e.details.get("id").toString(), (float) pf.getImageableX(), baseline);
 
             // FIXME: use relative columns
             if (e.details.containsKey("pith"))
-                g2.drawString(e.details.get("pith").toString(), (float) (left + 72 * 3.5), baseline);
+                g2.drawString(e.details.get("pith").toString(), (float) (pf.getImageableX() + 72 * 3.5), baseline);
             if (e.details.containsKey("unmeas_pre"))
-                g2.drawString("+" + e.details.get("unmeas_pre"), (float) (left + 72 * 4.0), baseline);
+                g2.drawString("+" + e.details.get("unmeas_pre"), (float) (pf.getImageableX() + 72 * 4.0), baseline);
 
-            g2.drawString(e.range.toString(), (float) (left + 72 * 4.5), baseline); // center around "-"?
+            g2.drawString(e.range.toString(), (float) (pf.getImageableX() + 72 * 4.5), baseline); // center around "-"?
 
             if (e.details.containsKey("unmeas_post"))
-                g2.drawString("+" + e.details.get("unmeas_post"), (float) (left + 72 * 5.5), baseline);
+                g2.drawString("+" + e.details.get("unmeas_post"), (float) (pf.getImageableX() + 72 * 5.5), baseline);
             if (e.details.containsKey("terminal"))
-                g2.drawString(e.details.get("terminal").toString(), (float) (left + 72 * 6.0), baseline);
+                g2.drawString(e.details.get("terminal").toString(), (float) (pf.getImageableX() + 72 * 6.0), baseline);
         }
         public int height(Graphics g) {
             return g.getFontMetrics(NORMAL).getHeight();
@@ -600,13 +444,10 @@ public class SamplePrinter implements Printable {
     //
     // PRIVATE DATA
     //
-    
+
     // sample to print
     private Sample s;
 
-    // lines to print
-    private List lines = new ArrayList();
-
-    // margins
-    private double left, right, top, bottom; // why the heck do i need to know inches down to 10^-8?
+    // lines to print -- TEMPORARILY PUBLIC!
+    public List lines = new ArrayList();
 }
