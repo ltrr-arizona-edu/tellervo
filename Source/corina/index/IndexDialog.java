@@ -36,9 +36,11 @@ import corina.gui.Bug;
 
 import java.io.File;
 import java.io.IOException;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
+
 import java.util.ResourceBundle;
 import java.util.Collections;
 import java.util.Vector;
