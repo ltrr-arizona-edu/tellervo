@@ -23,10 +23,9 @@ package corina.prefs.components;
 import corina.prefs.Prefs;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Font;
-import java.awt.FlowLayout;
 
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
@@ -53,10 +52,12 @@ import java.awt.event.ActionListener;
   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
   @version $Id$
 */
-public class FontPrefComponent extends JComponent implements ActionListener {
+public class FontPrefComponent implements ActionListener {
+  private static final Container BOGUS_PARENT = new Container(); 
   private JLabel label = new JLabel("Sample");
+  private JButton button;
   private String pref;
-  private Component owner;
+  private Component parent;
   /**
       Make a new FontPrefComponent which sets the specified preference.
       
@@ -64,27 +65,43 @@ public class FontPrefComponent extends JComponent implements ActionListener {
   */
   public FontPrefComponent(String pref) {
     this.pref = pref;
-    System.out.println("Owner: " + owner);
-    
-    setLayout(new FlowLayout(FlowLayout.LEFT, 4, 0));
+
     Font font = Font.decode(Prefs.getPref(pref));
     label.setFont(font);
     label.setText(font.getName() + " " + font.getSize());
 
-    final String glue = pref;
-    JButton b = new JButton("Change...");
-    b.addActionListener(this);
-            
-    add(label);
-    add(b);
+    button = new JButton("Change...");
+    button.addActionListener(this);            
   }
+  
+  public void setParent(Component parent) {
+    this.parent = parent;
+  }
+  
+  public Component getParent() {
+    return parent;
+  }
+  
+  public JLabel getLabel() {
+    return label;
+  }
+  
+  public JButton getButton() {
+    return button;
+  }
+  
   private Runnable showdialog = new Runnable() {
     public void run() {
-      Font font = JFontChooser.showDialog(owner, "Choose new font", "Sample", label.getFont());
+      Component actualParent;
+      if (parent == null) actualParent = parent;
+      else actualParent = BOGUS_PARENT;
+      Font font = JFontChooser.showDialog(actualParent, "Choose new font", "Sample", label.getFont());
     
+      // XXX: appears not to be working at the moment.. to be fixed soon
       // update sample text, font
       label.setFont(font);
       label.setText(font.getName() + " " + font.getSize());
+      label.repaint();
 
       // store pref
       Prefs.setPref(pref, UIDefaultsComponent.stringifyFont(font));
@@ -92,8 +109,6 @@ public class FontPrefComponent extends JComponent implements ActionListener {
   };
   
   public void actionPerformed(ActionEvent ae) {
-    this.owner = getTopLevelAncestor();
     SwingUtilities.invokeLater(showdialog);
   }
 }
-
