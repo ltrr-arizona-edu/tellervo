@@ -25,6 +25,7 @@ import corina.Range;
 import corina.Sample;
 import corina.Element;
 import corina.Weiserjahre;
+import corina.gui.Bug;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -379,7 +380,7 @@ public class Corina extends Filetype {
             // ok, maybe there's exactly 1 slash in each of the first 2 lines.  *groan*
             if (slash2 == -1) {
                 // super-special case: read inc/dec from line1, read inc/dec from line2, return.
-                corina.gui.Bug.bug(new corina.PoochScrewedException("d'oh, i never bothered to implement that"));
+                Bug.bug(new corina.PoochScrewedException("d'oh, i never bothered to implement that"));
             }
         }
 
@@ -623,7 +624,7 @@ public class Corina extends Filetype {
 		    w.write("      ");
 
 	    // data: pad to 6 ("%-6d")
-	    w.write(leftPad(data.get(y.diff(range.getStart())).toString(), 6));
+	    w.write(leftPad(data.get(y.diff(range.getStart())).toString(), 6)); // (dies if data[i] = null -- so don't do that)
 
 	    // newline
 	    if (range.endOfRow(y)) {
