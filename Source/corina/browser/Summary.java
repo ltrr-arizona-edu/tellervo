@@ -1,16 +1,45 @@
 package corina.browser;
 
+import corina.Element;
+import corina.util.Platform;
+
+import java.io.File;
+import java.io.IOException;
+
 public class Summary {
 
     /*
      methods:
      -- how to name (.summary / summary.sys)
      -- create (for a given folder)
-     -- load from disk
+     -- load from disk (actually, load all metadata, statting the files first, then loading them if need be.)
      -- save to disk
      -- i/o access (file locking?)
      */
 
+    // save all elements to ???
+    private void save() {
+        /*
+         format:
+         "SAMPLE:filename.blah
+         field1=val1
+         field2=val2
+         field3=val3
+         SAMPLE:filename2.blah
+         field1=val1
+         ..."
+         -- what about multi-line comments fields?  => they're the only multi-line field, and i use |, anyway
+         -- this only saves SAMPLE metadata, not file metadata (modified, size, etc.)
+         -- this needs to store the range, too -- "range = 1001-1036" -- make that a special case in both load/save.
+         */
+    }
+
+    // load elemens from file.
+    public void load() {
+        // load into a List of Elements
+        // --> should Row() be built from an Element, rather than a filename, then?  or Row.setElement(blah)?
+    }
+    
     /*
      design notes:
 
@@ -43,4 +72,46 @@ public class Summary {
     it won't know to update itself, so it'll be out-of-date.  ouch.
 possibility: re-stat the summary file fairly often (10-15s?), and make sure file edits make it back there immediately.
     */
+
+    public Summary(String folder) {
+        this.folder = folder;
+
+        // load summary file
+        // WRITEME
+    }
+
+    private String folder;
+
+    private File lock;
+
+    // create Element, any which way you can.
+    // -- best case, stat() the filename, it's already in the summary (which is in memory), so just return that.
+    // -- worst case, stat() the filename, it's newer than the summary file (or not there), so load it.
+    public Element getElement(String filename) {
+        return null;
+    }
+
+    // no: getElement() gets it if i know it, otherwise, returns null (gah!)
+    // if it's not there, provide a way to load it, like loadElement()
+    // (which also updates the summary file)
+
+    // REFACTOR: i now have a Lock class (it's in site right now, but util might be a better location)
+
+    private void acquireLock() throws IOException {
+        lock = new File(folder + File.separator + (Platform.isWindows ? "summary.lock" : ".summary.lock"));
+        for (;;) {
+            boolean gotIt = lock.createNewFile();
+            if (gotIt)
+                break;
+            else
+                try {
+                    Thread.sleep(500); // 1/2 sec?
+                } catch (InterruptedException ie) {
+                    // ignore
+                }
+        }
+    }
+    private void releaseLock() {
+        lock.delete();
+    }
 }
