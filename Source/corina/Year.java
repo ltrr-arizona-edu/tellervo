@@ -27,8 +27,8 @@ package corina;
    <p>In <code>Year</code> math:</p>
 
    <ul>
-     <li>-1 + 1 = 1
-     <li>2 - 4 = -3
+     <li>-1 + 1 = 1</li>
+     <li>2 - 4 = -3</li>
    </ul>
 
    <p>Years, like Numbers and Strings, are immutable, so they are not
@@ -40,15 +40,15 @@ package corina;
 public final class Year implements Comparable {
 
     /** The default year, 1001. */
-    public static Year DEFAULT = new Year(1001);
+    public static Year DEFAULT = new Year(1001); // why not just a private int here?  it's only used for Year(), Range()
 
     /** Holds the year value as an <code>int</code>. */
-    private int y;
-    
+    private final int y;
+
     /** Default constructor.  Uses <code>DEFAULT</code> as the year.
 	@see #DEFAULT */
     public Year() {
-	y = DEFAULT.y;
+        y = DEFAULT.y;
     }
 
     /** Constructor for <code>int</code>s.  Uses <code>DEFAULT</code>
@@ -56,7 +56,7 @@ public final class Year implements Comparable {
 	@param x the year value, as an int
     	@see #DEFAULT */
     public Year(int x) {
-	y = (x == 0 ? DEFAULT.y : x); // should be 1 instead of DEFAULT?
+        y = (x == 0 ? DEFAULT.y : x); // should be 1 instead of DEFAULT?
     }
 
     /** Constructor from (row,col) pair.  Assumes 10-year rows.  The
@@ -64,9 +64,10 @@ public final class Year implements Comparable {
 	@param row the row; row 0 is the decade ending in year 9
 	@param col the column; in row 0, year is the column */
     public Year(int row, int col) {
-	y = 10 * row + col;
-	if (y == 0)
-	    y = DEFAULT.y; // should be 1?
+        int yy = 10 * row + col;
+        if (yy == 0)
+            yy = DEFAULT.y; // should this be 1?
+        y = yy;
     }
 
     /** Constructor from String.  No AD/BC; reads it like C's
@@ -75,24 +76,23 @@ public final class Year implements Comparable {
 	parsed, or is equal to zero
 	@see java.lang.String */
     public Year(String s) throws NumberFormatException {
-	y = Integer.parseInt(s.trim());
-	if (y == 0)
-	    throw new NumberFormatException();
+        y = Integer.parseInt(s.trim());
+        if (y == 0)
+            throw new NumberFormatException();
     }
 
     /** Constructor from String.  No AD/BC; reads it like C's
-	<code>scanf(" %d ", &y)</code> would.  This constructor is for
-	zero-year-systems, if <code>zys</code> is true, i.e., -5 means
-	6 BC.
-	@exception NumberFormatException if the String cannot be
-	parsed
-	@see java.lang.String */
+        <code>scanf(" %d ", &y)</code> would.  This constructor is for
+        zero-year-systems, if <code>zys</code> is true, i.e., -5 means 6 BC.
+        @exception NumberFormatException if the String cannot be parsed
+        @see java.lang.String */
     public Year(String s, boolean zys) throws NumberFormatException {
-	y = Integer.parseInt(s.trim());
+        int yy = Integer.parseInt(s.trim());
 
-	// back up a year, if this system assumed a zero-year
-	if (zys && y<=0)
-	    y--;
+        // back up a year, if this system assumed a zero-year
+        if (zys && yy<=0)
+            yy--;
+        y = yy;
     }
 
     /** Convert to <code>String</code>.  No "AD"/"BC", simply the
@@ -100,7 +100,7 @@ public final class Year implements Comparable {
 	@return this year as a <code>String</code>
 	@see java.lang.String */
     public String toString() {
-	return String.valueOf(y);
+        return String.valueOf(y);
     }
 
     // intValue() is BAD.  (don't even think about implementing it!)
@@ -113,27 +113,27 @@ public final class Year implements Comparable {
     // it to get the int, and not for imagined performance or
     // convenience reasons, though.
     public int intValue() {
-	// i pity th' fool who tries to use intvalue!
-	throw new UnsupportedOperationException();
+        // i pity th' fool who tries to use intvalue!
+        throw new UnsupportedOperationException();
     }
     // JAVADOC ME!  this isn't worth much if developers never see it.
 
     /** Is this year 1 (AD)?
 	@return true if this is year 1 */
     public boolean isYearOne() {
-	return (y == 1);
+        return (y == 1);
     }
 
     /** The maximum (later) of two years.
 	@return the later of two years */
     public static Year max(Year y1, Year y2) {
-	return (y1.y > y2.y ? y1 : y2);
+        return (y1.y > y2.y ? y1 : y2);
     }
 
     /** The minimum (earlier) of two years.
 	@return the earlier of two years */
     public static Year min(Year y1, Year y2) {
-	return (y1.y < y2.y ? y1 : y2);
+        return (y1.y < y2.y ? y1 : y2);
     }
 
     /** Adds (or subtracts, for negative values) some number of years,
@@ -141,12 +141,18 @@ public final class Year implements Comparable {
 	@param dy the number of years to add (subtract)
 	@see #diff */
     public Year add(int dy) {
-	int r = y + dy;
-	if (y < 0 && r >= 0)
-	    r++;
-	else if (y > 0 && r <= 0)
-	    r--;
-	return new Year(r);
+        // copy, and convert to zys
+        int r = y;
+        if (r < 0)
+            r++;
+
+        // add dy
+        r += dy;
+
+        // convert back, and return
+        if (r < 0)
+            r--;
+        return new Year(r);
     }
 
     /** Calculate the number of years difference between two years.
@@ -158,12 +164,17 @@ public final class Year implements Comparable {
 	<code>this</code> and <code>y2</code>
 	@see #add */
     public int diff(Year y2) {
-	int d = y - y2.y;
-	if (y > 0 && y2.y < 0)
-	    d--;
-	else if (y < 0 && y2.y > 0)
-	    d++;
-	return d;
+        // copy, and convert to zys
+        int i1 = y;
+        if (i1 < 0)
+            i1++;
+
+        int i2 = y2.y;
+        if (i2 < 0)
+            i2++;
+
+        // subtract, and return
+        return i1 - i2;
     }
 
     /** Computes <code>this</code> modulo <code>m</code>.  Always
@@ -172,10 +183,10 @@ public final class Year implements Comparable {
 	@param m base for modulo
 	@return the year modulo <code>m</code> */
     public int mod(int m) {
-	int r = y % m;
-	if (r < 0)
-	    r += m;
-	return r;
+        int r = y % m;
+        if (r < 0)
+            r += m;
+        return r;
     }
 
     /** Determines what row this year would be, if years were in a
@@ -184,10 +195,10 @@ public final class Year implements Comparable {
 	@return this year's row
 	@see #column */
     public int row() {
-	int z = y / 10;
-	if (y<0 && y%10!=0)
-	    z--;
-	return z;
+        int z = y / 10;
+        if (y<0 && y%10!=0)
+            z--;
+        return z;
     }
 
     /** Determines what column this year would be, if years were in a
@@ -207,7 +218,7 @@ public final class Year implements Comparable {
 	@return this year's column
 	@see #row */
     public int column() {
-	return mod(10);
+        return mod(10);
     }
 
     /** Compares this and <code>o</code>.
@@ -216,7 +227,7 @@ public final class Year implements Comparable {
 	@return >0, ==0, or <0 if this is greater-than, equal-to, or less-than o
 	@throws ClassCastException if o is not a Year */
     public int compareTo(Object o) {
-	return this.y - ((Year) o).y;
+        return this.y - ((Year) o).y;
     }
 
     /** Returns <code>true</code> if and only if <code>this</code> is
@@ -225,6 +236,6 @@ public final class Year implements Comparable {
 	@return <code>true</code> if <code>this</code> is equal to
 	<code>y2</code>, else <code>false</code> */
     public boolean equals(Year y2) {
-	return (y == y2.y);
+        return (y == y2.y);
     }
 }
