@@ -1,17 +1,21 @@
 package corina.prefs.panels;
 
 import corina.prefs.Prefs;
-import corina.gui.layouts.DialogLayout;
 
 import java.io.File;
 
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.AbstractAction;
-import java.awt.Frame;
+import javax.swing.SwingUtilities;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 // TODO: gpl header
 // TODO: javadoc
@@ -26,52 +30,62 @@ import java.awt.event.ActionEvent;
 // in the future, this panel can be used to set up RDBMS (and other) sources.
 // or maybe it'll go away, because each source will use its own get-info dialog.
 
-public class DataPrefsPanel extends JPanel {
+public class DataPrefsPanel extends JComponent implements ActionListener {
+  private JLabel folder;
+  private Component parent;
+  private JFileChooser chooser = new JFileChooser();
+  
+  public DataPrefsPanel() {
+    setLayout(new BorderLayout());
 
-    public DataPrefsPanel() {
-        setLayout(new DialogLayout());
+    chooser.setDialogTitle("Choose new data folder");
+    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    // BUG: what if it's null?
+    chooser.setCurrentDirectory(new File(Prefs.getPref("corina.dir.data")));
+    // is this needed?
+    // chooser.setApproveButtonText("OK");
+    // chooser.setApproveButtonMnemonic('O');
 
-        // BUG: what if corina.dir.data isn't set yet?
+    // BUG: what if corina.dir.data isn't set yet?
+    // TODO: extract const "corina.dir.data"
 
-        // TODO: extract const "corina.dir.data"
+    String oldFolder = Prefs.getPref("corina.dir.data");
+    folder = new JLabel(new File(oldFolder).getAbsolutePath());
 
-        String oldFolder = Prefs.getPref("corina.dir.data");
-        final JLabel folder = new JLabel(new File(oldFolder).getPath());
-        JButton change = new JButton("Change...");
+    JLabel l = new JLabel("Data is stored in folder:");
+    JButton change = new JButton("Change...");
+    l.setLabelFor(change);
+    
+    change.addActionListener(this);
 
-        final Frame parent = (Frame) getTopLevelAncestor();
+    Container c = new Container();
+    c.setLayout(new FlowLayout(FlowLayout.LEFT, 4, 4));
 
-        change.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser f = new JFileChooser();
+    c.add(l);
+    c.add(folder);
+    c.add(change);
+    
+    add(c, BorderLayout.NORTH);
+  }
 
-                f.setDialogTitle("Choose new data folder");
+  private Runnable showdialog = new Runnable() {
+    public void run() {
+      int rv = chooser.showDialog(parent, "OK");
 
-                // BUG: what if it's null?
-                f.setCurrentDirectory(new File(Prefs.getPref("corina.dir.data")));
+      // --- JFileChooser then blocks here ---
 
-                // is this needed?
-                // f.setApproveButtonText("OK");
-                // f.setApproveButtonMnemonic('O');
-                
-                f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-                // show it
-                int rv = f.showDialog(parent, "OK");
-
-                // --- JFileChooser then blocks here ---
-
-                if (rv != JFileChooser.APPROVE_OPTION)
-                    return;
-
-                // it's done; set the pref, and update the label
-                String newFolder = f.getSelectedFile().getPath();
-                Prefs.setPref("corina.dir.data", newFolder);
-                folder.setText(newFolder);
-            }
-        });
-
-        add(folder, "Data is stored in folder:");
-        add(change, "");
+      if (rv != JFileChooser.APPROVE_OPTION) return;
+      
+      //    it's done; set the pref, and update the label
+      String newFolder = chooser.getSelectedFile().getPath();
+      Prefs.setPref("corina.dir.data", newFolder);
+      folder.setText(newFolder);
     }
+  };
+
+  public void actionPerformed(ActionEvent e) {
+    parent = getTopLevelAncestor();
+    // show it
+    SwingUtilities.invokeLater(showdialog);
+  }
 }
