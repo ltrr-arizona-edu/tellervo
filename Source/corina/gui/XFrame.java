@@ -20,8 +20,6 @@
 
 package corina.gui;
 
-import java.net.URL;
-
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.JFrame;
@@ -57,13 +55,9 @@ public abstract class XFrame extends JFrame implements WindowListener {
     // icon
     //
     private void setTreeIcon() {
-        ImageIcon treeIcon = null; // ugh!
         ClassLoader cl = this.getClass().getClassLoader();
-        URL iconURL = cl.getResource("Images/tree.png");
-        if (iconURL != null) { // ugh!
-            treeIcon = new ImageIcon(iconURL);
-            setIconImage(treeIcon.getImage());
-        }
+        ImageIcon treeIcon = new ImageIcon(cl.getResource("Images/Tree.png"));
+        setIconImage(treeIcon.getImage());
     }
 
     //
@@ -92,7 +86,7 @@ public abstract class XFrame extends JFrame implements WindowListener {
 	    }
 
 	    // no?  ask if user wants to save first.
-	    if (_dialogVisible) return;
+	    if (_dialogVisible) return; // -- could synch handle this better?
 	    _dialogVisible=true;
 	    ConfirmSave.showDialog((SaveableDocument) this);
 	    _dialogVisible=false;
