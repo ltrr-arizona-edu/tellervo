@@ -71,10 +71,7 @@ import javax.swing.undo.CannotRedoException;
    @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
    @version $Id$ */
 
-// - still a little bit of i18n left to do
-
 public class TruncateDialog extends JDialog {
-
     // data
     private Sample s;
     private Range r;
@@ -84,127 +81,98 @@ public class TruncateDialog extends JDialog {
     private JLabel result;
 
     // i18n
-    private ResourceBundle msg = ResourceBundle.getBundle("TruncateBundle");
+    private static ResourceBundle msg = ResourceBundle.getBundle("TruncateBundle");
 
     // update everything from "by /n/ years"
     private void updateFromNumbers() {
-	int n1=0, n2=0;
+        int n1=0, n2=0;
+        Year start;
 
-	try {
-	    n1 = Integer.parseInt(tf1.getText());
-	} catch (NumberFormatException nfe) {
-	    r = null;
-	    return;
-	}
+        try {
+            n1 = Integer.parseInt(tf1.getText());
+            start = s.range.getStart().add(n1);
+            n2 = Integer.parseInt(tf3.getText());
+        } catch (NumberFormatException nfe) {
+            r = null;
+            return;
+        }
 
-	Year start = s.range.getStart().add(n1);
+        if (n1 < 0 || n2 < 0 || (n1+n2 >= s.data.size())) {
+            r = null;
+            return;
+        }
 
-	try {
-	    n2 = Integer.parseInt(tf3.getText());
-	} catch (NumberFormatException nfe) {
-	    r = null;
-	    return;
-	}
+        Year end = s.range.getEnd().add(-n2);
 
-	if (n1 < 0 || n2 < 0 || (n1+n2 >= s.data.size())) {
-	    r = null;
-	    return;
-	}
+        r = new Range(start, end);
 
-	Year end = s.range.getEnd().add(-n2);
+        tf2.getDocument().removeDocumentListener(updater2);
+        tf4.getDocument().removeDocumentListener(updater2);
 
-	r = new Range(start, end);
+        tf2.setText(start.toString());
+        tf4.setText(end.toString());
 
-	tf2.getDocument().removeDocumentListener(updater2);
-	tf4.getDocument().removeDocumentListener(updater2);
-
-	tf2.setText(start.toString());
-	tf4.setText(end.toString());
-
-	tf2.getDocument().addDocumentListener(updater2);
-	tf4.getDocument().addDocumentListener(updater2);
+        tf2.getDocument().addDocumentListener(updater2);
+        tf4.getDocument().addDocumentListener(updater2);
     }
 
     // update everything from "to year /n/"
     private void updateFromYears() {
-	Year start, end;
+        Year start, end;
 
-	try {
-	    start = new Year(tf2.getText());
-	} catch (NumberFormatException nfe) {
-	    r = null;
-	    return;
-	}
-
-	try {
-	    end = new Year(tf4.getText());
-	} catch (NumberFormatException nfe) {
-	    r = null;
-	    return;
-	}
-
-	int n1, n2;
-	n1 = start.diff(s.range.getStart());
-	n2 = s.range.getEnd().diff(end);
-
-	if (n1 < 0 || n2 < 0 || (n1+n2 >= s.data.size())) {
-	    r = null;
-	    return;
-	}
-
-	r = new Range(start, end);
-
-	tf1.getDocument().removeDocumentListener(updater1);
-	tf3.getDocument().removeDocumentListener(updater1);
-
-	tf1.setText(String.valueOf(n1));
-	tf3.setText(String.valueOf(n2));
-
-	tf1.getDocument().addDocumentListener(updater1);
-	tf3.getDocument().addDocumentListener(updater1);
-    }
-
-    DocumentListener updater1 = new DocumentListener() {
-	    public void changedUpdate(DocumentEvent e) {
-		update();
-	    }
-	    public void insertUpdate(DocumentEvent e) {
-		update();
-	    }
-	    public void removeUpdate(DocumentEvent e) {
-		update();
-	    }
-	    private void update() {
-		updateFromNumbers();
-		updateResult();
-	    }
-	};
-
-    DocumentListener updater2 = new DocumentListener() {
-	    public void changedUpdate(DocumentEvent e) {
-		update();
-	    }
-	    public void insertUpdate(DocumentEvent e) {
-		update();
-	    }
-	    public void removeUpdate(DocumentEvent e) {
-		update();
-	    }
-	    private void update() {
-		updateFromYears();
-		updateResult();
-	    }
-	};
-    
-    private void updateResult() {
-        // error?
-        if (r == null) {
-            result.setText(msg.getString("after") + ": " + msg.getString("badcrop"));
+        try {
+            start = new Year(tf2.getText());
+            end = new Year(tf4.getText());
+        } catch (NumberFormatException nfe) {
+            r = null;
             return;
         }
 
-        // display result
-        result.setText(msg.getString("after") + ": " + r + " (n=" + r.span() + ")");
+        int n1 = start.diff(s.range.getStart());
+        int n2 = s.range.getEnd().diff(end);
+
+        if (n1 < 0 || n2 < 0 || (n1+n2 >= s.data.size())) {
+            r = null;
+            return;
+        }
+
+        r = new Range(start, end);
+
+        tf1.getDocument().removeDocumentListener(updater1);
+        tf3.getDocument().removeDocumentListener(updater1);
+
+        tf1.setText(String.valueOf(n1));
+        tf3.setText(String.valueOf(n2));
+
+        tf1.getDocument().addDocumentListener(updater1);
+        tf3.getDocument().addDocumentListener(updater1);
+    }
+
+    // when something is typed, update everything from the numbers
+    DocumentListener updater1 = new DocumentListener() {
+        public void changedUpdate(DocumentEvent e) { update(); }
+        public void insertUpdate(DocumentEvent e) { update(); }
+        public void removeUpdate(DocumentEvent e) { update(); }
+        private void update() {
+            updateFromNumbers();
+            updateResult();
+        }
+    };
+
+    // when something is typed, update everything from the years
+    DocumentListener updater2 = new DocumentListener() {
+        public void changedUpdate(DocumentEvent e) { update(); }
+        public void insertUpdate(DocumentEvent e) { update(); }
+        public void removeUpdate(DocumentEvent e) { update(); }
+        private void update() {
+            updateFromYears();
+            updateResult();
+        }
+    };
+
+    private void updateResult() {
+        String rangeAndSpan = (r!=null) ? (r + " (n=" + r.span() + ")") : msg.getString("badcrop");
+        result.setText(msg.getString("after") + ": " + rangeAndSpan);
     }
 
     private JPanel p;
@@ -383,27 +351,21 @@ public class TruncateDialog extends JDialog {
     }
 
     public TruncateDialog(Sample s, JFrame owner) {
-        // modal
-        super(owner);
-        setModal(true);
+        // owner, title, modal
+        super(owner, msg.getString("truncate"), true);
 
-        // get sample
+        // get sample, range
         this.s = s;
-
-        // copy range
         r = s.range;
 
-        // set title
-        setTitle(msg.getString("truncate"));
-
-        // pass
+        // setup
         setup();
         JButton ok = initButtons();
 
         // ret => ok, esc => cancel
         OKCancel.addKeyboardDefaults(this, ok);
 
-        // all done
+        // show it
         pack();
         setResizable(false);
         show();
