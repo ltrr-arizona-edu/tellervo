@@ -326,8 +326,8 @@ public class SiteDB { // implements PrintableDocument {
 	    return false;
 
     return filename.startsWith(folder) ||
-      filename.startsWith(System.getProperty("corina.dir.data") + File.separator + folder) ||
-      filename.startsWith(System.getProperty("corina.dir.data") + folder);
+      filename.startsWith(Prefs.getPref("corina.dir.data") + File.separator + folder) ||
+      filename.startsWith(Prefs.getPref("corina.dir.data") + folder);
     // this matches if (1) folder is relative,
     //                 (2) absolute and dir.data has no file.sep, or
     //                 (3) absolute and dir.data ends with file.sep
