@@ -56,6 +56,7 @@ import javax.swing.*; // !!!
 import javax.swing.Timer;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.DefaultTableCellRenderer;
 
 /**
    A crossdate.  Displays all scores and significant scores, and lets
@@ -254,9 +255,8 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 
     public class HistogramTableModel extends AbstractTableModel {
         public void formatChanged() {
-            // df = new DecimalFormat(c.getFormat());
-            // i'll still need this, but not sure what form it'll take.
-            // WRITEME?
+            // histo.formatChanged(); -- need to reset |memo|, |fmt|
+            // WRITEME
         }
 
         /** The column name.  The columns are:
@@ -372,7 +372,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 
         // prev
         prevButton = new JButton(msg.getString("prev"),
-                                 JarIcon.getJavaIcon("toolbarButtonGraphics/navigation/Back16.gif"));
+                                 JarIcon.getIcon("toolbarButtonGraphics/navigation/Back16.gif"));
         prevButton.setMnemonic(msg.getString("prev_key").charAt(0));
         prevButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
@@ -399,7 +399,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 
         // next
         nextButton = new JButton(msg.getString("next"),
-                                 JarIcon.getJavaIcon("toolbarButtonGraphics/navigation/Forward16.gif"));
+                                 JarIcon.getIcon("toolbarButtonGraphics/navigation/Forward16.gif"));
         nextButton.setMnemonic(msg.getString("next_key").charAt(0));
         nextButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
@@ -574,8 +574,15 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         sigsTable.setModel(new CrossSigsTableModel(cross));
         sigsTable.getColumnModel().getColumn(0).setPreferredWidth(24); // number column is too big
         sigsTable.getColumnModel().getColumn(0).setMaxWidth(36);
+
+        // histogram
+        int w = histoTable.getSize().width;
         histo = new Histogram(cross);
         histoTable.setModel(new HistogramTableModel());
+        histoTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+        histoTable.getColumnModel().getColumn(0).setPreferredWidth(w/4);
+        histoTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        histoTable.getColumnModel().getColumn(1).setPreferredWidth(w/4);
         histoTable.getColumnModel().getColumn(2).setCellRenderer(new CountRenderer(histo.getFullestBucket()));
 
         // select highest score
@@ -757,7 +764,12 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         // histogram
         histo = new Histogram(cross);
         histoTable = new JTable(new HistogramTableModel());
+        int w = histoTable.getSize().width;
         histoTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        histoTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+        histoTable.getColumnModel().getColumn(0).setPreferredWidth(w/4);
+        histoTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        histoTable.getColumnModel().getColumn(1).setPreferredWidth(w/4);
         histoTable.getColumnModel().getColumn(2).setCellRenderer(new CountRenderer(histo.getFullestBucket()));
         histoTable.getTableHeader().setReorderingAllowed(false);
 
@@ -776,6 +788,14 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 	prevButton.setEnabled(!(seq.isFirst()));
 	nextButton.setEnabled(!(seq.isLast()));
 	graphButton.setEnabled(true);
+    }
+
+    // for centered columns of stuff in a table
+    // no, this is stupid.  just call ((defaultrenderer) getrenderer()).sethorizalign('center);
+    private static DefaultTableCellRenderer centerRenderer;
+    static {
+        centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
     }
 
     private void disableButtons() {
@@ -821,11 +841,13 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 	scoresTable.setShowGrid(gridlines);
 	sigsTable.setShowGrid(gridlines);
 
-	// format strings
-	for (int i=1; i<=10; i++) // format strings updated
-	    scoresTable.getColumnModel().getColumn(i).setCellRenderer(new ScoreRenderer(cross));
-	((CrossSigsTableModel) sigsTable.getModel()).formatChanged();
-
+        // format strings
+        for (int i=1; i<=10; i++) // format strings updated
+            scoresTable.getColumnModel().getColumn(i).setCellRenderer(new ScoreRenderer(cross));
+        ((CrossSigsTableModel) sigsTable.getModel()).formatChanged();
+        ((HistogramTableModel) histoTable.getModel()).formatChanged();
+        // need to call something here to update histogram tab?
+        
 	// font
 	if (System.getProperty("corina.cross.font") != null) {
 	    Font f = Font.getFont("corina.cross.font");

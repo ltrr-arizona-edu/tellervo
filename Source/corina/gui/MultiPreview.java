@@ -99,7 +99,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 
 	// left: buttons (add)
 	add = new JButton(msg.getString("add"),
-			  JarIcon.getJavaIcon("toolbarButtonGraphics/navigation/Forward16.gif"));
+			  JarIcon.getIcon("toolbarButtonGraphics/navigation/Forward16.gif"));
 	add.setMnemonic(msg.getString("add_key").charAt(0));
 	add.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
@@ -114,7 +114,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 
 	// left: buttons (remove)
 	remove = new JButton(msg.getString("remove"),
-			     JarIcon.getJavaIcon("toolbarButtonGraphics/navigation/Back16.gif"));
+			     JarIcon.getIcon("toolbarButtonGraphics/navigation/Back16.gif"));
 	remove.setMnemonic(msg.getString("remove_key").charAt(0));
 	remove.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
