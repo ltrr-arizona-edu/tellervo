@@ -3,13 +3,13 @@ package corina.files;
 import corina.Sample;
 import corina.gui.ButtonLayout;
 import corina.gui.DialogLayout;
-import corina.gui.XButton;
 import corina.gui.UserCancelledException;
 import corina.gui.FileDialog;
 import corina.gui.Bug;
 import corina.util.OKCancel;
 import corina.util.Overwrite;
 import corina.browser.FileLength;
+import corina.ui.Builder;
 
 import java.io.File;
 import java.io.StringWriter;
@@ -134,7 +134,7 @@ public class ExportDialog extends JDialog {
         tuples.add(new JScrollPane(preview), msg.getString("preview"));
 
         // buttons
-        JButton help = new XButton("help");
+        JButton help = Builder.makeButton("help");
         help.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
 /*
@@ -153,14 +153,14 @@ public class ExportDialog extends JDialog {
  */
             }
         });
-        JButton copy = new XButton("copy");
+        JButton copy = Builder.makeButton("copy");
         copy.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 corina.util.TextClipboard.copy(preview.getText());
             }
         });
-        JButton cancel = new XButton("cancel");
-        ok = new XButton("ok");
+        JButton cancel = Builder.makeButton("cancel");
+        ok = Builder.makeButton("ok");
         OKCancel.addKeyboardDefaults(this, ok);
 
         // button actions
