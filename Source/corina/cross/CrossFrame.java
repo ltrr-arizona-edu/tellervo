@@ -369,9 +369,12 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
         getContentPane().add(buttons, BorderLayout.SOUTH);
         buttons.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // HACK!
 
+        // classloader, for icons
+        ClassLoader cl = this.getClass().getClassLoader();
+
         // prev
         prevButton = new JButton(msg.getString("prev"),
-                                 new ImageIcon(ClassLoader.getSystemResource("toolbarButtonGraphics/navigation/Back16.gif")));
+                                 new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Back16.gif")));
         prevButton.setMnemonic(msg.getString("prev_key").charAt(0));
         prevButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
@@ -398,7 +401,7 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 
         // next
         nextButton = new JButton(msg.getString("next"),
-                                 new ImageIcon(ClassLoader.getSystemResource("toolbarButtonGraphics/navigation/Forward16.gif")));
+                                 new ImageIcon(cl.getResource("toolbarButtonGraphics/navigation/Forward16.gif")));
         nextButton.setMnemonic(msg.getString("next_key").charAt(0));
         nextButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
