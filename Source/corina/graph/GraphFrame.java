@@ -39,6 +39,7 @@ import corina.gui.UserCancelledException;
 import corina.prefs.PrefsDialog;
 import corina.gui.Bug;
 import corina.util.Overwrite;
+import corina.ui.Builder;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,7 +82,7 @@ public class GraphFrame extends XFrame implements SampleListener,
                                                   HasPreferences {
 
     // i18n
-    ResourceBundle msg = ResourceBundle.getBundle("GraphBundle");
+    private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // SampleListener
     public void sampleRedated(SampleEvent e) { /* FIXME: handle this */ }
@@ -293,16 +294,14 @@ public class GraphFrame extends XFrame implements SampleListener,
     private JMenuItem _axisMenu, _gridlinesMenu, _baselinesMenu;
     private JMenu[] makeMenus() {
 	// spacing
-	JMenu v = new XMenubar.XMenu(msg.getString("view"),
-				     msg.getString("view_key").charAt(0));
+	JMenu v = Builder.makeMenu("view");
 
 	// Show/hide axis
-	_axisMenu = new XMenubar.XMenuItem(msg.getString("vert_show"));
-	_axisMenu.setMnemonic(msg.getString("vert_key").charAt(0));
+	_axisMenu = Builder.makeMenuItem("vert_show");
 	_axisMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    if (getAxisVisible()) { // visible, now hide
-			_axisMenu.setText(msg.getString("vert_show"));
+			_axisMenu.setText(msg.getString("vert_show")); // BUG: need to strip the control chars off first?
 			setAxisVisible(false);
 		    } else {
 			_axisMenu.setText(msg.getString("vert_hide"));
@@ -313,10 +312,8 @@ public class GraphFrame extends XFrame implements SampleListener,
 	v.add(_axisMenu);
 
 	// Show/hide gridlines
-	_gridlinesMenu = new XMenubar.XMenuItem(Boolean.getBoolean("corina.graph.graphpaper") ?
-						msg.getString("grid_hide") :
-						msg.getString("grid_show"));
-	_gridlinesMenu.setMnemonic(msg.getString("grid_key").charAt(0));
+	_gridlinesMenu = Builder.makeMenuItem(Boolean.getBoolean("corina.graph.graphpaper") ?
+					      "grid_hide" : "grid_show");
 	_gridlinesMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    boolean vis = Boolean.getBoolean("corina.graph.graphpaper");
@@ -333,10 +330,8 @@ public class GraphFrame extends XFrame implements SampleListener,
 	v.add(_gridlinesMenu);
 
 	// Show/hide baselines
-	_baselinesMenu = new XMenubar.XMenuItem(Boolean.getBoolean("corina.graph.baselines") ?
-						msg.getString("base_hide") :
-						msg.getString("base_show"));
-	_baselinesMenu.setMnemonic(msg.getString("base_key").charAt(0));
+	_baselinesMenu = Builder.makeMenuItem(Boolean.getBoolean("corina.graph.baselines") ?
+					      "base_hide" : "base_show");
 	_baselinesMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    boolean vis = Boolean.getBoolean("corina.graph.baselines");
@@ -357,7 +352,7 @@ public class GraphFrame extends XFrame implements SampleListener,
 	v.addSeparator();
 
 	// Squeeze together
-	JMenuItem squeeze = new XMenubar.XMenuItem(msg.getString("baselines_align"));
+	JMenuItem squeeze = Builder.makeMenuItem("baselines_align");
 	squeeze.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    squeezeTogether();
@@ -366,7 +361,7 @@ public class GraphFrame extends XFrame implements SampleListener,
 	v.add(squeeze);
 
 	// Spread apart
-	JMenuItem spread = new XMenubar.XMenuItem(msg.getString("baselines_spread"));
+	JMenuItem spread = Builder.makeMenuItem("baselines_spread");
 	spread.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    spreadOut();
@@ -375,7 +370,7 @@ public class GraphFrame extends XFrame implements SampleListener,
 	v.add(spread);
 
         // Squish
-        JMenuItem squish = new XMenubar.XMenuItem(msg.getString("baselines_squish"));
+        JMenuItem squish = Builder.makeMenuItem("baselines_squish");
         squish.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0));
         // -- i don't know how i'd put VK_SPACE in a properties file ("space" doesn't seem to work),
         // but i don't think anybody should ever change it, either.
@@ -391,10 +386,11 @@ public class GraphFrame extends XFrame implements SampleListener,
         v.add(squish);
 
 	/* -- horizontal scaling doesn't work yet
+	   (plus there's no i18n text for these)
 	// scale
-	JMenu scale = new XMenubar.XMenu("Scale");
+	JMenu scale = Builder.makeMenu("scale");
 
-	JMenuItem fixedScale = new XMenubar.XMenuItem("Fixed Scale");
+	JMenuItem fixedScale = Builder.makeMenuItem("fixed_scale");
 	fixedScale.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    fixedScale();
@@ -402,7 +398,7 @@ public class GraphFrame extends XFrame implements SampleListener,
 	    });
 	scale.add(fixedScale);
 
-	JMenuItem fixedWidth = new XMenubar.XMenuItem("Fixed Width");
+	JMenuItem fixedWidth = Builder.makeMenuItem("fixed_width");
 	fixedWidth.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    fixedWidth();
