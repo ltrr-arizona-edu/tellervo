@@ -20,6 +20,7 @@
 
 package corina.prefs;
 
+import corina.util.Platform;
 import corina.gui.Bug;
 
 import java.io.File;
@@ -48,13 +49,26 @@ import java.util.StringTokenizer;
 
 public class Prefs {
 
+    /*
+      NOW:
+      ~/xcorina/prefs.properties [win32]
+      ~/.corina/prefs.properties [unix]
+      ~/Library/Corina/prefs.properties [mac]
+
+      FUTURE:
+      ~/Corina Preferences [win32]
+      ~/.corina [unix]
+      ~/Library/Preferences/Corina Preferences [mac]
+
+      -- write a try-to-migrate method?
+      -- try both new&old locations, for now?
+     */
+
     /** Name of the properties directory, as a subdirectory of
-        user.home: ".corina", except on
-        Windows (where there are a lot of silly restrictions on what
-        filenames can be) where it's "xcorina", and MacOS where
-        it's the incredibly elegant "Library/Corina".  You're
-        assumed to be on Windows if the Java property
-        os.name starts with "Windows", and on MacOS if it starts with "Mac". */
+        user.home: ".corina", except on Windows (where there are a lot
+        of silly restrictions on what filenames can be) where it's
+        "xcorina", and MacOS where it's the incredibly elegant
+        "Library/Corina". */
     public final static String USER_PROPERTIES_DIR;
     /*
      this is BAD.  it should be called "Corina Preferences" (except on unix where it's .corina).
@@ -69,10 +83,10 @@ public class Prefs {
     static {
         String home = System.getProperty("user.home") + File.separator;
         
-	if (System.getProperty("os.name").startsWith("Windows"))
+	if (Platform.isWindows)
             // for lack of a  better place -- FIXME: MIGRATE TO "corina"!
 	    USER_PROPERTIES_DIR = home + "xcorina";
-	else if (System.getProperty("os.name").startsWith("Mac"))
+	else if (Platform.isMac)
             // this check belongs elsewhere, refactor!  (XMenubar.isMac() also exists)
 	    USER_PROPERTIES_DIR = home + "Library/Corina";
 	else // plain ol' unix
