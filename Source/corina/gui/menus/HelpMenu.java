@@ -20,11 +20,17 @@
 
 package corina.gui.menus;
 
+import java.awt.event.ActionEvent;
+
+import javax.swing.Action;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
+import corina.gui.AboutBox;
 import corina.ui.Builder;
+import corina.ui.CorinaAction;
 import corina.ui.I18n;
 import corina.util.Platform;
-
-import javax.swing.JMenu;
 
 // TODO: move all menus to corina.gui.menus or even corina.menus (i'm tending towards the latter)
 // TODO: error-log should be a singleton-window, and centered
@@ -51,7 +57,11 @@ import javax.swing.JMenu;
    @version $Id$
 */
 public class HelpMenu extends JMenu {
-
+  public static final CorinaAction ABOUT_ACTION = new CorinaAction("about") {
+    public void actionPerformed(ActionEvent ae) {
+      AboutBox.getInstance().show();
+    }
+  };
     // FIXME: do i need(want) to set font here for 1.3?  do i inherit that from my parents?
 
     /**
@@ -101,7 +111,8 @@ public class HelpMenu extends JMenu {
        Add the "About Corina..." menuitem.
     */
     protected void addAboutMenu() {
-	add(Builder.makeMenuItem("about",
-				 "new corina.gui.AboutBox()"));
+      JMenuItem menuitem = Builder.makeMenuItem("about");
+      menuitem.setAction(ABOUT_ACTION);
+      add(menuitem);
     }
 }

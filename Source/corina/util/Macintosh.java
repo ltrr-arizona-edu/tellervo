@@ -20,14 +20,15 @@
 
 package corina.util;
 
-import corina.prefs.PrefsDialog;
-import corina.gui.XCorina;
-import corina.gui.AboutBox;
-import corina.gui.Bug;
-
-import java.lang.reflect.Proxy;
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
+import corina.gui.Bug;
+import corina.gui.XCorina;
+import corina.gui.menus.HelpMenu;
+import corina.prefs.PrefsDialog;
+import corina.ui.CorinaAction;
 
 // TODO: refactor.  lots of duplicate code in here.
 // TODO: javadoc me.
@@ -57,11 +58,11 @@ public class Macintosh {
     public static void configureMenus() {
         if (Platform.isMac) {
             // register "about" menuitem
-            Macintosh.registerAboutHandler(new Runnable() {
+            Macintosh.registerAboutHandler(HelpMenu.ABOUT_ACTION);/*new Runnable() {
                 public void run() {
-                    new AboutBox();
+                    AboutBox.getInstance().show();
                 }
-            });
+            });*/
 
             // and "preferences"
             Macintosh.registerPrefsHandler(new Runnable() {
@@ -94,14 +95,12 @@ public class Macintosh {
             });
     */
 
-    public static void registerAboutHandler(Runnable about) {
-	final Runnable glue = about;
-
-	try {
-	    InvocationHandler handler = new InvocationHandler() {
-		    public Object invoke(Object proxy, Method method, Object[] args) {
-			if (method.getName().equals("handleAbout"))
-			    glue.run();
+  public static void registerAboutHandler(final CorinaAction about) {
+    try {
+      InvocationHandler handler = new InvocationHandler() {
+        public Object invoke(Object proxy, Method method, Object[] args) {
+          if (method.getName().equals("handleAbout"))
+            about.perform(null);
 			return null;
 		    }
 		};
