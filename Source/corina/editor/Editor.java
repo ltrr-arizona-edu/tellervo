@@ -512,7 +512,7 @@ public class Editor extends XFrame
         setup();
     }
 
-    // new sample for site
+    // new sample for site -- not used yet
     public Editor(Site s) {
         // ask user for title
         String title;
@@ -531,6 +531,15 @@ public class Editor extends XFrame
         setup();
     }
 
+    // TODO: want single-instance editors.
+    // so:
+    // -- make this private
+    // -- (should it just be Editor(filename)?)
+    // -- keep a (sample,editor) hash
+    // -- create a public getEditor(Sample)
+    // -- if an editor is in the hash, just front() it
+    // -- if it's not, add it
+    // -- on dispose(), remove it from the hash
     public Editor(Sample sample) {
         // copy data ref
         this.sample = sample;
@@ -613,8 +622,6 @@ public class Editor extends XFrame
 
 	// undo
 	undoMenu = Builder.makeMenuItem("undo");
-	// new XMenubar.XMenuItem(msg.getString("cant_undo"));
-        // undoMenu.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize(msg.getString("undo_acc"))));
 	undoMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    undoManager.undo();
@@ -623,8 +630,6 @@ public class Editor extends XFrame
 	    });
 	edit.add(undoMenu);
 	redoMenu = Builder.makeMenuItem("redo");
-	// new XMenubar.XMenuItem(msg.getString("cant_redo"));
-	// 	redoMenu.setAccelerator(KeyStroke.getKeyStroke(XMenubar.macize(msg.getString("redo_acc"))));
 	redoMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    undoManager.redo();
@@ -674,12 +679,21 @@ public class Editor extends XFrame
                     return; // clipboard contains no data
 
                 try {
-                    // copy text from the clipboard to ~/.corina/clipboard.
-                    // (why?  because Sample(filename) takes arbitrary formats, load(Reader) does not.  (fixable?))
+                    // copy text from the clipboard to $(TMP).  (why?
+                    // because Sample(filename) takes arbitrary
+                    // formats, load(Reader) does not.  (fixable?))
+
+		    // use $(TMP)/corinaXXXXX.clip for the filename
+		    File tmpFile = File.createTempFile("corina", ".clip");
+		    tmpFile.deleteOnExit();
+		    final String tmpFilename = tmpFile.getPath();
+
+		    // get ready to transfer the data
                     DataFlavor f = DataFlavor.selectBestTextFlavor(t.getTransferDataFlavors());
                     BufferedReader r = new BufferedReader(f.getReaderForText(t));
-                    BufferedWriter w = new BufferedWriter(new FileWriter(Prefs.USER_PROPERTIES_DIR +
-                                                                         File.separator + "clipboard"));
+                    BufferedWriter w = new BufferedWriter(new FileWriter(tmpFilename));
+
+		    // transfer it
                     for (;;) {
                         String l = r.readLine();
                         if (l == null)
@@ -687,14 +701,14 @@ public class Editor extends XFrame
                         w.write(l + '\n');
                     }
 
+		    // clean up
                     w.close();
                     r.close();
 
                     // now try to load it
-                    Sample tmp = new Sample(Prefs.USER_PROPERTIES_DIR +
-                                            File.separator + "clipboard");
+                    Sample tmp = new Sample(tmpFilename);
 
-                    // copy it here, except for the filename (".../clipboard")
+                    // copy it here, except for the filename
                     Sample.copy(tmp, sample);
                     sample.meta.remove("filename");
                 } catch (WrongFiletypeException wfte) {
@@ -812,7 +826,7 @@ public class Editor extends XFrame
 
 	ButtonGroup bg = new ButtonGroup();
 
-	v1 = new XMenubar.XRadioButtonMenuItem(msg.getString("view_filenames"));
+	v1 = Builder.makeRadioButtonMenuItem("view_filenames");
 	v1.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    elemPanel.setView(ElementsPanel.VIEW_FILENAMES);
@@ -821,7 +835,7 @@ public class Editor extends XFrame
 	v.add(v1);
 	bg.add(v1);
 
-	v2 = new XMenubar.XRadioButtonMenuItem(msg.getString("view_standard"));
+	v2 = Builder.makeRadioButtonMenuItem("view_standard");
 	v2.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    elemPanel.setView(ElementsPanel.VIEW_STANDARD);
@@ -830,7 +844,7 @@ public class Editor extends XFrame
 	v.add(v2);
 	bg.add(v2);
 
-	v3 = new XMenubar.XRadioButtonMenuItem(msg.getString("view_all"));
+	v3 = Builder.makeRadioButtonMenuItem("view_all");
 	v3.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    elemPanel.setView(ElementsPanel.VIEW_ALL);
@@ -850,8 +864,7 @@ public class Editor extends XFrame
 	   -- these items are undimmed iff the sample has a nonnull .count field (easy)
 	 */
 
-	// FIXME: use Builder!
-	JMenuItem vc1 = new XMenubar.XRadioButtonMenuItem(msg.getString("view_histogram"));
+	JMenuItem vc1 = Builder.makeRadioButtonMenuItem("view_histogram");
 	vc1.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    // WRITE ME
@@ -859,8 +872,7 @@ public class Editor extends XFrame
 		}
 	    });
 
-	// FIXME: use Builder!
-	JMenuItem vc2 = new XMenubar.XRadioButtonMenuItem(msg.getString("view_numbers"));
+	JMenuItem vc2 = Builder.makeRadioButtonMenuItem("view_numbers");
 	vc2.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    // WRITE ME
@@ -1139,8 +1151,7 @@ public class Editor extends XFrame
 	m.addSeparator();
 
 	// add item -- ENABLED IFF THERE EXIST OTHER ELEMENTS OR DATA IS-EMPTY
-	// FIXME: use Builder
-	addMenu = new XMenubar.XMenuItem("Add...", 'A');
+	addMenu = Builder.makeMenuItem("element_add...");
 	addMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    // open file dialog
@@ -1193,7 +1204,7 @@ public class Editor extends XFrame
 	m.add(addMenu);
 
 	// remove item
-	remMenu = new XMenubar.XMenuItem("Remove", 'R');
+	remMenu = Builder.makeMenuItem("element_remove");
 	remMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    elemPanel.removeSelectedRows(); // fixme: make this undoable
