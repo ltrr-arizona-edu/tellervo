@@ -20,89 +20,169 @@
 
 package corina.eyes;
 
-import corina.eyes.Scanner.Ring;
+import corina.Year;
+
+import java.util.Collections;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
-import javax.swing.JPanel;
+import java.awt.RenderingHints;
+import javax.swing.JComponent;
 
-// ideas:
-// - (this will end up being a second tab in a jframe)
-// - do i need events here, like scanner-path-changed-event?
-// - should be printable (printing a corina.eyes window prints both?)
-// - should be exportable (save data to 2-col, at least.  save png?)
-// - (other stuff i can't remember because i'm doped up on sudafed right now)
-// - make it light-on-dark, or customizeable?
+/**
+   A panel showing the density graph.
 
-public class DensityPanel extends JPanel {
+   the (programmer's) interface to this sucks.  it uses the catch-all
+   Scanner class.  see the constructor for what it should take.
 
-    private Scanner _s;
+   TODO:
+   -- allow dragging thresholds -- sliders on side?
+   -- document, document, document
+   -- make width wide enough to see last year?  +(width of that text)?
+   -- get rid of axes, and huge space on left/bottom.  ick.
 
-    public DensityPanel(Scanner s) {
-	_s = s;
+   FUTURE:
+   -- allow space-dragging to scroll?
+   -- labels: "density", "distance"?
+   -- zoom this to the same amount of zoom as the top component is using.
+*/
+public class DensityPanel extends JComponent {
+
+    // FIXME: as input, should take
+    // -- a DensityGraph (a list of [dist brightn] tuples)
+    // -- the output of Schweingruber (a list of numbers)
+    // -- the thresholds (i'll modify them, too)
+    private Scanner scanner;
+
+    /**
+       construct a new density panel.
+
+       distances, brightness, and rings.
+
+       dist/bri should be from a DensityGraph class
+
+       rings should be simply a list of numbers from schweingruber
+    */
+    public DensityPanel(Scanner scanner) {
+	this.scanner = scanner;
 
 	setBackground(Color.white);
     }
 
-    // probably a good deal of this belongs elsewhere (perhaps in the
-    // constructor), and doesn't need to be recomputed every
-    // paintComponent()
+    /**
+       Paint the density graph, thresholds, and years.
+    */
     public void paintComponent(Graphics g) {
-	// boilerplate
+	// PERF: this will get continuously redrawn while the user drags
+	// the path, so it must be fast.  profile, and if it's taking a
+	// non-trivial amount of time (>25ms), work on it.
+
 	super.paintComponent(g);
+
 	Graphics2D g2 = (Graphics2D) g;
+	g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+			    RenderingHints.VALUE_ANTIALIAS_ON);
 
-	// don't mess with scrolling.  the user will be pretty much
-	// looking at just this, probably in a fairly large window.
-	// plus, you'll only want to look at it for an overview, not
-	// details.
+	paintYears(g2);
+	paintThresholds(g2);
+	paintGraph(g2);
 
-	// strategy: left axis, bottom axis, title, graph,
-	// threshold(s)(?)
+	// TODO: scale?
+	// TODO: labels?
+	// TODO: title?
+    }
 
-	// get panel size
-	int w = getWidth();
-	int h = getHeight();
-
-	/*
-	// get data width (we know its height, right?)
-	Ring rings[] = _s.getRings();
-	int l = (int) rings[0].dist;
-	int r = (int) rings[rings.length-1].dist;
-	*/
-
-	// left axis - 50px wide, 10px from top/bottom
-	g2.setColor(Color.black);
-	g2.drawLine(50, 10, 50, h-50);
-	// WRITE ME: scale, label
-
-	// bottom axis
-	g2.setColor(Color.black);
-	g2.drawLine(50, h-50, w-10, h-50);
-	// WRITE ME: scale, label
-
-	/*
-	// title
-	// WRITE ME
-
+    // draw the density graph itself
+    private void paintGraph(Graphics2D g2) {
 	// graph
 	g2.setColor(Color.red);
 	GeneralPath gp = new GeneralPath();
 
-	float X = ((Number) _s.distances.get(0)).floatValue();
-	float Y = ((Number) _s.brightness.get(0)).floatValue();
+	// PERF: if it'll help out (esp. on bigger samples), only draw
+	// the part of the graph that needs to be drawn.
+
+	float X = ((Number) scanner.distances.get(0)).floatValue();
+	float Y = ((Number) scanner.brightness.get(0)).floatValue();
+	Y = y(Y);
 
 	gp.moveTo(X, Y);
 
-	for (int i=1; i<rings.length; i++) {
-	    X = ((Number) _s.distances.get(i)).floatValue();
-	    Y = ((Number) _s.brightness.get(i)).floatValue();
+	int n = scanner.distances.size();
+	for (int i=1; i<n; i++) {
+	    X = ((Number) scanner.distances.get(i)).floatValue();
+	    Y = ((Number) scanner.brightness.get(i)).floatValue();
+	    Y = y(Y);
 
 	    gp.lineTo(X, Y);
 	}
 	// WRITE ME
-	*/
+
+	g2.draw(gp);
+    }
+
+    // draw the upper and lower threshold values
+    private void paintThresholds(Graphics2D g2) {
+	g2.setColor(Color.blue);
+
+	int t1 = (int) Schweingruber.THRESHOLD_TOP;
+	int t2 = (int) Schweingruber.THRESHOLD_BOTTOM;
+
+	t1 = y(t1);
+	t2 = y(t2);
+
+	g2.drawLine(0, t1, getWidth(), t1);
+	g2.drawLine(0, t2, getWidth(), t2);
+
+	// TODO: draw jslider thumbs on thresholds for dragging?
+    }
+
+    // value->year
+    private int y(float v) {
+	int h = getHeight();
+	v *= h / 256f;
+	return Math.round(h - v);
+    }
+
+    // for each year, paint a vertical gray line, and label it
+    private void paintYears(Graphics2D g2) {
+	g2.setColor(Color.lightGray);
+	g2.setFont(g2.getFont().deriveFont(9f)); // same font, but 9 points
+	int ascent = g2.getFontMetrics().getAscent();
+
+	Year y = new Year(); // 1001
+	double x = 0;
+
+	double rings[] = scanner.getWidths();
+	for (int i=0; i<rings.length; i++) {
+	    x += rings[i];
+	    g2.drawLine((int) x, 0,
+			(int) x, getHeight());
+	    g2.drawString(y.toString(), (int)x+EPS, EPS+ascent);
+	    y = y.add(+1);
+	}
+    }
+
+    // a small value; year labels are this many pixels down from top and right from line
+    private final static int EPS = 2;
+
+    //
+    // size (for scroll pane)
+    //
+
+    /**
+       Recompute my size, and update my scrollbar if necessary.
+       Whenever the length of the path changes, this should be called.
+    */
+    public void updateSize() {
+	int width = ((Number) Collections.max(scanner.distances)).intValue();
+	// -- wouldn't this also be scanner.distances[n-1]?
+
+	Dimension d = new Dimension(width, 100);
+
+	setPreferredSize(d);
+	revalidate();
     }
 }
