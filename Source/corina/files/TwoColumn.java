@@ -25,6 +25,7 @@ import corina.Range;
 import corina.Sample;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import java.io.StreamTokenizer;
 import java.io.FileWriter;
@@ -102,51 +103,63 @@ public class TwoColumn extends Filetype {
         // don't be too afraid to throw a WrongFiletypeException:
         // we'll be getting all sorts of crap here.
 
-        // loop, reading (year, data)
-loop:
-            for (;;) {
-                // year
-                int x = t.nextToken();
-                if (x == StreamTokenizer.TT_EOF)
-                    break;
-                else if (x != StreamTokenizer.TT_NUMBER)
-                    throw new WrongFiletypeException();
+        boolean hasYear, hasCount;
 
-                // set start, if not yet read
-                if (start == null) {
-                    current = start = new Year((int) t.nval);
-                } else {
-                    // already know start -- double-check it
-                    current = current.add(1);
-                    Year y = new Year((int) t.nval);
+        // figure out what it has, by looking at 3 lines
+        {
+            // we'll read 3 lines, but put them back by the end of the block
+            r.mark(3*80);
 
-                    // it's not the right year -- maybe it's the count?
-                    if (!y.equals(current)) {
-                        if (s.count == null) {
-                            s.count = new ArrayList();
-                            s.count.add(new Integer((int) t.nval));
-                            current = current.add(-1); // not done yet...
-                            continue loop;
-                        } else {
-                            throw new WrongFiletypeException();
-                        }
-                    }
-                }
+            // read 3 lines of numbers
+            int a[] = parseLine(r.readLine());
+            int b[] = parseLine(r.readLine());
+            int c[] = parseLine(r.readLine());
 
-                // datum
-                x = t.nextToken();
-                if (x != StreamTokenizer.TT_NUMBER)
-                    throw new WrongFiletypeException();
-                s.data.add(new Integer((int) t.nval));
+            // if they're sequential, they're probably years
+            hasYear = ((a[0]+1 == b[0]) && (b[0]+1 == c[0]));
 
-                // count
-                if (s.count != null) {
-                    x = t.nextToken();
-                    if (x != StreamTokenizer.TT_NUMBER)
-                        throw new WrongFiletypeException();
-                    s.count.add(new Integer((int) t.nval));
-                }
+            // if there's an extra column, it's the count
+            int normal = 1 + (hasYear ? 1 : 0);
+            hasCount = ((a.length==normal+1) && (b.length==normal+1) && (c.length==normal+1));
+
+            // ok, done with that, put everything back
+            r.reset();
+        }
+
+        // if no year, let's make one up.
+        if (!hasYear)
+            start = Year.DEFAULT;
+        
+        // hasData
+        s.data = new ArrayList();
+        if (hasCount)
+            s.count = new ArrayList();
+        
+        for (;;) {
+            String line = r.readLine();
+
+            // no more data
+            if (line == null)
+                break;
+
+            // get ready to parse
+            StringTokenizer tok = new StringTokenizer(line, ",; \t");
+
+            if (hasYear) {
+                int y = Integer.parseInt(tok.nextToken());
+                // just ignore, unless it's the first one
+                if (start == null)
+                    start = new Year(y);
             }
+
+            int d = Integer.parseInt(tok.nextToken());
+            s.data.add(new Integer(d));
+
+            if (hasCount) {
+                int c = Integer.parseInt(tok.nextToken());
+                s.count.add(new Integer(c));
+            }
+        }
 
         // close file (asap)
         r.close();
@@ -177,6 +190,16 @@ loop:
             s.meta.put("comments", "Header line was: \"" + l + "\"");
         else
             r.reset();
+    }
+
+    // given a string like "1 2 3", return an int array like int[] {1, 2, 3}.
+    private int[] parseLine(String s) {
+        StringTokenizer tok = new StringTokenizer(s, ",; \t");
+        int n = tok.countTokens();
+        int x[] = new int[n];
+        for (int i=0; i<n; i++)
+            x[i] = Integer.parseInt(tok.nextToken());
+        return x;
     }
     
     // editor needs this to save to a custom writer for the clipboard
