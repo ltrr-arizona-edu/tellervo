@@ -128,7 +128,7 @@ public class Clean extends AbstractUndoableEdit {
     }
 
     // i18n
-    private ResourceBundle msg = ResourceBundle.getBundle("ManipBundle");
+    private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     private Clean(Sample s) {
 	this.s = s;
