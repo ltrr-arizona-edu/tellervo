@@ -32,6 +32,7 @@ public class Histogram {
 
     public Histogram(Cross c) {
         this(c.data, c.getFormat());
+        // barf here if c wasn't run yet?
     }
     private DecimalFormat fmt; // format string for values/scores
     public Histogram(double data[], String fmt) {
@@ -54,11 +55,14 @@ public class Histogram {
             double high;
             low = high = data[0];
             for (int i=1; i<n; i++) {
-                if (Double.isInfinite(data[i]) && data[i]>0) {
+                double x = data[i];
+                if (Double.isInfinite(x) && x>0) {
                     hasInfty = true;
+                } else if (Double.isNaN(x)) {
+                    // heck, this shouldn't happen, but if it does, let's just ignore it.
                 } else {
-                    low = Math.min(low, data[i]);
-                    high = Math.max(high, data[i]);
+                    low = Math.min(low, x);
+                    high = Math.max(high, x);
                 }
             }
             if (hasInfty)

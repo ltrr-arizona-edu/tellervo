@@ -2,6 +2,8 @@ package corina.cross;
 
 import junit.framework.TestCase;
 
+import java.util.StringTokenizer;
+
 public class UnitTests extends TestCase {
     public UnitTests(String name) {
         super(name);
@@ -17,6 +19,7 @@ public class UnitTests extends TestCase {
         double x[] = new double[n];
         for (int i=0; i<n; i++)
             x[i] = Math.random();
+        x[345] = Double.NaN; // give it something screwy to choke on
 
         // make a histogram of it
         String fmt = "#.##";
@@ -60,6 +63,15 @@ public class UnitTests extends TestCase {
             // succeed
         }
 
-        // stuff i don't really test here: getRange()
+        // test getRange()
+        String range = h.getRange(0);
+        StringTokenizer tok = new StringTokenizer(range, " ");
+        try {
+            Double.parseDouble(tok.nextToken());
+            tok.nextToken();
+            Double.parseDouble(tok.nextToken());
+        } catch (NumberFormatException nfe) {
+            fail();
+        }
     }
 }
