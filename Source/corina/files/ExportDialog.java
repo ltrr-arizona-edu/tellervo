@@ -3,6 +3,7 @@ package corina.files;
 import corina.Sample;
 import corina.gui.ButtonLayout;
 import corina.gui.DialogLayout;
+import corina.gui.XButton;
 import corina.gui.UserCancelledException;
 import corina.gui.FileDialog;
 import corina.gui.Bug;
@@ -13,8 +14,6 @@ import corina.browser.FileLength;
 import java.io.File;
 import java.io.StringWriter;
 import java.io.IOException;
-
-import java.text.DecimalFormat;
 
 import java.util.ResourceBundle;
 
@@ -42,7 +41,6 @@ import javax.swing.AbstractAction;
 // -- this is a fairly basic class, probably should have javadoc
 // -- filetype should have a suggestedExtension, so "ok" here gives you a default of "<old-filename>.<sug-ext>"
 // -- make it resizable, if i can figure out how to get the jtextarea to resize, as well.
-// -- add a "copy" button, so you can get a funny format to the clipboard without saving first
 
 /*
  notes on this implementation:
@@ -136,7 +134,7 @@ public class ExportDialog extends JDialog {
         tuples.add(new JScrollPane(preview), msg.getString("preview"));
 
         // buttons
-        JButton help = new JButton(msg.getString("help"));
+        JButton help = new XButton("help");
         help.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
 /*
@@ -155,14 +153,14 @@ public class ExportDialog extends JDialog {
  */
             }
         });
-        JButton copy = new JButton("Copy");
+        JButton copy = new XButton("copy");
         copy.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 corina.util.TextClipboard.copy(preview.getText());
             }
         });
-        JButton cancel = new JButton(msg.getString("cancel"));
-        ok = new JButton(msg.getString("ok"));
+        JButton cancel = new XButton("cancel");
+        ok = new XButton("ok");
         OKCancel.addKeyboardDefaults(this, ok);
 
         // button actions
