@@ -86,7 +86,7 @@ public class Hohenheim extends Filetype {
 
 	// make sure it's a hohenheim file: first lines starts with "+"
 	String line = r.readLine();
-	if (!line.startsWith("+"))
+	if (line==null || !line.startsWith("+"))
 	    throw new WrongFiletypeException(); // no header found
 
 	// new sample, with given filename
@@ -102,7 +102,12 @@ public class Hohenheim extends Filetype {
 	// ADD OTHER METADATA PARSING HERE!
 
 	// start/end are in the first line, too
-	Year start = new Year(line.substring(53, 58));
+	Year start;
+	try {
+	    start = new Year(line.substring(53, 58));
+	} catch (NumberFormatException nfe) {
+	    throw new IOException("can't parse year: " + line);
+	}
 
 	// if i was just loading metadata, i'd just take end from
 	// (59..64), but since i'm loading all of the data anyway,
@@ -128,6 +133,8 @@ public class Hohenheim extends Filetype {
 		    datum = Integer.parseInt(line.substring(column, column+4).trim());
 		} catch (NumberFormatException nfe) {
 		    throw new IOException("Can't parse '" + nfe.getMessage() + "' as a number.");
+		} catch (StringIndexOutOfBoundsException sioobe) {
+		    throw new WrongFiletypeException();
 		}
 
 		// on zero, break;
