@@ -56,6 +56,16 @@ public class Prefs {
         assumed to be on Windows if the Java property
         os.name starts with "Windows", and on MacOS if it starts with "Mac". */
     public final static String USER_PROPERTIES_DIR;
+    /*
+     this is BAD.  it should be called "Corina Preferences" (except on unix where it's .corina).
+     it should be a file, not a folder.
+     (open-recent needs to be merged into the prefs framework)
+     so:
+     unix = ~/.corina
+     mac = ~/Library/Preferences/Corina Preferences
+     win32 = ~/Corina Preferences
+     (unless there's a better place to put win32 prefs, but i don't know one)
+     */
     static {
         String home = System.getProperty("user.home") + File.separator;
         
@@ -150,6 +160,8 @@ public class Prefs {
             throw new IOException(errors);
     }
 
+    // BUG?  why's save() not synch?  (actually, save and load should both synch on the same ref.)
+    
     /** <p>Save current properties to the user's system-writable
 	properties (preferences) file,
 	<code>USER_PROPERTIES_FILE</code>.</p> */
