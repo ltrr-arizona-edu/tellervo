@@ -23,7 +23,7 @@ package corina.map;
 import corina.map.ToolBox.Tool;
 import corina.site.Site;
 import corina.site.SiteDB;
-import corina.site.SiteFrame;
+import corina.site.SiteProperties;
 import corina.util.ColorUtils;
 
 import java.io.IOException;
@@ -177,7 +177,7 @@ public class MapPanel extends JPanel implements Printable {
     // (europe on 64 ints a day?)
     private int x[] = new int[64];
     private int y[] = new int[64];
-    
+
     private void drawMap(Graphics2D g2, Renderer r) throws IOException {
         for (int i=0; i<Map.headers.length; i++) {
             Map.Header h = Map.headers[i];
@@ -193,22 +193,58 @@ public class MapPanel extends JPanel implements Printable {
 
             if (vis == Renderer.VISIBLE_YES) {
                 // we'll have to render the whole thing.  get the data -- hopefully cached -- and render it
+
+                // get data, and count them
                 Map.Data d = h.getData();
-                int n = d.x.length;
-                int m = x.length; // round up to power of 2, to minimize allocations
-                while (m < n) {
-                    m *= 2;
+                int numberOfLines = d.n; // was: d.x.length;
+
+                // realloc x/y, if needed
+                int myArraySize = x.length; // round up to power of 2, to minimize allocations
+                while (myArraySize < numberOfLines) {
+                    myArraySize *= 2;
                 }
-                if (m > x.length) {
-                    x = new int[m];
-                    y = new int[m];
+                if (myArraySize > x.length) {
+                    x = new int[myArraySize];
+                    y = new int[myArraySize];
                 }
-                for (int j=0; j<n; j++) {
+
+                // foreach point, render it into x/y
+                for (int j=0; j<numberOfLines; j++) {
                     Vector3 v = r.project(new Location(d.y[j], d.x[j])); // maybe keep this location around, even.
                     x[j] = (int) v.x;
                     y[j] = (int) v.y;
                 }
-                g2.drawPolyline(x, y, n);
+
+                // cut out trivial moves
+                boolean faster = true;
+                if (faster) {
+                    int from = 0, to = 0;
+                    int lastX = x[0], lastY = y[0];
+                    for (;;) {
+                        int threshold = 2; // "detail" -- detail = 5->2? (no need to go finer)
+                        // threshold=2 removes a lot of lines, and looks much cleaner
+                        // threshold=1 and even =0 remove quite a few lines, but i can't see any real improvement
+                        double leapSize = Math.sqrt((x[from]-lastX)*(x[from]-lastX) + (y[from]-lastY)*(y[from]-lastY));
+                        boolean bigLeap = (leapSize > threshold);
+                        if (from==0 || from==numberOfLines-1 || bigLeap) {
+                            // add this line
+                            x[to] = x[from];
+                            y[to] = y[from];
+                            lastX = x[to];
+                            lastY = y[to];
+                            to++;
+                        }
+                        from++;
+                        if (from==numberOfLines)
+                            break;
+                    }
+                    // running stats on saved/total segments, it looks like we're saving around
+                    // 96% of lines with thresh=2 and 98% with thresh=5.  yow.
+                    numberOfLines = to;
+                }
+
+                // draw it
+                g2.drawPolyline(x, y, numberOfLines);
             } else if (vis == Renderer.VISIBLE_POINT) {
                 // score!  this whole segment is one pixel, so don't even bother to load it.
                 Vector3 v = r.project(h.getInsideCorner()); // REDUNDANT: isVisible() projects both corners -- why can't i get at that result?
@@ -216,7 +252,7 @@ public class MapPanel extends JPanel implements Printable {
             }
         }
     }
-
+    
     // draw a little label, like those flags on hors d'oeuvres to tell you
     // which ones have dead animals in them and which ones are food
     private void label(Graphics2D g2, String text, int x, int y) {
@@ -458,7 +494,8 @@ public class MapPanel extends JPanel implements Printable {
         }
 
         // WORKING HERE -- draw sites, scale/legend, etc.
-
+        drawSites(g2, r2);
+        
         return Printable.PAGE_EXISTS;
     }
 }
