@@ -33,6 +33,7 @@ import corina.ui.Alert;
 
 import java.util.List;
 
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.awt.BasicStroke;
@@ -43,20 +44,33 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
+
+import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.Scrollable;
 
 import javax.swing.JScrollPane;
+import javax.swing.filechooser.FileFilter;
+
+import com.keypoint.PngEncoder;
+
 import java.awt.Container;
+import java.io.File;
+import java.io.FileOutputStream;
 
 public class GrapherPanel extends JPanel
                        implements KeyListener,
@@ -82,6 +96,8 @@ public class GrapherPanel extends JPanel
     // drawing agent!
     private StandardPlot myAgent;
 
+    private JPopupMenu popup = new JPopupMenu("Save");
+    
     // compute the initial range of the year-axis
     // (union of all graph ranges)
     // fixme: put |bounds| dfn here, change method name to be similar (computeBounds()?)
@@ -454,6 +470,11 @@ public class GrapherPanel extends JPanel
 	// reset drag?  that seems awkward
 	dragStart = null;
 	clicked = -1;
+  System.out.println(e);
+        if (e.isPopupTrigger()) {
+          popup.show(GrapherPanel.this, e.getX(), e.getY());
+          return;
+        }
     }
     // TODO: put the mouse-listener and mouse-motion-listener
     // stuff together.
@@ -473,7 +494,7 @@ public class GrapherPanel extends JPanel
 
     // graphs = List of Graph.
     // frame = window; (used for: title set to current graph, closed when ESC pressed.)
-    public GrapherPanel(List graphs, JFrame myFrame) {
+    public GrapherPanel(List graphs, final JFrame myFrame) {
         // yearSize
         queryScale();
 
@@ -532,6 +553,63 @@ public class GrapherPanel extends JPanel
 
 	// create drawing agent
 	recreateAgent();
+  
+  JMenuItem save = new JMenuItem("Save...");
+        save.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent ae) {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileFilter(new FileFilter() {
+              public boolean accept(File f) {
+                return f.getName().endsWith(".png");
+              }
+              public String getDescription() {
+                return "PNG image files";
+              }
+            });
+            chooser.setMultiSelectionEnabled(false);
+            chooser.setAcceptAllFileFilterUsed(true);
+            //chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            int returnVal = chooser.showSaveDialog(myFrame);
+            if (returnVal != JFileChooser.APPROVE_OPTION) return;
+
+            Rectangle rect = getBounds();
+            Image fileImage = 
+                createImage(rect.width,rect.height);
+            Graphics g = fileImage.getGraphics();
+
+            //write to the image
+            paint(g);
+ 
+            // write it out in the format you want
+
+            PngEncoder encoder = new PngEncoder(fileImage);
+            try {
+              FileOutputStream fos = new FileOutputStream(chooser.getSelectedFile());
+              byte[] bytes = encoder.pngEncode();
+              fos.write(bytes);
+              fos.flush();
+              fos.close();
+            } catch (Exception e) {
+              System.err.println("ERROR SAVING GRAPH TO: " + chooser.getSelectedFile());
+              e.printStackTrace();
+            }
+
+            //dispose of the graphics content
+            g.dispose();
+          }
+        });      
+        popup.add(save);
+      
+        /*addMouseListener(new MouseAdapter() {
+          public void mouseClicked(MouseEvent e) {
+            System.out.println(e);
+            if (!e.isPopupTrigger()) return;
+            
+            System.out.println("Popup triggered!");
+          
+            popup.show(GrapherPanel.this, e.getX(), e.getY());
+          }  
+        });*/
     }
 	
     public void recreateAgent() {
