@@ -246,6 +246,13 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
             }
         }
 
+        // finally, "?" sounds pretty unspecified to me.
+        if (newValue.equals("?")) {
+            s.meta.put(field, null);
+            popup.setSelectedIndex(0);
+            return;
+        }
+
         // crap.  we'll try asking the user what she was smoking.
         // (does this belong here?)
         String descriptions[] = new String[f.values.length+1];
@@ -396,7 +403,7 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
         // (cast required to make one arg assignable to the other -- see jls chapter 15, section 25, clause 4)
         JTextComponent t = (lines > 1 ?
                             new JTextArea(value, lines, 40) :
-                            (JTextComponent) /* ick! */ new JTextField(value, 32));
+                            (JTextComponent) /* ick! */ new JTextField(value, 32)); // TODO: use COLUMNS when that's added.
 
         if (f.readonly) {
             // if read-only, it's not editable
