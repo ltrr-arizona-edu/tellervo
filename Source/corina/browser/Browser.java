@@ -135,12 +135,6 @@ public class Browser extends JFrame {
                 public Component getTableCellRendererComponent(JTable table, Object value,
                                                                boolean isSelected, boolean hasFocus, int row, int column) {
                     JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                    // CATCHER FOR THREAD PROTOTYPE
-                    if (!(visibleFiles.get(row) instanceof File)) {
-                        c.setIcon(leafIcon);
-                        c.setText(visibleFiles.get(row).toString());
-                        return c;
-                    }
                     File f = (File) visibleFiles.get(row); // is this just another way to say f=value?
                     c.setIcon(f.isDirectory() ? closedIcon : leafIcon); // leafIcon isn't exactly correct on win32
                     c.setText(f.getName()); // show just the name, not the whole path
@@ -299,9 +293,6 @@ public class Browser extends JFrame {
 
         // loop through files, adding to visibleFiles if it should be visible
         for (int i=0; i<files.size(); i++) {
-            // TEMPORARY CATCH FOR THREAD PROTOTYPE
-            if (!(files.get(i) instanceof File)) { visibleFiles.add(files.get(i)); continue; }
-            
             File f = (File) files.get(i);
 
             // look for a match
