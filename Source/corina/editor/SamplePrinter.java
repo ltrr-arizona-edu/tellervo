@@ -387,8 +387,9 @@ public class SamplePrinter implements PrintableDocument {
                 String x1 = ((Number) s.incr.get(fake.add(i).diff(s.range.getStart()))).toString();
                 String x2 = ((Number) s.decr.get(fake.add(i).diff(s.range.getStart()))).toString();
                 
-		// separatar char
-		String c = (Weiserjahre.isSignificant(s, fake.add(i).diff(s.range.getStart())) ? "*" : "/");
+		// separatar char -- (this seems clunky to me)
+		String c = (Weiserjahre.isSignificant(s, fake.add(i).diff(s.range.getStart()))
+			    ? Weiserjahre.SIGNIFICANT : Weiserjahre.INSIGNIFICANT);
 		int c_width = g.getFontMetrics().stringWidth(c);
 
 		// right-aligned x1
