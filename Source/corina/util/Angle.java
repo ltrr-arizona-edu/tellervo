@@ -2,7 +2,6 @@ package corina.util;
 
 import java.awt.Point;
 
-// -- see also (poorer) implementations in eyes.*
 // -- float is ~7 sigfigs, and sin(.0001) is 1/1000 of a pixel at 1000 pixels out -- that's plenty
 
 public class Angle {
