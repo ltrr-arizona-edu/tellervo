@@ -36,7 +36,6 @@ public class StandardPlot {
     // these i get from sys props
     private boolean _baselines;
     private int _yearsize;
-    private float _width;
     private boolean _dottedIndexes;
 
     // these get passed
@@ -63,11 +62,11 @@ public class StandardPlot {
 
     public void draw(Graphics2D g2, Graph g, boolean isCurrent, int xscroll) {
         // set pen
-        g2.setStroke(makeStroke(isCurrent ? 2f*_width : _width, false));
+        g2.setStroke(makeStroke(isCurrent ? 2f*THICKNESS : THICKNESS, false));
 
         // use dotted line for indexes?  (refactor me?)
         if (_dottedIndexes && (g.graph instanceof Index)) {
-            g2.setStroke(makeStroke(isCurrent ? 2f*_width : _width, true));
+            g2.setStroke(makeStroke(isCurrent ? 2f*THICKNESS : THICKNESS, true));
         }
 
         // bottom
@@ -121,7 +120,7 @@ public class StandardPlot {
             // sapwood?  draw what we've got, and start a new (thicker) path
             if (i==sapwoodIndex) {
                 g2.draw(p);
-                g2.setStroke(makeStroke(isCurrent ? 4f*_width : 2f*_width, false));
+                g2.setStroke(makeStroke(isCurrent ? 4f*THICKNESS : 2f*THICKNESS, false));
                 p = new GeneralPath();
                 p.moveTo(_yearsize*(i-1 + g.graph.getStart().diff(_bounds.getStart()) + g.xoffset),
                          bottom - (int)(value*g.scale) - g.yoffset);
@@ -198,7 +197,9 @@ public class StandardPlot {
         // read sys props
         _baselines = Boolean.getBoolean("corina.graph.baselines");
         _yearsize = Integer.parseInt(System.getProperty("corina.graph.pixelsperyear", "10"));
-        _width = Float.parseFloat(System.getProperty("corina.graph.thickness", "1.0"));
         _dottedIndexes = Boolean.getBoolean("corina.graph.dotindexes");
     }
+
+    // thickness of the line drawn
+    private static final float THICKNESS = 1.0f;
 }

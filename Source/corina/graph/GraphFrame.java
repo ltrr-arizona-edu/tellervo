@@ -411,36 +411,8 @@ public class GraphFrame extends XFrame implements SampleListener,
 	scale.add(fixedWidth);
 	*/
 
-	// menu: line width
-	JMenu lw = new XMenubar.XMenu(msg.getString("thickness"),
-				      msg.getString("thickness_key").charAt(0));
-	ButtonGroup bg = new ButtonGroup();
-	double t = Double.parseDouble(System.getProperty("corina.graph.thickness", "1.0"));
-
-        for (int i=1; i<=3; i++) {
-            String iconFile = "Images/line-" + i + ".png";
-
-            final int glue = i;
-
-            ClassLoader cl = this.getClass().getClassLoader();
-            JMenuItem lwi = new JRadioButtonMenuItem(new ImageIcon(cl.getResource(iconFile)));
-            lwi.addActionListener(new AbstractAction() {
-                public void actionPerformed(ActionEvent e) {
-                    // set corina.graph.thickness to |t|, fire something
-                    System.setProperty("corina.graph.thickness", String.valueOf(glue));
-                    PrefsDialog.updateAll();
-                }
-            });
-            lw.add(lwi);
-            bg.add(lwi);
-
-            // is this my default?
-            if (Math.abs((double)i - t) < 0.001) // beautify me
-                lwi.setSelected(true);
-        }
-
 	// (return the menus)
-	return new JMenu[] { v, lw }; // lw is a work-in-progress
+	return new JMenu[] { v, };
     }
 
     private Axis a = new Axis();

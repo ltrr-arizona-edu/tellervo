@@ -151,8 +151,6 @@ public class PrefsTemplate {
         // graph
 	options.add(new Option("Graph", "Pixels per year:",
                         "corina.graph.pixelsperyear", Option.TYPE_STRING));
-	options.add(new Option("Graph", "Line thickness:",
-                        "corina.graph.thickness", Option.TYPE_STRING));
 	options.add(new Option("Graph", "Draw Baselines",
                         "corina.graph.baselines", Option.TYPE_BOOL));
 	options.add(new Option("Graph", "Draw Sapwood (as thicker line)",
