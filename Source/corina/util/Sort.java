@@ -149,10 +149,10 @@ public class Sort {
 			Comparable v2 = (Comparable) f.get(o2);
 
 			if (v1 == null && v2 == null) return 0;
-			if (v1 == null) return -1;
-			if (v2 == null) return +1;
+			if (v1 == null) return (reverse ? +1 : -1);
+			if (v2 == null) return (reverse ? -1 : +1);
 
-			int x = v1.compareTo(v2); // bug: trouble here if v1 (or maybe v2) is null
+			int x = v1.compareTo(v2);
 			return (reverse ? -x : x);
 		    } catch (IllegalAccessException iae) {
 			// gah, nothing i can do here.
@@ -176,10 +176,10 @@ public class Sort {
 			Comparable v2 = (Comparable) m.invoke(o2, new Object[] { });
 
 			if (v1 == null && v2 == null) return 0;
-			if (v1 == null) return -1;
-			if (v2 == null) return +1;
+			if (v1 == null) return (reverse ? +1 : -1);
+			if (v2 == null) return (reverse ? -1 : +1);
 
-			int x = v1.compareTo(v2); // bug: trouble here if v1 (or maybe v2) is null
+			int x = v1.compareTo(v2);
 			return (reverse ? -x : x);
 		    } catch (IllegalAccessException iae) {
 			// gah, nothing i can do here.
