@@ -1,0 +1,92 @@
+<body>
+
+File formats for loading and saving dendro data files.
+
+<hr/>
+
+I really need to rework the filesystem layer.  Here's one idea I had:
+
+<h2>Layer 1</h2>
+
+(This layer is done.)
+
+<pre>
+- interface filetype just defines load(reader), save(writer), perhaps getDefaultExtension()
+- (this makes the file parsing part of it really easy to debug and extend)
+- new interface:
+
+public interface Filetype {
+       Sample load(Reader r) throws IOException;
+       void save(Sample s, Writer w) throws IOException;
+       // toString(), of course
+       String getDefaultExtension(); // "
+}
+
+- always use buffered readers/writers, so i get readline/newline for free
+
+- one filetype object may be re-used
+- (the upshot of this is that i'll just create one of each and use that for everything)
+
+- classes: Corina, HTML, Heidelberg, Hohenheim, PackedTucson, RangesOnly, Spreadsheet, TRML, TSAPMatrix, Tucson, TwoColumn
+
+- they'll probably want to share some code.  so either make a common class (make Filetype an abstract class?) with some useful methods, or make a class with some static util methods.
+
+- public interface: pretty much none.  no other subpackages will ever touch this.
+</pre>
+
+<h2>Layer 2</h2>
+
+<pre>
+- a fairly simple layer on top of that (1 class?) to load/save samples, given a filename.
+- in GoF/DP terms, this is basically a facade
+- takes care of:
+  - buffering
+  - creating a reader/writer from filenames
+  - sync, so sample can't be changed during load()/save(), can't screw up a file on disk, etc.
+  - ...
+- (put FTP in this layer, too?)
+- (put JDBC in this layer, too?)
+
+- public interface: Files.load(filename), Files.save(sample) -- + URLs, JDBC, ...?
+</pre>
+
+<h2>Layer 3</h2>
+
+<pre>
+- an "intelligent" layer on top of this - ?
+- handles caching, summary files, ...
+
+- public interface: Files.getMeta(sample, field), Files.setMeta() ...?
+</pre>
+
+<h2>Left to do</h2>
+<ul>
+  <li>Clean up I/O...
+  <li>fix summary.update() so it updates, not just creates
+  <li>integrate it into browser
+  <li>(add gzip to all files?)  (easy later)
+</ul>
+
+<h2>Packed Files</h2>
+
+<p>unfortunately, some programs like to make what i call "packed" files,
+or files with several datasets.  since the tucson format needed the id
+number on each line, you didn't lose anything by just catting together
+all your files.</p>
+
+<p>that's not what a "file" is, though.  a file is a document.</p>
+
+<p>currently, i only let you "pack" and "unpack" normal files into packed
+files as a special function of the browser -- is that good enough?</p>
+
+<p>also, the i/o API doesn't have any way to save packed files, or report
+files as packed, or return them.  it would be useful to be able to
+say:</p>
+
+<ul>
+  <li>isPacked?
+  <li>Sample[] unpack()
+  <li>pack(Sample[])
+</ul>
+
+</body>
