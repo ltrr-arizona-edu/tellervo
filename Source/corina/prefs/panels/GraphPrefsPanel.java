@@ -1,6 +1,12 @@
 package corina.prefs.panels;
 
-import corina.gui.layouts.DialogLayout;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
 import corina.gui.Layout;
 import corina.prefs.Prefs;
 import corina.prefs.components.ColorPrefComponent;
@@ -8,42 +14,86 @@ import corina.prefs.components.BoolPrefComponent;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-import javax.swing.JComponent;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
-public class GraphPrefsPanel extends JPanel {
+public class GraphPrefsPanel extends Container {
+  public GraphPrefsPanel() {
+    setLayout(new BorderLayout());
+    
+    Container co = new Container();
+    co.setLayout(new GridBagLayout());
 
-    public GraphPrefsPanel() {
-        setLayout(new DialogLayout());
-        
-        ColorPrefComponent backColor = new ColorPrefComponent("corina.graph.background");
-        ColorPrefComponent axisColor = new ColorPrefComponent("corina.graph.foreground");
-        
-        BoolPrefComponent drawSapwood = new BoolPrefComponent("Draw sapwood with thicker line", "corina.graph.sapwood");
-        BoolPrefComponent drawIndexes = new BoolPrefComponent("Draw indexes with dotted line", "corina.graph.dotindexes");
-        BoolPrefComponent drawBaselines = new BoolPrefComponent("Draw baselines", "corina.graph.baselines");
-        BoolPrefComponent drawGraphpaper = new BoolPrefComponent("Draw graphpaper", "corina.graph.graphpaper");
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.gridy = 0;
+    gbc.insets = new Insets(2, 2, 2, 2);
+    
+    Component c = new ColorPrefComponent("corina.graph.background");
+    JLabel l = new JLabel("Background color:");
+    co.add(l, gbc);
+    gbc.gridx = 1;
+    gbc.weightx = 1;
+    co.add(c, gbc);
+    
+    
+    c = new ColorPrefComponent("corina.graph.foreground");
+    l = new JLabel("Axis/cursor color:");
+    gbc.gridy++;
+    gbc.gridx = 0;
+    gbc.weightx = 0;
+    co.add(l, gbc);
+    gbc.gridx = 1;
+    gbc.weightx = 1;
+    co.add(c, gbc);
+    
+    c = new BoolPrefComponent("Draw sapwood with thicker line", "corina.graph.sapwood");
+    gbc.gridy++;
+    gbc.gridx = 0;
+    gbc.weightx = 1;
+    gbc.gridwidth = 2;
+    co.add(c, gbc);
+          
+    c = new BoolPrefComponent("Draw indexes with dotted line", "corina.graph.dotindexes");
+    gbc.gridy++;
+    co.add(c, gbc);
 
-        ColorPrefComponent graphpaperColor = new ColorPrefComponent("corina.graph.graphpaper.color");
-        
-        // WRITEME: pixels-per-year, as empty string -- no, as slider
-        // "narrower" = 2, "wider" = 20? 30? 40?
-        JComponent horizScale = new HorizontalScaleSlider("corina.graph.pixelsperyear",
-                                        "Narrower", "Wider", 2, 20, 10);
-        
-        // put them all together
-        setLayout(new DialogLayout());
-        add(backColor, "Background color:");
-        add(axisColor, "Axis/cursor color:");
-        add(drawSapwood, "");
-        add(drawIndexes, "");
-        add(drawBaselines, "");
-        add(drawGraphpaper, "");
-        add(graphpaperColor, "Graphpaper color:");
-        add(horizScale, "Horizontal scale:");
-    }
+    
+    c = new BoolPrefComponent("Draw baselines", "corina.graph.baselines");
+    gbc.gridy++;
+    co.add(c, gbc);
+    
+    c = new BoolPrefComponent("Draw graphpaper", "corina.graph.graphpaper");
+    gbc.gridy++;
+    co.add(c, gbc);
+
+    c = new ColorPrefComponent("corina.graph.graphpaper.color");
+    l = new JLabel("Graphpaper color:");
+    gbc.gridy++;
+    gbc.gridwidth = 1;
+    gbc.weightx = 0;
+    co.add(l, gbc);
+    gbc.gridx = 1;
+    gbc.weightx = 1;
+    co.add(c, gbc);
+    
+    // WRITEME: pixels-per-year, as empty string -- no, as slider
+    // "narrower" = 2, "wider" = 20? 30? 40?
+    c = new HorizontalScaleSlider("corina.graph.pixelsperyear",
+                                  "Narrower", "Wider", 2, 20, 10);
+    l = new JLabel("Horizontal scale:");
+    gbc.gridy++;
+    gbc.gridx = 0;
+    gbc.weightx = 0;
+    co.add(l, gbc);
+    gbc.gridx = 1;
+    gbc.weightx = 1;
+    co.add(c, gbc);
+    
+    add(co, BorderLayout.NORTH);
+  }
     
     // TODO: rename to simply SliderPrefComponent, document, and extract
     private static class HorizontalScaleSlider extends JPanel {
