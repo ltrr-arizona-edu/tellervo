@@ -1,4 +1,4 @@
-package corina.prefs.component;
+package corina.prefs.components;
 
 import java.awt.Font;
 import java.awt.Component;
