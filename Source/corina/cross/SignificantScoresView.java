@@ -149,13 +149,17 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
 	  -- confidence
 	*/
         public String getColumnName(int col) {
+          
             switch (col) {
 	    case 0: return I18n.getText("number");
 	    case 1: return I18n.getText("fixed") +
 		    " (" + crossdate.getFixed().range + ")";
 	    case 2: return I18n.getText("moving") +
 		    " (" + crossdate.getMoving().range + ")";
-	    case 3: return crossdate.getName();
+	    case 3: 
+      new Exception("GETTIGN COLUMN NAME").printStackTrace();
+      System.out.println("Crossdate header: " + crossdate.getName());
+      return crossdate.getName();
 	    case 4: return I18n.getText("overlap");
 	    case 5: return I18n.getText("confidence") + " (%)"; // hack!
 		// FIXME: make this "confidence%", in case i need w/o-% also
@@ -199,6 +203,8 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
 	    // wouldn't it make more sense for them to be declared in
 	    // the HighScore class as Integers?
 
+System.out.println("fixedFloats: " + fixedFloats);
+System.out.println("movingFloats: " + movingFloats);
             switch (col) {
 	    case 0: return new Integer(s.number);
 	    case 1: return (fixedFloats ? s.fixedRange
@@ -325,6 +331,7 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
 
     private void initTable() {
         table = new JTable();
+        table.setAutoCreateColumnsFromModel(true);
         NoEmptySelection.noEmptySelection(table);
         table.getSelectionModel().setSelectionMode(
 				 ListSelectionModel.SINGLE_SELECTION);
@@ -337,6 +344,7 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
 	selectHighest();
         
         initPrefs();
+      table.setAutoCreateColumnsFromModel(true);
     }
 
     private void setupColumns() {
@@ -385,6 +393,8 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
 	// and restore it after the columns are reset.
 	int widths[] = saveColumnWidths();
 	model.fireTableStructureChanged();
+
+  System.err.println("header value: " + table.getColumnModel().getColumn(3).getHeaderValue());
 	restoreColumnWidths(widths);
 
 	System.out.println("model: table structure changed fired");
@@ -456,7 +466,7 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
     }
 
     // WRITEME: these aren't hooked up yet
-    private boolean fixedFloats=false, movingFloats=true;
+    private boolean fixedFloats=true, movingFloats=true;
 
     private void initPrefs() {
         refreshGridlines();
@@ -482,8 +492,8 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
     }
     private void refreshFont() {
 	// WAS: corina.cross.font (merged with corina.edit.font)
-        if (System.getProperty("corina.edit.font") != null) {
-            Font f = Font.getFont("corina.edit.font");
+        if (Prefs.getPref("corina.edit.font") != null) {
+            Font f = Font.decode(Prefs.getPref("corina.edit.font"));
 	    table.setFont(f);
             table.setRowHeight(f.getSize() + 3);
             // FIXME: instead of 3, use (defaultRowHeight - defaultFontSize)
@@ -516,12 +526,12 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
     public void addNotify() {
         super.addNotify();
         
-        Prefs.addPrefsListener(this);
+      Prefs.addPrefsListener(this);
     }
     
     public void removeNotify() {
         super.removeNotify();
         
-        Prefs.removePrefsListener(this);
+      Prefs.removePrefsListener(this);
     }
 }
