@@ -360,6 +360,9 @@ public class Browser extends JFrame {
                     // that kills the icons in col0, so reset those
                     addIconsForFirstColumn();
 
+                    // re-search, since the last search may very well no longer be valid
+                    doSearch();
+                    
                     // finally, save these fields in the prefs
                     saveFields();
                 }
@@ -518,6 +521,9 @@ public class Browser extends JFrame {
 
                     // load the metadata for this file.
                     r.load();
+
+                    // update search, too.
+                    doSearch(); // i only need to check one row, so there must be a much more efficient way to do this
 
                     int i[] = table.getSelectedRows(); // i'd like to re-select these, but how?
                     model.fireTableDataChanged(); // row only would be much more efficient, if i knew which row
