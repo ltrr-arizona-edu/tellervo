@@ -30,6 +30,7 @@ import corina.gui.Help;
 import corina.util.OKCancel;
 import corina.util.Overwrite;
 import corina.util.TextClipboard;
+import corina.util.PureStringWriter;
 import corina.browser.FileLength;
 import corina.ui.Builder;
 import corina.ui.I18n;
@@ -57,7 +58,6 @@ import javax.swing.BorderFactory;
 import javax.swing.AbstractAction;
 
 // issues:
-// -- heidelberg/hohenheim need wj -- give intelligent error when they fail?  or don't present them?
 // -- this is a fairly basic class, probably should have javadoc
 // -- filetype should have a suggestedExtension, so "ok" here gives you a default of "<old-filename>.<sug-ext>"
 // -- make it resizable, if i can figure out how to get the jtextarea to resize, as well.
@@ -204,17 +204,16 @@ public class ExportDialog extends JDialog {
                 }
             }
         });
-        
+
         // in a panel
 	Buttons buttons = new Buttons(help, copy, null, cancel, ok);
         buttons.setBorder(BorderFactory.createEmptyBorder(14, 0, 0, 0));
 
-        JPanel main = new JPanel();
-        main.setLayout(new BorderLayout());
+	JPanel main = Buttons.borderLayout(null,
+					   null, tuples, null,
+					   buttons);
         main.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
         setContentPane(main);
-        main.add(tuples, BorderLayout.CENTER);
-        main.add(buttons, BorderLayout.SOUTH);
 
         OKCancel.addKeyboardDefaults(ok);
 
@@ -228,7 +227,7 @@ public class ExportDialog extends JDialog {
     }
 
     // use the same StringWriter for all previews, because that way it uses the same StringBuffer
-    private StringWriter writer = new StringWriter(10240); // 10K
+    private StringWriter writer = new PureStringWriter(10240); // 10K
 
     private void updatePreview() {
         int i = popup.getSelectedIndex();
