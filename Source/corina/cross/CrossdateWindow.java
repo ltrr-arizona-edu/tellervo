@@ -30,7 +30,6 @@ import corina.gui.menus.EditMenu;
 import corina.gui.menus.WindowMenu;
 import corina.gui.menus.HelpMenu;
 import corina.gui.PrintableDocument;
-import corina.gui.HasPreferences;
 // import corina.gui.Tree; -- REMOVE?
 import corina.gui.Layout;
 import corina.util.Platform;
@@ -145,8 +144,7 @@ import javax.swing.event.ChangeEvent;
 */
 public class CrossdateWindow extends XFrame
                           implements PrintableDocument,
-			             HasPreferences, PrefsListener {
-    // FIXME: get rid of hasprefs!
+                                     PrefsListener {
     // FIXME: XFrame?
 
     // gui components
@@ -648,8 +646,8 @@ public class CrossdateWindow extends XFrame
             final JMenuItem both = Builder.makeRadioButtonMenuItem("both_moving");
 
             // read old value from prefs, set window accordingly
-            if (System.getProperty("corina.cross.dating") != null) {
-                decode(System.getProperty("corina.cross.dating"));
+            if (Prefs.getPref("corina.cross.dating") != null) {
+                decode(Prefs.getPref("corina.cross.dating"));
                 if (!fixedFloats && movingFloats)
                     moving.setSelected(true);
                 else if (fixedFloats && !movingFloats)
@@ -680,7 +678,7 @@ public class CrossdateWindow extends XFrame
                     repaint();
 
                     // set pref
-                    Prefs.setPref("corina.cross.dating", encode());
+                  Prefs.setPref("corina.cross.dating", encode());
                 }
             };
             moving.addActionListener(a);
@@ -714,15 +712,6 @@ public class CrossdateWindow extends XFrame
 
     private boolean fixedFloats = false, movingFloats = true;
 
-    // DESIGN: does this need to re-run the crossdate?
-    // well, if the overlap changes, i'll need more/less data...
-    // so, yeah.  ouch.
-    public void refreshFromPreferences() {
-	new RunThread().start(); // HACK!
-	// PERF: slow, especially if long sample and min_overlap didn't change
-	// -- it's only needed if min_overlap changed, right?  that's ok.
-    }
-
     /*
       if i implement the "BETTER" idea below (changes
       crossdate.range/span and views), i won't need to have a prefs
@@ -731,6 +720,11 @@ public class CrossdateWindow extends XFrame
       add/remove prefs listeners to them on add/remove notify (but
       that, too, doesn't get done here).
     */
+    // DESIGN: does this need to re-run the crossdate?
+    // well, if the overlap changes, i'll need more/less data...
+    // so, yeah.  ouch.
+    // PERF: slow, especially if long sample and min_overlap didn't change
+    // -- it's only needed if min_overlap changed, right?  that's ok.
     public void prefChanged(PrefsEvent e) {
 	if (e.getPref().equals("corina.cross.overlap")) {
 	    new RunThread().start(); // ugly, but necessary (i think)
