@@ -1,85 +1,87 @@
 package corina.cross;
 
-import corina.Year;
-import corina.Range;
-
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import corina.Range;
+
 /*
-  a renderer for ranges in jtable cells.
-
-  draws the start year right-aligned, just left of center.
-  draws the end year right-aligned, just right of the right edge.
-  draws a "-" center aligned.
-
-  left to do:
-  -- odd-rows-blue feature
-  ---- if isSelected, use table.getSelectionColor() for background
-  ---- if !isSelected && colorOddRows, use Browser.oddRowColor for background
-  ---- otherwise, use white(?)
-
-  -- give it a minimum width, or draw "..." if it's too narrow?
-
-  -- memoize dashWidth,descent?  nah, they're not very expensive, i
-     think, and they'd need to watch the font for changes, anyway.
-*/
+ * a renderer for ranges in jtable cells.
+ * 
+ * draws the start year right-aligned, just left of center. draws the end year
+ * right-aligned, just right of the right edge. draws a "-" center aligned.
+ * 
+ * left to do: -- odd-rows-blue feature ---- if isSelected, use
+ * table.getSelectionColor() for background ---- if !isSelected && colorOddRows,
+ * use Browser.oddRowColor for background ---- otherwise, use white(?)
+ *  -- give it a minimum width, or draw "..." if it's too narrow?
+ *  -- memoize dashWidth,descent? nah, they're not very expensive, i think, and
+ * they'd need to watch the font for changes, anyway.
+ */
 public class RangeRenderer extends DefaultTableCellRenderer {
+  private final static String DASH = " - ";
+  // use Browser.oddRowColor
+  private boolean colorOddRows = false;
+  private Range range;
 
-    // use Browser.oddRowColor
-    private boolean colorOddRows = false;
-    public RangeRenderer(boolean colorOddRows) {
-	this.colorOddRows = colorOddRows;
-    }
-    public RangeRenderer() {
-	// (needed by compiler)
-    }
+  public RangeRenderer() {}
 
-    private Range range;
+  public RangeRenderer(boolean colorOddRows) {
+    this.colorOddRows = colorOddRows;
+  }
 
-    public Component getTableCellRendererComponent(JTable table, Object value,
-						   boolean isSelected, boolean hasFocus,
-						   int row, int column) {
-	this.range = (Range) value;
+  private int preferredWidth;
 
-	return super.getTableCellRendererComponent(table, value,
-						   isSelected, hasFocus,
-						   row, column);
-    }
+  public Component getTableCellRendererComponent(JTable table, Object value,
+      boolean isSelected, boolean hasFocus, int row, int column) {
+    this.range = (Range) value;
+    final FontMetrics fm = table.getGraphics().getFontMetrics();
+    preferredWidth = fm.stringWidth(DASH) + fm.stringWidth(range.getStart().toString()) + fm.stringWidth(range.getEnd().toString());
+    return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+  }
 
-    public void paintComponent(Graphics g) {
-	Graphics2D g2 = (Graphics2D) g;
+  public Dimension getPreferredSize() {
+    Dimension d = super.getPreferredSize();
+    d.width = preferredWidth;
+    return d;
+  }
 
-	// compute baseline (from DecimalRenderer)
-	int baseline = getHeight() - g2.getFontMetrics().getDescent(); // (is this right?)
+  public void paintComponent(Graphics g) {
+    //final Graphics2D g2 = (Graphics2D) g;
 
-	// fill background -- (is this needed/allowed/automatic?) (apparently it's needed.)
-	g2.setColor(getBackground());
-	g2.fillRect(0, 0, getWidth(), getHeight());
+    final FontMetrics fm = g.getFontMetrics();
+    // compute baseline (from DecimalRenderer)
+    final int baseline = getHeight() - fm.getDescent(); // (is this right?)
 
-	// set foreground
-	g2.setColor(getForeground());
+    // fill background -- (is this needed/allowed/automatic?) (apparently it's
+    // needed.)
+    g.setColor(getBackground());
+    g.fillRect(0, 0, getWidth(), getHeight());
 
-	// center
-	int center = getWidth() / 2;
-	int dashWidth = g2.getFontMetrics().stringWidth(DASH);
-	g2.drawString(DASH, center - dashWidth/2, baseline);
+    // set foreground
+    g.setColor(getForeground());
 
-	// start
-	String start = range.getStart().toString();
-	int startWidth = g2.getFontMetrics().stringWidth(start);
-	g2.drawString(start, center - dashWidth/2 - startWidth, baseline);
+    // center
+    //int center = getWidth() / 2;
+    final int width = getWidth();
+    final int dashWidth = fm.stringWidth(DASH);
+    final int startOfDash = (width - dashWidth) / 2;
+    g.drawString(DASH, startOfDash, baseline);
 
-	// end
-	String end = range.getEnd().toString();
-	int endWidth = g2.getFontMetrics().stringWidth(end);
-	int right = getWidth() - dashWidth/2;
-	g2.drawString(end, right - endWidth, baseline);
-    }
+    // start
+    final String start = range.getStart().toString();
+    int startWidth = fm.stringWidth(start);
+    g.drawString(start, startOfDash - startWidth, baseline);
 
-    private final static String DASH = " - ";
+    // end
+    final String end = range.getEnd().toString();
+    int endWidth = fm.stringWidth(end);
+    int right = width - dashWidth / 2;
+    g.drawString(end, right - endWidth, baseline);
+  }
 }
