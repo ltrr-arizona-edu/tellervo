@@ -500,9 +500,11 @@ public class IndexDialog extends JDialog {
         // return those that match "*.sum"
         // -- this is something like: (remove-if-not (lambda (x) (ends-with x ".sum")))
         Vector result = new Vector();
-        for (int i=0; i<files.length; i++)
-            if (files[i].getName().toUpperCase().endsWith(".SUM"))
-                result.add(new UserFriendlyFile(files[i].getPath()));
+        if (files != null) { // null if not-a-dir
+            for (int i=0; i<files.length; i++)
+                if (files[i].getName().toUpperCase().endsWith(".SUM"))
+                    result.add(new UserFriendlyFile(files[i].getPath()));
+        }
         return result;
     }
 }
