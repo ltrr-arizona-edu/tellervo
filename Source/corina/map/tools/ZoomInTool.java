@@ -127,10 +127,9 @@ public class ZoomInTool extends Tool {
         // BUG: this doesn't change the popup menu (placard)
 
         // update buffer once for everything, and redraw
-//        p.updateBuffer(); // ugly!
+        p.updateBuffer(); // ugly!
         draw = false;
-//        p.repaint(); }
-}
+	p.repaint(); }
 
     public void decorate(Graphics g) {
         if (aborted)

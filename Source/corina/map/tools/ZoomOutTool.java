@@ -49,6 +49,5 @@ public class ZoomOutTool extends Tool {
         p.setZoom();
         
         // now update the buffer, and redraw
-//        p.updateBuffer(); // ugly!
-//        p.repaint(); } }
-        } }
+	p.updateBuffer(); // ugly!
+	p.repaint(); } }
