@@ -33,6 +33,7 @@ import corina.gui.PrintableDocument;
 import corina.gui.HasPreferences;
 import corina.gui.Tree;
 import corina.gui.ButtonLayout;
+import corina.gui.DialogLayout;
 
 import java.io.IOException;
 
@@ -393,7 +394,8 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 	// bottom panel ------------------------------------------------------------
         JPanel buttons = new JPanel(new ButtonLayout());
         getContentPane().add(buttons, BorderLayout.SOUTH);
-
+        buttons.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // HACK!
+        
 	// prev
 	prevButton = new JButton(msg.getString("prev"),
 				 JarIcon.getJavaIcon("toolbarButtonGraphics/navigation/Back16.gif"));
@@ -545,56 +547,35 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
 	tabPane = new JTabbedPane();
 	getContentPane().add(tabPane, BorderLayout.CENTER);
 
-	// top panel ----------------------------------------------------------------------
-	JPanel top = new JPanel();
+        // top panel ----------------------------------------------------------------------
+        // i'd rather use a dialoglayout to right-align the "fixed"/"moving" labels,
+        // but the spacing isn't quite right.  investigate.
+        JPanel top = new JPanel();
+        top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
 
-	/* strategy:
-	   [-->Fixed:] [@] [Zonguldak, Karabuk 3A]
-	   [->Moving:] [@] [Zonguldak, Karabuk 4A]
-	*/
-	GridBagLayout gbl = new GridBagLayout();
-	top.setLayout(gbl);
-	GridBagConstraints con = new GridBagConstraints();
-	con.insets = new Insets(0, 4, 0, 4);
-	con.weightx = 0.0;
-	con.fill = GridBagConstraints.HORIZONTAL;
+        /* goal:
+            Fixed: [@] [Zonguldak, Karabuk 3A]
+            Moving: [@] [Zonguldak, Karabuk 4A]
+        */
+        JPanel f = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        fixedTree = new Tree(cross.fixed);
+        fixedTitle = new JLabel(cross.fixed.toString());
+        f.add(new JLabel(msg.getString("fixed") + ":"));
+        f.add(fixedTree);
+//        f.add(Box.createHorizontalStrut(8));
+        f.add(fixedTitle);
+        top.add(f);
 
-	// "fixed", "moving" -- BUG: these aren't right-aligned, like i think they should be
-	con.anchor = GridBagConstraints.EAST;
-	con.gridx = 0;
-	con.gridy = 0;
-	JLabel f = new JLabel(msg.getString("fixed") + ":", SwingConstants.RIGHT);
-	gbl.setConstraints(f, con);
-	top.add(f);
-	con.gridy = 1;
-	JLabel m = new JLabel(msg.getString("moving") + ":", SwingConstants.RIGHT);
-	gbl.setConstraints(m, con);
-	top.add(m);
+        JPanel m = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        movingTree = new Tree(cross.moving);
+        movingTitle = new JLabel(cross.moving.toString());
+        m.add(new JLabel(msg.getString("moving") + ":"));
+        m.add(movingTree);
+//        m.add(Box.createHorizontalStrut(8));
+        m.add(movingTitle);
+        top.add(m);
 
-	// trees -- BUG: these don't get updated on next/prev
-	con.gridx = 1;
-	con.gridy = 0;
-	con.anchor = GridBagConstraints.CENTER;
-	fixedTree = new Tree(cross.fixed);
-	gbl.setConstraints(fixedTree, con);
-	top.add(fixedTree);
-	con.gridy = 1;
-	movingTree = new Tree(cross.moving);
-	gbl.setConstraints(movingTree, con);
-	top.add(movingTree);
-
-	// titles -- BUG: these don't get updated on next/prev
-	con.weightx = 1.0;
-	con.gridx = 2;
-	con.gridy = 0;
-	con.anchor = GridBagConstraints.WEST;
-	fixedTitle = new JLabel(cross.fixed.toString());
-	gbl.setConstraints(fixedTitle, con);
-	top.add(fixedTitle);
-	con.gridy = 1;
-	movingTitle = new JLabel(cross.moving.toString());
-	gbl.setConstraints(movingTitle, con);
-	top.add(movingTitle);
+        // BUG: titles/icons don't get updated on next/prev
 	
 	// TODO: add "swap f/m" button to right side, 1-line high,
 	// align-right, centered vertically in the 2-line space (its
