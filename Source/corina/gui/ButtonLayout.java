@@ -32,6 +32,12 @@ import java.awt.Insets;
 
 public class ButtonLayout implements LayoutManager {
     private static final int LEADING = 12; // says apple
+
+    // fixme:
+    // -- if there's a glue component (has maxwidth>1000),
+    // 	-- align items before glue to left edge
+    // 	-- align items after glue to right edge
+    // -- (but still maintain consistent width for all items except glue)
     
     public void layoutContainer(Container parent) {
         Insets border = parent.getInsets();
@@ -39,20 +45,42 @@ public class ButtonLayout implements LayoutManager {
         synchronized (parent.getTreeLock()) {
             int maxwidth=0;
             int n = parent.getComponentCount();
+            int glueIndex = -1;
+            int nn=0; // nn is like n, but doesn't count glue
             for (int i=0; i<n; i++) { // first pass: measure
                 Component m = parent.getComponent(i);
+                if (m.getMaximumSize().width > 32000) {
+                    glueIndex = i; // is-a glue object
+                    continue;
+                }
                 if (m.isVisible()) {
                     Dimension d = m.getPreferredSize();
                     maxwidth = Math.max(maxwidth, d.width);
+                    if (glueIndex != -1)
+                        nn++;
                 }
             }
-            int wholeWidth = n*maxwidth + (n-1)*LEADING;
+            if (nn == 0) // if they're only on the right side...
+                nn = n;
+            int wholeWidth = nn*maxwidth + (nn-1)*LEADING;
+            boolean beforeGlue = (glueIndex!=-1);
+            int j=0;
             for (int i=0; i<n; i++) { // second pass: cut
                 Component m = parent.getComponent(i);
+                if (i == glueIndex) {
+                    beforeGlue = false;
+                    continue;
+                }
                 if (m.isVisible()) {
                     Dimension d = m.getPreferredSize();
                     m.setSize(maxwidth, d.height);
-                    m.setLocation(parent.getWidth() - wholeWidth - border.right + i*maxwidth + i*LEADING, border.top);
+                    if (beforeGlue) {
+                        m.setLocation(border.left + i*(maxwidth + LEADING), border.top);
+                    } else {
+                        int x = parent.getWidth() - wholeWidth - border.right + j*(maxwidth + LEADING);
+                        m.setLocation(parent.getWidth() - wholeWidth - border.right + j*(maxwidth + LEADING), border.top);
+                        j++; // j is like i, but doesn't count the glue
+                    }
                 }
             }
         }
@@ -75,7 +103,6 @@ public class ButtonLayout implements LayoutManager {
         // insets
         d.width += border.left + border.right;
         d.height += border.top + border.bottom;
-
         return d;
     }
     public Dimension minimumLayoutSize(Container parent) {
