@@ -320,15 +320,7 @@ public class GridFrame extends XFrame
                 refreshFromPreferences();
 
                 // save new pref
-                try {
-                    Prefs.save();
-                } catch (IOException ioe) {
-                    // ignore?
-                    // BAD INTERFACE: if save() is meant to be called at random time by users like this,
-                    // it should handle ioe's gracefully.  i shouldn't have to worry about this sort of crap now.
-                    // (at worst, i should have 2 save()s, one that's force-save-dialog-on-fail, the other that's
-                    // save-now-if-you-can-but-not-required.)
-                }
+		Prefs.save();
             }
         };
         zoomIn.putValue(Action.MNEMONIC_KEY, new Integer('I'));
@@ -348,11 +340,7 @@ public class GridFrame extends XFrame
                 refreshFromPreferences();
 
                 // save new pref
-                try {
-                    Prefs.save();
-                } catch (IOException ioe) {
-                    // ignore
-                }
+		Prefs.save();
             }
         };
         zoomOut.putValue(Action.MNEMONIC_KEY, new Integer('O'));

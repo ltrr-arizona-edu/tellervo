@@ -1265,12 +1265,8 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
                 repaint();
 
                 // set pref, and save
-                System.setProperty("corina.cross.dating", encode()); // save pref
-                try {
-                    Prefs.save();
-                } catch (IOException ioe) {
-                    System.out.println("oops..."); // FIXME: make an intelligent warning here (with "don't warn again"?)
-                }
+                System.setProperty("corina.cross.dating", encode());
+		Prefs.save();
             }
         };
         moving.addActionListener(a);
