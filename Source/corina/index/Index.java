@@ -159,6 +159,41 @@ public abstract class Index implements Graphable, Runnable, UndoableEdit {
         return chi2;
     }
 
+    private Double r=null; // dunno what's a valid r, so just to be safe
+    public final double getR() {
+        if (r==null) // see getChi2()
+            r = new Double(computeR(data, target.data));
+        return r.doubleValue();
+    }
+    
+    // uses the r-algorithm stolen from t-score
+    private static double computeR(List A, List B) {
+        // compute means
+        int n = A.size();
+        double Amean=0.0, Bmean=0.0;
+        for (int i=0; i<n; i++) {
+            Amean += ((Number) A.get(i)).doubleValue();
+            Bmean += ((Number) B.get(i)).doubleValue();
+        }
+        Amean /= n;
+        Bmean /= n;
+
+        // compute xx, yy, z1/z2/z3
+        double z1=0.0, z2=0.0, z3=0.0;
+        for (int i=0; i<n; i++) {
+            double xx = ((Number) A.get(i)).doubleValue() - Amean;
+            double yy = ((Number) B.get(i)).doubleValue() - Bmean;
+
+            z1 += xx*xx;
+            z2 += yy*yy;
+            z3 += xx*yy;
+        }
+
+        // compute r
+        double r = z3 / Math.sqrt(z1*z2);
+        return r;
+    }
+    
     // undo: backup data
     private List backup=null;
     private String oldFormat;

@@ -96,24 +96,34 @@ public class IndexDialog extends JDialog {
 
     // table model -- (could be static but for msg.getString())
     private class IndexTableModel extends AbstractTableModel {
-        // formatter for chi^2
-        private DecimalFormat _fmt = new DecimalFormat("###,##0.0");
+        private DecimalFormat fmtChi2 = new DecimalFormat("###,##0.0"); // for chi2
+        private DecimalFormat fmtR = new DecimalFormat("0.000"); // for r
         private IndexSet iset;
         public IndexTableModel(IndexSet iset) {
             this.iset = iset;
         }
         public String getColumnName(int col) {
-            return (col == 0 ? msg.getString("index") : "\u03C7\u00B2"); // "Chi^2"
+            switch (col) {
+                case 0: return msg.getString("index");
+                case 1: return "\u03C7\u00B2"; // "Chi^2"
+                case 2: return "r"; // it's always "r", right?
+                default: return null;
+            }
         }
         public int getRowCount() {
             return iset.indexes.size();
         }
         public int getColumnCount() {
-            return 2;
+            return 3;
         }
         public Object getValueAt(int row, int col) {
             Index i = (Index) iset.indexes.get(row);
-            return (col == 0 ? i.getName() : _fmt.format(i.getChi2()));
+            switch (col) {
+                case 0: return i.getName();
+                case 1: return fmtChi2.format(i.getChi2());
+                case 2: return fmtR.format(i.getR());
+                default: return null;
+            }
         }
         public void setIndexSet(IndexSet iset) {
             this.iset = iset;
