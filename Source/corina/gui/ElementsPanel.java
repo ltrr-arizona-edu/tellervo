@@ -94,10 +94,10 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
     // --- PopupListener ----------------------------------------
     private class PopupListener extends MouseAdapter {
-	public void mousePressed(MouseEvent e) {
+	public void mousePressed(MouseEvent e) { // on mac, popup trigger set here
 	    maybeShowPopup(e);
 	}
-	public void mouseReleased(MouseEvent e) {
+	public void mouseReleased(MouseEvent e) { // on windows, popup trigger set here
 	    maybeShowPopup(e);
 	}
 	private void maybeShowPopup(MouseEvent e) {
@@ -152,7 +152,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 	    open.addActionListener(new AbstractAction() {
 		    public void actionPerformed(ActionEvent ae) {
 			// get selected element
-			int i = table.getSelectedRow();
+			int i = table.getSelectedRow(); // BUG: if nothing's selected, nothing gets selected, returns -1 here
 			Element e = (Element) elements.get(i);
 
 			// load it
@@ -407,47 +407,45 @@ public class ElementsPanel extends JPanel implements SampleListener {
 	    });
 	*/
 
-	// editor
-	final JPanel panel = new JPanel(new BorderLayout());
-	final JCheckBox chx = new JCheckBox();
-	final JLabel lab = new JLabel();
-	panel.add(chx, BorderLayout.WEST);
-	panel.add(lab, BorderLayout.CENTER);
-	lab.setFont(table.getFont());
-	chx.setForeground(table.getForeground());
-	lab.setForeground(table.getForeground());
-	chx.setBackground(table.getBackground());
-	lab.setBackground(table.getBackground());
-	lab.setOpaque(true);
-	chx.setOpaque(true);
-	table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(chx) {
-		public Component getTableCellEditorComponent(JTable table, Object value,
-							     boolean isSelected,
-							     int row, int column) {
-		    Element e = (Element) value;
-		    chx.setSelected(e.active);
-		    lab.setText(new File(e.getFilename()).getName()); // filename only (not fq)
+        // editor
+        final JPanel panel = new JPanel(new BorderLayout());
+        final JCheckBox chx = new JCheckBox();
+        final JLabel lab = new JLabel();
+        panel.add(chx, BorderLayout.WEST);
+        panel.add(lab, BorderLayout.CENTER);
+        lab.setFont(table.getFont());
+        chx.setForeground(table.getForeground());
+        lab.setForeground(table.getForeground());
+        chx.setBackground(table.getBackground());
+        lab.setBackground(table.getBackground());
+        lab.setOpaque(true);
+        chx.setOpaque(true);
+        table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(chx) {
+            public Component getTableCellEditorComponent(JTable table, Object value,
+                                                         boolean isSelected,
+                                                         int row, int column) {
+                Element e = (Element) value;
+                chx.setSelected(e.active);
+                lab.setText(new File(e.getFilename()).getName()); // filename only (not fq)
 
-		    Color fore = (isSelected ? table.getSelectionForeground() : table.getForeground());
-		    Color back = (isSelected ? table.getSelectionBackground() : table.getBackground());
+                Color fore = (isSelected ? table.getSelectionForeground() : table.getForeground());
+                Color back = (isSelected ? table.getSelectionBackground() : table.getBackground());
 
-		    /*
-		    // light-blue-ish
-		    if (row % 2 == 0)
-			back = new Color(back.getRed() - 16,
-					 back.getGreen() - 16,
-					 back.getBlue());
-		    */
+                /*
+                 // light-blue-ish
+                 if (row % 2 == 0)
+                 back = new Color(back.getRed() - 16, back.getGreen() - 16, back.getBlue());
+                 */
 
-		    chx.setForeground(fore);
-		    lab.setForeground(fore);
-		    chx.setBackground(back);
-		    lab.setBackground(back);
+                chx.setForeground(fore);
+                lab.setForeground(fore);
+                chx.setBackground(back);
+                lab.setBackground(back);
 
-		    return panel;
-		}
-	    });
-
+                return panel;
+            }
+        });
+        
 	// set columns: for each column use popup if suggested values present
 	for (int i=0; i<fields.size(); i++)
 	    if (((Field) fields.get(i)).values != null) {
@@ -457,7 +455,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 	    }
     }
 
-    // this method is unbelievably ugly, thanks to java's lack of closures.  *sigh*
+        // this method is pretty (was: unbelievably) ugly, thanks to java's lack of closures.  *sigh*
     private int lastSortCol = -1;
     private void addClickToSort() {
         table.getTableHeader().addMouseListener(new MouseAdapter() {

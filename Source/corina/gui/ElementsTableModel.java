@@ -56,6 +56,7 @@ public class ElementsTableModel extends AbstractTableModel {
     }
 
     // this is a really bad place for this...
+    // HEY: why can't i use a jcheckbox here?
     public static class FilenameRenderer extends JPanel implements TableCellRenderer {
 	private JLabel label = new JLabel();
 	private JCheckBox check = new JCheckBox();
@@ -76,6 +77,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	    Element e = (Element) value;
 	    check.setSelected(e.isActive());
 	    label.setText(new File(e.getFilename()).getName()); // filename only (not fq)
+                                                         // REFACTOR: new UserFriendlyFile avoids this problem
 
 	    Color fore = (isSelected ? table.getSelectionForeground() : table.getForeground());
 	    Color back = (isSelected ? table.getSelectionBackground() : table.getBackground());
@@ -100,10 +102,8 @@ public class ElementsTableModel extends AbstractTableModel {
     // column name
     public String getColumnName(int col) {
 	switch (col) {
-	case 0:
-	    return "Filename";
-	case 1:
-	    return "Range";
+	case 0: return "Filename";
+	case 1: return "Range";
 	default:
 	    return ((Metadata.Field) fields.get(col-2)).description;
 	}
@@ -165,14 +165,11 @@ public class ElementsTableModel extends AbstractTableModel {
 
     // column class
     public Class getColumnClass(int col) {
-	switch (col) {
-	case 0:
-	    return Element.class; // ???
-	case 1:
-	    return String.class; // well, it's a range...
-	default:
-	    return String.class; //  hrm.  well, assume it's a String...
-	}
+        switch (col) {
+	case 0: return Element.class; // ???
+	case 1: return String.class; // well, it's a range...
+	default: return String.class; //  hrm.  well, assume it's a String...
+        }
     }
 
     // set cell (row,col)
