@@ -353,7 +353,7 @@ public class IndexDialog extends JDialog {
 
         // bottom panel (buttons) -- REFACTOR: EXTRACT METHOD
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.setLayout(new corina.gui.ButtonLayout());
         p.add(buttonPanel);
 
         // graph button
@@ -362,11 +362,8 @@ public class IndexDialog extends JDialog {
         // (spacer)
         buttonPanel.add(Box.createHorizontalGlue());
 
-        // close button
+        // cancel button
         buttonPanel.add(makeCancelButton());
-
-        // (spacer)
-        buttonPanel.add(Box.createHorizontalStrut(8));
 
         // ok button -- REFACTOR: EXTRACT METHOD
         JButton okButton = new JButton(msg.getString("ok"));
