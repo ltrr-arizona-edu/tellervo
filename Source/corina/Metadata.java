@@ -20,8 +20,7 @@
 
 package corina;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.StringTokenizer;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 
@@ -72,8 +71,12 @@ import java.util.MissingResourceException;
    @version $Id$ */
 
 public class Metadata {
+    // would this be a good candidate for s-expressions?
+    // dunno, a lot of it is localized
+    // (dating '("D" "A"))
+    // -- "Dating", "Relative", "Absolute", and the tooltip still need to be in a properties file.  not a big win.
 
-    // metadata fields -- order matters!
+    // metadata fields -- order matters!  (which is one reason these aren't implicit in the properties file.)
     private static final String FIELD_LIST[] = {
 	"title",
 	"id",
@@ -115,6 +118,7 @@ public class Metadata {
         public boolean readonly; // is this field read-only?
         public boolean preview; // is this field one of the preview fields?
         public int lines; // number of lines to display
+                          // TO ADD: "columns".  ("sapwood count" doesn't need to be as wide as "title" or "species")
 
         // store type information?
 
@@ -163,18 +167,12 @@ public class Metadata {
 
             // values are going to be of the form "A,B,C" -- parse this
             try {
-                List tmp = new ArrayList();
                 String v = m.getString(key + ".options");
-                int start = 0;
-                for (;;) {
-                    int nextComma = v.indexOf(',', start);
-                    if (nextComma == -1)
-                        break;
-                    tmp.add(v.substring(start, nextComma));
-                    start = nextComma + 1;
-                }
-                tmp.add(v.substring(start));
-                f.values = (String[]) tmp.toArray(new String[0]);
+                StringTokenizer tok = new StringTokenizer(v, ",");
+                int n = tok.countTokens();
+                f.values = new String[n];
+                for (int j=0; j<n; j++)
+                    f.values[j] = tok.nextToken();
             } catch (MissingResourceException mre) {
                 f.values = null;
             }
