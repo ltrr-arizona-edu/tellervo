@@ -42,8 +42,6 @@ public class TextLine implements Line {
     private int size = NORMAL_SIZE;
     private Font font; // (the constructor sets this!)
 
-    private boolean smallcaps = false;
-    
     /**
        Create a text line, of the normal size.
 
@@ -66,47 +64,13 @@ public class TextLine implements Line {
         this.font = new Font("serif", Font.PLAIN, size);
     }
 
-    /**
-       Create a text line.
-
-       @param text the text to write
-       @param size the size to use
-       @param smallcaps if true, use small caps instead of lower-case letters
-    */
-    public TextLine(String text, int size, boolean smallcaps) {
-        this.text = text;
-        this.size = size;
-        this.smallcaps = smallcaps;
-        this.font = new Font("serif", Font.PLAIN, size);
-    }
-
     public void print(Graphics g, PageFormat pf, float y) {
         // baseline
         float baseline = (float) (y + height(g));
         Graphics2D g2 = (Graphics2D) g; // needed for drawString()
 
-        if (smallcaps) {
-	    printSmallCaps(g2, pf, baseline);
-	} else {
-	    g2.setFont(font);
-	    g2.drawString(text, (float) pf.getImageableX(), baseline);
-	}
-    }
-
-    // -- inefficient
-    // REFACTOR: use largest same-case chunks possible?
-    private void printSmallCaps(Graphics2D g2, PageFormat pf, float baseline) {
-	float x = (float) pf.getImageableX();
-	Font smallFont = new Font("serif", Font.PLAIN, (int) (size * 0.8)); // sc are 80%?
-	for (int i=0; i<text.length(); i++) {
-	    char c = text.charAt(i);
-	    boolean small = Character.isLowerCase(c);
-	    c = Character.toUpperCase(c);
-	    g2.setFont(small ? smallFont : font);
-	    String str = String.valueOf(c);
-	    g2.drawString(str, x, baseline);
-	    x += g2.getFontMetrics().stringWidth(str);
-	}
+	g2.setFont(font);
+	g2.drawString(text, (float) pf.getImageableX(), baseline);
     }
 
     public int height(Graphics g) {
