@@ -59,6 +59,7 @@ import javax.swing.filechooser.FileFilter;
 
 import com.keypoint.PngEncoder;
 
+import corina.Build;
 import corina.Range;
 import corina.Sample;
 import corina.Year;
@@ -142,7 +143,7 @@ public class GrapherPanel extends JPanel
 	    title += " (at " + g.getRange() + ")";
 
 	// set title
-	myFrame.setTitle(title);
+	myFrame.setTitle(title + " - " + Build.VERSION + " " + Build.TIMESTAMP);
     }
 
     // for horiz scrollbar

@@ -30,6 +30,8 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 
+import corina.Build;
+
 /**
    A window which displays a plain text file.
 
@@ -72,7 +74,7 @@ public class TextWindow extends JFrame {
         a.setFont(new Font("monospaced", oldFont.getStyle(), oldFont.getSize()));
 
 	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	setTitle(filename);
+	setTitle(filename + " - " + Build.VERSION + " " + Build.TIMESTAMP);
 	setSize(640, 480);
 	show();
     }

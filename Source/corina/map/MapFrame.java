@@ -20,6 +20,7 @@
 
 package corina.map;
 
+import corina.Build;
 import corina.map.tools.ToolBox;
 import corina.site.Site;
 import corina.site.SiteDB;
@@ -158,7 +159,7 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
     // EXTRACT: if i really need this (do i?), make a WindowListener(?)
 
     public void init() {
-        setTitle("Atlas");
+        setTitle("Atlas - " + Build.VERSION + " " + Build.TIMESTAMP);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         // add mappanel

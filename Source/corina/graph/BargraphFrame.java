@@ -20,6 +20,7 @@
 
 package corina.graph;
 
+import corina.Build;
 import corina.Year;
 import corina.Range;
 import corina.Sample;
@@ -714,7 +715,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
     }
 
         // frame title
-        setTitle("Bargraph");
+        setTitle("Bargraph" + " - " + Build.VERSION + " " + Build.TIMESTAMP);
 
 	// create panel
 	bgp = new BargraphPanel();

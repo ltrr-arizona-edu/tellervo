@@ -20,6 +20,7 @@
 
 package corina.cross;
 
+import corina.Build;
 import corina.Element;
 import corina.Sample;
 import corina.graph.GraphWindow;
@@ -285,7 +286,7 @@ public class GridFrame extends XFrame
     }
 
     private void init() {
-        setTitle(I18n.getText("crossdating_grid"));
+        setTitle(I18n.getText("crossdating_grid") + " - " + Build.VERSION + " " + Build.TIMESTAMP);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         initTable();

@@ -59,6 +59,7 @@ import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
+import corina.Build;
 import corina.Sample;
 import corina.SampleEvent;
 import corina.SampleListener;
@@ -440,7 +441,7 @@ public class Editor extends XFrame
     }
 
     public void updateTitle() {
-        setTitle(sample.toString());
+        setTitle(sample.toString() + " - " + Build.VERSION + " " + Build.TIMESTAMP);
     }
 
     // ask the user for a title for this (new) sample.  it's guaranteed to have a number, now!

@@ -20,6 +20,7 @@
 
 package corina.cross;
 
+import corina.Build;
 import corina.site.Site;
 import corina.site.SiteDB;
 import corina.site.SiteNotFoundException;
@@ -410,7 +411,7 @@ public class CrossdateWindow extends XFrame
 			    enableButtons();
 
 			    // window title
-			    setTitle(crossdate.toString());
+			    setTitle(crossdate.toString() + " - " + Build.VERSION + " " + Build.TIMESTAMP);
 
 			    // repaint(); // needed?
 			}
@@ -610,7 +611,7 @@ public class CrossdateWindow extends XFrame
 
                         // show card
                         cardLayout.show(cards, "table");
-                        setTitle(tableView.toString());
+                        setTitle(tableView.toString() + " - " + Build.VERSION + " " + Build.TIMESTAMP);
                         view = 1;
 
                     } catch (IOException ioe) {
@@ -635,7 +636,7 @@ public class CrossdateWindow extends XFrame
 
                     // show card
                     cardLayout.show(cards, "grid");
-                    setTitle(gridView.toString());
+                    setTitle(gridView.toString() + " - " + Build.VERSION + " " + Build.TIMESTAMP);
                     view = 2;
                 }
             });

@@ -22,6 +22,7 @@ package corina.gui;
 
 import corina.Sample;
 import corina.Element;
+import corina.Build;
 import corina.editor.Editor;
 import corina.gui.menus.FileMenu;
 import corina.gui.menus.EditMenu;
@@ -137,7 +138,7 @@ public class XCorina extends JFrame {
         _self = this;
 
         // boilerplate
-        setTitle("Corina");
+        setTitle("Corina - " + Build.VERSION + " " + Build.TIMESTAMP);
 
         // set tree icon (also in XFrame).
 	// EEP!  i can't use builder.geticon() if it doesn't guarantee an imageicon, no?
