@@ -47,6 +47,10 @@ public interface Graphable {
 	<code>Number</code>s.
 	@return data to graph */
     public List getData();
+    // THIS IS WHAT'S HOLDING ME BACK.
+    // it's a list because sample holds a list for editing, which forces graphable to take a list,
+    // which forces index to use a list, which just sucks everywhere.  i still want to be able
+    // to edit a sample and have it updated, so a plain copy won't work -- is this possible?
 
     /** Get the start of the range to graph.
 	@return start Year of data */
@@ -55,6 +59,6 @@ public interface Graphable {
     /** Get the default vertical scale; the data points are multiplied
 	by this value before being graphed.
 	@return default vertical scale factor */
-    public double getScale();
+    public float getScale();
 
 }
