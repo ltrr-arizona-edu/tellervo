@@ -24,6 +24,8 @@ import corina.Year;
 import corina.Range;
 import corina.Sample;
 import corina.gui.ButtonLayout;
+import corina.gui.DialogLayout;
+import corina.util.OKCancel;
 
 import java.util.ResourceBundle;
 
@@ -48,7 +50,6 @@ import javax.swing.undo.CannotRedoException;
 */
 
 public class RedateDialog extends JDialog {
-
     private Sample sample;
     private Range range;
     private boolean isAbsolute;
@@ -128,132 +129,103 @@ public class RedateDialog extends JDialog {
 
 	// all done
 	pack();
+        java.awt.Dimension d = getSize();
+        setSize(new java.awt.Dimension(d.width*3/2, d.height));
 	setResizable(false);
 	show();
 	endField.requestFocus();
     }
 
     private void setup() {
-	// set title
-	setTitle(msg.getString("redate"));
+        // set title
+        setTitle(msg.getString("redate"));
 
-	// kill me when i'm gone
-	setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        // kill me when i'm gone
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-	// grab data
-	range = sample.range;
-	isAbsolute = sample.isAbsolute();
+        // grab data
+        range = sample.range;
+        isAbsolute = sample.isAbsolute();
 
-	// layout
-	JPanel myPanel = new JPanel();
-	GridBagLayout myGrid = new GridBagLayout();
-	myPanel.setLayout(myGrid);
-	getContentPane().add(myPanel, BorderLayout.CENTER);
-	GridBagConstraints myConstraints = new GridBagConstraints();
-	myConstraints.anchor = GridBagConstraints.NORTHWEST;
-	myConstraints.insets = new Insets(3, 3, 3, 3);
+        // dialog is a boxlayout
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        p.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
+        setContentPane(p);
 
-	// more spacing!
-	getContentPane().add(Box.createVerticalStrut(12), BorderLayout.NORTH);
-	getContentPane().add(Box.createHorizontalStrut(20), BorderLayout.EAST);
-	getContentPane().add(Box.createHorizontalStrut(20), BorderLayout.WEST);
+        // controls go in a dialoglayout
+        JPanel controls = new JPanel(new DialogLayout());
+        p.add(controls);
 
-	// redate --------------------------------------------------
-	JLabel firstLabel = new JLabel(msg.getString("range") + ":", SwingConstants.TRAILING);
-	firstLabel.setVerticalAlignment(SwingConstants.CENTER);
-	firstLabel.setDisplayedMnemonic('G');
-	myConstraints.gridx = 0;
-	myConstraints.gridy = 0;
-	myConstraints.gridheight = 2;
-	myPanel.add(firstLabel, myConstraints);
-	myConstraints.gridheight = 1;
+        // old range
+        // controls.add(new JLabel(sample.range.toString()), msg.getString("old_range") + ":");
+        // controls.add(new JLabel(msg.getString("old_range") + " was " + sample.range));
 
-	JPanel rangePanel = new JPanel(); // default=FlowLayout
+        // redate --------------------------------------------------
+        JPanel rangePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
-	startListener = new StartListener();
-	startField = new JTextField(sample.range.getStart().toString(), 5);
-	startField.getDocument().addDocumentListener(startListener);
+        startListener = new StartListener();
+        startField = new JTextField(sample.range.getStart().toString(), 5);
+        startField.getDocument().addDocumentListener(startListener);
 
-	endListener = new EndListener();
-	endField = new JTextField(sample.range.getEnd().toString(), 5);
-	endField.getDocument().addDocumentListener(endListener);
+        endListener = new EndListener();
+        endField = new JTextField(sample.range.getEnd().toString(), 5);
+        endField.getDocument().addDocumentListener(endListener);
 
-	firstLabel.setLabelFor(endField); // :-)
+        // can't do this with dialoglayout! -- firstLabel.setLabelFor(endField); // :-)
 
-	rangePanel.add(startField);
-	rangePanel.add(new JLabel(" - "));
-	rangePanel.add(endField);
+        rangePanel.add(startField);
+        rangePanel.add(new JLabel(" - "));
+        rangePanel.add(endField);
 
-	myConstraints.gridx = 1;
-	myConstraints.gridy = 0;
-	myPanel.add(rangePanel, myConstraints);
+        controls.add(rangePanel, msg.getString("new_range") + ":");
 
-	// dating --------------------------------------------------
-	JLabel dating = new JLabel(msg.getString("dating") + ":", SwingConstants.TRAILING);
-	myConstraints.gridx = 0;
-	myConstraints.gridy = 2;
-	myConstraints.gridheight = 2;
-	myPanel.add(dating, myConstraints);
-	myConstraints.gridheight = 1;
+        // dating --------------------------------------------------
+        ButtonGroup datingGroup = new ButtonGroup();
+        JRadioButton relButton = new JRadioButton(msg.getString("relative"), !isAbsolute);
+        relButton.setMnemonic(msg.getString("relative_key").charAt(0));
+        final JRadioButton absButton = new JRadioButton(msg.getString("absolute"), isAbsolute);
+        absButton.setMnemonic(msg.getString("absolute_key").charAt(0));
 
-	ButtonGroup datingGroup = new ButtonGroup();
-	JRadioButton relButton = new JRadioButton(msg.getString("relative"), !isAbsolute);
-	relButton.setMnemonic(msg.getString("relative_key").charAt(0));
-	final JRadioButton absButton = new JRadioButton(msg.getString("absolute"), isAbsolute);
-	absButton.setMnemonic(msg.getString("absolute_key").charAt(0));
+        // on click (either radiobutton), set absolute (re-use listener)
+        ActionListener absListener = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                isAbsolute = (e.getSource() == absButton);
+            }
+        };
+        relButton.addActionListener(absListener);
+        absButton.addActionListener(absListener);
 
-	// on click (either radiobutton), set absolute (re-use listener)
-	ActionListener absListener = new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    isAbsolute = (e.getSource() == absButton);
-		}
-	    };
-	relButton.addActionListener(absListener);
-	absButton.addActionListener(absListener);
-
-	datingGroup.add(relButton);
-	datingGroup.add(absButton);
-	myConstraints.gridx = 1;
-	myPanel.add(relButton, myConstraints);
-	myConstraints.gridy = 3;
-	myPanel.add(absButton, myConstraints);
+        datingGroup.add(relButton);
+        datingGroup.add(absButton);
+        controls.add(relButton, "Dating:");
+        controls.add(Box.createVerticalStrut(4), null); // (8)
+        controls.add(absButton, "");
 
         // buttons --------------------------------------------------
         JPanel buttons = new JPanel(new ButtonLayout());
-        getContentPane().add(buttons, BorderLayout.SOUTH);
+        p.add(Box.createVerticalStrut(14), null); // ???
+        p.add(buttons);
 
-	// cancel, ok
-	JButton cancel = new JButton(msg.getString("cancel"));
-	final JButton ok = new JButton(msg.getString("ok"));
-	buttons.add(cancel);
-	buttons.add(ok);
+        // cancel, ok
+        JButton cancel = new JButton(msg.getString("cancel"));
+        final JButton ok = new JButton(msg.getString("ok"));
+        buttons.add(cancel);
+        buttons.add(ok);
 
-	// (listen for cancel, ok)
-	ActionListener buttonListener = new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    if (e.getSource()==ok &&
-			(!sample.range.equals(range) || sample.isAbsolute()!=isAbsolute))
-			sample.postEdit(Redate.redate(sample, range, isAbsolute ? "A" : "R"));
-		    dispose();
-		}
-	    };
+        // (listen for cancel, ok)
+        ActionListener buttonListener = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource()==ok &&
+                    (!sample.range.equals(range) || sample.isAbsolute()!=isAbsolute))
+                    sample.postEdit(Redate.redate(sample, range, isAbsolute ? "A" : "R"));
+                dispose();
+            }
+        };
+        cancel.addActionListener(buttonListener);
+        ok.addActionListener(buttonListener);
 
-	cancel.addActionListener(buttonListener);
-	ok.addActionListener(buttonListener);
-
-	// some nice spacing
-	buttons.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 10));
-
-	// esc => cancel
-	addKeyListener(new KeyAdapter() {
-		public void keyPressed(KeyEvent e) {
-		    if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-			dispose();
-		}
-	    });
-
-	// ret => ok
-	getRootPane().setDefaultButton(ok);
+        // esc => cancel, return => ok
+        OKCancel.addKeyboardDefaults(this, ok);
     }
-
 }
