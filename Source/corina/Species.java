@@ -35,8 +35,6 @@ import java.util.StringTokenizer;
 // the file came from web.utk.edu/~grissino/species.htm
 // I hope I didn't murder it too bad in converting it to a text file
 
-// (from before i wrote it:) is this really enough to justify its own class?
-
 public class Species {
     public static Properties species = new Properties(); // code => name hash
 
@@ -55,7 +53,7 @@ public class Species {
         Enumeration e = species.keys();
         while (e.hasMoreElements()) {
             String maybe = (String) e.nextElement();
-            if (species.get(maybe).equals(s))
+            if (((String) species.get(maybe)).equalsIgnoreCase(s))
                 return maybe;
         }
         throw new UnknownSpeciesException();
@@ -73,18 +71,11 @@ public class Species {
 
     static {
         // load most-common species
-        String s = System.getProperty("corina.species.common");
+        String s = System.getProperty("corina.species.common", "PISP,PCSP,JUSP,QUSP,UNKN");
 
-        if (s == null || s.length() == 0) {
-            common.add("PISP");
-            common.add("PCSP");
-            common.add("JUSP");
-            common.add("QUSP");
-            common.add("UNKN"); // should this be always present?  any others like this?
-        } else {
-            StringTokenizer t = new StringTokenizer(s, ",");
-            while (t.hasMoreTokens())
-                common.add(t.nextToken()); // sums will need the same sort of routine: "QUSP,PISP" => { "QUSP", "PISP" } => "Quercus, Pinus"
-        }
+        StringTokenizer t = new StringTokenizer(s, ", ");
+        while (t.hasMoreTokens())
+            common.add(t.nextToken());
+        // sums will need the same sort of routine: "QUSP,PISP" => { "QUSP", "PISP" } => "Quercus, Pinus"
     }
 }
