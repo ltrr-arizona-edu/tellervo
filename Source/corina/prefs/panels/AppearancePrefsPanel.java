@@ -25,54 +25,75 @@ import corina.prefs.components.ColorPrefComponent;
 import corina.prefs.components.BoolPrefComponent;
 import corina.prefs.components.FontPrefComponent;
 import corina.prefs.components.UIDefaultsComponent;
-import corina.gui.layouts.DialogLayout;
-import corina.gui.*;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import javax.swing.*;
 
 // TODO: javadoc
 // TODO: write
 // TODO: debug
 // TODO: use
-public class AppearancePrefsPanel extends JPanel {
+public class AppearancePrefsPanel extends Container {
 
   public AppearancePrefsPanel() {
-    // layout
-    setLayout(new DialogLayout());
+    setLayout(new GridBagLayout());
+    
+    JComponent gridGroup = new JPanel(new GridBagLayout());
+    gridGroup.setBorder(BorderFactory.createTitledBorder("Grid settings"));
+    gridGroup.setToolTipText("Grid settings");
+    
+    JLabel l = new JLabel("Text color:");
+    Component c = new ColorPrefComponent(Prefs.EDIT_FOREGROUND);
+    l.setLabelFor(c);
+    
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.insets = new Insets(2, 2, 2, 2);
+    
+    gridGroup.add(l, gbc);
+    gbc.gridx = 1;
+    gridGroup.add(c, gbc);
+    
+    l = new JLabel("Background color:");
+    c = new ColorPrefComponent(Prefs.EDIT_BACKGROUND);
+    
+    gbc.gridx = 0;
+    gbc.gridy = 1;
+    gridGroup.add(l, gbc);
+    gbc.gridx = 1;
+    gridGroup.add(c, gbc);
+    
+    l = new JLabel("Font:");
+    c = new FontPrefComponent(Prefs.EDIT_FONT);
 
-    final JPanel me = this; // ugh.
+    gbc.gridx = 0;
+    gbc.gridy = 2;
+    gridGroup.add(l, gbc);
+    gbc.gridx = 1;
+    gridGroup.add(c, gbc);
 
-    // foreground color
-    {
-      ColorPrefComponent p = new ColorPrefComponent(Prefs.EDIT_FOREGROUND);
-      JPanel t = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-      t.add(p);
-      add(t, "Text color:");
-    }
+    gbc.gridx = 0;
+    gbc.gridy = 3;
+    gbc.gridwidth = 2;
 
-    // background color
-    {
-      ColorPrefComponent p = new ColorPrefComponent(Prefs.EDIT_BACKGROUND);
-      JPanel t = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-      t.add(p);
-      add(t, "Background color:");
-    }
-
-    add(Box.createVerticalStrut(20));
-
-    // font
-    add(new FontPrefComponent(Prefs.EDIT_FONT), "Font:");
-
-    add(Box.createVerticalStrut(20));
-
-    // draw gridlines?
-    add(new BoolPrefComponent("Draw gridlines?", Prefs.EDIT_GRIDLINES), "");
-
-    JPanel p = new JPanel();
-    p.setLayout(new BorderLayout());
-    p.add(new UIDefaultsComponent(), BorderLayout.CENTER);
-    add(p, "UI");
+    gridGroup.add(new BoolPrefComponent("Draw gridlines?", Prefs.EDIT_GRIDLINES), gbc);
+    
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.weightx = 1;
+    gbc.weighty = 0;
+    gbc.insets = new Insets(0, 0, 0, 0);
+    
+    add(gridGroup, gbc);
+    
+    gbc.gridy = 1;
+    gbc.weighty = 1;
+    
+    gbc.fill = GridBagConstraints.BOTH;
+    
+    c = new UIDefaultsComponent();
+    ((JComponent) c).setBorder(BorderFactory.createTitledBorder("UI fonts and colors"));
+    add(c, gbc);
   }
 }
