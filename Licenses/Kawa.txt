@@ -1,0 +1,15 @@
+The Java classes (with related files and documentation) in these packages
+are copyright (C) 1996, 1997, 1998, 1999  Per Bothner.
+
+These classes are distributed in the hope that they will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+These classes are free software.  You can use and re-distribute a class
+without restriction (in source or binary form) as long as you use a
+version that has not been modified in any way from a version released
+by Per Bothner, Red Hat inc, or the Free Software Foundation.
+You may make and distribute a modified version, provided you follow
+the terms of the GNU General Public License; either version 2,
+or (at your option) any later version.
