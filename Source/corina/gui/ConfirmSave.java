@@ -21,6 +21,8 @@
 package corina.gui;
 
 import corina.util.OKCancel;
+import corina.util.JLinedLabel;
+import corina.ui.Builder;
 
 import java.awt.Dimension;
 import java.awt.Container;
@@ -49,6 +51,7 @@ public class ConfirmSave extends JDialog {
 	String prompt1 = "Do you want to save the changes you made in";
 	String prompt2 = "the document \"" + doc.getDocumentTitle() + "\"?"; // ack!
 	// String prompt3 = "Your changes will be lost if you don't save them.";  (smaller?)
+ // REFACTOR: create a multi-line jlabel, and make this a messageformat
 
 	// dialog
 	final JDialog dlg = new JDialog((JFrame) doc, true);
@@ -62,7 +65,7 @@ public class ConfirmSave extends JDialog {
 	dlg.setLocation(docsize.width/2 - size.width/2, docsize.height/2 - size.height/2);
 
 	// button: dont save
-	JButton dontSave = new JButton("Don't Save"); // dispose
+	JButton dontSave = Builder.makeButton("dont_save"); // dispose
 	dontSave.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    // close me
@@ -74,7 +77,7 @@ public class ConfirmSave extends JDialog {
 	    });
 
 	// button: cancel
-	JButton cancel = new JButton("Cancel");
+	JButton cancel = Builder.makeButton("cancel");
 	cancel.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    // just close
@@ -83,7 +86,7 @@ public class ConfirmSave extends JDialog {
 	    });
 
 	// button: save
-	JButton save = new JButton("Save"); // save,dispose
+	JButton save = Builder.makeButton("save"); // save, dispose
 	save.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    // close me
@@ -96,10 +99,11 @@ public class ConfirmSave extends JDialog {
 	    });
 
         // text chunk
-        JPanel text = new JPanel();
+	JPanel text = new JPanel();
         text.setLayout(new BoxLayout(text, BoxLayout.Y_AXIS));
-        text.add(new JLabel(prompt1));
-        text.add(new JLabel(prompt2));
+	// text.add(new JLinedLabel(prompt1 + "\n" + prompt2)); // doesn't work yet: jlinedlabel centers everything
+	text.add(new JLabel(prompt1));
+	text.add(new JLabel(prompt2));
         text.add(Box.createVerticalStrut(10));
 
         // layout/buttons: left-to-right
