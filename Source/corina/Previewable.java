@@ -15,25 +15,25 @@
 // along with Corina; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// Copyright 2001 Ken Harris <kbh7@cornell.edu>
+// Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
 package corina;
 
 /**
-   <p>Interface for objects that can display a preview of themselves,
-   e.g., in a file-chooser dialog or other file browser.</p>
+   <p>Interface for objects that can display a preview of themselves.
+   These are shown, for example, in a file-chooser dialog or other
+   file browser.</p>
 
-   @author <a href="mailto:kbh7@cornell.edu">Ken Harris</a>
-   @version $Id$ */
+   @see corina.Preview
+   @see corina.gui.PreviewComponent
 
+   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+   @version $Id$
+*/
 public interface Previewable {
 
-    // an HTML preview; deprecated
-    public String getHTMLPreview();
-
-    // ng-preview.
-    // usually (but not necessarily) called once per file...
+    /** Create a Preview for this Object.  Usually (but not necessarily) called once per file.
+	@return a Preview for this object */
     public Preview getPreview();
-
 }
