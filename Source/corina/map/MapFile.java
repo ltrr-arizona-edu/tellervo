@@ -20,22 +20,18 @@
 
 package corina.map;
 
-import java.io.RandomAccessFile;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-
+import java.io.RandomAccessFile;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.zip.GZIPInputStream;
 
-import java.awt.Frame;
+import javax.swing.JOptionPane;
 import javax.swing.ProgressMonitor;
 
 // an interface to earth.rez-format files.
@@ -108,6 +104,21 @@ import javax.swing.ProgressMonitor;
  - could this work?
 */
 public class MapFile {
+  private static final String COMPRESSED_FILENAME = "earth.rez.gz";
+  private static final String UNCOMPRESSED_FILENAME = "corina-earth.rez";
+  private static final File CACHED_FILE = new File(System.getProperty("java.io.tmpdir") + File.separator + UNCOMPRESSED_FILENAME);
+
+  static {
+    try {
+      // FIXME: don't do this in a static block!
+      unpackDataFile();
+      open(CACHED_FILE);
+      // WAS: open("Libraries/earth.rez");
+    } catch (IOException ioe) {
+      System.out.println("Error opening map: " + ioe);
+    }
+  }
+
     private MapFile() {
         // don't instantiate me
     }
@@ -122,18 +133,18 @@ public class MapFile {
     // earth.rez is 44.4 MB; earth.rez.gz is 8.7 MB.
     private static void unpackDataFile() throws IOException {
         // see if it's there, first
-        String check = System.getProperty("java.io.tmpdir") + File.separator +
-                        "corina-earth.rez";
-        if (new File(check).exists()) {
-            File file = new File(check);
+        if (CACHED_FILE.isFile()) {
+
+            /* disregard length check for now
             // check length
             boolean lengthOk = (file.length() == 46638184);
+            */
 
             // TODO: check magic
             boolean magicOk = true; // WRITEME
 
             // if length && magic, it's good, so just return now
-            if (lengthOk && magicOk)
+            //if (lengthOk && magicOk)
                 return;
         }
 
@@ -142,10 +153,10 @@ public class MapFile {
 
         // copying from a resource to $(TMP) can take 4 or 5 seconds,
         // so we'll put up a progress monitor so users know we haven't died.
-        ProgressMonitor progress = new ProgressMonitor(new Frame(), // parent
-                                                        "Preparing map for first use...", // message
-                                                        "", // note
-                                                        0, 45*1024*1024); // round up to 45 MB
+        ProgressMonitor progress = new ProgressMonitor(null, // parent
+                                                       "Preparing map for first use...", // message
+                                                       "", // note
+                                                       0, 45*1024*1024); // round up to 45 MB
 
         // after 0.25 sec, if it looks like it'll take
         // longer than 0.5 sec, show the monitor
@@ -154,32 +165,30 @@ public class MapFile {
 
         // where i'm going to get the data from
         ClassLoader loader = MapFile.class.getClassLoader();
-        InputStream rawInput = loader.getResourceAsStream("earth.rez.gz");
+        InputStream rawInput = loader.getResourceAsStream(COMPRESSED_FILENAME);
+
+        if (rawInput == null) {
+          JOptionPane.showMessageDialog(null, "Could not find '" + COMPRESSED_FILENAME + "' in class loader resource path", "File not found", JOptionPane.ERROR_MESSAGE);
+          return;
+        }
 
         // where i'm going to put the data
-        String targetFilename = System.getProperty("java.io.tmpdir") + File.separator +
-                                "corina-earth.rez";
-        BufferedInputStream in = null;
-        BufferedOutputStream out = null;
+        InputStream in = new GZIPInputStream(rawInput);
+        OutputStream out = new FileOutputStream(CACHED_FILE);
+
+        // buffer, for fast reading -- is 16 KB ok?
+        byte buf[] = new byte[16*1024];
+        int total = 0; // total number of bytes written
         
         try {
-          in = new BufferedInputStream(new GZIPInputStream(rawInput));
-          out = new BufferedOutputStream(new FileOutputStream(targetFilename));
-          // buffer, for fast reading -- is 16 KB ok?
-          byte buf[] = new byte[16*1024];
-          int total = 0; // total number of bytes written
-          
           // copy everything from in to out
-          for (;;) {
-              int n = in.read(buf);
-              if (n <= 0)
-                  break;
-              out.write(buf, 0, n);
-              
-              total += n;
-              progress.setProgress(total);
+          int bytesRead;
+          while ((bytesRead = in.read(buf)) != -1) {
+            out.write(buf, 0, bytesRead);
+            total += bytesRead;
+            progress.setProgress(total);
           }
-  
+
           // get rid of the progress monitor
           progress.setProgress(progress.getMaximum());
         } finally {
@@ -218,20 +227,6 @@ public class MapFile {
                 throw new UnsupportedOperationException();
             }
         };
-    }
-
-    static {
-        try {
-            // FIXME: don't do this in a static block!
-            unpackDataFile();
-            String file = System.getProperty("java.io.tmpdir") + File.separator +
-                            "corina-earth.rez";
-
-            open(file);
-                // WAS: open("Libraries/earth.rez");
-        } catch (IOException ioe) {
-            System.out.println("Error opening map: " + ioe);
-        }
     }
 
     /* like read(), but guaranteed to read all */
@@ -527,21 +522,19 @@ public class MapFile {
 
     // opening the map file and loading all the headers takes a couple hundred milliseconds.
     // enough for an hourglass pointer, perhaps, but not enough for a progress dialog.
-    private static void open(String filename) throws IOException {
-        File f = new File(filename);
-        
+    private static void open(File f) throws IOException {
         // check its existence first
         if (!f.exists())
             throw new FileNotFoundException();
 
         // make sure it's the right size: this is a quick validity check
-        if (f.length() != 46638184)
-            throw new IOException("Not a map file (wrong length)");
+        /*if (f.length() != 46638184)
+            throw new IOException("Not a map file (wrong length)");*/
 
 	// BUG? shouldn't this be in the synch block, too?
 	// -- synch on something else?  synch on class?  not needed?
 
-        rez = new RandomAccessFile(filename, "r");
+        rez = new RandomAccessFile(f, "r");
         synchronized (rez) {
 	    // start to read file: 3 ints at once
             byte buf3[] = new byte[3*4]; // magic, address of header[0], number of segments
