@@ -51,6 +51,14 @@ public class CountRenderer extends JComponent implements TableCellRenderer {
         double frac = (double) val / (double) max;
         int stop = (int) (frac * w);
 
+        // zero is a special case
+        if (val == 0) {
+            // but that looks sort of silly
+            //g.setColor(dark);
+            //g.fillRect(2, TOP+(HEIGHT/2)-1, 3, 2);
+            return;
+        }
+
         // draw dark lines
         g.setColor(dark);
         //        for (int x=0; x<stop; x+=2)
