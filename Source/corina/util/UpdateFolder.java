@@ -178,20 +178,30 @@ public class UpdateFolder implements Runnable {
 	InputStreamReader r = new InputStreamReader(new FileInputStream(from));
 	OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream(to));
 
-	int n;
-	do {
+  try {
+  	int n;
+  	do {
 	    n = r.read(cbuf, 0, BUFSIZE);
 	    if (stop)
-		return;
+	      return;
 	    if (n > 0)
-		w.write(cbuf, 0, n);
-	} while (n == BUFSIZE);
+	      w.write(cbuf, 0, n);
+  	} while (n == BUFSIZE);
+  } finally {
+    try {
+      w.close();
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+    }
+    try {
+      r.close();
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+    }
+  }
 
-	w.close();
-	r.close();
-
-	// set the last-modified time
+  // set the last-modified time
 	long mod = from.lastModified();
 	to.setLastModified(mod);
-    }
+  }
 }
