@@ -18,24 +18,31 @@ public class ZoomOutTool extends Tool {
 
     public ZoomOutTool(MapPanel p, View v, ToolBox b) {
         super(p, b);
-        this.v = v; }
+        this.v = v;
+    }
 
     Icon getIcon() {
         ClassLoader cl = this.getClass().getClassLoader();
-        return new ImageIcon(cl.getResource("Images/zoom.png")); }
+        return new ImageIcon(cl.getResource("Images/zoom.png"));
+    }
     Cursor getCursor() {
         ClassLoader cl = this.getClass().getClassLoader();
         ImageIcon icon = new ImageIcon(cl.getResource("Images/zoom-small.png"));
-        return Toolkit.getDefaultToolkit().createCustomCursor(icon.getImage(), new Point(0, 0), "Zoomer"); }
+        return Toolkit.getDefaultToolkit().createCustomCursor(icon.getImage(), new Point(0, 0), "Zoomer");
+    }
     String getTooltip() {
-        return "Zoom Out Tool"; }
+        return "Zoom Out Tool";
+    }
     String getName() {
-        return "Zoom Out"; }
+        return "Zoom Out";
+    }
     Character getKey() {
-        return null; }
+        return null;
+    }
     KeyStroke getFastKey() {
-        return null; } // KeyStroke.getKeyStroke(new Character(' '), Event.META_MASK); // cmd-space
-                         // return KeyStroke.getKeyStroke("meta space"); // meta-space on mac, control-space elsewhere
+        return null;
+    } // KeyStroke.getKeyStroke(new Character(' '), Event.META_MASK); // cmd-space
+    // return KeyStroke.getKeyStroke("meta space"); // meta-space on mac, control-space elsewhere
 
     public void mouseClicked(MouseEvent e) {
         // recenter on this point
@@ -50,4 +57,6 @@ public class ZoomOutTool extends Tool {
         
         // now update the buffer, and redraw
 	p.updateBuffer(); // ugly!
-	p.repaint(); } }
+	p.repaint();
+    }
+}
