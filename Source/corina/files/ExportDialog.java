@@ -19,6 +19,7 @@ import java.text.DecimalFormat;
 import java.util.ResourceBundle;
 
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -46,6 +47,35 @@ import javax.swing.AbstractAction;
 // -- make it resizable, if i can figure out how to get the jtextarea to resize, as well.
 // -- add a "copy" button, so you can get a funny format to the clipboard without saving first
 
+// -- don't even list rangesonly,spreadsheet,packedtucson if there's no elements?
+
+/*
+ notes on this implementation:
+
+ -- users find it informative, and even fun, to use this dialog.  every single person i've seen
+ has figured out how to use it instantly without being told.  (another dialog that shares these
+ traits is the old mac color chooser.)  all signs of a good interface, i think.
+
+ -- it was fairly fast to program, given (1) that i'd been working with swing for over a year,
+ and (2) that i had a collection of classes (buttonlayout, dialoglayout, okcancel, filelength,
+ overwrite) ready to use, in addition to the actual data and i/o routines.
+
+ -- this means to me that (1) swing has a steep learning curve, and (2) it's missing a bit of
+ basic functionality that should be included, and would make programmers' lives easier.
+
+ -- unfortunately, given the strict separation between the language, the default class library,
+ and user classes, i can't just extend java to include features i want; they'll always be second-
+ class citizens (so to speak).
+
+ -- it doesn't behave the same on windows and mac.  i don't know why it doesn't scroll to
+ the top on windows.  windows users don't seem to notice minor bugs, anyway.
+
+ -- on help: yes, help should be included with the application, and not require an internet
+ connection or a web browser to view.  if it's in a jar, it won't be loaded until the user asks
+ for it, and i can always distribute a version that matches the program.  i can also keep
+ it up-to-date with web-start.  of course, it can still be HTML; it'll just ignore my stylesheets.
+*/
+
 public class ExportDialog extends JDialog {
 
     private static final String EXPORTERS[] = new String[] {
@@ -65,7 +95,7 @@ public class ExportDialog extends JDialog {
     private JScrollPane scroll;
     private JButton ok;
     private Sample sample;
-    public ExportDialog(Sample s, java.awt.Frame parent) {
+    public ExportDialog(Sample s, Frame parent) {
         super(parent, "Export", true);
         this.sample = s;
 
@@ -180,8 +210,8 @@ public class ExportDialog extends JDialog {
         main.setLayout(new BorderLayout());
         main.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
         setContentPane(main);
-        main.add(tuples, java.awt.BorderLayout.CENTER);
-        main.add(buttons, java.awt.BorderLayout.SOUTH);
+        main.add(tuples, BorderLayout.CENTER);
+        main.add(buttons, BorderLayout.SOUTH);
 
         // initial view
         updatePreview();
@@ -209,7 +239,7 @@ public class ExportDialog extends JDialog {
             size.setText(new FileLength(buf.length()).toString());
             ok.setEnabled(true);
 
-            // scroll back to top -- doesn't work?
+            // scroll back to top -- doesn't work on windows
             JScrollBar b = scroll.getVerticalScrollBar();
             b.setValue(b.getMinimum());
 
