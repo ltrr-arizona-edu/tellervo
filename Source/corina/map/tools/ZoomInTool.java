@@ -29,23 +29,30 @@ public class ZoomInTool extends Tool {
 
     public ZoomInTool(MapPanel p, View v, ToolBox b) {
         super(p, b);
-        this.v = v; }
+        this.v = v;
+    }
 
     Icon getIcon() {
         ClassLoader cl = this.getClass().getClassLoader();
-        return new ImageIcon(cl.getResource("Images/zoom.png")); }
+        return new ImageIcon(cl.getResource("Images/zoom.png"));
+    }
     Cursor getCursor() {
         ClassLoader cl = this.getClass().getClassLoader();
         ImageIcon icon = new ImageIcon(cl.getResource("Images/zoom-small.png"));
-        return Toolkit.getDefaultToolkit().createCustomCursor(icon.getImage(), new Point(0, 0), "Zoomer"); }
+        return Toolkit.getDefaultToolkit().createCustomCursor(icon.getImage(), new Point(0, 0), "Zoomer");
+    }
     String getTooltip() {
-        return "Zoom In Tool"; }
+        return "Zoom In Tool";
+    }
     String getName() {
-        return "Zoom In"; }
+        return "Zoom In";
+    }
     Character getKey() {
-        return new Character('z'); }
+        return new Character('z');
+    }
     KeyStroke getFastKey() {
-        return KeyStroke.getKeyStroke(new Character(' '), Event.META_MASK); }
+        return KeyStroke.getKeyStroke(new Character(' '), Event.META_MASK);
+    }
     // cmd-space
     // return KeyStroke.getKeyStroke("meta space"); // meta-space on mac, control-space elsewhere
 
@@ -69,9 +76,12 @@ public class ZoomInTool extends Tool {
         // zoom in by a factor of 2 (zoom out if alt pressed?)
         v.zoom *= 1.25; // EXTRACT CONSTANT
 
+	p.setZoom();
+
         // now update the buffer, and redraw
         p.updateBuffer(); // ugly!
-        p.repaint(); }
+        p.repaint();
+    }
 
     boolean draw=false;
     boolean aborted = false;
@@ -84,7 +94,8 @@ public class ZoomInTool extends Tool {
         p1 = e.getPoint();
 
         // not aborted!
-        aborted = false; }
+        aborted = false;
+    }
 
     public void mouseDragged(MouseEvent e) {
         if (aborted)
@@ -94,7 +105,8 @@ public class ZoomInTool extends Tool {
 
         draw = true;
         p2 = e.getPoint();
-        p.repaint(); }
+        p.repaint();
+    }
 
     public void mouseReleased(MouseEvent e) {
         // i wasn't just dragging?  bah.
@@ -105,7 +117,8 @@ public class ZoomInTool extends Tool {
         if (Math.sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y)) < 5) {
             draw = false;
             p.repaint();
-            return; }
+            return;
+	}
 
         // i just finished dragging, so compute new zoom and location
 
@@ -129,7 +142,8 @@ public class ZoomInTool extends Tool {
         // update buffer once for everything, and redraw
         p.updateBuffer(); // ugly!
         draw = false;
-	p.repaint(); }
+	p.repaint();
+    }
 
     public void decorate(Graphics g) {
         if (aborted)
@@ -152,11 +166,14 @@ public class ZoomInTool extends Tool {
             g2.drawRect(nw.x, nw.y, se.x-nw.x, se.y-nw.y);
             g2.setColor(Color.black);
             g2.setStroke(dottedStroke); // new stroke with new phase (0..15) here, if you want marching ants
-            g2.drawRect(nw.x, nw.y, se.x-nw.x, se.y-nw.y); } }
+            g2.drawRect(nw.x, nw.y, se.x-nw.x, se.y-nw.y);
+	}
+    }
 
-        private Point nw = new Point();
-        private Point se = new Point();
-        private BasicStroke dottedStroke = new BasicStroke(1f,
-                                                           BasicStroke.CAP_BUTT,
-                                                           BasicStroke.JOIN_BEVEL,
-                                                           10f, new float[] { 8f }, 0f); }
+    private Point nw = new Point();
+    private Point se = new Point();
+    private BasicStroke dottedStroke = new BasicStroke(1f,
+						       BasicStroke.CAP_BUTT,
+						       BasicStroke.JOIN_BEVEL,
+						       10f, new float[] { 8f }, 0f);
+}
