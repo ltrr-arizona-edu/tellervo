@@ -49,12 +49,12 @@ public abstract class Map {
     // is an acceptable tradeoff, but there's got to be a way to make everybody happy.
     static {
         try {
-            open("earth.rez");
+            open("Libraries/earth.rez");
         } catch (FileNotFoundException fnfe) {
             try {
-                decompress("earth.rez.gz", "earth.rez");
-                new File("earth.rez.gz").delete();
-                open("earth.rez");
+                decompress("Libraries/earth.rez.gz", "Libraries/earth.rez");
+                new File("Libraries/earth.rez.gz").delete();
+                open("Libraries/earth.rez");
             } catch (IOException ioe) {
                 try {
                     // maybe it's a read-only directory ... try $TMP
@@ -71,7 +71,7 @@ public abstract class Map {
                     String tmp = dummy.getParent() + File.separator + "earth.rez";
                     File f = new File(tmp);
                     if (!(f.exists() && f.length()==46638184)) // maybe it's already there!
-                        decompress("earth.rez.gz", tmp);
+                        decompress("Libraries/earth.rez.gz", tmp);
                     open(tmp);
                 } catch (IOException ioe2) {
                     System.out.println("Error opening map: " + ioe2);
