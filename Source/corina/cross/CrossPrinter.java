@@ -29,25 +29,30 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import java.text.DateFormat;
+import java.text.MessageFormat;
+
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.BasicStroke;
 import java.awt.print.Printable;
 import java.awt.print.PageFormat;
 
 /*
-  left to do:
-  - highlight/outline significant scores in all-scores-table
-  - compute total pages for "page n of m" in corner?
-  --- (wait, i don't know how many pages it'll be!  no, it's easy to just count 'em, right?)
-  - print with same sorting as on-screen?
-  - print sigs before all?  let user choose?
-  - make font/sizes settable?
-  - i18n
-  - integrate rendering with CrossFrame?
-  - integrate with Editor to print samples?
-  - bug: quit too soon doesn't finish printing.
-  --- (how to solve?  start thread for printing, in "printing" threadgroup, "quit" joins 'em all)
+ left to do:
+ - highlight/outline significant scores in all-scores-table
+ - compute total pages for "page n of m" in corner?
+ --- (wait, i don't know how many pages it'll be!  no, it's easy to just count 'em, right?)
+ - print with same sorting as on-screen?
+ - let user choose which to print (all/sigs/histo)
+ - add space between sections
+ - start sections on new pages
+ - make font/sizes settable?
+ - integrate rendering with CrossFrame?  (don't bother)
+ - integrate with Editor to print samples?  (later)
+ - bug: quit too soon doesn't finish printing.
+ --- (how to solve?  start thread for printing, in "printing" threadgroup, "quit" joins 'em all)
 */
 
 public class CrossPrinter implements Printable {
@@ -57,16 +62,16 @@ public class CrossPrinter implements Printable {
     // knows it so a 2-page crossdate takes 80KB instead of 3MB (and
     // it'll print *much* faster)
     private void big() {
-	g2.setFont(new Font("serif", Font.PLAIN, 18));
+        g2.setFont(new Font("serif", Font.PLAIN, 18));
     }
     private void medium() {
-	g2.setFont(new Font("serif", Font.PLAIN, 12));
+        g2.setFont(new Font("serif", Font.PLAIN, 12));
     }
     private void small() {
-	g2.setFont(new Font("serif", Font.PLAIN, 9));
+        g2.setFont(new Font("serif", Font.PLAIN, 9));
     }
     private void small(boolean bold) {
-	g2.setFont(new Font("serif", (bold ? Font.BOLD : Font.PLAIN), 9));
+        g2.setFont(new Font("serif", (bold ? Font.BOLD : Font.PLAIN), 9));
     }
 
     // page margins
@@ -82,9 +87,6 @@ public class CrossPrinter implements Printable {
     private Cross cross;
     private Histogram histo;
 
-    // pct formatter (not user-settable), for histogram only
-    private DecimalFormat pctFmt = new DecimalFormat("0.0%");
-
     // number of rows: scores, sig, distro, total
     private int scoreRows;
     private int sigRows;
@@ -92,15 +94,20 @@ public class CrossPrinter implements Printable {
     private int totalRows;
 
     // l10n
-    private ResourceBundle msg = ResourceBundle.getBundle("CrossdatingBundle");
+    private ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // formatter
     DecimalFormat formatter;
 
-    // a new crossdate printer
+    // a new crossdate printer with everything (still needed?)
     public CrossPrinter(Cross c) {
+        this(c, true, true, true);
+    }
+
+    // a new crossdate printer, with user-selected stuff
+    public CrossPrinter(Cross c, boolean sigScores, boolean allScores, boolean histogram) {
         cross = c;
-        histo = new Histogram(c);
+        histo = new Histogram(c); // isn't this part of cross?
 
         // count some rows
         scoreRows = c.range.getEnd().row() - c.range.getStart().row() + 1;
@@ -194,7 +201,7 @@ public class CrossPrinter implements Printable {
 
     void printPageNr(int page) {
 	small();
-	String nr = "Page " + page; // of /n/???
+	String nr = msg.getString("page") + " " + page; // of /n/???
 	drawStringRight(nr, right);
 
 	// page 1 starts with "T-score" (or whatever the score is), so
@@ -221,26 +228,26 @@ public class CrossPrinter implements Printable {
 	  - footer: printed by ...
 	 */
 
-	if (row == 0)
-	    printTitle(cross.getName());
-	else if (row == 1)
-	    printLabel("Fixed: ", cross.fixed.toString());
-	else if (row == 2)
-	    printLabel("Moving: ", cross.moving.toString());
-	else if (row == 3)
-	    printSection("All Scores");
-	else if (row <= 4 + scoreRows)
-	    printScores(row - 4);
-	else if (row == 5 + scoreRows)
-	    printSection("Significant Scores");
-	else if (row <= 6 + scoreRows + sigRows)
-	    printSigs(row - (6 + scoreRows));
-	else if (row == 7 + scoreRows + sigRows)
-	    printSection("Distribution of Scores");
-	else if (row <= 8 + scoreRows + sigRows + distroRows)
-	    printDistro(row - (8 + scoreRows + sigRows));
-	else if (row == 9 + scoreRows + sigRows + distroRows)
-	    printByLine();
+        if (row == 0)
+            printTitle(cross.getName());
+        else if (row == 1)
+            printLabel(msg.getString("fixed") + ": ", cross.fixed.toString());
+        else if (row == 2)
+            printLabel(msg.getString("moving") + ": ", cross.moving.toString());
+        else if (row == 3)
+            printSection(msg.getString("all_scores"));
+        else if (row <= 4 + scoreRows)
+            printScores(row - 4);
+        else if (row == 5 + scoreRows)
+            printSection(msg.getString("sig_scores"));
+        else if (row <= 6 + scoreRows + sigRows)
+            printSigs(row - (6 + scoreRows));
+        else if (row == 7 + scoreRows + sigRows)
+            printSection(msg.getString("histogram"));
+        else if (row <= 8 + scoreRows + sigRows + distroRows)
+            printHisto(row - (8 + scoreRows + sigRows));
+        else if (row == 9 + scoreRows + sigRows + distroRows)
+            printByLine();
 
 	// ... else something's wrong, so ignore it.
     }
@@ -259,103 +266,105 @@ public class CrossPrinter implements Printable {
 
     // n = 0 is title ("year, 0, 1, ..., 9"), n>0 is row n-1
     void printScores(int n) {
-	small();
-	float colWidth = (float) ((right - left) / 11.);
-	if (n == 0) {
-	    String yr = "Year";
-	    drawStringRight(yr, left+colWidth);
+        small();
+        float colWidth = (float) ((right - left) / 11.);
+        if (n == 0) {
+            String yr = msg.getString("year");
+            drawStringRight(yr, left+colWidth);
 
-	    for (int i=0; i<10; i++) {
-		drawStringRight(String.valueOf(i), left+colWidth*(i+2));
-	    }
-	} else {
-	    // column 0: the decade
-	    int row_min = cross.range.getStart().row();
-	    String decade=null;
-	    if (n == 1)
-		decade = cross.range.getStart().toString();
-	    else if (n-1 + row_min == 0)
-		decade = "1"; // special case
-	    else
-		decade = (new Year(10 * (n-1 + row_min))).toString();
-	    drawStringRight(decade, left+colWidth);
+            for (int i=0; i<10; i++) {
+                drawStringRight(String.valueOf(i), left+colWidth*(i+2));
+            }
+        } else {
+            // column 0: the decade
+            int row_min = cross.range.getStart().row();
+            String decade=null;
+            if (n == 1)
+                decade = cross.range.getStart().toString();
+            else if (n-1 + row_min == 0)
+                decade = "1"; // special case
+            else
+                decade = (new Year(10 * (n-1 + row_min))).toString();
+            drawStringRight(decade, left+colWidth);
 
-	    // rest of the columns
-	    for (int i=0; i<10; i++) {
-		String val="";
+            // rest of the columns
+            for (int i=0; i<10; i++) {
+                Year y = new Year(10 * (n-1 + row_min) + i); // DUPLICATE CODE FROM SOMEWHERE!
+                if (cross.range.contains(y)) {
+                    String val = formatter.format(cross.data[y.diff(cross.range.getStart())]);
+                    drawStringRight(val, left+colWidth*(i+2));
+                }
+            }
+        }
 
-		Year y = new Year(10 * (n-1 + row_min) + i);
-		if (!cross.range.contains(y))
-		    continue;
-		else
-		    val = formatter.format(cross.data[y.diff(cross.range.getStart())]);
-
-		drawStringRight(val, left+colWidth*(i+2));
-	    }
-	}
-
-	newLine();
+        newLine();
     }
 
     // n = 0 is title ("no, fixed, moving, t-score, overlap"), n>0 is row n-1
     void printSigs(int n) {
-	small();
-	float colWidth = (float) ((right - left) / 5.);
-	if (n == 0) {
-	    String headers[] = new String[] { "No.", "Fixed", "Moving", "T-Score", "Overlap" };
-	    for (int i=0; i<headers.length; i++) {
-		drawStringRight(headers[i], left+colWidth*(i+1));
-	    }
-	} else {
-	    // straight from CrossFrame's getValueAt():
-	    int row = n-1;
-	    String vals[] = new String[] {
-		String.valueOf(((Score) cross.highScores.get(row)).number),
-		((Score) cross.highScores.get(row)).fixedRange.toString(),
-		((Score) cross.highScores.get(row)).movingRange.toString(),
-		formatter.format(((Score) cross.highScores.get(row)).score),
-		String.valueOf(((Score) cross.highScores.get(row)).span),
-	    };
-
-	    for (int i=0; i<5; i++) {
-		drawStringRight(vals[i], left+colWidth*(i+1));
-	    }
-	}
-
-	newLine();
-    }
-
-    // n = 0 is title ("t-score, number, percent, histogram"), n>0 is row n-1
-    void printDistro(int n) {
         small();
-        float colWidth = (float) ((right - left) / 4.);
+        float colWidth = (float) ((right - left) / 5.);
         if (n == 0) {
-            String headers[] = new String[] { cross.getName(), "Number", "Percent", "Histogram" };
+            String headers[] = new String[] {
+                msg.getString("number"),
+                msg.getString("fixed"),
+                msg.getString("moving"),
+                cross.getName(),
+                msg.getString("overlap") };
             for (int i=0; i<headers.length; i++) {
                 drawStringRight(headers[i], left+colWidth*(i+1));
             }
+        } else {
+            // straight from CrossFrame's getValueAt():
+            int row = n-1;
+            Score s = (Score) cross.highScores.get(row);
+            String vals[] = new String[] {
+                String.valueOf(s.number),
+                s.fixedRange.toString(),
+                s.movingRange.toString(),
+                formatter.format(s.score),
+                String.valueOf(s.span),
+            };
+
+            for (int i=0; i<5; i++) {
+                drawStringRight(vals[i], left+colWidth*(i+1));
+            }
+        }
+
+        newLine();
+    }
+
+    // n = 0 is title ("t-score, number, histogram"), n>0 is row n-1
+    void printHisto(int n) {
+        small();
+        int rangeGuide = (int) (left + (float) ((right - left) * 0.15)); // center guide for ranges
+        int histoGuide = (int) (left + (float) ((right - left) * 0.50)); // left guide for histo
+        int qtyGuide = (rangeGuide + histoGuide) / 2; // center guide for qtys
+        if (n == 0) {
+            drawStringCenter(cross.getName(), rangeGuide);
+            drawStringCenter(msg.getString("quantity"), qtyGuide);
+            drawStringCenter(msg.getString("histogram"), (int) ((histoGuide+right)/2));
+            
         } else {
             int row = n-1;
 
             // col 0: score
             String score = histo.getRange(row);
-            g2.drawString(score, (float) left, (float) position+lineHeight());
+            drawStringCenter(score, rangeGuide);
 
             // col 1: number (right-aligned), but only if >0
             if (histo.getNumber(row) > 0) {
                 String number = String.valueOf(histo.getNumber(row));
-                drawStringRight(number, left+colWidth*2);
+                drawStringCenter(number, qtyGuide);
 
-                // col 2: percent (right-aligned?), but also only if >0
-                // -- we don't do pct any more
-                //String pct = pctFmt.format(b[row].pct);
-                //drawStringRight(pct, left+colWidth*3);
-
-                // col 3: histogram -- only if n>0?
-                int x = (int) (left + colWidth*3) + 72/4;
-                int y = (int) (position + lineHeight()); // not /2?  no, that's full  height, incl. leading, etc.  FIXME
-                int dx = (int) (((double) histo.getNumber(row) / (double) cross.data.length) * (double) colWidth);
-                g2.drawLine(x, y, x+dx, y);
+                // col 2: histogram -- only if n>0
+                g2.setStroke(new BasicStroke(0.5f));
+                int x = (int) (histoGuide);
+                int ascent = g2.getFontMetrics().getAscent();
+                int y = (int) (position + lineHeight() - ascent);
+                double frac = (double) histo.getNumber(row) / (double) histo.getFullestBucket();
+                int dx = (int) (frac * (right - histoGuide));
+                g2.drawRect(x, y, dx, lineHeight());
             }
         }
 
@@ -364,38 +373,58 @@ public class CrossPrinter implements Printable {
 
     // used for "Fixed:" and "Moving:" labels at the top
     void printLabel(String label, String value) {
-	small(true);
-	drawStringRight(label, left+72);
+        small(true);
+        drawStringRight(label, left+72);
 
-	small();
-	g2.drawString(value, (float) left + 72, (float) position + lineHeight());
+        small();
+        g2.drawString(value, (float) left + 72, (float) position + lineHeight());
 
-	newLine();
+        newLine();
     }
 
-    // print a "printed by ... at ..." line.  BROKEN.
+    // print a "printed by ... at ..." line.
     void printByLine() {
-	small();
-	String byline = "Printed by " + System.getProperty("user.name") + ", " + new Date();
-	g2.drawString(byline, (float) left, (float) position + lineHeight());
-	newLine();
+        small();
+        Date date = new Date();
+        String dateString = DateFormat.getDateInstance().format(date);
+        String timeString = DateFormat.getTimeInstance().format(date);
+        String byline = MessageFormat.format(msg.getString("printed_by"),
+                                             new Object[] {
+                                                 System.getProperty("user.name"),
+                                                 dateString,
+                                                 timeString,
+                                             });
+
+        // draw on very bottom of page
+        g2.drawString(byline, (float) left, (float) bottom - lineHeight());
+        newLine(); // (does this do anything now?)
     }
 
     // compute the line height for the current font.  (in C, this
     // would be a macro.)
     private int lineHeight() {
-	return g2.getFontMetrics().getHeight();
+        return g2.getFontMetrics().getHeight();
+    }
+
+    // draw some text to the right and below (left,position)
+    private void drawStringLeft(String s, double left) {
+        g2.drawString(s, (float) left, (float) position + lineHeight());
     }
 
     // draw some text to the left and below (right,position)
     private void drawStringRight(String s, double right) {
-	int width = g2.getFontMetrics().stringWidth(s);
-	g2.drawString(s, (float) right - width, (float) position + lineHeight());
+        int width = g2.getFontMetrics().stringWidth(s);
+        g2.drawString(s, (float) right - width, (float) position + lineHeight());
     }
-
+    
+    // draw some text centered below (center,position)
+    private void drawStringCenter(String s, double center) {
+        int width = g2.getFontMetrics().stringWidth(s);
+        g2.drawString(s, (float) center - width/2, (float) position + lineHeight());
+    }
+    
     // increment position by lineheight
     private void newLine() {
-	position += lineHeight();
+        position += lineHeight();
     }
-
 }
