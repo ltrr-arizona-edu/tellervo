@@ -33,6 +33,7 @@ import corina.ui.Alert;
 
 import java.util.List;
 
+import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Dimension;
@@ -54,6 +55,7 @@ import java.awt.event.AdjustmentListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
@@ -557,7 +559,7 @@ public class GrapherPanel extends JPanel
   JMenuItem save = new JMenuItem("Save...");
         save.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent ae) {
-            JFileChooser chooser = new JFileChooser();
+            final JFileChooser chooser = new JFileChooser();
             chooser.setFileFilter(new FileFilter() {
               public boolean accept(File f) {
                 return f.getName().endsWith(".png");
@@ -572,30 +574,48 @@ public class GrapherPanel extends JPanel
             int returnVal = chooser.showSaveDialog(myFrame);
             if (returnVal != JFileChooser.APPROVE_OPTION) return;
 
-            Rectangle rect = getBounds();
-            Image fileImage = 
-                createImage(rect.width,rect.height);
-            Graphics g = fileImage.getGraphics();
-
-            //write to the image
-            paint(g);
- 
-            // write it out in the format you want
-
-            PngEncoder encoder = new PngEncoder(fileImage);
-            try {
-              FileOutputStream fos = new FileOutputStream(chooser.getSelectedFile());
-              byte[] bytes = encoder.pngEncode();
-              fos.write(bytes);
-              fos.flush();
-              fos.close();
-            } catch (Exception e) {
-              System.err.println("ERROR SAVING GRAPH TO: " + chooser.getSelectedFile());
-              e.printStackTrace();
-            }
-
-            //dispose of the graphics content
-            g.dispose();
+            EventQueue.invokeLater(new Runnable() {
+              public void run() {
+                Rectangle rect = getBounds();
+                final Image fileImage = 
+                    createImage(rect.width,rect.height);
+                final Graphics g = fileImage.getGraphics();
+    
+                //write to the image
+                paint(g);
+     
+                // write it out in the format you want
+    
+                new Thread(new Runnable() {
+                  public void run() {
+                    try {
+                      
+                      PngEncoder encoder = new PngEncoder(fileImage);
+                      byte[] bytes = encoder.pngEncode(false);
+                      /* (bytes == null) {
+                        PngEncoderB encoderb = new PngEncoderB((BufferedImage) fileImage);
+                        bytes = encoderb.pngEncode(false);
+                      }*/
+                      if (bytes != null) {
+                        FileOutputStream fos = new FileOutputStream(chooser.getSelectedFile());
+                        fos.write(bytes);
+                        fos.flush();
+                        fos.close();
+                      } else {
+                        System.err.println("ERROR IN ENCODER");
+                      }
+                      
+                    } catch (Exception e) {
+                      System.err.println("ERROR SAVING GRAPH TO: " + chooser.getSelectedFile());
+                      e.printStackTrace();
+                    }
+        
+                    //dispose of the graphics content
+                    g.dispose();
+                  }
+                }).start();
+              }
+            });
           }
         });      
         popup.add(save);
