@@ -20,6 +20,8 @@
 
 package corina;
 
+import corina.gui.Bug;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -47,7 +49,8 @@ public class Species {
             // load properties
             species.load(ClassLoader.getSystemResource("species.properties").openStream());
         } catch (IOException ioe) {
-            species = null; // ???
+            // can't happen
+            Bug.bug(ioe);
         }
     }
 
