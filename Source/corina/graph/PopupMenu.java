@@ -39,6 +39,8 @@ public class PopupMenu extends JPopupMenu {
         rangeItem = new JMenuItem();
         rangeItem.setEnabled(false);
 
+        // TODO: add cut, copy commands here
+
         // open
         JMenuItem open = new JMenuItem("Open"); // is "Edit" better than "Open"?
         open.addActionListener(new AbstractAction() {
@@ -70,7 +72,7 @@ public class PopupMenu extends JPopupMenu {
         _s = s;
 
         // update title, range
-        titleItem.setText((String) (_s.meta.containsKey("title") ? _s.meta.get("title") : _s.meta.get("filename"))); // REFACTOR: move this into Sample.getTitle()?
-        rangeItem.setText("    " + _s.range.toStringWithRange());
+        titleItem.setText((String) (_s.meta.containsKey("title") ? _s.meta.get("title") : _s.meta.get("filename")));
+        rangeItem.setText("    " + _s.range.toStringWithSpan());
     }
 }
