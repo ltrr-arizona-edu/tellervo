@@ -24,9 +24,7 @@ import corina.Sample;
 
 public class Weiserjahre extends Cross {
 
-    // ASSUMES fixed has weiserjahre.  there's no check: a npe gets
-    // fired if it doesn't have any.
-
+    // stupid, stupid -- DESIGN: make a factory?
     public Weiserjahre(Sample fixed, Sample moving) {
     	super(fixed, moving);
     }
@@ -52,6 +50,10 @@ public class Weiserjahre extends Cross {
 	// value = (# trends synchronous with signature years) /
 	//         (# signature years in overlap)
 
+	// need these fields, or can't compute weiserjahre cross
+	if (fixed.count == null || fixed.incr == null)
+	    throw new IllegalArgumentException("The fixed sample must be a sum,\nwith count and Weiserjahre data,\nto run a WJ cross.");
+
 	int i = offset_fixed;
 	int j = offset_moving;
 
@@ -68,7 +70,7 @@ public class Weiserjahre extends Cross {
 	    double pct = ((Number) fixed.incr.get(i)).doubleValue() / (double) n;
 
 	    // signature year?  (j==0 is bad, too)
-	    if (n>3 && (pct<=0.25 || pct>=0.75) && j>0) {
+	    if (n>3 && (pct<=0.25 || pct>=0.75) && j>0) { // REFACTOR: use Weiserjahre.isSignificant() here somehow?
 		// count it
 		totalSigs++;
 
