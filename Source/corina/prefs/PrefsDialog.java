@@ -206,15 +206,7 @@ public class PrefsDialog extends JFrame {
                 }
 
         // save all
-        try {
-            Prefs.save();
-        } catch (IOException ioe) {
-            JOptionPane.showMessageDialog(null,
-                                          "There was an error saving your preferences:\n" +
-                                          ioe.getMessage(),
-                                          "Error saving preferences",
-                                          JOptionPane.ERROR_MESSAGE);
-        }
+	Prefs.save();
     }
 
     private void apply() {
@@ -285,7 +277,8 @@ public class PrefsDialog extends JFrame {
 
         // icon!
         ClassLoader cl = this.getClass().getClassLoader();
-        setIconImage(new ImageIcon(cl.getResource("toolbarButtonGraphics/general/Preferences16.gif")).getImage());
+        setIconImage(new ImageIcon(cl.getResource("Images/Preferences16.gif")).getImage());
+        // setIconImage(new ImageIcon(cl.getResource("toolbarButtonGraphics/general/Preferences16.gif")).getImage());
 
         // get categories, options from Prefs
         categories = PrefsTemplate.getCategories();
