@@ -119,6 +119,7 @@ public class ExportDialog extends JDialog {
         "corina.formats.Heidelberg",
         "corina.formats.Hohenheim",
         "corina.formats.TSAPMatrix",
+        "corina.formats.MultiColumn",
     };
     private static final String EXPORTERS_SUM[] = new String[] {
         "corina.formats.Tucson",
@@ -153,119 +154,119 @@ public class ExportDialog extends JDialog {
         super(parent, I18n.getText("export"), true);
         this.sample = s;
 
-        // filetype popup
-	exporters = (s.elements == null ? EXPORTERS_RAW : EXPORTERS_SUM);
-        int n = exporters.length;
+      // filetype popup
+      exporters = (s.elements == null ? EXPORTERS_RAW : EXPORTERS_SUM);
+      int n = exporters.length;
 
-        String v[] = new String[n];
-        for (int i=0; i<n; i++) {
-            try {
-                Filetype f = (Filetype) Class.forName(exporters[i]).newInstance();
-                v[i] = f.toString();
-            } catch (Exception e) {
-                Bug.bug(e);
-            }
+      String v[] = new String[n];
+      for (int i=0; i<n; i++) {
+        try {
+          Filetype f = (Filetype) Class.forName(exporters[i]).newInstance();
+          v[i] = f.toString();
+        } catch (Exception e) {
+          Bug.bug(e);
         }
-        popup = new JComboBox(v);
-        popup.setMaximumRowCount(12); // i have 9 now, and this shouldn't scroll for so few
-        popup.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                updatePreview();
-            }
-        });
+      }
+      
+      popup = new JComboBox(v);
+      popup.setMaximumRowCount(12); // i have 9 now, and this shouldn't scroll for so few
+      popup.addActionListener(new AbstractAction() {
+          public void actionPerformed(ActionEvent e) {
+              updatePreview();
+          }
+      });
 
-        // size preview
-        size = new JLabel("");
+      // size preview
+      size = new JLabel("");
 
-        // text preview
-        preview = new JTextArea(12, 80) {
-            public boolean isManagingFocus() { // what's this for?  i've forgotten, document me!
-                return false;
-            }
-        };
+      // text preview
+      preview = new JTextArea(12, 80) {
+        public boolean isManagingFocus() { // what's this for?  i've forgotten, document me!
+          return false;
+        }
+      };
 
-	// switch to monospaced font
-        Font oldFont = preview.getFont();
-        preview.setFont(new Font("monospaced", oldFont.getStyle(), oldFont.getSize()));
+      // switch to monospaced font
+      Font oldFont = preview.getFont();
+      preview.setFont(new Font("monospaced", oldFont.getStyle(), oldFont.getSize()));
 
-	// not editable
-        preview.setEditable(false);
+      // not editable
+      preview.setEditable(false);
 
-        // in a panel
-        JPanel tuples = new JPanel(new DialogLayout());
-        tuples.add(popup, I18n.getText("filetype"));
-        // tuples.add(size, I18n.getText("size"));
-        tuples.add(new JScrollPane(preview), I18n.getText("export_preview"));
+      // in a panel
+      JPanel tuples = new JPanel(new DialogLayout());
+      tuples.add(popup, I18n.getText("filetype"));
+      // tuples.add(size, I18n.getText("size"));
+      tuples.add(new JScrollPane(preview), I18n.getText("export_preview"));
 
-        // buttons
-        JButton help = Builder.makeButton("help");
-	Help.addToButton(help, "exporting");
-	// BETTER?: look at state of filetype popup, and present appropriate format page
+      // buttons
+      JButton help = Builder.makeButton("help");
+	    Help.addToButton(help, "exporting");
+	    // BETTER?: look at state of filetype popup, and present appropriate format page
 
-        JButton copy = Builder.makeButton("copy");
-        copy.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                TextClipboard.copy(preview.getText());
-            }
-        });
-        JButton cancel = Builder.makeButton("cancel");
-        ok = Builder.makeButton("ok");
+      JButton copy = Builder.makeButton("copy");
+      copy.addActionListener(new AbstractAction() {
+          public void actionPerformed(ActionEvent e) {
+              TextClipboard.copy(preview.getText());
+          }
+      });
+      JButton cancel = Builder.makeButton("cancel");
+      ok = Builder.makeButton("ok");
 
-        // button actions
-        cancel.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                // just close
-                dispose();
-            }
-        });
-        final JDialog me = this;
-        ok.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-		// close dialog
-		dispose();
+      // button actions
+      cancel.addActionListener(new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          // just close
+          dispose();
+        }
+      });
+      
+      final JDialog me = this;
+      ok.addActionListener(new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+		      // close dialog
+		      dispose();
 
-                try {
-                    // ask for filename
-                    String fn = FileDialog.showSingle(I18n.getText("export"));
+          try {
+            // ask for filename
+            String fn = FileDialog.showSingle(I18n.getText("export"));
 
-                    // check for already-exists
-		    Overwrite.overwrite(fn);
+            // check for already-exists
+		        Overwrite.overwrite(fn);
 
-                    // save it
-                    String format = exporters[popup.getSelectedIndex()];
-                    Filetype f = (Filetype) Class.forName(format).newInstance();
-		    BufferedWriter w = new BufferedWriter(new FileWriter(fn));
-                    f.save(sample, w);
-		    w.close();
-                } catch (UserCancelledException uce) {
-                    // do nothing
-                } catch (IOException ioe) {
-                    // problem saving, tell user
-		    // WAS: passed |me| as owner of dialog; do i lose something here?
-		    // WAS: WARNING_MESSAGE -- Alert uses ERROR_MESSAGE, which i think is at least as good
-		    Alert.error(I18n.getText("export_error_title"),
-				I18n.getText("xport_error") + ioe);
-                } catch (Exception ex) {
-                    // problem creating filetype, or npe, or whatever -- bug.
-                    Bug.bug(ex);
-                }
-            }
-        });
+            // save it
+            String format = exporters[popup.getSelectedIndex()];
+            Filetype f = (Filetype) Class.forName(format).newInstance();
+            BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+            f.save(sample, w);
+		        w.close();
+          } catch (UserCancelledException uce) {
+            // do nothing
+          } catch (IOException ioe) {
+            // problem saving, tell user
+            // WAS: passed |me| as owner of dialog; do i lose something here?
+            // WAS: WARNING_MESSAGE -- Alert uses ERROR_MESSAGE, which i think is at least as good
+		        Alert.error(I18n.getText("export_error_title"),
+				    I18n.getText("xport_error") + ioe);
+          } catch (Exception ex) {
+            // problem creating filetype, or npe, or whatever -- bug.
+            Bug.bug(ex);
+          }
+        }
+      });
 
-        // in a panel
-	JPanel buttons = Layout.buttonLayout(help, copy, null, cancel, ok);
-        buttons.setBorder(BorderFactory.createEmptyBorder(14, 0, 0, 0));
+      // in a panel
+	    JPanel buttons = Layout.buttonLayout(help, copy, null, cancel, ok);
+      buttons.setBorder(BorderFactory.createEmptyBorder(14, 0, 0, 0));
 
-	JPanel main = Layout.borderLayout(null,
-					   null, tuples, null,
-					   buttons);
-        main.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
-        setContentPane(main);
+	    JPanel main = Layout.borderLayout(null, null, tuples, null, buttons);
+      main.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
+      setContentPane(main);
 
-        OKCancel.addKeyboardDefaults(ok);
+      OKCancel.addKeyboardDefaults(ok);
 
-        // initial view
-        updatePreview();
+      // initial view
+      updatePreview();
 
         // show
         pack();
