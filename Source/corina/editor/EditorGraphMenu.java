@@ -1,17 +1,19 @@
 package corina.editor;
 
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
 import corina.Sample;
 import corina.SampleEvent;
 import corina.SampleListener;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.graph.GraphWindow;
 import corina.graph.BargraphFrame;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.AbstractAction;
-import java.awt.event.ActionEvent;
+import corina.graph.GraphWindow;
+import corina.ui.Builder;
+import corina.ui.CorinaAction;
+import corina.ui.I18n;
 
 // graph
 // - graph
@@ -32,32 +34,35 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 	sample.addSampleListener(this);
 
 	// plot
-	plot = Builder.makeMenuItem("graph");
-	plot.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    new GraphWindow(sample);
+	plot = new JMenuItem(new CorinaAction("graph") {
+	  public void actionPerformed(ActionEvent e) {
+	    new GraphWindow(sample);
 		}
-	    });
+	});
 	add(plot);
 
 	// plot all
-	plotAll = Builder.makeMenuItem("graph_elements");
-	plotAll.addActionListener(new AbstractAction() {
+	plotAll = new JMenuItem(new CorinaAction("graph_elements") {
 		public void actionPerformed(ActionEvent e) {
 		    new GraphWindow(sample.elements);
 		}
-	    });
+    public boolean isEnabled() {
+      return sample.elements != null && sample.elements.size() > 0;
+    }
+	});
 	add(plotAll);
 
 	// bargraph all
-	bargraphAll = Builder.makeMenuItem("bargraph_elements");
-	bargraphAll.addActionListener(new AbstractAction() {
+	bargraphAll = new JMenuItem(new CorinaAction("bargraph_elements") {
 		public void actionPerformed(ActionEvent e) {
 		    // FIXME: pass my title here so the bargraph
 		    // has my name as its title.
 		    new BargraphFrame(sample.elements);
 		}
-	    });
+    public boolean isEnabled() {
+      return sample.elements != null && sample.elements.size() > 0;
+    }
+	});
 	add(bargraphAll);
     }
 
