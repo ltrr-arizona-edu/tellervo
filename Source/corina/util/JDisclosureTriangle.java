@@ -17,14 +17,18 @@ import javax.swing.JLabel;
 import javax.swing.Icon;
 import javax.swing.UIManager;
 
+// TODO: on non-mac platforms, still use some sort of arrow for the icon
+
 // DND support has been commented out, because i couldn't get it working
 // exactly as i wanted.
+
+// NOTE: can only be used in Windows (i.e., not Applets)
 
 public class JDisclosureTriangle extends JPanel /*implements DropTargetListener*/ {
 
     // disclosure triangle, initially visible by default
-    public JDisclosureTriangle(String title, JComponent component, Window windowToRepack) {
-	this(title, component, windowToRepack, true);
+    public JDisclosureTriangle(String title, JComponent component) {
+	this(title, component, true);
     }
 
     private static final Icon collapsedIcon = (Icon) UIManager.get("Tree.collapsedIcon");
@@ -34,10 +38,9 @@ public class JDisclosureTriangle extends JPanel /*implements DropTargetListener*
 
     private JLabel label;
     private JComponent component;
-    private Window window;
 
     // disclosure triangle, possibly hidden by default
-    public JDisclosureTriangle(String title, JComponent componentToAdd, Window windowToRepack, boolean initiallyVisible) {
+    public JDisclosureTriangle(String title, JComponent componentToAdd, boolean initiallyVisible) {
 	setLayout(new BorderLayout());
 
 	// north: label with icon
@@ -52,7 +55,6 @@ public class JDisclosureTriangle extends JPanel /*implements DropTargetListener*
 	    add(component, BorderLayout.CENTER);
 
 	// clicking on label shows or hides component
-	this.window = windowToRepack;
 	label.addMouseListener(new MouseAdapter() {
 		public void mouseClicked(MouseEvent e) {
 		    // update visible flag
@@ -96,7 +98,9 @@ public class JDisclosureTriangle extends JPanel /*implements DropTargetListener*
     }
 
     private void update() {
+	Window window = (Window) getTopLevelAncestor();
 	window.pack();
+	window.invalidate(); // this seems to work elsewhere -- does it work here?
 	window.repaint(); // BUG: doesn't work!
     }
 
