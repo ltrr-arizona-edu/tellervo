@@ -358,7 +358,7 @@ public class Location implements Cloneable {
     }
 
     // unicode DEGREE SIGN character
-    private static final String DEGREE_SIGN = "*"; //\u00B0';
+    private static final String DEGREE_SIGN = "\u00B0";
 
     // is this string an ISO-6709 location?
     private boolean isISO6709(String check) {
