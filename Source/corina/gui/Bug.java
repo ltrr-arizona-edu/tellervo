@@ -1,5 +1,7 @@
 package corina.gui;
 
+import java.io.StringWriter;
+import java.io.PrintWriter;
 import javax.swing.JOptionPane;
 
 public class Bug {
@@ -12,10 +14,16 @@ public class Bug {
       -- serialize all loaded samples to disk somewhere
     */
 
-    public static void bug(Exception e) {
+    public static void bug(Throwable t) {
+        // get stack trace
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        t.printStackTrace(pw);
+
+        // show dialog with exception and stack trace
         JOptionPane.showMessageDialog(null,
                                       "You found a bug in Corina!  Tell Ken:\n" +
-                                      e.getMessage(),
+                                      t + "\n" + sw,
                                       "Corina Bug",
                                       JOptionPane.ERROR_MESSAGE);
     }
