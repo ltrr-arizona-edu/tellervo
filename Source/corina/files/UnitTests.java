@@ -36,17 +36,17 @@ public class UnitTests extends TestCase {
     // testing Filetype factory
     //
     public void testFactory() {
-	try {
-	    Filetype f = Filetype.makeFiletype("corina.files.Corina");
-	} catch (ClassNotFoundException cnfe) {
-	    fail();
-	}
-	try {
-	    Filetype f = Filetype.makeFiletype("some.bogus.filetype");
-	    fail();
-	} catch (ClassNotFoundException cnfe) {
-	    // succeed
-	}
+        try {
+            Filetype f = Filetype.makeFiletype("corina.files.Corina");
+        } catch (ClassNotFoundException cnfe) {
+            fail();
+        }
+        try {
+            Filetype f = Filetype.makeFiletype("some.bogus.filetype");
+            fail();
+        } catch (ClassNotFoundException cnfe) {
+            // succeed
+        }
     }
 
     static final String TMP = System.getProperty("java.io.tmpdir") + File.separator;
@@ -55,67 +55,67 @@ public class UnitTests extends TestCase {
     // test any filetype
     //
     private void testFiletype(String filetype) {
-	try {
-	    // load a sample
-	    Sample s = new Sample("Demo Data/chil/chil001.crn");
+        try {
+            // load a sample
+            Sample s = new Sample("Demo Data/chil/chil001.crn");
 
-	    // save it as |filetype| in /tmp
-	    Filetype f=null;
-	    try {
-		f = Filetype.makeFiletype(filetype);
-	    } catch (ClassNotFoundException cnfe) {
-		fail();
-	    }
-	    f.save(TMP + "unittest.tmp", s);
+            // save it as |filetype| in /tmp
+            Filetype f=null;
+            try {
+                f = Filetype.makeFiletype(filetype);
+            } catch (ClassNotFoundException cnfe) {
+                fail();
+            }
+            f.save(TMP + "unittest.tmp", s);
 
-	    // load it again
-	    Sample s2 = new Sample(TMP + "unittest.tmp");
+            // load it again
+            Sample s2 = new Sample(TMP + "unittest.tmp");
 
-	    // are they the same data?  count?
-	    assert(s.data.equals(s2.data));
-	    if (s.count != null)
-		assert(s.count.equals(s2.count));
-	    if (s.elements != null)
-		assert(s.elements.equals(s2.elements));
+            // are they the same data?  count?
+            assertTrue(s.data.equals(s2.data));
+            if (s.count != null)
+                assertTrue(s.count.equals(s2.count));
+            if (s.elements != null)
+                assertTrue(s.elements.equals(s2.elements));
 
-	    // problem here: metadata aren't *exactly* the same every
-	    // time.  the filename is /tmp/ instead of ../Demo Data/,
-	    // for example.  should i check all of meta except
-	    // filename?  (and author?)
+            // problem here: metadata aren't *exactly* the same every
+            // time.  the filename is /tmp/ instead of ../Demo Data/,
+            // for example.  should i check all of meta except
+            // filename?  (and author?)
 
-	    // (clean up when you're done)
-	    new File(TMP + "unittest.tmp").delete();
-	} catch (IOException ioe) {
-	    fail();
-	}
+            // (clean up when you're done)
+            new File(TMP + "unittest.tmp").delete();
+        } catch (IOException ioe) {
+            fail();
+        }
     }
 
     //
     // test Tucson.java
     //
     public void testTucson() {
-	testFiletype("corina.files.Tucson");
+        testFiletype("corina.files.Tucson");
     }
 
     //
     // test Corina.java
     //
     public void testCorina() {
-	testFiletype("corina.files.Corina");
+        testFiletype("corina.files.Corina");
     }
 
     //
     // test TwoColumn.java
     //
     public void test2col() {
-	testFiletype("corina.files.TwoColumn");
+        testFiletype("corina.files.TwoColumn");
     }
 
     //
     // test Heidelberg.java
     //
     public void testHeidelberg() {
-	testFiletype("corina.files.Heidelberg");
+        testFiletype("corina.files.Heidelberg");
     }
 
     // left to add, load+save: Heidelberg, Hohenheim, TSAPMatrix

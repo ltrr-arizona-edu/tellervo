@@ -26,17 +26,17 @@ import java.util.List;
 
 public class UnitTests extends TestCase {
     public UnitTests(String name) {
-	super(name);
+        super(name);
     }
 
     //
     // testing Prefs.java
     //
     public void testPrefsLoad() {
-	List c = PrefsTemplate.getCategories();
-	assert(c != null && c.size() > 0);
-	List o = PrefsTemplate.getOptions();
-	assert(o != null && o.size() > 0);
+        List c = PrefsTemplate.getCategories();
+        assertTrue(c != null && c.size() > 0);
+        List o = PrefsTemplate.getOptions();
+        assertTrue(o != null && o.size() > 0);
     }
     public void testExtractInts() {
         int x[] = Prefs.extractInts("1 2 3");

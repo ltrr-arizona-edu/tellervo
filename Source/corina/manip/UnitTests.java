@@ -34,53 +34,53 @@ import javax.swing.undo.UndoableEdit;
 
 public class UnitTests extends TestCase {
     public UnitTests(String name) {
-	super(name);
+        super(name);
     }
 
     //
     // testing Clean.java
     //
     public void testClean() {
-	try {
-	    Sample s = new Sample("Demo Data/chil/chil001.crn");
-	    UndoableEdit undo = Clean.clean(s);
-	    assertEquals(s.incr, null);
-	    assertEquals(s.decr, null);
-	    assertEquals(s.elements, null);
-	    assertEquals(s.count, null);
-	    assert(!s.meta.containsKey("filename"));
+        try {
+            Sample s = new Sample("Demo Data/chil/chil001.crn");
+            UndoableEdit undo = Clean.clean(s);
+            assertEquals(s.incr, null);
+            assertEquals(s.decr, null);
+            assertEquals(s.elements, null);
+            assertEquals(s.count, null);
+            assertTrue(!s.meta.containsKey("filename"));
 
-	    // undo it
-	    undo.undo();
-	    assert(s.count != null);
-	    assert(s.meta.containsKey("filename"));
+            // undo it
+            undo.undo();
+            assertTrue(s.count != null);
+            assertTrue(s.meta.containsKey("filename"));
 
-	    // redo it
-	    undo.redo();
-	    assert(s.count == null);
-	    assert(!s.meta.containsKey("filename"));
-	} catch (IOException ioe) {
-	    fail();
-	}
+            // redo it
+            undo.redo();
+            assertTrue(s.count == null);
+            assertTrue(!s.meta.containsKey("filename"));
+        } catch (IOException ioe) {
+            fail();
+        }
     }
 
     //
     // testing Sum.java
     //
     public void testSum() {
-	try {
-	    Element e1 = new Element("Demo Data/chil/chil001.crn");
-	    Element e2 = new Element("Demo Data/chil/chil002.crn");
-	    Element e3 = new Element("Demo Data/chil/chil006.crn");
-	    Element e4 = new Element("Demo Data/chil/chil007.crn");
-	    List l = new ArrayList();
-	    l.add(e1);
-	    l.add(e2);
-	    l.add(e3);
-	    l.add(e4);
-	    Sample m = Sum.sum(l);
-	} catch (Exception ioe) {
-	    fail();
-	}
+        try {
+            Element e1 = new Element("Demo Data/chil/chil001.crn");
+            Element e2 = new Element("Demo Data/chil/chil002.crn");
+            Element e3 = new Element("Demo Data/chil/chil006.crn");
+            Element e4 = new Element("Demo Data/chil/chil007.crn");
+            List l = new ArrayList();
+            l.add(e1);
+            l.add(e2);
+            l.add(e3);
+            l.add(e4);
+            Sample m = Sum.sum(l);
+        } catch (Exception ioe) {
+            fail();
+        }
     }
 }
