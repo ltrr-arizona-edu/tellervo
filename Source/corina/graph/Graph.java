@@ -53,80 +53,81 @@ public class Graph {
     public double scale=1.0;
 
     /** Create a graph from a Graphable object.
-	@param g the Graphable object */
+        @param g the Graphable object */
     public Graph(Graphable g) {
-	// copy graph
-	graph = g;
+        // copy graph
+        graph = g;
 
-	// default scale
-	scale = g.getScale();
+        // default scale
+        scale = g.getScale();
     }
 
     // an arbitrary List of Numbers, starting at a Year.  (used for graphing density of masters.)
     public Graph(List l, Year y, String n) {
-	// ack, glue -- there's a better way, right?  fixme.
-	final List ll = l;
-	final Year yy = y;
-	final String nn = n;
+        // ack, glue -- there's a better way, right?  fixme.
+        final List ll = l;
+        final Year yy = y;
+        final String nn = n;
 
-	// create graph
-	graph = new Graphable() {
-		public List getData() {
-		    return ll;
-		}
-		public Year getStart() {
-		    return yy;
-		}
-		public double getScale() {
-		    return 1.0;
-		}
-		public String toString() {
-		    return nn;
-		}
-	    };
+        // create graph
+        graph = new Graphable() {
+            public List getData() {
+                    return ll;
+                }
+            public Year getStart() {
+                    return yy;
+                }
+            public double getScale() {
+                    return 1.0;
+                }
+            public String toString() {
+                    return nn;
+                }
+        };
     }
 
     private final static double SCALE = 1.25; // meaning, 25%, but (fixme) i should just say that
     public void bigger() {
-	scale *= SCALE;
+        scale *= SCALE;
     }
     public void smaller() {
-	scale /= SCALE;
+        scale /= SCALE;
     }
 
     public void left() {
-	xoffset--;
+        xoffset--;
     }
     public void right() {
-	xoffset++;
+        xoffset++;
     }
 
     // why is slide(int), but left()/right()?  something's funny here, methinks.
 
     public void slide(int pixels) {
-	yoffset += pixels;
+        yoffset += pixels;
     }
 
     // as "<graph scale=... xoffset=... yoffset=...>filename</graph>
     public String toXML() {
-	// can't save indexes or other non-samples, yet
-	if (!(graph instanceof Sample))
-	    return null;
+        // can't save indexes or other non-samples, yet
+        if (!(graph instanceof Sample))
+            return "<!-- not a sample (" + graph + ") -->"; // what to do?
 
-	// filename
-	String filename = (String) ((Sample) graph).meta.get("filename");
+        // filename
+        String filename = (String) ((Sample) graph).meta.get("filename");
 
-	// crunch together an XML tag
-	return "<graph scale=\"" + scale + "\" " +
-	              "xoffset=\"" + xoffset + "\" " +
-	              "yoffset=\"" + yoffset + "\">" + filename +
-	       "</graph>";
+        // crunch together an XML tag
+        return "<graph scale=\"" + scale + "\" " +
+            "xoffset=\"" + xoffset + "\" " +
+            "yoffset=\"" + yoffset + "\">" + filename +
+            "</graph>";
     }
 
     // (graph is an interface, not an abstract class, so it can't be
-    // moved any higher.)
+    // moved any higher.) -- not true any longer, but this still seems correct.
     public Range getRange() {
-	return new Range(graph.getStart().add(xoffset),
-			 graph.getData().size());
+        return new Range(graph.getStart().add(xoffset),
+                         graph.getData().size());
     }
+    // this method smells funny to me now.  how's it used?
 }
