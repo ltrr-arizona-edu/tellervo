@@ -22,15 +22,12 @@ package corina.gui;
 
 import corina.prefs.Prefs;
 import corina.gui.XMenubar.XMenuItem; // delete me!
-import corina.util.Platform;
 import corina.ui.Builder;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,7 +35,7 @@ import java.io.FileNotFoundException;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 
 import java.awt.event.ActionEvent;
 import javax.swing.JMenu;
@@ -74,17 +71,38 @@ public class OpenRecent {
     // list of created menus -- soft references
     private static List menus=new ArrayList();
 
-    // filename - ~/.xcorina/recent
-    private final static String RECENT_LIST_FILENAME = Prefs.USER_PROPERTIES_DIR + File.separator + "recent";
-    
     // on class load: load previous recent-list
     static {
-        try {
-            loadList();
-        } catch (IOException ioe) {
-            // can't load?  just use empty list
-            recent = new ArrayList();
-        }
+	// load list from prefs
+	loadList();
+
+	// migrate from old list to new list (which is just a pref, and needs no explicit loading)
+	migrate();
+    }
+
+    // if ~/<corina>/recent exists, store in pref and delete file
+    private static void migrate() {
+	try {
+	    // old file to load
+	    // BUG: don't rely on prefs directory!
+	    final String RECENT_LIST_FILENAME = Prefs.USER_PROPERTIES_DIR + File.separator + "recent";
+	    File old = new File(RECENT_LIST_FILENAME);
+
+	    if (old.exists()) {
+		// load
+		loadListLEGACY(RECENT_LIST_FILENAME);
+
+		// store as pref
+		saveList();
+
+		// delete file
+		old.delete();
+	    }
+	} catch (IOException ioe) {
+	    // ???
+	    System.out.println("ioe -- " + ioe);
+	    ioe.printStackTrace();
+	}
     }
 
     /** Indicate to the recent-file list that a file was just opened.
@@ -106,7 +124,7 @@ public class OpenRecent {
 	// prepend filename
 	recent.add(0, filename);
 
-	// update menu
+	// update menu(s)
 	updateAllMenus();
 
 	// update disk
@@ -150,6 +168,7 @@ public class OpenRecent {
 	}
     }
 
+    // BUG: error handling in here is miserable-to-nonexistant
     private static void updateMenu(JMenu menu) {
 	menu.removeAll();
 	for (int i=0; i<recent.size(); i++) {
@@ -205,49 +224,55 @@ public class OpenRecent {
 	}
     }
 
-    // load the recent-list from disk
-    private static void loadList() throws IOException {
+    // load recent-list from |corina.recent.files|.
+    // only called on class-load, so doesn't need to be synch.
+    private static void loadList() {
+	// create recent list
+	recent = new ArrayList();
+
+	// parse |corina.recent.files| pref, splitting by |path.separator| chars.
+	// (ASSUMES (path.separator).length()==1?
+	StringTokenizer tok = new StringTokenizer(System.getProperty("corina.recent.files", ""),
+						  System.getProperty("path.separator"));
+
+	// add all files to recent
+	while (tok.hasMoreTokens()) {
+	    String next = tok.nextToken();
+	    recent.add(next);
+	}
+    }
+
+    // store the recent-list in a string, in |corina.recent.files|
+    private static synchronized void saveList() {
+	StringBuffer buf = new StringBuffer();
+
+	char sep = File.pathSeparatorChar;
+
+	for (int i=0; i<recent.size(); i++) {
+	    buf.append(recent.get(i).toString());
+	    if (i < recent.size()-1)
+		buf.append(sep);
+	}
+
+	// store in pref
+	System.setProperty("corina.recent.files", buf.toString());
+
+	// save now?  (was: save after 4sec or so)
+	Prefs.save();
+    }
+
+    // --
+    // LEGACY: load the recent-list from disk.
+    // (only for migrating old setups.)
+    private static void loadListLEGACY(String filename) throws IOException {
         recent = new ArrayList();
 
-        BufferedReader r = new BufferedReader(new FileReader(RECENT_LIST_FILENAME));
+        BufferedReader r = new BufferedReader(new FileReader(filename));
         for (;;) {
             String line = r.readLine();
             if (line == null)
                 break;
             recent.add(line);
         }
-    }
-
-    // save the recent-list to disk
-    private static synchronized void saveList() {
-        // save it ... when i get around to it.  this certainly
-        // doesn't need to get done before the "open" command is done.
-        // the user *probably* won't quit right after opening
-        // something, but even so, it wouldn't be that horrible,
-        // anyway.
-        Thread t = new Thread() {
-            public void run() {
-                try {
-                    Thread.sleep(4000); // 4s
-                                        // todo: should probably merge with any other saveList threads, if they're started in here.
-                } catch (InterruptedException ie) {
-                    // ignore
-                }
-                try {
-                    BufferedWriter w = new BufferedWriter(new FileWriter(RECENT_LIST_FILENAME));
-                    for (int i=0; i<recent.size(); i++) {
-                        w.write(recent.get(i).toString());
-                        w.newLine();
-                    }
-                    w.close();
-                } catch (IOException ioe) {
-                    // store me?
-                }
-            }
-        };
-        t.setPriority(Thread.MIN_PRIORITY);
-        t.start();
-
-        // flag errors somehow!
     }
 }
