@@ -25,8 +25,10 @@ import corina.Range;
 import corina.Sample;
 import corina.SampleEvent;
 import corina.SampleListener;
-import corina.gui.HasPreferences;
 import corina.gui.Bug;
+import corina.prefs.Prefs;
+import corina.prefs.PrefsEvent;
+import corina.prefs.PrefsListener;
 import corina.ui.Builder;
 import corina.ui.Alert;
 import corina.util.PopupListener;
@@ -68,7 +70,7 @@ import javax.swing.*;
     // - setSelectedYear(Year) -- (why?)
     // - (the popup)
 
-public class SampleDataView extends JPanel implements SampleListener, HasPreferences {
+public class SampleDataView extends JPanel implements SampleListener, PrefsListener {
 
     private Sample mySample;
     public JTable myTable;
@@ -240,6 +242,8 @@ public class SampleDataView extends JPanel implements SampleListener, HasPrefere
 	sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 	add(sp, BorderLayout.CENTER);
 	add(new Modeline(myTable, mySample), BorderLayout.SOUTH);
+  
+  Prefs.addPrefsListener(this);
     }
 
     /** Return the Year of the currently selected cell.
@@ -371,9 +375,9 @@ public class SampleDataView extends JPanel implements SampleListener, HasPrefere
 
     // should this be part of update()?  well, the constructor will
     // need it, too, so it might as well be a separate method, anyway.
-    public void refreshFromPreferences() {
+    public void prefChanged(PrefsEvent e) {
 	// reset fonts
-	Font font = Font.getFont("corina.edit.font");
+	Font font = Font.decode(Prefs.getPref("corina.edit.font"));
 	if (font != null)
 	    myTable.setFont(font);
 
