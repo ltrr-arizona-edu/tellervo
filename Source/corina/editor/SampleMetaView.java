@@ -35,7 +35,6 @@ import java.util.ResourceBundle;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -344,7 +343,6 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
             JTextComponent x = makeTextBlock(f);
             
             // add to the panel
-//            p.add(x, c);
             // use a sub-panel, so the left-alignment is ok.  without this, on OS X it
             // looks passable, but on windows it looks horrible.
             JPanel flow = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -382,7 +380,7 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
                 int h = gbl.getLayoutDimensions()[1][0]; // (1=height, 0=first row)  "Most applications do not call this method directly."  (I'm special.)
                 glue.getVerticalScrollBar().setUnitIncrement(h);
                 glue.getHorizontalScrollBar().setUnitIncrement(h);
-                // todo: i can remove myself now, right?  [--wtf does this comment mean?]
+                // todo: i can remove myself now, right?  [--wtf does this comment mean?] [ it means this componentlistener is only used once.]
             }
         });
     }
