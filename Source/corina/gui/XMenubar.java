@@ -64,7 +64,6 @@ import javax.swing.*;
 public class XMenubar extends JMenuBar {
 
     // i18n
-    private static ResourceBundle oldmsg = ResourceBundle.getBundle("MenubarBundle");
     private static ResourceBundle msg = ResourceBundle.getBundle("TextBundle");
 
     // mac-ize keystrokes.  s/control/meta/ (meta==command)
@@ -181,9 +180,9 @@ public class XMenubar extends JMenuBar {
 
     public static class NewSample extends AbstractAction {
         public NewSample() {
-            super("    " + oldmsg.getString("sample")); // REFACTOR: indent() method...  BETTER: my own sub-menu, 2 styles.
-            putValue(Action.MNEMONIC_KEY, new Integer(oldmsg.getString("sample_key").charAt(0)));
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(oldmsg.getString("sample_acc"))));
+            super("    " + I18n.getText("sample...")); // REFACTOR: indent() method...  BETTER: my own sub-menu, 2 styles.
+            putValue(Action.MNEMONIC_KEY, new Integer(I18n.getMnemonic("sample...").charValue()));
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(I18n.getKeyStroke("sample...")));
         }
         public void actionPerformed(ActionEvent ae) {
             try {
@@ -196,14 +195,14 @@ public class XMenubar extends JMenuBar {
 
     public class NewSum extends AbstractAction {
         public NewSum() {
-            super("    " + oldmsg.getString("sum") + "...");
-            putValue(Action.MNEMONIC_KEY, new Integer(oldmsg.getString("sum_key").charAt(0)));
+            super("    " + I18n.getText("sum..."));
+            putValue(Action.MNEMONIC_KEY, new Integer(I18n.getMnemonic("sum...").charValue()));
         }
         public void actionPerformed(ActionEvent ae) {
             List tmp;
             try {
                 // get files for sum
-                tmp = FileDialog.showMulti("Sum");
+                tmp = FileDialog.showMulti(I18n.getText("sum"));
             } catch (UserCancelledException uce) {
                 return;
             }
@@ -250,13 +249,13 @@ public class XMenubar extends JMenuBar {
 
     public class NewPlot extends AbstractAction {
         public NewPlot() {
-            super("    " + oldmsg.getString("plot") + "...");
-            putValue(Action.MNEMONIC_KEY, new Integer(oldmsg.getString("plot_key").charAt(0)));
+            super("    " + I18n.getText("plot..."));
+            putValue(Action.MNEMONIC_KEY, new Integer(I18n.getMnemonic("plot...").charValue()));
         }
         public void actionPerformed(ActionEvent ae) {
             try {
                 // get samples
-                List ss = FileDialog.showMulti(oldmsg.getString("plot"));
+                List ss = FileDialog.showMulti(I18n.getText("plot"));
 
                 // make graph
                 new GraphFrame(ss);
@@ -268,13 +267,13 @@ public class XMenubar extends JMenuBar {
 
     public class NewGrid extends AbstractAction {
         public NewGrid() {
-            super("    " + oldmsg.getString("grid") + "...");
-            putValue(Action.MNEMONIC_KEY, new Integer(oldmsg.getString("grid_key").charAt(0)));
+            super("    " + I18n.getText("grid..."));
+            putValue(Action.MNEMONIC_KEY, new Integer(I18n.getMnemonic("grid...").charValue()));
         }
         public void actionPerformed(ActionEvent ae) {
             try {
                 // get samples
-                List ss = FileDialog.showMulti(oldmsg.getString("grid"));
+                List ss = FileDialog.showMulti(I18n.getText("grid"));
 
                 // make grid
                 new GridFrame(ss);
@@ -288,8 +287,8 @@ public class XMenubar extends JMenuBar {
 
     public class NewTable extends AbstractAction {
         public NewTable() {
-            super(oldmsg.getString("table"));
-            putValue(Action.MNEMONIC_KEY, new Integer(oldmsg.getString("table_key").charAt(0)));
+            super(I18n.getText("table"));
+            putValue(Action.MNEMONIC_KEY, new Integer(I18n.getMnemonic("table").charValue()));
         }
         public void actionPerformed(ActionEvent ae) {
             try {
@@ -311,14 +310,14 @@ public class XMenubar extends JMenuBar {
 
     public static class Open extends AbstractAction {
         public Open() {
-            super(oldmsg.getString("open"));
-            putValue(Action.MNEMONIC_KEY, new Integer(oldmsg.getString("open_key").charAt(0)));
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(macize(oldmsg.getString("open_acc"))));
+            super(I18n.getText("open..."));
+            putValue(Action.MNEMONIC_KEY, new Integer(I18n.getMnemonic("open...").charValue()));
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(I18n.getKeyStroke("open...")));
         }
         public void actionPerformed(ActionEvent ae) {
             try {
                 // get filename, and load
-                CanOpener.open(FileDialog.showSingle(oldmsg.getString("open")));
+                CanOpener.open(FileDialog.showSingle(I18n.getText("open")));
             } catch (UserCancelledException uce) {
                 return;
             } catch (IOException ioe) {
@@ -334,8 +333,8 @@ public class XMenubar extends JMenuBar {
 
     public class Rename extends AbstractAction {
         public Rename() {
-            super(oldmsg.getString("rename_to"));
-            putValue(Action.MNEMONIC_KEY, new Integer(oldmsg.getString("rename_to_key").charAt(0)));
+            super(I18n.getText("rename_to..."));
+            putValue(Action.MNEMONIC_KEY, new Integer(I18n.getMnemonic("rename_to...").charValue())); // mac?
         }
         public void actionPerformed(ActionEvent ae) {
             // make sure we're a saveable document
@@ -605,7 +604,7 @@ public class XMenubar extends JMenuBar {
 
     // new way: indent!
     public void addNewMenu(JMenu n) {
-        XMenuItem header = new XMenuItem(oldmsg.getString("new"));
+        XMenuItem header = new XMenuItem(I18n.getText("new"));
         header.setEnabled(false);
         n.add(header);
         n.add(new XMenuItem(new NewSample()));
@@ -917,6 +916,8 @@ public class XMenubar extends JMenuBar {
 		});
 	    file.add(saveAs);
 	}
+
+	// BAD DESIGN!  let Editor put its own menus on there.
         if (myFrame instanceof Editor) {
 	    JMenuItem export = Builder.makeMenuItem("export...");
 	    export.addActionListener(new AbstractAction() {
@@ -930,6 +931,7 @@ public class XMenubar extends JMenuBar {
 		});
 	    file.add(export);
 	}
+
         file.add(new XMenuItem(new XMenubar.Rename()));
         file.addSeparator();
         {
