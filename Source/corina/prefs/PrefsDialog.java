@@ -98,6 +98,10 @@ public class PrefsDialog extends JFrame {
                 final PrefsTemplate.Option o = (PrefsTemplate.Option) options.get(i);
                 if (o.category.equals(category)) {
 
+                    // ignore hidden prefs
+                    if (o.type == PrefsTemplate.Option.TYPE_HIDDEN)
+                        continue;
+                    
                     // create and add the constrained label
                     String label;
                     if (o.type != PrefsTemplate.Option.TYPE_BOOL) {
