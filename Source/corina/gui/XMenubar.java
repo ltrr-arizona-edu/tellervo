@@ -483,34 +483,34 @@ public class XMenubar extends JMenuBar {
 		return;
 	    }
 
-	    if (myFrame instanceof PrintableDocument || myFrame instanceof PageableDocument) {
-		// page setup wasn't run: force it
-		if (printJob == null)
-		    printJob = PrinterJob.getPrinterJob();
-		if (pageFormat == null)
-		    pageFormat = printJob.pageDialog(pageFormat);
-		if (pageFormat == null)
-		    return; // abort
+            if (myFrame instanceof PrintableDocument) {
+                // page setup wasn't run: force it
+                if (printJob == null)
+                    printJob = PrinterJob.getPrinterJob();
+                if (pageFormat == null)
+                    pageFormat = printJob.pageDialog(pageFormat);
+                if (pageFormat == null)
+                    return; // abort
 
-		if (myFrame instanceof PageableDocument) {
-		    // get document to print
-		    PageableDocument doc = (PageableDocument) myFrame;
-		    Pageable pageable = doc.print(pageFormat);
+                int method = ((PrintableDocument) myFrame).getPrintingMethod();
+                if (method == PrintableDocument.PAGEABLE) {
+                    // get document to print
+                    Pageable pageable = ((PrintableDocument) myFrame).makePageable(pageFormat);
 
-		    // prepare to print
-		    printJob.setJobName("Corina"); // get specific name from Document?
-		    printJob.setPageable(pageable);
-		} else {
-		    // get document to print
-		    PrintableDocument doc = (PrintableDocument) myFrame;
-		    Printable printable = doc.print(pageFormat);
+                    // prepare to print
+                    printJob.setPageable(pageable);
+                } else {
+                    // get document to print
+                    Printable printable = ((PrintableDocument) myFrame).makePrintable(pageFormat);
 
-		    // prepare to print
-		    printJob.setJobName("Corina"); // get specific name from Document?
-		    printJob.setPrintable(printable);
-		}
+                    // prepare to print
+                    printJob.setPrintable(printable);
+                }
 
-		// ask user options
+                // job title
+                printJob.setJobName(((PrintableDocument) myFrame).getPrintTitle());
+
+                // ask user options
 		if (!printJob.printDialog())
 		    return;
 
@@ -1055,8 +1055,7 @@ public class XMenubar extends JMenuBar {
         myFrame = me;
 
         // can print this document?
-        boolean canPrint = (me instanceof PrintableDocument) ||
-            (me instanceof PageableDocument) || (me instanceof Editor);
+        boolean canPrint = (me instanceof PrintableDocument) || (me instanceof Editor);
 
         // menu: file
         XMenu file = new XMenu(msg.getString("file"));

@@ -22,7 +22,7 @@ package corina.cross;
 
 import corina.graph.GraphFrame;
 import corina.gui.SaveableDocument;
-import corina.gui.PageableDocument;
+import corina.gui.PrintableDocument;
 import corina.gui.HasPreferences;
 import corina.prefs.PrefsDialog;
 import corina.prefs.Prefs;
@@ -47,6 +47,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.awt.print.Pageable;
+import java.awt.print.Printable;
 import java.awt.print.PageFormat;
 import javax.swing.JTable;
 import javax.swing.JOptionPane;
@@ -70,7 +71,7 @@ import javax.swing.table.TableCellRenderer;
 
 public class GridFrame extends XFrame
                     implements SaveableDocument,
-			       PageableDocument,
+			       PrintableDocument,
 			       HasPreferences {
     // gui
     private JTable output;
@@ -184,8 +185,17 @@ public class GridFrame extends XFrame
     }
 
     // PrintableDocument
-    public Pageable print(PageFormat pf) {
+    public int getPrintingMethod() {
+        return PrintableDocument.PAGEABLE;
+    }
+    public Pageable makePageable(PageFormat pf) {
 	return grid.makeHardcopy(pf);
+    }
+    public Printable makePrintable(PageFormat pf) {
+        return null;
+    }
+    public String getPrintTitle() {
+        return "Grid";
     }
 
     private void initTable() {

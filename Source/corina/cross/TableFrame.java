@@ -21,7 +21,7 @@
 package corina.cross;
 
 import corina.gui.XFrame;
-import corina.gui.PageableDocument;
+import corina.gui.PrintableDocument;
 import corina.gui.JarIcon;
 import corina.gui.FileDialog;
 
@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.List;
 
 import java.awt.print.Pageable;
+import java.awt.print.Printable;
 import java.awt.print.PageFormat;
 
 import java.awt.Dimension;
@@ -44,7 +45,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.AbstractAction;
 
-public class TableFrame extends XFrame implements PageableDocument {
+public class TableFrame extends XFrame implements PrintableDocument {
 
     // gui
     private JTable table;
@@ -80,8 +81,17 @@ public class TableFrame extends XFrame implements PageableDocument {
 	getContentPane().add(new JScrollPane(table), BorderLayout.CENTER);
     }
 
-    public Pageable print(PageFormat pf) {
+    public int getPrintingMethod() {
+        return PrintableDocument.PAGEABLE;
+    }
+    public Pageable makePageable(PageFormat pf) {
 	return new TablePager(t, pf);
+    }
+    public Printable makePrintable(PageFormat pf) {
+        return null;
+    }
+    public String getPrintTitle() {
+        return "Table"; // customize with master?
     }
 
     private void initButtons() {

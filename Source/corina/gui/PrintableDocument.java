@@ -27,10 +27,12 @@ public interface PrintableDocument {
     // this is awkward -- print(PageFormat) isn't ideal (separate
     // setPageFormat(), print()?)
 
-    // also, it doesn't allow Printable documents, just Pageable.
-    // should be a way to do both here.  or Books, even.
+    public final int PAGEABLE = 0;
+    public final int PRINTABLE = 1;
+    public int getPrintingMethod();
+    
+    public Printable makePrintable(PageFormat pf);
+    public Pageable makePageable(PageFormat pf);
 
-    public Printable print(PageFormat pf);
-
-    // add: title ("Map", "ZKB-1A", "Crossdate of ...", etc.)
+    public String getPrintTitle();
 }

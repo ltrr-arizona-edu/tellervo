@@ -44,6 +44,7 @@ import java.text.DecimalFormat;
 
 import java.awt.*; // !!!
 import java.awt.print.Printable;
+import java.awt.print.Pageable;
 import java.awt.print.PageFormat;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -72,7 +73,6 @@ import javax.swing.table.TableCellRenderer;
 */
 
 public class CrossFrame extends XFrame implements PrintableDocument, HasPreferences {
-
     // gui
     private JTable scoresTable=null, sigsTable, histogram;
     private JTabbedPane tabPane;
@@ -877,7 +877,16 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
     }
 
     // printing
-    public Printable print(PageFormat pf) {
-	return new CrossPrinter(cross);
+    public int getPrintingMethod() {
+        return PrintableDocument.PRINTABLE;
+    }
+    public Printable makePrintable(PageFormat pf) {
+        return new CrossPrinter(cross);
+    }
+    public Pageable makePageable(PageFormat pf) {
+        return null;
+    }
+    public String getPrintTitle() {
+        return cross.toString();
     }
 }

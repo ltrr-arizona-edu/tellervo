@@ -45,6 +45,7 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
 import java.awt.print.Printable;
+import java.awt.print.Pageable;
 import java.awt.print.PageFormat;
 
 import javax.swing.JPanel;
@@ -57,14 +58,18 @@ import javax.swing.AbstractAction;
 
 public class MapFrame extends XFrame implements PrintableDocument, ComponentListener {
 
-    public final static int SLIDER_WIDTH = 64;
-
     private MapPanel mapPanel;
     private Site s1=null, s2[]=null;
     private JComboBox zoomer;
     private JMenuItem zoomIn, zoomOut;
 
-    public Printable print(PageFormat pf) {
+    public int getPrintingMethod() {
+        return PrintableDocument.PRINTABLE;
+    }
+    public Pageable makePageable(PageFormat pf) {
+        return null;
+    }
+    public Printable makePrintable(PageFormat pf) {
         try {
             // get lat/lon/zoom, make new MapPrinter
             MapPrinter p = new MapPrinter(mapPanel.getView());
@@ -84,6 +89,9 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
 	    System.out.println("e! " + e);
 	    return null; // ouch!
 	}
+    }
+    public String getPrintTitle() {
+        return "Map"; // add location/sites/etc.
     }
 
     public MapFrame() throws IOException {
@@ -308,9 +316,5 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
 	*/
 
 	return new JMenu[] { view };
-    }
-
-    public static void main(String args[]) throws IOException {
-        new MapFrame();
     }
 }

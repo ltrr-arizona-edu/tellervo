@@ -197,9 +197,22 @@ public class GraphFrame extends XFrame implements SampleListener,
     //
     // PrintableDocument
     //
-    public Printable print(PageFormat pf) {
+    public int getPrintingMethod() {
+        return PrintableDocument.PRINTABLE;
+    }
+    public Pageable makePageable(PageFormat pf) {
+        return null;
+    }
+    public Printable makePrintable(PageFormat pf) {
 	return this;
     }
+    public String getPrintTitle() {
+        String s = "Graph: " + samples.get(0);
+        if (samples.size() > 1)
+            s += ", and others";
+        return s;
+    }
+    
     // Printable
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) {
 	// only 1 page, at least yet
