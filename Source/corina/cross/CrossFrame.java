@@ -606,30 +606,31 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
     /** Update both tables, the frame title, and the prev/next
         buttons. */
     private void updateTables() {
-	// tables
-	scoresTable.setModel(new CrossTableModel(cross));
-	sigsTable.setModel(new CrossSigsTableModel(cross));
-	sigsTable.getColumnModel().getColumn(0).setPreferredWidth(24); // number column is too big
-	sigsTable.getColumnModel().getColumn(0).setMaxWidth(36);
-	histogram.setModel(new HistogramTableModel(cross));
-	histogram.getColumnModel().getColumn(3).setCellRenderer(new CountRenderer(cross.data.length));
-	// => max(buckets[].count) would be better
+        // tables
+        scoresTable.setModel(new CrossTableModel(cross));
+        sigsTable.setModel(new CrossSigsTableModel(cross));
+        sigsTable.getColumnModel().getColumn(0).setPreferredWidth(24); // number column is too big
+        sigsTable.getColumnModel().getColumn(0).setMaxWidth(36);
+        histogram.setModel(new HistogramTableModel(cross));
+        histogram.getColumnModel().getColumn(3).setCellRenderer(new CountRenderer(cross.data.length));
+        // => max(buckets[].count) would be better
 
-	// select highest score
-	selectHighest();
+        // select highest score
+        selectHighest();
 
-	// hilite sig scores
-	// scoresTable.setDefaultRenderer(Double.class, new ScoreRenderer(cross)); -- ???
-	for (int i=1; i<=10; i++)
-	    scoresTable.getColumnModel().getColumn(i).setCellRenderer(new ScoreRenderer(cross));
+        // hilite sig scores
+        // scoresTable.setDefaultRenderer(Double.class, new ScoreRenderer(cross)); -- ???
+        ScoreRenderer sr = new ScoreRenderer(cross);
+        for (int i=1; i<=10; i++)
+            scoresTable.getColumnModel().getColumn(i).setCellRenderer(sr);
 
-	// title
-	setTitle(cross.toString());
+        // title
+        setTitle(cross.toString());
 
-	// buttons
-	prevButton.setEnabled(!(seq.isFirst()));
-	nextButton.setEnabled(!(seq.isLast()));
-	graphButton.setEnabled(true);
+        // buttons
+        prevButton.setEnabled(!(seq.isFirst()));
+        nextButton.setEnabled(!(seq.isLast()));
+        graphButton.setEnabled(true);
     }
 
     private class ScoreRenderer extends JLabel implements TableCellRenderer {
@@ -685,15 +686,16 @@ public class CrossFrame extends XFrame implements PrintableDocument, HasPreferen
     /** Initialize both tables, the frame title, and the prev/next
         buttons. */
     private void initTables() {
-	// scores
-	scoresTable = new JTable(new CrossTableModel(cross));
-	scoresTable.setRowSelectionAllowed(false);
-	scoresTable.getTableHeader().setReorderingAllowed(false);
+        // scores
+        scoresTable = new JTable(new CrossTableModel(cross));
+        scoresTable.setRowSelectionAllowed(false);
+        scoresTable.getTableHeader().setReorderingAllowed(false);
 
-	// testing: hilite sig scores
-	// scoresTable.setDefaultRenderer(Double.class, new ScoreRenderer(cross));
-	for (int i=1; i<=10; i++)
-	    scoresTable.getColumnModel().getColumn(i).setCellRenderer(new ScoreRenderer(cross));
+        // testing: hilite sig scores
+        // scoresTable.setDefaultRenderer(Double.class, new ScoreRenderer(cross));
+        ScoreRenderer sr = new ScoreRenderer(cross);
+        for (int i=1; i<=10; i++)
+            scoresTable.getColumnModel().getColumn(i).setCellRenderer(sr);
 
 	// double-click-able
 	scoresTable.addMouseListener(new MouseAdapter() {
