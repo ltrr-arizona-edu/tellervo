@@ -153,17 +153,22 @@ public class GraphFrame extends XFrame implements SampleListener,
 
             // compute mean of sample[current][y] - sample[i][y]
             double mean = 0.0;
+            
             List data = ((Graph) samples.get(i)).graph.getData();
             int j = overlap.getStart().diff(range.getStart()); // index into data[i]
+            double dataScale = ((Graph) samples.get(i)).scale;
+            
             List base = ((Graph) samples.get(plot.current)).graph.getData();
             int k = overlap.getStart().diff(((Graph) samples.get(plot.current)).graph.getStart()); // index into base=data[plot.current]
+            double baseScale = ((Graph) samples.get(plot.current)).scale;
+            
             for (Year y=overlap.getStart(); y.compareTo(overlap.getEnd())<=0; y=y.add(1)) {
-                mean += ((Number) data.get(j++)).doubleValue() - ((Number) base.get(k++)).doubleValue();
+                mean += ((Number) data.get(j++)).doubleValue()*dataScale - ((Number) base.get(k++)).doubleValue()*baseScale;
             }
             mean /= overlap.span();
 
             // make -mean its new offset
-            ((Graph) samples.get(i)).yoffset = (int) (-mean * ((Graph) samples.get(i)).scale);
+            ((Graph) samples.get(i)).yoffset = (int) (-mean * dataScale);
         }
 
         // make the lowest one have yoffset=0 now
