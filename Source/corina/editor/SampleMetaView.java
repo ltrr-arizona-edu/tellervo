@@ -115,7 +115,7 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
             try {
                 if (value.equals(s.meta.get(f.variable)))
                     return;
-                if (s.meta.get(f.variable)==null && ((String)value).length()==0)
+                if (!s.meta.containsKey(f.variable) && ((String)value).length()==0)
                     return;
             } catch (NullPointerException npe) {
                 // ignore?
@@ -246,7 +246,7 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
 
         // finally, "?" sounds pretty unspecified to me.
         if (newValue.equals("?")) {
-            s.meta.put(field, null);
+	    s.meta.remove(field);
             popup.setSelectedIndex(0);
             return;
         }
@@ -259,8 +259,8 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
             descriptions[i+1] = msg.getString(f.variable + "." + f.values[i]);
         int x = JOptionPane.showOptionDialog(this,
                                      "The field \"" + f.description + "\" has value \"" + newValue + "\", which I don't understand.  What did you mean?",
-                                     "Re-enter this value",
-                                     JOptionPane.YES_NO_OPTION, // i think this is meaningless
+                                     "Re-enter Value",
+                                     JOptionPane.YES_NO_OPTION, // i think this is meaningless, in this context
                                      JOptionPane.QUESTION_MESSAGE,
                                      null, // no icon
                                      descriptions,
@@ -280,7 +280,7 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
 
     /** Construct a new view of the metadata for a sample.
         @param sample the Sample */
-    public SampleMetaView(Sample sample) {
+    public SampleMetaView(Sample sample, Editor editor) {
         // copy data
         this.s = sample;
 
@@ -326,7 +326,7 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
 /*
             if (f.variable.equals("species")) {
                 JPanel fffff = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                fffff.add(new SpeciesPopup(s));
+                fffff.add(new SpeciesPopup(s, editor));
                 p.add(fffff, c);
                 continue;
             }
@@ -353,7 +353,7 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
 
             // add to hashmap -- only used for textcomponents
             //if (x instanceof JTextComponent)
-                components.put(f.variable, x);
+            components.put(f.variable, x);
 
             // first one?  focus!
             if (i == 0)
@@ -435,43 +435,52 @@ public class SampleMetaView extends JScrollPane implements SampleListener {
         for (int i=0; i<listeners.size(); i++)
             ((UpdateListener) listeners.get(i)).setEnabled(false);
 
-        for (int i=0; i<Metadata.fields.length; i++) {
-            Field f = Metadata.fields[i];
-            
-            // is this my format popup?  if so, choose the correct one...
-            if (popups.containsKey(f.variable)) {
-                resetPopup(f);
-                continue;
+        // if something gets thrown in here, make sure to re-enable all the listeners
+        try {
+
+            for (int i=0; i<Metadata.fields.length; i++) {
+                Field f = Metadata.fields[i];
+
+                // is this my format popup?  if so, choose the correct one...
+                if (popups.containsKey(f.variable)) {
+                    resetPopup(f);
+                    continue;
+                }
+
+                // get value -- DUPLICATE CODE, REFACTOR
+                Object hash = s.meta.get(f.variable);
+                String value = (hash==null ? "" : hash.toString());
+
+                // get component
+                String field = f.variable;
+                JTextComponent comp = (JTextComponent) components.get(field);
+
+                // HACK: index_type gets looked up now -- DUPLICATE CODE, REFACTOR
+                if (f.variable.equals("index_type") && hash!=null)
+                    value = msg.getString("index_type." + hash);
+
+                try {
+                    // text component?
+                    comp.setText(value);
+                } catch (IllegalStateException ise) {
+                    // there's got to be a better way to do this:
+                    // System.out.println("illegal state!  (skipping " + field + ")");
+                    continue;
+                    // this is caused by trying to update myself.  if something got thrown
+                    // here, the listeners wouldn't get re-enabled, and users would only
+                    // see the first letter they typed.  they hate that.  trust me.
+                }
             }
 
-            // get value -- DUPLICATE CODE, REFACTOR
-            Object hash = s.meta.get(f.variable);
-            String value = (hash==null ? "" : hash.toString());
+        } catch (Exception ex) {
+            // shouldn't happen, but it does (BUG: why?)
+            ex.printStackTrace();
 
-            // get component
-            String field = f.variable;
-            JTextComponent comp = (JTextComponent) components.get(field);
-
-            // HACK: index_type gets looked up now -- DUPLICATE CODE, REFACTOR
-            if (f.variable.equals("index_type") && hash!=null)
-                value = msg.getString("index_type." + hash);
-
-            try {
-                // text component?
-                comp.setText(value);
-            } catch (IllegalStateException ise) {
-                // there's got to be a better way to do this:
-                // System.out.println("illegal state!  (skipping " + field + ")");
-                continue;
-                // this is caused by trying to update myself.  if something got thrown
-                // here, the listeners wouldn't get re-enabled, and users would only
-                // see the first letter they typed.  they hate that.  trust me.
-            }
+        } finally {
+            // re-enable all listeners
+            for (int i=0; i<listeners.size(); i++)
+                ((UpdateListener) listeners.get(i)).setEnabled(true);
         }
-
-        // re-enable all listeners
-        for (int i=0; i<listeners.size(); i++)
-            ((UpdateListener) listeners.get(i)).setEnabled(true);
     }
     public void sampleFormatChanged(SampleEvent e) { }
     public void sampleElementsChanged(SampleEvent e) { }
