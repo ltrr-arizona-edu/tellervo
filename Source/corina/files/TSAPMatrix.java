@@ -49,12 +49,6 @@ public class TSAPMatrix extends Filetype {
 	return "TSAP";
     }
 
-    /** Return a unique character in the name to use as a mnemonic.
-	@return character to use as mnemonic */
-    public char getMnemonic() {
-	return 'P';
-    }
-
     /** Load a sample in TSAP-MATRIX format.
 	@param filename file to load from
 	@return Sample loaded from the file
@@ -68,33 +62,32 @@ public class TSAPMatrix extends Filetype {
 	if (!line.startsWith("TSAP-MATRIX-FORMAT"))
 	    throw new WrongFiletypeException(); // incorrect header found
 
-	// new sample, with given filename.  as far as i know, all
-	// TSAP-MATRIX-FORMAT files are summed, so make wj and count
-	// Lists, too.
-	Sample s = new Sample();
-	s.incr = new ArrayList(); // are all TSAP-MATRIX files summed?
-	s.decr = new ArrayList();
-	s.count = new ArrayList();
-//	s.meta.put("filename", filename);
+        // new sample, with given filename.  as far as i know, all
+        // TSAP-MATRIX-FORMAT files are summed, so make wj and count
+        // Lists, too.
+        Sample s = new Sample();
+        s.incr = new ArrayList(); // are all TSAP-MATRIX files summed?
+        s.decr = new ArrayList();
+        s.count = new ArrayList();
 
-	// after the TSAP-... header line, there are a series of "Tag:
-	// value" lines, then an empty line
-	for (;;) {
-	    line = r.readLine();
+        // after the TSAP-... header line, there are a series of "Tag:
+        // value" lines, then an empty line
+        for (;;) {
+            line = r.readLine();
 
-	    // stop on empty line
-	    if (line.length() == 0)
-		break;
+            // stop on empty line
+            if (line.length() == 0)
+                break;
 
-	    // as a temporary fix, so we don't lose data, let's just
-	    // append all the metadata lines to the ;comments field.
-	    if (s.meta.get("comments") == null)
-		s.meta.put("comments", line.trim());
-	    else
-		s.meta.put("comments", s.meta.get("comments") + "\n" + line.trim());
+            // as a temporary fix, so we don't lose data, let's just
+            // append all the metadata lines to the ;comments field.
+            if (!s.meta.containsKey("comments"))
+                s.meta.put("comments", line.trim());
+            else
+                s.meta.put("comments", s.meta.get("comments") + "\n" + line.trim());
 
-	    // WRITE ME: store metadata lines appropriately
-	}
+            // WRITE ME: store metadata lines appropriately
+        }
 
 	// now there's a line that says "Year, 100 Val  100 Nos ...".  skip it, too.
 	r.readLine();
