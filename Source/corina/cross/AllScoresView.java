@@ -37,9 +37,12 @@ import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.commons.logging.Log;
+
 import corina.Year;
 import corina.core.App;
 import corina.graph.GraphWindow;
+import corina.logging.CorinaLog;
 import corina.prefs.Prefs;
 import corina.prefs.PrefsEvent;
 import corina.prefs.PrefsListener;
@@ -73,6 +76,7 @@ import corina.ui.I18n;
     @version $Id$
 */
 public class AllScoresView extends JPanel implements PrefsListener {
+  private static final Log log = new CorinaLog(AllScoresView.class);
 
     // the crossdate
     private Cross crossdate;
@@ -129,11 +133,13 @@ public class AllScoresView extends JPanel implements PrefsListener {
                 if ((row + row_min == 0) && (col == 1))
                     return null; // zero-year
                 Year year = getYear(row, col);
+                
                 // shift one to start of moving slide 
-                if (!crossdate.getRange().redateBy(1).contains(year))
+                if (!crossdate.getRange().contains(year))
                     return null;
                 else {
 		    float score = crossdate.getScore(year);
+        log.debug("Year: " + year + " score: " + score);
                     return new Float(score);
 		}
 		// BUG: fails here if c.data.length=0 or some such crap

@@ -102,8 +102,7 @@ public abstract class Cross implements Runnable {
        @return the score at that position
     */
     public float getScore(Year year) {
-      // subtract one; data starts at one year shifted
-			int index = year.diff(range.getStart()) - 1;
+			int index = year.diff(range.getStart());
 			return data[index];
     }
 

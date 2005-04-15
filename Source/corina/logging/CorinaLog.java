@@ -18,6 +18,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
 
 /**
+ * Log implementation that subclasses SimpleLog and stores entries in a circular
+ * buffer to be presented in a GUI window.
+ * TODO: write factory class or method to obtain named <code>CorinaLog</code>s to
+ * save instantiations. 
  * @author Aaron Hamid
  */
 public class CorinaLog extends SimpleLog {
@@ -49,8 +53,8 @@ public class CorinaLog extends SimpleLog {
   protected static int logLineCount;
   protected static boolean wrap;
   private static LogListModel listModel = new LogListModel();
-  private static CorinaLog STDOUT = new CorinaLog("STDOUT", false);
-  private static CorinaLog STDERR = new CorinaLog("STDERR", false);
+  private static CorinaLog STDOUT = new CorinaLog("STDOUT", true);
+  private static CorinaLog STDERR = new CorinaLog("STDERR", true);
   private static Object LOCK = new Object();
 
   public static void init() {

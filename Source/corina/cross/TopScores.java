@@ -23,10 +23,12 @@ package corina.cross;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+
 import corina.Range;
 import corina.Sample;
-import corina.Year;
 import corina.core.App;
+import corina.logging.CorinaLog;
 
 /**
  * <h2>Left to do</h2>
@@ -40,6 +42,7 @@ import corina.core.App;
  * </ul>
  */
 public class TopScores {
+  private static final Log log = new CorinaLog(TopScores.class);
   private Cross c;
   private List highScores;
 
@@ -69,24 +72,26 @@ public class TopScores {
     int nr = 0;
     int length = c.getRange().span();
     for (int i = 0; i < length; i++) {
-      movingRange = movingRange.redateBy(+1); // slide it by 1
-
       // overlap not long enough? skip it.
       // (PERF: inefficient!)
-      if (fixedRange.overlap(movingRange) < minimumOverlap)
-        continue;
+      if (fixedRange.overlap(movingRange) >= minimumOverlap) {
 
-      float score = c.getScore(movingRange.getEnd());
-
-      if (c.isSignificant(score, fixedRange.overlap(movingRange)))
-        try {
-          nr++;
-          highScores.add(new HighScore(c, i + 1, nr));
-        } catch (Exception e) {
-          System.out.println("trouble with bayes! -- " + e);
-          // FIXME: bayes? huh?
-          e.printStackTrace();
+        float score = c.getScore(movingRange.getEnd());
+        log.debug(movingRange.getEnd() + ":" + score);
+  
+        if (c.isSignificant(score, fixedRange.overlap(movingRange))) {
+          try {
+            nr++;
+            highScores.add(new HighScore(c, i, nr));
+          } catch (Exception e) {
+            log.error("trouble with bayes! -- " + e);
+            // FIXME: bayes? huh?
+            e.printStackTrace();
+          }
         }
+      }
+        
+      movingRange = movingRange.redateBy(+1); // slide it by 1
     }
     // convert to array now? all i do with it is .size(), .get(),
     // and sort(comparable)
@@ -96,6 +101,9 @@ public class TopScores {
     // right now, i'm thinking:
     // - void cross.computeHighScores() -- computes all
     // - Iterator cross.getHighScores() -- returns only span>minimumOverlap
+
+    //testing
+    //oldComputeHighScores();
   }
 
   /**
@@ -121,7 +129,7 @@ public class TopScores {
       movingRange = movingRange.redateBy(+1); // slide it by 1
 
       float score = c.data[i];
-
+      System.out.println(movingRange.getEnd() + ":" + score);
       if (c.isSignificant(score, fixedRange.overlap(movingRange)))
         try {
           nr++;

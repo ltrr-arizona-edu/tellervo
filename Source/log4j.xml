@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+  <appender name="logfile" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${user.home}/corina.log"/>
+    <param name="MaxFileSize" value="2mb"/>
+    <param name="MaxBackupIndex" value="5"/>
+    <layout class="org.apache.log4j.TTCCLayout">
+      <param name="DateFormat" value="DATE"/>
+    </layout>
+  </appender>
+
+  <root>
+    <priority value="debug"/>
+    <appender-ref ref="logfile"/>
+  </root>
+
+</log4j:configuration>
