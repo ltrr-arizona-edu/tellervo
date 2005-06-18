@@ -185,10 +185,10 @@ public class Grid implements Runnable, Previewable {
 	public CrossCell(Sample fixed, Sample moving) {
 	    this.cross = new Single(fixed, moving);
 	}
-        public CrossCell(float t, float tr, float d, int n) {
+        public CrossCell(float t, float tr, float d, float r, int n) {
 	    // BAD INTERFACE -- REFACTOR -- (this is only used for xml
 	    // loading now -- ok?)
-	    cross = new Single(t, tr, d, n);
+	    cross = new Single(t, tr, d, r, n);
         }
         public void print(Graphics2D g2, int x, int y, float scale) {
             // fill with highlight -- would the user ever NOT want this?  well, yes, possibly.
@@ -211,7 +211,7 @@ public class Grid implements Runnable, Previewable {
             // cross
             // REFACTOR: {"t=" + blah.format(t)} should be simply Score.toString()?
 	    // TODO: need Cross.getShortName() (tscore -> "t") method
-            g2.drawString("t=" + cross.formatT(), x+EPS, y+(int)(getLineHeight()*scale)-EPS);
+            g2.drawString("t=" + cross.formatT() + ", r=" + cross.formatR(), x+EPS, y+(int)(getLineHeight()*scale)-EPS);
             g2.drawString("tr=" + cross.formatTrend(), x+EPS, y+(int)(2*getLineHeight()*scale)-EPS);
             g2.drawString("D=" + cross.formatD(), x+EPS, y+(int)(3*getLineHeight()*scale)-EPS);
             g2.drawString("n=" + String.valueOf(cross.n), x+EPS, y+(int)(4*getLineHeight()*scale)-EPS);
@@ -258,6 +258,7 @@ public class Grid implements Runnable, Previewable {
             return new CrossCell(Float.parseFloat(atts.getValue("t")),
                                  Float.parseFloat(atts.getValue("tr")),
                                  Float.parseFloat(atts.getValue("d")),
+                                 Float.parseFloat(atts.getValue("r")),
                                  Integer.parseInt(atts.getValue("n"))); // exception?
         } else {
             throw new IllegalArgumentException();

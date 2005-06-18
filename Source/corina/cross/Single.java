@@ -13,17 +13,18 @@ import java.text.DecimalFormat;
 
 public class Single {
     // the scores themselves
-    private float t, tr, d;
+    private float t, tr, d, r;
     // FUTURE: float[]
 
     // get rid of these formatters eventually.  scores should be able
     // to format themselves.
-    static DecimalFormat f1, f2, f3;
+    static DecimalFormat f1, f2, f3, f4;
     static {
         // REFACTOR: the crosses to use should be user-pickable, so this is B-A-D.
         f1 = new DecimalFormat(new TScore().getFormat());
         f2 = new DecimalFormat(new Trend().getFormat());
         f3 = new DecimalFormat(new DScore().getFormat());
+        f4 = new DecimalFormat(new RValue().getFormat());
     }
 
     // -- return all scores, formatted properly, in an array?
@@ -36,7 +37,10 @@ public class Single {
 	return f2.format(tr);
     }
     public String formatD() {
-	return f3.format(d);
+    return f3.format(d);
+    }
+    public String formatR() {
+    return f4.format(r);
     }
 
     /*
@@ -51,7 +55,7 @@ public class Single {
     */
 
     public String toXML() {
-	return "<cross t=\"" + t + "\" tr=\"" + tr + "\" d=\"" + d + "\" n=\"" + n + "\"/>";
+	return "<cross t=\"" + t + "\" tr=\"" + tr + "\" d=\"" + d + "\" r=\"" + r + "\" n=\"" + n + "\"/>";
 	// REFACTOR: would messageformat be clearer?
     }
     // TODO: make Cross.getShortName() ("t", "tr", "D", etc.) -- who uses this?
@@ -76,8 +80,10 @@ public class Single {
 	    t = new TScore(fixed, moving).single();
 	    tr = new Trend(fixed, moving).single();
 	    d = new DScore(fixed, moving).single();
+	    r = new RValue(fixed, moving).single();
+	    // FIXME: RValue computation is redundant, since it's already computed in the TScore 
 	} else {
-	    t = tr = d = 0; // right?
+	    t = tr = d = r = 0; // right?
 	}
 
 	// distance
@@ -95,11 +101,12 @@ public class Single {
 
     // FOR BACKWARDS COMPATIBILITY ONLY -- REFACTOR AND REMOVE ME -- ??
     // -- used only for Grid loading
-    public Single(float t, float tr, float d, int n) {
+    public Single(float t, float tr, float d, float r, int n) {
 	this.t = t;
 	this.tr = tr;
 	this.d = d;
 	this.n = n;
+	this.r = r;
 	isSig = new TScore().isSignificant(t, n);
     }
 

@@ -20,6 +20,8 @@
 
 package corina.map;
 
+import corina.gui.ProgressMeter;
+import corina.gui.Splash;
 import corina.map.tools.Tool;
 import corina.map.layers.GridlinesLayer;
 import corina.map.layers.MapLayer;
@@ -58,8 +60,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
+import javax.swing.ProgressMonitor;
 import javax.swing.RepaintManager;
 import javax.swing.filechooser.FileFilter;
+import javax.imageio.*;
 
 /**
    A map component.
@@ -98,6 +102,8 @@ public class MapPanel extends JPanel {
     
     private JPopupMenu popup = new JPopupMenu("Save");
     
+    private BufferedImage backbuffer = null; // the backbuffer for double buffering the map. null= not created yet
+    
     public void setZoom() {
         fr.setZoom();
     }
@@ -121,6 +127,7 @@ public class MapPanel extends JPanel {
         // arrays of layers
         layersDraw = new Layer[] { mapLayer, grid, sitesLayer, legend };
         layersCompute = new Layer[] { grid, mapLayer, sitesLayer, legend };
+        layersComputeNoDraw = new boolean[] { true, true, false, false };
 
         // disable double-buffering: since i have a whole stack of buffers
         // that i draw myself, it's not really useful for me.
@@ -146,7 +153,49 @@ public class MapPanel extends JPanel {
           //chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
           int returnVal = chooser.showSaveDialog(fr);
           if (returnVal != JFileChooser.APPROVE_OPTION) return;
+          
+          /*
+          Splash splash = new Splash("Exporting graph to PNG file...", null);
+          ProgressMeter pm = new ProgressMeter();                
+          pm.addProgressListener(splash);
+          */
+          
+          ProgressMonitor pm = new ProgressMonitor(fr, // parent
+                  "Exporting map to PNG file...", // message
+                  "", // note
+                  0, 50000); // round up to 45 MB
+          
+          pm.setMillisToDecideToPopup(100);
+          pm.setMillisToPopup(200);
+          
+          pm.setProgress(1);
+          pm.setNote("Creating memory image...");          
+          Rectangle rect = getBounds();
+          BufferedImage fileImage = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_RGB);
+          Graphics2D g = fileImage.createGraphics();
+          
+          try {
+          Thread.sleep(5000);
+          } catch (Exception e) {}
+          
+                   
+          pm.setProgress(2);
+          pm.setNote("Creating map...");          
+          paint(g);
 
+          pm.setProgress(3);
+          pm.setNote("Encoding as PNG...");
+          
+          try {
+        	  ImageIO.write(fileImage, "png", chooser.getSelectedFile());
+          } catch ( IOException ioe ) {
+              ioe.printStackTrace();        	  
+          }
+                   
+          //dispose of the graphics content
+          g.dispose();
+          
+          /*
           EventQueue.invokeLater(new Runnable() {
             public void run() {
               Rectangle rect = getBounds();
@@ -155,7 +204,7 @@ public class MapPanel extends JPanel {
               final Graphics g = fileImage.getGraphics();
 
               //write to the image
-                  paint(g);
+              paint(g);
  
                   // write it out in the format you want
 
@@ -169,6 +218,7 @@ public class MapPanel extends JPanel {
                       PngEncoderB encoderb = new PngEncoderB((BufferedImage) fileImage);
                       bytes = encoderb.pngEncode(false);
                     }*/
+                  /*
                     if (bytes != null) {
                       FileOutputStream fos = new FileOutputStream(chooser.getSelectedFile());
                       try {
@@ -197,7 +247,11 @@ public class MapPanel extends JPanel {
             }
           });
         }
-      });      
+      });
+      */
+        }
+      });
+
       popup.add(save);
 
       addMouseListener(new MouseAdapter() {
@@ -276,7 +330,7 @@ public class MapPanel extends JPanel {
 
 	// dirty all layers
 	for (int i=0; i<layersCompute.length; i++)
-	    layersCompute[i].setDirty(); // ??
+	    layersCompute[i].setDirty(layersComputeNoDraw[i]); // ??
 
 	// start a new worker thread
 	worker = new WorkerThread();
@@ -446,6 +500,7 @@ public class MapPanel extends JPanel {
 
     // the layers, in the order they're computed (first to last)
     private Layer layersCompute[];
+    private boolean layersComputeNoDraw[];
 
     // the layer which is currently being updated, or null if no update is occurring
     private Layer currentLayer = null;
@@ -460,16 +515,17 @@ public class MapPanel extends JPanel {
                 // if it's not dirty, skip it
                 if (!layersCompute[i].isDirty())
                     continue;
-
+                
                 // render it
 		currentLayer = layersCompute[i];
 		currentLayer.update(r);
 		currentLayer = null;
 
+	    }
 		// revalidate this panel
 		revalidate();
 		repaint();
-	    }
+	    
 	}
 
 	private boolean abort = false;
@@ -505,23 +561,35 @@ public class MapPanel extends JPanel {
     public void paintComponent(Graphics g) {
 	// -- draw all clean layers
 	// -- if no worker thread, start one -- FIXME: either i should do this, or i shouldn't claim to.
-	g.setColor(Color.white);
-	g.fillRect(0, 0, view.size.width, view.size.height);
+    
+    if ((backbuffer == null) || 
+    		(view.size.width != backbuffer.getWidth()) ||
+    		(view.size.height != backbuffer.getHeight()))
+    {
+    	backbuffer = new BufferedImage(getSize().width, getSize().height,
+    			BufferedImage.TYPE_INT_RGB);
+    }    	
+    
+    Graphics2D bg = backbuffer.createGraphics();
+    
+	bg.setColor(Color.white);
+	bg.fillRect(0, 0, view.size.width, view.size.height);
 
 	// draw all layers
-	Graphics2D g2 = (Graphics2D) g;
 	for (int i=0; i<layersDraw.length; i++) {
-	    if (!layersDraw[i].isDirty()) {
-		g.drawImage(layersDraw[i].getBuffer(), 0, 0, null);
+	    if (!layersDraw[i].noDraw()) {
+		bg.drawImage(layersDraw[i].getBuffer(), 0, 0, null);
 	    }
 	}
 
         // turn on antialiasing for decorators.
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+        bg.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                             RenderingHints.VALUE_ANTIALIAS_ON);
 
         // current tool gets a chance to decorate
-        decorate(g2); // BUG: the decoration isn't double-buffered! (on win32)
+        decorate(bg); // BUG: the decoration isn't double-buffered! (on win32)
+        
+        g.drawImage(backbuffer, 0, 0, null);
     }
 
     // extra crap, er, decorators -- via callbacks.  probably not threadsafe, but

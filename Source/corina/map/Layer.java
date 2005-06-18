@@ -111,15 +111,28 @@ public abstract class Layer {
     // layers would each create a bunch of garbage, and that's not cool.)
     private BufferedImage buf = null;
 
+    // something marked as dirty must be redrawn
+    // however, it's not always a great idea to remove items from the map
+    // whilst they are being drawn -- this leads to massive flicker.
+    public void setDirty(boolean hide_drawing) {
+    	dirty = true;
+    	nodraw = hide_drawing;
+    }
+
     public void setDirty() {
-	dirty = true;
+    	setDirty(true);
     }
-
+    
     public boolean isDirty() {
-	return dirty;
+    	return dirty;
     }
 
+    public boolean noDraw() {
+    	return dirty && nodraw;
+    }    
+    
     private boolean dirty = true;
+    private boolean nodraw = true;
 
     // may be slow -- updates the internal buffer, using draw();
     // used for drawing to components
@@ -156,6 +169,7 @@ public abstract class Layer {
         // PROFILING: System.out.println(getClass().getName() + ": spent " + (t2-t1) + " ms drawing");
 
 	dirty = false;
+	nodraw = false;
     }
 
     /**

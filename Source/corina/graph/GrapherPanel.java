@@ -42,11 +42,13 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -54,10 +56,17 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.ProgressMonitor;
+import javax.swing.RepaintManager;
 import javax.swing.Scrollable;
 import javax.swing.filechooser.FileFilter;
 
-import com.keypoint.PngEncoder;
+import com.lowagie.text.*;
+import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.DefaultFontMapper;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfTemplate;
+import com.lowagie.text.pdf.PdfWriter;
 
 import corina.Build;
 import corina.Range;
@@ -550,77 +559,194 @@ public class GrapherPanel extends JPanel
 
 	// create drawing agent
 	recreateAgent();
-  
-  JMenuItem save = new JMenuItem("Save...");
-        save.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent ae) {
-            final JFileChooser chooser = new JFileChooser();
-            chooser.setFileFilter(new FileFilter() {
-              public boolean accept(File f) {
-                return f.getName().endsWith(".png");
-              }
-              public String getDescription() {
-                return "PNG image files";
-              }
-            });
-            chooser.setMultiSelectionEnabled(false);
-            chooser.setAcceptAllFileFilterUsed(true);
-            //chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-            int returnVal = chooser.showSaveDialog(myFrame);
-            if (returnVal != JFileChooser.APPROVE_OPTION) return;
 
-            EventQueue.invokeLater(new Runnable() {
-              public void run() {
-                Rectangle rect = getBounds();
-                final Image fileImage = 
-                    createImage(rect.width,rect.height);
-                final Graphics g = fileImage.getGraphics();
-    
-                //write to the image
-                paint(g);
-     
-                // write it out in the format you want
-    
-                new Thread(new Runnable() {
-                  public void run() {
-                    try {
-                      
-                      PngEncoder encoder = new PngEncoder(fileImage);
-                      byte[] bytes = encoder.pngEncode(false);
-                      /* (bytes == null) {
-                        PngEncoderB encoderb = new PngEncoderB((BufferedImage) fileImage);
-                        bytes = encoderb.pngEncode(false);
-                      }*/
-                      if (bytes != null) {
-                        FileOutputStream fos = new FileOutputStream(chooser.getSelectedFile());
-                        try {
-                          fos.write(bytes);
-                          fos.flush();
-                        } finally {
-                          try {
-                            fos.close();
-                          } catch (IOException ioe) {
-                            ioe.printStackTrace();
-                          }
-                        }
-                      } else {
-                        System.err.println("ERROR IN ENCODER");
-                      }
-                      
-                    } catch (Exception e) {
-                      System.err.println("ERROR SAVING GRAPH TO: " + chooser.getSelectedFile());
-                      e.printStackTrace();
-                    }
-        
-                    //dispose of the graphics content
-                    g.dispose();
-                  }
-                }).start();
-              }
-            });
-          }
-        });      
-        popup.add(save);
+	JMenuItem savepng = new JMenuItem("Save as PNG...");
+	savepng.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			final JFileChooser chooser = new JFileChooser();
+			chooser.setFileFilter(new FileFilter() {
+				public boolean accept(File f) {
+					return f.getName().endsWith(".png");
+				}
+				public String getDescription() {
+					return "PNG image files";
+				}
+			});
+			chooser.setMultiSelectionEnabled(false);
+			chooser.setAcceptAllFileFilterUsed(false);
+			//chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			int returnVal = chooser.showSaveDialog(myFrame);
+			if (returnVal != JFileChooser.APPROVE_OPTION) return;
+			
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {            
+					
+					ProgressMonitor pm = new ProgressMonitor(myFrame, // parent
+							"Exporting graph to PNG file...", // message
+							"", // note
+							0, 5); // round up to 45 MB
+					
+					pm.setMillisToDecideToPopup(0);
+					pm.setMillisToPopup(0);
+					
+					pm.setProgress(1);
+					pm.setNote("Creating memory image...");          
+					Rectangle rect = getBounds();
+					BufferedImage fileImage = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_RGB);
+					Graphics2D g = fileImage.createGraphics();
+					
+					pm.setProgress(2);
+					pm.setNote("Drawing graph...");
+					
+					// We're going to save this graph, make sure it's readable and printable by normal programs.
+					Color old_background = getBackground();
+					Color old_major = major;
+					Color old_minor = minor;
+					Color old_FORE_COLOR = FORE_COLOR;
+					boolean old_inside = inside;
+					
+					setBackground(Color.white);
+					FORE_COLOR = Color.BLACK;
+					major = new Color(255, 200, 200);
+					minor = ColorUtils.blend(major, Color.white);
+					inside = false;
+					
+					//write to the image
+					paintGraph(g);
+					
+					setBackground(old_background);
+					major = old_major;
+					minor = old_minor;
+					FORE_COLOR = old_FORE_COLOR;
+					inside = old_inside;            
+					
+					pm.setProgress(3);
+					pm.setNote("Encoding as PNG and saving file...");
+					
+					try {
+						ImageIO.write(fileImage, "png", chooser.getSelectedFile());
+					} catch ( IOException ioe ) {
+						ioe.printStackTrace();        	  
+					}
+					
+					pm.setProgress(4);
+					pm.setNote("Cleaning up...");            		
+					
+					//dispose of the graphics content
+					g.dispose();
+					
+					pm.setProgress(5);            		            		
+				}
+			});
+		}
+	});
+	popup.add(savepng);
+	
+	JMenuItem savepdf = new JMenuItem("Save as PDF...");
+	savepdf.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			final JFileChooser chooser = new JFileChooser();
+			chooser.setFileFilter(new FileFilter() {
+				public boolean accept(File f) {
+					return f.getName().endsWith(".pdf");
+				}
+				public String getDescription() {
+					return "PNG image files";
+				}
+			});
+			chooser.setMultiSelectionEnabled(false);
+			chooser.setAcceptAllFileFilterUsed(false);
+			//chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			int returnVal = chooser.showSaveDialog(myFrame);
+			if (returnVal != JFileChooser.APPROVE_OPTION) return;
+			
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {            
+					
+					ProgressMonitor pm = new ProgressMonitor(myFrame, // parent
+							"Exporting graph to PDF file...", // message
+							"", // note
+							0, 5); // round up to 45 MB
+					
+					pm.setMillisToDecideToPopup(0);
+					pm.setMillisToPopup(0);
+
+					pm.setProgress(1);
+					pm.setNote("Creating PDF document...");            							
+					
+					// create a PDF document
+					Rectangle rect = getBounds();
+					com.lowagie.text.Rectangle pageSize = new com.lowagie.text.Rectangle(rect.width, rect.height);
+					Document document = new Document(pageSize);
+					
+					try {
+						// create an associated writer
+						PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(chooser.getSelectedFile()));
+						
+						// "open" the PDF
+						document.open();
+						
+						// set up a font mapper
+						//DefaultFontMapper mapper = new DefaultFontMapper();					
+						//FontFactory.registerDirectories();
+						
+						pm.setProgress(2);
+						pm.setNote("Creating PDF memory context...");            								
+						
+						// do some magic to set up the pdf context
+						PdfContentByte cb = writer.getDirectContent();					
+						Graphics2D g = 
+							cb.createGraphicsShapes(pageSize.width(), pageSize.height());
+						
+						
+						// We're going to save this graph, make sure it's readable and printable by normal programs.
+						Color old_background = getBackground();
+						Color old_major = major;
+						Color old_minor = minor;
+						Color old_FORE_COLOR = FORE_COLOR;
+						boolean old_inside = inside;
+						
+						setBackground(Color.white);
+						FORE_COLOR = Color.BLACK;
+						major = new Color(255, 200, 200);
+						minor = ColorUtils.blend(major, Color.white);
+						inside = false;
+						
+						//write to the image
+						pm.setProgress(3);
+						pm.setNote("Drawing graph...");
+						paintGraph(g);
+						
+						setBackground(old_background);
+						major = old_major;
+						minor = old_minor;
+						FORE_COLOR = old_FORE_COLOR;
+						inside = old_inside;
+						
+						// finish up the PDF cruft
+						//cb.addTemplate(tp, 0, 0);								
+						
+						//dispose of the graphics content
+						pm.setProgress(4);
+						pm.setNote("Cleaning up...");            								
+						g.dispose();
+					}
+					catch (DocumentException de) {
+						System.err.println(de.getMessage());
+						de.printStackTrace();						
+					}
+					catch (IOException ioe) {
+						System.err.println(ioe.getMessage());
+						ioe.printStackTrace();
+					}
+					
+					document.close();
+					pm.setProgress(5);            		            		
+				}
+			});
+		}
+	});
+	popup.add(savepdf);	
       
         /*addMouseListener(new MouseAdapter() {
           public void mouseClicked(MouseEvent e) {
@@ -816,14 +942,19 @@ public class GrapherPanel extends JPanel
          [a bit sluggish -- but only needed for scrolling]
     */
 
+    public void paintComponent(Graphics g) {
+    	ensureHorizExists();
+
+    	// graphics setup
+    	super.paintComponent(g);
+    	
+    	paintGraph(g);
+    }    
+    
     /** Paint this panel.  Draws a horizontal axis in white (on a
 	black background), then draws each graph in a different color.
 	@param g the Graphics to draw this panel onto */
-    public void paintComponent(Graphics g) {
-	ensureHorizExists();
-
-	// graphics setup
-	super.paintComponent(g);
+    public void paintGraph(Graphics g) {
 	Graphics2D g2 = (Graphics2D) g;
 
 	// from here down, everything is drawn in order.  this
