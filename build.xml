@@ -136,6 +136,7 @@
   <property name="ftp.jar" value="(set this in build.properties!)"/>
   <property name="batik.jar" value="(set this in build.properties!)"/>
   <property name="comm.jar" value="(set this in build.properties!)"/>
+  <property name="itext.jar" value="(set this in build.properties!)"/>
 	
 <!-- ==================== Compilation Classpath =========================== -->
 
@@ -156,6 +157,7 @@
     <pathelement location="${ftp.jar}"/>
     <pathelement location="${batik.jar}"/>
     <pathelement location="${comm.jar}"/> 
+    <pathelement location="${itext.jar}"/> 
   </path>
 
 <!-- ==================== All Target ====================================== -->
@@ -221,7 +223,11 @@
     </copy> -->
     <!-- Create application JAR file -->
     <jar jarfile="${dist.home}/${app.name}-${app.version}.jar"
-         basedir="${build.home}" index="true" compress="true"/>
+         basedir="${build.home}" index="true" compress="true">
+    	<manifest>
+    		<attribute name="Main-Class" value="${app.name}.gui.Startup"/>
+   		</manifest>   	
+   	</jar>
     <!-- Copy additional files to ${dist.home} as necessary -->
   </target>
 
