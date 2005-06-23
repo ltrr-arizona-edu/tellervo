@@ -651,7 +651,7 @@ public class GrapherPanel extends JPanel
 					return f.getName().endsWith(".pdf");
 				}
 				public String getDescription() {
-					return "PNG image files";
+					return "PDF Document files";
 				}
 			});
 			chooser.setMultiSelectionEnabled(false);
