@@ -56,6 +56,7 @@ public class LabelSet {
        @return an Iterator for all of the Locations
     */
     public Iterator getLocations() {
+    	/*
         // TODO: WRITEME
         return new Iterator() {
             public boolean hasNext() {
@@ -70,6 +71,8 @@ public class LabelSet {
                 // TODO: WRITEME
             }
         };
+        */
+    	return visibleLocations.iterator();
     }
 
     //
@@ -77,6 +80,7 @@ public class LabelSet {
     //
 
     private Set visibleSites = new HashSet(); // TODO: default should be all, not none, right?
+    private Set visibleLocations = new HashSet();
 
     /**
        Is this site visible?
@@ -95,10 +99,14 @@ public class LabelSet {
        @param visible if true, set it to visible; if false, invisible
     */
     public void setVisible(Site site, boolean visible) {
-        if (visible)
-            visibleSites.add(site);
-        else
+        if (visible) {
+        	visibleSites.add(site);
+            visibleLocations.add(site.getLocation());
+        }
+        else {
             visibleSites.remove(site);
+            visibleLocations.remove(site.getLocation());
+        }
     }
 
     /**
@@ -121,12 +129,24 @@ public class LabelSet {
         Iterator all = SiteDB.getSiteDB().sites.iterator();
         while (all.hasNext()) {
             Site site = (Site) all.next();
-            if (site.getLocation() != null)
+            if (site.getLocation() != null) {
                 visibleSites.add(site);
+                visibleLocations.add(site.getLocation());
+            }
         }
     }
     public void hideAllSites() {
         visibleSites.clear();
+        visibleLocations.clear();
+    }
+    
+    public void rehashLocations() {
+    	visibleLocations.clear();
+    	Iterator iter = visibleSites.iterator();
+    	
+    	while(iter.hasNext()) {
+    		visibleLocations.add(((Site)iter.next()).getLocation());
+    	}
     }
     
     //

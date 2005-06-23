@@ -79,7 +79,7 @@ public class SiteInfoDialog extends JDialog {
     private JTextField name, code, id;
     // ADDME: location, altitude
     private CountryPopup country;
-    private JTextField species;
+    private JTextField species, location, altitude;
     private JCheckBox ancient, medieval, forest, unknown;
     private JTextArea comments;
     // ADDME: folder
@@ -87,7 +87,9 @@ public class SiteInfoDialog extends JDialog {
     // display info for |site|;
     // center over |window|, or on screen if null.
     public SiteInfoDialog(Site site, Window window) {
-	// save site reference
+    	super((Frame) window, site.getName(), true);
+
+    	// save site reference
 	this.site = site;
 
 	// set dialog title
@@ -106,8 +108,8 @@ public class SiteInfoDialog extends JDialog {
 
 	// location line
 	// FIXME: getLocationAsString, getAltitudeAsString()
-	JTextField location = new JTextField(site.getLocation()==null ? "" : site.getLocation().toString(), 15);
-	JTextField altitude = new JTextField(site.getAltitude()==null ? "" : site.getAltitude().toString(), 5);
+	location = new JTextField(site.getLocation()==null ? "" : site.getLocation().toString(), 15);
+	altitude = new JTextField(site.getAltitude()==null ? "" : site.getAltitude().toString(), 5);
 	country = new CountryPopup(this, site.getCountry());
 
 	JPanel altitude2 = Layout.flowLayoutL(altitude,
@@ -152,11 +154,15 @@ public class SiteInfoDialog extends JDialog {
 	AbstractAction buttonAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    // if 'ok' clicked, writeback
-		    if (e.getSource() == ok)
-			writeback();
+			boolean kill = true;
+		    if (e.getSource() == ok) {
+		    	if(!writeback())
+		    		kill = false;
+		    }
 
-		    // close this dialog
-		    dispose();
+		    // close this dialog if we're told to kill
+		    if(kill)
+		    	dispose();
 		}
 	    };
 	cancel.addActionListener(buttonAction);
@@ -185,13 +191,25 @@ public class SiteInfoDialog extends JDialog {
 	show();
     }
 
-    private void writeback() {
+    private boolean writeback() {
+    	Location loc;
+    	
+    try {
+    	loc = new Location(location.getText());
+    }
+    catch (NumberFormatException nfe) {
+    	JOptionPane.showMessageDialog(this, "Invalid location string.");
+    	return false;
+    }
+
+    	
 	// - name, code, id
 	site.setName(name.getText());
 	site.setCode(code.getText());
 	site.setID(id.getText());
 
 	// - location, altitude, country
+	site.setLocation(loc);
 	// WRITEME
 	site.setCountry(country.getCountry());
 
@@ -213,6 +231,8 @@ public class SiteInfoDialog extends JDialog {
 
 	// TODO: save this site now
 	// future: site.getStorage().save(site);
+	
+	return true;
     }
 
     // (note: label is actually an i18n key!)

@@ -46,10 +46,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -106,6 +103,10 @@ public class MapPanel extends JPanel {
     
     public void setZoom() {
         fr.setZoom();
+    }
+    
+    public MapFrame getFrame() {
+    	return fr;
     }
 
     // note: mapframe is only used for its setZoom() method.
@@ -264,6 +265,7 @@ public class MapPanel extends JPanel {
           popup.show(MapPanel.this, e.getX(), e.getY());
         }  
       });
+      
     }
 
     // USED BY: toFront(), ArrowTool (hmm), etc.
@@ -282,6 +284,11 @@ public class MapPanel extends JPanel {
 
 	// BUG: if workers take a long time to die, what's to stop this from
 	// building up a whole bunch of threads?
+    }
+    
+    // used by ArrowTool -- if a lat/long changed, we need to fix the location cache
+    public void notifyLabelsChanged() {
+    	labels.rehashLocations();
     }
 
     // a Map of (Location=>(Site|List)); first element of each list is the frontmost site
@@ -444,7 +451,7 @@ public class MapPanel extends JPanel {
         // (stuff that was originally in the loop, but are invariant and moved out for performance)
         int textHeight = g2.getFontMetrics().getHeight();
         Point t = new Point();
-
+        
         // WAS: Iterator iter = siteHash.values().iterator();
         Iterator iter = labels.getLocations();
         // FIXME: should getLocations() return only visible locations?  or should i make a getVisibleLocations()?

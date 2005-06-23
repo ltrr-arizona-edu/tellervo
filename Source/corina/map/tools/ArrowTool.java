@@ -112,7 +112,10 @@ public class ArrowTool extends Tool {
                 Projection r = Projection.makeProjection(v);
                 Point pt = e.getPoint();
                 Site site = p.siteForPoint(r, pt, 20*((int) v.getZoom())); // from popup trigger, below
-                new SiteInfoDialog(site, null);
+                new SiteInfoDialog(site, p.getFrame());
+                p.notifyLabelsChanged();
+                p.updateBufferLabelsOnly();
+                p.repaint();
 		// FIXME: null = center on screen; would be better to
 		// center on the Atlas window which i'm in
 	    } catch (SiteNotFoundException snfe) {
