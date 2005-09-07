@@ -569,7 +569,7 @@ public class GrapherPanel extends JPanel
 					return f.getName().endsWith(".png");
 				}
 				public String getDescription() {
-					return "PNG image files";
+					return "PNG image files (*.png)";
 				}
 			});
 			chooser.setMultiSelectionEnabled(false);
@@ -624,7 +624,10 @@ public class GrapherPanel extends JPanel
 					pm.setNote("Encoding as PNG and saving file...");
 					
 					try {
-						ImageIO.write(fileImage, "png", chooser.getSelectedFile());
+						String fn = chooser.getSelectedFile().getAbsolutePath();
+						if(!fn.toLowerCase().endsWith(".png"))
+							fn += ".png";
+						ImageIO.write(fileImage, "png", new File(fn));
 					} catch ( IOException ioe ) {
 						ioe.printStackTrace();        	  
 					}
@@ -651,7 +654,7 @@ public class GrapherPanel extends JPanel
 					return f.getName().endsWith(".pdf");
 				}
 				public String getDescription() {
-					return "PDF Document files";
+					return "PDF Document files (*.pdf)";
 				}
 			});
 			chooser.setMultiSelectionEnabled(false);
@@ -674,6 +677,10 @@ public class GrapherPanel extends JPanel
 					pm.setProgress(1);
 					pm.setNote("Creating PDF document...");            							
 					
+					String fn = chooser.getSelectedFile().getAbsolutePath();
+					if(!fn.toLowerCase().endsWith(".pdf"))
+						fn += ".pdf";
+					
 					// create a PDF document
 					Rectangle rect = getBounds();
 					com.lowagie.text.Rectangle pageSize = new com.lowagie.text.Rectangle(rect.width, rect.height);
@@ -681,7 +688,7 @@ public class GrapherPanel extends JPanel
 					
 					try {
 						// create an associated writer
-						PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(chooser.getSelectedFile()));
+						PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(new File(fn)));
 						
 						// "open" the PDF
 						document.open();
