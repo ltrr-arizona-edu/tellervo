@@ -71,7 +71,7 @@ import corina.ui.I18n;
  * @version $Id$
  */
 public class FileDialog {
-  private static final Dimension SINGLE_DEFAULT_DIMENSION = new Dimension(480, 360);
+  private static final Dimension SINGLE_DEFAULT_DIMENSION = new Dimension(640, 480);
   private static final Dimension MULTI_DEFAULT_DIMENSION = new Dimension(640, 480);
   private static final String CLASS_NAME = FileDialog.class.getName();
   private static final String SINGLE_DIM_PREF = CLASS_NAME + ".single.dimension";
@@ -210,7 +210,7 @@ public class FileDialog {
    */
   public static String showSingle(String prompt) throws UserCancelledException {
     // create chooser
-    JFileChooser f = new JFileChooser(wd);
+    JFileChooser f = new JFileChooser(wd);    
 
     // add filters
     addFilters(f);
