@@ -48,6 +48,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import sun.security.krb5.internal.crypto.e;
+
 import corina.Build;
 import corina.core.App;
 import corina.cross.sigscores.SignificantScoresView;
@@ -251,6 +253,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
   private CardLayout cardLayout;
   private boolean movingFloats = true;
   private boolean fixedFloats = false;
+  private JLinedLabel errlabel = null;
 
   // private Tree fixedTree;
   // private Tree movingTree;
@@ -412,10 +415,11 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
         if (bad) {
           EventQueue.invokeLater(new Runnable() {
             public void run() {
-              // remove last component -- not terribly reliable ...
-              defaultView.remove(defaultView.getComponentCount() - 1);
+              defaultView.remove(errlabel);
+              errlabel = null;
               bad = false;
               defaultView.add(tabPane, BorderLayout.CENTER);
+              defaultView.validate();
 
               // repaint();
             }
@@ -446,11 +450,16 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
         final String message = iae.getMessage();
         EventQueue.invokeLater(new Runnable() {
           public void run() {
-            JLinedLabel label = new JLinedLabel(message);
+            System.out.println(message);
+             
+            errlabel = new JLinedLabel(message);
             defaultView.remove(tabPane);
-            defaultView.add(label, BorderLayout.CENTER);
+            defaultView.add(errlabel, BorderLayout.CENTER);
+            
+            defaultView.validate();            
+            
             bad = true;
-            // repaint();
+            repaint();
           }
         });
 
@@ -725,7 +734,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
   // PERF: slow, especially if long sample and min_overlap didn't change
   // -- it's only needed if min_overlap changed, right? that's ok.
   public void prefChanged(PrefsEvent e) {
-    if (e.getPref().equals("corina.cross.overlap")) {
+    if (e.getPref().equals("corina.cross.overlap") || e.getPref().equals("corina.cross.d-overlap")) {
       new Thread(new CrossdateRunner()).start(); // ugly, but necessary (i think)
       // BETTER: why not always compute the full overlap, but
       // only display the relevant parts? then changing the overlap

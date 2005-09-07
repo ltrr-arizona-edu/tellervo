@@ -12,6 +12,7 @@ import javax.swing.table.AbstractTableModel;
 
 import corina.Range;
 import corina.cross.HighScore;
+import corina.cross.Weiserjahre;
 import corina.ui.I18n;
 
 
@@ -97,7 +98,15 @@ class CrossSigsTableModel extends AbstractTableModel {
       case 0: return new Integer(s.number);
       case 1: return (this.view.isFixedFloats() ? s.fixedRange : this.view.getCrossdate().getFixed().range);
       case 2: return (this.view.isMovingFloats() ? s.movingRange : this.view.getCrossdate().getMoving().range);
-      case 3: return df.format(s.score);
+      case 3: 
+    	  {
+    	  	// this is pretty gross.
+    	  	// apologies in advance for making polymorphism advocates cry.
+    	    if(this.view.getCrossdate() instanceof Weiserjahre)
+    	    	return df.format(s.score) + " in " + s.signifigant;
+    	    else
+    	    	return df.format(s.score);
+    	  }
       case 4: return new Integer(s.span); // PERF!
       case 5: return (s.confidence > 0.90 ? formatNoPercent.format(s.confidence * 100) : "");
       // as %:

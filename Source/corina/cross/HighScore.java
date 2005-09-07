@@ -26,6 +26,7 @@ public class HighScore {
   public float score;
   public int span;
   public float confidence;
+  public int signifigant;
 
   public HighScore(Cross cross, int index, int nr) {
     Year firstCross = cross.getRange().getStart();
@@ -40,6 +41,7 @@ public class HighScore {
     //System.out.println("highscore: old: " + cross.getScoreOLD(index) + " new: " + cross.getScore(thisCross));
     // XXX: evil one-off error lurking around here
     score = cross.getScore(thisCross);
+    signifigant = cross.getScoreSignifigance(thisCross);
 
     span = cross.getFixed().range.overlap(movingRange);
 
@@ -47,6 +49,7 @@ public class HighScore {
     // FIXME: this throws exceptions(?)
 
     number = nr;
+       
   }
 
   /*

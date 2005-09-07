@@ -39,6 +39,7 @@ import javax.swing.table.TableColumnModel;
 import corina.Year;
 import corina.core.App;
 import corina.cross.Cross;
+import corina.cross.Weiserjahre;
 import corina.cross.HighScore;
 import corina.cross.RangeRenderer;
 import corina.graph.GraphWindow;
@@ -204,7 +205,7 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
     columns.getColumn(2).setCellRenderer(new RangeRenderer());
 
     String format = crossdate.getFormat();
-    columns.getColumn(3).setCellRenderer(new DecimalRenderer(format));
+   	columns.getColumn(3).setCellRenderer(new DecimalRenderer(format));
 
     // assume overlap is usually around 3 digits:
     columns.getColumn(4).setCellRenderer(new DecimalRenderer("000"));

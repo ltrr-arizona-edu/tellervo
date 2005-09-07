@@ -131,6 +131,10 @@ public class DScore extends Cross {
 	    trend.run();
     }
 
+    public int getOverlap() {
+    	return App.prefs.getIntPref("corina.cross.d-overlap", 100);
+    }
+    
     /*
       !!! BUG !!!
 

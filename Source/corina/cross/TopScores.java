@@ -68,7 +68,7 @@ public class TopScores {
     //System.out.println("movingRange: "+ movingRange);
 
     // FIXME: default=15 shouldn't be here; it's used elsewhere, as well.
-    final int minimumOverlap = App.prefs.getIntPref("corina.cross.overlap", 15);
+    final int minimumOverlap = c.getOverlap(); //App.prefs.getIntPref("corina.cross.overlap", 15);
     int nr = 0;
     int length = c.getRange().span();
     for (int i = 0; i < length; i++) {

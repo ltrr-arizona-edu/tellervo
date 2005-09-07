@@ -78,6 +78,7 @@ import corina.ui.I18n;
 public abstract class Cross implements Runnable {
     /** The crossdate scores. */
     private float data[];
+    private int signifigance[];
 
     /**
        Get a crossdate score.
@@ -107,13 +108,25 @@ public abstract class Cross implements Runnable {
     }
 
     /**
+     	Get a crossdate score signifigance.
+
+    	
+    	@param year the end year of the moving sample
+    	@return the score signifigance at that position
+    */    
+    public int getScoreSignifigance(Year year) {
+		int index = year.diff(range.getStart());
+		return signifigance[index];
+    }
+
+    /**
        The cross's range, which is the range of end-years the moving
        sample can be placed at.
 
        @return the span of years the moving sample can end at
     */
     public Range getRange() {
-	return range;
+    	return range;
     }
     private Range range;
 
@@ -219,7 +232,33 @@ public abstract class Cross implements Runnable {
 	return topScores;
     }
     private TopScores topScores;
+    
+    /**
+       Returns the minimum overlap
+       
+       This is done by calling getprefs. Done in a method so it can be overridden
+       by derived classes.
+       
+       @return the minimum overlap.
+     */
+    
+    public int getOverlap() {
+    	return App.prefs.getIntPref("corina.cross.overlap", 15);
+    }
 
+    /**
+    Returns the number of signifigant samples.
+
+    Useful only now for Weiserjahre.
+    
+    @return the number of signifigant samples
+  */
+ 
+    public int getSignifigant() {
+    	return 0;
+    }
+    
+    
     // don't use me
     protected Cross() { }
     // FIXME: then why is this here?
@@ -357,7 +396,7 @@ public abstract class Cross implements Runnable {
 
       // careful: it can be true that n>0 but there are 0 crosses
       // that should be run here.  check first:
-      int overlap = App.prefs.getIntPref("corina.cross.overlap", 15);
+      int overlap = getOverlap(); //App.prefs.getIntPref("corina.cross.overlap", 15);
       if (fixed.data.size() < overlap || moving.data.size() < overlap) {
         String problem = "These samples (n=" + fixed.data.size() + ", " +
             "n=" + moving.data.size() + ") aren't long enough for " +
@@ -370,10 +409,12 @@ public abstract class Cross implements Runnable {
       int n = fixed.data.size() + moving.data.size() - 1; // was: ...-2*getMinimumOverlap();
       if (n <= 0) {
         data = new float[0];
+        signifigance = new int[0];
         finished = true;
         return;
       }
       data = new float[n];
+      signifigance = new int[n];
       int done = 0;
 
       // preamble
@@ -388,11 +429,17 @@ public abstract class Cross implements Runnable {
 
       // phase 1:
       for (int i=moving.data.size()-1 /*getMinimumOverlap()*/; i>0; i--)
-        data[done++] = compute(0, i);
+      {
+        data[done] = compute(0, i);
+        signifigance[done++] = this.getSignifigant();
+      }
 
       // phase 2:
       for (int i=0; i<fixed.data.size()-1 /*getMinimumOverlap()*/; i++)
-        data[done++] = compute(i, 0);
+      {
+        data[done] = compute(i, 0);
+        signifigance[done++] = this.getSignifigant();
+      }
 
       // finish up...
       topScores = new TopScores(this);

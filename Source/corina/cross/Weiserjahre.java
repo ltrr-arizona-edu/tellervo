@@ -36,7 +36,8 @@ public class Weiserjahre extends Cross {
 
     public String getFormat() {
         // FIXME: this should be a pref, as well
-        return App.prefs.getPref("corina.cross.weiserjahre.format", "0.0%");
+        return App.prefs.getPref("corina.cross.weiserjahre.format", "0.0%") +
+        	"in 0000";
     }
 
     // same as trend?  (this is old-style trend, even -- very obsolete!)
@@ -52,6 +53,13 @@ public class Weiserjahre extends Cross {
 	return I18n.getText("weiserjahre");
     }
 
+    private int signifigantcount = 0;
+
+    // returns the number of signifigant intervals of the last compute()
+    public int getSignifigant() {
+    	return signifigantcount;
+    }
+    
     public float compute(int offset_fixed, int offset_moving) {
 	// value = (# trends synchronous with signature years) /
 	//         (# signature years in overlap)
@@ -114,6 +122,8 @@ public class Weiserjahre extends Cross {
 	    j++;
 	}
 
+		signifigantcount = totalSigs;
+		
         // if there were no significant intervals, call it 0.0.
         if (totalSigs == 0)
             return 0;
