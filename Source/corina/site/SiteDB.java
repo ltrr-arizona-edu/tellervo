@@ -323,9 +323,23 @@ public class SiteDB { // implements PrintableDocument {
     if (folder == null)
 	    return false;
 
-    return filename.startsWith(folder) ||
-      filename.startsWith(App.prefs.getPref("corina.dir.data") + File.separator + folder) ||
-      filename.startsWith(App.prefs.getPref("corina.dir.data") + folder);
+    // chop off any trailing separators
+    if(folder.endsWith(File.separator))
+    	folder = folder.substring(0, folder.length() - File.separator.length());
+    
+    // find the last separator
+    if(folder.lastIndexOf(File.separator) != -1) 
+    	folder = folder.substring(folder.lastIndexOf(File.separator) + 1, folder.length());
+
+    // find the last separator, but do the same with the file
+    if(filename.lastIndexOf(File.separator) != -1) 
+    	filename = filename.substring(filename.lastIndexOf(File.separator) + 1, filename.length());    
+        
+    return filename.startsWith(folder);
+    
+    //||
+    //  filename.startsWith(App.prefs.getPref("corina.dir.data") + File.separator + folder) ||
+    //  filename.startsWith(App.prefs.getPref("corina.dir.data") + folder);
     // this matches if (1) folder is relative,
     //                 (2) absolute and dir.data has no file.sep, or
     //                 (3) absolute and dir.data ends with file.sep

@@ -181,12 +181,20 @@ public class SiteListPanel extends JPanel {
 	    if (field.equals("id"))       return s.getID();
 	    if (field.equals("code"))     return s.getCode();
 	    if (field.equals("name"))     return s.getName();
-	    if (field.equals("country"))  return Country.getName(s.getCountry()); // PERF
-	    if (field.equals("type"))     return s.getTypesAsString(); // PERF
+	    if (field.equals("type")) 	  return s.getTypesAsString(); // PERF
 	    if (field.equals("species"))  return s.getSpecies();
 	    if (field.equals("altitude")) return s.altitude; // !!!
 	    if (field.equals("location")) return s.getLocation();
 	    if (field.equals("comments")) return s.getComments();
+	    if (field.equals("country")) {
+	    	try {
+	    		String cname = Country.getName(s.getCountry());
+	    		return cname;
+	    	} catch (IllegalArgumentException iee) {
+	    		return "<unknown country code " + s.getCountry() + ">";
+	    	}
+	    }
+	    
 	    // --FINISH ME--
 	    if (field.equals("distance")) {
 		if (s == target)
@@ -415,9 +423,14 @@ public class SiteListPanel extends JPanel {
                                     return -1;
                                 
                                 // everything else, use the name (not the code)
-                                String n1 = Country.getName(s1.getCountry());
-                                String n2 = Country.getName(s2.getCountry());
-                                return n1.compareTo(n2);
+                                try {
+                                	String n1 = Country.getName(s1.getCountry());
+                                	String n2 = Country.getName(s2.getCountry());
+                                	return n1.compareTo(n2);
+                                } catch (IllegalArgumentException iee) {
+                                	// Invalid country code somewhere. Compare just the codes, then?
+                                	return s1.getCountry().compareTo(s2.getCountry());
+                                }
                             }
                         });
                     }

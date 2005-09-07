@@ -5,6 +5,7 @@ import corina.site.SiteDB;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.List;
 import java.util.HashSet;
 
 /**
@@ -44,6 +45,17 @@ public class LabelSet {
 
         // everything visible
         showAllSites();
+    }
+    
+    public LabelSet(List sitelist) {
+        Iterator all = sitelist.iterator();
+        while (all.hasNext()) {
+            Site site = (Site) all.next();
+            if (site.getLocation() != null) {
+                visibleSites.add(site);
+                visibleLocations.add(site.getLocation());
+            }
+        }    	
     }
 
     /**

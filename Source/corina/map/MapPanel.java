@@ -296,6 +296,9 @@ public class MapPanel extends JPanel {
     // i'll need iterators ... (will i need to make my own site iterator?  no.  maybe.)
 
     public void setSites(List sites) {
+    	// this is setSites, not addSites... clear it?
+    	siteHash.clear();
+    	
         for (int i=0; i<sites.size(); i++) {
             Site s = (Site) sites.get(i);
             if (s.getLocation() == null)

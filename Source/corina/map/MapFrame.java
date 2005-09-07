@@ -71,7 +71,7 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
 
     private JTabbedPane tabs;
 
-    private LabelSet labels = new LabelSet(); // this is the master copy!
+    private LabelSet labels;
     
     // printing
     public Object getPrinter(PageFormat pf) {
@@ -87,27 +87,33 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
     }
 
     public MapFrame() {
-	// this seems downright silly ... we'll have no silliness here!
-        this(SiteDB.getSiteDB());
+    	// this seems downright silly ... we'll have no silliness here!
+   		this(SiteDB.getSiteDB());
     }
 
     public MapFrame(Site s1, Site s2) {
         super();
-        init();
         
         // set mappanel
         List tmp = new ArrayList();
         tmp.add(s1);
         tmp.add(s2);
+        labels = new LabelSet(tmp); // this is the master copy!
+        
+        init();
+        
         mapPanel.setSites(tmp);
         
         // center between them
-	Location mid = Location.midpoint(s1.getLocation(), s2.getLocation());
+        Location mid = Location.midpoint(s1.getLocation(), s2.getLocation());
         mapPanel.getView().center = mid;
+        
     }
 
     private MapFrame(SiteDB db) {
         super();
+        
+        labels = new LabelSet(); // this is the master copy!
         init();
 
         // set mappanel.sites

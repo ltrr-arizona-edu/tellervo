@@ -139,7 +139,11 @@ public class CountryDialog {
                 if (countryList.getSelectedIndex() != 0) {
                     // figure out code from name, store in result
                     String name = (String) countryList.getSelectedValue();
-                    result = Country.getCode(name);
+                    try {
+                    	result = Country.getCode(name);
+                    } catch (IllegalArgumentException iee) {
+                    	result = "<unknown country " + name + ">";
+                    }
                 }
 
                 d.dispose();
@@ -160,7 +164,11 @@ public class CountryDialog {
 
                     // get name, lookup code, and close
                     String name = (String) countryList.getSelectedValue();
-                    result = Country.getCode(name);
+                    try {
+                    	result = Country.getCode(name);
+                    } catch (IllegalArgumentException iee) {                    	
+                    	result = "<unknown country " + name + ">";
+                    }
                     d.dispose();
                 }
             }

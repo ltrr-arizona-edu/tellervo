@@ -116,18 +116,34 @@ public class CountryPopup extends JComboBox {
        selected
     */
     public String getCountry() {
-	if (getSelectedIndex() == 0)
-	    return null;
-	else
-	    return Country.getCode((String) getSelectedItem());
+    	if (getSelectedIndex() == 0) {
+	    	return null;
+		}
+    	else {
+            try {
+            	String result = Country.getCode((String) getSelectedItem());
+            	return result;
+            } catch (IllegalArgumentException iee) {
+            	String result = "<unknown country " + (String) getSelectedItem() + ">";
+            	return result;
+            }    		
+    	}
     }
 
     // returns an array of the country names in the sitedb, sorted
     private String[] getCountryNames() {
         String codes[] = SiteDB.getSiteDB().getCountries();
         String countries[] = new String[codes.length];
-        for (int i=0; i<codes.length; i++)
-            countries[i] = Country.getName(codes[i]);
+        for (int i=0; i<codes.length; i++) {
+        	try {
+        		countries[i] = Country.getName(codes[i]);
+        	}
+        	catch (IllegalArgumentException ex) {
+        		countries[i] = "<unknown country code " + codes[i] + ">";
+        	}
+        	
+        }
+            
         Arrays.sort(countries);
 	return countries;
     }
@@ -160,7 +176,11 @@ public class CountryPopup extends JComboBox {
 		    if (index == 0)
 			code = null;
 		    else
-			code = Country.getCode((String) getItemAt(index));
+		    	try {
+		    		code = Country.getCode((String) getItemAt(index));
+		    	} catch (IllegalArgumentException iee) {
+		    		code = null;
+		    	}
 		    return;
 		}
 
@@ -190,13 +210,18 @@ public class CountryPopup extends JComboBox {
 
 		// case 1: it's in the list.  not too hard.
 		// REFACTOR: can i use something like 'contains here?
-		String name = Country.getName(country);
-		for (int i=1; i<getItemCount(); i++) {
-		    if (getItemAt(i).equals(name)) {
-			setSelectedIndex(i);
-			code = country;
-			return;
-		    }
+		String name;
+		try {
+			name = Country.getName(country);
+			for (int i=1; i<getItemCount(); i++) {
+		    	if (getItemAt(i).equals(name)) {
+		    	setSelectedIndex(i);
+				code = country;
+				return;
+		    	}
+			}
+		} catch (IllegalArgumentException iee) {
+			name = "<uknown country code " + country + ">";
 		}
 
 		// case 2: it's not in the list.  ugh.
