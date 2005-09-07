@@ -131,6 +131,9 @@ public class Startup implements PrivilegedAction {
    *          command-line arguments; ignored
    */
   public static void main(String args[]) {
+	  
+	System.setSecurityManager(null);
+	  
     if (args.length == 0 || !"-a".equals(args[0])) {
       new Startup(args).run();
       return;
