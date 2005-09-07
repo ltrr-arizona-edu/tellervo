@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.text.*;
 
 import java.lang.reflect.Constructor;
 
@@ -79,8 +80,13 @@ public class Files {
           br.close();
   
           String filetype = format.toString();
+          float flength = (float) f.length() / (float) 1024;
+          NumberFormat form = NumberFormat.getInstance();
+          
+          String filesize = form.format(flength);
           s.meta.put("filetype", filetype); // (used only for preview)
-          s.meta.put("filename", filename);
+          s.meta.put("filename", filename);          
+          s.meta.put("filesize", filesize);
   
           // if we made it this far without throwing a
           // WrongFiletypeException or IOException (or any other
