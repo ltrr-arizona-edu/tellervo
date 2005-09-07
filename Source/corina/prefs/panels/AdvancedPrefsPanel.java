@@ -179,6 +179,9 @@ public class AdvancedPrefsPanel extends JPanel {
     gbc.weightx = 0;
 
     // file chooser
+    /*
+     * This appears to be absolutely useless. Commented out for now? 
+     * - lucas
     ButtonGroup group = new ButtonGroup();
     JRadioButton swing = new JRadioButton("Swing (slower)");
     JRadioButton awt = new JRadioButton("AWT (faster, but no preview)");
@@ -200,6 +203,8 @@ public class AdvancedPrefsPanel extends JPanel {
     co.add(awt, gbc);
 
     // TODO: add spacer below bottom, just in case?
+
+*/
 
     add(co, BorderLayout.NORTH);
   }

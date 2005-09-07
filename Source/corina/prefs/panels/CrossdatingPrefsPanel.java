@@ -124,18 +124,19 @@ public class CrossdatingPrefsPanel extends Container {
     System.out.println("isParseIntegerOnly: " + df1.isParseIntegerOnly() + " " + df1.getMinimumFractionDigits());  
     scb.setFormats(df0, df1);
     
+    // TODO: make sure corina.cross.overlap is fixed everywhere else to show the right value!
     String init = App.prefs.getPref("corina.cross.overlap");
-    Integer value = null; // default is 50
+    Integer value = null; // default is 15
     if (init != null) {
       try {
         value = Integer.decode(init);
       } catch (NumberFormatException nfe) {
-        // ignore -- we'll just use 50, then
+        // ignore -- we'll just use 15, then
         nfe.printStackTrace();
-        value = new Integer(50);
+        value = new Integer(15);
       }
     } else {
-      value = new Integer(50);
+      value = new Integer(15);
     }
     System.out.println("Setting: " +value);
     scb.setEditable(true);
@@ -155,7 +156,7 @@ public class CrossdatingPrefsPanel extends Container {
     
     //c = new OverlapPopup();
     c = scb;
-    l = new JLabel("Minimum overlap:");
+    l = new JLabel("Minimum overlap");
     l.setLabelFor(c);
     gbc.gridy++;
     gbc.gridx = 0;
@@ -165,6 +166,53 @@ public class CrossdatingPrefsPanel extends Container {
     gbc.weightx = 1;
     co.add(c, gbc);
 
+    // min overlap, D-score
+    final SpinnerComboBox dscb = new SpinnerComboBox(YEARS);
+    System.out.println("isParseIntegerOnly: " + df0.isParseIntegerOnly() + " " + df0.getMinimumFractionDigits());
+    System.out.println("isParseIntegerOnly: " + df1.isParseIntegerOnly() + " " + df1.getMinimumFractionDigits());  
+    dscb.setFormats(df0, df1);
+    
+    // TODO: make sure corina.cross.overlap is fixed everywhere else to show the right value!
+    init = App.prefs.getPref("corina.cross.d-overlap");
+    value = null; // default is 100
+    if (init != null) {
+      try {
+        value = Integer.decode(init);
+      } catch (NumberFormatException nfe) {
+        // ignore -- we'll just use 100, then
+        nfe.printStackTrace();
+        value = new Integer(100);
+      }
+    } else {
+      value = new Integer(100);
+    }
+    System.out.println("Setting: " +value);
+    dscb.setEditable(true);
+    dscb.setSelectedItem(value);
+    dscb.setEditable(false);
+    
+    dscb.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        System.err.println("spinner stateChanged: " + dscb.getSpinner().getValue() + " " + dscb.getSpinner().getValue().getClass());
+        App.prefs.setPref("corina.cross.d-overlap", dscb.getSpinner().getValue().toString());
+
+        //popup.setSelectedItem(spinner.getValue());
+        System.out.println("Selected item after setting: " + dscb.getSelectedItem());
+      }
+    });
+    
+    //c = new OverlapPopup();
+    c = dscb;
+    l = new JLabel("Minimum overlap, D-Score:");
+    l.setLabelFor(c);
+    gbc.gridy++;
+    gbc.gridx = 0;
+    gbc.weightx = 0;
+    co.add(l, gbc);
+    gbc.gridx = 1;
+    gbc.weightx = 1;
+    co.add(c, gbc);
+    
     // highlight sig scores -- corina.grid.highlight
     // TODO: rename this pref to corina.cross.highlight!
     BoolPrefComponent hilite = new BoolPrefComponent("Highlight significant scores",
@@ -312,6 +360,10 @@ public class CrossdatingPrefsPanel extends Container {
     
     // a popup, which lets the user set the value of corina.cross.overlap
     // to any of a number of presets.
+    //
+    // DANGER - woefully out of date, but unused.
+    // TODO: verify if it's ok to delete this code?
+    //
     private static class OverlapPopup extends JPanel { // !!!
         // entries: any, 5, 10, 25, 50, 100, 250, 500 years.
         // this list must be in order (lowest-to-highest), and no value should
