@@ -81,277 +81,287 @@ import java.awt.datatransfer.UnsupportedFlavorException;
    @version $Id$
 */
 public class EditorEditMenu extends EditMenu implements SampleListener {
-    private Sample sample;
-    private SampleDataView dataView;
+	private Sample sample;
 
-    /**
-       Make a new Edit menu for an Editor.  This stores the parameters,
-       and adds itself as a SampleListener.
-        
-       @param sample the Sample to watch
-       @param dataView the SampleDataView to use for inserting and deleting years
-    */
-    public EditorEditMenu(Sample sample, SampleDataView dataView) {
-        super();
+	private SampleDataView dataView;
 
-	this.sample = sample;
-	this.dataView = dataView;
+	/**
+	 Make a new Edit menu for an Editor.  This stores the parameters,
+	 and adds itself as a SampleListener.
+	 
+	 @param sample the Sample to watch
+	 @param dataView the SampleDataView to use for inserting and deleting years
+	 */
+	public EditorEditMenu(Sample sample, SampleDataView dataView) {
+		super();
 
-	sample.addSampleListener(this);
-    }
+		this.sample = sample;
+		this.dataView = dataView;
 
-    protected void addUndo() {
-	undoMenu = Builder.makeMenuItem("undo");
-	undoMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    // DISABLED: undoManager.undo();
-		    // DISABLED: refreshUndoRedo();
-		}
-	    });
-        undoMenu.setEnabled(false);
-	add(undoMenu);
-    }
-
-    protected void addRedo() {
-	redoMenu = Builder.makeMenuItem("redo");
-	redoMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    // DISABLED: undoManager.redo();
-		    // DISABLED: refreshUndoRedo();
-		}
-	    });
-        redoMenu.setEnabled(false);
-	add(redoMenu);
-    }
-
-    /**
-       Add a Copy menuitem that copies this Sample to the clipboard
-       in 2-column format.
-    */
-    protected void addCopy() {
-        // copy: put all data unto clipboard in 2-column format
-	JMenuItem copy = Builder.makeMenuItem("copy");
-        copy.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-		// copy the sample to the clipboard, as 2-column
-		TextClipboard.copy(asTwoColumn());
-            }
-        });
-        add(copy);
-    }
-
-    /**
-       Add a Paste menuitem that replaces this data with whatever
-       is on the clipboard.
-    */
-    protected void addPaste() {
-        // paste: replace (insert?) data from clipboard (any format) into this sample
-        JMenuItem paste = Builder.makeMenuItem("paste");
-        paste.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                paste();
-            }
-        });
-        add(paste);
-    }
-
-    /**
-       Put all the normal items in the menu, along with Insert,
-       Insert MR, and Delete.
-    */
-    protected void init() {
-        addUndoRedo();
-        addSeparator();
-
-        addClipboard();
-        addSeparator();
-
-        addSelectAll();
-
-        addSeparator();
-        
-        // insert, insert MR, delete
-        addInsert();
-        addInsertMR();
-        addDelete();
-
-	/*
-        // if comm present, start/stop measure
-        if (false) { // Measure.hasSerialAPI()) {
-            addSeparator();
-            measureMenu = new Measure(this).makeMenuItem();
-            add(measureMenu);
-        }
-	*/
-
-        addPreferences();
-	// TODO: hit listeners to make initial state right
-    }
-
-    private void addInsert() {
-	insert = Builder.makeMenuItem("insert_year");
-	insert.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    dataView.insertYear();
-		}
-	    });
-	add(insert);
-    }
-
-    private void addInsertMR() {
-	insertMR = Builder.makeMenuItem("insert_mr");
-	insertMR.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    dataView.insertMR();
-		}
-	    });
-	add(insertMR);
-    }
-
-    private void addDelete() {
-	delete = Builder.makeMenuItem("delete_year");
-	delete.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    dataView.deleteYear();
-		}
-	    });
-	add(delete);
-    }
-
-    // helper functions follow:
-
-    private void paste() {
-        // get the stuff that's on the clipboard
-        // REFACTOR: would my TextClipboard abstraction help out here?
-        Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
-        Transferable t = c.getContents(null);
-        if (t == null)
-            return; // clipboard contains no data
-
-        try {
-            // copy text from the clipboard to $(TMP).  (why?
-            // because Sample(filename) takes arbitrary
-            // formats, load(Reader) does not.  (fixable?))
-
-            // use $(TMP)/corinaXXXXX.clip for the filename
-            File tmpFile = File.createTempFile("corina", ".clip");
-            tmpFile.deleteOnExit();
-            final String tmpFilename = tmpFile.getPath();
-
-            // get ready to transfer the data
-            DataFlavor f = DataFlavor.selectBestTextFlavor(t.getTransferDataFlavors());
-            BufferedReader r = null; 
-            BufferedWriter w = null;
-            
-            try {
-              r = new BufferedReader(f.getReaderForText(t));
-              w = new BufferedWriter(new FileWriter(tmpFilename));
-              // transfer it
-              for (;;) {
-                  String l = r.readLine();
-                  if (l == null)
-                      break;
-                  w.write(l + '\n');
-              }
-            } finally {
-              if (r != null) try {
-                r.close();
-              } catch (IOException ioe) {
-                ioe.printStackTrace();
-              }
-              if (w != null) try {
-                w.close();
-              } catch (IOException ioe) {
-                ioe.printStackTrace();
-              }
-            }
-
-            // now try to load it
-            Sample tmp = new Sample(tmpFilename);
-            
-            // copy it here, except for the filename
-            Sample.copy(tmp, sample);
-            sample.meta.remove("filename");
-        } catch (WrongFiletypeException wfte) {
-            // unreadable format.  tell user.
-            Alert.error("Problem Pasting",
-                        "The clipboard doesn't appear to have a dendro dataset.");
-            return;
-        } catch (IOException ioe) {
-            // shouldn't ever happen.  this means there was a problem reading or
-            // writing a "clipboard" file.  probably a bug, then.
-            // FUTURE: if i refactor so i don't need to use $TMP, this will
-            // probably become a "can't happen" case.  (really?)
-            new Bug(ioe);
-            return;
-        } catch (UnsupportedFlavorException ufe) {
-            // clipboard doesn't have text on it.  tell user.
-            Alert.error("Problem Pasting",
-                        "The clipboard doesn't appear to have text on it.");
-            return;
-        }
-
-        // fire all sorts of alarms
-        sample.fireSampleRedated();
-        sample.fireSampleDataChanged();
-        sample.fireSampleMetadataChanged();
-        sample.fireSampleElementsChanged();
-
-        /* oh crap.  it iterates over the LOADERS[], passing them filenames.
-            i'll need to abstract out the iteration, and put loading from a
-            filename in sample(filename) only.  i guess that cleans up some
-            low-level things, but it means more work now.
-
-            err, no.  what do you want it to do, iterate over readers?
-            can you guarantee that a reader is reset()able to its start?
-            you might have to save the entire thing to a buffer ... er, that's
-            where it is.  you might have to get a reader passed, clone it,
-            try, clone, try, but readers probably don't work that way.  there's
-            got to be a way to do this.
-
-            (it's good this came up, though.  opening a file 5 times because
-             it's not the most popular format is killing i/o performance.)
-
-            quick hack just to make it work: save to /tmp/corinaXXXXX.clip, ...
-            */
-    }
-
-    // return the sample in 2-column format, as a string
-    private String asTwoColumn() {
-	try {
-	    int estimatedLength = 10 * sample.data.size();
-	    PureStringWriter w = new PureStringWriter(estimatedLength);
-	    BufferedWriter b = new BufferedWriter(w);
-	    new TwoColumn().save(sample, b);
-	    b.close();
-	    return w.toString();
-	} catch (IOException ioe) {
-	    // can't happen: i'm just writing to a buffer
-	    return "";
+		sample.addSampleListener(this);
 	}
-    }
 
-    // menuitems that i'll need refs for
-    private JMenuItem insert, insertMR, delete;
+	protected void addUndo() {
+		undoMenu = Builder.makeMenuItem("undo");
+		undoMenu.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				// DISABLED: undoManager.undo();
+				// DISABLED: refreshUndoRedo();
+			}
+		});
+		undoMenu.setEnabled(false);
+		add(undoMenu);
+	}
 
-    private JMenuItem measureMenu;
+	protected void addRedo() {
+		redoMenu = Builder.makeMenuItem("redo");
+		redoMenu.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				// DISABLED: undoManager.redo();
+				// DISABLED: refreshUndoRedo();
+			}
+		});
+		redoMenu.setEnabled(false);
+		add(redoMenu);
+	}
 
-    private JMenuItem undoMenu, redoMenu;
+	/**
+	 Add a Copy menuitem that copies this Sample to the clipboard
+	 in 2-column format.
+	 */
+	protected void addCopy() {
+		// copy: put all data unto clipboard in 2-column format
+		JMenuItem copy = Builder.makeMenuItem("copy");
+		copy.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				// copy the sample to the clipboard, as 2-column
+				TextClipboard.copy(asTwoColumn());
+			}
+		});
+		add(copy);
+	}
 
-    //
-    // listener
-    //
-    public void sampleRedated(SampleEvent e) { }
-    public void sampleDataChanged(SampleEvent e) { }
-    public void sampleMetadataChanged(SampleEvent e) {
-	// insert/delete
-	insert.setEnabled(sample.isEditable());
-	insertMR.setEnabled(sample.isEditable());
-	delete.setEnabled(sample.isEditable());
+	/**
+	 Add a Paste menuitem that replaces this data with whatever
+	 is on the clipboard.
+	 */
+	protected void addPaste() {
+		// paste: replace (insert?) data from clipboard (any format) into this sample
+		JMenuItem paste = Builder.makeMenuItem("paste");
+		paste.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				paste();
+			}
+		});
+		add(paste);
+	}
 
-        // measure menu: only if not summed
-        if (measureMenu != null)
-            measureMenu.setEnabled(!sample.isSummed());
-    }
-    public void sampleElementsChanged(SampleEvent e) { }
+	/**
+	 Put all the normal items in the menu, along with Insert,
+	 Insert MR, and Delete.
+	 */
+	protected void init() {
+		addUndoRedo();
+		addSeparator();
+
+		addClipboard();
+		addSeparator();
+
+		addSelectAll();
+
+		addSeparator();
+
+		// insert, insert MR, delete
+		addInsert();
+		addInsertMR();
+		addDelete();
+
+		/*
+		 // if comm present, start/stop measure
+		 if (false) { // Measure.hasSerialAPI()) {
+		 addSeparator();
+		 measureMenu = new Measure(this).makeMenuItem();
+		 add(measureMenu);
+		 }
+		 */
+
+		addPreferences();
+		// TODO: hit listeners to make initial state right
+	}
+
+	private void addInsert() {
+		insert = Builder.makeMenuItem("insert_year");
+		insert.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				dataView.insertYear();
+			}
+		});
+		add(insert);
+	}
+
+	private void addInsertMR() {
+		insertMR = Builder.makeMenuItem("insert_mr");
+		insertMR.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				dataView.insertMR();
+			}
+		});
+		add(insertMR);
+	}
+
+	private void addDelete() {
+		delete = Builder.makeMenuItem("delete_year");
+		delete.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				dataView.deleteYear();
+			}
+		});
+		add(delete);
+	}
+
+	// helper functions follow:
+
+	private void paste() {
+		// get the stuff that's on the clipboard
+		// REFACTOR: would my TextClipboard abstraction help out here?
+		Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Transferable t = c.getContents(null);
+		if (t == null)
+			return; // clipboard contains no data
+
+		try {
+			// copy text from the clipboard to $(TMP).  (why?
+			// because Sample(filename) takes arbitrary
+			// formats, load(Reader) does not.  (fixable?))
+
+			// use $(TMP)/corinaXXXXX.clip for the filename
+			File tmpFile = File.createTempFile("corina", ".clip");
+			tmpFile.deleteOnExit();
+			final String tmpFilename = tmpFile.getPath();
+
+			// get ready to transfer the data
+			DataFlavor f = DataFlavor.selectBestTextFlavor(t
+					.getTransferDataFlavors());
+			BufferedReader r = null;
+			BufferedWriter w = null;
+
+			try {
+				r = new BufferedReader(f.getReaderForText(t));
+				w = new BufferedWriter(new FileWriter(tmpFilename));
+				// transfer it
+				for (;;) {
+					String l = r.readLine();
+					if (l == null)
+						break;
+					w.write(l + '\n');
+				}
+			} finally {
+				if (r != null)
+					try {
+						r.close();
+					} catch (IOException ioe) {
+						ioe.printStackTrace();
+					}
+				if (w != null)
+					try {
+						w.close();
+					} catch (IOException ioe) {
+						ioe.printStackTrace();
+					}
+			}
+
+			// now try to load it
+			Sample tmp = new Sample(tmpFilename);
+
+			// copy it here, except for the filename
+			Sample.copy(tmp, sample);
+			sample.meta.remove("filename");
+		} catch (WrongFiletypeException wfte) {
+			// unreadable format.  tell user.
+			Alert.error("Problem Pasting",
+					"The clipboard doesn't appear to have a dendro dataset.");
+			return;
+		} catch (IOException ioe) {
+			// shouldn't ever happen.  this means there was a problem reading or
+			// writing a "clipboard" file.  probably a bug, then.
+			// FUTURE: if i refactor so i don't need to use $TMP, this will
+			// probably become a "can't happen" case.  (really?)
+			new Bug(ioe);
+			return;
+		} catch (UnsupportedFlavorException ufe) {
+			// clipboard doesn't have text on it.  tell user.
+			Alert.error("Problem Pasting",
+					"The clipboard doesn't appear to have text on it.");
+			return;
+		}
+
+		// fire all sorts of alarms
+		sample.fireSampleRedated();
+		sample.fireSampleDataChanged();
+		sample.fireSampleMetadataChanged();
+		sample.fireSampleElementsChanged();
+
+		/* oh crap.  it iterates over the LOADERS[], passing them filenames.
+		 i'll need to abstract out the iteration, and put loading from a
+		 filename in sample(filename) only.  i guess that cleans up some
+		 low-level things, but it means more work now.
+
+		 err, no.  what do you want it to do, iterate over readers?
+		 can you guarantee that a reader is reset()able to its start?
+		 you might have to save the entire thing to a buffer ... er, that's
+		 where it is.  you might have to get a reader passed, clone it,
+		 try, clone, try, but readers probably don't work that way.  there's
+		 got to be a way to do this.
+
+		 (it's good this came up, though.  opening a file 5 times because
+		 it's not the most popular format is killing i/o performance.)
+
+		 quick hack just to make it work: save to /tmp/corinaXXXXX.clip, ...
+		 */
+	}
+
+	// return the sample in 2-column format, as a string
+	private String asTwoColumn() {
+		try {
+			int estimatedLength = 10 * sample.data.size();
+			PureStringWriter w = new PureStringWriter(estimatedLength);
+			BufferedWriter b = new BufferedWriter(w);
+			new TwoColumn().save(sample, b);
+			b.close();
+			return w.toString();
+		} catch (IOException ioe) {
+			// can't happen: i'm just writing to a buffer
+			return "";
+		}
+	}
+
+	// menuitems that i'll need refs for
+	private JMenuItem insert, insertMR, delete;
+
+	private JMenuItem measureMenu;
+
+	private JMenuItem undoMenu, redoMenu;
+
+	//
+	// listener
+	//
+	public void sampleRedated(SampleEvent e) {
+	}
+
+	public void sampleDataChanged(SampleEvent e) {
+	}
+
+	public void sampleMetadataChanged(SampleEvent e) {
+		// insert/delete
+		insert.setEnabled(sample.isEditable());
+		insertMR.setEnabled(sample.isEditable());
+		delete.setEnabled(sample.isEditable());
+
+		// measure menu: only if not summed
+		if (measureMenu != null)
+			measureMenu.setEnabled(!sample.isSummed());
+	}
+
+	public void sampleElementsChanged(SampleEvent e) {
+	}
 }
