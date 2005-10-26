@@ -249,8 +249,13 @@ public class DecadalModel extends AbstractTableModel {
 			// redate
 			try {
 				// compute and set
-				Range newRange = s.range
-						.redateStartTo(new Year((String) value));
+				Year newYear = new Year((String) value);
+
+				// if we don't change it at all, don't mark it as modified...
+				if(newYear.equals(s.range.getStart()))
+					return;
+				
+				Range newRange = s.range.redateStartTo(newYear);
 
 				// redate, and post undo
 				s.postEdit(Redate.redate(s, newRange));
@@ -294,11 +299,14 @@ public class DecadalModel extends AbstractTableModel {
 			// s.range.end = s.range.getEnd().add(+1);
 			s.range = new Range(s.range.getStart(), s.range.getEnd().add(+1));
 		} else {
+			if(value.equals(oldVal))
+				return;
 			s.data.set(y.diff(s.range.getStart()), value);
 		}
 		fireTableCellUpdated(row, col);
 
 		// set modified
+		s.setModified();		
 		s.fireSampleDataChanged();
 		if (bigger)
 			s.fireSampleRedated();
