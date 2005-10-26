@@ -54,7 +54,7 @@ public class StandardPlot {
         _bounds = bounds;
         _panel = panel;
     }
-
+    
     // PERF: too many new's!  can i memoize this?  or just use constants for the 6(?) strokes i use?
     private BasicStroke makeStroke(float width, boolean dotted) {
 	if (dotted)
