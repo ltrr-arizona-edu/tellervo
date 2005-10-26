@@ -9,6 +9,7 @@ import corina.ui.I18n;
 import corina.ui.Alert;
 import corina.manip.Sum;
 import corina.manip.Clean;
+import corina.gui.ElementsPanel;
 import corina.gui.FileDialog;
 import corina.gui.UserCancelledException;
 import corina.gui.Bug;
@@ -43,11 +44,14 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 	private JMenuItem addMenu, remMenu;
 
 	private Sample sample;
+	
+	private ElementsPanel elemPanel;
 
-	public EditorSumMenu(Sample s) {
+	public EditorSumMenu(Sample s, ElementsPanel epanel) {
 		super(I18n.getText("sum"));
 
 		this.sample = s;
+		this.elemPanel = epanel;
 
 		sample.addSampleListener(this);
 
@@ -188,7 +192,7 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 		remMenu = Builder.makeMenuItem("element_remove");
 		remMenu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				// DISABLED: elemPanel.removeSelectedRows();
+				elemPanel.removeSelectedRows();
 				// fixme: make this undoable
 			}
 		});
@@ -224,4 +228,6 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 		// clean: if summed (what's that mean, exactly?)
 		cleanMenu.setEnabled(sample.isSummed());
 	}
+	
+    public void setElementsPanel(ElementsPanel ep) { elemPanel = ep; }
 }

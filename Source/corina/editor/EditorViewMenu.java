@@ -116,5 +116,12 @@ public class EditorViewMenu extends JMenu implements SampleListener {
 	v2.setEnabled(sample.elements != null);
 	v3.setEnabled(sample.elements != null);
     }
-    public void sampleElementsChanged(SampleEvent e) { }
+    public void sampleElementsChanged(SampleEvent e) { 
+	v1.setEnabled(sample.elements != null);
+	v2.setEnabled(sample.elements != null);
+	v3.setEnabled(sample.elements != null);
+    }
+    
+    public void setElementsPanel(ElementsPanel ep) { elemPanel = ep; }
+
 }

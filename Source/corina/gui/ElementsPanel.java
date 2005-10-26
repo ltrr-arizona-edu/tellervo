@@ -99,7 +99,10 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
 	// randomness...
 	public void update() {
-		((AbstractTableModel) table.getModel()).fireTableDataChanged();
+		// no no no! YES table data changed, you removed stuff that it POINTS TO! ACK!
+		// You must re-initialize the table from scratch, with is oddly just a setView() call...
+		// ((AbstractTableModel) table.getModel()).fireTableDataChanged();
+		setView(currentView);		
 	}
 
 	// --- DropAdder ----------------------------------------
@@ -309,6 +312,8 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		final int rows[] = table.getSelectedRows();
 		int deleted = 0; // number of rows already deleted
 		for (int i = 0; i < rows.length; i++) { // remove those rows
+			String s = ((Element)elements.get(rows[i] - deleted)).getFilename();
+			System.out.println(s);
 			elements.remove(rows[i] - deleted);
 			deleted++;
 		}
@@ -347,9 +352,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			});
 		}
 
-		System.out.println("updating... -- BROKEN!");
 		update();
-		// what the fuck is going on here?  why why oh why?
 	}
 
 	private List fields;
@@ -359,6 +362,8 @@ public class ElementsPanel extends JPanel implements SampleListener {
 	public final static int VIEW_STANDARD = 1;
 
 	public final static int VIEW_ALL = 2;
+
+	private int currentView = -1;
 
 	public void setView(int view) {
 		switch (view) {
@@ -406,6 +411,8 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		default:
 			throw new IllegalArgumentException();
 		}
+		
+		currentView = view;
 
 		table.setModel(new ElementsTableModel(elements, fields));
 

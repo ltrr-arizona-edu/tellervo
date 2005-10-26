@@ -160,7 +160,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 	private JPanel wjPanel;
 
-	private ElementsPanel elemPanel;
+	private ElementsPanel elemPanel = null;
 
 	private JComponent metaView;
 
@@ -168,6 +168,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private SampleDataView dataView; // (a jpanel)
 
 	private JTabbedPane rolodex;
+	
+	// for menus we have to notify...
+	private EditorViewMenu editorViewMenu;
+	private EditorSumMenu editorSumMenu;
 
 	// undo
 	private UndoManager undoManager = new UndoManager();
@@ -234,10 +238,19 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				rolodex.remove(wjPanel);
 			else if (rolodex.indexOfComponent(wjPanel) == -1)
 				rolodex.add(wjPanel, I18n.getText("tab_weiserjahre"));
-			if (sample.elements == null)
+			if (sample.elements == null) {
 				rolodex.remove(elemPanel);
-			else if (rolodex.indexOfComponent(elemPanel) == -1)
+				initElemPanel();
+				editorViewMenu.setElementsPanel(elemPanel);
+				editorSumMenu.setElementsPanel(elemPanel);
+			}
+			else if (elemPanel == null)
+			{
+				initElemPanel();
 				rolodex.add(elemPanel, I18n.getText("tab_elements"));
+				editorViewMenu.setElementsPanel(elemPanel);
+				editorSumMenu.setElementsPanel(elemPanel);				
+			}
 		}
 	}
 
@@ -423,6 +436,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		if (sample.elements != null) {
 			elemPanel = new ElementsPanel(this);
 			sample.addSampleListener(elemPanel);
+		}
+		else {
+			if(elemPanel != null)
+				sample.removeSampleListener(elemPanel);
+			elemPanel = null;
 		}
 	}
 
@@ -689,9 +707,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// TODO: extend CorinaMenuBar
 		menubar.add(new EditorFileMenu(this));
 		menubar.add(new EditorEditMenu(sample, dataView));
-		menubar.add(new EditorViewMenu(sample, elemPanel));
+		editorViewMenu = new EditorViewMenu(sample, elemPanel);
+		menubar.add(editorViewMenu);
 		menubar.add(new EditorManipMenu(sample, this));
-		menubar.add(new EditorSumMenu(sample));
+		editorSumMenu = new EditorSumMenu(sample, elemPanel);
+		menubar.add(editorSumMenu);
 		menubar.add(new EditorGraphMenu(sample));
 		menubar.add(new EditorSiteMenu(sample));
 		if (App.platform.isMac())
