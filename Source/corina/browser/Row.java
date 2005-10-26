@@ -211,7 +211,7 @@ public class Row {
                     break;
                 }
             }
-            if (!match)
+            if (match)
                 return value;
 
             // if it's a species, try looking it up with the Species object,
