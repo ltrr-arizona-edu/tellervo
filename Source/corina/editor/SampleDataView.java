@@ -362,9 +362,9 @@ public class SampleDataView extends JPanel implements SampleListener,
 		// does this always, DELETE never does.
 
 		// set modified
+		mySample.setModified();		
 		mySample.fireSampleDataChanged();
 		mySample.fireSampleRedated();
-		mySample.setModified();
 	}
 
 	public void sampleRedated(SampleEvent e) {
