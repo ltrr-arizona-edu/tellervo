@@ -24,6 +24,7 @@ import corina.Element;
 import corina.MetadataTemplate;
 import corina.Range;
 import corina.util.StringUtils;
+import corina.util.GreedyProgressMonitor;
 import corina.util.GZIP;
 import corina.site.Lock; // REFACTOR: move to util!
 
@@ -47,7 +48,8 @@ import java.util.HashMap;
 import java.util.Hashtable; // consolidate my maps!  at least explain why i pick each.
 import java.util.Iterator;
 
-import javax.swing.ProgressMonitor; // !!!
+import java.awt.Component;
+import javax.swing.JOptionPane;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.XMLReader;
@@ -121,7 +123,9 @@ public class Summary {
 	}
 
 	/** The filename to store cache files under: ".Corina_Cache". */
-	public static final String CACHE_FILENAME = ".Corina_Cache";
+	public static final String CACHE_FILENAME = "CORINA.CCH";
+	
+	private Component parent;
 
 	// ****************************************
 	/*
@@ -189,20 +193,21 @@ public class Summary {
 
 			boolean lock = Lock.acquire(fullFilename);
 			if (!lock) {
-				System.out.println("BUG: can't lock cache file! (FIXME)");
+				System.out.println("BUG: can't lock cache file! (FIXME)" + fullFilename);
 				throw new IOException("can't lock cache file");
 			}
 
 			Writer fw;
 			if (USE_COMPRESSION)
 				fw = new OutputStreamWriter(new GZIPOutputStream(
-						new FileOutputStream(fullFilename)));
+						new FileOutputStream(fullFilename)), "UTF-8");
 			else
-				fw = new FileWriter(fullFilename);
+				fw = new OutputStreamWriter(
+						new FileOutputStream(fullFilename), "UTF-8");
 			// BUG: this uses native encoding; it should use UTF-8 everywhere!
 			BufferedWriter w = new BufferedWriter(fw);
 
-			w.write("<?xml version=\"1.0\"?>");
+			w.write("<?xml version=\"1.0\" encoding=\"UFT8\"?>");
 			w.newLine();
 
 			w.newLine();
@@ -259,56 +264,86 @@ public class Summary {
 	 @exception FileNotFoundException if the cache file isn't present
 	 @exception IOException if something goes wrong
 	 */
-	private void loadSummary() throws FileNotFoundException, IOException {
+	private void loadSummary() throws FileNotFoundException, IOException,
+			SAXParseException {
 		String fullFilename = folder + File.separator + CACHE_FILENAME;
 
-		try {
-			// lock the file
-			boolean lock = Lock.acquire(fullFilename);
-			// FIXME: keep trying!
-			if (!lock) {
-				System.out.println("locked!  skipping...");
-				return; // (temp: just quit, i'll have to stat them all, anyway)
-			}
+		// lock the file
+		boolean lock = false;
 
+		while (!lock) {
+			lock = Lock.acquire(fullFilename);
+			if (!lock) {
+				String labels[] = { "Try again", "Delete it", "Cancel" };
+
+				int ret = JOptionPane
+						.showOptionDialog(
+								parent,
+								"The folder "
+										+ folder
+										+ " appears to be locked. If nobody else is Using Corina, it's likely that this is a stale lock. What should I do?",
+								"Can't access " + folder,
+								JOptionPane.YES_NO_CANCEL_OPTION,
+								JOptionPane.QUESTION_MESSAGE, null, labels,
+								labels[0]);
+
+				switch (ret) {
+				case 0:
+					continue;
+				case 1:
+					Lock.release(fullFilename);
+					continue;
+				case 2:
+					return;
+				}
+			}
+		}
+
+		try {
 			// make a reader for the file
 			Reader r;
 			if (GZIP.isCompressed(fullFilename))
 				r = new InputStreamReader(new GZIPInputStream(
-						new FileInputStream(fullFilename)));
+						new FileInputStream(fullFilename)), "UTF-8");
 			else
-				r = new FileReader(fullFilename);
+				r = new InputStreamReader(new FileInputStream(fullFilename),
+					"UTF-8");
+
 			// BUG: use UTF-8 always, not native encoding!
 
-			try {
-				// make a new XML parser
-				XMLReader xr = XMLReaderFactory.createXMLReader();
+			// make a new XML parser
+			XMLReader xr = XMLReaderFactory.createXMLReader();
 
-				// ... configure it to use a my SampleHandler ...
-				SummaryLoader loader = new SummaryLoader();
-				xr.setContentHandler(loader);
-				xr.setErrorHandler(loader);
+			// ... configure it to use a my SampleHandler ...
+			SummaryLoader loader = new SummaryLoader();
+			xr.setContentHandler(loader);
+			xr.setErrorHandler(loader);
 
-				// ... and feed it the file
-				xr.parse(new InputSource(r));
-			} catch (SAXException se) {
-				// DEBUG: explicit debugging info
-				System.out.println("sax exception = " + se);
-				if (se instanceof SAXParseException) {
-					SAXParseException spe = (SAXParseException) se;
-					System.out.println("row=" + spe.getLineNumber() + ", "
-							+ "col=" + spe.getColumnNumber());
-				}
+			// ... and feed it the file
+			xr.parse(new InputSource(r));
+		} catch (SAXException se) {
+			Lock.release(fullFilename);
+			// DEBUG: explicit debugging info
+			System.out.println("sax exception = " + se);
+			
+			if (se instanceof SAXParseException) {
+				SAXParseException spe = (SAXParseException) se;
+				System.out.println("row=" + spe.getLineNumber() + ", " + "col="
+						+ spe.getColumnNumber());
 
-				// release the lock -- MOVE: can this just go in a finally clause?
-
-				throw new IOException(); // INTERFACE: be explicit!
+				throw (SAXParseException) se;
 			}
 
-		} finally {
-			// release the lock
+			// release the lock -- MOVE: can this just go in a finally clause?
+
+			throw new IOException(); // INTERFACE: be explicit!
+		}
+		finally {
 			Lock.release(fullFilename);
 		}
+
+		// release the lock
+		Lock.release(fullFilename);
 	}
 
 	// BUG: summary doesn't store "filetype" field?
@@ -449,14 +484,15 @@ public class Summary {
 	 @exception FileNotFoundException if the folder doesn't exist,
 	 or isn't a folder
 	 */
-	public Summary(String folder, ProgressMonitor monitor) throws IOException,
+	public Summary(String folder, GreedyProgressMonitor monitor, Component parent) throws IOException,
 			FileNotFoundException {
 		this.folder = folder; // store folder
 		this.monitor = monitor; // store monitor
+		this.parent = parent;
 		update(); // update myself
 	}
 
-	private ProgressMonitor monitor;
+	private GreedyProgressMonitor monitor;
 
 	// FNFE if |folder| doesn't exist, or isn't a folder.
 	private void update() throws IOException, FileNotFoundException {
@@ -464,7 +500,11 @@ public class Summary {
 		try {
 			loadSummary();
 		} catch (FileNotFoundException fnfe) {
+			monitor.setNote("Summary does not exist, creating...");
 			// that's ok (but any other ioe is not, so it still gets thrown)
+		} catch (SAXParseException spe) {
+			monitor.setNote("Parsing error (corrupt summary?), recreating cache...");
+		   // there was a parser error...
 		}
 
 		// make sure folder exists, and is a folder
@@ -557,7 +597,7 @@ public class Summary {
 				}
 			}
 
-			monitor.setProgress(++done);
+			monitor.setProgressGreedy(++done);
 		}
 
 		// PERF: lastMod() gets called twice.  perhaps loadMeta() should

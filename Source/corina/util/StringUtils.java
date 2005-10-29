@@ -21,6 +21,8 @@
 package corina.util;
 
 import java.util.StringTokenizer;
+import java.io.UnsupportedEncodingException;
+
 
 /**
    Some handy string utilities.
@@ -152,7 +154,7 @@ public class StringUtils {
 
 	// BETTER: isn't there a String.replace() or something that
 	// would do this in about 2 lines?
-
+    
 	StringBuffer output = new StringBuffer();
 	for (int i=0; i<input.length(); i++) {
 	    char c = input.charAt(i);
@@ -184,7 +186,10 @@ public class StringUtils {
 		    // which won't show up correctly?  do they need
 		    // the right encoding=""?  do they have it?
 
-		    output.append("&#x");
+			if(c < 32)
+				output.append("ILLEGAL-XML-CHAR:");
+			else
+				output.append("&#x");
 
 		    String hex = Integer.toHexString((int) c);
 		    for (int ii=0; ii<4-hex.length(); ii++)
@@ -199,7 +204,7 @@ public class StringUtils {
 	}
 	return output.toString();
     }
-
+    
     /**
        In a string, replace one substring with another.
 

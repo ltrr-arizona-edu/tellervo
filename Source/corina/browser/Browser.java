@@ -22,6 +22,7 @@ package corina.browser;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -55,8 +56,7 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
+import javax.swing.JCheckBoxMenuItem;import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -105,6 +105,7 @@ import corina.ui.Builder;
 import corina.ui.I18n;
 import corina.util.NaturalSort;
 import corina.util.TextClipboard;
+import corina.util.GreedyProgressMonitor;
 
 /**
    Corina's browser.
@@ -250,7 +251,7 @@ public class Browser extends JFrame {
 
 	// REFACTOR: this constructor runs over 150 lines (!!!)
 	public Browser() {
-		super("Corina");
+		super("Corina Browser");
 
 		String dir = App.prefs.getPref("corina.browser.folder"); // BUG: what if this folder doesn't exist?
 		if (dir == null)
@@ -481,9 +482,6 @@ public class Browser extends JFrame {
 				}
 			});
 
-			// table: initial view
-			doList();
-
 			// TODO: make option "show/hide non-dendro files" -- don't show *.grf,.. files at all
 
 			JScrollPane sp = new JScrollPane(table,
@@ -541,6 +539,8 @@ public class Browser extends JFrame {
 				});
 
 		searchField.requestFocus();
+		
+		doList();
 	}
 
 	private SortedHeaderRenderer shr;
@@ -1283,6 +1283,7 @@ public class Browser extends JFrame {
 	// strategy: instead of updating the table in-place (which is slow,
 	// and annoying), we'll load it as fast as possible, then just
 	// show the whole thing at once.
+	
 	public void doList() {
 		// reset search field (good idea?)
 		searchField.reset();
@@ -1290,60 +1291,76 @@ public class Browser extends JFrame {
 		// clear old list -- (why don't i just make a new one?)
 		while (files.size() > 0)
 			files.remove(0);
+		
+		final Browser _parent = this;
+		table.setVisible(false);
+		
+		Thread th = new Thread(new Runnable() {
+			public void run() {
+				// make a progress monitor, in case this takes a while (it
+				// might)
+				GreedyProgressMonitor monitor = new GreedyProgressMonitor(_parent,
+						"Summarizing folder...", "Listing files", 0, files
+								.size() + 10);
+				monitor.setMillisToDecideToPopup(10); // default: 500 (1/2
+														// sec)
+				monitor.setMillisToPopup(20); // default: 2000 (2 sec) (was:
+												// 1000)
 
-		long t1 = System.currentTimeMillis();
+				long t1 = System.currentTimeMillis();		
 
-		// make a progress monitor, in case this takes a while (it might)
-		ProgressMonitor monitor = new ProgressMonitor(this,
-				"Summarizing folder...", "Listing files", 0, files.size() + 1);
-		monitor.setMillisToDecideToPopup(100); // default: 500 (1/2 sec)
-		monitor.setMillisToPopup(500); // default: 2000 (2 sec) (was: 1000)
+				monitor.setNote("Checking summary...");
 
-		monitor.setNote("Checking summary...");
+				// ask Summary for folder contents
+				try {
+					summary = new Summary(folder, monitor, _parent);
 
-		// ask Summary for folder contents
-		try {
-			summary = new Summary(folder, monitor);
+					// FIXME: summary c'tor needs to have a ref to this monitor
+				} catch (IOException ioe) {
+					System.out.println("BUG: ioe!");
+					ioe.printStackTrace();
+				}
+				
+				int idx = 0;
+				Iterator filenames = summary.getFilenames();
+				while (filenames.hasNext()) {
+					String fn = (String) filenames.next();
+					Element e = summary.getElement(fn);
+					if (e != null)
+					{
+						monitor.setProgressGreedy(++idx);
+						files.add(new Row(e, _parent));
+					}
+				}
 
-			// FIXME: summary c'tor needs to have a ref to this monitor
-		} catch (IOException ioe) {
-			System.out.println("BUG: ioe!");
-			ioe.printStackTrace();
-		}
+				monitor.setProgressGreedy(files.size() + 10);
 
-		Iterator filenames = summary.getFilenames();
-		while (filenames.hasNext()) {
-			String fn = (String) filenames.next();
-			Element e = summary.getElement(fn);
-			if (e != null)
-				files.add(new Row(e, this));
-		}
+				/*
+				 * for (int i=0; i<files.size(); i++) { Row r = (Row)
+				 * files.get(i);
+				 * 
+				 * monitor.setNote("Loading " + r.getName());
+				 *  // load row if (!r.isDirectory()) r.load();
+				 * 
+				 * monitor.setProgress(i + 1); }
+				 * monitor.setProgress(files.size() + 1);
+				 */
 
-		monitor.setProgress(files.size() + 1);
-
-		/*
-		 for (int i=0; i<files.size(); i++) {
-		 Row r = (Row) files.get(i);
-
-		 monitor.setNote("Loading " + r.getName());
-
-		 // load row
-		 if (!r.isDirectory())
-		 r.load();
-
-		 monitor.setProgress(i + 1);
-		 }
-		 monitor.setProgress(files.size() + 1);
-		 */
-
-		long t2 = System.currentTimeMillis();
-		System.out.println("doList() took " + (t2 - t1)
-				+ " ms to list all metadata for this folder");
-
-		doSearch();
-		// saveSelection(); { // PERF: doSort() has a save/restore block, too!
-		doSort();
-		browserModel.fireTableDataChanged();
+				doSearch();
+				// saveSelection(); { // PERF: doSort() has a save/restore
+				// block, too!
+				doSort();
+				
+				long t2 = System.currentTimeMillis();
+				System.out.println("doList() took " + (t2 - t1)
+						+ " ms to list all metadata for this folder");		
+				
+				table.setVisible(true);
+				browserModel.fireTableDataChanged();
+			}
+		});
+		th.start();
+		
 		// } restoreSelection();
 	}
 
