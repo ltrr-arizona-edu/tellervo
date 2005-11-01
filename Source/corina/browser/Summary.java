@@ -123,7 +123,7 @@ public class Summary {
 	}
 
 	/** The filename to store cache files under: ".Corina_Cache". */
-	public static final String CACHE_FILENAME = "CORINA.CCH";
+	public static final String CACHE_FILENAME = ".Corina_Cache";
 	
 	private Component parent;
 
@@ -298,6 +298,8 @@ public class Summary {
 				}
 			}
 		}
+		
+		monitor.setProgressGreedy(0);
 
 		try {
 			// make a reader for the file
