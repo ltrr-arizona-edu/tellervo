@@ -173,8 +173,9 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 			}
 
 			// (if it's a String, try to make it an Integer)
+			// But be careful: no hex or octal, please.
 			try {
-				value = Integer.decode((String) value);
+				value = new Integer(Integer.parseInt((String) value, 10));
 			} catch (NumberFormatException nfe) {
 				// ok, it's just a String -- that's fine
 			}
