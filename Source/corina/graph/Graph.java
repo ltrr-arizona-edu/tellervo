@@ -25,6 +25,7 @@ import corina.Range;
 import corina.Sample;
 
 import java.util.List;
+import java.awt.Color;
 
 /*
   the purpose of this class is:
@@ -132,4 +133,20 @@ public class Graph {
                          graph.getData().size());
     }
     // this method smells funny to me now.  how's it used?
+    
+    // the following data is internal to the grapher
+    // it is used entirely to maintain visual information
+    private Color mainColor;
+    private Color printerColor;
+    
+    public void setColor(Color gcolor, Color pcolor) {
+    	mainColor = gcolor;
+    	printerColor = pcolor;
+    }
+    
+    public Color getColor(boolean isPrinting) {
+    	if(isPrinting)
+    		return printerColor;
+    	return mainColor;
+    }
 }

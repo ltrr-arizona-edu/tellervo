@@ -84,20 +84,21 @@ import corina.util.Overwrite;
 import corina.util.PopupListener;
 
 /**
- A graph.  It graphs any number of samples (or any Graphable) and
- allows the user to scroll, slide the samples up/down/left/right,
- and scale them vertically.
-
- @see Graphable
-
- @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
- @version $Id$
+ * A graph. It graphs any number of samples (or any Graphable) and allows the
+ * user to scroll, slide the samples up/down/left/right, and scale them
+ * vertically.
+ * 
+ * @see Graphable
+ * 
+ * @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i
+ *         style="color: gray">dot</i> edu&gt;
+ * @version $Id$
  */
 
 // TODO:
 // -- clean up .* imports: swing, awt.event
 // -- extract some parts: svg exporting, printing?, png exporting?
-// -- extract squish?  (all 3?)
+// -- extract squish? (all 3?)
 // -- make this use either GrapherPanel or BargraphPanel
 // ---- rename GrapherPanel to GraphPanel
 // ---- extract BargraphPanel from BargraphFrame
@@ -111,15 +112,16 @@ import corina.util.PopupListener;
 public class GraphWindow extends XFrame implements SampleListener,
 		SaveableDocument,
 		// DISABLED until printing works better:
-		//						   PrintableDocument,
+		// PrintableDocument,
 		Printable, PrefsListener {
 
 	// SampleListener
 	private void update(Sample s) {
 		// data/format changed, need to recheck getScale();
-		// BUG?: if data changed, but not format, won't this be unnecesary at best, wrong at worst?
+		// BUG?: if data changed, but not format, won't this be unnecesary at
+		// best, wrong at worst?
 		// REFACTOR: why isn't this a 1-liner?
-		//    (reset-scale (find :key #'graph s plot.graphs))
+		// (reset-scale (find :key #'graph s plot.graphs))
 		for (int i = 0; i < plot.graphs.size(); i++) {
 			Graph g = (Graph) plot.graphs.get(i);
 			if (g.graph == s) {
@@ -153,9 +155,6 @@ public class GraphWindow extends XFrame implements SampleListener,
 	public void sampleElementsChanged(SampleEvent e) {
 	}
 
-	// initial vertical spacing between graphs, in pixels
-	public final static int SPACING = 20;
-
 	// gui
 	public GrapherPanel plot; // the plot area itself
 
@@ -172,8 +171,10 @@ public class GraphWindow extends XFrame implements SampleListener,
 	}
 
 	public void spreadOut() {
+		// 20 'units' = 0 - 200%
+		int spacing = plot.getYearSize() / 7;
 		for (int i = 0; i < samples.size(); i++)
-			((Graph) samples.get(i)).yoffset = i * SPACING;
+			((Graph) samples.get(i)).yoffset = i * spacing;
 		repaint();
 	}
 
@@ -186,10 +187,11 @@ public class GraphWindow extends XFrame implements SampleListener,
 		((Graph) samples.get(plot.current)).yoffset = 0;
 
 		// compute viewport range
-		// REFACTOR: write a getYearForPoint() method, and call that on both ends of the visible JViewPane
+		// REFACTOR: write a getYearForPoint() method, and call that on both
+		// ends of the visible JViewPane
 		Year viewportLeft = plot.bounds.getStart().add(
-				scroller.getHorizontalScrollBar().getValue() / plot.yearSize);
-		int viewportSize = scroller.getWidth() / plot.yearSize;
+				scroller.getHorizontalScrollBar().getValue() / plot.getYearSize());
+		int viewportSize = scroller.getWidth() / plot.getYearSize();
 		Range viewport = new Range(viewportLeft, viewportSize);
 
 		// idea: emphasize middle 50% of viewport
@@ -212,12 +214,17 @@ public class GraphWindow extends XFrame implements SampleListener,
 			// now, compute mean of sample[current][y] - sample[i][y]
 
 			List data = ((Graph) samples.get(i)).graph.getData();
-			int j = overlap.getStart().diff(range.getStart()); // index into data[i]
+			int j = overlap.getStart().diff(range.getStart()); // index into
+																// data[i]
 			double dataScale = ((Graph) samples.get(i)).scale;
 
 			List base = ((Graph) samples.get(plot.current)).graph.getData();
 			int k = overlap.getStart().diff(
-					((Graph) samples.get(plot.current)).getRange().getStart()); // graph.getStart()); // index into base=data[plot.current]
+					((Graph) samples.get(plot.current)).getRange().getStart()); // graph.getStart());
+																				// //
+																				// index
+																				// into
+																				// base=data[plot.current]
 			double baseScale = ((Graph) samples.get(plot.current)).scale;
 
 			double mean = 0.0;
@@ -245,7 +252,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 	// add a new sample
 	public void add(Sample s) {
-		samples.add(new Graph(s)); // doesn't get next yoffset, is that ok?  (yeah, sure)
+		samples.add(new Graph(s)); // doesn't get next yoffset, is that ok?
+									// (yeah, sure)
 		// need to recompute range now!
 		repaint();
 	}
@@ -358,12 +366,13 @@ public class GraphWindow extends XFrame implements SampleListener,
 		}
 	}
 
-	// copy this graph to the clipboard as SVG -- is this really valuable?  does it work?
+	// copy this graph to the clipboard as SVG -- is this really valuable? does
+	// it work?
 	private void copyToClipboard() {
 		final String glue = toSVG();
 
 		// copy = svg to clipboard
-		// BROKEN: this doesn't work, for some reason.  i'm not exactly
+		// BROKEN: this doesn't work, for some reason. i'm not exactly
 		// sure what i'd need to do to get copy-svg-to-clipboard to work.
 		// help?
 
@@ -417,16 +426,12 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 		private GraphWindow window;
 
-		/* -- DISABLED until i'm sure it works: copy svg to clipboard
-		 protected void addCopy() {
-		 JMenuItem copy = Builder.makeMenuItem("copy");
-		 copy.addActionListener(new AbstractAction() {
-		 public void actionPerformed(ActionEvent e) {
-		 window.copyToClipboard();
-		 }
-		 });
-		 this.add(copy);
-		 }
+		/*
+		 * -- DISABLED until i'm sure it works: copy svg to clipboard protected
+		 * void addCopy() { JMenuItem copy = Builder.makeMenuItem("copy");
+		 * copy.addActionListener(new AbstractAction() { public void
+		 * actionPerformed(ActionEvent e) { window.copyToClipboard(); } });
+		 * this.add(copy); }
 		 */
 	}
 
@@ -442,10 +447,12 @@ public class GraphWindow extends XFrame implements SampleListener,
 			this.window = win;
 
 			// Show/hide axis
-			_axisMenu = Builder.makeMenuItem("vert_show"); // FIXME: init from corina.graph.vertical-axis
+			_axisMenu = Builder.makeMenuItem("vert_show"); // FIXME: init from
+															// corina.graph.vertical-axis
 			_axisMenu.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					boolean vis = window.getAxisVisible(); // FIXME: set c.g.vertical-axis
+					boolean vis = window.getAxisVisible(); // FIXME: set
+															// c.g.vertical-axis
 					_axisMenu.setText(I18n.getText(vis ? "vert_show"
 							: "vert_hide"));
 					window.setAxisVisible(!vis);
@@ -459,9 +466,10 @@ public class GraphWindow extends XFrame implements SampleListener,
 					.booleanValue() ? "grid_hide" : "grid_show");
 			_gridlinesMenu.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					boolean vis = Boolean.getBoolean("corina.graph.graphpaper"); // ACK!  FIXME!
-					App.prefs.setPref("corina.graph.graphpaper", String
-							.valueOf(!vis));
+					boolean vis = Boolean.valueOf(App.prefs.getPref("corina.graph.graphpaper")).booleanValue();
+					
+					window.plot.setGraphPaperVisible(!vis);
+
 					_gridlinesMenu.setText(I18n.getText(vis ? "grid_show"
 							: "grid_hide"));
 					repaint();
@@ -475,12 +483,12 @@ public class GraphWindow extends XFrame implements SampleListener,
 							App.prefs.getPref("corina.graph.baselines"))
 							.booleanValue() ? "base_hide" : "base_show");
 			_baselinesMenu.addActionListener(new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					boolean vis = Boolean.getBoolean("corina.graph.baselines"); // ACK! FIXME!
-					App.prefs.setPref("corina.graph.baselines", String
-							.valueOf(!vis));
+				public void actionPerformed(ActionEvent e) {					
+					boolean vis = Boolean.valueOf(App.prefs.getPref("corina.graph.baselines")).booleanValue();
+
 					window.plot.setBaselinesVisible(!vis);
 					window.plot.recreateAgent();
+					
 					_baselinesMenu.setText(I18n.getText(vis ? "base_show"
 							: "base_hide"));
 					repaint();
@@ -491,7 +499,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 			// ---
 			this.addSeparator();
 
-			// TODO: put the baseline menuitems under an "Align" menu (and reword them)
+			// TODO: put the baseline menuitems under an "Align" menu (and
+			// reword them)
 
 			// Squeeze together
 			JMenuItem squeeze = Builder.makeMenuItem("baselines_align");
@@ -522,7 +531,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 					try {
 						window.squishTogether();
 					} catch (Exception ex) {
-						// see squishTogether() method for at least 1 remaining bug
+						// see squishTogether() method for at least 1 remaining
+						// bug
 						new Bug(ex);
 					}
 				}
@@ -563,7 +573,10 @@ public class GraphWindow extends XFrame implements SampleListener,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		setContentPane(scroller);
-
+		
+		// set initial y-offsets: spread 'em out
+		spreadOut();						
+		
 		// corner!
 		JLabel black = new JLabel();
 		black.setBackground(Color.getColor("corina.graph.background",
@@ -611,7 +624,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 				// select this graph
 				int n = plot.getGraphAt(e.getPoint());
 
-				// not on a graph?  bail.
+				// not on a graph? bail.
 				if (n == -1)
 					return;
 
@@ -628,11 +641,11 @@ public class GraphWindow extends XFrame implements SampleListener,
 		});
 		// IDEA: if you set a member variable currentSample(?) whenever a new
 		// sample is selected, you can simply say
-		//    new PopupListener(popup, plot)
+		// new PopupListener(popup, plot)
 		// here.
 
 		App.prefs.addPrefsListener(this);
-
+		
 		// display the window
 		pack();
 		show();
@@ -645,7 +658,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 	}
 
 	// if there's more than one sample, scroll to start of
-	// overlap, i.e., the start of the SECOND graph.  (there's
+	// overlap, i.e., the start of the SECOND graph. (there's
 	// certainly a better way to do this.)
 	private void scrollToSecondGraph() {
 		if (samples.size() == 1)
@@ -689,9 +702,10 @@ public class GraphWindow extends XFrame implements SampleListener,
 	//
 
 	/**
-	 Graph a single Sample.
-
-	 @param s the Sample to graph
+	 * Graph a single Sample.
+	 * 
+	 * @param s
+	 *            the Sample to graph
 	 */
 	public GraphWindow(Sample s) {
 		// samples
@@ -711,9 +725,10 @@ public class GraphWindow extends XFrame implements SampleListener,
 	}
 
 	/**
-	 Graph all the files in a List of Elements.
-
-	 @param ss the List to get the Elements from
+	 * Graph all the files in a List of Elements.
+	 * 
+	 * @param ss
+	 *            the List to get the Elements from
 	 */
 	public GraphWindow(List ss) {
 		// samples
@@ -746,15 +761,12 @@ public class GraphWindow extends XFrame implements SampleListener,
 			return;
 		}
 
-		// set initial y-offsets: spread 'em out
-		spreadOut();
-
 		// go
 		createPanelAndDisplay();
 	}
 
 	/**
-	 Graph any files the user chooses.
+	 * Graph any files the user chooses.
 	 */
 	public GraphWindow() {
 		// get samples
@@ -766,7 +778,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 			return;
 		}
 
-		// REFACTOR: everything below this point is the same as GraphWindow(List)
+		// REFACTOR: everything below this point is the same as
+		// GraphWindow(List)
 
 		// samples
 		boolean problem = false;
@@ -798,17 +811,15 @@ public class GraphWindow extends XFrame implements SampleListener,
 			return;
 		}
 
-		// set initial y-offsets: spread 'em out
-		spreadOut();
-
 		// go
 		createPanelAndDisplay();
 	}
 
 	/**
-	 Graph an Index, and its target Sample.
-
-	 @param i the Index to graph
+	 * Graph an Index, and its target Sample.
+	 * 
+	 * @param i
+	 *            the Index to graph
 	 */
 	public GraphWindow(Index i) {
 		// samples
@@ -821,13 +832,14 @@ public class GraphWindow extends XFrame implements SampleListener,
 	}
 
 	/**
-	 Graph the two samples of a Cross, at one of the statistically
-	 significant overlaps.  The graph is automatically scrolled to
-	 the start of the overlap interval.
-
-	 @param c the Cross to graph
-	 @param movingPosition the end-year of the moving sample
-	 of the cross to graph
+	 * Graph the two samples of a Cross, at one of the statistically significant
+	 * overlaps. The graph is automatically scrolled to the start of the overlap
+	 * interval.
+	 * 
+	 * @param c
+	 *            the Cross to graph
+	 * @param movingPosition
+	 *            the end-year of the moving sample of the cross to graph
 	 */
 	public GraphWindow(Cross c, Year movingPosition) {
 		// careful!
@@ -841,17 +853,15 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// compute offset of moving sample
 		tmp.xoffset = movingPosition.diff(c.getMoving().range.getEnd());
 
-		// set initial y-offsets: spread 'em out
-		spreadOut();
-
 		// go
 		createPanelAndDisplay();
 	}
 
 	/**
-	 (Re)create a plot that was saved to disk.
-
-	 @param filename the filename of the plot to load
+	 * (Re)create a plot that was saved to disk.
+	 * 
+	 * @param filename
+	 *            the filename of the plot to load
 	 */
 	public GraphWindow(String filename) throws WrongFiletypeException {
 		// load
@@ -861,7 +871,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 			throw new WrongFiletypeException();
 		}
 
-		// no files loaded?  ouch.
+		// no files loaded? ouch.
 		if (samples.isEmpty())
 			throw new WrongFiletypeException();
 
@@ -878,7 +888,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		int dy = Math.abs(y.diff(plot.bounds.getStart()));
 
 		// scroll
-		scroller.getHorizontalScrollBar().setValue(dy * plot.yearSize);
+		scroller.getHorizontalScrollBar().setValue(dy * plot.getYearSize());
 	}
 
 	// live-updating preferences

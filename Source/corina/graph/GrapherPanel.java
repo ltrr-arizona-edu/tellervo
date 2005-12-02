@@ -82,8 +82,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		MouseMotionListener, AdjustmentListener, Scrollable {
 
 	/** Width in pixels of one year on the x-axis. */
-	public int yearSize;
-
+	//public int yearSize;
+	
 	// data
 	/* private */public List graphs; // of Graph
 
@@ -95,12 +95,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	private JScrollBar horiz = null;
 	private JFrame myFrame; // for setTitle(), dispose()
 
-	// (precomputed)
-	private boolean baselines; // draw baselines below graphs?  (much slower (--only if it's done naively, fixme))
-
 	// drawing agent!
-	private StandardPlot myAgent;
-
+	private StandardPlot myAgent;	
+	private GraphInfo gInfo;
+	
 	private JPopupMenu popup = new JPopupMenu("Save");
 
 	// compute the initial range of the year-axis
@@ -163,7 +161,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		horiz = h;
 
 		// add update listener, required for keeping baselines drawn
-		if (baselines)
+		if (gInfo.drawBaselines())
 			horiz.addAdjustmentListener(this);
 	}
 
@@ -177,25 +175,33 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			setHoriz(((JScrollPane) pop).getHorizontalScrollBar());
 		}
 	}
+	
+	public void setGraphPaperVisible(boolean visible) {
+		// set the preference...
+		App.prefs.setPref("corina.graph.graphpaper", Boolean.toString(visible));
 
-	// toggle baselines
+		// reload the prefs into the graphInfo
+		gInfo.reloadPrefs();
+		
+		// redraw
+		repaint();		
+	}
+
 	public void setBaselinesVisible(boolean visible) {
-		// toggle baselines
-		baselines = !baselines;
-		App.prefs.setPref("corina.graph.baselines", String.valueOf(baselines));
+		// set the preference...
+		App.prefs.setPref("corina.graph.baselines", Boolean.toString(visible));
 
+		// reload the prefs into the graphInfo
+		gInfo.reloadPrefs();
+		
 		// add/remove listener so they get updated properly
-		if (!baselines)
+		if (!gInfo.drawBaselines())
 			horiz.removeAdjustmentListener(this);
 		else
 			horiz.addAdjustmentListener(this);
 
 		// redraw
 		repaint();
-	}
-
-	public boolean getBaselinesVisible() {
-		return baselines;
 	}
 
 	// used for clickers and draggers: get graph nr at point
@@ -254,9 +260,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		int dx = 0;
 		if (!e.isShiftDown()) {
 			dx = (int) (e.getX() - dragStart.getX());
-			dx -= dx % yearSize;
+			dx -= dx % gInfo.getYearSize();
 		}
-		((Graph) graphs.get(current)).xoffset = startX + (int) dx / yearSize;
+		((Graph) graphs.get(current)).xoffset = startX + (int) dx / gInfo.getYearSize();
 		//        recomputeDrops(); -- writeme?
 
 		// repaint
@@ -276,6 +282,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	public void mouseMoved(MouseEvent e) {
 		// old cursorX
 		int old = cursorX;
+		int yearSize = gInfo.getYearSize();
 
 		// update cursorX
 		cursorX = e.getX();
@@ -324,6 +331,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// extract some info once so i don't have to do it later
 		int m = e.getModifiers();
 		int k = e.getKeyCode();
+		
+		// cache yearsize, we use it a lot here
+		int yearSize = gInfo.getYearSize();
 
 		// repaint graph?
 		boolean repaint = false;
@@ -548,25 +558,21 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	// TODO: put the mouse-listener and mouse-motion-listener
 	// stuff together.
 	// ------------------------------------------------------------
-
-	public void queryScale() {
-		// pixels / year -- weird stuff here because yearSize is final
-		int tmp = 10;
-		try {
-			tmp = Integer.parseInt(App.prefs.getPref(
-					"corina.graph.pixelsperyear", "10"));
-			// FIXME: why not use Integer.getInteger()?
-		} catch (NumberFormatException nfe) {
-			// show warning dialog?
+	
+	private void setDefaultGraphColors() {
+		int i;
+		
+		for(i = 0; i < graphs.size(); i++) {
+			Graph g = (Graph) graphs.get(i);
+			
+			g.setColor(gInfo.screenColors[i % gInfo.screenColors.length].getColor(),
+					gInfo.printerColors[i % gInfo.printerColors.length].getColor());
 		}
-		yearSize = tmp;
 	}
 
 	// graphs = List of Graph.
 	// frame = window; (used for: title set to current graph, closed when ESC pressed.)
-	public GrapherPanel(List graphs, final JFrame myFrame) {
-		// yearSize
-		queryScale();
+	public GrapherPanel(List graphs, final JFrame myFrame) {		
 
 		// my frame
 		this.myFrame = myFrame;
@@ -575,10 +581,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// note: (mac crosshair doesn't invert on 10.[01], so it's invisible on black)
 		setCursor(crosshair);
 
-		// baselines?
-		baselines = Boolean
-				.valueOf(App.prefs.getPref("corina.graph.baselines"))
-				.booleanValue();
+		gInfo = new GraphInfo();
 
 		// key listener -- apparently the focus gets screwed up and
 		// keys stop responding if I don't add a key listener to both
@@ -593,12 +596,15 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// copy data ref
 		this.graphs = graphs;
+		
+		// set default colors
+		setDefaultGraphColors();
 
 		// update bounds
 		computeRange();
 		
 		// set default scrolly window size
-		setPreferredSize(new Dimension(bounds.span() * yearSize, 200));
+		setPreferredSize(new Dimension(bounds.span() * gInfo.getYearSize(), 200));
 
 		// make sure sapwood and unmeas_pre are integers
 		for (int i = 0; i < graphs.size(); i++) {
@@ -631,6 +637,15 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// create drawing agent
 		recreateAgent();
 
+		final List _graphs = graphs;
+		JMenuItem export = new JMenuItem("Export...");
+		export.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				new GraphExportDialog(myFrame, _graphs);
+			}
+		});
+		popup.add(export);
+		
 		JMenuItem savepng = new JMenuItem("Save as PNG...");
 		savepng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -672,6 +687,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 						pm.setProgress(2);
 						pm.setNote("Drawing graph...");
 
+						/* BROKEN FOR NOW
 						// We're going to save this graph, make sure it's readable and printable by normal programs.
 						Color old_background = getBackground();
 						Color old_major = major;
@@ -693,6 +709,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 						minor = old_minor;
 						FORE_COLOR = old_FORE_COLOR;
 						inside = old_inside;
+						*/
 
 						pm.setProgress(3);
 						pm.setNote("Encoding as PNG and saving file...");
@@ -784,6 +801,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 							Graphics2D g = cb.createGraphicsShapes(pageSize
 									.width(), pageSize.height());
 
+							/* BROKEN FOR NOW
 							// We're going to save this graph, make sure it's readable and printable by normal programs.
 							Color old_background = getBackground();
 							Color old_major = major;
@@ -807,7 +825,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 							minor = old_minor;
 							FORE_COLOR = old_FORE_COLOR;
 							inside = old_inside;
-
+*/
 							// finish up the PDF cruft
 							//cb.addTemplate(tp, 0, 0);								
 
@@ -848,40 +866,23 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	}
 
 	/** Colors to use for graphs: blue, green, red, cyan, yellow, magenta. */
-	public final/* static */Color COLORS[] = { new Color(0.00f, 0.53f, 1.00f), // blue
+	/*
+	public final Color COLORS[] = { new Color(0.00f, 0.53f, 1.00f), // blue
 			new Color(0.27f, 1.00f, 0.49f), // green
 			new Color(1.00f, 0.28f, 0.27f), // red
 			new Color(0.22f, 0.80f, 0.82f), // cyan
 			new Color(0.82f, 0.81f, 0.23f), // yellow
 			new Color(0.85f, 0.26f, 0.81f), // magenta
 	};
+	*/
 
 	// number of pixels between the bottom of the panel and the baseline
 	/*package?*/static final int AXIS_HEIGHT = 30;
 
-	// BUG: this won't update when you refreshFromPreferences(), as it is now
-	// -- but my new prefs framework should take care of that.
-	private Color FORE_COLOR = Color.getColor("corina.graph.foreground",
-			Color.white);
-
-	// BUG: this won't update when you refreshFromPreferences(), as it is now
-	// -- but my new prefs framework should take care of that.
-	private Color major = Color.getColor("corina.graph.graphpaper.color",
-			new Color(0, 51, 51));
-
-	// color for thin lines: halfway between |major| and |background|.
-	// (real 50% alpha is far too slow on any computer i have access to today,
-	// except of course macintoshes, which can make swing really scream.)
-	private Color minor = ColorUtils.blend(major, Color.getColor(
-			"corina.graph.background", Color.black));
-
-	// REFACTOR: use Prefs class methods, not Color class methods
-	// EXTRACT: should have default value for pref in prefs, not here
-
 	// timing: this seems to take a significant portion of the time used to
 	// draw the graph; usually 20-30 ms, but often jumping to 80-90
 	// ms.  still far too much garbage being created here.
-	private void paintGraphPaper(Graphics2D g2) {
+	private void paintGraphPaper(Graphics2D g2, GraphInfo info) {
 		// visible range: [l..r]
 		int l = g2.getClipBounds().x;
 		int r = l + g2.getClipBounds().width;
@@ -891,9 +892,13 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// draw horizontal lines
 		// (would it help if everything was a big generalpath?  it appears not.)
+		Color major = info.getMajorLineColor();
+		Color minor = info.getMinorLineColor();
+		int yearSize = gInfo.getYearSize();
+		
 		g2.setColor(minor);
 		int i = 1;
-		for (int y = bottom - 10; y > 0; y -= 10) {
+		for (int y = bottom - yearSize; y > 0; y -= yearSize) {
 			// BUG: 10?  is that right?  EXTRACT CONST, at least
 			if (i % 5 == 0)
 				g2.setColor(major);
@@ -969,17 +974,22 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	 -- well, is it correct, or off-by-one?  i think it's correct...
 	 */
 	private Year yearForPosition(int x) {
-		return bounds.getStart().add(x / yearSize);
+		return bounds.getStart().add(x / gInfo.getYearSize());
+	}
+	
+	public int getYearSize() {
+		return gInfo.getYearSize();
 	}
 
 	// timing: down to around 10 ms
-	private void paintHorizAxis(Graphics g) {
+	private void paintHorizAxis(Graphics g, GraphInfo info) {
 		Graphics2D g2 = (Graphics2D) g;
-		g2.setColor(FORE_COLOR);
+		g2.setColor(info.getForeColor());
 
 		int l = g2.getClipBounds().x;
 		int r = l + g2.getClipBounds().width;
 		int bottom = getHeight() - AXIS_HEIGHT;
+		int yearSize = getYearSize();
 
 		Year startYear = yearForPosition(l).add(-5); // go one further, just to be sure
 		// actually, go 5 further; i need to make sure to draw the text, even if it's
@@ -1037,13 +1047,13 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// graphics setup
 		super.paintComponent(g);
 
-		paintGraph(g);
+		paintGraph(g, gInfo);
 	}
 
 	/** Paint this panel.  Draws a horizontal axis in white (on a
 	 black background), then draws each graph in a different color.
 	 @param g the Graphics to draw this panel onto */
-	public void paintGraph(Graphics g) {
+	public void paintGraph(Graphics g, GraphInfo info) {
 		Graphics2D g2 = (Graphics2D) g;
 
 		// from here down, everything is drawn in order.  this
@@ -1051,18 +1061,15 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// the bottommost layer, on up to the vertical-bar on top.
 
 		// draw graphpaper
-		if (Boolean.valueOf(App.prefs.getPref("corina.graph.graphpaper"))
-				.booleanValue()) {
-			// PERF: is this expensive?  (it's not just a bool!)
-			paintGraphPaper(g2);
-		}
+		if (info.drawGraphPaper())
+			paintGraphPaper(g2, info);
 
 		// ?? -- figure out which years to draw the scale
 		// -- 1, 5, 10, 50, 100, 500, ...
 		// WRITE ME
 
 		// draw scale
-		paintHorizAxis(g2);
+		paintHorizAxis(g2, info);
 
 		// force antialiasing for graphs -- it looks so much better,
 		// and everybody's computer is fast enough for it these days
@@ -1075,7 +1082,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			Graph graph = (Graph) graphs.get(i);
 
 			// set color
-			g2.setColor(COLORS[i % COLORS.length]);
+			g2.setColor(graph.getColor(false));
 
 			// draw it
 			myAgent.draw(g2, graph, current == i, horiz.getValue());
@@ -1137,6 +1144,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		 // FIXME: only draw lines where there are at least (2, 3, ?) samples?
 		 }
 		 */
+		
 		// FIXME: what they really want is general-purpose decorators: lines
 		// (possibly with arrowheads), boxes, text, etc.  "mark all decreasing
 		// years" should just add decorators, not be a special mode.
@@ -1144,7 +1152,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		if (inside) {
 			// set color/stroke
 			g2.setStroke(CURSOR_STROKE);
-			g2.setColor(FORE_COLOR);
+			g2.setColor(info.getForeColor());
 
 			// draw the vertical bar
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -1203,7 +1211,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	public int getScrollableUnitIncrement(Rectangle visibleRect,
 			int orientation, int direction) {
 		// orient=vert never happens
-		return yearSize * 10; // one decade (?)
+		return gInfo.getYearSize() * 10; // one decade (?)
 	}
 
 	public Dimension getPreferredScrollableViewportSize() {
