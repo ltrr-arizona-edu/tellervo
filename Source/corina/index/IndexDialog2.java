@@ -18,7 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -343,7 +343,7 @@ public class IndexDialog2 extends JDialog {
 
 	    // create graph preview for |l|
 	    preview = new GrapherPanel(l, new JFrame());
-	    ((GrapherPanel) preview).setHoriz(new JScrollBar());
+	    ((GrapherPanel) preview).setScroller(new JScrollPane());
 	    p.add(preview, BorderLayout.CENTER);
 	}
 

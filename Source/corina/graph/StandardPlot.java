@@ -37,25 +37,23 @@ import corina.index.Index;
 public class StandardPlot {
 
 	// these i get from sys props
-	private boolean _baselines;
-
-	private int _yearsize;
+	//private boolean _baselines;
+	//private int _yearsize;
 
 	private boolean _dottedIndexes;
 
 	// these get passed
 	private Range _bounds;
-
-	private JPanel _panel;
+	private GraphInfo _graphinfo;
 
 	// nb: this gets recreated every from refreshFromPreferences()
-	public StandardPlot(Range bounds, JPanel panel) {
+	public StandardPlot(Range bounds, GraphInfo graphinfo) {
 		// read sys props
 		update();
 
 		// copy parms
 		_bounds = bounds;
-		_panel = panel;
+		_graphinfo = graphinfo;
 	}
 
 	// PERF: too many new's!  can i memoize this?  or just use constants for the 6(?) strokes i use?
@@ -70,23 +68,25 @@ public class StandardPlot {
 
 	// TESTING: perf
 	private Rectangle tempRect = new Rectangle();
-
-	public void draw(Graphics2D g2, Graph g, boolean isCurrent, int xscroll) {
+	
+	public void draw(Graphics2D g2, int bottom, Graph g, int thickness, int xscroll) {
+		// cache yearsize, we use this a lot
+		int yearSize = _graphinfo.getYearSize(); // the size of a year, in pixels
+		float unitScale = (float) yearSize / 10.0f; // the size of 10 "units" in pixels.
+												   // using another var in case these become independent
+		
 		// set pen
 		boolean dotted = (_dottedIndexes && (g.graph instanceof Index));
-		g2.setStroke(makeStroke(isCurrent ? 2 * THICKNESS : THICKNESS, dotted));
+		g2.setStroke(makeStroke(thickness, dotted));
 
 		// left/right
 		int l = g2.getClipBounds().x;
 		int r = l + g2.getClipBounds().width;
 
-		// bottom
-		int bottom = _panel.getHeight() - GrapherPanel.AXIS_HEIGHT;
-
 		// baseline
-		if (_baselines) {
+		if (_graphinfo.drawBaselines()) {
 			int y = bottom - g.yoffset;
-			g2.drawLine(xscroll, y, xscroll + 10 * _yearsize, y); // 1 decade wide -- ok?
+			g2.drawLine(xscroll, y, xscroll + 10 * yearSize, y); // 1 decade wide -- ok?
 		}
 
 		// no data?  stop.
@@ -94,10 +94,10 @@ public class StandardPlot {
 			return;
 
 		// compare g.getClipBounds() to [x,0]..[x+yearSize*data.size(),bottom]
-		tempRect.x = _yearsize
+		tempRect.x = yearSize
 				* (g.graph.getStart().diff(_bounds.getStart()) + g.xoffset); // REDUNDANT! see x later
 		tempRect.y = 0; // - g.yoffset, IF you're sure there are no negative values (but there are)
-		tempRect.width = _yearsize * (g.graph.getData().size() - 1);
+		tempRect.width = yearSize * (g.graph.getData().size() - 1);
 		tempRect.height = bottom;
 		// TODO: compute top/bottom as min/max?
 		// REFACTOR: will this be obsolete with the start/end stuff below?
@@ -131,7 +131,7 @@ public class StandardPlot {
 		GeneralPath p = new GeneralPath();
 
 		// x-position
-		int x = _yearsize
+		int x = yearSize
 				* (g.graph.getStart().diff(_bounds.getStart()) + g.xoffset);
 
 		// move to the first point -- THIS IS NOT REALLY A SPECIAL CASE!
@@ -141,7 +141,7 @@ public class StandardPlot {
 		} catch (ClassCastException cce) {
 			value = 0; // BAD!  instead: (1) just continue now, and (2) NEXT point is a move-to.
 		}
-		p.moveTo(x, bottom - (int) (value * g.scale) - g.yoffset);
+		p.moveTo(x, bottom - (int) (value * g.scale * unitScale) - g.yoffset);
 
 		/*
 		 -- i really want to start at year max(graph.start, bounds.start)
@@ -157,28 +157,21 @@ public class StandardPlot {
 		int n = g.graph.getData().size(); // THIS is the third time it's called; why not use it above?
 		for (int i = 1; i < n; i++) {
 			// new x-position for this point
-			x += _yearsize;
+			x += yearSize;
 
 			// if we're past the end, draw what we've got, and say goodbye
 			// (go +_yearsize so the line going off the screen is visible)
-			if (x > r + _yearsize) {
+			if (x > r + yearSize) {
 				break;
 			}
 
 			// sapwood?  draw what we've got, and start a new (thicker) path
 			if (i == sapwoodIndex) {
 				g2.draw(p);
-				g2.setStroke(makeStroke(isCurrent ? 4 * THICKNESS
-						: 2 * THICKNESS, false));
+				g2.setStroke(makeStroke(2 * thickness, false));
 				p = new GeneralPath();
-				p
-						.moveTo(
-								_yearsize
-										* (i
-												- 1
-												+ g.graph.getStart().diff(
-														_bounds.getStart()) + g.xoffset),
-								bottom - (int) (value * g.scale) - g.yoffset);
+				p.moveTo(yearSize * (i - 1 + g.graph.getStart().diff(_bounds.getStart()) + g.xoffset),
+						 bottom - (int) (value * g.scale * unitScale) - g.yoffset);
 			}
 
 			// y-position for this point
@@ -189,10 +182,10 @@ public class StandardPlot {
 				// BAD!  instead: (1) draw what i've got so far, and (2) NEXT point is a move-to.
 				// -- try to parse String as an integer?
 			}
-			int y = bottom - (int) (value * g.scale) - g.yoffset;
+			int y = bottom - (int) (value * g.scale * unitScale) - g.yoffset;
 
 			// if we're not where this sample starts, don't bother drawing yet
-			if (x < l - _yearsize) {
+			if (x < l - yearSize) {
 				p.moveTo(x, y);
 				continue;
 			}
@@ -213,16 +206,17 @@ public class StandardPlot {
 	private final static int NEAR = 5;
 
 	// BUG: if you click exactly on the rightmost pixel of a graph, it doesn't hit
-	public boolean contact(Graph g, Point p) {
+	public boolean contact(Graph g, Point p, int bottom) {
 		// snap to year
-		int x1 = p.x - p.x % _yearsize;
-		int x2 = x1 + _yearsize;
+		int yearSize = _graphinfo.getYearSize();
+		int x1 = p.x - p.x % yearSize;
+		int x2 = x1 + yearSize;
 
 		// fraction of the way between x1 and x2
 		float f = (p.x - x1) / (float) (x2 - x1);
 
 		// get year of click
-		Year y1 = _bounds.getStart().add(x1 / _yearsize); // REFACTOR: does this look like yearForPosition()?
+		Year y1 = _bounds.getStart().add(x1 / yearSize); // REFACTOR: does this look like yearForPosition()?
 		Year y2 = y1.add(1);
 
 		// --- everything above this is independent of graph ---
@@ -234,8 +228,8 @@ public class StandardPlot {
 			return false;
 
 		// get expected y-locs
-		int yloc1 = getPosition(g, y1);
-		int yloc2 = getPosition(g, y2);
+		int yloc1 = getPosition(g, y1, bottom);
+		int yloc2 = getPosition(g, y2, bottom);
 
 		// get adjusted expected y-loc
 		int yloc = (int) (yloc1 + (yloc2 - yloc1) * f);
@@ -249,26 +243,19 @@ public class StandardPlot {
 		return ((Number) g.graph.getData().get(i)).intValue();
 	}
 
-	private int getYValue(Graph g, int value) {
-		int bottom = _panel.getHeight() - GrapherPanel.AXIS_HEIGHT;
-		return bottom - (int) (value * g.scale) - g.yoffset; // DUPLICATE: this line appears above 3 times
+	private int getYValue(Graph g, int value, int bottom) {
+		float unitScale = (float) _graphinfo.getYearSize() / 10.0f;
+		return bottom - (int) (value * g.scale * unitScale) - g.yoffset; // DUPLICATE: this line appears above 3 times
 	}
 
-	private int getPosition(Graph g, Year y) {
-		return getYValue(g, getDataValue(g, y));
+	private int getPosition(Graph g, Year y, int bottom) {
+		return getYValue(g, getDataValue(g, y), bottom);
 	}
 
 	// REFACTOR: use this same method above when actually drawing it
 
 	public void update() {
 		// read sys props
-		_baselines = Boolean.valueOf(
-				App.prefs.getPref("corina.graph.baselines")).booleanValue();
-		_yearsize = Integer.parseInt(App.prefs.getPref(
-				"corina.graph.pixelsperyear", "10"));
 		_dottedIndexes = Boolean.getBoolean("corina.graph.dotindexes");
 	}
-
-	// thickness of the line drawn
-	private static final float THICKNESS = 1f;
 }

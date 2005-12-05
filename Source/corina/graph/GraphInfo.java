@@ -4,10 +4,12 @@
 package corina.graph;
 
 import corina.core.App;
+import corina.Range;
 import java.awt.Color;
 import java.awt.Toolkit;
 
 import corina.util.ColorUtils;
+import javax.swing.JPanel;
 
 /**
  * @author Lucas Madar
@@ -15,22 +17,65 @@ import corina.util.ColorUtils;
  */
 public class GraphInfo {
 	
+	boolean printing;
+	
+	public GraphInfo(boolean forprinting)
+	{
+		giInit(forprinting);
+	}
+	
 	public GraphInfo() {
+		giInit(false);
+	}
+	
+	private void giInit(boolean forprinting) {
+		printing = forprinting;
 		reloadPrefs();
 	}
+
+	// gets a printing version of this...
+	// a method here in case it gets more complicated than just constructing it with printing on
+	public GraphInfo getPrinter() {
+		return new GraphInfo(true);
+	}
+	
+	void setPrinting(boolean isprinting) { printing = isprinting; }
+	boolean isPrinting() { return printing; }
+	
+	// color settings
+	private Color foreColor;
+	private Color majorLineColor;
+	private Color minorLineColor;
+	private Color backgroundColor;
 	
 	public void reloadPrefs() {
 		// set some defaults...
-		// EXTRACT: should have default value for pref in prefs, not here	
-		foreColor = App.prefs.getColorPref("corina.graph.foreground", Color.white);
-		majorLineColor = App.prefs.getColorPref("corina.graph.graphpaper.color", new Color(0, 51, 51));
-		minorLineColor = ColorUtils.blend(majorLineColor, App.prefs.getColorPref("corina.graph.background", Color.black));
 		
+		// EXTRACT: should have default value for pref in prefs, not here	
+		
+		if(!printing) {
+			backgroundColor = App.prefs.getColorPref("corina.graph.background", Color.black);
+			foreColor = App.prefs.getColorPref("corina.graph.foreground", Color.white);
+			majorLineColor = App.prefs.getColorPref("corina.graph.graphpaper.color", new Color(0, 51, 51));
+			minorLineColor = ColorUtils.blend(majorLineColor, 
+				App.prefs.getColorPref("corina.graph.background", backgroundColor));
+		}
+		else {
+			backgroundColor = App.prefs.getColorPref("corina.graph.print.background", Color.white);
+			foreColor = App.prefs.getColorPref("corina.graph.print.foreground", Color.black);
+			majorLineColor = App.prefs.getColorPref("corina.graph.print.graphpaper.color", new Color(255, 204, 204));
+			minorLineColor = ColorUtils.blend(majorLineColor, 
+				App.prefs.getColorPref("corina.graph.print.background", backgroundColor));			
+		}
+
+		showVertAxis = Boolean.valueOf(App.prefs.getPref("corina.graph.vertical-axis")).booleanValue();
 		showGraphPaper = Boolean.valueOf(App.prefs.getPref("corina.graph.graphpaper")).booleanValue();
 		showBaselines = Boolean.valueOf(App.prefs.getPref("corina.graph.baselines")).booleanValue();
+		showGraphNames = Boolean.valueOf(App.prefs.getPref("corina.graph.componentnames")).booleanValue();
 		
 		// decide how many pixels per year
-		int ppy = Toolkit.getDefaultToolkit().getScreenResolution();
+		// the default is DPI / 8 (screen DPI is typically 72, so the default is typically 9)
+		int ppy = Toolkit.getDefaultToolkit().getScreenResolution() / 8;
 		
 		try {
 			ppy = Integer.parseInt(App.prefs.getPref(
@@ -40,31 +85,59 @@ public class GraphInfo {
 		}
 		yearSize = ppy;
 	}
+	// important graph stuff...
+	private Range drawBounds;
+	private Range emptyBounds;
+	
+	public void setEmptyRange(Range r) { emptyBounds = r; }
+	public void setDrawRange(Range r) { drawBounds = r; }
+	public Range getEmptyRange() { return emptyBounds; }
+	public Range getDrawRange() { return drawBounds; }
+	
+	private int printHeight = 0;
+	public int getPrintHeight() { return printHeight; }
+	public void setPrintHeight(int h) { printHeight = h; }
+	
+	public int getHeight(JPanel panel) {
+		if(printing)
+			return printHeight;
+		return panel.getHeight();
+	}
 	
 	// graph visual settings
-	boolean showGraphPaper;
-	boolean drawGraphPaper() { return showGraphPaper; }
+	private boolean showGraphPaper;
+	public boolean drawGraphPaper() { return showGraphPaper; }
 	
-	boolean showBaselines;
-	boolean drawBaselines() { return showBaselines; }
+	private boolean showBaselines;
+	public boolean drawBaselines() { return showBaselines; }
 	
-	int yearSize;
-	void setYearSize(int size) { yearSize = size; }
-	int getYearSize() { return yearSize; }
+	private boolean showGraphNames;
+	public boolean drawGraphNames() { return showGraphNames; }
 	
-	// color settings
-	private Color foreColor;
-	private Color majorLineColor;
-	private Color minorLineColor;
+	private boolean showVertAxis;
+	public boolean drawVertAxis() { return showVertAxis; }
 	
-	public Color getMajorLineColor() { return majorLineColor; }
-	public Color getMinorLineColor() { return minorLineColor; }
-	public Color getForeColor() { return foreColor; }
+	private int yearSize;
+	public void setYearSize(int size) { yearSize = size; }
+	public int getYearSize() { return yearSize; }
+
+
+	public Color getBackgroundColor() { 
+		return backgroundColor; 
+	}
+	public Color getMajorLineColor() { 
+		return majorLineColor; 
+	}
+	public Color getMinorLineColor() { 
+		return minorLineColor; 
+	}
+	public Color getForeColor() { 
+		return foreColor;
+	}
 	
 	public void setMajorLineColor(Color c) { majorLineColor = c; }
 	public void setMinorLineColor(Color c) { minorLineColor = c; }
-	public void setForeColor(Color c) { foreColor = c; }
-	
+	public void setForeColor(Color c) { foreColor = c; }	
 
 	// Let's contain the color list in here
 	// graph color list logic below!
@@ -109,6 +182,5 @@ public class GraphInfo {
 			new colorPair("Pink", Color.pink),
 			new colorPair("Yellow", Color.yellow),
 			new colorPair("Gray", Color.gray) 
-			};
-	
+			};	
 }

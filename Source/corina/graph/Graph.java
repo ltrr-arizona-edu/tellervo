@@ -61,6 +61,9 @@ public class Graph {
 
         // default scale
         scale = g.getScale();
+        
+        // save name...
+        graphName = g.toString();
     }
 
     // an arbitrary List of Numbers, starting at a Year.  (used for graphing density of masters.)
@@ -144,9 +147,39 @@ public class Graph {
     	printerColor = pcolor;
     }
     
+    public void setColor(Color c, boolean isPrinting) {
+    	if(isPrinting)
+    		printerColor = c;
+    	else
+    		mainColor = c;
+    }
+    
     public Color getColor(boolean isPrinting) {
     	if(isPrinting)
     		return printerColor;
     	return mainColor;
     }
+    
+    // default line thickness
+    int lineThickness = 1;
+    int printerlineThickness = 1;
+    
+    public void setThickness(int thickness, boolean isPrinting) {
+    	if(isPrinting)
+    		printerlineThickness = thickness;
+    	else
+    		lineThickness = thickness;
+    }
+    
+    public int getThickness(boolean isPrinting) {
+    	if(isPrinting) {
+    		return printerlineThickness;
+    	}
+    	return lineThickness;
+    }
+    
+    // displayed name...
+    private String graphName;
+    public String getGraphName() { return graphName; }
+    public void setGraphName(String name) { graphName = name; }
 }

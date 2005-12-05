@@ -189,7 +189,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// compute viewport range
 		// REFACTOR: write a getYearForPoint() method, and call that on both
 		// ends of the visible JViewPane
-		Year viewportLeft = plot.bounds.getStart().add(
+		Year viewportLeft = plot.getRange().getStart().add(
 				scroller.getHorizontalScrollBar().getValue() / plot.getYearSize());
 		int viewportSize = scroller.getWidth() / plot.getYearSize();
 		Range viewport = new Range(viewportLeft, viewportSize);
@@ -437,7 +437,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 	private static class GraphViewMenu extends JMenu {
 		// custom menus for graph windows
-		private JMenuItem _axisMenu, _gridlinesMenu, _baselinesMenu;
+		private JMenuItem _axisMenu, _gridlinesMenu, _baselinesMenu, _compnamesMenu;
 
 		private GraphWindow window;
 
@@ -447,15 +447,18 @@ public class GraphWindow extends XFrame implements SampleListener,
 			this.window = win;
 
 			// Show/hide axis
-			_axisMenu = Builder.makeMenuItem("vert_show"); // FIXME: init from
-															// corina.graph.vertical-axis
+			_axisMenu = Builder.makeMenuItem(Boolean.valueOf(
+					App.prefs.getPref("corina.graph.vertical-axis"))
+					.booleanValue() ? "vert_hide" : "vert_show");
 			_axisMenu.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					boolean vis = window.getAxisVisible(); // FIXME: set
-															// c.g.vertical-axis
+					boolean vis = Boolean.valueOf(
+							App.prefs.getPref("corina.graph.vertical-axis")).booleanValue();
+					
+					window.plot.setAxisVisible(!vis);
+					
 					_axisMenu.setText(I18n.getText(vis ? "vert_show"
 							: "vert_hide"));
-					window.setAxisVisible(!vis);
 				}
 			});
 			this.add(_axisMenu);
@@ -466,7 +469,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 					.booleanValue() ? "grid_hide" : "grid_show");
 			_gridlinesMenu.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					boolean vis = Boolean.valueOf(App.prefs.getPref("corina.graph.graphpaper")).booleanValue();
+					boolean vis = Boolean.valueOf(
+							App.prefs.getPref("corina.graph.graphpaper")).booleanValue();
 					
 					window.plot.setGraphPaperVisible(!vis);
 
@@ -496,6 +500,24 @@ public class GraphWindow extends XFrame implements SampleListener,
 			});
 			this.add(_baselinesMenu);
 
+			// Show/hide graph component names
+			_compnamesMenu = Builder
+					.makeMenuItem(Boolean.valueOf(
+							App.prefs.getPref("corina.graph.componentnames"))
+							.booleanValue() ? "compn_hide" : "compn_show");
+			_compnamesMenu.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {					
+					boolean vis = Boolean.valueOf(App.prefs.getPref("corina.graph.componentnames")).booleanValue();
+
+					window.plot.setComponentNamesVisible(!vis);
+					
+					_compnamesMenu.setText(I18n.getText(vis ? "compn_show"
+							: "compn_hide"));
+					repaint();
+				}
+			});
+			this.add(_compnamesMenu);
+			
 			// ---
 			this.addSeparator();
 
@@ -540,28 +562,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 			this.add(squish);
 		}
 	}
-
-	private Axis a = new Axis();
-
-	private boolean _axisVisible = false;
-
-	public void setAxisVisible(boolean visible) {
-		_axisVisible = visible;
-
-		if (_axisVisible) {
-			scroller.setRowHeaderView(a);
-			DropTarget t2 = new DropTarget(a, dtl); // on the axis!
-			repaint();
-		} else {
-			scroller.setRowHeaderView(null);
-			repaint();
-		}
-	}
-
-	public boolean getAxisVisible() {
-		return _axisVisible;
-	}
-
+	
 	// drop target
 	private DropTargetListener dtl;
 
@@ -573,7 +574,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		setContentPane(scroller);
-		
+				
 		// set initial y-offsets: spread 'em out
 		spreadOut();						
 		
@@ -584,12 +585,11 @@ public class GraphWindow extends XFrame implements SampleListener,
 		black.setOpaque(true);
 		scroller.setCorner(JScrollPane.LOWER_LEFT_CORNER, black);
 
-		// vert axis!
-		// FIXME: make this a pref
-		setAxisVisible(false);
-
 		// to set the initial title
 		plot.updateTitle();
+		
+		// to turn on baselines and vert axis, if enabled...
+		plot.postScrollpanedInit();		
 
 		// special case: if there's an Index, align baselines (ugly test!)
 		// REFACTOR: this doesn't do anything, does it?
@@ -885,7 +885,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 	// scroll the left side to a particular year
 	public void scrollTo(Year y) {
 		// compute how much to scroll
-		int dy = Math.abs(y.diff(plot.bounds.getStart()));
+		int dy = Math.abs(y.diff(plot.getRange().getStart()));
 
 		// scroll
 		scroller.getHorizontalScrollBar().setValue(dy * plot.getYearSize());
