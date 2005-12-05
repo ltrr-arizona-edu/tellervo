@@ -105,6 +105,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	private GraphInfo gInfo;
 	
 	private JPopupMenu popup = new JPopupMenu("Save");
+	
+	private Font graphNamesFont = new Font("Dialog", Font.PLAIN, 15);
+	private Font tickFont = new Font("Dialog", Font.PLAIN, 11);	
 
 	// compute the initial range of the year-axis
 	// (union of all graph ranges)
@@ -117,6 +120,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		computeRange(gInfo, null);
 	}
 	
+	private final int yearsBeforeLabel = 0;
+	private final int yearsAfterLabel = 5;
 	public void computeRange(GraphInfo info, Graphics graphics) {
 		Range boundsr = null, emptyr = null;
 		if (graphs.isEmpty()) {
@@ -131,9 +136,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				boundsr = boundsr.union(g.getRange());
 			}
 		}
-
+		
 		if(info.drawGraphNames()) {
-			int mgw = calculateMaxGraphNameWidth(info, graphics) + 5;
+			int mgw = calculateMaxGraphNameWidth(info, graphics) + 
+						yearsBeforeLabel + yearsAfterLabel;
 			Range strange = new Range(boundsr.getStart().add(-mgw), 1);
 		
 			emptyr = new Range(strange.getStart(), boundsr.getStart());
@@ -152,11 +158,11 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// if a graphics context is passed, use that... otherwise, use my panel
 		if(g != null) {
-			font = g.getFont().deriveFont(Font.BOLD, 14.0f);
+			font = graphNamesFont;
 			fontmetrics = g.getFontMetrics(font);
 		}
 		else {
-			font = getFont().deriveFont(Font.BOLD, 14.0f);
+			font = graphNamesFont;
 			fontmetrics = getFontMetrics(font);
 		}
 
@@ -167,22 +173,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				mw = w;
 		}
 		
-		return (int) ((float) mw / (float) info.getYearSize());		
-/*		
-		oldfont = g.getFont();
-		bigfont = oldfont.deriveFont(Font.BOLD, 12.0f);
-		g.setFont(bigfont);
-		
-		for(int i = 0; i < graphs.size(); i++) {
-			Graph gr = (Graph) graphs.get(i);
-			int w = g.getFontMetrics().stringWidth(gr.getGraphName());
-			if(w > mw)
-				mw = w;
-		}
-	
-		g.setFont(oldfont);
-		return (int) ((float) mw / (float) getYearSize());
-		*/
+		return 1 + (int) ((float) mw / (float) info.getYearSize());		
 	}
 
 	// here, we union ranges in Graphs; in Sum.java, we union ranges
@@ -680,6 +671,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		}
 	}
 
+	public void tryPrint(int printStyle) {
+		new GraphPrintDialog(myFrame, graphs, this, printStyle);
+	}
+	
 	// graphs = List of Graph.
 	// frame = window; (used for: title set to current graph, closed when ESC pressed.)
 	public GrapherPanel(List graphs, final JFrame myFrame) {		
@@ -747,16 +742,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// create drawing agent
 		recreateAgent();
 
-		final List _graphs = graphs;
-		final GrapherPanel _panel = this;
-		JMenuItem export = new JMenuItem("Export...");
-		export.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				new GraphPrintDialog(myFrame, _graphs, _panel);
-			}
-		});
-		popup.add(export);
-		
 		JMenuItem savepng = new JMenuItem("Save as PNG...");
 		savepng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -1006,7 +991,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		Range bounds = info.getDrawRange();
 		
 		if(info.drawGraphNames()) {
-			int yeardiff = yearForPosition(info, l).compareTo(info.getEmptyRange().getEnd());
+			int yeardiff = yearForPosition(info, l).
+							compareTo(info.getEmptyRange().getEnd());
 
 			if(yeardiff < 0)
 				l += -yeardiff * info.getYearSize();
@@ -1115,6 +1101,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	// timing: down to around 10 ms
 	private void paintHorizAxis(Graphics g, GraphInfo info) {
 		Graphics2D g2 = (Graphics2D) g;
+		Font oldfont = g2.getFont();
+		
+		g2.setFont(tickFont);
 		g2.setColor(info.getForeColor());
 
 		int l = g2.getClipBounds().x;
@@ -1135,7 +1124,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				break;
 
 			// don't draw years or ticks in the empty part of the graph
-			if(info.drawGraphNames() && y.compareTo(info.getEmptyRange().getEnd()) < -5) {
+			if(info.drawGraphNames() && 
+					y.compareTo(info.getEmptyRange().getEnd()) < -5) {
 				x += yearSize;
 				continue;
 			}
@@ -1158,6 +1148,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// draw a horizontal bar
 		g2.drawLine(l, bottom, r, bottom);
+		g2.setFont(oldfont);
 	}
 
 	/*
@@ -1192,14 +1183,13 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		int[] overlaps = new int[graphs.size()];		
 		float unitScale = (float) yearSize / 10.0f;			
 		Stroke oldstroke;
-		Font oldfont, newfont;
+		Font oldfont;
 		BasicStroke connectorLine = new BasicStroke(1, BasicStroke.CAP_BUTT,
 				BasicStroke.JOIN_BEVEL, 10f, new float[] { 8f }, 0f);			
 		
 		// bump up the text size...
 		oldfont = g2.getFont();
-		newfont = oldfont.deriveFont(Font.BOLD, 14.0f);
-		g2.setFont(newfont);
+		g2.setFont(graphNamesFont);
 
 		oldstroke = g2.getStroke();
 		g2.setStroke(connectorLine);
@@ -1213,17 +1203,16 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			
 			// gnw = x coordinate for start of string
 			int gnw = ((info.getEmptyRange().span() * yearSize) - stringWidth) - 
-			          (yearSize * 5);
+			          (yearSize * yearsAfterLabel);
 			
-			//int ybase = bottom - gr.yoffset;
 			int grfirstvalue;
 			try {
 				grfirstvalue = ((Number) gr.graph.getData().get(0)).intValue();
 			} catch (ClassCastException cce) {
-				grfirstvalue = bottom - gr.yoffset - (lineHeight / 2);
+				grfirstvalue = bottom - (int) (gr.yoffset * unitScale) - (lineHeight / 2);
 			}
 			
-			int y = bottom - (int) (grfirstvalue * gr.scale * unitScale) - gr.yoffset;
+			int y = bottom - (int) (grfirstvalue * gr.scale * unitScale) - (int) (gr.yoffset * unitScale);
 			
 			// at this point, we want to find something as close to the original 'y' as possible...
 			
@@ -1251,7 +1240,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			g2.drawLine(gnw + stringWidth + 1, 
 					y, 
 					gnw + stringWidth + yearSize * 4,
-					bottom - (int) (grfirstvalue * gr.scale * unitScale) - gr.yoffset);
+					bottom - (int) (grfirstvalue * gr.scale * unitScale) - (int) (gr.yoffset * unitScale));
 					
 		}
 		
@@ -1272,8 +1261,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	/** Paint this panel.  Draws a horizontal axis in white (on a
 	 black background), then draws each graph in a different color.
 	 @param g the Graphics to draw this panel onto */
+	private static final BasicStroke BLCENTER_STROKE = new BasicStroke(1);
 	public void paintGraph(Graphics g, GraphInfo info, StandardPlot agent) {
 		Graphics2D g2 = (Graphics2D) g;
+		int bottom = info.getHeight(this) - GrapherPanel.AXIS_HEIGHT;
 
 		// from here down, everything is drawn in order.  this
 		// means that the first thing drawn (the graphpaper) is
@@ -1282,6 +1273,38 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// draw graphpaper
 		if (info.drawGraphPaper())
 			paintGraphPaper(g2, info);
+
+		/* TODO: Draw a harsh line every 4??
+		if (info.drawBaselines()) {
+			int l = g2.getClipBounds().x;
+			int r = l + g2.getClipBounds().width;
+			float unitScale = (float) info.getYearSize() / 10.0f;			
+			int yeardiff = yearForPosition(info, l).
+							compareTo(info.getEmptyRange().getEnd());
+
+			if(yeardiff < 0) {
+				Year leftYear = yearForPosition(info, l);
+				l = leftYear.diff(info.getDrawRange().getStart()) * 
+								  info.getYearSize();				
+			}
+			
+			g2.setColor(info.getBLCenterColor());
+			g2.setStroke(BLCENTER_STROKE);			
+
+			for (int i = 0; i < graphs.size(); i++) {
+				// get graph
+				Graph graph = (Graph) graphs.get(i);
+
+				// draw a line at the center of the graph... (define center as
+				// '1000')
+				int y = bottom - (int) (1000 * graph.scale * unitScale)
+						- (int) (graph.yoffset * unitScale);
+
+				g2.drawLine(l, y, r, y);
+			}
+		}
+		*/
+		
 
 		// ?? -- figure out which years to draw the scale
 		// -- 1, 5, 10, 50, 100, 500, ...
@@ -1301,11 +1324,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 				
 		// draw graphs
-		int bottom = info.getHeight(this) - GrapherPanel.AXIS_HEIGHT;
 		for (int i = 0; i < graphs.size(); i++) {
 			// get graph
 			Graph graph = (Graph) graphs.get(i);
-
+		
 			// draw it
 			if(info.isPrinting()) {
 				// get printing color, printing thickness...
@@ -1315,8 +1337,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				// use the thickness we have on our local graph...
 				int thickness = graph.getThickness(false) * ((current == i) ? 2 : 1);
 				g2.setColor(graph.getColor(false));				
-				agent.draw(g2, bottom, graph, thickness, scroller.getHorizontalScrollBar().getValue());
-			}
+				agent.draw(g2, bottom, graph, thickness, scroller.getHorizontalScrollBar().getValue());						
+			}			
 		}
 
 		// for each year that's all-down, draw a RED vertical line.

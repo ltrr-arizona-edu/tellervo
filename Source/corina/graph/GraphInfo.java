@@ -48,6 +48,7 @@ public class GraphInfo {
 	private Color minorLineColor;
 	private Color backgroundColor;
 	
+	
 	public void reloadPrefs() {
 		// set some defaults...
 		
@@ -133,6 +134,10 @@ public class GraphInfo {
 	}
 	public Color getForeColor() { 
 		return foreColor;
+	}
+	
+	public Color getBLCenterColor() { 
+		return ColorUtils.blend(minorLineColor, foreColor); 
 	}
 	
 	public void setMajorLineColor(Color c) { majorLineColor = c; }

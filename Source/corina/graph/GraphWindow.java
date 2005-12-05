@@ -170,14 +170,28 @@ public class GraphWindow extends XFrame implements SampleListener,
 		repaint();
 	}
 
-	public void spreadOut() {
-		// 20 'units' = 0 - 200%
-		int spacing = plot.getYearSize() / 7;
+	public void spreadOut(int units) {
 		for (int i = 0; i < samples.size(); i++)
-			((Graph) samples.get(i)).yoffset = i * spacing;
+			((Graph) samples.get(i)).yoffset = i * units;
 		repaint();
 	}
 
+	public void halveScale() {
+		for (int i = 0; i < samples.size(); i++) {
+			Graph g = (Graph) samples.get(i);
+			g.scale /= 2;
+		}
+		repaint();		
+	}
+	
+	public void resetScaling() {
+		for (int i = 0; i < samples.size(); i++) {
+			Graph g = (Graph) samples.get(i);
+			g.scale = g.graph.getScale();
+		}
+		repaint();
+	}
+	
 	public void squishTogether() {
 		// squish together samples in visible window
 
@@ -534,12 +548,39 @@ public class GraphWindow extends XFrame implements SampleListener,
 			this.add(squeeze);
 
 			// Spread apart
-			JMenuItem spread = Builder.makeMenuItem("baselines_spread");
-			spread.addActionListener(new AbstractAction() {
+			JMenu spread = Builder.makeMenu("baselines_spread");
+			JMenuItem spread_25 = new JMenuItem("25 units");
+			spread_25.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					window.spreadOut();
+					window.spreadOut(25);
 				}
 			});
+			spread.add(spread_25);
+			
+			JMenuItem spread_50 = new JMenuItem("50 units");
+			spread_50.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					window.spreadOut(50);
+				}
+			});
+			spread.add(spread_50);
+			
+			JMenuItem spread_100 = new JMenuItem("100 units (half scale index plot)");
+			spread_100.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					window.spreadOut(100);
+				}
+			});
+			spread.add(spread_100);
+
+			JMenuItem spread_200 = new JMenuItem("200 units (full scale index plot)");
+			spread_200.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					window.spreadOut(200);
+				}
+			});
+			spread.add(spread_200);
+			
 			this.add(spread);
 
 			// Squish
@@ -560,6 +601,52 @@ public class GraphWindow extends XFrame implements SampleListener,
 				}
 			});
 			this.add(squish);
+
+			this.addSeparator();
+			
+			// scaling... half scale
+			JMenuItem halvescale = Builder.makeMenuItem("scale_halve");
+			halvescale.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					window.halveScale();
+				}
+			});
+			this.add(halvescale);			
+
+			// scaling... reset scale
+			JMenuItem resetscale = Builder.makeMenuItem("scale_reset");
+			resetscale.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					window.resetScaling();
+				}
+			});
+			this.add(resetscale);			
+
+			this.addSeparator();
+			
+			JMenuItem print1 = Builder.makeMenuItem("plot_print");
+			print1.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					window.plot.tryPrint(GraphPrintDialog.PRINT_PRINTER);
+				}
+			});
+			this.add(print1);			
+
+			JMenuItem print2 = Builder.makeMenuItem("plot_exportpdf");
+			print2.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					window.plot.tryPrint(GraphPrintDialog.PRINT_PDF);
+				}
+			});
+			this.add(print2);			
+
+			JMenuItem print3 = Builder.makeMenuItem("plot_exportpng");
+			print3.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					window.plot.tryPrint(GraphPrintDialog.PRINT_PNG);
+				}
+			});
+			this.add(print3);						
 		}
 	}
 	
@@ -576,7 +663,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		setContentPane(scroller);
 				
 		// set initial y-offsets: spread 'em out
-		spreadOut();						
+		spreadOut(50);						
 		
 		// corner!
 		JLabel black = new JLabel();

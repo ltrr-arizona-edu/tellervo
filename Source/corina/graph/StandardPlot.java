@@ -72,7 +72,7 @@ public class StandardPlot {
 	public void draw(Graphics2D g2, int bottom, Graph g, int thickness, int xscroll) {
 		// cache yearsize, we use this a lot
 		int yearSize = _graphinfo.getYearSize(); // the size of a year, in pixels
-		float unitScale = (float) yearSize / 10.0f; // the size of 10 "units" in pixels.
+		float unitScale = (float) yearSize / 10.0f; // the size of 1 "unit" in pixels.
 												   // using another var in case these become independent
 		
 		// set pen
@@ -85,7 +85,7 @@ public class StandardPlot {
 
 		// baseline
 		if (_graphinfo.drawBaselines()) {
-			int y = bottom - g.yoffset;
+			int y = bottom - (int) (g.yoffset * unitScale);
 			g2.drawLine(xscroll, y, xscroll + 10 * yearSize, y); // 1 decade wide -- ok?
 		}
 
@@ -141,7 +141,7 @@ public class StandardPlot {
 		} catch (ClassCastException cce) {
 			value = 0; // BAD!  instead: (1) just continue now, and (2) NEXT point is a move-to.
 		}
-		p.moveTo(x, bottom - (int) (value * g.scale * unitScale) - g.yoffset);
+		p.moveTo(x, bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale));
 
 		/*
 		 -- i really want to start at year max(graph.start, bounds.start)
@@ -171,7 +171,7 @@ public class StandardPlot {
 				g2.setStroke(makeStroke(2 * thickness, false));
 				p = new GeneralPath();
 				p.moveTo(yearSize * (i - 1 + g.graph.getStart().diff(_bounds.getStart()) + g.xoffset),
-						 bottom - (int) (value * g.scale * unitScale) - g.yoffset);
+						 bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale));
 			}
 
 			// y-position for this point
@@ -182,7 +182,7 @@ public class StandardPlot {
 				// BAD!  instead: (1) draw what i've got so far, and (2) NEXT point is a move-to.
 				// -- try to parse String as an integer?
 			}
-			int y = bottom - (int) (value * g.scale * unitScale) - g.yoffset;
+			int y = bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale);
 
 			// if we're not where this sample starts, don't bother drawing yet
 			if (x < l - yearSize) {
@@ -245,7 +245,8 @@ public class StandardPlot {
 
 	private int getYValue(Graph g, int value, int bottom) {
 		float unitScale = (float) _graphinfo.getYearSize() / 10.0f;
-		return bottom - (int) (value * g.scale * unitScale) - g.yoffset; // DUPLICATE: this line appears above 3 times
+		return bottom - (int) (value * g.scale * unitScale) - 
+						(int) (g.yoffset * unitScale); // DUPLICATE: this line appears above 3 times
 	}
 
 	private int getPosition(Graph g, Year y, int bottom) {

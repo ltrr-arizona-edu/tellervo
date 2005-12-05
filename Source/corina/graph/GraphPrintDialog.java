@@ -33,11 +33,15 @@ import javax.swing.event.*;
  */
 public class GraphPrintDialog extends JPanel {
 	
+	public final static int PRINT_PRINTER = 1;
+	public final static int PRINT_PDF = 2;
+	public final static int PRINT_PNG = 3;
+	
 	// this is what actually does the graphing for us...
 	private GrapherPanel plot;
 	private GraphInfo gInfo;
 	
-	public GraphPrintDialog(JFrame parent, List graphs, GrapherPanel plot) {
+	public GraphPrintDialog(JFrame parent, List graphs, GrapherPanel plot, int printType) {
 		final JDialog d;
 		final PreviewPanel preview;
 		final ParamsPanel params;
@@ -64,24 +68,30 @@ public class GraphPrintDialog extends JPanel {
 	            
 	            if(pane.getSelectedIndex() == 2) {
 	            	// preview pane selected now...
-	            	preview.preparePreview();
+	            	preview.preparePreview(params.getDPI());
 	            }
 			}
 		});
 		
 	    JPanel okButtonContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-	    String oktext = corina.ui.I18n.getText("ok");
-	    if (oktext == null) oktext = "OK";
+	    String i18text = (printType == PRINT_PRINTER) ? "print" : "save_as";
+	    String deftext = (printType == PRINT_PRINTER) ? "Print..." : "Save as...";
+	    
+	    String oktext = corina.ui.I18n.getText(i18text);
+	    if (oktext == null) oktext = deftext;
 	    JButton okButton = new JButton(oktext);
 	    okButtonContainer.add(okButton);
+	    
 	    final GraphInfo _info = gInfo;
 	    final GrapherPanel _plotter = plot;
+	    final int _printType = printType;
 	    okButton.addActionListener(new ActionListener() {
 	      public void actionPerformed(ActionEvent ae) {
-	    	  new GraphPrinter(_info, _plotter, params.getDPI()).doPrint();
-	    	  	    	  
-	    	  d.dispose();
+	    	  if(_printType == PRINT_PRINTER) {
+	    		  if(new GraphPrinter(_info, _plotter, params.getDPI()).doPrint())	    	  	    	  
+	    			  d.dispose();
+	    	  }
 	      }
 	    });
 
@@ -340,6 +350,7 @@ public class GraphPrintDialog extends JPanel {
 			private GrapherPanel plotter;
 			private GraphInfo pinfo;
 			private StandardPlot agent;
+			private double scale;
 			
 			public PreviewInsidePane(GrapherPanel p, GraphInfo g) {
 				super();
@@ -349,16 +360,16 @@ public class GraphPrintDialog extends JPanel {
 				plotter = p;
 				pinfo = g;
 				g.setPrintHeight(plotter.getHeight());
-				
-				preparePreview();
 			}
 			
-			public void preparePreview() {
+			public void preparePreview(int scale) {
 				plotter.computeRange(pinfo, null);
 
+				this.scale = 72.0 / (float) scale;
+				
 				setPreferredSize(new Dimension(
-						pinfo.getDrawRange().span() * pinfo.getYearSize(), 
-						pinfo.getPrintHeight()));
+						(int) (pinfo.getDrawRange().span() * pinfo.getYearSize() * this.scale), 
+						(int) (pinfo.getPrintHeight() * this.scale)));
 				agent = new StandardPlot(pinfo.getDrawRange(), pinfo);
 				revalidate();
 				repaint();
@@ -366,6 +377,7 @@ public class GraphPrintDialog extends JPanel {
 			
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
+				((Graphics2D)g).scale(scale, scale);
 				plotter.paintGraph(g, pinfo, agent);
 			}				
 		}
@@ -377,11 +389,11 @@ public class GraphPrintDialog extends JPanel {
 			scrollerpane.setPreferredSize(new Dimension(400, 300));
 			add(scrollerpane);
 			
-			preparePreview();
+			preparePreview(72);
 		}
 		
-		public void preparePreview() {
-			inpane.preparePreview();
+		public void preparePreview(int scale) {
+			inpane.preparePreview(scale);
 			
 			// TODO: Move the scrollpane to the lower left corner
 		}
@@ -406,27 +418,34 @@ public class GraphPrintDialog extends JPanel {
 		
 		private GrapherPanel plotter;
 		
+		private double pscale;
+		
 		public GraphPrinter(GraphInfo info, GrapherPanel plotter, int DPI) {
 		    job = PrinterJob.getPrinterJob();
 		    Paper paper = new Paper();
 		    PageFormat pfmt = new PageFormat();
-		    float h, w, conv;
+		    double h, w;
 		    
 		    this.info = info;
 		    this.plotter = plotter; 
 		    
 		    // we need to make a scale from 72nds of an inch to DPInds of an inch...
-		    conv = 72.0f / (float) DPI;
-		    w = gInfo.getDrawRange().span() * gInfo.getYearSize() * conv;
-		    h = gInfo.getPrintHeight() * conv;
+		    w = gInfo.getDrawRange().span() * gInfo.getYearSize();
+		    h = gInfo.getPrintHeight();
+		    pscale = 72.0 / (double) DPI;
 		    
-		    paper.setSize(w, h);
-		    paper.setImageableArea(0, 0, w, h);
+		    // width, height is now in pixels.. 
+		    // convert it to inches and then multiply by 72
+		    h *= pscale;
+		    w *= pscale;
+		    		    
+		    //paper.setSize(h, w);
+		    paper.setImageableArea(18, 18, h + 18, w + 18);
 		    pfmt.setOrientation(PageFormat.LANDSCAPE);
 		    pfmt.setPaper(paper);		    
 		    format = pfmt;
-		    format = job.defaultPage();
-		    
+
+		    job.setJobName("Corina plot");
 		    job.setPageable(this); 
 		}
 		
@@ -446,6 +465,11 @@ public class GraphPrintDialog extends JPanel {
 		public int print(Graphics g, PageFormat format, int pagenum) {
 			if(pagenum != 0)
 				return NO_SUCH_PAGE;
+			
+			// move out of our margins...
+			((Graphics2D) g).translate(format.getImageableX(), 
+					format.getImageableY());
+			((Graphics2D) g).scale(pscale, pscale);			
 			
 			plotter.computeRange(info, g);
 			StandardPlot agent = new StandardPlot(info.getDrawRange(), info);
