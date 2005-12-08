@@ -116,648 +116,706 @@ import corina.ui.I18n;
    @version $Id$
 */
 public class Grid implements Runnable, Previewable {
-  private static final CorinaLog log = new CorinaLog(Grid.class);
+	private static final CorinaLog log = new CorinaLog(Grid.class);
 
-    // inputs
-    private List files;
-    private int num; // number of active files
+	// inputs
+	private List files;
 
-    // outputs
-    private Cell cell[][];
-    private Exception error=null;
+	private int num; // number of active files
 
-    // (used when creating graph of these samples)
-    public List getFiles() {
-        return files;
-    }
+	// outputs
+	private Cell cell[][];
 
-    // ----------------------------------------
-    public interface Cell {
-        public abstract void print(Graphics2D g2, int x, int y, float scale);
-        public abstract String toXML();
-    }
-    public static class EmptyCell implements Cell {
-        public void print(Graphics2D g2, int x, int y, float scale) {
-            // do nothing
-        }
-        public String toXML() {
-            return "<empty/>";
-        }
-    }
-    public class HeaderCell implements Cell {
-        protected String name;
-        public HeaderCell(String name) {
-            // crop directory
-            int index = name.lastIndexOf(File.separatorChar);
-            this.name = name.substring(index+1);
-        }
-        public void print(Graphics2D g2, int x, int y, float scale) {
-            // filename
-            g2.drawString(name, x+EPS, y+(int)((getCellHeight()/2-getLineHeight()/2)*scale));
-        }
-        public String toXML() {
-            return "<header name=\"" + name + "\"/>";
-        }
-    }
-    public class HeaderRangeCell extends HeaderCell {
-        private Range range;
-        public HeaderRangeCell(String name, Range range) {
-            super(name);
-            this.range = range;
-        }
-        public void print(Graphics2D g2, int x, int y, float scale) {
-            // filename
-            g2.drawString(name, x+EPS, y+(int)((getCellHeight()/2)*scale));
+	private Exception error = null;
 
-            // range
-            g2.drawString(range.toString(), x+EPS, y+(int)((getCellHeight()/2 + getLineHeight())*scale));
-        }
-        public String toXML() {
-            return "<header name=\"" + name + "\" range=\"" + range + "\"/>";
-        }
-    }
-    // !!! REFACTOR !!!: CrossCell and Table.Row are virtually identical! ...IN PROGRESS...
-    // -- BETTER: why doesn't CrossCell just extend Single?
-    // (when that's done, t/tr/d can be unified between sequence and onecross)
-    // hey, cross.single() only makes sense in the context of a onecross, right?  score!
-    public static class CrossCell implements Cell {
-	private Single cross;
-	public CrossCell(Sample fixed, Sample moving) {
-	    this.cross = new Single(fixed, moving);
+	// (used when creating graph of these samples)
+	public List getFiles() {
+		return files;
 	}
-        public CrossCell(float t, float tr, float d, float r, int n) {
-	    // BAD INTERFACE -- REFACTOR -- (this is only used for xml
-	    // loading now -- ok?)
-	    cross = new Single(t, tr, d, r, n);
-        }
-        public void print(Graphics2D g2, int x, int y, float scale) {
-            // fill with highlight -- would the user ever NOT want this?  well, yes, possibly.
-            if (Boolean.valueOf(App.prefs.getPref(Prefs.GRID_HIGHLIGHT)).booleanValue() && cross.isSignificant()) {
-                Color oldColor = g2.getColor();
-                g2.setColor(App.prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR, Color.green));
-                g2.fillRect(x, y, (int) (getCellWidth()*scale), (int) (getCellHeight()*scale));
-                g2.setColor(oldColor);
-            }
 
-            // box
-            g2.drawRect(x, y, (int) (getCellWidth()*scale), (int) (getCellHeight()*scale));
+	// ----------------------------------------
+	public interface Cell {
+		public abstract void print(Graphics2D g2, int x, int y, float scale);
 
-            // little/no overlap: just show the overlap
-            if (cross.n < 10) { // Cross.getMinimumOverlap()) {
-                g2.drawString("n=" + cross.n, x+EPS, y+(int)((getCellHeight()/2-getLineHeight()/2)*scale));
-                return;
-            }
-
-            // cross
-            // REFACTOR: {"t=" + blah.format(t)} should be simply Score.toString()?
-	    // TODO: need Cross.getShortName() (tscore -> "t") method
-            g2.drawString("t=" + cross.formatT() + ", r=" + cross.formatR(), x+EPS, y+(int)(getLineHeight()*scale)-EPS);
-            g2.drawString("tr=" + cross.formatTrend(), x+EPS, y+(int)(2*getLineHeight()*scale)-EPS);
-            g2.drawString("D=" + cross.formatD(), x+EPS, y+(int)(3*getLineHeight()*scale)-EPS);
-            g2.drawString("n=" + String.valueOf(cross.n), x+EPS, y+(int)(4*getLineHeight()*scale)-EPS);
-        }
-        // in toXML, store full precision, with no %'s -- this means
-        // later we won't have too few digits, if the user decides she
-        // wants more, and we won't have to worry about parsing it
-        // incorrectly with NumberFormat.parse().  the users never
-        // need to look at a *.grid file, either, so they won't care.
-	// (...later: *.cross? *.xdate? *.xd?  i like *.xdate)
-        public String toXML() {
-            return cross.toXML();
-        }
-    }
-    public static class LengthCell implements Cell {
-        private int length;
-        LengthCell(int length) {
-            this.length = length;
-        }
-        public void print(Graphics2D g2, int x, int y, float scale) {
-            // box? -- no box for you!  (the box nazi, of course.)
-
-            // length
-            g2.drawString("n=" + length, x+EPS, y+(int)((getCellHeight()/2-getLineHeight()/2)*scale));
-        }
-        public String toXML() {
-            return "<length n=\"" + length + "\"/>";
-        }
-    }
-    // ----------------------------------------
-
-    // cell factory -- given XML tag name and attributes
-    private Cell makeCell(String name, Attributes atts) { // can't be static: cells aren't static
-        if (name.equals("header")) {
-            String r = atts.getValue("range"); // check for range="a-b"
-            if (r != null)
-                return new HeaderRangeCell(atts.getValue("name"),
-					   new Range(r));
-            else
-                return new HeaderCell(atts.getValue("name"));
-        } else if (name.equals("length")) {
-            return new LengthCell(Integer.parseInt(atts.getValue("n")));
-        } else if (name.equals("cross")) {
-            return new CrossCell(Float.parseFloat(atts.getValue("t")),
-                                 Float.parseFloat(atts.getValue("tr")),
-                                 Float.parseFloat(atts.getValue("d")),
-                                 Float.parseFloat(atts.getValue("r")),
-                                 Integer.parseInt(atts.getValue("n"))); // exception?
-        } else {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    // ----------------------------------------
-    // print one page of a grid
-    private static class GridPage implements Printable {
-	private Grid grid;
-	private int startRow, endRow, startCol, endCol;
-	public GridPage(Grid grid,
-			int startRow, int endRow,
-			int startCol, int endCol) {
-	    this.grid = grid;
-	    this.startRow = startRow;
-	    this.endRow = endRow;
-	    this.startCol = startCol;
-	    this.endCol = endCol;
+		public abstract String toXML();
 	}
-	public int print(Graphics g, PageFormat pf, int pageNr)
-	    throws PrinterException
-	{
-	    // WAS: if (pageNr != 0) return NO_SUCH_PAGE;
 
-	    // no, pageNr is 1 for the second page!  (did the docs say it would?)
-	    // now: ignore pageNr here
-
-	    Graphics2D g2 = (Graphics2D) g;
-	    g2.setColor(Color.black);
-	    g2.setStroke(new BasicStroke(0.1f)); // what's a good thickness?
-
-	    // set font (for all cells)
-	    // FIXME: use Prefs
-	    if (App.prefs.getPref("corina.grid.font") != null)
-		g2.setFont(Font.decode(App.prefs.getPref("corina.grid.font")));
-
-	    // figure out stop row, col: end of page, or end of grid,
-	    // whichever comes first
-	    int stopRow = Math.min(endRow, grid.cell.length-1);
-	    int stopCol = Math.min(endCol, grid.cell[0].length-1);
-
-	    // print each one
-	    for (int x=startCol; x<=stopCol; x++) {
-		for (int y=startRow; y<=stopRow; y++) {
-		    Cell c = grid.cell[y][x];
-		    c.print(g2,
-			    ((int) pf.getImageableX()) +
-			                 (x-startCol)*getCellWidth(),
-			    ((int) pf.getImageableY()) +
-			                 (y-startRow)*getCellHeight(),
-			    1.0f); // always print to paper with scale=1.0
+	public static class EmptyCell implements Cell {
+		public void print(Graphics2D g2, int x, int y, float scale) {
+			// do nothing
 		}
-	    }
 
-	    return PAGE_EXISTS;
-	}
-    }
-
-    // ----------------------------------------
-    // print all pages of a grid (using GridPage)
-    private static class GridPrinter implements Pageable {
-        private Grid grid;
-        private int size;
-        private int rowsPerPage, colsPerPage, pagesWide, pagesTall, numPages;
-        private PageFormat pf;
-        public GridPrinter(Grid grid, PageFormat pf) {
-            this.grid = grid;
-            this.size = grid.size() + 1; // size() is #samples; +1 for headers
-            this.pf = pf;
-
-            // examine the size of the page
-            rowsPerPage = ((int) pf.getImageableHeight()) / getCellHeight();
-            colsPerPage = ((int) pf.getImageableWidth()) / getCellWidth();
-
-	    // pagesWide = cols / colsPerPage
-            pagesWide = (int) Math.ceil((float) size / colsPerPage);
-
-	    // pagesTall = rows / rowsPerPage
-            pagesTall = (int) Math.ceil((float) size / rowsPerPage);
-
-            numPages = pagesWide * pagesTall;
-        }
-        public int getNumberOfPages() {
-            return numPages;
-        }
-        public PageFormat getPageFormat(int pageIndex)
-	                                    throws IndexOutOfBoundsException {
-            return pf;
-        }
-        public Printable getPrintable(int pageIndex)
-	                                    throws IndexOutOfBoundsException {
-	    // is this right?  strange...
-	    if (pageIndex >= numPages)
-		throw new IndexOutOfBoundsException();
-
-            int x = pageIndex % pagesWide;
-            int y = pageIndex / pagesWide;
-
-            return new GridPage(grid,
-                                y*rowsPerPage, y*rowsPerPage + rowsPerPage-1,
-                                x*colsPerPage, x*colsPerPage + colsPerPage-1);
-        }
-    }
-    // ----------------------------------------
-
-    // external print interface
-    public Pageable makeHardcopy(PageFormat pf) {
-        return new GridPrinter(this, pf);
-    }
-
-    /**
-       Construct a Grid from a List of Elements.  Elements with
-       <code>active=false</code> are ignored.
-
-       @param elements the List of Elements to use
-    */
-    public Grid(List elements) {
-	// copy set
-	files = elements;
-
-	// number of active samples in the grid
-	// (count-if files #'active)
-	num = 0;
-	for (int i=0; i<files.size(); i++)
-	    if (((Element) files.get(i)).active)
-		num++;
-
-	// create outputs
-	cell = new Cell[num+1][num+1];
-    }
-
-    /**
-       Construct a Grid from an existing file.  Cells are loaded from
-       the previously-calculated values; the user must "refresh" the
-       display (<code>run()</code>) to update these values.
-
-       @param filename the file to load
-       @exception WrongFiletypeException if this file isn't a Grid
-       @exception FileNotFoundException if the file can't be found
-       @exception IOException if a low-level I/O exception occurs
-    */
-    public Grid(String filename) throws WrongFiletypeException,
-					FileNotFoundException, IOException {
-            // load the file
-            load(filename);
-    }
-
-    public Grid(Sequence seq) {
-        // what to do?
-        // copy elements (use seq.getAllFixed(), seq.getAllMoving() -- which are the same here?)
-        // -- assume seq.getallfixed==seq.getallmoving
-        // NO, DON'T!
-        // the right way: add all-fixed, then add all-moving, but with no duplicates (quickly!)
-
-        files = new ArrayList();
-
-        // add all fixed
-        List fixed = seq.getAllFixed();
-        for (int i=0; i<fixed.size(); i++)
-            files.add(new Element((String) fixed.get(i)));
-
-        // add all (non-duplicate) moving
-        List moving = seq.getAllMoving();
-        for (int i=0; i<moving.size(); i++)
-            if (!fixed.contains(moving.get(i)))
-                files.add(new Element((String) moving.get(i)));
-        
-        // create cell array
-        num = files.size();
-        cell = new Cell[num+1][num+1];
-        // (later?) run crosses
-        run();
-    }
-
-    /**
-       The number of samples in this Grid.  Add one to this value to
-       get the number of cells high or wide the grid is.
-
-       @return the number of samples in this Grid
-    */
-    public int size() {
-        return num;
-    }
-
-    /**
-       Get a Cell from the grid.
-
-       @param row the row
-       @param column the column
-       @return the cell at (row, column)
-    */
-    public Cell getCell(int row, int column) {
-	// (cells are immutable, so this is safe.)
-        return cell[row][column];
-    }
-
-    /** Compute the cells of this grid. */
-    public void run() {
-        // step 1: load all samples into a buffer.  for reference, on
-        // a P3/1000, 256MB, over a 10b2 network (limiting factor?),
-        // Win2000, Sun JDK1.3, computing a full grid from PIK's '96
-        // Gordion chronology (188 elements) used to take 2min 10sec,
-        // but with this buffer takes only 5 seconds.  moral: I/O is
-        // really slow, and memory is cheap, so use it!
-        Sample buffer[] = new Sample[num];
-        int read=0;
-        for (int i=0; i<files.size(); i++) {
-            // get an element
-            Element e = (Element) files.get(i);
-            // ABSTRACTION: i'd sure like to grab an enumeration of
-	    // active elements (well, sort of).  what i really want is
-	    // a filter.  i'll get rid of the active flag someday, but
-	    // in the meantime, it'd be useful to have
-	    //    public static List Element.activeOnly(List)
-            
-            // skip inactive elements
-            if (!e.isActive())
-                continue;
-
-            // it's active: try to load
-            try {
-                buffer[read] = e.load();
-                read++;
-            } catch (IOException ioe) {
-                // ArrayIndexOutOfBoundsException on the next line, on
-                // right-click-"grid from all" with no loadable
-                // samples.
-                buffer[read] = null; // can be null!  doesn't handle below!
-                read++;
-                error = ioe;
-                continue;
-            }
-        }
-
-        // step 2: compute crosses.  buffer now holds only active
-        // elements, so we can just run 0..num-1.  (the array |cell|
-        // was created in the constructor)
-        for (int row=0; row<num; row++) {
-            // "load" fixed
-            Sample fixed = buffer[row];
-
-	    // ignore nulls here -- kind of a hack
-	    if (fixed==null || fixed.meta.get("filename")==null)
-		continue;
-
-            // set headers -- if you want straight-across headers (as
-            // opposed to down-the-diagonal headers),
-            // s/[row][row+1]/[0][row+1]/
-            String filename = (String) fixed.meta.get("filename");
-            cell[row+1][0] = new HeaderCell(filename);
-            cell[row][row+1] = new HeaderRangeCell(filename, fixed.range);
-
-            // set length
-            cell[row+1][row+1] = new LengthCell(fixed.data.size());
-
-            for (int col=0; col<row; col++) {
-                // "load" moving
-                Sample moving = buffer[col];
-
-		// ignore nulls here -- kind of a hack
-		if (moving==null || moving.meta.get("filename")==null)
-		    continue;
-
-		// run the single cross, and put it in the grid
-		cell[row+1][col+1] = new CrossCell(fixed, moving);
-            }
-        }
-
-        // step 3: set all unused grid cells to EmptyCell.  i'm lazy
-        // -- let's just look for null cells.  (i really should know a
-        // priori what cells will be null here, but after loading /n/
-        // samples from disk, looking for nulls is really fast.)
-        EmptyCell e = new EmptyCell(); // lots of these: FLYWEIGHT!
-        for (int row=0; row<num+1; row++)
-            for (int col=0; col<num+1; col++)
-                if (cell[row][col] == null)
-                    cell[row][col] = e;
-
-        // contents of buffer can now be GC'd.  whew.
-    }
-
-    /**
-       Get the error that occurred while computing the grid.  The
-       run() method in Runnable can't throw any exceptions, so we just
-       store them here for later use.
-
-       @return an Exception, if one occurred, else null
-    */
-    public Exception getError() {
-        return error;
-    }
-
-    // NOTE: the following methods should NOT be made into constants, and
-    // the property lookups should NOT be cached.  the user MUST be
-    // able to change these without creating a new Grid.
-    public static int getCellWidth() {
-        // cell width = 140% of cell height
-        return (int) (getCellHeight() * 1.4);
-    }
-    public static int getCellHeight() {
-        // make it big enough for 4 lines of text
-        int h; // height of a line of text
-
-        // font to use
-        Font myFont = App.prefs.getFontPref("corina.grid.font", new Font("sansserif", Font.PLAIN, 12));
-        // erp ... this calls new font() for the second arg even when it's not needed (!)
-
-        // i don't think this is quite kosher...  (uh, nope.  fixme.
-        // look at its ascent.)
-        h = myFont.getSize();
-        return  4*(h + 2*EPS);
-    }
-    private static int getLineHeight() {
-        return getCellHeight() / 4;
-    }
-
-    private static final int EPS = 2; // a wee bit: 2 points (pixels)
-
-    /**
-       A short preview for file dialogs.  Displays "Crossdating Grid",
-       and lists the first few elements.
-
-       @return a preview component for this grid
-    */
-    public Preview getPreview() {
-	return new GridPreview(this);
-    }
-
-    // a preview for grids
-    private static class GridPreview extends Preview {
-	GridPreview(Grid g) {
-	    title = I18n.getText("crossdating_grid");
-	    items = new ArrayList();
-	    items.add("(" + g.files.size() + " " +
-		            I18n.getText("total") + ")");
-
-	    // up to 5
-	    for (int i=0; i<g.files.size(); i++) {
-		if (i==4 && g.files.size()>5) {
-		    items.add("...");
-		    break;
+		public String toXML() {
+			return "<empty/>";
 		}
-		String filename = ((Element) g.files.get(i)).getFilename();
-		items.add(new File(filename).getName());
-	    }
 	}
-    }
 
-    /** A SAX2 handler for loading saved grid files. */
-    private class GridHandler extends DefaultHandler {
-        private boolean readAnything=false;
-        private int row=0, col=0; // current row and column
-        private EmptyCell e=new EmptyCell(); // flyweight for empty cells
-        public void startElement(String uri, String name, String qName,
-				 Attributes atts) throws SAXException {
-           System.out.println("startElement");
-            // something has been read!  make sure it's a grid
-            if (!readAnything) {
-                if (name.equals("grid")) {
-                    readAnything = true;
-                    return;
-                }
+	public class HeaderCell implements Cell {
+		protected String name;
 
-                // else
-                throw new SAXException("Not a grid!");
-		// can't i do better?  wfte?
-            }
+		public HeaderCell(String name) {
+			// crop directory
+			int index = name.lastIndexOf(File.separatorChar);
+			this.name = name.substring(index + 1);
+		}
 
-            // if starting inputs, create list for files
-            if (name.equals("input")) {
-                files = new ArrayList();
-                return;
-            }
+		public void print(Graphics2D g2, int x, int y, float scale) {
+			// filename
+			g2
+					.drawString(
+							name,
+							x + EPS,
+							y
+									+ (int) ((getCellHeight() / 2 - getLineHeight() / 2) * scale));
+		}
 
-            // if a sample (input section), add to list
-            if (name.equals("sample")) {
-                files.add(new Element(atts.getValue("filename"))); // --> doesn't care about inactive files?
-                return;
-            }
+		public String toXML() {
+			return "<header name=\"" + name + "\"/>";
+		}
+	}
 
-            // if starting outputs, create array for cells
-            if (name.equals("output")) {
-                cell = new Cell[num+1][num+1];
-                return;
-            }
+	public class HeaderRangeCell extends HeaderCell {
+		private Range range;
 
-            // if an empty cell, use flyweight
-            if (name.equals("empty")) {
-                cell[row][col] = e;
-                return;
-            }
+		public HeaderRangeCell(String name, Range range) {
+			super(name);
+			this.range = range;
+		}
 
-            try {
-                Cell c = makeCell(name, atts);
-                cell[row][col] = c;
-            } catch (IllegalArgumentException iae) {
-                // ignore -- FIXME: this is just plain awkward
-            }
-        }
-        public void endElement(String uri, String name, String qName) {
-          System.out.println("endElement");
-            // if ending input section, compute num
-            if (name.equals("input")) {
-                num = files.size();
-                return;
-            }
+		public void print(Graphics2D g2, int x, int y, float scale) {
+			// filename
+			g2.drawString(name, x + EPS, y
+					+ (int) ((getCellHeight() / 2) * scale));
 
-            // if ending a cell, increment row
-            // ABSTRACTION: isCellName() -- can be used to avoid IAE's above, and here.
-            if (name.equals("empty") || name.equals("header") ||
-                name.equals("length") || name.equals("cross")) {
-                col++;
-                return;
-            }
+			// range
+			g2.drawString(range.toString(), x + EPS, y
+					+ (int) ((getCellHeight() / 2 + getLineHeight()) * scale));
+		}
 
-            // if ending a row, reset col=0, and increment row
-            if (name.equals("row")) {
-                col = 0;
-                row++;
-                return;
-            }
-        }
-    }
+		public String toXML() {
+			return "<header name=\"" + name + "\" range=\"" + range + "\"/>";
+		}
+	}
 
-    /**
-       Load a grid, saved in XML format.
+	// !!! REFACTOR !!!: CrossCell and Table.Row are virtually identical! ...IN PROGRESS...
+	// -- BETTER: why doesn't CrossCell just extend Single?
+	// (when that's done, t/tr/d can be unified between sequence and onecross)
+	// hey, cross.single() only makes sense in the context of a onecross, right?  score!
+	public static class CrossCell implements Cell {
+		private Single cross;
 
-       @param filename the target to load
-       @exception WrongFiletypeException if this file isn't a Grid
-       @exception FileNotFoundException if there is no file by this name
-       @exception IOException if an I/O exception occurs while trying
-       to load
-    */
-    public void load(String filename) throws WrongFiletypeException,
-					     FileNotFoundException,
-					     IOException {
-            try {
-                // make a new XML parser
-                XMLReader xr = XMLReaderFactory.createXMLReader();
+		public CrossCell(Sample fixed, Sample moving) {
+			this.cross = new Single(fixed, moving);
+		}
 
-                // ... configure it to use a my SampleHandler ...
-                GridHandler loader = new GridHandler();
-                xr.setContentHandler(loader);
-                xr.setErrorHandler(loader);
+		public CrossCell(float t, float tr, float d, float r, int n) {
+			// BAD INTERFACE -- REFACTOR -- (this is only used for xml
+			// loading now -- ok?)
+			cross = new Single(t, tr, d, r, n);
+		}
 
-                // ... and feed it the file
-                System.out.println("reading " + filename + " as xml");
-                FileReader r = new FileReader(filename);
-                xr.parse(new InputSource(r));
-                System.out.println("done parsing");
-            } catch (SAXException se) {
-              se.printStackTrace();
-                throw new WrongFiletypeException();
-            }
-    }
+		public void print(Graphics2D g2, int x, int y, float scale) {
+			// fill with highlight -- would the user ever NOT want this?  well, yes, possibly.
+			if (Boolean.valueOf(App.prefs.getPref(Prefs.GRID_HIGHLIGHT))
+					.booleanValue()
+					&& cross.isSignificant()) {
+				Color oldColor = g2.getColor();
+				g2.setColor(App.prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR,
+						Color.green));
+				g2.fillRect(x, y, (int) (getCellWidth() * scale),
+						(int) (getCellHeight() * scale));
+				g2.setColor(oldColor);
+			}
 
-    /**
-       Save this grid in XML format.
+			// box
+			g2.drawRect(x, y, (int) (getCellWidth() * scale),
+					(int) (getCellHeight() * scale));
 
-       @param filename the target to save to
-       @exception IOException if an I/O exception occurs while trying to save
-    */
-    public void save(String filename) throws IOException {
-      // open, and write header
-      BufferedWriter w = new BufferedWriter(new FileWriter(filename));
-      try {
-        w.write("<?xml version=\"1.0\"?>\n"); // can/should i make the encoding explicit here?
-        w.write("\n");
-        w.write("<grid>\n");
-        w.write("\n");
+			// little/no overlap: just show the overlap
+			if (cross.n < 10) { // Cross.getMinimumOverlap()) {
+				g2
+						.drawString(
+								"n=" + cross.n,
+								x + EPS,
+								y
+										+ (int) ((getCellHeight() / 2 - getLineHeight() / 2) * scale));
+				return;
+			}
 
-        // input: filenames
-        w.write("  <input>\n");
-        for (int i=0; i<files.size(); i++) {
-            w.write("    <sample filename=\"" + files.get(i) + "\"/>\n");
-        }
-        w.write("  </input>\n");
-        w.write("\n");
+			// cross
+			// REFACTOR: {"t=" + blah.format(t)} should be simply Score.toString()?
+			// TODO: need Cross.getShortName() (tscore -> "t") method
+			g2.drawString("t=" + cross.formatT() + ", r=" + cross.formatR(), x
+					+ EPS, y + (int) (getLineHeight() * scale) - EPS);
+			g2.drawString("tr=" + cross.formatTrend(), x + EPS, y
+					+ (int) (2 * getLineHeight() * scale) - EPS);
+			g2.drawString("D=" + cross.formatD(), x + EPS, y
+					+ (int) (3 * getLineHeight() * scale) - EPS);
+			g2.drawString("n=" + String.valueOf(cross.n), x + EPS, y
+					+ (int) (4 * getLineHeight() * scale) - EPS);
+		}
 
-        // output: cells
-        w.write("  <output>\n");
-        for (int r=0; r<cell.length; r++) {
-            w.write("    <row>\n");
-            for (int c=0; c<cell[r].length; c++)
-                w.write("      " + cell[r][c].toXML() + "\n");
-            w.write("    </row>\n");
-        }
-        w.write("  </output>\n");
-        w.write("\n");
+		// in toXML, store full precision, with no %'s -- this means
+		// later we won't have too few digits, if the user decides she
+		// wants more, and we won't have to worry about parsing it
+		// incorrectly with NumberFormat.parse().  the users never
+		// need to look at a *.grid file, either, so they won't care.
+		// (...later: *.cross? *.xdate? *.xd?  i like *.xdate)
+		public String toXML() {
+			return cross.toXML();
+		}
+	}
 
-        // end, and close
-        w.write("</grid>\n");
-      } finally {
-        try {
-          w.close();
-        } catch (IOException ioe) {
-          log.error("Error closing writer", ioe);
-        }
-      }
-    }
+	public static class LengthCell implements Cell {
+		private int length;
+
+		LengthCell(int length) {
+			this.length = length;
+		}
+
+		public void print(Graphics2D g2, int x, int y, float scale) {
+			// box? -- no box for you!  (the box nazi, of course.)
+
+			// length
+			g2
+					.drawString(
+							"n=" + length,
+							x + EPS,
+							y
+									+ (int) ((getCellHeight() / 2 - getLineHeight() / 2) * scale));
+		}
+
+		public String toXML() {
+			return "<length n=\"" + length + "\"/>";
+		}
+	}
+
+	// ----------------------------------------
+
+	// cell factory -- given XML tag name and attributes
+	private Cell makeCell(String name, Attributes atts) { // can't be static: cells aren't static
+		if (name.equals("header")) {
+			String r = atts.getValue("range"); // check for range="a-b"
+			if (r != null)
+				return new HeaderRangeCell(atts.getValue("name"), new Range(r));
+			else
+				return new HeaderCell(atts.getValue("name"));
+		} else if (name.equals("length")) {
+			return new LengthCell(Integer.parseInt(atts.getValue("n")));
+		} else if (name.equals("cross")) {
+			return new CrossCell(Float.parseFloat(atts.getValue("t")), Float
+					.parseFloat(atts.getValue("tr")), Float.parseFloat(atts
+					.getValue("d")), Float.parseFloat(atts.getValue("r")),
+					Integer.parseInt(atts.getValue("n"))); // exception?
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	// ----------------------------------------
+	// print one page of a grid
+	private static class GridPage implements Printable {
+		private Grid grid;
+
+		private int startRow, endRow, startCol, endCol;
+
+		public GridPage(Grid grid, int startRow, int endRow, int startCol,
+				int endCol) {
+			this.grid = grid;
+			this.startRow = startRow;
+			this.endRow = endRow;
+			this.startCol = startCol;
+			this.endCol = endCol;
+		}
+
+		public int print(Graphics g, PageFormat pf, int pageNr)
+				throws PrinterException {
+			// WAS: if (pageNr != 0) return NO_SUCH_PAGE;
+
+			// no, pageNr is 1 for the second page!  (did the docs say it would?)
+			// now: ignore pageNr here
+
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setColor(Color.black);
+			g2.setStroke(new BasicStroke(0.1f)); // what's a good thickness?
+
+			// set font (for all cells)
+			// FIXME: use Prefs
+			if (App.prefs.getPref("corina.grid.font") != null)
+				g2.setFont(Font.decode(App.prefs.getPref("corina.grid.font")));
+
+			// figure out stop row, col: end of page, or end of grid,
+			// whichever comes first
+			int stopRow = Math.min(endRow, grid.cell.length - 1);
+			int stopCol = Math.min(endCol, grid.cell[0].length - 1);
+
+			// print each one
+			for (int x = startCol; x <= stopCol; x++) {
+				for (int y = startRow; y <= stopRow; y++) {
+					Cell c = grid.cell[y][x];
+					c.print(g2, ((int) pf.getImageableX()) + (x - startCol)
+							* getCellWidth(), ((int) pf.getImageableY())
+							+ (y - startRow) * getCellHeight(), 1.0f); // always print to paper with scale=1.0
+				}
+			}
+
+			return PAGE_EXISTS;
+		}
+	}
+
+	// ----------------------------------------
+	// print all pages of a grid (using GridPage)
+	private static class GridPrinter implements Pageable {
+		private Grid grid;
+
+		private int size;
+
+		private int rowsPerPage, colsPerPage, pagesWide, pagesTall, numPages;
+
+		private PageFormat pf;
+
+		public GridPrinter(Grid grid, PageFormat pf) {
+			this.grid = grid;
+			this.size = grid.size() + 1; // size() is #samples; +1 for headers
+			this.pf = pf;
+
+			// examine the size of the page
+			rowsPerPage = ((int) pf.getImageableHeight()) / getCellHeight();
+			colsPerPage = ((int) pf.getImageableWidth()) / getCellWidth();
+
+			// pagesWide = cols / colsPerPage
+			pagesWide = (int) Math.ceil((float) size / colsPerPage);
+
+			// pagesTall = rows / rowsPerPage
+			pagesTall = (int) Math.ceil((float) size / rowsPerPage);
+
+			numPages = pagesWide * pagesTall;
+		}
+
+		public int getNumberOfPages() {
+			return numPages;
+		}
+
+		public PageFormat getPageFormat(int pageIndex)
+				throws IndexOutOfBoundsException {
+			return pf;
+		}
+
+		public Printable getPrintable(int pageIndex)
+				throws IndexOutOfBoundsException {
+			// is this right?  strange...
+			if (pageIndex >= numPages)
+				throw new IndexOutOfBoundsException();
+
+			int x = pageIndex % pagesWide;
+			int y = pageIndex / pagesWide;
+
+			return new GridPage(grid, y * rowsPerPage, y * rowsPerPage
+					+ rowsPerPage - 1, x * colsPerPage, x * colsPerPage
+					+ colsPerPage - 1);
+		}
+	}
+
+	// ----------------------------------------
+
+	// external print interface
+	public Pageable makeHardcopy(PageFormat pf) {
+		return new GridPrinter(this, pf);
+	}
+
+	/**
+	 Construct a Grid from a List of Elements.  Elements with
+	 <code>active=false</code> are ignored.
+
+	 @param elements the List of Elements to use
+	 */
+	public Grid(List elements) {
+		// copy set
+		files = elements;
+
+		// number of active samples in the grid
+		// (count-if files #'active)
+		num = 0;
+		for (int i = 0; i < files.size(); i++)
+			if (((Element) files.get(i)).active)
+				num++;
+
+		// create outputs
+		cell = new Cell[num + 1][num + 1];
+	}
+
+	/**
+	 Construct a Grid from an existing file.  Cells are loaded from
+	 the previously-calculated values; the user must "refresh" the
+	 display (<code>run()</code>) to update these values.
+
+	 @param filename the file to load
+	 @exception WrongFiletypeException if this file isn't a Grid
+	 @exception FileNotFoundException if the file can't be found
+	 @exception IOException if a low-level I/O exception occurs
+	 */
+	public Grid(String filename) throws WrongFiletypeException,
+			FileNotFoundException, IOException {
+		// load the file
+		load(filename);
+	}
+
+	public Grid(Sequence seq) {
+		// what to do?
+		// copy elements (use seq.getAllFixed(), seq.getAllMoving() -- which are the same here?)
+		// -- assume seq.getallfixed==seq.getallmoving
+		// NO, DON'T!
+		// the right way: add all-fixed, then add all-moving, but with no duplicates (quickly!)
+
+		files = new ArrayList();
+
+		// add all fixed
+		List fixed = seq.getAllFixed();
+		for (int i = 0; i < fixed.size(); i++)
+			files.add(new Element((String) fixed.get(i)));
+
+		// add all (non-duplicate) moving
+		List moving = seq.getAllMoving();
+		for (int i = 0; i < moving.size(); i++)
+			if (!fixed.contains(moving.get(i)))
+				files.add(new Element((String) moving.get(i)));
+
+		// create cell array
+		num = files.size();
+		cell = new Cell[num + 1][num + 1];
+		// (later?) run crosses
+		run();
+	}
+
+	/**
+	 The number of samples in this Grid.  Add one to this value to
+	 get the number of cells high or wide the grid is.
+
+	 @return the number of samples in this Grid
+	 */
+	public int size() {
+		return num;
+	}
+
+	/**
+	 Get a Cell from the grid.
+
+	 @param row the row
+	 @param column the column
+	 @return the cell at (row, column)
+	 */
+	public Cell getCell(int row, int column) {
+		// (cells are immutable, so this is safe.)
+		return cell[row][column];
+	}
+
+	/** Compute the cells of this grid. */
+	public void run() {
+		// step 1: load all samples into a buffer.  for reference, on
+		// a P3/1000, 256MB, over a 10b2 network (limiting factor?),
+		// Win2000, Sun JDK1.3, computing a full grid from PIK's '96
+		// Gordion chronology (188 elements) used to take 2min 10sec,
+		// but with this buffer takes only 5 seconds.  moral: I/O is
+		// really slow, and memory is cheap, so use it!
+		Sample buffer[] = new Sample[num];
+		int read = 0;
+		for (int i = 0; i < files.size(); i++) {
+			// get an element
+			Element e = (Element) files.get(i);
+			// ABSTRACTION: i'd sure like to grab an enumeration of
+			// active elements (well, sort of).  what i really want is
+			// a filter.  i'll get rid of the active flag someday, but
+			// in the meantime, it'd be useful to have
+			//    public static List Element.activeOnly(List)
+
+			// skip inactive elements
+			if (!e.isActive())
+				continue;
+
+			// it's active: try to load
+			try {
+				buffer[read] = e.load();
+				read++;
+			} catch (IOException ioe) {
+				// ArrayIndexOutOfBoundsException on the next line, on
+				// right-click-"grid from all" with no loadable
+				// samples.
+				buffer[read] = null; // can be null!  doesn't handle below!
+				read++;
+				error = ioe;
+				continue;
+			}
+		}
+
+		// step 2: compute crosses.  buffer now holds only active
+		// elements, so we can just run 0..num-1.  (the array |cell|
+		// was created in the constructor)
+		for (int row = 0; row < num; row++) {
+			// "load" fixed
+			Sample fixed = buffer[row];
+
+			// ignore nulls here -- kind of a hack
+			if (fixed == null || fixed.meta.get("filename") == null)
+				continue;
+
+			// set headers -- if you want straight-across headers (as
+			// opposed to down-the-diagonal headers),
+			// s/[row][row+1]/[0][row+1]/
+			String filename = (String) fixed.meta.get("filename");
+			cell[row + 1][0] = new HeaderCell(filename);
+			cell[row][row + 1] = new HeaderRangeCell(filename, fixed.range);
+
+			// set length
+			cell[row + 1][row + 1] = new LengthCell(fixed.data.size());
+
+			for (int col = 0; col < row; col++) {
+				// "load" moving
+				Sample moving = buffer[col];
+
+				// ignore nulls here -- kind of a hack
+				if (moving == null || moving.meta.get("filename") == null)
+					continue;
+
+				// run the single cross, and put it in the grid
+				cell[row + 1][col + 1] = new CrossCell(fixed, moving);
+			}
+		}
+
+		// step 3: set all unused grid cells to EmptyCell.  i'm lazy
+		// -- let's just look for null cells.  (i really should know a
+		// priori what cells will be null here, but after loading /n/
+		// samples from disk, looking for nulls is really fast.)
+		EmptyCell e = new EmptyCell(); // lots of these: FLYWEIGHT!
+		for (int row = 0; row < num + 1; row++)
+			for (int col = 0; col < num + 1; col++)
+				if (cell[row][col] == null)
+					cell[row][col] = e;
+
+		// contents of buffer can now be GC'd.  whew.
+	}
+
+	/**
+	 Get the error that occurred while computing the grid.  The
+	 run() method in Runnable can't throw any exceptions, so we just
+	 store them here for later use.
+
+	 @return an Exception, if one occurred, else null
+	 */
+	public Exception getError() {
+		return error;
+	}
+
+	// NOTE: the following methods should NOT be made into constants, and
+	// the property lookups should NOT be cached.  the user MUST be
+	// able to change these without creating a new Grid.
+	public static int getCellWidth() {
+		// cell width = 140% of cell height
+		return (int) (getCellHeight() * 1.4);
+	}
+
+	public static int getCellHeight() {
+		// make it big enough for 4 lines of text
+		int h; // height of a line of text
+
+		// font to use
+		Font myFont = App.prefs.getFontPref("corina.grid.font", new Font(
+				"sansserif", Font.PLAIN, 12));
+		// erp ... this calls new font() for the second arg even when it's not needed (!)
+
+		// i don't think this is quite kosher...  (uh, nope.  fixme.
+		// look at its ascent.)
+		h = myFont.getSize();
+		return 4 * (h + 2 * EPS);
+	}
+
+	private static int getLineHeight() {
+		return getCellHeight() / 4;
+	}
+
+	private static final int EPS = 2; // a wee bit: 2 points (pixels)
+
+	/**
+	 A short preview for file dialogs.  Displays "Crossdating Grid",
+	 and lists the first few elements.
+
+	 @return a preview component for this grid
+	 */
+	public Preview getPreview() {
+		return new GridPreview(this);
+	}
+
+	// a preview for grids
+	private static class GridPreview extends Preview {
+		GridPreview(Grid g) {
+			title = I18n.getText("crossdating_grid");
+			items = new ArrayList();
+			items.add("(" + g.files.size() + " " + I18n.getText("total") + ")");
+
+			// up to 5
+			for (int i = 0; i < g.files.size(); i++) {
+				if (i == 4 && g.files.size() > 5) {
+					items.add("...");
+					break;
+				}
+				String filename = ((Element) g.files.get(i)).getFilename();
+				items.add(new File(filename).getName());
+			}
+		}
+	}
+
+	/** A SAX2 handler for loading saved grid files. */
+	private class GridHandler extends DefaultHandler {
+		private boolean readAnything = false;
+
+		private int row = 0, col = 0; // current row and column
+
+		private EmptyCell e = new EmptyCell(); // flyweight for empty cells
+
+		public void startElement(String uri, String name, String qName,
+				Attributes atts) throws SAXException {
+			System.out.println("startElement");
+			// something has been read!  make sure it's a grid
+			if (!readAnything) {
+				if (name.equals("grid")) {
+					readAnything = true;
+					return;
+				}
+
+				// else
+				throw new SAXException("Not a grid!");
+				// can't i do better?  wfte?
+			}
+
+			// if starting inputs, create list for files
+			if (name.equals("input")) {
+				files = new ArrayList();
+				return;
+			}
+
+			// if a sample (input section), add to list
+			if (name.equals("sample")) {
+				files.add(new Element(atts.getValue("filename"))); // --> doesn't care about inactive files?
+				return;
+			}
+
+			// if starting outputs, create array for cells
+			if (name.equals("output")) {
+				cell = new Cell[num + 1][num + 1];
+				return;
+			}
+
+			// if an empty cell, use flyweight
+			if (name.equals("empty")) {
+				cell[row][col] = e;
+				return;
+			}
+
+			try {
+				Cell c = makeCell(name, atts);
+				cell[row][col] = c;
+			} catch (IllegalArgumentException iae) {
+				// ignore -- FIXME: this is just plain awkward
+			}
+		}
+
+		public void endElement(String uri, String name, String qName) {
+			System.out.println("endElement");
+			// if ending input section, compute num
+			if (name.equals("input")) {
+				num = files.size();
+				return;
+			}
+
+			// if ending a cell, increment row
+			// ABSTRACTION: isCellName() -- can be used to avoid IAE's above, and here.
+			if (name.equals("empty") || name.equals("header")
+					|| name.equals("length") || name.equals("cross")) {
+				col++;
+				return;
+			}
+
+			// if ending a row, reset col=0, and increment row
+			if (name.equals("row")) {
+				col = 0;
+				row++;
+				return;
+			}
+		}
+	}
+
+	/**
+	 Load a grid, saved in XML format.
+
+	 @param filename the target to load
+	 @exception WrongFiletypeException if this file isn't a Grid
+	 @exception FileNotFoundException if there is no file by this name
+	 @exception IOException if an I/O exception occurs while trying
+	 to load
+	 */
+	public void load(String filename) throws WrongFiletypeException,
+			FileNotFoundException, IOException {
+		try {
+			// make a new XML parser
+			XMLReader xr = XMLReaderFactory.createXMLReader();
+
+			// ... configure it to use a my SampleHandler ...
+			GridHandler loader = new GridHandler();
+			xr.setContentHandler(loader);
+			xr.setErrorHandler(loader);
+
+			// ... and feed it the file
+			System.out.println("reading " + filename + " as xml");
+			FileReader r = new FileReader(filename);
+			xr.parse(new InputSource(r));
+			System.out.println("done parsing");
+		} catch (SAXException se) {
+			se.printStackTrace();
+			throw new WrongFiletypeException();
+		}
+	}
+
+	/**
+	 Save this grid in XML format.
+
+	 @param filename the target to save to
+	 @exception IOException if an I/O exception occurs while trying to save
+	 */
+	public void save(String filename) throws IOException {
+		// open, and write header
+		BufferedWriter w = new BufferedWriter(new FileWriter(filename));
+		try {
+			w.write("<?xml version=\"1.0\"?>\n"); // can/should i make the encoding explicit here?
+			w.write("\n");
+			w.write("<grid>\n");
+			w.write("\n");
+
+			// input: filenames
+			w.write("  <input>\n");
+			for (int i = 0; i < files.size(); i++) {
+				w.write("    <sample filename=\"" + files.get(i) + "\"/>\n");
+			}
+			w.write("  </input>\n");
+			w.write("\n");
+
+			// output: cells
+			w.write("  <output>\n");
+			for (int r = 0; r < cell.length; r++) {
+				w.write("    <row>\n");
+				for (int c = 0; c < cell[r].length; c++)
+					w.write("      " + cell[r][c].toXML() + "\n");
+				w.write("    </row>\n");
+			}
+			w.write("  </output>\n");
+			w.write("\n");
+
+			// end, and close
+			w.write("</grid>\n");
+		} finally {
+			try {
+				w.close();
+			} catch (IOException ioe) {
+				log.error("Error closing writer", ioe);
+			}
+		}
+	}
 }
