@@ -161,12 +161,8 @@ public class Grid implements Runnable, Previewable {
 
 		public void print(Graphics2D g2, int x, int y, float scale) {
 			// filename
-			g2
-					.drawString(
-							name,
-							x + EPS,
-							y
-									+ (int) ((getCellHeight() / 2 - getLineHeight() / 2) * scale));
+			g2.drawString(name, x + EPS,
+						  y + (int) ((getCellHeight() / 2 - getLineHeight() / 2) * scale));
 		}
 
 		public String toXML() {
@@ -196,29 +192,24 @@ public class Grid implements Runnable, Previewable {
 			return "<header name=\"" + name + "\" range=\"" + range + "\"/>";
 		}
 	}
-
-	// !!! REFACTOR !!!: CrossCell and Table.Row are virtually identical! ...IN PROGRESS...
-	// -- BETTER: why doesn't CrossCell just extend Single?
+	
 	// (when that's done, t/tr/d can be unified between sequence and onecross)
 	// hey, cross.single() only makes sense in the context of a onecross, right?  score!
-	public static class CrossCell implements Cell {
-		private Single cross;
-
+	public static class CrossCell extends Single implements Cell {
 		public CrossCell(Sample fixed, Sample moving) {
-			this.cross = new Single(fixed, moving);
+			super(fixed, moving);
 		}
 
 		public CrossCell(float t, float tr, float d, float r, int n) {
-			// BAD INTERFACE -- REFACTOR -- (this is only used for xml
-			// loading now -- ok?)
-			cross = new Single(t, tr, d, r, n);
+			// (this is only used for xml loading now -- ok?)
+			super(t, tr, d, r, n);
 		}
-
+		
 		public void print(Graphics2D g2, int x, int y, float scale) {
 			// fill with highlight -- would the user ever NOT want this?  well, yes, possibly.
 			if (Boolean.valueOf(App.prefs.getPref(Prefs.GRID_HIGHLIGHT))
 					.booleanValue()
-					&& cross.isSignificant()) {
+					&& isSignificant()) {
 				Color oldColor = g2.getColor();
 				g2.setColor(App.prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR,
 						Color.green));
@@ -232,26 +223,22 @@ public class Grid implements Runnable, Previewable {
 					(int) (getCellHeight() * scale));
 
 			// little/no overlap: just show the overlap
-			if (cross.n < 10) { // Cross.getMinimumOverlap()) {
-				g2
-						.drawString(
-								"n=" + cross.n,
-								x + EPS,
-								y
-										+ (int) ((getCellHeight() / 2 - getLineHeight() / 2) * scale));
+			if (n < 10) { // Cross.getMinimumOverlap()) {
+				g2.drawString("n=" + n, x + EPS,
+							  y + (int) ((getCellHeight() / 2 - getLineHeight() / 2) * scale));
 				return;
 			}
 
 			// cross
 			// REFACTOR: {"t=" + blah.format(t)} should be simply Score.toString()?
 			// TODO: need Cross.getShortName() (tscore -> "t") method
-			g2.drawString("t=" + cross.formatT() + ", r=" + cross.formatR(), x
+			g2.drawString("t=" + formatT() + ", r=" + formatR(), x
 					+ EPS, y + (int) (getLineHeight() * scale) - EPS);
-			g2.drawString("tr=" + cross.formatTrend(), x + EPS, y
+			g2.drawString("tr=" + formatTrend(), x + EPS, y
 					+ (int) (2 * getLineHeight() * scale) - EPS);
-			g2.drawString("D=" + cross.formatD(), x + EPS, y
+			g2.drawString("D=" + formatD(), x + EPS, y
 					+ (int) (3 * getLineHeight() * scale) - EPS);
-			g2.drawString("n=" + String.valueOf(cross.n), x + EPS, y
+			g2.drawString("n=" + String.valueOf(n), x + EPS, y
 					+ (int) (4 * getLineHeight() * scale) - EPS);
 		}
 
@@ -261,9 +248,8 @@ public class Grid implements Runnable, Previewable {
 		// incorrectly with NumberFormat.parse().  the users never
 		// need to look at a *.grid file, either, so they won't care.
 		// (...later: *.cross? *.xdate? *.xd?  i like *.xdate)
-		public String toXML() {
-			return cross.toXML();
-		}
+		
+		// err... cross already has this?
 	}
 
 	public static class LengthCell implements Cell {
@@ -277,12 +263,8 @@ public class Grid implements Runnable, Previewable {
 			// box? -- no box for you!  (the box nazi, of course.)
 
 			// length
-			g2
-					.drawString(
-							"n=" + length,
-							x + EPS,
-							y
-									+ (int) ((getCellHeight() / 2 - getLineHeight() / 2) * scale));
+			g2.drawString("n=" + length, x + EPS,
+						  y + (int) ((getCellHeight() / 2 - getLineHeight() / 2) * scale));
 		}
 
 		public String toXML() {
@@ -508,7 +490,7 @@ public class Grid implements Runnable, Previewable {
 		// (cells are immutable, so this is safe.)
 		return cell[row][column];
 	}
-
+	
 	/** Compute the cells of this grid. */
 	public void run() {
 		// step 1: load all samples into a buffer.  for reference, on
@@ -517,8 +499,11 @@ public class Grid implements Runnable, Previewable {
 		// Gordion chronology (188 elements) used to take 2min 10sec,
 		// but with this buffer takes only 5 seconds.  moral: I/O is
 		// really slow, and memory is cheap, so use it!
+		
+		AvgSingle averages = new AvgSingle();
 		Sample buffer[] = new Sample[num];
 		int read = 0;
+		
 		for (int i = 0; i < files.size(); i++) {
 			// get an element
 			Element e = (Element) files.get(i);
@@ -577,7 +562,18 @@ public class Grid implements Runnable, Previewable {
 					continue;
 
 				// run the single cross, and put it in the grid
-				cell[row + 1][col + 1] = new CrossCell(fixed, moving);
+				Cell crosscell = new CrossCell(fixed, moving);
+				cell[row + 1][col + 1] = crosscell;
+				averages.addSingle((Single)crosscell);
+			}
+		}
+		
+		averages.calculateAverages();
+		// place the "averages" at the first free column on row #2...
+		for(int col = 0; col < num + 1; col++) {
+			if(cell[1][col] == null) {
+				cell[1][col] = averages;
+				break;
 			}
 		}
 
@@ -818,4 +814,52 @@ public class Grid implements Runnable, Previewable {
 			}
 		}
 	}
+
+	// this class is used for making our average cell...
+	private class AvgSingle extends Single implements Cell {
+		private int numCrosses;
+		private float cumt, cumtr, cumd, cumr;;
+		
+		public AvgSingle() {
+			super();
+			numCrosses = 0;
+			cumt = cumtr = cumd = cumr = 0.0f;
+		}
+		
+		public void addSingle(Single cross) {
+			// not signifigant, ignore it...
+			if(cross.n < 10)
+				return;
+			
+			cumt += cross.t;
+			cumtr += cross.tr;
+			cumd += cross.d;
+			cumr += cross.r;
+			numCrosses++;
+		}
+		
+		public void calculateAverages() {
+			t = cumt / numCrosses;
+			tr = cumtr / numCrosses;
+			d = cumd / numCrosses;
+			r = cumr / numCrosses;
+		}
+		
+		public void print(Graphics2D g2, int x, int y, float scale) {
+			// fill with highlight -- would the user ever NOT want this?  well, yes, possibly.
+			// box
+			g2.drawRect(x, y, (int) (getCellWidth() * scale),
+					(int) (getCellHeight() * scale));
+
+			g2.drawString("t=" + formatT() + ", r=" + formatR(), x + EPS, y 
+					+ (int) (2 * getLineHeight() * scale) - EPS);
+			g2.drawString("tr=" + formatTrend(), x + EPS, y
+					+ (int) (3 * getLineHeight() * scale) - EPS);
+			g2.drawString("D=" + formatD(), x + EPS, y
+					+ (int) (4 * getLineHeight() * scale) - EPS);
+			g2.drawString("Averages n>=10", x + EPS, y
+					+ (int) (1 * getLineHeight() * scale) - EPS);
+		}				
+	}
+	
 }
