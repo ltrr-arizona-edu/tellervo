@@ -45,6 +45,7 @@ public class GraphInfo {
 	// color settings
 	private Color foreColor;
 	private Color majorLineColor;
+	private Color midLineColor;
 	private Color minorLineColor;
 	private Color backgroundColor;
 	
@@ -60,6 +61,7 @@ public class GraphInfo {
 			majorLineColor = App.prefs.getColorPref("corina.graph.graphpaper.color", new Color(0, 51, 51));
 			minorLineColor = ColorUtils.blend(majorLineColor, 
 				App.prefs.getColorPref("corina.graph.background", backgroundColor));
+			midLineColor = ColorUtils.blend(majorLineColor, minorLineColor);
 		}
 		else {
 			backgroundColor = App.prefs.getColorPref("corina.graph.print.background", Color.white);
@@ -67,6 +69,7 @@ public class GraphInfo {
 			majorLineColor = App.prefs.getColorPref("corina.graph.print.graphpaper.color", new Color(255, 204, 204));
 			minorLineColor = ColorUtils.blend(majorLineColor, 
 				App.prefs.getColorPref("corina.graph.print.background", backgroundColor));			
+			midLineColor = ColorUtils.blend(majorLineColor, minorLineColor);
 		}
 
 		showVertAxis = Boolean.valueOf(App.prefs.getPref("corina.graph.vertical-axis")).booleanValue();
@@ -132,6 +135,9 @@ public class GraphInfo {
 	public Color getMinorLineColor() { 
 		return minorLineColor; 
 	}
+	public Color getMidLineColor() {
+		return midLineColor;
+	}
 	public Color getForeColor() { 
 		return foreColor;
 	}
@@ -161,31 +167,28 @@ public class GraphInfo {
 	};
 	
 	public final colorPair printerColors[] = { 
+			new colorPair("Blue", new Color(0.00f, 0.53f, 1.00f)),
+			new colorPair("Green", new Color(0.27f, 1.00f, 0.49f)),
+			new colorPair("Red", new Color(1.00f, 0.28f, 0.27f)),
+			new colorPair("Cyan", new Color(0.22f, 0.80f, 0.82f)),
+			new colorPair("Yellow", new Color(0.82f, 0.81f, 0.23f)),
+			new colorPair("Magenta", new Color(0.85f, 0.26f, 0.81f)),
+			new colorPair("Gray", Color.gray),			
+			new colorPair("Orange", Color.ORANGE),
 			new colorPair("Black", Color.BLACK),
-			new colorPair("Blue", Color.BLUE),
-			new colorPair("Cyan", Color.CYAN),
-			new colorPair("Light Gray", Color.lightGray),
-			new colorPair("Green", Color.green),
-			new colorPair("Magenta", Color.magenta),
-			new colorPair("Orange", Color.orange),
-			new colorPair("Red", Color.red),
-			new colorPair("Dark Gray", Color.darkGray),
-			new colorPair("Pink", Color.pink),
-			new colorPair("Yellow", Color.yellow),
-			new colorPair("Gray", Color.gray) 
+			new colorPair("Pink", Color.PINK)
 			};
 
 	public final colorPair screenColors[] = { 
-			new colorPair("Blue", Color.BLUE),
-			new colorPair("Cyan", Color.CYAN),
-			new colorPair("Light Gray", Color.lightGray),
-			new colorPair("Green", Color.green),
-			new colorPair("Magenta", Color.magenta),
-			new colorPair("Orange", Color.orange),
-			new colorPair("Red", Color.red),
-			new colorPair("Dark Gray", Color.darkGray),
-			new colorPair("Pink", Color.pink),
-			new colorPair("Yellow", Color.yellow),
-			new colorPair("Gray", Color.gray) 
+			new colorPair("Blue", new Color(0.00f, 0.53f, 1.00f)),
+			new colorPair("Green", new Color(0.27f, 1.00f, 0.49f)),
+			new colorPair("Red", new Color(1.00f, 0.28f, 0.27f)),
+			new colorPair("Cyan", new Color(0.22f, 0.80f, 0.82f)),
+			new colorPair("Yellow", new Color(0.82f, 0.81f, 0.23f)),
+			new colorPair("Magenta", new Color(0.85f, 0.26f, 0.81f)),
+			new colorPair("Gray", Color.gray),			
+			new colorPair("Orange", Color.ORANGE),
+			new colorPair("White", Color.WHITE),
+			new colorPair("Pink", Color.PINK)
 			};	
 }

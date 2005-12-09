@@ -10,6 +10,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableModel;
 
+import corina.graph.GraphInfo.colorPair;
 import corina.util.ColorPair;
 
 import java.util.List;
@@ -85,19 +86,23 @@ public class ElemColorTable extends JScrollPane {
 	protected ColorPair graphColors[];
 	
 	public final ColorPair colors[] = { 
+			new ColorPair("Blue", new Color(0.00f, 0.53f, 1.00f)),
+			new ColorPair("Green", new Color(0.27f, 1.00f, 0.49f)),
+			new ColorPair("Red", new Color(1.00f, 0.28f, 0.27f)),
+			new ColorPair("Cyan", new Color(0.22f, 0.80f, 0.82f)),
+			new ColorPair("Yellow", new Color(0.82f, 0.81f, 0.23f)),
+			new ColorPair("Magenta", new Color(0.85f, 0.26f, 0.81f)),
+			new ColorPair("Gray", Color.gray),			
+			new ColorPair("Orange", Color.ORANGE),
 			new ColorPair("Black", Color.BLACK),
-			new ColorPair("Blue", Color.BLUE),
-			new ColorPair("Cyan", Color.CYAN),
-			new ColorPair("Light Gray", Color.lightGray),
-			new ColorPair("Green", Color.green),
-			new ColorPair("Magenta", Color.magenta),
-			new ColorPair("Orange", Color.orange),
-			new ColorPair("Red", Color.red),
-			new ColorPair("Dark Gray", Color.darkGray),
-			new ColorPair("Pink", Color.pink),
-			new ColorPair("Yellow", Color.yellow),
-			new ColorPair("Gray", Color.gray), 
-			new ColorPair("White", Color.white) 
+			new ColorPair("Pink", Color.PINK),			
+			new ColorPair("Dk Blue", Color.BLUE),
+			new ColorPair("Lt Cyan", Color.CYAN),
+			new ColorPair("Lt Gray", Color.lightGray),
+			new ColorPair("Dk Green", Color.green),
+			new ColorPair("Dk Magenta", Color.magenta),
+			new ColorPair("Dk Red", Color.red),
+			new ColorPair("Dk Gray", Color.darkGray)
 			};
 	
 	public final Integer thicknesses[] = { new Integer(1), new Integer(2), 

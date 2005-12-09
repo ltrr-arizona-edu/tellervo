@@ -795,6 +795,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// draw horizontal lines
 		// (would it help if everything was a big generalpath?  it appears not.)
 		Color major = info.getMajorLineColor();
+		Color mid = info.getMidLineColor();
 		Color minor = info.getMinorLineColor();
 		int yearSize = info.getYearSize();
 		
@@ -809,7 +810,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			if (i % 5 == 0) {
 				if(x0 != origl)
 					g2.drawLine(origl, y, x0, y);
-				g2.setColor(major);
+				g2.setColor((i % 10 == 0) ? major : mid);
 				g2.drawLine(x0, y, r, y);
 				g2.setColor(minor);				
 			} 
@@ -827,9 +828,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			g2.drawLine(x, 0, x, bottom);
 		}
 
-		// (thick lines)
-		g2.setColor(major);
-
 		// crosses AD/BC boundary?
 		// (LOD: EXTRACT "crosses-boundary"?  well, it's pretty trivial now)
 		if (bounds.intersection(AD_BC).span() == 2) {
@@ -844,6 +842,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					continue;
 				if (x < l)
 					break;
+				g2.setColor((y.mod(10) == 0) ? major : mid);
 				g2.drawLine(x, 0, x, bottom);
 			}
 			for (Year y = new Year(5); y.compareTo(bounds.getEnd()) < 0; y = y
@@ -853,6 +852,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					continue;
 				if (x > r)
 					break;
+				g2.setColor((y.mod(10) == 0) ? major : mid);
 				g2.drawLine(x, 0, x, bottom);
 			}
 		} else {
@@ -865,6 +865,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					continue;
 				if (x > r)
 					break;
+				g2.setColor((y.mod(10) == 0) ? major : mid);
 				g2.drawLine(x, 0, x, bottom);
 			}
 		}
