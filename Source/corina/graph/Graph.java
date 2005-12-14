@@ -88,6 +88,12 @@ public class Graph {
                     return nn;
                 }
         };
+        
+        // default scale
+        scale = graph.getScale();
+        
+        // save name...
+        graphName = graph.toString();        
     }
 
     // meaning, 25%, but (fixme) i should just say that
