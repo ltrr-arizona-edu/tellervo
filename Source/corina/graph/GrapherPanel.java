@@ -734,7 +734,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// create drawing agent
 		recreateAgent();
-
+		
+		// ensure that we're double buffered
+		setDoubleBuffered(true);
 
 		/*addMouseListener(new MouseAdapter() {
 		 public void mouseClicked(MouseEvent e) {
