@@ -6,7 +6,9 @@ package corina.graph;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import corina.core.App;
 import corina.prefs.PrefsDialog;
+import corina.ui.Builder;
 import corina.util.Center;
 
 import java.awt.FlowLayout;
@@ -15,6 +17,8 @@ import java.util.List;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.EventQueue;
 import java.awt.Graphics;
@@ -29,6 +33,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
+
+import java.awt.event.*;
 
 import java.awt.print.*;
 
@@ -65,16 +71,16 @@ public class GraphPrintDialog extends JPanel {
 		
 		d = new JDialog(parent, "Printing / Exporting options...", true);
 		d.setContentPane(this);
-		d.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setLayout(new BorderLayout());
 		
 		preview = new PreviewPanel(plot, gInfo);
 		params = new ParamsPanel(gInfo, printType);
-		
+				
 		JTabbedPane tabs = new JTabbedPane();
 		tabs.addTab("Parameters", params);
 		tabs.addTab("Colors, Names, and Widths", new ElemColorPanel(graphs, gInfo.isPrinting()));
-		tabs.addTab("Preview", new JScrollPane(preview));
+		tabs.addTab("Preview", preview);
 		add(tabs, BorderLayout.CENTER);
 		
 		tabs.addChangeListener(new ChangeListener() {
@@ -107,7 +113,7 @@ public class GraphPrintDialog extends JPanel {
 	    okButton.addActionListener(new ActionListener() {
 	      public void actionPerformed(ActionEvent ae) {
 	    	  if(_printType == PRINT_PRINTER) {
-	    		  if(new GraphPrinter(_info, _plotter, params.getDPI()).doPrint())	    	  	    	  
+	    		  if(new GraphPrinter(_info, _plotter, params).doPrint())	    	  	    	  
 	    			  d.dispose();
 	    	  }
 	    	  else if(_printType == PRINT_PDF) {
@@ -130,10 +136,11 @@ public class GraphPrintDialog extends JPanel {
 	    	  d.dispose();
 	      }
 	    });
-	    
+	    	    
 	    add(okButtonContainer, BorderLayout.SOUTH);	  
 	    
-	    d.pack();
+	    d.setSize(400, 500);
+	    //d.pack();
 	    Center.center(d);
 	    d.setVisible(true);	    
 	}
@@ -310,13 +317,28 @@ public class GraphPrintDialog extends JPanel {
 		JTextField pixelheight; 
 		JTextField inchheight;
 		JTextField inchwidth;
-		
+		JRadioButton landscape;
+		JRadioButton portrait;
+		JRadioButton reverse_landscape;
+				
 		GraphInfo gInfo;
 		
 	    DecimalFormat dfmt = new DecimalFormat("0.00");
 	    
 	    public int getDPI() {
 	    	return Integer.parseInt(dpi.getText());
+	    }
+	    
+	    public int getPrintFormat() {
+	    	if(landscape.isSelected())
+	    		return PageFormat.LANDSCAPE;
+	    	if(portrait.isSelected())
+	    		return PageFormat.PORTRAIT;
+	    	if(reverse_landscape.isSelected())
+	    		return PageFormat.REVERSE_LANDSCAPE;
+	    	
+	    	// so it doesn't complain...
+	    	return PageFormat.LANDSCAPE;
 	    }
 		
 		public ParamsPanel(GraphInfo g, int printType) {
@@ -454,6 +476,40 @@ public class GraphPrintDialog extends JPanel {
 		    co.add(inchwidth, gbc);
 		    
 		    add(co, BorderLayout.CENTER);		    
+		    
+		    if (printType == GraphPrintDialog.PRINT_PRINTER) {
+				co = new JPanel(new GridBagLayout());
+				co.setToolTipText("<html>Set printing preferences");
+				co.setBorder(BorderFactory
+						.createTitledBorder("Printing preferences"));
+
+				gbc = new GridBagConstraints();
+				gbc.anchor = GridBagConstraints.WEST;
+				gbc.fill = GridBagConstraints.NONE;
+				gbc.insets = new Insets(2, 2, 2, 2);
+				gbc.gridy = 0;
+				
+				landscape = new JRadioButton("Print landscape", true);
+				reverse_landscape = new JRadioButton("Print reverse landscape");
+				portrait = new JRadioButton("Print portrait", true);
+				
+				ButtonGroup printbuttons = new ButtonGroup();
+				
+				printbuttons.add(landscape);
+				printbuttons.add(reverse_landscape);
+				printbuttons.add(portrait);
+
+				// start a row
+				gbc.gridx = 0;				
+				co.add(landscape, gbc);
+				gbc.gridx++;
+				co.add(portrait, gbc);
+				gbc.gridy++;
+				gbc.gridx = 0;				
+				co.add(reverse_landscape, gbc);
+
+				add(co, BorderLayout.SOUTH);
+			}		    
 		}
 		
 		private void recalc(DocumentEvent d) {
@@ -544,6 +600,9 @@ public class GraphPrintDialog extends JPanel {
 			private GraphInfo pinfo;
 			private StandardPlot agent;
 			private double scale;
+			private double zoom;
+			
+			private double fullscale;
 			
 			public PreviewInsidePane(GrapherPanel p, GraphInfo g) {
 				super();
@@ -553,34 +612,80 @@ public class GraphPrintDialog extends JPanel {
 				plotter = p;
 				pinfo = g;
 				g.setPrintHeight(plotter.getHeight());
+				zoom = 1.0;
+			}
+
+			public void preparePreview() {
+				plotter.computeRange(pinfo, null);
+				
+				fullscale = scale * zoom;
+				
+				setPreferredSize(new Dimension(
+						(int) (pinfo.getDrawRange().span() * pinfo.getYearSize() * fullscale), 
+						(int) (pinfo.getPrintHeight() * fullscale)));
+				agent = new StandardPlot(pinfo.getDrawRange(), pinfo);
+				revalidate();
+				repaint();				
+			}
+			
+			public void setZoom(float zoom) {
+				this.zoom = zoom;
 			}
 			
 			public void preparePreview(int scale) {
-				plotter.computeRange(pinfo, null);
-
 				this.scale = 72.0 / (float) scale;
 				
-				setPreferredSize(new Dimension(
-						(int) (pinfo.getDrawRange().span() * pinfo.getYearSize() * this.scale), 
-						(int) (pinfo.getPrintHeight() * this.scale)));
-				agent = new StandardPlot(pinfo.getDrawRange(), pinfo);
-				revalidate();
-				repaint();
+				preparePreview();
 			}
 			
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
-				((Graphics2D)g).scale(scale, scale);
+				((Graphics2D)g).scale(fullscale, fullscale);
 				plotter.paintGraph(g, pinfo, agent);
 			}				
 		}
 		
 		public PreviewPanel(GrapherPanel p, GraphInfo g) {
+			super(new BorderLayout());
 
 			inpane = new PreviewInsidePane(p, g);
 			scrollerpane = new JScrollPane(inpane);
-			scrollerpane.setPreferredSize(new Dimension(400, 300));
-			add(scrollerpane);
+			add(scrollerpane, BorderLayout.CENTER);
+			
+			JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		    final JSlider slider = new JSlider(10, 400, 100);
+		    final JLabel zoom = new JLabel("Zoom: 100%");
+		    
+		    final PreviewPanel _this = this;
+			slider.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					zoom.setText("Zoom: " + slider.getValue() + "%");
+					_this.inpane.setZoom(slider.getValue() / 100.0f);
+					_this.inpane.preparePreview();
+				 }
+			});
+			    
+			JLabel large = new JLabel(Builder.getIcon("mountains-large.png"));
+			JLabel small = new JLabel(Builder.getIcon("mountains-small.png"));
+
+			// allow clicking on these!
+			large.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					slider.setValue(slider.getValue() + 5);
+				}
+			});
+			small.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					slider.setValue(slider.getValue() - 5);
+				}
+			});
+
+			bottom.add(zoom);
+			bottom.add(small);
+			bottom.add(slider);
+			bottom.add(large);
+			
+			add(bottom, BorderLayout.SOUTH);
 			
 			preparePreview(72);
 		}
@@ -613,7 +718,7 @@ public class GraphPrintDialog extends JPanel {
 		
 		private double pscale;
 		
-		public GraphPrinter(GraphInfo info, GrapherPanel plotter, int DPI) {
+		public GraphPrinter(GraphInfo info, GrapherPanel plotter, ParamsPanel params) {
 		    job = PrinterJob.getPrinterJob();
 		    Paper paper = new Paper();
 		    PageFormat pfmt = new PageFormat();
@@ -625,17 +730,32 @@ public class GraphPrintDialog extends JPanel {
 		    // we need to make a scale from 72nds of an inch to DPInds of an inch...
 		    w = gInfo.getDrawRange().span() * gInfo.getYearSize();
 		    h = gInfo.getPrintHeight();
-		    pscale = 72.0 / (double) DPI;
+		    pscale = 72.0 / (double) params.getDPI();
 		    
 		    // width, height is now in pixels.. 
 		    // convert it to inches and then multiply by 72
 		    h *= pscale;
 		    w *= pscale;
-		    		    
-		    //paper.setSize(h, w);
-		    paper.setImageableArea(18, 18, h + 18, w + 18);
-		    pfmt.setOrientation(PageFormat.LANDSCAPE);
-		    pfmt.setPaper(paper);		    
+		    
+		    int m1 = 72;
+		    int m2 = m1 * 2;
+
+		    // for some reason, this is retarded...
+		    if(h > w) {
+		    	paper.setSize(w + m2, h + m2);
+		    	paper.setImageableArea(m1, m1, w + m1, h + m1);
+		    }
+		    else {
+		    	paper.setSize(h + m2, w + m2);
+		    	paper.setImageableArea(m1, m1, h + m1, w + m1);		    	
+		    }
+//		    if(params.getPrintFormat() == PageFormat.PORTRAIT)
+//		    	paper.setImageableArea(18, 18, w + 18, h + 18);
+//		    else
+//	    		paper.setImageableArea(18, 18, h + 18, w + 18);
+		    
+			pfmt.setPaper(paper);		    		    	
+		    pfmt.setOrientation(params.getPrintFormat());
 		    format = pfmt;
 
 		    job.setJobName("Corina plot");
