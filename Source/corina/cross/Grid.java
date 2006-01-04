@@ -160,6 +160,19 @@ public class Grid implements Runnable, Previewable {
 			this.name = name.substring(index + 1);
 		}
 
+		// awful hack to allow us to use popup menus referencing this cell...
+		Sample fixed;
+		public Sample getFixed() { return fixed; }
+		
+		public HeaderCell(Sample fixed) {
+			String name = (String) fixed.meta.get("filename");
+			
+			// crop directory
+			int index = name.lastIndexOf(File.separatorChar);
+			this.name = name.substring(index + 1);
+			this.fixed = fixed;
+		}
+		
 		public void print(Graphics2D g2, int x, int y, int width, int height, float scale) {
 			// clip this cell 
 			g2.setClip(x, y, width, height);
@@ -180,6 +193,11 @@ public class Grid implements Runnable, Previewable {
 		public HeaderRangeCell(String name, Range range) {
 			super(name);
 			this.range = range;
+		}
+
+		public HeaderRangeCell(Sample fixed) {
+			super(fixed);
+			this.range = fixed.range;
 		}
 
 		public void print(Graphics2D g2, int x, int y, int width, int height, float scale) {
@@ -203,9 +221,18 @@ public class Grid implements Runnable, Previewable {
 	// (when that's done, t/tr/d can be unified between sequence and onecross)
 	// hey, cross.single() only makes sense in the context of a onecross, right?  score!
 	public static class CrossCell extends Single implements Cell {
+		
+		Sample fixed, moving;
+		
 		public CrossCell(Sample fixed, Sample moving) {
 			super(fixed, moving);
+			this.fixed = fixed;
+			this.moving = moving;
 		}
+		
+		// awful hack to allow us to use popup menus referencing this cell...
+		public Sample getFixed() { return fixed; }
+		public Sample getMoving() { return moving; }
 
 		public CrossCell(float t, float tr, float d, float r, int n) {
 			// (this is only used for xml loading now -- ok?)
@@ -555,8 +582,8 @@ public class Grid implements Runnable, Previewable {
 			// opposed to down-the-diagonal headers),
 			// s/[row][row+1]/[0][row+1]/
 			String filename = (String) fixed.meta.get("filename");
-			cell[row + 1][0] = new HeaderCell(filename);
-			cell[row][row + 1] = new HeaderRangeCell(filename, fixed.range);
+			cell[row + 1][0] = new HeaderCell(fixed);
+			cell[row][row + 1] = new HeaderRangeCell(fixed);
 
 			// set length
 			cell[row + 1][row + 1] = new LengthCell(fixed.data.size());

@@ -7,10 +7,15 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -24,8 +29,13 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
+import java.awt.event.MouseAdapter;
 
+import corina.Element;
+import corina.Sample;
 import corina.core.App;
+import corina.editor.Editor;
+import corina.graph.GraphWindow;
 import corina.gui.Layout;
 import corina.ui.I18n;
 import corina.util.PopupListener;
@@ -99,17 +109,58 @@ public class GridView extends JPanel {
 		add(zoomer, BorderLayout.NORTH); // ???
 
 		// popup
+		/*
 		JPopupMenu popup = new JPopupMenu();
 		popup.add(new JMenuItem("Graph this Crossdate")); // WRITEME: implement
 		popup.add(new JMenuItem("Jump to this Crossdate")); // WRITEME: implement
 		popup.addSeparator();
 		popup.add(new JMenuItem("Graph this Sample")); // WRITEME: implement
 		popup.add(new JMenuItem("Open this Sample")); // WRITEME: implement
+		*/
 
 		// TODO: no, i like 2 popup menus better.  they are "context"
 		// menus, after all.
+		
+		final GridViewPopup gridViewPopup = new GridViewPopup();
+		
+		table.addMouseListener(new PopupListener(gridViewPopup) {
+		    public void showPopup(MouseEvent e) {
+		    	// if table, and this row not selected, select this row
+		    	if (e.getSource() instanceof JTable) {
+		    	    JTable table = (JTable) e.getSource();
+		    	    int row = table.rowAtPoint(e.getPoint());
+		    	    int col = table.columnAtPoint(e.getPoint());
+		    	    if (row!=-1 && !table.isRowSelected(row))
+		    	    	table.setRowSelectionInterval(row, row);
+		    	    if (col!=-1 && !table.isColumnSelected(col))
+		    	    	table.setColumnSelectionInterval(col, col);
+		    	}
+		    	
+		    	// ok, we know what's selected. 
+		    	Grid.Cell cell = grid.getCell(table.getSelectedRow(), table.getSelectedColumn());
+		    	
+		    	gridViewPopup.disableAll();
+		    	
+		    	if(cell instanceof Grid.HeaderCell || cell instanceof Grid.HeaderRangeCell) {
+		    		if(((Grid.HeaderCell)cell).getFixed() != null)
+		    			gridViewPopup.setPopupForSample();
+		    	}
+		    	else if(cell instanceof Grid.CrossCell) {
+		    		
+		    		// we can't do this on saved grids, alas :(
+		    		if(((Grid.CrossCell)cell).getFixed() != null)
+		    			gridViewPopup.setPopupForCross();
+		    	}
+		    	else
+		    		return; // no popups on these weird cells
 
-		table.addMouseListener(new PopupListener(popup) {
+		    	// show popup
+		    	if (gridViewPopup != null)
+		    	    gridViewPopup.show(e.getComponent(), e.getX(), e.getY());
+		    }
+		});
+
+		/*table.addMouseListener(new PopupListener(popup) {
 			public void showPopup(MouseEvent e) {
 				// WRITEME: select this cell
 				// (and make sure super's selection doesn't take over?)
@@ -119,8 +170,91 @@ public class GridView extends JPanel {
 				super.showPopup(e);
 			}
 		});
+		*/
 	}
 
+	// popup menu
+	private class GridViewPopup extends JPopupMenu {
+		private JMenuItem graph = new JMenuItem("Graph this Crossdate"); 
+		private JMenuItem jump = new JMenuItem("Jump to this Crossdate");
+		private JMenuItem graph_sample = new JMenuItem("Graph this Sample");
+		private JMenuItem open_sample = new JMenuItem("Open this Sample"); 
+		
+		public void setPopupForCross() {
+			graph.setEnabled(true);
+			jump.setEnabled(true);
+		}
+
+		public void setPopupForSample() {
+			graph.setEnabled(false);
+			jump.setEnabled(false);
+			graph_sample.setEnabled(true);
+			open_sample.setEnabled(true);
+		}
+		
+		public void disableAll() {
+			graph.setEnabled(false);
+			jump.setEnabled(false);
+			graph_sample.setEnabled(false);
+			open_sample.setEnabled(false);
+		}
+		
+		public GridViewPopup() {
+			
+			graph.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					// get the cross cell...
+					Grid.CrossCell cross = (Grid.CrossCell) grid.getCell(
+							table.getSelectedRow(), table.getSelectedColumn());					
+
+					// make graph
+					List list = new ArrayList();
+					list.add(new Element((String)cross.getFixed().meta.get("filename")));
+					list.add(new Element((String)cross.getMoving().meta.get("filename")));
+					
+					new GraphWindow(list);
+				}
+			});
+			jump.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					// TODO: get fixed
+					// TODO: get moving (selection)
+					// TODO: crossdateWindow.jumpToCrossdate(f,m)?
+					// NEED: a ref to the CDW here
+					// NEED: that method in CDW
+				}
+			});
+			
+			graph_sample.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					// get the header cell...
+					Grid.HeaderCell header = (Grid.HeaderCell) grid.getCell(
+							table.getSelectedRow(), table.getSelectedColumn());					
+
+					// make graph
+					new GraphWindow(header.getFixed());
+				}
+			});
+			
+			open_sample.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					// get the header cell...
+					Grid.HeaderCell header = (Grid.HeaderCell) grid.getCell(
+							table.getSelectedRow(), table.getSelectedColumn());					
+
+					// get sample, put in editor
+					new Editor(header.getFixed());
+				}
+			});
+			
+			add(graph);
+			add(jump);
+			addSeparator();
+			add(graph_sample);
+			add(open_sample);
+		}
+	}
+	
 	private Grid grid;
 
 	private JTable table;
