@@ -328,14 +328,14 @@ public class MultiColumn implements Filetype {
       }
 
       for (int i = column; i < 10; i++) {
-        System.out.print("year: " + y + " column: " + i + " countpos " + countpos + " count size " + s.count.size());
         if (hasCount && countpos < s.count.size()) {
+          System.out.print("year: " + y + " column: " + i + " countpos " + countpos + " count size " + s.count.size());
           String countstring = s.count.get(countpos).toString(); 
           System.out.println("writing count: " + countstring);
           w.write(countstring);
           countpos++;
+          System.out.println();
         }
-        System.out.println();
         w.write('\t');
         y = y.add(1);
       }
