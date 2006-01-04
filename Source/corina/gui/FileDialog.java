@@ -71,262 +71,275 @@ import corina.ui.I18n;
  * @version $Id$
  */
 public class FileDialog {
-  private static final Dimension SINGLE_DEFAULT_DIMENSION = new Dimension(640, 480);
-  private static final Dimension MULTI_DEFAULT_DIMENSION = new Dimension(640, 480);
-  private static final String CLASS_NAME = FileDialog.class.getName();
-  private static final String SINGLE_DIM_PREF = CLASS_NAME + ".single.dimension";
-  private static final String MULTI_DIM_PREF = CLASS_NAME + ".double.dimension";
-  private static final String SINGLE_VIEWMODE_PREF = CLASS_NAME + ".single.viewmode";
-  private static final String MULTI_VIEWMODE_PREF = CLASS_NAME + ".double.viewmode";
+	private static final Dimension SINGLE_DEFAULT_DIMENSION = new Dimension(640, 480);
+  	private static final Dimension MULTI_DEFAULT_DIMENSION = new Dimension(640, 480);
+  	private static final String CLASS_NAME = FileDialog.class.getName();
+  	private static final String SINGLE_DIM_PREF = CLASS_NAME + ".single.dimension";
+  	private static final String MULTI_DIM_PREF = CLASS_NAME + ".double.dimension";
+  	private static final String SINGLE_VIEWMODE_PREF = CLASS_NAME + ".single.viewmode";
+  	private static final String MULTI_VIEWMODE_PREF = CLASS_NAME + ".double.viewmode";
 
-  private static final CorinaLog log = new CorinaLog("Prefs");
-  
-  private FileDialog() {
-    // (don't instantiate me)
-  }
+  	private static final CorinaLog log = new CorinaLog("Prefs");
 
-  private static class ExtensionFilter extends FileFilter {
-    private String TLA, tla;
+	private FileDialog() {
+		// (don't instantiate me)
+	}
 
-    private String name;
+	private static class ExtensionFilter extends FileFilter {
+		private String TLA, tla;
 
-    /**
-     * Create a new filter with the given name, for the given TLA.
-     * @param tla
-     *          3-letter-acronym to match as an extension
-     * @param name
-     *          the name of this filter
-     */
-    public ExtensionFilter(String tla, String name) {
-      this.tla = tla.toLowerCase();
-      this.TLA = tla.toUpperCase();
-      this.name = name + " (*." + this.TLA + ")";
-    }
+		private String name;
 
-    /**
-     * Decide whether this file ends in the given TLA.
-     * @param f
-     *          the file to test
-     * @return true, if and only if the filename ends in the TLA
-     */
-    public boolean accept(File f) {
-      // users can always traverse a directory
-      if (f.isDirectory())
-        return true;
-      // it's okay if it ends with the TLA, either case
-      String filename = f.getName();
-      return (filename.endsWith(tla) || filename.endsWith(TLA));
-    }
+		/**
+		 * Create a new filter with the given name, for the given TLA.
+		 * @param tla
+		 *          3-letter-acronym to match as an extension
+		 * @param name
+		 *          the name of this filter
+		 */
+		public ExtensionFilter(String tla, String name) {
+			this.tla = tla.toLowerCase();
+			this.TLA = tla.toUpperCase();
+			this.name = name + " (*." + this.TLA + ")";
+		}
 
-    /**
-     * The user-readable description of this filter. Specified as "name
-     * (*.TLA)".
-     * @return the user-readable name of this filter
-     */
-    public String getDescription() {
-      return name;
-    }
-  }
+		/**
+		 * Decide whether this file ends in the given TLA.
+		 * @param f
+		 *          the file to test
+		 * @return true, if and only if the filename ends in the TLA
+		 */
+		public boolean accept(File f) {
+			// users can always traverse a directory
+			if (f.isDirectory())
+				return true;
+			// it's okay if it ends with the TLA, either case
+			String filename = f.getName();
+			return (filename.endsWith(tla) || filename.endsWith(TLA));
+		}
 
-  /**
-   * The default list of filters to use, as a list of extensions.
-   */
-  public static String FILTERS[] = new String[] { "raw", "sum", "rec", "ind",
-      "cln", "trn", };
+		/**
+		 * The user-readable description of this filter. Specified as "name
+		 * (*.TLA)".
+		 * @return the user-readable name of this filter
+		 */
+		public String getDescription() {
+			return name;
+		}
+	}
 
-  // add all default filters to this target, and then reset to default (*.*)
-  private static void addFilters(JFileChooser f) {
-    for (int i = 0; i < FILTERS.length; i++)
-      f.addChoosableFileFilter(new ExtensionFilter(FILTERS[i], I18n.getText("."
-          + FILTERS[i])));
-    // REFACTOR: should only need to pass FILTERS[i] to constructor here
-    f.setFileFilter(f.getAcceptAllFileFilter());
-  }
+	/**
+	 * The default list of filters to use, as a list of extensions.
+	 */
+	public static String FILTERS[] = new String[] { "raw", "sum", "rec", "ind",
+			"cln", "trn", };
 
-  // working directory -- this gets updated whenever OK is clicked
-  // XXX: can you say race condition - aaron... dependence on static
-  // initializers, data and methods needs to be fixed
-  // If this class is referenced before Prefs is, we are SOL
-  private static String wd = App.prefs.getPref("corina.dir.data");
+	// add all default filters to this target, and then reset to default (*.*)
+	private static void addFilters(JFileChooser f) {
+		for (int i = 0; i < FILTERS.length; i++)
+			f.addChoosableFileFilter(new ExtensionFilter(FILTERS[i], I18n
+					.getText("." + FILTERS[i])));
+		// REFACTOR: should only need to pass FILTERS[i] to constructor here
+		f.setFileFilter(f.getAcceptAllFileFilter());
+	}
 
-  /**
-   * This is a big hack to snoop into the JFileChooser GUI, and find
-   * the details view mode button and fire it, so we can preserve
-   * settings. 
-   */
-  private static void setConfiguredMode(JFileChooser chooser, String pref) {
-    String v = App.prefs.getPrefs().getProperty(pref, "list");
-    if (!"details".equals(v)) return;
-    Component[] comps = chooser.getComponents();
-    // ok, the JFileChooser contains a JToolBar
-    for (int i = 0; i < comps.length; i++) {
-      if (!(comps[i] instanceof JToolBar)) continue;
-      Component[] comps2 = ((JToolBar) comps[i]).getComponents();
-      // and the JToolBar has JToggleButtons
-      for (int j = 0; j < comps2.length; j++) {
-        if (!(comps2[j] instanceof JToggleButton)) continue;
-        JToggleButton tb = (JToggleButton) comps2[j];
-        String s = tb.getAccessibleContext().getAccessibleName();
-        if (s != null &&
-            s.equals(UIManager.getString("FileChooser.detailsViewButtonAccessibleName",chooser.getLocale()))) {
-          tb.doClick();
-          return;
-        }
-      }      
-    }
-  }
-  
-  private static void saveConfiguredMode(JFileChooser chooser, String pref) {
-    Component[] comps = chooser.getComponents();
-    // ok, the JFileChooser contains a JToolBar
-    for (int i = 0; i < comps.length; i++) {
-      if (!(comps[i] instanceof JToolBar)) continue;
-      Component[] comps2 = ((JToolBar) comps[i]).getComponents();
-      // and the JToolBar has JToggleButtons
-      for (int j = 0; j < comps2.length; j++) {
-        if (!(comps2[j] instanceof JToggleButton)) continue;
-        JToggleButton tb = (JToggleButton) comps2[j];
-        String s = tb.getAccessibleContext().getAccessibleName();
-        if (s != null &&
-            s.equals(UIManager.getString("FileChooser.detailsViewButtonAccessibleName",chooser.getLocale()))) {
-          if (tb.isSelected()) {
-            App.prefs.getPrefs().setProperty(pref, "details");
-          } else {
-            App.prefs.getPrefs().setProperty(pref, "list");
-          }
-        }
-      }      
-    }
-  }
-  /**
-   * Show a file selection dialog. This allows the user to select one file. It
-   * shows a preview component, and has the default filters available.
-   * 
-   * @param prompt
-   *          the text string to use for both the title bar and approve button
-   * @return the filename that was selected
-   * @exception UserCancelledException
-   *              if the user cancelled
-   */
-  public static String showSingle(String prompt) throws UserCancelledException {
-    // create chooser
-    JFileChooser f = new JFileChooser(wd);    
+	// working directory -- this gets updated whenever OK is clicked
+	// XXX: can you say race condition - aaron... dependence on static
+	// initializers, data and methods needs to be fixed
+	// If this class is referenced before Prefs is, we are SOL
+	private static String wd = App.prefs.getPref("corina.dir.data");
 
-    // add filters
-    addFilters(f);
+	/**
+	 * This is a big hack to snoop into the JFileChooser GUI, and find
+	 * the details view mode button and fire it, so we can preserve
+	 * settings. 
+	 */
+	private static void setConfiguredMode(JFileChooser chooser, String pref) {
+		String v = App.prefs.getPrefs().getProperty(pref, "list");
+		if (!"details".equals(v))
+			return;
+		Component[] comps = chooser.getComponents();
+		// ok, the JFileChooser contains a JToolBar
+		for (int i = 0; i < comps.length; i++) {
+			if (!(comps[i] instanceof JToolBar))
+				continue;
+			Component[] comps2 = ((JToolBar) comps[i]).getComponents();
+			// and the JToolBar has JToggleButtons
+			for (int j = 0; j < comps2.length; j++) {
+				if (!(comps2[j] instanceof JToggleButton))
+					continue;
+				JToggleButton tb = (JToggleButton) comps2[j];
+				String s = tb.getAccessibleContext().getAccessibleName();
+				if (s != null
+						&& s.equals(UIManager.getString(
+								"FileChooser.detailsViewButtonAccessibleName",
+								chooser.getLocale()))) {
+					tb.doClick();
+					return;
+				}
+			}
+		}
+	}
 
-    // preview component
-    f.setAccessory(new SamplePreview(f));
+	private static void saveConfiguredMode(JFileChooser chooser, String pref) {
+		Component[] comps = chooser.getComponents();
+		// ok, the JFileChooser contains a JToolBar
+		for (int i = 0; i < comps.length; i++) {
+			if (!(comps[i] instanceof JToolBar))
+				continue;
+			Component[] comps2 = ((JToolBar) comps[i]).getComponents();
+			// and the JToolBar has JToggleButtons
+			for (int j = 0; j < comps2.length; j++) {
+				if (!(comps2[j] instanceof JToggleButton))
+					continue;
+				JToggleButton tb = (JToggleButton) comps2[j];
+				String s = tb.getAccessibleContext().getAccessibleName();
+				if (s != null
+						&& s.equals(UIManager.getString(
+								"FileChooser.detailsViewButtonAccessibleName",
+								chooser.getLocale()))) {
+					if (tb.isSelected()) {
+						App.prefs.getPrefs().setProperty(pref, "details");
+					} else {
+						App.prefs.getPrefs().setProperty(pref, "list");
+					}
+				}
+			}
+		}
+	}
 
-    // make the window a resonable size to see everything
-    Dimension dim = App.prefs.getDimensionPref(SINGLE_DIM_PREF, SINGLE_DEFAULT_DIMENSION);
-    f.setPreferredSize(dim);
-    setConfiguredMode(f, SINGLE_VIEWMODE_PREF);
+	/**
+	 * Show a file selection dialog. This allows the user to select one file. It
+	 * shows a preview component, and has the default filters available.
+	 * 
+	 * @param prompt
+	 *          the text string to use for both the title bar and approve button
+	 * @return the filename that was selected
+	 * @exception UserCancelledException
+	 *              if the user cancelled
+	 */
+	public static String showSingle(String prompt)
+			throws UserCancelledException {
+		// create chooser
+		JFileChooser f = new JFileChooser(wd);
 
-    // show the dialog
-    int result = f.showDialog(null, prompt);
+		// add filters
+		addFilters(f);
 
-    try {
-      if (result == JFileChooser.APPROVE_OPTION) {
-        // ok: store wd, and return file
-        wd = f.getCurrentDirectory().getPath();
-        return f.getSelectedFile().getPath();
-      } else {
-        // cancel
-        throw new UserCancelledException();
-      }
-    } finally {
-      Dimension d = f.getSize();
-      App.prefs.setPref(SINGLE_DIM_PREF, d.width + "," + d.height);
-      saveConfiguredMode(f, SINGLE_VIEWMODE_PREF);
-    }
-  }
+		// preview component
+		f.setAccessory(new SamplePreview(f));
 
-  // --------------------------------------------------
-  // multi
-  //
+		// make the window a resonable size to see everything
+		Dimension dim = App.prefs.getDimensionPref(SINGLE_DIM_PREF,
+				SINGLE_DEFAULT_DIMENSION);
+		f.setPreferredSize(dim);
+		setConfiguredMode(f, SINGLE_VIEWMODE_PREF);
 
-  /**
-   * Show a multiple file selection dialog. This allows the user to select any
-   * number of files. It shows a preview component, and has the default filters
-   * available.
-   * 
-   * @param prompt
-   *          the text string to use for both the title bar and approve button
-   * @return a List of filenames that were selected
-   * @exception UserCancelledException
-   *              if the user cancelled
-   */
-  public static List showMulti(String prompt) throws UserCancelledException {
-    // create a new list to use
-    List list = new ArrayList();
-    return showMultiReal(prompt, list);
-  }
+		// show the dialog
+		int result = f.showDialog(null, prompt);
 
-  /**
-   * Show a multiple file selection dialog, with a list of files to start with.
-   * This allows the user to select any number of files. It shows a preview
-   * component, and has the default filters available.
-   * 
-   * @param prompt
-   *          the text string to use for both the title bar and approve button
-   * @param list
-   *          a List of filenames to have already selected
-   * @return a List of filenames that were selected
-   * @exception UserCancelledException
-   *              if the user cancelled
-   */
-  public static List showMulti(String prompt, List list)
-      throws UserCancelledException { // to edit a list
-    // use the given list
-    return showMultiReal(prompt, list);
-  }
+		try {
+			if (result == JFileChooser.APPROVE_OPTION) {
+				// ok: store wd, and return file
+				wd = f.getCurrentDirectory().getPath();
+				return f.getSelectedFile().getPath();
+			} else {
+				// cancel
+				throw new UserCancelledException();
+			}
+		} finally {
+			Dimension d = f.getSize();
+			App.prefs.setPref(SINGLE_DIM_PREF, d.width + "," + d.height);
+			saveConfiguredMode(f, SINGLE_VIEWMODE_PREF);
+		}
+	}
 
-  private static List showMultiReal(String prompt, List list)
-      throws UserCancelledException {
-    // big-preview-list-component-thingy ... yeah.
-    final MultiPreview mp = new MultiPreview(list);
+	// --------------------------------------------------
+	// multi
+	//
 
-    // make double-clicking a file call MultiPreview's addClicked() method
-    JFileChooser f = new JFileChooser(wd) {
-      public void approveSelection() {
-        mp.addClicked(); // heh heh heh...
-      }
-    };
+	/**
+	 * Show a multiple file selection dialog. This allows the user to select any
+	 * number of files. It shows a preview component, and has the default filters
+	 * available.
+	 * 
+	 * @param prompt
+	 *          the text string to use for both the title bar and approve button
+	 * @return a List of filenames that were selected
+	 * @exception UserCancelledException
+	 *              if the user cancelled
+	 */
+	public static List showMulti(String prompt) throws UserCancelledException {
+		// create a new list to use
+		List list = new ArrayList();
+		return showMultiReal(prompt, list);
+	}
 
-    // filters
-    addFilters(f);
+	/**
+	 * Show a multiple file selection dialog, with a list of files to start with.
+	 * This allows the user to select any number of files. It shows a preview
+	 * component, and has the default filters available.
+	 * 
+	 * @param prompt
+	 *          the text string to use for both the title bar and approve button
+	 * @param list
+	 *          a List of filenames to have already selected
+	 * @return a List of filenames that were selected
+	 * @exception UserCancelledException
+	 *              if the user cancelled
+	 */
+	public static List showMulti(String prompt, List list)
+			throws UserCancelledException { // to edit a list
+		// use the given list
+		return showMultiReal(prompt, list);
+	}
 
-    // hide ok/cancel, we'll do that ourselves
-    f.setControlButtonsAreShown(false);
+	private static List showMultiReal(String prompt, List list)
+			throws UserCancelledException {
+		// big-preview-list-component-thingy ... yeah.
+		final MultiPreview mp = new MultiPreview(list);
 
-    // preview component + multi-list
-    mp.hook(f); // add reference to this jfilechooser
-    f.setAccessory(mp);
+		// make double-clicking a file call MultiPreview's addClicked() method
+		JFileChooser f = new JFileChooser(wd) {
+			public void approveSelection() {
+				mp.addClicked(); // heh heh heh...
+			}
+		};
 
-    // make the window a resonable size to see everything
-    Dimension dim = App.prefs.getDimensionPref(MULTI_DIM_PREF, MULTI_DEFAULT_DIMENSION);
-    f.setPreferredSize(dim);
-    setConfiguredMode(f, MULTI_VIEWMODE_PREF);
+		// filters
+		addFilters(f);
 
-    // show dialog
-    f.showDialog(null, prompt); // don't care what the return value is, it's
-    // always CANCEL
-    
-    Dimension d = f.getSize();
-    App.prefs.setPref(MULTI_DIM_PREF, d.width + "," + d.height);
-    saveConfiguredMode(f, MULTI_VIEWMODE_PREF);
+		// hide ok/cancel, we'll do that ourselves
+		f.setControlButtonsAreShown(false);
 
-    // store wd, if ok
-    if (mp.getSamples() != null)
-      wd = f.getCurrentDirectory().getPath();
+		// preview component + multi-list
+		mp.hook(f); // add reference to this jfilechooser
+		f.setAccessory(mp);
 
-    // null? have to deal, now.
-    if (mp.getSamples() == null)
-      throw new UserCancelledException();
+		// make the window a resonable size to see everything
+		Dimension dim = App.prefs.getDimensionPref(MULTI_DIM_PREF,
+				MULTI_DEFAULT_DIMENSION);
+		f.setPreferredSize(dim);
+		setConfiguredMode(f, MULTI_VIEWMODE_PREF);
 
-    // return samples
-    return mp.getSamples();
-  }
+		// show dialog
+		f.showDialog(null, prompt); // don't care what the return value is, it's
+		// always CANCEL
+
+		Dimension d = f.getSize();
+		App.prefs.setPref(MULTI_DIM_PREF, d.width + "," + d.height);
+		saveConfiguredMode(f, MULTI_VIEWMODE_PREF);
+
+		// store wd, if ok
+		if (mp.getSamples() != null)
+			wd = f.getCurrentDirectory().getPath();
+
+		// null? have to deal, now.
+		if (mp.getSamples() == null)
+			throw new UserCancelledException();
+
+		// return samples
+		return mp.getSamples();
+	}
 
 }
