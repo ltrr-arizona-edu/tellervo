@@ -48,162 +48,166 @@ import corina.ui.Builder;
 
 public class MultiPreview extends JPanel implements PropertyChangeListener {
 
-    // gui
-    private JPanel preview;
-    private JButton add, remove;
-    private ElementsPanel panel;
-    private JFileChooser chooser;
+	// gui
+	private JPanel preview;
 
-    // data
-    private File file;
-    private List set;
+	private JButton add, remove;
 
-    // because only FileDialog knows what happens when a file is double-clicked...blah
-    public void addClicked() {
-	// add to set
-	set.add(new Element(file.getPath()));
+	private ElementsPanel panel;
 
-	// update view
-	panel.update();
-    }
+	private JFileChooser chooser;
 
-    public void hook(JFileChooser f) {
-	chooser = f;
-	chooser.addPropertyChangeListener(this);
-    }
+	// data
+	private File file;
 
-    public MultiPreview(List ss) {
-	// boilerplate
-	set = ss;
+	private List set;
 
-	// gui -- layout
-	setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-	setMinimumSize(new Dimension(480, 360)); // ??
-	setPreferredSize(new Dimension(400, 200)); // at least...
+	// because only FileDialog knows what happens when a file is double-clicked...blah
+	public void addClicked() {
+		// add to set
+		set.add(new Element(file.getPath()));
 
-	// left panel
-	JPanel left = new JPanel();
-	left.setMaximumSize(new Dimension(180, 640));
-	left.setLayout(new BorderLayout(6, 6));
-	add(left);
-
-	// left: preview
-	preview = new JPanel(new BorderLayout());
-	preview.setMinimumSize(new Dimension(240, 100));
-	left.add(preview, BorderLayout.CENTER);
-
-	// left: button panel
-	JPanel buttons = new JPanel();
-	buttons.setLayout(new GridLayout(0, 1, 6, 6));
-	buttons.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 6)); // top-left-bottom-right
-	left.add(buttons, BorderLayout.SOUTH);
-
-	// left: buttons (add)
-        add = Builder.makeButton("add");
-	if (!App.platform.isMac())
-	    add.setIcon(Builder.getIcon("Forward16.gif"));
-	add.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // add to set
-		    set.add(new Element(file.getPath())); // NullPointerException if no file selected!
-
-		    // update view
-		    panel.update();
-		}
-	    });
-	buttons.add(add);
-
-	// left: buttons (remove)
-        remove = Builder.makeButton("remove");
-	if (!App.platform.isMac())
-	    remove.setIcon(Builder.getIcon("Back16.gif"));
-	remove.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    panel.removeSelectedRows();
-		}
-	    });
-	buttons.add(remove);
-
-	// left: buttons (ok)
-	JButton okay = Builder.makeButton("ok");
-	okay.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // if (set.size() == 0) // okay with zero samples is like cancel
-		    // set = null;
-		    chooser.cancelSelection();
-		}
-	    });
-	buttons.add(okay);
-
-	// left: buttons (cancel)
-	JButton cancel = Builder.makeButton("cancel");
-	cancel.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    set = null;
-		    chooser.cancelSelection();
-		}
-	    });
-	buttons.add(cancel);
-
-	// right: elements panel (table)
-	panel = new ElementsPanel(set);
-	add(panel);
-    }
-
-    // PropertyChangeListener helper
-    // (REFACTOR: use SamplePreview here!)
-    private void loadSample() {
-	// no file?
-        if (file == null)
-            return;
- 
-	try {
-	    Previewable s=null;
-
-	    // new: loop to find a Previewable
-	    try {
-		s = new Grid(file.getPath());
-	    } catch (WrongFiletypeException wfte) {
-		s = new Sample(file.getPath());
-	    } // but can't string catches here ... darn
-
-	    // get preview, and show it.
-	    showPreview(s.getPreview());
-
-	} catch (WrongFiletypeException wfte) {
-	    showPreview(new Preview.NotDendroDataPreview());
-
-	} catch (IOException ioe) {
-	    showPreview(new Preview.ErrorLoadingPreview(ioe));
+		// update view
+		panel.update();
 	}
-    }
 
-    // implements PropertyChangeListener
-    public void propertyChange(PropertyChangeEvent e) {
-        String prop = e.getPropertyName();
-        if (prop.equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
-            file = (File) e.getNewValue();
-            if (isShowing()) {
-                loadSample();
-                repaint();
-            }
-        }
-    }
+	public void hook(JFileChooser f) {
+		chooser = f;
+		chooser.addPropertyChangeListener(this);
+	}
 
-    private void showPreview(Preview p) {
-	// remove old value, and put new preview component up.
-	if (preview.getComponentCount() > 0)
-	    preview.remove(0);
-	PreviewComponent pc = new PreviewComponent(p);
-	preview.add(pc, BorderLayout.CENTER);
+	public MultiPreview(List ss) {
+		// boilerplate
+		set = ss;
 
-	// beat swing with a stick until it repaints me.
-	preview.invalidate();
-	preview.validate();
-    }
+		// gui -- layout
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		setMinimumSize(new Dimension(480, 360)); // ??
+		setPreferredSize(new Dimension(400, 200)); // at least...
 
-    // get the result
-    public List getSamples() {
-	return set;
-    }
+		// left panel
+		JPanel left = new JPanel();
+		left.setMaximumSize(new Dimension(180, 640));
+		left.setLayout(new BorderLayout(6, 6));
+		add(left);
+
+		// left: preview
+		preview = new JPanel(new BorderLayout());
+		preview.setMinimumSize(new Dimension(240, 100));
+		left.add(preview, BorderLayout.CENTER);
+
+		// left: button panel
+		JPanel buttons = new JPanel();
+		buttons.setLayout(new GridLayout(0, 1, 6, 6));
+		buttons.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 6)); // top-left-bottom-right
+		left.add(buttons, BorderLayout.SOUTH);
+
+		// left: buttons (add)
+		add = Builder.makeButton("add");
+		if (!App.platform.isMac())
+			add.setIcon(Builder.getIcon("Forward16.gif"));
+		add.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				// add to set
+				set.add(new Element(file.getPath())); // NullPointerException if no file selected!
+
+				// update view
+				panel.update();
+			}
+		});
+		buttons.add(add);
+
+		// left: buttons (remove)
+		remove = Builder.makeButton("remove");
+		if (!App.platform.isMac())
+			remove.setIcon(Builder.getIcon("Back16.gif"));
+		remove.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				panel.removeSelectedRows();
+			}
+		});
+		buttons.add(remove);
+
+		// left: buttons (ok)
+		JButton okay = Builder.makeButton("ok");
+		okay.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				// if (set.size() == 0) // okay with zero samples is like cancel
+				// set = null;
+				chooser.cancelSelection();
+			}
+		});
+		buttons.add(okay);
+
+		// left: buttons (cancel)
+		JButton cancel = Builder.makeButton("cancel");
+		cancel.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				set = null;
+				chooser.cancelSelection();
+			}
+		});
+		buttons.add(cancel);
+
+		// right: elements panel (table)
+		panel = new ElementsPanel(set);
+		add(panel);
+	}
+
+	// PropertyChangeListener helper
+	// (REFACTOR: use SamplePreview here!)
+	private void loadSample() {
+		// no file?
+		if (file == null)
+			return;
+
+		try {
+			Previewable s = null;
+
+			// new: loop to find a Previewable
+			try {
+				s = new Grid(file.getPath());
+			} catch (WrongFiletypeException wfte) {
+				s = new Sample(file.getPath());
+			} // but can't string catches here ... darn
+
+			// get preview, and show it.
+			showPreview(s.getPreview());
+
+		} catch (WrongFiletypeException wfte) {
+			showPreview(new Preview.NotDendroDataPreview());
+
+		} catch (IOException ioe) {
+			showPreview(new Preview.ErrorLoadingPreview(ioe));
+		}
+	}
+
+	// implements PropertyChangeListener
+	public void propertyChange(PropertyChangeEvent e) {
+		String prop = e.getPropertyName();
+		if (prop.equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
+			file = (File) e.getNewValue();
+			if (isShowing()) {
+				loadSample();
+				repaint();
+			}
+		}
+	}
+
+	private void showPreview(Preview p) {
+		// remove old value, and put new preview component up.
+		if (preview.getComponentCount() > 0)
+			preview.remove(0);
+		PreviewComponent pc = new PreviewComponent(p);
+		preview.add(pc, BorderLayout.CENTER);
+
+		// beat swing with a stick until it repaints me.
+		preview.invalidate();
+		preview.validate();
+	}
+
+	// get the result
+	public List getSamples() {
+		return set;
+	}
 }
