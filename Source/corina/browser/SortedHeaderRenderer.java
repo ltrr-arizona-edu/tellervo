@@ -20,16 +20,15 @@
 
 package corina.browser;
 
-import corina.util.ColorUtils;
-
 import javax.swing.table.TableCellRenderer;
-import javax.swing.JComponent;
 import javax.swing.JTable;
 import java.awt.Component;
 import java.awt.RenderingHints;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Color;
+import javax.swing.JLabel;
+import javax.swing.Icon;
 
 /**
     A table header renderer which adds a small triangle to the "sort" column.
@@ -75,16 +74,21 @@ public class SortedHeaderRenderer implements TableCellRenderer {
         
         @param table the JTable which will use this class
         as its renderer
+        @param defaultSortColumn the name of the default column to sort by. Can be null.
     */
-    public SortedHeaderRenderer(JTable table) {
+    public SortedHeaderRenderer(JTable table, String defaultSortColumn) {
         normal = table.getTableHeader().getDefaultRenderer();
+        if(defaultSortColumn != null)
+        	sortColumn = defaultSortColumn;
+        else
+        	sortColumn = "";
     }
 
     // the default header renderer
     private TableCellRenderer normal;
 
     // which column to sort by?  (as its text label)
-    private String sortColumn = ""; // (don't use null)
+    private String sortColumn;
 
     // is the sort reversed?
     private boolean reversed = false;
@@ -112,88 +116,98 @@ public class SortedHeaderRenderer implements TableCellRenderer {
     public void setReversed(boolean reversed) {
         this.reversed = reversed;
     }
+    
+    private static class SortArrowIcon implements Icon {
+    	private boolean reversed;
+    	private int size;
+    	
+    	public SortArrowIcon(boolean reversed, int size) {
+    		this.size = size;
+    		this.reversed = reversed;
+    	}
+    	
+    	public int getIconHeight() {
+    		return size;
+    	}
+    	
+    	public int getIconWidth() {
+    		return size;
+    	}
+    	
+		public void paintIcon(Component c, Graphics g, int x, int y) {
+			Color bgcolor = (c == null) ? Color.GRAY : c.getBackground();
+			
+			// turn on antialiasing
+			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON);
 
+			int dx = (int) (size / 1.25);
+			int dy = reversed ? -dx : dx;
+			
+			// magic: align icon with specified font size
+			y += 5*size/6 + (reversed ? 0 : -dy);
+			// give it some space!
+			x += size*2;
+			
+			int shift = reversed ? -1 : 1;
+			
+			g.translate(x, y);
+			
+			// draw the right diagonal
+			g.setColor(bgcolor.darker());
+            g.drawLine(dx / 2, dy, 0, 0);
+            g.drawLine(dx / 2, dy + shift, 0, shift);
+            
+            // Left diagonal. 
+            g.setColor(bgcolor.brighter());
+            g.drawLine(dx / 2, dy, dx, 0);
+            g.drawLine(dx / 2, dy + shift, dx, shift);
+            
+            // Horizontal line. 
+            if (!reversed) {
+                g.setColor(bgcolor.darker().darker());
+            } else {
+                g.setColor(bgcolor.brighter().brighter());
+            }
+            g.drawLine(dx, 0, 0, 0);
+
+            g.setColor(bgcolor);
+            g.translate(-x, -y);			
+		}
+	}
+    
     /**
-        Return the component which does the rendering.  This is used
-        by the JTable architecture; you never need to call this explicitly.
-        
-        @return the default renderer component, with a triangle drawn
-        on it, if its text matches the sort field
-    */
+	 * Return the component which does the rendering. This is used by the JTable
+	 * architecture; you never need to call this explicitly.
+	 * 
+	 * @return the default renderer component, with a triangle drawn on it, if
+	 *         its text matches the sort field
+	 */
     public Component getTableCellRendererComponent(JTable table,
                                                    Object value,
                                                    boolean isSelected,
                                                    boolean hasFocus,
                                                    int row, int column) {
-        // figure out what would normally be drawn.
-        final Component c = normal.getTableCellRendererComponent(table,
-                                                                 value,
-                                                                 isSelected,
-                                                                 hasFocus,
-                                                                 row,
-                                                                 column);
-        // i'm being asked to draw: |value|;
-        // the sort is: |sortColumn|.
-        if (sortColumn.equals(value)) {
-            // make a new component.
-            return new JComponent() {
-                    public void paintComponent(Graphics g) {
-                        // start with default
-                        c.setBounds(getBounds());
-                        c.paint(g);
-
-                        // then paint my arrow on it
-                        paintArrow(g);
-                    }
-
-                    // paint a little arrow on the right side of the header
-                    private void paintArrow(Graphics g) {
-                        // turn on antialiasing
-                        Graphics2D g2 = (Graphics2D) g;
-                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                            RenderingHints.VALUE_ANTIALIAS_ON);
-
-                        // then paint little triangle arrow -- DOCUMENT THIS!
-
-                        // compute points
-                        int h = getHeight();
-                        int w = getWidth();
-                        
-                        int top = h/3;
-                        int bottom = h*2/3;
-
-                        int right = w - h/3;
-                        int left = right - h/3;
-                        int middle = (right+left)/2;
-
-                        // stuff in x,y arrays
-                        x[0] = left;
-                        x[1] = middle;
-                        x[2] = right;
-                        if (!reversed) {
-                            y[0] = bottom;
-                            y[1] = top;
-                            y[2] = bottom;
-                        } else {
-                            y[0] = top;
-                            y[1] = bottom;
-                            y[2] = top;
-                        }
-                        
-                        // draw it
-                        g2.setColor(ColorUtils.reallyDark(c.getBackground()) ? LIGHTEN : DARKEN);
-                        g2.fillPolygon(x, y, 3);
-                    }
-                };
-        } else {
-            return c;
+    	
+        Component c = normal.getTableCellRendererComponent(table,
+                value,
+                isSelected,
+                hasFocus,
+                row,
+                column);
+        
+        // if it's a normal table header (and it should be...)
+        if(c instanceof JLabel) {
+        	JLabel l = (JLabel) c;
+        	
+        	l.setHorizontalTextPosition(JLabel.LEFT);
+        	
+        	if(sortColumn.equals(value)) 
+        		l.setIcon(new SortArrowIcon(reversed, l.getFont().getSize()));
+        	else
+        		l.setIcon(null); // no icon!
         }
+        
+        return c;	
     }
-
-    // x,y arrays for points to draw
-    private int x[] = new int[3];
-    private int y[] = new int[3];
-
-    private final static Color DARKEN = ColorUtils.addAlpha(Color.black, 0.5f); // 50% opaque black
-    private final static Color LIGHTEN = ColorUtils.addAlpha(Color.white, 0.5f); // 50% opaque white
 }

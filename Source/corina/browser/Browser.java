@@ -106,6 +106,7 @@ import corina.ui.I18n;
 import corina.util.NaturalSort;
 import corina.util.TextClipboard;
 import corina.util.GreedyProgressMonitor;
+import corina.gui.XFrame;
 
 /**
    Corina's browser.
@@ -134,7 +135,7 @@ import corina.util.GreedyProgressMonitor;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-public class Browser extends JFrame {
+public class Browser extends XFrame {
 	/*
 	 -- refactor!
 	 
@@ -251,7 +252,8 @@ public class Browser extends JFrame {
 
 	// REFACTOR: this constructor runs over 150 lines (!!!)
 	public Browser() {
-		super("Corina Browser");
+		super(); // get the tree icon goodness!
+		setTitle("Corina Browser");
 
 		String dir = App.prefs.getPref("corina.browser.folder"); // BUG: what if this folder doesn't exist?
 		if (dir == null)
@@ -354,7 +356,7 @@ public class Browser extends JFrame {
 					});
 
 			// custom header renderer: show which column is used for the sort
-			shr = new SortedHeaderRenderer(table);
+			shr = new SortedHeaderRenderer(table, nameOfField(sortField));
 			table.getTableHeader().setDefaultRenderer(shr);
 
 			// popup
@@ -1377,8 +1379,7 @@ public class Browser extends JFrame {
 		if (sortField.equals(newSort)) {
 			reverse = !reverse;
 			shr.setReversed(reverse);
-			App.prefs
-					.setPref("corina.browser.reverse", String.valueOf(reverse));
+			App.prefs.setPref("corina.browser.reverse", String.valueOf(reverse));
 			// wait ... in this case, i don't need to doSort() again; reverse() is good enough.
 			// plus, it acts as the user expects.
 			saveSelection();
@@ -1393,14 +1394,11 @@ public class Browser extends JFrame {
 			App.prefs.setPref("corina.browser.sort", sortField);
 			reverse = false;
 			shr.setReversed(reverse);
-			App.prefs
-					.setPref("corina.browser.reverse", String.valueOf(reverse));
+			App.prefs.setPref("corina.browser.reverse", String.valueOf(reverse));
 			doSort();
 		}
 
-		// force the header to redraw itself -- BUG: which it doesn't, sometimes, for unknown reasons
-		// FIXME: is revalidate() what i really want here?
-		table.getTableHeader().invalidate();
+		// force the header to redraw itself 
 		table.getTableHeader().repaint();
 	}
 
@@ -1567,10 +1565,8 @@ public class Browser extends JFrame {
 
 	// load fields from prefs (or use a reasonable default).
 	private void loadFields() {
-		String pref = App.prefs
-				.getPref("corina.browser.fields", DEFAULT_FIELDS);
-		// FIXME: prefs.getPref() needs defaults!
-
+		String pref = App.prefs.getPref("corina.browser.fields", DEFAULT_FIELDS);
+		
 		// always add name, if for some reason it's not there (e.g., fields="")
 		if (pref.indexOf("name") == -1)
 			pref = "name," + pref;
@@ -1754,6 +1750,11 @@ public class Browser extends JFrame {
 
 		StringTokenizer tok = new StringTokenizer(spec, ", ");
 		int n = tok.countTokens();
+		
+		// if we've removed columns, just ignore the extra defs...
+		if(n > table.getModel().getColumnCount())
+			n = table.getModel().getColumnCount();
+		
 		for (int i = 0; i < n; i++) {
 			try {
 				float pct = fmt.parse(tok.nextToken()).floatValue();
