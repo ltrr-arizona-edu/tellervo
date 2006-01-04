@@ -36,6 +36,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import corina.Element;
 import corina.Preview;
@@ -49,7 +50,7 @@ import corina.ui.Builder;
 public class MultiPreview extends JPanel implements PropertyChangeListener {
 
 	// gui
-	private JPanel preview;
+	private JScrollPane previewScroller;
 
 	private JButton add, remove;
 
@@ -92,9 +93,10 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 		add(left);
 
 		// left: preview
-		preview = new JPanel(new BorderLayout());
-		preview.setMinimumSize(new Dimension(240, 100));
-		left.add(preview, BorderLayout.CENTER);
+		previewScroller = new JScrollPane();
+		previewScroller.setMinimumSize(new Dimension(240, 100));
+		previewScroller.setBorder(BorderFactory.createEmptyBorder());
+		left.add(previewScroller, BorderLayout.CENTER);
 
 		// left: button panel
 		JPanel buttons = new JPanel();
@@ -195,15 +197,8 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 	}
 
 	private void showPreview(Preview p) {
-		// remove old value, and put new preview component up.
-		if (preview.getComponentCount() > 0)
-			preview.remove(0);
-		PreviewComponent pc = new PreviewComponent(p);
-		preview.add(pc, BorderLayout.CENTER);
-
-		// beat swing with a stick until it repaints me.
-		preview.invalidate();
-		preview.validate();
+		// just put a new previewcomponent inside the previewScroller...
+		previewScroller.getViewport().setView(new PreviewComponent(p));		
 	}
 
 	// get the result
