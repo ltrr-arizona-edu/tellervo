@@ -79,201 +79,203 @@ import java.awt.print.Printable;
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
-*/
+ */
 public class TableView extends JPanel {
 
-    private List moving;
+	private List moving;
 
-    // this could get confusing making tables out of tables, so
-    // in this file, let's call JTables "jtable", and Tables "table".
-    private JTable jtable;
+	// this could get confusing making tables out of tables, so
+	// in this file, let's call JTables "jtable", and Tables "table".
+	private JTable jtable;
 
-    // EXTRACT ME!
-    private int[] saveColumnWidths() {
-	TableColumnModel columns = jtable.getColumnModel();
-	int n = columns.getColumnCount();
-	int columnWidths[] = new int[n];
-	for (int i=0; i<n; i++)
-	    columnWidths[i] = columns.getColumn(i).getWidth();
-	return columnWidths;
-    }
-    private void restoreColumnWidths(int columnWidths[]) {
-	TableColumnModel columns = jtable.getColumnModel();
-	int n = columnWidths.length;
-	for (int i=0; i<n; i++)
-	    columns.getColumn(i).setPreferredWidth(columnWidths[i]);
-    }
+	// EXTRACT ME!
+	private int[] saveColumnWidths() {
+		TableColumnModel columns = jtable.getColumnModel();
+		int n = columns.getColumnCount();
+		int columnWidths[] = new int[n];
+		for (int i = 0; i < n; i++)
+			columnWidths[i] = columns.getColumn(i).getWidth();
+		return columnWidths;
+	}
 
-    /**
-       Make a printable object for this crossdating table.
+	private void restoreColumnWidths(int columnWidths[]) {
+		TableColumnModel columns = jtable.getColumnModel();
+		int n = columnWidths.length;
+		for (int i = 0; i < n; i++)
+			columns.getColumn(i).setPreferredWidth(columnWidths[i]);
+	}
 
-       @return a Printable for this Table
-    */
-    public Printable print() {
-	return table.print();
-    }
+	/**
+	 Make a printable object for this crossdating table.
 
-    private Table table;
+	 @return a Printable for this Table
+	 */
+	public Printable print() {
+		return table.print();
+	}
 
-    private JComboBox fixedPopup;
+	private Table table;
 
-    private List fixedAsList;
+	private JComboBox fixedPopup;
 
-    /**
-       Make a new table view for a sequence.
+	private List fixedAsList;
 
-       @param sequence a sequence containing the fixed and moving
-       samples to display in a table
-       @exception IOException I have no excuse: fix me
-    */
-    public TableView(Sequence sequence) throws IOException {
-	// put all "fixed" samples in a popup -- EXTRACT METHOD!
-	fixedAsList = new ArrayList(sequence.getAllFixed());
-	String names[] = new String[fixedAsList.size()];
-	for (int i=0; i<names.length; i++)
-	    names[i] = new Sample((String) fixedAsList.get(i)).toString();
-	fixedPopup = new JComboBox(names);
-	fixedPopup.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    // -- figure out what sample to use
-		    int selection = fixedPopup.getSelectedIndex();
-		    String fixed = (String) fixedAsList.get(selection);
+	/**
+	 Make a new table view for a sequence.
 
-		    try {
-			// -- make new Table object
-			table = new Table(fixed, moving);
+	 @param sequence a sequence containing the fixed and moving
+	 samples to display in a table
+	 @exception IOException I have no excuse: fix me
+	 */
+	public TableView(Sequence sequence) throws IOException {
+		// put all "fixed" samples in a popup -- EXTRACT METHOD!
+		fixedAsList = new ArrayList(sequence.getAllFixed());
+		String names[] = new String[fixedAsList.size()];
+		for (int i = 0; i < names.length; i++)
+			names[i] = new Sample((String) fixedAsList.get(i)).toString();
+		fixedPopup = new JComboBox(names);
+		fixedPopup.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				// -- figure out what sample to use
+				int selection = fixedPopup.getSelectedIndex();
+				String fixed = (String) fixedAsList.get(selection);
 
-			// -- call table.setModel(t)
-			int widths[] = saveColumnWidths();
-			jtable.setModel(table);
-			initRenderers();
-			restoreColumnWidths(widths);
-		    } catch (IOException ioe) {
-			System.out.println("ioe!");
-		    }
-		}
-	    });
+				try {
+					// -- make new Table object
+					table = new Table(fixed, moving);
 
-        JPanel top = Layout.flowLayoutL(new JLabel("Fixed:"), fixedPopup);
-	top.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+					// -- call table.setModel(t)
+					int widths[] = saveColumnWidths();
+					jtable.setModel(table);
+					initRenderers();
+					restoreColumnWidths(widths);
+				} catch (IOException ioe) {
+					System.out.println("ioe!");
+				}
+			}
+		});
 
-	setLayout(new BorderLayout());
-	add(top, BorderLayout.NORTH);
+		JPanel top = Layout.flowLayoutL(new JLabel("Fixed:"), fixedPopup);
+		top.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
-	// first fixed one
-	String fixed = (String) sequence.getAllFixed().get(0);
-	moving = sequence.getAllMoving();
+		setLayout(new BorderLayout());
+		add(top, BorderLayout.NORTH);
 
-	// make a table.
-	table = new Table(fixed, moving);
-	jtable = new JTable(table) {
-		public void addNotify() {
-		    super.addNotify();
-		    System.out.println("width=" + getWidth()); // 0!
-		    getColumnModel().getColumn(0).setPreferredWidth(getWidth()/2);
-		}
-	    };
-	// doesn't work: wait for addNotify()? jtable.getColumnModel().getColumn(0).setPreferredWidth(jtable.getWidth() / 2);
+		// first fixed one
+		String fixed = (String) sequence.getAllFixed().get(0);
+		moving = sequence.getAllMoving();
 
-	// align by decimal points
-	initRenderers();
+		// make a table.
+		table = new Table(fixed, moving);
+		jtable = new JTable(table) {
+			public void addNotify() {
+				super.addNotify();
+				System.out.println("width=" + getWidth()); // 0!
+				getColumnModel().getColumn(0).setPreferredWidth(getWidth() / 2);
+			}
+		};
+		// doesn't work: wait for addNotify()? jtable.getColumnModel().getColumn(0).setPreferredWidth(jtable.getWidth() / 2);
 
-	JScrollPane scroll = new JScrollPane(jtable);
-	add(scroll, BorderLayout.CENTER);
+		// align by decimal points
+		initRenderers();
+
+		JScrollPane scroll = new JScrollPane(jtable);
+		add(scroll, BorderLayout.CENTER);
+
+		// popup menu
+		jtable.addMouseListener(new PopupListener(new TableViewPopup()));
+
+		// TODO: buttons (graph, map)
+		JButton graph = Builder.makeButton("plot");
+		graph.setEnabled(false);
+		JButton map = Builder.makeButton("map");
+		map.setEnabled(false);
+		JPanel buttons = Layout.buttonLayout(graph, map, null);
+		buttons.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+		add(buttons, BorderLayout.SOUTH); // FIXME: use Layout for this
+
+		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+	}
+
+	private void initRenderers() {
+		TableColumnModel columns = jtable.getColumnModel();
+
+		// HACK: replace me with: Cross.getFormat(alg)
+		String t = new TScore().getFormat();
+		String tr = new Trend().getFormat();
+		String d = new DScore().getFormat();
+
+		// t, tr, d
+		columns.getColumn(1).setCellRenderer(new DecimalRenderer(t));
+		columns.getColumn(2).setCellRenderer(new DecimalRenderer(tr));
+		columns.getColumn(3).setCellRenderer(new DecimalRenderer(d));
+
+		// overlap
+		columns.getColumn(4).setCellRenderer(new DecimalRenderer("000"));
+	}
+
+	/**
+	 Returns a title suitable for this view.  It'll probably be a
+	 localized version of something like "Crossdating Table".
+
+	 @return a title for this view
+	 */
+	public String toString() {
+		return I18n.getText("crossdating_table");
+	}
 
 	// popup menu
-	jtable.addMouseListener(new PopupListener(new TableViewPopup()));
+	private class TableViewPopup extends JPopupMenu {
+		TableViewPopup() {
+			JMenuItem graph = new JMenuItem("Graph this Crossdate");
+			JMenuItem jump = new JMenuItem("Jump to this Crossdate");
+			JMenuItem open = new JMenuItem("Open this Sample");
 
-	// TODO: buttons (graph, map)
-	JButton graph = Builder.makeButton("plot");
-	graph.setEnabled(false);
-	JButton map = Builder.makeButton("map");
-	map.setEnabled(false);
-	JPanel buttons = Layout.buttonLayout(graph, map, null);
-	buttons.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-	add(buttons, BorderLayout.SOUTH); // FIXME: use Layout for this
+			graph.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					// get fixed
+					int i = fixedPopup.getSelectedIndex();
+					Element f = new Element((String) fixedAsList.get(i));
 
-	setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    }
+					// get moving
+					int j = jtable.getSelectedRow();
+					Element m = new Element((String) table.getFilenameOfRow(j));
 
-    private void initRenderers() {
-	TableColumnModel columns = jtable.getColumnModel();
+					// make graph
+					List list = new ArrayList();
+					list.add(f);
+					list.add(m);
+					new GraphWindow(list);
+				}
+			});
+			jump.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					// TODO: get fixed
+					// TODO: get moving (selection)
+					// TODO: crossdateWindow.jumpToCrossdate(f,m)?
+					// NEED: a ref to the CDW here
+					// NEED: that method in CDW
+				}
+			});
+			open.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						// get moving, make sample, put in editor
+						int j = jtable.getSelectedRow();
+						Sample s = new Sample((String) table
+								.getFilenameOfRow(j));
+						new Editor(s);
+					} catch (IOException ioe) {
+						// FIXME
+						System.out.println("ioe!");
+					}
+				}
+			});
 
-	// HACK: replace me with: Cross.getFormat(alg)
-	String t = new TScore().getFormat();
-	String tr = new Trend().getFormat();
-	String d = new DScore().getFormat();
-
-	// t, tr, d
-	columns.getColumn(1).setCellRenderer(new DecimalRenderer(t));
-	columns.getColumn(2).setCellRenderer(new DecimalRenderer(tr));
-	columns.getColumn(3).setCellRenderer(new DecimalRenderer(d));
-
-	// overlap
-	columns.getColumn(4).setCellRenderer(new DecimalRenderer("000"));
-    }
-
-    /**
-       Returns a title suitable for this view.  It'll probably be a
-       localized version of something like "Crossdating Table".
-
-       @return a title for this view
-    */
-    public String toString() {
-	return I18n.getText("crossdating_table");
-    }
-
-    // popup menu
-    private class TableViewPopup extends JPopupMenu {
-	TableViewPopup() {
-	    JMenuItem graph = new JMenuItem("Graph this Crossdate");
-	    JMenuItem jump = new JMenuItem("Jump to this Crossdate");
-	    JMenuItem open = new JMenuItem("Open this Sample");
-
-	    graph.addActionListener(new AbstractAction() {
-		    public void actionPerformed(ActionEvent e) {
-			// get fixed
-			int i = fixedPopup.getSelectedIndex();
-			Element f = new Element((String) fixedAsList.get(i));
-
-			// get moving
-			int j = jtable.getSelectedRow();
-			Element m = new Element((String) table.getFilenameOfRow(j));
-
-			// make graph
-			List list = new ArrayList();
-			list.add(f);
-			list.add(m);
-			new GraphWindow(list);
-		    }
-		});
-	    jump.addActionListener(new AbstractAction() {
-		    public void actionPerformed(ActionEvent e) {
-			// TODO: get fixed
-			// TODO: get moving (selection)
-			// TODO: crossdateWindow.jumpToCrossdate(f,m)?
-			// NEED: a ref to the CDW here
-			// NEED: that method in CDW
-		    }
-		});
-	    open.addActionListener(new AbstractAction() {
-		    public void actionPerformed(ActionEvent e) {
-			try {
-			    // get moving, make sample, put in editor
-			    int j = jtable.getSelectedRow();
-			    Sample s = new Sample((String) table.getFilenameOfRow(j));
-			    new Editor(s);
-			} catch (IOException ioe) {
-			    // FIXME
-			    System.out.println("ioe!");
-			}
-		    }
-		});
-
-	    add(graph);
-	    add(jump);
-	    addSeparator();
-	    add(open);
+			add(graph);
+			add(jump);
+			addSeparator();
+			add(open);
+		}
 	}
-    }
 }
