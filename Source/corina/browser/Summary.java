@@ -207,7 +207,7 @@ public class Summary {
 			// BUG: this uses native encoding; it should use UTF-8 everywhere!
 			BufferedWriter w = new BufferedWriter(fw);
 
-			w.write("<?xml version=\"1.0\" encoding=\"UFT8\"?>");
+			w.write("<?xml version=\"1.0\" encoding=\"UTF8\"?>");
 			w.newLine();
 
 			w.newLine();
@@ -539,7 +539,7 @@ public class Summary {
 			}
 
 			// others -- put everything in "others" now, and when loading them, move to "elements"
-			out: if (!files[i].isDirectory()) {
+			if (!files[i].isDirectory()) {
 				if (items.containsKey(files[i].getName())) {
 
 					Object o = items.get(files[i].getName());
@@ -592,7 +592,7 @@ public class Summary {
 					try {
 						if (verbose)
 							System.out.println("reloading " + fn);
-						e.loadMeta();
+						e.reloadMeta();
 					} catch (IOException ioe) {
 						items.put(fn, new MyFile(diskMod));
 					}

@@ -532,8 +532,6 @@ public class Sample implements Previewable, Graphable {
 		    summedLine += " (" + s.elements.size() + " " + I18n.getText("elements") + ")";
 		items.add(summedLine);
 	    }
-	    if(s.meta.containsKey("filesize"))
-	    	items.add(s.meta.get("filesize").toString() + "KB");
 	}
     }
 

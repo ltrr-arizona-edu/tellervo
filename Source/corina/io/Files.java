@@ -80,13 +80,8 @@ public class Files {
           br.close();
   
           String filetype = format.toString();
-          float flength = (float) f.length() / (float) 1024;
-          NumberFormat form = NumberFormat.getInstance();
-          
-          String filesize = form.format(flength);
           s.meta.put("filetype", filetype); // (used only for preview)
           s.meta.put("filename", filename);          
-          s.meta.put("filesize", filesize);
   
           // if we made it this far without throwing a
           // WrongFiletypeException or IOException (or any other

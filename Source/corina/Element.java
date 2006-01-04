@@ -190,6 +190,11 @@ public class Element implements Comparable {
     // dead samples should be dimmed or something
     private boolean dead=false;
 
+    public void reloadMeta() throws IOException {
+    	details = null;
+    	loadMeta();
+    }
+    
     /**
        Load the metadata fields for this Element.
 
