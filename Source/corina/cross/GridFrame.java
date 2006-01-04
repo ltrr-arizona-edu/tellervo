@@ -26,6 +26,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -166,9 +167,9 @@ public class GridFrame extends XFrame
             // FIXME: agh!  just call g2.scale(scale, scale) -- grid cells shouldn't have to
             // scale themselves.  but scale() doesn't scale the text as nicely as i do, so
             // until i figure that out, i'll keep passing in my own scale.
-
+            
             // call the printing method (REFACTOR: rename method?  it's not just for printing, anymore... -- draw())
-            cell.print((Graphics2D) g, 0, 0, scale);
+            cell.print((Graphics2D) g, 0, 0, getWidth(), getHeight(), scale);
         }
     }
 

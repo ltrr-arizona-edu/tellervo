@@ -55,6 +55,7 @@ import corina.formats.WrongFiletypeException;
 import corina.logging.CorinaLog;
 import corina.prefs.Prefs;
 import corina.ui.I18n;
+import javax.swing.JLabel;
 
 /**
    A crossdating grid.
@@ -135,13 +136,13 @@ public class Grid implements Runnable, Previewable {
 
 	// ----------------------------------------
 	public interface Cell {
-		public abstract void print(Graphics2D g2, int x, int y, float scale);
+		public abstract void print(Graphics2D g2, int x, int y, int width, int height, float scale);
 
 		public abstract String toXML();
 	}
 
 	public static class EmptyCell implements Cell {
-		public void print(Graphics2D g2, int x, int y, float scale) {
+		public void print(Graphics2D g2, int x, int y, int width, int height, float scale) {
 			// do nothing
 		}
 
@@ -159,7 +160,10 @@ public class Grid implements Runnable, Previewable {
 			this.name = name.substring(index + 1);
 		}
 
-		public void print(Graphics2D g2, int x, int y, float scale) {
+		public void print(Graphics2D g2, int x, int y, int width, int height, float scale) {
+			// clip this cell 
+			g2.setClip(x, y, width, height);
+			
 			// filename
 			g2.drawString(name, x + EPS,
 						  y + (int) ((getCellHeight() / 2 - getLineHeight() / 2) * scale));
@@ -178,7 +182,10 @@ public class Grid implements Runnable, Previewable {
 			this.range = range;
 		}
 
-		public void print(Graphics2D g2, int x, int y, float scale) {
+		public void print(Graphics2D g2, int x, int y, int width, int height, float scale) {
+			// clip this cell 
+			g2.setClip(x, y, width, height);
+			
 			// filename
 			g2.drawString(name, x + EPS, y
 					+ (int) ((getCellHeight() / 2) * scale));
@@ -205,7 +212,7 @@ public class Grid implements Runnable, Previewable {
 			super(t, tr, d, r, n);
 		}
 		
-		public void print(Graphics2D g2, int x, int y, float scale) {
+		public void print(Graphics2D g2, int x, int y, int width, int height, float scale) {
 			// fill with highlight -- would the user ever NOT want this?  well, yes, possibly.
 			if (Boolean.valueOf(App.prefs.getPref(Prefs.GRID_HIGHLIGHT))
 					.booleanValue()
@@ -259,7 +266,7 @@ public class Grid implements Runnable, Previewable {
 			this.length = length;
 		}
 
-		public void print(Graphics2D g2, int x, int y, float scale) {
+		public void print(Graphics2D g2, int x, int y, int width, int height, float scale) {
 			// box? -- no box for you!  (the box nazi, of course.)
 
 			// length
@@ -337,7 +344,8 @@ public class Grid implements Runnable, Previewable {
 					Cell c = grid.cell[y][x];
 					c.print(g2, ((int) pf.getImageableX()) + (x - startCol)
 							* getCellWidth(), ((int) pf.getImageableY())
-							+ (y - startRow) * getCellHeight(), 1.0f); // always print to paper with scale=1.0
+							+ (y - startRow) * getCellHeight(), 
+							getCellWidth(), getCellHeight(), 1.0f); // always print to paper with scale=1.0
 				}
 			}
 
@@ -845,7 +853,7 @@ public class Grid implements Runnable, Previewable {
 			r = cumr / numCrosses;
 		}
 		
-		public void print(Graphics2D g2, int x, int y, float scale) {
+		public void print(Graphics2D g2, int x, int y, int width, int height, float scale) {
 			// fill with highlight -- would the user ever NOT want this?  well, yes, possibly.
 			// box
 			g2.drawRect(x, y, (int) (getCellWidth() * scale),
