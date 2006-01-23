@@ -1,6 +1,7 @@
 package corina.io;
 
 import java.util.*;
+import java.lang.reflect.*;
 import java.io.*;
 
 import corina.prefs.Prefs;
@@ -92,14 +93,21 @@ public class SerialSampleIO implements SerialPortEventListener {
 			
 		}
 	}
-	
+		
 	// returns TRUE if serial package is capable on this platform...
 	public static boolean hasSerialCapability() {
 		try {
-			Class.forName("gnu.io.SerialPort");
+			Class.forName("gnu.io.RXTXCommDriver");
 			return true;
 		}
 		catch (ClassNotFoundException e) {
+			// driver not installed...
+			System.err.println(e.toString());
+			return false;
+		}
+		catch (java.lang.UnsatisfiedLinkError e) {
+			// native interface not installed...
+			System.err.println(e.toString());
 			return false;
 		}
 	}
