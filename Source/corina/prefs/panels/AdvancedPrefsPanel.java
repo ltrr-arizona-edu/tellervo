@@ -28,6 +28,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.util.Vector;
+
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
@@ -35,9 +37,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.JComboBox;
+import javax.swing.JScrollPane;
 import javax.swing.event.DocumentEvent;
 
 import corina.core.App;
+import corina.io.SerialSampleIO;
 import corina.prefs.components.FontPrefComponent;
 import corina.util.DocumentListener2;
 
@@ -77,7 +82,7 @@ public class AdvancedPrefsPanel extends JPanel {
     gbc.insets = new Insets(2, 2, 2, 2);
     gbc.gridy = 0;
     gbc.gridx = 0;
-    gbc.weightx = 0;
+    gbc.weightx = 1;
     
     // menubar font override
     final JCheckBox menubarCheckBox = new JCheckBox("Override menubar font");
@@ -173,38 +178,92 @@ public class AdvancedPrefsPanel extends JPanel {
     gbc.weightx = 1;
 
     co.add(usernameField, gbc);
+    
+    // serial IO capability...?
+    if (SerialSampleIO.hasSerialCapability()) {
+    	gbc.gridy++;
+    	gbc.gridx = 0;
+    	gbc.weightx = 0;
+    	
+    	boolean addedPort = false;
+    	JLabel label = new JLabel("Sample Recorder Data Port");
+    	// first, enumerate all the ports.
+    	Vector comportlist = SerialSampleIO.enumeratePorts();
+    	
+    	// do we have a COM port selected that's not in the list? (ugh!)
+    	String curport = App.prefs.getPref("corina.serialsampleio.port");
+    	if (curport != null && !comportlist.contains(curport)) {
+    		comportlist.add(curport);
+    		addedPort = true;
+    	}
+    	
+    	// make the combobox, and select the current port...
+    	final JComboBox comports = new JComboBox(comportlist);
+    	if (curport != null)
+    		comports.setSelectedItem(curport);
+    	
+    	comports.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			App.prefs.setPref("corina.serialsampleio.port",
+    					(String) comports.getSelectedItem());
+    		}
+    	});
+    	
+    	label.setLabelFor(comports);
+    	co.add(label, gbc);
+    	
+    	gbc.gridx++;
+    	gbc.weightx = 1;
+    	
+    	co.add(comports, gbc);
+    	
+    	// add a warning message if we have a strange com port...
+    	if (addedPort) {
+    		gbc.gridy++;
+    		gbc.gridx = 1;
+    		gbc.gridwidth = gbc.REMAINDER;
+    		gbc.weightx = 0;
+    		gbc.fill = gbc.VERTICAL;
+    		
+    		label = new JLabel(
+    				"<html>The communications port '"
+    				+ curport
+    				+ "' was not found.<br>It may be in use;<br>"
+    				+ "you may experience problems if you attempt to use it.");
+    		co.add(label, gbc);
+    		
+    		gbc.fill = gbc.NONE;
+    		gbc.gridwidth = 1;
+    	}
+    }
 
     gbc.gridy++;
     gbc.gridx = 0;
     gbc.weightx = 0;
+    
 
     // file chooser
     /*
-     * This appears to be absolutely useless. Commented out for now? 
-     * - lucas
-    ButtonGroup group = new ButtonGroup();
-    JRadioButton swing = new JRadioButton("Swing (slower)");
-    JRadioButton awt = new JRadioButton("AWT (faster, but no preview)");
-    group.add(swing);
-    group.add(awt);
-
-    JLabel l = new JLabel("Use which file chooser:");
-    l.setAlignmentX(LEFT_ALIGNMENT);
-
-    co.add(l, gbc);
-
-    gbc.gridx++;
-
-    co.add(swing, gbc);
-
-    gbc.gridx++;
-    gbc.weightx = 1;
-
-    co.add(awt, gbc);
-
-    // TODO: add spacer below bottom, just in case?
-
-*/
+	 * This appears to be absolutely useless. Commented out for now? - lucas
+	 * ButtonGroup group = new ButtonGroup(); JRadioButton swing = new
+	 * JRadioButton("Swing (slower)"); JRadioButton awt = new JRadioButton("AWT
+	 * (faster, but no preview)"); group.add(swing); group.add(awt);
+	 * 
+	 * JLabel l = new JLabel("Use which file chooser:");
+	 * l.setAlignmentX(LEFT_ALIGNMENT);
+	 * 
+	 * co.add(l, gbc);
+	 * 
+	 * gbc.gridx++;
+	 * 
+	 * co.add(swing, gbc);
+	 * 
+	 * gbc.gridx++; gbc.weightx = 1;
+	 * 
+	 * co.add(awt, gbc);
+	 *  // TODO: add spacer below bottom, just in case?
+	 * 
+	 */
 
     add(co, BorderLayout.NORTH);
   }

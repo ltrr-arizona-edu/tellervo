@@ -91,6 +91,12 @@ public class SampleDataView extends JPanel implements SampleListener,
 					System.currentTimeMillis(), 0, KeyEvent.VK_ENTER));
 	}
 
+	public void enableEditing(boolean enable) {
+		if(!enable)
+			stopEditing();
+		((DecadalModel)myModel).enableEditing(enable);
+	}
+	
 	public SampleDataView(Sample s) {
 		// copy data reference, add self as observer
 		mySample = s;
@@ -259,17 +265,17 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 	// default is an empty string to type in.
 	public void insertYear() {
-		insertYear("");
+		insertYear("", true);
 	}
 
 	// use Sample.MR for now.
 	// -- let users change this?
 	// -- add it as "MR", display as a different symbol, and save as "MR"?
 	public void insertMR() {
-		insertYear(new Integer(Sample.MR));
+		insertYear(new Integer(Sample.MR), true);
 	}
 
-	public void insertYear(Object val) {
+	public void insertYear(Object val, boolean selectAndEdit) {
 		// note: ideally this would never be called for isSummed() or
 		// isIndexed() samples, so these checks will be obselete.
 
@@ -309,14 +315,25 @@ public class SampleDataView extends JPanel implements SampleListener,
 		myTable.setRowSelectionInterval(row, row);
 		myTable.setColumnSelectionInterval(col, col);
 
-		// (HACK! -- but not if it's a MR.)
-		if (!val.equals(new Integer(Sample.MR)))
+		if (selectAndEdit)
 			myTable.editCellAt(row, col);
 
 		// set modified
 		mySample.fireSampleDataChanged();
 		mySample.fireSampleRedated();
 		mySample.setModified();
+		
+		if(!selectAndEdit) {
+			// what's the next year?
+			y = y.add(1);
+
+			// where's it located?
+			row = y.row() - mySample.range.getStart().row();
+			col = y.column() + 1;
+
+			myTable.setRowSelectionInterval(row, row);
+			myTable.setColumnSelectionInterval(col, col);
+		}
 	}
 
 	// TODO: insert/delete shouldn't be enabled if the selection isn't a data year, either.
@@ -413,6 +430,10 @@ public class SampleDataView extends JPanel implements SampleListener,
 	}
 
 	public void measured(int x) {
+		this.insertYear(new Integer(x), false);
+		Toolkit.getDefaultToolkit().beep();
+		
+		/*
 		// figure out what year we're looking at now -- BREAKS IF EDITING=TRUE
 		Year y = ((DecadalModel) myTable.getModel()).getYear(myTable
 				.getSelectedRow(), myTable.getSelectedColumn());
@@ -457,5 +478,6 @@ public class SampleDataView extends JPanel implements SampleListener,
 		// select it
 		myTable.setRowSelectionInterval(row, row);
 		myTable.setColumnSelectionInterval(col, col);
+		*/
 	}
 }

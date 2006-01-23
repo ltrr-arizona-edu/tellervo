@@ -220,9 +220,19 @@ public class DecadalModel extends AbstractTableModel {
 		return ((col >= 1 && col <= 10) ? Integer.class : String.class);
 	}
 
+	private boolean editingOff = false;
+	public void enableEditing(boolean enable) {
+		// if it's true, turn off editingOff
+		editingOff = !enable;
+	}
+	
 	public boolean isCellEditable(int row, int col) {
 		// REFACTOR this whole method.  i'd like to see a couple temps, then something simple
 		// like return a||b||c||d;
+		
+		// we're currently in a mode that doesn't allow editing!
+		if(editingOff)
+			return false;
 
 		// feature: (0,0) is editable (it's the start year, and editing it redates the sample)
 		if (row == 0 && col == 0)

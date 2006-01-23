@@ -32,7 +32,9 @@ import corina.formats.TwoColumn;
 import corina.formats.WrongFiletypeException;
 import corina.gui.menus.EditMenu;
 import corina.gui.Bug;
+import corina.io.SerialSampleIO;
 import corina.logging.CorinaLog;
+import corina.core.App;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -82,7 +84,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 */
 public class EditorEditMenu extends EditMenu implements SampleListener {
 	private Sample sample;
-
+	private Editor editor;
 	private SampleDataView dataView;
 
 	/**
@@ -92,11 +94,12 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	 @param sample the Sample to watch
 	 @param dataView the SampleDataView to use for inserting and deleting years
 	 */
-	public EditorEditMenu(Sample sample, SampleDataView dataView) {
+	public EditorEditMenu(Sample sample, SampleDataView dataView, Editor editor) {
 		super();
 
 		this.sample = sample;
 		this.dataView = dataView;
+		this.editor = editor;
 
 		sample.addSampleListener(this);
 	}
@@ -175,7 +178,13 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		addInsert();
 		addInsertMR();
 		addDelete();
-
+		
+		if(SerialSampleIO.hasSerialCapability() && 
+				App.prefs.getPref("corina.serialsampleio.port") != null) {			
+			addSeparator();
+			addMeasure();
+		}
+		
 		/*
 		 // if comm present, start/stop measure
 		 if (false) { // Measure.hasSerialAPI()) {
@@ -189,6 +198,16 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		// TODO: hit listeners to make initial state right
 	}
 
+	private void addMeasure() {
+		measureMenu = Builder.makeMenuItem("start_measuring");
+		measureMenu.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				editor.startMeasuring();
+			}
+		});
+		add(measureMenu);
+	}
+	
 	private void addInsert() {
 		insert = Builder.makeMenuItem("insert_year");
 		insert.addActionListener(new AbstractAction() {
@@ -360,6 +379,16 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		// measure menu: only if not summed
 		if (measureMenu != null)
 			measureMenu.setEnabled(!sample.isSummed());
+	}
+	
+	public void enableMeasureMenu(boolean enable) {
+		if(measureMenu == null)
+			return;
+		
+		if(!enable)
+			measureMenu.setEnabled(false);
+		else
+			measureMenu.setEnabled(!sample.isSummed());			
 	}
 
 	public void sampleElementsChanged(SampleEvent e) {

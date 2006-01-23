@@ -27,6 +27,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
 import java.awt.print.PageFormat;
 import java.io.File;
 import java.io.IOException;
@@ -86,6 +87,8 @@ import corina.util.Center;
 import corina.util.DocumentListener2;
 import corina.util.OKCancel;
 import corina.util.Overwrite;
+import corina.io.SerialSampleIO;
+import corina.io.SerialSampleIOEvent;
 
 /*
  left to do:
@@ -161,6 +164,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private JPanel wjPanel;
 
 	private ElementsPanel elemPanel = null;
+	
+	private EditorMeasurePanel measurePanel = null;
 
 	private JComponent metaView;
 
@@ -172,6 +177,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	// for menus we have to notify...
 	private EditorViewMenu editorViewMenu;
 	private EditorSumMenu editorSumMenu;
+	private EditorEditMenu editorEditMenu;
 
 	// undo
 	private UndoManager undoManager = new UndoManager();
@@ -706,7 +712,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// TODO: extend CorinaMenuBar
 		menubar.add(new EditorFileMenu(this));
-		menubar.add(new EditorEditMenu(sample, dataView));
+		editorEditMenu = new EditorEditMenu(sample, dataView, this);
+		menubar.add(editorEditMenu);
 		editorViewMenu = new EditorViewMenu(sample, elemPanel);
 		menubar.add(editorViewMenu);
 		menubar.add(new EditorManipMenu(sample, this));
@@ -907,6 +914,45 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		result[3] = s4.isSelected();
 		return result;
 	}
+	
+	public void startMeasuring() {
+		SerialSampleIO dataPort;
+		try {
+			dataPort = new SerialSampleIO(App.prefs.getPref("corina.serialsampleio.port"));
+			dataPort.initialize();
+		}
+		catch (IOException ioe) {
+			Alert.error("Couldn't start measuring", 
+					"There was an error while initializing the external communications device: " +
+					ioe.toString());
+			return;
+		}
+		
+		editorEditMenu.enableMeasureMenu(false);
+		dataView.enableEditing(false);
+		
+		// add the measure panel...
+		measurePanel = new EditorMeasurePanel(this, dataPort);
+		add(measurePanel, BorderLayout.SOUTH);
+		getContentPane().validate();
+		getContentPane().repaint();
+	}
+	
+	public void stopMeasuring() {
+		measurePanel.cleanup();
+		remove(measurePanel);
+		editorEditMenu.enableMeasureMenu(true);
+		dataView.enableEditing(true);		
+		getContentPane().validate();
+		getContentPane().repaint();
+		measurePanel = null;
+	}
+	
+    public void windowClosing(WindowEvent e) {
+		if(measurePanel != null)
+			stopMeasuring();    	
+		super.windowClosing(e);
+    }
 
 	protected void finalize() throws Throwable {
 		super.finalize();
