@@ -24,6 +24,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Shape;
 import java.awt.Graphics2D;
 import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
@@ -369,10 +370,14 @@ public class Grid implements Runnable, Previewable {
 			for (int x = startCol; x <= stopCol; x++) {
 				for (int y = startRow; y <= stopRow; y++) {
 					Cell c = grid.cell[y][x];
+					Shape oldclip = g2.getClip();
 					c.print(g2, ((int) pf.getImageableX()) + (x - startCol)
 							* getCellWidth(), ((int) pf.getImageableY())
 							+ (y - startRow) * getCellHeight(), 
 							getCellWidth(), getCellHeight(), 1.0f); // always print to paper with scale=1.0
+					
+					// remove any clipping set by the cell...
+					g2.setClip(oldclip);
 				}
 			}
 
