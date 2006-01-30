@@ -174,9 +174,10 @@ public class Heidelberg implements Filetype {
 	    w.write(StringUtils.leftPad(wjIsNull ? "0" : s.decr.get(i).toString(), 5));
 
 	    // newline every 4
-	    column++;
 	    if (column % 4 == 3)
-		w.newLine();
+	    	w.newLine();
+	    
+	    column++;	    
 	}
 
 	// COMBINE these: newline-every-4, and extra-0's-to-pad both
