@@ -14,14 +14,35 @@ import gnu.io.*;
  * 
  */
 
-public class SerialSampleIO implements SerialPortEventListener {
+public class SerialSampleIO 
+
+/*{
+	// for disabling this whole thing outright...
+	public SerialSampleIO(String s) throws IOException {}
+	public static boolean hasSerialCapability() { return false; }
+	public void close() {}
+	public void initialize() {}
+	public static Vector enumeratePorts() { return new Vector(); }
+	public void addSerialSampleIOListener(Object o) {}
+	*/
+
+implements SerialPortEventListener {
 	
 	// not used yet, since this is borked
 	private static final int EVE_ENQ = 5;
 	private static final int EVE_ACK = 6;
+	private static final int EVE_NAK = 7;
 	
 	// the actual serial port
 	private SerialPort dataPort;
+	private BufferedOutputStream dataOutStream;
+	
+	// the state...
+	private static final int SERIALSTATE_WAITINGFORACK = 2;
+	private static final int SERIALSTATE_NORMAL = 1;
+	
+	private int serialState;
+	
 	// serial NUMBER of the last data point...
 	private int lastSerial = -1;
 	
@@ -31,6 +52,7 @@ public class SerialSampleIO implements SerialPortEventListener {
 	// tie us to the port...
 	public SerialSampleIO(String portName) throws IOException {
 		dataPort = openPort(portName);
+		serialState = SERIALSTATE_NORMAL;
 	}
 	
 	// on shutdown, make sure we closed the port.
@@ -42,14 +64,19 @@ public class SerialSampleIO implements SerialPortEventListener {
 
 	// clean up!
 	public void close() {
+		dataOutStream = null;
 		dataPort.close();
 		dataPort = null;
 	}
 	
 	public void initialize() throws IOException {
-		OutputStream output = dataPort.getOutputStream();
-
-		// uh.. nothing yet. this is broken?
+		/*
+		serialState = SERIALSTATE_WAITINGFORACK;
+		
+		dataPort.getOutputStream().write(SerialSampleIO.EVE_ENQ);
+		dataOutStream.write(SerialSampleIO.EVE_ENQ);		
+		*/
+		// writing fails on my USB->Serial adapter...
 	}
 	
 	public void serialEvent(SerialPortEvent e) {
@@ -66,26 +93,39 @@ public class SerialSampleIO implements SerialPortEventListener {
 			}
 			
 			try {
-				int counter, valuehi, valuelo, value;
-				
-				// if any of these are -1, we timed out. 
-				// something was most likely invalid in the send/serial link...
-				// don't worry, we still have to ACK everything.
-				if(((counter = input.read()) == -1) ||
-				   ((valuehi = input.read()) == -1) ||
-				   ((valuelo = input.read()) == -1)) {
-					fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
-					return;
+				if(serialState == SERIALSTATE_WAITINGFORACK) {
+					int val = input.read();
+					
+					if(val == EVE_ACK) {
+						System.out.println("Received ACK");
+						
+						serialState = SERIALSTATE_NORMAL;
+						return;
+					}
+					System.out.println("Received " + val + "while waiting for ACK");
 				}
-			
-				// this is a duplicate packet. ignore it!
-				if(counter == lastSerial)
-					return;
-				
-				lastSerial = counter;
-				value = (256 * valuehi) + valuelo;
-				
-				fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, new Integer(value));
+				else if(serialState == SERIALSTATE_NORMAL) {
+					int counter, valuehi, valuelo, value;
+					
+					// if any of these are -1, we timed out. 
+					// something was most likely invalid in the send/serial link...
+					// don't worry, we still have to ACK everything.
+					if(((counter = input.read()) == -1) ||
+							((valuehi = input.read()) == -1) ||
+							((valuelo = input.read()) == -1)) {
+						fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
+						return;
+					}
+					
+					// this is a duplicate packet. ignore it!
+					if(counter == lastSerial)
+						return;
+					
+					lastSerial = counter;
+					value = (256 * valuehi) + valuelo;
+					
+					fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, new Integer(value));
+				}
 			}
 			catch (IOException ioe) {
 				System.out.println("Error reading from serial port: " + ioe);
@@ -93,23 +133,34 @@ public class SerialSampleIO implements SerialPortEventListener {
 			
 		}
 	}
-		
+	
+	// obnoxiously stupid, but on a 'link error' Java seems to 
+	// mess around for a few seconds, perhaps searching other libraries?
+	// Let's only do this once.
+	private static boolean hscChecked = false;
+	private static boolean hscResult = false;
 	// returns TRUE if serial package is capable on this platform...
-	public static boolean hasSerialCapability() {
+	public static boolean hasSerialCapability() {		
+		// stupid.
+		if(hscChecked)
+			return hscResult;
+
+		// set the checked flag... check it, if it succeeds, change the result.
+		hscChecked = true;
 		try {
+			// this loads the DLL...
 			Class.forName("gnu.io.RXTXCommDriver");
-			return true;
+			hscResult = true;
 		}
-		catch (ClassNotFoundException e) {
+		catch (Exception e) {
 			// driver not installed...
 			System.err.println(e.toString());
-			return false;
 		}
-		catch (java.lang.UnsatisfiedLinkError e) {
+		catch (Error e) {
 			// native interface not installed...
 			System.err.println(e.toString());
-			return false;
 		}
+		return hscResult;
 	}
 	
 	// return an array of Strings that contains all serial port identifiers...
@@ -156,6 +207,8 @@ public class SerialSampleIO implements SerialPortEventListener {
 			
 			// time out after 500ms when reading...
 			((SerialPort)port).enableReceiveTimeout(500);
+			
+			dataOutStream = new BufferedOutputStream((((SerialPort)port).getOutputStream()));
 		}
 		catch (NoSuchPortException e) {
 			throw new IOException("Unable to open port: it does not exist!");
