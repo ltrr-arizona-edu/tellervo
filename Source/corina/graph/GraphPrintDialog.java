@@ -318,8 +318,8 @@ public class GraphPrintDialog extends JPanel {
 		JTextField inchheight;
 		JTextField inchwidth;
 		JRadioButton landscape;
-		JRadioButton portrait;
 		JRadioButton reverse_landscape;
+		JLabel printWidthHeight;
 				
 		GraphInfo gInfo;
 		
@@ -332,8 +332,6 @@ public class GraphPrintDialog extends JPanel {
 	    public int getPrintFormat() {
 	    	if(landscape.isSelected())
 	    		return PageFormat.LANDSCAPE;
-	    	if(portrait.isSelected())
-	    		return PageFormat.PORTRAIT;
 	    	if(reverse_landscape.isSelected())
 	    		return PageFormat.REVERSE_LANDSCAPE;
 	    	
@@ -369,7 +367,7 @@ public class GraphPrintDialog extends JPanel {
 		    gbc.gridx++;
 		    
 		    pixelsperyear = new JTextField(6);
-		    pixelsperyear.setText(Integer.toString(g.getYearSize()));
+		    pixelsperyear.setText(Integer.toString(10));
 		    pixelsperyear.getDocument().addDocumentListener(this);
 		    pixelsperyear.getDocument().putProperty("propname", "pixelsperyear");
 		    jl.setLabelFor(pixelsperyear);
@@ -386,7 +384,7 @@ public class GraphPrintDialog extends JPanel {
 		    dpi = new JTextField(6);
 		    if(printType != GraphPrintDialog.PRINT_PRINTER)
 		    	dpi.setEditable(false);
-		    dpi.setText(Integer.toString(72));
+		    dpi.setText(Integer.toString(100));
 		    dpi.getDocument().addDocumentListener(this);
 		    dpi.getDocument().putProperty("propname", "dpi");
 		    jl.setLabelFor(dpi);
@@ -491,25 +489,59 @@ public class GraphPrintDialog extends JPanel {
 				
 				landscape = new JRadioButton("Print landscape", true);
 				reverse_landscape = new JRadioButton("Print reverse landscape");
-				portrait = new JRadioButton("Print portrait", true);
 				
 				ButtonGroup printbuttons = new ButtonGroup();
 				
 				printbuttons.add(landscape);
 				printbuttons.add(reverse_landscape);
-				printbuttons.add(portrait);
 
 				// start a row
 				gbc.gridx = 0;				
 				co.add(landscape, gbc);
 				gbc.gridx++;
-				co.add(portrait, gbc);
-				gbc.gridy++;
-				gbc.gridx = 0;				
 				co.add(reverse_landscape, gbc);
 
+				gbc.gridy++;
+				gbc.gridx = 0;
+				gbc.fill = gbc.HORIZONTAL;
+				gbc.gridwidth = gbc.REMAINDER;
+				
+				co.add(new JLabel("<html>When specifying paper size during printing, " +
+						"make sure to use <i>at least</i> the following paper width and height:<br>"),
+						gbc);
+				
+				gbc.gridy++;
+				gbc.gridx = 0;
+				gbc.gridwidth = gbc.REMAINDER;
+				
+				printWidthHeight = new JLabel("n/a");
+				co.add(printWidthHeight, gbc);
+
 				add(co, BorderLayout.SOUTH);
-			}		    
+			}		   
+		    
+		    updatePrintDimensions();
+		}
+		
+		private void updatePrintDimensions() {
+		    float pgraphHeight = 0.0f;
+		    try {
+		    	pgraphHeight = ((float) gInfo.getDrawRange().span() * gInfo.getYearSize()) / 
+		    		Float.parseFloat(dpi.getText());
+		    } catch (Exception e) { }
+		    
+		    float pgraphWidth = 0.0f;
+			try {
+		    	pgraphWidth = (float) gInfo.getPrintHeight() / Float.parseFloat(dpi.getText());
+			} catch (Exception e) {	}		 
+			
+			// half an inch on each side!
+			pgraphWidth += 1f;
+			pgraphHeight += 1f;
+		    
+			printWidthHeight.setText("<html><b>" +
+					dfmt.format(pgraphWidth) + "\"</b>(w) x <b>" +
+					dfmt.format(pgraphHeight) + "\"</b>(h)");			
 		}
 		
 		private void recalc(DocumentEvent d) {
@@ -577,6 +609,7 @@ public class GraphPrintDialog extends JPanel {
 			    		));								
 			}
 			*/
+			updatePrintDimensions();
 		}
 		
 		public void insertUpdate(DocumentEvent d) {
@@ -727,9 +760,18 @@ public class GraphPrintDialog extends JPanel {
 		    this.info = info;
 		    this.plotter = plotter; 
 		    
-		    // we need to make a scale from 72nds of an inch to DPInds of an inch...
-		    w = gInfo.getDrawRange().span() * gInfo.getYearSize();
-		    h = gInfo.getPrintHeight();
+		    // set the orientation
+		    pfmt.setOrientation(params.getPrintFormat());
+
+		    // CONFUSED?
+		    // we print landscape!
+		    // so, confusingly, the "width" of the printed graph is the height 
+		    // of the graph we see on the screen and the "height" of the printed 
+		    // graph is the width we see on the screen
+		    
+		    // we need to make a scale from 72nds of an inch to "DPI" of an inch...
+		    h = gInfo.getDrawRange().span() * gInfo.getYearSize();
+		    w = gInfo.getPrintHeight();
 		    pscale = 72.0 / (double) params.getDPI();
 		    
 		    // width, height is now in pixels.. 
@@ -739,6 +781,12 @@ public class GraphPrintDialog extends JPanel {
 		    
 		    int m1 = 72;
 		    int m2 = m1 * 2;
+		    
+		    paper.setSize(w + m2, h + m2);
+		    paper.setImageableArea(m1, m1, w, h);
+		    pfmt.setPaper(paper);
+
+		    /*
 
 		    // for some reason, this is retarded...
 		    if(h > w) {
@@ -756,6 +804,7 @@ public class GraphPrintDialog extends JPanel {
 		    
 			pfmt.setPaper(paper);		    		    	
 		    pfmt.setOrientation(params.getPrintFormat());
+		    */
 		    format = pfmt;
 
 		    job.setJobName("Corina plot");
