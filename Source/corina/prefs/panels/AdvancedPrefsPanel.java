@@ -196,6 +196,10 @@ public class AdvancedPrefsPanel extends JPanel {
     		comportlist.add(curport);
     		addedPort = true;
     	}
+    	else {
+    		curport = "<choose a serial port>";
+    		comportlist.add(curport);
+    	}
     	
     	// make the combobox, and select the current port...
     	final JComboBox comports = new JComboBox(comportlist);
