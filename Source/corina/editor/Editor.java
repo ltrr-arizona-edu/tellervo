@@ -829,12 +829,24 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 	public Object getPrinter(PageFormat pf) {
 		// what to do with |format| here?
+		
+		SampleBit bits = SampleBit.askBits(this);
+		
+		// user cancelled anyway...
+		if(bits == null)
+			return null;
+		
+		SamplePrintEditor spe = new SamplePrintEditor(sample, bits, this, (int) pf.getImageableWidth());
+		
+		return spe.getPrintable();
+		
+//		return null;
 
 		// TODO: use askWhichPages() to figure out which sections to print
 		// then pass to SamplePrinter(sample, bool[])
 		// BUT: how to distinguish?  as an Editor, i'll represent 2 PrintableDocs!
 
-		return new SamplePrinter(sample);
+		//return new SamplePrinter(sample);
 	}
 
 	// TODO: use me!

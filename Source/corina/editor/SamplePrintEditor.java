@@ -24,6 +24,9 @@ import javax.swing.JScrollPane;
 import javax.swing.text.*;
 
 import java.awt.FlowLayout;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.Rectangle;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -75,10 +78,12 @@ public class SamplePrintEditor extends JPanel {
 				if (kind.equals(AbstractDocument.ContentElementName)) {
 					return new LabelView(elem);
 				} else if (kind.equals(AbstractDocument.ParagraphElementName)) {
-					// This is the only thing we've changed.
+					// We changed this so we can mess with tab stops
 					return new SPParagraphView(elem);
 				} else if (kind.equals(AbstractDocument.SectionElementName)) {
 					return new BoxView(elem, View.Y_AXIS);
+					// we changed this so we can zoom in on text
+					//return new ScaledBoxView(elem, View.Y_AXIS);
 				} else if (kind.equals(StyleConstants.ComponentElementName)) {
 					return new ComponentView(elem);
 				} else if (kind.equals(StyleConstants.IconElementName)) {
@@ -87,7 +92,83 @@ public class SamplePrintEditor extends JPanel {
 			// default to text display
 			return new LabelView(elem);
 		}
-	}	
+	}
+	
+	/*
+	private class ScaledBoxView extends BoxView {
+		private double zoomFactor = 2.0f;
+	    public ScaledBoxView(Element elem, int axis) {
+	        super(elem,axis);
+	    }
+	    
+	    public double getZoomFactor() {
+	    	return zoomFactor;
+	    }
+	    
+	    public void setZoomFactor(double zoom) {
+	    	zoomFactor = zoom;
+	    }
+	 
+	    public void paint(Graphics g, Shape allocation) {
+	        Graphics2D g2d = (Graphics2D)g;
+	        g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
+	                             RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+	        double zoomFactor = getZoomFactor();
+	        AffineTransform old=g2d.getTransform();
+	        g2d.scale(zoomFactor, zoomFactor);
+	        super.paint(g2d, allocation);
+	        g2d.setTransform(old);
+	    }
+	 
+	    public float getMinimumSpan(int axis) {
+	    	return (float) (super.getMinimumSpan(axis) * getZoomFactor());
+	    }
+	 
+	    public float getMaximumSpan(int axis) {
+	    	return (float) (super.getMaximumSpan(axis) * getZoomFactor());
+	    }
+	 
+	    public float getPreferredSpan(int axis) {
+	    	return (float) (super.getPreferredSpan(axis) * getZoomFactor());
+	    }
+	 
+	    public Shape modelToView(int pos, Shape a, Position.Bias b) throws BadLocationException {
+	        double zoomFactor = getZoomFactor();
+	        Rectangle alloc;
+	        alloc = a.getBounds();
+	        Shape s = super.modelToView(pos, alloc, b);
+	        alloc = s.getBounds();
+	        alloc.x*=zoomFactor;
+	        alloc.y*=zoomFactor;
+	        alloc.width*=zoomFactor;
+	        alloc.height*=zoomFactor;
+	 
+	        return alloc;
+	    }
+	 
+	 
+	    public int viewToModel(float x, float y, Shape a, Position.Bias[] bias) {
+	        double zoomFactor = getZoomFactor();
+	        Rectangle alloc = a.getBounds();
+	        x/=zoomFactor;
+	        y/=zoomFactor;
+	        alloc.x/=zoomFactor;
+	        alloc.y/=zoomFactor;
+	        alloc.width/=zoomFactor;
+	        alloc.height/=zoomFactor;
+	 
+	        return super.viewToModel(x, y, alloc, bias);
+	    }
+	 
+	    protected void layout(int width, int height) {
+	        super.layout(
+	        		new Double(width/getZoomFactor()).intValue(),
+	        		new Double(height*getZoomFactor()).intValue());
+	    }
+	 
+	}
+	*/
+	
 	private class SPParagraphView extends ParagraphView {
 		char mutantTabDecimalChars[];
 		char mutantTabChars[];
@@ -187,12 +268,10 @@ public class SamplePrintEditor extends JPanel {
 	        } catch (BadLocationException e) {} 
 		}
 		public void paintComponent(Graphics g) {
-			/*
-			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, 
-					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+					RenderingHints.VALUE_ANTIALIAS_ON);
 			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_RENDERING, 
 					RenderingHints.VALUE_RENDER_QUALITY);
-					*/
 			super.paintComponent(g);
 		}
 		public int print(Graphics g, PageFormat pageFormat, int pagenum) {
