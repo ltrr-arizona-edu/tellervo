@@ -382,6 +382,11 @@ public class FileMenu extends JMenu {
 	PrintableDocument doc = (PrintableDocument) f;
 
 	Object p = doc.getPrinter(pageFormat);
+	
+	// let the printable object cancel.
+	if(p == null)
+		return;
+	
 	if (p instanceof Printable)
 	    printJob.setPrintable((Printable) p);
 	else if (p instanceof Pageable)
