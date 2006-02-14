@@ -128,7 +128,7 @@ public class GraphPrintDialog extends JPanel {
 	    });
 
 	    String canceltext = corina.ui.I18n.getText("cancel");
-	    if (canceltext == null) oktext = "Cancel";
+	    if (canceltext == null) canceltext = "Cancel";
 	    JButton cancelButton = new JButton(canceltext);
 	    okButtonContainer.add(cancelButton);
 	    cancelButton.addActionListener(new ActionListener() {
