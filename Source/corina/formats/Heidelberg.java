@@ -74,6 +74,7 @@ public class Heidelberg implements Filetype {
 
 	// don't know end, yet
 	Year end = null;
+	int length = -1;
 
 	// metadata
 	for (;;) {
@@ -94,6 +95,9 @@ public class Heidelberg implements Filetype {
 	    // got end-date.
 	    if (tag.equals("DateEnd"))
 		end = new Year(value);
+	    
+	    if (tag.equals("Length"))
+	    	length = Integer.parseInt(value);
 
 	    // WRITE ME: parse other tags and interpret metadata as
 	    // intelligently as possible
@@ -105,26 +109,39 @@ public class Heidelberg implements Filetype {
 
 	// data -- i'll assume all data is (width,count,up,down)
 	StreamTokenizer t = new StreamTokenizer(r);
+	int idx = 0;
+	
 	for (;;) {
 	    // parse (datum, count, up, dn)
-	    t.nextToken();
-	    int datum = (int) t.nval;
-	    t.nextToken();
-	    int count = (int) t.nval;
-	    t.nextToken();
-	    int up = (int) t.nval;
-	    t.nextToken();
-	    int dn = (int) t.nval;
+		int datum, count, up, dn;
+		try {
+				t.nextToken();
+				datum = (int) t.nval;
+				t.nextToken();
+				count = (int) t.nval;
+				t.nextToken();
+				up = (int) t.nval;
+				t.nextToken();
+				dn = (int) t.nval;
+		} catch (IOException ioe) {
+			throw new WrongFiletypeException();
+		}
 
 	    // (0,0,0,0) seems to mean end-of-sample
 	    if (datum == 0)
-		break;
+	    	break;
 
 	    // add to lists
 	    s.data.add(new Integer(datum));
 	    s.count.add(new Integer(count));
 	    s.incr.add(new Integer(up));
 	    s.decr.add(new Integer(dn));
+	    
+	    idx++;
+	    
+	    // break out if we have 'length' samples
+	    if(idx == length)
+	    	break;
 	}
 
 	// no end?  die.
