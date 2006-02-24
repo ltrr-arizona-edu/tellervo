@@ -281,7 +281,7 @@ public class Browser extends XFrame {
 		// watch size/location -- EXTRACT this?
 		String geom = App.prefs.getPref("corina.browser.geometry");
 		if (geom == null)
-			geom = "600x400+20+20";
+			geom = "600x400+100+20";
 		Geometry.decode(this, geom); // FIXME: bad interface!  (really?)
 		final JFrame glue = this;
 		addComponentListener(new ComponentAdapter() {
@@ -501,7 +501,7 @@ public class Browser extends XFrame {
 		// DISABLED: folderPopup.addKeyListener(new KeyboardSorter());
 		searchField.addKeyListener(new KeyboardSorter());
 
-		show();
+		setVisible(true);
 
 		// UGLY: if it's after the show() call, it starts out the other way, and
 		// then jumps to the correct widths; if it's before, it has no effect.
@@ -1318,10 +1318,15 @@ public class Browser extends XFrame {
 					summary = new Summary(folder, monitor, _parent);
 
 					// FIXME: summary c'tor needs to have a ref to this monitor
+				} catch (Throwable thr) {
+					new Bug(thr);
+				}
+					/*
 				} catch (IOException ioe) {
 					System.out.println("BUG: ioe!");
 					ioe.printStackTrace();
 				}
+				*/
 				
 				int idx = 0;
 				Iterator filenames = summary.getFilenames();

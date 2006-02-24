@@ -85,8 +85,8 @@ public class Startup implements PrivilegedAction {
       // let's go...
       XCorina.showCorinaWindow();
 
-    } catch (Exception e) {
-      Bug.bug(e);
+    } catch (Throwable t) {
+      new Bug(t);
     }
     return null;
   }
