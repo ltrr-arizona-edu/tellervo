@@ -169,6 +169,30 @@ public class Layout {
 	p.add(componentOrString(o5));
 	return p;
     }
+    public static JPanel flowLayoutL(Object o1, Object o2, Object o3,
+		     Object o4, Object o5, Object o6) {
+   JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+   p.add(componentOrString(o1));
+   p.add(componentOrString(o2));
+   p.add(componentOrString(o3));
+   p.add(componentOrString(o4));
+   p.add(componentOrString(o5));
+   p.add(componentOrString(o6));
+   return p;
+   }
+    public static JPanel flowLayoutL(Object o1, Object o2, Object o3,
+		     Object o4, Object o5, Object o6, Object o7) {
+   JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+   p.add(componentOrString(o1));
+   p.add(componentOrString(o2));
+   p.add(componentOrString(o3));
+   p.add(componentOrString(o4));
+   p.add(componentOrString(o5));
+   p.add(componentOrString(o6));
+   p.add(componentOrString(o7));
+   return p;
+   }
+    
 
     public static JPanel flowLayoutC(Object o1) {
 	JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
