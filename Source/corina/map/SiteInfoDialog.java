@@ -86,16 +86,18 @@ public class SiteInfoDialog extends JDialog {
 	private JCheckBox ancient, medieval, forest, unknown;
 
 	private JTextArea comments;
+	
+	private JButton location_edit;
 
 	// ADDME: folder
 
 	// display info for |site|;
 	// center over |window|, or on screen if null.
-	public SiteInfoDialog(Site site, Window window) {
-		super((Frame) window, site.getName(), true);
+	public SiteInfoDialog(Site infosite, Window window) {
+		super((Frame) window, infosite.getName(), true);
 
 		// save site reference
-		this.site = site;
+		this.site = infosite;
 
 		// set dialog title
 		setTitle(site.getName());
@@ -113,6 +115,20 @@ public class SiteInfoDialog extends JDialog {
 		// FIXME: getLocationAsString, getAltitudeAsString()
 		location = new JTextField(site.getLocation() == null ? "" : site
 				.getLocation().toString(), 15);
+		location.setEditable(false);
+		
+		location_edit = new JButton("Change");
+		location_edit.setFont(location_edit.getFont().deriveFont(9.0f));
+		location_edit.setPreferredSize(new Dimension(20, 20));
+		final JDialog _parent = this;
+		location_edit.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				new LocationEditorDialog(site, _parent);
+				location.setText(site.getLocation() == null ? "" : site.getLocation().toString());
+			}
+		});
+		
+		
 		altitude = new JTextField(site.getAltitude() == null ? "" : site
 				.getAltitude().toString(), 5);
 		country = new CountryPopup(this, site.getCountry());
@@ -121,9 +137,12 @@ public class SiteInfoDialog extends JDialog {
 				+ I18n.getText("meters")));
 
 		JPanel line_2 = Layout.flowLayoutL(
-				labelOnTop("site_location", location), strutH(12), labelOnTop(
-						"site_altitude", altitude2), strutH(12), labelOnTop(
-						"site_country", country));
+				labelOnTop("site_location", location), 
+				labelOnTopNotKey(" ", location_edit),
+				strutH(12), 
+				labelOnTop("site_altitude", altitude2), 
+				strutH(12), 
+				labelOnTop("site_country", country));
 
 		// type line
 		species = new JTextField(site.getSpecies(), 20);
@@ -237,6 +256,13 @@ public class SiteInfoDialog extends JDialog {
 	// (note: label is actually an i18n key!)
 	private static JComponent labelOnTop(String key, JComponent component) {
 		String text = I18n.getText(key) + ":";
+
+		return Layout.borderLayout(new JLabel(text), null, component, null,
+				null);
+	}
+
+	private static JComponent labelOnTopNotKey(String key, JComponent component) {
+		String text = key;
 
 		return Layout.borderLayout(new JLabel(text), null, component, null,
 				null);

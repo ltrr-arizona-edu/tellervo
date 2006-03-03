@@ -341,6 +341,27 @@ public final class Location implements Cloneable {
     //
     // TOSTRING
     //
+
+    /*
+     * For location editor
+     */
+    
+    public String getEasyString() {
+        // extract degrees and minutes, latitude and longitude
+        int latDegs = Math.abs(getLatitudeAsSeconds()) / 3600;
+        int latMins = Math.abs(getLatitudeAsSeconds()) / 60 - latDegs * 60;
+        int longDegs = Math.abs(getLongitudeAsSeconds()) / 3600;
+        int longMins = Math.abs(getLongitudeAsSeconds()) / 60 - longDegs * 60;
+        
+	// hemispheres
+	String latHemi = (latitude > 0 ? NORTH : SOUTH);
+	String longHemi = (longitude > 0 ? EAST : WEST);
+
+	// assemble it into a string
+	return latDegs + "," + latMins + "," + latHemi + "," +
+               longDegs + "," + longMins + "," + longHemi;
+    	
+    }
     
     /**
        Return this location as a nicely-formatted string.  The string returned by this
@@ -368,7 +389,7 @@ public final class Location implements Cloneable {
     }
 
     // unicode DEGREE SIGN character
-    private static final String DEGREE_SIGN = "\u00B0";
+    public static final String DEGREE_SIGN = "\u00B0";
 
     // is this string an ISO-6709 location?
     private boolean isISO6709(String check) {
