@@ -4,6 +4,7 @@
 package corina.editor;
 
 import javax.swing.*;
+import java.awt.Rectangle;
 import java.awt.Font;
 
 import javax.swing.JButton;
@@ -274,7 +275,45 @@ public class SamplePrintEditor extends JPanel {
 					RenderingHints.VALUE_RENDER_QUALITY);
 			super.paintComponent(g);
 		}
+		
+		protected int printingPage = -1;
+		protected double pageEndY = 0;
+		protected double pageStartY = 0;
 		public int print(Graphics g, PageFormat pageFormat, int pagenum) {
+			Graphics2D g2 = (Graphics2D) g;
+			View root;
+			
+			textpane.setSize((int)pageFormat.getImageableWidth(), Integer.MAX_VALUE);
+			textpane.validate();
+			
+			root = textpane.getUI().getRootView(textpane);
+			
+			g2.setClip((int)pageFormat.getImageableX(), (int) pageFormat.getImageableY(),
+					(int)pageFormat.getImageableWidth(), (int) pageFormat.getImageableHeight());
+			
+			if(pagenum > printingPage) {
+				printingPage = pagenum;
+				pageStartY += pageEndY;
+				pageEndY = g2.getClipBounds().getHeight();
+			}
+			
+			g2.translate(g2.getClipBounds().getX(), g2.getClipBounds().getY());
+			
+			Rectangle alloc = new Rectangle(0, (int) -pageStartY,
+					(int) (textpane.getMinimumSize().getWidth()),
+					(int) (textpane.getPreferredSize().getHeight()));
+			
+			if(printView(g2, alloc, root)) {
+				return Printable.PAGE_EXISTS;
+			}
+			else {
+				pageStartY = 0;
+				pageEndY = 0;
+				printingPage = -1;
+				return Printable.NO_SUCH_PAGE;
+			}
+			
+			/*
 			if(pagenum > 1)
 				return Printable.NO_SUCH_PAGE;
 			
@@ -284,7 +323,78 @@ public class SamplePrintEditor extends JPanel {
 			paint(g);
 	        currentManager.setDoubleBufferingEnabled(true);			
 			return Printable.PAGE_EXISTS;
+			*/
 		}
+		protected boolean printView(Graphics2D graphics2D, Shape allocation, View view)
+		{
+			//This function paints the page if it exists
+	 
+			boolean pageExists = false;
+			Rectangle clipRectangle = graphics2D.getClipBounds();
+			Shape childAllocation;
+			View childView;
+	 
+			if(view.getViewCount() > 0)
+			{
+	 			for(int i = 0;i<view.getViewCount();i++)
+				{
+	 				childAllocation = view.getChildAllocation(i,allocation);
+					if (childAllocation != null)
+					{
+						childView = view.getView(i);
+	 
+						if(printView(graphics2D,childAllocation,childView)) 
+						{
+							pageExists = true;
+						}	 
+					}
+				}
+			}
+			else 
+			{
+				//The below if statement checks if there are pages currently to paint
+	 
+				if(allocation.getBounds().getMaxY() >= clipRectangle.getY())
+				{
+					pageExists = true;
+	 
+					if((allocation.getBounds().getHeight() > clipRectangle.getHeight()) &&
+					(allocation.intersects(clipRectangle)))
+					{
+						view.paint(graphics2D,allocation);
+					}
+	 
+					else
+					{
+	 
+						if(allocation.getBounds().getY() >= clipRectangle.getY())
+						{
+	 
+							if(allocation.getBounds().getMaxY() <= clipRectangle.getMaxY() - 15)
+							{
+								view.paint(graphics2D,allocation);
+							}
+	 
+							else
+							{
+	 
+								if(allocation.getBounds().getY() < pageEndY)
+								{
+									pageEndY = allocation.getBounds().getY();
+								}
+	 
+							}
+	 
+						}
+	 
+					}
+	 
+				}
+	 
+			}
+	 
+			return pageExists;
+		}		
 	}
 	
 	public SamplePrintEditor(Sample sample, SampleBit bits, JFrame parent, int width) {
@@ -478,12 +588,21 @@ public class SamplePrintEditor extends JPanel {
 
 		// build the summed data tab specification
 		sb.setLength(0);
+		sb.append("< 4%");
+		for(int i = 0; i < 10; i++) {
+			sb.append(" 5.7%"); // data
+		}
+		sb.append(" 3.3%");
+		for (int i = 0; i < 10; i++)
+			sb.append(" 3.4%"); // count
+		/*
 		sb.append("> 4% <");
 		for (int i = 0; i < 10; i++)
 			sb.append(" 5.7%"); // data
 		sb.append(" 5%");
 		for (int i = 0; i < 10; i++)
 			sb.append(" 3.4%"); // count
+			*/
 
 		style = textpane.getStyle("summed data");
 		tabset = EditorTabSetFactory.buildTabset(sb.toString(), width);
@@ -533,8 +652,8 @@ public class SamplePrintEditor extends JPanel {
 				decade = decade.add(-1);
 
 			// we start out indented...
-			sb.append(String.valueOf(y));
 			sb.append("\t");
+			sb.append(String.valueOf(y));
 
 			// data
 			for (int i = 0; i < 10; i++) {
@@ -543,6 +662,7 @@ public class SamplePrintEditor extends JPanel {
 					sb.append( ((Number) s.data.get(decade.add(i).diff(
 							s.range.getStart()))).intValue());
 			}
+			sb.append("\t");
 			// count
 			for (int i = 0; i < 10; i++) {
 				sb.append("\t");
