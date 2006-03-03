@@ -184,6 +184,14 @@ public class GraphWindow extends XFrame implements SampleListener,
 		repaint();		
 	}
 	
+	public void doubleScale() {
+		for (int i = 0; i < samples.size(); i++) {
+			Graph g = (Graph) samples.get(i);
+			g.scale *= 2;
+		}
+		repaint();		
+	}
+	
 	public void resetScaling() {
 		for (int i = 0; i < samples.size(); i++) {
 			Graph g = (Graph) samples.get(i);
@@ -612,6 +620,15 @@ public class GraphWindow extends XFrame implements SampleListener,
 				}
 			});
 			this.add(halvescale);			
+			
+			// scaling... half scale
+			JMenuItem doublescale = Builder.makeMenuItem("scale_double");
+			doublescale.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					window.doubleScale();
+				}
+			});
+			this.add(doublescale);			
 
 			// scaling... reset scale
 			JMenuItem resetscale = Builder.makeMenuItem("scale_reset");
