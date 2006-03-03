@@ -70,177 +70,175 @@ import javax.swing.*;
 */
 public class SiteInfoDialog extends JDialog {
 
-    private static Component strutH(int width) {
-	return Box.createHorizontalStrut(width);
-    }
+	private static Component strutH(int width) {
+		return Box.createHorizontalStrut(width);
+	}
 
-    private Site site;
+	private Site site;
 
-    private JTextField name, code, id;
-    // ADDME: location, altitude
-    private CountryPopup country;
-    private JTextField species, location, altitude;
-    private JCheckBox ancient, medieval, forest, unknown;
-    private JTextArea comments;
-    // ADDME: folder
+	private JTextField name, code, id;
 
-    // display info for |site|;
-    // center over |window|, or on screen if null.
-    public SiteInfoDialog(Site site, Window window) {
-    	super((Frame) window, site.getName(), true);
+	// ADDME: location, altitude
+	private CountryPopup country;
 
-    	// save site reference
-	this.site = site;
+	private JTextField species, location, altitude;
 
-	// set dialog title
-	setTitle(site.getName());
+	private JCheckBox ancient, medieval, forest, unknown;
 
-	// id line
-	name = new JTextField(site.getName(), 40);
-	code = new JTextField(site.getCode(), 3);
-	id = new JTextField(site.getID(), 3);
+	private JTextArea comments;
 
-	JPanel line_1 = Layout.flowLayoutL(labelOnTop("site_name", name),
-					   strutH(12),
-					   labelOnTop("site_code", code),
-					   strutH(12),
-					   labelOnTop("site_id", id));
+	// ADDME: folder
 
-	// location line
-	// FIXME: getLocationAsString, getAltitudeAsString()
-	location = new JTextField(site.getLocation()==null ? "" : site.getLocation().toString(), 15);
-	altitude = new JTextField(site.getAltitude()==null ? "" : site.getAltitude().toString(), 5);
-	country = new CountryPopup(this, site.getCountry());
+	// display info for |site|;
+	// center over |window|, or on screen if null.
+	public SiteInfoDialog(Site site, Window window) {
+		super((Frame) window, site.getName(), true);
 
-	JPanel altitude2 = Layout.flowLayoutL(altitude,
-					      new JLabel(" " + I18n.getText("meters")));
+		// save site reference
+		this.site = site;
 
-	JPanel line_2 = Layout.flowLayoutL(labelOnTop("site_location", location),
-					   strutH(12),
-					   labelOnTop("site_altitude", altitude2),
-					   strutH(12),
-					   labelOnTop("site_country", country));
+		// set dialog title
+		setTitle(site.getName());
 
-	// type line
-	species = new JTextField(site.getSpecies(), 20);
+		// id line
+		name = new JTextField(site.getName(), 40);
+		code = new JTextField(site.getCode(), 3);
+		id = new JTextField(site.getID(), 3);
 
-	boolean types[] = site.getTypes();
-	ancient = new JCheckBox(I18n.getText("site_ancient"), types[0]);
-	medieval = new JCheckBox(I18n.getText("site_medieval"), types[1]);
-	forest = new JCheckBox(I18n.getText("site_forest"), types[2]);
-	unknown = new JCheckBox(I18n.getText("site_unknown"), types[3]);
-	JPanel type = Layout.flowLayoutL(ancient, medieval, forest, unknown);
+		JPanel line_1 = Layout.flowLayoutL(labelOnTop("site_name", name),
+				strutH(12), labelOnTop("site_code", code), strutH(12),
+				labelOnTop("site_id", id));
 
-	JPanel line_3 = Layout.flowLayoutL(labelOnTop("site_species", species),
-					   strutH(12),
-					   labelOnTop("site_type", type));
+		// location line
+		// FIXME: getLocationAsString, getAltitudeAsString()
+		location = new JTextField(site.getLocation() == null ? "" : site
+				.getLocation().toString(), 15);
+		altitude = new JTextField(site.getAltitude() == null ? "" : site
+				.getAltitude().toString(), 5);
+		country = new CountryPopup(this, site.getCountry());
 
-	// comments line
-	comments = new JTextArea(site.getComments(), 3, 50);
+		JPanel altitude2 = Layout.flowLayoutL(altitude, new JLabel(" "
+				+ I18n.getText("meters")));
 
-	JPanel line_4 = Layout.flowLayoutL(labelOnTop("site_comments",
-						      new JScrollPane(comments)));
+		JPanel line_2 = Layout.flowLayoutL(
+				labelOnTop("site_location", location), strutH(12), labelOnTop(
+						"site_altitude", altitude2), strutH(12), labelOnTop(
+						"site_country", country));
 
-	// WRITEME: folder line
+		// type line
+		species = new JTextField(site.getSpecies(), 20);
 
-	// put them all together
-	JPanel content = Layout.boxLayoutY(line_1, line_2, line_3, line_4);
+		boolean types[] = site.getTypes();
+		ancient = new JCheckBox(I18n.getText("site_ancient"), types[0]);
+		medieval = new JCheckBox(I18n.getText("site_medieval"), types[1]);
+		forest = new JCheckBox(I18n.getText("site_forest"), types[2]);
+		unknown = new JCheckBox(I18n.getText("site_unknown"), types[3]);
+		JPanel type = Layout.flowLayoutL(ancient, medieval, forest, unknown);
 
-	// buttons line
-        JButton help = Builder.makeButton("help");
-        Help.addToButton(help, "editing_site_info");
-	JButton cancel = Builder.makeButton("cancel");
-	final JButton ok = Builder.makeButton("ok");
-	AbstractAction buttonAction = new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    // if 'ok' clicked, writeback
-			boolean kill = true;
-		    if (e.getSource() == ok) {
-		    	if(!writeback())
-		    		kill = false;
-		    }
+		JPanel line_3 = Layout.flowLayoutL(labelOnTop("site_species", species),
+				strutH(12), labelOnTop("site_type", type));
 
-		    // close this dialog if we're told to kill
-		    if(kill)
-		    	dispose();
+		// comments line
+		comments = new JTextArea(site.getComments(), 3, 50);
+
+		JPanel line_4 = Layout.flowLayoutL(labelOnTop("site_comments",
+				new JScrollPane(comments)));
+
+		// WRITEME: folder line
+
+		// put them all together
+		JPanel content = Layout.boxLayoutY(line_1, line_2, line_3, line_4);
+
+		// buttons line
+		JButton help = Builder.makeButton("help");
+		Help.addToButton(help, "editing_site_info");
+		JButton cancel = Builder.makeButton("cancel");
+		final JButton ok = Builder.makeButton("ok");
+		AbstractAction buttonAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				// if 'ok' clicked, writeback
+				boolean kill = true;
+				if (e.getSource() == ok) {
+					if (!writeback())
+						kill = false;
+				}
+
+				// close this dialog if we're told to kill
+				if (kill)
+					dispose();
+			}
+		};
+		cancel.addActionListener(buttonAction);
+		ok.addActionListener(buttonAction);
+
+		JPanel buttons = Layout.buttonLayout(help, null, cancel, ok);
+		buttons.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+
+		// everything together
+		JPanel everything = Layout.borderLayout(null, null, content, null,
+				buttons);
+		everything.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		setContentPane(everything);
+
+		name.selectAll();
+		setResizable(false);
+		OKCancel.addKeyboardDefaults(ok);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+		pack();
+		if (window != null)
+			Center.center(this, window);
+		else
+			Center.center(this); // (on screen)
+		show();
+	}
+
+	private boolean writeback() {
+		Location loc;
+
+		try {
+			loc = new Location(location.getText());
+		} catch (NumberFormatException nfe) {
+			JOptionPane.showMessageDialog(this, "Invalid location string.");
+			return false;
 		}
-	    };
-	cancel.addActionListener(buttonAction);
-	ok.addActionListener(buttonAction);
 
-	JPanel buttons = Layout.buttonLayout(help, null, cancel, ok);
-	buttons.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+		// - name, code, id
+		site.setName(name.getText());
+		site.setCode(code.getText());
+		site.setID(id.getText());
 
-	// everything together
-	JPanel everything = Layout.borderLayout(null,
-						null, content, null,
-						buttons);
-	everything.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-	setContentPane(everything);
+		// - location, altitude, country
+		site.setLocation(loc);
+		// WRITEME
+		site.setCountry(country.getCountry());
 
-	name.selectAll();
-	setResizable(false);
-	OKCancel.addKeyboardDefaults(ok);
-	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		// - species, type
+		site.setSpecies(species.getText());
+		site.setTypes(new boolean[] { ancient.isSelected(),
+				medieval.isSelected(), forest.isSelected(),
+				unknown.isSelected() });
 
-	pack();
-	if (window != null)
-	    Center.center(this, window);
-	else
-	    Center.center(this); // (on screen)
-	show();
-    }
+		// - comments
+		site.setComments(comments.getText());
 
-    private boolean writeback() {
-    	Location loc;
-    	
-    try {
-    	loc = new Location(location.getText());
-    }
-    catch (NumberFormatException nfe) {
-    	JOptionPane.showMessageDialog(this, "Invalid location string.");
-    	return false;
-    }
+		// - (folder)
+		// WRITEME
 
-    	
-	// - name, code, id
-	site.setName(name.getText());
-	site.setCode(code.getText());
-	site.setID(id.getText());
+		// TODO: be sure to fire an event to the table model that i've changed
+		// (TODO: be sure to re-sort, if needed)
 
-	// - location, altitude, country
-	site.setLocation(loc);
-	// WRITEME
-	site.setCountry(country.getCountry());
+		// TODO: save this site now
+		// future: site.getStorage().save(site);
 
-	// - species, type
-	site.setSpecies(species.getText());
-	site.setTypes(new boolean[] { ancient.isSelected(),
-				      medieval.isSelected(),
-				      forest.isSelected(),
-				      unknown.isSelected() });
+		return true;
+	}
 
-	// - comments
-	site.setComments(comments.getText());
+	// (note: label is actually an i18n key!)
+	private static JComponent labelOnTop(String key, JComponent component) {
+		String text = I18n.getText(key) + ":";
 
-	// - (folder)
-	// WRITEME
-
-	// TODO: be sure to fire an event to the table model that i've changed
-	// (TODO: be sure to re-sort, if needed)
-
-	// TODO: save this site now
-	// future: site.getStorage().save(site);
-	
-	return true;
-    }
-
-    // (note: label is actually an i18n key!)
-    private static JComponent labelOnTop(String key, JComponent component) {
-	String text = I18n.getText(key) + ":";
-
-	return Layout.borderLayout(new JLabel(text),
-				   null, component, null,
-				   null);
-    }
+		return Layout.borderLayout(new JLabel(text), null, component, null,
+				null);
+	}
 }
