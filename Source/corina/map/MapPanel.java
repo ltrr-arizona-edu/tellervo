@@ -132,7 +132,9 @@ public class MapPanel extends JPanel {
 
         // disable double-buffering: since i have a whole stack of buffers
         // that i draw myself, it's not really useful for me.
-        RepaintManager.currentManager(this).setDoubleBufferingEnabled(false);
+        this.setDoubleBuffered(false);
+        // this seems to destroy double buffering for the rest of Corina
+        //RepaintManager.currentManager(this).setDoubleBufferingEnabled(false);
 
 	// add listener: update map when DB changes
         // REMOVED: it wasn't getting called, and relied on some incorrect assumptions
