@@ -75,6 +75,7 @@ public class GraphInfo {
 		showVertAxis = Boolean.valueOf(App.prefs.getPref("corina.graph.vertical-axis")).booleanValue();
 		showGraphPaper = Boolean.valueOf(App.prefs.getPref("corina.graph.graphpaper")).booleanValue();
 		showBaselines = Boolean.valueOf(App.prefs.getPref("corina.graph.baselines")).booleanValue();
+		showHundredpercentlines = Boolean.valueOf(App.prefs.getPref("corina.graph.hundredpercentlines")).booleanValue();
 		showGraphNames = Boolean.valueOf(App.prefs.getPref("corina.graph.componentnames")).booleanValue();
 		
 		// decide how many pixels per year
@@ -114,6 +115,9 @@ public class GraphInfo {
 	
 	private boolean showBaselines;
 	public boolean drawBaselines() { return showBaselines; }
+
+	private boolean showHundredpercentlines;
+	public boolean drawHundredpercentlines() { return showHundredpercentlines; }
 	
 	private boolean showGraphNames;
 	public boolean drawGraphNames() { return showGraphNames; }

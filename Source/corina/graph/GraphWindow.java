@@ -459,7 +459,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 	private static class GraphViewMenu extends JMenu {
 		// custom menus for graph windows
-		private JMenuItem _axisMenu, _gridlinesMenu, _baselinesMenu, _compnamesMenu;
+		private JMenuItem _axisMenu, _gridlinesMenu, _baselinesMenu, _compnamesMenu, _hundredpercentlinesMenu;
 
 		private GraphWindow window;
 
@@ -522,6 +522,25 @@ public class GraphWindow extends XFrame implements SampleListener,
 			});
 			this.add(_baselinesMenu);
 
+			// Show/hide baselines
+			_hundredpercentlinesMenu = Builder
+					.makeMenuItem(Boolean.valueOf(
+							App.prefs.getPref("corina.graph.hundredpercentlines"))
+							.booleanValue() ? "hperc_hide" : "hperc_show");
+			_hundredpercentlinesMenu.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {					
+					boolean vis = Boolean.valueOf(App.prefs.getPref("corina.graph.hundredpercentlines")).booleanValue();
+
+					window.plot.setHundredpercentlinesVisible(!vis);
+					window.plot.recreateAgent();
+					
+					_hundredpercentlinesMenu.setText(I18n.getText(vis ? "hperc_show"
+							: "hperc_hide"));
+					repaint();
+				}
+			});
+			this.add(_hundredpercentlinesMenu);
+			
 			// Show/hide graph component names
 			_compnamesMenu = Builder
 					.makeMenuItem(Boolean.valueOf(

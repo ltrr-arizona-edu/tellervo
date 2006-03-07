@@ -21,6 +21,7 @@
 package corina.graph;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -33,6 +34,7 @@ import corina.Sample;
 import corina.Year;
 import corina.core.App;
 import corina.index.Index;
+import corina.util.ColorUtils;
 
 public class StandardPlot {
 
@@ -87,6 +89,18 @@ public class StandardPlot {
 		if (_graphinfo.drawBaselines()) {
 			int y = bottom - (int) (g.yoffset * unitScale);
 			g2.drawLine(xscroll, y, xscroll + 10 * yearSize, y); // 1 decade wide -- ok?
+		}
+		
+		// hundred percent line
+		if (_graphinfo.drawHundredpercentlines() && (g.graph instanceof Sample) && ((Sample) g.graph).isIndexed()) {
+			Color oldcolor = g2.getColor();
+			g2.setColor(ColorUtils.blend(oldcolor, _graphinfo.getBackgroundColor()));
+						
+			int x = yearSize * (_graphinfo.getEmptyRange().span() - 1);			
+			int y = bottom - (int) (1000.0f * g.scale * unitScale) - (int) (g.yoffset * unitScale);
+			g2.drawLine((x > xscroll) ? x : xscroll, y, r, y);
+						
+			g2.setColor(oldcolor);
 		}
 
 		// no data?  stop.

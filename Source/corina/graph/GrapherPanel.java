@@ -254,6 +254,17 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		repaint();
 	}
 
+	public void setHundredpercentlinesVisible(boolean visible) {
+		// set the preference...
+		App.prefs.setPref("corina.graph.hundredpercentlines", Boolean.toString(visible));
+
+		// reload the prefs into the graphInfo
+		gInfo.reloadPrefs();
+		
+		// redraw
+		repaint();
+	}
+
 	public void setComponentNamesVisible(boolean visible) {
 		// set the preference...
 		App.prefs.setPref("corina.graph.componentnames", Boolean.toString(visible));
@@ -752,6 +763,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	
 	public void postScrollpanedInit() {
 		setBaselinesVisible(Boolean.valueOf(App.prefs.getPref("corina.graph.baselines")).booleanValue());
+		setHundredpercentlinesVisible(Boolean.valueOf(App.prefs.getPref("corina.graph.hundredpercentlines")).booleanValue());
 		setAxisVisible(Boolean.valueOf(App.prefs.getPref("corina.graph.vertical-axis")).booleanValue());
 	}
 
@@ -999,11 +1011,15 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			int gnw = ((info.getEmptyRange().span() * yearSize) - stringWidth) - 
 			          (yearSize * yearsAfterLabel);
 			
-			int grfirstvalue;
-			try {
-				grfirstvalue = ((Number) gr.graph.getData().get(0)).intValue();
-			} catch (ClassCastException cce) {
-				grfirstvalue = bottom - (int) (gr.yoffset * unitScale) - (lineHeight / 2);
+			// if this is an indexed sample, set this to be at the 100% line
+			int grfirstvalue = 1000;			
+			// otherwise, get the first point!
+			if(!((gr.graph instanceof Sample) && ((Sample) gr.graph).isIndexed())) {
+				try {
+					grfirstvalue = ((Number) gr.graph.getData().get(0)).intValue();
+				} catch (ClassCastException cce) {
+					grfirstvalue = bottom - (int) (gr.yoffset * unitScale) - (lineHeight / 2);
+				}
 			}
 			
 			int y = bottom - (int) (grfirstvalue * gr.scale * unitScale) - (int) (gr.yoffset * unitScale);
@@ -1106,12 +1122,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// draw scale
 		paintHorizAxis(g2, info);
-		
-		// draw component names, if applicable...
-		if(info.drawGraphNames()) {
-			drawGraphNames(g2, info);						
-		}		
-		
+				
 		// force antialiasing for graphs -- it looks so much better,
 		// and everybody's computer is fast enough for it these days
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -1134,6 +1145,11 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				agent.draw(g2, bottom, graph, thickness, scroller.getHorizontalScrollBar().getValue());						
 			}			
 		}
+		
+		// draw component names, if applicable...
+		if(info.drawGraphNames()) {
+			drawGraphNames(g2, info);						
+		}				
 
 		// for each year that's all-down, draw a RED vertical line.
 		// TODO: this should be enabled by a menuitem:
