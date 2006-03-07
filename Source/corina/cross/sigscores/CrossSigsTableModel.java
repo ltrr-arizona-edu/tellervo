@@ -103,7 +103,7 @@ class CrossSigsTableModel extends AbstractTableModel {
     	  	// this is pretty gross.
     	  	// apologies in advance for making polymorphism advocates cry.
     	    if(this.view.getCrossdate() instanceof Weiserjahre)
-    	    	return df.format(s.score) + " in " + s.signifigant;
+    	    	return df.format(s.score) + " of " + s.signifigant;    	    	
     	    else
     	    	return df.format(s.score);
     	  }

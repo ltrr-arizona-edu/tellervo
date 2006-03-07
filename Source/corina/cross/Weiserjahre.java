@@ -37,7 +37,7 @@ public class Weiserjahre extends Cross {
     public String getFormat() {
         // FIXME: this should be a pref, as well
         return App.prefs.getPref("corina.cross.weiserjahre.format", "0.0%") +
-        	"in 0000";
+        	"of 0000";
     }
 
     // same as trend?  (this is old-style trend, even -- very obsolete!)
