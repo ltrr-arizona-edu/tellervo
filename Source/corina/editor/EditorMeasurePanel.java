@@ -10,6 +10,7 @@ import java.awt.FlowLayout;
 import javax.swing.AbstractAction;
 import java.awt.event.*;
 import corina.io.*;
+import java.applet.*;
 
 /**
  * @author Lucas Madar
@@ -19,6 +20,7 @@ public class EditorMeasurePanel extends JPanel implements SerialSampleIOListener
 	private JLabel lastMeasurement;
 	private Editor editor;
 	private SerialSampleIO port;
+	private AudioClip thwack;
 	
 	public EditorMeasurePanel(Editor myeditor, SerialSampleIO ioport) {
 		super(new FlowLayout(FlowLayout.RIGHT));
@@ -41,6 +43,12 @@ public class EditorMeasurePanel extends JPanel implements SerialSampleIOListener
 
 		JLabel text = new JLabel("<html><i>Currently in measure mode</i>.<br>Table will not be manually editable.");
 		add(text);		
+	
+		try {
+			thwack = Applet.newAudioClip(getClass().getClassLoader().getResource("Images/sampleio.wav"));
+		} catch (Exception ae) {
+			// ignore this...
+		}
 	}
 	
 	public void cleanup() {
@@ -54,6 +62,8 @@ public class EditorMeasurePanel extends JPanel implements SerialSampleIOListener
 		else if(sse.getType() == SerialSampleIOEvent.NEW_SAMPLE_EVENT) {
 			Integer value = (Integer) sse.getValue();
 			lastMeasurement.setText("[Last measurement: " + value + "]");
+			if(thwack != null)
+				thwack.play();
 			editor.measured(value.intValue());
 		}
 	}

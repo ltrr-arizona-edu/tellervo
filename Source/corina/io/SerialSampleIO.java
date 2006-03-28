@@ -70,12 +70,10 @@ implements SerialPortEventListener {
 	}
 	
 	public void initialize() throws IOException {
-		/*
 		serialState = SERIALSTATE_WAITINGFORACK;
 		
 		dataPort.getOutputStream().write(SerialSampleIO.EVE_ENQ);
 		dataOutStream.write(SerialSampleIO.EVE_ENQ);		
-		*/
 		// writing fails on my USB->Serial adapter...
 	}
 	
@@ -97,7 +95,7 @@ implements SerialPortEventListener {
 					int val = input.read();
 					
 					if(val == EVE_ACK) {
-						System.out.println("Received ACK");
+						System.out.println("Received ACK from device, leaving initialize mode");
 						
 						serialState = SERIALSTATE_NORMAL;
 						return;
