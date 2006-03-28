@@ -293,9 +293,12 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 	public void save() {
+		// make sure we're not measuring
+		this.stopMeasuring();
+		
 		// make sure user isn't editing
 		dataView.stopEditing();
-
+		
 		// make sure they're all numbers -- no nulls, strings, etc.
 		// abstract this out as "boolean verifyOnlyNumbers()" or something?
 		for (int i = 0; i < sample.data.size(); i++) {
@@ -951,18 +954,19 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 	
 	public void stopMeasuring() {
-		measurePanel.cleanup();
-		remove(measurePanel);
-		editorEditMenu.enableMeasureMenu(true);
-		dataView.enableEditing(true);		
-		getContentPane().validate();
-		getContentPane().repaint();
+		if (measurePanel != null) {
+			measurePanel.cleanup();
+			remove(measurePanel);
+			editorEditMenu.enableMeasureMenu(true);
+			dataView.enableEditing(true);
+			getContentPane().validate();
+			getContentPane().repaint();
+		}
 		measurePanel = null;
 	}
 	
     public void windowClosing(WindowEvent e) {
-		if(measurePanel != null)
-			stopMeasuring();    	
+		stopMeasuring();    	
 		super.windowClosing(e);
     }
 
