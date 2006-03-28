@@ -250,7 +250,11 @@ public class FileMenu extends JMenu {
 
 			// save
 			doc.save();
-			OpenRecent.fileOpened(doc.getFilename());
+			
+			// add to the recently opened files list if the user actually saved
+			// also, the user can try to save a document they didn't do anything to. argh.
+			if(doc.isSaved() && doc.getFilename() != null)
+				OpenRecent.fileOpened(doc.getFilename());
 		    }
 		});
 	} else {

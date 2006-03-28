@@ -94,7 +94,10 @@ public class ConfirmSave extends JDialog {
 
 		    // save, then close document
 		    ((SaveableDocument) glue).save();
-		    glue.dispose();
+		    
+		    // only close the dialog if they actually went through with the save
+		    if(((SaveableDocument) glue).isSaved())
+		    	glue.dispose();
 		}
 	    });
 

@@ -107,7 +107,7 @@ public class EditorTabSetFactory {
 				mode = TabStop.ALIGN_DECIMAL;
 			else if (t.endsWith("%")) {
 				Float value = new Float(t.substring(0, t.length() - 1));
-				pos += value;
+				pos += value.floatValue();
 				int x = (int) (width * (pos / 100f));
 				
 				tabs.add(new TabStop(x, mode, TabStop.LEAD_NONE));
