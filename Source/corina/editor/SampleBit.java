@@ -30,6 +30,7 @@ public class SampleBit {
 	private boolean sb_weiser;
 	private boolean sb_elements;
 	private boolean sb_header;
+	private boolean sb_doublespace;
 
 	private SampleBit() {		
 	}
@@ -41,6 +42,7 @@ public class SampleBit {
 	public boolean wantMetaData() { return sb_meta; }
 	public boolean wantWeiserjahre() { return sb_weiser; }
 	public boolean wantElements() { return sb_elements; }
+	public boolean isDoubleSpaced() { return sb_doublespace; }
 
 	static public SampleBit askBits(JFrame parent) {
 		final JDialog dialog;
@@ -74,6 +76,7 @@ public class SampleBit {
 		JCheckBox showMeta = new JCheckBox("Metadata", true);
 		JCheckBox showWeiser = new JCheckBox("Weiserjahre", true);
 		JCheckBox showElements = new JCheckBox("Elements", true);
+		JCheckBox doubleSpace = new JCheckBox("Double-space all numerical data", true);
 		
 		JLabel text = new JLabel("<html>Which parts of the report<br>would you like to include?");
 		addComponent(checkboxpanel, text, gbc);
@@ -85,6 +88,7 @@ public class SampleBit {
 		addComponent(checkboxpanel, showMeta, gbc);
 		addComponent(checkboxpanel, showWeiser, gbc);
 		addComponent(checkboxpanel, showElements, gbc);
+		addComponent(checkboxpanel, doubleSpace, gbc);
 		
 		c.add(checkboxpanel, BorderLayout.CENTER);
 		
@@ -130,6 +134,7 @@ public class SampleBit {
 		sb.sb_printinfo = showPrintInfo.isSelected();
 		sb.sb_title = showTitle.isSelected();
 		sb.sb_weiser = showWeiser.isSelected();
+		sb.sb_doublespace = doubleSpace.isSelected();
 		return sb;
 	}
 	

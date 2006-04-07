@@ -507,11 +507,11 @@ public class SamplePrintEditor extends JPanel {
 		
 		if(bits.wantSampleData()) {
 			if(s.isSummed()) {
-				textpane.append("summed data", getSummed());
+				textpane.append("summed data", getSummed(bits.isDoubleSpaced()));
 				textpane.append("summed data info", getSummedInfo());
 			}
 			else
-				textpane.append("raw data", getRawData());
+				textpane.append("raw data", getRawData(bits.isDoubleSpaced()));
 		}
 		
 		if(bits.wantMetaData()) {
@@ -520,7 +520,7 @@ public class SamplePrintEditor extends JPanel {
 		
 		if(bits.wantWeiserjahre() && s.hasWeiserjahre()) {
 			textpane.append("section heading", "Weiserjahre Data\n");
-			textpane.append("weiserjahre data", getWeiserjahre());
+			textpane.append("weiserjahre data", getWeiserjahre(bits.isDoubleSpaced()));
 			textpane.append("weiserjahre data info", getWeiserjahreInfo());
 		}
 		
@@ -639,7 +639,7 @@ public class SamplePrintEditor extends JPanel {
 	/*
 	 * The following functions make huge datasets and append them to our JTextPane
 	 */
-	private String getSummed() {
+	private String getSummed(boolean doubleSpace) {
 		StringBuffer sb = new StringBuffer();
 		
 		for (Year y = s.range.getStart(); s.range.contains(y); y = y.add(1)) {
@@ -670,7 +670,7 @@ public class SamplePrintEditor extends JPanel {
 					sb.append( ((Number) s.count.get(decade.add(i).diff(
 							s.range.getStart()))).intValue());
 			}
-			sb.append("\n");
+			sb.append(doubleSpace ? "\n\n" : "\n");
 		}
 		return sb.toString();
 	}
@@ -689,7 +689,7 @@ public class SamplePrintEditor extends JPanel {
 		return sb.toString();
 	}
 	
-	private String getRawData() {
+	private String getRawData(boolean doubleSpace) {
 		StringBuffer sb = new StringBuffer();
 
 		// header...
@@ -713,7 +713,7 @@ public class SamplePrintEditor extends JPanel {
 					sb.append((Number) s.data.get(decade.add(i).diff(s.range.getStart())));
 			}
 
-			sb.append("\n");
+			sb.append(doubleSpace ? "\n\n" : "\n");
 		}
 		
 		return sb.toString();
@@ -794,7 +794,7 @@ public class SamplePrintEditor extends JPanel {
 		return sb.toString();
 	}
 
-	private String getWeiserjahre() {
+	private String getWeiserjahre(boolean doubleSpace) {
 		StringBuffer sb = new StringBuffer();
 
 		for (Year y = s.range.getStart(); s.range.contains(y); y = y.add(1)) {
@@ -824,7 +824,7 @@ public class SamplePrintEditor extends JPanel {
 					sb.append(wval);
 				}
 			}
-			sb.append("\n");
+			sb.append(doubleSpace ? "\n\n" : "\n");
 		}
 		sb.append("\n");
 		
