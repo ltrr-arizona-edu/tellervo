@@ -196,7 +196,7 @@ public class AdvancedPrefsPanel extends JPanel {
     		comportlist.add(curport);
     		addedPort = true;
     	}
-    	else {
+    	else if(curport == null) {
     		curport = "<choose a serial port>";
     		comportlist.add(curport);
     	}
