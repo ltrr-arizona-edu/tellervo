@@ -95,8 +95,10 @@ public class StandardPlot {
 		if (_graphinfo.drawHundredpercentlines() && (g.graph instanceof Sample) && ((Sample) g.graph).isIndexed()) {
 			Color oldcolor = g2.getColor();
 			g2.setColor(ColorUtils.blend(oldcolor, _graphinfo.getBackgroundColor()));
-						
-			int x = yearSize * (_graphinfo.getEmptyRange().span() - 1);			
+		
+			// x is 0 if we aren't drawing graph names...
+			// x is the pixel at the end of the empty range if we are.
+			int x = (_graphinfo.drawGraphNames()) ? yearSize * (_graphinfo.getEmptyRange().span() - 1) : 0;			
 			int y = bottom - (int) (1000.0f * g.scale * unitScale) - (int) (g.yoffset * unitScale);
 			g2.drawLine((x > xscroll) ? x : xscroll, y, r, y);
 						
