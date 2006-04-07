@@ -81,6 +81,7 @@ public class Prefs extends AbstractSubsystem {
    * NEW: ~/Corina Preferences [win32] ~/.corina [unix] ~/Library/Preferences/Corina Preferences [mac]
    */
   private String FILENAME;
+  private String MACHINEFILENAME;
   /**
    * Our internal Properties object in which to save preferences
    */
@@ -111,13 +112,19 @@ public class Prefs extends AbstractSubsystem {
     if (!home.endsWith(File.separator))
       home = home + File.separator;
 
-    if (App.platform.isWindows())
+    if (App.platform.isWindows()) {
       FILENAME = home + "Corina Preferences";
-    else if (App.platform.isMac())
+      MACHINEFILENAME = "C:\\Corina System Preferences";
+    }
+    else if (App.platform.isMac()) {
       FILENAME = home + "Library/Preferences/Corina Preferences"; // why in prefs? isn't lib ok?
-    else
+      MACHINEFILENAME = "/Library/Preferences/Corina System Preferences";
+    }
+    else {
       // plain ol' unix
       FILENAME = home + ".corina";
+      MACHINEFILENAME = "/etc/corina_system_preferences";
+    }
 
     initUIDefaults();
 
@@ -198,6 +205,13 @@ public class Prefs extends AbstractSubsystem {
       errors.append("Error loading Corina's default preferences (bug!).\n");
     }
 
+    // load machine properties
+    try {
+    	defaults.load(new FileInputStream(MACHINEFILENAME));
+    } catch (IOException ioe) {
+    	// ignore this; no machine properties is fine.
+    }
+    
     // instantiate our properties using the system properties
     // and corina properties as default values
     prefs = new Properties(defaults);
