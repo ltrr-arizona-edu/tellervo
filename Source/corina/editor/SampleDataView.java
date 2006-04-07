@@ -430,10 +430,11 @@ public class SampleDataView extends JPanel implements SampleListener,
 	}
 
 	public void measured(int x) {
-		this.insertYear(new Integer(x), false);
-		Toolkit.getDefaultToolkit().beep();
-		
 		/*
+		 * This code inserts the year instead of overwriting values... 
+		 * insertYear(new Integer(x), false);
+		 */
+		
 		// figure out what year we're looking at now -- BREAKS IF EDITING=TRUE
 		Year y = ((DecadalModel) myTable.getModel()).getYear(myTable
 				.getSelectedRow(), myTable.getSelectedColumn());
@@ -456,9 +457,15 @@ public class SampleDataView extends JPanel implements SampleListener,
 		mySample.data.set(i, new Integer(x));
 
 		// beep! (twice on column 0)
-		Toolkit.getDefaultToolkit().beep();
-		if (y.column() == 0)
-			Toolkit.getDefaultToolkit().beep();
+		/*
+		 * meh.. beeping doesn't do anything on newer computers.
+		 * 
+		 * play a .wav file instead... to be implemented.
+		 * 
+		 *	Toolkit.getDefaultToolkit().beep();
+		 *	if (y.column() == 0)
+		 *		Toolkit.getDefaultToolkit().beep();
+		 */
 
 		// what's the next year?
 		y = y.add(1);
@@ -478,6 +485,5 @@ public class SampleDataView extends JPanel implements SampleListener,
 		// select it
 		myTable.setRowSelectionInterval(row, row);
 		myTable.setColumnSelectionInterval(col, col);
-		*/
 	}
 }
