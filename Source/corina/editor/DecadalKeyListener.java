@@ -34,125 +34,127 @@ import javax.swing.table.TableCellEditor;
 
 public class DecadalKeyListener extends KeyAdapter {
 
-    private JTable _table;
-    private Sample _sample;
+	private JTable _table;
 
-    public DecadalKeyListener(JTable table, Sample sample) {
-	_table = table;
-	_sample = sample;
-    }
+	private Sample _sample;
 
-    // (not editing year!)
-    private Year getSelectedYear() {
-	int row, col;
-	if (_table.isEditing()) {
-	    row = _table.getEditingRow();
-	    col = _table.getEditingColumn();
-	} else {
-	    row = _table.getSelectedRow();
-	    col = _table.getSelectedColumn();
-	}
-	return ((DecadalModel) _table.getModel()).getYear(row, col);
-    }
-    private void selectYear(Year y) {
-	// compute (row,col)
-	int row = y.row() - _sample.range.getStart().row();
-	int col = y.column()+1;
-
-	// move selection
-	_table.setRowSelectionInterval(row, row);
-	_table.setColumnSelectionInterval(col, col);
-    }
-
-    // stop editing, and return the year that was being edited
-    private Year stopEditing() {
-	// where am i?
-	int row = _table.getEditingRow();
-	int col = _table.getEditingColumn();
-
-	// stop editing
-	TableCellEditor ed = _table.getCellEditor(row, col);
-	((DefaultCellEditor) ed).stopCellEditing();
-
-	// compute year
-	return ((DecadalModel) _table.getModel()).getYear(row, col);
-    }
-
-    public void keyPressed(KeyEvent e) {
-	Year y, target = null;
-
-	// ignore modifier keys -- if user presses "control" (and nothing else),
-	// we shouldn't start editing because of it.
-	if (e.getModifiers() != 0) {
-	    e.consume();
-	    return;
-	 }
-
-	switch (e.getKeyCode()) {
-	case KeyEvent.VK_TAB: // but shift-tab goes LEFT!
-	    if (e.isShiftDown()) {
-		y = (_table.isEditing() ? stopEditing() : getSelectedYear());
-		target = y.add(-1);
-		e.consume();
-		break;
-	    }
-	    // fall-through to...
-	case KeyEvent.VK_ENTER:
-	case KeyEvent.VK_RIGHT:
-	    y = (_table.isEditing() ? stopEditing() : getSelectedYear()); // this series is common, functionize it?
-	    target = y.add(+1);
-	    e.consume();
-	    break;
-	case KeyEvent.VK_LEFT:
-	    y = (_table.isEditing() ? stopEditing() : getSelectedYear());
-	    target = y.add(-1);
-	    e.consume();
-	    break;
-	case KeyEvent.VK_UP:
-	    y = (_table.isEditing() ? stopEditing() : getSelectedYear());
-	    target = y.add(-10);
-	    e.consume();
-	    break;
-	case KeyEvent.VK_DOWN:
-	    y = (_table.isEditing() ? stopEditing() : getSelectedYear());
-	    target = y.add(+10);
-	    e.consume();
-	    break;
-	case KeyEvent.VK_HOME:
-	    target = _sample.range.getStart();
-	    e.consume();
-	    break;
-	case KeyEvent.VK_END:
-	    target = _sample.range.getEnd();
-	    e.consume();
-	    break;
+	public DecadalKeyListener(JTable table, Sample sample) {
+		_table = table;
+		_sample = sample;
 	}
 
-	// move to target, if set
-	if (target != null) {
-	    if (target.compareTo(_sample.range.getStart()) < 0)
-		target = _sample.range.getStart();
-	    if (target.compareTo(_sample.range.getEnd().add(1)) > 0)
-		target = _sample.range.getEnd().add(1);
-	    selectYear(target);
-
-	    // scroll to visible
-	    int row = target.row() - _sample.range.getStart().row();
-	    _table.scrollRectToVisible(_table.getCellRect(row, 0, true));
+	// (not editing year!)
+	private Year getSelectedYear() {
+		int row, col;
+		if (_table.isEditing()) {
+			row = _table.getEditingRow();
+			col = _table.getEditingColumn();
+		} else {
+			row = _table.getSelectedRow();
+			col = _table.getSelectedColumn();
+		}
+		return ((DecadalModel) _table.getModel()).getYear(row, col);
 	}
 
-	// [0-9] on keyboard/keypad -> start editing
-	if (Character.isDigit(e.getKeyChar())) {
-	    int row = _table.getSelectedRow();
-	    int col = _table.getSelectedColumn();
-	    if (!_table.isCellEditable(row, col))
-		return;
-	    _table.setValueAt("", row, col);
-	    _table.editCellAt(row, col);
-	    return;
+	private void selectYear(Year y) {
+		// compute (row,col)
+		int row = y.row() - _sample.range.getStart().row();
+		int col = y.column() + 1;
+
+		// move selection
+		_table.setRowSelectionInterval(row, row);
+		_table.setColumnSelectionInterval(col, col);
 	}
 
-	// unknown -- ignore
-    }
+	// stop editing, and return the year that was being edited
+	private Year stopEditing() {
+		// where am i?
+		int row = _table.getEditingRow();
+		int col = _table.getEditingColumn();
+
+		// stop editing
+		TableCellEditor ed = _table.getCellEditor(row, col);
+		((DefaultCellEditor) ed).stopCellEditing();
+
+		// compute year
+		return ((DecadalModel) _table.getModel()).getYear(row, col);
+	}
+
+	public void keyPressed(KeyEvent e) {
+		Year y, target = null;
+
+		// ignore modifier keys -- if user presses "control" (and nothing else),
+		// we shouldn't start editing because of it.
+		if (e.getModifiers() != 0) {
+			e.consume();
+			return;
+		}
+
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_TAB: // but shift-tab goes LEFT!
+			if (e.isShiftDown()) {
+				y = (_table.isEditing() ? stopEditing() : getSelectedYear());
+				target = y.add(-1);
+				e.consume();
+				break;
+			}
+			// fall-through to...
+		case KeyEvent.VK_ENTER:
+		case KeyEvent.VK_RIGHT:
+			y = (_table.isEditing() ? stopEditing() : getSelectedYear()); // this series is common, functionize it?
+			target = y.add(+1);
+			e.consume();
+			break;
+		case KeyEvent.VK_LEFT:
+			y = (_table.isEditing() ? stopEditing() : getSelectedYear());
+			target = y.add(-1);
+			e.consume();
+			break;
+		case KeyEvent.VK_UP:
+			y = (_table.isEditing() ? stopEditing() : getSelectedYear());
+			target = y.add(-10);
+			e.consume();
+			break;
+		case KeyEvent.VK_DOWN:
+			y = (_table.isEditing() ? stopEditing() : getSelectedYear());
+			target = y.add(+10);
+			e.consume();
+			break;
+		case KeyEvent.VK_HOME:
+			target = _sample.range.getStart();
+			e.consume();
+			break;
+		case KeyEvent.VK_END:
+			target = _sample.range.getEnd();
+			e.consume();
+			break;
+		}
+
+		// move to target, if set
+		if (target != null) {
+			if (target.compareTo(_sample.range.getStart()) < 0)
+				target = _sample.range.getStart();
+			if (target.compareTo(_sample.range.getEnd().add(1)) > 0)
+				target = _sample.range.getEnd().add(1);
+			selectYear(target);
+
+			// scroll to visible
+			int row = target.row() - _sample.range.getStart().row();
+			_table.scrollRectToVisible(_table.getCellRect(row, 0, true));
+		}
+
+		// [0-9] on keyboard/keypad -> start editing
+		if (Character.isDigit(e.getKeyChar())) {
+			int row = _table.getSelectedRow();
+			int col = _table.getSelectedColumn();
+			if (!_table.isCellEditable(row, col))
+				return;
+			_table.setValueAt("", row, col);
+			_table.editCellAt(row, col);
+			return;
+		}
+
+		// unknown -- ignore
+	}
 
 }

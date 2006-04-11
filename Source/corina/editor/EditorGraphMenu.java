@@ -28,7 +28,7 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 
 	EditorGraphMenu(Sample s) {
 		super(I18n.getText("graph")); // i18n bypasses mnemonic here!
-
+		
 		this.sample = s;
 
 		sample.addSampleListener(this);
