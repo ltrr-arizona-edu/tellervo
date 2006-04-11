@@ -131,7 +131,8 @@ public class Startup implements PrivilegedAction {
    *          command-line arguments; ignored
    */
   public static void main(String args[]) {
-	  
+
+	// the Java Web Start security manager is by default horribly restrictive.
 	System.setSecurityManager(null);
 	  
     if (args.length == 0 || !"-a".equals(args[0])) {
