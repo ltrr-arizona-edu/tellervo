@@ -80,16 +80,38 @@ public class DecadalKeyListener extends KeyAdapter {
 		return ((DecadalModel) _table.getModel()).getYear(row, col);
 	}
 
+	// this fixes a bug where menu shortcuts get inserted into the table..
+	// this an obnoxious java mnemonic: pressed events are consumed by the
+	// menu accelerator, typed events are not.
+	public void keyTyped(KeyEvent e) {
+		// just EAT any modifiers that aren't shift
+		int notshiftdown = ~KeyEvent.SHIFT_DOWN_MASK;
+		if(!((e.getModifiers() & notshiftdown) == 0)) {
+			e.consume();
+			return;
+		}
+	}
+	
 	public void keyPressed(KeyEvent e) {
 		Year y, target = null;
 
 		// ignore modifier keys -- if user presses "control" (and nothing else),
 		// we shouldn't start editing because of it.
+		/*
+		 * What??
+		 * This throws out shift-based events, which we use below?!
 		if (e.getModifiers() != 0) {
 			e.consume();
 			return;
 		}
-
+		*/
+		
+		// just ignore any modifiers that aren't shift
+		int notshiftdown = ~KeyEvent.SHIFT_DOWN_MASK;
+		if(!((e.getModifiers() & notshiftdown) == 0)) {
+			return;
+		}
+		
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_TAB: // but shift-tab goes LEFT!
 			if (e.isShiftDown()) {
