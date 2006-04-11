@@ -89,6 +89,7 @@ import corina.util.OKCancel;
 import corina.util.Overwrite;
 import corina.io.SerialSampleIO;
 import corina.io.SerialSampleIOEvent;
+import corina.Year;
 
 /*
  left to do:
@@ -821,8 +822,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	//
 	// for serial-line measure-mode
 	//
-	public void measured(int x) {
-		dataView.measured(x);
+	public Year measured(int x) {
+		return dataView.measured(x);
 	}
 
 	// printing

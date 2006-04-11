@@ -429,7 +429,8 @@ public class SampleDataView extends JPanel implements SampleListener,
 		initPrefs();
 	}
 
-	public void measured(int x) {
+	// returns the Year that was measured, for graphical display goodness.
+	public Year measured(int x) {
 		/*
 		 * This code inserts the year instead of overwriting values... 
 		 * insertYear(new Integer(x), false);
@@ -455,6 +456,9 @@ public class SampleDataView extends JPanel implements SampleListener,
 		// set the value
 		int i = y.diff(mySample.range.getStart());
 		mySample.data.set(i, new Integer(x));
+		
+		// this is the year we return...
+		Year retYear = y;
 
 		// beep! (twice on column 0)
 		/*
@@ -485,5 +489,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		// select it
 		myTable.setRowSelectionInterval(row, row);
 		myTable.setColumnSelectionInterval(col, col);
+		
+		return retYear;
 	}
 }
