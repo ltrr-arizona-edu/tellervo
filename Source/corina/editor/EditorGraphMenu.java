@@ -22,64 +22,72 @@ import corina.ui.I18n;
 
 public class EditorGraphMenu extends JMenu implements SampleListener {
 
-    private JMenuItem plot, plotAll, bargraphAll;
+	private JMenuItem plot, plotAll, bargraphAll;
 
-    private Sample sample;
+	private Sample sample;
 
-    EditorGraphMenu(Sample s) {
-	super(I18n.getText("graph")); // i18n bypasses mnemonic here!
+	EditorGraphMenu(Sample s) {
+		super(I18n.getText("graph")); // i18n bypasses mnemonic here!
 
-	this.sample = s;
+		this.sample = s;
 
-	sample.addSampleListener(this);
+		sample.addSampleListener(this);
 
-	// plot
-	plot = new JMenuItem(new CorinaAction("graph") {
-	  public void actionPerformed(ActionEvent e) {
-	    new GraphWindow(sample);
-		}
-	});
-	add(plot);
+		// plot
+		plot = new JMenuItem(new CorinaAction("graph") {
+			public void actionPerformed(ActionEvent e) {
+				new GraphWindow(sample);
+			}
+		});
+		add(plot);
 
-	// plot all
-	plotAll = new JMenuItem(new CorinaAction("graph_elements") {
-		public void actionPerformed(ActionEvent e) {
-		    new GraphWindow(sample.elements);
-		}
-    public boolean isEnabled() {
-      return sample.elements != null && sample.elements.size() > 0;
-    }
-	});
-	add(plotAll);
+		// plot all
+		plotAll = new JMenuItem(new CorinaAction("graph_elements") {
+			public void actionPerformed(ActionEvent e) {
+				new GraphWindow(sample.elements);
+			}
 
-	// bargraph all
-	bargraphAll = new JMenuItem(new CorinaAction("bargraph_elements") {
-		public void actionPerformed(ActionEvent e) {
-		    // FIXME: pass my title here so the bargraph
-		    // has my name as its title.
-		    new BargraphFrame(sample.elements);
-		}
-    public boolean isEnabled() {
-      return sample.elements != null && sample.elements.size() > 0;
-    }
-	});
-	add(bargraphAll);
-    }
+			public boolean isEnabled() {
+				return sample.elements != null && sample.elements.size() > 0;
+			}
+		});
+		add(plotAll);
 
-    //
-    // listener
-    //
-    public void sampleRedated(SampleEvent e) { }
-    public void sampleDataChanged(SampleEvent e) { }
-    public void sampleMetadataChanged(SampleEvent e) {
-	// re-en/disable menuitems based on whether the editor's sample
-	// is summed.
-	boolean hasElements = (sample.elements != null) &&
-	                      (sample.elements.size() > 0);
-	// FIXME: didn't i want to have a hasElements() method in sample?
+		// bargraph all
+		bargraphAll = new JMenuItem(new CorinaAction("bargraph_elements") {
+			public void actionPerformed(ActionEvent e) {
+				// FIXME: pass my title here so the bargraph
+				// has my name as its title.
+				new BargraphFrame(sample.elements);
+			}
 
-	plotAll.setEnabled(hasElements);
-	bargraphAll.setEnabled(hasElements);
-    }
-    public void sampleElementsChanged(SampleEvent e) { }
+			public boolean isEnabled() {
+				return sample.elements != null && sample.elements.size() > 0;
+			}
+		});
+		add(bargraphAll);
+	}
+
+	//
+	// listener
+	//
+	public void sampleRedated(SampleEvent e) {
+	}
+
+	public void sampleDataChanged(SampleEvent e) {
+	}
+
+	public void sampleMetadataChanged(SampleEvent e) {
+		// re-en/disable menuitems based on whether the editor's sample
+		// is summed.
+		boolean hasElements = (sample.elements != null)
+				&& (sample.elements.size() > 0);
+		// FIXME: didn't i want to have a hasElements() method in sample?
+
+		plotAll.setEnabled(hasElements);
+		bargraphAll.setEnabled(hasElements);
+	}
+
+	public void sampleElementsChanged(SampleEvent e) {
+	}
 }

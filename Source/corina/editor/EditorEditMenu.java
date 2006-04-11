@@ -54,37 +54,39 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
 /**
-   The Edit menu for editor windows.
+ The Edit menu for editor windows.
 
-   <p>An Editor Edit menu differs from the default EditMenu in that:</p>
-   <ul>
-     <li>It implements Undo and Redo
-     <li>It implements Copy ("copy to clipboard in 2-column format")
-     <li>It implements Paste ("replace this data with whatever's on the clipboard")
-     <li>It adds 3 new menu items: Insert Year, Insert MR, and Delete Year
-   </ul>
+ <p>An Editor Edit menu differs from the default EditMenu in that:</p>
+ <ul>
+ <li>It implements Undo and Redo
+ <li>It implements Copy ("copy to clipboard in 2-column format")
+ <li>It implements Paste ("replace this data with whatever's on the clipboard")
+ <li>It adds 3 new menu items: Insert Year, Insert MR, and Delete Year
+ </ul>
  
-   <h2>Left to do:</h2>
-   <ul>
-     <li>Fix Undo/Redo (put manager <i>here</i>?)
-     <li>Instead of calling Bug, fix the bug!
-     <li>Document in manual (also, in a menu reference appendix?)
-     <li>I shouldn't need SampleDataView here: I should be able to add
-         a year, and have the data view be listening for that
-         (need to fix in SampleDataView)
-     <li>Can/should I remove myself as a SampleListener on, say,
-         removeNotify()?  Can/should I only add myself as a SampleListener
-         on addNotify()?
-   </ul>
+ <h2>Left to do:</h2>
+ <ul>
+ <li>Fix Undo/Redo (put manager <i>here</i>?)
+ <li>Instead of calling Bug, fix the bug!
+ <li>Document in manual (also, in a menu reference appendix?)
+ <li>I shouldn't need SampleDataView here: I should be able to add
+ a year, and have the data view be listening for that
+ (need to fix in SampleDataView)
+ <li>Can/should I remove myself as a SampleListener on, say,
+ removeNotify()?  Can/should I only add myself as a SampleListener
+ on addNotify()?
+ </ul>
 
-   @see corina.formats.TwoColumn
+ @see corina.formats.TwoColumn
 
-   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
-   @version $Id$
-*/
+ @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+ @version $Id$
+ */
 public class EditorEditMenu extends EditMenu implements SampleListener {
 	private Sample sample;
+
 	private Editor editor;
+
 	private SampleDataView dataView;
 
 	/**
@@ -178,13 +180,13 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		addInsert();
 		addInsertMR();
 		addDelete();
-		
-		if(SerialSampleIO.hasSerialCapability() && 
-				App.prefs.getPref("corina.serialsampleio.port") != null) {			
+
+		if (SerialSampleIO.hasSerialCapability()
+				&& App.prefs.getPref("corina.serialsampleio.port") != null) {
 			addSeparator();
 			addMeasure();
 		}
-		
+
 		/*
 		 // if comm present, start/stop measure
 		 if (false) { // Measure.hasSerialAPI()) {
@@ -207,7 +209,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		});
 		add(measureMenu);
 	}
-	
+
 	private void addInsert() {
 		insert = Builder.makeMenuItem("insert_year");
 		insert.addActionListener(new AbstractAction() {
@@ -380,15 +382,15 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		if (measureMenu != null)
 			measureMenu.setEnabled(!sample.isSummed());
 	}
-	
+
 	public void enableMeasureMenu(boolean enable) {
-		if(measureMenu == null)
+		if (measureMenu == null)
 			return;
-		
-		if(!enable)
+
+		if (!enable)
 			measureMenu.setEnabled(false);
 		else
-			measureMenu.setEnabled(!sample.isSummed());			
+			measureMenu.setEnabled(!sample.isSummed());
 	}
 
 	public void sampleElementsChanged(SampleEvent e) {

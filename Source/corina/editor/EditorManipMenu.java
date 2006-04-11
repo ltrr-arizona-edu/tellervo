@@ -13,6 +13,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import corina.core.App;
 import corina.CorinaPermission;
 import corina.Sample;
 import corina.SampleEvent;
@@ -142,72 +143,68 @@ public class EditorManipMenu extends JMenu implements SampleListener {
 	add(crossElements);
 
 	// reconcile
-	JMenuItem reconcile = Builder.makeMenuItem("reconcile");
-	reconcile.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    // REFACTOR: this method isn't very pretty.  there's probably
-		    // an elegant refactoring to be done, but i'm not seeing
-		    // it right now...
+	// but don't put this here if disablereconcile is on
+	// this is an awful hack; we're sorry.
+	if (!Boolean.valueOf(
+				App.prefs.getPref("corina.editor.disablereconcile")).booleanValue()) {
+			JMenuItem reconcile = Builder.makeMenuItem("reconcile");
+			reconcile.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					// REFACTOR: this method isn't very pretty. there's probably
+					// an elegant refactoring to be done, but i'm not seeing
+					// it right now...
 
-		    // EXTRACT: why isn't this part of reconciledialog?
+					// EXTRACT: why isn't this part of reconciledialog?
 
-		    // check for filename
-		    String filename = (String) sample.meta.get("filename");
+					// check for filename
+					String filename = (String) sample.meta.get("filename");
 
-		    // (do we need to ask the user?)
-		    boolean askUser = false;
+					// (do we need to ask the user?)
+					boolean askUser = false;
 
-		    // if null, need to ask user.
-		    if (filename==null) {
-			askUser = true;
-		    }
+					// if null, need to ask user.
+					if (filename == null) {
+						askUser = true;
+					}
 
-		    // try to guess
-		    String target=null;
-		    try {
-			if (!askUser)
-			    target = Reconcile.guessOtherReading(filename);
-		    } catch (FileNotFoundException fnfe) {
-			askUser = true;
-		    }
+					// try to guess
+					String target = null;
+					try {
+						if (!askUser)
+							target = Reconcile.guessOtherReading(filename);
+					} catch (FileNotFoundException fnfe) {
+						askUser = true;
+					}
 
-		    // ask user here -- REDUNDANT!
-		    try {
-			if (askUser)
-			    target = FileDialog.showSingle(I18n.getText("other_reading"));
+					// ask user here -- REDUNDANT!
+					try {
+						if (askUser)
+							target = FileDialog.showSingle(I18n
+									.getText("other_reading"));
 
-			// reconcile this and target
-			new ReconcileDialog(sample, new Sample(target));
-		    } catch (IOException ioe) {
-			// BUG: why does reconciledialog throw ioe's?
-			Bug.bug(ioe);
-		    } catch (UserCancelledException uce) {
-			// do nothing
-		    } catch (Exception ex) {
-			Bug.bug(ex);
-		    }
-		    /*
-		      here's how the reconcile UI should work:
-		      -- auto-tile
-		      +------A Reading------+ +------C Reading------+
-		      |                     | |                     |
-		      |                     | |                     |
-		      |                     | |                     |
-		      |                     | |                     |
-		      |                     | |                     |
-		      |                     | |                     |
-		      |                     | |                     |
-		      +---------------------+ +---------------------+
-		      +--------------Reconcile Dialog---------------+
-		      |                                             |
-		      |                                             |
-		      +---------------------------------------------+
-		      -- selecting an error row in the reconcile dialog
-		      selects that year in A and C
-		    */
+						// reconcile this and target
+						new ReconcileDialog(sample, new Sample(target));
+					} catch (IOException ioe) {
+						// BUG: why does reconciledialog throw ioe's?
+						Bug.bug(ioe);
+					} catch (UserCancelledException uce) {
+						// do nothing
+					} catch (Exception ex) {
+						Bug.bug(ex);
+					}
+					/*
+					 * here's how the reconcile UI should work: -- auto-tile
+					 * +------A Reading------+ +------C Reading------+ | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+					 * +---------------------+ +---------------------+
+					 * +--------------Reconcile Dialog---------------+ | | | |
+					 * +---------------------------------------------+ --
+					 * selecting an error row in the reconcile dialog selects
+					 * that year in A and C
+					 */
+				}
+			});
+			add(reconcile);
 		}
-	    });
-	add(reconcile);
 
 	// hit them so they enable/disable themselves properly
 	sampleMetadataChanged(null);
