@@ -805,7 +805,8 @@ public class Grid implements Runnable, Previewable {
 			xr.parse(new InputSource(r));
 			System.out.println("done parsing");
 		} catch (SAXException se) {
-			se.printStackTrace();
+			// no! we don't need to see this garbage!
+			//se.printStackTrace();
 			throw new WrongFiletypeException();
 		}
 	}

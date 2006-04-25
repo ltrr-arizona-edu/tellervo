@@ -42,6 +42,7 @@ import java.io.StringWriter;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 import java.awt.Font;
 import java.awt.Frame;
@@ -58,6 +59,7 @@ import javax.swing.JButton;
 import javax.swing.Box;
 import javax.swing.BorderFactory;
 import javax.swing.AbstractAction;
+import javax.swing.JFileChooser;
 
 /*
  notes on this implementation:
@@ -126,7 +128,7 @@ public class ExportDialog extends JDialog {
 			"corina.formats.RangesOnly", "corina.formats.Spreadsheet", };
 
 	// exporters i'm using
-	private final String exporters[];
+	private String exporters[];
 
 	private JComboBox popup;
 
@@ -138,18 +140,9 @@ public class ExportDialog extends JDialog {
 
 	private Sample sample;
 
-	/**
-	 Create and display a sample-export dialog.
-
-	 @param s the sample to export
-	 @param parent the window which holds the sample to export
-	 */
-	public ExportDialog(Sample s, Frame parent) {
-		super(parent, I18n.getText("export"), true);
-		this.sample = s;
-
+	private void commonSetup() {
 		// filetype popup
-		exporters = (s.elements == null ? EXPORTERS_RAW : EXPORTERS_SUM);
+		exporters = (sample.elements == null ? EXPORTERS_RAW : EXPORTERS_SUM);
 		int n = exporters.length;
 
 		String v[] = new String[n];
@@ -207,7 +200,6 @@ public class ExportDialog extends JDialog {
 			}
 		});
 		JButton cancel = Builder.makeButton("cancel");
-		ok = Builder.makeButton("ok");
 
 		// button actions
 		cancel.addActionListener(new AbstractAction() {
@@ -217,7 +209,36 @@ public class ExportDialog extends JDialog {
 			}
 		});
 
+		ok = Builder.makeButton("ok");
+		
+		// in a panel
+		JPanel buttons = Layout.buttonLayout(help, copy, null, cancel, ok);
+		buttons.setBorder(BorderFactory.createEmptyBorder(14, 0, 0, 0));
+
+		JPanel main = Layout.borderLayout(null, null, tuples, null, buttons);
+		main.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
+		setContentPane(main);
+
+		OKCancel.addKeyboardDefaults(ok);
+
+		// initial view
+		updatePreview();
+	}
+	
+	/**
+	 Create and display a sample-export dialog.
+
+	 @param s the sample to export
+	 @param parent the window which holds the sample to export
+	 */
+	public ExportDialog(Sample s, Frame parent) {
+		super(parent, I18n.getText("export"), true);
+		this.sample = s;
+
+		commonSetup();
+
 		final JDialog me = this;
+		final Sample exportee = s;
 		ok.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				// close dialog
@@ -225,7 +246,14 @@ public class ExportDialog extends JDialog {
 
 				try {
 					// ask for filename
-					String fn = FileDialog.showSingle(I18n.getText("export"));
+					String etext = "";
+					if (exportee.meta.get("filename") != null) {
+						File oldfile = new File((String) exportee.meta
+								.get("filename"));
+						etext = " (" + oldfile.getName() + ")";
+					}
+					String fn = FileDialog.showSingle(I18n.getText("export") +
+							etext);
 
 					// check for already-exists
 					Overwrite.overwrite(fn);
@@ -257,20 +285,7 @@ public class ExportDialog extends JDialog {
 					Bug.bug(ex);
 				}
 			}
-		});
-
-		// in a panel
-		JPanel buttons = Layout.buttonLayout(help, copy, null, cancel, ok);
-		buttons.setBorder(BorderFactory.createEmptyBorder(14, 0, 0, 0));
-
-		JPanel main = Layout.borderLayout(null, null, tuples, null, buttons);
-		main.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
-		setContentPane(main);
-
-		OKCancel.addKeyboardDefaults(ok);
-
-		// initial view
-		updatePreview();
+		});		
 
 		// show
 		pack();
@@ -278,6 +293,121 @@ public class ExportDialog extends JDialog {
 		show();
 	}
 
+	/**
+	 Create and display a sample-export dialog.
+
+	 @param samples the list of samples to export
+	 @param parent window
+	 */
+	public ExportDialog(List samples, Frame parent) {
+		super(parent, I18n.getText("export"), true);
+		this.sample = (Sample) samples.get(0);
+		
+		commonSetup();
+		
+		final JDialog me = this;
+		final List ss = samples;
+		ok.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				
+				try {
+					// get the export format...
+					String format = exporters[popup.getSelectedIndex()];
+					Filetype f = (Filetype) Class.forName(format).newInstance();
+					
+					JFileChooser chooser = new JFileChooser();
+				    chooser.setDialogTitle("Choose an export folder");
+				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				    
+				    int rv = chooser.showDialog(null, "OK");
+				    if (rv != JFileChooser.APPROVE_OPTION) 
+				    	return;
+				    			
+					//String dirn = FileDialog.showSingle(I18n.getText("export") +
+					//" (directory)");
+			
+					File dir = new File(
+							chooser.getSelectedFile().getAbsolutePath() +
+							File.separator + "Export" +
+							format.substring( format.lastIndexOf('.'), format.length())
+							);
+					
+					if(!((dir.exists() && dir.isDirectory()) || dir.mkdir())) {
+						Alert.error("Couldn't export", "Couldn't create/write to directory " + dir.getName());
+						return;
+					}
+
+					for (int i = 0; i < ss.size(); i++) {
+						Sample s = (Sample) ss.get(i);
+						String progress = "Processing "
+								+ ((String) s.meta.get("filename")) + " (" + i
+								+ "/" + ss.size() + ")";
+						preview.setText(progress);
+						
+						String fn = dir.getAbsolutePath() +
+							File.separator + "Export." +
+							s.meta.get("filename");		
+						System.out.println(fn);
+					}
+				} catch (Exception ex) {
+					// problem creating filetype, or npe, or whatever -- bug.
+					Bug.bug(ex);
+				}
+				
+				// close dialog
+				dispose();
+
+				/*
+				try {
+					// ask for filename
+					String etext = "";
+					if (exportee.meta.get("filename") != null) {
+						File oldfile = new File((String) exportee.meta
+								.get("filename"));
+						etext = " (" + oldfile.getName() + ")";
+					}
+					String fn = FileDialog.showSingle(I18n.getText("export") +
+							etext);
+
+					// check for already-exists
+					Overwrite.overwrite(fn);
+
+					// save it
+					String format = exporters[popup.getSelectedIndex()];
+					Filetype f = (Filetype) Class.forName(format).newInstance();
+					BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+					try {
+						f.save(sample, w);
+					} finally {
+						try {
+							w.close();
+						} catch (IOException ioe) {
+							ioe.printStackTrace();
+						}
+					}
+				} catch (UserCancelledException uce) {
+					// do nothing
+				} catch (IOException ioe) {
+					// problem saving, tell user
+					// WAS: passed |me| as owner of dialog; do i lose something here?
+					// WAS: WARNING_MESSAGE -- Alert uses ERROR_MESSAGE, which i think is at least as good
+					Alert.error(I18n.getText("export_error_title"), I18n
+							.getText("xport_error")
+							+ ioe);
+				} catch (Exception ex) {
+					// problem creating filetype, or npe, or whatever -- bug.
+					Bug.bug(ex);
+				}
+				*/
+			}
+		});		
+
+		// show
+		pack();
+		setResizable(false);
+		show();
+	}
+	
 	// use the same StringWriter for all previews, because that way it uses the same StringBuffer
 	private StringWriter writer = new PureStringWriter(10240); // 10K
 

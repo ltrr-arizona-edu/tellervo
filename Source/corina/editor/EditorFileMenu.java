@@ -72,7 +72,8 @@ public class EditorFileMenu extends FileMenu {
 			    // if there is one?
 
 			    // get new filename
-			    String filename = FileDialog.showSingle(I18n.getText("rename_to..."));
+			    String filename = FileDialog.showSingle(I18n.getText("rename_to...") +
+			    		" (" + oldFile.getName() + ")");
 			    File newFile = new File(filename);
 			    
 			    if(newFile.exists()) {

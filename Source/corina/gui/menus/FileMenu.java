@@ -34,6 +34,7 @@ import corina.ui.Alert;
 import corina.ui.Builder;
 import corina.ui.I18n;
 import corina.util.Overwrite;
+import corina.io.ExportDialog;
 
 // TODO:
 // -- refactor so Editor can use it (export)
@@ -157,7 +158,9 @@ public class FileMenu extends JMenu {
     add(Builder.makeMenuItem("open...",
 			 "corina.gui.menus.FileMenu.open()"));
     add(Builder.makeMenuItem("open_multi...",
-			 "corina.gui.menus.FileMenu.openMulti()"));
+	 "corina.gui.menus.FileMenu.openMulti()"));
+    add(Builder.makeMenuItem("export...",
+	 "corina.gui.menus.FileMenu.export()"));
 	add(Builder.makeMenuItem("browse...",
 				 "new corina.browser.Browser();"));
         add(OpenRecent.makeOpenRecentMenu());
@@ -209,6 +212,55 @@ public class FileMenu extends JMenu {
 	} 
     }    
 
+    // ask the user for a list of files to open
+    public static void export() {
+	try {
+		// get a list of elements
+		List elements = FileDialog.showMulti(I18n.getText("export"));
+
+		// convert them to samples
+		boolean problem = false;
+		List samples = new ArrayList(elements.size());
+		String errorsamples = "";
+		
+		for (int i = 0; i < elements.size(); i++) {
+			Element e = (Element) elements.get(i);
+
+			if (!e.isActive()) // skip inactive
+				continue;
+
+			try {
+				Sample s = e.load();
+				samples.add(s);
+			} catch (IOException ioe) {
+				problem = true;
+				if(errorsamples.length() != 0)
+					errorsamples += ", ";
+				errorsamples += e.getFilename();
+			}
+		}
+		
+		// problem?
+		if (problem) {
+			Alert.error("Error loading sample(s):",
+					errorsamples);
+			return;
+		}
+
+		// no samples => don't bother doing anything
+		if (samples.isEmpty()) {
+			return;
+		}
+
+		// ok, now we have a list of valid samples in 'samples'...
+		new ExportDialog(samples, null);
+		
+	} catch (UserCancelledException uce) {
+	    // do nothing
+	} 
+    }    
+    
+    
     // ask user for some files to sum, and make the sum
     // REFACTOR: why isn't this in manip.Sum?
     public static void sum() {
