@@ -21,6 +21,7 @@ import corina.Element;
 import corina.Sample;
 import corina.core.App;
 import corina.editor.Editor;
+import corina.graph.Graph;
 import corina.gui.Bug;
 import corina.gui.CanOpener;
 import corina.gui.FileDialog;
@@ -153,8 +154,10 @@ public class FileMenu extends JMenu {
 	add(map);
 
 	// open, browse
-        add(Builder.makeMenuItem("open...",
-				 "corina.gui.menus.FileMenu.open()"));
+    add(Builder.makeMenuItem("open...",
+			 "corina.gui.menus.FileMenu.open()"));
+    add(Builder.makeMenuItem("open_multi...",
+			 "corina.gui.menus.FileMenu.openMulti()"));
 	add(Builder.makeMenuItem("browse...",
 				 "new corina.browser.Browser();"));
         add(OpenRecent.makeOpenRecentMenu());
@@ -163,8 +166,8 @@ public class FileMenu extends JMenu {
     // ask the user for a file to open, and open it
     public static void open() {
 	try {
-	    // get filename, and load
-	    CanOpener.open(FileDialog.showSingle(I18n.getText("open")));
+		 // get filename, and load
+	     CanOpener.open(FileDialog.showSingle(I18n.getText("open")));	    
 	} catch (UserCancelledException uce) {
 	    // do nothing
 	} catch (IOException ioe) {
@@ -176,6 +179,35 @@ public class FileMenu extends JMenu {
 	    // (so why not use Bug.bug()?)
 	}
     }
+
+    // ask the user for a list of files to open
+    public static void openMulti() {
+	try {
+		
+		/*
+		 * This is a bit kludgy, but work around our existing framework:
+		 * get a list of elements; open each.
+		 */
+		
+		List elements = FileDialog.showMulti(I18n.getText("open"));
+		
+		for (int i = 0; i < elements.size(); i++) {
+			Element e = (Element) elements.get(i);
+
+			if (!e.isActive()) // skip inactive
+				continue;
+
+			try {
+				CanOpener.open(e.getFilename());
+			} catch (IOException ioe) {
+			    Alert.error("I/O Error",
+						"Can't open file: " + ioe.getMessage());				
+			}
+		}
+	} catch (UserCancelledException uce) {
+	    // do nothing
+	} 
+    }    
 
     // ask user for some files to sum, and make the sum
     // REFACTOR: why isn't this in manip.Sum?
