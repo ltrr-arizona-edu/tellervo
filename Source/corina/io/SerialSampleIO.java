@@ -35,7 +35,6 @@ implements SerialPortEventListener {
 	
 	// the actual serial port
 	private SerialPort dataPort;
-	private BufferedOutputStream dataOutStream;
 	
 	// the state...
 	private static final int SERIALSTATE_WAITINGFORACK = 2;
@@ -51,6 +50,9 @@ implements SerialPortEventListener {
 
 	// tie us to the port...
 	public SerialSampleIO(String portName) throws IOException {
+		
+		System.out.println("Opening port: " + portName);
+		
 		dataPort = openPort(portName);
 		serialState = SERIALSTATE_NORMAL;
 	}
@@ -58,13 +60,17 @@ implements SerialPortEventListener {
 	// on shutdown, make sure we closed the port.
 	protected void finalize() throws Throwable {
 		super.finalize();
-		if(dataPort != null)
+		
+		if(dataPort != null) {
+			System.out.println("Closing port (finalize): " + dataPort.getName());
 			dataPort.close();
+			dataPort = null;
+		}
 	}
 
 	// clean up!
 	public void close() {
-		dataOutStream = null;
+		System.out.println("Closing port (manual): " + dataPort.getName());
 		dataPort.close();
 		dataPort = null;
 	}
@@ -73,7 +79,6 @@ implements SerialPortEventListener {
 		serialState = SERIALSTATE_WAITINGFORACK;
 		
 		dataPort.getOutputStream().write(SerialSampleIO.EVE_ENQ);
-		dataOutStream.write(SerialSampleIO.EVE_ENQ);		
 		// writing fails on my USB->Serial adapter...
 	}
 	
@@ -206,7 +211,7 @@ implements SerialPortEventListener {
 			// time out after 500ms when reading...
 			((SerialPort)port).enableReceiveTimeout(500);
 			
-			dataOutStream = new BufferedOutputStream((((SerialPort)port).getOutputStream()));
+			//dataOutStream = new BufferedOutputStream((((SerialPort)port).getOutputStream()));
 		}
 		catch (NoSuchPortException e) {
 			throw new IOException("Unable to open port: it does not exist!");
