@@ -79,243 +79,238 @@ import javax.swing.AbstractAction;
 
  -- it doesn't behave exactly the same on windows and mac.  i don't know why it doesn't scroll to
  the top on windows.  (windows users don't seem to notice minor bugs, anyway.)
-*/
+ */
 
 /**
-   A dialog allowing the user to choose a file format to export.
+ A dialog allowing the user to choose a file format to export.
 
-   <h2>Left to do:</h2>
-   <ul>
-     <li>Move this class to corina.gui
-     <li>Handle IOE intelligently (e.g., when it can't load an element)
-     <li>Get rid of "size" field; it probably does more harm than good
-     <li>Run exporters in their own thread? (Spreadsheet format can take a little while)
-     <li>Javadoc
-     <li>Use Filetype.getDefaultExtension(), so clicking "Ok" here gives you
-         a default of "<old-filename>.<sug-ext>"
-     <li>Make it resizable (JTextArea doesn't resize -- bug in DialogLayout?)
-     <li>Should 2-column use a zero-year?
-     <li>Width is broken with 1.4.1: DialogLayout's fault
-     <li>Is it "Filetype", or "Format"?  I'd say the latter.
-     <li>"Copy" should be "Copy to Clipboard", but shouldn't force the other buttons to be wider
-     <li>"Copy" button should be in the middle, not next to "Help" (or on the right)
-     <li>Cache results?  creating a huge StringBuffer takes a non-trivial amount of time
-     <li>Sample param should be "sample", not "s"
-   </ul>
+ <h2>Left to do:</h2>
+ <ul>
+ <li>Move this class to corina.gui
+ <li>Handle IOE intelligently (e.g., when it can't load an element)
+ <li>Get rid of "size" field; it probably does more harm than good
+ <li>Run exporters in their own thread? (Spreadsheet format can take a little while)
+ <li>Javadoc
+ <li>Use Filetype.getDefaultExtension(), so clicking "Ok" here gives you
+ a default of "<old-filename>.<sug-ext>"
+ <li>Make it resizable (JTextArea doesn't resize -- bug in DialogLayout?)
+ <li>Should 2-column use a zero-year?
+ <li>Width is broken with 1.4.1: DialogLayout's fault
+ <li>Is it "Filetype", or "Format"?  I'd say the latter.
+ <li>"Copy" should be "Copy to Clipboard", but shouldn't force the other buttons to be wider
+ <li>"Copy" button should be in the middle, not next to "Help" (or on the right)
+ <li>Cache results?  creating a huge StringBuffer takes a non-trivial amount of time
+ <li>Sample param should be "sample", not "s"
+ </ul>
 
-   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
-   @version $Id$
-*/
+ @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
+ @version $Id$
+ */
 public class ExportDialog extends JDialog {
 
-    // exporters for raw, summed files -- this seems slightly awkward,
-    // but it's the SimplestThing right now
-    private static final String EXPORTERS_RAW[] = new String[] {
-        "corina.formats.Tucson",
-        "corina.formats.TucsonSimple",
-        "corina.formats.TwoColumn",
-        "corina.formats.Corina",
-        "corina.formats.TRML",
-        "corina.formats.HTML",
-        "corina.formats.Heidelberg",
-        "corina.formats.Hohenheim",
-        "corina.formats.TSAPMatrix",
-        "corina.formats.MultiColumn",
-    };
-    private static final String EXPORTERS_SUM[] = new String[] {
-        "corina.formats.Tucson",
-        "corina.formats.TucsonSimple",        
-        "corina.formats.PackedTucson",
-        "corina.formats.TwoColumn",
-        "corina.formats.Corina",
-        "corina.formats.TRML",
-        "corina.formats.HTML",
-        "corina.formats.Heidelberg",
-        "corina.formats.Hohenheim",
-        "corina.formats.TSAPMatrix",
-        "corina.formats.RangesOnly",
-        "corina.formats.Spreadsheet",
-    };
+	// exporters for raw, summed files -- this seems slightly awkward,
+	// but it's the SimplestThing right now
+	private static final String EXPORTERS_RAW[] = new String[] {
+			"corina.formats.Tucson", "corina.formats.TucsonSimple",
+			"corina.formats.TwoColumn", "corina.formats.Corina",
+			"corina.formats.TRML", "corina.formats.HTML",
+			"corina.formats.Heidelberg", "corina.formats.Hohenheim",
+			"corina.formats.TSAPMatrix", "corina.formats.MultiColumn", };
 
-    // exporters i'm using
-    private final String exporters[];
+	private static final String EXPORTERS_SUM[] = new String[] {
+			"corina.formats.Tucson", "corina.formats.TucsonSimple",
+			"corina.formats.PackedTucson", "corina.formats.TwoColumn",
+			"corina.formats.Corina", "corina.formats.TRML",
+			"corina.formats.HTML", "corina.formats.Heidelberg",
+			"corina.formats.Hohenheim", "corina.formats.TSAPMatrix",
+			"corina.formats.RangesOnly", "corina.formats.Spreadsheet", };
 
-    private JComboBox popup;
-    private JLabel size;
-    private JTextArea preview;
-    private JButton ok;
-    private Sample sample;
+	// exporters i'm using
+	private final String exporters[];
 
-    /**
-       Create and display a sample-export dialog.
+	private JComboBox popup;
 
-       @param s the sample to export
-       @param parent the window which holds the sample to export
-    */
-    public ExportDialog(Sample s, Frame parent) {
-        super(parent, I18n.getText("export"), true);
-        this.sample = s;
+	private JLabel size;
 
-      // filetype popup
-      exporters = (s.elements == null ? EXPORTERS_RAW : EXPORTERS_SUM);
-      int n = exporters.length;
+	private JTextArea preview;
 
-      String v[] = new String[n];
-      for (int i=0; i<n; i++) {
-        try {
-          Filetype f = (Filetype) Class.forName(exporters[i]).newInstance();
-          v[i] = f.toString();
-        } catch (Exception e) {
-          Bug.bug(e);
-        }
-      }
-      
-      popup = new JComboBox(v);
-      popup.setMaximumRowCount(12); // i have 9 now, and this shouldn't scroll for so few
-      popup.addActionListener(new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
-              updatePreview();
-          }
-      });
+	private JButton ok;
 
-      // size preview
-      size = new JLabel("");
+	private Sample sample;
 
-      // text preview
-      preview = new JTextArea(12, 80) {
-        public boolean isManagingFocus() { // what's this for?  i've forgotten, document me!
-          return false;
-        }
-      };
+	/**
+	 Create and display a sample-export dialog.
 
-      // switch to monospaced font
-      Font oldFont = preview.getFont();
-      preview.setFont(new Font("monospaced", oldFont.getStyle(), oldFont.getSize()));
+	 @param s the sample to export
+	 @param parent the window which holds the sample to export
+	 */
+	public ExportDialog(Sample s, Frame parent) {
+		super(parent, I18n.getText("export"), true);
+		this.sample = s;
 
-      // not editable
-      preview.setEditable(false);
+		// filetype popup
+		exporters = (s.elements == null ? EXPORTERS_RAW : EXPORTERS_SUM);
+		int n = exporters.length;
 
-      // in a panel
-      JPanel tuples = new JPanel(new DialogLayout());
-      tuples.add(popup, I18n.getText("filetype"));
-      // tuples.add(size, I18n.getText("size"));
-      tuples.add(new JScrollPane(preview), I18n.getText("export_preview"));
+		String v[] = new String[n];
+		for (int i = 0; i < n; i++) {
+			try {
+				Filetype f = (Filetype) Class.forName(exporters[i])
+						.newInstance();
+				v[i] = f.toString();
+			} catch (Exception e) {
+				Bug.bug(e);
+			}
+		}
 
-      // buttons
-      JButton help = Builder.makeButton("help");
-	    Help.addToButton(help, "exporting");
-	    // BETTER?: look at state of filetype popup, and present appropriate format page
+		popup = new JComboBox(v);
+		popup.setMaximumRowCount(12); // i have 9 now, and this shouldn't scroll for so few
+		popup.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				updatePreview();
+			}
+		});
 
-      JButton copy = Builder.makeButton("copy");
-      copy.addActionListener(new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
-              TextClipboard.copy(preview.getText());
-          }
-      });
-      JButton cancel = Builder.makeButton("cancel");
-      ok = Builder.makeButton("ok");
+		// size preview
+		size = new JLabel("");
 
-      // button actions
-      cancel.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          // just close
-          dispose();
-        }
-      });
-      
-      final JDialog me = this;
-      ok.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-		      // close dialog
-		      dispose();
+		// text preview
+		preview = new JTextArea(12, 80) {
+			public boolean isManagingFocus() { // what's this for?  i've forgotten, document me!
+				return false;
+			}
+		};
 
-          try {
-            // ask for filename
-            String fn = FileDialog.showSingle(I18n.getText("export"));
+		// switch to monospaced font
+		Font oldFont = preview.getFont();
+		preview.setFont(new Font("monospaced", oldFont.getStyle(), oldFont
+				.getSize()));
 
-            // check for already-exists
-		        Overwrite.overwrite(fn);
+		// not editable
+		preview.setEditable(false);
 
-            // save it
-            String format = exporters[popup.getSelectedIndex()];
-            Filetype f = (Filetype) Class.forName(format).newInstance();
-            BufferedWriter w = new BufferedWriter(new FileWriter(fn));
-            try {
-              f.save(sample, w);
-            } finally {
-              try {
-                w.close();
-              } catch (IOException ioe) {
-                ioe.printStackTrace();
-              }
-            }
-          } catch (UserCancelledException uce) {
-            // do nothing
-          } catch (IOException ioe) {
-            // problem saving, tell user
-            // WAS: passed |me| as owner of dialog; do i lose something here?
-            // WAS: WARNING_MESSAGE -- Alert uses ERROR_MESSAGE, which i think is at least as good
-		        Alert.error(I18n.getText("export_error_title"),
-				    I18n.getText("xport_error") + ioe);
-          } catch (Exception ex) {
-            // problem creating filetype, or npe, or whatever -- bug.
-            Bug.bug(ex);
-          }
-        }
-      });
+		// in a panel
+		JPanel tuples = new JPanel(new DialogLayout());
+		tuples.add(popup, I18n.getText("filetype"));
+		// tuples.add(size, I18n.getText("size"));
+		tuples.add(new JScrollPane(preview), I18n.getText("export_preview"));
 
-      // in a panel
-	    JPanel buttons = Layout.buttonLayout(help, copy, null, cancel, ok);
-      buttons.setBorder(BorderFactory.createEmptyBorder(14, 0, 0, 0));
+		// buttons
+		JButton help = Builder.makeButton("help");
+		Help.addToButton(help, "exporting");
+		// BETTER?: look at state of filetype popup, and present appropriate format page
 
-	    JPanel main = Layout.borderLayout(null, null, tuples, null, buttons);
-      main.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
-      setContentPane(main);
+		JButton copy = Builder.makeButton("copy");
+		copy.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				TextClipboard.copy(preview.getText());
+			}
+		});
+		JButton cancel = Builder.makeButton("cancel");
+		ok = Builder.makeButton("ok");
 
-      OKCancel.addKeyboardDefaults(ok);
+		// button actions
+		cancel.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				// just close
+				dispose();
+			}
+		});
 
-      // initial view
-      updatePreview();
+		final JDialog me = this;
+		ok.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				// close dialog
+				dispose();
 
-        // show
-        pack();
-        setResizable(false);
-        show();
-    }
+				try {
+					// ask for filename
+					String fn = FileDialog.showSingle(I18n.getText("export"));
 
-    // use the same StringWriter for all previews, because that way it uses the same StringBuffer
-    private StringWriter writer = new PureStringWriter(10240); // 10K
+					// check for already-exists
+					Overwrite.overwrite(fn);
 
-    // FIXME: sometimes the preview takes a while to create.  for example,
-    // a spreadsheet view of a 100-element master needs to load all 100
-    // elements.  yeowch.  i'll need to run this in a separate thread for that!
+					// save it
+					String format = exporters[popup.getSelectedIndex()];
+					Filetype f = (Filetype) Class.forName(format).newInstance();
+					BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+					try {
+						f.save(sample, w);
+					} finally {
+						try {
+							w.close();
+						} catch (IOException ioe) {
+							ioe.printStackTrace();
+						}
+					}
+				} catch (UserCancelledException uce) {
+					// do nothing
+				} catch (IOException ioe) {
+					// problem saving, tell user
+					// WAS: passed |me| as owner of dialog; do i lose something here?
+					// WAS: WARNING_MESSAGE -- Alert uses ERROR_MESSAGE, which i think is at least as good
+					Alert.error(I18n.getText("export_error_title"), I18n
+							.getText("xport_error")
+							+ ioe);
+				} catch (Exception ex) {
+					// problem creating filetype, or npe, or whatever -- bug.
+					Bug.bug(ex);
+				}
+			}
+		});
 
-    private void updatePreview() {
-        int i = popup.getSelectedIndex();
-        try {
-            // save to buffer
-            setCursor(new Cursor(Cursor.WAIT_CURSOR)); // this could take a second...
-            Filetype f = (Filetype) Class.forName(exporters[i]).newInstance();
-            StringBuffer buf = writer.getBuffer();
-            buf.delete(0, buf.length()); // clear it
-	    BufferedWriter b = new BufferedWriter(writer);
-            f.save(sample, b);
-	    b.close();
-            setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); // ok, done with the slow part
+		// in a panel
+		JPanel buttons = Layout.buttonLayout(help, copy, null, cancel, ok);
+		buttons.setBorder(BorderFactory.createEmptyBorder(14, 0, 0, 0));
 
-            // update views
-            preview.setText(buf.toString());
-            size.setText(new FileLength(buf.length()).toString());
-            ok.setEnabled(true);
+		JPanel main = Layout.borderLayout(null, null, tuples, null, buttons);
+		main.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
+		setContentPane(main);
 
-            // move cursor to start -- this scrolls to the top, as well
-            preview.setCaretPosition(0);
-        } catch (IOException ioe) {
-            // problem saving it -- bug
-            Bug.bug(ioe);
-        } catch (Exception e) {
-            // problem creating the filetype -- bug
-            Bug.bug(e);
-        }
-    }
+		OKCancel.addKeyboardDefaults(ok);
+
+		// initial view
+		updatePreview();
+
+		// show
+		pack();
+		setResizable(false);
+		show();
+	}
+
+	// use the same StringWriter for all previews, because that way it uses the same StringBuffer
+	private StringWriter writer = new PureStringWriter(10240); // 10K
+
+	// FIXME: sometimes the preview takes a while to create.  for example,
+	// a spreadsheet view of a 100-element master needs to load all 100
+	// elements.  yeowch.  i'll need to run this in a separate thread for that!
+
+	private void updatePreview() {
+		int i = popup.getSelectedIndex();
+		try {
+			// save to buffer
+			setCursor(new Cursor(Cursor.WAIT_CURSOR)); // this could take a second...
+			Filetype f = (Filetype) Class.forName(exporters[i]).newInstance();
+			StringBuffer buf = writer.getBuffer();
+			buf.delete(0, buf.length()); // clear it
+			BufferedWriter b = new BufferedWriter(writer);
+			f.save(sample, b);
+			b.close();
+			setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); // ok, done with the slow part
+
+			// update views
+			preview.setText(buf.toString());
+			size.setText(new FileLength(buf.length()).toString());
+			ok.setEnabled(true);
+
+			// move cursor to start -- this scrolls to the top, as well
+			preview.setCaretPosition(0);
+		} catch (IOException ioe) {
+			// problem saving it -- bug
+			Bug.bug(ioe);
+		} catch (Exception e) {
+			// problem creating the filetype -- bug
+			Bug.bug(e);
+		}
+	}
 }
