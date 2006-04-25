@@ -112,6 +112,7 @@ public class ExportDialog extends JDialog {
     // but it's the SimplestThing right now
     private static final String EXPORTERS_RAW[] = new String[] {
         "corina.formats.Tucson",
+        "corina.formats.TucsonSimple",
         "corina.formats.TwoColumn",
         "corina.formats.Corina",
         "corina.formats.TRML",
@@ -123,6 +124,7 @@ public class ExportDialog extends JDialog {
     };
     private static final String EXPORTERS_SUM[] = new String[] {
         "corina.formats.Tucson",
+        "corina.formats.TucsonSimple",        
         "corina.formats.PackedTucson",
         "corina.formats.TwoColumn",
         "corina.formats.Corina",
