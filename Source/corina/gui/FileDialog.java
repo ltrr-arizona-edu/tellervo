@@ -311,6 +311,9 @@ public class FileDialog {
 
 		// hide ok/cancel, we'll do that ourselves
 		f.setControlButtonsAreShown(false);
+		
+		// allow multiple selection!
+		f.setMultiSelectionEnabled(true);
 
 		// preview component + multi-list
 		mp.hook(f); // add reference to this jfilechooser

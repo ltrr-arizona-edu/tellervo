@@ -42,6 +42,7 @@ import corina.Element;
 import corina.Preview;
 import corina.Previewable;
 import corina.Sample;
+import corina.Preview.TooManySelectedPreview;
 import corina.core.App;
 import corina.cross.Grid;
 import corina.formats.WrongFiletypeException;
@@ -59,17 +60,21 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 	private JFileChooser chooser;
 
 	// data
-	private File file;
+	//private File file;
+	private File files[];
 
 	private List set;
 
 	// because only FileDialog knows what happens when a file is double-clicked...blah
 	public void addClicked() {
-		// add to set
-		set.add(new Element(file.getPath()));
+		if(files != null) {			
+			for(int i = 0; i < files.length; i++)
+				// add to set
+				set.add(new Element(files[i].getPath()));
 
-		// update view
-		panel.update();
+			// update view
+			panel.update();
+		}
 	}
 
 	public void hook(JFileChooser f) {
@@ -110,11 +115,15 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 			add.setIcon(Builder.getIcon("Forward16.gif"));
 		add.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
-				// add to set
-				set.add(new Element(file.getPath())); // NullPointerException if no file selected!
+				if(files != null) {			
+					for(int i = 0; i < files.length; i++)
+						// add to set
+						set.add(new Element(files[i].getPath()));
 
-				// update view
-				panel.update();
+					// update view
+					panel.update();
+				}
+				
 			}
 		});
 		buttons.add(add);
@@ -160,17 +169,23 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 	// (REFACTOR: use SamplePreview here!)
 	private void loadSample() {
 		// no file?
-		if (file == null)
+		if (files == null || files.length == 0)
 			return;
+		
+		// if multiple files are selected, we can't really show a preview for all of them...
+		if (files.length > 1) {
+			showPreview(new Preview.TooManySelectedPreview(files.length));
+			return;
+		}
 
 		try {
 			Previewable s = null;
 
 			// new: loop to find a Previewable
 			try {
-				s = new Grid(file.getPath());
+				s = new Grid(files[0].getPath());
 			} catch (WrongFiletypeException wfte) {
-				s = new Sample(file.getPath());
+				s = new Sample(files[0].getPath());
 			} // but can't string catches here ... darn
 
 			// get preview, and show it.
@@ -188,7 +203,8 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent e) {
 		String prop = e.getPropertyName();
 		if (prop.equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
-			file = (File) e.getNewValue();
+			files = chooser.getSelectedFiles();
+			//file = (File) e.getNewValue();
 			if (isShowing()) {
 				loadSample();
 				repaint();

@@ -305,6 +305,8 @@ public class ExportDialog extends JDialog {
 		
 		commonSetup();
 		
+		setTitle(getTitle() + " [first sample shown, choose format for all]");
+		
 		final JDialog me = this;
 		final List ss = samples;
 		ok.addActionListener(new AbstractAction() {
@@ -337,6 +339,7 @@ public class ExportDialog extends JDialog {
 						return;
 					}
 
+					// for each sample, make a new filename and export it!
 					for (int i = 0; i < ss.size(); i++) {
 						Sample s = (Sample) ss.get(i);
 						String progress = "Processing "
@@ -346,8 +349,19 @@ public class ExportDialog extends JDialog {
 						
 						String fn = dir.getAbsolutePath() +
 							File.separator + "Export." +
-							s.meta.get("filename");		
-						System.out.println(fn);
+							new File((String)s.meta.get("filename")).getName();		
+						
+						BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+						try {
+							f.save(sample, w);
+						} finally {
+							try {
+								w.close();
+							} catch (IOException ioe) {
+								ioe.printStackTrace();
+							}
+						}					
+						System.out.println("Exported " + fn);
 					}
 				} catch (Exception ex) {
 					// problem creating filetype, or npe, or whatever -- bug.
