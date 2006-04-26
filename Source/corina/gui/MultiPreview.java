@@ -202,7 +202,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 	// implements PropertyChangeListener
 	public void propertyChange(PropertyChangeEvent e) {
 		String prop = e.getPropertyName();
-		if (prop.equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
+		if (prop.equals(JFileChooser.SELECTED_FILES_CHANGED_PROPERTY)) {
 			files = chooser.getSelectedFiles();
 			//file = (File) e.getNewValue();
 			if (isShowing()) {
