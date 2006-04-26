@@ -303,8 +303,9 @@ public class Browser extends XFrame {
 		p.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
 		// "folder-tree | browser" split
+		tree = new FolderTree(this);
 		JSplitPane p2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				new FolderTree(this), p);
+				tree, p);
 		p2.setContinuousLayout(true); // -- when it's faster (my renderers suck)
 		setContentPane(p2);
 
@@ -1281,6 +1282,7 @@ public class Browser extends XFrame {
 	List visibleFiles = new ArrayList(); // of Element
 
 	Summary summary = null;
+	FolderTree tree = null;
 
 	// strategy: instead of updating the table in-place (which is slow,
 	// and annoying), we'll load it as fast as possible, then just
@@ -1296,6 +1298,7 @@ public class Browser extends XFrame {
 		
 		final Browser _parent = this;
 		table.setVisible(false);
+		tree.setEnabled(false);
 		
 		Thread th = new Thread(new Runnable() {
 			public void run() {
@@ -1363,6 +1366,7 @@ public class Browser extends XFrame {
 						+ " ms to list all metadata for this folder");		
 				
 				table.setVisible(true);
+				tree.setEnabled(true);
 				browserModel.fireTableDataChanged();
 			}
 		});

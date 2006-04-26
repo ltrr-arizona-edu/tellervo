@@ -149,6 +149,8 @@ public class FolderTree extends JPanel {
 		    // ignore
 		}
 		public void keyTyped(KeyEvent e) {
+			if(disabled)
+				return;
 		    char c = e.getKeyChar();
 		    long t = System.currentTimeMillis();
 
@@ -190,8 +192,14 @@ public class FolderTree extends JPanel {
 		}
 	    });
     }
+    
+    public void setEnabled(boolean enabled) {
+    	disabled = !enabled;
+    	tree.setEnabled(enabled);
+    }
 
     private static final int TYPE_SPEED = 1000; // after this many ms, type-buffer is cleared
     private long lastKeypress=-1; // time of last keypress
     private String buf="";
+    private boolean disabled=false;
 }
