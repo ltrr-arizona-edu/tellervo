@@ -97,6 +97,15 @@ public abstract class Preview {
 	    title = "Not a dendro data file";
 	}
     }
+    
+    /** A Preview for "Too many samples selected".  The title contains the text
+    "xx items selected", and there are no items. */
+public static class TooManySelectedPreview extends Preview {
+public TooManySelectedPreview(int size) {
+    title = size + " items selected";
+}
+}
+    
 
     /** A preview for "Error loading".  The title is "Error Loading", and
         it contains one item: the result of e.getMessage(). */

@@ -100,6 +100,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	private Font graphNamesFont = new Font("Dialog", Font.PLAIN, 15);
 	private Font tickFont = new Font("Dialog", Font.PLAIN, 11);	
 	
+	/*
 	private String[] plotAgentName =   {
 			"Standard Plot", 
 			"Semi-Log Plot",
@@ -118,6 +119,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	// perhaps we could 'auto-find' this, but it makes more sense at this point
 	// to kludge it in.
 	private final int densityPlotAgent = 2;
+	*/
+	
+	private PlotAgents agents;
 	
 	// compute the initial range of the year-axis
 	// (union of all graph ranges)
@@ -524,10 +528,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				gInfo.setYearWidth(curwidth);
 				
 				computeRange();				
-				setPreferredSize(new Dimension(bounds.span() * yearWidth, 200));
-				horiz.setValue(Math.abs(y.diff(getRange().getStart())) * gInfo.getYearWidth());
+				setPreferredSize(new Dimension(bounds.span() * curwidth, 200));
 				recreateAgent();
 				revalidate();					
+				horiz.setValue(Math.abs(y.diff(getRange().getStart())) * gInfo.getYearWidth());				
 				repaint = true;
 				break;
 			}
@@ -538,10 +542,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				gInfo.setYearWidth(curwidth);
 				
 				computeRange();
-				setPreferredSize(new Dimension(bounds.span() * yearWidth, 200));
-				horiz.setValue(Math.abs(y.diff(getRange().getStart())) * gInfo.getYearWidth());				
+				setPreferredSize(new Dimension(bounds.span() * curwidth, 200));
 				recreateAgent();
 				revalidate();					
+				horiz.setValue(Math.abs(y.diff(getRange().getStart())) * gInfo.getYearWidth());								
 				repaint = true;
 				break;
 			}
@@ -749,9 +753,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	
 	// graphs = List of Graph.
 	// frame = window; (used for: title set to current graph, closed when ESC pressed.)
-	public GrapherPanel(List graphs, final JFrame myFrame) {		
+	public GrapherPanel(List graphs, PlotAgents agents, final JFrame myFrame) {		
 		// my frame
 		this.myFrame = myFrame;
+		this.agents = agents;
 
 		// cursor: a crosshair.
 		// note: (mac crosshair doesn't invert on 10.[01], so it's invisible on black)
@@ -759,14 +764,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// set up the graph info, which loads a lot of default preferences.
 		gInfo = new GraphInfo();
-		// set default agent number
-		String defAgentName = App.prefs.getPref("corina.graph.defaultagent", "corina.graph.StandardPlot"); 
-		for(int i = 0; i < plotAgentInstance.length; i++) {
-			if(plotAgentInstance[i].getClass().getName().equals(defAgentName)) {
-				defPlotAgent = i;
-				break;
-			}
-		}
 
 		// key listener -- apparently the focus gets screwed up and
 		// keys stop responding if I don't add a key listener to both
@@ -818,9 +815,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			
 			// set each graph to have a the default agent; or the density agent.
 			if(cg.graph instanceof DensityGraph)
-				cg.setAgent(plotAgentInstance[densityPlotAgent]);
+				cg.setAgent(agents.acquireDensity());
 			else
-				cg.setAgent(plotAgentInstance[defPlotAgent]);
+				cg.setAgent(agents.acquireDefault());
 		}
 
 		// background -- default is black
@@ -1351,16 +1348,12 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// notification that a preference or the sample list has changed.
 		for (int i = 0; i < graphs.size(); i++) {
 			Graph cg = (Graph) graphs.get(i);
-			
-			// we only want graphs that don't have an agent yet!
-			if(cg.getAgent() != null)
-				continue;
-			
+						
 			// set each graph to have a the default agent; or the density agent.
 			if(cg.graph instanceof DensityGraph)
-				cg.setAgent(plotAgentInstance[densityPlotAgent]);
+				cg.setAgent(agents.acquireDensity());
 			else
-				cg.setAgent(plotAgentInstance[defPlotAgent]);
+				cg.setAgent(agents.acquireDefault());
 			
 		}
 		
@@ -1406,5 +1399,43 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	
 	public Range getRange() {
 		return gInfo.getDrawRange();
+	}
+	
+	public Range getGraphingRange() {
+		if(!gInfo.drawGraphNames())
+			return gInfo.getDrawRange();
+		
+		return new Range(gInfo.getEmptyRange().getEnd(), gInfo.getDrawRange().getEnd());
+	}
+	
+	public void forceYearWidth(int width) {
+		if(width < 1)
+			width = 1;
+		
+		gInfo.setYearWidth(width);
+		computeRange();				
+		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * width, 200));
+		recreateAgent();
+		revalidate();							
+	}
+	
+	public void forceUnitHeight(int height) {
+		if(height < 1)
+			height = 1;
+		
+		gInfo.set10UnitHeight(height);
+	}
+	
+	public int getMaxPixelHeight() {
+		int bottom = getHeight() - GrapherPanel.AXIS_HEIGHT;		
+		int maxh = 0;
+		// notification that a preference or the sample list has changed.
+		for (int i = 0; i < graphs.size(); i++) {
+			Graph cg = (Graph) graphs.get(i);
+			int val = cg.getAgent().getYRange(gInfo, cg, bottom);
+			if(val > maxh)
+				maxh = val;
+		}
+		return maxh;
 	}
 }

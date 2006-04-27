@@ -342,7 +342,7 @@ public class IndexDialog2 extends JDialog {
 	    l.add(ii);
 
 	    // create graph preview for |l|
-	    preview = new GrapherPanel(l, new JFrame());
+	    preview = new GrapherPanel(l, new corina.graph.PlotAgents(), new JFrame());
 	    ((GrapherPanel) preview).setScroller(new JScrollPane());
 	    p.add(preview, BorderLayout.CENTER);
 	}

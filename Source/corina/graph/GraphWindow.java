@@ -47,6 +47,8 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.ButtonGroup;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
@@ -157,6 +159,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 	// gui
 	public GrapherPanel plot; // the plot area itself
+	private PlotAgents agents;
 
 	private JScrollPane scroller; // scroller enclosing the plot
 
@@ -197,6 +200,26 @@ public class GraphWindow extends XFrame implements SampleListener,
 			Graph g = (Graph) samples.get(i);
 			g.scale = g.graph.getScale();
 		}
+		repaint();
+	}
+	
+	public void scaleToFitWidth() {
+		int viewportSize = scroller.getWidth();
+		int nYears = plot.getGraphingRange().span() + 2;
+		
+		// viewportSize is the number of pixels.
+		// nyears = 
+		int ppy = viewportSize / nYears;
+		plot.forceYearWidth(ppy);
+		repaint();
+		scrollTo(plot.getGraphingRange().getStart());
+	}
+	
+	public void scaleToFitHeight() {
+		int bottom = plot.getHeight() - GrapherPanel.AXIS_HEIGHT;
+		int maxheight = plot.getMaxPixelHeight();
+		int uph = (int) (10.0 * bottom / maxheight);
+		plot.forceUnitHeight(uph);
 		repaint();
 	}
 	
@@ -628,10 +651,47 @@ public class GraphWindow extends XFrame implements SampleListener,
 			});
 			this.add(squish);
 
+			// Squish
+			JMenuItem fitwidth = Builder.makeMenuItem("fit_horiz");
+			fitwidth.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						// first, squish them together.
+						window.squishTogether();
+						// then, squish it horizontally.
+						window.scaleToFitWidth();
+					} catch (Exception ex) {
+						// see squishTogether() method for at least 1 remaining
+						// bug
+						new Bug(ex);
+					}
+				}
+			});
+			this.add(fitwidth);
+
+			// Squish
+			JMenuItem fitboth = Builder.makeMenuItem("fit_both");
+			fitboth.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						// first, squish them together.
+						window.squishTogether();
+						// then, squish it horizontally.
+						window.scaleToFitWidth();
+						window.scaleToFitHeight();
+					} catch (Exception ex) {
+						// see squishTogether() method for at least 1 remaining
+						// bug
+						new Bug(ex);
+					}
+				}
+			});
+			this.add(fitboth);
+			
 			this.addSeparator();
 			
 			// scaling... half scale
-			JMenuItem halvescale = Builder.makeMenuItem("scale_halve");
+			JMenuItem halvescale = Builder.makeMenuItem("escale_halve");
 			halvescale.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
 					window.halveScale();
@@ -640,7 +700,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 			this.add(halvescale);			
 			
 			// scaling... half scale
-			JMenuItem doublescale = Builder.makeMenuItem("scale_double");
+			JMenuItem doublescale = Builder.makeMenuItem("escale_double");
 			doublescale.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
 					window.doubleScale();
@@ -649,7 +709,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 			this.add(doublescale);			
 
 			// scaling... reset scale
-			JMenuItem resetscale = Builder.makeMenuItem("scale_reset");
+			JMenuItem resetscale = Builder.makeMenuItem("escale_reset");
 			resetscale.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
 					window.resetScaling();
@@ -658,6 +718,28 @@ public class GraphWindow extends XFrame implements SampleListener,
 			this.add(resetscale);			
 
 			this.addSeparator();
+
+			JMenu plottype = Builder.makeMenu("plot_type");			
+			////////
+			String[] agentnames = window.agents.getAgents();
+			ButtonGroup agentgroup = new ButtonGroup();
+			for(int i = 0; i < agentnames.length; i++) {
+				JRadioButtonMenuItem sa = new JRadioButtonMenuItem(agentnames[i], window.agents.isDefault(i));
+				agentgroup.add(sa);
+				
+				// glue
+				final int ii = i;
+				sa.addActionListener(new AbstractAction() {
+					public void actionPerformed(ActionEvent e) {
+						window.agents.setAgent(ii);
+						window.plot.update();
+					}
+				});
+				plottype.add(sa);
+			}
+			this.add(plottype);
+			this.addSeparator();
+			////////
 			
 			JMenuItem print1 = Builder.makeMenuItem("plot_print");
 			print1.addActionListener(new AbstractAction() {
@@ -690,8 +772,10 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 	// construct a GrapherPanel, add a GrapherListener, etc.
 	private void createPanelAndDisplay() {
+		// initialize our plotting agents
+		agents = new PlotAgents();
 		// create a graph panel; put it in a scroll pane
-		plot = new GrapherPanel(samples, this);
+		plot = new GrapherPanel(samples, agents, this);
 		scroller = new JScrollPane(plot,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);

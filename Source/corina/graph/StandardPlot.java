@@ -93,7 +93,32 @@ public class StandardPlot implements CorinaGraphPlotter {
 
 	// TESTING: perf
 	protected Rectangle tempRect = new Rectangle();
-	
+
+	// returns the maximum size, in pixels, that the graph will take up.
+	public int getYRange(GraphInfo gInfo, Graph g, int bottom) {
+		float unitScale = (float) gInfo.get10UnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
+		int miny = 0; // minimum always starts at zero...
+		int maxy = -100000;
+		int value;
+		
+		int n = g.graph.getData().size(); 
+		for (int i = 0; i < n; i++) {
+			try {
+				value = yTransform(((Number) g.graph.getData().get(i)).intValue());
+			} catch (ClassCastException cce) {
+				value = yTransform(0); // e.g., if it's being edited, it's still a string
+				// BAD!  instead: (1) draw what i've got so far, and (2) NEXT point is a move-to.
+				// -- try to parse String as an integer?
+			}
+			int y = (int) (value * g.scale) - g.yoffset;//bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale);			
+			if(y < miny)
+				miny = y;
+			if(y > maxy)
+				maxy = y;
+		}
+		
+		return maxy - miny;
+	}
 	public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, Graph g, int thickness, int xscroll) {
 		// cache yearsize, we use this a lot
 		int yearWidth = gInfo.getYearWidth(); // the size of a year, in pixels
