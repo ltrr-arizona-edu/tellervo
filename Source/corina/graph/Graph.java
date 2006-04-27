@@ -68,26 +68,8 @@ public class Graph {
 
     // an arbitrary List of Numbers, starting at a Year.  (used for graphing density of masters.)
     public Graph(List l, Year y, String n) {
-        // ack, glue -- there's a better way, right?  fixme.
-        final List ll = l;
-        final Year yy = y;
-        final String nn = n;
-
         // create graph
-        graph = new Graphable() {
-            public List getData() {
-                    return ll;
-                }
-            public Year getStart() {
-                    return yy;
-                }
-            public float getScale() {
-                    return 1.0f;
-                }
-            public String toString() {
-                    return nn;
-                }
-        };
+        graph = new DensityGraph(l, y, n);
         
         // default scale
         scale = graph.getScale();
@@ -188,4 +170,8 @@ public class Graph {
     private String graphName;
     public String getGraphName() { return graphName; }
     public void setGraphName(String name) { graphName = name; }
+    
+    private CorinaGraphPlotter graphingAgent;
+    public void setAgent(CorinaGraphPlotter agent) { graphingAgent = agent; }
+    public CorinaGraphPlotter getAgent() { return graphingAgent; }
 }

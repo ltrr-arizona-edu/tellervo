@@ -212,8 +212,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// REFACTOR: write a getYearForPoint() method, and call that on both
 		// ends of the visible JViewPane
 		Year viewportLeft = plot.getRange().getStart().add(
-				scroller.getHorizontalScrollBar().getValue() / plot.getYearSize());
-		int viewportSize = scroller.getWidth() / plot.getYearSize();
+				scroller.getHorizontalScrollBar().getValue() / plot.getYearWidth());
+		int viewportSize = scroller.getWidth() / plot.getYearWidth();
 		Range viewport = new Range(viewportLeft, viewportSize);
 
 		// idea: emphasize middle 50% of viewport
@@ -276,8 +276,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 	public void add(Sample s) {
 		samples.add(new Graph(s)); // doesn't get next yoffset, is that ok?
 									// (yeah, sure)
-		// need to recompute range now!
-		repaint();
+		plot.update();
 	}
 
 	//
@@ -887,6 +886,61 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// go
 		createPanelAndDisplay();
 	}
+	
+	/**
+	 * Graph all the files in a List of Elements AND
+	 * a single sample to go with it.
+	 * 
+	 * @param s
+	 *            the Sample to graph
+	 * 
+	 * @param ss
+	 *            the List to get the Elements from
+	 */
+	public GraphWindow(Sample s, List ss) {
+		// samples
+		boolean problem = false;
+		samples = new ArrayList(ss.size() + 2);
+		samples.add(new Graph(s));
+
+		// summed -- add count, too
+		if (s.isSummed())
+			samples.add(new Graph(s.count, s.range.getStart(), I18n
+					.getText("number_of_samples")));
+
+		// observe
+		s.addSampleListener(this);
+		
+		for (int i = 0; i < ss.size(); i++) {
+			Element e = (Element) ss.get(i);
+
+			if (!e.isActive()) // skip inactive
+				continue;
+
+			try {
+				Sample ns = e.load();
+				samples.add(new Graph(ns));
+				ns.addSampleListener(this);
+			} catch (IOException ioe) {
+				problem = true; // ick.
+			}
+		}
+
+		// problem?
+		if (problem) {
+			Alert.error("Error loading sample(s)",
+					"Some samples were not able to be loaded.");
+		}
+
+		// no samples => don't bother doing anything
+		if (samples.isEmpty()) {
+			dispose();
+			return;
+		}
+
+		// go
+		createPanelAndDisplay();
+	}
 
 	/**
 	 * Graph any files the user chooses.
@@ -1011,7 +1065,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		int dy = Math.abs(y.diff(plot.getRange().getStart()));
 
 		// scroll
-		scroller.getHorizontalScrollBar().setValue(dy * plot.getYearSize());
+		scroller.getHorizontalScrollBar().setValue(dy * plot.getYearWidth());
 	}
 
 	// live-updating preferences

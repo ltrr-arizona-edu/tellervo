@@ -77,6 +77,8 @@ public class GraphInfo {
 		showBaselines = Boolean.valueOf(App.prefs.getPref("corina.graph.baselines")).booleanValue();
 		showHundredpercentlines = Boolean.valueOf(App.prefs.getPref("corina.graph.hundredpercentlines")).booleanValue();
 		showGraphNames = Boolean.valueOf(App.prefs.getPref("corina.graph.componentnames")).booleanValue();
+		thickerSapwood = Boolean.valueOf(App.prefs.getPref("corina.graph.sapwood")).booleanValue();
+		dottedIndexes = Boolean.valueOf(App.prefs.getPref("corina.graph.dotindexes")).booleanValue();
 		
 		// decide how many pixels per year
 		// the default is DPI / 8 (screen DPI is typically 72, so the default is typically 9)
@@ -88,7 +90,16 @@ public class GraphInfo {
 		} catch (NumberFormatException nfe) {
 			// do nothing, use the default.
 		}
-		yearSize = ppy;
+		yearWidth = ppy;
+
+		// get the unit height, too
+		try {
+			ppy = Integer.parseInt(App.prefs.getPref(
+					"corina.graph.pixelspertenunit", Integer.toString(ppy)));
+		} catch (NumberFormatException nfe) {
+			ppy = Toolkit.getDefaultToolkit().getScreenResolution() / 8;
+		}
+		unitHeight = ppy;
 	}
 	// important graph stuff...
 	private Range drawBounds;
@@ -110,6 +121,12 @@ public class GraphInfo {
 	}
 	
 	// graph visual settings
+	private boolean dottedIndexes;
+	public boolean indexesDotted() { return dottedIndexes; }
+	
+	private boolean thickerSapwood;
+	public boolean sapwoodThicker() { return thickerSapwood; }
+	
 	private boolean showGraphPaper;
 	public boolean drawGraphPaper() { return showGraphPaper; }
 	
@@ -125,10 +142,29 @@ public class GraphInfo {
 	private boolean showVertAxis;
 	public boolean drawVertAxis() { return showVertAxis; }
 	
-	private int yearSize;
-	public void setYearSize(int size) { yearSize = size; }
-	public int getYearSize() { return yearSize; }
+	
+	private int yearWidth;
+	private int unitHeight;
 
+	/**
+	 * Old interface! -- fix all occurances of this, then remove.
+	 *
+	 * @deprecated use setYearWidth(t)
+	 */		
+	public void setYearSize(int size) { yearWidth = size; unitHeight = size; }
+	/**
+	 * Old interface! -- fix all occurances of this, then remove.
+	 *
+	 * @deprecated use getYearWidth(t)
+	 */	
+	public int getYearSize() { return yearWidth; }
+
+	public void setYearWidth(int size) { yearWidth = size; }
+	public int getYearWidth() { return yearWidth; }
+
+	public void set10UnitHeight(int size) { unitHeight = size; }
+	public int get10UnitHeight() { return unitHeight; }
+	
 
 	public Color getBackgroundColor() { 
 		return backgroundColor; 

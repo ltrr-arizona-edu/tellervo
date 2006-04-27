@@ -68,5 +68,4 @@ public interface Graphable {
        @return default vertical scale factor
     */
     public float getScale();
-
 }

@@ -33,6 +33,7 @@ public class Axis extends JPanel {
 	
 	public static final int AXIS_STANDARD = 1; // counts up from zero
 	public static final int AXIS_PERCENT = 2; // has percentages...
+	public static final int AXIS_LOG = 3; // has percentages...
 
 	public Axis(GraphInfo gInfo) {
 		// background -- default is black
@@ -53,7 +54,7 @@ public class Axis extends JPanel {
 
 	public void drawVertAxis(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
-		int tenunitSize = gInfo.getYearSize();
+		int tenunitSize = gInfo.get10UnitHeight();
 
 		int w = getWidth();
 
@@ -63,20 +64,60 @@ public class Axis extends JPanel {
 		g2.drawLine(w - 1, 0, w - 1, bottom);
 
 		// draw ticks
-		int i = 1;
-		int y = bottom - i * tenunitSize;
-		while (y > 0) {
-			// draw tick
-			g2.drawLine(w - 1, y, w - 1 - (i % 5 == 0 ? 10 : 5), y);
+		switch(axisType) {
+			case AXIS_STANDARD: {		
+				int i = 1;
+				int y = bottom - i * tenunitSize;
+				while (y > 0) {
+					// draw tick
+					g2.drawLine(w - 1, y, w - 1 - (i % 5 == 0 ? 10 : 5), y);
 
-			// draw number -- every 50
-			/**/
-			if (i % 5 == 0) switch(axisType) {
-			case AXIS_STANDARD: {
+					// draw number -- every 50
+					if (i % 5 == 0) {
+						String value = String.valueOf(i * 10);				
+						g2.drawString(value, 
+								w - (g2.getFontMetrics().stringWidth(value) + 15), 
+								y + 5);	
+					}
+				
+					// update coordinates
+					i++;
+					y = bottom - i * tenunitSize;
+				}
+				break;
+			}
+			case AXIS_LOG: {
+				int i = 1;
+				int y = bottom - i * tenunitSize;
+				while (y > 0) {
+					// draw tick
+					g2.drawLine(w - 1, y, w - 1 - (i % 5 == 0 ? 10 : 5), y);
+
+					// draw number -- every 50
+					if (i % 5 == 0) {
+						String value = new Float((int) Math.log(i / 10)).toString();		
+						g2.drawString(value, 
+								w - (g2.getFontMetrics().stringWidth(value) + 15), 
+								y + 5);
+					}
+					// update coordinates
+					i++;
+					y = bottom - i * tenunitSize;
+				}
+				break;
+			}
+		}
+/*			
+			case AXIS_LOG: {
 				String value = String.valueOf(i * 10);				
 				g2.drawString(value, 
 						w - (g2.getFontMetrics().stringWidth(value) + 15), 
 						y + 5);
+				
+				// update coordinates
+				i++;
+				y = bottom - i * tenunitSize;
+				
 				break;
 			}
 				
@@ -103,14 +144,13 @@ public class Axis extends JPanel {
 							y + yv);
 					g2.drawLine(w - 12, y + yv, w - 4, y);
 				}*/
+		/*
 				break;
 			}
+			
 			}
-
-			// update coordinates
-			i++;
-			y = bottom - i * tenunitSize;
 		}		
+	*/
 	}
 	
 	// this doesn't get drawn very often: maybe half a dozen times,

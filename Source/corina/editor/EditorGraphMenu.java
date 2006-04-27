@@ -22,7 +22,7 @@ import corina.ui.I18n;
 
 public class EditorGraphMenu extends JMenu implements SampleListener {
 
-	private JMenuItem plot, plotAll, bargraphAll;
+	private JMenuItem plot, plotElements, plotAll, bargraphAll;
 
 	private Sample sample;
 
@@ -41,10 +41,22 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 		});
 		add(plot);
 
-		// plot all
-		plotAll = new JMenuItem(new CorinaAction("graph_elements") {
+		// plot elements
+		plotElements = new JMenuItem(new CorinaAction("graph_elements") {
 			public void actionPerformed(ActionEvent e) {
 				new GraphWindow(sample.elements);
+			}
+
+			public boolean isEnabled() {
+				return sample.elements != null && sample.elements.size() > 0;
+			}
+		});
+		add(plotElements);
+		
+		// plot all
+		plotAll = new JMenuItem(new CorinaAction("graph_everything") {
+			public void actionPerformed(ActionEvent e) {
+				new GraphWindow(sample, sample.elements);
 			}
 
 			public boolean isEnabled() {
@@ -84,6 +96,7 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 				&& (sample.elements.size() > 0);
 		// FIXME: didn't i want to have a hasElements() method in sample?
 
+		plotElements.setEnabled(hasElements);
 		plotAll.setEnabled(hasElements);
 		bargraphAll.setEnabled(hasElements);
 	}

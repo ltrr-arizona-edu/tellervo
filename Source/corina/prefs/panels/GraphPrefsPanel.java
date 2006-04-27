@@ -91,6 +91,19 @@ public class GraphPrefsPanel extends Container {
     gbc.gridx = 1;
     gbc.weightx = 1;
     co.add(c, gbc);
+
+    // WRITEME: pixels-per-year, as empty string -- no, as slider
+    // "narrower" = 2, "wider" = 20? 30? 40?
+    c = new HorizontalScaleSlider("corina.graph.pixelspertenunit",
+                                  "Narrower", "Wider", 2, 20, 10);
+    l = new JLabel("Vertical scale:");
+    gbc.gridy++;
+    gbc.gridx = 0;
+    gbc.weightx = 0;
+    co.add(l, gbc);
+    gbc.gridx = 1;
+    gbc.weightx = 1;
+    co.add(c, gbc);
     
     add(co, BorderLayout.NORTH);
   }

@@ -212,8 +212,7 @@ public class GraphPrintDialog extends JPanel {
 							.width(), pageSize.height());
 
 					plotter.computeRange(pinfo, g);
-					StandardPlot agent = new StandardPlot(pinfo.getDrawRange(), pinfo);
-					plotter.paintGraph(g, pinfo, agent);
+					plotter.paintGraph(g, pinfo);
 					
 					// finish up the PDF cruft
 					//cb.addTemplate(tp, 0, 0);								
@@ -282,8 +281,7 @@ public class GraphPrintDialog extends JPanel {
 				pm.setNote("Drawing graph...");
 
 				plotter.computeRange(pinfo, g);
-				StandardPlot agent = new StandardPlot(pinfo.getDrawRange(), pinfo);
-				plotter.paintGraph(g, pinfo, agent);
+				plotter.paintGraph(g, pinfo);
 				
 				pm.setProgress(3);
 				pm.setNote("Encoding as PNG and saving file...");
@@ -631,7 +629,6 @@ public class GraphPrintDialog extends JPanel {
 		private class PreviewInsidePane extends JPanel {
 			private GrapherPanel plotter;
 			private GraphInfo pinfo;
-			private StandardPlot agent;
 			private double scale;
 			private double zoom;
 			
@@ -656,7 +653,6 @@ public class GraphPrintDialog extends JPanel {
 				setPreferredSize(new Dimension(
 						(int) (pinfo.getDrawRange().span() * pinfo.getYearSize() * fullscale), 
 						(int) (pinfo.getPrintHeight() * fullscale)));
-				agent = new StandardPlot(pinfo.getDrawRange(), pinfo);
 				revalidate();
 				repaint();				
 			}
@@ -674,7 +670,7 @@ public class GraphPrintDialog extends JPanel {
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
 				((Graphics2D)g).scale(fullscale, fullscale);
-				plotter.paintGraph(g, pinfo, agent);
+				plotter.paintGraph(g, pinfo);
 			}				
 		}
 		
@@ -834,8 +830,7 @@ public class GraphPrintDialog extends JPanel {
 			((Graphics2D) g).scale(pscale, pscale);			
 			
 			plotter.computeRange(info, g);
-			StandardPlot agent = new StandardPlot(info.getDrawRange(), info);
-			plotter.paintGraph(g, info, agent);
+			plotter.paintGraph(g, info);
 			
 			return PAGE_EXISTS;
 		}

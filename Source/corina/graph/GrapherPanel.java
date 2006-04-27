@@ -93,15 +93,32 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	private JScrollPane scroller = null;
 	private JFrame myFrame; // for setTitle(), dispose()
 
-	// drawing agent!
-	private StandardPlot myAgent;	
 	private GraphInfo gInfo;
 	
 	private JPopupMenu popup = new JPopupMenu("Save");
 	
 	private Font graphNamesFont = new Font("Dialog", Font.PLAIN, 15);
 	private Font tickFont = new Font("Dialog", Font.PLAIN, 11);	
-
+	
+	private String[] plotAgentName =   {
+			"Standard Plot", 
+			"Semi-Log Plot",
+			"Toothed Plot"
+			};
+	
+	private CorinaGraphPlotter[] plotAgentInstance = {
+			new StandardPlot(),
+			new SemilogPlot(),
+			new DensityPlot()
+	};
+	
+	// if we don't have a match (prefs are munged?), defeault to standard plot.
+	private int defPlotAgent = 0;
+	// this is the index in to the array above of plot agents for density plot.
+	// perhaps we could 'auto-find' this, but it makes more sense at this point
+	// to kludge it in.
+	private final int densityPlotAgent = 2;
+	
 	// compute the initial range of the year-axis
 	// (union of all graph ranges)
 	// fixme: put |bounds| dfn here, change method name to be similar (computeBounds()?)
@@ -166,7 +183,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				mw = w;
 		}
 		
-		return 1 + (int) ((float) mw / (float) info.getYearSize());		
+		return 1 + (int) ((float) mw / (float) info.getYearWidth());		
 	}
 
 	// here, we union ranges in Graphs; in Sum.java, we union ranges
@@ -276,7 +293,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		computeRange();
 
 		// messy redrawing...
-		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * gInfo.getYearSize(), 200));
+		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * gInfo.getYearWidth(), 200));
 		recreateAgent();
 		revalidate();					
 		repaint();
@@ -315,7 +332,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			Graph gg = (Graph) graphs.get(i);
 
 			// hit?
-			if (myAgent.contact(gg, p, bottom))
+			if (gg.getAgent().contact(gInfo, gg, p, bottom))
 				return i;
 		}
 
@@ -363,9 +380,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		int dx = 0;
 		if (!e.isShiftDown()) {
 			dx = (int) (e.getX() - dragStart.getX());
-			dx -= dx % gInfo.getYearSize();
+			dx -= dx % gInfo.getYearWidth();
 		}
-		((Graph) graphs.get(current)).xoffset = startX + (int) dx / gInfo.getYearSize();
+		((Graph) graphs.get(current)).xoffset = startX + (int) dx / gInfo.getYearWidth();
 		//        recomputeDrops(); -- writeme?
 
 		// repaint
@@ -385,17 +402,17 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	public void mouseMoved(MouseEvent e) {
 		// old cursorX
 		int old = cursorX;
-		int yearSize = gInfo.getYearSize();
+		int yearWidth = gInfo.getYearWidth();
 
 		// update cursorX
 		cursorX = e.getX();
 
 		// put it on the nearest gridline
-		int distanceLeftToGridline = cursorX % yearSize;
-		boolean roundRight = (distanceLeftToGridline >= yearSize / 2);
+		int distanceLeftToGridline = cursorX % yearWidth;
+		boolean roundRight = (distanceLeftToGridline >= yearWidth / 2);
 		cursorX -= distanceLeftToGridline;
 		if (roundRight)
-			cursorX += yearSize;
+			cursorX += yearWidth;
 
 		// refresh, but only if necessary
 		if (cursorX != old) {
@@ -439,7 +456,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		int k = e.getKeyCode();
 		
 		// cache yearsize, we use it a lot here
-		int yearSize = gInfo.getYearSize();
+		int yearWidth = gInfo.getYearWidth();
 
 		// repaint graph?
 		boolean repaint = false;
@@ -477,6 +494,57 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			}
 		} else if (m == KeyEvent.CTRL_MASK) { // control keys
 			switch (k) {
+			// change the graph scale!
+			case KeyEvent.VK_W: {
+				int curheight = gInfo.get10UnitHeight();
+				if(--curheight < 2)
+					curheight = 2;
+				gInfo.set10UnitHeight(curheight);
+				recreateAgent();
+				revalidate();
+				vertaxis.repaint();
+				repaint = true;
+				break;
+			}
+			case KeyEvent.VK_S: {
+				int curheight = gInfo.get10UnitHeight();
+				curheight++;
+				gInfo.set10UnitHeight(curheight);
+				recreateAgent();
+				revalidate();					
+				vertaxis.repaint();				
+				repaint = true;
+				break;
+			}
+			case KeyEvent.VK_A: {
+				int curwidth = gInfo.getYearWidth();
+				Year y = yearForPosition(gInfo, horiz.getValue());								
+				if(--curwidth < 2)
+					curwidth = 2;
+				gInfo.setYearWidth(curwidth);
+				
+				computeRange();				
+				setPreferredSize(new Dimension(bounds.span() * yearWidth, 200));
+				horiz.setValue(Math.abs(y.diff(getRange().getStart())) * gInfo.getYearWidth());
+				recreateAgent();
+				revalidate();					
+				repaint = true;
+				break;
+			}
+			case KeyEvent.VK_D: {
+				int curwidth = gInfo.getYearWidth();
+				Year y = yearForPosition(gInfo, horiz.getValue());								
+				curwidth++;
+				gInfo.setYearWidth(curwidth);
+				
+				computeRange();
+				setPreferredSize(new Dimension(bounds.span() * yearWidth, 200));
+				horiz.setValue(Math.abs(y.diff(getRange().getStart())) * gInfo.getYearWidth());				
+				recreateAgent();
+				revalidate();					
+				repaint = true;
+				break;
+			}
 			case KeyEvent.VK_LEFT: {
 				g.left();
 				// see if our graph bounds changed at all. 
@@ -490,7 +558,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					endBoundChanged = true;
 				if(!bounds.getStart().equals(y1) || endBoundChanged)
 				{
-					setPreferredSize(new Dimension(bounds.span() * yearSize, 200));
+					setPreferredSize(new Dimension(bounds.span() * yearWidth, 200));
 					recreateAgent();
 					revalidate();					
 				}
@@ -498,7 +566,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				// if we're changing the start boundary, AND we're already at the *end*, 
 				// don't move the scroll bar, it'll move for us.
 				if(!(endBoundChanged && horiz.getValue() == horiz.getMinimum()))
-					horiz.setValue(horiz.getValue() - yearSize);				
+					horiz.setValue(horiz.getValue() - yearWidth);				
 				repaint = true;								
 				break;
 			}
@@ -516,7 +584,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					startBoundChanged = true;
 				if(!bounds.getEnd().equals(y2) || startBoundChanged)
 				{
-					setPreferredSize(new Dimension(bounds.span() * yearSize, 200));
+					setPreferredSize(new Dimension(bounds.span() * yearWidth, 200));
 					recreateAgent();
 					revalidate();					
 				}
@@ -524,7 +592,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				// if we're changing the start boundary, AND we're already at the beginning, 
 				// don't move the scroll bar, it'll move for us.
 				if(!(startBoundChanged && horiz.getValue() == horiz.getMinimum()))
-					horiz.setValue(horiz.getValue() + yearSize);				
+					horiz.setValue(horiz.getValue() + yearWidth);				
 
 				repaint = true;				
 				break;
@@ -556,11 +624,11 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				// values returned by the Scrollable interface would work.  oh well,
 				// i'll just work around it for now.
 				// -- OLD: horiz.setValue(horiz.getValue() - horiz.getUnitIncrement());
-				horiz.setValue(horiz.getValue() - yearSize * 10);
+				horiz.setValue(horiz.getValue() - yearWidth * 10);
 				break;
 			case KeyEvent.VK_RIGHT:
 				// -- OLD: horiz.setValue(horiz.getValue() + horiz.getUnitIncrement());
-				horiz.setValue(horiz.getValue() + yearSize * 10);
+				horiz.setValue(horiz.getValue() + yearWidth * 10);
 				break;
 			case KeyEvent.VK_PAGE_UP:
 				// BUG: if parent isn't viewport, ignore?: horiz.setValue(horiz.getValue() - yearSize*100);
@@ -682,7 +750,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	// graphs = List of Graph.
 	// frame = window; (used for: title set to current graph, closed when ESC pressed.)
 	public GrapherPanel(List graphs, final JFrame myFrame) {		
-
 		// my frame
 		this.myFrame = myFrame;
 
@@ -690,7 +757,16 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// note: (mac crosshair doesn't invert on 10.[01], so it's invisible on black)
 		setCursor(crosshair);
 
+		// set up the graph info, which loads a lot of default preferences.
 		gInfo = new GraphInfo();
+		// set default agent number
+		String defAgentName = App.prefs.getPref("corina.graph.defaultagent", "corina.graph.StandardPlot"); 
+		for(int i = 0; i < plotAgentInstance.length; i++) {
+			if(plotAgentInstance[i].getClass().getName().equals(defAgentName)) {
+				defPlotAgent = i;
+				break;
+			}
+		}
 
 		// key listener -- apparently the focus gets screwed up and
 		// keys stop responding if I don't add a key listener to both
@@ -713,11 +789,12 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		computeRange();
 		
 		// set default scrolly window size
-		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * gInfo.getYearSize(), 200));
+		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * gInfo.getYearWidth(), 200));
 
-		// make sure sapwood and unmeas_pre are integers
 		for (int i = 0; i < graphs.size(); i++) {
-			if (((Graph) graphs.get(i)).graph instanceof Sample) {
+			Graph cg = (Graph) graphs.get(i);
+			// make sure sapwood and unmeas_pre are integers			
+			if (cg.graph instanceof Sample) {
 				Sample s = (Sample) ((Graph) graphs.get(i)).graph;
 				Object sap = s.meta.get("sapwood");
 				Object pre = s.meta.get("unmeas_pre");
@@ -735,9 +812,15 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					// PROBLEM: be more specific -- *which* sample, and *what* value?
 					// plus, let me edit it here (button: "edit sample now", opens metadata view)
 					// better: just don't display it, or ... (?)
-					break;
+					return;
 				}
 			}
+			
+			// set each graph to have a the default agent; or the density agent.
+			if(cg.graph instanceof DensityGraph)
+				cg.setAgent(plotAgentInstance[densityPlotAgent]);
+			else
+				cg.setAgent(plotAgentInstance[defPlotAgent]);
 		}
 
 		// background -- default is black
@@ -768,7 +851,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	}
 
 	public void recreateAgent() {
-		myAgent = new StandardPlot(gInfo.getDrawRange(), gInfo);
+		// did we deprecate this horrible beast?
+		// myAgent = new StandardPlot(gInfo.getDrawRange(), gInfo);
 	}
 
 	/** Colors to use for graphs: blue, green, red, cyan, yellow, magenta. */
@@ -800,7 +884,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 							compareTo(info.getEmptyRange().getEnd());
 
 			if(yeardiff < 0)
-				l += -yeardiff * info.getYearSize();
+				l += -yeardiff * info.getYearWidth();
 		}
 
 		// bottom
@@ -811,15 +895,16 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		Color major = info.getMajorLineColor();
 		Color mid = info.getMidLineColor();
 		Color minor = info.getMinorLineColor();
-		int yearSize = info.getYearSize();
+		int yearWidth = info.getYearWidth();
+		int unitHeight = info.get10UnitHeight();
 		
 		// be sure to draw all the way to our first vert. line....
 		Year leftYear = yearForPosition(info, l);
-		int x0 = leftYear.diff(bounds.getStart()) * yearSize;
+		int x0 = leftYear.diff(bounds.getStart()) * yearWidth;
 		
 		g2.setColor(minor);
 		int i = 1;
-		for (int y = bottom - yearSize; y > 0; y -= yearSize) {
+		for (int y = bottom - unitHeight; y > 0; y -= unitHeight) {
 			// BUG: 10?  is that right?  EXTRACT CONST, at least
 			if (i % 5 == 0) {
 				if(x0 != origl)
@@ -838,7 +923,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// draw vertical lines.
 		// PERF: isn't every 5th line here just going to get overwritten?
 		// -- for vert lines, it's a bit harder (right now, anyway)
-		for (int x = x0; x < r; x += yearSize) { // thin lines
+		for (int x = x0; x < r; x += yearWidth) { // thin lines
 			g2.drawLine(x, 0, x, bottom);
 		}
 
@@ -851,7 +936,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			// +5 and go forward.
 			for (Year y = new Year(-5); y.compareTo(bounds.getStart()) > 0; y = y
 					.add(-5)) {
-				int x = y.diff(bounds.getStart()) * yearSize;
+				int x = y.diff(bounds.getStart()) * yearWidth;
 				if (x > r) // (note: this test is backwards from elsewhere; we're going right-to-left)
 					continue;
 				if (x < l)
@@ -861,7 +946,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			}
 			for (Year y = new Year(5); y.compareTo(bounds.getEnd()) < 0; y = y
 					.add(5)) {
-				int x = y.diff(bounds.getStart()) * yearSize;
+				int x = y.diff(bounds.getStart()) * yearWidth;
 				if (x < l)
 					continue;
 				if (x > r)
@@ -874,7 +959,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			Year y1 = yearForPosition(info, l);
 			y1 = y1.add(-(y1.mod(5) + 5)); // y -= (y%5) + 5; // EXTRACT: Year.sub()?
 			for (Year y = y1; y.compareTo(bounds.getEnd()) < 0; y = y.add(5)) {
-				int x = y.diff(bounds.getStart()) * yearSize; // EXTRACT: yearToPosition(y)
+				int x = y.diff(bounds.getStart()) * yearWidth; // EXTRACT: yearToPosition(y)
 				if (x < l)
 					continue;
 				if (x > r)
@@ -897,11 +982,11 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	 -- well, is it correct, or off-by-one?  i think it's correct...
 	 */
 	private Year yearForPosition(GraphInfo info, int x) {
-		return info.getDrawRange().getStart().add(x / info.getYearSize());
+		return info.getDrawRange().getStart().add(x / info.getYearWidth());
 	}
 	
-	public int getYearSize() {
-		return gInfo.getYearSize();
+	public int getYearWidth() {
+		return gInfo.getYearWidth();
 	}
 
 	// timing: down to around 10 ms
@@ -915,14 +1000,14 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		int l = g2.getClipBounds().x;
 		int r = l + g2.getClipBounds().width;
 		int bottom = info.getHeight(this) - AXIS_HEIGHT;
-		int yearSize = info.getYearSize();
+		int yearWidth = info.getYearWidth();
 		Range bounds = info.getDrawRange();
 
 		Year startYear = yearForPosition(info, l).add(-5); // go one further, just to be sure
 		// actually, go 5 further; i need to make sure to draw the text, even if it's
 		// not completely on the screen, and i'm ASSUMING the text isn't wider than 5
 		// years' worth -- if it is, it's probably going to start getting hard to read.
-		int x = startYear.diff(bounds.getStart()) * yearSize; // x-position of tick
+		int x = startYear.diff(bounds.getStart()) * yearWidth; // x-position of tick
 		for (Year y = startYear; y.compareTo(bounds.getEnd()) <= 0; y = y
 				.add(1)) {
 			// out of visible viewport?
@@ -932,7 +1017,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			// don't draw years or ticks in the empty part of the graph
 			if(info.drawGraphNames() && 
 					y.compareTo(info.getEmptyRange().getEnd()) < -5) {
-				x += yearSize;
+				x += yearWidth;
 				continue;
 			}
 
@@ -949,7 +1034,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			g2.drawLine(x, bottom, x, drop);
 
 			// next tick
-			x += yearSize;
+			x += yearWidth;
 		}
 
 		// draw a horizontal bar
@@ -979,15 +1064,15 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	public void drawGraphNames(Graphics g, GraphInfo info) {
 		Graphics2D g2 = (Graphics2D) g;
 		int bottom = info.getHeight(this) - GrapherPanel.AXIS_HEIGHT;
-		int yearSize = info.getYearSize();
-		Rectangle temprect = new Rectangle(0, 0, info.getEmptyRange().span() * yearSize, bottom);
+		int yearWidth = info.getYearWidth();
+		Rectangle temprect = new Rectangle(0, 0, info.getEmptyRange().span() * yearWidth, bottom);
 		
 		// we're not on the screen, don't draw this...
 		if(!temprect.intersects(g2.getClipBounds()))
 			return;
 		
 		int[] overlaps = new int[graphs.size()];		
-		float unitScale = (float) yearSize / 10.0f;			
+		float unitScale = (float) info.get10UnitHeight() / 10.0f;			
 		Stroke oldstroke;
 		Font oldfont;
 		BasicStroke connectorLine = new BasicStroke(1, BasicStroke.CAP_BUTT,
@@ -1008,8 +1093,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			int stringWidth = g2.getFontMetrics().stringWidth(gn);
 			
 			// gnw = x coordinate for start of string
-			int gnw = ((info.getEmptyRange().span() * yearSize) - stringWidth) - 
-			          (yearSize * yearsAfterLabel);
+			int gnw = ((info.getEmptyRange().span() * yearWidth) - stringWidth) - 
+			          (yearWidth * yearsAfterLabel);
 			
 			// if this is an indexed sample, set this to be at the 100% line
 			int grfirstvalue = 1000;			
@@ -1049,7 +1134,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					RenderingHints.VALUE_ANTIALIAS_ON);			
 			g2.drawLine(gnw + stringWidth + 1, 
 					y, 
-					gnw + stringWidth + yearSize * 4,
+					gnw + stringWidth + yearWidth * 4,
 					bottom - (int) (grfirstvalue * gr.scale * unitScale) - (int) (gr.yoffset * unitScale));
 					
 		}
@@ -1064,7 +1149,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// graphics setup
 		super.paintComponent(g);
 
-		paintGraph(g, gInfo, myAgent);
+		paintGraph(g, gInfo);
 		paintVertbar(g, gInfo);
 	}
 
@@ -1072,7 +1157,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	 black background), then draws each graph in a different color.
 	 @param g the Graphics to draw this panel onto */
 	private static final BasicStroke BLCENTER_STROKE = new BasicStroke(1);
-	public void paintGraph(Graphics g, GraphInfo info, StandardPlot agent) {
+	public void paintGraph(Graphics g, GraphInfo info) {
 		Graphics2D g2 = (Graphics2D) g;
 		int bottom = info.getHeight(this) - GrapherPanel.AXIS_HEIGHT;
 
@@ -1137,12 +1222,12 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			if(info.isPrinting()) {
 				// get printing color, printing thickness...
 				g2.setColor(graph.getColor(true));
-				agent.draw(g2, bottom, graph, graph.getThickness(true), 0);
+				graph.getAgent().draw(info, g2, bottom, graph, graph.getThickness(true), 0);
 			} else {
 				// use the thickness we have on our local graph...
 				int thickness = graph.getThickness(false) * ((current == i) ? 2 : 1);
 				g2.setColor(graph.getColor(false));				
-				agent.draw(g2, bottom, graph, thickness, scroller.getHorizontalScrollBar().getValue());						
+				graph.getAgent().draw(info, g2, bottom, graph, thickness, scroller.getHorizontalScrollBar().getValue());						
 			}			
 		}
 		
@@ -1263,7 +1348,24 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	//    }
 
 	public void update() {
-		myAgent.update();
+		// notification that a preference or the sample list has changed.
+		for (int i = 0; i < graphs.size(); i++) {
+			Graph cg = (Graph) graphs.get(i);
+			
+			// we only want graphs that don't have an agent yet!
+			if(cg.getAgent() != null)
+				continue;
+			
+			// set each graph to have a the default agent; or the density agent.
+			if(cg.graph instanceof DensityGraph)
+				cg.setAgent(plotAgentInstance[densityPlotAgent]);
+			else
+				cg.setAgent(plotAgentInstance[defPlotAgent]);
+			
+		}
+		
+		revalidate();
+		repaint();
 	}
 
 	//
@@ -1278,7 +1380,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	public int getScrollableUnitIncrement(Rectangle visibleRect,
 			int orientation, int direction) {
 		// orient=vert never happens
-		return gInfo.getYearSize() * 10; // one decade (?)
+		return gInfo.getYearWidth() * 10; // one decade (?)
 	}
 
 	public Dimension getPreferredScrollableViewportSize() {
