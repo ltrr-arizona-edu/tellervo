@@ -59,6 +59,14 @@ public class Platform extends AbstractSubsystem {
 
     // try to get the native L&F
     String slafclassname = UIManager.getSystemLookAndFeelClassName();
+    
+    /**
+    // smooth look and feel, anyone?
+    if(isWindows) {
+    	slafclassname = "smooth.windows.SmoothLookAndFeel";
+    }
+    **/
+    
     if (slafclassname != null) try {
       UIManager.setLookAndFeel(slafclassname);
     } catch (Exception e) {

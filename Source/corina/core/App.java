@@ -4,6 +4,7 @@
 package corina.core;
 
 import javax.swing.ProgressMonitor;
+import javax.swing.UIManager;
 
 import corina.gui.ProgressMeter;
 import corina.logging.CorinaLog;
@@ -81,6 +82,14 @@ public class App {
           "While trying to load preferences:\n" + ioe.getMessage(),
           "Corina: Error Loading Preferences", JOptionPane.ERROR_MESSAGE);
     }*/
+    
+    if(platform.isWindows() && Boolean.valueOf(prefs.getPref("corina.windows.smooth")).booleanValue()) {
+    	try {
+    		UIManager.setLookAndFeel("smooth.windows.SmoothLookAndFeel");
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    }
 
     initialized = true;   
   }

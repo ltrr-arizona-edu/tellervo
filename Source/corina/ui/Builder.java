@@ -15,6 +15,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.KeyStroke;
 
 import corina.core.App;
@@ -80,6 +81,28 @@ public class Builder {
 	public static JMenuItem makeMenuItem(String key, String action) {
 		JMenuItem m = makeMenuItem(key);
 		addAction(m, action);
+		return m;
+	}
+
+	public static JCheckBoxMenuItem makeCheckBoxMenuItem(String key) {
+		JCheckBoxMenuItem m = new JCheckBoxMenuItem("");
+
+		// TODO: set font only on java<1.4?
+		// NOTE: now using UIDefaults customization through Appearance Panel
+		// instead of corina.menubar.font property - cross this off PRIORITY list
+
+		m.setText(I18n.getText(key));
+
+		if (!App.platform.isMac()) {
+			Character mnemonic = I18n.getMnemonic(key);
+			if (mnemonic != null)
+				m.setMnemonic(mnemonic.charValue());
+		}
+
+		String keystroke = I18n.getKeyStroke(key);
+		if (keystroke != null)
+			m.setAccelerator(KeyStroke.getKeyStroke(keystroke));
+
 		return m;
 	}
 

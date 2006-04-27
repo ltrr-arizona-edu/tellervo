@@ -27,6 +27,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Component;
 
 import java.util.Vector;
 
@@ -43,6 +44,7 @@ import javax.swing.event.DocumentEvent;
 
 import corina.core.App;
 import corina.io.SerialSampleIO;
+import corina.prefs.components.BoolPrefComponent;
 import corina.prefs.components.FontPrefComponent;
 import corina.util.DocumentListener2;
 
@@ -245,7 +247,9 @@ public class AdvancedPrefsPanel extends JPanel {
     gbc.gridx = 0;
     gbc.weightx = 0;
     
-
+    Component c = new BoolPrefComponent("BETA: Smoothed feel on Windows [requires restart]", "corina.windows.smooth");
+    co.add(c, gbc);
+    
     // file chooser
     /*
 	 * This appears to be absolutely useless. Commented out for now? - lucas
