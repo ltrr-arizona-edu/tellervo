@@ -48,10 +48,13 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.ButtonGroup;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -160,6 +163,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 	// gui
 	public GrapherPanel plot; // the plot area itself
 	private PlotAgents agents;
+	private GraphElementsPanel elemPanel;
 
 	private JScrollPane scroller; // scroller enclosing the plot
 
@@ -300,6 +304,55 @@ public class GraphWindow extends XFrame implements SampleListener,
 		samples.add(new Graph(s)); // doesn't get next yoffset, is that ok?
 									// (yeah, sure)
 		plot.update();
+		
+		// be careful with the elements panel, too...
+		elemPanel.loadSamples(samples);
+		elemPanel.setSelectedIndex(plot.current);
+	}
+
+	// add a List of ELEMENTS
+	public void add(List ns) {
+		// samples
+		boolean problem = false;
+		for (int i = 0; i < ns.size(); i++) {
+			Element e = (Element) ns.get(i);
+
+			if (!e.isActive()) // skip inactive
+				continue;
+
+			try {
+				Sample s = e.load();
+				samples.add(new Graph(s));
+				s.addSampleListener(this);
+			} catch (IOException ioe) {
+				problem = true; // ick.
+			}
+		}
+
+		// problem?
+		if (problem) {
+			Alert.error("Error loading sample(s)",
+					"Some samples were not able to be loaded.");
+		}
+		
+		plot.update();
+		
+		// be careful with the elements panel, too...
+		elemPanel.loadSamples(samples);
+		elemPanel.setSelectedIndex(plot.current);
+	}
+
+	public void remove(int idx) {
+		samples.remove(idx);
+		
+		if(plot.current > samples.size())
+			plot.current--;
+
+		plot.update();
+		
+		// be careful with the elements panel, too...
+		elemPanel.loadSamples(samples);
+		elemPanel.setSelectedIndex(plot.current);
 	}
 
 	//
@@ -740,6 +793,16 @@ public class GraphWindow extends XFrame implements SampleListener,
 			this.add(plottype);
 			this.addSeparator();
 			////////
+			final JCheckBoxMenuItem showElemPanel = Builder.makeCheckBoxMenuItem("view_elements");
+			showElemPanel.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					window.elemPanel.setVisible(!window.elemPanel.isVisible());
+					showElemPanel.setSelected(window.elemPanel.isVisible());
+					revalidate();
+				}
+			});
+			this.add(showElemPanel);			
+			this.addSeparator();
 			
 			JMenuItem print1 = Builder.makeMenuItem("plot_print");
 			print1.addActionListener(new AbstractAction() {
@@ -776,10 +839,19 @@ public class GraphWindow extends XFrame implements SampleListener,
 		agents = new PlotAgents();
 		// create a graph panel; put it in a scroll pane
 		plot = new GrapherPanel(samples, agents, this);
+		
 		scroller = new JScrollPane(plot,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		setContentPane(scroller);
+		
+		JPanel content = new JPanel(new BorderLayout());
+		setContentPane(content);
+		
+		elemPanel = new GraphElementsPanel(samples, this);
+		content.add(elemPanel, BorderLayout.EAST);
+		content.add(scroller, BorderLayout.CENTER);
+		
+		elemPanel.setVisible(false);
 				
 		// set initial y-offsets: spread 'em out
 		spreadOut(50);						
@@ -837,6 +909,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 				// select it
 				plot.current = n;
 				plot.repaint();
+				
+				elemPanel.setSelectedIndex(plot.current);
 
 				// show the popup
 				popup
@@ -1150,6 +1224,20 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 		// scroll
 		scroller.getHorizontalScrollBar().setValue(dy * plot.getYearWidth());
+	}
+	
+	public void panelSelectionChanged() {
+		if(elemPanel.getSelectedIndex() != plot.current)
+			elemPanel.setSelectedIndex(plot.current);
+	}
+	
+	public void listSelectionChanged() {
+		if(plot.current == elemPanel.getSelectedIndex() || elemPanel.getSelectedIndex() < 0)
+			return;
+		// select it
+		plot.current = elemPanel.getSelectedIndex();
+		plot.repaint();		
+		plot.updateTitle();
 	}
 
 	// live-updating preferences

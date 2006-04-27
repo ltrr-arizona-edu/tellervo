@@ -218,6 +218,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// set title
 		myFrame.setTitle(title + " - " + Build.VERSION + " " + Build.TIMESTAMP);
+		
+		if(myFrame instanceof GraphWindow) {
+			((GraphWindow)myFrame).panelSelectionChanged();
+		}
 	}
 
 	// for horiz scrollbar
@@ -702,6 +706,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			// but that has problems with keyboard accels on current==-1
 			// actually the title should be "Plot: xyz", or "Plot", so if-stmt isn't even needed
 		}
+		this.requestFocus();
 	}
 
 	public void mouseEntered(MouseEvent e) {
