@@ -193,12 +193,13 @@ public class GraphInfo {
 	// Let's contain the color list in here
 	// graph color list logic below!
 	
-	public class colorPair {
+	public final static class colorPair {
 		private String colorName;
 		private Color colorVal;
 		
 		String getColorName() { return colorName; }
 		Color getColor() { return colorVal; }
+		void setColor(Color color) { colorVal = color; }
 		
 		public colorPair(String colorName, Color colorVal) {
 			this.colorName = colorName;
@@ -206,7 +207,7 @@ public class GraphInfo {
 		}
 	};
 	
-	public final colorPair printerColors[] = { 
+	public final static colorPair printerColors[] = { 
 			new colorPair("Blue", new Color(0.00f, 0.53f, 1.00f)),
 			new colorPair("Green", new Color(0.27f, 1.00f, 0.49f)),
 			new colorPair("Red", new Color(1.00f, 0.28f, 0.27f)),
@@ -219,7 +220,7 @@ public class GraphInfo {
 			new colorPair("Pink", Color.PINK)
 			};
 
-	public final colorPair screenColors[] = { 
+	public final static colorPair screenColors[] = { 
 			new colorPair("Blue", new Color(0.00f, 0.53f, 1.00f)),
 			new colorPair("Green", new Color(0.27f, 1.00f, 0.49f)),
 			new colorPair("Red", new Color(1.00f, 0.28f, 0.27f)),

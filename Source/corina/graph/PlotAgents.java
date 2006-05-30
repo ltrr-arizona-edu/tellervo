@@ -10,9 +10,16 @@ import corina.core.App;
  *
  */
 public class PlotAgents {
+	/*
+	 * 
+	 */
 	public PlotAgents() {
+		// get the saved default agent name, or default to "StandardPlot"
 		String defAgentName = App.prefs.getPref("corina.graph.defaultagent", "corina.graph.StandardPlot"); 
+		
 		for(int i = 0; i < plotAgentInstance.length; i++) {
+			// iterate through the plot agents, and if it equals the name of the
+			// default agent name, set it.
 			if(plotAgentInstance[i].getClass().getName().equals(defAgentName)) {
 				defPlotAgent = i;
 				break;
@@ -24,7 +31,13 @@ public class PlotAgents {
 			"Standard Plot", 
 			"Semi-Log Plot",
 			"Toothed Plot"
-			};
+	};
+
+	private final int[] plotAgentAxisType =   {
+			Axis.AXIS_STANDARD, 
+			Axis.AXIS_LOG,
+			Axis.AXIS_STANDARD,
+	};
 	
 	private CorinaGraphPlotter[] plotAgentInstance = {
 			new StandardPlot(),
@@ -65,6 +78,10 @@ public class PlotAgents {
 
 	public CorinaGraphPlotter acquireDefault() {
 		return plotAgentInstance[defPlotAgent];
+	}
+
+	public int acquireDefaultAxisType() {
+		return plotAgentAxisType[defPlotAgent];
 	}
 	
 	public CorinaGraphPlotter acquireDensity() {

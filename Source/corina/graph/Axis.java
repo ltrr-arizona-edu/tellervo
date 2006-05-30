@@ -32,18 +32,19 @@ public class Axis extends JPanel {
 	private int axisType;
 	
 	public static final int AXIS_STANDARD = 1; // counts up from zero
-	public static final int AXIS_PERCENT = 2; // has percentages...
 	public static final int AXIS_LOG = 3; // has percentages...
+	
+	public static final int AXIS_WIDTH = 50;
 
-	public Axis(GraphInfo gInfo) {
+	public Axis(GraphInfo gInfo, int type) {
 		// background -- default is black
 		this.gInfo = gInfo;
 		setBackground(gInfo.getBackgroundColor());
 
 		// size of axis-margin (only width matters)
-		setPreferredSize(new Dimension(50, 50));
+		setPreferredSize(new Dimension(AXIS_WIDTH, 50));
 		
-		axisType = AXIS_STANDARD;
+		axisType = type;
 	}
 	
 	public void setAxisType(int axisType) {
@@ -91,11 +92,11 @@ public class Axis extends JPanel {
 				int y = bottom - i * tenunitSize;
 				while (y > 0) {
 					// draw tick
-					g2.drawLine(w - 1, y, w - 1 - (i % 5 == 0 ? 10 : 5), y);
+					g2.drawLine(w - 1, y, w - 1 - (i % 10 == 0 ? 10 : 5), y);
 
-					// draw number -- every 50
-					if (i % 5 == 0) {
-						String value = new Float((int) Math.log(i / 10)).toString();		
+					// draw number -- every "100"
+					if (i % 10 == 0) {
+						String value = String.valueOf((int)Math.pow(10.0, i / 10.0));
 						g2.drawString(value, 
 								w - (g2.getFontMetrics().stringWidth(value) + 15), 
 								y + 5);

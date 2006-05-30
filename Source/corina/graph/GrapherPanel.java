@@ -28,6 +28,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Stroke;
 import java.awt.Image;
 import java.awt.Point;
@@ -78,16 +79,10 @@ import corina.util.ColorUtils;
 public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		MouseMotionListener, AdjustmentListener, Scrollable {
 
-	/** Width in pixels of one year on the x-axis. */
-	//public int yearSize;
 	
-	// data
-	/* private */public List graphs; // of Graph
-
-	/* private */public int current = 0; // currenly selected sample
-
-	///* private */private Range bounds; // bounds for entire graph
-	//private Range emptyRange = null;
+	// public data
+	public List graphs; // of Graph
+	public int current = 0; // currenly selected sample
 
 	// gui
 	private JScrollPane scroller = null;
@@ -99,28 +94,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	
 	private Font graphNamesFont = new Font("Dialog", Font.PLAIN, 15);
 	private Font tickFont = new Font("Dialog", Font.PLAIN, 11);	
-	
-	/*
-	private String[] plotAgentName =   {
-			"Standard Plot", 
-			"Semi-Log Plot",
-			"Toothed Plot"
-			};
-	
-	private CorinaGraphPlotter[] plotAgentInstance = {
-			new StandardPlot(),
-			new SemilogPlot(),
-			new DensityPlot()
-	};
-	
-	// if we don't have a match (prefs are munged?), defeault to standard plot.
-	private int defPlotAgent = 0;
-	// this is the index in to the array above of plot agents for density plot.
-	// perhaps we could 'auto-find' this, but it makes more sense at this point
-	// to kludge it in.
-	private final int densityPlotAgent = 2;
-	*/
-	
+		
 	private PlotAgents agents;
 	
 	// compute the initial range of the year-axis
@@ -320,7 +294,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		ensureScrollerExists();
 
 		if (gInfo.drawVertAxis()) {
-			vertaxis = new Axis(gInfo);
+			vertaxis = new Axis(gInfo, agents.acquireDefaultAxisType());
 			scroller.setRowHeaderView(vertaxis);
 			repaint();
 		} else {
@@ -510,7 +484,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				gInfo.set10UnitHeight(curheight);
 				recreateAgent();
 				revalidate();
-				vertaxis.repaint();
+				if(vertaxis != null)
+					vertaxis.repaint();
 				repaint = true;
 				break;
 			}
@@ -519,8 +494,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				curheight++;
 				gInfo.set10UnitHeight(curheight);
 				recreateAgent();
-				revalidate();					
-				vertaxis.repaint();				
+				revalidate();
+				if(vertaxis != null)
+					vertaxis.repaint();				
 				repaint = true;
 				break;
 			}
@@ -1224,12 +1200,12 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			if(info.isPrinting()) {
 				// get printing color, printing thickness...
 				g2.setColor(graph.getColor(true));
-				graph.getAgent().draw(info, g2, bottom, graph, graph.getThickness(true), 0);
+				graph.draw(info, g2, bottom, graph.getThickness(true), 0);
 			} else {
 				// use the thickness we have on our local graph...
 				int thickness = graph.getThickness(false) * ((current == i) ? 2 : 1);
 				g2.setColor(graph.getColor(false));				
-				graph.getAgent().draw(info, g2, bottom, graph, thickness, scroller.getHorizontalScrollBar().getValue());						
+				graph.draw(info, g2, bottom, thickness, scroller.getHorizontalScrollBar().getValue());
 			}			
 		}
 		
@@ -1353,14 +1329,25 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// notification that a preference or the sample list has changed.
 		for (int i = 0; i < graphs.size(); i++) {
 			Graph cg = (Graph) graphs.get(i);
-						
+			boolean newgraph = false;
+
+			if(cg.getAgent() == null) 
+				newgraph = true;
+			
 			// set each graph to have a the default agent; or the density agent.
 			if(cg.graph instanceof DensityGraph)
 				cg.setAgent(agents.acquireDensity());
 			else
 				cg.setAgent(agents.acquireDefault());
-			
+						
+			// assign the new graph a color
+			if(newgraph)
+				cg.setColor(gInfo.screenColors[i % gInfo.screenColors.length].getColor(),
+				 		gInfo.printerColors[i % gInfo.printerColors.length].getColor());	
 		}
+		
+		if(vertaxis != null)
+			vertaxis.setAxisType(agents.acquireDefaultAxisType());		
 		
 		revalidate();
 		repaint();
@@ -1383,10 +1370,14 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 	public Dimension getPreferredScrollableViewportSize() {
 		int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+		int frames = myFrame.getInsets().left + myFrame.getInsets().right;
 
 		// actually, this should be the amount of border, but
 		// i don't know to get that reliably
-		int width = screenWidth - 10;
+		// we do now!
+		int width = screenWidth - frames;
+		if(vertaxis != null)
+			width -= Axis.AXIS_WIDTH;
 		return new Dimension(width, 480);
 	}
 

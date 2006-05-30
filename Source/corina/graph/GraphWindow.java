@@ -902,7 +902,13 @@ public class GraphWindow extends XFrame implements SampleListener,
 	
 	public void panelSelectionChanged() {
 		if(elemPanel.getSelectedIndex() != plot.current)
+		{
 			elemPanel.setSelectedIndex(plot.current);
+			
+			Graph g = (Graph) samples.get(plot.current);
+			Color gcolor = g.getColor(false);			
+			elemPanel.setColor(gcolor);			
+		}
 	}
 	
 	public void listSelectionChanged() {
@@ -910,8 +916,19 @@ public class GraphWindow extends XFrame implements SampleListener,
 			return;
 		// select it
 		plot.current = elemPanel.getSelectedIndex();
+		
+		Graph g = (Graph) samples.get(plot.current);
+		Color gcolor = g.getColor(false);
+		elemPanel.setColor(gcolor);
+		
 		plot.repaint();		
 		plot.updateTitle();
+	}
+	
+	public void setActiveColor(Color c) {
+		Graph g = (Graph) plot.graphs.get(plot.current);
+		g.setColor(c, c);
+		plot.repaint();
 	}
 
 	// live-updating preferences

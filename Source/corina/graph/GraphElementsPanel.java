@@ -2,11 +2,13 @@ package corina.graph;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import javax.swing.BoxLayout;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import java.awt.Color;
 
 import corina.Element;
 import corina.Sample;
@@ -23,23 +25,40 @@ public class GraphElementsPanel extends JPanel {
 		super(new BorderLayout());
 		
 		this.window = gwindow;
+		JPanel topPanel = new JPanel();
+		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
 		
 		listmodel = new DefaultListModel();
 		list = new JList(listmodel);
 		list.setBorder(BorderFactory.createTitledBorder("Elements list"));
-		add(list, BorderLayout.NORTH);
+		topPanel.add(list);
 		
 		list.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
 				window.listSelectionChanged();
-				removeButton.setEnabled((list.getSelectedIndex() < 0) ? false : true);
+
+				boolean enabled = list.getSelectedIndex() < 0 ? false : true;
+
+				removeButton.setEnabled(enabled);
+				colorselect.setEnabled(enabled);
 			}
 		});
 		
-		loadSamples(samples);
+		colorselect = new ColorComboBox();
+		colorselect.setBorder(BorderFactory.createTitledBorder("Selected Element Color"));
+		topPanel.add(colorselect);
 		
+		colorselect.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				window.setActiveColor(colorselect.getSelectedColor());
+			}
+		});
+		
+		add(topPanel, BorderLayout.NORTH);
+		loadSamples(samples);
+				
 	    JPanel addButtonContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-	    add(addButtonContainer);
+	    add(addButtonContainer, BorderLayout.CENTER);
 	    
 	    addButton = new JButton("Add...");
 	    addButtonContainer.add(addButton);
@@ -70,6 +89,10 @@ public class GraphElementsPanel extends JPanel {
 		list.setSelectedIndex(idx);
 	}
 	
+	public void setColor(Color c) {
+		colorselect.setColor(c);
+	}
+	
 	public int getSelectedIndex() {
 		return list.getSelectedIndex();
 	}
@@ -89,4 +112,5 @@ public class GraphElementsPanel extends JPanel {
 	private GraphWindow window;
 	private JButton addButton;
 	private JButton removeButton;
+	private ColorComboBox colorselect;
 }

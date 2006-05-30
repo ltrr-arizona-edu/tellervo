@@ -71,6 +71,7 @@ public class GraphPrintDialog extends JPanel {
 		
 		d = new JDialog(parent, "Printing / Exporting options...", true);
 		d.setContentPane(this);
+		d.setUndecorated(false);
 		d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setLayout(new BorderLayout());
 		
@@ -185,7 +186,7 @@ public class GraphPrintDialog extends JPanel {
 				// create a PDF document
 				
 				Rectangle rect = new Rectangle(0, 0,
-						(int) (pinfo.getDrawRange().span() * pinfo.getYearSize()),
+						(int) (pinfo.getDrawRange().span() * pinfo.getYearWidth()),
 						(int) (pinfo.getPrintHeight()));
 				com.lowagie.text.Rectangle pageSize = new com.lowagie.text.Rectangle(
 						rect.width, rect.height);
@@ -270,7 +271,7 @@ public class GraphPrintDialog extends JPanel {
 				pm.setNote("Creating PNG document...");
 				
 				Rectangle rect = new Rectangle(0, 0,
-						(int) (pinfo.getDrawRange().span() * pinfo.getYearSize()),
+						(int) (pinfo.getDrawRange().span() * pinfo.getYearWidth()),
 						(int) (pinfo.getPrintHeight()));
 				
 				BufferedImage fileImage = new BufferedImage(rect.width,
@@ -342,7 +343,7 @@ public class GraphPrintDialog extends JPanel {
 		
 			gInfo = g;
 			
-			setLayout(new BorderLayout());
+			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 			JComponent co;
 			JLabel jl;
 			GridBagConstraints gbc;		    
@@ -405,7 +406,8 @@ public class GraphPrintDialog extends JPanel {
 		    jl.setLabelFor(yearsperinch);
 		    co.add(yearsperinch, gbc);
 		    
-		    add(co, BorderLayout.NORTH);
+		    //add(co, BorderLayout.NORTH);
+		    add(co);
 		    
 			co = new JPanel(new GridBagLayout());
 			co.setToolTipText("<html>View parameters for graph output");			
@@ -462,7 +464,7 @@ public class GraphPrintDialog extends JPanel {
 		    inchwidth.setEditable(false);
 		    float iw = 0;
 		    try {
-		    	iw = ((float) gInfo.getDrawRange().span() * gInfo.getYearSize()) / 
+		    	iw = ((float) gInfo.getDrawRange().span() * gInfo.getYearWidth()) / 
 		    	Float.parseFloat(dpi.getText());
 		    } catch (Exception e) { }
 		    inchwidth.setText(dfmt.format(iw));
@@ -471,7 +473,8 @@ public class GraphPrintDialog extends JPanel {
 		    jl.setLabelFor(inchwidth);
 		    co.add(inchwidth, gbc);
 		    
-		    add(co, BorderLayout.CENTER);		    
+		    //add(co, BorderLayout.CENTER);
+		    add(co);
 		    
 		    if (printType == GraphPrintDialog.PRINT_PRINTER) {
 				co = new JPanel(new GridBagLayout());
@@ -515,7 +518,8 @@ public class GraphPrintDialog extends JPanel {
 				printWidthHeight = new JLabel("n/a");
 				co.add(printWidthHeight, gbc);
 
-				add(co, BorderLayout.SOUTH);
+				//add(co, BorderLayout.SOUTH);
+				add(co);
 			}		   
 		    
 		    updatePrintDimensions();
@@ -524,7 +528,7 @@ public class GraphPrintDialog extends JPanel {
 		private void updatePrintDimensions() {
 		    float pgraphHeight = 0.0f;
 		    try {
-		    	pgraphHeight = ((float) gInfo.getDrawRange().span() * gInfo.getYearSize()) / 
+		    	pgraphHeight = ((float) gInfo.getDrawRange().span() * gInfo.getYearWidth()) / 
 		    		Float.parseFloat(dpi.getText());
 		    } catch (Exception e) { }
 		    
@@ -551,11 +555,12 @@ public class GraphPrintDialog extends JPanel {
 					float fdpi = Float.parseFloat(dpi.getText());
 					float fppy = Float.parseFloat(pixelsperyear.getText());
 					yearsperinch.setText(dfmt.format(fdpi / fppy));
-					gInfo.setYearSize((int) fppy);
+					gInfo.setYearWidth((int) fppy);
+					gInfo.set10UnitHeight((int) fppy);
 					
 				    float iw = 0;
 				    try {
-				    	iw = ((float) gInfo.getDrawRange().span() * gInfo.getYearSize()) / 
+				    	iw = ((float) gInfo.getDrawRange().span() * gInfo.getYearWidth()) / 
 				    	Float.parseFloat(dpi.getText());
 				    } catch (Exception e) { }
 				    inchwidth.setText(dfmt.format(iw));
@@ -574,7 +579,7 @@ public class GraphPrintDialog extends JPanel {
 					
 				    float iw = 0;
 				    try {
-				    	iw = ((float) gInfo.getDrawRange().span() * gInfo.getYearSize()) / 
+				    	iw = ((float) gInfo.getDrawRange().span() * gInfo.getYearWidth()) / 
 				    	Float.parseFloat(dpi.getText());
 				    } catch (Exception e) { }
 				    inchwidth.setText(dfmt.format(iw));
@@ -599,14 +604,7 @@ public class GraphPrintDialog extends JPanel {
 				} catch (Exception e) {					
 				}
 			}
-			/*
-			else if(source.equals("dpi")) {
-			    yearsperinch.setValue(new Float(
-			    		((Integer)dpi.getValue()).floatValue() /
-			    		((Integer)pixelsperyear.getValue()).floatValue() 
-			    		));								
-			}
-			*/
+			
 			updatePrintDimensions();
 		}
 		
@@ -766,7 +764,7 @@ public class GraphPrintDialog extends JPanel {
 		    // graph is the width we see on the screen
 		    
 		    // we need to make a scale from 72nds of an inch to "DPI" of an inch...
-		    h = gInfo.getDrawRange().span() * gInfo.getYearSize();
+		    h = gInfo.getDrawRange().span() * gInfo.getYearWidth();
 		    w = gInfo.getPrintHeight();
 		    pscale = 72.0 / (double) params.getDPI();
 		    

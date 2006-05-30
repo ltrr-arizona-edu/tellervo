@@ -80,8 +80,8 @@ public class StandardPlot implements CorinaGraphPlotter {
 	}
 	
 	// We don't do any y transform for the standard plot; this is here for overriding.
-	protected int yTransform(int y) {
-		return y;
+	protected int yTransform(float y) {
+		return (int) y;
 	}
 	
 	protected boolean validValue(int value) {
@@ -104,13 +104,13 @@ public class StandardPlot implements CorinaGraphPlotter {
 		int n = g.graph.getData().size(); 
 		for (int i = 0; i < n; i++) {
 			try {
-				value = yTransform(((Number) g.graph.getData().get(i)).intValue());
+				value = yTransform(((Number) g.graph.getData().get(i)).intValue() * g.scale);
 			} catch (ClassCastException cce) {
 				value = yTransform(0); // e.g., if it's being edited, it's still a string
 				// BAD!  instead: (1) draw what i've got so far, and (2) NEXT point is a move-to.
 				// -- try to parse String as an integer?
 			}
-			int y = (int) (value * g.scale) - g.yoffset;//bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale);			
+			int y = (int) value - g.yoffset;//bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale);			
 			if(y < miny)
 				miny = y;
 			if(y > maxy)
@@ -147,7 +147,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 			// x is 0 if we aren't drawing graph names...
 			// x is the pixel at the end of the empty range if we are.
 			int x = (gInfo.drawGraphNames()) ? yearWidth * (gInfo.getEmptyRange().span() - 1) : 0;			
-			int y = bottom - (int) (yTransform(1000) * g.scale * unitScale) - (int) (g.yoffset * unitScale);
+			int y = bottom - (int) (yTransform(1000 * g.scale) * unitScale) - (int) (g.yoffset * unitScale);
 			g2.drawLine((x > xscroll) ? x : xscroll, y, r, y);
 						
 			g2.setColor(oldcolor);
@@ -201,11 +201,11 @@ public class StandardPlot implements CorinaGraphPlotter {
 		// move to the first point -- THIS IS NOT REALLY A SPECIAL CASE!
 		int value;
 		try {
-			value = yTransform(((Number) g.graph.getData().get(0)).intValue());
+			value = yTransform(((Number) g.graph.getData().get(0)).intValue() * g.scale);
 		} catch (ClassCastException cce) {
 			value = yTransform(0); // BAD!  instead: (1) just continue now, and (2) NEXT point is a move-to.
 		}
-		p.moveTo(x, bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale));
+		p.moveTo(x, bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale));
 
 		/*
 		 -- i really want to start at year max(graph.start, bounds.start)
@@ -241,13 +241,13 @@ public class StandardPlot implements CorinaGraphPlotter {
 
 			// y-position for this point
 			try {
-				value = yTransform(((Number) g.graph.getData().get(i)).intValue());
+				value = yTransform(((Number) g.graph.getData().get(i)).intValue() * g.scale);
 			} catch (ClassCastException cce) {
 				value = yTransform(0); // e.g., if it's being edited, it's still a string
 				// BAD!  instead: (1) draw what i've got so far, and (2) NEXT point is a move-to.
 				// -- try to parse String as an integer?
 			}
-			int y = bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale);
+			int y = bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale);
 
 			// if we're not where this sample starts, don't bother drawing yet
 			if (x < l - yearWidth) {
@@ -310,7 +310,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 
 	private int getYValue(GraphInfo gInfo, Graph g, int value, int bottom) {
 		float unitScale = (float) gInfo.get10UnitHeight() / 10.0f;
-		return bottom - (int) (yTransform(value) * g.scale * unitScale) - 
+		return bottom - (int) (yTransform(value * g.scale) * unitScale) - 
 						(int) (g.yoffset * unitScale); // DUPLICATE: this line appears above 3 times
 	}
 

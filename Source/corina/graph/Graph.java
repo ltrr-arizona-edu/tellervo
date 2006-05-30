@@ -26,6 +26,7 @@ import corina.Sample;
 
 import java.util.List;
 import java.awt.Color;
+import java.awt.Graphics2D;
 
 /*
   the purpose of this class is:
@@ -174,4 +175,8 @@ public class Graph {
     private CorinaGraphPlotter graphingAgent;
     public void setAgent(CorinaGraphPlotter agent) { graphingAgent = agent; }
     public CorinaGraphPlotter getAgent() { return graphingAgent; }
+    
+    public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, int thickness, int xscroll) {
+    	graphingAgent.draw(gInfo, g2, bottom, this, thickness, xscroll);
+    }
 }

@@ -42,9 +42,12 @@ public class SemilogPlot extends StandardPlot implements CorinaGraphPlotter {
 	}
 
 	// This is only useful for indexed things...
-	protected int yTransform(int y) {
+	protected int yTransform(float y) {
+		/*
 		int tval = 1000 + (int) (1000.0 * Math.log(y / 1000.0));
 		return tval;
+		*/
+		return (int) (Math.log10(y) * 100.0);
 	}
 	
 	protected boolean validValue(int value) {

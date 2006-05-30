@@ -32,7 +32,7 @@ import javax.swing.AbstractAction;
 // used by: GraphWindow, BargraphFrame
 public class SamplePopupMenu extends JPopupMenu {
 
-    private JMenuItem titleItem, rangeItem;
+    private JMenuItem titleItem, rangeItem, scaleItem;
 
     public SamplePopupMenu() {
         // dummy entries: the name of the sample, and its range
@@ -40,6 +40,10 @@ public class SamplePopupMenu extends JPopupMenu {
         titleItem.setEnabled(false);
         rangeItem = new JMenuItem();
         rangeItem.setEnabled(false);
+        scaleItem = new JMenuItem();
+        scaleItem.setEnabled(false);
+        
+        titleItem.setForeground(java.awt.Color.BLUE);
 
         // TODO: add cut, copy commands here?
 
@@ -63,6 +67,7 @@ public class SamplePopupMenu extends JPopupMenu {
 
         add(titleItem);
         add(rangeItem);
+        add(scaleItem);
         addSeparator();
         add(open);
         add(plot);
@@ -78,5 +83,6 @@ public class SamplePopupMenu extends JPopupMenu {
 				    s.meta.get("title") :
 				    s.meta.get("filename")));
         rangeItem.setText(Builder.INDENT + s.range.toStringWithSpan());
+        scaleItem.setText("Sample scale: " + String.valueOf(s.getScale()));
     }
 }

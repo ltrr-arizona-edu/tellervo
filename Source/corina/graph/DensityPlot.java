@@ -41,8 +41,8 @@ public class DensityPlot extends StandardPlot implements CorinaGraphPlotter {
 		super();
 	}
 
-	protected int yTransform(int y) {
-		return y;
+	protected int yTransform(float y) {
+		return (int) y;
 	}
 	
 	protected boolean validValue(int value) {
@@ -95,13 +95,13 @@ public class DensityPlot extends StandardPlot implements CorinaGraphPlotter {
 		// move to the first point -- THIS IS NOT REALLY A SPECIAL CASE!
 		int value;
 		try {
-			value = yTransform(((Number) g.graph.getData().get(0)).intValue());
+			value = yTransform(((Number) g.graph.getData().get(0)).intValue() * g.scale);
 		} catch (ClassCastException cce) {
 			value = yTransform(0); // BAD!  instead: (1) just continue now, and (2) NEXT point is a move-to.
 		}
 		int y;
 		
-		y = bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale);
+		y = bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale);
 		p.moveTo(x, y);
 
 		/*
@@ -128,14 +128,14 @@ public class DensityPlot extends StandardPlot implements CorinaGraphPlotter {
 
 			// y-position for this point
 			try {
-				value = yTransform(((Number) g.graph.getData().get(i)).intValue());
+				value = yTransform(((Number) g.graph.getData().get(i)).intValue() * g.scale);
 			} catch (ClassCastException cce) {
 				value = yTransform(0); // e.g., if it's being edited, it's still a string
 				// BAD!  instead: (1) draw what i've got so far, and (2) NEXT point is a move-to.
 				// -- try to parse String as an integer?
 			}
 			int oldy = y;
-			y = bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale);
+			y = bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale);
 
 			// if we're not where this sample starts, don't bother drawing yet
 			if (x < l - yearWidth) {
