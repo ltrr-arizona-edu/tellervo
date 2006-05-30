@@ -1242,6 +1242,13 @@ public class Browser extends XFrame {
 		}
 
 		public Object getValueAt(int row, int column) {
+			// this is an awful bug,
+			// but it breaks corina pretty badly.
+			// TODO: Actually fix me!
+			if(row >= getRowCount()) {
+				return "BROKEN!!";
+			}
+			
 			Row r = (Row) visibleFiles.get(row);
 			return r.getField((String) fields.get(column));
 		}
