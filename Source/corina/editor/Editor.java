@@ -512,7 +512,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	 */
 	private static final String DEMO = "Acemh\u00FCy\u00FCk 36A";
 
-	private static String askTitle() throws UserCancelledException {
+	private static String askTitle() throws UserCancelledException {		
 		JLabel line1 = new JLabel("Enter a title for the new sample.");
 		JLabel line2 = new JLabel("Titles are usually of the form \"" + DEMO
 				+ "\".");

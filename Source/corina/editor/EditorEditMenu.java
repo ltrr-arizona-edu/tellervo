@@ -21,8 +21,10 @@
 package corina.editor;
 
 import corina.Sample;
+import corina.Range;
 import corina.SampleEvent;
 import corina.SampleListener;
+import corina.ui.AskNumber;
 import corina.ui.Builder;
 import corina.ui.I18n;
 import corina.ui.Alert;
@@ -32,6 +34,7 @@ import corina.formats.TwoColumn;
 import corina.formats.WrongFiletypeException;
 import corina.gui.menus.EditMenu;
 import corina.gui.Bug;
+import corina.gui.UserCancelledException;
 import corina.io.SerialSampleIO;
 import corina.logging.CorinaLog;
 import corina.core.App;
@@ -45,8 +48,13 @@ import java.io.IOException;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
+
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
+
+import java.util.List;
+import java.util.ArrayList;
 
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
@@ -139,8 +147,11 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		JMenuItem copy = Builder.makeMenuItem("copy");
 		copy.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
+				CopyDialog d = new CopyDialog(editor, sample.range);
+				if(d.isOk())
+					TextClipboard.copy(asTwoColumn(d.getChosenRange()));
 				// copy the sample to the clipboard, as 2-column
-				TextClipboard.copy(asTwoColumn());
+				//TextClipboard.copy(asTwoColumn());
 			}
 		});
 		add(copy);
@@ -180,6 +191,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		addInsert();
 		addInsertMR();
 		addDelete();
+		addInsertYears();
 
 		if (SerialSampleIO.hasSerialCapability()
 				&& App.prefs.getPref("corina.serialsampleio.port") != null) {
@@ -215,6 +227,44 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		insert.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				dataView.insertYear();
+			}
+		});
+		add(insert);
+	}
+	
+	private void addInsertYears() {
+		insert = Builder.makeMenuItem("insert_years");
+		insert.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				try {
+					// first, get the number of years...
+					int value = AskNumber.getNumber(
+							editor, "Insert years...",
+							"Insert how many years?", 2);
+					
+					String labels[] = {"Blank", "Default Value ["+Sample.MR+"]", "Cancel"};
+					
+					int ret = JOptionPane.showOptionDialog(
+							editor,
+							"What would you like the newly inserted years to be set to?",
+							"Insert " + value + " years...",
+							JOptionPane.YES_NO_CANCEL_OPTION,
+							JOptionPane.QUESTION_MESSAGE, null, labels,
+							labels[0]);
+					
+					switch(ret) {
+					case 0:
+						dataView.insertYears("", value);
+						break;
+					case 1:
+						dataView.insertYears(new Integer(Sample.MR), value);
+						break;
+					case 2: // cancel
+						break;
+					}					
+				} catch(UserCancelledException uce) {
+					return;
+				}
 			}
 		});
 		add(insert);
@@ -348,6 +398,30 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			PureStringWriter w = new PureStringWriter(estimatedLength);
 			BufferedWriter b = new BufferedWriter(w);
 			new TwoColumn().save(sample, b);
+			b.close();
+			return w.toString();
+		} catch (IOException ioe) {
+			// can't happen: i'm just writing to a buffer
+			return "";
+		}
+	}
+
+	private String asTwoColumn(Range range) {
+		try {
+			int inindex = range.getStart().compareTo(sample.range.getStart());
+			
+			List tmpData = sample.data.subList(inindex, inindex + range.span());
+			List tmpCount = (sample.count == null) ? null : sample.count.subList(inindex, inindex + range.span());
+			Sample tmpSample = new Sample();
+			
+			tmpSample.range = range;
+			tmpSample.data = tmpData;
+			tmpSample.count = tmpCount;
+			
+			int estimatedLength = 10 * tmpSample.data.size();
+			PureStringWriter w = new PureStringWriter(estimatedLength);
+			BufferedWriter b = new BufferedWriter(w);
+			new TwoColumn().save(tmpSample, b);
 			b.close();
 			return w.toString();
 		} catch (IOException ioe) {

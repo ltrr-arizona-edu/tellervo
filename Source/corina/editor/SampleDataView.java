@@ -39,6 +39,10 @@ import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 
 import corina.Range;
 import corina.Sample;
@@ -96,6 +100,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 			stopEditing();
 		((DecadalModel)myModel).enableEditing(enable);
 	}
+	
 	
 	public SampleDataView(Sample s) {
 		// copy data reference, add self as observer
@@ -210,12 +215,15 @@ public class SampleDataView extends JPanel implements SampleListener,
 		// key listener for table
 		myTable.addKeyListener(new DecadalKeyListener(myTable, mySample));
 
+		myTable.setCellSelectionEnabled(true);
+		myTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
 		// select the first year
-		myTable.setRowSelectionAllowed(false);
 		myTable.setRowSelectionInterval(0, 0);
 		myTable.setColumnSelectionInterval(
 				mySample.range.getStart().column() + 1, mySample.range
 						.getStart().column() + 1);
+		
 
 		// don't let the columns be rearranged or resized
 		myTable.getTableHeader().setReorderingAllowed(false);
@@ -336,6 +344,53 @@ public class SampleDataView extends JPanel implements SampleListener,
 		}
 	}
 
+	public void insertYears(Object val, int nYears) {
+		// make sure it's not indexed or summed
+		if (!mySample.isEditable()) {
+			Alert.error("Can't Modify Data",
+					"You cannot modify indexed or summed data files.");
+			return;
+		}
+
+		// get row, col
+		int row = myTable.getSelectedRow();
+		int col = myTable.getSelectedColumn();
+
+		// get year => get data index
+		Year y = ((DecadalModel) myModel).getYear(row, col);
+		int i = y.diff(mySample.range.getStart());
+
+		// make sure it's a valid place to insert a year
+		if (!mySample.range.contains(y)
+				&& !mySample.range.getEnd().add(nYears).equals(y)) {
+			// Alert.error("Can't insert here",
+			//    "This isn't a valid place to insert a year.");
+			return;
+		}
+
+		// insert 0, nyears times...
+		for(int j = 0; j < nYears; j++)
+			mySample.data.add(i, val); // new Integer(0));
+		mySample.range = new Range(mySample.range.getStart(), mySample.range
+				.getEnd().add(nYears));
+		// REFACTOR: by LoD, should be range.extend()
+
+		// fire event -- obsolete?
+		((DecadalModel) myModel).fireTableDataChanged();
+
+		// select this cell again?  edit it
+		myTable.setRowSelectionInterval(row, row);
+		myTable.setColumnSelectionInterval(col, col);
+
+		// set modified
+		mySample.fireSampleDataChanged();
+		mySample.fireSampleRedated();
+		mySample.setModified();
+		
+		myTable.setRowSelectionInterval(row, row);
+		myTable.setColumnSelectionInterval(col, col);
+	}
+	
 	// TODO: insert/delete shouldn't be enabled if the selection isn't a data year, either.
 
 	public void deleteYear() {
