@@ -27,6 +27,8 @@ import corina.ui.I18n;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
    A Tucson file containing multiple samples.
@@ -36,7 +38,7 @@ import java.io.IOException;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-public class PackedTucson extends Tucson {
+public class PackedTucson extends Tucson implements PackedFileType {
 
     public String toString() {
         return I18n.getText("format.packed_tucson");
@@ -60,6 +62,47 @@ public class PackedTucson extends Tucson {
                 break;
         // now: i is the first differing character, so return everything before that
         return s1.substring(0, i);
+    }
+    
+    public void saveSamples(List sl, BufferedWriter w) throws IOException {
+    	int bufsz = 0;
+    	List outsamples = new ArrayList(sl.size());
+    	String prefix = null;
+    	
+    	// iterate through the samples, making a list of them and
+    	// gathering data. 
+    	// We follow the logic in save() below:
+    	// if it's got elements, ignore the sample and use the elements.
+    	// Otherwise, we save the sample.
+    	for(int i = 0; i < sl.size(); i++) {
+    		Sample s = (Sample) sl.get(i);
+    		
+    		if(s.elements != null) {
+    			for(int j = 0; j < s.elements.size(); j++) {
+    				Sample tmp = ((Element) s.elements.get(j)).load();
+    				
+    				if(prefix == null)
+    					prefix = tmp.meta.get("id").toString();
+    				else
+    					prefix = commonPrefix(prefix, tmp.meta.get("id").toString());
+    				
+    				outsamples.add(tmp);
+    			}
+    		} else {
+				if(prefix == null)
+					prefix = s.meta.get("id").toString();
+				else
+					prefix = commonPrefix(prefix, s.meta.get("id").toString());
+				
+				outsamples.add(s);    			
+    		}
+    	}
+    	
+        // save the header, using that prefix
+        save3LineHeader(w, prefix); // was: "000   "
+        
+        for(int i = 0; i < outsamples.size(); i++)
+        	saveData((Sample) outsamples.get(i), w);
     }
 
     public void save(Sample s, BufferedWriter w) throws IOException {
