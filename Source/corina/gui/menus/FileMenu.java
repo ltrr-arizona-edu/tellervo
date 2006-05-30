@@ -16,6 +16,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import corina.Element;
 import corina.Sample;
@@ -159,8 +160,8 @@ public class FileMenu extends JMenu {
 			 "corina.gui.menus.FileMenu.open()"));
     add(Builder.makeMenuItem("open_multi...",
 	 "corina.gui.menus.FileMenu.openMulti()"));
-    add(Builder.makeMenuItem("export...",
-	 "corina.gui.menus.FileMenu.export()"));
+    add(Builder.makeMenuItem("bulkexport...",
+	 "corina.gui.menus.FileMenu.bulkexport()"));
 	add(Builder.makeMenuItem("browse...",
 				 "new corina.browser.Browser();"));
         add(OpenRecent.makeOpenRecentMenu());
@@ -213,10 +214,10 @@ public class FileMenu extends JMenu {
     }    
 
     // ask the user for a list of files to open
-    public static void export() {
+    public static void bulkexport() {
 	try {
 		// get a list of elements
-		List elements = FileDialog.showMulti(I18n.getText("export"));
+		List elements = FileDialog.showMulti(I18n.getText("bulkexport..."));
 
 		// convert them to samples
 		boolean problem = false;
@@ -251,9 +252,41 @@ public class FileMenu extends JMenu {
 		if (samples.isEmpty()) {
 			return;
 		}
-
+		
 		// ok, now we have a list of valid samples in 'samples'...
-		new ExportDialog(samples, null);
+		
+		// actions:
+		// 0: normal; export individualy
+		// 1: export to a packed format
+		// 2: cancel
+		int action = 0;
+		
+		if(elements.size() > 1) {
+			String labels[] = {"Individually", "Packed", "Cancel"};
+		
+			action = JOptionPane.showOptionDialog(
+					null,
+					"You are exporting more than one sample.\n" +
+					"Would you like to export to a single file ('packed' format),\n" +
+					"or convert each file individually?",
+					I18n.getText("bulkexport..."),
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.QUESTION_MESSAGE, null, labels,
+					labels[0]);
+		}
+		
+		switch(action) {
+		case 0:
+			new ExportDialog(samples, null, false);
+			break;
+		case 1:
+			new ExportDialog(samples, null, true);
+			break;
+		case 2:
+			// user cancelled
+			return;
+		}
+		
 		
 	} catch (UserCancelledException uce) {
 	    // do nothing
