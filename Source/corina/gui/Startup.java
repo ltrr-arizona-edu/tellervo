@@ -24,6 +24,7 @@ import java.awt.Toolkit;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -36,7 +37,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import corina.Element;
 import corina.core.App;
+import corina.graph.GraphWindow;
 
 /**
  * Bootstrap for Corina. It all starts here...
@@ -83,8 +86,8 @@ public class Startup implements PrivilegedAction {
       App.init(pm);
       //monitor.close();
       // let's go...
+      
       XCorina.showCorinaWindow();
-
     } catch (Throwable t) {
       new Bug(t);
     }

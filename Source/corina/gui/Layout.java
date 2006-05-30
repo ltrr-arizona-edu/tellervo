@@ -139,11 +139,17 @@ public class Layout {
 	return p;
     }
     public static JPanel flowLayoutL(Object o1, Object o2) {
-	JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
-	p.add(componentOrString(o1));
-	p.add(componentOrString(o2));
-	return p;
-    }
+    	JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    	p.add(componentOrString(o1));
+    	p.add(componentOrString(o2));
+    	return p;
+        }
+    public static JPanel flowLayoutR(Object o1, Object o2) {
+    	JPanel p = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    	p.add(componentOrString(o1));
+    	p.add(componentOrString(o2));
+    	return p;
+        }
     public static JPanel flowLayoutL(Object o1, Object o2, Object o3) {
 	JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	p.add(componentOrString(o1));

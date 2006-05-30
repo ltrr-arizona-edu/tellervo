@@ -133,7 +133,8 @@ public class SamplePreview extends JPanel implements PropertyChangeListener {
         s = new Grid(file.getPath());
         log.trace("done creating grid");
 	    } catch (WrongFiletypeException wfte) {
-        wfte.printStackTrace();
+	    // um.. no. this is annoying!
+        //wfte.printStackTrace();
         s = new Sample(file.getPath());
 	    } // but can't string catches here ... darn
 

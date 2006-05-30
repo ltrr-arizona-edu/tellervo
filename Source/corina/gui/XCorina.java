@@ -234,7 +234,10 @@ public class XCorina extends JFrame {
         DropTarget target3 = new DropTarget(panel, dropLoader);
         
         // size it?
-        setSize(480, 360); // was: 320, 240
+        //setSize(480, 360); // was: 320, 240
+        // height of the menu bar, height of the frame, and an extra two pels for good measure
+        setSize(480, getJMenuBar().getHeight() + getInsets().top + 2);
+        
 
 	/*
 	// set split locations (BETTER: keep these in the prefs)
