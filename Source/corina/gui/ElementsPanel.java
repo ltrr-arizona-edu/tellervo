@@ -198,9 +198,13 @@ public class ElementsPanel extends JPanel implements SampleListener {
 								prefix = "";
 								break;
 							}
-							prefix = prefix.substring(0, slash + 1);
+							prefix = prefix.substring(0, slash);
 						}
 					}
+					
+					// we took off the last file separator; let's see how it works now...
+					if (!prefix.endsWith(File.separator))
+						prefix += File.separatorChar;					
 
 					// ask user what the new directory will be
 					String target = (String) JOptionPane.showInputDialog(null,
