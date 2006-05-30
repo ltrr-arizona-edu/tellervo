@@ -24,6 +24,14 @@ public class Alert {
 				      treeIcon);
     }
 
+    // extracted error-dialog code
+    public static void message(String title, String text) {
+	JOptionPane.showMessageDialog(null, // ??  no parent -- is this ok?
+				      text,
+				      maybeTitle(title),
+				      JOptionPane.INFORMATION_MESSAGE,
+				      treeIcon);
+    }
     /*
       uses of Alert.error():
       -- custom text (x1)
