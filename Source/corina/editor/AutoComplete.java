@@ -127,7 +127,7 @@ public class AutoComplete extends JTextField {
     private String matchFromDictionary(String text) {
 	String completion = null;
 	for (int i=0; i<dict.size(); i++) {
-	    if (((String) dict.get(i)).startsWith(text)) {
+	    if (((String) dict.get(i)).toUpperCase().startsWith(text.toUpperCase())) {
 		return (String) dict.get(i);
 	    }
 	}
