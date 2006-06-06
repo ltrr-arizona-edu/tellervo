@@ -3,7 +3,7 @@ package corina.editor;
 import corina.Sample;
 import corina.site.Site;
 import corina.site.SiteDB;
-import corina.map.SiteInfoDialog;
+import corina.site.SiteInfoDialog;
 import corina.site.SiteNotFoundException;
 import corina.map.MapFrame;
 import corina.ui.Builder;
