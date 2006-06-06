@@ -65,6 +65,7 @@ import corina.gui.menus.OldCrossdateMenu;
 import corina.gui.menus.WindowMenu;
 import corina.platform.Platform;
 import corina.ui.Builder;
+import corina.util.Center;
 import corina.util.OKCancel;
 
 public class XCorina extends JFrame {
@@ -276,6 +277,8 @@ public class XCorina extends JFrame {
 		 tbSplit.setDividerLocation(0.25);
 		 */
 
+		Center.center(this);
+		
 		// show
 		show();
 	}
