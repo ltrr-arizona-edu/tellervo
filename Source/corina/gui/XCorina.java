@@ -22,6 +22,7 @@ package corina.gui;
 
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -71,6 +72,7 @@ public class XCorina extends JFrame {
     // menubar, and omnipresent menus
     private JMenuBar menubar;
     private List leftMenus, rightMenus;
+    private ImageIcon backgroundImage;
 
     // --- DropLoader ----------------------------------------
     // EXTRACT METHOD/CLASS!
@@ -145,6 +147,11 @@ public class XCorina extends JFrame {
           setIconImage(treeIcon.getImage());
         }
 
+        url = cl.getResource("Images/background.png");
+        if (url != null) {
+          backgroundImage = new ImageIcon(url);
+        }
+        
         // menubar
         {
             JMenuBar menubar = new JMenuBar();
@@ -157,7 +164,13 @@ public class XCorina extends JFrame {
             setJMenuBar(menubar);
         }
 
-	JPanel panel = new JPanel();
+	JPanel panel = new JPanel() {
+		protected void paintComponent(Graphics g) {
+			if(backgroundImage != null) {
+				g.drawImage(backgroundImage.getImage(), 0, 0, null);
+			}
+		}
+	};
 	setContentPane(panel);
 
 	/*
@@ -236,7 +249,10 @@ public class XCorina extends JFrame {
         // size it?
         //setSize(480, 360); // was: 320, 240
         // height of the menu bar, height of the frame, and an extra two pels for good measure
-        setSize(480, getJMenuBar().getHeight() + getInsets().top + 2);
+        if(backgroundImage == null)
+        	setSize(480, getJMenuBar().getHeight() + getInsets().top + 2);
+        else
+        	setSize(backgroundImage.getIconWidth(), getJMenuBar().getHeight() + getInsets().top + 2 + backgroundImage.getIconHeight());
         
 
 	/*
@@ -421,4 +437,5 @@ public class XCorina extends JFrame {
         if (App.platform.isMac())
             throw new IllegalStateException();
     }
+    
 }
