@@ -18,11 +18,8 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.map;
+package corina.site;
 
-import corina.site.SiteDB;
-import corina.site.Country;
-import corina.site.CountryDialog;
 import corina.ui.I18n;
 
 import java.util.Arrays;
