@@ -265,11 +265,14 @@ public class XCorina extends JFrame {
 		// size it?
 		//setSize(480, 360); // was: 320, 240
 		// height of the menu bar, height of the frame, and an extra two pels for good measure
-		if (backgroundImage == null)
+		if (backgroundImage == null) {
 			setSize(480, getJMenuBar().getHeight() + getInsets().top + 2);
-		else
+		}
+		else {
+			setResizable(false);
 			setSize(backgroundImage.getIconWidth(), getJMenuBar().getHeight()
 					+ getInsets().top + 2 + backgroundImage.getIconHeight());
+		}
 
 		/*
 		 // set split locations (BETTER: keep these in the prefs)
