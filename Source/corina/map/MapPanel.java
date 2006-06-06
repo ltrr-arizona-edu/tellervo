@@ -27,6 +27,7 @@ import corina.map.layers.GridlinesLayer;
 import corina.map.layers.MapLayer;
 import corina.map.layers.LegendLayer;
 import corina.map.layers.SitesLayer;
+import corina.site.Location;
 import corina.site.Site;
 import corina.site.SiteDB;
 import corina.site.SiteNotFoundException;

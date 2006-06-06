@@ -22,6 +22,8 @@ package corina.map;
 
 import java.awt.Dimension;
 
+import corina.site.Location;
+
 // TODO: what's a zoom factor of 1.0 defined to be, exactly?
 // TODO: loc should be getCenter/setCenter?
 // TODO: admit we're mutable?  who mutes us?

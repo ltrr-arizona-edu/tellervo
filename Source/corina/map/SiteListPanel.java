@@ -4,6 +4,7 @@ package corina.map;
 import corina.site.Site;
 import corina.site.SiteDB;
 import corina.site.Country;
+import corina.site.SiteInfoDialog;
 import corina.util.PopupListener;
 import corina.ui.Builder;
 import corina.gui.Layout;

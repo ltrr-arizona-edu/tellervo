@@ -34,6 +34,8 @@ import java.util.zip.GZIPInputStream;
 import javax.swing.JOptionPane;
 import javax.swing.ProgressMonitor;
 
+import corina.site.Location;
+
 // an interface to earth.rez-format files.
 // ABSTRACT: make interface for getting Segments(?) from a disk file,
 // then make RezMapFile implement it.  that way, i can play around with

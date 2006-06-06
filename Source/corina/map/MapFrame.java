@@ -60,8 +60,10 @@ import corina.gui.menus.FileMenu;
 import corina.gui.menus.HelpMenu;
 import corina.gui.menus.WindowMenu;
 import corina.map.tools.ToolBox;
+import corina.site.Location;
 import corina.site.Site;
 import corina.site.SiteDB;
+import corina.site.SiteInfoDialog;
 import corina.site.SitePrinter;
 import corina.ui.Builder;
 

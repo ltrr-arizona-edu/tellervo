@@ -21,6 +21,7 @@
 package corina.map;
 
 import corina.map.projections.RectangularProjection;
+import corina.site.Location;
 
 import java.awt.Point;
 

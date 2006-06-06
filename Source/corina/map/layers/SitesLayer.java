@@ -22,11 +22,11 @@ package corina.map.layers;
 
 import corina.map.Layer;
 import corina.map.Point3D;
-import corina.map.Location;
 import corina.map.Projection;
 import corina.map.View;
 import corina.map.LabelSet;
 
+import corina.site.Location;
 import corina.site.Site;
 import corina.site.SiteDB;
 

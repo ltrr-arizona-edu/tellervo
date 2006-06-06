@@ -20,6 +20,8 @@
 
 package corina.map;
 
+import corina.site.Location;
+
 /**
    A point in 3-space: (x, y, z).  Each component (x, y, z) is a float.
 

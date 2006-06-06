@@ -1,12 +1,12 @@
 package corina.map.layers;
 
 import corina.map.Layer;
-import corina.map.Location;
 import corina.map.Point3D;
 import corina.map.Projection;
 import corina.map.MapFile;
 import corina.map.Palette;
 
+import corina.site.Location;
 import corina.util.ColorUtils;
 
 import java.awt.Graphics2D;

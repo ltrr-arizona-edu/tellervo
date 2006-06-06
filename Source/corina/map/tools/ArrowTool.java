@@ -20,14 +20,14 @@
 
 package corina.map.tools;
 
-import corina.map.Location;
 import corina.map.Point3D;
 import corina.map.View;
 import corina.map.Projection;
 import corina.map.MapPanel;
+import corina.site.Location;
 import corina.site.Site;
 import corina.site.SiteDB;
-import corina.map.SiteInfoDialog;
+import corina.site.SiteInfoDialog;
 import corina.site.SiteNotFoundException;
 import corina.util.Angle;
 import corina.ui.Builder;

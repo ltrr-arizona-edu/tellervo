@@ -21,9 +21,9 @@
 package corina.map.layers;
 
 import corina.map.Layer;
-import corina.map.Location;
 import corina.map.Point3D;
 import corina.map.Projection;
+import corina.site.Location;
 
 import corina.gui.Bug;
 

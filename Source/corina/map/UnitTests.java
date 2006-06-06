@@ -20,6 +20,7 @@
 
 package corina.map;
 
+import corina.site.Location;
 import junit.framework.TestCase;
 
 public class UnitTests extends TestCase {

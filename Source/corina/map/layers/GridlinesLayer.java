@@ -22,8 +22,8 @@ package corina.map.layers;
 
 import corina.map.Layer;
 import corina.map.Projection;
-import corina.map.Location;
 import corina.map.Point3D;
+import corina.site.Location;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
