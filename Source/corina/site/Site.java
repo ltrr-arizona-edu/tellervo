@@ -297,27 +297,34 @@ public class Site {
 	 @return this Site as an XML String
 	 */
 	public String toXML() {
-		StringBuffer buf = new StringBuffer("   <site>\n");
-		appendIfNonNull(buf, getCountry(), "country");
-		appendIfNonNull(buf, code, "code");
+		String lineSeparator = System.getProperty("line.separator");
+		
+		StringBuffer buf = new StringBuffer("   <site>" + lineSeparator);
+		appendIfNonNull(buf, getCountry(), "country", lineSeparator);
+		appendIfNonNull(buf, code, "code", lineSeparator);
 		// BUG: need to escape &'s? -- i have a method for that already somewhere
-		appendIfNonNull(buf, getName(), "name");
-		appendIfNonNull(buf, getID(), "id");
-		appendIfNonNull(buf, species, "species");
-		appendIfNonNull(buf, type, "type");
-		appendIfNonNull(buf, getFolder(), "filename"); // "filename"? -- wouldn't "folder" be better?
-		appendIfNonNull(buf, getLocation().toString(), "location"); // FIXME: use toISO6709() here!
-		appendIfNonNull(buf, getComments(), "comments");
-		buf.append("   </site>\n");
+		appendIfNonNull(buf, getName(), "name", lineSeparator);
+		appendIfNonNull(buf, getID(), "id", lineSeparator);
+		appendIfNonNull(buf, species, "species", lineSeparator);
+		appendIfNonNull(buf, type, "type", lineSeparator);
+		appendIfNonNull(buf, getFolder(), "filename", lineSeparator); // "filename"? -- wouldn't "folder" be better?
+		
+		Location loc = getLocation();
+		if(loc != null)
+			appendIfNonNull(buf, loc.toISO6709(), "location", lineSeparator);
+		
+		appendIfNonNull(buf, getComments(), "comments", lineSeparator);
+		buf.append("   </site>" + lineSeparator);
 		return buf.toString();
 	}
 
 	// append "<tag>value</tag>\n" to buf if value!=null and value!=""
-	private void appendIfNonNull(StringBuffer buf, Object value, String tag) {
+	private void appendIfNonNull(StringBuffer buf, Object value, String tag, String lineSeparator) {
 		if (value == null || value.equals(""))
 			return;
 
-		buf.append("      <" + tag + ">" + value + "</" + tag + ">\n");
+		buf.append("      <" + tag + ">" + value + "</" + tag + ">" + lineSeparator);
+		
 	}
 
 	// make this customizable? -- (use map.Pallette?  no...)

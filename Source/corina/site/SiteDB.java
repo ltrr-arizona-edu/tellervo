@@ -24,6 +24,7 @@ import java.awt.print.Printable;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -33,11 +34,16 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.swing.JOptionPane;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -49,6 +55,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import corina.Sample;
 import corina.core.App;
 import corina.map.Location;
+import corina.ui.Alert;
+import corina.ui.I18n;
 
 /**
  * A database of sites.
@@ -91,6 +99,13 @@ public class SiteDB { // implements PrintableDocument {
 				ioe.printStackTrace();
 				db.sites = null;
 			}
+			finally {
+				try {
+					db.saveDB();
+				} catch (IOException ioe) {
+					ioe.printStackTrace();
+				}
+			}
 		}
 		// return it
 		return db;
@@ -100,17 +115,19 @@ public class SiteDB { // implements PrintableDocument {
 	// OBSOLETE: moved to SiteDBFile.getDBFilename() -- only used in this file
 	// for watching for file changes, which should either be moved to SiteDBFile,
 	// or at least use SiteDBFile.getFilename().
-	static String getDBFilename() {
+	private static String getDBFilename() {
 		return App.prefs.getPref("corina.dir.data") + File.separator
 				+ "Site DB";
 	}
 
-	void loadDB() throws IOException {
+	private void loadDB() throws IOException {
 		System.out.println("reloading database");
 
 		try {
-			// lock the file
-			boolean x = Lock.acquire(getDBFilename(), 20); // 20 tries = 10 sec
+			boolean lock = getLock(getDBFilename());
+			if(!lock) {
+				throw new IOException("Could not lock file for loading");
+			}
 
 			// create XML reader
 			XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -132,52 +149,77 @@ public class SiteDB { // implements PrintableDocument {
 			xr.parse(new InputSource(r));
 
 			// done updating
-			selfUpdating = true;
+			selfUpdating = false;
 
 			// let it go
 			// FIXME: make this final?  see same call in saveDB() for discussion
+			r.close();
 			Lock.release(getDBFilename());
 		} catch (SAXException se) {
+			// ack! don't keep the lock on an error!
+			selfUpdating = false;			
+			Lock.release(getDBFilename());
 			throw new IOException(se.getMessage());
+		} catch (IOException ioe) {
+			selfUpdating = false;
+			Alert.error("Error loading site database", 
+					"There was an error while loading the site database.\n" + 
+					"Most likely this means your data directory is set improperly.\n" + 
+					"Various corina functions will NOT work without a site database.\n\n" + 
+					"Error: " + ioe.toString());
+			throw ioe;
 		}
 	}
 
 	// save the sitedb to disk -- not used yet!
 	// FIXME: lock file during entire save, and set |modDate|
 	// TODO: what happens if i throw an ioe?  restore a backup?
-	void saveDB() throws IOException {
-		// lock the file
-		boolean x = Lock.acquire(getDBFilename(), 20); // 20 tries = 10 sec
-		if (x == false) {
-			throw new IOException("Can't lock file \"Site DB\"."); // OAOO: name of file
-			// FIXME: ask user if he wants to break the lock here
-			/*
-			 Can't lock file 'Site Database'.
-
-			 Corina puts a "lock" on the the Site Database file so multiple
-			 users can ???.  However, if your computer crashed, the lock could
-			 get stuck.  If you're the only user, click "Steal"...  Otherwise, wait? ...
-
-			 ( Cancel )			( Keep Waiting ) ( Steal Lock )
-			 */
+	private void saveDB() throws IOException {
+		boolean lock = getLock(getDBFilename());
+		if(!lock) {
+			throw new IOException("Could not lock file for saving");
 		}
 
+		// this is a sanity check. shouldn't happen.
+		if(selfUpdating) {
+			throw new IOException("SELF UPDATING ALREADY, DURING SAVE??");
+		}
+		
+		selfUpdating = true;
+
 		// use utf-8!
-		OutputStream os = new FileOutputStream(getDBFilename());
+		File outfile = new File(getDBFilename() + " - Saving");
+		OutputStream os = new FileOutputStream(outfile);
 		Writer wr = new OutputStreamWriter(os, "UTF8");
 		BufferedWriter w = new BufferedWriter(wr);
 
 		try {
-			w.write("<?xml version=\"1.0\"?>");
+			w.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 			w.newLine();
 
-			// TODO: put a header comment here saying what this file is,
-			// who created it (corina), where to find corina (url), etc.
-			// so if somebody stumbles across this file and decides to read it,
-			// they can understand what it is, where it came from, how to read it, etc.
-
+			w.write("<!--");
 			w.newLine();
+			
+			w.write(" WARNING WARNING WARNING WARNING WARNING WARNING ");
+			w.newLine(); w.newLine();
+			w.write("   This file is NOT MANUALLY EDITABLE. Modifying this file in a text editor such as notepad");
+			w.newLine();
+			w.write("   will destroy the internationalized text contained within.");
+			w.newLine();
+			w.write("   DO NOT EDIT UNLESS YOU ARE COMPLETELY SURE YOU KNOW WHAT YOU ARE DOING");
+			w.newLine(); w.newLine();
+			w.write(" WARNING WARNING WARNING WARNING WARNING WARNING ");
+			w.newLine(); w.newLine();
 
+			w.write(" File automatically generated by Corina, the Cornell Tree Ring Analysis system.");
+			w.newLine();
+			w.write(" " + nameCreator());
+			w.newLine();
+			
+			w.write("-->");
+			w.newLine();
+			
+			w.newLine();
 			w.write("<sitedb>");
 			w.newLine();
 
@@ -187,23 +229,46 @@ public class SiteDB { // implements PrintableDocument {
 			for (int i = 0; i < sites.size(); i++) {
 				Site s = (Site) sites.get(i);
 				w.write(s.toXML());
+				w.newLine();
 			}
 
 			w.newLine();
 			w.write("</sitedb>");
 			w.newLine();
+		} catch (Exception e) {
+			// an error.. writing the file? ack!
+			// clean up and bail!
+			outfile.delete();
+			selfUpdating = false;
+			Lock.release(getDBFilename());
+
+			if(e instanceof IOException)
+				throw (IOException) e;
+			else
+				e.printStackTrace();
 		} finally {
 			try {
 				w.close();
 			} catch (IOException ioe) {
-				ioe.printStackTrace();
+				// an error.. writing the file? ack!
+				// clean up and bail!
+				outfile.delete();
+				selfUpdating = false;
+				Lock.release(getDBFilename());
+				
+				throw ioe;
 			}
 		}
 
+		// only after complete success do we rename the file.
+		File realoutfile = new File(getDBFilename());
+		//outfile.renameTo(realoutfile);
+		
 		// before you unlock it, update |modDate|, so it doesn't look
 		// like it was changed by somebody else.
 		modDate = new File(getDBFilename()).lastModified();
-
+		selfUpdating = false;
+		
 		// let it go
 		// FIXME: should this be finally?  or would that cause problems, if i don't restore a backup?
 		Lock.release(getDBFilename());
@@ -603,6 +668,15 @@ public class SiteDB { // implements PrintableDocument {
 				File f = new File(getDBFilename());
 
 				for (;;) {
+					
+					if(selfUpdating) {
+						// sleep 1sec, don't load! causes corruption!
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException ie) {}
+						continue;
+					}
+					
 					// check moddate on disk file
 					long diskModDate = f.lastModified();
 
@@ -663,4 +737,53 @@ public class SiteDB { // implements PrintableDocument {
 	public Printable print() {
 		return new SitePrinter(sites);
 	}
+	
+    private static String nameCreator() {
+        Date date = new Date();
+        String dateString = DateFormat.getDateInstance().format(date);
+        String timeString = DateFormat.getTimeInstance().format(date);
+
+        Object args[] = new Object[] {
+        		System.getProperty("user.name", "(unknown user)"),
+        		dateString,
+        		timeString,
+        };
+
+        String byline = MessageFormat.format(I18n.getText("saved_by"), args);
+        return byline;
+    }
+
+    private boolean getLock(String fullFilename) {
+		// lock the file
+		boolean lock = false;
+
+		while (!lock) {
+			lock = Lock.acquire(fullFilename);
+			if (!lock) {
+				String labels[] = { "Try again", "Delete it", "Cancel" };
+
+				int ret = JOptionPane
+						.showOptionDialog(
+								null,
+								"The site database appears to be locked. If nobody else is Using Corina,\n" +
+								"it's likely that this is a stale lock." +
+								"What should I do?\n",
+								"Can't access site database",
+								JOptionPane.YES_NO_CANCEL_OPTION,
+								JOptionPane.QUESTION_MESSAGE, null, labels,
+								labels[0]);
+
+				switch (ret) {
+				case 0:
+					continue;
+				case 1:
+					Lock.release(fullFilename);
+					continue;
+				case 2:
+					return false;
+				}
+			}
+		}
+		return true;
+    }
 }
