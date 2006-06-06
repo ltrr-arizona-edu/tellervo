@@ -37,33 +37,6 @@ import corina.index.Index;
 import corina.util.ColorUtils;
 
 public class StandardPlot implements CorinaGraphPlotter {
-
-	// these i get from sys props
-	//private boolean _baselines;
-	//private int _yearsize;
-	// private boolean _dottedIndexes;
-
-	// these get passed
-	/*
-	protected Range _bounds;
-	protected GraphInfo _graphinfo;
-
-	// nb: this gets recreated every from refreshFromPreferences()
-	public StandardPlot(Range bounds, GraphInfo graphinfo) {
-		// copy parms
-		_bounds = bounds;
-		_graphinfo = graphinfo;
-	}
-	
-	public StandardPlot() {
-	}
-	
-	public void Setup(Range bounds, GraphInfo graphinfo) {
-		// copy parms
-		_bounds = bounds;
-		_graphinfo = graphinfo;		
-	}
-	*/
 	
 	public StandardPlot() {
 		// no initializing to do, I am STATELESS!
@@ -123,7 +96,6 @@ public class StandardPlot implements CorinaGraphPlotter {
 		// cache yearsize, we use this a lot
 		int yearWidth = gInfo.getYearWidth(); // the size of a year, in pixels
 		float unitScale = (float) gInfo.get10UnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
-												   // using another var in case these become independent
 		
 		// set pen
 		boolean dotted = (gInfo.indexesDotted() && (g.graph instanceof Index));
@@ -236,7 +208,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 				g2.setStroke(makeStroke(2 * thickness, false));
 				p = new GeneralPath();
 				p.moveTo(yearWidth * (i - 1 + g.graph.getStart().diff(gInfo.getDrawRange().getStart()) + g.xoffset),
-						 bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale));
+						 bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale));
 			}
 
 			// y-position for this point
