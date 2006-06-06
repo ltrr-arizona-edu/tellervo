@@ -52,168 +52,167 @@ import corina.util.OKCancel;
 */
 public class CountryDialog {
 
-    // TODO: why's this have a weird interface?  why not
-    // c = new CountryDialog(parent, oldCode), c.getCode()?
+	// TODO: why's this have a weird interface?  why not
+	// c = new CountryDialog(parent, oldCode), c.getCode()?
 
-    // BUG?: if dialogs are hide-on-close by default, does that mean
-    // i'll leak memory if the user brings up a CountryDialog, clicks
-    // the close box, and repeats?
+	// BUG?: if dialogs are hide-on-close by default, does that mean
+	// i'll leak memory if the user brings up a CountryDialog, clicks
+	// the close box, and repeats?
 
-    private String result;
-    private final String original;
+	private String result;
 
-    // value[0] -- what to show to mean "null".
-    private final static String NONE = "None";
+	private final String original;
 
-    private CountryDialog(Dialog parent, String oldCode) {
-        original = oldCode;
-        result = original; // cancel just disposes, so set this now
+	// value[0] -- what to show to mean "null".
+	private final static String NONE = "None";
 
-        JButton cancel = Builder.makeButton("cancel");
-        JButton ok = Builder.makeButton("ok");
+	private CountryDialog(Dialog parent, String oldCode) {
+		original = oldCode;
+		result = original; // cancel just disposes, so set this now
 
-        // make list of all countries, sorted;
-	// (assumes they're Capitalized Properly, else the
-	// sorting order will look weird.)
-        String names[] = Country.getAllNames();
-        Arrays.sort(names);
+		JButton cancel = Builder.makeButton("cancel");
+		JButton ok = Builder.makeButton("ok");
 
-        // prepend "None". (#'cons in 4 lines, 1 loop, double the memory!)
-        String countries[] = new String[names.length + 1];
-        for (int i=0; i<names.length; i++)
-            countries[i+1] = names[i];
-        countries[0] = NONE;
+		// make list of all countries, sorted;
+		// (assumes they're Capitalized Properly, else the
+		// sorting order will look weird.)
+		String names[] = Country.getAllNames();
+		Arrays.sort(names);
 
-        // make jlist, and select old value
-        final JList countryList = new JList(countries);
-        int target=0;
-        if (oldCode == null) {
-            countryList.setSelectedIndex(0);
-        } else {
-            String oldName = Country.getName(oldCode);
-            for (int i=0; i<names.length; i++) {
-                if (oldName.equals(names[i])) {
-                    countryList.setSelectedIndex(i+1);
-                    target = i+1;
-		    // we'll call ensureIndexIsVisible on |target| later
-                    break;
-                }
-            }
-        }
+		// prepend "None". (#'cons in 4 lines, 1 loop, double the memory!)
+		String countries[] = new String[names.length + 1];
+		for (int i = 0; i < names.length; i++)
+			countries[i + 1] = names[i];
+		countries[0] = NONE;
 
-        // add "type-to-select" listener?  well, i can't find it in
-	// the mac HIG, and i think mac-style is different from
-	// win32-style, anyway.  plus you can already use the arrows
-	// and page up/down and home/end, so i don't think it's worth
-	// my implementation time.  (if you want to add it, go ahead.)
+		// make jlist, and select old value
+		final JList countryList = new JList(countries);
+		int target = 0;
+		if (oldCode == null) {
+			countryList.setSelectedIndex(0);
+		} else {
+			String oldName = Country.getName(oldCode);
+			for (int i = 0; i < names.length; i++) {
+				if (oldName.equals(names[i])) {
+					countryList.setSelectedIndex(i + 1);
+					target = i + 1;
+					// we'll call ensureIndexIsVisible on |target| later
+					break;
+				}
+			}
+		}
 
-        // create dialog and lay out components
-        final JDialog d = new JDialog(parent,
-				      (App.platform.isMac() ? "" : I18n.getText("choose_country")),
-				      true); // true=modal
+		// add "type-to-select" listener?  well, i can't find it in
+		// the mac HIG, and i think mac-style is different from
+		// win32-style, anyway.  plus you can already use the arrows
+		// and page up/down and home/end, so i don't think it's worth
+		// my implementation time.  (if you want to add it, go ahead.)
 
-	// REFACTOR: use vertical margins on n/s instead of wrapping in box layouts?
+		// create dialog and lay out components
+		final JDialog d = new JDialog(parent, (App.platform.isMac() ? "" : I18n
+				.getText("choose_country")), true); // true=modal
 
-	JPanel n = Layout.boxLayoutY(Layout.flowLayoutL(I18n.getText("choose_a_country")),
-				     Box.createVerticalStrut(16));
+		// REFACTOR: use vertical margins on n/s instead of wrapping in box layouts?
 
-	JPanel s = Layout.boxLayoutY(Box.createVerticalStrut(18),
-				     Layout.buttonLayout(cancel, ok));
+		JPanel n = Layout.boxLayoutY(Layout.flowLayoutL(I18n
+				.getText("choose_a_country")), Box.createVerticalStrut(16));
 
-	JPanel p = Layout.borderLayout(n,
-				       null, new JScrollPane(countryList), null,
-				       s);
-        p.setBorder(BorderFactory.createEmptyBorder(12, 20, 20, 20));
-        d.setContentPane(p);
+		JPanel s = Layout.boxLayoutY(Box.createVerticalStrut(18), Layout
+				.buttonLayout(cancel, ok));
 
-        // cancel
-        cancel.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                d.dispose();
-            }
-        });
+		JPanel p = Layout.borderLayout(n, null, new JScrollPane(countryList),
+				null, s);
+		p.setBorder(BorderFactory.createEmptyBorder(12, 20, 20, 20));
+		d.setContentPane(p);
 
-        // ok
-        ok.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                if (countryList.getSelectedIndex() != 0) {
-                    // figure out code from name, store in result
-                    String name = (String) countryList.getSelectedValue();
-                    try {
-                    	result = Country.getCode(name);
-                    } catch (IllegalArgumentException iee) {
-                    	result = "<unknown country " + name + ">";
-                    }
-                }
+		// cancel
+		cancel.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				d.dispose();
+			}
+		});
 
-                d.dispose();
-            }
-        });
+		// ok
+		ok.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (countryList.getSelectedIndex() != 0) {
+					// figure out code from name, store in result
+					String name = (String) countryList.getSelectedValue();
+					try {
+						result = Country.getCode(name);
+					} catch (IllegalArgumentException iee) {
+						result = "<unknown country " + name + ">";
+					}
+				}
 
-        // double-click = ok
-        countryList.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    // is it null?
-                    int index = countryList.locationToIndex(e.getPoint());
-                    if (index==0) {
-                        result = null;
-                        d.dispose();
-                        return;
-                    }
+				d.dispose();
+			}
+		});
 
-                    // get name, lookup code, and close
-                    String name = (String) countryList.getSelectedValue();
-                    try {
-                    	result = Country.getCode(name);
-                    } catch (IllegalArgumentException iee) {                    	
-                    	result = "<unknown country " + name + ">";
-                    }
-                    d.dispose();
-                }
-            }
-        });
+		// double-click = ok
+		countryList.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					// is it null?
+					int index = countryList.locationToIndex(e.getPoint());
+					if (index == 0) {
+						result = null;
+						d.dispose();
+						return;
+					}
 
-        // handle return/escape
-        OKCancel.addKeyboardDefaults(ok);
+					// get name, lookup code, and close
+					String name = (String) countryList.getSelectedValue();
+					try {
+						result = Country.getCode(name);
+					} catch (IllegalArgumentException iee) {
+						result = "<unknown country " + name + ">";
+					}
+					d.dispose();
+				}
+			}
+		});
 
-        // set size: after pack(), increase the height, so users
-	// don't have to scroll as much.
-	// TODO: make sure this isn't taller than the screen!
-        d.pack();
-        Dimension size = d.getSize();
-        d.setSize(size.width, (int) (size.height*1.5));
+		// handle return/escape
+		OKCancel.addKeyboardDefaults(ok);
 
-	// set location: left-right, center on parent, but overlap title bars;
-	// (note that dialog locations are relative to the screen
-	// coordinate space, not relative to their parents' coordinate
-	// space, as the javadoc might lead you to believe.)
-	// TODO: perhaps watch this so it never goes off the bottom,
-	// which would hide the buttons and confuse people?
-	d.setLocation(parent.getX() + parent.getWidth()/2 - d.getWidth()/2,
-		      parent.getY());
+		// set size: after pack(), increase the height, so users
+		// don't have to scroll as much.
+		// TODO: make sure this isn't taller than the screen!
+		d.pack();
+		Dimension size = d.getSize();
+		d.setSize(size.width, (int) (size.height * 1.5));
 
-        // scroll to the current value, if it's not visible.
-        countryList.ensureIndexIsVisible(target);
+		// set location: left-right, center on parent, but overlap title bars;
+		// (note that dialog locations are relative to the screen
+		// coordinate space, not relative to their parents' coordinate
+		// space, as the javadoc might lead you to believe.)
+		// TODO: perhaps watch this so it never goes off the bottom,
+		// which would hide the buttons and confuse people?
+		d.setLocation(parent.getX() + parent.getWidth() / 2 - d.getWidth() / 2,
+				parent.getY());
 
-        // focus
-        countryList.requestFocus(); // (does this help at all?)
+		// scroll to the current value, if it's not visible.
+		countryList.ensureIndexIsVisible(target);
 
-        // whew, done.  (this blocks until dispose())
-        d.show();
-    }
+		// focus
+		countryList.requestFocus(); // (does this help at all?)
 
-    /**
-       Show the dialog, and return the country code the user chose.
-       (If the user cancels, returns the original code.)
+		// whew, done.  (this blocks until dispose())
+		d.show();
+	}
 
-       @param parent the parent component (dialog) for this dialog
-       @param oldCode the previous code; in the list, this is
-       initially selected
-       @return the new code, or null, if the user chose "None"
-    */
-    public static String showDialog(Dialog parent, String oldCode) {
-        CountryDialog c = new CountryDialog(parent, oldCode);
-        return c.result;
-    }
+	/**
+	 Show the dialog, and return the country code the user chose.
+	 (If the user cancels, returns the original code.)
+
+	 @param parent the parent component (dialog) for this dialog
+	 @param oldCode the previous code; in the list, this is
+	 initially selected
+	 @return the new code, or null, if the user chose "None"
+	 */
+	public static String showDialog(Dialog parent, String oldCode) {
+		CountryDialog c = new CountryDialog(parent, oldCode);
+		return c.result;
+	}
 }
