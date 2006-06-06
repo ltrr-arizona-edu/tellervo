@@ -131,6 +131,18 @@ public class Layout {
 	return p;
     }
 
+    public static JPanel boxLayoutY(Component c1, Component c2, Component c3,
+		    Component c4, Component c5) {
+    JPanel p = new JPanel();
+    p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+    p.add(c1);
+    p.add(c2);
+    p.add(c3);
+    p.add(c4);
+    p.add(c5);
+    return p;
+    }
+
     // -------------
     // flow layout...
     public static JPanel flowLayoutL(Object o1) {
