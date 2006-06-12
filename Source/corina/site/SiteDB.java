@@ -54,7 +54,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import corina.Sample;
 import corina.core.App;
-import corina.map.Location;
 import corina.ui.Alert;
 import corina.ui.I18n;
 
@@ -99,6 +98,8 @@ public class SiteDB { // implements PrintableDocument {
 				ioe.printStackTrace();
 				db.sites = null;
 			}
+			// this debug saves after loading.
+			/*
 			finally {
 				try {
 					db.saveDB();
@@ -106,10 +107,25 @@ public class SiteDB { // implements PrintableDocument {
 					ioe.printStackTrace();
 				}
 			}
+			*/
 		}
 		// return it
 		return db;
 	}
+	
+	/* Return true on a successful save! */
+	public boolean save() {
+		System.out.println("Saving Site DB!");
+		try {
+			saveDB();
+			return true;
+		} catch (IOException ioe) {
+			System.out.println("trying to save db, ioe=" + ioe);
+			ioe.printStackTrace();
+		}
+		return false;
+	}
+	
 
 	// this causes all sorts of failures if corina.dir.data==null!
 	// OBSOLETE: moved to SiteDBFile.getDBFilename() -- only used in this file
@@ -262,7 +278,7 @@ public class SiteDB { // implements PrintableDocument {
 
 		// only after complete success do we rename the file.
 		File realoutfile = new File(getDBFilename());
-		//outfile.renameTo(realoutfile);
+		outfile.renameTo(realoutfile);
 		
 		// before you unlock it, update |modDate|, so it doesn't look
 		// like it was changed by somebody else.
@@ -312,12 +328,16 @@ public class SiteDB { // implements PrintableDocument {
 				else if (state.equals("name"))
 					site.setName(data);
 				else if (state.equals("id"))
-					site.setID(data);
+					site.setId(data);
 				else if (state.equals("species"))
 					site.setSpecies(data);
 				else if (state.equals("type")) {
-					site.type = data;
-				} else if (state.equals("filename")) { // shouldn't this be "folder"?
+					site.setTypeString(data);
+				} else if (state.equals("filename")) { 
+					// shouldn't this be "folder"?
+					// yes, it should. setFileName converts to folder for compatibility with older SiteDBs.
+					site.setFilename(data);
+				} else if (state.equals("folder")) { 
 					site.setFolder(data);
 				} else if (state.equals("location")) {
 					site.setLocation(new Location(data));
@@ -352,6 +372,12 @@ public class SiteDB { // implements PrintableDocument {
 				return s;
 		}
 		throw new SiteNotFoundException();
+	}
+	
+	private String folderToLocalPath(String folder) {
+		String s = folder.replace(":", File.separator);
+		
+		return App.prefs.getPref("corina.dir.data") + File.separator + s;
 	}
 
 	public Site getSite(File folder) throws SiteNotFoundException {
@@ -395,6 +421,9 @@ public class SiteDB { // implements PrintableDocument {
 		if (folder == null)
 			return false;
 
+		// convert our folder to contain our local path.
+		folder = folderToLocalPath(folder).toUpperCase();
+
 		// chop off any trailing separators
 		if (folder.endsWith(File.separator))
 			folder = folder.substring(0, folder.length()
@@ -411,7 +440,7 @@ public class SiteDB { // implements PrintableDocument {
 					.substring(filename.lastIndexOf(File.separator) + 1,
 							filename.length());
 
-		return filename.startsWith(folder);
+		return filename.toUpperCase().startsWith(folder);
 
 		//||
 		//  filename.startsWith(App.prefs.getPref("corina.dir.data") + File.separator + folder) ||
@@ -639,21 +668,6 @@ public class SiteDB { // implements PrintableDocument {
 	// else changed it, i'll save it again, whis downright wrong.
 	private static boolean selfUpdating = false;
 
-	private static void save() {
-		// if this is just me reloading the same, shouldn't save it here.
-		if (selfUpdating)
-			return;
-
-		System.out.println("saving db (not really)...");
-		/*
-		 try {
-		 db.saveDB();
-		 } catch (IOException ioe) {
-		 System.out.println("trying to save db, ioe=" + ioe);
-		 ioe.printStackTrace();
-		 }
-		 */
-	}
 
 	// ------------------------------------------------------
 	// keep disk updated with my copy
