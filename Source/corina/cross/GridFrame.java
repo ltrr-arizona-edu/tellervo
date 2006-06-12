@@ -87,6 +87,10 @@ public class GridFrame extends XFrame
     public boolean isSaved() { // don't worry about deleting grids, for now
 	return true; // fixme
     }
+    
+    // saveabledocument -- yes, we can use save as...
+    public boolean isNameChangeable() { return true; };
+    
     /*
       REFACTOR: make Grid Saveable(?), and move all of this up to XFrame, which
       i should rename as DocumentFrame(?).  it's the same for samples, grids, graphs, ...

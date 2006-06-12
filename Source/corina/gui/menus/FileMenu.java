@@ -146,6 +146,11 @@ public class FileMenu extends JMenu {
 					     "new corina.map.MapFrame()");
 	indent(map);
 
+	// new site (site editor)
+	JMenuItem sites = Builder.makeMenuItem("site...",
+					     "new corina.site.SiteEditor()");
+	indent(sites);
+
 	// add menuitems to menu
 	add(Builder.makeMenuItem("new", false));
 	add(sample);
@@ -154,6 +159,7 @@ public class FileMenu extends JMenu {
         // add(grid);
 	add(crossdate);
 	add(map);
+	add(sites);
 
 	// open, browse
     add(Builder.makeMenuItem("open...",
@@ -385,7 +391,7 @@ public class FileMenu extends JMenu {
     public void addSaveAsMenu() {
 	JMenuItem saveAs = Builder.makeMenuItem("save_as...");
 
-	if (f instanceof SaveableDocument) {
+	if (f instanceof SaveableDocument && ((SaveableDocument)f).isNameChangeable()) {
 	    // add menuitems, hooked up to |f|
 	    saveAs.addActionListener(new AbstractAction() {
 		    public void actionPerformed(ActionEvent e) {

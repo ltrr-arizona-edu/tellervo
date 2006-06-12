@@ -292,6 +292,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			return (String) sample.meta.get("title");
 		}
 	}
+	
+    // saveabledocument -- yes, we can use save as...
+    public boolean isNameChangeable() { return true; };
 
 	public void save() {
 		// make sure we're not measuring

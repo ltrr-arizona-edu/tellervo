@@ -26,6 +26,7 @@ public interface SaveableDocument {
 
     public void save();
 
+    public boolean isNameChangeable();
     public void setFilename(String fn);
     public String getFilename();
 

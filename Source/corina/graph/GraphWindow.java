@@ -353,6 +353,9 @@ public class GraphWindow extends XFrame implements SampleListener,
 		return true; // fixme: false if saved once, but modified (?)
 	}
 
+    // saveabledocument -- yes, we can use save as...
+    public boolean isNameChangeable() { return true; };
+	
 	public void save() { // copied from gridder.java -- refactor?
 		if (filename == null) {
 			try {
