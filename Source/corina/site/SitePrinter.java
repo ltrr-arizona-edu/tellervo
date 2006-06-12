@@ -162,10 +162,10 @@ public class SitePrinter extends Printer {
     private void printSite(Site site) {
 	String args[] = new String[] {
 	    site.getCode(),
-	    site.getID(),
+	    site.getId(),
 	    site.getName(),
 	    site.getSpecies(),
-	    site.type, // FIXME: .getTypesAsString() (extract)
+	    site.getTypeString(), // FIXME: .getTypesAsString() (extract)
 	};
 
 	// ASSUMES: none of these fields was null, or
