@@ -97,4 +97,23 @@ public class Country {
             result[i] = countries[i].name;
         return result;
     }
+    
+    /*
+     * Returns a false country name for a bad country code
+     */
+    public static String badCountry(String code) {
+    	return "<unknown " + code + ">";
+    }
+    
+    /*
+     * Gets a bad country code from a false country name
+     */
+    public static String badCode(String country) {    	
+    	if(!(country.startsWith("<unknown "))) {
+    		return "<unknown '" + country + "'>";
+    	}
+    	    	
+    	return country.substring(9, country.length() - 2);
+    }
+    
 }

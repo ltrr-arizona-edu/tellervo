@@ -141,7 +141,7 @@ public class CountryDialog {
 					try {
 						result = Country.getCode(name);
 					} catch (IllegalArgumentException iee) {
-						result = "<unknown country " + name + ">";
+						result = Country.badCode(name);
 					}
 				}
 
@@ -166,7 +166,7 @@ public class CountryDialog {
 					try {
 						result = Country.getCode(name);
 					} catch (IllegalArgumentException iee) {
-						result = "<unknown country " + name + ">";
+						result = Country.badCode(name);
 					}
 					d.dispose();
 				}

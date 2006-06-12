@@ -102,8 +102,13 @@ public class CountryPopup extends JComboBox {
 
 	if (code == null)
 	    setSelectedIndex(0);
-	else
-	    setSelectedItem(Country.getName(code));
+	else {
+		try {
+			setSelectedItem(Country.getName(code));
+		} catch (IllegalArgumentException iae) {
+			setSelectedItem(Country.badCountry(code));
+		}
+	}
     }
 
     /**
@@ -121,12 +126,11 @@ public class CountryPopup extends JComboBox {
             	String result = Country.getCode((String) getSelectedItem());
             	return result;
             } catch (IllegalArgumentException iee) {
-            	String result = "<unknown country " + (String) getSelectedItem() + ">";
-            	return result;
+            	return Country.badCode((String) getSelectedItem());
             }    		
     	}
     }
-
+    
     // returns an array of the country names in the sitedb, sorted
     private String[] getCountryNames() {
         String codes[] = SiteDB.getSiteDB().getCountries();
@@ -136,7 +140,7 @@ public class CountryPopup extends JComboBox {
         		countries[i] = Country.getName(codes[i]);
         	}
         	catch (IllegalArgumentException ex) {
-        		countries[i] = "<unknown country code " + codes[i] + ">";
+        		countries[i] = Country.badCountry(codes[i]);
         	}
         	
         }
