@@ -379,14 +379,12 @@ public class SiteEditorPanel extends JPanel {
 					return s.getComments();
 				if (field.equals("country")) {
 					try {
-						String cname = Country.getName(s.getCountry());
-						return cname;
+						return Country.getName(s.getCountry());
 					} catch (IllegalArgumentException iee) {
 						return Country.badCountry(s.getCountry());
 					}
 				}
 
-				// --FINISH ME--
 				if (field.equals("distance")) {
 					if (s == target)
 						return "Target"; // need I18n
