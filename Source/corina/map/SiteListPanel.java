@@ -179,12 +179,12 @@ public class SiteListPanel extends JPanel {
             if (field.equals("show?"))
                 return (labels.isVisible(s) ? Boolean.TRUE : Boolean.FALSE);
 
-	    if (field.equals("id"))       return s.getID();
+	    if (field.equals("id"))       return s.getId();
 	    if (field.equals("code"))     return s.getCode();
 	    if (field.equals("name"))     return s.getName();
 	    if (field.equals("type")) 	  return s.getTypesAsString(); // PERF
 	    if (field.equals("species"))  return s.getSpecies();
-	    if (field.equals("altitude")) return s.altitude; // !!!
+	    if (field.equals("altitude")) return s.getAltitude();
 	    if (field.equals("location")) return s.getLocation();
 	    if (field.equals("comments")) return s.getComments();
 	    if (field.equals("country")) {
@@ -192,7 +192,7 @@ public class SiteListPanel extends JPanel {
 	    		String cname = Country.getName(s.getCountry());
 	    		return cname;
 	    	} catch (IllegalArgumentException iee) {
-	    		return "<unknown country code " + s.getCountry() + ">";
+	    		return Country.badCountry(s.getCountry());
 	    	}
 	    }
 	    
