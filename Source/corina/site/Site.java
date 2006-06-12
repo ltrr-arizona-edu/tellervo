@@ -20,11 +20,13 @@
 
 package corina.site;
 
-import corina.map.Location;
+import corina.core.App;
 import corina.util.ColorUtils;
+import corina.util.StringUtils;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.io.File;
 
 /*
   todo:
@@ -42,50 +44,34 @@ import java.awt.Graphics2D;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-public class Site {
-	/** The 3-digit identification number. */
-	private String id = "";
-
-	public String getID() {
+public class Site implements Cloneable {
+	public String getId() {
 		return id;
 	}
-
-	public void setID(String id) {
+	public void setId(String id) {
 		this.id = id;
 		// WAS: SiteDB.getSiteDB().fireSiteIDChanged(this);
 	}
 
-	/** The 3-letter code. */
-	private String code = "";
-
 	public String getCode() {
 		return code;
 	}
-
 	public void setCode(String code) {
 		this.code = code;
 		// WAS: SiteDB.getSiteDB().fireSiteCodeChanged(this);
 	}
 
-	/** The name. */
-	private String name = "";
-
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 		// WAS: SiteDB.getSiteDB().fireSiteNameChanged(this);
 	}
 
-	// country
-	private String country = null;
-
 	public String getCountry() {
 		return country;
 	}
-
 	public void setCountry(String country) {
 		this.country = country;
 		// WAS: SiteDB.getSiteDB().fireSiteCountryChanged(this);
@@ -94,17 +80,14 @@ public class Site {
 	// the type: FOREST(1), MEDIEVAL(2), ANCIENT(3), or UNKNOWN(4->0)
 	// => make bitfield?
 	public final static int TYPE_UNKNOWN = 0;
-
 	public final static int TYPE_FOREST = 1;
-
 	public final static int TYPE_MEDIEVAL = 2;
-
 	public final static int TYPE_ANCIENT = 3;
 
 	//    public int type=TYPE_UNKNOWN;
-	public String type2 = ""; // a string, like "AU" (=ancient+unknown)
-
-	public String type = "";
+	
+	// eh? what is this?
+	//public String type2 = ""; // a string, like "AU" (=ancient+unknown)
 
 	// 10-may-2003: what i want:
 	// in xml:
@@ -193,25 +176,24 @@ public class Site {
 		}
 		return buf.toString();
 	}
-
-	private/*!!!*/String species = "";
+	
+	public String getTypeString() {
+		return type;
+	}
+	public void setTypeString(String type) {
+		this.type = type;
+	}
 
 	public String getSpecies() {
 		return species;
 	}
-
 	public void setSpecies(String species) {
 		this.species = species;
 	}
 
-	/** The location (latitude, longitude).  Null means no location
-	 entered by user (yet). */
-	private Location location = null;
-
 	public Location getLocation() {
 		return location;
 	}
-
 	public void setLocation(Location location) {
 		this.location = location;
 		// WAS: SiteDB.getSiteDB().fireSiteMoved(this);
@@ -225,13 +207,9 @@ public class Site {
 	// expression, at least.)
 	// -- SOLUTION: make Mutable and Immutable Location classes.
 
-	/** The altitude, in meters. */
-	public Integer altitude = null;
-
 	public Integer getAltitude() {
 		return altitude;
 	}
-
 	public void setAltitude(Integer altitude) {
 		this.altitude = altitude;
 	}
@@ -240,24 +218,40 @@ public class Site {
 	 site.  This is just a hack, until a new file format, which
 	 contains the site explicitly
 	 ("<code>&lt;site&gt;ZKB&lt;/site&gt;</code>") is in place. */
-	private String folder = null;
-
 	public String getFolder() {
 		return folder;
 	}
 
+	//
+	// Remove G:\DATA cruft, and silly filename tag in sitedb
+	// Also removes data directory, if anyone else is using corina (??)
+	// TODO: maybe remove this, once sitedbs are updated?
+	public void setFilename(String filename) {
+		String folder = filename;
+		
+		if(filename.startsWith("G:\\DATA\\")) {
+			folder = filename.substring(8);
+		}
+		else if(filename.startsWith(App.prefs.getPref("corina.dir.data") + File.separator)) {
+			folder = filename.substring(App.prefs.getPref("corina.dir.data").length() + File.separator.length());
+		}
+		
+		// replace forward slashes with a :, which will be our path separator.
+		folder = folder.replace("\\", ":");
+		// do the same for some other platform
+		folder = folder.replace(File.separator, ":");
+		
+		setFolder(folder);
+	}
+	
 	public void setFolder(String folder) {
 		this.folder = folder;
 		// WRITEME: fire event!
 	}
 
-	/** Comments. */
-	private String comments = null;
-
 	public String getComments() {
 		return comments;
 	}
-
 	public void setComments(String comments) {
 		this.comments = comments;
 		// WRITEME: fire event!
@@ -302,12 +296,11 @@ public class Site {
 		StringBuffer buf = new StringBuffer("   <site>" + lineSeparator);
 		appendIfNonNull(buf, getCountry(), "country", lineSeparator);
 		appendIfNonNull(buf, code, "code", lineSeparator);
-		// BUG: need to escape &'s? -- i have a method for that already somewhere
 		appendIfNonNull(buf, getName(), "name", lineSeparator);
-		appendIfNonNull(buf, getID(), "id", lineSeparator);
+		appendIfNonNull(buf, getId(), "id", lineSeparator);
 		appendIfNonNull(buf, species, "species", lineSeparator);
 		appendIfNonNull(buf, type, "type", lineSeparator);
-		appendIfNonNull(buf, getFolder(), "filename", lineSeparator); // "filename"? -- wouldn't "folder" be better?
+		appendIfNonNull(buf, getFolder(), "folder", lineSeparator); 
 		
 		Location loc = getLocation();
 		if(loc != null)
@@ -323,7 +316,10 @@ public class Site {
 		if (value == null || value.equals(""))
 			return;
 
-		buf.append("      <" + tag + ">" + value + "</" + tag + ">" + lineSeparator);
+		// escape for XML!! AGH! Yay for no more corrupted site databases.
+		String outvalue = StringUtils.escapeForXML(value.toString());
+
+		buf.append("      <" + tag + ">" + outvalue + "</" + tag + ">" + lineSeparator);
 		
 	}
 
@@ -394,7 +390,13 @@ public class Site {
 	}
 
 	// o1.equals(o2), but valid for null/null as well.
+	// also, null string can equal null for this compare.
 	private boolean eq(Object o1, Object o2) {
+		if(o1 == null && o2 != null)
+			return o2.equals("");
+		if(o2 == null && o1 != null)
+			return o1.equals("");
+		
 		if (o1 == null)
 			return (o2 == null);
 		else
@@ -415,4 +417,39 @@ public class Site {
 	private int hash(Object o) {
 		return (o == null ? 0 : o.hashCode());
 	}
+	
+	// make a duplicate copy of this site.
+	public Object clone() {
+		Site clone = new Site();
+
+		clone.id = new String(id);
+		clone.code = new String(code);
+		clone.name = new String(name);
+		if(country != null)
+			clone.country = new String(country);
+		clone.type = new String(type);
+		clone.species = new String(species);
+		if(location != null)
+			clone.location = (Location) location.clone();
+		if(altitude != null)
+			clone.altitude = new Integer(altitude);
+		if(folder != null)
+			clone.folder = new String(folder);
+		if(comments != null)
+			clone.comments = new String(comments);
+		
+		return clone;
+	}
+	
+	private String id = ""; 			// The 3-digit identification number.
+	private String code = "";			// The 3-letter code.
+	private String name = "";   		// Site name
+	private String country = null;		// country
+	private String type = "";			// Site type
+	private String species = "";		// Species
+	private Location location = null;	// The location (latitude, longitude).  
+										// Null means no location entered by user (yet).
+	private Integer altitude = null;	// The altitude, in meters.
+	private String folder = null;		// The folder path which contains the file
+	private String comments = null;		// Site comments
 }
