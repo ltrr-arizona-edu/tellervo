@@ -20,7 +20,6 @@
 
 package corina.site;
 
-import corina.map.CountryPopup;
 import corina.gui.Layout;
 import corina.gui.Help;
 import corina.util.OKCancel;
@@ -61,7 +60,7 @@ import javax.swing.*;
    <li>make "masters"/"nonfits" on a tab (or 2 tabs)?
 </ul>
 
-   @see corina.map.CountryPopup
+   @see corina.site.CountryPopup
    @see corina.site.Country
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
@@ -74,6 +73,7 @@ public class SiteInfoDialog extends JDialog {
 	}
 
 	private Site site;
+	private Site originalSite;
 
 	private JTextField name, code, id;
 
@@ -89,6 +89,8 @@ public class SiteInfoDialog extends JDialog {
 	private JButton location_edit;
 	
 	private JTextField folder;
+	
+	private boolean doSave = false;
 
 	// ADDME: folder
 
@@ -99,6 +101,7 @@ public class SiteInfoDialog extends JDialog {
 
 		// save site reference
 		this.site = infosite;
+		this.originalSite = (Site) infosite.clone();
 
 		// set dialog title
 		setTitle(site.getName());
@@ -106,7 +109,7 @@ public class SiteInfoDialog extends JDialog {
 		// id line
 		name = new JTextField(site.getName(), 40);
 		code = new JTextField(site.getCode(), 3);
-		id = new JTextField(site.getID(), 3);
+		id = new JTextField(site.getId(), 3);
 
 		JPanel line_1 = Layout.flowLayoutL(labelOnTop("site_name", name),
 				strutH(12), labelOnTop("site_code", code), strutH(12),
@@ -182,7 +185,9 @@ public class SiteInfoDialog extends JDialog {
 				if (e.getSource() == ok) {
 					if (!writeback())
 						kill = false;
-				}
+					else
+						doSave = true; // we updated the site.
+				} 
 
 				// close this dialog if we're told to kill
 				if (kill)
@@ -244,7 +249,7 @@ public class SiteInfoDialog extends JDialog {
 		// - name, code, id
 		site.setName(name.getText());
 		site.setCode(code.getText());
-		site.setID(id.getText());
+		site.setId(id.getText());
 
 		// - location, altitude, country
 		site.setLocation(loc);
@@ -260,14 +265,9 @@ public class SiteInfoDialog extends JDialog {
 		// - comments
 		site.setComments(comments.getText());
 		
-		// - (folder)
-		// WRITEME
-
-		// TODO: be sure to fire an event to the table model that i've changed
-		// (TODO: be sure to re-sort, if needed)
-
 		// TODO: save this site now
 		// future: site.getStorage().save(site);
+		// no, don't do this. let whatever is calling our panel save it.
 
 		return true;
 	}
@@ -285,5 +285,13 @@ public class SiteInfoDialog extends JDialog {
 
 		return Layout.borderLayout(new JLabel(text), null, component, null,
 				null);
+	}
+	
+	public boolean shouldSave() {
+		// check for modification. Let 'ok' equal 'cancel' when the site was not modified at all. 
+		if(doSave && site.equals(originalSite))
+			return false;
+		
+		return doSave;
 	}
 }
