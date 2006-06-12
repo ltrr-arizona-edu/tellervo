@@ -364,6 +364,27 @@ public final class Location implements Cloneable {
     	
     }
     
+    public String getLatitudeAsString() {
+        // extract degrees and minutes
+        int latDegs = Math.abs(getLatitudeAsSeconds()) / 3600;
+        int latMins = Math.abs(getLatitudeAsSeconds()) / 60 - latDegs * 60;
+        // hemisphere
+    	String latHemi = (latitude > 0 ? NORTH : SOUTH);
+
+    	return latDegs + DEGREE_SIGN + latMins + "'" + latHemi;
+    }
+
+    public String getLongitudeAsString() {
+        // extract degrees and minutes
+        int longDegs = Math.abs(getLongitudeAsSeconds()) / 3600;
+        int longMins = Math.abs(getLongitudeAsSeconds()) / 60 - longDegs * 60;
+        
+        // hemispheres
+        String longHemi = (longitude > 0 ? EAST : WEST);
+        
+    	return longDegs + DEGREE_SIGN + longMins + "'" + longHemi;
+    }
+    
     /**
        Return this location as a nicely-formatted string.  The string returned by this
        method is locale-dependent, and should only be used for presentation to the user,
@@ -374,19 +395,7 @@ public final class Location implements Cloneable {
        @return this location as a string
     */
     public String toString() {
-        // extract degrees and minutes, latitude and longitude
-        int latDegs = Math.abs(getLatitudeAsSeconds()) / 3600;
-        int latMins = Math.abs(getLatitudeAsSeconds()) / 60 - latDegs * 60;
-        int longDegs = Math.abs(getLongitudeAsSeconds()) / 3600;
-        int longMins = Math.abs(getLongitudeAsSeconds()) / 60 - longDegs * 60;
-        
-	// hemispheres
-	String latHemi = (latitude > 0 ? NORTH : SOUTH);
-	String longHemi = (longitude > 0 ? EAST : WEST);
-
-	// assemble it into a string
-	return latDegs + DEGREE_SIGN + latMins + "'" + latHemi + " " +
-               longDegs + DEGREE_SIGN + longMins + "'" + longHemi;
+    	return getLatitudeAsString() + " " + getLongitudeAsString();
     }
 
     // unicode DEGREE SIGN character
