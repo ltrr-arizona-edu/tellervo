@@ -36,6 +36,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -278,7 +279,18 @@ public class SiteDB { // implements PrintableDocument {
 
 		// only after complete success do we rename the file.
 		File realoutfile = new File(getDBFilename());
-		outfile.renameTo(realoutfile);
+		
+		// first, move the Site DB to Site DB - Old YYYYMMDD HHMMSS
+		Date now = new Date();
+		SimpleDateFormat dFormat = new SimpleDateFormat("yyyyMMdd HHmmss");
+		File oldoutfile = new File(getDBFilename() + " - Old " + dFormat.format(now));
+		realoutfile.renameTo(oldoutfile);
+		// then, since realoutfile changed, reinit it...
+		realoutfile = new File(getDBFilename());
+		// and finally, move the new sitedb to the real sitedb.
+		if(outfile.renameTo(realoutfile) == false) {
+			System.out.println("Couldn't rename siteDB! I should handle this better!");
+		}
 		
 		// before you unlock it, update |modDate|, so it doesn't look
 		// like it was changed by somebody else.

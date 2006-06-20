@@ -493,6 +493,11 @@ public class SiteEditorPanel extends JPanel {
 		// and we start with our first target.
 		target = (Site) allSites.get(0);		
 	}
+	
+	public void reloadSitelist() {
+		allSites = parent.getImmutableSitelist();
+		model.fireTableDataChanged();
+	}
 
 	private void init() {
 		// table

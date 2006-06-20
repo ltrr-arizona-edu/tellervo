@@ -74,6 +74,7 @@ public class SiteEditor extends XFrame implements SaveableDocument {
 		for(int i = 0; i < refSites.size(); i++)
 			mySites.add(((Site)refSites.get(i)).clone());
 	}
+	
 	private List mySites; // immutable site list
 	
 	// saveabledocument interface
@@ -101,8 +102,10 @@ public class SiteEditor extends XFrame implements SaveableDocument {
 	public void save() {
 		// set our sites to be the global list of sites
 		SiteDB.getSiteDB().sites = mySites;
+		
 		// create a new cloned list of sites (from the ones we just installed!)
 		createImmutableSitelist();
+		sitePanel.reloadSitelist();
 
 		// Save the new site list to disk
 		// if we're successful, 
