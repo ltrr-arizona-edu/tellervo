@@ -17,9 +17,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.awt.ActiveEvent;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.BorderLayout;
+import java.awt.Event;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
@@ -341,6 +344,8 @@ public class SiteListPanel extends JPanel {
 
 		init();
 	}
+	
+	private JButton checkall, uncheckall;
 
 	private void init() {
 		// table
@@ -405,10 +410,38 @@ public class SiteListPanel extends JPanel {
 		table.getColumnModel().getColumn(1).setPreferredWidth(300);
 		
 		// buttons
-		// no buttons! use the site editor to add or remove sites!!
+		checkall = new JButton("Check all");
+		checkall.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				labels.showAllSites();
+				model.fireTableDataChanged();
+				
+				// update the label
+				updateLabel();
+
+				// tell the map panel to update itself -- but just the sites layer.
+				panel.updateBufferLabelsOnly();
+				
+			}
+		});
+		uncheckall = new JButton("Uncheck all");
+		uncheckall.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				labels.hideAllSites();				
+				model.fireTableDataChanged();
+				
+				// update the label
+				updateLabel();
+
+				// tell the map panel to update itself -- but just the sites layer.
+				panel.updateBufferLabelsOnly();
+				
+			}
+		});
+		JPanel buttons = Layout.buttonLayout(checkall, uncheckall);
 
 		// bottom = label + buttons
-		JPanel bottom = Layout.borderLayout(null, label, null, null, null);
+		JPanel bottom = Layout.borderLayout(null, label, null, buttons, null);
 		bottom.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		// NEW: panel
