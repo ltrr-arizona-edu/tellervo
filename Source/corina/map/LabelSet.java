@@ -141,7 +141,7 @@ public class LabelSet {
         Iterator all = SiteDB.getSiteDB().sites.iterator();
         while (all.hasNext()) {
             Site site = (Site) all.next();
-            if (site.getLocation() != null) {
+            if (site.getLocation() != null && site.getLocation().valid()) {
                 visibleSites.add(site);
                 visibleLocations.add(site.getLocation());
             }

@@ -304,7 +304,7 @@ public class MapPanel extends JPanel {
     	
         for (int i=0; i<sites.size(); i++) {
             Site s = (Site) sites.get(i);
-            if (s.getLocation() == null)
+            if (s.getLocation() == null || !s.getLocation().valid())
                 continue; // ignore these
             Location loc = (Location) s.getLocation().clone();
             if (siteHash.containsKey(loc)) {

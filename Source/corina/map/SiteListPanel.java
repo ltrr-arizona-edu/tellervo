@@ -1,6 +1,7 @@
 package corina.map;
 // MOVEME: this should be in corina.site -- but there's already a SiteList there (eep, what's it do?)
 
+import corina.site.Location;
 import corina.site.Site;
 import corina.site.SiteDB;
 import corina.site.Country;
@@ -146,7 +147,8 @@ public class SiteListPanel extends JPanel {
 		columns.add("name");
 		columns.add("code");
 		columns.add("id");
-		columns.add("location");
+		columns.add("latitude");
+		columns.add("longitude");
 		columns.add("altitude");
 		columns.add("country");
 		columns.add("species");
@@ -177,8 +179,6 @@ public class SiteListPanel extends JPanel {
 				// PERF: why can't i store the field/column(?) by an int, instead of a string?
 				String field = (String) columns.get(column);
 
-				// (i'd like to return null here if s.location=null, but
-				// it treats that as FALSE.)
 				if (field.equals("show?"))
 					return (labels.isVisible(s) ? Boolean.TRUE : Boolean.FALSE);
 
@@ -194,20 +194,23 @@ public class SiteListPanel extends JPanel {
 					return s.getSpecies();
 				if (field.equals("altitude"))
 					return s.getAltitude();
-				if (field.equals("location"))
-					return s.getLocation();
+
+				Location loc;
+				if (field.equals("latitude"))
+					return ((loc = s.getLocation()) != null) ? loc.getLatitudeAsString() : null;
+				if (field.equals("longitude"))
+					return ((loc = s.getLocation()) != null) ? loc.getLongitudeAsString() : null;
+				
 				if (field.equals("comments"))
 					return s.getComments();
 				if (field.equals("country")) {
 					try {
-						String cname = Country.getName(s.getCountry());
-						return cname;
+						return Country.getName(s.getCountry());
 					} catch (IllegalArgumentException iee) {
 						return Country.badCountry(s.getCountry());
 					}
 				}
 
-				// --FINISH ME--
 				if (field.equals("distance")) {
 					if (s == target)
 						return "Target"; // need I18n
@@ -288,7 +291,7 @@ public class SiteListPanel extends JPanel {
 		public boolean isCellEditable(int row, int column) {
 			String field = (String) columns.get(column);
 			Site site = (Site) allSites.get(row);
-			return field.equals("show?") && (site.getLocation() != null);
+			return field.equals("show?") && (site.getLocation() != null && site.getLocation().valid());
 		}
 	}
 
@@ -297,7 +300,7 @@ public class SiteListPanel extends JPanel {
 	// HACK: PUBLIC for MapFrame (menuitems)
 	public static final String FIELD_NAMES[] = new String[] {
 			"Show?", // TODO: i18n?
-			"Name", "Code", "ID", "Location", "Altitude", "Country", "Species",
+			"Name", "Code", "ID", "Latitude", "Longitude", "Altitude", "Country", "Species",
 			"Type", "Comments", "Distance", };
 
 	// FIXME: separate latitude/longitude columns?  Locations aren't comparable!
@@ -352,126 +355,11 @@ public class SiteListPanel extends JPanel {
 		table.setGridColor(Color.lightGray);
 
 		JScrollPane scroll = new JScrollPane(table);
-		scroll
-				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		scroll
-				.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		// click-to-sort
-		table.getTableHeader().addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				// which column was clicked?
-				int column = table.getTableHeader().columnAtPoint(e.getPoint());
-
-				// sort by that column
-				String field = (String) columns.get(column);
-				if (field.equals("location")) {
-					// ignore
-				} else if (field.equals("distance")) {
-					if (sortField.equals("distance")) {
-						Collections.reverse(allSites);
-						sortBackwards = !sortBackwards;
-						return;
-					}
-					sortField = field;
-					sortBackwards = false;
-
-					Collections.sort(allSites, new Comparator() {
-						public int compare(Object o1, Object o2) {
-
-							// EXTRACT: put all "targeT" stuff in one place -- its own class
-
-							Site s1 = (Site) o1;
-							Site s2 = (Site) o2;
-
-							// target goes at the beginning
-							if (s1 == target)
-								return -1;
-							if (s2 == target)
-								return +1;
-
-							// nulls go at the end
-							if (s1.getLocation() == null
-									&& s2.getLocation() == null)
-								return 0;
-							if (s1.getLocation() == null)
-								return +1;
-							if (s2.getLocation() == null)
-								return -1;
-
-							// everything else, let distanceTo() decide it
-							int d1 = s1.distanceTo(target);
-							int d2 = s2.distanceTo(target);
-							// PERF: inefficient!
-							return new Integer(d1).compareTo(new Integer(d2));
-						}
-					});
-					// WRITEME: other special cases?
-				} else if (field.equals("country")) {
-					// default
-					if (sortField.equals(field)) {
-						Collections.reverse(allSites);
-						sortBackwards = !sortBackwards;
-					} else {
-						sortField = field;
-						sortBackwards = false;
-
-						Collections.sort(allSites, new Comparator() {
-							public int compare(Object o1, Object o2) {
-								Site s1 = (Site) o1;
-								Site s2 = (Site) o2;
-
-								// nulls at end
-								if (s1.getCountry() == null
-										&& s2.getCountry() == null)
-									return 0;
-								if (s1.getCountry() == null)
-									return +1;
-								if (s2.getCountry() == null)
-									return -1;
-
-								// everything else, use the name (not the code)
-								try {
-									String n1 = Country
-											.getName(s1.getCountry());
-									String n2 = Country
-											.getName(s2.getCountry());
-									return n1.compareTo(n2);
-								} catch (IllegalArgumentException iee) {
-									// Invalid country code somewhere. Compare just the codes, then?
-									return s1.getCountry().compareTo(
-											s2.getCountry());
-								}
-							}
-						});
-					}
-				} else {
-					// default
-					if (sortField.equals(field)) {
-						Collections.reverse(allSites);
-						sortBackwards = !sortBackwards;
-					} else {
-						sortField = field;
-						sortBackwards = false;
-						Sort.sort(allSites, field);
-					}
-				}
-
-				// TODO: preserve selection for sort
-				// FIXME: use better sort (case-insens, natural order, accent-removal, etc.)
-				// FIXME: better sorts: species, nulls should go at end; show, visible first (throws ex now), etc.
-				// FIXME: sort by output, not code (i.e., Turkey by "Turkey", not "TU")
-				// TODO: store the sort in the prefs (corina.sites.sort.field = distance, corina.sites.sort.reverse = true)
-				// TODO: draw arrow on table with current sort
-				// (EXTRACT: click-to-sort, arrow-on-sort, save-to-prefs, preserve selection.)
-				// TODO: if some data gets changed, or a site gets moved on the map, or the target site changes,
-				// the site should automatically re-sort itself.
-
-				// refresh display
-				// BUG: this doesn't always work!
-				table.repaint();
-			}
-		});
+		table.getTableHeader().addMouseListener(new SiteListSorter());
 
 		// table popup
 		JPopupMenu sitePopup = new SitePopup();
@@ -481,8 +369,7 @@ public class SiteListPanel extends JPanel {
 				if (e.getClickCount() == 2) {
 					int i = table.getSelectedRow();
 					Site site = (Site) allSites.get(i);
-					new SiteInfoDialog(site, (JFrame) table
-							.getTopLevelAncestor());
+					new SiteInfoDialog(site, (JFrame) table.getTopLevelAncestor());
 				}
 			}
 		});
@@ -503,8 +390,7 @@ public class SiteListPanel extends JPanel {
 						int start = e.getFirstIndex();
 						int last = e.getLastIndex();
 						for (int i = start; i <= last; i++) {
-							labels.setSelected((Site) allSites.get(i), table
-									.getSelectionModel().isSelectedIndex(i));
+							labels.setSelected((Site) allSites.get(i), table.getSelectionModel().isSelectedIndex(i));
 						}
 
 						// redraw map with new selection
@@ -512,13 +398,18 @@ public class SiteListPanel extends JPanel {
 					}
 				});
 
+		// more table init
+		Sort.sort(allSites, sortField);
+		target = (Site) allSites.get(0);
+		table.getColumnModel().getColumn(0).setPreferredWidth(40);
+		table.getColumnModel().getColumn(1).setPreferredWidth(300);
+		
 		// buttons
-		JButton minus = new JButton(Builder.getIcon("minus.png"));
-		JButton plus = new JButton(Builder.getIcon("plus.png"));
-		JPanel buttons = Layout.buttonLayout(minus, plus);
+		// no buttons! use the site editor to add or remove sites!!
 
 		// bottom = label + buttons
-		JPanel bottom = Layout.borderLayout(null, label, null, buttons, null);
+		JPanel bottom = Layout.borderLayout(null, label, null, null, null);
+		bottom.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		// NEW: panel
 		setLayout(new BorderLayout()); // default is flow, for some reason
@@ -526,7 +417,6 @@ public class SiteListPanel extends JPanel {
 	}
 
 	private String sortField = "name";
-
 	private boolean sortBackwards = false;
 
 	// update the label at the bottom; to be called wehnever the number of sites,
@@ -568,8 +458,10 @@ public class SiteListPanel extends JPanel {
 					// same as double-click: REFACTOR
 					int i = table.getSelectedRow();
 					Site site = (Site) allSites.get(i);
-					new SiteInfoDialog(site, (JFrame) table
+					SiteInfoDialog sid = new SiteInfoDialog(site, (JFrame) table
 							.getTopLevelAncestor());
+					if(sid.shouldSave())
+						SiteDB.getSiteDB().save();
 				}
 			});
 			add(info);
@@ -633,4 +525,211 @@ public class SiteListPanel extends JPanel {
 	// so Startup (RENAME to Main) merely calls Bootstrap, then new
 	// XCorina().  that'll make startup cleaner, and make it much
 	// easier to write little spikes.
+	
+	private final class SiteListSorter extends MouseAdapter {
+		public void mouseClicked(MouseEvent e) {
+			// which column was clicked?
+			int column = table.getTableHeader().columnAtPoint(e.getPoint());
+		
+			// sort by that column
+			String field = (String) columns.get(column);
+			if (field.equals("distance")) {
+				if (sortField.equals("distance")) {
+					Collections.reverse(allSites);
+					sortBackwards = !sortBackwards;
+					return;
+				}
+				sortField = field;
+				sortBackwards = false;
+		
+				Collections.sort(allSites, new Comparator() {
+					public int compare(Object o1, Object o2) {
+		
+						// EXTRACT: put all "targeT" stuff in one place -- its own class
+		
+						Site s1 = (Site) o1;
+						Site s2 = (Site) o2;
+		
+						// target goes at the beginning
+						if (s1 == target)
+							return -1;
+						if (s2 == target)
+							return +1;
+		
+						// nulls go at the end
+						if (s1.getLocation() == null
+								&& s2.getLocation() == null)
+							return 0;
+						if (s1.getLocation() == null)
+							return +1;
+						if (s2.getLocation() == null)
+							return -1;
+		
+						// everything else, let distanceTo() decide it
+						int d1 = s1.distanceTo(target);
+						int d2 = s2.distanceTo(target);
+						// PERF: inefficient!
+						return new Integer(d1).compareTo(new Integer(d2));
+					}
+				});					
+			} else if (field.equals("latitude")) {
+				if (sortField.equals("latitude")) {
+					Collections.reverse(allSites);
+					sortBackwards = !sortBackwards;
+					return;
+				}
+				sortField = field;
+				sortBackwards = false;
+		
+				Collections.sort(allSites, new Comparator() {
+					public int compare(Object o1, Object o2) {
+		
+						// EXTRACT: put all "targeT" stuff in one place -- its own class
+		
+						Site s1 = (Site) o1;
+						Site s2 = (Site) o2;
+		
+						// nulls go at the end
+						if (s1.getLocation() == null
+								&& s2.getLocation() == null)
+							return 0;
+						if (s1.getLocation() == null)
+							return +1;
+						if (s2.getLocation() == null)
+							return -1;
+		
+						// everything else, use the name (not the code)
+						String n1 = s1.getLocation().getLatitudeAsString();
+						String n2 = s2.getLocation().getLatitudeAsString();
+						return n1.compareTo(n2);
+					}
+				});
+			} else if (field.equals("longitude")) {
+				if (sortField.equals("longitude")) {
+					Collections.reverse(allSites);
+					sortBackwards = !sortBackwards;
+					return;
+				}
+				sortField = field;
+				sortBackwards = false;
+		
+				Collections.sort(allSites, new Comparator() {
+					public int compare(Object o1, Object o2) {
+		
+						Site s1 = (Site) o1;
+						Site s2 = (Site) o2;
+		
+						// nulls go at the end
+						if (s1.getLocation() == null
+								&& s2.getLocation() == null)
+							return 0;
+						if (s1.getLocation() == null)
+							return +1;
+						if (s2.getLocation() == null)
+							return -1;
+		
+						// everything else, use the name (not the code)
+						String n1 = s1.getLocation().getLongitudeAsString();
+						String n2 = s2.getLocation().getLongitudeAsString();
+						return n1.compareTo(n2);
+					}
+				});
+			} else if (field.equals("country")) {
+				// default
+				if (sortField.equals(field)) {
+					Collections.reverse(allSites);
+					sortBackwards = !sortBackwards;
+					return;
+				} else {
+					sortField = field;
+					sortBackwards = false;
+		
+					Collections.sort(allSites, new Comparator() {
+						public int compare(Object o1, Object o2) {
+							Site s1 = (Site) o1;
+							Site s2 = (Site) o2;
+		
+							// nulls at end
+							if (s1.getCountry() == null
+									&& s2.getCountry() == null)
+								return 0;
+							if (s1.getCountry() == null)
+								return +1;
+							if (s2.getCountry() == null)
+								return -1;
+		
+							// everything else, use the name (not the code)
+							try {
+								String n1 = Country
+										.getName(s1.getCountry());
+								String n2 = Country
+										.getName(s2.getCountry());
+								return n1.compareTo(n2);
+							} catch (IllegalArgumentException iee) {
+								// Invalid country code somewhere. Compare just the codes, then?
+								return s1.getCountry().compareTo(
+										s2.getCountry());
+							}
+						}
+					});
+				}
+			} else if(field.equals("show?")) {
+				if (sortField.equals("show?")) {
+					Collections.reverse(allSites);
+					sortBackwards = !sortBackwards;
+					return;
+				} else {
+					sortField = field;
+					sortBackwards = false;
+
+					Collections.sort(allSites, new Comparator() {
+						public int compare(Object o1, Object o2) {
+							Site s1 = (Site) o1;
+							Site s2 = (Site) o2;
+							
+							boolean v1 = labels.isVisible(s1);
+							boolean v2 = labels.isVisible(s2);
+							
+							if(v1 == v2)
+								return 0;
+							
+							if(v1)
+								return -1;
+							
+							if(v2)
+								return 1;
+							
+							// not possible.
+							return 0;
+						}
+					});
+				}
+			} else {
+				// default
+				if (sortField.equals(field)) {
+					Collections.reverse(allSites);
+					sortBackwards = !sortBackwards;
+				} else {
+					sortField = field;
+					sortBackwards = false;
+					Sort.sort(allSites, field);
+				}
+			}
+		
+			// TODO: preserve selection for sort
+			// FIXME: use better sort (case-insens, natural order, accent-removal, etc.)
+			// FIXME: better sorts: species, nulls should go at end; show, visible first (throws ex now), etc.
+			// FIXME: sort by output, not code (i.e., Turkey by "Turkey", not "TU")
+			// TODO: store the sort in the prefs (corina.sites.sort.field = distance, corina.sites.sort.reverse = true)
+			// TODO: draw arrow on table with current sort
+			// (EXTRACT: click-to-sort, arrow-on-sort, save-to-prefs, preserve selection.)
+			// TODO: if some data gets changed, or a site gets moved on the map, or the target site changes,
+			// the site should automatically re-sort itself.
+		
+			// refresh display
+			model.fireTableDataChanged();
+		}
+	}
+	
 }
+
