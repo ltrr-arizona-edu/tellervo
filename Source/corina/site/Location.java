@@ -565,4 +565,8 @@ public final class Location implements Cloneable {
         
         return l;
     }
+    
+    public boolean valid() {
+    	return (!(latitude == 0 && longitude == 0));
+    }
 }

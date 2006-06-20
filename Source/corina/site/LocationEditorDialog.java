@@ -31,6 +31,16 @@ public class LocationEditorDialog extends JDialog {
 	public LocationEditorDialog(Site site, Dialog window) {
 		super(window, site.getName(), true);
 		
+		init(site, window);
+	}
+	
+	public LocationEditorDialog(Site site) {
+		super((Frame) null, site.getName(), true);
+		
+		init(site, null);
+	}
+	
+	private void init(Site site, Window parent) {
 		String location;
 		if(site.getLocation() == null)
 			location = new String("0,0,N,0,0,E");
@@ -163,13 +173,14 @@ public class LocationEditorDialog extends JDialog {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
 		pack();
-		if (window != null)
-			Center.center(this, window);
+		if (parent != null)
+			Center.center(this, parent);
 		else
 			Center.center(this); // (on screen)
-		show();
+		setVisible(true);
 		
 	}
+	
 	private static JComponent labelOnTopNotKey(String key, JComponent component) {
 		String text = key;
 

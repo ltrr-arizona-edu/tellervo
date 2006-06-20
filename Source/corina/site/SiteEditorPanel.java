@@ -19,7 +19,11 @@ import java.util.ArrayList;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.BorderLayout;
+import java.awt.Event;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
@@ -28,6 +32,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
 
 /**
    A panel which shows a table of sites.
@@ -367,7 +372,7 @@ public class SiteEditorPanel extends JPanel {
 				if (field.equals("species"))
 					return s.getSpecies();
 				if (field.equals("altitude"))
-					return s.getAltitude();
+					return (s.getAltitude() != null) ? s.getAltitude().toString() : null;
 				
 				Location loc;
 				if (field.equals("latitude"))
@@ -377,13 +382,8 @@ public class SiteEditorPanel extends JPanel {
 					
 				if (field.equals("comments"))
 					return s.getComments();
-				if (field.equals("country")) {
-					try {
-						return Country.getName(s.getCountry());
-					} catch (IllegalArgumentException iee) {
-						return Country.badCountry(s.getCountry());
-					}
-				}
+				if (field.equals("country")) 
+					return s.getCountry();
 
 				if (field.equals("distance")) {
 					if (s == target)
@@ -412,15 +412,55 @@ public class SiteEditorPanel extends JPanel {
 		private long total = 0, number = 0;
 
 		public void setValueAt(Object object, int row, int column) {
-			Site site = (Site) allSites.get(row);
-
+			Site s = (Site) allSites.get(row);
+			String field = (String) columns.get(column);
+			Object oldval = getValueAt(row, column);
+						
+			// no changes? so what.
+			if((oldval != null && oldval.equals(object)) ||
+			   (oldval == null && object != null && object.equals("")))
+				return;
+			
+			if (field.equals("id"))
+				s.setId((String)object);
+			else if (field.equals("code"))
+				s.setCode((String)object);
+			else if (field.equals("name"))
+				s.setName((String)object);
+			else if (field.equals("folder"))
+				s.setFolder((String)object);
+			else if (field.equals("species"))
+				s.setSpecies((String)object);
+			else if (field.equals("comments"))
+				s.setComments((String)object);
+			else if (field.equals("altitude")) {
+				try {
+					Integer val = Integer.parseInt(((String) object));
+					s.setAltitude(val);
+				} catch (NumberFormatException nfe) {
+					// ignore this if it's an invalid altitude
+					return;
+				}
+			}
+			else if(field.equals("country"))
+				s.setCountry((String) object);
+			
+			setDataModified(true);
+			
 			// update the label
 			updateLabel();
 		}
-
+		
 		public Class getColumnClass(int column) {
 			String field = (String) columns.get(column);
-			return Object.class;
+			
+			if(field.equals("latitude") || field.equals("longitude"))
+				return Location.class;
+			
+			if(field.equals("country"))
+				return Country.class;
+
+			return String.class;
 		}
 
 		public String getColumnName(int column) {
@@ -431,13 +471,16 @@ public class SiteEditorPanel extends JPanel {
 
 		public boolean isCellEditable(int row, int column) {
 			String field = (String) columns.get(column);
-			Site site = (Site) allSites.get(row);
-			return false;
+			
+			if(field.equals("distance") || field.equals("type"))
+				return false;
+			
+			return true;
 		}
 	}
 
 	private JTable table;
-	private JButton plus, minus;
+	private JButton plus, minus, editit;
 
 	public SiteEditorPanel(SiteEditor parent) {
 		this.parent = parent;
@@ -445,10 +488,10 @@ public class SiteEditorPanel extends JPanel {
 		// get a COPY of the site list.
 		allSites = parent.getImmutableSitelist();
 		
-		// and we start with our first target.
-		target = (Site) allSites.get(0);
-
 		init();
+		
+		// and we start with our first target.
+		target = (Site) allSites.get(0);		
 	}
 
 	private void init() {
@@ -495,6 +538,19 @@ public class SiteEditorPanel extends JPanel {
 		// buttons
 		minus = new JButton(Builder.getIcon("minus.png"));
 		plus = new JButton(Builder.getIcon("plus.png"));
+		editit = new JButton("Edit...");
+		
+		editit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// same as double-click: REFACTOR
+				int i = table.getSelectedRow();
+				Site site = (Site) allSites.get(i);
+				SiteInfoDialog sid = new SiteInfoDialog(site, (JFrame) table.getTopLevelAncestor());
+				
+				if(sid.shouldSave())
+					setDataModified(true);
+			}			
+		});
 		
 		minus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -507,7 +563,7 @@ public class SiteEditorPanel extends JPanel {
 				
 				int ret = JOptionPane.showConfirmDialog(table.getTopLevelAncestor(), 
 						"Are you sure you wish to delete information for the site:\n" +
-						site.getName() + "\n" + 
+						site.getName() + "?\n" + 
 						"This operation is not undoable.", 
 						"Remove site?",
 						JOptionPane.YES_NO_OPTION);
@@ -551,7 +607,12 @@ public class SiteEditorPanel extends JPanel {
 		Sort.sort(allSites, sortField);
 		table.getColumnModel().getColumn(0).setPreferredWidth(300);
 		
-		JPanel buttons = Layout.buttonLayout(minus, plus);
+		table.setDefaultRenderer(Country.class, new CountryRenderer());
+		
+		table.setDefaultEditor(Location.class, new LocationEditor());
+		table.setDefaultEditor(Country.class, new CountryEditor());
+		
+		JPanel buttons = Layout.buttonLayout(editit, minus, plus);
 		buttons.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
 
 		// bottom = label + buttons
@@ -578,9 +639,11 @@ public class SiteEditorPanel extends JPanel {
 		int i = table.getSelectedRow();
 		if(i < 0) {
 			minus.setEnabled(false);
+			editit.setEnabled(false);
 		}
 		else {
 			minus.setEnabled(true);
+			editit.setEnabled(true);
 			
 			Site site = (Site) allSites.get(i);
 			text.append(" " + site.getName() + " selected.");
@@ -599,6 +662,7 @@ public class SiteEditorPanel extends JPanel {
 		SitePopup() {
 			// iick...
 			final JMenuItem info = new JMenuItem("Edit..."); 
+			info.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
 			info.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
 					// same as double-click: REFACTOR
@@ -674,6 +738,85 @@ public class SiteEditorPanel extends JPanel {
 			return c;
 		}
 	}
+	
+	class LocationEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+	    private JButton button;
+	    private Site site;
+	    protected static final String EDIT = "edit";
+
+	    public LocationEditor() {
+	        button = new JButton();
+	        button.setActionCommand(EDIT);
+	        button.addActionListener(this);
+	        button.setBorderPainted(false);
+	    }
+	    
+		public Object getCellEditorValue() {
+			return site.getLocation();
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			if (EDIT.equals(e.getActionCommand())) {
+				new LocationEditorDialog(site);
+				
+				fireEditingStopped();
+			}
+		}		
+
+		public Component getTableCellEditorComponent(JTable table,
+				Object value, boolean isSelected, int row, int column) {
+
+			site = (Site) allSites.get(row);
+			return button;
+		}
+	}	
+	
+	private class CountryRenderer extends DefaultTableCellRenderer {
+	    public CountryRenderer() { super(); }
+
+	    public void setValue(Object value) {
+	    	if(value instanceof String) {
+	    		String country = (String) value;
+				try {
+					setText(Country.getName(country));
+				} catch (IllegalArgumentException iee) {
+					setText(Country.badCountry(country));
+				}	    		
+	    	}
+	    }
+	}
+	
+	private class CountryEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+	    private JButton button;
+	    private String country;
+	    protected static final String EDIT = "edit";
+
+	    public CountryEditor() {
+	        button = new JButton();
+	        button.setActionCommand(EDIT);
+	        button.addActionListener(this);
+	        button.setBorderPainted(false);
+	    }
+	    
+		public Object getCellEditorValue() {
+			return country;
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			if (EDIT.equals(e.getActionCommand())) {
+				country = CountryDialog.showDialog(null, country);
+				
+				fireEditingStopped();
+			}
+		}		
+
+		public Component getTableCellEditorComponent(JTable table,
+				Object value, boolean isSelected, int row, int column) {
+
+			country = ((Site) allSites.get(row)).getCountry();
+			return button;
+		}
+	}	
 	
 	public void setDataModified(boolean isModified) {
 		model.fireTableDataChanged();

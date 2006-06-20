@@ -22,6 +22,7 @@ package corina.site;
 
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -40,6 +41,7 @@ import corina.core.App;
 import corina.gui.Layout;
 import corina.ui.Builder;
 import corina.ui.I18n;
+import corina.util.Center;
 import corina.util.OKCancel;
 
 /**
@@ -65,6 +67,13 @@ public class CountryDialog {
 
 	// value[0] -- what to show to mean "null".
 	private final static String NONE = "None";
+	
+	private JDialog getDialog(Dialog parent) {
+		if(parent != null)
+			return new JDialog(parent, (App.platform.isMac() ? "" : I18n.getText("choose_country")), true); // true=modal
+		else
+			return new JDialog((Frame) null, (App.platform.isMac() ? "" : I18n.getText("choose_country")), true); // true=modal
+	}
 
 	private CountryDialog(Dialog parent, String oldCode) {
 		original = oldCode;
@@ -109,8 +118,7 @@ public class CountryDialog {
 		// my implementation time.  (if you want to add it, go ahead.)
 
 		// create dialog and lay out components
-		final JDialog d = new JDialog(parent, (App.platform.isMac() ? "" : I18n
-				.getText("choose_country")), true); // true=modal
+		final JDialog d = getDialog(parent);
 
 		// REFACTOR: use vertical margins on n/s instead of wrapping in box layouts?
 
@@ -183,14 +191,10 @@ public class CountryDialog {
 		Dimension size = d.getSize();
 		d.setSize(size.width, (int) (size.height * 1.5));
 
-		// set location: left-right, center on parent, but overlap title bars;
-		// (note that dialog locations are relative to the screen
-		// coordinate space, not relative to their parents' coordinate
-		// space, as the javadoc might lead you to believe.)
-		// TODO: perhaps watch this so it never goes off the bottom,
-		// which would hide the buttons and confuse people?
-		d.setLocation(parent.getX() + parent.getWidth() / 2 - d.getWidth() / 2,
-				parent.getY());
+		if(parent != null)
+			Center.center(d, parent);
+		else
+			Center.center(d);
 
 		// scroll to the current value, if it's not visible.
 		countryList.ensureIndexIsVisible(target);
