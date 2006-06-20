@@ -82,11 +82,13 @@ public class SiteEditor extends XFrame implements SaveableDocument {
 	}
 	
 	public String getFilename() {
-		return "xxxxx";
+		return null;
 	}
+	
 	public void setFilename(String x) {
 		// don't do anything.
 	}
+	
 	public boolean isNameChangeable() {
 		// this is the Site DB. We can't save as.
 		return false;
