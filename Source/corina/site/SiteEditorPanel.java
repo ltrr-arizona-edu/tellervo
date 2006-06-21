@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
@@ -544,8 +545,9 @@ public class SiteEditorPanel extends JPanel {
 		minus = new JButton(Builder.getIcon("minus.png"));
 		plus = new JButton(Builder.getIcon("plus.png"));
 		editit = new JButton("Edit...");
-		
-		editit.addActionListener(new ActionListener() {
+		editit.setPreferredSize(new Dimension(editit.getPreferredSize().width, plus.getPreferredSize().height));
+				
+		Action editAction = new AbstractAction("editit") {
 			public void actionPerformed(ActionEvent e) {
 				// same as double-click: REFACTOR
 				int i = table.getSelectedRow();
@@ -555,7 +557,15 @@ public class SiteEditorPanel extends JPanel {
 				if(sid.shouldSave())
 					setDataModified(true);
 			}			
-		});
+		};
+		
+		// obnoxiously, this code below makes ctrl-e edit.
+		InputMap editimap = editit.getInputMap(WHEN_IN_FOCUSED_WINDOW);
+		ActionMap editamap = editit.getActionMap();
+		KeyStroke ctrle = KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK);
+		editimap.put(ctrle, editAction.getValue(Action.NAME));
+		editamap.put(editAction.getValue(Action.NAME), editAction);
+		editit.addActionListener(editAction);
 		
 		minus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
