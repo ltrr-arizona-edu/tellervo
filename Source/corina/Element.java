@@ -175,7 +175,7 @@ public class Element implements Comparable {
 			
 			// if, for some reason, adaptive reading is turned off... 
 			// don't bother to parse it!
-			if(Boolean.valueOf(App.prefs.getPref("corina.dir.adaptiveread")).booleanValue()) {
+			if(Boolean.valueOf(App.prefs.getPref("corina.dir.adaptiveread")).booleanValue() == false) {
 				this.filename = filename;
 				this.basename = new File(filename).getName();
 				return;				
