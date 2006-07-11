@@ -34,11 +34,13 @@ import java.util.ArrayList;
 import java.awt.Component;
 import java.awt.Color;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.AbstractTableModel;
 
@@ -80,7 +82,9 @@ public class ElementsTableModel extends AbstractTableModel {
 				int column) {
 			Element e = (Element) value;
 			check.setSelected(e.isActive());
-			label.setText(new File(e.getFilename()).getName()); // filename only (not fq)
+
+			label.setText(e.getBasename());
+
 			// REFACTOR: new UserFriendlyFile avoids this problem
 
 			Color fore = (isSelected ? table.getSelectionForeground() : table
@@ -89,11 +93,8 @@ public class ElementsTableModel extends AbstractTableModel {
 					.getBackground());
 
 			/*
-			 // light-blue-ish
-			 if (row % 2 == 0)
-			 back = new Color(back.getRed() - 16,
-			 back.getGreen() - 16,
-			 back.getBlue());
+			 * // light-blue-ish if (row % 2 == 0) back = new
+			 * Color(back.getRed() - 16, back.getGreen() - 16, back.getBlue());
 			 */
 
 			check.setForeground(fore);
@@ -111,6 +112,8 @@ public class ElementsTableModel extends AbstractTableModel {
 		case 0:
 			return "Filename";
 		case 1:
+			return "Folder";
+		case 2:
 			return "Range";
 		default:
 			return ((MetadataTemplate.Field) fields.get(col - 2))
@@ -125,8 +128,8 @@ public class ElementsTableModel extends AbstractTableModel {
 
 	// column count
 	public int getColumnCount() {
-		// for now: range data iff other data being shown
-		return 1 + (fields.size() == 0 ? 0 : 1) + fields.size();
+		// filename, folder, range + fields
+		return 3 + fields.size();
 	}
 
 	// value of cell (row,col)
@@ -135,9 +138,11 @@ public class ElementsTableModel extends AbstractTableModel {
 		Element e = (Element) elements.get(row);
 
 		switch (col) {
-		case 0:
+		case 0: 
 			return e;
 		case 1:
+			return e.getFolder();
+		case 2:
 			return e.getRange(); // (lazy-loads)
 		default:
 			// might need more metadata
@@ -162,7 +167,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	public boolean isCellEditable(int row, int col) {
 		// only after refresh?  no, assume refresh is always "done".  (threadme)
 
-		return (col != 1); // everything except range
+		return (col != 1 && col != 2); // everything except folder, and range
 	}
 
 	// column class
@@ -171,7 +176,8 @@ public class ElementsTableModel extends AbstractTableModel {
 		case 0:
 			return Element.class; // ???
 		case 1:
-			return String.class; // well, it's a range...
+		case 2:
+			return String.class; // well, it's a range or a folder...
 		default:
 			return String.class; //  hrm.  well, assume it's a String...
 		}

@@ -84,13 +84,23 @@ public class Element implements Comparable {
 	// these members should probably be PRIVATE!
 	public boolean active;
 
-	public final String filename;
-
 	public Map details = null;
 
 	public long lastModified = -1;
 
 	private Range range = null;
+	
+	// filename is the full path (ie, G:\DATA\ACM\asdf.moo)
+	public final String filename;	
+	
+	// folder is the path under the data directory,
+	// using : as a path separator.
+	// If we're passed a filename beginning with a ?, treat it as a folder:basename pair
+	// can be null if element is not in our data directory tree!
+	public String folder = null;
+	
+	// basename is the name of the file without any path information
+	public final String basename;
 
 	public Range getRange() { // i really should USE this!
 		// lazy-load!
@@ -138,7 +148,74 @@ public class Element implements Comparable {
 	 */
 	public Element(String filename, boolean active) {
 		this.active = active;
-		this.filename = filename;
+		
+		// if it starts with a ?, this is a relative path, using :'s as separators
+		// ie, ?FOREST:ACM:moo123.pik
+		if(filename.startsWith("?")) {
+			String fn = filename.substring(1);
+			
+			int pos = fn.lastIndexOf(':');
+			
+			if(pos >= 0) {
+				this.folder = fn.substring(0, pos);
+				this.basename = fn.substring(pos + 1, fn.length());
+				
+				this.filename = App.prefs.getPref("corina.dir.data") + File.separator +
+								this.folder.replace(":", File.separator) + File.separator +
+								this.basename;
+			}
+			else {
+				this.filename = filename;
+				this.basename = new File(filename).getName();
+			}
+		}
+		// otherwise, we got passed a whole file name. try and parse it up.
+		else {
+			String fn = filename;
+			
+			// if, for some reason, adaptive reading is turned off... 
+			// don't bother to parse it!
+			if(Boolean.valueOf(App.prefs.getPref("corina.dir.adaptiveread")).booleanValue()) {
+				this.filename = filename;
+				this.basename = new File(filename).getName();
+				return;				
+			}
+			
+			// chop off any sort of beginning cruft
+			if(fn.startsWith("G:\\DATA\\")) {
+				fn = fn.substring(8);
+			}
+			else if(filename.startsWith(App.prefs.getPref("corina.dir.data") + File.separator)) {
+				fn = fn.substring(App.prefs.getPref("corina.dir.data").length() + File.separator.length());
+			}
+			else {
+				// we can't convert this into a special path.
+				// leave folder null and bail.
+				this.filename = filename;
+				this.basename = new File(filename).getName();
+				return;
+			}
+			
+			// replace forward slashes with a :, which will be our path separator.
+			fn = fn.replace("\\", ":");
+			// do the same for some other platform
+			fn = fn.replace(File.separator, ":");
+			
+			int pos = fn.lastIndexOf(':');
+			
+			if(pos >= 0) {
+				this.folder = fn.substring(0, pos);
+				this.basename = fn.substring(pos + 1, fn.length());
+				
+				this.filename = App.prefs.getPref("corina.dir.data") + File.separator +
+								this.folder.replace(":", File.separator) + File.separator +
+								this.basename;
+			}
+			else {
+				this.filename = filename;
+				this.basename = new File(filename).getName();
+			}
+		}
 	}
 
 	/**
@@ -158,24 +235,38 @@ public class Element implements Comparable {
 	public String getFilename() {
 		return filename;
 	}
+	
+	/**
+	 Return the Element's basename.
+
+	 @return the basename of the file this Element refers to
+	 */
+	public String getBasename() {
+		return basename;
+	}
+	
+	/**
+	 Return the Element's folder path.
+
+	 @return the folder path of the file this Element refers to
+	 */
+	public String getFolder() {
+		return folder;
+	}
 
 	/**
 	 Return this Element's filename, with
-	 <code>corina.dir.data</code> replaced by an "@", if it's in a
+	 <code>corina.dir.data</code> replaced by an "?", if it's in a
 	 subfolder of that.  (Otherwise, returns the absolute filename.)
 
-	 @return the filename, with @'s
+	 @return the filename, with ?'s
 	 */
-	public String getFilenameWithAts() {
-		String root = App.prefs.getPref("corina.dir.data");
-
-		// no known root, or isn't a subfolder of root
-		// (BUG: i don't think this is 100% correct, for various reasons)
-		if (root == null || !filename.startsWith(root))
+	public String getRelativeFilename() {
+		// no basename or folder? return relative path...
+		if(basename == null || folder == null)
 			return filename;
-
-		// BUG: file.sep is often (always?) redundant here
-		return "@" + File.separator + filename.substring(root.length());
+		
+		return "?" + folder + ":" + basename;
 	}
 
 	/**

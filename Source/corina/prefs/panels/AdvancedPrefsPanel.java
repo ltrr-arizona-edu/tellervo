@@ -249,6 +249,16 @@ public class AdvancedPrefsPanel extends JPanel {
     
     Component c = new BoolPrefComponent("BETA: Smoothed feel on Windows [requires restart]", "corina.windows.smooth");
     co.add(c, gbc);
+
+    gbc.gridy++;    
+    c = new BoolPrefComponent("<html>Adaptive reading for elements (G:\\DATA removal)<br>" +
+    		"<font size=-2>Attempts to interpret absolute paths when reading from sums.", "corina.dir.adaptiveread");
+    co.add(c, gbc);
+    
+    gbc.gridy++;    
+    c = new BoolPrefComponent("<html>Adaptive writing for elements (uses relative paths)<br>" +
+    		"<font size=-2>Sums produced with this on will not be compatible with older versions of Corina.", "corina.dir.relativepaths");
+    co.add(c, gbc);
     
     // file chooser
     /*

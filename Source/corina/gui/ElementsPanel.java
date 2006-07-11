@@ -375,6 +375,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			fields = new ArrayList();
 			table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 			break;
+			
 		case VIEW_STANDARD: {
 			// (later, this will use BrowserComponent, so this
 			// won't be needed at all)
@@ -423,6 +424,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		// renderer
 		table.getColumnModel().getColumn(0).setCellRenderer(
 				new ElementsTableModel.FilenameRenderer(table));
+		
 		/*
 		 table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 		 public Component getTableCellRendererComponent(JTable table, Object value,
@@ -513,13 +515,21 @@ public class ElementsPanel extends JPanel implements SampleListener {
 				switch (col) {
 				case 0: // filename
 				{
-					boolean reverse = (lastSortCol == col && first.filename
-							.compareTo(last.filename) < 0);
-					Sort.sort(elements, "filename", reverse);
+					// sort by basename, since we don't want to sort by
+					// the directory the files are in (which isn't displayed!)
+					boolean reverse = (lastSortCol == col && first.basename
+							.compareTo(last.basename) < 0);
+					Sort.sort(elements, "basename", reverse);
+					break;
+				}
+				
+				case 1: // folder
+				{
+					// no sorting here!
 					break;
 				}
 
-				case 1: // range
+				case 2: // range
 				{
 					// IDEA: this reverse is getting pretty popular ... could it be integrated into my sort() wrapper?
 					boolean reverse = (lastSortCol == col && first.getRange()
