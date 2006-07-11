@@ -1,6 +1,7 @@
 package corina.site;
 
 import corina.map.MapFrame;
+import corina.prefs.Prefs;
 import corina.site.Site;
 import corina.site.SiteDB;
 import corina.site.Country;
@@ -9,6 +10,7 @@ import corina.util.PopupListener;
 import corina.ui.Builder;
 import corina.gui.Layout;
 import corina.browser.Browser; // (for ODD_ROW_COLOR)
+import corina.core.App;
 import corina.util.Sort;
 
 import java.util.Collections;
@@ -21,6 +23,7 @@ import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Event;
+import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.InputEvent;
@@ -501,8 +504,24 @@ public class SiteEditorPanel extends JPanel {
 	}
 
 	private void init() {
+		// set up the table font...
+		final Font font = Font.decode(App.prefs.getPref("corina.deftable.font"));
+		
 		// table
-		table = new JTable();
+		// obnoxiously, the default editor doesn't respect the table font we set.
+		// override it!
+		if(font != null) {
+			table = new JTable() {
+				public Component prepareEditor(TableCellEditor editor, int row, int column) {
+					Component c = super.prepareEditor(editor, row, column);
+					
+					c.setFont(font);
+					return c;
+				}
+			};
+		}
+		else
+			table = new JTable();
 		model = new SiteTableModel();
 		table.setModel(model);
 
@@ -514,6 +533,11 @@ public class SiteEditorPanel extends JPanel {
 		table.setRowSelectionAllowed(true);
 		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+		if(font != null) {
+			table.setFont(font);
+			table.setRowHeight(font.getSize() + 4);			
+		}
+		
 		JScrollPane scroll = new JScrollPane(table);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -786,7 +810,7 @@ public class SiteEditorPanel extends JPanel {
 		}
 	}	
 	
-	private class CountryRenderer extends DefaultTableCellRenderer {
+	private class CountryRenderer extends EvenOddRenderer {
 	    public CountryRenderer() { super(); }
 
 	    public void setValue(Object value) {

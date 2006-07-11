@@ -38,70 +38,133 @@ public class AppearancePrefsPanel extends JComponent {
   public AppearancePrefsPanel() {
     setLayout(new GridBagLayout());
     
-    JComponent gridGroup = new JPanel(new GridBagLayout());
-    gridGroup.setBorder(BorderFactory.createTitledBorder("Grid settings"));
-    gridGroup.setToolTipText("Grid settings: these settings apply to various Corina grid components");
-    
-    JLabel l = new JLabel("Text color:");
-    Component c = new ColorPrefComponent(Prefs.EDIT_FOREGROUND);
-    l.setLabelFor(c);
-    
     GridBagConstraints gbc = new GridBagConstraints();
+
     gbc.anchor = GridBagConstraints.WEST;
     gbc.fill = GridBagConstraints.NONE;
-    gbc.insets = new Insets(2, 2, 2, 2);
-    
-    gridGroup.add(l, gbc);
-    gbc.gridx = 1;
-    gridGroup.add(c, gbc);
-    
-    l = new JLabel("Background color:");
-    c = new ColorPrefComponent(Prefs.EDIT_BACKGROUND);
-    
-    gbc.gridx = 0;
-    gbc.gridy = 1;
-    gridGroup.add(l, gbc);
-    gbc.gridx = 1;
-    gridGroup.add(c, gbc);
-    
-    l = new JLabel("Font:");
-    Container co = new Container();
-    fpc = new FontPrefComponent(Prefs.EDIT_FONT);
-    co.setLayout(new FlowLayout(FlowLayout.LEFT, 4, 0));
-    co.add(fpc.getLabel());
-    co.add(fpc.getButton());
+    gbc.gridwidth = GridBagConstraints.RELATIVE;
 
-    c = co;
-
-    gbc.gridx = 0;
-    gbc.gridy = 2;
-    gridGroup.add(l, gbc);
-    gbc.gridx = 1;
-    gridGroup.add(c, gbc);
-
-    gbc.gridx = 0;
-    gbc.gridy = 3;
-    gbc.gridwidth = 2;
-
-    gridGroup.add(new BoolPrefComponent("Draw gridlines?", Prefs.EDIT_GRIDLINES), gbc);
-    
     gbc.gridx = 0;
     gbc.gridy = 0;
     gbc.weightx = 1;
     gbc.weighty = 0;
     gbc.insets = new Insets(0, 0, 0, 0);
-    
-    add(gridGroup, gbc);
-    
+    JPanel jp = new JPanel(new FlowLayout());
+    jp.add(makeEditorSettingsComponent());
+    jp.add(makeTableSettingsComponent());
+    add(jp, gbc);
+
+    gbc.gridx = 0;
     gbc.gridy = 1;
-    gbc.weighty = 1;
-    
+    gbc.weightx = 0;
+    gbc.weighty = 1;    
     gbc.fill = GridBagConstraints.BOTH;
+    add(makeUIDefaultsComponent(), gbc);
+  }
+  
+  private Component makeEditorSettingsComponent() {
+	    JComponent gridGroup = new JPanel(new GridBagLayout());
+	    gridGroup.setBorder(BorderFactory.createTitledBorder("Sample editor grid settings"));
+	    gridGroup.setToolTipText("Grid settings: these settings apply to various Corina grid components");
+	    
+	    JLabel l = new JLabel("Text color:");
+	    Component c = new ColorPrefComponent(Prefs.EDIT_FOREGROUND);
+	    l.setLabelFor(c);
+	    
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.anchor = GridBagConstraints.WEST;
+	    gbc.fill = GridBagConstraints.NONE;
+	    gbc.insets = new Insets(2, 2, 2, 2);
+	    
+	    gridGroup.add(l, gbc);
+	    gbc.gridx = 1;
+	    gridGroup.add(c, gbc);
+	    
+	    l = new JLabel("Background color:");
+	    c = new ColorPrefComponent(Prefs.EDIT_BACKGROUND);
+	    
+	    gbc.gridx = 0;
+	    gbc.gridy = 1;
+	    gridGroup.add(l, gbc);
+	    gbc.gridx = 1;
+	    gridGroup.add(c, gbc);
+	    
+	    l = new JLabel("Font:");
+	    Container co = new Container();
+	    fpc = new FontPrefComponent(Prefs.EDIT_FONT);
+	    co.setLayout(new FlowLayout(FlowLayout.LEFT, 4, 0));
+	    co.add(fpc.getLabel());
+	    co.add(fpc.getButton());
+
+	    c = co;
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 2;
+	    gridGroup.add(l, gbc);
+	    gbc.gridx = 1;
+	    gridGroup.add(c, gbc);
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 3;
+	    gbc.gridwidth = 2;
+
+	    gridGroup.add(new BoolPrefComponent("Draw gridlines?", Prefs.EDIT_GRIDLINES), gbc);
+	    
+	    return gridGroup;
+  }
+  
+  private Component makeTableSettingsComponent() {
+	    JComponent gridGroup = new JPanel(new GridBagLayout());
+	    gridGroup.setBorder(BorderFactory.createTitledBorder("Other table settings"));
+	    gridGroup.setToolTipText("Grid settings: these settings apply to most tables that contain only text");
+	    
+	    JLabel l = new JLabel("Text color:");
+	    Component c = new ColorPrefComponent("corina.deftable.foreground");
+	    l.setLabelFor(c);
+	    
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.anchor = GridBagConstraints.WEST;
+	    gbc.fill = GridBagConstraints.NONE;
+	    gbc.insets = new Insets(2, 2, 2, 2);
+	    
+	    gridGroup.add(l, gbc);
+	    gbc.gridx = 1;
+	    gridGroup.add(c, gbc);
+	    
+	    l = new JLabel("Background color:");
+	    c = new ColorPrefComponent("corina.deftable.background");
+	    
+	    gbc.gridx = 0;
+	    gbc.gridy = 1;
+	    gridGroup.add(l, gbc);
+	    gbc.gridx = 1;
+	    gridGroup.add(c, gbc);
+	    
+	    l = new JLabel("Font:");
+	    Container co = new Container();
+	    fpc = new FontPrefComponent("corina.deftable.font");
+	    co.setLayout(new FlowLayout(FlowLayout.LEFT, 4, 0));
+	    co.add(fpc.getLabel());
+	    co.add(fpc.getButton());
+
+	    c = co;
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 2;
+	    gridGroup.add(l, gbc);
+	    gbc.gridx = 1;
+	    gridGroup.add(c, gbc);
+	    
+	    return gridGroup;
+}
+  
+  private Component makeUIDefaultsComponent() {
+    Component c = new UIDefaultsComponent();
     
-    c = new UIDefaultsComponent();
     ((JComponent) c).setBorder(BorderFactory.createTitledBorder("UI fonts and colors"));
     ((JComponent) c).setToolTipText("UI fonts and colors: settings modified here will apply to all universally throughout Corina");
-    add(c, gbc);
+    
+    return c;
   }
   
   public void addNotify() {
