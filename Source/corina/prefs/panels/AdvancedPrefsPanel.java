@@ -256,7 +256,7 @@ public class AdvancedPrefsPanel extends JPanel {
     co.add(c, gbc);
     
     gbc.gridy++;    
-    c = new BoolPrefComponent("<html>Adaptive writing for elements (uses relative paths)<br>" +
+    c = new BoolPrefComponent("<html>Save relative paths to elements<br>" +
     		"<font size=-2>Sums produced with this on will not be compatible with older versions of Corina.", "corina.dir.relativepaths");
     co.add(c, gbc);
     
