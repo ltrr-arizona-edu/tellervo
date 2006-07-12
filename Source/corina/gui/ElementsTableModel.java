@@ -47,14 +47,15 @@ import javax.swing.table.AbstractTableModel;
 public class ElementsTableModel extends AbstractTableModel {
 
 	private List elements; // list of Elements
-
 	private List fields; // list of preview fields
+	private int view; // ElementsPanel.currentView...
 
 	// constructor -- fields to use are given; fields cannot be null:
 	// pass an empty List if you don't want anything else.
-	public ElementsTableModel(List elements, List fields) {
+	public ElementsTableModel(List elements, List fields, int view) {
 		this.elements = elements;
 		this.fields = fields;
+		this.view = view;
 	}
 
 	// this is a really bad place for this...
@@ -128,6 +129,9 @@ public class ElementsTableModel extends AbstractTableModel {
 
 	// column count
 	public int getColumnCount() {
+		// just filename and meta...?
+		if(view == ElementsPanel.VIEW_FILENAMES_MINIMAL)
+			return 1 + fields.size();
 		// filename, folder, range + fields
 		return 3 + fields.size();
 	}

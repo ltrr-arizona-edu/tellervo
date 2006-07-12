@@ -162,6 +162,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 
 		// right: elements panel (table)
 		panel = new ElementsPanel(set);
+		panel.setView(ElementsPanel.VIEW_FILENAMES_MINIMAL);
 		add(panel);
 	}
 

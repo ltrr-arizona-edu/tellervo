@@ -361,17 +361,17 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
 	private List fields;
 
-	public final static int VIEW_FILENAMES = 0;
-
-	public final static int VIEW_STANDARD = 1;
-
-	public final static int VIEW_ALL = 2;
+	public final static int VIEW_FILENAMES_MINIMAL = 0;
+	public final static int VIEW_FILENAMES = 1;
+	public final static int VIEW_STANDARD = 2;
+	public final static int VIEW_ALL = 3;
 
 	private int currentView = -1;
 
 	public void setView(int view) {
 		switch (view) {
 		case VIEW_FILENAMES:
+		case VIEW_FILENAMES_MINIMAL:
 			fields = new ArrayList();
 			table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 			break;
@@ -419,7 +419,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		
 		currentView = view;
 
-		table.setModel(new ElementsTableModel(elements, fields));
+		table.setModel(new ElementsTableModel(elements, fields, currentView));
 
 		// renderer
 		table.getColumnModel().getColumn(0).setCellRenderer(
