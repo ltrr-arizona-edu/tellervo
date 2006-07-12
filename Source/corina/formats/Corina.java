@@ -25,6 +25,7 @@ import corina.Range;
 import corina.Sample;
 import corina.Element;
 import corina.Weiserjahre;
+import corina.core.App;
 import corina.gui.Bug;
 import corina.util.StringUtils;
 import corina.ui.I18n;
@@ -694,14 +695,16 @@ public class Corina implements Filetype {
 	private void saveElements(Sample s, BufferedWriter w) throws IOException {
 		if (s.elements == null)
 			return;
+				
+		// if relative paths are on, save elements with relative paths!
+		boolean relativepath = Boolean.valueOf(App.prefs.getPref("corina.dir.relativepaths")).booleanValue();
 
 		w.write(";ELEMENTS ");
 		w.newLine();
 		for (int i = 0; i < s.elements.size(); i++) {
 			// if disabled, write '*' before filename
 			Element el = (Element) s.elements.get(i);
-			// w.write((el.isActive() ? "" : "*") + el.getFilenameWithAts()); // with @'s!
-			w.write((el.isActive() ? "" : "*") + el.getFilename()); // old (absolute) style
+			w.write((el.isActive() ? "" : "*") + (relativepath ? el.getRelativeFilename() : el.getFilename()));
 			w.newLine();
 		}
 	}
