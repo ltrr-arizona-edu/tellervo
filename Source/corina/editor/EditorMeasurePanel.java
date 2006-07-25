@@ -70,6 +70,15 @@ public class EditorMeasurePanel extends JPanel implements SerialSampleIOListener
 		if(sse.getType() == SerialSampleIOEvent.BAD_SAMPLE_EVENT) {
 			lastMeasurement.setText("There was an error reading the previous sample!");
 		}
+		if(sse.getType() == SerialSampleIOEvent.ERROR) {
+			lastMeasurement.setText((String) sse.getValue());
+		}
+		else if(sse.getType() == SerialSampleIOEvent.INITIALIZING_EVENT) {
+			lastMeasurement.setText("Initializing reader (try "+ sse.getValue() +")");
+		}
+		else if(sse.getType() == SerialSampleIOEvent.INITIALIZED_EVENT) {
+			lastMeasurement.setText("Initialized reader. Ready to read samples.");
+		}
 		else if(sse.getType() == SerialSampleIOEvent.NEW_SAMPLE_EVENT) {
 			Integer value = (Integer) sse.getValue();
 			

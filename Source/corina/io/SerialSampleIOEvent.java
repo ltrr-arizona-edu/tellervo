@@ -13,8 +13,13 @@ public class SerialSampleIOEvent extends EventObject {
 	public final static int BAD_SAMPLE_EVENT = 2;
 	
 	// initializing stuff.
+	// int argument, value is try #
 	public final static int INITIALIZING_EVENT = 3;
+	// no arguments
 	public final static int INITIALIZED_EVENT = 4;
+	
+	// generic error. string argument.
+	public final static int ERROR = 100;
 	
 	private int type;
 	private Object value;

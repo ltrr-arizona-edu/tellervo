@@ -104,6 +104,7 @@ implements SerialPortEventListener {
 						if(serialState == SERIALSTATE_WAITINGFORACK) {
 							
 							if(tryCount++ == 25) {
+								fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Failed to initialize reader device.");
 								System.out.println("init tries exhausted; giving up.");
 								break;
 							}
