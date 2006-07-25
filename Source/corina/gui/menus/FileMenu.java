@@ -267,7 +267,7 @@ public class FileMenu extends JMenu {
 		// 2: cancel
 		int action = 0;
 		
-		if(elements.size() > 1) {
+		if(samples.size() > 1) {
 			String labels[] = {"Individually", "Packed", "Cancel"};
 		
 			action = JOptionPane.showOptionDialog(
@@ -279,6 +279,67 @@ public class FileMenu extends JMenu {
 					JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.QUESTION_MESSAGE, null, labels,
 					labels[0]);
+		} else if(((Sample)samples.get(0)).isSummed()) {
+			String labels[] = {"Sum", "Elements", "Combined"};
+			
+			action = JOptionPane.showOptionDialog(
+					null,
+					"You are exporting a sum.\n" +
+					"Would you like to export the summed values,\n" +
+					"export the sum's elements in a packed file,\n" +
+					"or export them combined in a packed file?",
+					I18n.getText("bulkexport..."),
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.QUESTION_MESSAGE, null, labels,
+					labels[0]);	
+			
+			Sample base = (Sample) samples.get(0);
+			
+			switch(action) {
+			case 0:
+				break; // this case is normal. whew.
+				
+			case 1: // export elements. we need to reload the samples array.
+				samples.clear();
+				// fall through...
+				
+			case 2: // export everything.
+				elements = base.elements;
+				
+				errorsamples = "";
+				
+				for (int i = 0; i < elements.size(); i++) {
+					Element e = (Element) elements.get(i);
+
+					if (!e.isActive()) // skip inactive
+						continue;
+
+					try {
+						Sample s = e.load();
+						samples.add(s);
+					} catch (IOException ioe) {
+						problem = true;
+						if(errorsamples.length() != 0)
+							errorsamples += ", ";
+						errorsamples += e.getFilename();
+					}
+				}
+				
+				// problem?
+				if (problem) {
+					Alert.error("Error loading sample(s):",
+							errorsamples);
+					return;
+				}
+
+				// no samples => don't bother doing anything
+				if (samples.isEmpty()) {
+					return;
+				}
+				
+				// now, kludge action for below, so it uses a packed format...
+				action = 1;
+			}
 		}
 		
 		switch(action) {
@@ -288,6 +349,7 @@ public class FileMenu extends JMenu {
 		case 1:
 			new ExportDialog(samples, null, true);
 			break;
+		case JOptionPane.CLOSED_OPTION:
 		case 2:
 			// user cancelled
 			return;

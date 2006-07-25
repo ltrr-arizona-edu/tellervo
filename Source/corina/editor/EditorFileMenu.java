@@ -1,5 +1,6 @@
 package corina.editor;
 
+import corina.Element;
 import corina.Sample;
 import corina.io.ExportDialog;
 import corina.gui.FileDialog;
@@ -7,6 +8,7 @@ import corina.gui.SaveableDocument;
 import corina.gui.UserCancelledException;
 import corina.gui.menus.FileMenu;
 import corina.gui.menus.OpenRecent;
+import corina.ui.Alert;
 import corina.ui.Builder;
 import corina.ui.I18n;
 import corina.util.Overwrite;
@@ -15,6 +17,10 @@ import javax.swing.JMenuItem;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JOptionPane;
 
 // a FileMenu with "Export..." for samples.
@@ -42,12 +48,77 @@ public class EditorFileMenu extends FileMenu {
 	// add "Export..." menuitem
 	JMenuItem export = Builder.makeMenuItem("export...");
 	export.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent aev) {
 		    // REFACTOR: make ExportDialog take just 1 arg (the frame),
 		    // then make an export() method which calls that,
 		    // and call makeMenuItem() with 2 args ("c.e.EFM.export()")
 		    Sample s = ((Editor) f).getSample();
-		    new ExportDialog(s, f);
+		    if(s.isSummed()) {
+				String labels[] = {"Sum", "Elements", "Combined"};
+				
+				int action = JOptionPane.showOptionDialog(
+						f,
+						"You are exporting a sum.\n" +
+						"Would you like to export the summed values,\n" +
+						"export the sum's elements in a packed file,\n" +
+						"or export them combined in a packed file?",
+						I18n.getText("export..."),
+						JOptionPane.YES_NO_CANCEL_OPTION,
+						JOptionPane.QUESTION_MESSAGE, null, labels,
+						labels[0]);	
+				
+				Sample base = s;
+				List samples = new ArrayList();
+				
+				switch(action) {
+				case JOptionPane.CLOSED_OPTION:
+					return;
+					
+				case 0:
+			    	new ExportDialog(s, f);
+					break; // this case is normal. whew.
+					
+				case 2: // export everything.
+					samples.add(s);
+					
+				case 1: // export only the elements.
+					String errorsamples = "";
+					boolean problem = false;
+					
+					for (int i = 0; i < s.elements.size(); i++) {
+						Element e = (Element) s.elements.get(i);
+
+						if (!e.isActive()) // skip inactive
+							continue;
+
+						try {
+							Sample stmp = e.load();
+							samples.add(stmp);
+						} catch (IOException ioe) {
+							problem = true;
+							if(errorsamples.length() != 0)
+								errorsamples += ", ";
+							errorsamples += e.getFilename();
+						}
+					}
+					
+					// problem?
+					if (problem) {
+						Alert.error("Error loading sample(s):",
+								errorsamples);
+						return;
+					}
+
+					// no samples => don't bother doing anything
+					if (samples.isEmpty()) {
+						return;
+					}
+					
+					new ExportDialog(samples, f, true);
+				}
+		    }
+		    else
+		    	new ExportDialog(s, f);
 		}
 	    });
 	add(export);
