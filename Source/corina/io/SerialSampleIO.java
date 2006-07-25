@@ -39,6 +39,8 @@ implements SerialPortEventListener {
 	// the state...
 	private static final int SERIALSTATE_WAITINGFORACK = 2;
 	private static final int SERIALSTATE_NORMAL = 1;
+	private static final int SERIALSTATE_POSTINIT = 4;
+	private static final int SERIALSTATE_DIE = 3;
 	
 	private int serialState;
 	
@@ -61,6 +63,8 @@ implements SerialPortEventListener {
 	protected void finalize() throws Throwable {
 		super.finalize();
 		
+		serialState = SERIALSTATE_DIE;
+		
 		if(dataPort != null) {
 			System.out.println("Closing port (finalize): " + dataPort.getName());
 			dataPort.close();
@@ -71,15 +75,60 @@ implements SerialPortEventListener {
 	// clean up!
 	public void close() {
 		System.out.println("Closing port (manual): " + dataPort.getName());
+		
+		serialState = SERIALSTATE_DIE;
+		if(initThread != null) {
+			try {
+				initThread.join();
+			} catch (InterruptedException e) {} 
+			initThread = null;
+		}
+		
 		dataPort.close();
 		dataPort = null;
 	}
 	
+	Thread initThread;
+	Object sync = new Object();
+	
 	public void initialize() throws IOException {
 		serialState = SERIALSTATE_WAITINGFORACK;
 		
-		dataPort.getOutputStream().write(SerialSampleIO.EVE_ENQ);
-		// writing fails on my USB->Serial adapter...
+		initThread = new Thread(new Runnable() {
+			public void run() {
+				boolean waiting_for_init = true;
+				int tryCount = 0;
+				
+				while(waiting_for_init) {
+					synchronized(sync) {
+						if(serialState == SERIALSTATE_WAITINGFORACK) {
+							
+							if(tryCount++ == 25) {
+								System.out.println("init tries exhausted; giving up.");
+								break;
+							}
+							
+							try {
+								System.out.println("Initializing reader, try " + tryCount + "...");
+								dataPort.getOutputStream().write(SerialSampleIO.EVE_ENQ);
+							}
+							catch (IOException e) {	}
+						} else {
+							waiting_for_init = false;
+							continue;
+						}
+						
+						// no response yet.. wait.
+						try {
+							sync.wait(300);
+						} catch (InterruptedException e) {}						
+					}					
+				}
+			}
+		});
+		
+		//dataPort.getOutputStream().write(SerialSampleIO.EVE_ENQ);
+		// keep sending this until we get a response, or 15 times.
 	}
 	
 	public void serialEvent(SerialPortEvent e) {
@@ -101,6 +150,15 @@ implements SerialPortEventListener {
 					
 					if(val == EVE_ACK) {
 						System.out.println("Received ACK from device, leaving initialize mode");
+						
+						// notify our initializing thread...
+						serialState = SERIALSTATE_POSTINIT;
+						sync.notify();
+						
+						try {
+							initThread.join();
+						} catch (InterruptedException ieeee) {} 
+						initThread = null;
 						
 						serialState = SERIALSTATE_NORMAL;
 						return;
