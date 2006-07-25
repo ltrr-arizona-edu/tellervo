@@ -110,6 +110,7 @@ implements SerialPortEventListener {
 							
 							try {
 								System.out.println("Initializing reader, try " + tryCount + "...");
+								fireSerialSampleEvent(SerialSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
 								dataPort.getOutputStream().write(SerialSampleIO.EVE_ENQ);
 							}
 							catch (IOException e) {	}
@@ -156,11 +157,11 @@ implements SerialPortEventListener {
 						// update our status...
 						synchronized(sync) {
 							serialState = SERIALSTATE_POSTINIT;
+							
+							// tell our synchronization object..
+							sync.notify();							
 						}
-						
-						// tell our synchronization object..
-						sync.notify();
-						
+												
 						// wait for it to die..
 						try {
 							initThread.join();
@@ -169,6 +170,8 @@ implements SerialPortEventListener {
 						
 						// dump any input we have...
 						while(input.read() != -1);
+						
+						fireSerialSampleEvent(SerialSampleIOEvent.INITIALIZED_EVENT, null);
 						
 						// yay!
 						serialState = SERIALSTATE_NORMAL;
@@ -309,7 +312,7 @@ implements SerialPortEventListener {
 		listeners.remove(l);
 	}
 	
-	private void fireSerialSampleEvent(int type, Object value) {
+	private synchronized void fireSerialSampleEvent(int type, Object value) {
 		// alert all listeners
 		SerialSampleIOListener[] l;
 		synchronized (listeners) {
