@@ -123,9 +123,11 @@ implements SerialPortEventListener {
 							sync.wait(300);
 						} catch (InterruptedException e) {}						
 					}					
-				}
+				}				
 			}
 		});
+		
+		initThread.start();
 		
 		//dataPort.getOutputStream().write(SerialSampleIO.EVE_ENQ);
 		// keep sending this until we get a response, or 15 times.
@@ -151,15 +153,24 @@ implements SerialPortEventListener {
 					if(val == EVE_ACK) {
 						System.out.println("Received ACK from device, leaving initialize mode");
 						
-						// notify our initializing thread...
-						serialState = SERIALSTATE_POSTINIT;
+						// update our status...
+						synchronized(sync) {
+							serialState = SERIALSTATE_POSTINIT;
+						}
+						
+						// tell our synchronization object..
 						sync.notify();
 						
+						// wait for it to die..
 						try {
 							initThread.join();
 						} catch (InterruptedException ieeee) {} 
 						initThread = null;
 						
+						// dump any input we have...
+						while(input.read() != -1);
+						
+						// yay!
 						serialState = SERIALSTATE_NORMAL;
 						return;
 					}
