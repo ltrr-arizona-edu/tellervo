@@ -81,18 +81,26 @@ public class PackedTucson extends Tucson implements PackedFileType {
     			for(int j = 0; j < s.elements.size(); j++) {
     				Sample tmp = ((Element) s.elements.get(j)).load();
     				
-    				if(prefix == null)
-    					prefix = tmp.meta.get("id").toString();
-    				else
-    					prefix = commonPrefix(prefix, tmp.meta.get("id").toString());
+    				try {
+    					if(prefix == null)
+    						prefix = tmp.meta.get("id").toString();
+    					else
+    						prefix = commonPrefix(prefix, tmp.meta.get("id").toString());
+    				} catch (NullPointerException npe) {
+    					throw new IOException("Invalid META ID in file " + tmp.meta.get("filename"));
+    				}
     				
     				outsamples.add(tmp);
     			}
     		} else {
-				if(prefix == null)
-					prefix = s.meta.get("id").toString();
-				else
-					prefix = commonPrefix(prefix, s.meta.get("id").toString());
+    			try {
+    				if(prefix == null)
+    					prefix = s.meta.get("id").toString();
+    				else
+    					prefix = commonPrefix(prefix, s.meta.get("id").toString());
+    			} catch (NullPointerException npe) {
+    				throw new IOException("Invalid META ID in file " + s.meta.get("filename"));
+    			}
 				
 				outsamples.add(s);    			
     		}
