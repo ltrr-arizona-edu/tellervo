@@ -527,6 +527,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 		elemPanel = new GraphElementsPanel(samples, this);
 		content.add(elemPanel, BorderLayout.EAST);
 		content.add(scroller, BorderLayout.CENTER);
+		// re-enable me when graph toolbar is done
+		//content.add(new GraphToolbar(this), BorderLayout.NORTH);
 		
 		elemPanel.setVisible(false);
 				
