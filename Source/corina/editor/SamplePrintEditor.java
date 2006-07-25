@@ -3,6 +3,12 @@
  */
 package corina.editor;
 
+import javax.print.*;
+import javax.print.attribute.*;
+import javax.print.attribute.standard.MediaSize;
+import javax.print.attribute.standard.MediaSizeName;
+import javax.print.attribute.standard.MediaSize.ISO;
+import javax.print.attribute.standard.MediaSize.NA;
 import javax.swing.*;
 import java.awt.Rectangle;
 import java.awt.Font;
@@ -14,8 +20,12 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import javax.swing.JTextPane;
 import java.awt.Dimension;
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
@@ -253,12 +263,14 @@ public class SamplePrintEditor extends JPanel {
 		
 	}
 	
+	private StringBuffer stringDoc = new StringBuffer();
+	
 	private class SPTextPane extends JTextPane implements Printable {
 		public SPTextPane() {
 			super();
 			this.setEditorKit(new SPEditorKit());
 		}
-		
+				
 		public void append(String style, String text) {
 	        StyledDocument doc = (StyledDocument)getDocument();
 	        try {
@@ -268,6 +280,7 @@ public class SamplePrintEditor extends JPanel {
 	        	doc.setParagraphAttributes(oldLength, newLength - oldLength, getStyle(style), false);
 	        } catch (BadLocationException e) {} 
 		}
+		
 		public void paintComponent(Graphics g) {
 			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
 					RenderingHints.VALUE_ANTIALIAS_ON);
@@ -424,6 +437,41 @@ public class SamplePrintEditor extends JPanel {
 		
 		JPanel buttonpanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		
+	    JButton quickButton = new JButton("Quick Print [debug]");
+	    buttonpanel.add(quickButton);
+	    quickButton.addActionListener(new ActionListener() {
+	      public void actionPerformed(ActionEvent ae) {
+	    	  d.dispose();
+	    	  printable = null;
+	    	  {
+	    		  String stringdoc = stringDoc.toString().replace("\n", "\r\n");
+	    		  DocFlavor flavor = DocFlavor.INPUT_STREAM.AUTOSENSE;
+	    		  InputStream docReader = new ByteArrayInputStream(stringdoc.getBytes()); 
+	    		  Doc doc = new SimpleDoc(docReader, flavor, null);
+	    		  
+	    		  PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
+	    		  aset.add(MediaSizeName.NA_LETTER);
+	    		  
+	    		  PrintService printService[] = 
+	    			    PrintServiceLookup.lookupPrintServices(null, null);
+	    		  
+	    		  PrintService defaultService = 
+	    			    PrintServiceLookup.lookupDefaultPrintService();
+	    		  
+	    		  PrintService service = ServiceUI.printDialog(null, 200, 200,
+	    			    printService, defaultService, flavor, aset);
+	    		  
+	    		  if (service != null) {
+	    			    DocPrintJob job = service.createPrintJob();
+	    			    try {
+	    			    	job.print(doc, aset);
+	    			    } catch (PrintException pe) {}
+	    		  }
+	    	  }
+	      }
+	    });
+		
+		
 	    String oktext = corina.ui.I18n.getText("ok");
 	    if (oktext == null) oktext = "Ok";
 	    JButton okButton = new JButton(oktext);
@@ -467,6 +515,7 @@ public class SamplePrintEditor extends JPanel {
 			
 			sb.append("\n");
 			textpane.append("title", sb.toString());
+			stringDoc.append(sb);
 			lines++;
 		}
 		
@@ -486,12 +535,15 @@ public class SamplePrintEditor extends JPanel {
 	        
 	        sb.append("\n");
 			textpane.append("print info", sb.toString());
+			stringDoc.append(sb);
 			lines++;
 		}
 
 		// get a blank line in here...
-		if(lines != 0)
+		if(lines != 0) {
 			textpane.append("default", "\n");
+			stringDoc.append("\n");
+		}
 		
 		if(bits.wantSampleHeader() && !s.isIndexed()) {
 	        // print radius, avg width, but only for non-indexed samples
@@ -503,29 +555,45 @@ public class SamplePrintEditor extends JPanel {
 	        sb.append("Radius: " + df.format(radius) + " cm, " +
                                    "Average ring width: " + df.format(average) + " cm\n\n");
             textpane.append("sample header", sb.toString());
+            stringDoc.append(sb);
 		}
 		
 		if(bits.wantSampleData()) {
 			if(s.isSummed()) {
 				textpane.append("summed data", getSummed(bits.isDoubleSpaced()));
-				textpane.append("summed data info", getSummedInfo());
+				
+				String summedInfo = getSummedInfo();
+				textpane.append("summed data info", summedInfo);
+				stringDoc.append(summedInfo);
 			}
-			else
+			else {
 				textpane.append("raw data", getRawData(bits.isDoubleSpaced()));
+				stringDoc.append(getRawDataSpaced(bits.isDoubleSpaced()));
+			}
 		}
 		
 		if(bits.wantMetaData()) {
-			textpane.append("metadata", getMetadata());
+			String metadata = getMetadata();
+			textpane.append("metadata", metadata);
+			stringDoc.append(metadata);
 		}
 		
 		if(bits.wantWeiserjahre() && s.hasWeiserjahre()) {
+			String weiser;
 			textpane.append("section heading", "Weiserjahre Data\n");
-			textpane.append("weiserjahre data", getWeiserjahre(bits.isDoubleSpaced()));
-			textpane.append("weiserjahre data info", getWeiserjahreInfo());
+			weiser = getWeiserjahre(bits.isDoubleSpaced());
+			textpane.append("weiserjahre data", weiser);
+			stringDoc.append(weiser);
+			weiser = getWeiserjahreInfo();
+			textpane.append("weiserjahre data info", weiser);
+			stringDoc.append(weiser);
 		}
 		
 		if(bits.wantElements() && s.elements != null) {
-			textpane.append("elements", getElements());
+			String elements = getElements();
+			
+			textpane.append("elements", elements);
+			stringDoc.append(elements);
 		}
 	}
 
@@ -711,6 +779,50 @@ public class SamplePrintEditor extends JPanel {
 				sb.append("\t");
 				if (s.range.contains(decade.add(i)))
 					sb.append((Number) s.data.get(decade.add(i).diff(s.range.getStart())));
+			}
+
+			sb.append(doubleSpace ? "\n\n" : "\n");
+		}
+		
+		return sb.toString();
+	}
+	
+	private String getRawDataSpaced(boolean doubleSpace) {
+		StringBuffer sb = new StringBuffer();
+
+		// each column gets seven spaces.. 7x12 = 72
+		
+		// header
+		sb.append("      ");
+		for(int i = 0; i < 10; i++)
+			sb.append("      " + i);
+		sb.append("\n");
+		
+		for (Year y = s.range.getStart(); s.range.contains(y); y = y.add(1)) {
+			if (!y.equals(s.range.getStart()) && y.column() != 0)
+				continue;
+
+			String tmp = y.toString();
+			int len = tmp.length();
+			
+			sb.append(y.toString());
+			for(int i = 0; i < 6 - len; i++)
+				sb.append(" ");
+
+			Year decade = y;
+			while (decade.column() != 0)
+				decade = decade.add(-1);
+
+			// loop through years
+			for (int i = 0; i < 10; i++) {
+				if (s.range.contains(decade.add(i))) {
+					String val = ((Number) s.data.get(decade.add(i).diff(s.range.getStart()))).toString();
+					for(int j = 0; j < 7 - val.length(); j++)
+						sb.append(" ");
+					sb.append(val);
+				}
+				else
+					sb.append("       ");
 			}
 
 			sb.append(doubleSpace ? "\n\n" : "\n");
