@@ -29,6 +29,8 @@ import corina.ui.I18n;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
    A file format for exporting several datasets to a spreadsheet.
@@ -64,7 +66,7 @@ Year      Sample A  Sample B  Sample C
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-public class Spreadsheet implements Filetype {
+public class Spreadsheet implements Filetype, PackedFileType {
     /**
        Make a new spreadsheet-saving Filetype.
     */
@@ -100,54 +102,72 @@ public class Spreadsheet implements Filetype {
 	return ".TXT";
     }
 
-    // save
-    public void save(Sample s, BufferedWriter w) throws IOException {
-        // verify it's a master
-        if (s.elements == null)
-            throw new IOException("Spreadsheet format is only available " +
-				  "for summed samples with Elements");
 
-        // number of elements
-        int n = s.elements.size();
+	// save
+    // deprecated! this is a packed sample format!
+	public void save(Sample s, BufferedWriter w) throws IOException {
+		// verify it's a master
+		if (s.elements == null)
+			throw new IOException("Spreadsheet format is only available "
+					+ "for summed samples with Elements");
 
-        // load all the elements into a buffer
-        Sample buf[] = new Sample[n];
-        for (int i=0; i<n; i++) {
-            try {
-                buf[i] = ((Element) s.elements.get(i)).load();
-            } catch (IOException ioe) {
-		String filename = ((Element) s.elements.get(i)).getFilename();
-                throw new IOException("Can't load element " + filename);
-            }
-	}
-
-        // write header
-        w.write(I18n.getText("year"));
-        for (int i=0; i<n; i++)
-            w.write("\t" + buf[i].meta.get("title"));
-        w.newLine();
-
-        // save line(=year)-at-a-time
-	Range r = s.range;
-        for (Year y=r.getStart(); y.compareTo(r.getEnd())<=0; y=y.add(1)) {
-	    // write year
-	    w.write(y.toString());
-
-	    // write each datum for this year
-	    for (int i=0; i<n; i++) {
-		// tab
-		w.write("\t");
-
-		// data[y]
-		if (buf[i].range.contains(y)) {
-		    Year start = buf[i].range.getStart();
-		    int index = y.diff(start);
-		    w.write(buf[i].data.get(index).toString());
+		// load all the samples into a list
+		List slist = new ArrayList();		
+		for (int i = 0; i < s.elements.size(); i++) {
+			try {
+				slist.add(((Element) s.elements.get(i)).load());
+			} catch (IOException ioe) {
+				String filename = ((Element) s.elements.get(i)).getFilename();
+				throw new IOException("Can't load element " + filename);
+			}			
 		}
-	    }
-
-	    // end-of-line
-	    w.newLine();
+		
+		// and pass them to savesamples
+		saveSamples(slist, w);
 	}
-    }
+
+	// for PackedFileType
+    public void saveSamples(List sl, BufferedWriter w) throws IOException {
+		// load all the elements into a buffer
+		int n = sl.size();
+		Range r = null;
+
+		// make range a union of all the ranges.		
+		for (int i = 0; i < n; i++) {
+			if(r == null)
+				r = ((Sample)sl.get(i)).range;
+			else
+				r = r.union(((Sample)sl.get(i)).range);
+		}
+
+		// write header
+		w.write(I18n.getText("year"));
+		for (int i = 0; i < n; i++)
+			w.write("\t" + ((Sample)sl.get(i)).meta.get("title"));
+		w.newLine();
+
+		// save line(=year)-at-a-time
+		for (Year y = r.getStart(); y.compareTo(r.getEnd()) <= 0; y = y.add(1)) {
+			// write year
+			w.write(y.toString());
+
+			// write each datum for this year
+			for (int i = 0; i < n; i++) {
+				// tab
+				w.write("\t");
+
+				Sample s = (Sample) sl.get(i);
+				
+				// data[y]
+				if (s.range.contains(y)) {
+					Year start = s.range.getStart();
+					int index = y.diff(start);
+					w.write(s.data.get(index).toString());
+				}
+			}
+
+			// end-of-line
+			w.newLine();
+		}
+	}
 }

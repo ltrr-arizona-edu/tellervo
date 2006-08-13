@@ -65,7 +65,6 @@ public class PackedTucson extends Tucson implements PackedFileType {
     }
     
     public void saveSamples(List sl, BufferedWriter w) throws IOException {
-    	int bufsz = 0;
     	List outsamples = new ArrayList(sl.size());
     	String prefix = null;
     	

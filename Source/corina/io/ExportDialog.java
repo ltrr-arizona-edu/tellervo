@@ -126,11 +126,11 @@ public class ExportDialog extends JDialog {
 			"corina.formats.Corina", "corina.formats.TRML",
 			"corina.formats.HTML", "corina.formats.Heidelberg",
 			"corina.formats.Hohenheim", "corina.formats.TSAPMatrix",
-			"corina.formats.RangesOnly", "corina.formats.Spreadsheet", };
+			"corina.formats.RangesOnly", };
 	
 	// these exporters implement 'PackedFileType' and can save more than one sample to a file.
 	private static final String EXPORTERS_PACKED[] = new String[] {
-		"corina.formats.PackedTucson" };
+		"corina.formats.PackedTucson", "corina.formats.Spreadsheet", };
 
 	// exporters i'm using
 	private String exporters[];
