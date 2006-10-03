@@ -80,6 +80,7 @@ public class Prefs extends AbstractSubsystem {
    * 
    * NEW: ~/Corina Preferences [win32] ~/.corina [unix] ~/Library/Preferences/Corina Preferences [mac]
    */
+  private String CORINADIR;
   private String FILENAME;
   private String MACHINEFILENAME;
   /**
@@ -97,6 +98,11 @@ public class Prefs extends AbstractSubsystem {
   public String getName() {
     return "Preferences";
   }
+  
+  // returns the directory for storing Corina-related files...
+  public String getCorinaDir() {
+	  return CORINADIR;
+  }
 
   /**
    * Initializes the preferences system. This should be called upon startup.
@@ -113,17 +119,52 @@ public class Prefs extends AbstractSubsystem {
       home = home + File.separator;
 
     if (App.platform.isWindows()) {
-      FILENAME = home + "Corina Preferences";
-      MACHINEFILENAME = "C:\\Corina System Preferences";
+    	String basedir = home;
+    	
+    	// old location for corina preferences exists; migrate it over in the end.    	
+    	File oldprefs = new File(home + "Corina Preferences");
+    	    	
+    	// if the Application Data directory exists, use it as our base.
+    	if(new File(home + "Application Data").isDirectory()) 
+    		basedir = home + "Application Data" + File.separator;    			
+    
+    	// ~/Application Data/Corina/
+    	// OR ~/Corina/, if no Application Data
+    	basedir += "Corina" + File.separator;
+    	
+    	// if the Corina directory doesn't exist, make it.
+    	File corinadir = new File(basedir);
+    	if(!corinadir.exists())
+    		corinadir.mkdir();
+    	
+    	CORINADIR = basedir;
+    	FILENAME = basedir + "Corina.pref";
+    	MACHINEFILENAME = "C:\\Corina System Preferences";
+
+    	// migrate over the old preferences, if they exist.
+    	if(oldprefs.exists()) {
+    		oldprefs.renameTo(new File(FILENAME));
+    	}
     }
     else if (App.platform.isMac()) {
-      FILENAME = home + "Library/Preferences/Corina Preferences"; // why in prefs? isn't lib ok?
+      CORINADIR = home + "Library/Corina/";
+      FILENAME = home + "Library/Corina/Preferences"; // why in prefs? isn't lib ok?
       MACHINEFILENAME = "/Library/Preferences/Corina System Preferences";
+      
+      File basedir = new File(CORINADIR);
+      if(!basedir.exists())
+    	  basedir.mkdirs();
     }
     else {
       // plain ol' unix
-      FILENAME = home + ".corina";
+      CORINADIR = home + ".corina";    	
+      FILENAME = home + ".corina/.preferences";
       MACHINEFILENAME = "/etc/corina_system_preferences";
+
+      File basedir = new File(CORINADIR);
+      if(!basedir.exists())
+    	  basedir.mkdirs();
+      
     }
 
     initUIDefaults();

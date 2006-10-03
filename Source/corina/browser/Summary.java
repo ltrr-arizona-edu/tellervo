@@ -27,6 +27,7 @@ import corina.util.StringUtils;
 import corina.util.GreedyProgressMonitor;
 import corina.util.GZIP;
 import corina.site.Lock; // REFACTOR: move to util!
+import corina.core.App;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -187,15 +188,22 @@ public class Summary {
 	 @exception IOException if something goes wrong
 	 */
 	private void saveSummary() throws IOException {
-		String fullFilename = folder + File.separator + CACHE_FILENAME;
+		//String fullFilename = folder + File.separator + CACHE_FILENAME;
+		String fullFilename = cacheNameForFolder();
+		
+		File basedir = new File(fullFilename).getParentFile();
+		if(!basedir.exists())
+			basedir.mkdir();
 
 		try {
 
+			/* No locking; file is local. 
 			boolean lock = Lock.acquire(fullFilename);
 			if (!lock) {
 				System.out.println("BUG: can't lock cache file! (FIXME)" + fullFilename);
 				throw new IOException("can't lock cache file");
 			}
+			*/
 
 			Writer fw;
 			if (USE_COMPRESSION)
@@ -254,7 +262,7 @@ public class Summary {
 
 		} finally {
 			// always release lock
-			Lock.release(fullFilename);
+			//Lock.release(fullFilename);
 		}
 	}
 
@@ -265,9 +273,11 @@ public class Summary {
 	 @exception IOException if something goes wrong
 	 */
 	private void loadSummary() throws FileNotFoundException, IOException,
-			SAXParseException {
-		String fullFilename = folder + File.separator + CACHE_FILENAME;
+			SAXParseException {	
+		
+		String fullFilename = cacheNameForFolder();
 
+		/* NO LOCKING!! This file is local.
 		// lock the file
 		boolean lock = false;
 
@@ -298,6 +308,7 @@ public class Summary {
 				}
 			}
 		}
+		*/
 		
 		monitor.setProgressGreedy(0);
 
@@ -324,7 +335,7 @@ public class Summary {
 			// ... and feed it the file
 			xr.parse(new InputSource(r));
 		} catch (SAXException se) {
-			Lock.release(fullFilename);
+			//Lock.release(fullFilename);
 			// DEBUG: explicit debugging info
 			System.out.println("sax exception = " + se);
 			
@@ -336,16 +347,16 @@ public class Summary {
 				throw (SAXParseException) se;
 			}
 
-			// release the lock -- MOVE: can this just go in a finally clause?
-
 			throw new IOException(); // INTERFACE: be explicit!
 		}
+		/*
 		finally {
 			Lock.release(fullFilename);
 		}
 
 		// release the lock
 		Lock.release(fullFilename);
+		*/
 	}
 
 	// BUG: summary doesn't store "filetype" field?
@@ -688,5 +699,10 @@ public class Summary {
 		 Element e[] = s.getResults();
 		 */
 		// -- add this as Edit->Find..., and also as "Advanced..." button next to browser search field
+	}
+
+	// get the local cache file...
+	private String cacheNameForFolder() {
+		return App.prefs.getCorinaDir() + "Cache" + File.separator + folder.replaceAll("[\\./\\\\:]", "_") + ".cache";
 	}
 }

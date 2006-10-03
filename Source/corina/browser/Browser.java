@@ -261,7 +261,7 @@ public class Browser extends XFrame {
 		// BUG: what if this folder doesn't exist?
 
 		// if no folder, use |user.dir|
-		if (dir.equals(""))
+		if (dir == null || dir.equals(""))
 			dir = System.getProperty("user.dir");
 
 		// if there's something wrong with that, default to this folder.

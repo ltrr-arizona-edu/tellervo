@@ -175,7 +175,7 @@ public class Files {
 	".GRF", // "GS Draw File: Copyright Golden Software Inc. 1991-1994" (a GRaF)
 	".JAR", ".CLASS", ".JAVA",
 	"SITE.LOC", "SITE.XML", // (old corina data files -- remove these later)
-	corina.browser.Summary.CACHE_FILENAME.toUpperCase(),
+	".Corina_Cache",
 
 	// TODO: should i skip backup~ files here, too?  (they're not actually invalid, just "hidden")
     };
