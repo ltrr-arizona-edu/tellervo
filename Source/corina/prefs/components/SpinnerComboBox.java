@@ -1,4 +1,4 @@
-package corina.prefs.panels;
+package corina.prefs.components;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -50,7 +50,7 @@ public class SpinnerComboBox extends JComboBox {
   };
   private ChangeListener changeListener = new ChangeListener() {
     public void stateChanged(ChangeEvent e) {
-      System.out.println("stateChanged " + spinner.getValue());
+      //System.out.println("stateChanged " + spinner.getValue());
       setSelectedItem(spinner.getValue());
       //    XXX: this particular line doesn't appear to be working,
       // the intention is to resize when a new value, which may be wider
@@ -71,7 +71,7 @@ public class SpinnerComboBox extends JComboBox {
   };
   private FocusListener focusListener = new FocusAdapter() {
     public void focusLost(FocusEvent fe) {
-      System.out.println("textfield focus lost");
+      //System.out.println("textfield focus lost");
       setEditable(false);
       repaint();
       /*SwingUtilities.invokeLater(new Runnable() {
@@ -97,24 +97,24 @@ public class SpinnerComboBox extends JComboBox {
     
     public Object getElementAt(int i) {
       Object o = outputFormat.format(internal.getElementAt(i));
-      System.out.println("getElementAt " + i + ": " + o);
+      //System.out.println("getElementAt " + i + ": " + o);
       return o;
     }
     
     public Object getSelectedItem() {
-      System.out.println("getSelectedItem " + internal.getSelectedItem());
+      //System.out.println("getSelectedItem " + internal.getSelectedItem());
       Object o = outputFormat.format(internal.getSelectedItem());
-      System.out.println("getSelectedItem formatted: " + o);
+      //System.out.println("getSelectedItem formatted: " + o);
       return o;
       //return internal.getSelectedItem();
     }
     
     public void setSelectedItem(Object o) {
-      System.out.println("setSelectedItem: " + o + " " + o.getClass());
+      //System.out.println("setSelectedItem: " + o + " " + o.getClass());
       if (o instanceof String) {
         try {
           Object p = outputFormat.parseObject((String) o);
-          System.out.println("PARSED OBJECT: " + p + " " + p.getClass());
+          //System.out.println("PARSED OBJECT: " + p + " " + p.getClass());
           internal.setSelectedItem(outputFormat.parseObject((String)o));
         } catch (ParseException pe) {
           pe.printStackTrace();
@@ -144,14 +144,14 @@ public class SpinnerComboBox extends JComboBox {
 
     public Object getItem() {
       Object value = spinner.getValue();
-      System.out.println("getItem: " + value + " " + value.getClass());
+      //System.out.println("getItem: " + value + " " + value.getClass());
       Object o = outputFormat.format(value);
-      System.out.println("getItem formatted: " + o);
+      //System.out.println("getItem formatted: " + o);
       return o;
     }
 
     public void setItem(Object anObject) {
-      System.out.println("setItem: " + anObject + " " + anObject.getClass());
+      //System.out.println("setItem: " + anObject + " " + anObject.getClass());
       if (anObject instanceof String) {
         try {
           Object o = inputFormat.parseObject((String) anObject);
@@ -160,7 +160,7 @@ public class SpinnerComboBox extends JComboBox {
           if (isNumberModel) {
             Number number = (Number) o; 
           
-            System.out.println("SetItem PARSED: " + number + " " + number.getClass());
+            //System.out.println("SetItem PARSED: " + number + " " + number.getClass());
             if (isFloatingPoint) {
               if (!(number instanceof Double) && !(number instanceof Float))
                 o = new Double(number.doubleValue());
@@ -198,7 +198,7 @@ public class SpinnerComboBox extends JComboBox {
 
   public SpinnerComboBox(Object[] items) {
     super(items);
-    System.out.println("**** Setting spinner number model");
+    //System.out.println("**** Setting spinner number model");
     if (items instanceof Float[] || items instanceof Double[]) {
       spinner = new JSpinner(new SpinnerNumberModel(0d, 0d, Double.MAX_VALUE, 0.1d));
       isFloatingPoint = true;
@@ -243,7 +243,7 @@ public class SpinnerComboBox extends JComboBox {
     if (inputFormat != null && outputFormat != null) {
       ComboBoxModel model = getModel();
       if (!(model instanceof FormattingComboBoxModel)) {
-        System.out.println("Setting FormattingComboBoxModel");
+        //System.out.println("Setting FormattingComboBoxModel");
         setModel(new FormattingComboBoxModel(model));
       }
     }
@@ -259,9 +259,9 @@ public class SpinnerComboBox extends JComboBox {
   public void setFormats(Format inputFormat, Format outputFormat) {
     this.inputFormat = inputFormat;  
     this.outputFormat = outputFormat;
-    System.out.println("Spinner model: " + spinner.getModel());
+    //System.out.println("Spinner model: " + spinner.getModel());
     spinner.setModel(spinner.getModel());
-    System.out.println("**** Setting spinner editor");
+    //System.out.println("**** Setting spinner editor");
     if (inputFormat instanceof DecimalFormat) {
       spinner.setEditor(new JSpinner.NumberEditor(spinner, ((DecimalFormat) inputFormat).toPattern()));
     } else if (outputFormat instanceof SimpleDateFormat) {

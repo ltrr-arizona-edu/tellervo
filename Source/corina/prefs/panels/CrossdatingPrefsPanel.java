@@ -33,6 +33,7 @@ import corina.prefs.Prefs;
 import corina.prefs.components.BoolPrefComponent;
 import corina.prefs.components.ColorPrefComponent;
 import corina.prefs.components.FormattingPrefComponent;
+import corina.prefs.components.SpinnerComboBox;
 
 public class CrossdatingPrefsPanel extends Container {
   private static final Integer[] YEARS = new Integer[] { new Integer(1),
