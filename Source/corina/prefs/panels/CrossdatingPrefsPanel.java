@@ -72,7 +72,7 @@ public class CrossdatingPrefsPanel extends Container {
     l = new JLabel("R-value format:");
     l.setLabelFor(c);
     gbc.gridy++;
-    System.out.println("gridy: " + gbc.gridy);
+    //System.out.println("gridy: " + gbc.gridy);
     gbc.gridx = 0;
     gbc.weightx = 0;
     co.add(l, gbc);
@@ -84,7 +84,7 @@ public class CrossdatingPrefsPanel extends Container {
     l = new JLabel("Trend format:");
     l.setLabelFor(c);
     gbc.gridy++;
-    System.out.println("gridy: " + gbc.gridy);
+    //System.out.println("gridy: " + gbc.gridy);
     gbc.gridx = 0;
     gbc.weightx = 0;
     co.add(l, gbc);
@@ -96,7 +96,7 @@ public class CrossdatingPrefsPanel extends Container {
     l = new JLabel("D-score format:");
     l.setLabelFor(c);
     gbc.gridy++;
-    System.out.println("gridy: " + gbc.gridy);
+    //System.out.println("gridy: " + gbc.gridy);
     gbc.gridx = 0;
     gbc.weightx = 0;
     co.add(l, gbc);
@@ -108,7 +108,7 @@ public class CrossdatingPrefsPanel extends Container {
     l = new JLabel("Weiserjahre format:");
     l.setLabelFor(c);
     gbc.gridy++;
-    System.out.println("gridy: " + gbc.gridy);
+    //System.out.println("gridy: " + gbc.gridy);
     gbc.gridx = 0;
     gbc.weightx = 0;
     co.add(l, gbc);
@@ -120,8 +120,8 @@ public class CrossdatingPrefsPanel extends Container {
     final SpinnerComboBox scb = new SpinnerComboBox(YEARS);
     DecimalFormat df0 = new DecimalFormat("#,##0");
     DecimalFormat df1 = new DecimalFormat("#,##0 years");
-    System.out.println("isParseIntegerOnly: " + df0.isParseIntegerOnly() + " " + df0.getMinimumFractionDigits());
-    System.out.println("isParseIntegerOnly: " + df1.isParseIntegerOnly() + " " + df1.getMinimumFractionDigits());  
+    //System.out.println("isParseIntegerOnly: " + df0.isParseIntegerOnly() + " " + df0.getMinimumFractionDigits());
+    //System.out.println("isParseIntegerOnly: " + df1.isParseIntegerOnly() + " " + df1.getMinimumFractionDigits());  
     scb.setFormats(df0, df1);
     
     // TODO: make sure corina.cross.overlap is fixed everywhere else to show the right value!
@@ -138,7 +138,7 @@ public class CrossdatingPrefsPanel extends Container {
     } else {
       value = new Integer(15);
     }
-    System.out.println("Setting: " +value);
+    //System.out.println("Setting: " +value);
     scb.setEditable(true);
     //scb.getSpinner().setValue(new Integer(value));
     scb.setSelectedItem(value);
@@ -150,7 +150,7 @@ public class CrossdatingPrefsPanel extends Container {
         App.prefs.setPref("corina.cross.overlap", scb.getSpinner().getValue().toString());
 
         //popup.setSelectedItem(spinner.getValue());
-        System.out.println("Selected item after setting: " + scb.getSelectedItem());
+        //System.out.println("Selected item after setting: " + scb.getSelectedItem());
       }
     });
     
@@ -168,8 +168,8 @@ public class CrossdatingPrefsPanel extends Container {
 
     // min overlap, D-score
     final SpinnerComboBox dscb = new SpinnerComboBox(YEARS);
-    System.out.println("isParseIntegerOnly: " + df0.isParseIntegerOnly() + " " + df0.getMinimumFractionDigits());
-    System.out.println("isParseIntegerOnly: " + df1.isParseIntegerOnly() + " " + df1.getMinimumFractionDigits());  
+    //System.out.println("isParseIntegerOnly: " + df0.isParseIntegerOnly() + " " + df0.getMinimumFractionDigits());
+    //System.out.println("isParseIntegerOnly: " + df1.isParseIntegerOnly() + " " + df1.getMinimumFractionDigits());  
     dscb.setFormats(df0, df1);
     
     // TODO: make sure corina.cross.overlap is fixed everywhere else to show the right value!
@@ -186,7 +186,7 @@ public class CrossdatingPrefsPanel extends Container {
     } else {
       value = new Integer(100);
     }
-    System.out.println("Setting: " +value);
+    //System.out.println("Setting: " +value);
     dscb.setEditable(true);
     dscb.setSelectedItem(value);
     dscb.setEditable(false);
@@ -197,7 +197,7 @@ public class CrossdatingPrefsPanel extends Container {
         App.prefs.setPref("corina.cross.d-overlap", dscb.getSpinner().getValue().toString());
 
         //popup.setSelectedItem(spinner.getValue());
-        System.out.println("Selected item after setting: " + dscb.getSelectedItem());
+        //System.out.println("Selected item after setting: " + dscb.getSelectedItem());
       }
     });
     
@@ -243,16 +243,16 @@ public class CrossdatingPrefsPanel extends Container {
                                                               new Integer(2) });
     DecimalFormat df0 = new DecimalFormat("#,##0");
     DecimalFormat df1 = new DecimalFormat("#,##0 years");
-    System.out.println("isParseIntegerOnly: " + df0.isParseIntegerOnly() + " " + df0.getMinimumFractionDigits());
-    System.out.println("isParseIntegerOnly: " + df1.isParseIntegerOnly() + " " + df1.getMinimumFractionDigits());  
+    //System.out.println("isParseIntegerOnly: " + df0.isParseIntegerOnly() + " " + df0.getMinimumFractionDigits());
+    //System.out.println("isParseIntegerOnly: " + df1.isParseIntegerOnly() + " " + df1.getMinimumFractionDigits());  
     scb.setFormats(df0, df1);
         
     top.add(scb, "test");
   
     DecimalFormat df2 = new DecimalFormat("#,##0.0##");
     DecimalFormat df3 = new DecimalFormat("#,##0.0## years");
-  System.out.println("isParseIntegerOnly: " + df2.isParseIntegerOnly() + " " + df2.getMinimumFractionDigits());
-          System.out.println("isParseIntegerOnly: " + df3.isParseIntegerOnly() + " " + df3.getMinimumFractionDigits());  
+  //System.out.println("isParseIntegerOnly: " + df2.isParseIntegerOnly() + " " + df2.getMinimumFractionDigits());
+          //System.out.println("isParseIntegerOnly: " + df3.isParseIntegerOnly() + " " + df3.getMinimumFractionDigits());  
     
     SpinnerComboBox scb2 = new SpinnerComboBox(new Double[] { new Double(0),
                                                                     new Double(1),
@@ -295,11 +295,11 @@ public class CrossdatingPrefsPanel extends Container {
       }
 
       public Object getItem() {
-        System.out.println("Getting spinner value: " + spinner.getValue());
+        //System.out.println("Getting spinner value: " + spinner.getValue());
         return spinner.getValue();
       }
       public void setItem(Object anObject) {
-        System.out.println(anObject.getClass());
+        //System.out.println(anObject.getClass());
         if (anObject instanceof String) {
           String theObject = (String) anObject;
           if ("any".equals(theObject)) anObject = new Integer(1);
@@ -382,7 +382,7 @@ public class CrossdatingPrefsPanel extends Container {
             final JComboBox popup = new JComboBox(choices);
             Component[] children = popup.getComponents();
             for (int i = 0; i < children.length; i++) {
-              System.out.println(children[i]);
+              //System.out.println(children[i]);
             }
                         
             SpinnerComboBoxEditor scbe = new SpinnerComboBoxEditor();
@@ -403,18 +403,18 @@ public class CrossdatingPrefsPanel extends Container {
                 App.prefs.setPref("corina.cross.overlap", spinner.getValue().toString());
 
                 popup.setSelectedItem(spinner.getValue());
-                System.out.println("Selected item after setting: " + popup.getSelectedItem());
+                //System.out.println("Selected item after setting: " + popup.getSelectedItem());
               }
             });
             ((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().addFocusListener(new FocusListener() {
               public void focusGained(FocusEvent fe) {
-                System.out.println("textfield fained focus " + fe);
+                //System.out.println("textfield fained focus " + fe);
               }
               public void focusLost(FocusEvent fe) {
-                System.out.println("textfield lost focus " + fe);
+                //System.out.println("textfield lost focus " + fe);
                 SwingUtilities.invokeLater(new Runnable() {
                   public void run() {
-                    System.out.println("Setting editable to false.");
+                    //System.out.println("Setting editable to false.");
                     popup.setEditable(false);
                     popup.repaint();
                   }
@@ -425,22 +425,22 @@ public class CrossdatingPrefsPanel extends Container {
             popup.setEditor(scbe);
             popup.addFocusListener(new FocusAdapter() {
               public void focusLost(FocusEvent fe) {
-                System.out.println("Combobox lost focus");
+                //System.out.println("Combobox lost focus");
                 if (!SwingUtilities.isDescendingFrom(fe.getOppositeComponent(), popup)) {
-                  System.out.println("Combobox lost focus to non-child component");
+                  //System.out.println("Combobox lost focus to non-child component");
                   //popup.setEditable(false);
                   //popup.repaint();
                 }
               }
               
               public void focusGained(FocusEvent fe) {
-                System.out.println("Combobox gained focus");
+                //System.out.println("Combobox gained focus");
               }
             });
             
             popup.addMouseListener(new MouseAdapter() {
               public void mouseClicked(MouseEvent me) {
-                System.out.println("mouse clicked " + me.getSource() + ", setting editable to true");
+                //System.out.println("mouse clicked " + me.getSource() + ", setting editable to true");
                 SwingUtilities.invokeLater(new Runnable() {
                   public void run() {
                     popup.setEditable(true);
@@ -472,7 +472,7 @@ public class CrossdatingPrefsPanel extends Container {
                     popup.setSelectedIndex(i);
                 }
             if (!found) {
-              System.out.println("Setting custom value: " + new Integer(value));
+              //System.out.println("Setting custom value: " + new Integer(value));
               popup.setEditable(true);
               popup.setSelectedItem(new Integer(value));
               popup.setEditable(false);
@@ -486,13 +486,13 @@ public class CrossdatingPrefsPanel extends Container {
               public void actionPerformed(ActionEvent e) {
                   // figure out what got selected
                   int i = popup.getSelectedIndex();
-                  System.out.println("Selected index: " + i);
+                  //System.out.println("Selected index: " + i);
                   if (i > -1) {
                     int n = YEARS[i];
-                    System.out.println("Selected value: " + n);
+                    //System.out.println("Selected value: " + n);
                     // store it as corina.cross.overlap
                     App.prefs.setPref("corina.cross.overlap", String.valueOf(n));
-                    System.out.println("popup is editable: " + popup.isEditable());
+                    //System.out.println("popup is editable: " + popup.isEditable());
                   }
 
                   popup.setEditable(true);

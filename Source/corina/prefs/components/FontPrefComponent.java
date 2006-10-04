@@ -94,7 +94,7 @@ public class FontPrefComponent implements ActionListener {
       Component actualParent;
       if (parent != null) actualParent = parent;
       else actualParent = BOGUS_PARENT;
-      System.out.println(actualParent);
+      //System.out.println(actualParent);
       Font font = JFontChooser.showDialog(actualParent, "Choose new font", "Sample", label.getFont());
 
       if (font == null) return;
