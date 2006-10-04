@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import corina.core.App;
@@ -30,7 +31,7 @@ import corina.core.App;
 // or maybe it'll go away, because each source will use its own get-info dialog.
 
 public class DataPrefsPanel extends JComponent implements ActionListener {
-  private JLabel folder;
+  private JTextField folder;
   private Component parent;
   private JFileChooser chooser = new JFileChooser();
   
@@ -49,7 +50,9 @@ public class DataPrefsPanel extends JComponent implements ActionListener {
     // TODO: extract const "corina.dir.data"
 
     String oldFolder = App.prefs.getPref("corina.dir.data");
-    folder = new JLabel(new File(oldFolder).getAbsolutePath());
+    folder = new JTextField(new File(oldFolder).getAbsolutePath());
+    folder.setEditable(false);
+    folder.setColumns(30);
 
     JLabel l = new JLabel("Data is stored in folder:");
     JButton change = new JButton("Change...");
@@ -58,7 +61,7 @@ public class DataPrefsPanel extends JComponent implements ActionListener {
     change.addActionListener(this);
 
     Container c = new Container();
-    c.setLayout(new FlowLayout(FlowLayout.LEFT, 4, 4));
+    c.setLayout(new FlowLayout(FlowLayout.LEFT, 14, 4));
 
     c.add(l);
     c.add(folder);

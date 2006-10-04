@@ -22,6 +22,7 @@ package corina.prefs.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -29,11 +30,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Component;
 
+import java.io.File;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -41,6 +49,7 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JScrollPane;
 import javax.swing.event.DocumentEvent;
+import javax.swing.filechooser.FileFilter;
 
 import corina.core.App;
 import corina.io.SerialSampleIO;
@@ -55,239 +64,328 @@ import corina.util.DocumentListener2;
 // TODO: i18n
 
 /*
-    [ ] override menubar font
-        font: Lucida Grande 11
-              (Change...)
-        
-    [ ] Override user name
-        name: [             ]
-        
-    
-    use which file chooser:
-        (*) swing (slower)
-        ( ) awt (faster, but no preview)
-*/
+ [ ] override menubar font
+ font: Lucida Grande 11
+ (Change...)
+ 
+ [ ] Override user name
+ name: [             ]
+ 
+ 
+ use which file chooser:
+ (*) swing (slower)
+ ( ) awt (faster, but no preview)
+ */
 
 public class AdvancedPrefsPanel extends JPanel {
-  private FontPrefComponent fontprefcomponent = new FontPrefComponent("corina.menubar.font");
-  public AdvancedPrefsPanel() {
-    // setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-    setLayout(new BorderLayout());
-    //setLayout(new GridLayout(0, 1));
-    
-    Container co = new Container();
-    co.setLayout(new GridBagLayout());
-    
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.anchor = GridBagConstraints.WEST;
-    gbc.fill = GridBagConstraints.NONE;
-    gbc.insets = new Insets(2, 2, 2, 2);
-    gbc.gridy = 0;
-    gbc.gridx = 0;
-    gbc.weightx = 1;
-    
-    // menubar font override
-    final JCheckBox menubarCheckBox = new JCheckBox("Override menubar font");
-    menubarCheckBox.setAlignmentX(LEFT_ALIGNMENT);
-    co.add(menubarCheckBox, gbc);
+	private FontPrefComponent fontprefcomponent = new FontPrefComponent(
+			"corina.menubar.font");
 
-    // TODO: make checkbox a bool-pref
-    // TODO: make checkbox control font-pref-component (dim)
-    // TODO: c.gui.menubar.font isn't the right pref!
-    // TODO: figure out how to make the checkbox un-set the font pref
-    // (idea: PrefComponent interface, getPref(), checkbox calls
-    // getPref() on controlled components, sets them to null on dim)
+	public AdvancedPrefsPanel() {
+		JPanel content = new JPanel();
+		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS) {
+			public void moo() {
+			}
+		});
 
-    gbc.gridx++;
-    co.add(fontprefcomponent.getLabel(), gbc);
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(2, 2, 2, 2);
+		gbc.gridy = gbc.gridx = 0;
+		gbc.weightx = 1;
 
-    gbc.gridx++;
-    gbc.weightx = 1;
-    co.add(fontprefcomponent.getButton(), gbc);
+		// BEGIN OVERRIDES
+		{
+			JPanel box = new JPanel(new GridBagLayout());
+			box.setBorder(BorderFactory
+							.createTitledBorder("Setting Overrides"));
 
-    fontprefcomponent.getLabel().setEnabled(menubarCheckBox.isSelected()); 
-    fontprefcomponent.getButton().setEnabled(menubarCheckBox.isSelected());
+			gbc.gridx = 0;
+			gbc.gridy = 0;
 
-    menubarCheckBox.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent ae) {
-        fontprefcomponent.getLabel().setEnabled(menubarCheckBox.isSelected());
-        fontprefcomponent.getButton().setEnabled(menubarCheckBox.isSelected());
-      }
-    });
+			// menubar font override
+			final JCheckBox menubarCheckBox = new JCheckBox(
+					"Override menubar font");
+			menubarCheckBox.setAlignmentX(LEFT_ALIGNMENT);
+			box.add(menubarCheckBox, gbc);
 
-    // user name override
-    // TODO: fix layout
-    // TODO: change these to better names (usernameCheckbox, usernameField)
-    final JCheckBox username = new JCheckBox("Override user name");
-    final JTextField usernameField = new JTextField(20);
-    final JLabel usernameLabel = new JLabel("Name:");
-    usernameLabel.setLabelFor(usernameField);
+			// TODO: make checkbox a bool-pref
+			// TODO: make checkbox control font-pref-component (dim)
+			// TODO: c.gui.menubar.font isn't the right pref!
+			// TODO: figure out how to make the checkbox un-set the font pref
+			// (idea: PrefComponent interface, getPref(), checkbox calls
+			// getPref() on controlled components, sets them to null on dim)
 
-    // set initial state from prefs
-    if (App.prefs.getPref("corina.user.name") != null) {
-      username.setSelected(true);
-      usernameField.setText(App.prefs.getPref("corina.user.name"));
-    } else {
-      username.setSelected(false);
-      usernameField.setEnabled(false);
-      usernameLabel.setEnabled(false);
-      usernameField.setText(System.getProperty("user.name"));
-    }
+			gbc.gridx++;
+			box.add(fontprefcomponent.getLabel(), gbc);
 
-    /*
-        why use corina.user.name instead of just setting user.name directly?
-        because if the user unchecks the checkbox, we need to be able to get
-        the original value of user.name back, and once you set the system
-        property user.name to something else, the original value is gone.
-    */
+			gbc.gridx++;
+			gbc.weightx = 1;
+			box.add(fontprefcomponent.getButton(), gbc);
 
-    username.setAlignmentX(LEFT_ALIGNMENT);
-    username.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-            // enable/disable text field
-            usernameField.setEnabled(username.isSelected());
-            usernameLabel.setEnabled(username.isSelected());
-            
-            // name to use: either the default, or the user's version
-            String name;
-            if (username.isSelected())
-                name = usernameField.getText();
-            else
-                name = System.getProperty("user.name");
+			fontprefcomponent.getLabel().setEnabled(
+					menubarCheckBox.isSelected());
+			fontprefcomponent.getButton().setEnabled(
+					menubarCheckBox.isSelected());
 
-            // set pref
-            App.prefs.setPref("corina.user.name", name);
-        }
-    });
+			menubarCheckBox.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					fontprefcomponent.getLabel().setEnabled(
+							menubarCheckBox.isSelected());
+					fontprefcomponent.getButton().setEnabled(
+							menubarCheckBox.isSelected());
+				}
+			});
 
-    usernameField.getDocument().addDocumentListener(new DocumentListener2() {
-        public void update(DocumentEvent e) {
-          App.prefs.setPref("corina.user.name", usernameField.getText());
-        }
-    });
+			// user name override
+			// TODO: fix layout
+			// TODO: change these to better names (usernameCheckbox,
+			// usernameField)
+			final JCheckBox username = new JCheckBox("Override user name");
+			final JTextField usernameField = new JTextField(20);
+			final JLabel usernameLabel = new JLabel("Name:");
+			usernameLabel.setLabelFor(usernameField);
 
-    gbc.gridy++;
-    gbc.gridx = 0;
-    gbc.weightx = 0;
+			// set initial state from prefs
+			if (App.prefs.getPref("corina.user.name") != null) {
+				username.setSelected(true);
+				usernameField.setText(App.prefs.getPref("corina.user.name"));
+			} else {
+				username.setSelected(false);
+				usernameField.setEnabled(false);
+				usernameLabel.setEnabled(false);
+				usernameField.setText(System.getProperty("user.name"));
+			}
 
-    co.add(username, gbc);
+			/*
+			 * why use corina.user.name instead of just setting user.name
+			 * directly? because if the user unchecks the checkbox, we need to
+			 * be able to get the original value of user.name back, and once you
+			 * set the system property user.name to something else, the original
+			 * value is gone.
+			 */
 
-    gbc.gridx++;
+			username.setAlignmentX(LEFT_ALIGNMENT);
+			username.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					// enable/disable text field
+					usernameField.setEnabled(username.isSelected());
+					usernameLabel.setEnabled(username.isSelected());
 
-    co.add(usernameLabel, gbc);
+					// name to use: either the default, or the user's version
+					String name;
+					if (username.isSelected())
+						name = usernameField.getText();
+					else
+						name = System.getProperty("user.name");
 
-    gbc.gridx++;
-    gbc.weightx = 1;
+					// set pref
+					App.prefs.setPref("corina.user.name", name);
+				}
+			});
 
-    co.add(usernameField, gbc);
-    
-    // serial IO capability...?
-    if (SerialSampleIO.hasSerialCapability()) {
-    	gbc.gridy++;
-    	gbc.gridx = 0;
-    	gbc.weightx = 0;
-    	
-    	boolean addedPort = false;
-    	JLabel label = new JLabel("Sample Recorder Data Port");
-    	// first, enumerate all the ports.
-    	Vector comportlist = SerialSampleIO.enumeratePorts();
-    	
-    	// do we have a COM port selected that's not in the list? (ugh!)
-    	String curport = App.prefs.getPref("corina.serialsampleio.port");
-    	if (curport != null && !comportlist.contains(curport)) {
-    		comportlist.add(curport);
-    		addedPort = true;
-    	}
-    	else if(curport == null) {
-    		curport = "<choose a serial port>";
-    		comportlist.add(curport);
-    	}
-    	
-    	// make the combobox, and select the current port...
-    	final JComboBox comports = new JComboBox(comportlist);
-    	if (curport != null)
-    		comports.setSelectedItem(curport);
-    	
-    	comports.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent ae) {
-    			App.prefs.setPref("corina.serialsampleio.port",
-    					(String) comports.getSelectedItem());
-    		}
-    	});
-    	
-    	label.setLabelFor(comports);
-    	co.add(label, gbc);
-    	
-    	gbc.gridx++;
-    	gbc.weightx = 1;
-    	
-    	co.add(comports, gbc);
-    	
-    	// add a warning message if we have a strange com port...
-    	if (addedPort) {
-    		gbc.gridy++;
-    		gbc.gridx = 1;
-    		gbc.gridwidth = gbc.REMAINDER;
-    		gbc.weightx = 0;
-    		gbc.fill = gbc.VERTICAL;
-    		
-    		label = new JLabel(
-    				"<html>The communications port '"
-    				+ curport
-    				+ "' was not found.<br>It may be in use;<br>"
-    				+ "you may experience problems if you attempt to use it.");
-    		co.add(label, gbc);
-    		
-    		gbc.fill = gbc.NONE;
-    		gbc.gridwidth = 1;
-    	}
-    }
+			usernameField.getDocument().addDocumentListener(
+					new DocumentListener2() {
+						public void update(DocumentEvent e) {
+							App.prefs.setPref("corina.user.name", usernameField
+									.getText());
+						}
+					});
 
-    gbc.gridy++;
-    gbc.gridx = 0;
-    gbc.weightx = 0;
-    
-    Component c = new BoolPrefComponent("BETA: Smoothed feel on Windows [requires restart]", "corina.windows.smooth");
-    co.add(c, gbc);
+			gbc.gridy++;
+			gbc.gridx = 0;
+			gbc.weightx = 0;
 
-    gbc.gridy++;    
-    c = new BoolPrefComponent("<html>Adaptive reading for elements (G:\\DATA removal)<br>" +
-    		"<font size=-2>Attempts to interpret absolute paths when reading from sums.", "corina.dir.adaptiveread");
-    co.add(c, gbc);
-    
-    gbc.gridy++;    
-    c = new BoolPrefComponent("<html>Save relative paths to elements<br>" +
-    		"<font size=-2>Sums produced with this on will not be compatible with older versions of Corina.", "corina.dir.relativepaths");
-    co.add(c, gbc);
-    
-    // file chooser
-    /*
-	 * This appears to be absolutely useless. Commented out for now? - lucas
-	 * ButtonGroup group = new ButtonGroup(); JRadioButton swing = new
-	 * JRadioButton("Swing (slower)"); JRadioButton awt = new JRadioButton("AWT
-	 * (faster, but no preview)"); group.add(swing); group.add(awt);
-	 * 
-	 * JLabel l = new JLabel("Use which file chooser:");
-	 * l.setAlignmentX(LEFT_ALIGNMENT);
-	 * 
-	 * co.add(l, gbc);
-	 * 
-	 * gbc.gridx++;
-	 * 
-	 * co.add(swing, gbc);
-	 * 
-	 * gbc.gridx++; gbc.weightx = 1;
-	 * 
-	 * co.add(awt, gbc);
-	 *  // TODO: add spacer below bottom, just in case?
-	 * 
-	 */
+			box.add(username, gbc);
 
-    add(co, BorderLayout.NORTH);
-  }
-  
-  public void addNotify() {
-    fontprefcomponent.setParent(getTopLevelAncestor());
-    super.addNotify();
-  }
+			gbc.gridx++;
+
+			box.add(usernameLabel, gbc);
+
+			gbc.gridx++;
+			gbc.weightx = 1;
+
+			box.add(usernameField, gbc);
+
+			content.add(box);
+
+		} // END OVERRIDES
+
+		// serial IO capability...?
+		if (SerialSampleIO.hasSerialCapability()) {
+			JPanel box = new JPanel(new GridBagLayout());
+			box.setBorder(BorderFactory
+					.createTitledBorder("Measuring device configuration"));
+
+			gbc.gridy = gbc.gridx = 0;
+			gbc.weightx = 1;
+
+			boolean addedPort = false;
+			JLabel label = new JLabel("Sample Recorder Data Port");
+			// first, enumerate all the ports.
+			Vector comportlist = SerialSampleIO.enumeratePorts();
+
+			// do we have a COM port selected that's not in the list? (ugh!)
+			String curport = App.prefs.getPref("corina.serialsampleio.port");
+			if (curport != null && !comportlist.contains(curport)) {
+				comportlist.add(curport);
+				addedPort = true;
+			} else if (curport == null) {
+				curport = "<choose a serial port>";
+				comportlist.add(curport);
+			}
+
+			// make the combobox, and select the current port...
+			final JComboBox comports = new JComboBox(comportlist);
+			if (curport != null)
+				comports.setSelectedItem(curport);
+
+			comports.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					App.prefs.setPref("corina.serialsampleio.port",
+							(String) comports.getSelectedItem());
+				}
+			});
+
+			label.setLabelFor(comports);
+			box.add(label, gbc);
+
+			gbc.gridx++;
+			gbc.weightx = 1;
+
+			box.add(comports, gbc);
+
+			// add a warning message if we have a strange com port...
+			if (addedPort) {
+				gbc.gridy++;
+				gbc.gridx = 1;
+				gbc.gridwidth = gbc.REMAINDER;
+				gbc.weightx = 0;
+				gbc.fill = gbc.VERTICAL;
+
+				label = new JLabel(
+						"<html>The communications port '"
+								+ curport
+								+ "' was not found.<br>It may be in use;<br>"
+								+ "you may experience problems if you attempt to use it.");
+				box.add(label, gbc);
+
+				gbc.fill = gbc.NONE;
+				gbc.gridwidth = 1;
+			}
+			content.add(box);
+		}
+		
+		// COFECHA integration
+		{
+			JPanel box = new JPanel(new FlowLayout(FlowLayout.LEFT));
+			box.setBorder(BorderFactory.createTitledBorder("COFECHA Integration"));
+			
+		    JLabel l = new JLabel("Path to COFECHA executable:");
+		    String oldFolder = App.prefs.getPref("corina.dir.cofecha", "");
+		    
+		    if(oldFolder.length() == 0)
+		    	cofechaPath = new JTextField("");
+		    else
+		    	cofechaPath = new JTextField(new File(oldFolder).getAbsolutePath());
+		    
+		    cofechaPath.setEditable(false);
+		    cofechaPath.setColumns(30);		    
+		    JButton change = new JButton("Change...");
+		    l.setLabelFor(change);
+		    
+		    box.add(l); box.add(cofechaPath); box.add(change);
+		    content.add(box);
+		    
+		    change.addActionListener(new ActionListener() {
+		    	public void actionPerformed(ActionEvent ae) {
+		    		chooseCofechaExecutable();
+		    	}
+		    });
+		}
+
+		{
+			JPanel box = new JPanel(null);
+			box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
+			box.setBorder(BorderFactory.createTitledBorder("Miscellaneous settings"));
+
+			Component c = new BoolPrefComponent(
+					"BETA: Smoothed feel on Windows [requires restart]",
+					"corina.windows.smooth");
+			box.add(c);
+
+			c = new BoolPrefComponent(
+					"<html>Adaptive reading for elements (G:\\DATA removal)<br>"
+							+ "<font size=-2>Attempts to interpret absolute paths when reading from sums.",
+					"corina.dir.adaptiveread");
+			box.add(c);
+
+			c = new BoolPrefComponent(
+					"<html>Save relative paths to elements<br>"
+							+ "<font size=-2>Sums produced with this on will not be compatible with older versions of Corina.",
+					"corina.dir.relativepaths");
+			box.add(c);
+			
+			content.add(box);
+		}
+
+		// file chooser
+		/*
+		 * This appears to be absolutely useless. Commented out for now? - lucas
+		 * ButtonGroup group = new ButtonGroup(); JRadioButton swing = new
+		 * JRadioButton("Swing (slower)"); JRadioButton awt = new JRadioButton("AWT
+		 * (faster, but no preview)"); group.add(swing); group.add(awt);
+		 * 
+		 * JLabel l = new JLabel("Use which file chooser:");
+		 * l.setAlignmentX(LEFT_ALIGNMENT);
+		 * 
+		 * co.add(l, gbc);
+		 * 
+		 * gbc.gridx++;
+		 * 
+		 * co.add(swing, gbc);
+		 * 
+		 * gbc.gridx++; gbc.weightx = 1;
+		 * 
+		 * co.add(awt, gbc);
+		 *  // TODO: add spacer below bottom, just in case?
+		 * 
+		 */
+		add(content);
+	}
+	
+	public void addNotify() {
+		fontprefcomponent.setParent(getTopLevelAncestor());
+		super.addNotify();
+	}
+	
+	private JTextField cofechaPath;
+	
+	private void chooseCofechaExecutable() {
+	    Container parent = getTopLevelAncestor();
+	    JFileChooser chooser = new JFileChooser();
+	    FileFilter filter = new FileFilter() {
+	    	public boolean accept(File f) {
+	            return f.getName().toLowerCase().equals("cofecha.exe") || f.isDirectory();
+	        }
+	        
+	        public String getDescription() {
+	            return "COFECHA Program files";
+	        }
+	    };
+	    
+	    chooser.setDialogTitle("Choose COFECHA executable (COFECHA.EXE)");
+	    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+	    chooser.setCurrentDirectory(new File(cofechaPath.getText()));
+	    chooser.setFileFilter(filter);
+	    
+	    int rv = chooser.showDialog(parent, "OK");
+	    if(rv != JFileChooser.APPROVE_OPTION)
+	    	return;
+	    
+	    String cofecha = chooser.getSelectedFile().getPath();
+	    cofechaPath.setText(cofecha);
+	    App.prefs.setPref("corina.dir.cofecha", cofecha);
+	}
 }
