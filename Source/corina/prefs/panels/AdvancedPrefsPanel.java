@@ -91,9 +91,9 @@ public class AdvancedPrefsPanel extends JPanel {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = new Insets(2, 2, 2, 2);
+		gbc.insets = new Insets(6, 6, 6, 6);
 		gbc.gridy = gbc.gridx = 0;
-		gbc.weightx = 1;
+		gbc.weightx = 1.0;
 
 		// BEGIN OVERRIDES
 		{
@@ -103,6 +103,7 @@ public class AdvancedPrefsPanel extends JPanel {
 
 			gbc.gridx = 0;
 			gbc.gridy = 0;
+			gbc.weightx = 0.5;
 
 			// menubar font override
 			final JCheckBox menubarCheckBox = new JCheckBox(
@@ -117,11 +118,11 @@ public class AdvancedPrefsPanel extends JPanel {
 			// (idea: PrefComponent interface, getPref(), checkbox calls
 			// getPref() on controlled components, sets them to null on dim)
 
+			gbc.weightx = 0.60;
 			gbc.gridx++;
 			box.add(fontprefcomponent.getLabel(), gbc);
 
 			gbc.gridx++;
-			gbc.weightx = 1;
 			box.add(fontprefcomponent.getButton(), gbc);
 
 			fontprefcomponent.getLabel().setEnabled(
@@ -195,7 +196,6 @@ public class AdvancedPrefsPanel extends JPanel {
 
 			gbc.gridy++;
 			gbc.gridx = 0;
-			gbc.weightx = 0;
 
 			box.add(username, gbc);
 
@@ -204,7 +204,6 @@ public class AdvancedPrefsPanel extends JPanel {
 			box.add(usernameLabel, gbc);
 
 			gbc.gridx++;
-			gbc.weightx = 1;
 
 			box.add(usernameField, gbc);
 
@@ -219,7 +218,7 @@ public class AdvancedPrefsPanel extends JPanel {
 					.createTitledBorder("Measuring device configuration"));
 
 			gbc.gridy = gbc.gridx = 0;
-			gbc.weightx = 1;
+			gbc.anchor = gbc.EAST;
 
 			boolean addedPort = false;
 			JLabel label = new JLabel("Sample Recorder Data Port");
@@ -251,8 +250,8 @@ public class AdvancedPrefsPanel extends JPanel {
 			label.setLabelFor(comports);
 			box.add(label, gbc);
 
+			gbc.anchor = gbc.WEST;
 			gbc.gridx++;
-			gbc.weightx = 1;
 
 			box.add(comports, gbc);
 
@@ -261,7 +260,6 @@ public class AdvancedPrefsPanel extends JPanel {
 				gbc.gridy++;
 				gbc.gridx = 1;
 				gbc.gridwidth = gbc.REMAINDER;
-				gbc.weightx = 0;
 				gbc.fill = gbc.VERTICAL;
 
 				label = new JLabel(
@@ -277,13 +275,28 @@ public class AdvancedPrefsPanel extends JPanel {
 			content.add(box);
 		}
 		
+		gbc.weightx = 1;
+		
 		// COFECHA integration
 		{
-			JPanel box = new JPanel(new FlowLayout(FlowLayout.LEFT));
+			JPanel box = new JPanel(new GridBagLayout());
 			box.setBorder(BorderFactory.createTitledBorder("COFECHA Integration"));
 			
+			gbc.gridx = gbc.gridy = 0;
+			gbc.anchor = gbc.WEST;
+			
+			Component c = new BoolPrefComponent(
+					"Enable COFECHA Integration [requires Corina restart]",
+					"corina.cofecha.enable");
+			box.add(c, gbc);
+			
+			gbc.gridy++;
+			
+			Container co = new Container();
+			co.setLayout(new FlowLayout(FlowLayout.LEFT));
+			
 		    JLabel l = new JLabel("Path to COFECHA executable:");
-		    String oldFolder = App.prefs.getPref("corina.dir.cofecha", "");
+		    String oldFolder = App.prefs.getPref("corina.cofecha.dir", "");
 		    
 		    if(oldFolder.length() == 0)
 		    	cofechaPath = new JTextField("");
@@ -295,37 +308,43 @@ public class AdvancedPrefsPanel extends JPanel {
 		    JButton change = new JButton("Change...");
 		    l.setLabelFor(change);
 		    
-		    box.add(l); box.add(cofechaPath); box.add(change);
-		    content.add(box);
-		    
 		    change.addActionListener(new ActionListener() {
 		    	public void actionPerformed(ActionEvent ae) {
 		    		chooseCofechaExecutable();
 		    	}
 		    });
+		    
+		    co.add(l); co.add(cofechaPath); co.add(change);
+		    box.add(co, gbc);
+		    
+		    content.add(box);
 		}
 
 		{
-			JPanel box = new JPanel(null);
-			box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
+			JPanel box = new JPanel(new GridBagLayout());
 			box.setBorder(BorderFactory.createTitledBorder("Miscellaneous settings"));
 
+			gbc.gridx = gbc.gridy = 0;
+			gbc.weightx = 1;
+			
 			Component c = new BoolPrefComponent(
-					"BETA: Smoothed feel on Windows [requires restart]",
+					"BETA: Smoothed feel on Windows [requires Corina restart]",
 					"corina.windows.smooth");
-			box.add(c);
+			box.add(c, gbc);
 
+			gbc.gridy++;
 			c = new BoolPrefComponent(
 					"<html>Adaptive reading for elements (G:\\DATA removal)<br>"
 							+ "<font size=-2>Attempts to interpret absolute paths when reading from sums.",
 					"corina.dir.adaptiveread");
-			box.add(c);
+			box.add(c, gbc);
 
+			gbc.gridy++;
 			c = new BoolPrefComponent(
 					"<html>Save relative paths to elements<br>"
 							+ "<font size=-2>Sums produced with this on will not be compatible with older versions of Corina.",
 					"corina.dir.relativepaths");
-			box.add(c);
+			box.add(c, gbc);
 			
 			content.add(box);
 		}
