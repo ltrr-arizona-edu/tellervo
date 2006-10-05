@@ -231,170 +231,7 @@ public class ExportDialog extends JDialog {
 		// initial view
 		updatePreview();
 	}
-	
-	/**
-	 * Save a single sample.
-	 * Pops up a dialog box asking for the file name to save to, exports to the type chosen in the
-	 * visible popup menu.
-	 * 
-	 * @param exportee the sample to export
-	 */
-	public void saveSingleSample(Sample exportee) {
-		try {
-			// ask for filename
-			String etext = "";
-			if (exportee.meta.get("filename") != null) {
-				File oldfile = new File((String) exportee.meta
-						.get("filename"));
-				etext = " (" + oldfile.getName() + ")";
-			}
-			String fn = FileDialog.showSingle(I18n.getText("export") +
-					etext);
-
-			// check for already-exists
-			Overwrite.overwrite(fn);
-
-			// save it
-			String format = exporters[popup.getSelectedIndex()];
-			Filetype f = (Filetype) Class.forName(format).newInstance();
-			BufferedWriter w = new BufferedWriter(new FileWriter(fn));
-			try {
-				f.save(sample, w);
-			} finally {
-				try {
-					w.close();
-				} catch (IOException ioe) {
-					ioe.printStackTrace();
-				}
-			}
-		} catch (UserCancelledException uce) {
-			// do nothing
-		} catch (IOException ioe) {
-			// problem saving, tell user
-			// WAS: passed |me| as owner of dialog; do i lose something here?
-			// WAS: WARNING_MESSAGE -- Alert uses ERROR_MESSAGE, which i think is at least as good
-			Alert.error(I18n.getText("export_error_title"), I18n
-					.getText("xport_error")
-					+ ioe);
-		} catch (Exception ex) {
-			// problem creating filetype, or npe, or whatever -- bug.
-			Bug.bug(ex);
-		}		
-	}
-	
-	/**
-	 * Save a list of samples in packed format.
-	 * Pops up a dialog box asking for the file name to save to, exports to the type chosen in the
-	 * visible popup menu.
-	 * 
-	 * @param exportee the sample to export
-	 */
-	public void savePackedSample(List slist) {
-		try {
-			// ask for filename
-			String fn = FileDialog.showSingle(I18n.getText("export"));
-
-			// check for already-exists
-			Overwrite.overwrite(fn);
-
-			// save it
-			String format = exporters[popup.getSelectedIndex()];
-			Filetype f = (Filetype) Class.forName(format).newInstance();
-			BufferedWriter w = new BufferedWriter(new FileWriter(fn));
-			try {
-				((PackedFileType)f).saveSamples(slist, w);
-				//f.save(sample, w);
-			} finally {
-				try {
-					w.close();
-				} catch (IOException ioe) {
-					ioe.printStackTrace();
-				}
-			}
-		} catch (UserCancelledException uce) {
-			// do nothing
-		} catch (IOException ioe) {
-			// problem saving, tell user
-			// WAS: passed |me| as owner of dialog; do i lose something here?
-			// WAS: WARNING_MESSAGE -- Alert uses ERROR_MESSAGE, which i think is at least as good
-			Alert.error(I18n.getText("export_error_title"), I18n
-					.getText("xport_error")
-					+ ioe);
-		} catch (Exception ex) {
-			// problem creating filetype, or npe, or whatever -- bug.
-			Bug.bug(ex);
-		}		
-	}
-	
-	/**
-	 * Saves multiple samples.
-	 * Pops up a dialog box asking for a folder to save to;
-	 * files are dumped in to this folder with a default extension added, ie:
-	 * ACM123.PIK becomes ACM123.PIK.TUC
-	 * 
-	 * @param slist a List of samples
-	 */
-	public void saveMultiSample(List slist) {		
-		try {
-			// get the export format...
-			String format = exporters[popup.getSelectedIndex()];
-			Filetype f = (Filetype) Class.forName(format).newInstance();
-			
-			JFileChooser chooser = new JFileChooser();
-		    chooser.setDialogTitle("Choose an export folder");
-		    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		    
-		    int rv = chooser.showDialog(null, "OK");
-		    if (rv != JFileChooser.APPROVE_OPTION) 
-		    	return;
-		    				
-			File dir = new File(
-					chooser.getSelectedFile().getAbsolutePath() +
-					File.separator + "Export" +
-					format.substring( format.lastIndexOf('.'), format.length())
-					);
-			
-			if(!((dir.exists() && dir.isDirectory()) || dir.mkdir())) {
-				Alert.error("Couldn't export", "Couldn't create/write to directory " + dir.getName());
-				return;
-			}
-
-			// for each sample, make a new filename and export it!
-			for (int i = 0; i < sample_list.size(); i++) {
-				Sample s = (Sample) sample_list.get(i);
-				String progress = "Processing "
-						+ ((String) s.meta.get("filename")) + " (" + i
-						+ "/" + sample_list.size() + ")";
-				preview.setText(progress);
-				
-				// so, we have things like "blah.pkw.TUC!"
-				// gross, but this is what people wanted.
-				String fn = dir.getAbsolutePath() +
-					File.separator +
-					new File((String)s.meta.get("filename")).getName() +
-					f.getDefaultExtension();		
-				
-				BufferedWriter w = new BufferedWriter(new FileWriter(fn));
-				try {
-					f.save(sample, w);
-				} finally {
-					try {
-						w.close();
-					} catch (IOException ioe) {
-						ioe.printStackTrace();
-					}
-				}					
-				System.out.println("Exported " + fn);
-			}
-			
-			Alert.message(I18n.getText("bulkexport..."), "Exporting comple.");
-		} catch (Exception ex) {
-			// problem creating filetype, or npe, or whatever -- bug.
-			Bug.bug(ex);
-		}
 		
-	}
-	
 	/**
 	 Create and display a sample-export dialog.
 
@@ -413,7 +250,8 @@ public class ExportDialog extends JDialog {
 				// close dialog
 				dispose();
 
-				saveSingleSample(sample);
+				String format = exporters[popup.getSelectedIndex()];
+				Export.saveSingleSample(sample, format);
 			}
 		});		
 
@@ -431,7 +269,7 @@ public class ExportDialog extends JDialog {
 	 */
 	public ExportDialog(List samples, Frame parent, boolean savePacked) {
 		super(parent, I18n.getText("export"), true);
-		
+
 		if(savePacked) {
 			this.sample = null;
 			this.sample_list = samples;
@@ -447,16 +285,19 @@ public class ExportDialog extends JDialog {
 			setTitle(getTitle() + " [first sample shown, choose format for all]");
 		}
 		
-		
+		final boolean bGlue = savePacked;
 		ok.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					// if the sample list exists, and there's no individual sample, we want
 					// a packed file. 
-					if(sample_list != null && sample == null)
-						savePackedSample(sample_list);
+					
+					String format = exporters[popup.getSelectedIndex()];
+
+					if(bGlue == true)
+						Export.savePackedSample(sample_list, format);
 					else
-						saveMultiSample(sample_list);
+						Export.saveMultiSample(sample_list, format);
 
 				} catch (Exception ex) {
 					Bug.bug(ex);
