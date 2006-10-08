@@ -405,6 +405,6 @@ public class AdvancedPrefsPanel extends JPanel {
 	    
 	    String cofecha = chooser.getSelectedFile().getPath();
 	    cofechaPath.setText(cofecha);
-	    App.prefs.setPref("corina.dir.cofecha", cofecha);
+	    App.prefs.setPref("corina.cofecha.dir", cofecha);
 	}
 }

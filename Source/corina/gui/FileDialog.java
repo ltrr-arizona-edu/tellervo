@@ -208,6 +208,7 @@ public class FileDialog {
 		}
 	}
 
+	
 	/**
 	 * Show a file selection dialog. This allows the user to select one file. It
 	 * shows a preview component, and has the default filters available.
@@ -218,10 +219,24 @@ public class FileDialog {
 	 * @exception UserCancelledException
 	 *              if the user cancelled
 	 */
-	public static String showSingle(String prompt)
+	public static String showSingle(String prompt) throws UserCancelledException {
+		return showSingle(prompt, wd);
+	}
+	
+	/**
+	 * Show a file selection dialog. This allows the user to select one file. It
+	 * shows a preview component, and has the default filters available.
+	 * 
+	 * @param prompt
+	 *          the text string to use for both the title bar and approve button
+	 * @return the filename that was selected
+	 * @exception UserCancelledException
+	 *              if the user cancelled
+	 */
+	public static String showSingle(String prompt, String workingDirectory)
 			throws UserCancelledException {
 		// create chooser
-		JFileChooser f = new JFileChooser(wd);
+		JFileChooser f = new JFileChooser(workingDirectory);
 
 		// add filters
 		addFilters(f);

@@ -7,11 +7,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.swing.JFileChooser;
 
 import corina.Sample;
+import corina.core.App;
 import corina.formats.Filetype;
 import corina.formats.PackedFileType;
 import corina.gui.Bug;
@@ -25,15 +28,44 @@ import corina.util.Overwrite;
  * @author Lucas Madar
  *
  */
-public class Export {
+public class Exporter {
+	private String exportDirectory;
+	private boolean rememberExportDirectory;
+	
+	public Exporter() {
+		rememberExportDirectory = true;
+
+		// load the last export directory. If it doesn't exist, make a nice default.
+		exportDirectory = App.prefs.getPref("corina.dir.export");
+		if(exportDirectory == null)
+			exportDirectory = App.prefs.getPref("corina.dir.data");
+		if(exportDirectory == null)
+			exportDirectory = "";
+		
+		// now, keep going back until it exists and is a directory.
+		File exdf = new File(exportDirectory).getAbsoluteFile();
+		
+		while(!exdf.isDirectory() && exdf.toString().length() > 0)
+			exdf = exdf.getParentFile();
+		
+		exportDirectory = exdf.getAbsolutePath();
+	}
+
+	// set from an outside source? Don't save it.
+	public void setExportDirectory(String directory) {
+		rememberExportDirectory = false;
+		exportDirectory = directory;
+	}
+	
 	/**
 	 * Save a single sample.
 	 * Pops up a dialog box asking for the file name to save to, exports to the type 
 	 * passed in 'format' (ie, corina.Formats.Tucson)
 	 * 
 	 * @param exportee the sample to export
+	 * @return The full path of the exported file name, or null if not saved
 	 */
-	public static void saveSingleSample(Sample exportee, String format) {
+	public String saveSingleSample(Sample exportee, String format) {
 		
 		// use the default title...
 		
@@ -46,12 +78,18 @@ public class Export {
 
 		String title = I18n.getText("export") + etext;
 		
-		saveSingleSample(exportee, format, title);
+		return saveSingleSample(exportee, format, title);
 	}
 
-	public static void saveSingleSample(Sample exportee, String format, String title) {
+	public String saveSingleSample(Sample exportee, String format, String title) {
+		String fn = null;
+		
 		try {
-			String fn = FileDialog.showSingle(title);
+			fn = FileDialog.showSingle(title, exportDirectory);
+
+			// save the export directory. Remember, fn is the actual filename, so we need to chop off the file name bit.
+			if(rememberExportDirectory)
+				App.prefs.setPref("corina.dir.export", new File(fn).getParent());
 
 			// check for already-exists
 			Overwrite.overwrite(fn);
@@ -80,7 +118,9 @@ public class Export {
 		} catch (Exception ex) {
 			// problem creating filetype, or npe, or whatever -- bug.
 			Bug.bug(ex);
-		}		
+		}
+				
+		return fn;
 	}
 	
 	/**
@@ -89,16 +129,22 @@ public class Export {
 	 * visible popup menu.
 	 * 
 	 * @param exportee the sample to export
+	 * @return the full path of the saved packed sample, or null if not saved
 	 */
-	public static void savePackedSample(List slist, String format) {
-		savePackedSample(slist, format, I18n.getText("export"));
+	public String savePackedSample(List slist, String format) {
+		return savePackedSample(slist, format, I18n.getText("export"));
 	}
 
-	public static void savePackedSample(List slist, String format, String title) {
+	public String savePackedSample(List slist, String format, String title) {
+		String fn = null;
 		try {
 			// ask for filename
-			String fn = FileDialog.showSingle(title);
-
+			fn = FileDialog.showSingle(title, exportDirectory);
+			
+			// save the export directory. Remember, fn is the actual filename, so we need to chop off the file name bit.
+			if(rememberExportDirectory)
+				App.prefs.setPref("corina.dir.export", new File(fn).getParent());
+			
 			// check for already-exists
 			Overwrite.overwrite(fn);
 
@@ -126,7 +172,9 @@ public class Export {
 		} catch (Exception ex) {
 			// problem creating filetype, or npe, or whatever -- bug.
 			Bug.bug(ex);
-		}		
+		}
+		
+		return fn;
 	}
 	
 	/**
@@ -136,12 +184,14 @@ public class Export {
 	 * ACM123.PIK becomes ACM123.PIK.TUC
 	 * 
 	 * @param slist a List of samples
+	 * @return a List of saved file names, or null if not saved.
 	 */
-	public static void saveMultiSample(List slist, String format) {
-		saveMultiSample(slist, format, "Choose an Export Folder");
+	public List saveMultiSample(List slist, String format) {
+		return saveMultiSample(slist, format, "Choose an Export Folder");
 	}
 	
-	public static void saveMultiSample(List slist, String format, String title) {		
+	public List saveMultiSample(List slist, String format, String title) {		
+		List savedNames = new ArrayList();
 		try {
 			// get the export format...
 			Filetype f = (Filetype) Class.forName(format).newInstance();
@@ -152,7 +202,11 @@ public class Export {
 		    
 		    int rv = chooser.showDialog(null, "OK");
 		    if (rv != JFileChooser.APPROVE_OPTION) 
-		    	return;
+		    	return null;
+		    
+			// save the export directory. Remember, fn is the actual filename, so we need to chop off the file name bit.
+			if(rememberExportDirectory)
+				App.prefs.setPref("corina.dir.export", chooser.getSelectedFile().getAbsolutePath());
 		    				
 			File dir = new File(
 					chooser.getSelectedFile().getAbsolutePath() +
@@ -160,9 +214,9 @@ public class Export {
 					format.substring( format.lastIndexOf('.'), format.length())
 					);
 			
-			if(!((dir.exists() && dir.isDirectory()) || dir.mkdir())) {
+			if(!((dir.exists() && dir.isDirectory()) || dir.mkdirs())) {
 				Alert.error("Couldn't export", "Couldn't create/write to directory " + dir.getName());
-				return;
+				return null;
 			}
 
 			// for each sample, make a new filename and export it!
@@ -180,6 +234,8 @@ public class Export {
 					new File((String)s.meta.get("filename")).getName() +
 					f.getDefaultExtension();		
 				
+				savedNames.add(fn);
+				
 				BufferedWriter w = new BufferedWriter(new FileWriter(fn));
 				try {
 					f.save(s, w);
@@ -193,13 +249,11 @@ public class Export {
 				System.out.println("Exported " + fn);
 			}
 			
-			Alert.message(I18n.getText("bulkexport..."), "Exporting comple.");
 		} catch (Exception ex) {
 			// problem creating filetype, or npe, or whatever -- bug.
 			Bug.bug(ex);
 		}
-		
+	
+		return savedNames;
 	}
-
-
 }

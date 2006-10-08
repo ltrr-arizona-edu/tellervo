@@ -251,7 +251,7 @@ public class ExportDialog extends JDialog {
 				dispose();
 
 				String format = exporters[popup.getSelectedIndex()];
-				Export.saveSingleSample(sample, format);
+				new Exporter().saveSingleSample(sample, format);
 			}
 		});		
 
@@ -295,9 +295,9 @@ public class ExportDialog extends JDialog {
 					String format = exporters[popup.getSelectedIndex()];
 
 					if(bGlue == true)
-						Export.savePackedSample(sample_list, format);
+						new Exporter().savePackedSample(sample_list, format);
 					else
-						Export.saveMultiSample(sample_list, format);
+						new Exporter().saveMultiSample(sample_list, format);
 
 				} catch (Exception ex) {
 					Bug.bug(ex);

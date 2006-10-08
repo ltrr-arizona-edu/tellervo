@@ -2,7 +2,10 @@ package corina.editor;
 
 import corina.Element;
 import corina.Sample;
+import corina.io.Exporter;
 import corina.io.ExportDialog;
+import corina.io.NativeSpawn;
+import corina.core.App;
 import corina.gui.FileDialog;
 import corina.gui.SaveableDocument;
 import corina.gui.UserCancelledException;
@@ -15,6 +18,8 @@ import corina.util.Overwrite;
 
 import javax.swing.JMenuItem;
 import javax.swing.AbstractAction;
+
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -48,16 +53,12 @@ public class EditorFileMenu extends FileMenu {
 		// add "Export..." menuitem
 		JMenuItem export = Builder.makeMenuItem("export...");
 		export.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent aev) {
-				// REFACTOR: make ExportDialog take just 1 arg (the frame),
-				// then make an export() method which calls that,
-				// and call makeMenuItem() with 2 args ("c.e.EFM.export()")
+			public void actionPerformed(ActionEvent ev) {
 				Sample s = ((Editor) f).getSample();
 				if (s.isSummed()) {
 					String labels[] = { "Sum", "Elements", "Combined" };
 
-					int action = JOptionPane
-							.showOptionDialog(
+					int action = JOptionPane.showOptionDialog(
 									f,
 									"You are exporting a sum.\n"
 											+ "Would you like to export the summed values,\n"
@@ -65,8 +66,8 @@ public class EditorFileMenu extends FileMenu {
 											+ "or export them combined in a packed file?",
 									I18n.getText("export..."),
 									JOptionPane.YES_NO_CANCEL_OPTION,
-									JOptionPane.QUESTION_MESSAGE, null, labels,
-									labels[0]);
+									JOptionPane.QUESTION_MESSAGE, null,
+									labels, labels[0]);
 
 					Sample base = s;
 					List samples = new ArrayList();
@@ -122,6 +123,130 @@ public class EditorFileMenu extends FileMenu {
 			}
 		});
 		add(export);
+		
+		if(Boolean.parseBoolean(App.prefs.getPref("corina.cofecha.enable"))) {
+			JMenuItem cofecha = new JMenuItem("Export to COFECHA...");
+			
+			cofecha.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent aev) {
+					
+					// create an exporter object
+					Exporter exporter = new Exporter();
+					
+					// for cofecha, remember the last directory we used cofecha in.
+					String lastCofechaDir = App.prefs.getPref("corina.cofecha.lastdir");
+					if(lastCofechaDir != null)
+						exporter.setExportDirectory(lastCofechaDir);
+
+					Sample s = ((Editor) f).getSample();
+					File savedFile = null;
+					if (s.isSummed()) {
+						String labels[] = { "Sum", "Elements", "Combined" }, fileRet;
+
+						int action = JOptionPane
+								.showOptionDialog(
+										f,
+										"You are exporting a sum.\n"
+												+ "Would you like to export the summed values,\n"
+												+ "export the sum's elements in a packed file,\n"
+												+ "or export them combined in a packed file?",
+										"Export to COFECHA...",
+										JOptionPane.YES_NO_CANCEL_OPTION,
+										JOptionPane.QUESTION_MESSAGE, null, labels,
+										labels[0]);
+
+						Sample base = s;
+						List samples = new ArrayList();
+
+						switch (action) {
+						case JOptionPane.CLOSED_OPTION:
+							return;
+
+						case 0:
+							fileRet = exporter.saveSingleSample(s, "corina.formats.Tucson", "Export as... [For COFECHA]");
+							if(fileRet != null)
+								savedFile = new File(fileRet);
+							break; // this case is normal. whew.
+
+						case 2: // export everything.
+							samples.add(s);
+
+						case 1: // export only the elements.
+							String errorsamples = "";
+							boolean problem = false;
+
+							for (int i = 0; i < s.elements.size(); i++) {
+								Element e = (Element) s.elements.get(i);
+
+								if (!e.isActive()) // skip inactive
+									continue;
+
+								try {
+									Sample stmp = e.load();
+									samples.add(stmp);
+								} catch (IOException ioe) {
+									problem = true;
+									if (errorsamples.length() != 0)
+										errorsamples += ", ";
+									errorsamples += e.getFilename();
+								}
+							}
+
+							// problem?
+							if (problem) {
+								Alert.error("Error loading sample(s):",
+										errorsamples);
+								return;
+							}
+
+							// no samples => don't bother doing anything
+							if (samples.isEmpty()) {
+								return;
+							}
+							
+							fileRet = exporter.savePackedSample(samples, "corina.formats.PackedTucson", "Export as... [For COFECHA]");
+							if(fileRet != null)
+								savedFile = new File(fileRet);
+						}
+					} else {
+						String fileRet = exporter.saveSingleSample(s, "corina.formats.Tucson", "Export as... [For COFECHA]");
+						if(fileRet != null)
+							savedFile = new File(fileRet);
+					}
+					
+					// ok, we saved a file...
+					if(savedFile != null) {
+						
+						// Where is cofecha? Remember this!
+						String cofecha = App.prefs.getPref("corina.cofecha.dir", "cofecha.exe");
+						// Save our directory for convenience
+						App.prefs.setPref("corina.cofecha.lastdir", savedFile.getParent());
+						
+						if(!new File(cofecha).exists()) {
+							Alert.error("Couldn't launch COFECHA", "COFECHA executable does not exist.\nMake sure you've set it up correctly in the preferences!");
+							return;
+						}
+						
+						final String command = '"' + cofecha + '"';
+						final String dir = savedFile.getParent();
+						EventQueue.invokeLater(new Runnable() {
+							public void run() {
+								try {
+									//Process proc = Runtime.getRuntime().exec(command); //, null, savedFile.getParentFile());
+									NativeSpawn.spawnProcess(command, dir);
+								} catch (IOException ioe) {
+									Alert.error("Couldn't launch COFECHA", ioe.toString());
+								}
+							}
+						});
+						// catch (InterruptedException iex) {
+						//	Alert.error("Couldn't launch COFECHA(2)", iex.toString());
+						//}
+					}
+				}
+			});
+			add(cofecha);
+		}
 
 		// add "Rename to..." menuitem
 		JMenuItem rename_to = Builder.makeMenuItem("rename_to...");
@@ -131,8 +256,7 @@ public class EditorFileMenu extends FileMenu {
 					// get doc
 					SaveableDocument doc = (SaveableDocument) f;
 					if (doc.getFilename() == null) {
-						JOptionPane
-								.showMessageDialog(
+						JOptionPane.showMessageDialog(
 										f,
 										"Can't 'rename' an unsaved Sample.\nUse save as instead.",
 										"Error", JOptionPane.ERROR_MESSAGE);
@@ -152,8 +276,7 @@ public class EditorFileMenu extends FileMenu {
 					File newFile = new File(filename);
 
 					if (newFile.exists()) {
-						JOptionPane
-								.showMessageDialog(
+						JOptionPane.showMessageDialog(
 										f,
 										"Can't rename to a file that already exists.\nUse save as instead.",
 										"Error renaming...",
