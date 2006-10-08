@@ -48,8 +48,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import sun.security.krb5.internal.crypto.e;
-
 import corina.Build;
 import corina.core.App;
 import corina.cross.sigscores.SignificantScoresView;
