@@ -236,8 +236,8 @@ public class FileDialog {
 	public static String showSingle(String prompt, String workingDirectory)
 			throws UserCancelledException {
 		// create chooser
-		JFileChooser f = new JFileChooser(workingDirectory);
-
+		JFileChooser f = new JFileChooser();
+		
 		// add filters
 		addFilters(f);
 
@@ -250,6 +250,9 @@ public class FileDialog {
 		f.setPreferredSize(dim);
 		setConfiguredMode(f, SINGLE_VIEWMODE_PREF);
 
+		// set the working directory
+		f.setSelectedFile(new File(workingDirectory));
+		
 		// show the dialog
 		int result = f.showDialog(null, prompt);
 

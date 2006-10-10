@@ -29,6 +29,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -122,33 +123,37 @@ public class SamplePreview extends JPanel implements PropertyChangeListener {
   	// idea.
 
     try {
-	    Previewable s=null;
+			Previewable s = null;
 
-	    // new: loop to find a Previewable
-	    try {
-        log.trace("creating grid");
-        // XXX: aaron - well, Grid constructor likes to hang on
-        // invalid files apparently... not sure what causes it
-        // but the parse method never returns
-        s = new Grid(file.getPath());
-        log.trace("done creating grid");
-	    } catch (WrongFiletypeException wfte) {
-	    // um.. no. this is annoying!
-        //wfte.printStackTrace();
-        s = new Sample(file.getPath());
-	    } // but can't string catches here ... darn
+			// new: loop to find a Previewable
+			try {
+				log.trace("creating grid");
+				// XXX: aaron - well, Grid constructor likes to hang on
+				// invalid files apparently... not sure what causes it
+				// but the parse method never returns
+				s = new Grid(file.getPath());
+				log.trace("done creating grid");
+			} catch (WrongFiletypeException wfte) {
+				// um.. no. this is annoying!
+				// wfte.printStackTrace();
+				s = new Sample(file.getPath());
+			} // but can't string catches here ... darn
 
-	    // get preview, and show it.
-	    showPreview(s.getPreview());
+			// get preview, and show it.
+			showPreview(s.getPreview());
 
-	    // TODO: if title is too long, wrap?  use tooltip?  (jlinedlabel?)
-    } catch (WrongFiletypeException wfte) {
-      wfte.printStackTrace();
-	    showPreview(new Preview.NotDendroDataPreview());
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-	    showPreview(new Preview.ErrorLoadingPreview(ioe));
-    }
+			// TODO: if title is too long, wrap? use tooltip? (jlinedlabel?)
+		} catch (WrongFiletypeException wfte) {
+			wfte.printStackTrace();
+			showPreview(new Preview.NotDendroDataPreview());
+		} catch (FileNotFoundException fnfe) {
+			// file doesn't exist, so just hide our preview window.
+			// useful for saving files. :)
+			setVisible(false);
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+			showPreview(new Preview.ErrorLoadingPreview(ioe));
+		}
   }
 
   private void showPreview(Preview p) {
