@@ -85,7 +85,16 @@ public class Exporter {
 		String fn = null;
 		
 		try {
-			fn = FileDialog.showSingle(title, exportDirectory);
+			Filetype f = (Filetype) Class.forName(format).newInstance();
+			String suggestedfn = 
+				exportDirectory + 
+				File.separator + 
+				new File((String)exportee.meta.get("filename")).getName() +
+				f.getDefaultExtension();
+			
+			System.out.println(suggestedfn);
+			
+			fn = FileDialog.showSingle(title, suggestedfn);
 
 			// save the export directory. Remember, fn is the actual filename, so we need to chop off the file name bit.
 			if(rememberExportDirectory)
@@ -95,7 +104,6 @@ public class Exporter {
 			Overwrite.overwrite(fn);
 
 			// save it
-			Filetype f = (Filetype) Class.forName(format).newInstance();
 			BufferedWriter w = new BufferedWriter(new FileWriter(fn));
 			try {
 				f.save(exportee, w);
