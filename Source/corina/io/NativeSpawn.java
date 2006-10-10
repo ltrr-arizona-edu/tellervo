@@ -17,9 +17,9 @@ public class NativeSpawn {
 		System.loadLibrary("NativeSpawn");
 	}
 	
-	public static void spawnProcess(String command, String workingDirectory) throws IOException {
-		new NativeSpawn().doSpawn(command, workingDirectory);		
+	public static void spawnConsoleProcess(String command, String workingDirectory, String consoleTitle) throws IllegalArgumentException {
+		new NativeSpawn().doConsoleSpawn(command, workingDirectory, consoleTitle);		
 	}
 	
-	private native void doSpawn(String command, String workingDirectory) throws IOException;
+	private native void doConsoleSpawn(String command, String workingDirectory, String consoleTitle) throws IllegalArgumentException;
 }
