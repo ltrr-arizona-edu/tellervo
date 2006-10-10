@@ -229,19 +229,16 @@ public class EditorFileMenu extends FileMenu {
 						
 						final String command = '"' + cofecha + '"';
 						final String dir = savedFile.getParent();
+						final String filename = savedFile.getName();
 						EventQueue.invokeLater(new Runnable() {
 							public void run() {
 								try {
-									//Process proc = Runtime.getRuntime().exec(command); //, null, savedFile.getParentFile());
-									NativeSpawn.spawnProcess(command, dir);
-								} catch (IOException ioe) {
+									NativeSpawn.spawnConsoleProcess(command, dir, "COFECHA Export - " + filename);
+								} catch (IllegalArgumentException ioe) {
 									Alert.error("Couldn't launch COFECHA", ioe.toString());
 								}
 							}
 						});
-						// catch (InterruptedException iex) {
-						//	Alert.error("Couldn't launch COFECHA(2)", iex.toString());
-						//}
 					}
 				}
 			});
