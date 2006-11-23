@@ -934,7 +934,14 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		return result;
 	}
 	
-	public void startMeasuring() {
+	public void toggleMeasuring() {
+		// are we already measuring?
+		if(measurePanel != null) {
+			stopMeasuring();
+			return;
+		}
+		
+		// ok, start measuring, if we can!
 		SerialSampleIO dataPort;
 		try {
 			dataPort = new SerialSampleIO(App.prefs.getPref("corina.serialsampleio.port"));
@@ -947,7 +954,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			return;
 		}
 		
-		editorEditMenu.enableMeasureMenu(false);
+		editorEditMenu.setMeasuring(true);
 		dataView.enableEditing(false);
 		
 		// add the measure panel...
@@ -961,12 +968,12 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		if (measurePanel != null) {
 			measurePanel.cleanup();
 			remove(measurePanel);
-			editorEditMenu.enableMeasureMenu(true);
+			editorEditMenu.setMeasuring(false);
 			dataView.enableEditing(true);
 			getContentPane().validate();
 			getContentPane().repaint();
+			measurePanel = null;
 		}
-		measurePanel = null;
 	}
 	
     public void windowClosing(WindowEvent e) {

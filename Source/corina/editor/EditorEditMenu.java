@@ -216,7 +216,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		measureMenu = Builder.makeMenuItem("start_measuring");
 		measureMenu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
-				editor.startMeasuring();
+				editor.toggleMeasuring();
 			}
 		});
 		add(measureMenu);
@@ -457,14 +457,15 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			measureMenu.setEnabled(!sample.isSummed());
 	}
 
-	public void enableMeasureMenu(boolean enable) {
+	// change the text in the menu to match what we're doing
+	public void setMeasuring(boolean measuring) {
 		if (measureMenu == null)
 			return;
 
-		if (!enable)
-			measureMenu.setEnabled(false);
+		if(!measuring)
+			measureMenu.setText(I18n.getText("start_measuring"));
 		else
-			measureMenu.setEnabled(!sample.isSummed());
+			measureMenu.setText(I18n.getText("stop_measuring"));
 	}
 
 	public void sampleElementsChanged(SampleEvent e) {

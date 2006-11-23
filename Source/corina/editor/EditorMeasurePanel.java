@@ -12,6 +12,7 @@ import java.awt.event.*;
 import corina.io.*;
 import java.applet.*;
 import corina.Year;
+import corina.ui.Builder;
 
 /**
  * @author Lucas Madar
@@ -38,7 +39,8 @@ public class EditorMeasurePanel extends JPanel implements SerialSampleIOListener
 		lastMeasurement = new JLabel("[No last measurement]");
 		add(lastMeasurement);
 				
-		JButton leave = new JButton("Stop measuring");
+
+		JButton leave = Builder.makeButton("stop_measuring");
 		add(leave);
 		leave.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
