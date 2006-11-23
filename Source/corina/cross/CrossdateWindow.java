@@ -250,8 +250,6 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
   private JComponent tableView = null;
   private JPanel cards;
   private CardLayout cardLayout;
-  private boolean movingFloats = true;
-  private boolean fixedFloats = false;
   private JLinedLabel errlabel = null;
 
   // private Tree fixedTree;
@@ -307,29 +305,6 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
     pack();
     setSize(new Dimension(640, 480));
     show();
-  }
-  // convert fixedFloats/movingFloats to a string, for storing in the prefs
-  private String encode() {
-    if (fixedFloats && !movingFloats)
-      return "fixed";
-    else if (!fixedFloats && movingFloats)
-      return "moving";
-    else
-      return "both";
-  }
-
-  // set fixedFloats/movingFloats based on a string, which was stored in the prefs
-  private void decode(String pref) {
-    if (pref.equals("fixed")) {
-      fixedFloats = true;
-      movingFloats = false;
-    } else if (pref.equals("both")) {
-      fixedFloats = true;
-      movingFloats = true;
-    } else { // "moving"
-      fixedFloats = false;
-      movingFloats = true;
-    }
   }
 
   // gui setup
@@ -666,52 +641,8 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
     	  gridFormat1.setSelected(true);
       }
 
-      // menuitems (final for inner class use)
-      final JMenuItem moving = Builder.makeRadioButtonMenuItem("second_moving");
-      final JMenuItem fixed = Builder.makeRadioButtonMenuItem("first_moving");
-      final JMenuItem both = Builder.makeRadioButtonMenuItem("both_moving");
-
-      // read old value from prefs, set window accordingly
-      if (App.prefs.getPref("corina.cross.dating") != null) {
-        decode(App.prefs.getPref("corina.cross.dating"));
-        if (!fixedFloats && movingFloats)
-          moving.setSelected(true);
-        else if (fixedFloats && !movingFloats)
-          fixed.setSelected(true);
-        else
-          both.setSelected(true);
-      } else {
-        moving.setSelected(true);
-      }
-
-      // an action to call when one of the 3 menuitems is selected
-      Action a = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          // based on menuitem, set flags
-          Object source = e.getSource();
-          if (source == moving) {
-            fixedFloats = false;
-            movingFloats = true;
-          } else if (source == fixed) {
-            fixedFloats = true;
-            movingFloats = false;
-          } else { // both
-            fixedFloats = true;
-            movingFloats = true;
-          }
-
-          // update view
-          repaint();
-
-          // set pref
-          App.prefs.setPref("corina.cross.dating", encode());
-        }
-      };
-      moving.addActionListener(a);
-      fixed.addActionListener(a);
-      both.addActionListener(a);
       
-      a = new AbstractAction() {
+      Action a = new AbstractAction() {
           public void actionPerformed(ActionEvent e) {
         	int gfN;
             Object source = e.getSource();
@@ -748,13 +679,6 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
         views.add(asGrid);
         asCross.setSelected(true);
       }
-
-      { // ranges radio button group
-        ButtonGroup ranges = new ButtonGroup();
-        ranges.add(fixed);
-        ranges.add(moving);
-        ranges.add(both);
-      }
       
       { // grid format radio button group
           ButtonGroup gridFormats = new ButtonGroup();
@@ -770,10 +694,6 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
       add(asCross);
       add(asTable);
       add(asGrid);
-      addSeparator();
-      add(moving);
-      add(fixed);
-      add(both);
       addSeparator();
       add(gridFormatSelector);
     }
