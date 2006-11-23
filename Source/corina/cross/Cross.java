@@ -546,7 +546,8 @@ public abstract class Cross implements Runnable {
     */
     public final static String DEFAULT_CROSSDATES[] = new String[] {
 	"corina.cross.TScore",
+	"corina.cross.RValue",
 	"corina.cross.Trend",
-	"corina.cross.DScore",
+	"corina.cross.Weiserjahre",
     };
 }
