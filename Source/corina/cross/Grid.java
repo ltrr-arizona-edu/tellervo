@@ -221,7 +221,7 @@ public class Grid implements Runnable, Previewable {
 	
 	// (when that's done, t/tr/d can be unified between sequence and onecross)
 	// hey, cross.single() only makes sense in the context of a onecross, right?  score!
-	public static class CrossCell extends Single implements Cell {
+	public class CrossCell extends Single implements Cell {
 		
 		Sample fixed, moving;
 		
@@ -267,14 +267,29 @@ public class Grid implements Runnable, Previewable {
 			// cross
 			// REFACTOR: {"t=" + blah.format(t)} should be simply Score.toString()?
 			// TODO: need Cross.getShortName() (tscore -> "t") method
-			g2.drawString("t=" + formatT() + ", r=" + formatR(), x
-					+ EPS, y + (int) (getLineHeight() * scale) - EPS);
-			g2.drawString("tr=" + formatTrend(), x + EPS, y
-					+ (int) (2 * getLineHeight() * scale) - EPS);
-			g2.drawString("D=" + formatD(), x + EPS, y
-					+ (int) (3 * getLineHeight() * scale) - EPS);
-			g2.drawString("n=" + String.valueOf(n), x + EPS, y
-					+ (int) (4 * getLineHeight() * scale) - EPS);
+			switch (gridFormat) {
+			case GF_1:
+				g2.drawString("t=" + formatT() + ", r=" + formatR(), x + EPS, y
+						+ (int) (getLineHeight() * scale) - EPS);
+				g2.drawString("tr=" + formatTrend(), x + EPS, y
+						+ (int) (2 * getLineHeight() * scale) - EPS);
+				g2.drawString("D=" + formatD(), x + EPS, y
+						+ (int) (3 * getLineHeight() * scale) - EPS);
+				g2.drawString("n=" + String.valueOf(n), x + EPS, y
+						+ (int) (4 * getLineHeight() * scale) - EPS);
+				break;
+				
+			case GF_2:
+				g2.drawString("t=" + formatT(), x + EPS, y
+						+ (int) (getLineHeight() * scale) - EPS);
+				g2.drawString("r=" + formatR(), x + EPS, y
+						+ (int) (2 * getLineHeight() * scale) - EPS);
+				g2.drawString("tr=" + formatTrend(), x + EPS, y
+						+ (int) (3 * getLineHeight() * scale) - EPS);
+				g2.drawString("n=" + String.valueOf(n), x + EPS, y
+						+ (int) (4 * getLineHeight() * scale) - EPS);
+				break;				
+			}
 		}
 
 		// in toXML, store full precision, with no %'s -- this means
@@ -892,15 +907,38 @@ public class Grid implements Runnable, Previewable {
 			g2.drawRect(x, y, (int) (getCellWidth() * scale),
 					(int) (getCellHeight() * scale));
 
-			g2.drawString("t=" + formatT() + ", r=" + formatR(), x + EPS, y 
-					+ (int) (2 * getLineHeight() * scale) - EPS);
-			g2.drawString("tr=" + formatTrend(), x + EPS, y
-					+ (int) (3 * getLineHeight() * scale) - EPS);
-			g2.drawString("D=" + formatD(), x + EPS, y
-					+ (int) (4 * getLineHeight() * scale) - EPS);
-			g2.drawString("Averages n>=10", x + EPS, y
-					+ (int) (1 * getLineHeight() * scale) - EPS);
+			switch(gridFormat) {
+			case GF_1:
+				g2.drawString("t=" + formatT() + ", r=" + formatR(), x + EPS, y 
+						+ (int) (2 * getLineHeight() * scale) - EPS);
+				g2.drawString("tr=" + formatTrend(), x + EPS, y
+						+ (int) (3 * getLineHeight() * scale) - EPS);
+				g2.drawString("D=" + formatD(), x + EPS, y
+						+ (int) (4 * getLineHeight() * scale) - EPS);
+				g2.drawString("Averages n>=10", x + EPS, y
+						+ (int) (1 * getLineHeight() * scale) - EPS);
+				break;
+				
+			case GF_2:
+				g2.drawString("t=" + formatT(), x + EPS, y 
+						+ (int) (2 * getLineHeight() * scale) - EPS);
+				g2.drawString("tr=" + formatTrend(), x + EPS, y
+						+ (int) (3 * getLineHeight() * scale) - EPS);
+				g2.drawString("r=" + formatR(), x + EPS, y
+						+ (int) (4 * getLineHeight() * scale) - EPS);
+				g2.drawString("Averages n>=10", x + EPS, y
+						+ (int) (1 * getLineHeight() * scale) - EPS);
+				break;
+			}
 		}				
 	}
+
+	// for our grid format...
+	private final static int GF_1 = 1;
+	private final static int GF_2 = 2;
+	private int gridFormat = App.prefs.getIntPref("corina.cross.gridformat", 1);
 	
+	public void setFormat(int format) {
+		gridFormat = format;
+	}
 }

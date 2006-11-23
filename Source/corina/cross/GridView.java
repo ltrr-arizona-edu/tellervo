@@ -389,6 +389,11 @@ public class GridView extends JPanel {
 			cell.print((Graphics2D) g, 0, 0, getWidth(), getHeight(), scale);
 		}
 	}
+	
+	// pass our grid format on to our grid cells...
+	public void setGridFormat(int gfN) {
+		grid.setFormat(gfN);
+	}
 
 	// table model for the grid.
 	// EXCELLENT: this is great evidence for why Table shouldn't

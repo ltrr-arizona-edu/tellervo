@@ -44,6 +44,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -652,6 +653,19 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
         }
       });
 
+      // menu items for grid format
+      JMenu gridFormatSelector = Builder.makeMenu("grid_format");
+      final JMenuItem gridFormat1 = new JRadioButtonMenuItem("t & r, tr, D, n");
+      final JMenuItem gridFormat2 = new JRadioButtonMenuItem("t, r, tc, n");
+      
+      // read last selected grid format value from prefs
+      int gridFormatN = App.prefs.getIntPref("corina.cross.gridformat", 1);
+      if(gridFormatN == 2) {
+    	  gridFormat2.setSelected(true);
+      } else { // fall through, select format #1
+    	  gridFormat1.setSelected(true);
+      }
+
       // menuitems (final for inner class use)
       final JMenuItem moving = Builder.makeRadioButtonMenuItem("second_moving");
       final JMenuItem fixed = Builder.makeRadioButtonMenuItem("first_moving");
@@ -696,6 +710,36 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
       moving.addActionListener(a);
       fixed.addActionListener(a);
       both.addActionListener(a);
+      
+      a = new AbstractAction() {
+          public void actionPerformed(ActionEvent e) {
+        	int gfN;
+            Object source = e.getSource();
+            if (source == gridFormat1) {
+            	gfN = 1;
+            } else if (source == gridFormat2) {
+            	gfN = 2;
+            } else { 
+            	// ?? bail out.
+            	return;
+            }
+            
+            if(gridView != null) {
+            	// inform the gridView of our choice
+            	((GridView)gridView).setGridFormat(gfN);
+            	
+            	// update view if the grid is visible
+            	if(view == 2)
+            		gridView.repaint();
+            }
+
+            // set pref
+            App.prefs.setPref("corina.cross.gridformat", Integer.toString(gfN));
+          }
+        };
+        gridFormat1.addActionListener(a);
+        gridFormat2.addActionListener(a);
+
 
       { // views radio button group -- this always starts as-cross
         ButtonGroup views = new ButtonGroup();
@@ -711,7 +755,18 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
         ranges.add(moving);
         ranges.add(both);
       }
+      
+      { // grid format radio button group
+          ButtonGroup gridFormats = new ButtonGroup();
+          gridFormats.add(gridFormat1);
+          gridFormats.add(gridFormat2);
+          
+          // jam these in our submenu
+          gridFormatSelector.add(gridFormat1);
+          gridFormatSelector.add(gridFormat2);
+      }
 
+      
       add(asCross);
       add(asTable);
       add(asGrid);
@@ -719,6 +774,8 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
       add(moving);
       add(fixed);
       add(both);
+      addSeparator();
+      add(gridFormatSelector);
     }
   }
 
