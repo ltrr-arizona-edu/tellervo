@@ -722,7 +722,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
             } else { 
             	// ?? bail out.
             	return;
-            }
+            } 
             
             if(gridView != null) {
             	// inform the gridView of our choice
