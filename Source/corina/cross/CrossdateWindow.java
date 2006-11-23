@@ -662,6 +662,9 @@ public class CrossdateWindow extends XFrame implements PrintableDocument, PrefsL
             	// update view if the grid is visible
             	if(view == 2)
             		gridView.repaint();
+            	
+            	// redraw us, because things get ugly!
+            	repaint();
             }
 
             // set pref
