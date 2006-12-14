@@ -285,8 +285,9 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 	private void resetPopup(Field f) {
 		String field = f.getVariable();
 		JComboBox popup = (JComboBox) popups.get(f.getVariable());
-		String newValue = (String) s.meta.get(field);
-
+		// newValue can be an integer! beware!
+		String newValue = s.meta.get(field).toString();
+		
 		// maybe it's null
 		if (newValue == null) {
 			popup.setSelectedIndex(0);
