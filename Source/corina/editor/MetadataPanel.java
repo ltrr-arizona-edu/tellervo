@@ -285,13 +285,16 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 	private void resetPopup(Field f) {
 		String field = f.getVariable();
 		JComboBox popup = (JComboBox) popups.get(f.getVariable());
-		// newValue can be an integer! beware!
-		String newValue = s.meta.get(field).toString();
+		// newValue can be a String, Integer, or null...
+		Object nvTmp = s.meta.get(field);
+		String newValue;
 		
 		// maybe it's null
-		if (newValue == null) {
+		if (nvTmp == null) {
 			popup.setSelectedIndex(0);
 			return;
+		} else {
+			newValue = nvTmp.toString();
 		}
 
 		// for "PITH", what mecki's corina called "+" i call "*"
