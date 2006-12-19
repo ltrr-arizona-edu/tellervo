@@ -158,19 +158,19 @@ public class TScore extends RValue {
 				getMoving().data.size() - offsetMoving);
 
 		// already know how to compute r
-		float r = super.compute(offsetFixed, offsetMoving);
+		rval = super.compute(offsetFixed, offsetMoving);
 		// FIXME: get rid of cast!
 
 		// if r is negative, t is zero.
 		// (baillie & pilcher caught this earlier, at r's z3, but this
 		// way is more convenient for me, and gives the same result.)
-		if (r < 0)
+		if (rval < 0)
 			return 0;
 
 		// t = r * sqrt(n-2)/sqrt(1-r^2)
 		float num = (float) Math.sqrt(overlap - 2);
-		float den = (float) Math.sqrt(1 - r * r);
-		float t = r * num / den;
+		float den = (float) Math.sqrt(1 - rval * rval);
+		float t = rval * num / den;
 
 		// if overlap=1 or some other silliness, make it zero.
 		if (Float.isNaN(t))
@@ -178,4 +178,6 @@ public class TScore extends RValue {
 
 		return t;
 	}
+	
+	public float rval = 0.0f;
 }
