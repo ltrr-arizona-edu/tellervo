@@ -542,9 +542,6 @@ public class GraphWindow extends XFrame implements SampleListener,
 		black.setOpaque(true);
 		scroller.setCorner(JScrollPane.LOWER_LEFT_CORNER, black);
 
-		// to set the initial title
-		plot.updateTitle();
-		
 		// to turn on baselines and vert axis, if enabled...
 		plot.postScrollpanedInit();		
 

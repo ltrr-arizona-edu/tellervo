@@ -94,6 +94,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	
 	private Font graphNamesFont = new Font("Dialog", Font.PLAIN, 15);
 	private Font tickFont = new Font("Dialog", Font.PLAIN, 11);	
+
+	private String scorePostpend = "";
 		
 	private PlotAgents agents;
 	
@@ -191,7 +193,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			title += " (at " + g.getRange() + ")";
 
 		// set title
-		myFrame.setTitle(title + " - " + Build.VERSION + " " + Build.TIMESTAMP);
+		myFrame.setTitle(title + scorePostpend + " - " + Build.VERSION + " " + Build.TIMESTAMP);
 		
 		if(myFrame instanceof GraphWindow) {
 			((GraphWindow)myFrame).panelSelectionChanged();
@@ -368,6 +370,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		//        recomputeDrops(); -- writeme?
 
 		// repaint
+		calculateScores();
 		updateTitle();
 		repaint();
 	}
@@ -648,6 +651,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			// but probably needs to be done, eventually.
 			// also, see sun's jscrollpane tutorial: it has
 			// demos on how to resize the scrollable area.
+			calculateScores();
 			repaint();
 		}
 
@@ -823,6 +827,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	}
 	
 	public void postScrollpanedInit() {
+		// calculate our initial scores, and set the initial title...
+		calculateScores();
+		updateTitle();
+		
 		setBaselinesVisible(Boolean.valueOf(App.prefs.getPref("corina.graph.baselines")).booleanValue());
 		setHundredpercentlinesVisible(Boolean.valueOf(App.prefs.getPref("corina.graph.hundredpercentlines")).booleanValue());
 		setAxisVisible(Boolean.valueOf(App.prefs.getPref("corina.graph.vertical-axis")).booleanValue());
@@ -1433,5 +1441,91 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				maxh = val;
 		}
 		return maxh;
+	}
+	
+	/*
+	 * QuickScorer class
+	 * 
+	 * This class is used to generate T-scores and R-scores
+	 * for display in our title bar.
+	 */
+
+	QuickScorer scoreCalculator = new QuickScorer();
+
+	private class QuickScorer {
+		public QuickScorer() {}
+
+		private class graphTScore extends corina.cross.TScore {
+			public graphTScore(Sample s1, Sample s2) {
+				super(s1, s2);
+				preamble();
+			}
+		}
+		
+		public void calculate(Sample s1, Sample s2, int o1, int o2) {			
+			if(sample1 != s1 || sample2 != s2) {
+				p_tscore = new graphTScore(s1, s2);
+				sample1 = s1;
+				sample2 = s2;
+			}
+			
+			tscore = p_tscore.compute(o1, o2);
+			rvalue = p_tscore.rval;
+		}
+		
+		public float tscore, rvalue;
+
+		private Sample sample1 = null, sample2 = null;
+		private graphTScore p_tscore;
+	}
+
+	/*
+	 * calculateScores()
+	 * 
+	 * when we have exactly two samples, we can do t- and r-score calculations on them.
+	 */
+	private void calculateScores() {
+		// only makes sense for two samples
+		
+		scorePostpend = "";
+		
+		if(graphs.size() != 2)
+			return;
+		
+		int next = (current + 1) % graphs.size();
+
+		// no scores!
+		// this shouldn't happen...
+		if(next == current)
+			return;
+		
+		Sample s1, s2;
+		Graph g1, g2;
+		
+		try {
+			g1 = (Graph) graphs.get(current);
+			g2 = (Graph) graphs.get(next);
+			s1 = (Sample) g1.graph;
+			s2 = (Sample) g2.graph;
+		} catch (java.lang.ClassCastException ce) {
+			// only works on Samples. Bail out if we're not dealing with them.
+			return;
+		}
+				
+		Year start1 = s1.getStart().add(g1.xoffset);
+		Year start2 = s2.getStart().add(g2.xoffset);
+		
+        int o1, o2;
+        if (start2.compareTo(start1) > 0) {
+            o1 = start2.diff(start1);
+            o2 = 0;
+        } else {
+            o1 = 0;
+            o2 = start1.diff(start2);
+        }
+
+        scoreCalculator.calculate(s1, s2, o1, o2);
+
+        scorePostpend = " [t: " + scoreCalculator.tscore + ", r: " + scoreCalculator.rvalue + "] ";
 	}
 }
