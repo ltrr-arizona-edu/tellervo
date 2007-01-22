@@ -25,6 +25,7 @@ import java.awt.Dimension;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 import javax.swing.JFileChooser;
 import javax.swing.JToggleButton;
@@ -147,7 +148,27 @@ public class FileDialog {
 	// XXX: can you say race condition - aaron... dependence on static
 	// initializers, data and methods needs to be fixed
 	// If this class is referenced before Prefs is, we are SOL
-	private static String wd = App.prefs.getPref("corina.dir.data");
+	//private static String wd = App.prefs.getPref("corina.dir.data");
+	
+	// working directory
+	// we keep a map of working directories for each function,
+	// ie opening/saving files ("general"), 
+	// exporting ("export"), etc.
+	
+	private static HashMap workingDirectories = new HashMap();
+	
+	private static String getWorkingDirectory(String function) {
+		String wd = (String) workingDirectories.get(function);
+		
+		if(wd == null)
+			return App.prefs.getPref("corina.dir.data");
+		else
+			return wd;
+	}
+	
+	private static void setWorkingDirectory(String function, String wd) {
+		workingDirectories.put(function, wd);
+	}
 
 	/**
 	 * This is a big hack to snoop into the JFileChooser GUI, and find
@@ -220,7 +241,7 @@ public class FileDialog {
 	 *              if the user cancelled
 	 */
 	public static String showSingle(String prompt) throws UserCancelledException {
-		return showSingle(prompt, wd);
+		return showSingle(prompt, getWorkingDirectory("general"), "general");
 	}
 	
 	/**
@@ -229,11 +250,16 @@ public class FileDialog {
 	 * 
 	 * @param prompt
 	 *          the text string to use for both the title bar and approve button
+	 * @param workingDirectory
+	 *          the directory to start in
+	 * @param function
+	 *          the function being used, ie general, export
+	 *          used for keeping working directories for different functions
 	 * @return the filename that was selected
 	 * @exception UserCancelledException
 	 *              if the user cancelled
 	 */
-	public static String showSingle(String prompt, String workingDirectory)
+	public static String showSingle(String prompt, String workingDirectory, String function)
 			throws UserCancelledException {
 		// create chooser
 		JFileChooser f = new JFileChooser();
@@ -251,7 +277,7 @@ public class FileDialog {
 		setConfiguredMode(f, SINGLE_VIEWMODE_PREF);
 
 		// set the working directory
-		f.setSelectedFile(new File(workingDirectory));
+		f.setCurrentDirectory(new File(workingDirectory));
 		
 		// show the dialog
 		int result = f.showDialog(null, prompt);
@@ -259,7 +285,7 @@ public class FileDialog {
 		try {
 			if (result == JFileChooser.APPROVE_OPTION) {
 				// ok: store wd, and return file
-				wd = f.getCurrentDirectory().getPath();
+				setWorkingDirectory(function, f.getCurrentDirectory().getPath());
 				return f.getSelectedFile().getPath();
 			} else {
 				// cancel
@@ -290,7 +316,7 @@ public class FileDialog {
 	public static List showMulti(String prompt) throws UserCancelledException {
 		// create a new list to use
 		List list = new ArrayList();
-		return showMultiReal(prompt, list);
+		return showMultiReal(prompt, list, "export");
 	}
 
 	/**
@@ -309,16 +335,16 @@ public class FileDialog {
 	public static List showMulti(String prompt, List list)
 			throws UserCancelledException { // to edit a list
 		// use the given list
-		return showMultiReal(prompt, list);
+		return showMultiReal(prompt, list, "general");
 	}
 
-	private static List showMultiReal(String prompt, List list)
+	private static List showMultiReal(String prompt, List list, String function)
 			throws UserCancelledException {
 		// big-preview-list-component-thingy ... yeah.
 		final MultiPreview mp = new MultiPreview(list);
 
 		// make double-clicking a file call MultiPreview's addClicked() method
-		JFileChooser f = new JFileChooser(wd) {
+		JFileChooser f = new JFileChooser(getWorkingDirectory(function)) {
 			public void approveSelection() {
 				mp.addClicked(); // heh heh heh...
 			}
@@ -352,8 +378,9 @@ public class FileDialog {
 		saveConfiguredMode(f, MULTI_VIEWMODE_PREF);
 
 		// store wd, if ok
-		if (mp.getSamples() != null)
-			wd = f.getCurrentDirectory().getPath();
+		if (mp.getSamples() != null) {
+			setWorkingDirectory(function, f.getCurrentDirectory().getPath());
+		}
 
 		// null? have to deal, now.
 		if (mp.getSamples() == null)

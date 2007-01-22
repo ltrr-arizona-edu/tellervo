@@ -94,7 +94,7 @@ public class Exporter {
 			
 			System.out.println(suggestedfn);
 			
-			fn = FileDialog.showSingle(title, suggestedfn);
+			fn = FileDialog.showSingle(title, suggestedfn, "export");
 
 			// save the export directory. Remember, fn is the actual filename, so we need to chop off the file name bit.
 			if(rememberExportDirectory)
@@ -147,7 +147,7 @@ public class Exporter {
 		String fn = null;
 		try {
 			// ask for filename
-			fn = FileDialog.showSingle(title, exportDirectory);
+			fn = FileDialog.showSingle(title, exportDirectory, "export");
 			
 			// save the export directory. Remember, fn is the actual filename, so we need to chop off the file name bit.
 			if(rememberExportDirectory)
