@@ -56,6 +56,7 @@ import corina.formats.WrongFiletypeException;
 import corina.logging.CorinaLog;
 import corina.prefs.Prefs;
 import corina.ui.I18n;
+import corina.util.StringUtils;
 import javax.swing.JLabel;
 
 /**
@@ -140,6 +141,7 @@ public class Grid implements Runnable, Previewable {
 		public abstract void print(Graphics2D g2, int x, int y, int width, int height, float scale);
 
 		public abstract String toXML();
+		public abstract String toString();
 	}
 
 	public static class EmptyCell implements Cell {
@@ -149,6 +151,10 @@ public class Grid implements Runnable, Previewable {
 
 		public String toXML() {
 			return "<empty/>";
+		}
+		
+		public String toString() {
+			return null;
 		}
 	}
 
@@ -186,6 +192,10 @@ public class Grid implements Runnable, Previewable {
 		public String toXML() {
 			return "<header name=\"" + name + "\"/>";
 		}
+		
+		public String toString() {
+			return name;
+		}
 	}
 
 	public class HeaderRangeCell extends HeaderCell {
@@ -216,6 +226,10 @@ public class Grid implements Runnable, Previewable {
 
 		public String toXML() {
 			return "<header name=\"" + name + "\" range=\"" + range + "\"/>";
+		}
+		
+		public String toString() {
+			return name.toString() + " " + range.toString();
 		}
 	}
 	
@@ -300,6 +314,35 @@ public class Grid implements Runnable, Previewable {
 		// (...later: *.cross? *.xdate? *.xd?  i like *.xdate)
 		
 		// err... cross already has this?
+		
+		public String toString() {
+			String s;
+			
+			if(n < 10)
+				return "n=" + String.valueOf(n);
+			
+			switch (gridFormat) {
+			case GF_1:
+				s = "t=" + formatT() + ", " +
+					"tr=" + formatTrend() + ", " +
+					"D=" + formatD() + ", " +					
+					"n=" + String.valueOf(n);
+				break;
+				
+			case GF_2:
+				s = "t=" + formatT() + ", " +
+					"r=" + formatR() + ", " +
+					"tr=" + formatTrend() + ", " +
+					"n=" + String.valueOf(n);				
+				break;
+				
+			default:
+				// this should never happen.
+				s = null;
+			}
+			
+			return s;
+		}
 	}
 
 	public static class LengthCell implements Cell {
@@ -319,6 +362,10 @@ public class Grid implements Runnable, Previewable {
 
 		public String toXML() {
 			return "<length n=\"" + length + "\"/>";
+		}
+		
+		public String toString() {
+			return String.valueOf(length);
 		}
 	}
 
@@ -871,6 +918,41 @@ public class Grid implements Runnable, Previewable {
 		}
 	}
 
+	/**
+	 Save this grid in CSV format.
+
+	 @param filename the target to save to
+	 @exception IOException if an I/O exception occurs while trying to save
+	 */
+	public void saveCSV(String filename) throws IOException {
+		// open, and write header
+		BufferedWriter w = new BufferedWriter(new FileWriter(filename));
+		try {
+			for (int r = 0; r < cell.length; r++) {
+				for (int c = 0; c < cell[r].length; c++) {
+					String s = cell[r][c].toString();
+					
+					// if it's a null string, it's an empty cell.
+					// We don't have empty cells in the middle of the grid, so this is safe and won't
+					// push anything out of alignment.
+					if(s == null)
+						continue;
+				
+					if(c != 0)
+						w.write(",");
+					w.write(StringUtils.escapeForCSV(s));
+				}
+				w.write("\r\n");
+			}
+		} finally {
+			try {
+				w.close();
+			} catch (IOException ioe) {
+				log.error("Error closing writer", ioe);
+			}
+		}		
+	}
+
 	// this class is used for making our average cell...
 	private class AvgSingle extends Single implements Cell {
 		private int numCrosses;
@@ -931,6 +1013,10 @@ public class Grid implements Runnable, Previewable {
 				break;
 			}
 		}				
+		
+		public String toString() {
+			return null;
+		}
 	}
 
 	// for our grid format...

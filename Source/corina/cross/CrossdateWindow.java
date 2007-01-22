@@ -53,6 +53,8 @@ import corina.Build;
 import corina.core.App;
 import corina.cross.sigscores.SignificantScoresView;
 import corina.gui.Layout;
+import corina.gui.FileDialog;
+import corina.gui.UserCancelledException;
 import corina.gui.PrintableDocument;
 import corina.gui.XFrame;
 import corina.gui.menus.EditMenu;
@@ -71,6 +73,7 @@ import corina.util.Center;
 import corina.util.JLinedLabel;
 import corina.util.OKCancel;
 import corina.util.Sort;
+import corina.util.Overwrite;
 
 /**
  * A window which displays a crossdate. Displays all scores and significant scores, and lets
@@ -301,7 +304,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument,
 		{
 			JMenuBar menubar = new JMenuBar();
 
-			menubar.add(new FileMenu(this));
+			menubar.add(new CrossdateFileMenu(this));
 			menubar.add(new CrossdateEditMenu());
 			menubar.add(new CrossdateViewMenu());
 			if (App.platform.isMac())
@@ -553,6 +556,33 @@ public class CrossdateWindow extends XFrame implements PrintableDocument,
 		graphButton.setEnabled(false);
 		mapButton.setEnabled(false);
 	}
+	
+	private class CrossdateFileMenu extends FileMenu {
+		public CrossdateFileMenu(CrossdateWindow w) {
+			super(w);
+		}
+		
+		public void addCloseSaveMenus() {
+			super.addCloseSaveMenus();
+			
+			JMenuItem export = new JMenuItem("Save as CSV...");
+			export.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						String filename = FileDialog.showSingle("Save as CSV...");
+						Overwrite.overwrite(filename);
+						new Grid(sequence).saveCSV(filename);						
+					} catch (UserCancelledException uce) {
+						return;
+					} catch (IOException ioe) {
+						// do something?
+						return;
+					}
+				}
+			});
+			add(export);
+		}
+	}
 
 	// our Edit menu has the additional menu item "Edit this Crossdate" (or
 	// something like that) which brings up a CrossdateKit.
@@ -592,7 +622,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument,
 	}
 
 	private class CrossdateViewMenu extends JMenu {
-		CrossdateViewMenu() {
+		public CrossdateViewMenu() {
 			super(I18n.getText("view"));
 
 			JMenuItem asCross = Builder

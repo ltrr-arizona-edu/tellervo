@@ -204,6 +204,34 @@ public class StringUtils {
 	}
 	return output.toString();
     }
+
+
+    /** 
+     escapeForCSV
+      
+     given a string, replace any occurances of " with double "'s, and return it surrounded in "'s
+      
+     @param input a string
+     @return the same string, with "'s escaped
+    */
+
+    public static String escapeForCSV(String input) {
+    	StringBuffer output = new StringBuffer();
+
+    	output.append("\"");
+    	
+    	for (int i=0; i<input.length(); i++) {
+    		char c = input.charAt(i);
+    		output.append(c);
+    		if(c == '"')
+    			output.append(c);
+    	}
+    	
+    	output.append("\"");
+    	
+    	return output.toString();
+    }
+
     
     /**
        In a string, replace one substring with another.
