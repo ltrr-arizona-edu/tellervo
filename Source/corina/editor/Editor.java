@@ -301,7 +301,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		this.stopMeasuring();
 		
 		// make sure user isn't editing
-		dataView.stopEditing();
+		dataView.stopEditing(false);
 		
 		// make sure they're all numbers -- no nulls, strings, etc.
 		// abstract this out as "boolean verifyOnlyNumbers()" or something?

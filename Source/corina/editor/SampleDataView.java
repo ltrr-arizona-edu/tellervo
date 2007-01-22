@@ -87,18 +87,46 @@ public class SampleDataView extends JPanel implements SampleListener,
 	}
 
 	// (for Editor)
-	public void stopEditing() {
-		// strategy: if editing, fire an VK_ENTER keytype event at the table
-		// (that also solves the "user typed the number and shouldn't lose that data" problem)
-		if (myTable.isEditing())
-			myTable.dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED,
-					System.currentTimeMillis(), 0, KeyEvent.VK_ENTER));
+	public void stopEditing(boolean disableFutureEdits) {
+		
+		/*
+		 * This "old way" looks like quite a kludge. 
+		 * How about we tell the table to stop editing, instead of jamming
+		 * keystrokes into it's queue? - lucas
+		 * 
+		  // strategy: if editing, fire an VK_ENTER keytype event at the table
+		  // (that also solves the "user typed the number and shouldn't lose that data" problem)
+		  if (myTable.isEditing())
+			  myTable.dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED,
+				  	System.currentTimeMillis(), 0, KeyEvent.VK_ENTER));
+		*/
+		
+		int row = myTable.getEditingRow();
+		int col = myTable.getEditingColumn();
+		if (row != -1 && col != -1) {
+		  myTable.getCellEditor(row,col).stopCellEditing(); 
+
+		  // disable editing
+		  if(disableFutureEdits)
+			  ((DecadalModel)myModel).enableEditing(false);
+		  
+		  // reselect whatever we just deselected
+		  myTable.setRowSelectionInterval(row, row);
+		  myTable.setColumnSelectionInterval(col, col);
+		}
+		
+	}
+	
+	public void startEditing() {
+		((DecadalModel)myModel).enableEditing(true);
 	}
 
+
 	public void enableEditing(boolean enable) {
-		if(!enable)
-			stopEditing();
-		((DecadalModel)myModel).enableEditing(enable);
+		if(enable)
+			startEditing();
+		else
+			stopEditing(true);
 	}
 	
 	
