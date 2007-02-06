@@ -23,8 +23,8 @@ public class EmailBugReport {
 			email.setHostName(App.prefs.getPref("corina.mail.mailhost"));
 			email.setFrom("corina-auto-report@dendro.cornell.edu", "Corina Automated Bug Report");
 			email.addTo("lucas@dendro.cornell.edu");
-			email.setSubject("Subject!");
 			
+			String userName = System.getProperty("user.name", "(unknown user)");
 			ListModel logEntries = CorinaLog.getLogListModel();
 			StringBuffer errors = new StringBuffer();
 			
@@ -35,14 +35,15 @@ public class EmailBugReport {
 	        errors.append(" ");
 	        errors.append(DateFormat.getTimeInstance().format(date));
 	        errors.append(" by ");
-	        errors.append(System.getProperty("user.name", "(unknown user)"));
+	        errors.append(userName);
 	        errors.append("\r\n\r\n");
 			
 			for(int i = 0; i < logEntries.getSize(); i++) {
 				errors.append(logEntries.getElementAt(i));
 				errors.append("\r\n");
 			}
-			
+
+			email.setSubject("CORINA Bug report from " + userName);
 			email.setMsg(errors.toString());
 			email.send();
 		} catch (EmailException e) {
