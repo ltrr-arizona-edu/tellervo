@@ -103,7 +103,8 @@ public class HelpMenu extends JMenu {
      * FIXME: not really just an "error" log... more like "activity" log.
      */
     protected void addErrorLogMenu() {
-      add(Builder.makeMenuItem("error_log...", "corina.gui.ErrorLog.showLogViewer()"));
+        add(Builder.makeMenuItem("error_log...", "corina.gui.ErrorLog.showLogViewer()"));
+        add(Builder.makeMenuItem("error_log_mail...", "corina.util.EmailBugReport.submitBugReport()"));
     }
 
     /**
