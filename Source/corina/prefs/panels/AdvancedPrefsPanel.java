@@ -206,6 +206,28 @@ public class AdvancedPrefsPanel extends JPanel {
 			gbc.gridx++;
 
 			box.add(usernameField, gbc);
+			
+			//SMTP server override
+			final JTextField smtpField = new JTextField(20);
+			final JLabel smtpLabel = new JLabel("SMTP Server:");
+			smtpLabel.setLabelFor(smtpField);
+
+			smtpField.setText(App.prefs.getPref("corina.mail.mailhost", ""));
+			smtpField.getDocument().addDocumentListener(
+					new DocumentListener2() {
+						public void update(DocumentEvent e) {
+							App.prefs.setPref("corina.mail.mailhost", smtpField.getText());
+						}
+					});
+
+			gbc.gridy++;
+			gbc.gridx = 1;
+
+			box.add(smtpLabel, gbc);
+
+			gbc.gridx++;
+
+			box.add(smtpField, gbc);
 
 			content.add(box);
 
