@@ -302,14 +302,14 @@ public class AdvancedPrefsPanel extends JPanel {
 		// COFECHA integration
 		{
 			JPanel box = new JPanel(new GridBagLayout());
-			box.setBorder(BorderFactory.createTitledBorder("COFECHA Integration"));
+			box.setBorder(BorderFactory.createTitledBorder("COREM (COFECHA) Integration"));
 			
 			gbc.gridx = gbc.gridy = 0;
 			gbc.anchor = gbc.WEST;
 			
 			Component c = new BoolPrefComponent(
-					"Enable COFECHA Integration [requires Corina restart]",
-					"corina.cofecha.enable");
+					"Enable COREM Integration [requires Corina restart]",
+					"corina.corem.enable");
 			box.add(c, gbc);
 			
 			gbc.gridy++;
@@ -317,26 +317,26 @@ public class AdvancedPrefsPanel extends JPanel {
 			Container co = new Container();
 			co.setLayout(new FlowLayout(FlowLayout.LEFT));
 			
-		    JLabel l = new JLabel("Path to COFECHA executable:");
-		    String oldFolder = App.prefs.getPref("corina.cofecha.dir", "");
+		    JLabel l = new JLabel("Path to COREM executable:");
+		    String oldFolder = App.prefs.getPref("corina.corem.dir", "");
 		    
 		    if(oldFolder.length() == 0)
-		    	cofechaPath = new JTextField("");
+		    	coremPath = new JTextField("");
 		    else
-		    	cofechaPath = new JTextField(new File(oldFolder).getAbsolutePath());
+		    	coremPath = new JTextField(new File(oldFolder).getAbsolutePath());
 		    
-		    cofechaPath.setEditable(false);
-		    cofechaPath.setColumns(30);		    
+		    coremPath.setEditable(false);
+		    coremPath.setColumns(30);		    
 		    JButton change = new JButton("Change...");
 		    l.setLabelFor(change);
 		    
 		    change.addActionListener(new ActionListener() {
 		    	public void actionPerformed(ActionEvent ae) {
-		    		chooseCofechaExecutable();
+		    		chooseCoremExecutable();
 		    	}
 		    });
 		    
-		    co.add(l); co.add(cofechaPath); co.add(change);
+		    co.add(l); co.add(coremPath); co.add(change);
 		    box.add(co, gbc);
 		    
 		    content.add(box);
@@ -401,24 +401,24 @@ public class AdvancedPrefsPanel extends JPanel {
 		super.addNotify();
 	}
 	
-	private JTextField cofechaPath;
+	private JTextField coremPath;
 	
-	private void chooseCofechaExecutable() {
+	private void chooseCoremExecutable() {
 	    Container parent = getTopLevelAncestor();
 	    JFileChooser chooser = new JFileChooser();
 	    FileFilter filter = new FileFilter() {
 	    	public boolean accept(File f) {
-	            return f.getName().toLowerCase().equals("cofecha.exe") || f.isDirectory();
+	            return f.getName().toLowerCase().equals("corem.exe") || f.isDirectory();
 	        }
 	        
 	        public String getDescription() {
-	            return "COFECHA Program files";
+	            return "COREM Program files";
 	        }
 	    };
 	    
-	    chooser.setDialogTitle("Choose COFECHA executable (COFECHA.EXE)");
+	    chooser.setDialogTitle("Choose COREM executable (COREM.EXE)");
 	    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-	    chooser.setCurrentDirectory(new File(cofechaPath.getText()));
+	    chooser.setCurrentDirectory(new File(coremPath.getText()));
 	    chooser.setFileFilter(filter);
 	    
 	    int rv = chooser.showDialog(parent, "OK");
@@ -426,7 +426,7 @@ public class AdvancedPrefsPanel extends JPanel {
 	    	return;
 	    
 	    String cofecha = chooser.getSelectedFile().getPath();
-	    cofechaPath.setText(cofecha);
-	    App.prefs.setPref("corina.cofecha.dir", cofecha);
+	    coremPath.setText(cofecha);
+	    App.prefs.setPref("corina.corem.dir", cofecha);
 	}
 }

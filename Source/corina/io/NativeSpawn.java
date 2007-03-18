@@ -17,9 +17,15 @@ public class NativeSpawn {
 		System.loadLibrary("NativeSpawn");
 	}
 	
-	public static void spawnConsoleProcess(String command, String workingDirectory, String consoleTitle) throws IllegalArgumentException {
+	public static void spawnConsoleProcess(String command, String workingDirectory, String consoleTitle) throws IllegalArgumentException, IOException {
 		new NativeSpawn().doConsoleSpawn(command, workingDirectory, consoleTitle);		
 	}
 	
-	private native void doConsoleSpawn(String command, String workingDirectory, String consoleTitle) throws IllegalArgumentException;
+	public static void spawnCofecha(String command, String workingDirectory, String inFilename, String outFilename) throws IllegalArgumentException, IOException {
+		new NativeSpawn().doCofechaSpawn(command, workingDirectory, inFilename, outFilename);		
+	}
+	
+	private native void doConsoleSpawn(String command, String workingDirectory, String consoleTitle) throws IllegalArgumentException, IOException;	
+	private native void doCofechaSpawn(String command, String workingDirectory, String inFilename, String outFilename) throws IllegalArgumentException, IOException;
+	
 }

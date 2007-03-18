@@ -162,11 +162,12 @@ public class FileDialog {
 		
 		if(wd == null)
 			return App.prefs.getPref("corina.dir.data");
-		else
-			return wd;
+
+		return wd;
 	}
 	
 	private static void setWorkingDirectory(String function, String wd) {
+		System.out.println("Setwd for " + function + ": " + wd);
 		workingDirectories.put(function, wd);
 	}
 
@@ -277,7 +278,14 @@ public class FileDialog {
 		setConfiguredMode(f, SINGLE_VIEWMODE_PREF);
 
 		// set the working directory
-		f.setCurrentDirectory(new File(workingDirectory));
+		File workFile = new File(workingDirectory);
+		if(!workFile.isDirectory()) {
+			File workDir = workFile.getParentFile();
+			f.setCurrentDirectory(workDir);
+			f.setSelectedFile(workFile);
+		}
+		else		
+			f.setCurrentDirectory(workFile);
 		
 		// show the dialog
 		int result = f.showDialog(null, prompt);
