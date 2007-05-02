@@ -17,15 +17,24 @@ public class EmailBugReport {
 	// don't instantiate me!
 	private EmailBugReport() {}
 	
-	public static void submitBugReport() {
+	public static void submitBugReportText(String errorText) {
 		try {
 			SimpleEmail email = new SimpleEmail();
-			email.setHostName(App.prefs.getPref("corina.mail.mailhost"));
+			String mailHost = App.prefs.getPref("corina.mail.mailhost");
+			
+			if(mailHost == null) {
+				Alert.error("No mail server set",
+						"Cannot submit bug report because no e-mail server was set.\r\n" +
+						"This may be due to a bug occuring before the system that stores preferences\r\n" +
+						"was initialized. Please copy and paste this bug to report it manually.");
+				return;
+			}
+			
+			email.setHostName(mailHost);
 			email.setFrom("corina-auto-report@dendro.cornell.edu", "Corina Automated Bug Report");
 			email.addTo("lucas@dendro.cornell.edu");
 			
 			String userName = System.getProperty("user.name", "(unknown user)");
-			ListModel logEntries = CorinaLog.getLogListModel();
 			StringBuffer errors = new StringBuffer();
 			
 	        Date date = new Date();
@@ -38,10 +47,7 @@ public class EmailBugReport {
 	        errors.append(userName);
 	        errors.append("\r\n\r\n");
 			
-			for(int i = 0; i < logEntries.getSize(); i++) {
-				errors.append(logEntries.getElementAt(i));
-				errors.append("\r\n");
-			}
+	        errors.append(errorText);
 
 			email.setSubject("CORINA Bug report from " + userName);
 			email.setMsg(errors.toString());
@@ -53,5 +59,18 @@ public class EmailBugReport {
 		}
 		
 		Alert.message("Error report email", "Error report e-mail successfully sent.");
+		
+	}
+	
+	public static void submitBugReport() {
+		StringBuffer errors = new StringBuffer();	
+		ListModel logEntries = CorinaLog.getLogListModel();
+
+		for(int i = 0; i < logEntries.getSize(); i++) {
+			errors.append(logEntries.getElementAt(i));
+			errors.append("\r\n");
+		}
+
+		submitBugReportText(errors.toString());
 	}
 }

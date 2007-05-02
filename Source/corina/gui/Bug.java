@@ -183,10 +183,12 @@ public class Bug extends JDialog {
 	  super();
 	  setTitle("Bug!");
 	  setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+	  
+	  final String bugText = "Exception:\n" +
+		   getStackTrace(t) + "\n\n" +
+		   getSystemInfo();
 
-  	JTextArea textArea = new JTextArea("Exception:\n" +
-  					   getStackTrace(t) + "\n\n" +
-  					   getSystemInfo(), 10, 50);
+  	JTextArea textArea = new JTextArea(bugText, 10, 50);
   	textArea.setEditable(false);
   	stackTrace = new JScrollPane(textArea);
   
@@ -199,6 +201,13 @@ public class Bug extends JDialog {
   		}
   	});
   
+  	JButton submitreport = new JButton("Submit e-mail bug report");
+  	submitreport.addActionListener(new AbstractAction() {
+  		public void actionPerformed(ActionEvent e) {
+  			corina.util.EmailBugReport.submitBugReportText(bugText);
+  		}
+  	});
+  	
   	more = new JButton("Show Details");
   	more.addActionListener(new AbstractAction() {
   		public void actionPerformed(ActionEvent e) {
@@ -223,7 +232,7 @@ public class Bug extends JDialog {
   		}
 	  });
 
-  	JPanel buttons = Layout.buttonLayout(more, null, bummer);
+  	JPanel buttons = Layout.buttonLayout(more, submitreport, bummer);
   	buttons.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
   
   	JPanel content = Layout.borderLayout(message,
