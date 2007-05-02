@@ -344,18 +344,12 @@ public class AdvancedPrefsPanel extends JPanel {
 
 		{
 			JPanel box = new JPanel(new GridBagLayout());
-			box.setBorder(BorderFactory.createTitledBorder("Miscellaneous settings"));
+			box.setBorder(BorderFactory.createTitledBorder("Old Corina Filetype Settings"));
 
 			gbc.gridx = gbc.gridy = 0;
 			gbc.weightx = 1;
 			
 			Component c = new BoolPrefComponent(
-					"BETA: Smoothed feel on Windows [requires Corina restart]",
-					"corina.windows.smooth");
-			box.add(c, gbc);
-
-			gbc.gridy++;
-			c = new BoolPrefComponent(
 					"<html>Adaptive reading for elements (G:\\DATA removal)<br>"
 							+ "<font size=-2>Attempts to interpret absolute paths when reading from sums.",
 					"corina.dir.adaptiveread");

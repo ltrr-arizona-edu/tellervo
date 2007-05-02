@@ -83,14 +83,6 @@ public class App {
           "Corina: Error Loading Preferences", JOptionPane.ERROR_MESSAGE);
     }*/
     
-    if(platform.isWindows() && Boolean.valueOf(prefs.getPref("corina.windows.smooth")).booleanValue()) {
-    	try {
-    		UIManager.setLookAndFeel("smooth.windows.SmoothLookAndFeel");
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    	}
-    }
-
     initialized = true;   
   }
 
