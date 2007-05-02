@@ -108,6 +108,19 @@ import corina.util.TextClipboard;
 import corina.util.GreedyProgressMonitor;
 import corina.gui.XFrame;
 
+
+/**
+* This code was edited or generated using CloudGarden's Jigloo
+* SWT/Swing GUI Builder, which is free for non-commercial
+* use. If Jigloo is being used commercially (ie, by a corporation,
+* company or business for any purpose whatever) then you
+* should purchase a license for each developer using Jigloo.
+* Please visit www.cloudgarden.com for details.
+* Use of Jigloo implies acceptance of these licensing terms.
+* A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
+* THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
+* LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
+*/
 /**
    Corina's browser.
 
@@ -881,9 +894,8 @@ public class Browser extends XFrame {
 		search.addSeparator();
 
 		// add sample searches here
-		search
-				.add(new SearchMenuItem("Oak", "quercus", "species",
-						browserModel));
+		search.add(new SearchMenuItem("Oak", "quercus", "species",
+				browserModel));
 		search.add(new SearchMenuItem("Tucson Format", "tucson", "filetype",
 				browserModel));
 		search.add(new SearchMenuItem("Absolutely Dated", "absolut", "dating",
@@ -1103,18 +1115,23 @@ public class Browser extends XFrame {
 
 	private class FieldCheckBoxMenuItem extends JCheckBoxMenuItem {
 		// e.g., ("name", "Name")
-		FieldCheckBoxMenuItem(String variable, String label) {
+		public FieldCheckBoxMenuItem(String variable, String label) {
 			this(variable, label, true);
 		}
 
-		FieldCheckBoxMenuItem(String variable, String label, boolean enabled) {
+		public FieldCheckBoxMenuItem(String variable, String label, boolean enabled) {
 			super(label);
+			
 			this.setEnabled(enabled);
+			
 			final String field = variable;
+			final FieldCheckBoxMenuItem glue = this;
+
 			setSelected(fields.indexOf(field) != -1);
+
 			addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					if (isSelected()) {
+					if (glue.isSelected()) {
 						// selected => add to end of list
 						fields.add(field);
 					} else {
@@ -1780,5 +1797,23 @@ public class Browser extends XFrame {
 				// ignore?
 			}
 		}
+	}
+	/**
+	* This method should return an instance of this class which does 
+	* NOT initialize it's GUI elements. This method is ONLY required by
+	* Jigloo if the superclass of this class is abstract or non-public. It 
+	* is not needed in any other situation.
+	 */
+	public static Object getGUIBuilderInstance() {
+		return new Browser(Boolean.FALSE);
+	}
+	
+	/**
+	 * This constructor is used by the getGUIBuilderInstance method to
+	 * provide an instance of this class which has not had it's GUI elements
+	 * initialized (ie, initGUI is not called in this constructor).
+	 */
+	public Browser(Boolean initGUI) {
+		super();
 	}
 }

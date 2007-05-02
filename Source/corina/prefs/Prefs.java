@@ -202,10 +202,17 @@ public class Prefs extends AbstractSubsystem {
     // returned by UIDefaults keySet object does not return any
     // keys, and therefore Enumeration must be used instead - aaron
     Enumeration e = defaults.keys();
+    
     while (e.hasMoreElements()) {
       Object key = e.nextElement();
+      Object value = defaults.get(key);
+      
+      // for some reason, java 1.6 seems to have some null values.
+      if(value == null)
+    	  continue;      
+      
       //log.debug("Saving UIDefault: " + key);
-      UIDEFAULTS.put(key, defaults.get(key));
+      UIDEFAULTS.put(key, value);
     }
   }
 
