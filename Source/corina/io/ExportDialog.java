@@ -114,6 +114,7 @@ public class ExportDialog extends JDialog {
 	// exporters for raw, summed files -- this seems slightly awkward,
 	// but it's the SimplestThing right now
 	private static final String EXPORTERS_RAW[] = new String[] {
+			"corina.formats.CorinaXML",
 			"corina.formats.Tucson", "corina.formats.TucsonSimple",
 			"corina.formats.TwoColumn", "corina.formats.Corina",
 			"corina.formats.TRML", "corina.formats.HTML",
@@ -121,6 +122,7 @@ public class ExportDialog extends JDialog {
 			"corina.formats.TSAPMatrix", "corina.formats.MultiColumn", };
 
 	private static final String EXPORTERS_SUM[] = new String[] {
+			"corina.formats.CorinaXML",
 			"corina.formats.Tucson", "corina.formats.TucsonSimple",
 			"corina.formats.PackedTucson", "corina.formats.TwoColumn",
 			"corina.formats.Corina", "corina.formats.TRML",
