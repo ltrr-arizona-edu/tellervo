@@ -34,7 +34,7 @@ import javax.swing.*;
 // TODO: debug
 // TODO: use
 public class AppearancePrefsPanel extends JComponent {
-  private FontPrefComponent fpc;
+  private FontPrefComponent fpce, fpct;
   public AppearancePrefsPanel() {
     setLayout(new GridBagLayout());
     
@@ -91,10 +91,10 @@ public class AppearancePrefsPanel extends JComponent {
 	    
 	    l = new JLabel("Font:");
 	    Container co = new Container();
-	    fpc = new FontPrefComponent(Prefs.EDIT_FONT);
+	    fpce = new FontPrefComponent(Prefs.EDIT_FONT);
 	    co.setLayout(new FlowLayout(FlowLayout.LEFT, 4, 0));
-	    co.add(fpc.getLabel());
-	    co.add(fpc.getButton());
+	    co.add(fpce.getLabel());
+	    co.add(fpce.getButton());
 
 	    c = co;
 
@@ -142,10 +142,10 @@ public class AppearancePrefsPanel extends JComponent {
 	    
 	    l = new JLabel("Font:");
 	    Container co = new Container();
-	    fpc = new FontPrefComponent("corina.deftable.font");
+	    fpct = new FontPrefComponent("corina.deftable.font");
 	    co.setLayout(new FlowLayout(FlowLayout.LEFT, 4, 0));
-	    co.add(fpc.getLabel());
-	    co.add(fpc.getButton());
+	    co.add(fpct.getLabel());
+	    co.add(fpct.getButton());
 
 	    c = co;
 
@@ -168,7 +168,8 @@ public class AppearancePrefsPanel extends JComponent {
   }
   
   public void addNotify() {
-    fpc.setParent(getTopLevelAncestor());
+    fpce.setParent(getTopLevelAncestor());
+    fpct.setParent(getTopLevelAncestor());
     super.addNotify();
   }
 }
