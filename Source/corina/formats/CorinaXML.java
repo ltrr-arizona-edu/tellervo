@@ -31,7 +31,6 @@ import corina.gui.Bug;
 import corina.util.StringUtils;
 import corina.util.GUIDGenerator;
 import corina.ui.I18n;
-import corina.util.XMLTag;
 
 import java.util.Iterator;
 import java.util.List;
