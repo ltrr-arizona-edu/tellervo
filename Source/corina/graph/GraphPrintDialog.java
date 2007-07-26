@@ -541,9 +541,13 @@ public class GraphPrintDialog extends JPanel {
 			pgraphWidth += 1f;
 			pgraphHeight += 1f;
 		    
-			printWidthHeight.setText("<html><b>" +
+			// printWidthHeight is only created if we're printing to a real printer
+			// otherwise, it's not initialized!
+		    if (printWidthHeight != null) {
+		    	printWidthHeight.setText("<html><b>" +
 					dfmt.format(pgraphWidth) + "\"</b>(w) x <b>" +
-					dfmt.format(pgraphHeight) + "\"</b>(h)");			
+					dfmt.format(pgraphHeight) + "\"</b>(h)");		
+		    }
 		}
 		
 		private void recalc(DocumentEvent d) {
