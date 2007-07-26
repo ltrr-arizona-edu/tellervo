@@ -181,6 +181,7 @@ public class Files {
     };
 
     private final static String LOADERS[] = {
+    // (not yet!) "corina.formats.CorinaXML",
 	"corina.formats.Corina",
 	"corina.formats.TRML",
 	"corina.formats.TSAPMatrix",

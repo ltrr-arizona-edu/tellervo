@@ -23,9 +23,12 @@ package corina;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import corina.core.App;
 import corina.formats.WrongFiletypeException;
+import corina.gui.Bug;
 
 /**
    An Element, basically a reference to a Sample (stored on disk).
@@ -269,6 +272,25 @@ public class Element implements Comparable {
 		return "?" + folder + ":" + basename;
 	}
 
+	/**
+	 @return the filename, with ?'s
+	 */
+	public URI getURI() {
+		
+		try {
+			// no basename or folder? return relative path...
+			if(basename == null || folder == null)
+				return new URI("absfile", filename, null);
+
+			return new URI("relfile", folder + ":" + basename, null);
+		} catch (URISyntaxException e) {
+			// this shouldn't happen...
+			new Bug(e);			
+			return null;
+		}		
+	}
+
+	
 	/**
 	 Load this Element.  Returns this Element in a Sample object.
 

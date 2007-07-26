@@ -178,92 +178,114 @@ public class MetadataTemplate {
     */
     public static class Field {
 
-	public Field(String variable,
-		     boolean editable) {
-	    this.variable = variable;
-	    // TODO: this'll get refactored into Field(...)! -- why?
-	    this.readonly = !editable;
+		public Field(String variable, boolean editable) {
+			this.variable = variable;
+			// TODO: this'll get refactored into Field(...)! -- why?
+			this.readonly = !editable;
 
-	    // set description, from |m|
-            this.description = I18n.getText("meta." + variable);
+			// set description, from |m|
+			this.description = I18n.getText("meta." + variable);
+		}
+
+		public Field(String variable, boolean editable, int lines) {
+			this(variable, editable);
+			this.lines = lines;
+			this.values = null;
+		}
+
+		public Field(String variable, boolean editable, String values) {
+			this(variable, editable);
+			this.lines = 1;
+
+			this.values = StringUtils.splitBy(values, ',');
+			this.machineValues = true;
+		}
+
+		private String variable = "";
+
+		public String getVariable() {
+			return variable;
+		}
+
+		private String description = "";
+
+		public String getDescription() {
+			return description;
+		}
+
+		// document: null means it's free-form! (do i need a 'type', too?)
+		// TYPES: string, one-of, string (multiple lines), label (ro!).
+		// subclass?
+		// -- StringField
+		// -- ChoiceField (getChoices(), etc.)
+		// -- TextField (just StringField with lines != 1?)
+		// -- LabelField (just like StringField, but users can't edit)
+		public String values[] = null;
+
+		// TODO: give this a nice public interface
+		// used by: DataComponent, MetadataPanel, ElementsPanel
+		public boolean isValidValue(String value) {
+			for (int i = 0; i < values.length; i++)
+				if (values[i].equals(value))
+					return true;
+			return false;
+		}
+
+		private boolean readonly = false;
+
+		public boolean isReadOnly() {
+			return readonly;
+		}
+
+		private int lines = 1;
+
+		public int getLines() {
+			return lines;
+		}
+
+		// TO ADD: "columns". ("sapwood count" doesn't need to be as
+		// wide as "title" or "species")
+
+		// TO ADD: numbers-only? (types)
+
+		// store type information?
+
+		// awt/swing sometimes lets you use objects directly,
+		// and use the toString() value as their label.
+		// so let's provide that.
+		public String toString() {
+			return description;
+		}
+		
+		// if it's a 'machine value', it's mapped by some text to some value.
+		// In some cases, we save this differently.
+		private boolean machineValues = false;
+		public boolean isMachineValue() {
+			return machineValues;
+		}
+		
+		// translate a machine value to a human readable value.
+		// If it's not a machine value, return the passed info
+		// If we can't parse, return the passed info.
+		public String getReadableValue(String machineValue) {
+			if(!machineValues)
+				return machineValue;
+			
+			String description = I18n.getText("meta." + getVariable() + "." + machineValue);
+			if(description == null)
+				return machineValue;
+			
+			return description;
+		}
 	}
-        
-	public Field(String variable,
-		     boolean editable,
-		     int lines) {
-	    this(variable, editable);
-	    this.lines = lines;
-	    this.values = null;
-	}
-
-	public Field(String variable,
-		     boolean editable,
-		     String values) {
-	    this(variable, editable);
-	    this.lines = 1;
-
-	    this.values = StringUtils.splitBy(values, ',');
-	}
-
-        private String variable="";
-        public String getVariable() {
-            return variable;
-        }
-
-        private String description="";
-	public String getDescription() {
-	    return description;
-	}
-        
-	// document: null means it's free-form!  (do i need a 'type', too?)
-	// TYPES: string, one-of, string (multiple lines), label (ro!).
-	// subclass?
-	// -- StringField
-	// -- ChoiceField (getChoices(), etc.)
-	// -- TextField (just StringField with lines != 1?)
-	// -- LabelField (just like StringField, but users can't edit)
-        public String values[]=null;
-	// TODO: give this a nice public interface
-	// used by: DataComponent, MetadataPanel, ElementsPanel
-	public boolean isValidValue(String value) {
-	    for (int i=0; i<values.length; i++)
-		if (values[i].equals(value))
-		    return true;
-	    return false;
-	}
-        
-        private boolean readonly=false;
-        public boolean isReadOnly() {
-            return readonly;
-        }
-        
-        private int lines=1;
-	public int getLines() {
-	    return lines;
-	}
-
-        // TO ADD: "columns".  ("sapwood count" doesn't need to be as
-        // wide as "title" or "species")
-
-        // TO ADD: numbers-only? (types)
-
-        // store type information?
-
-	// awt/swing sometimes lets you use objects directly,
-	// and use the toString() value as their label.
-	// so let's provide that.
-        public String toString() {
-            return description;
-        }
-    }
 
     /**
-        Return true if the given string is the name of a field, like
-        "species".
-
-	@param f a string to check
-	@return true, iff it's the name of a metadata field
-    */
+	 * Return true if the given string is the name of a field, like "species".
+	 * 
+	 * @param f
+	 *            a string to check
+	 * @return true, iff it's the name of a metadata field
+	 */
     public static boolean isField(String field) {
 	if (field == null)
             return false;
