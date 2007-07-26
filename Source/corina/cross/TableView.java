@@ -171,7 +171,7 @@ public class TableView extends JPanel {
 			public void addNotify() {
 				super.addNotify();
 				System.out.println("width=" + getWidth()); // 0!
-				getColumnModel().getColumn(0).setPreferredWidth(getWidth() / 2);
+				//getColumnModel().getColumn(0).setPreferredWidth(getWidth() / 2);
 			}
 		};
 		// doesn't work: wait for addNotify()? jtable.getColumnModel().getColumn(0).setPreferredWidth(jtable.getWidth() / 2);

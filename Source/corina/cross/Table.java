@@ -161,7 +161,7 @@ public class Table extends AbstractTableModel {
 
     public int getColumnCount() {
 	// title, scores*, overlap, distance
-        return 1 + Cross.DEFAULT_CROSSDATES.length + 2;
+        return 6;
     }
 
     public int getRowCount() {
@@ -173,8 +173,8 @@ public class Table extends AbstractTableModel {
 	case 0: return I18n.getText("sample");
 
 	case 1: return I18n.getText("tscore"); // ***
-	case 2: return I18n.getText("trend");
-	case 3: return I18n.getText("dscore");
+	case 2: return I18n.getText("rvalue");
+	case 3: return I18n.getText("trend");
 
 	case 4: return I18n.getText("overlap");
 	case 5: return I18n.getText("distance");
@@ -189,8 +189,8 @@ public class Table extends AbstractTableModel {
 	case 0: return r.title;
 
 	case 1: return (r.n==0 ? "" : r.formatT()); // ***
-	case 2: return (r.n==0 ? "" : r.formatTrend());
-	case 3: return (r.n==0 ? "" : r.formatD());
+	case 2: return (r.n==0 ? "" : r.formatR());
+	case 3: return (r.n==0 ? "" : r.formatTrend());
 
 	case 4: return String.valueOf(r.n);
 	case 5: return r.distanceAsString();
@@ -204,6 +204,7 @@ public class Table extends AbstractTableModel {
 
     // new c'tor: takes any (fixed, moving[]) combo from a seq.
     public Table(String fixed, List moving) throws IOException {
+    	super();
         // set singleton -- fixed sample
         singleton = new Sample(fixed);
 
