@@ -6,7 +6,7 @@
      set to the current working directory.
 -->
 
-<project name="cuwebauth" default="compile" basedir=".">
+<project name="corinaws" default="compile" basedir=".">
 
 <!-- ===================== Property Definitions =========================== -->
 
@@ -60,8 +60,9 @@
 
   <property name="app.name"      value="corina"/>
   <property name="app.version"   value="dev"/>
+  <property name="app.keystore"  value="corina.keystore.set.in.build.properties"/>
   <property name="build.home"    value="build"/>
-  <property name="deploy.home"   value="(set this in build.properties!)"/>
+  <property name="deploy.home"   value="deploy"/>
   <property name="dist.home"     value="dist"/>
 
 <!--  ==================== Compilation Control Options ==================== -->
@@ -78,7 +79,7 @@
 -->
 
   <property name="compile.debug"       value="true"/>
-  <property name="compile.deprecation" value="true"/>
+  <property name="compile.deprecation" value="false"/>
   <property name="compile.optimize"    value="true"/>
 
 <!-- ==================== External Dependencies =========================== -->
@@ -158,6 +159,9 @@
     <pathelement location="${batik.jar}"/>
     <pathelement location="${comm.jar}"/> 
     <pathelement location="${itext.jar}"/> 
+    <pathelement location="${mail.jar}"/> 
+    <pathelement location="${commons-email.jar}"/> 
+    <pathelement location="${RXTXcomm.jar}"/> 
   </path>
 
 <!-- ==================== All Target ====================================== -->
@@ -196,11 +200,12 @@
 
   <target name="compile" depends="prepare" description="Compile Java sources">
     <!-- Compile Java classes as necessary -->
-    <javac srcdir="source"
+    <javac srcdir="Source"
           destdir="${build.home}"
             debug="${compile.debug}"
       deprecation="${compile.deprecation}"
-         optimize="${compile.optimize}">
+         optimize="${compile.optimize}"
+         excludes="${compile.exclude}">
       <classpath refid="compile.classpath"/>
     </javac>
   </target>
@@ -242,7 +247,7 @@
 
   <target name="javadoc" depends="compile" description="Create Javadoc API documentation">
     <mkdir dir="${dist.home}/docs/api"/>
-    <javadoc sourcepath="source"
+    <javadoc sourcepath="Source"
            classpathref="compile.classpath"
                 destdir="${dist.home}/docs/api"
            packagenames="corina.*"
@@ -272,4 +277,59 @@
     <!-- Create build directory and copy static content -->
     <mkdir  dir="${build.home}"/>
   </target>
+
+<!-- ==================== Deploy Target ===================================== -->
+
+<!--
+   Creates .jar files for deployment as a java web start project
+-->
+
+  <target name="deploy" depends="compile" description="Create deployable binary distribution">
+    <!-- Copy documentation subdirectory -->
+    <!--  <copy todir="${dist.home}/docs">
+      <fileset dir="doc"/>
+    </copy> -->
+
+    <!-- Create deploy directory and copy static content -->
+    <mkdir dir="${deploy.home}"/>
+
+    <!-- Create resource JAR file -->
+    <jar jarfile="${deploy.home}/${app.name}-resources.jar"
+         index="true" compress="true" includes="Images">
+	<fileset dir="Source" casesensitive="no">
+		<include name="**/*.gif"/>
+		<include name="**/*.jpg"/>
+		<include name="**/*.png"/>
+		<include name="**/*.wav"/>
+        </fileset>
+    </jar>
+
+    <signjar jar="${deploy.home}/${app.name}-resources.jar" alias="dendro" storepass="d3ndr0" keystore="${app.keystore}"/>
+
+    <tstamp>
+	<format property="deploy.releaseid" pattern="yyyyMMdd-hhmm"/>
+    </tstamp>
+
+    <echo file="Source/Timestamp" message="${deploy.releaseid}"/>
+
+    <jar jarfile="${deploy.home}/${app.name}-${app.version}.jar"
+         basedir="${build.home}" index="true" compress="true">
+
+	<fileset dir="Source" casesensitive="no">
+		<include name="Translations/**"/>
+		<include name="Statistics/**"/>
+		<include name="*.properties"/>
+		<include name="log4j.xml"/>
+		<include name="Timestamp"/>
+	</fileset>
+
+    	<manifest>
+    		<attribute name="Main-Class" value="${app.name}.gui.Startup"/>
+   	</manifest>   	
+    </jar>
+
+    <signjar jar="${deploy.home}/${app.name}-${app.version}.jar" alias="dendro" storepass="d3ndr0" keystore="${app.keystore}"/>
+
+  </target>
+
 </project>
