@@ -157,13 +157,13 @@ public class XCorina extends JFrame {
 		// set tree icon (also in XFrame).
 		// EEP!  i can't use builder.geticon() if it doesn't guarantee an imageicon, no?
 		ClassLoader cl = this.getClass().getClassLoader();
-		java.net.URL url = cl.getResource("Images/Tree.png");
+		java.net.URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/Tree.png");
 		if (url != null) {
 			ImageIcon treeIcon = new ImageIcon(url);
 			setIconImage(treeIcon.getImage());
 		}
 
-		url = cl.getResource("Images/background.png");
+		url = cl.getResource("edu/cornell/dendro/corina_resources/Images/background.png");
 		if (url != null) {
 			backgroundImage = new ImageIcon(url);
 		}

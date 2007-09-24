@@ -167,7 +167,7 @@ public class Builder {
 	// i make icons from files in Images/ so often, i'll just make it a builder method.
 	// use: Builder.getIcon("x.png") returns an Icon made from the file "Images/x.png".
 	public static Icon getIcon(String name) {
-		java.net.URL url = cl.getResource("Images/" + name);
+		java.net.URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/" + name);
 		if (url != null)
 			return new ImageIcon(url);
 		else
@@ -177,7 +177,7 @@ public class Builder {
 	// TODO: Cursor makeCursor(String name)
 	// (yeah, it's pretty much the same as getIcon(), but don't tell anybody!)
 	public static Image getImage(String name) {
-		java.net.URL url = cl.getResource("Images/" + name);
+		java.net.URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/" + name);
 		if (url != null)
 			return new ImageIcon(url).getImage();
 		else

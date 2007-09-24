@@ -75,7 +75,7 @@ public class Startup implements PrivilegedAction {
     try {
       // TODO: implement progress listeners and splash screen for real
       ClassLoader cl = this.getClass().getClassLoader();
-      URL url = cl.getResource("Images/Tree.png");
+      URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/Tree.png");
       ImageIcon ii = null;
       if (url != null) {
         ii = new ImageIcon(url);

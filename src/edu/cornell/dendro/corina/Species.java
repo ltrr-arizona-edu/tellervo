@@ -79,7 +79,7 @@ public class Species {
         try {
             // load properties
             ClassLoader cl = edu.cornell.dendro.corina.Species.class.getClassLoader();
-            species.load(cl.getResource("species.properties").openStream());
+            species.load(cl.getResource("edu/cornell/dendro/corina_resources/species.properties").openStream());
         } catch (Exception e) {
             // can't happen
             new Bug(e); // move to its own class so the exception can be caught and it can be unit tested?

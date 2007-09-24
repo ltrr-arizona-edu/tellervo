@@ -221,7 +221,7 @@ public class I18n {
     static {
       ResourceBundle bundle;
       try {
-        bundle = ResourceBundle.getBundle("Translations/TextBundle");
+        bundle = ResourceBundle.getBundle("edu/cornell/dendro/corina_resources/Translations/TextBundle");
       } catch (MissingResourceException mre) {
         try {
           bundle = ResourceBundle.getBundle("TextBundle");

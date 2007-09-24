@@ -240,7 +240,7 @@ public class Prefs extends AbstractSubsystem {
     // load system properties as a resource from this jar
     ClassLoader cl = Prefs.class.getClassLoader();
     try {
-      java.io.InputStream is = cl.getResourceAsStream("prefs.properties");
+      java.io.InputStream is = cl.getResourceAsStream("edu/cornell/dendro/corina_resources/prefs.properties");
       if (is != null) {
         try {
           defaults.load(is);

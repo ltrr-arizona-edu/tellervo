@@ -39,7 +39,7 @@ public class Country {
         Properties prop = new Properties();
         try {
             ClassLoader cl = edu.cornell.dendro.corina.site.Country.class.getClassLoader();
-            prop.load(cl.getResource("countries.properties").openStream());
+            prop.load(cl.getResource("edu/cornell/dendro/corina_resources/countries.properties").openStream());
         } catch (Exception e) {
             Bug.bug(e); // can't happen
         }
