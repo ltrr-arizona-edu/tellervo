@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry including="edu/cornell/dendro/corina/**|edu/cornell/dendro/corina_resources/**|log4j.xml" kind="src" path="src"/>
+	<classpathentry including="edu/cornell/dendro/corina/**|edu/cornell/dendro/corina_resources/**|edu/cornell/dendro/cpgdb/**|log4j.xml" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="Libraries/avalon.jar"/>
 	<classpathentry kind="lib" path="Libraries/batik.jar"/>
