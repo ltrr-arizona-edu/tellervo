@@ -1,4 +1,4 @@
-package corina.sources;
+package edu.cornell.dendro.corina.sources;
 
 import javax.swing.Icon;
 import javax.swing.tree.DefaultTreeCellRenderer;

@@ -1,11 +1,11 @@
-package corina.util;
+package edu.cornell.dendro.corina.util;
 
 import java.text.DateFormat;
 import java.util.Date;
 
-import corina.core.App;
-import corina.ui.Alert;
-import corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.logging.CorinaLog;
 
 import javax.swing.ListModel;
 

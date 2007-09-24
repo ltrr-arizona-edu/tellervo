@@ -1,15 +1,15 @@
 /**
  * 
  */
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import corina.Range;
-import corina.Year;
-import corina.ui.Alert;
-import corina.util.Center;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.util.Center;
 
 
 /**

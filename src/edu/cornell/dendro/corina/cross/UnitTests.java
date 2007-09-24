@@ -1,6 +1,6 @@
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
-import corina.Sample;
+import edu.cornell.dendro.corina.Sample;
 
 import junit.framework.TestCase;
 

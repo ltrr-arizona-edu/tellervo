@@ -1,20 +1,20 @@
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
-import corina.Element;
-import corina.Sample;
-import corina.io.Exporter;
-import corina.io.ExportDialog;
-import corina.io.NativeSpawn;
-import corina.core.App;
-import corina.gui.FileDialog;
-import corina.gui.SaveableDocument;
-import corina.gui.UserCancelledException;
-import corina.gui.menus.FileMenu;
-import corina.gui.menus.OpenRecent;
-import corina.ui.Alert;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.util.Overwrite;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.io.Exporter;
+import edu.cornell.dendro.corina.io.ExportDialog;
+import edu.cornell.dendro.corina.io.NativeSpawn;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.SaveableDocument;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.gui.menus.FileMenu;
+import edu.cornell.dendro.corina.gui.menus.OpenRecent;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.Overwrite;
 
 import javax.swing.JMenuItem;
 import javax.swing.AbstractAction;
@@ -142,7 +142,7 @@ public class EditorFileMenu extends FileMenu {
 						return;
 
 					case 0:
-						fileRet = exporter.saveSingleSample(s, "corina.formats.Tucson", "Export as... [For COFECHA]");
+						fileRet = exporter.saveSingleSample(s, "edu.cornell.dendro.corina.formats.Tucson", "Export as... [For COFECHA]");
 						if(fileRet != null)
 							savedFile = new File(fileRet);
 						break; // this case is normal. whew.
@@ -183,12 +183,12 @@ public class EditorFileMenu extends FileMenu {
 							return;
 						}
 						
-						fileRet = exporter.savePackedSample(samples, "corina.formats.PackedTucson", "Export as... [For COFECHA]");
+						fileRet = exporter.savePackedSample(samples, "edu.cornell.dendro.corina.formats.PackedTucson", "Export as... [For COFECHA]");
 						if(fileRet != null)
 							savedFile = new File(fileRet);
 					}
 				} else {
-					String fileRet = exporter.saveSingleSample(s, "corina.formats.Tucson", "Export as... [For COFECHA]");
+					String fileRet = exporter.saveSingleSample(s, "edu.cornell.dendro.corina.formats.Tucson", "Export as... [For COFECHA]");
 					if(fileRet != null)
 						savedFile = new File(fileRet);
 				}

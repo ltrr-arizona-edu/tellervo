@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -38,10 +38,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import corina.Build;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.util.Center;
+import edu.cornell.dendro.corina.Build;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.Center;
 
 /**
  * About-box for Corina.

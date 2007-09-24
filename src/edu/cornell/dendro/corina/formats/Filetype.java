@@ -18,9 +18,9 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.formats;
+package edu.cornell.dendro.corina.formats;
 
-import corina.Sample;
+import edu.cornell.dendro.corina.Sample;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

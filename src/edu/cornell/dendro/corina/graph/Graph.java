@@ -18,11 +18,11 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
-import corina.Year;
-import corina.Range;
-import corina.Sample;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
 
 import java.util.List;
 import java.awt.Color;

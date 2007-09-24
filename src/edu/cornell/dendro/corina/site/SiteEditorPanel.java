@@ -1,17 +1,17 @@
-package corina.site;
+package edu.cornell.dendro.corina.site;
 
-import corina.map.MapFrame;
-import corina.prefs.Prefs;
-import corina.site.Site;
-import corina.site.SiteDB;
-import corina.site.Country;
-import corina.site.SiteInfoDialog;
-import corina.util.PopupListener;
-import corina.ui.Builder;
-import corina.gui.Layout;
-import corina.browser.Browser; // (for ODD_ROW_COLOR)
-import corina.core.App;
-import corina.util.Sort;
+import edu.cornell.dendro.corina.map.MapFrame;
+import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.Country;
+import edu.cornell.dendro.corina.site.SiteInfoDialog;
+import edu.cornell.dendro.corina.util.PopupListener;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.browser.Browser; // (for ODD_ROW_COLOR)
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.util.Sort;
 
 import java.util.Collections;
 import java.util.Comparator;

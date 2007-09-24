@@ -18,17 +18,17 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 
-import corina.Range;
-import corina.Sample;
-import corina.core.App;
-import corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.logging.CorinaLog;
 
 /**
  * <h2>Left to do</h2>

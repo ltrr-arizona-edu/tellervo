@@ -7,7 +7,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Stroke;
 
-import corina.util.ColorUtils;
+import edu.cornell.dendro.corina.util.ColorUtils;
 
 /**
  * Taken from Palette.  Lots of comments are Ken's not mine.

@@ -18,19 +18,19 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.formats;
+package edu.cornell.dendro.corina.formats;
 
-import corina.MetadataTemplate;
-import corina.Year;
-import corina.Range;
-import corina.Sample;
-import corina.Weiserjahre;
-import corina.MetadataTemplate.Field;
-import corina.core.App;
-import corina.gui.Bug;
-import corina.util.StringUtils;
-import corina.util.GUIDGenerator;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.MetadataTemplate;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Weiserjahre;
+import edu.cornell.dendro.corina.MetadataTemplate.Field;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.util.StringUtils;
+import edu.cornell.dendro.corina.util.GUIDGenerator;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import java.util.Iterator;
 import java.util.List;
@@ -112,7 +112,7 @@ public class CorinaXML implements Filetype {
 
 		if(s.elements != null) {
 			for (int i = 0; i < s.elements.size(); i++) {
-				corina.Element el = (corina.Element) s.elements.get(i);
+				edu.cornell.dendro.corina.Element el = (edu.cornell.dendro.corina.Element) s.elements.get(i);
 				URI uri = el.getURI();
 				Element e = doc.createElement("element");
 			

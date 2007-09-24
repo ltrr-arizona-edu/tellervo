@@ -1,6 +1,6 @@
-package corina.sources;
+package edu.cornell.dendro.corina.sources;
 
-import corina.Element;
+import edu.cornell.dendro.corina.Element;
 
 import java.awt.event.ActionListener;
 import javax.swing.Icon;
@@ -11,8 +11,8 @@ public interface Source {
 
     // available sources!
     public static final String[] SOURCES = new String[] {
-        "corina.sources.FolderSource",
-        "corina.sources.FavoritesSource",
+       "edu.cornell.dendro.corina.sources.FolderSource",
+       "edu.cornell.dendro.corina.sources.FavoritesSource",
     };
 
     // like "Trash" or "ITRDB"

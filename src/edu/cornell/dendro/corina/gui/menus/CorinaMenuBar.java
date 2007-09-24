@@ -1,9 +1,9 @@
-package corina.gui.menus;
+package edu.cornell.dendro.corina.gui.menus;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 // default:
 // - FileMenu

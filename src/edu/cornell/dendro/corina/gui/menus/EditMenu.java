@@ -18,14 +18,14 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui.menus;
+package edu.cornell.dendro.corina.gui.menus;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import corina.core.App;
-import corina.ui.Builder;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
     An "Edit" menu.
@@ -135,7 +135,7 @@ public class EditMenu extends JMenu {
         if (!App.platform.isMac()) {
             addSeparator();
             JMenuItem prefs = Builder.makeMenuItem("preferences",
-                                                   "corina.prefs.PrefsDialog.showPreferences()");
+                                                   "edu.cornell.dendro.corina.prefs.PrefsDialog.showPreferences()");
             add(prefs);
         }
     }

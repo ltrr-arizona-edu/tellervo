@@ -1,4 +1,4 @@
-package corina.cross.sigscores;
+package edu.cornell.dendro.corina.cross.sigscores;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

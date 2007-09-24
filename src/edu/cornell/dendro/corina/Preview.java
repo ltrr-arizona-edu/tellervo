@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina;
+package edu.cornell.dendro.corina;
 
 import java.util.Collections;
 import java.util.List;

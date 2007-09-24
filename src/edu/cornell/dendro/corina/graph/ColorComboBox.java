@@ -1,7 +1,7 @@
 /**
  * 
  */
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -16,8 +16,8 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-import corina.core.App;
-import corina.graph.GraphInfo.colorPair;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.graph.GraphInfo.colorPair;
 
 /**
  * @author Lucas Madar

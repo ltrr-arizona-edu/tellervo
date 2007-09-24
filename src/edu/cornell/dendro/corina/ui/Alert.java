@@ -1,4 +1,4 @@
-package corina.ui;
+package edu.cornell.dendro.corina.ui;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.io.IOException;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 public class Alert {
 

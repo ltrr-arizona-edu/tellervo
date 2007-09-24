@@ -18,9 +18,9 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.print;
+package edu.cornell.dendro.corina.print;
 
-import corina.util.StringUtils;
+import edu.cornell.dendro.corina.util.StringUtils;
 
 import java.util.List;
 import java.util.ArrayList;

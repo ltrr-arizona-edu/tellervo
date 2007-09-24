@@ -1,7 +1,7 @@
 /**
  * 
  */
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import java.awt.Graphics2D;
 import java.awt.Point;

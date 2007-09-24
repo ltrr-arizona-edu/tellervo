@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
 import java.text.DecimalFormat;
 

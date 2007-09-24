@@ -1,14 +1,14 @@
 /**
  * 
  */
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
-import corina.core.App;
-import corina.Range;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.Range;
 import java.awt.Color;
 import java.awt.Toolkit;
 
-import corina.util.ColorUtils;
+import edu.cornell.dendro.corina.util.ColorUtils;
 import javax.swing.JPanel;
 
 /**
@@ -86,7 +86,7 @@ public class GraphInfo {
 		
 		try {
 			ppy = Integer.parseInt(App.prefs.getPref(
-					"corina.graph.pixelsperyear", Integer.toString(ppy)));
+				"corina.graph.pixelsperyear", Integer.toString(ppy)));
 		} catch (NumberFormatException nfe) {
 			// do nothing, use the default.
 		}
@@ -95,7 +95,7 @@ public class GraphInfo {
 		// get the unit height, too
 		try {
 			ppy = Integer.parseInt(App.prefs.getPref(
-					"corina.graph.pixelspertenunit", Integer.toString(ppy)));
+				"corina.graph.pixelspertenunit", Integer.toString(ppy)));
 		} catch (NumberFormatException nfe) {
 			ppy = Toolkit.getDefaultToolkit().getScreenResolution() / 8;
 		}

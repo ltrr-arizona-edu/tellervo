@@ -58,7 +58,7 @@
  * <http://www.apache.org/>.
  *
  */ 
-package corina.util;
+package edu.cornell.dendro.corina.util;
 
 import java.io.InputStream;
 import java.io.Serializable;

@@ -1,4 +1,4 @@
-package corina.util;
+package edu.cornell.dendro.corina.util;
 
 import java.util.Collections;
 import java.util.List;

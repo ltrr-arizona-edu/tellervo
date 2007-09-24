@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -29,12 +29,12 @@ import java.awt.geom.GeneralPath;
 
 import javax.swing.JPanel;
 
-import corina.Range;
-import corina.Sample;
-import corina.Year;
-import corina.core.App;
-import corina.index.Index;
-import corina.util.ColorUtils;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.index.Index;
+import edu.cornell.dendro.corina.util.ColorUtils;
 
 public class SemilogPlot extends StandardPlot implements CorinaGraphPlotter {	
 	public SemilogPlot() {

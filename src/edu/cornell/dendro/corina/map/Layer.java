@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.map;
+package edu.cornell.dendro.corina.map;
 
 import java.awt.Graphics2D;
 import java.awt.AlphaComposite;

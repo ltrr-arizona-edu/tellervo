@@ -1,6 +1,6 @@
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
-import corina.gui.layouts.ButtonLayout;
+import edu.cornell.dendro.corina.gui.layouts.ButtonLayout;
 
 import javax.swing.JPanel;
 import javax.swing.Box;

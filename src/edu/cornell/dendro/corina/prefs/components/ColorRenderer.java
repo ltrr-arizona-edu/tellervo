@@ -1,4 +1,4 @@
-package corina.prefs.components;
+package edu.cornell.dendro.corina.prefs.components;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -8,7 +8,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
 
-import corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.logging.CorinaLog;
 
 public class ColorRenderer extends JLabel implements TableCellRenderer {
   private static final CorinaLog log = new CorinaLog(ColorRenderer.class);

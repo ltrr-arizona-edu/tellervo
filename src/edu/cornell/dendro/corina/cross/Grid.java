@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -46,17 +46,17 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import corina.Element;
-import corina.Preview;
-import corina.Previewable;
-import corina.Range;
-import corina.Sample;
-import corina.core.App;
-import corina.formats.WrongFiletypeException;
-import corina.logging.CorinaLog;
-import corina.prefs.Prefs;
-import corina.ui.I18n;
-import corina.util.StringUtils;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.Preview;
+import edu.cornell.dendro.corina.Previewable;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.StringUtils;
 import javax.swing.JLabel;
 
 /**

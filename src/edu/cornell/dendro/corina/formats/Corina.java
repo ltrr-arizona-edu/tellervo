@@ -18,17 +18,17 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.formats;
+package edu.cornell.dendro.corina.formats;
 
-import corina.Year;
-import corina.Range;
-import corina.Sample;
-import corina.Element;
-import corina.Weiserjahre;
-import corina.core.App;
-import corina.gui.Bug;
-import corina.util.StringUtils;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.Weiserjahre;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.util.StringUtils;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import java.util.List;
 import java.util.ArrayList;

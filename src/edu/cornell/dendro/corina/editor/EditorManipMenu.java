@@ -1,4 +1,4 @@
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -13,24 +13,24 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import corina.core.App;
-import corina.CorinaPermission;
-import corina.Sample;
-import corina.SampleEvent;
-import corina.SampleListener;
-import corina.cross.CrossdateWindow;
-import corina.cross.Sequence;
-import corina.gui.Bug;
-import corina.gui.FileDialog;
-import corina.gui.UserCancelledException;
-import corina.index.IndexDialog;
-import corina.manip.Reconcile;
-import corina.manip.ReconcileDialog;
-import corina.manip.RedateDialog;
-import corina.manip.Reverse;
-import corina.manip.TruncateDialog;
-import corina.ui.Builder;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.CorinaPermission;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.SampleEvent;
+import edu.cornell.dendro.corina.SampleListener;
+import edu.cornell.dendro.corina.cross.CrossdateWindow;
+import edu.cornell.dendro.corina.cross.Sequence;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.index.IndexDialog;
+import edu.cornell.dendro.corina.manip.Reconcile;
+import edu.cornell.dendro.corina.manip.ReconcileDialog;
+import edu.cornell.dendro.corina.manip.RedateDialog;
+import edu.cornell.dendro.corina.manip.Reverse;
+import edu.cornell.dendro.corina.manip.TruncateDialog;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 
 // REFACTOR: this class needs refactoring.  there's IOEs and FNFEs in here!
 

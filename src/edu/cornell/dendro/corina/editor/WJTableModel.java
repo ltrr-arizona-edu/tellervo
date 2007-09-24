@@ -18,13 +18,13 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
-import corina.Year;
-import corina.Sample;
-import corina.SampleListener;
-import corina.SampleEvent;
-import corina.Weiserjahre;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.SampleListener;
+import edu.cornell.dendro.corina.SampleEvent;
+import edu.cornell.dendro.corina.Weiserjahre;
 
 /**
    Special DecadalModel for Weiserjahre.

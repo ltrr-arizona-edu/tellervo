@@ -18,9 +18,9 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.browser;
+package edu.cornell.dendro.corina.browser;
 
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import java.util.Calendar;
 import java.util.Date;

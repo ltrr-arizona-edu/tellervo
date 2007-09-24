@@ -1,4 +1,4 @@
-package corina.index;
+package edu.cornell.dendro.corina.index;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -23,14 +23,14 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import corina.Sample;
-import corina.core.App;
-import corina.graph.Graph;
-import corina.graph.GrapherPanel;
-import corina.gui.Layout;
-import corina.prefs.PrefsEvent;
-import corina.prefs.PrefsListener;
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.graph.Graph;
+import edu.cornell.dendro.corina.graph.GrapherPanel;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.prefs.PrefsEvent;
+import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.ui.Builder;
 
 // south=buttons
 // center=graph (preview)
@@ -342,7 +342,7 @@ public class IndexDialog2 extends JDialog {
 	    l.add(ii);
 
 	    // create graph preview for |l|
-	    preview = new GrapherPanel(l, new corina.graph.PlotAgents(), new JFrame());
+	    preview = new GrapherPanel(l, new edu.cornell.dendro.corina.graph.PlotAgents(), new JFrame());
 	    ((GrapherPanel) preview).setScroller(new JScrollPane());
 	    p.add(preview, BorderLayout.CENTER);
 	}

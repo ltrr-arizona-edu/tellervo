@@ -1,4 +1,4 @@
-package corina.index;
+package edu.cornell.dendro.corina.index;
 
 import junit.framework.TestCase;
 

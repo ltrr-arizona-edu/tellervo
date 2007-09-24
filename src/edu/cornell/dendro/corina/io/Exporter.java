@@ -1,7 +1,7 @@
 /**
  * 
  */
-package corina.io;
+package edu.cornell.dendro.corina.io;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,16 +13,16 @@ import java.util.ListIterator;
 
 import javax.swing.JFileChooser;
 
-import corina.Sample;
-import corina.core.App;
-import corina.formats.Filetype;
-import corina.formats.PackedFileType;
-import corina.gui.Bug;
-import corina.gui.FileDialog;
-import corina.gui.UserCancelledException;
-import corina.ui.Alert;
-import corina.ui.I18n;
-import corina.util.Overwrite;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.formats.Filetype;
+import edu.cornell.dendro.corina.formats.PackedFileType;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.Overwrite;
 
 /**
  * @author Lucas Madar

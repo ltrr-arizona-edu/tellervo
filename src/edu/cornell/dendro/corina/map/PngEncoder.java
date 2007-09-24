@@ -1,4 +1,4 @@
-package corina.map;
+package edu.cornell.dendro.corina.map;
 // package com.keypoint;
 
 /**

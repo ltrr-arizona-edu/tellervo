@@ -18,11 +18,11 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.map;
+package edu.cornell.dendro.corina.map;
 
 import java.awt.Dimension;
 
-import corina.site.Location;
+import edu.cornell.dendro.corina.site.Location;
 
 // TODO: what's a zoom factor of 1.0 defined to be, exactly?
 // TODO: loc should be getCenter/setCenter?

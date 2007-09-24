@@ -1,4 +1,4 @@
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -94,7 +94,7 @@ public class SampleBit {
 		
 		buttonpanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		
-	    String oktext = corina.ui.I18n.getText("ok");
+	    String oktext = edu.cornell.dendro.corina.ui.I18n.getText("ok");
 	    if (oktext == null) oktext = "Ok";
 	    JButton okButton = new JButton(oktext);
 	    buttonpanel.add(okButton);
@@ -105,7 +105,7 @@ public class SampleBit {
 	      }
 	    });
 	    
-	    String canceltext = corina.ui.I18n.getText("cancel");
+	    String canceltext = edu.cornell.dendro.corina.ui.I18n.getText("cancel");
 	    if (canceltext == null) canceltext = "Cancel";
 	    JButton cancelButton = new JButton(canceltext);
 	    buttonpanel.add(cancelButton);

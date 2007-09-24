@@ -1,4 +1,4 @@
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -11,13 +11,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 
-import corina.Sample;
-import corina.SampleEvent;
-import corina.SampleListener;
-import corina.core.App;
-import corina.manip.MeanSensitivity;
-import corina.prefs.Prefs;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.SampleEvent;
+import edu.cornell.dendro.corina.SampleListener;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.manip.MeanSensitivity;
+import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /*
   TODO:

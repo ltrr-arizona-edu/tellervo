@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.browser;
+package edu.cornell.dendro.corina.browser;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -77,36 +77,36 @@ import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import corina.Element;
-import corina.MetadataTemplate;
-import corina.Range;
-import corina.Sample;
-import corina.core.App;
-import corina.cross.RangeRenderer;
-import corina.editor.Editor;
-import corina.gui.Bug;
-import corina.gui.Layout;
-import corina.gui.Scripts;
-import corina.gui.menus.HelpMenu;
-import corina.manip.Sum;
-import corina.prefs.Geometry;
-import corina.print.ByLine;
-import corina.print.EmptyLine;
-import corina.print.Line;
-import corina.print.Printer;
-import corina.print.TabbedLineFactory;
-import corina.print.TextLine;
-import corina.print.ThinLine;
-import corina.site.Site;
-import corina.site.SiteDB;
-import corina.site.SiteNotFoundException;
-import corina.ui.Alert;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.util.NaturalSort;
-import corina.util.TextClipboard;
-import corina.util.GreedyProgressMonitor;
-import corina.gui.XFrame;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.MetadataTemplate;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.cross.RangeRenderer;
+import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.Scripts;
+import edu.cornell.dendro.corina.gui.menus.HelpMenu;
+import edu.cornell.dendro.corina.manip.Sum;
+import edu.cornell.dendro.corina.prefs.Geometry;
+import edu.cornell.dendro.corina.print.ByLine;
+import edu.cornell.dendro.corina.print.EmptyLine;
+import edu.cornell.dendro.corina.print.Line;
+import edu.cornell.dendro.corina.print.Printer;
+import edu.cornell.dendro.corina.print.TabbedLineFactory;
+import edu.cornell.dendro.corina.print.TextLine;
+import edu.cornell.dendro.corina.print.ThinLine;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.SiteNotFoundException;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.NaturalSort;
+import edu.cornell.dendro.corina.util.TextClipboard;
+import edu.cornell.dendro.corina.util.GreedyProgressMonitor;
+import edu.cornell.dendro.corina.gui.XFrame;
 
 /**
    Corina's browser.

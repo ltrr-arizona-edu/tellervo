@@ -1,7 +1,7 @@
-package corina.map;
+package edu.cornell.dendro.corina.map;
 
-import corina.site.Site;
-import corina.util.ColorUtils;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.util.ColorUtils;
 
 import java.awt.Color;
 import java.awt.Point;

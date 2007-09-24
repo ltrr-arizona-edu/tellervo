@@ -1,4 +1,4 @@
-package corina.manip;
+package edu.cornell.dendro.corina.manip;
 
 import java.util.Collections;
 import java.util.List;

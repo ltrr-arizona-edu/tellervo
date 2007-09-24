@@ -1,4 +1,4 @@
-package corina.ui;
+package edu.cornell.dendro.corina.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -20,10 +20,10 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-import corina.core.App;
-import corina.gui.Layout;
-import corina.gui.UserCancelledException;
-import corina.util.Center;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.util.Center;
 
 public class AskNumber extends JDialog {
 	private JSpinner spinner;

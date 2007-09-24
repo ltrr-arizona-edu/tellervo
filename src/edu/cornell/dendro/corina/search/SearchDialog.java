@@ -1,4 +1,4 @@
-package corina.search;
+package edu.cornell.dendro.corina.search;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -21,13 +21,13 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import corina.MetadataTemplate;
-import corina.core.App;
-import corina.gui.Help;
-import corina.gui.Layout;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.util.OKCancel;
+import edu.cornell.dendro.corina.MetadataTemplate;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Help;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.OKCancel;
 
 /*
   design:

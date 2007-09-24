@@ -1,14 +1,14 @@
-package corina.map.tools;
+package edu.cornell.dendro.corina.map.tools;
 
-import corina.map.Point3D;
-import corina.map.View;
-import corina.map.Projection;
-import corina.map.MapPanel;
-import corina.site.Location;
-import corina.site.Site;
-import corina.site.SiteNotFoundException;
-import corina.util.Angle;
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.map.Point3D;
+import edu.cornell.dendro.corina.map.View;
+import edu.cornell.dendro.corina.map.Projection;
+import edu.cornell.dendro.corina.map.MapPanel;
+import edu.cornell.dendro.corina.site.Location;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.SiteNotFoundException;
+import edu.cornell.dendro.corina.util.Angle;
+import edu.cornell.dendro.corina.ui.Builder;
 
 import java.awt.Color;
 import java.awt.Cursor;

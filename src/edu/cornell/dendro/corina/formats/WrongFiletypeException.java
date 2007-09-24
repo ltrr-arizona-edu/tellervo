@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.formats;
+package edu.cornell.dendro.corina.formats;
 
 import java.io.IOException;
 

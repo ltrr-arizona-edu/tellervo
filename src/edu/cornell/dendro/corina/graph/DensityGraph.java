@@ -1,11 +1,11 @@
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 /*
  * Density graph: graphable wrapper, essentially.
  */
 
 import java.util.List;
-import corina.Year;
+import edu.cornell.dendro.corina.Year;
 
 public class DensityGraph implements Graphable {
 	private List data;

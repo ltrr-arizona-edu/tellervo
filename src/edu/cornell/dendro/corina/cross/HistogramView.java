@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -32,11 +32,11 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import corina.core.App;
-import corina.editor.CountRenderer;
-import corina.prefs.PrefsEvent;
-import corina.prefs.PrefsListener;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.editor.CountRenderer;
+import edu.cornell.dendro.corina.prefs.PrefsEvent;
+import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
     A view of a histogram of scores of a crossdate.  The view can be

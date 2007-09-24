@@ -1,4 +1,4 @@
-package corina.util;
+package edu.cornell.dendro.corina.util;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

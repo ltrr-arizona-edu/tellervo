@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.index;
+package edu.cornell.dendro.corina.index;
 
 /**
     A basis function for fitting data points to, using

@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina;
+package edu.cornell.dendro.corina;
 
 /**
    <p>Interface for objects that can display a preview of themselves.

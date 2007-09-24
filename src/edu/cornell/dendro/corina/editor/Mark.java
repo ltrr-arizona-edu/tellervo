@@ -1,6 +1,6 @@
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.Builder;
 
 import javax.swing.Icon;
 

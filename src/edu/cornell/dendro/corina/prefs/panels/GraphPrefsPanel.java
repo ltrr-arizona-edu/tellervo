@@ -1,4 +1,4 @@
-package corina.prefs.panels;
+package edu.cornell.dendro.corina.prefs.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -13,10 +13,10 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import corina.core.App;
-import corina.gui.Layout;
-import corina.prefs.components.BoolPrefComponent;
-import corina.prefs.components.ColorPrefComponent;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.prefs.components.BoolPrefComponent;
+import edu.cornell.dendro.corina.prefs.components.ColorPrefComponent;
 
 public class GraphPrefsPanel extends Container {
   public GraphPrefsPanel() {

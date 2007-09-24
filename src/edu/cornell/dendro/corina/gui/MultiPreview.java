@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -38,15 +38,15 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import corina.Element;
-import corina.Preview;
-import corina.Previewable;
-import corina.Sample;
-import corina.Preview.TooManySelectedPreview;
-import corina.core.App;
-import corina.cross.Grid;
-import corina.formats.WrongFiletypeException;
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.Preview;
+import edu.cornell.dendro.corina.Previewable;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Preview.TooManySelectedPreview;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.cross.Grid;
+import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.ui.Builder;
 
 public class MultiPreview extends JPanel implements PropertyChangeListener {
 

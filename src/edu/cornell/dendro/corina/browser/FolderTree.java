@@ -1,4 +1,4 @@
-package corina.browser;
+package edu.cornell.dendro.corina.browser;
 
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
@@ -15,8 +15,8 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import corina.core.App;
-import corina.util.NaturalSort;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.util.NaturalSort;
 
 /*
   ok, it's working.  i want to integrate this into browser.  what to do?

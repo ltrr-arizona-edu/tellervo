@@ -1,9 +1,9 @@
 /**
  * 
  */
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
-import corina.gui.menus.EditMenu;
+import edu.cornell.dendro.corina.gui.menus.EditMenu;
 
 class GraphEditMenu extends EditMenu {
 	GraphEditMenu(GraphWindow window) {

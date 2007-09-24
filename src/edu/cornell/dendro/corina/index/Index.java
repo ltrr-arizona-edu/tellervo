@@ -18,12 +18,12 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.index;
+package edu.cornell.dendro.corina.index;
 
-import corina.Year;
-import corina.Sample;
-import corina.graph.Graphable;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.graph.Graphable;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import java.util.List;
 import java.util.ArrayList;

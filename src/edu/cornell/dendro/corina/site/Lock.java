@@ -1,4 +1,4 @@
-package corina.site;
+package edu.cornell.dendro.corina.site;
 
 import java.io.File;
 import java.io.IOException;

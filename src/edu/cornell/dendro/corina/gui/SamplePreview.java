@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -37,12 +37,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import corina.Preview;
-import corina.Previewable;
-import corina.Sample;
-import corina.cross.Grid;
-import corina.formats.WrongFiletypeException;
-import corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.Preview;
+import edu.cornell.dendro.corina.Previewable;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.cross.Grid;
+import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.logging.CorinaLog;
 
 public class SamplePreview extends JPanel implements PropertyChangeListener {
   private static final CorinaLog log = new CorinaLog(SamplePreview.class);

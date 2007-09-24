@@ -18,25 +18,25 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.io;
+package edu.cornell.dendro.corina.io;
 
-import corina.Sample;
-import corina.gui.Layout;
-import corina.gui.layouts.DialogLayout;
-import corina.gui.UserCancelledException;
-import corina.gui.FileDialog;
-import corina.gui.Bug;
-import corina.gui.Help;
-import corina.util.OKCancel;
-import corina.util.Overwrite;
-import corina.util.TextClipboard;
-import corina.util.PureStringWriter;
-import corina.browser.FileLength;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.ui.Alert;
-import corina.formats.Filetype;
-import corina.formats.PackedFileType;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.layouts.DialogLayout;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.Help;
+import edu.cornell.dendro.corina.util.OKCancel;
+import edu.cornell.dendro.corina.util.Overwrite;
+import edu.cornell.dendro.corina.util.TextClipboard;
+import edu.cornell.dendro.corina.util.PureStringWriter;
+import edu.cornell.dendro.corina.browser.FileLength;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.formats.Filetype;
+import edu.cornell.dendro.corina.formats.PackedFileType;
 
 import java.io.File;
 import java.io.StringWriter;
@@ -114,25 +114,36 @@ public class ExportDialog extends JDialog {
 	// exporters for raw, summed files -- this seems slightly awkward,
 	// but it's the SimplestThing right now
 	private static final String EXPORTERS_RAW[] = new String[] {
-			"corina.formats.CorinaXML",
-			"corina.formats.Tucson", "corina.formats.TucsonSimple",
-			"corina.formats.TwoColumn", "corina.formats.Corina",
-			"corina.formats.TRML", "corina.formats.HTML",
-			"corina.formats.Heidelberg", "corina.formats.Hohenheim",
-			"corina.formats.TSAPMatrix", "corina.formats.MultiColumn", };
+			"edu.cornell.dendro.corina.formats.CorinaXML",
+			"edu.cornell.dendro.corina.formats.Tucson", 
+			"edu.cornell.dendro.corina.formats.TucsonSimple",
+			"edu.cornell.dendro.corina.formats.TwoColumn", 
+			"edu.cornell.dendro.corina.formats.Corina",
+			"edu.cornell.dendro.corina.formats.TRML", 
+			"edu.cornell.dendro.corina.formats.HTML",
+			"edu.cornell.dendro.corina.formats.Heidelberg", 
+			"edu.cornell.dendro.corina.formats.Hohenheim",
+			"edu.cornell.dendro.corina.formats.TSAPMatrix", 
+			"edu.cornell.dendro.corina.formats.MultiColumn", };
 
 	private static final String EXPORTERS_SUM[] = new String[] {
-			"corina.formats.CorinaXML",
-			"corina.formats.Tucson", "corina.formats.TucsonSimple",
-			"corina.formats.PackedTucson", "corina.formats.TwoColumn",
-			"corina.formats.Corina", "corina.formats.TRML",
-			"corina.formats.HTML", "corina.formats.Heidelberg",
-			"corina.formats.Hohenheim", "corina.formats.TSAPMatrix",
-			"corina.formats.RangesOnly", };
+			"edu.cornell.dendro.corina.formats.CorinaXML",
+			"edu.cornell.dendro.corina.formats.Tucson", 
+			"edu.cornell.dendro.corina.formats.TucsonSimple",
+			"edu.cornell.dendro.corina.formats.PackedTucson", 
+			"edu.cornell.dendro.corina.formats.TwoColumn",
+			"edu.cornell.dendro.corina.formats.Corina", 
+			"edu.cornell.dendro.corina.formats.TRML",
+			"edu.cornell.dendro.corina.formats.HTML", 
+			"edu.cornell.dendro.corina.formats.Heidelberg",
+			"edu.cornell.dendro.corina.formats.Hohenheim", 
+			"edu.cornell.dendro.corina.formats.TSAPMatrix",
+			"edu.cornell.dendro.corina.formats.RangesOnly", };
 	
 	// these exporters implement 'PackedFileType' and can save more than one sample to a file.
 	private static final String EXPORTERS_PACKED[] = new String[] {
-		"corina.formats.PackedTucson", "corina.formats.Spreadsheet", };
+		"edu.cornell.dendro.corina.formats.PackedTucson", 
+		"edu.cornell.dendro.corina.formats.Spreadsheet", };
 
 	// exporters i'm using
 	private String exporters[];

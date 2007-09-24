@@ -18,12 +18,12 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
-import corina.MetadataTemplate;
-import corina.Element;
-import corina.Sample;
-import corina.ui.Alert;
+import edu.cornell.dendro.corina.MetadataTemplate;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.ui.Alert;
 
 import java.io.IOException;
 import java.io.File;

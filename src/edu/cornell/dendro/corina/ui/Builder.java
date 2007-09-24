@@ -1,4 +1,4 @@
-package corina.ui;
+package edu.cornell.dendro.corina.ui;
 
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -18,7 +18,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.KeyStroke;
 
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 // TODO: if on 1.4, use setDisplayedMnemonicIndex() so "Save &As..."
 // underlines the correct 'A'
@@ -185,7 +185,7 @@ public class Builder {
 	}
 
 	// my classloador, for getting icons as resources.
-	private static ClassLoader cl = corina.ui.Builder.class.getClassLoader();
+	private static ClassLoader cl = edu.cornell.dendro.corina.ui.Builder.class.getClassLoader();
 
 	// ----------------------------------------
 	/*

@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -82,26 +82,26 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import corina.Build;
-import corina.Element;
-import corina.Range;
-import corina.Sample;
-import corina.Year;
-import corina.core.App;
-import corina.gui.Bug;
-import corina.gui.Layout;
-import corina.gui.PrintableDocument;
-import corina.gui.Tree;
-import corina.gui.XFrame;
-import corina.gui.menus.EditMenu;
-import corina.gui.menus.FileMenu;
-import corina.gui.menus.HelpMenu;
-import corina.gui.menus.WindowMenu;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.util.ColorUtils;
-import corina.util.PopupListener;
-import corina.util.Sort;
+import edu.cornell.dendro.corina.Build;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.PrintableDocument;
+import edu.cornell.dendro.corina.gui.Tree;
+import edu.cornell.dendro.corina.gui.XFrame;
+import edu.cornell.dendro.corina.gui.menus.EditMenu;
+import edu.cornell.dendro.corina.gui.menus.FileMenu;
+import edu.cornell.dendro.corina.gui.menus.HelpMenu;
+import edu.cornell.dendro.corina.gui.menus.WindowMenu;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.ColorUtils;
+import edu.cornell.dendro.corina.util.PopupListener;
+import edu.cornell.dendro.corina.util.Sort;
 
 /*
   Strategy:

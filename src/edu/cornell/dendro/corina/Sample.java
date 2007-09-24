@@ -18,12 +18,12 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina;
+package edu.cornell.dendro.corina;
 
-import corina.io.Files;
-import corina.formats.WrongFiletypeException;
-import corina.graph.Graphable;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.io.Files;
+import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.graph.Graphable;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import java.io.File;
 import java.io.BufferedReader;
@@ -247,7 +247,7 @@ public class Sample implements Previewable, Graphable {
 	 public Sample(URL url) throws IOException {
 	 this();
 	 try {
-	 Class.forName("corina.browser.ItrdbURLConnection");
+	 Class.forName(package edu.cornell.dendro.corinabrowser.ItrdbURLConnection");
 	 } catch (ClassNotFoundException cnfe) {
 	 corina.gui.Bug.bug(cnfe);
 	 }

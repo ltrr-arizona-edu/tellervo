@@ -1,4 +1,4 @@
-package corina.prefs.components;
+package edu.cornell.dendro.corina.prefs.components;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;

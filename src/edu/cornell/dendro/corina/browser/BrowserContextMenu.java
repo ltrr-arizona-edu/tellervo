@@ -18,19 +18,19 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.browser;
+package edu.cornell.dendro.corina.browser;
 
-import corina.Sample;
-import corina.editor.Editor;
-import corina.cross.CrossdateKit;
-import corina.cross.CrossdateWindow;
-import corina.cross.Sequence;
-import corina.graph.GraphWindow;
-import corina.graph.BargraphFrame;
-import corina.gui.TextWindow;
-import corina.gui.Bug;
-import corina.ui.Builder;
-import corina.util.PopupListener;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.cross.CrossdateKit;
+import edu.cornell.dendro.corina.cross.CrossdateWindow;
+import edu.cornell.dendro.corina.cross.Sequence;
+import edu.cornell.dendro.corina.graph.GraphWindow;
+import edu.cornell.dendro.corina.graph.BargraphFrame;
+import edu.cornell.dendro.corina.gui.TextWindow;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.PopupListener;
 
 import java.util.Collections;
 import java.util.List;

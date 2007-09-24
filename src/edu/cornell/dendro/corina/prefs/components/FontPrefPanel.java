@@ -1,4 +1,4 @@
-package corina.prefs.components;
+package edu.cornell.dendro.corina.prefs.components;
 
 import java.awt.FlowLayout;
 import javax.swing.JComponent;

@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui.layouts;
+package edu.cornell.dendro.corina.gui.layouts;
 
 import java.awt.LayoutManager;
 import java.awt.Component;

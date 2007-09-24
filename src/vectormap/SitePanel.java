@@ -11,7 +11,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.ListModel;
 
-import corina.site.Site;
+import edu.cornell.dendro.corina.site.Site;
 
 /**
  * Panel containing Site information

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package corina.util;
+package edu.cornell.dendro.corina.util;
 
 import java.awt.Color;
 

@@ -18,16 +18,16 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.db;
+package edu.cornell.dendro.corina.db;
 
-import corina.Year;
-import corina.Range;
-import corina.Sample;
-import corina.Element;
-import corina.MetadataTemplate;
-import corina.MetadataTemplate.Field;
-import corina.formats.WrongFiletypeException;
-import corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.MetadataTemplate;
+import edu.cornell.dendro.corina.MetadataTemplate.Field;
+import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.logging.CorinaLog;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -554,8 +554,8 @@ public class DB {
 			str += "\n" + extraComments.get(ii);
 
 		// BUG: this is weird!
-		str = corina.util.StringUtils.substitute(str, "\n", "n");
-		str = corina.util.StringUtils.substitute(str, "\r", "r");
+		str = edu.cornell.dendro.corina.util.StringUtils.substitute(str, "\n", "n");
+		str = edu.cornell.dendro.corina.util.StringUtils.substitute(str, "\r", "r");
 
 		metaStmt.setString(5+n, str);
 	    }

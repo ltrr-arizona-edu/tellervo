@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.prefs;
+package edu.cornell.dendro.corina.prefs;
 
 import java.util.EventListener;
 

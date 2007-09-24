@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import java.awt.Dimension;
 import java.awt.Graphics;

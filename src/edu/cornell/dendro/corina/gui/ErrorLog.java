@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
 import java.awt.BorderLayout;
 import java.io.OutputStream;
@@ -30,8 +30,8 @@ import javax.swing.JDialog;
 
 import org.apache.commons.logging.Log;
 
-import corina.logging.CorinaLog;
-import corina.util.Center;
+import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.util.Center;
 
 /**
     An error log.

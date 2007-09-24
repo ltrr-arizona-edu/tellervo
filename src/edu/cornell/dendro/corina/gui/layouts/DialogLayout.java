@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui.layouts;
+package edu.cornell.dendro.corina.gui.layouts;
 
 import java.awt.LayoutManager2;
 import java.awt.Component;
@@ -335,7 +335,7 @@ public class DialogLayout implements LayoutManager2 {
         p.add(new JLabel("A"), "1:");
         p.add(new JTextField("B"), "2:");
         p.add(new JPasswordField("C"), "3:");
-        p.add(corina.gui.Layout.borderLayout(
+        p.add(edu.cornell.dendro.corina.gui.Layout.borderLayout(
                     new JLabel("N"),
                     new JLabel("W"),
                     new JLabel("C"),

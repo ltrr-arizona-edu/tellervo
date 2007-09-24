@@ -1,4 +1,4 @@
-package corina.prefs.panels;
+package edu.cornell.dendro.corina.prefs.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -15,7 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 // TODO: gpl header
 // TODO: javadoc

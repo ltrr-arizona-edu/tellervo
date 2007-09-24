@@ -18,18 +18,18 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.platform;
+package edu.cornell.dendro.corina.platform;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import corina.core.App;
-import corina.gui.Bug;
-import corina.gui.XCorina;
-import corina.gui.menus.HelpMenu;
-import corina.prefs.PrefsDialog;
-import corina.ui.CorinaAction;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.XCorina;
+import edu.cornell.dendro.corina.gui.menus.HelpMenu;
+import edu.cornell.dendro.corina.prefs.PrefsDialog;
+import edu.cornell.dendro.corina.ui.CorinaAction;
 
 // TODO: refactor.  lots of duplicate code in here.
 // TODO: javadoc me.
@@ -212,6 +212,6 @@ public class Macintosh {
     // --------------------------------------------------
     // common code:
     private static ClassLoader getClassLoader() {
-	    return corina.platform.Macintosh.class.getClassLoader();
+	    return edu.cornell.dendro.corina.platform.Macintosh.class.getClassLoader();
     }
 }

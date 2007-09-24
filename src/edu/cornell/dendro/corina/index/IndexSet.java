@@ -18,14 +18,14 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.index;
+package edu.cornell.dendro.corina.index;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import corina.Sample;
-import corina.core.App;
-import corina.util.StringUtils;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.util.StringUtils;
 
 /**
     Run a set of Indexes on a single Sample.  This runs a set of

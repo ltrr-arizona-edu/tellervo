@@ -18,13 +18,13 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.prefs.panels;
+package edu.cornell.dendro.corina.prefs.panels;
 
-import corina.prefs.Prefs;
-import corina.prefs.components.ColorPrefComponent;
-import corina.prefs.components.BoolPrefComponent;
-import corina.prefs.components.FontPrefComponent;
-import corina.prefs.components.UIDefaultsComponent;
+import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.prefs.components.ColorPrefComponent;
+import edu.cornell.dendro.corina.prefs.components.BoolPrefComponent;
+import edu.cornell.dendro.corina.prefs.components.FontPrefComponent;
+import edu.cornell.dendro.corina.prefs.components.UIDefaultsComponent;
 
 import java.awt.*;
 import javax.swing.*;

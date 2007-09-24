@@ -18,14 +18,14 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.manip;
+package edu.cornell.dendro.corina.manip;
 
-import corina.Sample;
-import corina.SampleAdapter;
-import corina.SampleEvent;
-import corina.gui.Layout;
-import corina.gui.Bug;
-import corina.util.ColorUtils;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.SampleAdapter;
+import edu.cornell.dendro.corina.SampleEvent;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.util.ColorUtils;
 
 import java.io.IOException;
 

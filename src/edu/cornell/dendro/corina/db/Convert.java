@@ -18,10 +18,10 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.db;
+package edu.cornell.dendro.corina.db;
 
-import corina.Sample;
-import corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 
 import java.io.File;
 import java.io.IOException;

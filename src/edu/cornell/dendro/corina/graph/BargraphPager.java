@@ -1,8 +1,8 @@
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
-import corina.Year;
-import corina.Range; // ...
-import corina.Element; // !
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Range; // ...
+import edu.cornell.dendro.corina.Element; // !
 
 import java.util.List;
 

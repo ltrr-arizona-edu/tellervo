@@ -1,12 +1,12 @@
-package corina.io;
+package edu.cornell.dendro.corina.io;
 
 import java.util.*;
 import java.lang.reflect.*;
 import java.io.*;
 
-import corina.prefs.Prefs;
-import corina.prefs.PrefsEvent;
-import corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.prefs.PrefsEvent;
+import edu.cornell.dendro.corina.prefs.PrefsListener;
 import gnu.io.*;
 
 /*

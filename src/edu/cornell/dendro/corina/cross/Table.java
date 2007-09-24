@@ -18,12 +18,12 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
-import corina.Sample;
-import corina.Element;
-import corina.ui.I18n;
-import corina.print.*; // !!!
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.print.*; // !!!
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

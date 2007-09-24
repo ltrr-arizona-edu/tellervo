@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -29,8 +29,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import corina.Preview;
-import corina.core.App;
+import edu.cornell.dendro.corina.Preview;
+import edu.cornell.dendro.corina.core.App;
 
 /**
    A component that displays a Preview.  It displays the title in bold

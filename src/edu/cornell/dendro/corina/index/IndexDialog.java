@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.index;
+package edu.cornell.dendro.corina.index;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -48,19 +48,19 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 
-import corina.Sample;
-import corina.graph.GraphWindow;
-import corina.gui.FileDialog;
-import corina.gui.Help;
-import corina.gui.Layout;
-import corina.gui.UserCancelledException;
-import corina.ui.Alert;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.util.NoEmptySelection;
-import corina.util.OKCancel;
-import corina.util.TextClipboard;
-import corina.util.UserFriendlyFile;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.graph.GraphWindow;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.Help;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.NoEmptySelection;
+import edu.cornell.dendro.corina.util.OKCancel;
+import edu.cornell.dendro.corina.util.TextClipboard;
+import edu.cornell.dendro.corina.util.UserFriendlyFile;
 
 /**
    Indexing dialog.  Lets the user choose an indexing algorithm to use.

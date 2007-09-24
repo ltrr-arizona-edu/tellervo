@@ -18,16 +18,16 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.browser;
+package edu.cornell.dendro.corina.browser;
 
-import corina.Element;
-import corina.MetadataTemplate;
-import corina.Range;
-import corina.util.StringUtils;
-import corina.util.GreedyProgressMonitor;
-import corina.util.GZIP;
-import corina.site.Lock; // REFACTOR: move to util!
-import corina.core.App;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.MetadataTemplate;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.util.StringUtils;
+import edu.cornell.dendro.corina.util.GreedyProgressMonitor;
+import edu.cornell.dendro.corina.util.GZIP;
+import edu.cornell.dendro.corina.site.Lock; // REFACTOR: move to util!
+import edu.cornell.dendro.corina.core.App;
 
 import java.io.File;
 import java.io.FileWriter;

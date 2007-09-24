@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -44,19 +44,19 @@ import javax.swing.DefaultListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
-import corina.Range;
-import corina.Sample;
-import corina.SampleEvent;
-import corina.SampleListener;
-import corina.Year;
-import corina.core.App;
-import corina.gui.Bug;
-import corina.prefs.Prefs;
-import corina.prefs.PrefsEvent;
-import corina.prefs.PrefsListener;
-import corina.ui.Alert;
-import corina.ui.Builder;
-import corina.util.PopupListener;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.SampleEvent;
+import edu.cornell.dendro.corina.SampleListener;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.prefs.PrefsEvent;
+import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.PopupListener;
 
 // TODO: add slasher -- but it needs to either (1) override table
 // sizing, or (2) override scrollpane painting (probably the latter)

@@ -1,4 +1,4 @@
-package corina.prefs.components;
+package edu.cornell.dendro.corina.prefs.components;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,7 +8,7 @@ import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 // TODO: clean up imports
 // TODO: gpl header

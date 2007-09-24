@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.manip;
+package edu.cornell.dendro.corina.manip;
 
 import java.util.List;
 

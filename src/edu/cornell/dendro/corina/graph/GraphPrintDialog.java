@@ -1,15 +1,15 @@
 /**
  * 
  */
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import corina.core.App;
-import corina.prefs.PrefsDialog;
-import corina.ui.Builder;
-import corina.util.Center;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.PrefsDialog;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.Center;
 
 import java.awt.FlowLayout;
 import java.awt.Container;
@@ -102,7 +102,7 @@ public class GraphPrintDialog extends JPanel {
 	    
 	    String oktext = null;
 	    try {
-	    	oktext = corina.ui.I18n.getText(i18text);
+	    	oktext = edu.cornell.dendro.corina.ui.I18n.getText(i18text);
 	    } catch (Exception e) { }
 	    if (oktext == null) oktext = deftext;
 	    JButton okButton = new JButton(oktext);
@@ -128,7 +128,7 @@ public class GraphPrintDialog extends JPanel {
 	      }
 	    });
 
-	    String canceltext = corina.ui.I18n.getText("cancel");
+	    String canceltext = edu.cornell.dendro.corina.ui.I18n.getText("cancel");
 	    if (canceltext == null) canceltext = "Cancel";
 	    JButton cancelButton = new JButton(canceltext);
 	    okButtonContainer.add(cancelButton);

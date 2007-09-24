@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.cross.sigscores;
+package edu.cornell.dendro.corina.cross.sigscores;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -36,18 +36,18 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
-import corina.Year;
-import corina.core.App;
-import corina.cross.Cross;
-import corina.cross.Weiserjahre;
-import corina.cross.HighScore;
-import corina.cross.RangeRenderer;
-import corina.graph.GraphWindow;
-import corina.index.DecimalRenderer;
-import corina.prefs.Prefs;
-import corina.prefs.PrefsEvent;
-import corina.prefs.PrefsListener;
-import corina.util.NoEmptySelection;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.cross.Cross;
+import edu.cornell.dendro.corina.cross.Weiserjahre;
+import edu.cornell.dendro.corina.cross.HighScore;
+import edu.cornell.dendro.corina.cross.RangeRenderer;
+import edu.cornell.dendro.corina.graph.GraphWindow;
+import edu.cornell.dendro.corina.index.DecimalRenderer;
+import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.prefs.PrefsEvent;
+import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.util.NoEmptySelection;
 
 /**
  * A view of the significant scores of a crossdate. The view can be changed at any time to a different crossdate.

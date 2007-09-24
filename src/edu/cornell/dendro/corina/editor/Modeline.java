@@ -18,13 +18,13 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
-import corina.Year;
-import corina.Sample;
-import corina.Weiserjahre;
-import corina.gui.Tree;
-import corina.gui.ElementsPanel;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Weiserjahre;
+import edu.cornell.dendro.corina.gui.Tree;
+import edu.cornell.dendro.corina.gui.ElementsPanel;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;

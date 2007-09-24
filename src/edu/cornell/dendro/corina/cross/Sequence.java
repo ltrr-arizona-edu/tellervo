@@ -18,10 +18,10 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
-import corina.Sample;
-import corina.Element;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Element;
 
 import java.io.File;
 import java.io.IOException;

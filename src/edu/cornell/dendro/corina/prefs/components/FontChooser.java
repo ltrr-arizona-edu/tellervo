@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.prefs.components;
+package edu.cornell.dendro.corina.prefs.components;
 
 import java.awt.Component;
 import java.awt.Font;
@@ -48,10 +48,10 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import corina.core.App;
-import corina.gui.Layout;
-import corina.gui.UserCancelledException;
-import corina.util.Center;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.util.Center;
 
 /*
   TODO:

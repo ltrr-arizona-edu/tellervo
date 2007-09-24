@@ -1,4 +1,4 @@
-package corina.prefs.components;
+package edu.cornell.dendro.corina.prefs.components;
 
 import java.awt.Component;
 import java.awt.Font;
@@ -12,7 +12,7 @@ import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
 
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 // UNUSED!
 public class FontPopup extends JComboBox {

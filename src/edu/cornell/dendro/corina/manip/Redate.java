@@ -18,11 +18,11 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.manip;
+package edu.cornell.dendro.corina.manip;
 
-import corina.Range;
-import corina.Sample;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotUndoException;

@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.site;
+package edu.cornell.dendro.corina.site;
 
 import java.awt.print.Printable;
 import java.io.BufferedWriter;
@@ -53,10 +53,10 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import corina.Sample;
-import corina.core.App;
-import corina.ui.Alert;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
  * A database of sites.

@@ -18,14 +18,14 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.formats;
+package edu.cornell.dendro.corina.formats;
 
-import corina.Year;
-import corina.Range;
-import corina.Sample;
-import corina.Weiserjahre;
-import corina.util.StringUtils;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Weiserjahre;
+import edu.cornell.dendro.corina.util.StringUtils;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import java.util.ArrayList;
 
@@ -130,7 +130,7 @@ public class Heidelberg implements Filetype {
 			// let's call this a bug, so we get better user feedback.
 
 			IOException ioe = new IOException("Couldn't open Heidelberg data format: " + dataFormat);
-			new corina.gui.Bug(ioe);
+			new edu.cornell.dendro.corina.gui.Bug(ioe);
 			throw ioe;
 		}
 

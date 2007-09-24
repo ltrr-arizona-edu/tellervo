@@ -18,10 +18,10 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.map.tools;
+package edu.cornell.dendro.corina.map.tools;
 
-import corina.map.MapPanel;
-import corina.map.View;
+import edu.cornell.dendro.corina.map.MapPanel;
+import edu.cornell.dendro.corina.map.View;
 
 import javax.swing.JToolBar;
 import javax.swing.JFrame;

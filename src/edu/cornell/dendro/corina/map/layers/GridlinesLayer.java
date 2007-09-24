@@ -18,12 +18,12 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.map.layers;
+package edu.cornell.dendro.corina.map.layers;
 
-import corina.map.Layer;
-import corina.map.Projection;
-import corina.map.Point3D;
-import corina.site.Location;
+import edu.cornell.dendro.corina.map.Layer;
+import edu.cornell.dendro.corina.map.Projection;
+import edu.cornell.dendro.corina.map.Point3D;
+import edu.cornell.dendro.corina.site.Location;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

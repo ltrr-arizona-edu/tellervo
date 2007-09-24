@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.map;
+package edu.cornell.dendro.corina.map;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -50,22 +50,22 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import corina.Build;
-import corina.core.App;
-import corina.gui.Layout;
-import corina.gui.PrintableDocument;
-import corina.gui.XFrame;
-import corina.gui.menus.EditMenu;
-import corina.gui.menus.FileMenu;
-import corina.gui.menus.HelpMenu;
-import corina.gui.menus.WindowMenu;
-import corina.map.tools.ToolBox;
-import corina.site.Location;
-import corina.site.Site;
-import corina.site.SiteDB;
-import corina.site.SiteInfoDialog;
-import corina.site.SitePrinter;
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.Build;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.PrintableDocument;
+import edu.cornell.dendro.corina.gui.XFrame;
+import edu.cornell.dendro.corina.gui.menus.EditMenu;
+import edu.cornell.dendro.corina.gui.menus.FileMenu;
+import edu.cornell.dendro.corina.gui.menus.HelpMenu;
+import edu.cornell.dendro.corina.gui.menus.WindowMenu;
+import edu.cornell.dendro.corina.map.tools.ToolBox;
+import edu.cornell.dendro.corina.site.Location;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.SiteInfoDialog;
+import edu.cornell.dendro.corina.site.SitePrinter;
+import edu.cornell.dendro.corina.ui.Builder;
 
 public class MapFrame extends XFrame implements PrintableDocument, ComponentListener {
 

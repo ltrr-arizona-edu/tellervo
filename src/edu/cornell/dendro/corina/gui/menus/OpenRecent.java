@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui.menus;
+package edu.cornell.dendro.corina.gui.menus;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -34,10 +34,10 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import corina.core.App;
-import corina.gui.CanOpener;
-import corina.ui.Alert;
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.CanOpener;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
 
 /**
     A menu which shows recently-opened files.

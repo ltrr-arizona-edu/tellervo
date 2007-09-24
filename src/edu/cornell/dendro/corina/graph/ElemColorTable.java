@@ -1,7 +1,7 @@
 /**
  * 
  */
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
@@ -10,8 +10,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableModel;
 
-import corina.graph.GraphInfo.colorPair;
-import corina.util.ColorPair;
+import edu.cornell.dendro.corina.graph.GraphInfo.colorPair;
+import edu.cornell.dendro.corina.util.ColorPair;
 
 import java.util.List;
 import javax.swing.table.AbstractTableModel;

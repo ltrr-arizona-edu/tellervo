@@ -1,9 +1,9 @@
-package corina.search;
+package edu.cornell.dendro.corina.search;
 
-import corina.Element;
-import corina.Year;
-import corina.Range;
-import corina.browser.Summary;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.browser.Summary;
 
 import java.io.File;
 

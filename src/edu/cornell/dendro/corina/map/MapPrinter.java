@@ -18,12 +18,12 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.map;
+package edu.cornell.dendro.corina.map;
 
-import corina.map.layers.GridlinesLayer;
-import corina.map.layers.MapLayer;
-import corina.map.layers.LegendLayer;
-import corina.map.layers.SitesLayer;
+import edu.cornell.dendro.corina.map.layers.GridlinesLayer;
+import edu.cornell.dendro.corina.map.layers.MapLayer;
+import edu.cornell.dendro.corina.map.layers.LegendLayer;
+import edu.cornell.dendro.corina.map.layers.SitesLayer;
 
 import java.awt.Dimension;
 import java.awt.BasicStroke;

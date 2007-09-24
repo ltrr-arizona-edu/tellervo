@@ -1,7 +1,7 @@
-package corina.ui;
+package edu.cornell.dendro.corina.ui;
 
 import junit.framework.TestCase;
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 /*
   yup, this looks weird.  it's fairly generic stuff, so i can change

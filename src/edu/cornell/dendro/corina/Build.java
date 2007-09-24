@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina;
+package edu.cornell.dendro.corina;
 
 import java.io.*;
 
@@ -47,7 +47,7 @@ public class Build {
     // this jar, and return it
     private static String loadTimestamp() {
 	try {
-	    ClassLoader cl = corina.Build.class.getClassLoader();
+	    ClassLoader cl = edu.cornell.dendro.corina.Build.class.getClassLoader();
 	    InputStream is = cl.getResourceAsStream("Timestamp");
       if (is != null) {
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -58,7 +58,7 @@ public class Build {
         }
       }
 	} catch (IOException ioe) {
-	    new corina.gui.Bug(ioe);
+	    new edu.cornell.dendro.corina.gui.Bug(ioe);
 	}
 
 	return "(time/date unknown)";

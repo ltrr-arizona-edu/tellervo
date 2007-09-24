@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.util;
+package edu.cornell.dendro.corina.util;
 
 import java.io.FileInputStream;
 import java.io.IOException;

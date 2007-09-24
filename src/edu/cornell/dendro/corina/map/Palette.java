@@ -1,6 +1,6 @@
-package corina.map;
+package edu.cornell.dendro.corina.map;
 
-import corina.util.ColorUtils;
+import edu.cornell.dendro.corina.util.ColorUtils;
 
 import java.awt.Color;
 import java.awt.Stroke;

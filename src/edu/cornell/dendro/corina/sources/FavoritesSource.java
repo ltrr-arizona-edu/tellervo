@@ -1,7 +1,7 @@
-package corina.sources;
+package edu.cornell.dendro.corina.sources;
 
-import corina.ui.Builder;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import javax.swing.Icon;
 

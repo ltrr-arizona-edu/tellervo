@@ -1,11 +1,11 @@
-package corina.browser;
+package edu.cornell.dendro.corina.browser;
 
-import corina.Element;
-import corina.Range;
-import corina.MetadataTemplate;
-import corina.Species;
-import corina.UnknownSpeciesException;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.MetadataTemplate;
+import edu.cornell.dendro.corina.Species;
+import edu.cornell.dendro.corina.UnknownSpeciesException;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import java.io.File;
 import java.io.IOException;

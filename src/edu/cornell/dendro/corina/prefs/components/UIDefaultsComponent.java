@@ -1,4 +1,4 @@
-package corina.prefs.components;
+package edu.cornell.dendro.corina.prefs.components;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -15,8 +15,8 @@ import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import corina.core.App;
-import corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.logging.CorinaLog;
 
 public class UIDefaultsComponent extends JComponent implements TableModelListener, ActionListener {
   private static final CorinaLog log = new CorinaLog("UIDefaultsComponent");

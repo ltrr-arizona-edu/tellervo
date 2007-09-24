@@ -4,16 +4,16 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package corina.cross.sigscores;
+package edu.cornell.dendro.corina.cross.sigscores;
 
 import java.text.DecimalFormat;
 
 import javax.swing.table.AbstractTableModel;
 
-import corina.Range;
-import corina.cross.HighScore;
-import corina.cross.Weiserjahre;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.cross.HighScore;
+import edu.cornell.dendro.corina.cross.Weiserjahre;
+import edu.cornell.dendro.corina.ui.I18n;
 
 
 class CrossSigsTableModel extends AbstractTableModel {

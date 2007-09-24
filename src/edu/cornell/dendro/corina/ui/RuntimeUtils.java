@@ -1,8 +1,8 @@
-package corina.ui;
+package edu.cornell.dendro.corina.ui;
 
 import javax.swing.KeyStroke;
 
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 public class RuntimeUtils {
 

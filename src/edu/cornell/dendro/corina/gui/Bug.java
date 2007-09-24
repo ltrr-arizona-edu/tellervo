@@ -1,4 +1,4 @@
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -15,10 +15,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import corina.Build;
-import corina.util.Center;
-import corina.util.OKCancel;
-import corina.util.PureStringWriter;
+import edu.cornell.dendro.corina.Build;
+import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.util.OKCancel;
+import edu.cornell.dendro.corina.util.PureStringWriter;
 
 // TODO: refactor!
 
@@ -204,7 +204,7 @@ public class Bug extends JDialog {
   	JButton submitreport = new JButton("Submit e-mail bug report");
   	submitreport.addActionListener(new AbstractAction() {
   		public void actionPerformed(ActionEvent e) {
-  			corina.util.EmailBugReport.submitBugReportText(bugText);
+  			edu.cornell.dendro.corina.util.EmailBugReport.submitBugReportText(bugText);
   		}
   	});
   	

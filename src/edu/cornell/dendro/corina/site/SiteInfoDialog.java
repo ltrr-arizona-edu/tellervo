@@ -18,14 +18,14 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.site;
+package edu.cornell.dendro.corina.site;
 
-import corina.gui.Layout;
-import corina.gui.Help;
-import corina.util.OKCancel;
-import corina.util.Center;
-import corina.ui.I18n;
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.Help;
+import edu.cornell.dendro.corina.util.OKCancel;
+import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.ui.Builder;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

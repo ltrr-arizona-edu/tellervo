@@ -1,4 +1,4 @@
-package corina.gui.menus;
+package edu.cornell.dendro.corina.gui.menus;
 
 import java.awt.event.ActionEvent;
 import java.awt.print.PageFormat;
@@ -18,24 +18,24 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import corina.Element;
-import corina.Sample;
-import corina.core.App;
-import corina.editor.Editor;
-import corina.graph.Graph;
-import corina.gui.Bug;
-import corina.gui.CanOpener;
-import corina.gui.FileDialog;
-import corina.gui.PrintableDocument;
-import corina.gui.SaveableDocument;
-import corina.gui.UserCancelledException;
-import corina.gui.XFrame;
-import corina.manip.Sum;
-import corina.ui.Alert;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.util.Overwrite;
-import corina.io.ExportDialog;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.graph.Graph;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.CanOpener;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.PrintableDocument;
+import edu.cornell.dendro.corina.gui.SaveableDocument;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.gui.XFrame;
+import edu.cornell.dendro.corina.manip.Sum;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.Overwrite;
+import edu.cornell.dendro.corina.io.ExportDialog;
 
 // TODO:
 // -- refactor so Editor can use it (export)
@@ -120,17 +120,17 @@ public class FileMenu extends JMenu {
 	public void addNewOpenMenus() {
 		// new sample
 		JMenuItem sample = Builder.makeMenuItem("sample...",
-				"new corina.editor.Editor()");
+				"new edu.cornell.dendro.corina.editor.Editor()");
 		indent(sample); // (re-indent!)
 
 		// new sum
 		JMenuItem sum = Builder.makeMenuItem("sum...",
-				"corina.gui.menus.FileMenu.sum()"); // why not "new Sum()"?
+			"edu.cornell.dendro.corina.gui.menus.FileMenu.sum()"); // why not "new Sum()"?
 		indent(sum);
 
 		// new plot
 		JMenuItem plot = Builder.makeMenuItem("plot...",
-				"new corina.graph.GraphWindow()");
+				"new edu.cornell.dendro.corina.graph.GraphWindow()");
 		indent(plot); // (re-indent!)
 
 		// new grid
@@ -139,17 +139,17 @@ public class FileMenu extends JMenu {
 		// "new corina.cross.GridFrame()");
 		// indent(grid); // (re-indent!)
 		JMenuItem crossdate = Builder.makeMenuItem("crossdate...",
-				"new corina.cross.CrossdateKit()");
+				"new edu.cornell.dendro.corina.cross.CrossdateKit()");
 		indent(crossdate);
 
 		// new atlas
 		JMenuItem map = Builder.makeMenuItem("atlas...",
-				"new corina.map.MapFrame()");
+				"new edu.cornell.dendro.corina.map.MapFrame()");
 		indent(map);
 
 		// new site (site editor)
 		JMenuItem sites = Builder.makeMenuItem("site...",
-				"new corina.site.SiteEditor()");
+				"new edu.cornell.dendro.corina.site.SiteEditor()");
 		indent(sites);
 
 		// add menuitems to menu
@@ -163,12 +163,12 @@ public class FileMenu extends JMenu {
 		add(sites);
 
 		// open, browse
-		add(Builder.makeMenuItem("open...", "corina.gui.menus.FileMenu.open()"));
+		add(Builder.makeMenuItem("open...", "edu.cornell.dendro.corina.gui.menus.FileMenu.open()"));
 		add(Builder.makeMenuItem("open_multi...",
-				"corina.gui.menus.FileMenu.openMulti()"));
+				"edu.cornell.dendro.corina.gui.menus.FileMenu.openMulti()"));
 		add(Builder.makeMenuItem("bulkexport...",
-				"corina.gui.menus.FileMenu.bulkexport()"));
-		add(Builder.makeMenuItem("browse...", "new corina.browser.Browser();"));
+				"edu.cornell.dendro.corina.gui.menus.FileMenu.bulkexport()"));
+		add(Builder.makeMenuItem("browse...", "new edu.cornell.dendro.corina.browser.Browser();"));
 		add(OpenRecent.makeOpenRecentMenu());
 	}
 
@@ -621,7 +621,7 @@ public class FileMenu extends JMenu {
 	public void addExitMenu() {
 		if (!App.platform.isMac()) {
 			addSeparator();
-			add(Builder.makeMenuItem("quit", "corina.gui.XCorina.quit()"));
+			add(Builder.makeMenuItem("quit", "edu.cornell.dendro.corina.gui.XCorina.quit()"));
 		}
 	}
 }

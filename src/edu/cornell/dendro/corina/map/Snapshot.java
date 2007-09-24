@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.map;
+package edu.cornell.dendro.corina.map;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -51,20 +51,20 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 
-import corina.core.App;
-import corina.gui.Bug;
-import corina.gui.FileDialog;
-import corina.gui.Layout;
-import corina.gui.UserCancelledException;
-import corina.gui.layouts.DialogLayout;
-import corina.map.layers.GridlinesLayer;
-import corina.map.layers.LegendLayer;
-import corina.map.layers.MapLayer;
-import corina.map.layers.SitesLayer;
-import corina.ui.Builder;
-import corina.util.DocumentListener2;
-import corina.util.OKCancel;
-import corina.util.Overwrite;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.gui.layouts.DialogLayout;
+import edu.cornell.dendro.corina.map.layers.GridlinesLayer;
+import edu.cornell.dendro.corina.map.layers.LegendLayer;
+import edu.cornell.dendro.corina.map.layers.MapLayer;
+import edu.cornell.dendro.corina.map.layers.SitesLayer;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.DocumentListener2;
+import edu.cornell.dendro.corina.util.OKCancel;
+import edu.cornell.dendro.corina.util.Overwrite;
 
 // import com.keypoint.PngEncoder;
 

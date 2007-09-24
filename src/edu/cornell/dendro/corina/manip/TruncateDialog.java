@@ -18,17 +18,17 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.manip;
+package edu.cornell.dendro.corina.manip;
 
-import corina.Year;
-import corina.Range;
-import corina.Sample;
-import corina.gui.Layout;
-import corina.util.OKCancel;
-import corina.util.JLine;
-import corina.util.DocumentListener2;
-import corina.ui.Builder;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.util.OKCancel;
+import edu.cornell.dendro.corina.util.JLine;
+import edu.cornell.dendro.corina.util.DocumentListener2;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;

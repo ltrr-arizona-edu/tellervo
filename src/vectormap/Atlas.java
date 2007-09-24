@@ -36,10 +36,10 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import corina.core.App;
-import corina.map.SiteInfoDialog;
-import corina.site.Site;
-import corina.site.SiteDB;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.map.SiteInfoDialog;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.SiteDB;
 
 /**
  * Atlas

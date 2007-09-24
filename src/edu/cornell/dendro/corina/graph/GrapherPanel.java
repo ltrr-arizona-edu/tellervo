@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -66,15 +66,15 @@ import javax.swing.RepaintManager;
 import javax.swing.Scrollable;
 import javax.swing.filechooser.FileFilter;
 
-import corina.Build;
-import corina.Range;
-import corina.Sample;
-import corina.Year;
-import corina.core.App;
-import corina.gui.Bug;
-import corina.gui.XFrame;
-import corina.ui.Alert;
-import corina.util.ColorUtils;
+import edu.cornell.dendro.corina.Build;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.XFrame;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.util.ColorUtils;
 
 public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		MouseMotionListener, AdjustmentListener, Scrollable {
@@ -1455,7 +1455,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	private class QuickScorer {
 		public QuickScorer() {}
 
-		private class graphTScore extends corina.cross.TScore {
+		private class graphTScore extends edu.cornell.dendro.corina.cross.TScore {
 			public graphTScore(Sample s1, Sample s2) {
 				super(s1, s2);
 				preamble();

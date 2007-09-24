@@ -18,9 +18,9 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
-import corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.SiteDB;
 
 import java.util.List;
 import java.util.ArrayList;

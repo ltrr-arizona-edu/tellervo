@@ -18,18 +18,18 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui.menus;
+package edu.cornell.dendro.corina.gui.menus;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import corina.core.App;
-import corina.gui.AboutBox;
-import corina.ui.Builder;
-import corina.ui.CorinaAction;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.AboutBox;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.CorinaAction;
+import edu.cornell.dendro.corina.ui.I18n;
 
 // TODO: move all menus to corina.gui.menus or even corina.menus (i'm tending towards the latter)
 // TODO: error-log should be a singleton-window, and centered
@@ -87,7 +87,7 @@ public class HelpMenu extends JMenu {
     */
     protected void addHelpMenu() {
 	add(Builder.makeMenuItem("corina_help",
-				 "corina.gui.Help.showHelp()"));
+				 "edu.cornell.dendro.corina.gui.Help.showHelp()"));
     }
 
     /**
@@ -95,7 +95,7 @@ public class HelpMenu extends JMenu {
     */
     protected void addSystemInfoMenu() {
         add(Builder.makeMenuItem("system_info...",
-                                 "corina.util.PropertiesWindow.showPropertiesWindow()"));
+                                 "edu.cornell.dendro.corina.util.PropertiesWindow.showPropertiesWindow()"));
     }
 
     /**
@@ -103,8 +103,8 @@ public class HelpMenu extends JMenu {
      * FIXME: not really just an "error" log... more like "activity" log.
      */
     protected void addErrorLogMenu() {
-        add(Builder.makeMenuItem("error_log...", "corina.gui.ErrorLog.showLogViewer()"));
-        add(Builder.makeMenuItem("error_log_mail...", "corina.util.EmailBugReport.submitBugReport()"));
+        add(Builder.makeMenuItem("error_log...", "edu.cornell.dendro.corina.gui.ErrorLog.showLogViewer()"));
+        add(Builder.makeMenuItem("error_log_mail...", "edu.cornell.dendro.corina.util.EmailBugReport.submitBugReport()"));
     }
 
     /**

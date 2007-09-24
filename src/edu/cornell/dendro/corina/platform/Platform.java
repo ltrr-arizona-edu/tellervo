@@ -1,4 +1,4 @@
-package corina.platform;
+package edu.cornell.dendro.corina.platform;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,9 +6,9 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
-import corina.core.AbstractSubsystem;
-import corina.gui.Bug;
-import corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.core.AbstractSubsystem;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.logging.CorinaLog;
 
 /**
  * Platform subsystem that takes care of platform-specific things.

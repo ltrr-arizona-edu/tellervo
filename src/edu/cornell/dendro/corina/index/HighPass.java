@@ -18,16 +18,16 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.index;
+package edu.cornell.dendro.corina.index;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import corina.Sample;
-import corina.core.App;
-import corina.ui.I18n;
-import corina.util.StringUtils;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.StringUtils;
 
 /**
    A simple high-pass filter.

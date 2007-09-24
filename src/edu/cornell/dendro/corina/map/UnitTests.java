@@ -18,9 +18,9 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.map;
+package edu.cornell.dendro.corina.map;
 
-import corina.site.Location;
+import edu.cornell.dendro.corina.site.Location;
 import junit.framework.TestCase;
 
 public class UnitTests extends TestCase {

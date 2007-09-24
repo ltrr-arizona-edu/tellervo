@@ -1,13 +1,13 @@
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
-import corina.Species;
-import corina.UnknownSpeciesException;
-import corina.Sample;
-import corina.gui.Layout;
-import corina.gui.Bug;
-import corina.util.OKCancel;
-import corina.ui.Builder;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Species;
+import edu.cornell.dendro.corina.UnknownSpeciesException;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.util.OKCancel;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import java.util.Collections;
 import java.util.Iterator;

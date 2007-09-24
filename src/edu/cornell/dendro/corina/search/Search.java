@@ -1,6 +1,6 @@
-package corina.search;
+package edu.cornell.dendro.corina.search;
 
-import corina.Element;
+import edu.cornell.dendro.corina.Element;
 
 import java.io.File;
 

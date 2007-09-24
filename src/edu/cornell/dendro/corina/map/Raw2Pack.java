@@ -1,4 +1,4 @@
-package corina.map;
+package edu.cornell.dendro.corina.map;
 
 import java.io.*;
 import java.util.StringTokenizer;

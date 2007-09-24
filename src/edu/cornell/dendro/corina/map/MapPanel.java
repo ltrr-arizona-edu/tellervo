@@ -18,19 +18,19 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.map;
+package edu.cornell.dendro.corina.map;
 
-import corina.gui.ProgressMeter;
-import corina.gui.Splash;
-import corina.map.tools.Tool;
-import corina.map.layers.GridlinesLayer;
-import corina.map.layers.MapLayer;
-import corina.map.layers.LegendLayer;
-import corina.map.layers.SitesLayer;
-import corina.site.Location;
-import corina.site.Site;
-import corina.site.SiteDB;
-import corina.site.SiteNotFoundException;
+import edu.cornell.dendro.corina.gui.ProgressMeter;
+import edu.cornell.dendro.corina.gui.Splash;
+import edu.cornell.dendro.corina.map.tools.Tool;
+import edu.cornell.dendro.corina.map.layers.GridlinesLayer;
+import edu.cornell.dendro.corina.map.layers.MapLayer;
+import edu.cornell.dendro.corina.map.layers.LegendLayer;
+import edu.cornell.dendro.corina.map.layers.SitesLayer;
+import edu.cornell.dendro.corina.site.Location;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.SiteNotFoundException;
 
 import java.util.List;
 import java.util.ArrayList;

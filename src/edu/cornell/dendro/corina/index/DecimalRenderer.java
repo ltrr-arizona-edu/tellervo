@@ -1,4 +1,4 @@
-package corina.index;
+package edu.cornell.dendro.corina.index;
 
 import java.awt.Component;
 import java.awt.FontMetrics;

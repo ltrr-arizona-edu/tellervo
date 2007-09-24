@@ -1,4 +1,4 @@
-package corina.util;
+package edu.cornell.dendro.corina.util;
 
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionListener;

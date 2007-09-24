@@ -18,9 +18,9 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.map;
+package edu.cornell.dendro.corina.map;
 
-import corina.site.Location;
+import edu.cornell.dendro.corina.site.Location;
 
 /**
    A point in 3-space: (x, y, z).  Each component (x, y, z) is a float.

@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -45,24 +45,24 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import corina.Build;
-import corina.Element;
-import corina.core.App;
-import corina.graph.GraphWindow;
-import corina.gui.FileDialog;
-import corina.gui.PrintableDocument;
-import corina.gui.SaveableDocument;
-import corina.gui.UserCancelledException;
-import corina.gui.XFrame;
-import corina.gui.menus.FileMenu;
-import corina.gui.menus.HelpMenu;
-import corina.gui.menus.WindowMenu;
-import corina.prefs.PrefsEvent;
-import corina.prefs.PrefsListener;
-import corina.ui.Alert;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.util.Overwrite;
+import edu.cornell.dendro.corina.Build;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.graph.GraphWindow;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.PrintableDocument;
+import edu.cornell.dendro.corina.gui.SaveableDocument;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.gui.XFrame;
+import edu.cornell.dendro.corina.gui.menus.FileMenu;
+import edu.cornell.dendro.corina.gui.menus.HelpMenu;
+import edu.cornell.dendro.corina.gui.menus.WindowMenu;
+import edu.cornell.dendro.corina.prefs.PrefsEvent;
+import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.Overwrite;
 
 /*
   TODO:

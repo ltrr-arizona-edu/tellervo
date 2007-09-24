@@ -1,4 +1,4 @@
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -8,7 +8,7 @@ import java.awt.Graphics;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import corina.Range;
+import edu.cornell.dendro.corina.Range;
 
 /*
  * a renderer for ranges in jtable cells.

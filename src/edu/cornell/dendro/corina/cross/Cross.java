@@ -18,17 +18,17 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
-import corina.Range;
-import corina.Sample;
-import corina.Year;
-import corina.core.App;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
    Abstract class representing a crossdating algorithm, and its scores.
@@ -331,7 +331,7 @@ public abstract class Cross implements Runnable {
     /*
       IDEA: make Crossdate and Algorithm separate classes
 
-      -- package corina.cross.algorithms
+      -- package edu.cornell.dendro.corina.cross.algorithms
       -- Algorithm has just compute(int,int), isSig(float,int)
       -- name and format aren't really coded -- put in prefs defaults?  i18n?
       -- (also need: letter -- "t", "D", etc.)
@@ -529,11 +529,11 @@ public abstract class Cross implements Runnable {
       trend, D-score, weiserjahre.
     */
     public final static String ALL_CROSSDATES[] = new String[] {
-	"corina.cross.TScore",
-	"corina.cross.RValue",
-	"corina.cross.Trend",
-	"corina.cross.DScore",
-	"corina.cross.Weiserjahre",
+	"edu.cornell.dendro.corina.cross.TScore",
+	"edu.cornell.dendro.corina.cross.RValue",
+	"edu.cornell.dendro.corina.cross.Trend",
+	"edu.cornell.dendro.corina.cross.DScore",
+	"edu.cornell.dendro.corina.cross.Weiserjahre",
 	// -> add new crossdates here
     };
 
@@ -545,9 +545,9 @@ public abstract class Cross implements Runnable {
        of ALL_CROSSDATES is always used.)
     */
     public final static String DEFAULT_CROSSDATES[] = new String[] {
-	"corina.cross.TScore",
-	"corina.cross.RValue",
-	"corina.cross.Trend",
-	"corina.cross.Weiserjahre",
+	"edu.cornell.dendro.corina.cross.TScore",
+	"edu.cornell.dendro.corina.cross.RValue",
+	"edu.cornell.dendro.corina.cross.Trend",
+	"edu.cornell.dendro.corina.cross.Weiserjahre",
     };
 }

@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -57,7 +57,7 @@ public class Help {
     private static void createHelpSet() {
 	try {
 	    // Corina help, in the corina/manual/ folder of Corina.jar
-	    ClassLoader loader = corina.gui.Help.class.getClassLoader();
+	    ClassLoader loader = edu.cornell.dendro.corina.gui.Help.class.getClassLoader();
             // URL url = loader.getResource("javahelp/jhelpset.hs");
             URL url = loader.getResource("corina/manual/jhelpset.hs");
 	    hs = new HelpSet(null, url);

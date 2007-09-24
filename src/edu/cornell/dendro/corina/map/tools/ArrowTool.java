@@ -18,19 +18,19 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.map.tools;
+package edu.cornell.dendro.corina.map.tools;
 
-import corina.map.Point3D;
-import corina.map.View;
-import corina.map.Projection;
-import corina.map.MapPanel;
-import corina.site.Location;
-import corina.site.Site;
-import corina.site.SiteDB;
-import corina.site.SiteInfoDialog;
-import corina.site.SiteNotFoundException;
-import corina.util.Angle;
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.map.Point3D;
+import edu.cornell.dendro.corina.map.View;
+import edu.cornell.dendro.corina.map.Projection;
+import edu.cornell.dendro.corina.map.MapPanel;
+import edu.cornell.dendro.corina.site.Location;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.SiteInfoDialog;
+import edu.cornell.dendro.corina.site.SiteNotFoundException;
+import edu.cornell.dendro.corina.util.Angle;
+import edu.cornell.dendro.corina.ui.Builder;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -240,11 +240,11 @@ public class ArrowTool extends Tool {
 
                 boolean insideBox = selectionBox.contains(p3.getX(), p3.getY());
 
-                corina.map.LabelSet ls = p.labels; // HACK!
+                edu.cornell.dendro.corina.map.LabelSet ls = p.labels; // HACK!
                 ls.setSelected(s, insideBox);
             }
 
-            corina.map.LabelSet ls = p.labels; // HACK!
+            edu.cornell.dendro.corina.map.LabelSet ls = p.labels; // HACK!
             System.out.println(ls.countSelectedSites() + " sites selected");
             
 	    p.repaint(); // only if changed?  only relevant area?

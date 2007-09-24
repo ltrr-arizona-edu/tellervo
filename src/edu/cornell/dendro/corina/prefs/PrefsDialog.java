@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.prefs;
+package edu.cornell.dendro.corina.prefs;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -30,14 +30,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import corina.gui.Bug;
-import corina.prefs.panels.AdvancedPrefsPanel;
-import corina.prefs.panels.AppearancePrefsPanel;
-import corina.prefs.panels.CrossdatingPrefsPanel;
-import corina.prefs.panels.DataPrefsPanel;
-import corina.prefs.panels.GraphPrefsPanel;
-import corina.ui.Builder;
-import corina.util.Center;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.prefs.panels.AdvancedPrefsPanel;
+import edu.cornell.dendro.corina.prefs.panels.AppearancePrefsPanel;
+import edu.cornell.dendro.corina.prefs.panels.CrossdatingPrefsPanel;
+import edu.cornell.dendro.corina.prefs.panels.DataPrefsPanel;
+import edu.cornell.dendro.corina.prefs.panels.GraphPrefsPanel;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.Center;
 
 /**
     A dialog for setting user preferences.
@@ -150,7 +150,7 @@ public class PrefsDialog extends JFrame {
     tabs.addTab("Advanced", new AdvancedPrefsPanel());
     getContentPane().add(tabs, BorderLayout.CENTER);
     JPanel okButtonContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    String oktext = corina.ui.I18n.getText("ok");
+    String oktext = edu.cornell.dendro.corina.ui.I18n.getText("ok");
     if (oktext == null) oktext = "OK";
     JButton okButton = new JButton(oktext);
     okButtonContainer.add(okButton);

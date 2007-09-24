@@ -18,20 +18,20 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
-import corina.Sample;
-import corina.Element;
-import corina.Year;
-import corina.Weiserjahre;
-import corina.util.StringUtils;
-import corina.print.Line;
-import corina.print.EmptyLine;
-import corina.print.TextLine;
-import corina.print.ByLine;
-import corina.print.ThinLine;
-import corina.print.TabbedLineFactory;
-import corina.print.Printer;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Weiserjahre;
+import edu.cornell.dendro.corina.util.StringUtils;
+import edu.cornell.dendro.corina.print.Line;
+import edu.cornell.dendro.corina.print.EmptyLine;
+import edu.cornell.dendro.corina.print.TextLine;
+import edu.cornell.dendro.corina.print.ByLine;
+import edu.cornell.dendro.corina.print.ThinLine;
+import edu.cornell.dendro.corina.print.TabbedLineFactory;
+import edu.cornell.dendro.corina.print.Printer;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;

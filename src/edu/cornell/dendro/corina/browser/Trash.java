@@ -1,4 +1,4 @@
-package corina.browser;
+package edu.cornell.dendro.corina.browser;
 
 import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
@@ -19,9 +19,9 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
-import corina.core.App;
-import corina.platform.Platform;
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.platform.Platform;
+import edu.cornell.dendro.corina.ui.Builder;
 
 /*
  left to do:

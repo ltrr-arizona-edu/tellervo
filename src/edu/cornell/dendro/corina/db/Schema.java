@@ -1,4 +1,4 @@
-package corina.db;
+package edu.cornell.dendro.corina.db;
 
 import java.sql.*;
 

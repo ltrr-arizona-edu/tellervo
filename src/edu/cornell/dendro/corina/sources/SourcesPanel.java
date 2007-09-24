@@ -1,4 +1,4 @@
-package corina.sources;
+package edu.cornell.dendro.corina.sources;
 
 import java.awt.*;
 import javax.swing.*;

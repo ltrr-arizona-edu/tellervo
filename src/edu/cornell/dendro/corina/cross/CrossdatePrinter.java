@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -28,17 +28,17 @@ import java.awt.Stroke;
 import java.awt.print.PageFormat;
 import java.text.DecimalFormat;
 
-import corina.Year;
-import corina.core.App;
-import corina.prefs.Prefs;
-import corina.print.ByLine;
-import corina.print.EmptyLine;
-import corina.print.Line;
-import corina.print.Printer;
-import corina.print.TabbedLineFactory;
-import corina.print.TextLine;
-import corina.print.ThinLine;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.print.ByLine;
+import edu.cornell.dendro.corina.print.EmptyLine;
+import edu.cornell.dendro.corina.print.Line;
+import edu.cornell.dendro.corina.print.Printer;
+import edu.cornell.dendro.corina.print.TabbedLineFactory;
+import edu.cornell.dendro.corina.print.TextLine;
+import edu.cornell.dendro.corina.print.ThinLine;
+import edu.cornell.dendro.corina.ui.I18n;
 
 // TODO:
 // -- refactor lineWithBar (formerly HistoLine)

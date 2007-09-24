@@ -18,17 +18,17 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
-import corina.Year;
-import corina.Range;
-import corina.Sample;
-import corina.Element;
-import corina.index.Index;
-import corina.index.Exponential; // extract const! -- better: let user pick!
-import corina.util.Overwrite;
-import corina.ui.Builder;
-import corina.ui.Alert;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.index.Index;
+import edu.cornell.dendro.corina.index.Exponential; // extract const! -- better: let user pick!
+import edu.cornell.dendro.corina.util.Overwrite;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.Alert;
 
 import java.io.File;
 import java.io.IOException;

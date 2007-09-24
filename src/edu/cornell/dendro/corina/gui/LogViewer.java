@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
 //{{{ Imports
 import java.awt.BorderLayout;
@@ -43,9 +43,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import corina.core.App;
-import corina.logging.CorinaLog;
-import corina.util.TextClipboard;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.util.TextClipboard;
 //}}}
 
 public class LogViewer extends JPanel

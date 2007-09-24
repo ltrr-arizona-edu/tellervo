@@ -1,4 +1,4 @@
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -46,16 +46,16 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import corina.core.App;
-import corina.db.Convert;
-import corina.db.DBBrowser;
-import corina.gui.layouts.DialogLayout;
-import corina.ui.Alert;
-import corina.ui.Builder;
-import corina.util.NoEmptySelection;
-import corina.util.OKCancel;
-import corina.util.PopupListener;
-import corina.util.UpdateFolder;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.db.Convert;
+import edu.cornell.dendro.corina.db.DBBrowser;
+import edu.cornell.dendro.corina.gui.layouts.DialogLayout;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.NoEmptySelection;
+import edu.cornell.dendro.corina.util.OKCancel;
+import edu.cornell.dendro.corina.util.PopupListener;
+import edu.cornell.dendro.corina.util.UpdateFolder;
 
 // purpose: show a list of all the available sources, to be used with
 // the corina sample browser.

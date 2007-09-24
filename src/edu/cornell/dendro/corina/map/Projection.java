@@ -18,10 +18,10 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.map;
+package edu.cornell.dendro.corina.map;
 
-import corina.map.projections.RectangularProjection;
-import corina.site.Location;
+import edu.cornell.dendro.corina.map.projections.RectangularProjection;
+import edu.cornell.dendro.corina.site.Location;
 
 import java.awt.Point;
 

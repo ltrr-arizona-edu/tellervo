@@ -1,4 +1,4 @@
-package corina.prefs.components;
+package edu.cornell.dendro.corina.prefs.components;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -19,8 +19,8 @@ import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.AbstractTableModel;
 
-import corina.core.App;
-import corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.logging.CorinaLog;
 
 public class UIDefaultsTableModel extends AbstractTableModel {
   private static final CorinaLog log = new CorinaLog(UIDefaultsTableModel.class);

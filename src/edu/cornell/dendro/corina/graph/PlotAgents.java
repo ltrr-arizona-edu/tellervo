@@ -1,9 +1,9 @@
 /**
  * 
  */
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 /**
  * @author Lucas Madar

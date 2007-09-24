@@ -1,7 +1,7 @@
 /**
  * 
  */
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import java.awt.event.ActionEvent;
 
@@ -10,8 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 
 
-import corina.gui.menus.FileMenu;
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.gui.menus.FileMenu;
+import edu.cornell.dendro.corina.ui.Builder;
 
 /**
  * @author Lucas Madar

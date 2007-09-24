@@ -18,14 +18,14 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.util;
+package edu.cornell.dendro.corina.util;
 
 import java.io.File;
 
 import javax.swing.JOptionPane;
 
-import corina.core.App;
-import corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
 
 /**
    A helper function for asking "do you really want to overwrite that

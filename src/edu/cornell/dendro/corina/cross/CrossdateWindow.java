@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -49,31 +49,31 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import corina.Build;
-import corina.core.App;
-import corina.cross.sigscores.SignificantScoresView;
-import corina.gui.Layout;
-import corina.gui.FileDialog;
-import corina.gui.UserCancelledException;
-import corina.gui.PrintableDocument;
-import corina.gui.XFrame;
-import corina.gui.menus.EditMenu;
-import corina.gui.menus.FileMenu;
-import corina.gui.menus.HelpMenu;
-import corina.gui.menus.WindowMenu;
-import corina.map.MapFrame;
-import corina.prefs.PrefsEvent;
-import corina.prefs.PrefsListener;
-import corina.site.Site;
-import corina.site.SiteDB;
-import corina.site.SiteNotFoundException;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.util.Center;
-import corina.util.JLinedLabel;
-import corina.util.OKCancel;
-import corina.util.Sort;
-import corina.util.Overwrite;
+import edu.cornell.dendro.corina.Build;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.cross.sigscores.SignificantScoresView;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.gui.PrintableDocument;
+import edu.cornell.dendro.corina.gui.XFrame;
+import edu.cornell.dendro.corina.gui.menus.EditMenu;
+import edu.cornell.dendro.corina.gui.menus.FileMenu;
+import edu.cornell.dendro.corina.gui.menus.HelpMenu;
+import edu.cornell.dendro.corina.gui.menus.WindowMenu;
+import edu.cornell.dendro.corina.map.MapFrame;
+import edu.cornell.dendro.corina.prefs.PrefsEvent;
+import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.SiteNotFoundException;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.util.JLinedLabel;
+import edu.cornell.dendro.corina.util.OKCancel;
+import edu.cornell.dendro.corina.util.Sort;
+import edu.cornell.dendro.corina.util.Overwrite;
 
 /**
  * A window which displays a crossdate. Displays all scores and significant scores, and lets
@@ -519,7 +519,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument,
 			// the other 2, right? (along with a "this is a bug" message.)
 		} catch (Exception e) {
 			// NOTE: histogram is dying right now; you can remove this later.
-			new corina.gui.Bug(e);
+			new edu.cornell.dendro.corina.gui.Bug(e);
 		}
 
 		tabPane.addTab(I18n.getText("sig_scores"), sigs);

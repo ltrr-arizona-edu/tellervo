@@ -1,10 +1,10 @@
-package corina.search;
+package edu.cornell.dendro.corina.search;
 
-import corina.Year;
-import corina.MetadataTemplate;
-import corina.logging.CorinaLog;
-import corina.util.ColorUtils;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.MetadataTemplate;
+import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.util.ColorUtils;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import java.util.Date;
 import java.util.Vector;

@@ -1,16 +1,16 @@
 // Copyright (c) 2004-2005 Aaron Hamid.  All rights reserved.
 // See license in COPYING.txt distributed with this file and available online at http://www.gnu.org/licenses/gpl.txt
 
-package corina.core;
+package edu.cornell.dendro.corina.core;
 
 import javax.swing.ProgressMonitor;
 import javax.swing.UIManager;
 
-import corina.gui.ProgressMeter;
-import corina.logging.CorinaLog;
-import corina.logging.Logging;
-import corina.platform.Platform;
-import corina.prefs.Prefs;
+import edu.cornell.dendro.corina.gui.ProgressMeter;
+import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.logging.Logging;
+import edu.cornell.dendro.corina.platform.Platform;
+import edu.cornell.dendro.corina.prefs.Prefs;
 
 /**
  * Contextual state of the app; holds references to all "subsystems".

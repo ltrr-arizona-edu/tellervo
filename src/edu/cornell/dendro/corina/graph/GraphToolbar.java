@@ -1,7 +1,7 @@
 /**
  * 
  */
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import java.awt.Image;
 
@@ -10,7 +10,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.Builder;
 
 /**
  * @author Lucas Madar

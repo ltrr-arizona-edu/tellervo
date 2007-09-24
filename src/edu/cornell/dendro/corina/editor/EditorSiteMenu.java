@@ -1,15 +1,15 @@
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
-import corina.Sample;
-import corina.site.Site;
-import corina.site.SiteDB;
-import corina.site.SiteInfoDialog;
-import corina.site.SiteNotFoundException;
-import corina.map.MapFrame;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.ui.Alert;
-import corina.gui.Bug;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.SiteInfoDialog;
+import edu.cornell.dendro.corina.site.SiteNotFoundException;
+import edu.cornell.dendro.corina.map.MapFrame;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.gui.Bug;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;

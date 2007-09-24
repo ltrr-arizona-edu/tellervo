@@ -1,4 +1,4 @@
-package corina.ui;
+package edu.cornell.dendro.corina.ui;
 
 import java.awt.event.ActionEvent;
 
@@ -6,7 +6,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.KeyStroke;
 
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 /**
  * A base Corina action which sets Mnemonic and Accelerator based on I18N settings.

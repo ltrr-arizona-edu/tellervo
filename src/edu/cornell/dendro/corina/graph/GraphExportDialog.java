@@ -1,5 +1,5 @@
 
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -16,7 +16,7 @@ import javax.swing.RepaintManager;
 import javax.swing.Scrollable;
 import javax.swing.filechooser.FileFilter;
 import java.awt.BorderLayout;
-import corina.Sample;
+import edu.cornell.dendro.corina.Sample;
 import java.util.List;
 import java.util.ArrayList;
 import javax.swing.JScrollPane;

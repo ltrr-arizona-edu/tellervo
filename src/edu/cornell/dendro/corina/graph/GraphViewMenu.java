@@ -1,7 +1,7 @@
 /**
  * 
  */
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -14,10 +14,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
-import corina.core.App;
-import corina.gui.Bug;
-import corina.ui.Builder;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 
 class GraphViewMenu extends JMenu {
 	// custom menus for graph windows

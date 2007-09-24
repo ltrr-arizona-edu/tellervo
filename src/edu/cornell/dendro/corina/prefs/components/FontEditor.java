@@ -1,4 +1,4 @@
-package corina.prefs.components;
+package edu.cornell.dendro.corina.prefs.components;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.table.TableCellEditor;
@@ -10,7 +10,7 @@ import java.awt.Component;
 
 import com.ozten.font.JFontChooser;
 
-import corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.logging.CorinaLog;
 
 public class FontEditor extends AbstractCellEditor implements TableCellEditor {
   private static final CorinaLog log = new CorinaLog(FontEditor.class);

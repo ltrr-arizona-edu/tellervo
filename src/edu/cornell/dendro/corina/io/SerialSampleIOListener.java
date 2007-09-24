@@ -1,7 +1,7 @@
 /**
  * 
  */
-package corina.io;
+package edu.cornell.dendro.corina.io;
 
 import java.util.EventListener;
 

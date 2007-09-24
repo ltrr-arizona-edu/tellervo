@@ -1,6 +1,6 @@
-package corina.site;
+package edu.cornell.dendro.corina.site;
 
-import corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.Bug;
 
 import java.util.Properties;
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class Country {
     static {
         Properties prop = new Properties();
         try {
-            ClassLoader cl = corina.site.Country.class.getClassLoader();
+            ClassLoader cl = edu.cornell.dendro.corina.site.Country.class.getClassLoader();
             prop.load(cl.getResource("countries.properties").openStream());
         } catch (Exception e) {
             Bug.bug(e); // can't happen

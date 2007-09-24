@@ -1,4 +1,4 @@
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
 import java.awt.*;
 import javax.swing.*;

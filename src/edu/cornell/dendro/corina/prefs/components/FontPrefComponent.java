@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.prefs.components;
+package edu.cornell.dendro.corina.prefs.components;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -32,7 +32,7 @@ import javax.swing.SwingUtilities;
 
 import com.ozten.font.JFontChooser;
 
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 /**
   A component for changing a font preference.

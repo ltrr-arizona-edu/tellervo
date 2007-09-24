@@ -1,6 +1,6 @@
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
-import corina.Sample;
+import edu.cornell.dendro.corina.Sample;
 
 import java.io.File;
 import java.io.BufferedWriter;
@@ -518,7 +518,7 @@ public class Bayesian {
 	if (args.length >= 2) {
 	    algorithm = Class.forName(args[1]);
 	} else {
-	    algorithm = Class.forName("corina.cross.TScore");
+	    algorithm = Class.forName("edu.cornell.dendro.corina.cross.TScore");
 	}
 
 	int numberOfPairs;

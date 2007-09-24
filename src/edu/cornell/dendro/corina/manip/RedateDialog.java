@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.manip;
+package edu.cornell.dendro.corina.manip;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -43,15 +43,15 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import corina.CorinaPermission;
-import corina.Range;
-import corina.Sample;
-import corina.Year;
-import corina.gui.Layout;
-import corina.gui.layouts.DialogLayout;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.util.OKCancel;
+import edu.cornell.dendro.corina.CorinaPermission;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.layouts.DialogLayout;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.OKCancel;
 
 /**
    A dialog which enables the user to redate a sample.  You can redate

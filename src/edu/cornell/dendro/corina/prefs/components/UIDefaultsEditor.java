@@ -1,4 +1,4 @@
-package corina.prefs.components;
+package edu.cornell.dendro.corina.prefs.components;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -12,7 +12,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 
-import corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.logging.CorinaLog;
 
 /**
  * @author Aaron

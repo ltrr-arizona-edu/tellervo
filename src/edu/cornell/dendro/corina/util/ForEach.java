@@ -1,4 +1,4 @@
-package corina.util;
+package edu.cornell.dendro.corina.util;
 
 // this class will help you do stuff for each (get it?  get it?) sample in a folder
 

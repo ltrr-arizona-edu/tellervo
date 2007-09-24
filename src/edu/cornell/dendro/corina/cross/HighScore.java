@@ -2,10 +2,10 @@
 // See license in COPYING.txt distributed with this file and available online at http://www.gnu.org/licenses/gpl.txt
 // Created on Apr 1, 2005
 
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
-import corina.Range;
-import corina.Year;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Year;
 
 
 public class HighScore {

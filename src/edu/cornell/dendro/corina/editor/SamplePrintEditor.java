@@ -1,7 +1,7 @@
 /**
  * 
  */
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
 import javax.print.*;
 import javax.print.attribute.*;
@@ -46,15 +46,15 @@ import java.awt.event.ActionListener;
 import java.awt.print.Printable;
 import java.awt.print.PageFormat;
 
-import corina.Sample;
-import corina.Weiserjahre;
-import corina.Year;
-import corina.print.EmptyLine;
-import corina.print.Line;
-import corina.print.TabbedLineFactory;
-import corina.print.TextLine;
-import corina.ui.I18n;
-import corina.util.StringUtils;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Weiserjahre;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.print.EmptyLine;
+import edu.cornell.dendro.corina.print.Line;
+import edu.cornell.dendro.corina.print.TabbedLineFactory;
+import edu.cornell.dendro.corina.print.TextLine;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.StringUtils;
 
 /**
  * @author Lucas Madar
@@ -472,7 +472,7 @@ public class SamplePrintEditor extends JPanel {
 	    });
 		
 		
-	    String oktext = corina.ui.I18n.getText("ok");
+	    String oktext = edu.cornell.dendro.corina.ui.I18n.getText("ok");
 	    if (oktext == null) oktext = "Ok";
 	    JButton okButton = new JButton(oktext);
 	    buttonpanel.add(okButton);
@@ -483,7 +483,7 @@ public class SamplePrintEditor extends JPanel {
 	      }
 	    });
 	    
-	    String canceltext = corina.ui.I18n.getText("cancel");
+	    String canceltext = edu.cornell.dendro.corina.ui.I18n.getText("cancel");
 	    if (canceltext == null) canceltext = "Cancel";
 	    JButton cancelButton = new JButton(canceltext);
 	    buttonpanel.add(cancelButton);
@@ -975,7 +975,7 @@ public class SamplePrintEditor extends JPanel {
 
 		// write out all elements
 		for (int i = 0; i < s.elements.size(); i++) {
-			corina.Element e = (corina.Element) s.elements.get(i);
+			edu.cornell.dendro.corina.Element e = (edu.cornell.dendro.corina.Element) s.elements.get(i);
 
 			if (e.details == null) {
 				try {

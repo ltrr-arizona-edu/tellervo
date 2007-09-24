@@ -1,4 +1,4 @@
-package corina.ui;
+package edu.cornell.dendro.corina.ui;
 
 import java.util.Enumeration;
 import java.util.ResourceBundle;

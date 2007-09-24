@@ -1,4 +1,4 @@
-package corina.browser;
+package edu.cornell.dendro.corina.browser;
 
 import java.io.File;
 

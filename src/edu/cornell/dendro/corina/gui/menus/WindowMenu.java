@@ -1,4 +1,4 @@
-package corina.gui.menus;
+package edu.cornell.dendro.corina.gui.menus;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -14,7 +14,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 // REFACTOR: this is very similar to OpenRecent, a menu shared by all open frames.
 

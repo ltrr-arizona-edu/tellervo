@@ -1,17 +1,17 @@
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
-import corina.Sample;
-import corina.Element;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Element;
 // IDEA: what if i got rid of Element?  it's either a sample, or a
 // filename.  no, that's bad, i wouldn't be able to load massive
 // amounts of metadata, as browser requires...
-import corina.graph.GraphWindow;
-import corina.editor.Editor;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.gui.Layout;
-import corina.index.DecimalRenderer;
-import corina.util.PopupListener;
+import edu.cornell.dendro.corina.graph.GraphWindow;
+import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.index.DecimalRenderer;
+import edu.cornell.dendro.corina.util.PopupListener;
 
 import java.io.IOException;
 

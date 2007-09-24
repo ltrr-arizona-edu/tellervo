@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.print;
+package edu.cornell.dendro.corina.print;
 
 import java.awt.print.Printable;
 import java.awt.print.PageFormat;

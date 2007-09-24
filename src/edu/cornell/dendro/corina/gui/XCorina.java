@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -54,19 +54,19 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSplitPane;
 
-import corina.Build;
-import corina.Sample;
-import corina.core.App;
-import corina.editor.Editor;
-import corina.gui.menus.EditMenu;
-import corina.gui.menus.FileMenu;
-import corina.gui.menus.HelpMenu;
-import corina.gui.menus.OldCrossdateMenu;
-import corina.gui.menus.WindowMenu;
-import corina.platform.Platform;
-import corina.ui.Builder;
-import corina.util.Center;
-import corina.util.OKCancel;
+import edu.cornell.dendro.corina.Build;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.gui.menus.EditMenu;
+import edu.cornell.dendro.corina.gui.menus.FileMenu;
+import edu.cornell.dendro.corina.gui.menus.HelpMenu;
+import edu.cornell.dendro.corina.gui.menus.OldCrossdateMenu;
+import edu.cornell.dendro.corina.gui.menus.WindowMenu;
+import edu.cornell.dendro.corina.platform.Platform;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.util.OKCancel;
 
 public class XCorina extends JFrame {
 

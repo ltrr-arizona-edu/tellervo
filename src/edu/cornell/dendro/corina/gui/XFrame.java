@@ -18,9 +18,9 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.Builder;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;

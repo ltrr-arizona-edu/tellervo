@@ -1,12 +1,12 @@
-package corina.gui.menus;
+package edu.cornell.dendro.corina.gui.menus;
 
-import corina.gui.FileDialog;
-import corina.gui.UserCancelledException;
-import corina.cross.Sequence;
-import corina.cross.CrossdateWindow;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.ui.Alert;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.cross.Sequence;
+import edu.cornell.dendro.corina.cross.CrossdateWindow;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.ui.Alert;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,16 +23,16 @@ public class OldCrossdateMenu extends JMenu {
 	super(I18n.getText("crossdate"));
 
         add(Builder.makeMenuItem("1_by_n",
-				 "corina.gui.menus.OldCrossdateMenu.cross1byN()"));
+				 "edu.cornell.dendro.corina.gui.menus.OldCrossdateMenu.cross1byN()"));
         add(Builder.makeMenuItem("n_by_n",
-				 "corina.gui.menus.OldCrossdateMenu.crossNbyN()"));
+				 "edu.cornell.dendro.corina.gui.menus.OldCrossdateMenu.crossNbyN()"));
         add(Builder.makeMenuItem("1_by_1",
-				 "corina.gui.menus.OldCrossdateMenu.cross1by1()"));
+				 "edu.cornell.dendro.corina.gui.menus.OldCrossdateMenu.cross1by1()"));
         add(Builder.makeMenuItem("n_by_1",
-				 "corina.gui.menus.OldCrossdateMenu.crossNby1()"));
+				 "edu.cornell.dendro.corina.gui.menus.OldCrossdateMenu.crossNby1()"));
         addSeparator();
         add(Builder.makeMenuItem("crossdate_kit",
-				 "new corina.cross.CrossdateKit()"));
+				 "new edu.cornell.dendro.corina.cross.CrossdateKit()"));
     }
 
     // !!!

@@ -18,10 +18,10 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.site;
+package edu.cornell.dendro.corina.site;
 
-import corina.map.Point3D;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.map.Point3D;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import java.util.StringTokenizer;
 

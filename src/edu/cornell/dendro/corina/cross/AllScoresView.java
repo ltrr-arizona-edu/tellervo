@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -39,14 +39,14 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.commons.logging.Log;
 
-import corina.Year;
-import corina.core.App;
-import corina.graph.GraphWindow;
-import corina.logging.CorinaLog;
-import corina.prefs.Prefs;
-import corina.prefs.PrefsEvent;
-import corina.prefs.PrefsListener;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.graph.GraphWindow;
+import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.prefs.PrefsEvent;
+import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
     A view of all of the scores of a crossdate.  The view can be

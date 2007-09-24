@@ -18,13 +18,13 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.ui;
+package edu.cornell.dendro.corina.ui;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import corina.core.App;
-import corina.util.StringUtils;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.util.StringUtils;
 
 /**
    Provide localization strings.

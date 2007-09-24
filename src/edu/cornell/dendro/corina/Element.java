@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina;
+package edu.cornell.dendro.corina;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,9 +26,9 @@ import java.util.Map;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import corina.core.App;
-import corina.formats.WrongFiletypeException;
-import corina.gui.Bug;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.gui.Bug;
 
 /**
    An Element, basically a reference to a Sample (stored on disk).

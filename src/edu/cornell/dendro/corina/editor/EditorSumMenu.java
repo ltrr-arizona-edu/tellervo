@@ -1,18 +1,18 @@
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
-import corina.Sample;
-import corina.SampleEvent;
-import corina.SampleListener;
-import corina.Element;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.ui.Alert;
-import corina.manip.Sum;
-import corina.manip.Clean;
-import corina.gui.ElementsPanel;
-import corina.gui.FileDialog;
-import corina.gui.UserCancelledException;
-import corina.gui.Bug;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.SampleEvent;
+import edu.cornell.dendro.corina.SampleListener;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.manip.Sum;
+import edu.cornell.dendro.corina.manip.Clean;
+import edu.cornell.dendro.corina.gui.ElementsPanel;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.gui.Bug;
 
 import java.io.IOException;
 

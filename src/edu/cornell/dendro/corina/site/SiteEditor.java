@@ -1,7 +1,7 @@
 /**
  * 
  */
-package corina.site;
+package edu.cornell.dendro.corina.site;
 
 import java.awt.Dimension;
 import java.awt.Window;
@@ -11,12 +11,12 @@ import java.util.List;
 import javax.swing.JMenuBar;
 import javax.swing.JScrollPane;
 
-import corina.Build;
-import corina.core.App;
-import corina.gui.XFrame;
-import corina.gui.menus.*;
-import corina.util.*;
-import corina.gui.SaveableDocument;
+import edu.cornell.dendro.corina.Build;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.XFrame;
+import edu.cornell.dendro.corina.gui.menus.*;
+import edu.cornell.dendro.corina.util.*;
+import edu.cornell.dendro.corina.gui.SaveableDocument;
 
 /**
  * @author Lucas Madar

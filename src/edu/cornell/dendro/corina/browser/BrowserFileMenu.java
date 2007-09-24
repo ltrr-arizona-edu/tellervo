@@ -18,19 +18,19 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.browser;
+package edu.cornell.dendro.corina.browser;
 
-import corina.Sample;
-import corina.Element;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.graph.GraphWindow;
-import corina.graph.BargraphFrame;
-import corina.editor.Editor;
-import corina.gui.Bug;
-import corina.site.Site;
-import corina.site.SiteDB;
-import corina.site.SiteNotFoundException;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.graph.GraphWindow;
+import edu.cornell.dendro.corina.graph.BargraphFrame;
+import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.SiteNotFoundException;
 
 import java.io.File;
 import java.io.IOException;
@@ -106,7 +106,7 @@ public class BrowserFileMenu extends JMenu {
 
         // crossdate
         add(Builder.makeMenuItem("new_crossdate",
-                                 "new corina.cross.CrossdateKit()"));
+                                 "new edu.cornell.dendro.corina.cross.CrossdateKit()"));
 
         // ---
         addSeparator();

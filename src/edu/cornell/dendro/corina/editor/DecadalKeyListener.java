@@ -18,10 +18,10 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
-import corina.Year;
-import corina.Sample;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Sample;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

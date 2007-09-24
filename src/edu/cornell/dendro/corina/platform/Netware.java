@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.platform;
+package edu.cornell.dendro.corina.platform;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,7 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 /**
    Deal with ickiness that comes up when running Java programs under
@@ -168,10 +168,10 @@ Connection: 9 (Directory Services)
 	    }
 
 	} catch (IOException ioe) {
-	    corina.gui.Bug.bug(ioe);
+		edu.cornell.dendro.corina.gui.Bug.bug(ioe);
 	    return "--bad--";
 	} catch (Exception e) {
-	    corina.gui.Bug.bug(e);
+		edu.cornell.dendro.corina.gui.Bug.bug(e);
 	    return "-- really bad --";
 	    }
 
@@ -224,7 +224,7 @@ One User object was found.
 	try {
 	    int x = p.waitFor();
 	} catch (InterruptedException ie) {
-	    corina.gui.Bug.bug(ie);
+		edu.cornell.dendro.corina.gui.Bug.bug(ie);
 	}
 
 	// look for name, etc. in output
@@ -257,7 +257,7 @@ One User object was found.
 
 	// BUG (but not here): if WHOAMI exists, but we're not logged in, what happens?
 
-	corina.gui.Bug.bug(new IllegalArgumentException("done with workaround: name=" + name +
+	edu.cornell.dendro.corina.gui.Bug.bug(new IllegalArgumentException("done with workaround: name=" + name +
 							", home=" + home));
     }
 
@@ -303,7 +303,7 @@ S7: = X:. [PITH_SYS: \PUBLIC\NLS]
 	try {
 	    int x = p.waitFor();
 	} catch (InterruptedException ie) {
-	    corina.gui.Bug.bug(ie);
+		edu.cornell.dendro.corina.gui.Bug.bug(ie);
 	}
 
 	// look for "User ID:" in output

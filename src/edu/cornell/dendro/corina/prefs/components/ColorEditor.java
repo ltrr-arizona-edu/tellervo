@@ -1,4 +1,4 @@
-package corina.prefs.components;
+package edu.cornell.dendro.corina.prefs.components;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.table.TableCellEditor;
@@ -13,7 +13,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.logging.CorinaLog;
 
 public class ColorEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
   private static final CorinaLog log = new CorinaLog(ColorEditor.class);

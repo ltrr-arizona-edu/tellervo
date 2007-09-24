@@ -1,4 +1,4 @@
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import java.awt.print.Pageable;
 import java.awt.print.Printable;

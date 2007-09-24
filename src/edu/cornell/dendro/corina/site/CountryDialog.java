@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.site;
+package edu.cornell.dendro.corina.site;
 
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -37,12 +37,12 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import corina.core.App;
-import corina.gui.Layout;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.util.Center;
-import corina.util.OKCancel;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.util.OKCancel;
 
 /**
    Display a dialog allowing the user to choose a country, or "None".

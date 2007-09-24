@@ -1,6 +1,6 @@
-package corina.formats;
+package edu.cornell.dendro.corina.formats;
 
-import corina.Sample;
+import edu.cornell.dendro.corina.Sample;
 
 import java.io.File;
 import java.io.BufferedWriter;

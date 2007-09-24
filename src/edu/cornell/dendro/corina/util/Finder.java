@@ -1,7 +1,7 @@
-package corina.util;
+package edu.cornell.dendro.corina.util;
 
-import corina.ui.Builder;
-import corina.gui.Layout;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.gui.Layout;
 
 import java.io.File;
 import java.io.FileNotFoundException;

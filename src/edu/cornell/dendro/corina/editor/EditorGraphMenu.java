@@ -1,4 +1,4 @@
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
 import java.awt.event.ActionEvent;
 
@@ -6,14 +6,14 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import corina.Sample;
-import corina.SampleEvent;
-import corina.SampleListener;
-import corina.graph.BargraphFrame;
-import corina.graph.GraphWindow;
-import corina.ui.Builder;
-import corina.ui.CorinaAction;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.SampleEvent;
+import edu.cornell.dendro.corina.SampleListener;
+import edu.cornell.dendro.corina.graph.BargraphFrame;
+import edu.cornell.dendro.corina.graph.GraphWindow;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.CorinaAction;
+import edu.cornell.dendro.corina.ui.I18n;
 
 // graph
 // - graph

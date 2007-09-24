@@ -1,4 +1,4 @@
-package corina.util;
+package edu.cornell.dendro.corina.util;
 
 import java.awt.BorderLayout;
 import java.awt.Window;

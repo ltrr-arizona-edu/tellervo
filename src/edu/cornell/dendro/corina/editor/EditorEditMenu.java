@@ -18,26 +18,26 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
-import corina.Sample;
-import corina.Range;
-import corina.SampleEvent;
-import corina.SampleListener;
-import corina.ui.AskNumber;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.ui.Alert;
-import corina.util.TextClipboard;
-import corina.util.PureStringWriter;
-import corina.formats.TwoColumn;
-import corina.formats.WrongFiletypeException;
-import corina.gui.menus.EditMenu;
-import corina.gui.Bug;
-import corina.gui.UserCancelledException;
-import corina.io.SerialSampleIO;
-import corina.logging.CorinaLog;
-import corina.core.App;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.SampleEvent;
+import edu.cornell.dendro.corina.SampleListener;
+import edu.cornell.dendro.corina.ui.AskNumber;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.util.TextClipboard;
+import edu.cornell.dendro.corina.util.PureStringWriter;
+import edu.cornell.dendro.corina.formats.TwoColumn;
+import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.gui.menus.EditMenu;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.io.SerialSampleIO;
+import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.core.App;
 
 import java.io.File;
 import java.io.FileWriter;

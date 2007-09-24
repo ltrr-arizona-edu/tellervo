@@ -18,10 +18,10 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.index;
+package edu.cornell.dendro.corina.index;
 
-import corina.Sample;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
    Horizontal-line index type.

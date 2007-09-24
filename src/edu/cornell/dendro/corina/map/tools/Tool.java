@@ -18,13 +18,13 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.map.tools;
+package edu.cornell.dendro.corina.map.tools;
 
-import corina.map.View;
-import corina.map.Projection;
-import corina.map.MapPanel;
-import corina.site.Site;
-import corina.site.SiteNotFoundException;
+import edu.cornell.dendro.corina.map.View;
+import edu.cornell.dendro.corina.map.Projection;
+import edu.cornell.dendro.corina.map.MapPanel;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.SiteNotFoundException;
 
 import java.util.List;
 import java.util.Collections;

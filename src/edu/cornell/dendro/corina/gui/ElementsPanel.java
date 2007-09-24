@@ -18,18 +18,18 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
-import corina.Sample;
-import corina.SampleListener;
-import corina.SampleEvent;
-import corina.Element;
-import corina.MetadataTemplate;
-import corina.MetadataTemplate.Field;
-import corina.editor.Editor;
-import corina.util.Sort;
-import corina.util.PopupListener;
-import corina.ui.Alert;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.SampleListener;
+import edu.cornell.dendro.corina.SampleEvent;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.MetadataTemplate;
+import edu.cornell.dendro.corina.MetadataTemplate.Field;
+import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.util.Sort;
+import edu.cornell.dendro.corina.util.PopupListener;
+import edu.cornell.dendro.corina.ui.Alert;
 
 import java.io.File;
 import java.io.IOException;

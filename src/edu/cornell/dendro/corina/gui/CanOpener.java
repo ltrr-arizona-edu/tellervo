@@ -18,15 +18,15 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
-import corina.Sample;
-import corina.cross.Grid;
-import corina.cross.GridFrame;
-import corina.graph.GraphWindow;
-import corina.formats.WrongFiletypeException;
-import corina.editor.Editor;
-import corina.gui.menus.OpenRecent;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.cross.Grid;
+import edu.cornell.dendro.corina.cross.GridFrame;
+import edu.cornell.dendro.corina.graph.GraphWindow;
+import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 
 import java.io.IOException;
 

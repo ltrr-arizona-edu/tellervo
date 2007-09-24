@@ -2,7 +2,7 @@
 // Copyright (c) 2004-2005 Aaron Hamid
 // See license in COPYING.txt distributed with this file and available online at http://www.gnu.org/licenses/gpl.txt
 
-package corina.prefs;
+package edu.cornell.dendro.corina.prefs;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -37,12 +37,12 @@ import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 
-import corina.core.AbstractSubsystem;
-import corina.core.App;
-import corina.gui.Bug;
-import corina.logging.CorinaLog;
-import corina.ui.I18n;
-import corina.util.JDisclosureTriangle;
+import edu.cornell.dendro.corina.core.AbstractSubsystem;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.JDisclosureTriangle;
 
 /**
  * Storage and access of user preferences.

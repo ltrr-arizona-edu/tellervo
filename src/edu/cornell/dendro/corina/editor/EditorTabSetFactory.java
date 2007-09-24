@@ -1,7 +1,7 @@
 /**
  * 
  */
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
 import java.util.ArrayList;
 import java.util.List;

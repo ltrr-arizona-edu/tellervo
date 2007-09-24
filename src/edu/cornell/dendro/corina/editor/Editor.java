@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -59,37 +59,37 @@ import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
-import corina.Build;
-import corina.Sample;
-import corina.SampleEvent;
-import corina.SampleListener;
-import corina.core.App;
-import corina.gui.Bug;
-import corina.gui.ElementsPanel;
-import corina.gui.FileDialog;
-import corina.gui.Help;
-import corina.gui.Layout;
-import corina.gui.PrintableDocument;
-import corina.gui.SaveableDocument;
-import corina.gui.UserCancelledException;
-import corina.gui.XFrame;
-import corina.gui.menus.HelpMenu;
-import corina.gui.menus.WindowMenu;
-import corina.logging.CorinaLog;
-import corina.prefs.Prefs;
-import corina.prefs.PrefsEvent;
-import corina.prefs.PrefsListener;
-import corina.site.Site;
-import corina.ui.Alert;
-import corina.ui.Builder;
-import corina.ui.I18n;
-import corina.util.Center;
-import corina.util.DocumentListener2;
-import corina.util.OKCancel;
-import corina.util.Overwrite;
-import corina.io.SerialSampleIO;
-import corina.io.SerialSampleIOEvent;
-import corina.Year;
+import edu.cornell.dendro.corina.Build;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.SampleEvent;
+import edu.cornell.dendro.corina.SampleListener;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.ElementsPanel;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.Help;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.PrintableDocument;
+import edu.cornell.dendro.corina.gui.SaveableDocument;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.gui.XFrame;
+import edu.cornell.dendro.corina.gui.menus.HelpMenu;
+import edu.cornell.dendro.corina.gui.menus.WindowMenu;
+import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.prefs.PrefsEvent;
+import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.util.DocumentListener2;
+import edu.cornell.dendro.corina.util.OKCancel;
+import edu.cornell.dendro.corina.util.Overwrite;
+import edu.cornell.dendro.corina.io.SerialSampleIO;
+import edu.cornell.dendro.corina.io.SerialSampleIOEvent;
+import edu.cornell.dendro.corina.Year;
 
 /*
  left to do:

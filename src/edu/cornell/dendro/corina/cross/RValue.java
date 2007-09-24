@@ -18,15 +18,15 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
 import java.util.Arrays;
 import java.util.List;
 
-import corina.Sample;
-import corina.core.App;
-import corina.index.HighPass;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.index.HighPass;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
  An R-value.

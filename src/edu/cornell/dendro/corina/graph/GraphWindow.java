@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -52,30 +52,30 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 
-import corina.Element;
-import corina.Range;
-import corina.Sample;
-import corina.SampleEvent;
-import corina.SampleListener;
-import corina.Year;
-import corina.core.App;
-import corina.cross.Cross;
-import corina.formats.WrongFiletypeException;
-import corina.gui.Bug;
-import corina.gui.FileDialog;
-import corina.gui.SaveableDocument;
-import corina.gui.UserCancelledException;
-import corina.gui.XFrame;
-import corina.gui.menus.FileMenu;
-import corina.gui.menus.HelpMenu;
-import corina.gui.menus.WindowMenu;
-import corina.index.Index;
-import corina.prefs.PrefsEvent;
-import corina.prefs.PrefsListener;
-import corina.ui.Alert;
-import corina.ui.I18n;
-import corina.util.Overwrite;
-import corina.util.PopupListener;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.SampleEvent;
+import edu.cornell.dendro.corina.SampleListener;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.cross.Cross;
+import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.SaveableDocument;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.gui.XFrame;
+import edu.cornell.dendro.corina.gui.menus.FileMenu;
+import edu.cornell.dendro.corina.gui.menus.HelpMenu;
+import edu.cornell.dendro.corina.gui.menus.WindowMenu;
+import edu.cornell.dendro.corina.index.Index;
+import edu.cornell.dendro.corina.prefs.PrefsEvent;
+import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.Overwrite;
+import edu.cornell.dendro.corina.util.PopupListener;
 
 /**
  * A graph. It graphs any number of samples (or any Graphable) and allows the

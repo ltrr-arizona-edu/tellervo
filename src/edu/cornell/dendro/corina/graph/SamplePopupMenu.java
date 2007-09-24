@@ -18,11 +18,11 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
-import corina.Sample;
-import corina.editor.Editor;
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.ui.Builder;
 
 import java.awt.event.ActionEvent;
 import javax.swing.JPopupMenu;

@@ -1,10 +1,10 @@
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
-import corina.Sample;
-import corina.ui.I18n;
-import corina.site.Site;
-import corina.site.SiteDB;
-import corina.site.SiteNotFoundException;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.SiteNotFoundException;
 
 import java.text.DecimalFormat;
 

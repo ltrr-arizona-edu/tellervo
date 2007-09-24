@@ -18,15 +18,15 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.site;
+package edu.cornell.dendro.corina.site;
 
-import corina.print.Printer;
-import corina.print.Line;
-import corina.print.TextLine;
-import corina.print.EmptyLine;
-import corina.print.ThinLine;
-import corina.print.ByLine;
-import corina.print.TabbedLineFactory;
+import edu.cornell.dendro.corina.print.Printer;
+import edu.cornell.dendro.corina.print.Line;
+import edu.cornell.dendro.corina.print.TextLine;
+import edu.cornell.dendro.corina.print.EmptyLine;
+import edu.cornell.dendro.corina.print.ThinLine;
+import edu.cornell.dendro.corina.print.ByLine;
+import edu.cornell.dendro.corina.print.TabbedLineFactory;
 
 import java.util.List;
 

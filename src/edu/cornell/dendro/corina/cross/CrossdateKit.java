@@ -1,15 +1,15 @@
-package corina.cross;
+package edu.cornell.dendro.corina.cross;
 
-import corina.Element;
-import corina.util.JLine;
-import corina.util.UserFriendlyFile;
-import corina.util.OKCancel;
-import corina.gui.Layout;
-import corina.gui.FileDialog;
-import corina.gui.UserCancelledException;
-import corina.gui.Tree;
-import corina.gui.Bug;
-import corina.gui.Help;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.util.JLine;
+import edu.cornell.dendro.corina.util.UserFriendlyFile;
+import edu.cornell.dendro.corina.util.OKCancel;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.gui.Tree;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.Help;
 
 import java.io.File;
 import java.io.IOException;

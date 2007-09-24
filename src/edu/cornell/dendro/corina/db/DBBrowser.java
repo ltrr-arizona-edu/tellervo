@@ -1,8 +1,8 @@
-package corina.db;
+package edu.cornell.dendro.corina.db;
 
-import corina.Sample;
-import corina.Element;
-import corina.gui.Layout;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.gui.Layout;
 
 import java.util.List;
 import java.util.ArrayList;

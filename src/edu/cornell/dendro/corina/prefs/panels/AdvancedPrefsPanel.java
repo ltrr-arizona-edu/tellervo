@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.prefs.panels;
+package edu.cornell.dendro.corina.prefs.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -51,11 +51,11 @@ import javax.swing.JScrollPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.filechooser.FileFilter;
 
-import corina.core.App;
-import corina.io.SerialSampleIO;
-import corina.prefs.components.BoolPrefComponent;
-import corina.prefs.components.FontPrefComponent;
-import corina.util.DocumentListener2;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.io.SerialSampleIO;
+import edu.cornell.dendro.corina.prefs.components.BoolPrefComponent;
+import edu.cornell.dendro.corina.prefs.components.FontPrefComponent;
+import edu.cornell.dendro.corina.util.DocumentListener2;
 
 // TODO: javadoc
 

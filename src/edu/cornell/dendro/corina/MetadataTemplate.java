@@ -18,10 +18,10 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina;
+package edu.cornell.dendro.corina;
 
-import corina.util.StringUtils;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.util.StringUtils;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

@@ -1,7 +1,7 @@
-package corina.map;
+package edu.cornell.dendro.corina.map;
 
-import corina.site.Site;
-import corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.SiteDB;
 
 import java.util.Iterator;
 import java.util.Set;

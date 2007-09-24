@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina;
+package edu.cornell.dendro.corina;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -28,8 +28,8 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import corina.core.App;
-import corina.gui.Bug;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
 
 // a complete list of all the species.
 // the file came from http://web.utk.edu/~grissino/species.htm
@@ -78,7 +78,7 @@ public class Species {
     static {
         try {
             // load properties
-            ClassLoader cl = corina.Species.class.getClassLoader();
+            ClassLoader cl = edu.cornell.dendro.corina.Species.class.getClassLoader();
             species.load(cl.getResource("species.properties").openStream());
         } catch (Exception e) {
             // can't happen

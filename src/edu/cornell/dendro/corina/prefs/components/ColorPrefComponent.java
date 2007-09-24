@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.prefs.components;
+package edu.cornell.dendro.corina.prefs.components;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -33,7 +33,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 /**
     A popup menu for picking a color.  Given a key (like "corina.graph.background"),

@@ -18,11 +18,11 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.manip;
+package edu.cornell.dendro.corina.manip;
 
-import corina.Year;
-import corina.Sample;
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.ui.Builder;
 
 import java.io.File;
 import java.io.IOException;

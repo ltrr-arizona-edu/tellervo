@@ -1,8 +1,8 @@
-package corina.io;
+package edu.cornell.dendro.corina.io;
 
-import corina.Sample;
-import corina.formats.Filetype;
-import corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.formats.Filetype;
+import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 
 import java.io.File;
 import java.io.FileReader;
@@ -140,7 +140,7 @@ public class Files {
 
        @see corina.formats.Corina
     */
-    private final static String DEFAULT_SAVER = "corina.formats.Corina";
+    private final static String DEFAULT_SAVER = "edu.cornell.dendro.corina.formats.Corina";
     // FIXME: make pref: "default save format: corina, tucson, ..., whatever it was before.
 
   // save a file
@@ -181,13 +181,13 @@ public class Files {
     };
 
     private final static String LOADERS[] = {
-    // (not yet!) "corina.formats.CorinaXML",
-	"corina.formats.Corina",
-	"corina.formats.TRML",
-	"corina.formats.TSAPMatrix",
-	"corina.formats.Hohenheim",
-	"corina.formats.Heidelberg",
-	"corina.formats.Tucson",
-	"corina.formats.TwoColumn", // <-- should always be last
+    // (not yet!) "edu.cornell.dendro.corina.formats.CorinaXML",
+	"edu.cornell.dendro.corina.formats.Corina",
+	"edu.cornell.dendro.corina.formats.TRML",
+	"edu.cornell.dendro.corina.formats.TSAPMatrix",
+	"edu.cornell.dendro.corina.formats.Hohenheim",
+	"edu.cornell.dendro.corina.formats.Heidelberg",
+	"edu.cornell.dendro.corina.formats.Tucson",
+	"edu.cornell.dendro.corina.formats.TwoColumn", // <-- should always be last
     };
 }

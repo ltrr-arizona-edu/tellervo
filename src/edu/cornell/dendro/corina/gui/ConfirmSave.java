@@ -18,11 +18,11 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
-import corina.util.OKCancel;
-// import corina.util.JLinedLabel; -- FUTURE
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.util.OKCancel;
+// import edu.cornell.dendro.corina.util.JLinedLabel; -- FUTURE
+import edu.cornell.dendro.corina.ui.Builder;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;

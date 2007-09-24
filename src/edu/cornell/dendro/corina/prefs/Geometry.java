@@ -1,4 +1,4 @@
-package corina.prefs;
+package edu.cornell.dendro.corina.prefs;
 
 import java.awt.Window;
 import java.awt.Rectangle;

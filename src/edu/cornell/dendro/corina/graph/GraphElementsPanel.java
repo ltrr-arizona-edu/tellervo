@@ -1,4 +1,4 @@
-package corina.graph;
+package edu.cornell.dendro.corina.graph;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -10,12 +10,12 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.Color;
 
-import corina.Element;
-import corina.Sample;
-import corina.gui.FileDialog;
-import corina.gui.UserCancelledException;
-import corina.ui.Alert;
-import corina.ui.I18n;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import java.awt.event.ActionEvent;
 import java.io.IOException;

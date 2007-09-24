@@ -1,13 +1,13 @@
-package corina.map.layers;
+package edu.cornell.dendro.corina.map.layers;
 
-import corina.map.Layer;
-import corina.map.Point3D;
-import corina.map.Projection;
-import corina.map.MapFile;
-import corina.map.Palette;
+import edu.cornell.dendro.corina.map.Layer;
+import edu.cornell.dendro.corina.map.Point3D;
+import edu.cornell.dendro.corina.map.Projection;
+import edu.cornell.dendro.corina.map.MapFile;
+import edu.cornell.dendro.corina.map.Palette;
 
-import corina.site.Location;
-import corina.util.ColorUtils;
+import edu.cornell.dendro.corina.site.Location;
+import edu.cornell.dendro.corina.util.ColorUtils;
 
 import java.awt.Graphics2D;
 import java.awt.Color;

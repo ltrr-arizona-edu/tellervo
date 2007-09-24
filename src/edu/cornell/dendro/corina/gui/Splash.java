@@ -1,7 +1,7 @@
 // Copyright (c) 2004-2005 Aaron Hamid.  All rights reserved.
 // See license in COPYING.txt distributed with this file and available online at http://www.gnu.org/licenses/gpl.txt
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -19,8 +19,8 @@ import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
-import corina.gui.ProgressMeter.ProgressEvent;
-import corina.util.Center;
+import edu.cornell.dendro.corina.gui.ProgressMeter.ProgressEvent;
+import edu.cornell.dendro.corina.util.Center;
 
 /**
  * @author Aaron

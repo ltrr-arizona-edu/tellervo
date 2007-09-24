@@ -18,11 +18,11 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.site;
+package edu.cornell.dendro.corina.site;
 
-import corina.core.App;
-import corina.util.ColorUtils;
-import corina.util.StringUtils;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.util.ColorUtils;
+import edu.cornell.dendro.corina.util.StringUtils;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

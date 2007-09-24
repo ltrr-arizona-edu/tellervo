@@ -1,4 +1,4 @@
-package corina.site;
+package edu.cornell.dendro.corina.site;
 
 import java.awt.Component;
 import java.awt.Frame;
@@ -11,11 +11,11 @@ import java.awt.*;
 import java.util.StringTokenizer;
 import java.awt.event.ActionEvent;
 
-import corina.gui.Layout;
-import corina.site.*;
-import corina.ui.Builder;
-import corina.util.Center;
-import corina.util.OKCancel;
+import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.site.*;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.util.OKCancel;
 
 public class LocationEditorDialog extends JDialog {	
 	private JTextField latdeg;

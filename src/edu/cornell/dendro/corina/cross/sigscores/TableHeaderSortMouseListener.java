@@ -4,15 +4,15 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package corina.cross.sigscores;
+package edu.cornell.dendro.corina.cross.sigscores;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 
-import corina.cross.HighScore;
-import corina.cross.TopScores;
-import corina.util.Sort;
+import edu.cornell.dendro.corina.cross.HighScore;
+import edu.cornell.dendro.corina.cross.TopScores;
+import edu.cornell.dendro.corina.util.Sort;
 
 
 final class TableHeaderSortMouseListener extends MouseAdapter {

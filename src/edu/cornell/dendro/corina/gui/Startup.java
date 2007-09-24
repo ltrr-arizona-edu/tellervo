@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package corina.gui;
+package edu.cornell.dendro.corina.gui;
 
 import java.awt.Toolkit;
 import java.net.URL;
@@ -37,9 +37,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import corina.Element;
-import corina.core.App;
-import corina.graph.GraphWindow;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.graph.GraphWindow;
 
 /**
  * Bootstrap for Corina. It all starts here...

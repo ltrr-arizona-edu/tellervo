@@ -1,4 +1,4 @@
-package corina.prefs.components;
+package edu.cornell.dendro.corina.prefs.components;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -8,7 +8,7 @@ import java.text.DecimalFormat;
 import javax.swing.AbstractAction;
 import javax.swing.JComboBox;
 
-import corina.core.App;
+import edu.cornell.dendro.corina.core.App;
 
 /*
     TODO: gpl header, javadoc

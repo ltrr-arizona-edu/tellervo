@@ -1,7 +1,7 @@
 /**
  * 
  */
-package corina.editor;
+package edu.cornell.dendro.corina.editor;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -9,10 +9,10 @@ import javax.swing.JButton;
 import java.awt.FlowLayout;
 import javax.swing.AbstractAction;
 import java.awt.event.*;
-import corina.io.*;
+import edu.cornell.dendro.corina.io.*;
 import java.applet.*;
-import corina.Year;
-import corina.ui.Builder;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.ui.Builder;
 
 /**
  * @author Lucas Madar
