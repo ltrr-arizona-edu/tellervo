@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<!--
+	This document provides the basis of a semantically structured web page 
+	authored in XHTML 1.0 Transitional using established Cornell University
+	naming conventions.
+-->
+
+<head>
+	<title>Cornell University Website Template - Photo</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<meta http-equiv="Content-Language" content="en-us" />
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+	
+<!--
+	All layout and formatting should be controlled through Cascading Stylesheets (CSS).
+	The following link tag should appear in the head of every page in the website. see
+	styles/screen.css.
+-->
+	<link rel="stylesheet" type="text/css" media="screen" href="styles/screen.css" />
+</head>
+
+<body class="onecolumn">
+
+<!--
+	The following link provides a way for people using text-based browsers and
+	screen readers to skip over repetitive navigation elements so that they can 
+	get directly to the content. It is hidden from general users through CSS.
+-->
+<div id="skipnav">
+	<a href="#content">Skip to main content</a>
+</div>
+
+<hr />
+
+<!-- The following div contains the Cornell University logo and search link -->
+<div id="cu-identity">
+	<div id="cu-logo">
+		<a href="http://www.cornell.edu/"><img src="images/cu_logo_unstyled.gif" alt="Cornell University" width="180" height="45" border="0" /></a>
+	</div>
+	<div id="cu-search">
+		<a href="http://www.cornell.edu/search/">Search Cornell</a>
+	</div>
+</div>
+
+<hr />
+
+<!-- The header div contains the main identity and main navigation for the site -->
+<div id="header">
+	<div id="identity">
+		<h1>Unit Name Goes Here</h1>
+	</div>
+	<div id="navigation">
+		<ul>
+			<li><a href="#">Navigation 1</a></li>
+			<li><a href="#">Navigation 2</a></li>
+			<li><a href="#">Navigation 3</a></li>		
+			<li><a href="#">Navigation 4</a></li>		
+			<li><a href="#">Navigation 5</a></li>		
+			
+			<!-- More navigation as needed
+			<li><a href="#">Navigation 6</a></li>
+			-->
+						
+		</ul>
+	</div>
+</div>
+
+<hr />
+
+<div id="wrap">
+
+<!-- The content div contains the main content of the page -->
+<div id="content">
+	<div id="main">
+		<!--
+			The photo img is displayed in the left column of the page. The image
+			file should be 510px wide.
+		-->
+		<img id="photo" src="images/photos/artsquad3.jpg" alt="Arts Quad" />
+		
+		<!--
+			The photo-meta div is displayed in the right column of the page. 
+			This div contains a webring for navigating to the next and previous
+			photos in the series, as well as a caption and credit for the photo.
+		-->
+		<div id="photo-meta">
+			<div id="webring">
+				<a class="prev" href="#">prev</a>
+				<span class="sep">|</span>
+				<a href="#">thumbnails</a>
+				<span class="sep">|</span>
+				<a class="next" href="#">next</a>
+			</div>
+			
+			<p class="caption">
+			Per aperiam iuvaret detracto an. Qui cu habeo mazim argumentum, est no agam nibh graece, ius dissentiunt consequuntur id. Denique menandri eam id, mutat docendi eleifend cu vel.
+			</p>
+			
+			<div id="photo-credit">
+			Photo Credit
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+<hr />
+
+<div id="footer">
+<!-- The footer-content div contains the Cornell University copyright -->
+<div id="footer-content">
+	&copy;2005 <a href="http://www.cornell.edu/">Cornell University</a>
+</div>
+</div>
+
+</body>
+</html>
