@@ -5,7 +5,7 @@
 *
 * The first parameter to TESTOSBIB is the bibliographic style.  This can be any of the OSBIB supplied styles in ../styles/bibliography.
 */
-$basepath = "/var/www/dendrowebsite/";
+$basepath = "/var/www/website/";
 $useStyle = loadStyle();
 $testosbib = new TESTOSBIB($useStyle);
 $testosbib->execute();

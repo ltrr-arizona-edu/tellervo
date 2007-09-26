@@ -53,10 +53,10 @@ class BIBFORMAT
 		}
 		else
 		{
-			include_once("/var/www/dendrowebsite/phpinc/OSBiB/STYLEMAP.php");
+			include_once("/var/www/website/phpinc/OSBiB/STYLEMAP.php");
 			$this->styleMap = new STYLEMAP();
 		}
-		include_once("/var/www/dendrowebsite/phpinc/OSBiB/UTF8.php");
+		include_once("/var/www/website/phpinc/OSBiB/UTF8.php");
 		$this->utf8 = new UTF8();
 /**
 * Highlight preg pattern and CSS class for HTML display

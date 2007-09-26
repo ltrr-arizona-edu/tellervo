@@ -4,7 +4,7 @@ $title = "Bibliography";
 $news = "";
 $vertnavbarfilename = "phpinc/vert-navbar.php";
 
-include('/var/www/dendrowebsite/phpinc/hub-header.php');
+include('phpinc/hub-header.php');
 ?>
 <p>
 Below is a bibliographical listing of publications by members of the Malcolm and

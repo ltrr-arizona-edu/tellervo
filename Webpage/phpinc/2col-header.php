@@ -1,6 +1,6 @@
 <?php 
 // The absolute path of the base of the website
-$basepath="/var/www/dendrowebsite/";
+$basepath="/var/www/website/";
 ?>
 
 
