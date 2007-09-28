@@ -2,9 +2,9 @@ package edu.cornell.dendro.cpgdb;
 
 import java.sql.SQLException;
 
-public class CPGDBDispatch {
+public class Dispatch {
 
-	public static String GetVMeasurementResult(String VMeasurementID) throws SQLException {
+	public static String GetVMeasurementResult(int VMeasurementID) throws SQLException {
 		// Simple and clean. Pass in the ID, return the result string.
 		VMeasurementResult result = new VMeasurementResult(VMeasurementID);
 		
@@ -15,10 +15,10 @@ public class CPGDBDispatch {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		try {
-			System.out.println("Moo!!!");
-			GetVMeasurementResult("1");
+			System.out.println("PG DB TEST!");
+			String result = GetVMeasurementResult(6);
+			System.out.println("Result ID: " + result);
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
 		}
