@@ -24,7 +24,6 @@
 	<classpathentry kind="lib" path="Libraries/jython.jar"/>
 	<classpathentry kind="lib" path="Libraries/kawa.jar"/>
 	<classpathentry kind="lib" path="Libraries/log4j-1.2.8.jar"/>
-	<classpathentry kind="lib" path="Libraries/postgresql.jar"/>
 	<classpathentry kind="lib" path="Libraries/saxon.jar"/>
 	<classpathentry kind="lib" path="Libraries/xalan.jar"/>
 	<classpathentry kind="lib" path="Libraries"/>
@@ -32,5 +31,6 @@
 	<classpathentry kind="lib" path="Libraries/RXTXcomm.jar"/>
 	<classpathentry kind="lib" path="Libraries/commons-email-1.0.jar"/>
 	<classpathentry kind="lib" path="Libraries/mail.jar"/>
+	<classpathentry kind="lib" path="Libraries/postgresql-8.2-506.jdbc3.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
