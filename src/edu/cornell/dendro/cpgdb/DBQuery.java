@@ -38,6 +38,11 @@ public class DBQuery {
 	}
 	
 	public String createUUID() throws SQLException {
+		String nativeUUID = UUID.createUUID();
+
+		if(nativeUUID != null)
+			return nativeUUID;
+
 		Statement stmt = sql.createStatement();
 		ResultSet res = stmt.executeQuery("SELECT uuid()");
 		

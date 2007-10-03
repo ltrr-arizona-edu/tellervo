@@ -10,6 +10,26 @@ package edu.cornell.dendro.cpgdb;
  */
 
 public class UUID {
-	public static native String generateUUID();
+	
+	public static String createUUID() {
+		if(!loaded)
+			return null;
+
+		return generateUUID();
+        }
+
+	private static native String generateUUID();
+	private static boolean loaded = false;
+
+	static {
+		try {
+			System.loadLibrary("cpgdb_uuid");
+			System.out.println("Successfully loaded native UUID driver.");
+			loaded = true;
+		} catch (UnsatisfiedLinkError e) {
+			System.out.println("Unable to load native UUID driver.");
+			loaded = false;
+		}
+	}
 }
 
