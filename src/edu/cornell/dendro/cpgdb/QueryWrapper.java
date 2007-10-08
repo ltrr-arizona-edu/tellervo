@@ -120,10 +120,8 @@ public class QueryWrapper {
 			return null;
 		
 		for(int i = 0; i < args.length; i++) {
-			if(args[i] instanceof String)
+			if(args[i] == null)
 				statement.setString(i + 1, (String) args[i]);
-			else if(args[i] instanceof Integer)
-				statement.setInt(i + 1, (Integer) args[i]);
 			else
 				statement.setObject(i + 1, args[i]);
 		}
