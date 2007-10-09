@@ -61,8 +61,16 @@ if(!($myMetaHeader->status == "Error"))
             while ($row = pg_fetch_array($result))
             {
                 $mySiteNote = new siteNote();
-                $mySiteNote->setParamsFromDB($row['sitenoteid']);
-                $xmldata.=$mySiteNote->asXML();
+                $success = $mySiteNote->setParamsFromDB($row['sitenoteid']);
+
+                if($success)
+                {
+                    $xmldata.=$mySiteNote->asXML();
+                }
+                else
+                {
+                    $myMetaHeader->setMessage($mySiteNote->getLastErrorCode, $mySiteNote->getLastErrorMessage);
+                }
             }
         }
         else
@@ -83,7 +91,9 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 echo "<corina>\n";
 echo $myMetaHeader->asXML();
 echo "<data>\n";
+echo "<siteNoteDictionary>\n";
 echo $xmldata;
+echo "</siteNoteDictionary>\n";
 echo "</data>\n";
 echo "</corina>";
 ?>

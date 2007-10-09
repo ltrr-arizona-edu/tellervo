@@ -35,10 +35,6 @@ if($theID == NULL)
 {
     $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
 }
-if(($theIsStandard == NULL) && ($theIsStandard!=FALSE))
-{
-    $myMetaHeader->setMessage("902", "Missing parameter - 'isstandard' field is required.");
-}
 
 // Check data types of parameters
 if((gettype($theIsStandard)!="boolean") && ($theIsStandard!=NULL))
@@ -58,35 +54,20 @@ $xmldata ="<data>\n";
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
 {
-    $dbconnstatus = pg_connection_status($dbconn);
-    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-    {
-        // DB connection ok
-        $sql = "update tlkpsitenote set note='$theNote', isstandard='".fromPHPtoPGBool($theIsStandard)."' where sitenoteid=$theID";
+    // Create siteNote object and set existing parameter values
+    $mySiteNote = new siteNote();
+    $mySiteNote->setParamsFromDB($theID);
 
-        if ($sql)
-        {
-            // Run SQL 
-            pg_send_query($dbconn, $sql);
-            $result = pg_get_result($dbconn);
-            if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-            {
-                $myMetaHeader->setMessage("002", pg_result_error($result)."--- SQL was $sql");
-            }
-        }
-        else
-        {
-            // No SQL to run
-        }
-    }
-    else
-    {
-      // Connection bad
-      $myMetaHeader->setMessage("001", "Error connecting to database");
-    }
-}
+    // Update parameters as requested
+    if ($theNote) $mySiteNote->setNote($theNote);
+    if ($theIsStandard) $mySiteNote->setIsStandard($theIsStandard);
+    
+    // Write to database and return as XML
+    $mySiteNote->writeToDB();
+    $xmldata.=$mySiteNote->asXML();
+
+}    
 $xmldata.="</data>\n";
-
 
 // Output the resulting XML
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
