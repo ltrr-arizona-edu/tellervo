@@ -8,6 +8,25 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 
+function getLastUpdateDate($tablename)
+{
+    global $dbconn;
+    $sql = "select max(lastmodifiedtimestamp) as max from $tablename";
+    $dbconnstatus = pg_connection_status($dbconn);        
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+        $result = pg_query($dbconn, $sql);
+        $row = pg_fetch_array($result);
+        {
+            return $row['max'];
+        }
+    }
+    else
+    {
+        return false; 
+    }
+}
+
 
 function fromPGtoPHPBool($theValue)
 {
