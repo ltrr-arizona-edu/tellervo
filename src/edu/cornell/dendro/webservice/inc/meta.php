@@ -34,6 +34,7 @@ class meta
     // Setter for user details
     $this->username = $theUsername;
     $this->firstname = $theFirstname;
+    $this->lastname = $theLastname;
   }
   
   function setMessage($theCode, $theMessage, $theStatus="Error")
@@ -63,7 +64,7 @@ class meta
   {
     // Get class as XML 
     $xml ="<meta>\n";
-    $xml.="<user username=\"".$this->username."\" firstname=\"".$this->firstname."\" lastname=\"".$lastname."\" />\n";
+    $xml.="<user username=\"".$this->username."\" firstname=\"".$this->firstname."\" lastname=\"".$this->lastname."\" />\n";
     $xml.="<wsversion>".$this->wsversion."</wsversion>\n";
     $xml.="<clientversion>".$this->clientversion."</clientversion>\n";
     $xml.="<requestdate>".$this->requestdate."</requestdate>\n";

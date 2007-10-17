@@ -13,6 +13,9 @@ require_once("config.php");
 require_once("inc/dbsetup.php");
 require_once("inc/meta.php");
 require_once("inc/site.php");
+require_once("inc/auth.php");
+
+$myAuth = new auth();
 
 // Extract parameters from request and ensure no SQL has been injected
 $theMode = strtolower(addslashes($_GET['mode']));
@@ -23,28 +26,53 @@ if(isset($_GET['name'])) $theName = addslashes($_GET['name']);
 // Create new meta object and check required input parameters and data types
 switch($theMode)
 {
-    case "update":
-        $myMetaHeader = new meta("update");
-        if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-        if(($theName == NULL) && ($theCode==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - either 'name' or 'code' fields (or both) must be specified.");
-        break;
-
     case "read":
         $myMetaHeader = new meta("read");
         //if(!($theName==NULL) && (strlen($theName)<3)) $myMetaHeader->setMessage("904", "Parameter too short - 'name' field must contain three or more characters."); 
         //if(!($theCode==NULL) && (strlen($theName)<2)) $myMetaHeader->setMessage("904", "Parameter too short - 'name' field must contain two or more characters."); 
         break;
+    
+    case "update":
+        $myMetaHeader = new meta("update");
+        if($myAuth->isLoggedIn())
+        {
+            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if(($theName == NULL) && ($theCode==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - either 'name' or 'code' fields (or both) must be specified.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            break;
+        }
 
     case "delete":
-        $myMetaHeader = new meta("delete");
-        if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-        break;
+        if($myAuth->isLoggedIn())
+        {
+            $myMetaHeader = new meta("delete");
+            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            break;
+        }
+
 
     case "create":
-        $myMetaHeader = new meta("create");
-        if($theName == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
-        if($theCode == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'code' field is required.");
-        break;
+        if($myAuth->isLoggedIn())
+        {
+            $myMetaHeader = new meta("create");
+            if($theName == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
+            if($theCode == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'code' field is required.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            break;
+        }
 
     default:
         $myMetaHeader = new meta("help");
@@ -59,7 +87,14 @@ switch($theMode)
 }
 
 // Set user details
-$myMetaHeader->setUser("Guest", "", "");
+if($myAuth->isLoggedIn())
+{
+    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
+}
+else
+{
+    $myMetaHeader->setUser("Guest", "Guest", "Guest");
+}
 
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
