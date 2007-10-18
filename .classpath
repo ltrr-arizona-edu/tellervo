@@ -32,5 +32,6 @@
 	<classpathentry kind="lib" path="Libraries/commons-email-1.0.jar"/>
 	<classpathentry kind="lib" path="Libraries/mail.jar"/>
 	<classpathentry kind="lib" path="Libraries/postgresql-8.2-506.jdbc3.jar"/>
+	<classpathentry kind="lib" path="Libraries/jdom.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
