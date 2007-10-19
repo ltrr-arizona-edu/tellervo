@@ -24,10 +24,9 @@ import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.MetadataTemplate;
-import edu.cornell.dendro.corina.MetadataTemplate.Field;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.metadata.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -231,7 +230,7 @@ public class DB {
 
 	Iterator i = MetadataTemplate.getFields();
 	while (i.hasNext()) {
-	    MetadataTemplate.Field f = (MetadataTemplate.Field) i.next();
+	    MetadataField f = (MetadataField) i.next();
 	    Object x = meta.getObject(f.getVariable());
 	    // since i don't want to worry about types right now
 	    // PERFORMANCE: but getObject() is slower than get<Type>().
@@ -476,7 +475,7 @@ public class DB {
 	Iterator i = MetadataTemplate.getFields();
 	List extraComments = new ArrayList();
 	while (i.hasNext()) {
-	    String variable = ((Field) i.next()).getVariable();
+	    String variable = ((MetadataField) i.next()).getVariable();
 	    n++;
 	    Object v = s.meta.get(variable);
 

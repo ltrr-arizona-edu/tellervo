@@ -20,9 +20,9 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import edu.cornell.dendro.corina.MetadataTemplate;
 import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.ui.Alert;
 
 import java.io.IOException;
@@ -117,7 +117,7 @@ public class ElementsTableModel extends AbstractTableModel {
 		case 2:
 			return "Range";
 		default:
-			return ((MetadataTemplate.Field) fields.get(col - 2))
+			return ((MetadataField) fields.get(col - 2))
 					.getDescription();
 		}
 	}
@@ -161,7 +161,7 @@ public class ElementsTableModel extends AbstractTableModel {
 			if (e.details == null)
 				return null;
 
-			String key = ((MetadataTemplate.Field) fields.get(col - 2))
+			String key = ((MetadataField) fields.get(col - 2))
 					.getVariable();
 			return e.details.get(key);
 		}
@@ -202,7 +202,7 @@ public class ElementsTableModel extends AbstractTableModel {
 
 		default: // update a user-chosen metadata field
 			// this is the key to update
-			String key = ((MetadataTemplate.Field) fields.get(col - 2))
+			String key = ((MetadataField) fields.get(col - 2))
 					.getVariable();
 
 			// null?  remove it.  (q: are there any cases where it's assumed key exists, like title?)

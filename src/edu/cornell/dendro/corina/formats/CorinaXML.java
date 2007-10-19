@@ -20,14 +20,13 @@
 
 package edu.cornell.dendro.corina.formats;
 
-import edu.cornell.dendro.corina.MetadataTemplate;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Weiserjahre;
-import edu.cornell.dendro.corina.MetadataTemplate.Field;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.util.GUIDGenerator;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -193,7 +192,7 @@ public class CorinaXML implements Filetype {
 		
 		Iterator i = MetadataTemplate.getFields();
 		while (i.hasNext()) {
-		    Field f = (Field) i.next();
+		    MetadataField f = (MetadataField) i.next();
 		    String fieldName = f.getVariable();
 		    Object fieldValue = s.meta.get(fieldName);
 		    

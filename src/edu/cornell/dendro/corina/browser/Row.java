@@ -2,9 +2,9 @@ package edu.cornell.dendro.corina.browser;
 
 import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.MetadataTemplate;
 import edu.cornell.dendro.corina.Species;
 import edu.cornell.dendro.corina.UnknownSpeciesException;
+import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import java.io.File;
@@ -204,7 +204,7 @@ public class Row {
             boolean match = false;
 	    Iterator i = MetadataTemplate.getFields();
 	    while (i.hasNext()) {
-		MetadataTemplate.Field f = (MetadataTemplate.Field) i.next();
+		MetadataField f = (MetadataField) i.next();
                 if (f.getVariable().equals(field)) {
 		    // REFACTOR: looks familiar -- isField() or something?
                     match = true;
@@ -236,7 +236,7 @@ public class Row {
 		return null;
 
 	    // it's a valid field -- find it, and look up the string
-	    MetadataTemplate.Field f = MetadataTemplate.getField(field);
+	    MetadataField f = MetadataTemplate.getField(field);
 	    if (f.isValidValue(value.toString()))
 	        return I18n.getText("meta." + field + "." + value);
 

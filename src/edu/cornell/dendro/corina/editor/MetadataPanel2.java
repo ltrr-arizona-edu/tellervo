@@ -23,10 +23,9 @@ package edu.cornell.dendro.corina.editor;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.SampleListener;
 import edu.cornell.dendro.corina.SampleEvent;
-import edu.cornell.dendro.corina.MetadataTemplate;
-import edu.cornell.dendro.corina.MetadataTemplate.Field;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.layouts.DialogLayout;
+import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import java.util.List;
@@ -124,9 +123,9 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
     // that sure would save on the enabled/disabled crap.
     private static class UpdateListener implements DocumentListener {
         private Sample s;
-        private Field f;
+        private MetadataField f;
         private boolean enabled=true;
-        public UpdateListener(Sample s, Field f) {
+        public UpdateListener(Sample s, MetadataField f) {
             // get updates in field, send to sample
             this.s = s;
             this.f = f;
@@ -188,7 +187,7 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
 
     private Map popups = new Hashtable(); // field varname => jcombobox mapping
 
-    private JComponent makePopup(Field f) {
+    private JComponent makePopup(MetadataField f) {
         final String field = f.getVariable();
 
         // construct popup, with english labels to display
@@ -200,7 +199,7 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
         // TODO: check f.readonly?
         popups.put(field, popup); // store for listener later
 
-        final Field glue = f; // ack...
+        final MetadataField glue = f; // ack...
 
         resetPopup(f);
         popup.addItemListener(new ItemListener() { // user changes popup => we change metadata
@@ -263,7 +262,7 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
         // put in a flow, so it doesn't consume the entire width
 	return Layout.flowLayoutL(popup);
     }
-    private void resetPopup(Field f) {
+    private void resetPopup(MetadataField f) {
         String field = f.getVariable();
         JComboBox popup = (JComboBox) popups.get(f.getVariable());
         String newValue = (String) s.meta.get(field);
@@ -362,7 +361,7 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
         // add the fields, one at a time
 	Iterator it = MetadataTemplate.getFields();
 	while (it.hasNext()) {
-	    Field f = (Field) it.next();
+	    MetadataField f = (MetadataField) it.next();
 
             // for computing height of first row -- UNUSED!
             // if (firstLabel == null)
@@ -434,7 +433,7 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
         });
     }
 
-    private JTextComponent makeTextBlock(Field f) {
+    private JTextComponent makeTextBlock(MetadataField f) {
         // number of lines?
         int lines = f.getLines();
 
@@ -491,7 +490,7 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
 
 	    Iterator i = MetadataTemplate.getFields();
 	    while (i.hasNext()) {
-		Field f = (Field) i.next();
+		MetadataField f = (MetadataField) i.next();
 
                 // is this my format popup?  if so, choose the correct one...
                 if (popups.containsKey(f.getVariable())) {

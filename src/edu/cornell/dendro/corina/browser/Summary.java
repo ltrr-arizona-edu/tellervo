@@ -21,11 +21,11 @@
 package edu.cornell.dendro.corina.browser;
 
 import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.MetadataTemplate;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.util.GreedyProgressMonitor;
 import edu.cornell.dendro.corina.util.GZIP;
+import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.site.Lock; // REFACTOR: move to util!
 import edu.cornell.dendro.corina.core.App;
 
@@ -102,7 +102,7 @@ public class Summary {
 
 		Iterator i = MetadataTemplate.getFields();
 		while (i.hasNext()) {
-			MetadataTemplate.Field f = (MetadataTemplate.Field) i.next();
+			MetadataField f = (MetadataField) i.next();
 			String field = f.getVariable();
 			if (e.details != null && e.details.containsKey(field)) { // |details| should be |meta|
 				Object value = e.details.get(field);

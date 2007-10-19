@@ -24,9 +24,8 @@ import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.SampleListener;
 import edu.cornell.dendro.corina.SampleEvent;
 import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.MetadataTemplate;
-import edu.cornell.dendro.corina.MetadataTemplate.Field;
 import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.util.Sort;
 import edu.cornell.dendro.corina.util.PopupListener;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -389,7 +388,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			// add all fields in |PREVIEW_FIELDS| to |fields|
 			Iterator i = MetadataTemplate.getFields();
 			while (i.hasNext()) {
-				Field f = (Field) i.next();
+				MetadataField f = (MetadataField) i.next();
 
 				for (int j = 0; j < PREVIEW_FIELDS.length; j++) {
 					if (f.getVariable().equals(PREVIEW_FIELDS[j]))
@@ -406,7 +405,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			// add all fields to |fields|
 			Iterator i = MetadataTemplate.getFields();
 			while (i.hasNext()) {
-				Field f = (Field) i.next();
+				MetadataField f = (MetadataField) i.next();
 				fields.add(f);
 			}
 
@@ -491,8 +490,8 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
 		// set columns: for each column use popup if suggested values present
 		for (int i = 0; i < fields.size(); i++)
-			if (((Field) fields.get(i)).values != null) {
-				JComboBox popup = new JComboBox(((Field) fields.get(i)).values);
+			if (((MetadataField) fields.get(i)).values != null) {
+				JComboBox popup = new JComboBox(((MetadataField) fields.get(i)).values);
 				popup.setEditable(true);
 				table.getColumnModel().getColumn(i + 2).setCellEditor(
 						new DefaultCellEditor(popup));
@@ -543,7 +542,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					// i'm calling a method on a field.  i could write another sort() wrapper to take a :key
 					// method, like lisp does, and implement it in an anonymous class here, but that's more
 					// work than just sorting by hand.  gah.
-					String key = ((Field) fields.get(col - 2)).getVariable();
+					String key = ((MetadataField) fields.get(col - 2)).getVariable();
 					Comparable v0 = (Comparable) first.details.get(key);
 					Comparable vn = (Comparable) last.details.get(key);
 					boolean reverse = (lastSortCol == col && v0.compareTo(vn) < 0);

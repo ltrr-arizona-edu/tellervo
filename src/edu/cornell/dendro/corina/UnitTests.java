@@ -5,6 +5,8 @@ import junit.framework.TestCase;
 import java.util.List;
 import java.util.Iterator;
 
+import edu.cornell.dendro.corina.metadata.MetadataTemplate;
+
 public class UnitTests extends TestCase {
     public UnitTests(String name) {
         super(name);

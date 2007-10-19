@@ -21,10 +21,10 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import edu.cornell.dendro.corina.MetadataTemplate;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.OKCancel;
@@ -144,7 +144,7 @@ public class SearchDialog extends JDialog {
 			    // look up the key
 			    Iterator ii = MetadataTemplate.getFields();
 			    while (ii.hasNext()) {
-				MetadataTemplate.Field f = (MetadataTemplate.Field) ii.next();
+				MetadataField f = (MetadataField) ii.next();
 				if (f.getDescription().equals(name))
 				    field = f.getVariable();
 			    }
@@ -266,7 +266,7 @@ public class SearchDialog extends JDialog {
 
 	    Iterator i = MetadataTemplate.getFields();
 	    while (i.hasNext()) {
-		metaFields.add(((MetadataTemplate.Field) i.next()).getDescription());
+		metaFields.add(((MetadataField) i.next()).getDescription());
 	    }
 
 	    // FIXME: display these as they are now, but the back-end needs to know it by some other name, right?

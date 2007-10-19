@@ -25,8 +25,7 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.Weiserjahre;
-import edu.cornell.dendro.corina.MetadataTemplate;
-import edu.cornell.dendro.corina.MetadataTemplate.Field;
+import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import java.io.BufferedReader;
@@ -344,7 +343,7 @@ public class HTML implements Filetype {
 	// strings, and descriptions
 	Iterator i = MetadataTemplate.getFields();
 	while (i.hasNext()) {
-	    Field f = (Field) i.next();
+	    MetadataField f = (MetadataField) i.next();
 	    w.write("  <tr>");
 	    w.newLine();
 	    w.write("    <td align=\"left\">" + f.getDescription() + "</td>");

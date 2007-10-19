@@ -24,8 +24,8 @@ import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.MetadataTemplate;
 import edu.cornell.dendro.corina.Weiserjahre;
+import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -155,7 +155,7 @@ public class TRML implements Filetype {
 	    // other metadata field
 	    Iterator i = MetadataTemplate.getFields();
 	    while (i.hasNext()) {
-		MetadataTemplate.Field f = (MetadataTemplate.Field) i.next();
+		MetadataField f = (MetadataField) i.next();
 
 		if (f.getVariable().equals(name)) {
 		    s.meta.put(name, data.toString().trim());
@@ -249,7 +249,7 @@ public class TRML implements Filetype {
 	// other fields
 	Iterator i = MetadataTemplate.getFields();
 	while (i.hasNext()) {
-	    MetadataTemplate.Field f = (MetadataTemplate.Field) i.next();
+	    MetadataField f = (MetadataField) i.next();
 
 	    Object x = s.meta.get(f.getVariable());
 	    if (x != null) {

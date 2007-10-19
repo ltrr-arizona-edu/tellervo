@@ -1,8 +1,8 @@
 package edu.cornell.dendro.corina.search;
 
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.MetadataTemplate;
 import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.util.ColorUtils;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -79,10 +79,10 @@ public class DataComponent {
 	// MetadataPanel.makePopup()...
 
 	// figure out field
-	MetadataTemplate.Field f = null;
+	MetadataField f = null;
 	Iterator ii = MetadataTemplate.getFields();
 	while (ii.hasNext()) {
-	    MetadataTemplate.Field field = (MetadataTemplate.Field) ii.next();
+	    MetadataField field = (MetadataField) ii.next();
 	    if (field.getDescription().equals(fieldName)) {
 		f = field;
 		break;
@@ -110,10 +110,10 @@ public class DataComponent {
 	    String text = (String) getSelectedItem();
 
 	    // look up the field i've got -- REFACTOR: duplicate code!
-	    MetadataTemplate.Field f = null;
+	    MetadataField f = null;
 	    Iterator ii = MetadataTemplate.getFields();
 	    while (ii.hasNext()) {
-		MetadataTemplate.Field ff = (MetadataTemplate.Field) ii.next();
+		MetadataField ff = (MetadataField) ii.next();
 		if (ff.getDescription().equals(field)) {
 		    f = ff;
 		    break;

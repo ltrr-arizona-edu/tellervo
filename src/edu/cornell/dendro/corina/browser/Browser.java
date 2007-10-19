@@ -78,7 +78,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.MetadataTemplate;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.core.App;
@@ -89,6 +88,7 @@ import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.Scripts;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.manip.Sum;
+import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.prefs.Geometry;
 import edu.cornell.dendro.corina.print.ByLine;
 import edu.cornell.dendro.corina.print.EmptyLine;
@@ -591,7 +591,7 @@ public class Browser extends XFrame {
 		// -- sample metadata
 		Iterator i = MetadataTemplate.getFields();
 		while (i.hasNext()) {
-			MetadataTemplate.Field f = (MetadataTemplate.Field) i.next();
+			MetadataField f = (MetadataField) i.next();
 			p
 					.add(new FieldCheckBoxMenuItem(f.getVariable(), f
 							.getDescription()));
@@ -822,7 +822,7 @@ public class Browser extends XFrame {
 		same.addSeparator();
 		Iterator i = MetadataTemplate.getFields();
 		while (i.hasNext()) {
-			MetadataTemplate.Field f = (MetadataTemplate.Field) i.next();
+			MetadataField f = (MetadataField) i.next();
 			final String glue = f.getVariable();
 
 			JMenuItem sameAs = new JMenuItem(f.getDescription());
@@ -1267,7 +1267,7 @@ public class Browser extends XFrame {
 		// standard metadata label
 		Iterator i = MetadataTemplate.getFields();
 		while (i.hasNext()) {
-			MetadataTemplate.Field f = (MetadataTemplate.Field) i.next();
+			MetadataField f = (MetadataField) i.next();
 			if (f.getVariable().equals(field))
 				return f.getDescription();
 		}
