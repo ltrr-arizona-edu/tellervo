@@ -83,10 +83,7 @@ public class AdvancedPrefsPanel extends JPanel {
 
 	public AdvancedPrefsPanel() {
 		JPanel content = new JPanel();
-		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS) {
-			public void moo() {
-			}
-		});
+		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.WEST;
@@ -342,6 +339,7 @@ public class AdvancedPrefsPanel extends JPanel {
 		    content.add(box);
 		}
 
+		// Old Corina adaptive stuff
 		{
 			JPanel box = new JPanel(new GridBagLayout());
 			box.setBorder(BorderFactory.createTitledBorder("Old Corina Filetype Settings"));
@@ -364,6 +362,46 @@ public class AdvancedPrefsPanel extends JPanel {
 			
 			content.add(box);
 		}
+		
+		// webservice goodness
+		{
+			JPanel box = new JPanel(new GridBagLayout());
+			box.setBorder(BorderFactory.createTitledBorder("Web Database Interface"));
+
+			gbc.gridx = gbc.gridy = 0;
+			gbc.weightx = 1;
+			
+			final JTextField weburlField = new JTextField(25);
+			JLabel weburlLabel = new JLabel("DBI URL:");
+			weburlLabel.setLabelFor(weburlField);
+
+			weburlField.setText(App.prefs.getPref("corina.webservice.url"));
+			
+			weburlField.getDocument().addDocumentListener(
+					new DocumentListener2() {
+						public void update(DocumentEvent e) {
+							App.prefs.setPref("corina.webservice.url", weburlField.getText());
+						}
+					});
+
+			
+			box.add(weburlLabel, gbc);
+			gbc.gridx++;
+			box.add(weburlField, gbc);
+			gbc.gridx = 0; gbc.gridy++;
+
+			JButton reloadDict = new JButton("Force Reload Dictionary");
+			reloadDict.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					App.dictionary.load();
+					App.dictionary.debugDumpListeners();
+				}
+			});
+			box.add(reloadDict, gbc);
+			
+			content.add(box);
+		}
+
 
 		// file chooser
 		/*
