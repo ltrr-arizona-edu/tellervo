@@ -594,7 +594,7 @@ public class Browser extends XFrame {
 			MetadataField f = (MetadataField) i.next();
 			p
 					.add(new FieldCheckBoxMenuItem(f.getVariable(), f
-							.getDescription()));
+							.getFieldDescription()));
 		}
 	}
 
@@ -825,7 +825,7 @@ public class Browser extends XFrame {
 			MetadataField f = (MetadataField) i.next();
 			final String glue = f.getVariable();
 
-			JMenuItem sameAs = new JMenuItem(f.getDescription());
+			JMenuItem sameAs = new JMenuItem(f.getFieldDescription());
 			sameAs.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
 					// select-same:
@@ -1269,7 +1269,7 @@ public class Browser extends XFrame {
 		while (i.hasNext()) {
 			MetadataField f = (MetadataField) i.next();
 			if (f.getVariable().equals(field))
-				return f.getDescription();
+				return f.getFieldDescription();
 		}
 
 		// "filetype", which is (sort of) a hack.  (well, it sure is now!)

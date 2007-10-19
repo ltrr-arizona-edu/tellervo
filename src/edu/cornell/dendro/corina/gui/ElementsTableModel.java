@@ -118,7 +118,7 @@ public class ElementsTableModel extends AbstractTableModel {
 			return "Range";
 		default:
 			return ((MetadataField) fields.get(col - 2))
-					.getDescription();
+					.getFieldDescription();
 		}
 	}
 

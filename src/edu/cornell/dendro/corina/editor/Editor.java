@@ -27,6 +27,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.PageFormat;
 import java.io.File;
@@ -696,6 +697,14 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 	// setup common to both constructors
 	private void setup() {
+		
+		// first, make sure we stop measuring if the window is closed.
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent we) {
+				stopMeasuring();
+			}
+		});
+		
 		// view area
 		initWJPanel();
 		initMetaView();
@@ -976,11 +985,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		}
 	}
 	
-    public void windowClosing(WindowEvent e) {
-		stopMeasuring();    	
-		super.windowClosing(e);
-    }
-
 	protected void finalize() throws Throwable {
 		super.finalize();
 		App.prefs.removePrefsListener(this);

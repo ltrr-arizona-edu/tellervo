@@ -10,6 +10,7 @@ public abstract class BasicDictionaryElement {
 	private String value;
 	
 	public BasicDictionaryElement(String internalRepresentation, String value) {
+		//System.out.println("Element: " + internalRepresentation + " = " + value);
 		this.internalRepresentation = internalRepresentation;
 		this.value = value;
 	}

@@ -490,8 +490,8 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
 		// set columns: for each column use popup if suggested values present
 		for (int i = 0; i < fields.size(); i++)
-			if (((MetadataField) fields.get(i)).values != null) {
-				JComboBox popup = new JComboBox(((MetadataField) fields.get(i)).values);
+			if (((MetadataField) fields.get(i)).isList()) {
+				JComboBox popup = new JComboBox(((MetadataField) fields.get(i)).getValuesArray());
 				popup.setEditable(true);
 				table.getColumnModel().getColumn(i + 2).setCellEditor(
 						new DefaultCellEditor(popup));

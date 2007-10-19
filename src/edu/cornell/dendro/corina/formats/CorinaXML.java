@@ -200,7 +200,7 @@ public class CorinaXML implements Filetype {
 		    	Element e = doc.createElement(fieldName);
 		    	Text t;
 		    	
-		    	if(f.isMachineValue()) {
+		    	if(f.isList()) {
 		    		e.setAttribute("value", fieldValue.toString());
 		    		t = doc.createTextNode(f.getReadableValue(fieldValue.toString()));
 		    	} else {

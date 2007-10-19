@@ -145,7 +145,7 @@ public class SearchDialog extends JDialog {
 			    Iterator ii = MetadataTemplate.getFields();
 			    while (ii.hasNext()) {
 				MetadataField f = (MetadataField) ii.next();
-				if (f.getDescription().equals(name))
+				if (f.getFieldDescription().equals(name))
 				    field = f.getVariable();
 			    }
 
@@ -266,7 +266,7 @@ public class SearchDialog extends JDialog {
 
 	    Iterator i = MetadataTemplate.getFields();
 	    while (i.hasNext()) {
-		metaFields.add(((MetadataField) i.next()).getDescription());
+		metaFields.add(((MetadataField) i.next()).getFieldDescription());
 	    }
 
 	    // FIXME: display these as they are now, but the back-end needs to know it by some other name, right?

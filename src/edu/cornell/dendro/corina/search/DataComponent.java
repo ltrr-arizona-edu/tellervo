@@ -83,7 +83,7 @@ public class DataComponent {
 	Iterator ii = MetadataTemplate.getFields();
 	while (ii.hasNext()) {
 	    MetadataField field = (MetadataField) ii.next();
-	    if (field.getDescription().equals(fieldName)) {
+	    if (field.getFieldDescription().equals(fieldName)) {
 		f = field;
 		break;
 	    }
@@ -92,8 +92,8 @@ public class DataComponent {
 
     if (f != null) {
       // add to popup
-      for (int i=0; i<f.values.length; i++)
-        popup.addItem(I18n.getText("meta." + f.getVariable() + "." + f.values[i]));
+      for (int i=0; i<f.getListSize(); i++)
+        popup.addItem(f.getListItemDescription(i));
     } else {
       log.error("MetadataTemplate.Field not found: " + fieldName);
     }
@@ -114,7 +114,7 @@ public class DataComponent {
 	    Iterator ii = MetadataTemplate.getFields();
 	    while (ii.hasNext()) {
 		MetadataField ff = (MetadataField) ii.next();
-		if (ff.getDescription().equals(field)) {
+		if (ff.getFieldDescription().equals(field)) {
 		    f = ff;
 		    break;
 		}
@@ -125,10 +125,9 @@ public class DataComponent {
 	    // WANT: code
 	    String code = "xxx";
       if (f != null) {
-        for (int i=0; i<f.values.length; i++) {
-          if (I18n.getText("meta." + f.getVariable() +
-                           "." + f.values[i]).equals(text)) {
-            code = f.values[i];
+        for (int i=0; i<f.getListSize(); i++) {
+          if (f.getListItemDescription(i).equals(text)) {
+            code = f.getListItemValue(i);
             break;
           }
         }

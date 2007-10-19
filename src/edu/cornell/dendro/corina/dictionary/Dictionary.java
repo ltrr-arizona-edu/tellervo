@@ -87,7 +87,13 @@ public class Dictionary extends CachedResource {
 			try {
 				for(int i = 0; i < elements.size(); i++) {
 					Element e = (Element) elements.get(i);
-					Object obj = targetConstructor.newInstance(new Object[] {e.getName(), e.getText()});
+					
+					// no id? drop it.
+					Attribute id = e.getAttribute("id");
+					if(id == null)
+						continue;
+					
+					Object obj = targetConstructor.newInstance(new Object[] {id.getValue(), e.getText()});
 					l.add(obj);
 					
 					// If we have an element that can be standard or not, set it
@@ -106,6 +112,26 @@ public class Dictionary extends CachedResource {
 		}
 		return true;
 	}
+	
+	/**
+	 * Used to acquire a dictionary.
+	 * 
+	 * @param dictionaryType
+	 * @return A List of dictionaryType classes
+	 */
+	public List getDictionary(String dictionaryType) {
+		String localName = Character.toLowerCase(dictionaryType.charAt(0)) + dictionaryType.substring(1) + "Dictionary";
+		Field dField;
+		
+		try {
+			dField = this.getClass().getDeclaredField(localName);
+			return (List) dField.get(this);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	private Integer assDictionary;
 	
 	private volatile List specimenTypeDictionary;
 	private volatile List terminalRingDictionary;

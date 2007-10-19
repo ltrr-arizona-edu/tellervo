@@ -2,8 +2,10 @@ package edu.cornell.dendro.corina.webdbi;
 
 import org.jdom.Document;
 import org.jdom.Element;
+
+import edu.cornell.dendro.corina.util.WeakEventListenerList;
+
 import java.io.IOException;
-import javax.swing.event.EventListenerList;
 
 /*
  * A resource is essentially a wrapper for an XML document acquired
@@ -107,7 +109,7 @@ public class Resource {
 	 * our event notification handlers are below. This is pretty standard java,
 	 * so it's not so commented.
 	 */
-	protected EventListenerList listenerList = new EventListenerList();
+	protected WeakEventListenerList listenerList = new WeakEventListenerList();
 	
 	public void addResourceEventListener(ResourceEventListener rel) {
 		listenerList.add(ResourceEventListener.class, rel);
@@ -125,5 +127,17 @@ public class Resource {
 			if(listeners[i] == ResourceEventListener.class)
 				((ResourceEventListener)listeners[i+1]).resourceChanged(re);
 		}
+	}
+	
+	public void debugDumpListeners() {
+		Object[] listeners = listenerList.getListenerList();
+		
+		System.out.println("DUMPING LISTENERS " + listeners.length);
+		
+		// For some reason, this array is stored oddly. ookay, java...
+		for(int i = 0; i < listeners.length; i += 2) {
+			if(listeners[i] == ResourceEventListener.class)
+				System.out.println("Listening: " + listeners[i + 1]);
+		}		
 	}
 }

@@ -346,7 +346,7 @@ public class HTML implements Filetype {
 	    MetadataField f = (MetadataField) i.next();
 	    w.write("  <tr>");
 	    w.newLine();
-	    w.write("    <td align=\"left\">" + f.getDescription() + "</td>");
+	    w.write("    <td align=\"left\">" + f.getFieldDescription() + "</td>");
 	    w.newLine();
 	    Object v = s.meta.get(f.getVariable());
 	    w.write("    <td align=\"left\">" + (v==null ? "" : v) + "</td>");

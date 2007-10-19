@@ -22,6 +22,7 @@ package edu.cornell.dendro.corina.gui;
 
 import edu.cornell.dendro.corina.ui.Builder;
 
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.JFrame;
@@ -39,7 +40,7 @@ import javax.swing.WindowConstants;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-public abstract class XFrame extends JFrame implements WindowListener {
+public abstract class XFrame extends JFrame {
 
     /*
       i hate this class.  i'd much prefer to simply have a
@@ -61,7 +62,15 @@ public abstract class XFrame extends JFrame implements WindowListener {
     //
     public XFrame() {
 	setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-	addWindowListener(this);
+	addWindowListener(new WindowAdapter() {
+		public void windowClosing(WindowEvent e) {
+		    //
+		    // if closing an unsaved document, make sure that's what the user wants.
+		    //
+
+			close();
+		}
+	});
 
 	// tree icon
 	setTreeIcon();
@@ -73,19 +82,6 @@ public abstract class XFrame extends JFrame implements WindowListener {
     private void setTreeIcon() {
 	setIconImage(Builder.getImage("Tree.png"));
     }
-
-    //
-    // if closing an unsaved document, make sure that's what the user wants.
-    //
-    public void windowClosing(WindowEvent e) {
-	close(); // close me, if user says ok.
-    }
-    public void windowActivated(WindowEvent e) { }
-    public void windowClosed(WindowEvent e) { }
-    public void windowDeactivated(WindowEvent e) { }
-    public void windowDeiconified(WindowEvent e) { }
-    public void windowIconified(WindowEvent e) { }
-    public void windowOpened(WindowEvent e) { }
 
     // call me to close an XFrame.  confirms close with user, if
     // document has been modified since last save.

@@ -191,10 +191,10 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
         final String field = f.getVariable();
 
         // construct popup, with english labels to display
-        String values[] = new String[1 + f.values.length];
+        String values[] = new String[1 + f.getValues().length];
         values[0] = I18n.getText("meta.unspecified");
-        for (int j=0; j<f.values.length; j++)
-            values[j+1] = I18n.getText("meta." + field + "." + f.values[j]);
+        for (int j=0; j<f.getValues().length; j++)
+            values[j+1] = I18n.getText("meta." + field + "." + f.getValues()[j]);
         JComboBox popup = new JComboBox(values);
         // TODO: check f.readonly?
         popups.put(field, popup); // store for listener later
@@ -208,8 +208,8 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
                     final int which = ((JComboBox) e.getSource()).getSelectedIndex();
 
                     int tmp = 0; // also in resetPopup() -- refactor?
-                    for (int i=0; i<glue.values.length; i++)
-                        if (glue.values[i].equals(s.meta.get(glue.getVariable())))
+                    for (int i=0; i<glue.getValues().length; i++)
+                        if (glue.getValues()[i].equals(s.meta.get(glue.getVariable())))
                             break;
                     // fall-through?
                     final int oldWhich = tmp+1; // index into values[] of the current value -- isn't there a method to compute this somewhere?  refactor.
@@ -217,7 +217,7 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
                     if (which == 0)
                         s.meta.remove(field);
                     else
-                        s.meta.put(field, glue.values[which-1]);
+                        s.meta.put(field, glue.getValues()[which-1]);
 
                     // undoable
                     s.postEdit(new AbstractUndoableEdit() {
@@ -226,7 +226,7 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
                             if (oldWhich == 0)
                                 s.meta.remove(field);
                             else
-                                s.meta.put(field, glue.values[oldWhich-1]);
+                                s.meta.put(field, glue.getValues()[oldWhich-1]);
                             if (!wasMod)
                                 s.clearModified();
                             System.out.println("undo called, now at " + oldWhich);
@@ -237,7 +237,7 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
                             if (which == 0)
                                 s.meta.remove(field);
                             else
-                                s.meta.put(field, glue.values[which-1]);
+                                s.meta.put(field, glue.getValues()[which-1]);
                             System.out.println("redo called, now at " + which);
                             s.setModified();
                             s.fireSampleMetadataChanged();
@@ -246,7 +246,7 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
                             return true;
                         }
                         public String getPresentationName() {
-                            return glue.getDescription() + " Change";
+                            return glue.getFieldDescription() + " Change";
                         }
                     });
                     
@@ -285,8 +285,8 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
 	// BUG: isn't it "pith", not "PITH"?
 
         // maybe it's one of the legal values
-        for (int j=0; j<f.values.length; j++) {
-            if (f.values[j].toUpperCase().equals(newValue.toUpperCase())) { // case-insensitive!
+        for (int j=0; j<f.getValues().length; j++) {
+            if (f.getValues()[j].toUpperCase().equals(newValue.toUpperCase())) { // case-insensitive!
                 popup.setSelectedIndex(j+1);
                 return;
             }
@@ -301,13 +301,13 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
 
         // crap.  we'll try asking the user what she was smoking.
         // (does this belong here?  NO!)
-        String descriptions[] = new String[f.values.length+1];
+        String descriptions[] = new String[f.getValues().length+1];
         descriptions[0] = "unspecified";
-        for (int i=0; i<f.values.length; i++)
+        for (int i=0; i<f.getValues().length; i++)
             descriptions[i+1] = I18n.getText("meta." + f.getVariable() +
-					         "." + f.values[i]);
+					         "." + f.getValues()[i]);
         int x = JOptionPane.showOptionDialog(this,
-                                     "The field \"" + f.getDescription() + "\" has value \"" + newValue + "\", which I don't understand.  What did you mean?",
+                                     "The field \"" + f.getFieldDescription() + "\" has value \"" + newValue + "\", which I don't understand.  What did you mean?",
                                      "Re-enter Value",
                                      JOptionPane.YES_NO_OPTION, // i think this is meaningless, in this context
                                      JOptionPane.QUESTION_MESSAGE,
@@ -332,7 +332,7 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
         if (x == 0)
             s.meta.remove(field);
         else
-            s.meta.put(field, f.values[x-1]);
+            s.meta.put(field, f.getValues()[x-1]);
         s.setModified();
         s.fireSampleMetadataChanged();
 
@@ -378,8 +378,8 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
             }
 */
 
-            if (f.values != null) {
-                p.add(makePopup(f), f.getDescription() + ":");
+            if (f.getValues() != null) {
+                p.add(makePopup(f), f.getFieldDescription() + ":");
                 continue;
             } // integrate this clause into the rest...  easier once old-style-popups are all gone
             
@@ -392,9 +392,9 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
             // looks passable, but on windows it looks horrible.
             if (x instanceof JTextArea) {
 		// p.add(Layout.flowLayoutL(new JScrollPane(x)), c);
-		p.add(new JScrollPane(x), f.getDescription() + ":");
+		p.add(new JScrollPane(x), f.getFieldDescription() + ":");
             } else {
-		p.add(x, f.getDescription() + ":");
+		p.add(x, f.getFieldDescription() + ":");
 	    }
 
             // add to hashmap -- only used for textcomponents

@@ -34,7 +34,7 @@ public class MetadataField {
 		this.readonly = !editable;
 
 		// set description, from |m|
-		this.description = I18n.getText("meta." + variable);
+		this.fieldDescription = I18n.getText("meta." + variable);
 	}
 
 	public MetadataField(String variable, boolean editable, int lines) {
@@ -48,7 +48,7 @@ public class MetadataField {
 		this.lines = 1;
 
 		this.values = StringUtils.splitBy(values, ',');
-		this.machineValues = true;
+		this.hasSetValues = true;
 	}
 	
 	private String variable = "";
@@ -57,10 +57,10 @@ public class MetadataField {
 		return variable;
 	}
 
-	private String description = "";
+	private String fieldDescription = "";
 
-	public String getDescription() {
-		return description;
+	public String getFieldDescription() {
+		return fieldDescription;
 	}
 
 	// document: null means it's free-form! (do i need a 'type', too?)
@@ -104,22 +104,27 @@ public class MetadataField {
 	// and use the toString() value as their label.
 	// so let's provide that.
 	public String toString() {
-		return description;
+		return fieldDescription;
 	}
 
-	// if it's a 'machine value', it's mapped by some text to some value.
-	// In some cases, we save this differently.
-	protected boolean machineValues = false;
+	// Is our field just a list of selectable values?
+	protected boolean hasSetValues = false;
 
-	public boolean isMachineValue() {
-		return machineValues;
+	/**
+	 * Method to determine if this field is a list (ie, combobox)
+	 * 
+	 * @return true if this field contains a list of values, 
+	 * false if it is free-editable (ie, a text field)
+	 */
+	public boolean isList() {
+		return hasSetValues;
 	}
 
 	// translate a machine value to a human readable value.
 	// If it's not a machine value, return the passed info
 	// If we can't parse, return the passed info.
 	public String getReadableValue(String machineValue) {
-		if (!machineValues)
+		if (!hasSetValues)
 			return machineValue;
 
 		String description = I18n.getText("meta." + getVariable() + "."
@@ -130,11 +135,40 @@ public class MetadataField {
 		return description;
 	}
 
+	public int getListSize() {
+		return values.length;
+	}
+	
+	public String getListItemValue(int index) {
+		return values[index];
+	}
+	
+	public String getListItemDescription(int index) {
+		String desc = I18n.getText("meta." + variable + "." + values[index]);
+		
+		if(desc == null)
+			return "[" + values[index] + "]";
+		
+		return desc;
+	}
+	
+	/**
+	 * Some methods need an array of values, I guess.
+	 * @return an array of machine values
+	 */
+	public String[] getValuesArray() {
+		String[] s = new String[getListSize()];
+		for(int i = 0; i < getListSize(); i++)
+			s[i] = getListItemValue(i);
+		
+		return s;
+	}
+	
+	/**
+	 * @deprecated
+	 * @return
+	 */
 	public String[] getValues() {
 		return values;
-	}
-
-	protected void setValues(String[] values) {
-		this.values = values;
 	}
 }
