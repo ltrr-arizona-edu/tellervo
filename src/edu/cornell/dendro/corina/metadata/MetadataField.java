@@ -27,8 +27,7 @@ in forms and table headers
 <dd>WRITEME ("number of lines to display")
 </dl>
 */
-public class MetadataField {
-
+public class MetadataField {	
 	public MetadataField(String variable, boolean editable) {
 		this.variable = variable;
 		// TODO: this'll get refactored into Field(...)! -- why?
@@ -51,7 +50,7 @@ public class MetadataField {
 		this.values = StringUtils.splitBy(values, ',');
 		this.machineValues = true;
 	}
-
+	
 	private String variable = "";
 
 	public String getVariable() {
@@ -71,7 +70,7 @@ public class MetadataField {
 	// -- ChoiceField (getChoices(), etc.)
 	// -- TextField (just StringField with lines != 1?)
 	// -- LabelField (just like StringField, but users can't edit)
-	public String values[] = null;
+	private String values[] = null;
 
 	// TODO: give this a nice public interface
 	// used by: DataComponent, MetadataPanel, ElementsPanel
@@ -110,7 +109,7 @@ public class MetadataField {
 
 	// if it's a 'machine value', it's mapped by some text to some value.
 	// In some cases, we save this differently.
-	private boolean machineValues = false;
+	protected boolean machineValues = false;
 
 	public boolean isMachineValue() {
 		return machineValues;
@@ -129,5 +128,13 @@ public class MetadataField {
 			return machineValue;
 
 		return description;
+	}
+
+	public String[] getValues() {
+		return values;
+	}
+
+	protected void setValues(String[] values) {
+		this.values = values;
 	}
 }

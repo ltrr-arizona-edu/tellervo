@@ -109,24 +109,28 @@ public class MetadataTemplate {
 
 	// metadata fields -- order matters!
 	private static final MetadataField FIELDS[] = {
-			// variable, editable?, [values | lines]
-			// -- (description, help-text, and value-names are in
-			// bundle)
-			new MetadataField("title", true),
-			new MetadataField("id", true),
-			new MetadataField("dating", true, "R,A"),
-			new MetadataField("unmeas_pre", true),
-			new MetadataField("unmeas_post", true),
-			new MetadataField("type", true, "C,H,S"),
-			new MetadataField("species", true),
-			new MetadataField("format", true, "R,I"),
-			new MetadataField("index_type", false), // why not "-1,1,2,3,..."?  BUG with that + readonly=true
-			new MetadataField("sapwood", true), new MetadataField("pith", true, "P,*,N"),
-			new MetadataField("terminal", true, "B,W,v,vv"),
-			new MetadataField("continuous", true, "C,R,N"),
-			new MetadataField("quality", true, "+,++"),
-			new MetadataField("reconciled", true, "Y,N"), new MetadataField("author", false),
-			new MetadataField("comments", true, 4), };
+		
+		// variable, editable?, [values | lines]
+		// -- (description, help-text, and value-names are in
+		// bundle)
+		new MetadataField("title", true),
+		new MetadataField("id", true),
+		new MetadataField("dating", true, "R,A"),
+		new MetadataField("unmeas_pre", true),
+		new MetadataField("unmeas_post", true),
+		new MetadataField("type", true, "C,H,S"),
+		new MetadataField("species", true),
+		new MetadataField("format", true, "R,I"),
+		new MetadataField("index_type", false), // why not "-1,1,2,3,..."?  BUG with that + readonly=true
+		new MetadataField("sapwood", true), 
+		new MetadataField("pith", true, "P,*,N"),
+		new MetadataField("terminal", true, "B,W,v,vv"),
+		new MetadataField("continuous", true, "C,R,N"),
+		new MetadataField("quality", true, "+,++"),
+		new MetadataField("reconciled", true, "Y,N"), 
+		new MetadataField("author", false),
+		new MetadataField("comments", true, 4), 
+	};
 
 	/**
 	 Return all of the fields, in order.
