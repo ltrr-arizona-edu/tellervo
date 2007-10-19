@@ -43,6 +43,8 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.JDisclosureTriangle;
+import edu.cornell.dendro.corina.util.WeakEventListenerList;
+import edu.cornell.dendro.corina.webdbi.ResourceEventListener;
 
 /**
  * Storage and access of user preferences.
@@ -87,8 +89,6 @@ public class Prefs extends AbstractSubsystem {
    * Our internal Properties object in which to save preferences
    */
   private Properties prefs;
-
-  private Set listeners = new HashSet();
 
   /**
    * A copy of the default UIDefaults object available at startup. We cache these defaults to allow the user to "reset" any changes they may have made through the Appearance Panel.
@@ -523,18 +523,29 @@ public class Prefs extends AbstractSubsystem {
     firePrefChanged(pref);
   }
 
+  private WeakEventListenerList listeners = new WeakEventListenerList();
+
   // IDEA: addPrefsListener(l, String pref)?
-  public synchronized void addPrefsListener(PrefsListener l) {
-    if (!listeners.contains(l))
-      listeners.add(l);
+  public void addPrefsListener(PrefsListener l) {
+	  listeners.add(PrefsListener.class, l);
   }
 
-  public synchronized void removePrefsListener(PrefsListener l) {
-    listeners.remove(l);
+  public void removePrefsListener(PrefsListener l) {
+    listeners.remove(PrefsListener.class, l);
   }
 
   public void firePrefChanged(String pref) {
     // alert all listeners
+	Object[] l = listeners.getListenerList();
+		
+    PrefsEvent e = new PrefsEvent(Prefs.class, pref);
+    
+	for(int i = 0; i < l.length; i += 2) {
+		if(l[i] == PrefsListener.class)
+			((PrefsListener)l[i+1]).prefChanged(e);
+	}
+  }
+  /*
     PrefsListener[] l;
     synchronized (Prefs.class) {
       l = (PrefsListener[]) listeners.toArray(new PrefsListener[listeners.size()]);
@@ -551,4 +562,5 @@ public class Prefs extends AbstractSubsystem {
       l[i].prefChanged(e);
     }
   }
+  */
 }
