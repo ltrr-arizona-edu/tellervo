@@ -5,15 +5,16 @@ package edu.cornell.dendro.corina.dictionary;
  * and a value, which is generally displayed to the user.
  */
 
-public abstract class BasicDictionaryType {
+public abstract class BasicDictionaryElement {
 	private String internalRepresentation;
 	private String value;
 	
-	public BasicDictionaryType(String internalRepresentation, String value) {
+	public BasicDictionaryElement(String internalRepresentation, String value) {
 		this.internalRepresentation = internalRepresentation;
 		this.value = value;
 	}
 	
 	public String getValue() { return value; }
+	public String toString() { return value; }
 	public String getInternalRepresentation() { return internalRepresentation; }
 }

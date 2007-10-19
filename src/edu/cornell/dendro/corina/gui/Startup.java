@@ -83,6 +83,8 @@ public class Startup implements PrivilegedAction {
       Splash splash = new Splash("Starting Corina", ii);
       ProgressMeter pm = new ProgressMeter();
       pm.addProgressListener(splash);
+      pm.setMillisToDecideToPopup(0);
+      pm.setMillisToPopup(0);
       App.init(pm);
       //monitor.close();
       // let's go...

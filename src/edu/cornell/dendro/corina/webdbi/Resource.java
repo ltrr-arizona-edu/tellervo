@@ -3,6 +3,7 @@ package edu.cornell.dendro.corina.webdbi;
 import org.jdom.Document;
 import org.jdom.Element;
 import java.io.IOException;
+import javax.swing.event.EventListenerList;
 
 /*
  * A resource is essentially a wrapper for an XML document acquired
@@ -10,6 +11,10 @@ import java.io.IOException;
  * other resources are to be derived
  */
 
+/**
+ * @author Lucas Madar
+ *
+ */
 public class Resource {
 	
 	private String resourceName; // the noun associated with this resource
@@ -24,6 +29,8 @@ public class Resource {
 		this.resourceName = resourceName;
 		this.resourceLoaded = false;
 	}
+	
+	public String getResourceName() { return resourceName; }
 	
 	public WebXMLDocumentAccessor getDocumentAccessor(String verb) {
 		return new WebXMLDocumentAccessor(resourceName, verb);
@@ -44,7 +51,8 @@ public class Resource {
 			if(doc.getRootElement().getName().compareToIgnoreCase("corina") != 0)
 				throw new IOException("Invalid XML document returned; Root element is not corina type.");
 			
-			loadDocument(doc);
+			if(loadDocument(doc))
+				loadSucceeded(doc);
 		} catch (IOException ioe) {
 			loadFailed(ioe);
 		}
@@ -57,13 +65,26 @@ public class Resource {
 	 * This means it must not change any class variables without synchronizing against them!
 	 * 
 	 * @param doc The XML JDOM document obtained by the load function
+	 * @return true on success, false on failure
 	 */
-	public void loadDocument(Document doc) {
-		// this is meant to be overloaded.		
+	public boolean loadDocument(Document doc) {
+		// this is meant to be overloaded.
+		return true;
 	}
 	
 	/**
-	 * In this function, handle any failure condition
+	 * Called if loadDocument returns true
+	 * Meant only to be overloaded by CachedResource
+	 * @param doc
+	 */
+	protected void loadSucceeded(Document doc) {
+		resourceLoaded = true;
+		fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_LOADED));
+	}
+	
+	/**
+	 * In this function, handle any failure condition.
+	 * This is only called if loadDocument() is not called.
 	 */
 	public void loadFailed(Exception e) {
 		System.out.println("Failed to load resource " + resourceName);
@@ -79,5 +100,30 @@ public class Resource {
 				loadWait();
 			}
 		}.start();
+	}
+	
+	
+	/*
+	 * our event notification handlers are below. This is pretty standard java,
+	 * so it's not so commented.
+	 */
+	protected EventListenerList listenerList = new EventListenerList();
+	
+	public void addResourceEventListener(ResourceEventListener rel) {
+		listenerList.add(ResourceEventListener.class, rel);
+	}
+	
+	public void removeResourceEventListener(ResourceEventListener rel) {
+		listenerList.remove(ResourceEventListener.class, rel);
+	}
+	
+	protected void fireResourceEvent(ResourceEvent re) {
+		Object[] listeners = listenerList.getListenerList();
+		
+		// For some reason, this array is stored oddly. ookay, java...
+		for(int i = 0; i < listeners.length; i += 2) {
+			if(listeners[i] == ResourceEventListener.class)
+				((ResourceEventListener)listeners[i+1]).resourceChanged(re);
+		}
 	}
 }

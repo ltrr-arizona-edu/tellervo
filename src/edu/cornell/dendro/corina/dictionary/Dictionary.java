@@ -6,7 +6,8 @@ import edu.cornell.dendro.corina.webdbi.*;
 
 import org.jdom.*;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
+import java.lang.reflect.Constructor;
 import java.util.*;
 
 /*
@@ -25,22 +26,17 @@ import java.util.*;
 public class Dictionary extends CachedResource {
 	public Dictionary() {
 		super("dictionaries");
-		
-		specimenTypeList = new ArrayList();
 	}
 	
-	public void loadDocument(Document doc) {
+	public boolean loadDocument(Document doc) {
 		Element root = doc.getRootElement();
 		Element dataElement = root.getChild("data");
 		
 		if(dataElement == null) {
 			System.out.println("No data element in dictionary; ignoring this.");
-			return;
+			return false;
 		}
-		
-		// Let our parent cache this for next time
-		super.loadDocument(doc);
-		
+				
 		List data = dataElement.getChildren();
 		Iterator itr = data.iterator();
 		
@@ -49,30 +45,75 @@ public class Dictionary extends CachedResource {
 		while(itr.hasNext()) {
 			Element child = (Element) itr.next();
 			
+			Field targetField;
+			Class targetClass;
+			Constructor targetConstructor;
+
+			// Check to see if we have a class variable with the dictionary name
 			try {
-				Method m = Dictionary.class.getMethod(child.getName() + "Loader" , new Class[] { Element.class });
-				m.invoke(this, new Object[] { child });
+				targetField = this.getClass().getDeclaredField(child.getName());
+			} catch(Exception e) {
+				System.out.println("No dictionary exists for " + child.getName());
+				continue;
+			}
+			
+			/* Obtain a name for the associated class.
+			 * For example,
+			 *   specimenTypeDictionary -> SpecimenType
+			 */
+			String className = child.getName();
+			if(className.endsWith("Dictionary"))
+				className = className.substring(0, className.length() - 10);
+			className = Character.toUpperCase(className.charAt(0)) + className.substring(1);
+
+			// Find our class
+			try {
+				targetClass = Class.forName("edu.cornell.dendro.corina.dictionary." + className);
 			} catch (Exception e) {
-				System.out.println("No Dictionary Loader for " + child.getName());
+				System.out.println("Dictionary exists for " + child.getName() + ", but no corresponding class");
+				continue;
+			}
+			
+			// Find a constructor for our class
+			try {
+				targetConstructor = targetClass.getConstructor(new Class[] {String.class, String.class});
+			} catch (Exception e) {
+				continue;
+			}
+			
+			// Now, finally, loop through our child elements and make new objects for each
+			ArrayList l = new ArrayList();
+			List elements = child.getChildren();
+			try {
+				for(int i = 0; i < elements.size(); i++) {
+					Element e = (Element) elements.get(i);
+					Object obj = targetConstructor.newInstance(new Object[] {e.getName(), e.getText()});
+					l.add(obj);
+					
+					// If we have an element that can be standard or not, set it
+					if(obj instanceof StockDictionaryElement) {
+						Attribute standard = e.getAttribute("isStandard");
+						if(standard != null) {
+							((StockDictionaryElement)obj).setStandard(standard.getBooleanValue());
+						}
+					}
+				}
+				
+				targetField.set(this, l);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
+		return true;
 	}
 	
-	public void specimenTypeDictionaryLoader(Element root) {
-		List elements = root.getChildren();
-		ArrayList l = new ArrayList();
-		
-		for(int i = 0; i < elements.size(); i++) {
-			Element e = (Element) elements.get(i);
-			
-			l.add(new SpecimenType(e.getAttributeValue("id"), e.getText()));
-		}
-		
-		synchronized(specimenTypeList) {
-			specimenTypeList = l;
-		}
-	}
-	
-	
-	private List specimenTypeList;
+	private volatile List specimenTypeDictionary;
+	private volatile List terminalRingDictionary;
+	private volatile List specimenQualityDictionary;
+	private volatile List pithDictionary;
+	private volatile List specimenContinuityDictionary;
+	private volatile List treeNoteDictionary;
+	private volatile List measurementNoteDictionary;
+	private volatile List readingNoteDictionary;
+	private volatile List siteNoteDictionary;
 }

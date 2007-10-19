@@ -11,6 +11,7 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 
 /**
  * Contextual state of the app; holds references to all "subsystems".
@@ -22,6 +23,7 @@ public class App {
   public static Prefs prefs;
   public static Platform platform;
   public static Logging logging;
+  public static Dictionary dictionary;
 
   private static final CorinaLog log = new CorinaLog(App.class);
   private static boolean initialized;
@@ -34,7 +36,7 @@ public class App {
     log.debug("initializing App");
 
     if (meter != null) {
-      meter.setMaximum(3);
+      meter.setMaximum(4);
       meter.setNote("Initializing Logging...");
     }
 
@@ -82,7 +84,16 @@ public class App {
           "While trying to load preferences:\n" + ioe.getMessage(),
           "Corina: Error Loading Preferences", JOptionPane.ERROR_MESSAGE);
     }*/
-    
+
+    if (meter != null) {
+        meter.setNote("Initializing Dictionary...");
+    }
+    dictionary = new Dictionary();
+    dictionary.load();
+    if (meter != null) {
+      meter.setProgress(4);
+    }
+
     initialized = true;   
   }
 
