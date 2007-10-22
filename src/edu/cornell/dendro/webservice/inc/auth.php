@@ -122,6 +122,68 @@ class auth
         return true; 
     }
   }
+  
+  function vmeasurementPermission($theVMeasurementID, $thePermissionID)
+  {
+    global $dbconn;
+    
+    // Check user is logged in first
+    if ($this->isLoggedIn())
+    {
+        $sql = "select * from securitygroupvmeasurementmaster($thePermissionID, ".$this->securityuserid.") where objectid=$theVMeasurementID";
+        
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            if(pg_num_rows($result)==0)
+            {
+                // No records match the id specified
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+    }
+    else
+    {
+        return false;
+    }
+  }
+  
+  function sitePermission($theSiteID, $thePermissionID)
+  {
+    global $dbconn;
+    
+    // Check user is logged in first
+    if ($this->isLoggedIn())
+    {
+        $sql = "select * from securitygroupsitemaster($thePermissionID, ".$this->securityuserid.") where objectid=$theSiteID";
+        
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            if(pg_num_rows($result)==0)
+            {
+                // No records match the id specified
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+    }
+    else
+    {
+        return false;
+    }
+  }
 
   function treePermission($theTreeID, $thePermissionID)
   {
@@ -148,6 +210,10 @@ class auth
             }
         }
     }
+    else
+    {
+        return false;
+    }
   }
 
   function treeReadPermission($theTreeID)
@@ -164,13 +230,35 @@ class auth
   {
     return $this->treePermission($theTreeID, 5);
   }
-
-  function accessVMeasurement($theId)
+  
+  function siteReadPermission($theTreeID)
   {
-    if($this->loggedIn)
-    {
-        return true; 
-    }
+    return $this->sitePermission($theTreeID, 2);
+  }
+  
+  function siteUpdatePermission($theTreeID)
+  {
+    return $this->sitePermission($theTreeID, 4);
+  }
+
+  function siteDeletePermission($theTreeID)
+  {
+    return $this->sitePermission($theTreeID, 5);
+  }
+  
+  function vmeasurementReadPermission($theTreeID)
+  {
+    return $this->vmeasurementPermission($theTreeID, 2);
+  }
+  
+  function vmeasurementUpdatePermission($theTreeID)
+  {
+    return $this->vmeasurementPermission($theTreeID, 4);
+  }
+
+  function vmeasurementDeletePermission($theTreeID)
+  {
+    return $this->vmeasurementPermission($theTreeID, 5);
   }
 
   function hashPassword($password)
