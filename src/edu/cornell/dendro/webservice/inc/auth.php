@@ -123,14 +123,14 @@ class auth
     }
   }
 
-  function treePermission($theTreeID, $theUserID, $thePermissionID)
+  function treePermission($theTreeID, $thePermissionID)
   {
     global $dbconn;
     
     // Check user is logged in first
     if ($this->isLoggedIn())
     {
-        $sql = "select * from securitygrouptreemaster($thePermissionID, $theUserID) where objectid=$theTreeID";
+        $sql = "select * from securitygrouptreemaster($thePermissionID, ".$this->securityuserid.") where objectid=$theTreeID";
         
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -150,19 +150,19 @@ class auth
     }
   }
 
-  function treeReadPermission($theTreeID, $theUserID)
+  function treeReadPermission($theTreeID)
   {
-    return treePermission($theTreeID, $theUserID, 2);
+    return $this->treePermission($theTreeID, 2);
   }
   
-  function treeUpdatePermission($theTreeID, $theUserID)
+  function treeUpdatePermission($theTreeID)
   {
-    return treePermission($theTreeID, $theUserID, 4);
+    return $this->treePermission($theTreeID, 4);
   }
 
-  function treeDeletePermission($theTreeID, $theUserID)
+  function treeDeletePermission($theTreeID)
   {
-    return treePermission($theTreeID, $theUserID, 5);
+    return $this->treePermission($theTreeID, 5);
   }
 
   function accessVMeasurement($theId)

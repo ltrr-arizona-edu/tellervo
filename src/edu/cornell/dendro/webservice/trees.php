@@ -173,7 +173,7 @@ if(!($myMetaHeader->status == "Error"))
 
                     if($success && $success2)
                     {
-                        if($myAuth->treeReadPermission($myTree->getID(), $myAuth->getID()))
+                        if($myAuth->treeReadPermission($myTree->getID()))
                         {
                             $xmldata.=$myTree->asXML();
                         }
