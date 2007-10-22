@@ -12,7 +12,8 @@ header('Content-Type: application/xhtml+xml; charset=utf-8');
 require_once("config.php");
 require_once("inc/dbsetup.php");
 require_once("inc/meta.php");
-require_once("inc/site.php");
+require_once("inc/tree.php");
+require_once("inc/specimen.php");
 require_once("inc/auth.php");
 
 $myAuth = new auth();
@@ -20,16 +21,13 @@ $myAuth = new auth();
 // Extract parameters from request and ensure no SQL has been injected
 $theMode = strtolower(addslashes($_GET['mode']));
 $theID = (int) $_GET['id'];
-if(isset($_GET['code'])) $theCode = addslashes($_GET['code']);
-if(isset($_GET['name'])) $theName = addslashes($_GET['name']);
+if(isset($_GET['label'])) $theName = addslashes($_GET['label']);
 
 // Create new meta object and check required input parameters and data types
 switch($theMode)
 {
     case "read":
         $myMetaHeader = new meta("read");
-        //if(!($theName==NULL) && (strlen($theName)<3)) $myMetaHeader->setMessage("904", "Parameter too short - 'name' field must contain three or more characters."); 
-        //if(!($theCode==NULL) && (strlen($theName)<2)) $myMetaHeader->setMessage("904", "Parameter too short - 'name' field must contain two or more characters."); 
         break;
     
     case "update":
@@ -99,36 +97,36 @@ else
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
 {
-    // Create site object 
-    $mySite = new site();
-    $parentTagBegin = $mySite->getParentTagBegin();
-    $parentTagEnd = $mySite->getParentTagEnd();
+    // Create tree object 
+    $myTree = new tree();
+    $parentTagBegin = $myTree->getParentTagBegin();
+    $parentTagEnd = $myTree->getParentTagEnd();
 
     // Set existing parameters if updating or deleting from database
     if($theMode=='update' || $theMode=='delete') 
     {
-        $success = $mySite->setParamsFromDB($theID);
+        $success = $myTree->setParamsFromDB($theID);
         if(!$success) 
         {
-            $myMetaHeader->setMessage($mySite->getLastErrorCode(), $mySite->getLastErrorMessage());
+            $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
         }
     }
 
     // Update parameters in object if updating or creating an object 
     if($theMode=='update' || $theMode=='create')
     {
-        if (isset($theName)) $mySite->setName($theName);
-        if (isset($theCode)) $mySite->setCode($theCode);
+        if (isset($theName)) $myTree->setName($theName);
+        if (isset($theCode)) $myTree->setCode($theCode);
 
         // Write to object to database
-        $success = $mySite->writeToDB();
+        $success = $myTree->writeToDB();
         if($success)
         {
-            $xmldata=$mySite->asXML();
+            $xmldata=$myTree->asXML();
         }
         else
         {
-            $myMetaHeader->setMessage($mySite->getLastErrorCode(), $mySite->getLastErrorMessage());
+            $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
         }
     }
 
@@ -136,14 +134,14 @@ if(!($myMetaHeader->status == "Error"))
     if($theMode=='delete')
     {
         // Write to Database
-        $success = $mySite->deleteFromDB();
+        $success = $myTree->deleteFromDB();
         if($success)
         {
-            $xmldata=$mySite->asXML();
+            $xmldata=$myTree->asXML();
         }
         else
         {
-            $myMetaHeader->setMessage($mySite->getLastErrorCode(), $mySite->getLastErrorMessage());
+            $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
         }
     }
 
@@ -156,24 +154,11 @@ if(!($myMetaHeader->status == "Error"))
             // Build SQL depending on parameters
             if(!$theID==NULL)
             {
-                $sql="select * from tblsite where siteid=$theID order by siteid";
-            }
-            elseif((isset($theName)) && (isset($theCode)))
-            {
-                echo "2";
-                $sql="select * from tblsite where name='$theName' and code='$theCode' order by siteid";
-            }
-            elseif(isset($theName))
-            {
-                $sql="select * from tblsite where name ilike '%$theName%' order by siteid";
-            }
-            elseif(isset($theCode))
-            {
-                $sql="select * from tblsite where code ilike '%$theCode%' order by siteid";
+                $sql="select * from tbltree where treeid=$theID order by treeid";
             }
             else
             {
-                $sql="select * from tblsite order by siteid";
+                $sql="select * from tbltree order by treeid";
             }
 
             if($sql)
@@ -182,17 +167,24 @@ if(!($myMetaHeader->status == "Error"))
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    $mySite = new site();
-                    $success = $mySite->setParamsFromDB($row['siteid']);
-                    $success2 = $mySite->setChildParamsFromDB();
+                    $myTree = new tree();
+                    $success = $myTree->setParamsFromDB($row['treeid']);
+                    $success2 = $myTree->setChildParamsFromDB();
 
                     if($success && $success2)
                     {
-                        $xmldata.=$mySite->asXML();
+                        if($myAuth->treeReadPermission($myTree->getID(), $myAuth->getID()))
+                        {
+                            $xmldata.=$myTree->asXML();
+                        }
+                        else
+                        {
+                            $myMetaHeader->setMessage("103", "Permission denied on treeid ".$myTree->getID(), "Warning");
+                        }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage($mySite->getLastErrorCode, $mySite->getLastErrorMessage);
+                        $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
                     }
 
                 }

@@ -16,6 +16,7 @@ require_once("inc/auth.php");
 
 $myAuth = new auth();
 
+//$myAuth->setPassword("test", "helloworld");
 
 // Extract parameters from request and ensure no SQL has been injected
 $theMode = strtolower(addslashes($_GET['mode']));

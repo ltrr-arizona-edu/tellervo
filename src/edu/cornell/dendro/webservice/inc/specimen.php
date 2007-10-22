@@ -8,21 +8,40 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 require_once('dbhelper.php');
-require_once('inc/siteNote.php');
-require_once('inc/subSite.php');
+//require_once('inc/radius.php');
+require_once('inc/specimenType.php');
+require_once('inc/terminalRing.php');
+require_once('inc/specimenQuality.php');
+require_once('inc/specimenContinuity.php');
+require_once('inc/pith.php');
 
-class site 
+class specimen 
 {
     var $id = NULL;
-    var $name = NULL;
-    var $code = NULL;
-    var $siteNoteArray = array();
-    var $subSiteArray = array();
+    var $label = NULL;
+    var $treeID = NULL;
+    var $dateCollected = NULL;
+    var $specimenTypeID = NULL;
+    var $terminalRingID = NULL;
+    var $terminalRingVerified = NULL;
+    var $sapwoodCount = NULL;
+    var $sapwoodCountVerified = NULL;
+    var $specimenQualityID = NULL;
+    var $specimenQualityVerified = NULL;
+    var $specimenContinuityID = NULL;
+    var $specimenContinuityVerified = NULL;
+    var $pithID = NULL;
+    var $pithVerified = NULL;
+    var $unmeasuredPre = NULL;
+    var $isUnmeasuredPreVerified = NULL;
+    var $unmeasuredPost = NULL;
+    var $isUnmeasuredPostVerified = NULL;
+    
+    var $radiusArray = array();
     var $createdTimeStamp = NULL;
     var $lastModifiedTimeStamp = NULL;
 
-
-    var $parentXMLTag = "sites"; 
+    var $parentXMLTag = "specimens"; 
     var $lastErrorMessage = NULL;
     var $lastErrorCode = NULL;
 
@@ -30,7 +49,7 @@ class site
     /* CONSTRUCTOR */
     /***************/
 
-    function site()
+    function specimen()
     {
         // Constructor for this class.
     }
@@ -39,16 +58,16 @@ class site
     /* SETTERS */
     /***********/
 
-    function setName($theName)
+    function setLabel($theLabel)
     {
         // Set the current objects note.
-        $this->name=$theName;
+        $this->name=$theLabel;
     }
     
-    function setCode($theCode)
+    function setTreeID($theTreeID)
     {
         // Set the current objects note.
-        $this->code=$theCode;
+        $this->treeID=$theTreeID;
     }
 
     function setErrorMessage($theCode, $theMessage)
@@ -65,7 +84,7 @@ class site
         global $dbconn;
         
         $this->id=$theID;
-        $sql = "select * from tblsite where siteid=$theID";
+        $sql = "select * from tblspecimen where specimenid=$theID";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -81,12 +100,27 @@ class site
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->name = $row['name'];
-                $this->code = $row['code'];
+                $this->label = $row['label'];
+                $this->id = $row['specimenid'];
+                $this->dateCollected = $row['datecollected'];
+                $this->specimenTypeID = $row['specimentypeid'];
+                $this->terminalRingID = $row['terminalringid'];
+                $this->isTerminalRingVerified = $row['isterminalringverified'];
+                $this->sapwoodCount = $row['sapwoodcount'];
+                $this->isSapwoodCountVerified = $row['issapwoodcountverified'];
+                $this->specimenQualityID= $row['specimenqualityid'];
+                $this->isSpecimenQualityVerified= $row['isspecimenqualityverified'];
+                $this->specimenContinuityID = $row['specimencontinuityid'];
+                $this->isSpecimenContinuityVerified = $row['isspecimencontinuityverified'];
+                $this->pithID = $row['pithid'];
+                $this->isPithVerified = $row['ispithverified'];
+                $this->unmeasuredPre = $row['unmeaspre'];
+                $this->isUnmeasuredPreVerified = $row['isunmeaspreverified'];
+                $this->unmeasuredPost = $row['unmeaspost'];
+                $this->isUnmeasuredPostVerified = $row['isunmeaspostverified'];
                 $this->createdTimeStamp = $row['createdtimestamp'];
                 $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
             }
-
         }
         else
         {
@@ -101,27 +135,20 @@ class site
     function setChildParamsFromDB()
     {
         // Add the id's of the current objects direct children from the database
-        // SiteSiteNotes
+        // SpecimenSpecimenNotes
 
         global $dbconn;
 
-        $sql  = "select sitenoteid from tblsitesitenote where siteid=".$this->id;
-        $sql2 = "select subsiteid from tblsubsite where siteid=".$this->id;
+        $sql  = "select radiusid from tblradius where specimenid=".$this->id;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
+
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
             {
                 // Get all tree note id's for this tree and store 
-                array_push($this->siteNoteArray, $row['sitenoteid']);
-            }
-
-            $result = pg_query($dbconn, $sql2);
-            while ($row = pg_fetch_array($result))
-            {
-                // Get all tree note id's for this tree and store 
-                array_push($this->subSiteArray, $row['subsiteid']);
+                array_push($this->radiusArray, $row['radiusid']);
             }
         }
         else
@@ -144,49 +171,65 @@ class site
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
+            $mySpecimenType = new specimenType;
+            $mySpecimenType->setParamsFromDB($this->specimenTypeID);
+            $myTerminalRing = new terminalRing;
+            $myTerminalRing->setParamsFromDB($this->terminalRingID);
+            $mySpecimenQuality = new specimenQuality;
+            $mySpecimenQuality->setParamsFromDB($this->specimenQualityID);
+            $mySpecimenContinuity = new specimenContinuity;
+            $mySpecimenContinuity->setParamsFromDB($this->specimenContinuityID);
+            $myPith = new pith;
+            $myPith->setParamsFromDB($this->pithID);
+
             // Only return XML when there are no errors.
-            $xml.= "<site id=\"".$this->id."\" code=\"".$this->code."\" createdTimeStamp=\"".$this->createdTimeStamp."\" lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" name=\"".$this->name."\">";
+            $xml.= "<specimen ";
+            $xml.= "id=\"".$this->id."\" ";
+            $xml.= "label=\"".$this->label."\" ";
+            $xml.= "dateCollected=\"".$this->dateCollected."\" ";
+            $xml.= "specimenType=\"".$mySpecimenType->getLabel()."\" ";
+            $xml.= "terminalRing=\"".$myTerminalRing->getLabel()."\" ";
+            $xml.= "isTerminalRingVerified=\"".fromPGtoStringBool($this->isTerminalRingVerified)."\" ";
+            $xml.= "sapwoodCount=\"".$this->sapwoodCount."\" ";
+            $xml.= "isSapwoodCountVerified=\"".fromPHPtoStringBool($this->isSapwoodCountVerified)."\" ";
+            $xml.= "specimenQuality=\"".$mySpecimenQuality->getLabel()."\" ";
+            $xml.= "isSpecimenQualityVerified=\"".fromPHPtoStringBool($this->isSpecimenQualityVerified)."\" ";
+            $xml.= "specimenContinuity=\"".$mySpecimenContinuity->getLabel()."\" ";
+            $xml.= "isSpecimenContinuityVerified=\"".fromPHPtoStringBool($this->isSpecimenContinuityVerified)."\" ";
+            $xml.= "pith=\"".$myPith->getLabel()."\" ";
+            $xml.= "isPithVerified=\"".fromPHPtoStringBool($this->isPithVerified)."\" ";
+            $xml.= "unmeasuredPre=\"".$this->unmeasuredPre."\" ";
+            $xml.= "isUnmeasuredPreVerified=\"".fromPHPtoStringBool($this->isUnmeasuredPreVerified)."\" ";
+            $xml.= "unmeasuredPost=\"".$this->unmeasuredPost."\" ";
+            $xml.= "isUnmeasuredPostVerified=\"".fromPHPtoStringBool($this->isUnmeasuredPostVerified)."\" ";
+
+            $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
+            $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
+            $xml.= ">";
             
-            // Include site notes if present
-            if ($this->siteNoteArray)
+            /*
+            // Include radii if present
+            if ($this->radiusArray)
             {
-                foreach($this->siteNoteArray as $value)
+                foreach($this->radiusArray as $value)
                 {
-                    $mySiteNote = new siteNote();
-                    $success = $mySiteNote->setParamsFromDB($value);
+                    $myRadius = new radius();
+                    $success = $myRadius->setParamsFromDB($value);
 
                     if($success)
                     {
-                        $xml.=$mySiteNote->asXML();
+                        $xml.=$myRadius->asXML();
                     }
                     else
                     {
-                        $myMetaHeader->setErrorMessage($mySiteNote->getLastErrorCode, $mySiteNote->getLastErrorMessage);
+                        $myMetaHeader->setErrorMessage($myRadius->getLastErrorCode, $myRadius->getLastErrorMessage);
                     }
                 }
             }
-            
-            // Include subsites if present
-            if ($this->subSiteArray)
-            {
-                foreach($this->subSiteArray as $value)
-                {
-                    $mySubSite = new subSite();
-                    $success = $mySubSite->setParamsFromDB($value);
-
-                    if($success)
-                    {
-                        $xml.=$mySubSite->asXML();
-                    }
-                    else
-                    {
-                        $myMetaHeader->setErrorMessage($mySubSite->getLastErrorCode, $mySubSite->getLastErrorMessage);
-                    }
-                }
-            }
+            */
 
             // End XML tag
-            $xml.= "</site>\n";
+            $xml.= "</specimen>\n";
             return $xml;
         }
         else
@@ -198,7 +241,7 @@ class site
     function getParentTagBegin()
     {
         // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tblsite")."'>";
+        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tblspecimen")."'>";
         return $xml;
     }
 
@@ -259,12 +302,12 @@ class site
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tblsite (name, code) values ('".$this->name."', '".$this->code."')";
+                    $sql = "insert into tblspecimen (name, code) values ('".$this->name."', '".$this->code."')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tblsite set name='".$this->name."', code='".$this->code."' where siteid=".$this->id;
+                    $sql = "update tblspecimen set name='".$this->name."', code='".$this->code."' where specimenid=".$this->id;
                 }
 
                 // Run SQL command
@@ -312,7 +355,7 @@ class site
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tblsite where siteid=".$this->id;
+                $sql = "delete from tblspecimen where specimenid=".$this->id;
 
                 // Run SQL command
                 if ($sql)

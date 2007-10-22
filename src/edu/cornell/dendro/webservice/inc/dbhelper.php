@@ -101,5 +101,10 @@ function fromPGtoStringBool($theValue)
 
 }
 
+function fromPHPtoStringBool($theValue)
+{
+    return fromPGtoStringBool($theValue);
+}
+
 
 ?>

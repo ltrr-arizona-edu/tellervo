@@ -100,6 +100,11 @@ class specimenType
         }
     }
 
+    function getLabel()
+    {
+        return $this->label;
+    }
+
     function getParentTagBegin()
     {
         // Return a string containing the start XML tag for the current object's parent

@@ -98,6 +98,11 @@ class terminalRing
             return FALSE;
         }
     }
+    
+    function getLabel()
+    {
+        return $this->label;
+    }
 
     function getParentTagBegin()
     {

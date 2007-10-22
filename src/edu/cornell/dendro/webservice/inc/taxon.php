@@ -9,11 +9,14 @@
 //////*******************************************************************
 require_once('dbhelper.php');
 
-class specimenContinuity 
+class taxon 
 {
     var $id = NULL;
     var $label = NULL;
-    var $parentXMLTag = "specimenContinuityDictionary"; 
+    var $colID = NULL;
+    var $colParentID = NULL;
+    var $taxonRank = NULL;
+    var $parentXMLTag = "taxonDictionary"; 
     var $lastErrorMessage = NULL;
     var $lastErrorCode = NULL;
 
@@ -21,7 +24,7 @@ class specimenContinuity
     /* CONSTRUCTOR */
     /***************/
 
-    function specimenContinuity()
+    function taxon()
     {
         // Constructor for this class.
         $this->isStandard = FALSE;
@@ -49,8 +52,9 @@ class specimenContinuity
         // Set the current objects parameters from the database
 
         global $dbconn;
+        
         $this->id=$theID;
-        $sql = "select * from tlkpspecimencontinuity where specimencontinuityid='$theID'";
+        $sql = "select tlkptaxon.taxonid, tlkptaxon.colID, tlkptaxon.colParentID, tlkptaxonrank.taxonrank, tlkptaxon.label from tlkptaxon, tlkptaxonrank  where tlkptaxon.specimentypeid=$theID and tlkptaxonrank.taxonrankid=tlkptaxon.taxonrankid";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -59,7 +63,7 @@ class specimenContinuity
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No records match the specified specimenContinuity id");
+                $this->setErrorMessage("903", "No records match the specified id");
                 return FALSE;
             }
             else
@@ -67,7 +71,9 @@ class specimenContinuity
                 // Set parameters from db
                 $row = pg_fetch_array($result);
                 $this->label = $row['label'];
-                return TRUE;
+                $this->colID = $row['colid'];
+                $this->colParentID = $row['colparentid'];
+                $this->taxonRank = $row['taxonrankid'];
             }
         }
         else
@@ -77,6 +83,7 @@ class specimenContinuity
             return FALSE;
         }
 
+        return TRUE;
     }
 
 
@@ -90,7 +97,7 @@ class specimenContinuity
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml.= "<specimenContinuity id=\"".$this->id."\">".$this->label."</specimenContinuity>\n";
+            $xml.= "<taxon id=\"".$this->id."\" colID=\"".$this->colID."\" colParentID=\"".$this->colParentID."\" taxonRank=\"".$this->taxonRank."\">".$this->label."</taxon>\n";
             return $xml;
         }
         else
@@ -168,12 +175,12 @@ class specimenContinuity
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tlkpspecimencontinuity (label) values ('".$this->label."')";
+                    $sql = "insert into tlkpspecimentype (label) values ('".$this->label."')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tlkpspecimencontinuity set label='".$this->label."' where specimencontinuityid=".$this->id;
+                    $sql = "update tlkpspecimentype set label='".$this->label."' where specimentypeid=".$this->id;
                 }
 
                 // Run SQL command
@@ -221,7 +228,7 @@ class specimenContinuity
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tlkpspecimencontinuity where specimencontinuityid=".$this->id;
+                $sql = "delete from tlkpspecimentype where specimentypeid=".$this->id;
 
                 // Run SQL command
                 if ($sql)

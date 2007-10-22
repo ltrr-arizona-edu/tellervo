@@ -38,19 +38,35 @@ class auth
 
   function login($theUsername, $thePassword)
   {
-    $sql = "select * from tblsecurityuser where username='$theUsername' and password='$thePassword'";
+    global $dbconn;
+
+    $sql = "select * from tblsecurityuser where username='$theUsername'";
+    
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+        $result = pg_query($dbconn, $sql);
+        while ($row = pg_fetch_array($result))
+        {
+            $dbpassword = $row['password'];
+        }
+    }
 
     // Authenticate against the database
-    if (1==1)
+    if ($this->validatePassword($dbpassword, $thePassword))
     {
         // Login passed
-        session_start();
-        $_SESSION['initiated'] = TRUE;
-        $_SESSION["securityuserid"] = 1;
-        $_SESSION['firstname'] = "George";
-        $_SESSION['lastname'] = "Bush";
-        $_SESSION['username'] = "gb1";
-        $this->loggedIn = TRUE;
+        $result = pg_query($dbconn, $sql);
+        while ($row = pg_fetch_array($result))
+        {
+            session_start();
+            $_SESSION['initiated'] = TRUE;
+            $_SESSION["securityuserid"] = $row['securityuserid'];
+            $_SESSION['firstname'] = $row['firstname'];
+            $_SESSION['lastname'] = $row['lastname'];
+            $_SESSION['username'] = $row['username'];
+            $this->loggedIn = TRUE;
+        }
     }
     else
     {
@@ -92,6 +108,11 @@ class auth
     return $this->username;
   }
 
+  function getID()
+  {
+    return $this->securityuserid;
+  }
+
 
 
   function accessSite($theId)
@@ -102,12 +123,46 @@ class auth
     }
   }
 
-  function accessTree($theId)
+  function treePermission($theTreeID, $theUserID, $thePermissionID)
   {
-    if($this->loggedIn)
+    global $dbconn;
+    
+    // Check user is logged in first
+    if ($this->isLoggedIn())
     {
-        return true; 
+        $sql = "select * from securitygrouptreemaster($thePermissionID, $theUserID) where objectid=$theTreeID";
+        
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            if(pg_num_rows($result)==0)
+            {
+                // No records match the id specified
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
+  }
+
+  function treeReadPermission($theTreeID, $theUserID)
+  {
+    return treePermission($theTreeID, $theUserID, 2);
+  }
+  
+  function treeUpdatePermission($theTreeID, $theUserID)
+  {
+    return treePermission($theTreeID, $theUserID, 4);
+  }
+
+  function treeDeletePermission($theTreeID, $theUserID)
+  {
+    return treePermission($theTreeID, $theUserID, 5);
   }
 
   function accessVMeasurement($theId)
@@ -118,6 +173,47 @@ class auth
     }
   }
 
+  function hashPassword($password)
+  {
+    mt_srand((double)microtime()*1000000);
+    $salt = mhash_keygen_s2k(MHASH_SHA1, $password, substr(pack('h*', md5(mt_rand())), 0, 8), 4);
+    $hash = "{SSHA}".base64_encode(mhash(MHASH_SHA1, $password.$salt).$salt);
+    return $hash;
+  }
+
+  function validatePassword($password, $hash)
+  {/*
+    $hash = base64_decode(substr($hash, 6));
+    $original_hash = substr($hash, 0, 20);
+    $salt = substr($hash, 20);
+    $new_hash = mhash(MHASH_SHA1, $password . $salt);
+   */
+    $original_hash = $password;
+    $new_hash = $hash;
+    if (strcmp($original_hash, $new_hash) == 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+  }
+
+  function setPassword($username, $password)
+  {
+    global $dbconn;
+
+    $sql = "update tblsecurityuser set password='".$this->hashPassword($password)."' where username='$username'";
+    
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+        $result = pg_query($dbconn, $sql);
+    }
+
+    
+  }
 
 } 
 ?>

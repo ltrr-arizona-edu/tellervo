@@ -98,6 +98,11 @@ class pith
             return FALSE;
         }
     }
+    
+    function getLabel()
+    {
+        return $this->label;
+    }
 
     function getParentTagBegin()
     {

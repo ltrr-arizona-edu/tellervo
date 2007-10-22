@@ -8,12 +8,26 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 require_once('dbhelper.php');
+require_once('inc/treeNote.php');
+require_once('inc/specimen.php');
+require_once('inc/taxon.php');
 
-class specimenContinuity 
+class tree 
 {
     var $id = NULL;
+    var $taxonID = NULL;
+    var $subSiteID = NULL;
     var $label = NULL;
-    var $parentXMLTag = "specimenContinuityDictionary"; 
+    var $latitude = NULL;
+    var $longitude = NULL;
+    var $precision = NULL;
+    var $specimenArray = array();
+    var $treeNoteArray = array();
+    var $createdTimeStamp = NULL;
+    var $lastModifiedTimeStamp = NULL;
+
+
+    var $parentXMLTag = "trees"; 
     var $lastErrorMessage = NULL;
     var $lastErrorCode = NULL;
 
@@ -21,10 +35,9 @@ class specimenContinuity
     /* CONSTRUCTOR */
     /***************/
 
-    function specimenContinuity()
+    function tree()
     {
         // Constructor for this class.
-        $this->isStandard = FALSE;
     }
 
     /***********/
@@ -33,8 +46,20 @@ class specimenContinuity
 
     function setLabel($theLabel)
     {
-        // Set the current objects note.
+        // Set the current objects label
         $this->label=$theLabel;
+    }
+    
+    function setTaxonID($theTaxonID)
+    {
+        // Set the current objects taxonid
+        $this->taxonID=$theTaxonID;
+    }
+
+    function setSubSiteID($theSubSiteID)
+    {
+        // Set the current objects subsite ID
+        $this->subSiteID=$theSubSiteID;
     }
 
     function setErrorMessage($theCode, $theMessage)
@@ -44,13 +69,22 @@ class specimenContinuity
         $this->lastErrorMessage = $theMessage;
     }
 
+    function setLocality($theLat, $theLong, $thePrecision)
+    {
+        // Set the location of the current object
+        $this->latitude = $theLat;
+        $this->longitude = $theLong;
+        $this->precision = $thePrecision;
+    }
+
     function setParamsFromDB($theID)
     {
         // Set the current objects parameters from the database
 
         global $dbconn;
+        
         $this->id=$theID;
-        $sql = "select * from tlkpspecimencontinuity where specimencontinuityid='$theID'";
+        $sql = "select treeid, taxonid, subsiteid, label, X(location) as long, Y(location) as lat, precision, createdtimestamp, lastmodifiedtimestamp from tbltree where treeid=$theID";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -59,15 +93,21 @@ class specimenContinuity
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No records match the specified specimenContinuity id");
+                $this->setErrorMessage("903", "No records match the specified id");
                 return FALSE;
             }
             else
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
+                $this->taxonID = $row['taxonid'];
+                $this->subSiteID = $row['subsiteid'];
                 $this->label = $row['label'];
-                return TRUE;
+                $this->latitude = $row['lat'];
+                $this->longitude = $row['long'];
+                $this->precision = $row['precision'];
+                $this->createdTimeStamp = $row['createdtimestamp'];
+                $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
             }
         }
         else
@@ -77,6 +117,43 @@ class specimenContinuity
             return FALSE;
         }
 
+        return TRUE;
+    }
+
+    function setChildParamsFromDB()
+    {
+        // Add the id's of the current objects direct children from the database
+        // Specimen
+
+        global $dbconn;
+
+        $sql  = "select treenoteid from tbltreetreenote where treeid=".$this->id;
+        $sql2 = "select specimenid from tblspecimen where treeid=".$this->id;
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);
+            while ($row = pg_fetch_array($result))
+            {
+                // Get all tree note id's for this tree and store 
+                array_push($this->treeNoteArray, $row['treenoteid']);
+            }
+
+            $result = pg_query($dbconn, $sql2);
+            while ($row = pg_fetch_array($result))
+            {
+                // Get all tree note id's for this tree and store 
+                array_push($this->specimenArray, $row['specimenid']);
+            }
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+
+        return TRUE;
     }
 
 
@@ -89,8 +166,61 @@ class specimenContinuity
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
+            $myTaxon = new taxon;
+            $myTaxon->setParamsFromDB($this->taxonID);
+
             // Only return XML when there are no errors.
-            $xml.= "<specimenContinuity id=\"".$this->id."\">".$this->label."</specimenContinuity>\n";
+            $xml.= "<tree ";
+            $xml.= "id=\"".$this->id."\" ";
+            $xml.= "label=\"".$this->label."\" ";
+            $xml.= "taxon=\"".$myTaxon->getLabel()."\" ";
+            $xml.= "latitude=\"".$this->latitude."\" ";
+            $xml.= "longitude=\"".$this->longitude."\" ";
+            $xml.= "precision=\"".$this->precision."\" ";
+            $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
+            $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
+            $xml.= ">";
+            
+            // Include tree notes if present
+            if ($this->treeNoteArray)
+            {
+                foreach($this->treeNoteArray as $value)
+                {
+                    $myTreeNote = new treeNote();
+                    $success = $myTreeNote->setParamsFromDB($value);
+
+                    if($success)
+                    {
+                        $xml.=$myTreeNote->asXML();
+                    }
+                    else
+                    {
+                        $myMetaHeader->setErrorMessage($myTreeNote->getLastErrorCode, $myTreeNote->getLastErrorMessage);
+                    }
+                }
+            }
+
+            // Include specimens if present
+            if ($this->specimenArray)
+            {
+                foreach($this->specimenArray as $value)
+                {
+                    $mySpecimen = new specimen();
+                    $success = $mySpecimen->setParamsFromDB($value);
+
+                    if($success)
+                    {
+                        $xml.=$mySpecimen->asXML();
+                    }
+                    else
+                    {
+                        $myMetaHeader->setErrorMessage($mySpecimen->getLastErrorCode, $mySpecimen->getLastErrorMessage);
+                    }
+                }
+            }
+
+            // End XML tag
+            $xml.= "</tree>\n";
             return $xml;
         }
         else
@@ -99,15 +229,10 @@ class specimenContinuity
         }
     }
 
-    function getLabel()
-    {
-        return $this->label;
-    }
-
     function getParentTagBegin()
     {
         // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag.">";
+        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tbltree")."'>";
         return $xml;
     }
 
@@ -118,6 +243,10 @@ class specimenContinuity
         return $xml;
     }
 
+    function getID()
+    {
+        return $this->id;
+    }
     function getLastErrorCode()
     {
         // Return an integer containing the last error code recorded for this object
@@ -136,25 +265,21 @@ class specimenContinuity
     /*FUNCTIONS*/
     /***********/
 
-
-    /*
-     *
-     * FUNCTIONS DISABLED FOR THIS CLASS
-     *
-     *
-
-
-
     function writeToDB()
     {
         // Write the current object to the database
 
         global $dbconn;
-
+        
         // Check for required parameters
-        if($this->note == NULL) 
+        if($this->name == NULL) 
         {
-            $this->setErrorMessage("902", "Missing parameter - 'note' field is required.");
+            $this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
+            return FALSE;
+        }
+        if($this->code == NULL) 
+        {
+            $this->setErrorMessage("902", "Missing parameter - 'code' field is required.");
             return FALSE;
         }
 
@@ -168,12 +293,12 @@ class specimenContinuity
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tlkpspecimencontinuity (label) values ('".$this->label."')";
+                    $sql = "insert into tbltree (name, code) values ('".$this->name."', '".$this->code."')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tlkpspecimencontinuity set label='".$this->label."' where specimencontinuityid=".$this->id;
+                    $sql = "update tbltree set name='".$this->name."', code='".$this->code."' where treeid=".$this->id;
                 }
 
                 // Run SQL command
@@ -221,7 +346,7 @@ class specimenContinuity
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tlkpspecimencontinuity where specimencontinuityid=".$this->id;
+                $sql = "delete from tbltree where treeid=".$this->id;
 
                 // Run SQL command
                 if ($sql)
@@ -247,7 +372,7 @@ class specimenContinuity
         // Return true as write to DB went ok.
         return TRUE;
     }
- */
+
 // End of Class
 } 
 ?>
