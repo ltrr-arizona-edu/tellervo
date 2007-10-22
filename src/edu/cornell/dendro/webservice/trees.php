@@ -167,24 +167,25 @@ if(!($myMetaHeader->status == "Error"))
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    $myTree = new tree();
-                    $success = $myTree->setParamsFromDB($row['treeid']);
-                    $success2 = $myTree->setChildParamsFromDB();
-
-                    if($success && $success2)
+                    // Check user has permission to read tree
+                    if($myAuth->treeReadPermission($row['treeid']))
                     {
-                        if($myAuth->treeReadPermission($myTree->getID()))
+                        $myTree = new tree();
+                        $success = $myTree->setParamsFromDB($row['treeid']);
+                        $success2 = $myTree->setChildParamsFromDB();
+
+                        if($success && $success2)
                         {
                             $xmldata.=$myTree->asXML();
                         }
                         else
                         {
-                            $myMetaHeader->setMessage("103", "Permission denied on treeid ".$myTree->getID(), "Warning");
+                            $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
                         }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
+                        $myMetaHeader->setMessage("103", "Permission denied on treeid ".$myTree->getID(), "Warning");
                     }
 
                 }
