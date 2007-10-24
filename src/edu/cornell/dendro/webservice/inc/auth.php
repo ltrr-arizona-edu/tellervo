@@ -53,7 +53,7 @@ class auth
     }
 
     // Authenticate against the database
-    if ($this->validatePassword($dbpassword, $thePassword))
+    if (hash('md5', $thePassword)==$dbpassword)
     {
         // Login passed
         $result = pg_query($dbconn, $sql);
@@ -113,16 +113,6 @@ class auth
     return $this->securityuserid;
   }
 
-
-
-  function accessSite($theId)
-  {
-    if($this->loggedIn)
-    {
-        return true; 
-    }
-  }
-  
   function vmeasurementPermission($theVMeasurementID, $thePermissionID)
   {
     global $dbconn;
@@ -269,39 +259,19 @@ class auth
     return $hash;
   }
 
-  function validatePassword($password, $hash)
-  {/*
-    $hash = base64_decode(substr($hash, 6));
-    $original_hash = substr($hash, 0, 20);
-    $salt = substr($hash, 20);
-    $new_hash = mhash(MHASH_SHA1, $password . $salt);
-   */
-    $original_hash = $password;
-    $new_hash = $hash;
-    if (strcmp($original_hash, $new_hash) == 0)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-  }
-
   function setPassword($username, $password)
   {
     global $dbconn;
 
-    $sql = "update tblsecurityuser set password='".$this->hashPassword($password)."' where username='$username'";
-    
+    $sql = "update tblsecurityuser set password='".hash('md5', $password)."' where username='$username'";
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
         $result = pg_query($dbconn, $sql);
     }
-
-    
   }
 
+
+// End of class
 } 
 ?>
