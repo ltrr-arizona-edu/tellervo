@@ -170,6 +170,7 @@ class readingNote
                 {
                     // New record
                     $sql = "insert into tlkpreadingnote (note, isstandard) values ('".$this->note."', '".fromPHPtoPGBool($this->isStandard)."')";
+                    $sql2 = "select * from tlkpreadingnote where readingnoteid=currval('tlkpreadingnote_readingnoteid_seq')";
                 }
                 else
                 {
@@ -187,6 +188,16 @@ class readingNote
                     {
                         $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
                         return FALSE;
+                    }
+                }
+                // Retrieve automated field values when a new record has been inserted
+                if ($sql2)
+                {
+                    // Run SQL
+                    $result = pg_query($dbconn, $sql2);
+                    while ($row = pg_fetch_array($result))
+                    {
+                        $this->id=$row['readingnoteid'];   
                     }
                 }
             }

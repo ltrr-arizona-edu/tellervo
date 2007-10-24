@@ -170,6 +170,7 @@ class treeNote
                 {
                     // New record
                     $sql = "insert into tlkptreenote (note, isstandard) values ('".$this->note."', '".fromPHPtoPGBool($this->isStandard)."')";
+                    $sql2 = "select * from tlkptreenote where treenoteid=currval('tlkptreenote_treenoteid_seq')";
                 }
                 else
                 {
@@ -187,6 +188,16 @@ class treeNote
                     {
                         $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
                         return FALSE;
+                    }
+                }
+                // Retrieve automated field values when a new record has been inserted
+                if ($sql2)
+                {
+                    // Run SQL
+                    $result = pg_query($dbconn, $sql2);
+                    while ($row = pg_fetch_array($result))
+                    {
+                        $this->id=$row['treenoteid'];   
                     }
                 }
             }

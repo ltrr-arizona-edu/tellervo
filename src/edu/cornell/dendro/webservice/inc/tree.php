@@ -161,66 +161,73 @@ class tree
     /*ACCESSORS*/
     /***********/
 
-    function asXML()
+    function asXML($mode="all")
     {
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
-            $myTaxon = new taxon;
-            $myTaxon->setParamsFromDB($this->taxonID);
-
-            // Only return XML when there are no errors.
-            $xml.= "<tree ";
-            $xml.= "id=\"".$this->id."\" ";
-            $xml.= "label=\"".$this->label."\" ";
-            $xml.= "taxon=\"".$myTaxon->getLabel()."\" ";
-            $xml.= "latitude=\"".$this->latitude."\" ";
-            $xml.= "longitude=\"".$this->longitude."\" ";
-            $xml.= "precision=\"".$this->precision."\" ";
-            $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
-            $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
-            $xml.= ">";
-            
-            // Include tree notes if present
-            if ($this->treeNoteArray)
+            if(($mode=="all") || ($mode=="begin"))
             {
-                foreach($this->treeNoteArray as $value)
-                {
-                    $myTreeNote = new treeNote();
-                    $success = $myTreeNote->setParamsFromDB($value);
+                $myTaxon = new taxon;
+                $myTaxon->setParamsFromDB($this->taxonID);
 
-                    if($success)
+                // Only return XML when there are no errors.
+                $xml.= "<tree ";
+                $xml.= "id=\"".$this->id."\" ";
+                $xml.= "label=\"".$this->label."\" ";
+                $xml.= "taxon=\"".$myTaxon->getLabel()."\" ";
+                $xml.= "latitude=\"".$this->latitude."\" ";
+                $xml.= "longitude=\"".$this->longitude."\" ";
+                $xml.= "precision=\"".$this->precision."\" ";
+                $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
+                $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
+                $xml.= ">";
+                
+                // Include tree notes if present
+                if ($this->treeNoteArray)
+                {
+                    foreach($this->treeNoteArray as $value)
                     {
-                        $xml.=$myTreeNote->asXML();
+                        $myTreeNote = new treeNote();
+                        $success = $myTreeNote->setParamsFromDB($value);
+
+                        if($success)
+                        {
+                            $xml.=$myTreeNote->asXML();
+                        }
+                        else
+                        {
+                            $myMetaHeader->setErrorMessage($myTreeNote->getLastErrorCode, $myTreeNote->getLastErrorMessage);
+                        }
                     }
-                    else
+                }
+
+                // Include specimens if present
+                if ($this->specimenArray)
+                {
+                    foreach($this->specimenArray as $value)
                     {
-                        $myMetaHeader->setErrorMessage($myTreeNote->getLastErrorCode, $myTreeNote->getLastErrorMessage);
+                        $mySpecimen = new specimen();
+                        $success = $mySpecimen->setParamsFromDB($value);
+
+                        if($success)
+                        {
+                            $xml.=$mySpecimen->asXML();
+                        }
+                        else
+                        {
+                            $myMetaHeader->setErrorMessage($mySpecimen->getLastErrorCode, $mySpecimen->getLastErrorMessage);
+                        }
                     }
                 }
             }
 
-            // Include specimens if present
-            if ($this->specimenArray)
+            if(($mode=="all") || ($mode=="end"))
             {
-                foreach($this->specimenArray as $value)
-                {
-                    $mySpecimen = new specimen();
-                    $success = $mySpecimen->setParamsFromDB($value);
-
-                    if($success)
-                    {
-                        $xml.=$mySpecimen->asXML();
-                    }
-                    else
-                    {
-                        $myMetaHeader->setErrorMessage($mySpecimen->getLastErrorCode, $mySpecimen->getLastErrorMessage);
-                    }
-                }
+                // End XML tag
+                $xml.= "</tree>\n";
             }
 
-            // End XML tag
-            $xml.= "</tree>\n";
             return $xml;
         }
         else

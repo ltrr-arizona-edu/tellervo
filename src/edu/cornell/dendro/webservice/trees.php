@@ -13,6 +13,8 @@ require_once("config.php");
 require_once("inc/dbsetup.php");
 require_once("inc/meta.php");
 require_once("inc/tree.php");
+require_once("inc/subSite.php");
+require_once("inc/site.php");
 require_once("inc/specimen.php");
 require_once("inc/auth.php");
 
@@ -154,15 +156,45 @@ if(!($myMetaHeader->status == "Error"))
             // Build SQL depending on parameters
             if(!$theID==NULL)
             {
-                $sql="select * from tbltree where treeid=$theID order by treeid";
+                $sql="select tbltree.*, tblsubsite.subsiteid, tblsubsite.siteid from tbltree, tblsubsite  where treeid=$theID and tbltree.subsiteid=tblsubsite.subsiteid order by tbltree.treeid";
+                // Run SQL
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    // Check user has permission to read tree
+                    if($myAuth->treeReadPermission($row['treeid']))
+                    {
+                        $myTree = new tree();
+                        $success = $myTree->setParamsFromDB($row['treeid']);
+                        $success2 = $myTree->setChildParamsFromDB();
+                        $mySubSite = new subSite();
+                        $success3 = $mySubSite->setParamsFromDB($row['subsiteid']);
+                        $mySite = new site();
+                        $success4 = $mySite->setParamsFromDB($row['siteid']);
+
+                        if($success && $success2 && $success3 && success4 )
+                        {
+                            $xmldata.= $mySite->asXML("begin");
+                            $xmldata.= $mySubSite->asXML("begin");
+                            $xmldata.= $myTree->asXML();
+                            $xmldata.= $mySubSite->asXML("end");
+                            $xmldata.= $mySite->asXML("end");
+                        }
+                        else
+                        {
+                            $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
+                        }
+                    }
+                    else
+                    {
+                        $myMetaHeader->setMessage("103", "Permission denied on treeid ".$row['treeid'], "Warning");
+                    }
+                }
             }
             else
             {
+                $xmldata.= $parentTagBegin."\n";
                 $sql="select * from tbltree order by treeid";
-            }
-
-            if($sql)
-            {
                 // Run SQL
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
@@ -185,10 +217,10 @@ if(!($myMetaHeader->status == "Error"))
                     }
                     else
                     {
-                        $myMetaHeader->setMessage("103", "Permission denied on treeid ".$myTree->getID(), "Warning");
+                        $myMetaHeader->setMessage("103", "Permission denied on treeid ".$row['treeid'], "Warning");
                     }
-
                 }
+                $xmldata.= $parentTagEnd."\n";
             }
         }
         else
@@ -204,8 +236,6 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 echo "<corina>\n";
 echo $myMetaHeader->asXML();
 echo "<data>\n";
-echo $parentTagBegin."\n";
 echo $xmldata;
-echo $parentTagEnd."\n";
 echo "</data>\n";
 echo "</corina>";

@@ -170,6 +170,7 @@ class siteNote
                 {
                     // New record
                     $sql = "insert into tlkpsitenote (note, isstandard) values ('".$this->note."', '".fromPHPtoPGBool($this->isStandard)."')";
+                    $sql2 = "select * from tlkpsitenote where sitenoteid=currval('tlkpsitenote_sitenoteid_seq')";
                 }
                 else
                 {
@@ -187,6 +188,16 @@ class siteNote
                     {
                         $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
                         return FALSE;
+                    }
+                }
+                // Retrieve automated field values when a new record has been inserted
+                if ($sql2)
+                {
+                    // Run SQL
+                    $result = pg_query($dbconn, $sql2);
+                    while ($row = pg_fetch_array($result))
+                    {
+                        $this->id=$row['sitenoteid'];   
                     }
                 }
             }

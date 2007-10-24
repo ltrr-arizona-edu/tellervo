@@ -166,70 +166,77 @@ class specimen
     /*ACCESSORS*/
     /***********/
 
-    function asXML()
+    function asXML($mode="all")
     {
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
-            $mySpecimenType = new specimenType;
-            $mySpecimenType->setParamsFromDB($this->specimenTypeID);
-            $myTerminalRing = new terminalRing;
-            $myTerminalRing->setParamsFromDB($this->terminalRingID);
-            $mySpecimenQuality = new specimenQuality;
-            $mySpecimenQuality->setParamsFromDB($this->specimenQualityID);
-            $mySpecimenContinuity = new specimenContinuity;
-            $mySpecimenContinuity->setParamsFromDB($this->specimenContinuityID);
-            $myPith = new pith;
-            $myPith->setParamsFromDB($this->pithID);
-
-            // Only return XML when there are no errors.
-            $xml.= "<specimen ";
-            $xml.= "id=\"".$this->id."\" ";
-            $xml.= "label=\"".$this->label."\" ";
-            $xml.= "dateCollected=\"".$this->dateCollected."\" ";
-            $xml.= "specimenType=\"".$mySpecimenType->getLabel()."\" ";
-            $xml.= "terminalRing=\"".$myTerminalRing->getLabel()."\" ";
-            $xml.= "isTerminalRingVerified=\"".fromPGtoStringBool($this->isTerminalRingVerified)."\" ";
-            $xml.= "sapwoodCount=\"".$this->sapwoodCount."\" ";
-            $xml.= "isSapwoodCountVerified=\"".fromPHPtoStringBool($this->isSapwoodCountVerified)."\" ";
-            $xml.= "specimenQuality=\"".$mySpecimenQuality->getLabel()."\" ";
-            $xml.= "isSpecimenQualityVerified=\"".fromPHPtoStringBool($this->isSpecimenQualityVerified)."\" ";
-            $xml.= "specimenContinuity=\"".$mySpecimenContinuity->getLabel()."\" ";
-            $xml.= "isSpecimenContinuityVerified=\"".fromPHPtoStringBool($this->isSpecimenContinuityVerified)."\" ";
-            $xml.= "pith=\"".$myPith->getLabel()."\" ";
-            $xml.= "isPithVerified=\"".fromPHPtoStringBool($this->isPithVerified)."\" ";
-            $xml.= "unmeasuredPre=\"".$this->unmeasuredPre."\" ";
-            $xml.= "isUnmeasuredPreVerified=\"".fromPHPtoStringBool($this->isUnmeasuredPreVerified)."\" ";
-            $xml.= "unmeasuredPost=\"".$this->unmeasuredPost."\" ";
-            $xml.= "isUnmeasuredPostVerified=\"".fromPHPtoStringBool($this->isUnmeasuredPostVerified)."\" ";
-
-            $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
-            $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
-            $xml.= ">";
-            
-            /*
-            // Include radii if present
-            if ($this->radiusArray)
+            if(($mode=="all") || ($mode=="begin"))
             {
-                foreach($this->radiusArray as $value)
-                {
-                    $myRadius = new radius();
-                    $success = $myRadius->setParamsFromDB($value);
+                $mySpecimenType = new specimenType;
+                $mySpecimenType->setParamsFromDB($this->specimenTypeID);
+                $myTerminalRing = new terminalRing;
+                $myTerminalRing->setParamsFromDB($this->terminalRingID);
+                $mySpecimenQuality = new specimenQuality;
+                $mySpecimenQuality->setParamsFromDB($this->specimenQualityID);
+                $mySpecimenContinuity = new specimenContinuity;
+                $mySpecimenContinuity->setParamsFromDB($this->specimenContinuityID);
+                $myPith = new pith;
+                $myPith->setParamsFromDB($this->pithID);
 
-                    if($success)
+                // Only return XML when there are no errors.
+                $xml.= "<specimen ";
+                $xml.= "id=\"".$this->id."\" ";
+                $xml.= "label=\"".$this->label."\" ";
+                $xml.= "dateCollected=\"".$this->dateCollected."\" ";
+                $xml.= "specimenType=\"".$mySpecimenType->getLabel()."\" ";
+                $xml.= "terminalRing=\"".$myTerminalRing->getLabel()."\" ";
+                $xml.= "isTerminalRingVerified=\"".fromPGtoStringBool($this->isTerminalRingVerified)."\" ";
+                $xml.= "sapwoodCount=\"".$this->sapwoodCount."\" ";
+                $xml.= "isSapwoodCountVerified=\"".fromPHPtoStringBool($this->isSapwoodCountVerified)."\" ";
+                $xml.= "specimenQuality=\"".$mySpecimenQuality->getLabel()."\" ";
+                $xml.= "isSpecimenQualityVerified=\"".fromPHPtoStringBool($this->isSpecimenQualityVerified)."\" ";
+                $xml.= "specimenContinuity=\"".$mySpecimenContinuity->getLabel()."\" ";
+                $xml.= "isSpecimenContinuityVerified=\"".fromPHPtoStringBool($this->isSpecimenContinuityVerified)."\" ";
+                $xml.= "pith=\"".$myPith->getLabel()."\" ";
+                $xml.= "isPithVerified=\"".fromPHPtoStringBool($this->isPithVerified)."\" ";
+                $xml.= "unmeasuredPre=\"".$this->unmeasuredPre."\" ";
+                $xml.= "isUnmeasuredPreVerified=\"".fromPHPtoStringBool($this->isUnmeasuredPreVerified)."\" ";
+                $xml.= "unmeasuredPost=\"".$this->unmeasuredPost."\" ";
+                $xml.= "isUnmeasuredPostVerified=\"".fromPHPtoStringBool($this->isUnmeasuredPostVerified)."\" ";
+
+                $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
+                $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
+                $xml.= ">";
+                
+                /*
+                // Include radii if present
+                if ($this->radiusArray)
+                {
+                    foreach($this->radiusArray as $value)
                     {
-                        $xml.=$myRadius->asXML();
-                    }
-                    else
-                    {
-                        $myMetaHeader->setErrorMessage($myRadius->getLastErrorCode, $myRadius->getLastErrorMessage);
+                        $myRadius = new radius();
+                        $success = $myRadius->setParamsFromDB($value);
+
+                        if($success)
+                        {
+                            $xml.=$myRadius->asXML();
+                        }
+                        else
+                        {
+                            $myMetaHeader->setErrorMessage($myRadius->getLastErrorCode, $myRadius->getLastErrorMessage);
+                        }
                     }
                 }
+                */
             }
-            */
 
-            // End XML tag
-            $xml.= "</specimen>\n";
+            if(($mode=="all") || ($mode=="end"))
+            {
+                // End XML tag
+                $xml.= "</specimen>\n";
+            }
+
             return $xml;
         }
         else

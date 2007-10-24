@@ -170,6 +170,7 @@ class vMeasurementNote
                 {
                     // New record
                     $sql = "insert into tlkpvmeasurementnote (note, isstandard) values ('".$this->note."', '".fromPHPtoPGBool($this->isStandard)."')";
+                    $sql2 = "select * from tlkpvmeasurementnote where vmeasurementnoteid=currval('tlkpvmeasurementnote_vmeasurementnoteid_seq')";
                 }
                 else
                 {
@@ -187,6 +188,16 @@ class vMeasurementNote
                     {
                         $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
                         return FALSE;
+                    }
+                }
+                // Retrieve automated field values when a new record has been inserted
+                if ($sql2)
+                {
+                    // Run SQL
+                    $result = pg_query($dbconn, $sql2);
+                    while ($row = pg_fetch_array($result))
+                    {
+                        $this->id=$row['vmeasurementnoteid'];   
                     }
                 }
             }

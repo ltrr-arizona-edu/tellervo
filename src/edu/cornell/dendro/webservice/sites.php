@@ -28,9 +28,15 @@ switch($theMode)
 {
     case "read":
         $myMetaHeader = new meta("read");
-        //if(!($theName==NULL) && (strlen($theName)<3)) $myMetaHeader->setMessage("904", "Parameter too short - 'name' field must contain three or more characters."); 
-        //if(!($theCode==NULL) && (strlen($theName)<2)) $myMetaHeader->setMessage("904", "Parameter too short - 'name' field must contain two or more characters."); 
-        break;
+        if($myAuth->isLoggedIn())
+        {
+            break;
+        }
+        else
+        {
+            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            break;
+        }
     
     case "update":
         $myMetaHeader = new meta("update");
@@ -90,10 +96,6 @@ switch($theMode)
 if($myAuth->isLoggedIn())
 {
     $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
-}
-else
-{
-    $myMetaHeader->setUser("Guest", "Guest", "Guest");
 }
 
 //Only attempt to run SQL if there are no errors so far
@@ -173,7 +175,7 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $sql="select * from tblsite order by siteid";
+                $sql="select tblsite.* from (tblsite INNER JOIN securitygroupsitemaster(2,".$myAuth->getID().") on tblsite.siteid = securitygroupsitemaster.objectid) order by tblsite.siteid";
             }
 
             if($sql)
@@ -182,19 +184,26 @@ if(!($myMetaHeader->status == "Error"))
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    $mySite = new site();
-                    $success = $mySite->setParamsFromDB($row['siteid']);
-                    $success2 = $mySite->setChildParamsFromDB();
-
-                    if($success && $success2)
+                    // Check user has permission to read tree
+                    if($myAuth->siteReadPermission($row['siteid']))
                     {
-                        $xmldata.=$mySite->asXML();
+                        $mySite = new site();
+                        $success = $mySite->setParamsFromDB($row['siteid']);
+                        $success2 = $mySite->setChildParamsFromDB();
+
+                        if($success && $success2)
+                        {
+                            $xmldata.=$mySite->asXML();
+                        }
+                        else
+                        {
+                            $myMetaHeader->setMessage($mySite->getLastErrorCode, $mySite->getLastErrorMessage);
+                        }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage($mySite->getLastErrorCode, $mySite->getLastErrorMessage);
+                        $myMetaHeader->setMessage("103", "Permission denied on site id ".$row['siteid'], "Warning");
                     }
-
                 }
             }
         }

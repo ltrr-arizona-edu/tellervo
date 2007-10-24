@@ -13,6 +13,9 @@ require_once("config.php");
 require_once("inc/dbsetup.php");
 require_once("inc/meta.php");
 require_once("inc/specimen.php");
+require_once("inc/tree.php");
+require_once("inc/subSite.php");
+require_once("inc/site.php");
 //require_once("inc/radii.php");
 require_once("inc/auth.php");
 
@@ -155,7 +158,6 @@ if(!($myMetaHeader->status == "Error"))
             if(!$theID==NULL)
             {
                 // Output multiple specimens as XML
-                $xmldata.=$parentTagBegin."\n";
 
                 $sql = "select tblsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblspecimen.specimenid ";
                 $sql.= "from tblsite, tblsubsite, tbltree, tblspecimen ";
@@ -164,22 +166,34 @@ if(!($myMetaHeader->status == "Error"))
                 while ($row = pg_fetch_array($result))
                 {
                     $mySpecimen = new specimen();
+                    $myTree = new tree();
+                    $mySubSite = new subSite();
+                    $mySite = new site();
                     $success = $mySpecimen->setParamsFromDB($row['specimenid']);
                     $success2 = $mySpecimen->setChildParamsFromDB();
+                    $success3 = $myTree->setParamsFromDB($row['treeid']);
+                    $success4 = $mySubSite->setParamsFromDB($row['subsiteid']);
+                    $success5 = $mySite->setParamsFromDB($row['siteid']);
 
-                    if($success && $success2)
+                    if($success && $success2 && $success3 && $success4 && $success5)
                     {
+                        $xmldata.=$mySite->asXML("begin");
+                        $xmldata.=$mySubSite->asXML("begin");
+                        $xmldata.=$myTree->asXML("begin");
                         $xmldata.=$mySpecimen->asXML();
+                        $xmldata.=$myTree->asXML("end");
+                        $xmldata.=$mySubSite->asXML("end");
+                        $xmldata.=$mySite->asXML("end");
                     }
                     else
                     {
                         $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
                     }
                 }
-                $xmldata.=$parentTagEnd."\n";
             }
             else
             {
+                $xmldata.=$parentTagBegin."\n";
                 // Output one specimen with its parents
                 $sql="select * from tblspecimen order by specimenid";
                 $result = pg_query($dbconn, $sql);
@@ -197,6 +211,7 @@ if(!($myMetaHeader->status == "Error"))
                         $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
                     }
                 }
+                $xmldata.=$parentTagEnd."\n";
             }
         }
         else

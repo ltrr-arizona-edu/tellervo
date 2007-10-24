@@ -139,54 +139,66 @@ class site
     /*ACCESSORS*/
     /***********/
 
-    function asXML()
+    function asXML($mode="all")
     {
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
-            // Only return XML when there are no errors.
-            $xml.= "<site id=\"".$this->id."\" code=\"".$this->code."\" createdTimeStamp=\"".$this->createdTimeStamp."\" lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" name=\"".$this->name."\">";
-            
-            // Include site notes if present
-            if ($this->siteNoteArray)
+            if(($mode=="all") || ($mode=="begin"))
             {
-                foreach($this->siteNoteArray as $value)
+                // Only return XML when there are no errors.
+                $xml.= "<site ";
+                $xml.= "id=\"".$this->id."\" ";
+                $xml.= "code=\"".$this->code."\" ";
+                $xml.= "name=\"".$this->name."\" ";
+                $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
+                $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
+                $xml.= ">";
+                
+                // Include site notes if present
+                if ($this->siteNoteArray)
                 {
-                    $mySiteNote = new siteNote();
-                    $success = $mySiteNote->setParamsFromDB($value);
+                    foreach($this->siteNoteArray as $value)
+                    {
+                        $mySiteNote = new siteNote();
+                        $success = $mySiteNote->setParamsFromDB($value);
 
-                    if($success)
-                    {
-                        $xml.=$mySiteNote->asXML();
+                        if($success)
+                        {
+                            $xml.=$mySiteNote->asXML();
+                        }
+                        else
+                        {
+                            $myMetaHeader->setErrorMessage($mySiteNote->getLastErrorCode, $mySiteNote->getLastErrorMessage);
+                        }
                     }
-                    else
+                }
+                
+                // Include subsites if present
+                if ($this->subSiteArray)
+                {
+                    foreach($this->subSiteArray as $value)
                     {
-                        $myMetaHeader->setErrorMessage($mySiteNote->getLastErrorCode, $mySiteNote->getLastErrorMessage);
+                        $mySubSite = new subSite();
+                        $success = $mySubSite->setParamsFromDB($value);
+
+                        if($success)
+                        {
+                            $xml.=$mySubSite->asXML();
+                        }
+                        else
+                        {
+                            $myMetaHeader->setErrorMessage($mySubSite->getLastErrorCode, $mySubSite->getLastErrorMessage);
+                        }
                     }
                 }
             }
-            
-            // Include subsites if present
-            if ($this->subSiteArray)
+
+            if(($mode=="all") || ($mode=="end"))
             {
-                foreach($this->subSiteArray as $value)
-                {
-                    $mySubSite = new subSite();
-                    $success = $mySubSite->setParamsFromDB($value);
-
-                    if($success)
-                    {
-                        $xml.=$mySubSite->asXML();
-                    }
-                    else
-                    {
-                        $myMetaHeader->setErrorMessage($mySubSite->getLastErrorCode, $mySubSite->getLastErrorMessage);
-                    }
-                }
+                // End XML tag
+                $xml.= "</site>\n";
             }
-
-            // End XML tag
-            $xml.= "</site>\n";
             return $xml;
         }
         else
@@ -260,6 +272,7 @@ class site
                 {
                     // New record
                     $sql = "insert into tblsite (name, code) values ('".$this->name."', '".$this->code."')";
+                    $sql2 = "select * from tblsite  where siteid=currval('tblsite_siteid_seq')";
                 }
                 else
                 {
@@ -279,6 +292,21 @@ class site
                         return FALSE;
                     }
                 }
+
+                // Retrieve automated field values when a new record has been inserted
+                if ($sql2)
+                {
+                    // Run SQL
+                    $result = pg_query($dbconn, $sql2);
+                    while ($row = pg_fetch_array($result))
+                    {
+                        $this->id=$row['siteid'];   
+                        $this->createdTimeStamp=$row['createdtimestamp'];   
+                        $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
+                    }
+                }
+
+
             }
             else
             {

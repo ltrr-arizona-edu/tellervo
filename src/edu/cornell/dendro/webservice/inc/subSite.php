@@ -8,6 +8,7 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 require_once('dbhelper.php');
+require_once('inc/tree.php');
 
 class subSite 
 {
@@ -123,35 +124,47 @@ class subSite
     /*ACCESSORS*/
     /***********/
 
-    function asXML()
+    function asXML($mode="all")
     {
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
-            // Only return XML when there are no errors.
-            $xml.= "<subSite id=\"".$this->id."\" createdTimeStamp=\"".$this->createdTimeStamp."\" lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" name=\"".$this->name."\">";
-            
-            // Include subSite notes if present
-            if ($this->childArray)
+            if(($mode=="all") || ($mode=="begin"))
             {
-                foreach($this->childArray as $value)
+                // Only return XML when there are no errors.
+                $xml.= "<subSite ";
+                $xml.= "id=\"".$this->id."\" ";
+                $xml.= "name=\"".$this->name."\" ";
+                $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
+                $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
+                $xml.= ">";
+                
+                // Include subSite notes if present
+                if ($this->childArray)
                 {
-                    $myTree = new tree();
-                    $success = $myTree->setParamsFromDB($value);
+                    foreach($this->childArray as $value)
+                    {
+                        $myTree = new tree();
+                        $success = $myTree->setParamsFromDB($value);
 
-                    if($success)
-                    {
-                        $xml.=$myTree->asXML();
-                    }
-                    else
-                    {
-                        $myMetaHeader->setErrorMessage($myTree->getLastErrorCode, $myTree->getLastErrorMessage);
+                        if($success)
+                        {
+                            $xml.=$myTree->asXML();
+                        }
+                        else
+                        {
+                            $myMetaHeader->setErrorMessage($myTree->getLastErrorCode, $myTree->getLastErrorMessage);
+                        }
                     }
                 }
             }
 
-            // End XML tag
-            $xml.= "</subSite>\n";
+            if(($mode=="all") || ($mode=="end"))
+            {
+                // End XML tag
+                $xml.= "</subSite>\n";
+            }
+            
             return $xml;
         }
         else
@@ -225,6 +238,7 @@ class subSite
                 {
                     // New record
                     $sql = "insert into tblsubsite (name, code) values ('".$this->name."', '".$this->code."')";
+                    $sql2 = "select * from tblsubsite where subsiteid=currval('tblsubsite_subsiteid_seq')";
                 }
                 else
                 {
@@ -242,6 +256,18 @@ class subSite
                     {
                         $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
                         return FALSE;
+                    }
+                }
+                // Retrieve automated field values when a new record has been inserted
+                if ($sql2)
+                {
+                    // Run SQL
+                    $result = pg_query($dbconn, $sql2);
+                    while ($row = pg_fetch_array($result))
+                    {
+                        $this->id=$row['subsiteid'];   
+                        $this->createdTimeStamp=$row['createdtimestamp'];   
+                        $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
                     }
                 }
             }
