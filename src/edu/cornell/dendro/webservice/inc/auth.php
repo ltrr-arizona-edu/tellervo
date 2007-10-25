@@ -113,15 +113,164 @@ class auth
     return $this->securityuserid;
   }
 
-  function vmeasurementPermission($theVMeasurementID, $thePermissionID)
+  function vmeasurementPermission($theVMeasurementID, $theType)
   {
-    global $dbconn;
-    
-    // Check user is logged in first
-    if ($this->isLoggedIn())
-    {
-        $sql = "select * from securitygroupvmeasurementmaster($thePermissionID, ".$this->securityuserid.") where objectid=$theVMeasurementID";
+        global $dbconn;
         
+        switch($theType)
+        {
+        case "create":
+            return true;
+            break;
+
+        case "read":
+            $thePermissionID=2;
+            break;
+
+        case "update":
+            $thePermissionID=4;
+            break;
+
+        case "delete":
+            $thePermissionID=5;
+            break;
+        } 
+        
+        // Check user is logged in first
+        if ($this->isLoggedIn())
+        {
+            $sql = "select * from securitygroupvmeasurementmaster($thePermissionID, ".$this->securityuserid.") where objectid=$theVMeasurementID";
+            
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn);
+                if(pg_num_rows($result)==0)
+                {
+                    // No records match the id specified
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
+    return false;
+  }
+  
+  function sitePermission($theSiteID, $theType)
+  {
+        global $dbconn;
+        
+        switch($theType)
+        {
+        case "create":
+            return true;
+            break;
+
+        case "read":
+            $thePermissionID=2;
+            break;
+
+        case "update":
+            $thePermissionID=4;
+            break;
+
+        case "delete":
+            $thePermissionID=5;
+            break;
+        } 
+        
+        // Check user is logged in first
+        if ($this->isLoggedIn())
+        {
+            $sql = "select * from securitygroupsitemaster($thePermissionID, ".$this->securityuserid.") where objectid=$theSiteID";
+            
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn);
+                if(pg_num_rows($result)==0)
+                {
+                    // No records match the id specified
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
+    return false;
+  }
+
+  function treePermission($theTreeID, $theType)
+  {
+        global $dbconn;
+
+        switch($theType)
+        {
+        case "create":
+            return true;
+            break;
+
+        case "read":
+            $thePermissionID=2;
+            break;
+
+        case "update":
+            $thePermissionID=4;
+            break;
+
+        case "delete":
+            $thePermissionID=5;
+            break;
+        } 
+        
+        // Check user is logged in first
+        if ($this->isLoggedIn())
+        {
+            $sql = "select * from securitygrouptreemaster($thePermissionID, ".$this->securityuserid.") where objectid=$theTreeID";
+            
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn);
+                if(pg_num_rows($result)==0)
+                {
+                    // No records match the id specified
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
+    return false;
+  }
+
+  function subSitePermission($theSubSiteID, $theType)
+  {
+
+        global $dbconn;
+        $sql = "select siteid from tblsubsite where subsiteid=$theSubSiteID";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -134,25 +283,20 @@ class auth
             }
             else
             {
-                return true;
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    return $this->sitePermission($row['siteid'], $theType);
+                }
             }
         }
-    }
-    else
-    {
         return false;
-    }
   }
-  
-  function sitePermission($theSiteID, $thePermissionID)
+
+  function specimenPermission($theSpecimenID, $theType)
   {
-    global $dbconn;
-    
-    // Check user is logged in first
-    if ($this->isLoggedIn())
-    {
-        $sql = "select * from securitygroupsitemaster($thePermissionID, ".$this->securityuserid.") where objectid=$theSiteID";
-        
+        global $dbconn;
+        $sql = "select treeid from tblspecimen where specimenid=$theSpecimenID";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -165,25 +309,20 @@ class auth
             }
             else
             {
-                return true;
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    return $this->treePermission($row['treeid'], $theType);
+                }
             }
         }
-    }
-    else
-    {
         return false;
-    }
   }
-
-  function treePermission($theTreeID, $thePermissionID)
+  
+  function radiusPermission($theRadiusID, $theType)
   {
-    global $dbconn;
-    
-    // Check user is logged in first
-    if ($this->isLoggedIn())
-    {
-        $sql = "select * from securitygrouptreemaster($thePermissionID, ".$this->securityuserid.") where objectid=$theTreeID";
-        
+        global $dbconn;
+        $sql = "select tblradius.radiusid, tblspecimen.treeid from tblradius, tblspecimen where tblradius.radiusid=$theRadiusID and tblradius.specimenid=tblspecimen.specimenid";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -196,77 +335,14 @@ class auth
             }
             else
             {
-                return true;
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    return $this->treePermission($row['treeid'], $theType);
+                }
             }
         }
-    }
-    else
-    {
         return false;
-    }
-  }
-
-  function treeCreatePermission($theTreeID)
-  {
-    // TO IMPLEMENT
-    return true;
-  }
-
-  function treeReadPermission($theTreeID)
-  {
-    return $this->treePermission($theTreeID, 2);
-  }
-  
-  function treeUpdatePermission($theTreeID)
-  {
-    return $this->treePermission($theTreeID, 4);
-  }
-
-  function treeDeletePermission($theTreeID)
-  {
-    return $this->treePermission($theTreeID, 5);
-  }
-  
-  function siteCreatePermission($theSiteD)
-  {
-    // TO IMPLEMENT
-    return true;
-  }
-  
-  function siteReadPermission($theSiteID)
-  {
-    return $this->sitePermission($theSiteID, 2);
-  }
-  
-  function siteUpdatePermission($theSiteID)
-  {
-    return $this->sitePermission($theSiteID, 4);
-  }
-
-  function siteDeletePermission($theSiteID)
-  {
-    return $this->sitePermission($theSiteID, 5);
-  }
-  
-  function vmeasurementCreatePermission($theVMeasurementID)
-  {
-    // TO IMPLEMENT
-    return true;
-  }
-  
-  function vmeasurementReadPermission($theVMeasurementID)
-  {
-    return $this->vmeasurementPermission($theVMeasurementID, 2);
-  }
-  
-  function vmeasurementUpdatePermission($theVMeasurementID)
-  {
-    return $this->vmeasurementPermission($theVMeasurementID, 4);
-  }
-
-  function vmeasurementDeletePermission($theVMeasurementID)
-  {
-    return $this->vmeasurementPermission($theVMeasurementID, 5);
   }
 
   function hashPassword($password)
