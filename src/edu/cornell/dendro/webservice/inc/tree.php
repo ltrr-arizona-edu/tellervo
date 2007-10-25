@@ -61,12 +61,24 @@ class tree
         // Set the current objects subsite ID
         $this->subSiteID=$theSubSiteID;
     }
+    
 
-    function setErrorMessage($theCode, $theMessage)
+    function setLatitude($theLatitude)
     {
-        // Set the error latest error message and code for this object.
-        $this->lastErrorCode = $theCode;
-        $this->lastErrorMessage = $theMessage;
+        // Set the current objects latitude 
+        $this->latitude=$theLatitude;
+    }
+    
+    function setLongitude($theLongitude)
+    {
+        // Set the current objects longitude 
+        $this->longitude=$theLongitude;
+    }
+    
+    function setPrecision($thePrecision)
+    {
+        // Set the current objects precision 
+        $this->precision=$thePrecision;
     }
 
     function setLocality($theLat, $theLong, $thePrecision)
@@ -154,6 +166,13 @@ class tree
         }
 
         return TRUE;
+    }
+    
+    function setErrorMessage($theCode, $theMessage)
+    {
+        // Set the error latest error message and code for this object.
+        $this->lastErrorCode = $theCode;
+        $this->lastErrorMessage = $theMessage;
     }
 
 
@@ -277,16 +296,11 @@ class tree
         // Write the current object to the database
 
         global $dbconn;
-        
+
         // Check for required parameters
-        if($this->name == NULL) 
+        if($this->label == NULL) 
         {
-            $this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
-            return FALSE;
-        }
-        if($this->code == NULL) 
-        {
-            $this->setErrorMessage("902", "Missing parameter - 'code' field is required.");
+            $this->setErrorMessage("902", "Missing parameter - 'label' field is required.");
             return FALSE;
         }
 
@@ -300,12 +314,13 @@ class tree
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tbltree (name, code) values ('".$this->name."', '".$this->code."')";
+                    $sql = "insert into tbltree (taxonid, subsiteid, label, location) values ('".$this->taxonID."', '".$this->subSiteID."', '".$this->label."', geomfromtext('POINT(".$this->longitude." ".$this->latitude.")'))";
+                    $sql2 = "select * from tbltree where treeid=currval('tbltree_treeid_seq')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tbltree set name='".$this->name."', code='".$this->code."' where treeid=".$this->id;
+                    $sql = "update tbltree set taxonid=".$this->taxonID.", subsiteid=".$this->subSiteID.", label='".$this->label."', location=geomfromtext('POINT(".$this->longitude." ".$this->latitude.")') where treeid=".$this->id;
                 }
 
                 // Run SQL command
@@ -318,6 +333,19 @@ class tree
                     {
                         $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
                         return FALSE;
+                    }
+                }
+                // Retrieve automated field values when a new record has been inserted
+                if ($sql2)
+                {
+                    // Run SQL
+                    $result = pg_query($dbconn, $sql2);
+                    while ($row = pg_fetch_array($result))
+                    {
+                        $this->id=$row['treeid'];   
+                        $this->precision=$row['precision'];   
+                        $this->createdTimeStamp=$row['createdtimestamp'];   
+                        $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
                     }
                 }
             }

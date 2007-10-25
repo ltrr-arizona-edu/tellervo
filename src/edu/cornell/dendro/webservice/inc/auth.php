@@ -206,6 +206,12 @@ class auth
     }
   }
 
+  function treeCreatePermission($theTreeID)
+  {
+    // TO IMPLEMENT
+    return true;
+  }
+
   function treeReadPermission($theTreeID)
   {
     return $this->treePermission($theTreeID, 2);
@@ -221,34 +227,46 @@ class auth
     return $this->treePermission($theTreeID, 5);
   }
   
-  function siteReadPermission($theTreeID)
+  function siteCreatePermission($theSiteD)
   {
-    return $this->sitePermission($theTreeID, 2);
+    // TO IMPLEMENT
+    return true;
   }
   
-  function siteUpdatePermission($theTreeID)
+  function siteReadPermission($theSiteID)
   {
-    return $this->sitePermission($theTreeID, 4);
+    return $this->sitePermission($theSiteID, 2);
+  }
+  
+  function siteUpdatePermission($theSiteID)
+  {
+    return $this->sitePermission($theSiteID, 4);
   }
 
-  function siteDeletePermission($theTreeID)
+  function siteDeletePermission($theSiteID)
   {
-    return $this->sitePermission($theTreeID, 5);
+    return $this->sitePermission($theSiteID, 5);
   }
   
-  function vmeasurementReadPermission($theTreeID)
+  function vmeasurementCreatePermission($theVMeasurementID)
   {
-    return $this->vmeasurementPermission($theTreeID, 2);
+    // TO IMPLEMENT
+    return true;
   }
   
-  function vmeasurementUpdatePermission($theTreeID)
+  function vmeasurementReadPermission($theVMeasurementID)
   {
-    return $this->vmeasurementPermission($theTreeID, 4);
+    return $this->vmeasurementPermission($theVMeasurementID, 2);
+  }
+  
+  function vmeasurementUpdatePermission($theVMeasurementID)
+  {
+    return $this->vmeasurementPermission($theVMeasurementID, 4);
   }
 
-  function vmeasurementDeletePermission($theTreeID)
+  function vmeasurementDeletePermission($theVMeasurementID)
   {
-    return $this->vmeasurementPermission($theTreeID, 5);
+    return $this->vmeasurementPermission($theVMeasurementID, 5);
   }
 
   function hashPassword($password)

@@ -54,7 +54,8 @@ class taxon
         global $dbconn;
         
         $this->id=$theID;
-        $sql = "select tlkptaxon.taxonid, tlkptaxon.colID, tlkptaxon.colParentID, tlkptaxonrank.taxonrank, tlkptaxon.label from tlkptaxon, tlkptaxonrank  where tlkptaxon.specimentypeid=$theID and tlkptaxonrank.taxonrankid=tlkptaxon.taxonrankid";
+        $sql = "select tlkptaxon.taxonid, tlkptaxon.colID, tlkptaxon.colParentID, tlkptaxonrank.taxonrank, tlkptaxon.label as label from tlkptaxon, tlkptaxonrank  where tlkptaxon.taxonid=$theID and tlkptaxonrank.taxonrankid=tlkptaxon.taxonrankid";
+        //echo $sql;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {

@@ -19,11 +19,16 @@ require_once("inc/specimen.php");
 require_once("inc/auth.php");
 
 $myAuth = new auth();
-
 // Extract parameters from request and ensure no SQL has been injected
 $theMode = strtolower(addslashes($_GET['mode']));
+if(isset($_GET['label'])) $theLabel = addslashes($_GET['label']);
 $theID = (int) $_GET['id'];
-if(isset($_GET['label'])) $theName = addslashes($_GET['label']);
+$theTaxonID = (int) $_GET['taxonid'];
+$theSubSiteID = (int) $_GET['subsiteid'];
+$theLatitude = (double) $_GET['lat'];
+$theLongitude = (double) $_GET['long'];
+$thePrecision = (int) $_GET['precision'];
+
 
 // Create new meta object and check required input parameters and data types
 switch($theMode)
@@ -37,7 +42,7 @@ switch($theMode)
         if($myAuth->isLoggedIn())
         {
             if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if(($theName == NULL) && ($theCode==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - either 'name' or 'code' fields (or both) must be specified.");
+            if(($theTaxonID==NULL) && ($theSubSiteID==NULL) && ($theLatitude==NULL) && ($theLongitude==NULL) && ($thePrecision=NULL)) $myMetaHeader->setMessage("902", "Missing parameters - you haven't specified any parameters to update.");
             break;
         }
         else
@@ -64,8 +69,9 @@ switch($theMode)
         $myMetaHeader = new meta("create");
         if($myAuth->isLoggedIn())
         {
-            if($theName == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
-            if($theCode == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'code' field is required.");
+            if($theLabel == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'label' field is required.");
+            if($theTaxonID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'taxonid' field is required.");
+            if($theSubSiteID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'subsiteid' field is required.");
             break;
         }
         else
@@ -117,33 +123,48 @@ if(!($myMetaHeader->status == "Error"))
     // Update parameters in object if updating or creating an object 
     if($theMode=='update' || $theMode=='create')
     {
-        if (isset($theName)) $myTree->setName($theName);
-        if (isset($theCode)) $myTree->setCode($theCode);
-
-        // Write to object to database
-        $success = $myTree->writeToDB();
-        if($success)
+        if (isset($theLabel)) $myTree->setLabel($theLabel);
+        if (!($theLatitude)==NULL) $myTree->setLatitude($theLatitude);
+        if (!($theLongitude)==NULL) $myTree->setLongitude($theLongitude);
+        if (!($thePrecision)==NULL) $myTree->setPrecision($thePrecision);
+        if (!($theTaxonID)==NULL) $myTree->setTaxonID($theTaxonID);
+        if (!($theSubSiteID)==NULL) $myTree->setSubSiteID($theSubSiteID);
+        
+        if( (($theMode=='update') && ($myAuth->treeUpdatePermission($theID)))  || 
+            (($theMode=='create') && ($myAuth->treeCreatePermission($theID)))    )
         {
-            $xmldata=$myTree->asXML();
-        }
+            // Check user has permission to update / create tree before writing object to database
+            $success = $myTree->writeToDB();
+            if($success)
+            {
+                $xmldata=$myTree->asXML();
+            }
+            else
+            {
+               $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
+            }
+        }  
         else
         {
-            $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
+            $myMetaHeader->setMessage("103", "Permission denied on treeid $theID");
         }
     }
 
     // Delete record from db if requested
     if($theMode=='delete')
     {
-        // Write to Database
-        $success = $myTree->deleteFromDB();
-        if($success)
+        if($myAuth->treeDeletePermission($theID))
         {
-            $xmldata=$myTree->asXML();
-        }
-        else
-        {
-            $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
+            // Check user has permission to delete record before performing statement
+            $success = $myTree->deleteFromDB();
+            if($success)
+            {
+                $xmldata=$myTree->asXML();
+            }
+            else
+            {
+                $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
+            }
         }
     }
 
