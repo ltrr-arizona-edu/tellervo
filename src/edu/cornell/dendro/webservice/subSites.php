@@ -125,31 +125,46 @@ if(!($myMetaHeader->status == "Error"))
     {
         if (isset($theName)) $mySubSite->setName($theName);
         if (isset($theCode)) $mySubSite->setCode($theCode);
-
-        // Write to object to database
-        $success = $mySubSite->writeToDB();
-        if($success)
+        
+        if( (($theMode=='update') && ($myAuth->subSitePermission($theID, "update")))  || 
+            (($theMode=='create') && ($myAuth->subSitePermission($theID, "create")))    )
         {
-            $xmldata=$mySubSite->asXML();
+            // Check user has permission to update / create subsite before writing object to database
+            $success = $mySubSite->writeToDB();
+            if($success)
+            {
+                $xmldata=$mySubSite->asXML();
+            }
+            else
+            {
+                $myMetaHeader->setMessage($mySubSite->getLastErrorCode(), $mySubSite->getLastErrorMessage());
+            }
         }
         else
         {
-            $myMetaHeader->setMessage($mySubSite->getLastErrorCode(), $mySubSite->getLastErrorMessage());
+            $myMetaHeader->setMessage("103", "Permission denied on subsiteid $theID");
         }
     }
 
     // Delete record from db if requested
     if($theMode=='delete')
     {
-        // Write to Database
-        $success = $mySubSite->deleteFromDB();
-        if($success)
+        if($myAuth->subSitePermission($theID, "delete"))
         {
-            $xmldata=$mySubSite->asXML();
+            // Check the user has permission to delete record before performing statement
+            $success = $mySubSite->deleteFromDB();
+            if($success)
+            {
+                $xmldata=$mySubSite->asXML();
+            }
+            else
+            {
+                $myMetaHeader->setMessage($mySubSite->getLastErrorCode(), $mySubSite->getLastErrorMessage());
+            }
         }
         else
         {
-            $myMetaHeader->setMessage($mySubSite->getLastErrorCode(), $mySubSite->getLastErrorMessage());
+            $myMetaHeader->setMessage("103", "Permission denied on subsiteid $theID");
         }
     }
 
@@ -168,7 +183,7 @@ if(!($myMetaHeader->status == "Error"))
                 while ($row = pg_fetch_array($result))
                 {
                     // Check user has permission to read subSite
-                    if($myAuth->siteReadPermission($row['siteid']))
+                    if($myAuth->subSiteReadPermission($row['subsiteid'], "read"))
                     {
                         $mySubSite = new subSite();
                         $success = $mySubSite->setParamsFromDB($row['subsiteid']);
@@ -189,7 +204,7 @@ if(!($myMetaHeader->status == "Error"))
                     }
                     else
                     {
-                        $myMetaHeader->setMessage("103", "Permission denied on siteid ".$row['siteid'], "Warning");
+                        $myMetaHeader->setMessage("103", "Permission denied on subsiteid ".$row['subsiteid'], "Warning");
                     }
                 }
             }
@@ -202,7 +217,7 @@ if(!($myMetaHeader->status == "Error"))
                 while ($row = pg_fetch_array($result))
                 {
                     // Check user has permission to read subSite
-                    if($myAuth->siteReadPermission($row['siteid']))
+                    if($myAuth->subSitePermission($row['subsiteid'], "read"))
                     {
                         $mySubSite = new subSite();
                         $success = $mySubSite->setParamsFromDB($row['subsiteid']);
@@ -219,7 +234,7 @@ if(!($myMetaHeader->status == "Error"))
                     }
                     else
                     {
-                        $myMetaHeader->setMessage("103", "Permission denied on siteid ".$row['siteid'], "Warning");
+                        $myMetaHeader->setMessage("103", "Permission denied on subsiteid ".$row['subsiteid'], "Warning");
                     }
                 }
                 $xmldata.= $parentTagEnd."\n";

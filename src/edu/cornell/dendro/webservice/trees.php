@@ -35,7 +35,15 @@ switch($theMode)
 {
     case "read":
         $myMetaHeader = new meta("read");
-        break;
+        if($myAuth->isLoggedIn())
+        {
+            break;
+        }
+        else
+        {
+            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            break;
+        }
     
     case "update":
         $myMetaHeader = new meta("update");
@@ -97,10 +105,6 @@ if($myAuth->isLoggedIn())
 {
     $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
 }
-else
-{
-    $myMetaHeader->setUser("Guest", "Guest", "Guest");
-}
 
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
@@ -130,8 +134,8 @@ if(!($myMetaHeader->status == "Error"))
         if (!($theTaxonID)==NULL) $myTree->setTaxonID($theTaxonID);
         if (!($theSubSiteID)==NULL) $myTree->setSubSiteID($theSubSiteID);
         
-        if( (($theMode=='update') && ($myAuth->treeUpdatePermission($theID)))  || 
-            (($theMode=='create') && ($myAuth->treeCreatePermission($theID)))    )
+        if( (($theMode=='update') && ($myAuth->treePermission($theID, "update")))  || 
+            (($theMode=='create') && ($myAuth->treePermission($theID, "create")))    )
         {
             // Check user has permission to update / create tree before writing object to database
             $success = $myTree->writeToDB();
@@ -153,7 +157,7 @@ if(!($myMetaHeader->status == "Error"))
     // Delete record from db if requested
     if($theMode=='delete')
     {
-        if($myAuth->treeDeletePermission($theID))
+        if($myAuth->treePermission($theID, "delete"))
         {
             // Check user has permission to delete record before performing statement
             $success = $myTree->deleteFromDB();
@@ -165,6 +169,10 @@ if(!($myMetaHeader->status == "Error"))
             {
                 $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
             }
+        }
+        else
+        {
+            $myMetaHeader->setMessage("103", "Permission denied on treeid $theID");
         }
     }
 
@@ -183,7 +191,7 @@ if(!($myMetaHeader->status == "Error"))
                 while ($row = pg_fetch_array($result))
                 {
                     // Check user has permission to read tree
-                    if($myAuth->treeReadPermission($row['treeid']))
+                    if($myAuth->treePermission($row['treeid'], "read"))
                     {
                         $myTree = new tree();
                         $success = $myTree->setParamsFromDB($row['treeid']);
@@ -221,7 +229,7 @@ if(!($myMetaHeader->status == "Error"))
                 while ($row = pg_fetch_array($result))
                 {
                     // Check user has permission to read tree
-                    if($myAuth->treeReadPermission($row['treeid']))
+                    if($myAuth->treePermission($row['treeid'], "read"))
                     {
                         $myTree = new tree();
                         $success = $myTree->setParamsFromDB($row['treeid']);

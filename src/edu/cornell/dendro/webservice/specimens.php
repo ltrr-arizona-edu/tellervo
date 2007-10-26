@@ -25,20 +25,45 @@ $myAuth = new auth();
 $theMode = strtolower(addslashes($_GET['mode']));
 $theID = (int) $_GET['id'];
 if(isset($_GET['label'])) $theName = addslashes($_GET['label']);
+$theTreeID = (int) $_GET['treeid'];
+$theDay = (int) $_GET['collectedday'];
+$theMonth = (int) $_GET['collectedmonth'];
+$theYear = (int) $_GET['collectedyear'];
+$theSpecimenTypeID = (int) $_GET['specimentypeid'];
+$theTerminalRingID = (int) $_GET['terminalringid'];
+$theIsTerminalRingVerified= fromStringToPHPBool($_GET['isterminalringverified']);
+$theSapwoodCount = (int) $_GET['sapwoodcount'];
+$theIsSapwoodCountVerified= fromStringToPHPBool($_GET['issapwoodcountverified']);
+$theSpecimenQualityID = (int) $_GET['specimenqualityid'];
+$theIsSpecimenQualityVerified= fromStringToPHPBool($_GET['isspecimenqualityverified']);
+$theSpecimenContinuityID = (int) $_GET['specimencontinuityid'];
+$thePithID = (int) $_GET['pithid'];
+$theIsPithVerified= fromStringToPHPBool($_GET['ispithverified']);
+$theUnmeasPre = (int) $_GET['unmeaspre'];
+$theIsUnmeasPreVerified= fromStringToPHPBool($_GET['isunmeaspreverified']);
+$theUnmeasPost = (int) $_GET['unmeaspost'];
+$theIsUnmeasPostVerified= fromStringToPHPBool($_GET['isunmeaspostverified']);
 
 // Create new meta object and check required input parameters and data types
 switch($theMode)
 {
     case "read":
         $myMetaHeader = new meta("read");
-        break;
+        if($myAuth->isLoggedIn())
+        {
+            break;
+        }
+        else
+        {
+            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            break;
+        }
 
     case "update":
         $myMetaHeader = new meta("update");
         if($myAuth->isLoggedIn())
         {
             if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if(($theName == NULL) && ($theCode==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - either 'name' or 'code' fields (or both) must be specified.");
             break;
         }
         else
@@ -65,8 +90,8 @@ switch($theMode)
         $myMetaHeader = new meta("create");
         if($myAuth->isLoggedIn())
         {
-            if($theName == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
-            if($theCode == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'code' field is required.");
+            if($theLabel == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'label' field is required.");
+            if($theTreeID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'treeid' field is required.");
             break;
         }
         else
@@ -118,33 +143,63 @@ if(!($myMetaHeader->status == "Error"))
     // Update parameters in object if updating or creating an object 
     if($theMode=='update' || $theMode=='create')
     {
-        if (isset($theName)) $mySpecimen->setName($theName);
-        if (isset($theCode)) $mySpecimen->setCode($theCode);
+        if (isset($theLabel)) $mySpecimen->setLabel($theLabel);
+        if (isset($theTreeID)) $mySpecimen->setTreeID($theTreeID);
+        if ((isset($theDay)) && (isset($theMonth)) && (isset($theYear))) $mySpecimen->setCollectionDate($theDay, $theMonth, $theYear);
+        if (isset($theSpecimenTypeID)) $mySpecimen->setSpecimenTypeID($theSpecimenTypeID);
+        if (isset($theTerminalRingID)) $mySpecimen->setTerminalRingID($theTerminalRingID);
+        if (isset($theIsTerminalRingVerified)) $mySpecimen->setIsTerminalRingVerified($theIsTerminalRingVerified);
+        if (isset($theSapwoodCount)) $mySpecimen->setSapwoodCount($theSapwoodCount);
+        if (isset($theIsSapwoodCountVerified)) $mySpecimen->setIsSapwoodCountVerified($theIsSapwoodCountVerified);
+        if (isset($theSpecimenQualityID)) $mySpecimen->setSpecimenQualityID($theSpecimenQualityID);
+        if (isset($theIsSpecimenQualityVerified)) $mySpecimen->setIsSpecimenQualityVerified($theIsSpecimenQualityVerified);
+        if (isset($theSpecimenContinuityID)) $mySpecimen->setSpecimenContinuityID($theSpecimenContinuityID);
+        if (isset($thePithID)) $mySpecimen->setPithID($thePithID);
+        if (isset($theIsPithVerified)) $mySpecimen->setIsPithVerified($theIsPithVerified);
+        if (isset($theUnmeasPre)) $mySpecimen->setUnmeasPre($theUnmeasPre);
+        if (isset($theIsUnmeasPreVerified)) $mySpecimen->setIsUnmeasPreVerified($theIsUnmeasPreVerified);
+        if (isset($theUnmeasPost)) $mySpecimen->setUnmeasPost($theUnmeasPost);
+        if (isset($theIsUnmeasPostVerified)) $mySpecimen->setIsUnmeasPostVerified($theIsUnmeasPostVerified);
 
-        // Write to object to database
-        $success = $mySpecimen->writeToDB();
-        if($success)
+        if( (($theMode=='update') && ($myAuth->specimenPermission($theID, "update")))  || 
+            (($theMode=='create') && ($myAuth->specimenPermission($theID, "create")))    )
         {
-            $xmldata=$mySpecimen->asXML();
-        }
+            // Write to object to database
+            $success = $mySpecimen->writeToDB();
+            if($success)
+            {
+                $xmldata=$mySpecimen->asXML();
+            }
+            else
+            {
+                $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
+            }
+        }  
         else
         {
-            $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
+            $myMetaHeader->setMessage("103", "Permission denied on specimenid $theID");
         }
     }
 
     // Delete record from db if requested
     if($theMode=='delete')
     {
-        // Write to Database
-        $success = $mySpecimen->deleteFromDB();
-        if($success)
+        if($myAuth->specimenPermission($theID, "delete"))
         {
-            $xmldata=$mySpecimen->asXML();
+            // Write to Database
+            $success = $mySpecimen->deleteFromDB();
+            if($success)
+            {
+                $xmldata=$mySpecimen->asXML();
+            }
+            else
+            {
+                $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
+            }
         }
         else
         {
-            $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
+            $myMetaHeader->setMessage("103", "Permission denied on specimenid $theID");
         }
     }
 
@@ -165,29 +220,37 @@ if(!($myMetaHeader->status == "Error"))
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    $mySpecimen = new specimen();
-                    $myTree = new tree();
-                    $mySubSite = new subSite();
-                    $mySite = new site();
-                    $success = $mySpecimen->setParamsFromDB($row['specimenid']);
-                    $success2 = $mySpecimen->setChildParamsFromDB();
-                    $success3 = $myTree->setParamsFromDB($row['treeid']);
-                    $success4 = $mySubSite->setParamsFromDB($row['subsiteid']);
-                    $success5 = $mySite->setParamsFromDB($row['siteid']);
-
-                    if($success && $success2 && $success3 && $success4 && $success5)
+                    // Check user has permission to read tree
+                    if($myAuth->specimenPermission($row['specimenid'], "read"))
                     {
-                        $xmldata.=$mySite->asXML("begin");
-                        $xmldata.=$mySubSite->asXML("begin");
-                        $xmldata.=$myTree->asXML("begin");
-                        $xmldata.=$mySpecimen->asXML();
-                        $xmldata.=$myTree->asXML("end");
-                        $xmldata.=$mySubSite->asXML("end");
-                        $xmldata.=$mySite->asXML("end");
+                        $mySpecimen = new specimen();
+                        $myTree = new tree();
+                        $mySubSite = new subSite();
+                        $mySite = new site();
+                        $success = $mySpecimen->setParamsFromDB($row['specimenid']);
+                        $success2 = $mySpecimen->setChildParamsFromDB();
+                        $success3 = $myTree->setParamsFromDB($row['treeid']);
+                        $success4 = $mySubSite->setParamsFromDB($row['subsiteid']);
+                        $success5 = $mySite->setParamsFromDB($row['siteid']);
+
+                        if($success && $success2 && $success3 && $success4 && $success5)
+                        {
+                            $xmldata.=$mySite->asXML("begin");
+                            $xmldata.=$mySubSite->asXML("begin");
+                            $xmldata.=$myTree->asXML("begin");
+                            $xmldata.=$mySpecimen->asXML();
+                            $xmldata.=$myTree->asXML("end");
+                            $xmldata.=$mySubSite->asXML("end");
+                            $xmldata.=$mySite->asXML("end");
+                        }
+                        else
+                        {
+                            $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
+                        }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
+                        $myMetaHeader->setMessage("103", "Permission denied on specimenid ".$row['specimenid'], "Warning");
                     }
                 }
             }
@@ -199,16 +262,24 @@ if(!($myMetaHeader->status == "Error"))
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    $mySpecimen = new specimen();
-                    $success = $mySpecimen->setParamsFromDB($row['specimenid']);
-                    $success2 = $mySpecimen->setChildParamsFromDB();
-                    if($success && $success2)
+                    // Check user has permission to read tree
+                    if($myAuth->treePermission($row['treeid'], "read"))
                     {
-                        $xmldata.=$mySpecimen->asXML();
+                        $mySpecimen = new specimen();
+                        $success = $mySpecimen->setParamsFromDB($row['specimenid']);
+                        $success2 = $mySpecimen->setChildParamsFromDB();
+                        if($success && $success2)
+                        {
+                            $xmldata.=$mySpecimen->asXML();
+                        }
+                        else
+                        {
+                            $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
+                        }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
+                        $myMetaHeader->setMessage("103", "Permission denied on specimenid ".$row['specimenid'], "Warning");
                     }
                 }
                 $xmldata.=$parentTagEnd."\n";

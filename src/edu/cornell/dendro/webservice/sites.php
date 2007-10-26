@@ -122,30 +122,45 @@ if(!($myMetaHeader->status == "Error"))
         if (isset($theName)) $mySite->setName($theName);
         if (isset($theCode)) $mySite->setCode($theCode);
 
-        // Write to object to database
-        $success = $mySite->writeToDB();
-        if($success)
+        if( (($theMode=='update') && ($myAuth->sitePermission($theID, "update")))  || 
+            (($theMode=='create') && ($myAuth->sitePermission($theID, "create")))    )
         {
-            $xmldata=$mySite->asXML();
+            // Write to object to database
+            $success = $mySite->writeToDB();
+            if($success)
+            {
+                $xmldata=$mySite->asXML();
+            }
+            else
+            {
+                $myMetaHeader->setMessage($mySite->getLastErrorCode(), $mySite->getLastErrorMessage());
+            }
         }
         else
         {
-            $myMetaHeader->setMessage($mySite->getLastErrorCode(), $mySite->getLastErrorMessage());
+            $myMetaHeader->setMessage("103", "Permission denied on siteid $theID");
         }
     }
 
     // Delete record from db if requested
     if($theMode=='delete')
     {
-        // Write to Database
-        $success = $mySite->deleteFromDB();
-        if($success)
+        if($myAuth->sitePermission($theID, "delete"))
         {
-            $xmldata=$mySite->asXML();
+            // Write to Database
+            $success = $mySite->deleteFromDB();
+            if($success)
+            {
+                $xmldata=$mySite->asXML();
+            }
+            else
+            {
+                $myMetaHeader->setMessage($mySite->getLastErrorCode(), $mySite->getLastErrorMessage());
+            }
         }
         else
         {
-            $myMetaHeader->setMessage($mySite->getLastErrorCode(), $mySite->getLastErrorMessage());
+            $myMetaHeader->setMessage("103", "Permission denied on siteid $theID");
         }
     }
 
@@ -185,7 +200,7 @@ if(!($myMetaHeader->status == "Error"))
                 while ($row = pg_fetch_array($result))
                 {
                     // Check user has permission to read tree
-                    if($myAuth->siteReadPermission($row['siteid']))
+                    if($myAuth->sitePermission($row['siteid'], "read"))
                     {
                         $mySite = new site();
                         $success = $mySite->setParamsFromDB($row['siteid']);

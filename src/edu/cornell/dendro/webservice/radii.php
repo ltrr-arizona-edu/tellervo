@@ -13,33 +13,41 @@ require_once("config.php");
 require_once("inc/dbsetup.php");
 require_once("inc/meta.php");
 require_once("inc/radius.php");
-require_once("inc/specimen.php");
-require_once("inc/tree.php");
 require_once("inc/subSite.php");
 require_once("inc/site.php");
-
+require_once("inc/specimen.php");
+require_once("inc/tree.php");
 require_once("inc/auth.php");
 
 $myAuth = new auth();
-
 // Extract parameters from request and ensure no SQL has been injected
 $theMode = strtolower(addslashes($_GET['mode']));
+if(isset($_GET['label'])) $theLabel = addslashes($_GET['label']);
 $theID = (int) $_GET['id'];
-if(isset($_GET['label'])) $theName = addslashes($_GET['label']);
+$theSpecimenID = (int) $_GET['specimenid'];
 
 // Create new meta object and check required input parameters and data types
 switch($theMode)
 {
     case "read":
         $myMetaHeader = new meta("read");
-        break;
+        if($myAuth->isLoggedIn())
+        {
+            break;
+        }
+        else
+        {
+            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            break;
+        }
 
+    
     case "update":
         $myMetaHeader = new meta("update");
         if($myAuth->isLoggedIn())
         {
             if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if(($theName == NULL) && ($theCode==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - either 'name' or 'code' fields (or both) must be specified.");
+            if(($theSpecimenID==NULL) && ($theLabel==NULL)) $myMetaHeader->setMessage("902", "Missing parameters - you haven't specified any parameters to update.");
             break;
         }
         else
@@ -66,8 +74,8 @@ switch($theMode)
         $myMetaHeader = new meta("create");
         if($myAuth->isLoggedIn())
         {
-            if($theName == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
-            if($theCode == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'code' field is required.");
+            if($theLabel == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'label' field is required.");
+            if($theSpecimenID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'specimenid' field is required.");
             break;
         }
         else
@@ -119,33 +127,48 @@ if(!($myMetaHeader->status == "Error"))
     // Update parameters in object if updating or creating an object 
     if($theMode=='update' || $theMode=='create')
     {
-        if (isset($theName)) $myRadius->setName($theName);
-        if (isset($theCode)) $myRadius->setCode($theCode);
-
-        // Write to object to database
-        $success = $myRadius->writeToDB();
-        if($success)
+        if (isset($theLabel)) $myRadius->setLabel($theLabel);
+        if (!($theSpecimenID)==NULL) $myRadius->setSpecimenID($theSpecimenID);
+        
+        if( (($theMode=='update') && ($myAuth->radiusPermission($theID, "update")))  || 
+            (($theMode=='create') && ($myAuth->radiusPermission($theID, "create")))    )
         {
-            $xmldata=$myRadius->asXML();
-        }
+            // Check user has permission to update / create radius before writing object to database
+            $success = $myRadius->writeToDB();
+            if($success)
+            {
+                $xmldata=$myRadius->asXML();
+            }
+            else
+            {
+               $myMetaHeader->setMessage($myRadius->getLastErrorCode(), $myRadius->getLastErrorMessage());
+            }
+        }  
         else
         {
-            $myMetaHeader->setMessage($myRadius->getLastErrorCode(), $myRadius->getLastErrorMessage());
+            $myMetaHeader->setMessage("103", "Permission denied on radiusid $theID");
         }
     }
 
     // Delete record from db if requested
     if($theMode=='delete')
     {
-        // Write to Database
-        $success = $myRadius->deleteFromDB();
-        if($success)
+        if($myAuth->radiusPermission($theID, "delete"))
         {
-            $xmldata=$myRadius->asXML();
+            // Check user has permission to delete record before performing statement
+            $success = $myRadius->deleteFromDB();
+            if($success)
+            {
+                $xmldata=$myRadius->asXML();
+            }
+            else
+            {
+                $myMetaHeader->setMessage($myRadius->getLastErrorCode(), $myRadius->getLastErrorMessage());
+            }
         }
         else
         {
-            $myMetaHeader->setMessage($myRadius->getLastErrorCode(), $myRadius->getLastErrorMessage());
+            $myMetaHeader->setMessage("103", "Permission denied on radiusid $theID");
         }
     }
 
@@ -158,65 +181,80 @@ if(!($myMetaHeader->status == "Error"))
             // Build SQL depending on parameters
             if(!$theID==NULL)
             {
-                // Output multiple radiuss as XML
-
-                $sql = "select tblsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblspecimen.specimenid, tblradius.radiusid ";
-                $sql.= "from tblsite, tblsubsite, tbltree, tblspecimen, tblradius ";
-                $sql.= "where tblradius.radiusid=$theID and tblradius.specimenid=tblspecimen.specimenid and tblspecimen.treeid=tbltree.treeid and tbltree.subsiteid=tblsubsite.subsiteid and tblsubsite.siteid=tblsite.siteid";
+                $sql="select tblradius.*, tblspecimen.specimenid, tbltree.treeid, tblsubsite.subsiteid, tblsubsite.siteid from tblradius, tblspecimen, tbltree, tblsubsite where radiusid=$theID 
+                    and tblradius.specimenid=tblspecimen.specimenid and tblspecimen.treeid=tbltree.treeid and tbltree.subsiteid=tblsubsite.subsiteid order by tblradius.radiusid";
+                // Run SQL
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    $myRadius = new radius();
-                    $mySpecimen = new specimen();
-                    $myTree = new tree();
-                    $mySubSite = new subSite();
-                    $mySite = new site();
-                    $success = $myRadius->setParamsFromDB($row['radiusid']);
-                    $success2 = $myRadius->setChildParamsFromDB();
-                    $success3 = $mySpecimen->setParamsFromDB($row['specimenid']);
-                    $success4 = $myTree->setParamsFromDB($row['treeid']);
-                    $success5 = $mySubSite->setParamsFromDB($row['subsiteid']);
-                    $success6 = $mySite->setParamsFromDB($row['siteid']);
-
-                    if($success && $success2 && $success3 && $success4 && $success5 && $success6)
+                    // Check user has permission to read radius
+                    if($myAuth->radiusPermission($row['radiusid'], "read"))
                     {
-                        $xmldata.=$mySite->asXML("begin");
-                        $xmldata.=$mySubSite->asXML("begin");
-                        $xmldata.=$myTree->asXML("begin");
-                        $xmldata.=$mySpecimen->asXML("begin");
-                        $xmldata.=$myRadius->asXML();
-                        $xmldata.=$mySpecimen->asXML("end");
-                        $xmldata.=$myTree->asXML("end");
-                        $xmldata.=$mySubSite->asXML("end");
-                        $xmldata.=$mySite->asXML("end");
+                        $myRadius = new radius();
+                        $mySpecimen = new specimen();
+                        $myTree = new tree();
+                        $mySubSite = new subSite();
+                        $mySite = new site();
+                        $success = $myRadius->setParamsFromDB($row['radiusid']);
+                        $success2 = $myRadius->setChildParamsFromDB();
+                        $success3 = $mySpecimen->setParamsFromDB($row['specimenid']);
+                        $success4 = $myTree->setParamsFromDB($row['treeid']);
+                        $success5 = $mySubSite->setParamsFromDB($row['subsiteid']);
+                        $success6 = $mySite->setParamsFromDB($row['siteid']);
+
+                        if($success && $success2 && $success3 && $success4 && $success5 && $success6 )
+                        {
+                            $xmldata.= $mySite->asXML("begin");
+                            $xmldata.= $mySubSite->asXML("begin");
+                            $xmldata.= $myTree->asXML("begin");
+                            $xmldata.= $mySpecimen->asXML("begin");
+                            $xmldata.= $myRadius->asXML();
+                            $xmldata.= $mySpecimen->asXML("end");
+                            $xmldata.= $myTree->asXML("end");
+                            $xmldata.= $mySubSite->asXML("end");
+                            $xmldata.= $mySite->asXML("end");
+                        }
+                        else
+                        {
+                            $myMetaHeader->setMessage($myRadius->getLastErrorCode(), $myRadius->getLastErrorMessage());
+                        }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage($myRadius->getLastErrorCode(), $myRadius->getLastErrorMessage());
+                        $myMetaHeader->setMessage("103", "Permission denied on radiusid ".$row['radiusid'], "Warning");
                     }
                 }
             }
             else
             {
-                $xmldata.=$parentTagBegin."\n";
-                // Output one radius with its parents
+                $xmldata.= $parentTagBegin."\n";
                 $sql="select * from tblradius order by radiusid";
+                // Run SQL
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    $myRadius = new radius();
-                    $success = $myRadius->setParamsFromDB($row['radiusid']);
-                    $success2 = $myRadius->setChildParamsFromDB();
-                    if($success && $success2)
+                    // Check user has permission to read radius
+                    if($myAuth->radiusPermission($row['radiusid'], "read"))
                     {
-                        $xmldata.=$myRadius->asXML();
+                        $myRadius = new radius();
+                        $success = $myRadius->setParamsFromDB($row['radiusid']);
+                        $success2 = $myRadius->setChildParamsFromDB();
+
+                        if($success && $success2)
+                        {
+                            $xmldata.=$myRadius->asXML();
+                        }
+                        else
+                        {
+                            $myMetaHeader->setMessage($myRadius->getLastErrorCode(), $myRadius->getLastErrorMessage());
+                        }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage($myRadius->getLastErrorCode(), $myRadius->getLastErrorMessage());
+                        $myMetaHeader->setMessage("103", "Permission denied on radiusid ".$row['radiusid'], "Warning");
                     }
                 }
-                $xmldata.=$parentTagEnd."\n";
+                $xmldata.= $parentTagEnd."\n";
             }
         }
         else
