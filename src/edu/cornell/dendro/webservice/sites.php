@@ -30,6 +30,8 @@ switch($theMode)
         $myMetaHeader = new meta("read");
         if($myAuth->isLoggedIn())
         {
+            if(!(gettype($theID)=="integer") && !($theID==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
+            if(!($theID>0) && !($theID==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be a valid positive integer.");
             break;
         }
         else
