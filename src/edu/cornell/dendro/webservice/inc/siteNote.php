@@ -259,6 +259,60 @@ class siteNote
         // Return true as write to DB went ok.
         return TRUE;
     }
+    
+    function assignToSite($theSiteID)
+    {
+        global $dbconn;
+        //Only attempt to run SQL if there are no errors so far
+        if($this->lastErrorCode == NULL)
+        {
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $sql = "insert into tblsitesitenote (siteid, sitenoteid) values ($theSiteID, ".$this->id.")";
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn);
+                if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                {
+                    $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                    return FALSE;
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+        }
+    }
+    
+    function unassignToSite($theSiteID)
+    {
+        global $dbconn;
+        //Only attempt to run SQL if there are no errors so far
+        if($this->lastErrorCode == NULL)
+        {
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $sql = "delete from tblsitesitenote where siteid=$theSiteID and sitenoteid=".$this->id;
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn);
+                if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                {
+                    $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                    return FALSE;
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+        }
+    }
 
 // End of Class
 } 

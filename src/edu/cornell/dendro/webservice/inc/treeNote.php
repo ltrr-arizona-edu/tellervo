@@ -260,6 +260,60 @@ class treeNote
         return TRUE;
     }
 
+    function assignToTree($theTreeID)
+    {
+        global $dbconn;
+        //Only attempt to run SQL if there are no errors so far
+        if($this->lastErrorCode == NULL)
+        {
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $sql = "insert into tbltreetreenote (treeid, treenoteid) values ($theTreeID, ".$this->id.")";
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn);
+                if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                {
+                    $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                    return FALSE;
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+        }
+    }
+    
+    function unassignToTree($theTreeID)
+    {
+        global $dbconn;
+        //Only attempt to run SQL if there are no errors so far
+        if($this->lastErrorCode == NULL)
+        {
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $sql = "delete from tbltreetreenote where treeid=$theTreeID and treenoteid=".$this->id;
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn);
+                if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                {
+                    $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                    return FALSE;
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+        }
+    }
+
 // End of Class
 } 
 ?>

@@ -345,6 +345,14 @@ class auth
         return false;
   }
 
+  function isAdmin()
+  {
+        global $dbconn;
+
+        return true;
+        
+  }
+
   function hashPassword($password)
   {
     mt_srand((double)microtime()*1000000);

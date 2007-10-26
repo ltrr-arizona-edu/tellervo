@@ -16,6 +16,7 @@ class meta
   var $wsversion = 0.1;
   var $clientversion = NULL;
   var $requestdate = NULL;
+  var $startTimestamp = NULL;
   var $requesturl = NULL;
   var $requesttype = "Read";
   var $status = "OK";
@@ -23,6 +24,7 @@ class meta
 
   function meta($theRequestType="Read")
   {
+    $this->startTimestamp = microtime(true);
     $this->requestdate= date(DATE_ISO8601);
     $this->requesturl= htmlentities($_SERVER['REQUEST_URI']);
     $this->clientversion= htmlentities($_SERVER['HTTP_USER_AGENT']);
@@ -68,6 +70,7 @@ class meta
     $xml.="<wsversion>".$this->wsversion."</wsversion>\n";
     $xml.="<clientversion>".$this->clientversion."</clientversion>\n";
     $xml.="<requestdate>".$this->requestdate."</requestdate>\n";
+    $xml.="<queryTime unit=\"seconds\">".round((microtime(true)-$this->startTimestamp), 2)."</queryTime>\n";
     $xml.="<requesturl>".$this->requesturl."</requesturl>\n";
     $xml.="<requesttype>".$this->requesttype."</requesttype>\n";
     $xml.="<status>".$this->status."</status>\n";
