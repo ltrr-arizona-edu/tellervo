@@ -241,7 +241,7 @@ class auth
         // Check user is logged in first
         if ($this->isLoggedIn())
         {
-            $sql = "select * from securitygrouptreemaster($thePermissionID, ".$this->securityuserid.") where objectid=$theTreeID";
+            $sql = "select * from securitypermstree(".$this->securityuserid.", $thePermissionID, $theTreeID)";
             
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -255,7 +255,11 @@ class auth
                 }
                 else
                 {
-                    return true;
+                    $result = pg_query($dbconn, $sql);
+                    while ($row = pg_fetch_array($result))
+                    {
+                        return fromPGtoPHPBool($row['securitypermstree']);
+                    }
                 }
             }
         }
@@ -348,9 +352,24 @@ class auth
   function isAdmin()
   {
         global $dbconn;
-
-        return true;
-        
+        $sql = "select * from isadmin($securityuserid) where isadmin=true";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            if(pg_num_rows($result)==0)
+            {
+                // No records match so not in admin group
+                return false;
+            }
+            else
+            {
+                // Result retrned so must be in admin group
+                return true;
+            }
+        }
+        return false;
   }
 
   function hashPassword($password)
