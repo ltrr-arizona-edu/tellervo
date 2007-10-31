@@ -41,7 +41,7 @@ switch($theMode)
         }
         else
         {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
     
@@ -264,7 +264,7 @@ if(!($myMetaHeader->status == "Error"))
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 echo "<corina>\n";
 echo $myMetaHeader->asXML();
-echo "<data>\n";
+echo "<content>\n";
 echo $xmldata;
-echo "</data>\n";
+echo "</content>\n";
 echo "</corina>";

@@ -14,8 +14,8 @@ class auth
   var $firstname = NULL;
   var $lastname = NULL;
   var $username = NULL;
+  var $dbPasswordHash = NULL;
   var $loggedIn = FALSE;
-
 
   function auth()
   {
@@ -34,6 +34,50 @@ class auth
         // Need to log in 
         $this->loggedIn = FALSE;
     }
+  }
+
+  function login2($theUsername, $theClientHash, $theClientNonce)
+  {
+    global $dbconn;
+    
+    $sql = "select * from tblsecurityuser where username='$theUsername'";
+    
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+        $result = pg_query($dbconn, $sql);
+        while ($row = pg_fetch_array($result))
+        {
+            $dbPasswordHash = $row['password'];
+            $this->username = $row['username'];
+        }
+    }
+
+    // Authenticate against the database
+    if ($this->checkClientHash($dbPasswordHash, $theClientNonce, $theClientHash))
+    {
+        // Login passed
+        $result = pg_query($dbconn, $sql);
+        while ($row = pg_fetch_array($result))
+        {
+            session_start();
+            $_SESSION['initiated'] = TRUE;
+            $_SESSION["securityuserid"] = $row['securityuserid'];
+            $_SESSION['firstname'] = $row['firstname'];
+            $_SESSION['lastname'] = $row['lastname'];
+            $_SESSION['username'] = $row['username'];
+            $this->loggedIn = TRUE;
+        }
+    }
+    else
+    {
+        // Login failed
+        $this->loggedIn = FALSE;
+    }
+
+    return $this->loggedIn;
+
+
   }
 
   function login($theUsername, $thePassword)
@@ -352,7 +396,7 @@ class auth
   function isAdmin()
   {
         global $dbconn;
-        $sql = "select * from isadmin($securityuserid) where isadmin=true";
+        $sql = "select * from isadmin(".$this->securityuserid.") where isadmin=true";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -372,14 +416,6 @@ class auth
         return false;
   }
 
-  function hashPassword($password)
-  {
-    mt_srand((double)microtime()*1000000);
-    $salt = mhash_keygen_s2k(MHASH_SHA1, $password, substr(pack('h*', md5(mt_rand())), 0, 8), 4);
-    $hash = "{SSHA}".base64_encode(mhash(MHASH_SHA1, $password.$salt).$salt);
-    return $hash;
-  }
-
   function setPassword($username, $password)
   {
     global $dbconn;
@@ -392,6 +428,35 @@ class auth
     }
   }
 
+  function nonce($timeseed="current")
+  {
+    if ($timeseed=="current")
+    {
+        // hash of current date
+       return hash('md5', date("l F j H:i T Y"));
+    }
+    else
+    {
+        // hash of  date 1 minute ago
+       return hash('md5', date("l F j H:i T Y", time()-60));
+    }
+  }
+
+  function checkClientHash($dbPasswordHash, $cnonce, $clientHash)
+  {
+    $serverHashCurrent = hash('md5', $this->username.":".$dbPasswordHash.":".$this->nonce("current").":".$cnonce);
+    $serverHashLast = hash('md5', $this->username.":".$dbPasswordHash.":".$this->nonce("last").":".$cnonce);
+
+    if (($serverHashCurrent==$clientHash) || ($serverHashLast==$clientHash))
+    {
+        return true;
+    }
+    else
+    {   
+        return false;
+    }
+
+  }
 
 // End of class
 } 
