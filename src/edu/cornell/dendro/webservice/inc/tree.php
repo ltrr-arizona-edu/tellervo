@@ -118,7 +118,7 @@ class tree
                 $this->latitude = $row['lat'];
                 $this->longitude = $row['long'];
                 $this->precision = $row['precision'];
-                $this->createdTimeStamp = $row['createdtimestamp'];
+                $this->createdTimeStamp = dateFudge($row['createdtimestamp']);
                 $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
             }
         }

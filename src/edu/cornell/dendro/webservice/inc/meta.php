@@ -21,13 +21,19 @@ class meta
   var $requesttype = "Read";
   var $status = "OK";
   var $messages = array();
+  var $nonce = NULL;
 
-  function meta($theRequestType="Read")
+  function meta($theRequestType="")
   {
     $this->startTimestamp = microtime(true);
     $this->requestdate= date(DATE_ISO8601);
     $this->requesturl= htmlentities($_SERVER['REQUEST_URI']);
     $this->clientversion= htmlentities($_SERVER['HTTP_USER_AGENT']);
+    if($theRequestType)  $this->requesttype= $theRequestType;
+  }
+
+  function setRequestType($theRequestType)
+  {
     $this->requesttype= $theRequestType;
   }
 
@@ -59,13 +65,18 @@ class meta
     {
         $this->status="OK";
     }
+  }
 
+  function requestLogin($nonce)
+  {
+        $this->nonce= $nonce;
+        $this->setMessage("102", "You must login to run this query.");
   }
 
   function asXML()
   {
-    // Get class as XML 
-    $xml ="<meta>\n";
+      // Get class as XML 
+    $xml="<header>\n";
     $xml.="<user username=\"".$this->username."\" firstname=\"".$this->firstname."\" lastname=\"".$this->lastname."\" />\n";
     $xml.="<wsversion>".$this->wsversion."</wsversion>\n";
     $xml.="<clientversion>".$this->clientversion."</clientversion>\n";
@@ -82,7 +93,13 @@ class meta
           $xml.="<message code=\"".$code."\">".$message."</message>\n";
         }
     }
-    $xml.="</meta>\n";
+
+    if ($this->nonce)
+    {
+        $xml.="<nonce>".$this->nonce."</nonce>\n";
+    }
+
+    $xml.="</header>\n";
     return $xml;
   }
 } 

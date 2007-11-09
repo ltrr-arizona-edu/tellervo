@@ -5,7 +5,7 @@ $conn_string = "host=dendro.cornell.edu port=5432 dbname=corina_test user=webuse
 $dbconn = pg_connect ($conn_string);
 
 //Date format
-$sql = "set datestyle to 'Postgres, European'";
+$sql = "set datestyle to 'ISO'";
 pg_query($dbconn, $sql);
 
 ?>

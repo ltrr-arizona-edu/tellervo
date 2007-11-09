@@ -8,6 +8,18 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 
+
+function dateFudge($theDate)
+{
+    // Converts PG ISO 8601 date into a slightly different form of ISO 8601 date so that it vaidates in XML schema.
+    // Adds T between date and time
+    // Adds :00 to timezone.  Super fudgy as will bomb if a non hourly timezone is used e.g. +13:45 - Chatham Is.
+
+    return str_replace(" ", "T", $theDate).":00";
+
+
+}
+
 function getLastUpdateDate($tablename)
 {
     global $dbconn;
@@ -18,7 +30,7 @@ function getLastUpdateDate($tablename)
         $result = pg_query($dbconn, $sql);
         $row = pg_fetch_array($result);
         {
-            return $row['max'];
+            return dateFudge($row['max']);
         }
     }
     else

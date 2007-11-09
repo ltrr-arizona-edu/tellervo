@@ -117,7 +117,8 @@ class siteNote
     function getParentTagBegin()
     {
         // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tlkpsitenote")."'>";
+        //$xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tlkpsitenote")."'>";
+        $xml = "<".$this->parentXMLTag.">";
         return $xml;
     }
 
