@@ -11,5 +11,8 @@
 
 $debugFlag = True;
 
+$schemaSites = "/var/www/webservice/schemas/sites.xsd";
+$rngSites = "/var/www/webservice/schemas/sites.rng";
+
 
 ?>

@@ -8,26 +8,59 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 header('Content-Type: application/xhtml+xml; charset=utf-8');
+error_reporting(E_ERROR);
 
 require_once("config.php");
 require_once("inc/dbsetup.php");
 require_once("inc/meta.php");
 require_once("inc/site.php");
 require_once("inc/auth.php");
+require_once("inc/xmlhelper.php");
 
 $myAuth = new auth();
+$myMetaHeader = new meta();
 
-// Extract parameters from request and ensure no SQL has been injected
-$theMode = strtolower(addslashes($_GET['mode']));
-$theID = (int) $_GET['id'];
-if(isset($_GET['code'])) $theCode = addslashes($_GET['code']);
-if(isset($_GET['name'])) $theName = addslashes($_GET['name']);
+
+if(isset($_POST['xmlrequest']))
+{
+    // Extract parameters from XML post
+    $xmlstring = stripslashes($_POST['xmlrequest']);
+//    $doc = new DomDocument;
+ //   $doc->loadXML($xmlstring);
+  //  if($doc->validate($schemaSites))
+  //  {
+        $xml = simplexml_load_string($xmlstring);
+        if($xml)
+        {
+            $theMode= strtolower($xml->request['type']);
+            if($xml->request->site['id']) $theID = (int) $xml->request->site['id'];
+            if($xml->request->site['code']) $theCode = addslashes($xml->request->site['code']);
+            if($xml->request->site['name']) $theName = addslashes($xml->request->site['name']);
+        }
+        else
+        {
+            setXMLErrors($myMetaHeader);
+        }
+  //  }
+  //  else
+  //  {
+   //     $myMetaHeader->setMessage("905", "XML does not validate against schema.");
+  //  }
+}
+else
+{
+    // Extract parameters from get request and ensure no SQL has been injected
+    $theMode = strtolower(addslashes($_GET['mode']));
+    $theID = (int) $_GET['id'];
+    if(isset($_GET['code'])) $theCode = addslashes($_GET['code']);
+    if(isset($_GET['name'])) $theName = addslashes($_GET['name']);
+}
 
 // Create new meta object and check required input parameters and data types
 switch($theMode)
 {
     case "read":
-        $myMetaHeader = new meta("read");
+        $myMetaHeader->setRequestType("read");
         if($myAuth->isLoggedIn())
         {
             if(!(gettype($theID)=="integer") && !($theID==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
@@ -41,7 +74,7 @@ switch($theMode)
         }
     
     case "update":
-        $myMetaHeader = new meta("update");
+        $myMetaHeader->setRequestType("update");
         if($myAuth->isLoggedIn())
         {
             if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
@@ -55,7 +88,7 @@ switch($theMode)
         }
 
     case "delete":
-        $myMetaHeader = new meta("delete");
+        $myMetaHeader->setRequestType("delete");
         if($myAuth->isLoggedIn())
         {
             if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
@@ -69,7 +102,7 @@ switch($theMode)
 
 
     case "create":
-        $myMetaHeader = new meta("create");
+        $myMetaHeader->setRequestType("create");
         if($myAuth->isLoggedIn())
         {
             if($theName == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
@@ -83,7 +116,7 @@ switch($theMode)
         }
 
     default:
-        $myMetaHeader = new meta("help");
+        $myMetaHeader->setRequestType("help");
         $myMetaHeader->setUser("Guest", "", "");
         // Output the resulting XML
         echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -236,9 +269,9 @@ if(!($myMetaHeader->status == "Error"))
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 echo "<corina>\n";
 echo $myMetaHeader->asXML();
-echo "<data>\n";
+echo "<content>\n";
 echo $parentTagBegin."\n";
 echo $xmldata;
 echo $parentTagEnd."\n";
-echo "</data>\n";
+echo "</content>\n";
 echo "</corina>";
