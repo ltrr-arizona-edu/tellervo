@@ -51,81 +51,82 @@ import edu.cornell.dendro.corina.util.StringUtils;
    @version $Id$
 */
 public class HighPass extends Index {
-    /**
-       Create a new high-pass filter for the given sample.
+	/**
+	   Create a new high-pass filter for the given sample.
 
-       @param s the Sample to index
-    */
-    public HighPass(Sample s) {
-        super(s);
+	   @param s the Sample to index
+	 */
+	public HighPass(Sample s) {
+		super(s);
 
-        // parse weights; assumes weights.length is odd
-        weights = StringUtils.extractInts(App.prefs.getPref("corina.index.lowpass", "1 2 4 2 1"));
-    }
+		// parse weights; assumes weights.length is odd
+		weights = StringUtils.extractInts(App.prefs.getPref(
+				"corina.index.lowpass", "1 2 4 2 1"));
+	}
 
-    private int weights[];
+	private int weights[];
 
-    /** Compute the index. */
-    public void index() {
-        data = filter(source.data, weights);
-    }
+	/** Compute the index. */
+	public void index() {
+		data = filter(source.data, weights);
+	}
 
-    // a discrete high-pass filter.
-    // used by: highpass.run(), floating.run(), tscore.preamble()
-    // -- array/list dichotomy problem?  no, seems ok.
-    // -- implement special case for w[i]==1?  (floating and t-score use it this way.)
-    public static List filter(List input, int[] w) {
-        int n = input.size();
-        List output = new ArrayList(n);
-        int nw = (w.length - 1) / 2;
+	// a discrete high-pass filter.
+	// used by: highpass.run(), floating.run(), tscore.preamble()
+	// -- array/list dichotomy problem?  no, seems ok.
+	// -- implement special case for w[i]==1?  (floating and t-score use it this way.)
+	public static List filter(List input, int[] w) {
+		int n = input.size();
+		List output = new ArrayList(n);
+		int nw = (w.length - 1) / 2;
 
-        // sum the weights -- (extract method?)
-        int sum=0; // -- (apply '+ w)
-        for (int i=0; i<w.length; i++)
-            sum += w[i];
+		// sum the weights -- (extract method?)
+		int sum = 0; // -- (apply '+ w)
+		for (int i = 0; i < w.length; i++)
+			sum += w[i];
 
-        for (int i=0; i<n; i++) {
-            double x=0, adj=0;
-            int j=-nw;
-            do {
-                if (i+j >= 0 && i+j < n)
-                    x += ((Number) input.get(i+j)).doubleValue() * w[nw+j]; // add value, weighted, or ...
-                else
-                    adj += w[nw+j]; // ... discount weights by that amount
-                j++;
-            } while (j<=nw);
+		for (int i = 0; i < n; i++) {
+			double x = 0, adj = 0;
+			int j = -nw;
+			do {
+				if (i + j >= 0 && i + j < n)
+					x += ((Number) input.get(i + j)).doubleValue() * w[nw + j]; // add value, weighted, or ...
+				else
+					adj += w[nw + j]; // ... discount weights by that amount
+				j++;
+			} while (j <= nw);
 
-            double value;
-            if (sum - adj == 0) { // was: ... || x==0
-                value = 0.0;
-            } else {
-                value = x / (sum - adj);
-            }
-            output.add(new Double(value));
-        }
-        return output;
-    }
+			double value;
+			if (sum - adj == 0) { // was: ... || x==0
+				value = 0.0;
+			} else {
+				value = x / (sum - adj);
+			}
+			output.add(new Double(value));
+		}
+		return output;
+	}
 
-    /**
-       The name of this filter.  This lists the weights, separated by
-       hyphens, so the default filter is called "High-pass
-       (1-2-4-2-1)".
-    */
-    public String getName() {
-        // this is basically the opposite of StringUtils.extractInts() -- consolidate?
-        StringBuffer buf = new StringBuffer();
-        for (int i=0; i<weights.length; i++) {
-            buf.append(weights[i]);
-            if (i < weights.length-1)
-                buf.append('-');
-        }
+	/**
+	   The name of this filter.  This lists the weights, separated by
+	   hyphens, so the default filter is called "High-pass
+	   (1-2-4-2-1)".
+	 */
+	public String getName() {
+		// this is basically the opposite of StringUtils.extractInts() -- consolidate?
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0; i < weights.length; i++) {
+			buf.append(weights[i]);
+			if (i < weights.length - 1)
+				buf.append('-');
+		}
 
-        // format, and return
-        return MessageFormat.format(I18n.getText("high_pass"),
-				    new Object[] { buf.toString() } );
-    }
+		// format, and return
+		return MessageFormat.format(I18n.getText("high_pass"),
+				new Object[] { buf.toString() });
+	}
 
-    public int getID() {
-        return 9;
-    }
+	public int getID() {
+		return 9;
+	}
 }

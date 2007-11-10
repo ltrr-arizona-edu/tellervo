@@ -39,32 +39,32 @@ import edu.cornell.dendro.corina.ui.I18n;
    @version $Id$
 */
 public class Horizontal extends Index {
-    /**
-       Constructs a new Horizontal index with the given sample.
+	/**
+	   Constructs a new Horizontal index with the given sample.
 
-       @param s sample to index
-    */
-    public Horizontal(Sample s) {
-	super(s);
-    }
+	   @param s sample to index
+	 */
+	public Horizontal(Sample s) {
+		super(s);
+	}
 
-    /** Run the index. */
-    public void index() {
-	// compute mean; make a flyweight for the list
-	Double mean = new Double((double) source.computeRadius() /
-				 source.data.size());
+	/** Run the index. */
+	public void index() {
+		// compute mean; make a flyweight for the list
+		Double mean = new Double((double) source.computeRadius()
+				/ source.data.size());
 
-	// the curve: well, it's flat...
-	int n = source.data.size();
-	for (int i=0; i<n; i++)
-	    data.add(mean);
-    }
+		// the curve: well, it's flat...
+		int n = source.data.size();
+		for (int i = 0; i < n; i++)
+			data.add(mean);
+	}
 
-    public String getName() {
-	return I18n.getText("horizontal");
-    }
+	public String getName() {
+		return I18n.getText("horizontal");
+	}
 
-    public int getID() {
-        return 0;
-    }
+	public int getID() {
+		return 0;
+	}
 }

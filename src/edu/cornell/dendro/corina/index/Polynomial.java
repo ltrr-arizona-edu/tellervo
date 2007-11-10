@@ -34,80 +34,80 @@ import java.text.MessageFormat;
 */
 public class Polynomial extends Index implements Function {
 
-    // degree of polynomial to use
-    private int degree;
+	// degree of polynomial to use
+	private int degree;
 
-    /**
-       Evaluate the basis polynomial at x, for
-       <code>Solver.leastSquares()</code>.  The basis polynomial is:
-       <blockquote><i>f(x) = [ 1 x x&#x00B2; x&#x00B3;
-                               ... x<sup>degree</sup> ]</i></blockquote>
+	/**
+	   Evaluate the basis polynomial at x, for
+	   <code>Solver.leastSquares()</code>.  The basis polynomial is:
+	   <blockquote><i>f(x) = [ 1 x x&#x00B2; x&#x00B3;
+	                           ... x<sup>degree</sup> ]</i></blockquote>
 
-       @param x the x-value to evaluate the polynomial at
-       @return the y-value of the basis polynomial at this x
-    */
-    public double[] f(double x) {
-	double y[] = new double[degree+1];
-	y[0] = 1.;
-	for (int i=1; i<degree+1; i++)
-	    y[i] = y[i-1] * x;
-	return y;
-    }
-
-    /**
-       Construct a new polynomial fit from a sample, given a degree
-       polynomial to fit.
-
-       @param s the Sample to index
-       @param degree the degree polynomial to use
-    */
-    public Polynomial(Sample s, int degree) {
-	super(s);
-	this.degree = degree;
-    }
-
-    /**
-       Return the name, e.g., "Polynomial (3&#x00B0;)" for a
-       third-degree polynomial.
-
-       @return name of this index
-    */
-    public String getName() {
-	return MessageFormat.format(I18n.getText("polynomial"),
-				    new Object[] { new Integer(degree) });
-    }
-
-    /** Compute the index. */
-    public void index() {
-	// init x, y
-	int n = source.data.size();
-	double x[] = new double[n];
-	double y[] = new double[n];
-	for (int i=0; i<n; i++) {
-	    x[i] = (double) i;
-	    y[i] = ((Number) source.data.get(i)).doubleValue();
+	   @param x the x-value to evaluate the polynomial at
+	   @return the y-value of the basis polynomial at this x
+	 */
+	public double[] f(double x) {
+		double y[] = new double[degree + 1];
+		y[0] = 1.;
+		for (int i = 1; i < degree + 1; i++)
+			y[i] = y[i - 1] * x;
+		return y;
 	}
 
-	// compute coeffs
-	double c[] = null;
-	try {
-	    c = Solver.leastSquares(this, x, y);
-	} catch (SingularMatrixException sme) {
-	    // how to deal with errors?
-	    return;
+	/**
+	   Construct a new polynomial fit from a sample, given a degree
+	   polynomial to fit.
+
+	   @param s the Sample to index
+	   @param degree the degree polynomial to use
+	 */
+	public Polynomial(Sample s, int degree) {
+		super(s);
+		this.degree = degree;
 	}
 
-	// compute curve
-	for (int i=0; i<n; i++) {
-	    double f[] = f(x[i]);
-	    double yp = 0.;
-	    for (int j=0; j<degree+1; j++)
-		yp += c[j] * f[j];
-	    data.add(new Double(yp));
-	}
-    }
+	/**
+	   Return the name, e.g., "Polynomial (3&#x00B0;)" for a
+	   third-degree polynomial.
 
-    public int getID() {
-        return degree;
-    }
+	   @return name of this index
+	 */
+	public String getName() {
+		return MessageFormat.format(I18n.getText("polynomial"),
+				new Object[] { new Integer(degree) });
+	}
+
+	/** Compute the index. */
+	public void index() {
+		// init x, y
+		int n = source.data.size();
+		double x[] = new double[n];
+		double y[] = new double[n];
+		for (int i = 0; i < n; i++) {
+			x[i] = (double) i;
+			y[i] = ((Number) source.data.get(i)).doubleValue();
+		}
+
+		// compute coeffs
+		double c[] = null;
+		try {
+			c = Solver.leastSquares(this, x, y);
+		} catch (SingularMatrixException sme) {
+			// how to deal with errors?
+			return;
+		}
+
+		// compute curve
+		for (int i = 0; i < n; i++) {
+			double f[] = f(x[i]);
+			double yp = 0.;
+			for (int j = 0; j < degree + 1; j++)
+				yp += c[j] * f[j];
+			data.add(new Double(yp));
+		}
+	}
+
+	public int getID() {
+		return degree;
+	}
 }

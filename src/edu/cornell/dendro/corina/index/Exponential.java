@@ -47,121 +47,122 @@ import java.util.ArrayList;
 */
 public class Exponential extends Index implements Function {
 
-    // this class took 11 minutes to write (not counting
-    // documentation).  porting mecki's exponential-fit (which i can't
-    // even distribute because it's under NR's license) took hours, if
-    // not days.  plus, this one is simpler.
+	// this class took 11 minutes to write (not counting
+	// documentation).  porting mecki's exponential-fit (which i can't
+	// even distribute because it's under NR's license) took hours, if
+	// not days.  plus, this one is simpler.
 
-    // multiplier in exponent
-    private double p;
+	// multiplier in exponent
+	private double p;
 
-    /**
-       Compute the basis vector, which is
-       <blockquote><i>[ 1 e<sup>-px</sup> ]</i></blockquote>.
-    */
-    public double[] f(double x) {
-	return new double[] { 1., Math.exp(-p*x) };
-    }
-
-    /**
-       Create an exponential fit from a given sample.
-
-       @param s the Sample to index
-    */
-    public Exponential(Sample s) {
-	super(s);
-    }
-
-    public String getName() {
-	return I18n.getText("exponential"); // include p?
-    }
-
-    // if forReal==false, compute chi2, only.
-    // if forReal==true, compute chi2 and put results in data
-    private double compute(boolean forReal) {
-	// init x, y
-	int n = source.data.size();
-	double x[] = new double[n]; // don't worry, this is only called once
-	double y[] = new double[n];
-	for (int i=0; i<n; i++) {
-	    x[i] = (double) i;
-	    y[i] = ((Number) source.data.get(i)).doubleValue();
+	/**
+	   Compute the basis vector, which is
+	   <blockquote><i>[ 1 e<sup>-px</sup> ]</i></blockquote>.
+	 */
+	public double[] f(double x) {
+		return new double[] { 1., Math.exp(-p * x) };
 	}
 
-	// compute coeffs
-	double c[] = null;
-	try {
-	    c = Solver.leastSquares(this, x, y);
-	} catch (SingularMatrixException sme) {
-	    // how to deal with errors?  return a really big chi2!
-	    return Double.MAX_VALUE;
+	/**
+	   Create an exponential fit from a given sample.
+
+	   @param s the Sample to index
+	 */
+	public Exponential(Sample s) {
+		super(s);
 	}
 
-	// compute curve, chi2.  (this is a special chi^2-computer: it
-	// doesn't require a complete list, or O(n) memory.  otherwise
-	// i'd re-use Index's implementation.)
-	double chi2 = 0.;
-	if (forReal)
-	    data = new ArrayList(n);
-	for (int i=0; i<n; i++) {
-	    double f[] = f(x[i]);
-	    double yp = 0.;
-	    for (int j=0; j<2; j++) // degree+1
-		yp += c[j] * f[j];
-	    chi2 += (y[i] - yp) * (y[i] - yp);
-	    if (forReal)
-		data.add(new Double(yp));
+	public String getName() {
+		return I18n.getText("exponential"); // include p?
 	}
 
-	// (if your compiler does loop unrolling and CSE, that last
-	// part will be beautiful.  if not...)
+	// if forReal==false, compute chi2, only.
+	// if forReal==true, compute chi2 and put results in data
+	private double compute(boolean forReal) {
+		// init x, y
+		int n = source.data.size();
+		double x[] = new double[n]; // don't worry, this is only called once
+		double y[] = new double[n];
+		for (int i = 0; i < n; i++) {
+			x[i] = (double) i;
+			y[i] = ((Number) source.data.get(i)).doubleValue();
+		}
 
-	// return chi2
-	return chi2;
-    }
+		// compute coeffs
+		double c[] = null;
+		try {
+			c = Solver.leastSquares(this, x, y);
+		} catch (SingularMatrixException sme) {
+			// how to deal with errors?  return a really big chi2!
+			return Double.MAX_VALUE;
+		}
 
-    // do a linear search from BIG_START to BIG_STOP, in steps of BIG_STEP
-    private static final double BIG_START = 0.01;
-    private static final double BIG_STOP = 0.41;
-    private static final double BIG_STEP = 0.01;
+		// compute curve, chi2.  (this is a special chi^2-computer: it
+		// doesn't require a complete list, or O(n) memory.  otherwise
+		// i'd re-use Index's implementation.)
+		double chi2 = 0.;
+		if (forReal)
+			data = new ArrayList(n);
+		for (int i = 0; i < n; i++) {
+			double f[] = f(x[i]);
+			double yp = 0.;
+			for (int j = 0; j < 2; j++)
+				// degree+1
+				yp += c[j] * f[j];
+			chi2 += (y[i] - yp) * (y[i] - yp);
+			if (forReal)
+				data.add(new Double(yp));
+		}
 
-    // then do a linear search around the best value, in steps of BIG_STEP/10
+		// (if your compiler does loop unrolling and CSE, that last
+		// part will be beautiful.  if not...)
 
-    // the best p-value found so far
-    private double bestExp;
+		// return chi2
+		return chi2;
+	}
 
-    // the chi2 of the best p-value
-    private double bestChi2=Double.MAX_VALUE;
+	// do a linear search from BIG_START to BIG_STOP, in steps of BIG_STEP
+	private static final double BIG_START = 0.01;
+	private static final double BIG_STOP = 0.41;
+	private static final double BIG_STEP = 0.01;
 
-    // search from |start| to |stop| every |incr|, looking for the
-    // lowest chi^2.  store results in bestChi2, bestExp
-    private void search(double start, double stop, double incr) {
-        for (p=start; p<stop; p+=incr) {
-            double chi2 = compute(false);
-            if (chi2 < bestChi2) {
-                bestChi2 = chi2;
-                bestExp = p;
-            }
-        }
-    }
+	// then do a linear search around the best value, in steps of BIG_STEP/10
 
-    /**
-       Run the index; do a search in two passes to find a good
-       &Chi;<sup>2</sup>.
-    */
-    public void index() {
-        // big steps
-        search(BIG_START, BIG_STOP, BIG_STEP);
+	// the best p-value found so far
+	private double bestExp;
 
-        // refine that best value
-        search(bestExp-BIG_STEP, bestExp+BIG_STEP, BIG_STEP/10); // mecki: .003
+	// the chi2 of the best p-value
+	private double bestChi2 = Double.MAX_VALUE;
 
-        // for real, now
-        p = bestExp;
-        compute(true);
-    }
+	// search from |start| to |stop| every |incr|, looking for the
+	// lowest chi^2.  store results in bestChi2, bestExp
+	private void search(double start, double stop, double incr) {
+		for (p = start; p < stop; p += incr) {
+			double chi2 = compute(false);
+			if (chi2 < bestChi2) {
+				bestChi2 = chi2;
+				bestExp = p;
+			}
+		}
+	}
 
-    public int getID() {
-        return 7;
-    }
+	/**
+	   Run the index; do a search in two passes to find a good
+	   &Chi;<sup>2</sup>.
+	 */
+	public void index() {
+		// big steps
+		search(BIG_START, BIG_STOP, BIG_STEP);
+
+		// refine that best value
+		search(bestExp - BIG_STEP, bestExp + BIG_STEP, BIG_STEP / 10); // mecki: .003
+
+		// for real, now
+		p = bestExp;
+		compute(true);
+	}
+
+	public int getID() {
+		return 7;
+	}
 }
