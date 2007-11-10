@@ -25,7 +25,7 @@ import java.util.List;
 
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.index.HighPass;
+import edu.cornell.dendro.corina_indexing.HighPass;
 import edu.cornell.dendro.corina.ui.I18n;
 
 /**

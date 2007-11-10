@@ -25,7 +25,7 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.index.Index;
-import edu.cornell.dendro.corina.index.Exponential; // extract const! -- better: let user pick!
+import edu.cornell.dendro.corina_indexing.Exponential; // extract const! -- better: let user pick!
 import edu.cornell.dendro.corina.util.Overwrite;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -282,7 +282,7 @@ public class Scripts {
 	    }
 
 	    // run an exp index
-	    Index index = new Exponential(s);
+	    Index index = new Index(s, new Exponential(s));
 	    index.run();
 	    index.apply();
 

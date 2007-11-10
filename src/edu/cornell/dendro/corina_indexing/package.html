@@ -1,0 +1,85 @@
+<body>
+
+Algorithms for indexing (de-trending) data.
+
+<p>These algorithms are easily runnable as Threads (they implement
+Runnable), but most samples are probably too short and most computers
+too fast for this to be really necessary.  They also are Graphable, so
+the user can visually compare indexes.</p>
+
+
+
+<h2>How to use in an application</h2>
+
+<p>A single Index is straightforward to use:
+
+<pre>
+Index i = new Floating(mySample);		// create the index
+System.out.println("Running index:" + i);	// print the name
+i.run();					// run the computation
+System.out.println("chi^2 = " + i.getChi2());	// print chi^2 value
+i.apply();					// apply to mySample
+</pre>
+
+Because Indexes are Graphable, an application will usually give the
+user the option to view the graph after running it, but before
+applying it.</p>
+
+<p>Since they're Runnable, you can also run it in a separate thread:
+
+<pre>
+Thread t = new Thread(new Exponential(mySample));
+t.start();
+</pre>
+
+But this probably isn't necessary, unless you're on a slow computer or
+want the interface to be highly responsive.</p>
+
+<p>Usually, the user will want to see many different possible indexes,
+and choose one.  For this, IndexSet is provided.  It will run a group
+of common indexes.  The application can then display them all (in a
+table, for example):
+
+<pre>
+IndexSet is = new IndexSet(mySample);	// create an IndexSet
+is.run();				// IndexSet is also Runnable
+for (int i=0; i&lt;is.indexes.size(); i++) {	// print each, along with chi^2
+    Index x = (Index) is.indexes.get(i);
+    System.out.println(x + ", chi^2 = " + x.getChi2());
+}
+</pre>
+</p>
+
+
+
+<h2>How to add a new indexing algorithm</h2>
+
+To create a new indexing algorithm, just subclass Index.  There are
+only 3 methods you need to deal with:
+
+<ul>
+
+  <li>Constructor.  It does whatever you want it to do.  You should
+      call super(s) first.</li>
+
+  <li><code>getName()</code>.  One version is already provided: it
+      returns the name of the class.  If this isn't good enough for
+      you (the Polynomial index does some nice formatting of its
+      name), overload this method with whatever you like.  It should
+      return the type of cross, but not include the name of the sample
+      being indexed.</li>
+
+  <li><code>run()</code>.  Again, whatever you want, but it has to
+      fill the data field with the proper number of elements.</li>
+
+</ul>
+
+<p>To use it, you'll probably want to add it to IndexSet.</p>
+
+<p>Be sure to write Javadoc for the Index, including what the
+algorithm is and where it came from, and update the IndexSet Javadoc,
+if you add it there.</p>
+
+
+
+</body>

@@ -45,7 +45,7 @@ import edu.cornell.dendro.corina.ui.Builder;
 */
 
 public class IndexDialog2 extends JDialog {
-
+/*
     private JPanel left;
     private JPanel pick;
     private JComponent options;
@@ -208,7 +208,7 @@ public class IndexDialog2 extends JDialog {
 			  so when i'm done getting prefs working, remove
 			  this.  proper behavior: when the dialog is closed,
 			  set the pref.
-			*/
+			* /
 
 			App.prefs.setPref("corina.index.cubicfactor", String.valueOf(sval));
 			// "1e" + s.getValue());
@@ -303,7 +303,7 @@ public class IndexDialog2 extends JDialog {
 
     private Sample sample;
 
-    public IndexDialog2(Sample s /*, JFrame owner*/) {
+    public IndexDialog2(Sample s /*, JFrame owner* /) {
         // super(owner);
         // setModal(true);
 	setTitle("Index of: " + s);
@@ -363,4 +363,6 @@ public class IndexDialog2 extends JDialog {
 	Sample s2 = new Sample(args[1]);
 	new IndexDialog2(s2);
     }
+    
+    */
 }

@@ -27,6 +27,8 @@ import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.util.StringUtils;
 
+import edu.cornell.dendro.corina_indexing.*;
+
 /**
     Run a set of Indexes on a single Sample.  This runs a set of
     frequently-used indexes:
@@ -58,7 +60,7 @@ import edu.cornell.dendro.corina.util.StringUtils;
 
 public class IndexSet implements Runnable {
     /** The indexes. */
-    public List indexes = new ArrayList();
+    public List<Index> indexes = new ArrayList();
 
     /**
         Make a new IndexSet.
@@ -67,7 +69,7 @@ public class IndexSet implements Runnable {
     */
     public IndexSet(Sample sample) {
         // horizontal
-        indexes.add(new Horizontal(sample));
+        indexes.add(new Index(sample, new Horizontal(sample)));
 
         // polynomial fits
         String degreesToUse = App.prefs.getPref("corina.index.polydegs");
@@ -75,13 +77,17 @@ public class IndexSet implements Runnable {
             degreesToUse = "1 2 3 4 5 6";
         int polydegs[] = StringUtils.extractInts(degreesToUse);
         for (int i=0; i<polydegs.length; i++)
-            indexes.add(new Polynomial(sample, polydegs[i]));
+            indexes.add(new Index(sample, new Polynomial(sample, polydegs[i])));
 
         // exponential, floating, highpass, and cubicspline
-        indexes.add(new Exponential(sample));
-        indexes.add(new Floating(sample));
-        indexes.add(new HighPass(sample));
-        indexes.add(new CubicSpline(sample));
+        indexes.add(new Index(sample, new Exponential(sample)));
+        indexes.add(new Index(sample, new Floating(sample)));
+        indexes.add(new Index(sample, 
+        		new HighPass(sample, StringUtils.extractInts(
+        				App.prefs.getPref("corina.index.lowpass", "1 2 4 2 1")))));
+        indexes.add(new Index(sample, 
+        		new CubicSpline(sample, 
+        				Double.parseDouble(App.prefs.getPref("corina.index.cubicfactor", "1e-16")))));
     }
 
     /**

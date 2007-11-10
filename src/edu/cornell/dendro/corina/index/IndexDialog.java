@@ -62,6 +62,8 @@ import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.TextClipboard;
 import edu.cornell.dendro.corina.util.UserFriendlyFile;
 
+import edu.cornell.dendro.corina_indexing.Exponential;
+
 /**
    Indexing dialog.  Lets the user choose an indexing algorithm to use.
 
@@ -180,7 +182,7 @@ public class IndexDialog extends JDialog {
         // select exponential, because that's probably the one that's going to get used
         // (and we should encourage that)
         for (int i=0; i<iset.indexes.size(); i++) {
-            if (iset.indexes.get(i) instanceof Exponential) {
+            if (((Index)iset.indexes.get(i)).getIndexFunction() instanceof Exponential) {
                 table.setRowSelectionInterval(i, i);
                 break;
             }
@@ -224,8 +226,8 @@ public class IndexDialog extends JDialog {
         // -- copy year, too?
         // -- copy data, too?
         StringBuffer buf = new StringBuffer();
-        for (int i=0; i<ind.data.size(); i++) { // Index.data is a LIST?  what was i thinking?
-            buf.append(ind.data.get(i).toString());
+        for (int i=0; i<ind.getData().size(); i++) { // Index.data is a LIST?  what was i thinking?
+            buf.append(ind.getData().get(i).toString());
             buf.append('\n');
         }
 
@@ -302,6 +304,7 @@ public class IndexDialog extends JDialog {
             p.add(p2);
             useProxy.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
+                	int lastSelectedRow = table.getSelectedRow();
                     if (useProxy.isSelected()) {
                         // checked
                         try {
@@ -326,6 +329,8 @@ public class IndexDialog extends JDialog {
                         iset.run();
                         model.setIndexSet(iset);
                     }
+                    // clean up and make sure we reselect!
+                   	table.setRowSelectionInterval(lastSelectedRow, lastSelectedRow);
                 }
             });
         }

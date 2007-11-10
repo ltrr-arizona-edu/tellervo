@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 
 import java.util.List;
 import java.util.ArrayList;
+import edu.cornell.dendro.corina_indexing.*;
 
 public class UnitTests extends TestCase {
     public UnitTests(String name) {

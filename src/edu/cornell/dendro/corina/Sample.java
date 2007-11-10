@@ -25,6 +25,8 @@ import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.graph.Graphable;
 import edu.cornell.dendro.corina.ui.I18n;
 
+import edu.cornell.dendro.corina_indexing.Indexable;
+
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -68,7 +70,7 @@ import javax.swing.undo.*;
 // the same object.  better yet, an editor factory so a second
 // editor(sample) bringstofront the existing editor.
 
-public class Sample implements Previewable, Graphable {
+public class Sample implements Previewable, Graphable, Indexable {
 
 	/** The value of a missing ring, 2.  Anything less than or equal
 	 to this value is considered a MR. */
@@ -322,8 +324,12 @@ public class Sample implements Previewable, Graphable {
 		modified = false;
 	}
 
-	/** Return the data for a graph.
-	 @return data to graph, as a List of Integers */
+	/** Return the data for a graph
+	 * or the data to index.
+	 * @see Graphable
+	 * @see Indexable
+	 * @return data to graph, as a List of Integers 
+	 */
 	public List getData() {
 		return data;
 	}
