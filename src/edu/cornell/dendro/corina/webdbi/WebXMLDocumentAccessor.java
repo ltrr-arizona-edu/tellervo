@@ -57,7 +57,7 @@ public class WebXMLDocumentAccessor {
 		HttpURLConnection http = (HttpURLConnection) url.openConnection();
 		
 		// Set any header fields
-		http.setRequestProperty("User-Agent", "Corina WSI " + Build.VERSION);
+		http.setRequestProperty("User-Agent", "Corina WSI " + Build.VERSION + ":" + Build.TIMESTAMP);
 		
 		// if we're using an https connection, we're going to have to be careful
 		if(http instanceof HttpsURLConnection) {

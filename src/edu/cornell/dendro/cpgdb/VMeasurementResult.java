@@ -37,8 +37,8 @@ public class VMeasurementResult {
 			int MeasurementID = res.getInt("MeasurementID");
 			
 			int VMeasurementsInGroup = res.getInt("VMeasurementsInGroup");
-			// in Kit's source, he checks to see if the OpParameter is NULL
-			// however, Postgres doesn't allow an int column type to be NULL, so this will be 0
+			// If VMeasurementOpParameter is NULL, getInt turns NULL to 0
+			// This is what Kit is doing in his code, but we don't need an extra sanity check.
 			VMeasurementOpParameter = res.getInt("VMeasurementOpParameter");
 			
 			if(op == VMeasurementOperation.DIRECT && VMeasurementsInGroup == 0 && MeasurementID != 0) {
