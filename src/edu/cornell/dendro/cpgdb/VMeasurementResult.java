@@ -186,13 +186,10 @@ public class VMeasurementResult {
 
 			// prepare a statement for inserting our rows
 			
-			PreparedStatement bulkInsert = dbq.getConnection().prepareStatement(
-					"INSERT into tblVMeasurementReadingResult "+
-					"(VMeasurementResultID, RelYear, Reading) VALUES (?, ?, ?)");
+			Statement bulkInsert = dbq.getConnection().createStatement();
 
 			// prepare them in batch, and submit them all.
-			bulkInsert.setString(1, newVMeasurementResultID);
-			idx.batchAddPreparedStatements(bulkInsert);
+			idx.batchAddStatements(bulkInsert, newVMeasurementResultID);
 			bulkInsert.executeBatch();
 			bulkInsert.close();
 		}

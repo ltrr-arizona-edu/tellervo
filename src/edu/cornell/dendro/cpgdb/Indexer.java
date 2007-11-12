@@ -3,9 +3,9 @@
  */
 package edu.cornell.dendro.cpgdb;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,15 +96,25 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 	}
 	
 	/**
-	 * Ensure that you have already set parameter 1 to the proper UUID
-	 * Param 2 = relyear, param 3 = data value
+	 * This function actually does the SQL Insert work...
+	 * Trust that our newVMeasurementID contains no ' chars?
 	 */
-	public void batchAddPreparedStatements(PreparedStatement s) throws SQLException {
+	public void batchAddStatements(Statement s, String newVMeasurementResultID) throws SQLException {
+		String header = "INSERT into tblVMeasurementReadingResult (VMeasurementResultID,RelYear,Reading) VALUES ('";
+		int truncateLength = header.length();
+		StringBuffer b = new StringBuffer(header);		
+		
 		int len = output.size();
 		for(int i = 0; i < len; i++) {
-			s.setInt(2, ((Number) relYear.get(i)).intValue());
-			s.setInt(3, ((Number) output.get(i)).intValue());
-			s.addBatch();
+			b.setLength(truncateLength);
+			
+			b.append(newVMeasurementResultID);
+			b.append("',");
+			b.append(((Number) relYear.get(i)).intValue());
+			b.append(',');
+			b.append(((Number) output.get(i)).intValue());
+			b.append(")");
+			s.addBatch(b.toString());
 		}
 	}
 }
