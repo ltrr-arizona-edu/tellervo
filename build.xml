@@ -286,7 +286,7 @@
    Creates .jar files for deployment as a java web start project
 -->
 
-  <target name="deploy" depends="compile" description="Create deployable binary distribution">
+  <target name="deploy" depends="compile, corina-indexing" description="Create deployable binary distribution">
     <!-- Copy documentation subdirectory -->
     <!--  <copy todir="${dist.home}/docs">
       <fileset dir="doc"/>
@@ -332,21 +332,38 @@
 
     <signjar jar="${deploy.home}/${app.name}-${app.version}.jar" alias="dendro" storepass="d3ndr0" keystore="${app.keystore}"/>
 
+    <!-- Sign the indexing jar, while we're at it.. -->
+    <signjar jar="${deploy.home}/${app.name}-indexing.jar" alias="dendro" storepass="d3ndr0" keystore="${app.keystore}"/>
+
   </target>
 
 <!--
    Creates .jar files for postgresql db functions
 -->
 
-  <target name="cpgdb" depends="compile" description="Create deployable binary distribution">
+  <target name="cpgdb" depends="compile" description="Create deployable binary distribution of databasing functions">
 
     <!-- Create deploy directory and copy static content -->
-    <mkdir dir="${deploy.home}/cpgdb"/>
+    <mkdir dir="${deploy.home}"/>
 
-    <jar jarfile="${deploy.home}/cpgdb/cpgdb.jar"
+    <jar jarfile="${deploy.home}/cpgdb.jar"
          basedir="${build.home}" index="true" compress="true" includes="edu/cornell/dendro/cpgdb/**">
     </jar>
 
+  </target>
+
+<!--
+   Creates .jar files for indexing math functions
+-->
+
+  <target name="corina-indexing" depends="compile" description="Create deployable binary distribution of databasing functions">
+    <!-- Create deploy directory and copy static content -->
+    <mkdir dir="${deploy.home}"/>
+
+    <!-- Create corina_indexing JAR file -->
+    <jar jarfile="${deploy.home}/${app.name}-indexing.jar"
+         basedir="${build.home}" index="true" compress="true" includes="edu/cornell/dendro/corina_indexing/**">
+    </jar>
   </target>
 
 </project>
