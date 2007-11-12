@@ -51,11 +51,13 @@ public class QueryWrapper {
 		 */
 		addQuery("qappVMeasurementResult", 
 				"INSERT INTO tblVMeasurementResult " +
-				"( VMeasurementResultID, VMeasurementID, RadiusID, IsReconciled, StartYear, IsRelYear, " +
+				"( VMeasurementResultID, VMeasurementID, RadiusID, IsReconciled, StartYear, " +
+				"DatingTypeID, DatingErrorPositive, DatingErrorNegative, " +
 				"IsLegacyCleaned, CreatedTimestamp, LastModifiedTimestamp, VMeasurementResultGroupID, " +
 				"VMeasurementResultMasterID, OwnerUserID ) " +
 				"SELECT ? AS Expr1, ? AS Expr2, tblMeasurement.RadiusID, tblMeasurement.IsReconciled, " +
-				"tblMeasurement.StartYear, tblMeasurement.IsRelYear, tblMeasurement.IsLegacyCleaned, " +
+				"tblMeasurement.StartYear, tblMeasurement.DatingTypeID, tblMeasurement.DatingErrorPositive, " +
+				"tblMeasurement.DatingErrorNegative, tblMeasurement.IsLegacyCleaned, " +
 				"Now() AS Expr3, Now() AS Expr4, ? AS Expr5, ? AS Expr6, 1 AS Expr7 " +
 				"FROM tblMeasurement WHERE tblMeasurement.MeasurementID=?");
 		/*
@@ -120,11 +122,12 @@ public class QueryWrapper {
 		 */
 		addQuery("qappVMeasurementResultOpIndex",
 				"INSERT INTO tblVMeasurementResult ( VMeasurementResultID, VMeasurementID, RadiusID, " +
-				"IsReconciled, StartYear, IsRelYear, IsLegacyCleaned, CreatedTimestamp, " + 
-				"LastModifiedTimestamp, VMeasurementResultMasterID, OwnerUserID ) " +
+				"IsReconciled, StartYear, DatingTypeID, DatingErrorPositive, DatingErrorNegative, " +
+				"IsLegacyCleaned, CreatedTimestamp, LastModifiedTimestamp, VMeasurementResultMasterID, OwnerUserID ) " +
 				"SELECT ? AS Expr1, ? AS Expr2, " +
 				"tblVMeasurementResult.RadiusID, tblVMeasurementResult.IsReconciled, tblVMeasurementResult.StartYear, " +
-				"tblVMeasurementResult.IsRelYear, tblVMeasurementResult.IsLegacyCleaned, Now() AS Expr3, " +
+				"tblVMeasurementResult.DatingTypeID, tblVMeasurementResult.DatingErrorPositive, " +
+				"tblVMeasurementResult.DatingErrorNegative, tblVMeasurementResult.IsLegacyCleaned, Now() AS Expr3, " +
 				"Now() AS Expr4, ? AS Expr5, 1 AS Expr6 " +
 				"FROM tblVMeasurementResult " +
 				"WHERE tblVMeasurementResult.VMeasurementResultID=?");
