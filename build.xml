@@ -138,6 +138,7 @@
   <property name="batik.jar" value="(set this in build.properties!)"/>
   <property name="comm.jar" value="(set this in build.properties!)"/>
   <property name="itext.jar" value="(set this in build.properties!)"/>
+  <property name="jdom.jar" value="(set this in build.properties!)"/>
 	
 <!-- ==================== Compilation Classpath =========================== -->
 
@@ -162,6 +163,7 @@
     <pathelement location="${mail.jar}"/> 
     <pathelement location="${commons-email.jar}"/> 
     <pathelement location="${RXTXcomm.jar}"/> 
+    <pathelement location="${jdom.jar}"/> 
   </path>
 
 <!-- ==================== All Target ====================================== -->
