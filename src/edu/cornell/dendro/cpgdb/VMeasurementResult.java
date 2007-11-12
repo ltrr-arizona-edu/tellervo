@@ -16,9 +16,12 @@ public class VMeasurementResult {
 	
 	public VMeasurementResult(int VMeasurementID, boolean cleanup) throws SQLException {
 		this.dbq = new DBQuery();
-		acquireVMeasurementResult(VMeasurementID, cleanup);
+		try {
+			acquireVMeasurementResult(VMeasurementID, cleanup);
+		} finally {
 		// we created this dbquery object, it's our responsibility to clean it up.
-		dbq.cleanup();
+			dbq.cleanup();
+		}
 	}
 	
 	public VMeasurementResult(int VMeasurementID, boolean cleanup, DBQuery dbQuery) throws SQLException {
