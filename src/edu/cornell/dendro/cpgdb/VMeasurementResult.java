@@ -10,18 +10,63 @@ public class VMeasurementResult {
 	private String result;
 	
 	// we keep this instantiated for easy access to the db
-	private DBQuery dbq = new DBQuery();
+	private DBQuery dbq;
+	/** true if we created the dbquery object, false if it was passed to us. */
+	private boolean ourDBQuery = false;
 	
-	public VMeasurementResult(int VMeasurementID) throws SQLException {
-		result = getVMeasurementResult(VMeasurementID, (String)null, (String)null, 0);
+	public VMeasurementResult(int VMeasurementID, boolean cleanup) throws SQLException {
+		this.dbq = new DBQuery();
+		acquireVMeasurementResult(VMeasurementID, cleanup);
+		// we created this dbquery object, it's our responsibility to clean it up.
+		dbq.cleanup();
 	}
 	
-	private String getVMeasurementResult(int VMeasurementID, String VMeasurementResultGroupID,	
+	public VMeasurementResult(int VMeasurementID, boolean cleanup, DBQuery dbQuery) throws SQLException {
+		this.dbq = dbQuery;		
+		acquireVMeasurementResult(VMeasurementID, cleanup);
+	}
+
+	/**
+	 * Starts the recursive process that gets the VMeasurementResult UUID
+	 * 
+	 * Why a routine for cleanup? Well, cleanup works under the native pl/java driver,
+	 * but doesn't work under the postgresql jdbc driver. Thus making testing a nightmare!
+	 * 
+	 * @param VMeasurementID
+	 * @throws SQLException
+	 */
+	private void acquireVMeasurementResult(int VMeasurementID, boolean cleanup) throws SQLException {
+		if(cleanup) {
+			// If we have an error, clean up any mess we made, but pass along the exception.
+			Savepoint beforeCreation = dbq.getConnection().setSavepoint();
+			
+			try {
+				result = recursiveGetVMeasurementResult(VMeasurementID, (String)null, (String)null, 0);
+			} catch (SQLException sql) {
+				dbq.getConnection().rollback(beforeCreation);
+				throw sql;
+			} finally {
+				dbq.getConnection().releaseSavepoint(beforeCreation);
+			}					
+		}
+		else
+			result = recursiveGetVMeasurementResult(VMeasurementID, (String)null, (String)null, 0);
+	}
+	
+	/**
+	 * @param VMeasurementID The ID of the VMeasurement in the database we are performing an operation on
+	 * @param VMeasurementResultGroupID A UUID which groups together VMeasurementResults in this level of summing (for sums; starts as NULL)
+	 * @param VMeasurementResultMasterID A UUID which groups together all VMeasurementResults created by this function (starts as NULL)
+	 * @param recursionDepth our recursion depth
+	 * @return A string indicating the UUID of the VMeasurementResult associated with the provided VMeasurementID
+	 * @throws SQLException
+	 */
+	private String recursiveGetVMeasurementResult(int VMeasurementID, String VMeasurementResultGroupID,	
 			String VMeasurementResultMasterID, int recursionDepth) throws SQLException {
 		
 		ResultSet res;
 		VMeasurementOperation op;
-		int VMeasurementOpParameter;
+		Integer VMeasurementOpParameter = null;
 				
 		// break out of the whole mess if we have an infinite loop
 		if(recursionDepth > 50)
@@ -37,9 +82,9 @@ public class VMeasurementResult {
 			int MeasurementID = res.getInt("MeasurementID");
 			
 			int VMeasurementsInGroup = res.getInt("VMeasurementsInGroup");
+
 			// If VMeasurementOpParameter is NULL, getInt turns NULL to 0
-			// This is what Kit is doing in his code, but we don't need an extra sanity check.
-			VMeasurementOpParameter = res.getInt("VMeasurementOpParameter");
+			VMeasurementOpParameter = (Integer) res.getObject("VMeasurementOpParameter");
 			
 			if(op == VMeasurementOperation.DIRECT && VMeasurementsInGroup == 0 && MeasurementID != 0) {
 				// Ah, the clean base case. Just drop out nicely, after we clean up.
@@ -113,7 +158,7 @@ public class VMeasurementResult {
 		res = dbq.query("qryVMeasurementMembers", VMeasurementID);
 
 		while (res.next()) {
-			lastWorkingVMeasurementResultID = getVMeasurementResult(res.getInt("MemberVMeasurementID"),
+			lastWorkingVMeasurementResultID = recursiveGetVMeasurementResult(res.getInt("MemberVMeasurementID"),
 					newVMeasurementResultGroupID, VMeasurementResultMasterID,
 					recursionDepth + 1);
 		}
@@ -123,9 +168,37 @@ public class VMeasurementResult {
 		 * Now, we have to perform whatever evil operation we were intending to do.
 		 */
 		
-		switch(op) {
+		switch (op) {
+		case INDEX: 
+		{			
+			// First, create a new VMeasurementResult and move our metadata over to it
+			newVMeasurementResultID = dbq.createUUID();
+			dbq.execute("qappVMeasurementResultOpIndex",
+					newVMeasurementResultID, VMeasurementID,
+					VMeasurementResultMasterID,
+					lastWorkingVMeasurementResultID);
+
+			// Now, acquire our working dataset and pass it to the indexer.
+			res = dbq.query("qacqVMeasurementReadingResult", lastWorkingVMeasurementResultID);
+			Indexer idx = new Indexer(res, VMeasurementOpParameter);
+			res.close();
+
+
+			// prepare a statement for inserting our rows
+			
+			PreparedStatement bulkInsert = dbq.getConnection().prepareStatement(
+					"INSERT into tblVMeasurementReadingResult "+
+					"(VMeasurementResultID, RelYear, Reading) VALUES (?, ?, ?)");
+
+			// prepare them in batch, and submit them all.
+			bulkInsert.setString(1, newVMeasurementResultID);
+			idx.batchAddPreparedStatements(bulkInsert);
+			bulkInsert.executeBatch();
+			bulkInsert.close();
+		}
+		break;
+			
 		case SUM:
-		case INDEX:
 			// TODO: Implement these. :)
 			throw new SQLException("Sorry, these functions aren't implemented yet. :'(");
 			
@@ -141,6 +214,9 @@ public class VMeasurementResult {
 			/* 
 			 * "As we are updating a record, not appending a new one, use the current ID as the new one."
 			 */
+			if(VMeasurementOpParameter == null)
+				throw new SQLException("Invalid null redate parameter");
+			
 			newVMeasurementResultID = lastWorkingVMeasurementResultID;
 			dbq.execute("qupdVMeasurementResultOpRedate", VMeasurementID, VMeasurementOpParameter, lastWorkingVMeasurementResultID);
 			break;

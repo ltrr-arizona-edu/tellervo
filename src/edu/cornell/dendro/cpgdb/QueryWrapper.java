@@ -1,6 +1,7 @@
 package edu.cornell.dendro.cpgdb;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -24,7 +25,7 @@ public class QueryWrapper {
 	public QueryWrapper(Connection sqlConnection) throws SQLException {
 		this.sql = sqlConnection;
 		
-		queries = new HashMap<String, PreparedStatement>();
+		queries = new HashMap<String, StatementQueryHolder>();
 		
 		addQuery("getuuid", "select uuid()");
 		
@@ -111,13 +112,52 @@ public class QueryWrapper {
 				"WHERE VMeasurementResultMasterID=? AND " +
 				"VMeasurementResultID<>?");
 
-	}
+		/*
+		 * 1 = paramNewVMeasurementResultID
+		 * 2 = paramVMeasurementID
+		 * 3 = paramVMeasurementResultMasterID
+		 * 4 = paramCurrentVMeasurementResultID
+		 */
+		addQuery("qappVMeasurementResultOpIndex",
+				"INSERT INTO tblVMeasurementResult ( VMeasurementResultID, VMeasurementID, RadiusID, " +
+				"IsReconciled, StartYear, IsRelYear, IsLegacyCleaned, CreatedTimestamp, " + 
+				"LastModifiedTimestamp, VMeasurementResultMasterID, OwnerUserID ) " +
+				"SELECT ? AS Expr1, ? AS Expr2, " +
+				"tblVMeasurementResult.RadiusID, tblVMeasurementResult.IsReconciled, tblVMeasurementResult.StartYear, " +
+				"tblVMeasurementResult.IsRelYear, tblVMeasurementResult.IsLegacyCleaned, Now() AS Expr3, " +
+				"Now() AS Expr4, ? AS Expr5, 1 AS Expr6 " +
+				"FROM tblVMeasurementResult " +
+				"WHERE tblVMeasurementResult.VMeasurementResultID=?");
 		
-	public PreparedStatement getQuery(String queryName, Object[] args) throws SQLException {
-		PreparedStatement statement = queries.get(queryName);
+		/*
+		 * 1 = paramCurrentVMeasurementResultID
+		 */
+		addQuery("qacqVMeasurementReadingResult", 
+				"SELECT RelYear, Reading from tblVMeasurementReadingResult WHERE VMeasurementResultID=? ORDER BY RelYear ASC");
+	}
 
-		if(statement == null)
-			return null;
+	/**
+	 * Closes all prepared statements.
+	 * @throws SQLException
+	 */
+	public void cleanup() throws SQLException {
+		Iterator i = queries.keySet().iterator();
+		
+		while(i.hasNext()) {
+			StatementQueryHolder sq = queries.get(i.next());
+			if(sq != null)
+				sq.cleanup();
+		}
+	}
+	
+	public PreparedStatement getQuery(String queryName, Object[] args) throws SQLException {
+		StatementQueryHolder holder = queries.get(queryName);
+
+		// no query by this name? bzzt.
+		if(holder == null)
+			throw new SQLException("Invalid query name: " + queryName);
+		
+		PreparedStatement statement = holder.getStatement();
 		
 		for(int i = 0; i < args.length; i++) {
 			if(args[i] == null)
@@ -126,15 +166,45 @@ public class QueryWrapper {
 				statement.setObject(i + 1, args[i]);
 		}
 		
-		System.out.println(statement.toString());
+		// debug output that prints out queries...
+		//System.out.println(statement.toString());
 		
 		return statement;
 	}
 
 	private void addQuery(String queryName, String SQLStatement) throws SQLException {
-		queries.put(queryName, sql.prepareStatement(SQLStatement));
+		queries.put(queryName, new StatementQueryHolder(SQLStatement, sql));
 	}
-	
-	private HashMap<String, PreparedStatement> queries;
+
+	/**
+	 * This internal class creates prepared statements on an as-needed basis and caches them.
+	 * 
+	 * @author Lucas Madar
+	 */
+	private class StatementQueryHolder {
+		private PreparedStatement preparedStatement;
+		private String queryString;
+		private Connection sqlConnection;
+
+		public StatementQueryHolder(String queryString, Connection sqlConnection) {
+			this.queryString = queryString;
+			this.sqlConnection = sqlConnection;
+			this.preparedStatement = null;
+		}
+
+		public PreparedStatement getStatement() throws SQLException {
+			if(preparedStatement == null) 
+				preparedStatement = sqlConnection.prepareStatement(queryString);
+			
+			return preparedStatement;
+		}
+		
+		public void cleanup() throws SQLException {
+			if(preparedStatement != null)
+				preparedStatement.close();
+		}		
+	}
+		
+	private HashMap<String, StatementQueryHolder> queries;
 	private Connection sql;
 }

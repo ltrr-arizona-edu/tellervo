@@ -5,36 +5,23 @@ import java.util.Properties;
 
 public class DBQuery {
 	// our connection via jdbc to the server
-	private Connection sql;
+	private Connection sqlConnection;
 
 	// We use the querywrapper to get prepared statements.
-	private QueryWrapper queries;	
+	private QueryWrapper queries;
+	
+	// in debug mode, we print out a bunch of stuff to stdout.
+	private boolean debug = false;
+	
+	public DBQuery(Connection sqlConnection) throws SQLException {
+		this.sqlConnection = sqlConnection;
+		this.queries = new QueryWrapper(sqlConnection);		
+	}
 	
 	// keep around a jdbc connection
 	public DBQuery() throws SQLException {
-		/*
-		 * The following code is for testing purposes.
-		 */
-		
-		/**/
-		try {
-			Class.forName("org.postgresql.Driver");
-		} catch (Exception e) {}
-		
-		Properties props = new Properties();
-		props.setProperty("user", "testuser");
-		props.setProperty("password", "t3stus3r");
-		props.setProperty("loglevel", "1");
-		
-		sql = DriverManager.getConnection("jdbc:postgresql://negaverse.no-ip.org/corina", props);
-		/**/
-		
-		/*
-		 * In production, this will be how we connect to the server...
-		 * sql = DriverManager.getConnection("jdbc:default:connection");
-		 */
-		
-		queries = new QueryWrapper(sql);
+		// obtain a JDBC connection, if one isn't passed to us.
+		this(DriverManager.getConnection("jdbc:default:connection"));
 	}
 	
 	public String createUUID() throws SQLException {
@@ -43,7 +30,7 @@ public class DBQuery {
 		if(nativeUUID != null)
 			return nativeUUID;
 
-		Statement stmt = sql.createStatement();
+		Statement stmt = sqlConnection.createStatement();
 		ResultSet res = stmt.executeQuery("SELECT uuid()");
 		
 		// perhaps some better error checking is in order,
@@ -67,7 +54,8 @@ public class DBQuery {
 	}
 	
 	public boolean execute(String queryName, Object ... args) throws SQLException {
-		beVerbose(queryName, args);
+		if(debug)
+			beVerbose(queryName, args);
 		
 		PreparedStatement q = queries.getQuery(queryName, args);
 		if(q != null)
@@ -77,12 +65,27 @@ public class DBQuery {
 	}
 	
 	public ResultSet query(String queryName, Object ... args) throws SQLException {
-		beVerbose(queryName, args);
+		if(debug)
+			beVerbose(queryName, args);
 		
 		PreparedStatement q = queries.getQuery(queryName, args);
 		if(q != null)
 			return q.executeQuery();
 		
 		throw new SQLException("Invalid Query");
+	}
+	
+	public Connection getConnection() {
+		return sqlConnection;
+	}
+	
+	/** close our connection and clean up our stored queries */
+	public void cleanup() throws SQLException {
+		try {
+			queries.cleanup();
+			sqlConnection.close();
+		} catch (SQLException sqle) {
+			// cleanup failed? oh well.
+		}
 	}
 }
