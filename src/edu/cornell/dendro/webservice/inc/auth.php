@@ -183,22 +183,30 @@ class auth
         // Check user is logged in first
         if ($this->isLoggedIn())
         {
-            $sql = "select * from securitygroupvmeasurementmaster($thePermissionID, ".$this->securityuserid.") where objectid=$theVMeasurementID";
-            
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            if(!($this->isAdmin()))
             {
-                pg_send_query($dbconn, $sql);
-                $result = pg_get_result($dbconn);
-                if(pg_num_rows($result)==0)
+                $sql = "select * from securitygroupvmeasurementmaster($thePermissionID, ".$this->securityuserid.") where objectid=$theVMeasurementID";
+                
+                $dbconnstatus = pg_connection_status($dbconn);
+                if ($dbconnstatus ===PGSQL_CONNECTION_OK)
                 {
-                    // No records match the id specified
-                    return false;
+                    pg_send_query($dbconn, $sql);
+                    $result = pg_get_result($dbconn);
+                    if(pg_num_rows($result)==0)
+                    {
+                        // No records match the id specified
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
-                else
-                {
-                    return true;
-                }
+            }
+            else
+            {
+                // Admin user so give permission
+                return true;
             }
         }
         else
@@ -234,27 +242,34 @@ class auth
         // Check user is logged in first
         if ($this->isLoggedIn())
         {
-            $sql = "select * from securitygroupsitemaster($thePermissionID, ".$this->securityuserid.") where objectid=$theSiteID";
-            
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            if(!($this->isAdmin()))
             {
-                pg_send_query($dbconn, $sql);
-                $result = pg_get_result($dbconn);
-                if(pg_num_rows($result)==0)
+                echo "here";
+                $sql = "select * from securitygroupsitemaster($thePermissionID, ".$this->securityuserid.") where objectid=$theSiteID";
+                $dbconnstatus = pg_connection_status($dbconn);
+                if ($dbconnstatus ===PGSQL_CONNECTION_OK)
                 {
-                    // No records match the id specified
-                    return false;
+                    pg_send_query($dbconn, $sql);
+                    $result = pg_get_result($dbconn);
+                    if(pg_num_rows($result)==0)
+                    {
+                        // No records match the id specified
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
-                else
-                {
-                    return true;
-                }
+            }
+            else
+            {
+                return true;
             }
         }
         else
         {
-            return false;
+            return true;
         }
     return false;
   }
@@ -285,26 +300,34 @@ class auth
         // Check user is logged in first
         if ($this->isLoggedIn())
         {
-            $sql = "select * from securitypermstree(".$this->securityuserid.", $thePermissionID, $theTreeID)";
-            
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            if(!($this->isAdmin()))
             {
-                pg_send_query($dbconn, $sql);
-                $result = pg_get_result($dbconn);
-                if(pg_num_rows($result)==0)
+                $sql = "select * from securitypermstree(".$this->securityuserid.", $thePermissionID, $theTreeID)";
+                
+                $dbconnstatus = pg_connection_status($dbconn);
+                if ($dbconnstatus ===PGSQL_CONNECTION_OK)
                 {
-                    // No records match the id specified
-                    return false;
-                }
-                else
-                {
-                    $result = pg_query($dbconn, $sql);
-                    while ($row = pg_fetch_array($result))
+                    pg_send_query($dbconn, $sql);
+                    $result = pg_get_result($dbconn);
+                    if(pg_num_rows($result)==0)
                     {
-                        return fromPGtoPHPBool($row['securitypermstree']);
+                        // No records match the id specified
+                        return false;
+                    }
+                    else
+                    {
+                        $result = pg_query($dbconn, $sql);
+                        while ($row = pg_fetch_array($result))
+                        {
+                            return fromPGtoPHPBool($row['securitypermstree']);
+                        }
                     }
                 }
+            }
+            else
+            {
+                // Admin user so give permission
+                return true;
             }
         }
         else
@@ -409,7 +432,7 @@ class auth
             }
             else
             {
-                // Result retrned so must be in admin group
+                // Result returned so must be in admin group
                 return true;
             }
         }
@@ -447,21 +470,19 @@ class auth
     $serverHashCurrent = hash('md5', $this->username.":".$dbPasswordHash.":".$this->nonce("current").":".$cnonce);
     $serverHashLast = hash('md5', $this->username.":".$dbPasswordHash.":".$this->nonce("last").":".$cnonce);
 
-    echo $this->username.":".$dbPasswordHash.":".$this->nonce("current").":".$cnonce."<br/>";
-    echo $serverHashCurrent."<br/>";
-    echo $clientHash."<br/>";
-
+    //echo $this->username.":".$dbPasswordHash.":".$this->nonce("current").":".$cnonce."<br/>";
+    //echo $serverHashCurrent."<br/>";
+    //echo $clientHash."<br/>";
 
     //echo $this->username.":".$dbPasswordHash.":".$this->nonce("last").":".$cnonce."<br/>";
     //echo $serverHashLast."<br/>";
-
 
     if (($serverHashCurrent==$clientHash) || ($serverHashLast==$clientHash))
     {
         return true;
     }
     else
-    {   
+    {
         return false;
     }
 

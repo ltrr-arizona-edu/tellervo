@@ -44,6 +44,38 @@ class specimenQuality
         $this->lastErrorMessage = $theMessage;
     }
 
+    function setParamsFromLabel($theLabel)
+    {
+        global $dbconn;
+        $sql = "select * from tlkpspecimenquality where label='$theLabel'";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            if(pg_num_rows($result)==0)
+            {
+                // No records match the label specified
+                $this->setErrorMessage("903", "No records match the specified label");
+                return FALSE;
+            }
+            else
+            {
+                // Set parameters from db
+                $row = pg_fetch_array($result);
+                $this->setParamsFromDB($row['specimenqualityid']);
+            }
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
     function setParamsFromDB($theID)
     {
         // Set the current objects parameters from the database
@@ -98,7 +130,12 @@ class specimenQuality
             return FALSE;
         }
     }
-    
+
+    function getID()
+    {
+        return $this->id;
+    }
+
     function getLabel()
     {
         return $this->label;

@@ -70,6 +70,41 @@ class specimen
         $this->treeID=$theTreeID;
     }
 
+    function setSpecimenTypeID($specimenType)
+    {
+        $mySpecimenType = new specimenType;
+        $mySpecimenType->setParamsFromLabel($specimenType);
+        $this->specimenTypeID=$mySpecimenType->getID();
+    }
+
+    function setTerminalRingID($terminalRing)
+    {
+        $myTerminalRing = new terminalRing;
+        $myTerminalRing->setParamsFromLabel($terminalRing);
+        $this->terminalRingID=$myTerminalRing->getID();
+    }
+
+    function setSpecimenQualityID($specimenQuality)
+    {
+        $mySpecimenQuality = new specimenQuality;
+        $mySpecimenQuality->setParamsFromLabel($specimenQuality);
+        $this->specimenQualityID=$mySpecimenQuality->getID();
+    }
+
+    function setSpecimenContinuityID($specimenContinuity)
+    {
+        $mySpecimenContinuity = new specimenContinuity;
+        $mySpecimenContinuity->setParamsFromLabel($specimenContinuity);
+        $this->$specimenContinuityID=$mySpecimenContinuity->getID();
+    }
+
+    function setPithID($pith)
+    {
+        $myPith = new specimenContinuity;
+        $myPith->setParamsFromLabel($pith);
+        $this->$pithID=$myPith->getID();
+    }
+
     function setErrorMessage($theCode, $theMessage)
     {
         // Set the error latest error message and code for this object.
@@ -208,7 +243,7 @@ class specimen
                 $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
                 $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
                 $xml.= ">";
-                
+
                 /*
                 // Include radii if present
                 if ($this->radiusArray)
