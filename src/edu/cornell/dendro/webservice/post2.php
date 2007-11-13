@@ -4,7 +4,7 @@
 
 
 <html>
-<form method="post" action="trees.php">
+<form method="post" action="relax.php">
 
 <textarea name="xmlrequest" rows="20" cols="80"></textarea>
 

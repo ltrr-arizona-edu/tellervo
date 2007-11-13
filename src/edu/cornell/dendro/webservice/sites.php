@@ -8,68 +8,62 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 header('Content-Type: application/xhtml+xml; charset=utf-8');
-error_reporting(E_ERROR);
 
-require_once("config.php");
+// Only report errors
+//error_reporting(E_ERROR);
+
 require_once("inc/dbsetup.php");
+require_once("config.php");
 require_once("inc/meta.php");
-require_once("inc/site.php");
 require_once("inc/auth.php");
-require_once("inc/xmlhelper.php");
+require_once("inc/request.php");
+require_once("inc/output.php");
 
-$myAuth = new auth();
-$myMetaHeader = new meta();
+require_once("inc/site.php");
 
+// Create Authentication, Request and Header objects
+$myAuth         = new auth();
+$myMetaHeader   = new meta();
+$myRequest      = new siteRequest($myMetaHeader);
 
+// Set user details
+if($myAuth->isLoggedIn())
+{
+    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
+}
+
+// **************
+// GET PARAMETERS
+// **************
 if(isset($_POST['xmlrequest']))
 {
-    // Extract parameters from XML post
-    $xmlstring = stripslashes($_POST['xmlrequest']);
-//    $doc = new DomDocument;
- //   $doc->loadXML($xmlstring);
-  //  if($doc->validate($schemaSites))
-  //  {
-        $xml = simplexml_load_string($xmlstring);
-        if($xml)
-        {
-            $theMode= strtolower($xml->request['type']);
-            if($xml->request->site['id']) $theID = (int) $xml->request->site['id'];
-            if($xml->request->site['code']) $theCode = addslashes($xml->request->site['code']);
-            if($xml->request->site['name']) $theName = addslashes($xml->request->site['name']);
-        }
-        else
-        {
-            setXMLErrors($myMetaHeader);
-        }
-  //  }
-  //  else
-  //  {
-   //     $myMetaHeader->setMessage("905", "XML does not validate against schema.");
-  //  }
+    // Extract parameters from XML request POST
+    $myRequest->getXMLParams();
 }
 else
 {
     // Extract parameters from get request and ensure no SQL has been injected
-    $theMode = strtolower(addslashes($_GET['mode']));
-    $theID = (int) $_GET['id'];
-    if(isset($_GET['code'])) $theCode = addslashes($_GET['code']);
-    if(isset($_GET['name'])) $theName = addslashes($_GET['name']);
+    $myRequest->getGetParams();
 }
 
-// Create new meta object and check required input parameters and data types
-switch($theMode)
+
+
+// ****************
+// CHECK PARAMETERS 
+// ****************
+switch($myRequest->mode)
 {
     case "read":
         $myMetaHeader->setRequestType("read");
         if($myAuth->isLoggedIn())
         {
-            if(!(gettype($theID)=="integer") && !($theID==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
-            if(!($theID>0) && !($theID==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be a valid positive integer.");
+            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
+            if(!($myRequest->id>0) && !($myRequest->id==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be a valid positive integer.");
             break;
         }
         else
         {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
     
@@ -77,13 +71,13 @@ switch($theMode)
         $myMetaHeader->setRequestType("update");
         if($myAuth->isLoggedIn())
         {
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if(($theName == NULL) && ($theCode==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - either 'name' or 'code' fields (or both) must be specified.");
+            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if(($myRequest->name == NULL) && ($myRequest->code==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - either 'name' or 'code' fields (or both) must be specified.");
             break;
         }
         else
         {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
 
@@ -91,12 +85,12 @@ switch($theMode)
         $myMetaHeader->setRequestType("delete");
         if($myAuth->isLoggedIn())
         {
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
             break;
         }
         else
         {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
 
@@ -105,33 +99,31 @@ switch($theMode)
         $myMetaHeader->setRequestType("create");
         if($myAuth->isLoggedIn())
         {
-            if($theName == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
-            if($theCode == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'code' field is required.");
+            if($myRequest->name == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
+            if($myRequest->code == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'code' field is required.");
             break;
         }
         else
         {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
 
+    case "failed":
+        $myMetaHeader->setRequestType("help");
+        break;
+
     default:
         $myMetaHeader->setRequestType("help");
-        $myMetaHeader->setUser("Guest", "", "");
         // Output the resulting XML
-        echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        echo "<corina>\n";
-        echo $myMetaHeader->asXML();
-        echo "<help> Details of how to use this web service will be added here later! </help>";
-        echo "</corina>\n";
+        $xmldata ="Details of how to use this web service will be added here later!";
+        writeHelpOutput($myMetaHeader,$xmldata);
         die;
 }
 
-// Set user details
-if($myAuth->isLoggedIn())
-{
-    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
-}
+// *************
+// PERFORM QUERY
+// *************
 
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
@@ -142,9 +134,9 @@ if(!($myMetaHeader->status == "Error"))
     $parentTagEnd = $mySite->getParentTagEnd();
 
     // Set existing parameters if updating or deleting from database
-    if($theMode=='update' || $theMode=='delete') 
+    if($myRequest->mode=='update' || $myRequest->mode=='delete') 
     {
-        $success = $mySite->setParamsFromDB($theID);
+        $success = $mySite->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
             $myMetaHeader->setMessage($mySite->getLastErrorCode(), $mySite->getLastErrorMessage());
@@ -152,13 +144,13 @@ if(!($myMetaHeader->status == "Error"))
     }
 
     // Update parameters in object if updating or creating an object 
-    if($theMode=='update' || $theMode=='create')
+    if($myRequest->mode=='update' || $myRequest->mode=='create')
     {
-        if (isset($theName)) $mySite->setName($theName);
-        if (isset($theCode)) $mySite->setCode($theCode);
+        if (isset($myRequest->name)) $mySite->setName($myRequest->name);
+        if (isset($myRequest->code)) $mySite->setCode($myRequest->code);
 
-        if( (($theMode=='update') && ($myAuth->sitePermission($theID, "update")))  || 
-            (($theMode=='create') && ($myAuth->sitePermission($theID, "create")))    )
+        if( (($myRequest->mode=='update') && ($myAuth->sitePermission($myRequest->id, "update")))  || 
+            (($myRequest->mode=='create') && ($myAuth->sitePermission($myRequest->id, "create")))    )
         {
             // Write to object to database
             $success = $mySite->writeToDB();
@@ -173,14 +165,14 @@ if(!($myMetaHeader->status == "Error"))
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on siteid $theID");
+            $myMetaHeader->setMessage("103", "Permission denied on siteid". $myRequest->id);
         }
     }
 
     // Delete record from db if requested
-    if($theMode=='delete')
+    if($myRequest->mode=='delete')
     {
-        if($myAuth->sitePermission($theID, "delete"))
+        if($myAuth->sitePermission($myRequest->id, "delete"))
         {
             // Write to Database
             $success = $mySite->deleteFromDB();
@@ -195,33 +187,33 @@ if(!($myMetaHeader->status == "Error"))
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on siteid $theID");
+            $myMetaHeader->setMessage("103", "Permission denied on siteid". $myRequest->id);
         }
     }
 
-    if($theMode=='read')
+    if($myRequest->mode=='read')
     {
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
             // DB connection ok
             // Build SQL depending on parameters
-            if(!$theID==NULL)
+            if(!$myRequest->id==NULL)
             {
-                $sql="select * from tblsite where siteid=$theID order by siteid";
+                $sql="select * from tblsite where siteid=".$myRequest->id." order by siteid";
             }
-            elseif((isset($theName)) && (isset($theCode)))
+            elseif((isset($myRequest->name)) && (isset($myRequest->code)))
             {
                 echo "2";
-                $sql="select * from tblsite where name='$theName' and code='$theCode' order by siteid";
+                $sql="select * from tblsite where name='$myRequest->name' and code='$myRequest->code' order by siteid";
             }
-            elseif(isset($theName))
+            elseif(isset($myRequest->name))
             {
-                $sql="select * from tblsite where name ilike '%$theName%' order by siteid";
+                $sql="select * from tblsite where name ilike '%$myRequest->name%' order by siteid";
             }
-            elseif(isset($theCode))
+            elseif(isset($myRequest->code))
             {
-                $sql="select * from tblsite where code ilike '%$theCode%' order by siteid";
+                $sql="select * from tblsite where code ilike '%$myRequest->code%' order by siteid";
             }
             else
             {
@@ -232,18 +224,25 @@ if(!($myMetaHeader->status == "Error"))
             {
                 // Run SQL
                 $result = pg_query($dbconn, $sql);
+                $myMetaHeader->setTiming("Start main SQL request");
                 while ($row = pg_fetch_array($result))
                 {
+                    $myMetaHeader->setTiming("Found row match now check permission");
                     // Check user has permission to read tree
                     if($myAuth->sitePermission($row['siteid'], "read"))
                     {
+                        $myMetaHeader->setTiming("Permission ok");
                         $mySite = new site();
                         $success = $mySite->setParamsFromDB($row['siteid']);
+                        $myMetaHeader->setTiming("Params set from DB");
                         $success2 = $mySite->setChildParamsFromDB();
+                        $myMetaHeader->setTiming("Child object params set from DB");
 
                         if($success && $success2)
                         {
+                            $myMetaHeader->setTiming("Start XML build");
                             $xmldata.=$mySite->asXML();
+                            $myMetaHeader->setTiming("End XML build");
                         }
                         else
                         {
@@ -265,13 +264,9 @@ if(!($myMetaHeader->status == "Error"))
     }
 }
 
-// Output the resulting XML
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-echo "<corina>\n";
-echo $myMetaHeader->asXML();
-echo "<content>\n";
-echo $parentTagBegin."\n";
-echo $xmldata;
-echo $parentTagEnd."\n";
-echo "</content>\n";
-echo "</corina>";
+// ***********
+// OUTPUT DATA
+// ***********
+writeOutput($myMetaHeader, $xmldata, $parentTagBegin, $parentTagEnd);
+
+

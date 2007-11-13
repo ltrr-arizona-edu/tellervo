@@ -8,11 +8,13 @@
 //// Requirements : PHP >= 5.0
 ////*******************************************************************
 
+// Only report errors
+error_reporting(E_ERROR);
 
 $debugFlag = True;
 
-$schemaSites = "/var/www/webservice/schemas/sites.xsd";
-$rngSites = "/var/www/webservice/schemas/sites.rng";
+$rngSchema = "/var/www/webservice/schemas/corina.rng";
+
 
 
 ?>

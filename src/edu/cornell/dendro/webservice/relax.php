@@ -1,17 +1,19 @@
 <?php
 
+include('config.php');
 
-
+// Extract parameters from XML post
+$xmlstring = stripslashes($_POST['xmlrequest']);
 $doc = new DomDocument;
-$doc->load($_POST['file']);
-
-$valid = $doc->relaxNGValidate('schema/corina.rng');
-
-echo "Document validates against RelaxNG schema";
-
-
-
-
+$doc->loadXML($xmlstring);
+if($doc->relaxNGValidate('/home/aps03pwb/test.rng'))
+{
+    echo "valid";
+}
+else
+{
+    echo "invalid";
+}
 
 
 ?>

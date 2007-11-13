@@ -12,29 +12,47 @@ header('Content-Type: application/xhtml+xml; charset=utf-8');
 require_once("config.php");
 require_once("inc/dbsetup.php");
 require_once("inc/meta.php");
+require_once("inc/auth.php");
+require_once("inc/request.php");
+require_once("inc/output.php");
+
 require_once("inc/tree.php");
 require_once("inc/subSite.php");
 require_once("inc/site.php");
-require_once("inc/specimen.php");
-require_once("inc/auth.php");
 
-$myAuth = new auth();
-// Extract parameters from request and ensure no SQL has been injected
-$theMode = strtolower(addslashes($_GET['mode']));
-if(isset($_GET['label'])) $theLabel = addslashes($_GET['label']);
-$theID = (int) $_GET['id'];
-$theTaxonID = (int) $_GET['taxonid'];
-$theSubSiteID = (int) $_GET['subsiteid'];
-$theLatitude = (double) $_GET['lat'];
-$theLongitude = (double) $_GET['long'];
-$thePrecision = (int) $_GET['precision'];
+// Create Authentication, Request and Header objects
+$myAuth         = new auth();
+$myMetaHeader   = new meta();
+$myRequest      = new treeRequest($myMetaHeader);
 
+// Set user details
+if($myAuth->isLoggedIn())
+{
+    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
+}
 
-// Create new meta object and check required input parameters and data types
-switch($theMode)
+// **************
+// GET PARAMETERS
+// **************
+
+if(isset($_POST['xmlrequest']))
+{
+    // Extract parameters from XML request POST
+    $myRequest->getXMLParams();
+}
+else
+{
+    // Extract parameters from get request and ensure no SQL has been injected
+    $myRequest->getGetParams();
+}
+
+// ****************
+// CHECK PARAMETERS 
+// ****************
+switch($myRequest->mode)
 {
     case "read":
-        $myMetaHeader = new meta("read");
+        $myMetaHeader->setRequestType("read");
         if($myAuth->isLoggedIn())
         {
             break;
@@ -46,65 +64,62 @@ switch($theMode)
         }
     
     case "update":
-        $myMetaHeader = new meta("update");
+        $myMetaHeader->setRequestType("update");
         if($myAuth->isLoggedIn())
         {
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if(($theTaxonID==NULL) && ($theSubSiteID==NULL) && ($theLatitude==NULL) && ($theLongitude==NULL) && ($thePrecision=NULL)) $myMetaHeader->setMessage("902", "Missing parameters - you haven't specified any parameters to update.");
+            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if(($myRequest->taxonid==NULL) && ($myRequest->subsiteid==NULL) && ($myRequest->latitude==NULL) && ($myRequest->longitude==NULL) && ($myRequest->precision==NULL))                 $myMetaHeader->setMessage("902", "Missing parameters - you haven't specified any parameters to update.");
             break;
         }
         else
         {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
 
     case "delete":
-        $myMetaHeader = new meta("delete");
+        $myMetaHeader->setRequestType("delete");
         if($myAuth->isLoggedIn())
         {
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
             break;
         }
         else
         {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
-
 
     case "create":
-        $myMetaHeader = new meta("create");
+        $myMetaHeader->setRequestType("create");
         if($myAuth->isLoggedIn())
         {
-            if($theLabel == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'label' field is required.");
-            if($theTaxonID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'taxonid' field is required.");
-            if($theSubSiteID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'subsiteid' field is required.");
+            if($myRequest->label == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'label' field is required.");
+            if($myRequest->taxonid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'taxonid' field is required.");
+            if($myRequest->subsiteid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'subsiteid' field is required.");
             break;
         }
         else
         {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
 
+    case "failed":
+        $myMetaHeader->setRequestType("help");
+        break;
+
     default:
-        $myMetaHeader = new meta("help");
-        $myMetaHeader->setUser("Guest", "", "");
+        $myMetaHeader->setRequestType("help");
         // Output the resulting XML
-        echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        echo "<corina>\n";
-        echo $myMetaHeader->asXML();
-        echo "<help> Details of how to use this web service will be added here later! </help>";
-        echo "</corina>\n";
+        $xmldata ="Details of how to use this web service will be added here later!";
+        writeHelpOutput($myMetaHeader,$xmldata);
         die;
 }
 
-// Set user details
-if($myAuth->isLoggedIn())
-{
-    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
-}
+// *************
+// PERFORM QUERY
+// *************
 
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
@@ -115,9 +130,9 @@ if(!($myMetaHeader->status == "Error"))
     $parentTagEnd = $myTree->getParentTagEnd();
 
     // Set existing parameters if updating or deleting from database
-    if($theMode=='update' || $theMode=='delete') 
+    if($myRequest->mode=='update' || $myRequest->mode=='delete') 
     {
-        $success = $myTree->setParamsFromDB($theID);
+        $success = $myTree->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
             $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
@@ -125,17 +140,17 @@ if(!($myMetaHeader->status == "Error"))
     }
 
     // Update parameters in object if updating or creating an object 
-    if($theMode=='update' || $theMode=='create')
+    if($myRequest->mode=='update' || $myRequest->mode=='create')
     {
-        if (isset($theLabel)) $myTree->setLabel($theLabel);
-        if (!($theLatitude)==NULL) $myTree->setLatitude($theLatitude);
-        if (!($theLongitude)==NULL) $myTree->setLongitude($theLongitude);
-        if (!($thePrecision)==NULL) $myTree->setPrecision($thePrecision);
-        if (!($theTaxonID)==NULL) $myTree->setTaxonID($theTaxonID);
-        if (!($theSubSiteID)==NULL) $myTree->setSubSiteID($theSubSiteID);
+        if (isset($myRequest->label)) $myTree->setLabel($myRequest->label);
+        if (!($myRequest->latitude)==NULL) $myTree->setLatitude($myRequest->latitude);
+        if (!($myRequest->longitude)==NULL) $myTree->setLongitude($myRequest->longitude);
+        if (!($myRequest->precision)==NULL) $myTree->setPrecision($myRequest->precision);
+        if (!($myRequest->taxonid)==NULL) $myTree->setTaxonID($myRequest->taxonid);
+        if (!($myRequest->subsiteid)==NULL) $myTree->setSubSiteID($myRequest->subsiteid);
         
-        if( (($theMode=='update') && ($myAuth->treePermission($theID, "update")))  || 
-            (($theMode=='create') && ($myAuth->treePermission($theID, "create")))    )
+        if( (($myRequest->mode=='update') && ($myAuth->treePermission($myRequest->id, "update")))  || 
+            (($myRequest->mode=='create') && ($myAuth->treePermission($myRequest->id, "create")))    )
         {
             // Check user has permission to update / create tree before writing object to database
             $success = $myTree->writeToDB();
@@ -150,14 +165,14 @@ if(!($myMetaHeader->status == "Error"))
         }  
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on treeid $theID");
+            $myMetaHeader->setMessage("103", "Permission denied on treeid $myRequest->id");
         }
     }
 
     // Delete record from db if requested
-    if($theMode=='delete')
+    if($myRequest->mode=='delete')
     {
-        if($myAuth->treePermission($theID, "delete"))
+        if($myAuth->treePermission($myRequest->id, "delete"))
         {
             // Check user has permission to delete record before performing statement
             $success = $myTree->deleteFromDB();
@@ -172,20 +187,20 @@ if(!($myMetaHeader->status == "Error"))
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on treeid $theID");
+            $myMetaHeader->setMessage("103", "Permission denied on treeid $myRequest->id");
         }
     }
 
-    if($theMode=='read')
+    if($myRequest->mode=='read')
     {
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
             // DB connection ok
             // Build SQL depending on parameters
-            if(!$theID==NULL)
+            if(!$myRequest->id==NULL)
             {
-                $sql="select tbltree.*, tblsubsite.subsiteid, tblsubsite.siteid from tbltree, tblsubsite  where treeid=$theID and tbltree.subsiteid=tblsubsite.subsiteid order by tbltree.treeid";
+                $sql="select tbltree.*, tblsubsite.subsiteid, tblsubsite.siteid from tbltree, tblsubsite  where treeid=$myRequest->id and tbltree.subsiteid=tblsubsite.subsiteid order by tbltree.treeid";
                 // Run SQL
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
@@ -260,11 +275,7 @@ if(!($myMetaHeader->status == "Error"))
     }
 }
 
-// Output the resulting XML
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-echo "<corina>\n";
-echo $myMetaHeader->asXML();
-echo "<content>\n";
-echo $xmldata;
-echo "</content>\n";
-echo "</corina>";
+// ***********
+// OUTPUT DATA
+// ***********
+writeOutput($myMetaHeader, $xmldata);
