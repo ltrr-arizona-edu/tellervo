@@ -11,9 +11,9 @@
 class auth 
 {
   var $securityuserid = NULL;
-  var $firstname = NULL;
-  var $lastname = NULL;
-  var $username = NULL;
+  var $firstname = "Unknown";
+  var $lastname = "Unknown";
+  var $username = "Guest";
   var $dbPasswordHash = NULL;
   var $loggedIn = FALSE;
 
@@ -36,12 +36,12 @@ class auth
     }
   }
 
-  function login2($theUsername, $theClientHash, $theClientNonce)
+  function loginWithNonce($theUsername, $theClientHash, $theClientNonce)
   {
     global $dbconn;
     
     $sql = "select * from tblsecurityuser where username='$theUsername'";
-    
+ 
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
@@ -446,6 +446,15 @@ class auth
   {
     $serverHashCurrent = hash('md5', $this->username.":".$dbPasswordHash.":".$this->nonce("current").":".$cnonce);
     $serverHashLast = hash('md5', $this->username.":".$dbPasswordHash.":".$this->nonce("last").":".$cnonce);
+
+    echo $this->username.":".$dbPasswordHash.":".$this->nonce("current").":".$cnonce."<br/>";
+    echo $serverHashCurrent."<br/>";
+    echo $clientHash."<br/>";
+
+
+    //echo $this->username.":".$dbPasswordHash.":".$this->nonce("last").":".$cnonce."<br/>";
+    //echo $serverHashLast."<br/>";
+
 
     if (($serverHashCurrent==$clientHash) || ($serverHashLast==$clientHash))
     {

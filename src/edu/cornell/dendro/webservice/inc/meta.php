@@ -22,6 +22,7 @@ class meta
   var $status = "OK";
   var $messages = array();
   var $nonce = NULL;
+  var $timing = array();
 
   function meta($theRequestType="")
   {
@@ -67,6 +68,14 @@ class meta
     }
   }
 
+  function setTiming($theLabel)
+  {
+    // Setter for error and warning messages
+
+    $message = array($theLabel => round(((microtime(true)*1000)-($this->startTimestamp*1000)), 0));
+    array_push($this->timing, $message);
+  }
+
   function requestLogin($nonce)
   {
         $this->nonce= $nonce;
@@ -91,6 +100,14 @@ class meta
         foreach($item as $code => $message)
         {
           $xml.="<message code=\"".$code."\">".$message."</message>\n";
+        }
+    }
+
+    foreach($this->timing as $item)
+    {
+        foreach($item as $code => $message)
+        {
+          $xml.="<timing label=\"".$code."\">".$message."</timing>\n";
         }
     }
 
