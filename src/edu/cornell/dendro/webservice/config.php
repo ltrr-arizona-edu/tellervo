@@ -9,9 +9,9 @@
 ////*******************************************************************
 
 // Only report errors
-error_reporting(E_ERROR);
+//error_reporting(E_ERROR);
 
-$debugFlag = True;
+$debugFlag = false;
 
 $rngSchema = "/var/www/webservice/schemas/corina.rng";
 

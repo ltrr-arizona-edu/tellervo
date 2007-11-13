@@ -9,43 +9,47 @@
 //////*******************************************************************
 header('Content-Type: application/xhtml+xml; charset=utf-8');
 
-require_once("config.php");
 require_once("inc/dbsetup.php");
+require_once("config.php");
 require_once("inc/meta.php");
+require_once("inc/auth.php");
+require_once("inc/request.php");
+require_once("inc/output.php");
+
 require_once("inc/specimen.php");
 require_once("inc/tree.php");
 require_once("inc/subSite.php");
 require_once("inc/site.php");
-//require_once("inc/radii.php");
-require_once("inc/auth.php");
 
-$myAuth = new auth();
+// Create Authentication, Request and Header objects
+$myAuth         = new auth();
+$myMetaHeader   = new meta();
+$myRequest      = new specimenRequest($myMetaHeader);
 
-// Extract parameters from request and ensure no SQL has been injected
-$theMode = strtolower(addslashes($_GET['mode']));
-$theID = (int) $_GET['id'];
-if(isset($_GET['label'])) $theName = addslashes($_GET['label']);
-$theTreeID = (int) $_GET['treeid'];
-$theDay = (int) $_GET['collectedday'];
-$theMonth = (int) $_GET['collectedmonth'];
-$theYear = (int) $_GET['collectedyear'];
-$theSpecimenTypeID = (int) $_GET['specimentypeid'];
-$theTerminalRingID = (int) $_GET['terminalringid'];
-$theIsTerminalRingVerified= fromStringToPHPBool($_GET['isterminalringverified']);
-$theSapwoodCount = (int) $_GET['sapwoodcount'];
-$theIsSapwoodCountVerified= fromStringToPHPBool($_GET['issapwoodcountverified']);
-$theSpecimenQualityID = (int) $_GET['specimenqualityid'];
-$theIsSpecimenQualityVerified= fromStringToPHPBool($_GET['isspecimenqualityverified']);
-$theSpecimenContinuityID = (int) $_GET['specimencontinuityid'];
-$thePithID = (int) $_GET['pithid'];
-$theIsPithVerified= fromStringToPHPBool($_GET['ispithverified']);
-$theUnmeasPre = (int) $_GET['unmeaspre'];
-$theIsUnmeasPreVerified= fromStringToPHPBool($_GET['isunmeaspreverified']);
-$theUnmeasPost = (int) $_GET['unmeaspost'];
-$theIsUnmeasPostVerified= fromStringToPHPBool($_GET['isunmeaspostverified']);
+// Set user details
+if($myAuth->isLoggedIn())
+{
+    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
+}
 
-// Create new meta object and check required input parameters and data types
-switch($theMode)
+// **************
+// GET PARAMETERS
+// **************
+if(isset($_POST['xmlrequest']))
+{
+    // Extract parameters from XML request POST
+    $myRequest->getXMLParams();
+}
+else
+{
+    // Extract parameters from get request and ensure no SQL has been injected
+    $myRequest->getGetParams();
+}
+
+// ****************
+// CHECK PARAMETERS 
+// ****************
+switch($myRequest->mode)
 {
     case "read":
         $myMetaHeader = new meta("read");
@@ -55,7 +59,7 @@ switch($theMode)
         }
         else
         {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
 
@@ -63,12 +67,12 @@ switch($theMode)
         $myMetaHeader = new meta("update");
         if($myAuth->isLoggedIn())
         {
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
             break;
         }
         else
         {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
 
@@ -76,12 +80,12 @@ switch($theMode)
         $myMetaHeader = new meta("delete");
         if($myAuth->isLoggedIn())
         {
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
             break;
         }
         else
         {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
 
@@ -90,37 +94,31 @@ switch($theMode)
         $myMetaHeader = new meta("create");
         if($myAuth->isLoggedIn())
         {
-            if($theLabel == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'label' field is required.");
-            if($theTreeID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'treeid' field is required.");
+            if($myRequest->label == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'label' field is required.");
+            if($myRequest->treeid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'treeid' field is required.");
             break;
         }
         else
         {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
+            $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
 
+    case "failed":
+        $myMetaHeader->setRequestType("help");
+        break;
+
     default:
-        $myMetaHeader = new meta("help");
-        $myMetaHeader->setUser("Guest", "", "");
+        $myMetaHeader->setRequestType("help");
         // Output the resulting XML
-        echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        echo "<corina>\n";
-        echo $myMetaHeader->asXML();
-        echo "<help> Details of how to use this web service will be added here later! </help>";
-        echo "</corina>\n";
+        $xmldata ="Details of how to use this web service will be added here later!";
+        writeHelpOutput($myMetaHeader,$xmldata);
         die;
 }
 
-// Set user details
-if($myAuth->isLoggedIn())
-{
-    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
-}
-else
-{
-    $myMetaHeader->setUser("Guest", "Guest", "Guest");
-}
+// *************
+// PERFORM QUERY
+// *************
 
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
@@ -131,9 +129,9 @@ if(!($myMetaHeader->status == "Error"))
     $parentTagEnd = $mySpecimen->getParentTagEnd();
 
     // Set existing parameters if updating or deleting from database
-    if($theMode=='update' || $theMode=='delete') 
+    if($myRequest->mode=='update' || $myRequest->mode=='delete') 
     {
-        $success = $mySpecimen->setParamsFromDB($theID);
+        $success = $mySpecimen->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
             $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
@@ -141,28 +139,28 @@ if(!($myMetaHeader->status == "Error"))
     }
 
     // Update parameters in object if updating or creating an object 
-    if($theMode=='update' || $theMode=='create')
+    if($myRequest->mode=='update' || $myRequest->mode=='create')
     {
-        if (isset($theLabel)) $mySpecimen->setLabel($theLabel);
-        if (isset($theTreeID)) $mySpecimen->setTreeID($theTreeID);
-        if ((isset($theDay)) && (isset($theMonth)) && (isset($theYear))) $mySpecimen->setCollectionDate($theDay, $theMonth, $theYear);
-        if (isset($theSpecimenTypeID)) $mySpecimen->setSpecimenTypeID($theSpecimenTypeID);
-        if (isset($theTerminalRingID)) $mySpecimen->setTerminalRingID($theTerminalRingID);
-        if (isset($theIsTerminalRingVerified)) $mySpecimen->setIsTerminalRingVerified($theIsTerminalRingVerified);
-        if (isset($theSapwoodCount)) $mySpecimen->setSapwoodCount($theSapwoodCount);
-        if (isset($theIsSapwoodCountVerified)) $mySpecimen->setIsSapwoodCountVerified($theIsSapwoodCountVerified);
-        if (isset($theSpecimenQualityID)) $mySpecimen->setSpecimenQualityID($theSpecimenQualityID);
-        if (isset($theIsSpecimenQualityVerified)) $mySpecimen->setIsSpecimenQualityVerified($theIsSpecimenQualityVerified);
-        if (isset($theSpecimenContinuityID)) $mySpecimen->setSpecimenContinuityID($theSpecimenContinuityID);
-        if (isset($thePithID)) $mySpecimen->setPithID($thePithID);
-        if (isset($theIsPithVerified)) $mySpecimen->setIsPithVerified($theIsPithVerified);
-        if (isset($theUnmeasPre)) $mySpecimen->setUnmeasPre($theUnmeasPre);
-        if (isset($theIsUnmeasPreVerified)) $mySpecimen->setIsUnmeasPreVerified($theIsUnmeasPreVerified);
-        if (isset($theUnmeasPost)) $mySpecimen->setUnmeasPost($theUnmeasPost);
-        if (isset($theIsUnmeasPostVerified)) $mySpecimen->setIsUnmeasPostVerified($theIsUnmeasPostVerified);
+        if (isset($myRequest->label)) $mySpecimen->setLabel($myRequest->label);
+        if (isset($myRequest->treeid)) $mySpecimen->setTreeID($myRequest->treeid);
+        if ((isset($myRequest->collectedday)) && (isset($myRequest->collectedmonth)) && (isset($myRequest->collectedyear))) $mySpecimen->setCollectionDate($myRequest->collectedday, $myRequest->collectedmonth, $myRequest->collectedyear);
+        if (isset($myRequest->specimentype)) $mySpecimen->setSpecimenTypeID($myRequest->specimentype);
+        //if (isset($myRequest->terminalring)) $mySpecimen->setTerminalRingID($myRequest->terminalring);
+        if (isset($myRequest->isterminalringverified)) $mySpecimen->setIsTerminalRingVerified($myRequest->isterminalringverified);
+        if (isset($myRequest->sapwoodcount)) $mySpecimen->setSapwoodCount($myRequest->sapwoodcount);
+        if (isset($myRequest->issapwoodcountverified)) $mySpecimen->setIsSapwoodCountVerified($myRequest->issapwoodcountverified);
+        //if (isset($myRequest->specimenqualityid)) $mySpecimen->setSpecimenQualityID($myRequest->specimenqualityid);
+        if (isset($myRequest->isspecimenqualityverified)) $mySpecimen->setIsSpecimenQualityVerified($myRequest->isspecimenqualityverified);
+        //if (isset($myRequest->specimencontinuityid)) $mySpecimen->setSpecimenContinuityID($myRequest->specimencontinuityid);
+        //if (isset($myRequest->pith)) $mySpecimen->setPithID($myRequest->pith);
+        if (isset($myRequest->ispithverified)) $mySpecimen->setIsPithVerified($myRequest->ispithverified);
+        if (isset($myRequest->unmeasuredpre)) $mySpecimen->setUnmeasPre($myRequest->unmeasuredpre);
+        if (isset($myRequest->isunmeasuredpreverified)) $mySpecimen->setIsUnmeasPreVerified($myRequest->isunmeasuredpreverified);
+        if (isset($myRequest->unmeasuredpost)) $mySpecimen->setUnmeasPost($myRequest->unmeasuredpost);
+        if (isset($myRequest->isunmeasuredpostverified)) $mySpecimen->setIsUnmeasPostVerified($myRequest->isunmeasuredpostverified);
 
-        if( (($theMode=='update') && ($myAuth->specimenPermission($theID, "update")))  || 
-            (($theMode=='create') && ($myAuth->specimenPermission($theID, "create")))    )
+        if( (($myRequest->mode=='update') && ($myAuth->specimenPermission($myRequest->id, "update")))  || 
+            (($myRequest->mode=='create') && ($myAuth->specimenPermission($myRequest->id, "create")))    )
         {
             // Write to object to database
             $success = $mySpecimen->writeToDB();
@@ -177,14 +175,14 @@ if(!($myMetaHeader->status == "Error"))
         }  
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on specimenid $theID");
+            $myMetaHeader->setMessage("103", "Permission denied on specimenid ".$myRequest->id);
         }
     }
 
     // Delete record from db if requested
-    if($theMode=='delete')
+    if($myRequest->mode=='delete')
     {
-        if($myAuth->specimenPermission($theID, "delete"))
+        if($myAuth->specimenPermission($myRequest->id, "delete"))
         {
             // Write to Database
             $success = $mySpecimen->deleteFromDB();
@@ -199,24 +197,24 @@ if(!($myMetaHeader->status == "Error"))
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on specimenid $theID");
+            $myMetaHeader->setMessage("103", "Permission denied on specimenid ".$myRequest->id);
         }
     }
 
-    if($theMode=='read')
+    if($myRequest->mode=='read')
     {
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
             // DB connection ok
             // Build SQL depending on parameters
-            if(!$theID==NULL)
+            if(!$myRequest->id==NULL)
             {
                 // Output multiple specimens as XML
 
                 $sql = "select tblsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblspecimen.specimenid ";
                 $sql.= "from tblsite, tblsubsite, tbltree, tblspecimen ";
-                $sql.= "where tblspecimen.specimenid=$theID and tblspecimen.treeid=tbltree.treeid and tbltree.subsiteid=tblsubsite.subsiteid and tblsubsite.siteid=tblsite.siteid";
+                $sql.= "where tblspecimen.specimenid=$myRequest->id and tblspecimen.treeid=tbltree.treeid and tbltree.subsiteid=tblsubsite.subsiteid and tblsubsite.siteid=tblsite.siteid";
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
@@ -256,7 +254,6 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $xmldata.=$parentTagBegin."\n";
                 // Output one specimen with its parents
                 $sql="select * from tblspecimen order by specimenid";
                 $result = pg_query($dbconn, $sql);
@@ -282,7 +279,6 @@ if(!($myMetaHeader->status == "Error"))
                         $myMetaHeader->setMessage("103", "Permission denied on specimenid ".$row['specimenid'], "Warning");
                     }
                 }
-                $xmldata.=$parentTagEnd."\n";
             }
         }
         else
@@ -293,11 +289,7 @@ if(!($myMetaHeader->status == "Error"))
     }
 }
 
-// Output the resulting XML
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-echo "<corina>\n";
-echo $myMetaHeader->asXML();
-echo "<content>\n";
-echo $xmldata;
-echo "</content>\n";
-echo "</corina>";
+// ***********
+// OUTPUT DATA
+// ***********
+writeOutput($myMetaHeader, $xmldata, $parentTagBegin, $parentTagEnd);

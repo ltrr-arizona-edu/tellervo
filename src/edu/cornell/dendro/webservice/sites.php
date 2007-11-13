@@ -9,9 +9,6 @@
 //////*******************************************************************
 header('Content-Type: application/xhtml+xml; charset=utf-8');
 
-// Only report errors
-//error_reporting(E_ERROR);
-
 require_once("inc/dbsetup.php");
 require_once("config.php");
 require_once("inc/meta.php");
@@ -46,8 +43,6 @@ else
     $myRequest->getGetParams();
 }
 
-
-
 // ****************
 // CHECK PARAMETERS 
 // ****************
@@ -66,7 +61,7 @@ switch($myRequest->mode)
             $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
-    
+ 
     case "update":
         $myMetaHeader->setRequestType("update");
         if($myAuth->isLoggedIn())
@@ -152,7 +147,7 @@ if(!($myMetaHeader->status == "Error"))
         if( (($myRequest->mode=='update') && ($myAuth->sitePermission($myRequest->id, "update")))  || 
             (($myRequest->mode=='create') && ($myAuth->sitePermission($myRequest->id, "create")))    )
         {
-            // Write to object to database
+            // Write object to database
             $success = $mySite->writeToDB();
             if($success)
             {
@@ -204,7 +199,6 @@ if(!($myMetaHeader->status == "Error"))
             }
             elseif((isset($myRequest->name)) && (isset($myRequest->code)))
             {
-                echo "2";
                 $sql="select * from tblsite where name='$myRequest->name' and code='$myRequest->code' order by siteid";
             }
             elseif(isset($myRequest->name))

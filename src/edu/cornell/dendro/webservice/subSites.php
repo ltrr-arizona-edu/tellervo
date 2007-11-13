@@ -9,98 +9,113 @@
 //////*******************************************************************
 header('Content-Type: application/xhtml+xml; charset=utf-8');
 
-require_once("config.php");
 require_once("inc/dbsetup.php");
+require_once("config.php");
 require_once("inc/meta.php");
+require_once("inc/auth.php");
+require_once("inc/request.php");
+require_once("inc/output.php");
+
 require_once("inc/subSite.php");
 require_once("inc/site.php");
-require_once("inc/auth.php");
 
-$myAuth = new auth();
-
-// Extract parameters from request and ensure no SQL has been injected
-$theMode = strtolower(addslashes($_GET['mode']));
-$theName = strtolower(addslashes($_GET['name']));
-$theID = (int) $_GET['id'];
-if(isset($_GET['label'])) $theName = addslashes($_GET['label']);
-
-// Create new meta object and check required input parameters and data types
-switch($theMode)
-{
-    case "read":
-        $myMetaHeader = new meta("read");
-        if($myAuth->isLoggedIn())
-        {
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-    
-    case "update":
-        $myMetaHeader = new meta("update");
-        if($myAuth->isLoggedIn())
-        {
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if($theName == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-
-    case "delete":
-        $myMetaHeader = new meta("delete");
-        if($myAuth->isLoggedIn())
-        {
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-
-
-    case "create":
-        $myMetaHeader = new meta("create");
-        if($myAuth->isLoggedIn())
-        {
-            if($theName == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-
-    default:
-        $myMetaHeader = new meta("help");
-        $myMetaHeader->setUser("Guest", "", "");
-        // Output the resulting XML
-        echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        echo "<corina>\n";
-        echo $myMetaHeader->asXML();
-        echo "<help> Details of how to use this web service will be added here later! </help>";
-        echo "</corina>\n";
-        die;
-}
+// Create Authentication, Request and Header objects
+$myAuth         = new auth();
+$myMetaHeader   = new meta();
+$myRequest      = new subSiteRequest($myMetaHeader);
 
 // Set user details
 if($myAuth->isLoggedIn())
 {
     $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
 }
+
+// **************
+// GET PARAMETERS
+// **************
+if(isset($_POST['xmlrequest']))
+{
+    // Extract parameters from XML request POST
+    $myRequest->getXMLParams();
+}
 else
 {
-    $myMetaHeader->setUser("Guest", "Guest", "Guest");
+    // Extract parameters from get request and ensure no SQL has been injected
+    $myRequest->getGetParams();
 }
+
+// ****************
+// CHECK PARAMETERS 
+// ****************
+switch($myRequest->mode)
+{
+    case "read":
+        $myMetaHeader->setRequestType("read");
+        if($myAuth->isLoggedIn())
+        {
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+
+    case "update":
+        $myMetaHeader->setRequestType("update");
+        if($myAuth->isLoggedIn())
+        {
+            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if($myRequest->name == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+
+    case "delete":
+        $myMetaHeader->setRequestType("delete");
+        if($myAuth->isLoggedIn())
+        {
+            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+
+    case "create":
+        $myMetaHeader->setRequestType("create");
+        if($myAuth->isLoggedIn())
+        {
+            if($myRequest->name == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+
+    case "failed":
+        $myMetaHeader->setRequestType("help");
+        break;
+
+    default:
+        $myMetaHeader->setRequestType("help");
+        // Output the resulting XML
+        $xmldata ="Details of how to use this web service will be added here later!";
+        writeHelpOutput($myMetaHeader,$xmldata);
+        die;
+}
+
+// *************
+// PERFORM QUERY
+// *************
 
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
@@ -111,9 +126,9 @@ if(!($myMetaHeader->status == "Error"))
     $parentTagEnd = $mySubSite->getParentTagEnd();
 
     // Set existing parameters if updating or deleting from database
-    if($theMode=='update' || $theMode=='delete') 
+    if($myRequest->mode=='update' || $myRequest->mode=='delete') 
     {
-        $success = $mySubSite->setParamsFromDB($theID);
+        $success = $mySubSite->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
             $myMetaHeader->setMessage($mySubSite->getLastErrorCode(), $mySubSite->getLastErrorMessage());
@@ -121,13 +136,13 @@ if(!($myMetaHeader->status == "Error"))
     }
 
     // Update parameters in object if updating or creating an object 
-    if($theMode=='update' || $theMode=='create')
+    if($myRequest->mode=='update' || $myRequest->mode=='create')
     {
-        if (isset($theName)) $mySubSite->setName($theName);
+        if (isset($myRequest->name)) $mySubSite->setName($myRequest->name);
         if (isset($theCode)) $mySubSite->setCode($theCode);
-        
-        if( (($theMode=='update') && ($myAuth->subSitePermission($theID, "update")))  || 
-            (($theMode=='create') && ($myAuth->subSitePermission($theID, "create")))    )
+
+        if( (($myRequest->mode=='update') && ($myAuth->subSitePermission($myRequest->id, "update")))  || 
+            (($myRequest->mode=='create') && ($myAuth->subSitePermission($myRequest->id, "create")))    )
         {
             // Check user has permission to update / create subsite before writing object to database
             $success = $mySubSite->writeToDB();
@@ -142,14 +157,14 @@ if(!($myMetaHeader->status == "Error"))
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on subsiteid $theID");
+            $myMetaHeader->setMessage("103", "Permission denied on subsiteid $myRequest->id");
         }
     }
 
     // Delete record from db if requested
-    if($theMode=='delete')
+    if($myRequest->mode=='delete')
     {
-        if($myAuth->subSitePermission($theID, "delete"))
+        if($myAuth->subSitePermission($myRequest->id, "delete"))
         {
             // Check the user has permission to delete record before performing statement
             $success = $mySubSite->deleteFromDB();
@@ -164,20 +179,20 @@ if(!($myMetaHeader->status == "Error"))
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on subsiteid $theID");
+            $myMetaHeader->setMessage("103", "Permission denied on subsiteid $myRequest->id");
         }
     }
 
-    if($theMode=='read')
+    if($myRequest->mode=='read')
     {
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
             // DB connection ok
             // Build SQL depending on parameters
-            if(!$theID==NULL)
+            if(!$myRequest->id==NULL)
             {
-                $sql="select tblsubsite.subsiteid, tblsubsite.siteid from tblsubsite  where subsiteid=$theID order by tblsubsite.subsiteid";
+                $sql="select tblsubsite.subsiteid, tblsubsite.siteid from tblsubsite  where subsiteid=$myRequest->id order by tblsubsite.subsiteid";
                 // Run SQL
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
@@ -248,11 +263,9 @@ if(!($myMetaHeader->status == "Error"))
     }
 }
 
-// Output the resulting XML
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-echo "<corina>\n";
-echo $myMetaHeader->asXML();
-echo "<data>\n";
-echo $xmldata;
-echo "</data>\n";
-echo "</corina>";
+// ***********
+// OUTPUT DATA
+// ***********
+writeOutput($myMetaHeader, $xmldata, $parentTagBegin, $parentTagEnd);
+
+

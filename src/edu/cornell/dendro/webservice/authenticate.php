@@ -7,7 +7,7 @@
 //////
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
-//header('Content-Type: application/xhtml+xml; charset=utf-8');
+header('Content-Type: application/xhtml+xml; charset=utf-8');
 
 require_once("config.php");
 require_once("inc/dbsetup.php");
@@ -40,6 +40,16 @@ if(isset($_POST['username'])) $theUsername = addslashes($_POST['username']);
 if(isset($_POST['password'])) $thePassword = addslashes($_POST['password']);
 if(isset($_POST['hash'])) $theClientHash = addslashes($_POST['hash']);
 if(isset($_POST['nonce'])) $theClientNonce = addslashes($_POST['nonce']);
+
+if($debugFlag)
+{
+    $myMetaHeader->setMessage("Username", $_POST['username'], "Warning");
+    $myMetaHeader->setMessage("Password", $_POST['password'], "Warning");
+    $myMetaHeader->setMessage("Hash", $_POST['hash'], "Warning");
+    $myMetaHeader->setMessage("Prehash", $_POST['prehash'], "Warning");
+    $myMetaHeader->setMessage("nonce", $_POST['nonce'], "Warning");
+}
+
 
 // ****************
 // CHECK PARAMETERS 
@@ -88,7 +98,6 @@ if(!($myMetaHeader->status == "Error"))
     if($theMode=='plainlogin')
     {
         $myAuth->login($theUsername, $thePassword);
-        
         if($myAuth->isLoggedIn())
         {
             // Log in worked
@@ -96,7 +105,7 @@ if(!($myMetaHeader->status == "Error"))
         else
         {
             // Log in failed
-            $myMetaHeader->setMessage(101, "Authentication failed");
+            $myMetaHeader->setMessage(101, "Authentication failed using plain login");
         }
     }
     
@@ -112,7 +121,7 @@ if(!($myMetaHeader->status == "Error"))
         else
         {
             // Log in failed
-            $myMetaHeader->setMessage(101, "Authentication failed");
+            $myMetaHeader->setMessage(101, "Authentication failed using secure login");
         }
     }
 
