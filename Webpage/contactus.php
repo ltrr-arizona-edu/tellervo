@@ -5,6 +5,7 @@ $news = "";
 $vertnavbarfilename = "phpinc/vert-navbar-contactus.php";
 
 $sideimagesarray["dendroteam.jpg"] = "The team in Crete 2007.";
+$sideimagesarray["ymk.jpg"] = "";
 
 include('phpinc/2col-header.php');
 
@@ -24,7 +25,7 @@ B-48 Goldwin Smith Hall<br/>
 Cornell University<br/>
 Ithaca NY 14853-3201 USA<br/><br/>
 Tel. 1-607/255-8650<br/>
-Fax. 1-607/255-8336<br/>
+Fax. 1-607/254-8899 <br/> - (attn. Prof. Sturt Manning)<br/>
 </td>
 <td>
 NYS &amp; NE North American Dendrochronology Project<br/>
@@ -33,7 +34,7 @@ B-48 Goldwin Smith Hall<br/>
 Cornell University<br/>
 Ithaca NY 14853-3201 USA<br/><br/>
 Tel. 1-607/255-8650<br/>
-Fax. 1-607/255-8336<br/>
+Fax. 1-607/254-8899<br/> (attn. Prof. Sturt Manning)<br/>
 </td>
 </tr>
 </table>
@@ -49,6 +50,12 @@ If you would like to find out more about who we are please see our personal page
 <td><a href="/personal/sturt.php">Sturt Manning</a></td>
 <td>(Director)</td>
 <td><a href="mailto:sm456@cornell.edu">sm456@cornell.edu</a></td>
+</tr>
+
+<tr>
+<td colspan=3>
+
+</td>
 </tr>
 
 <tr>
@@ -72,12 +79,6 @@ If you would like to find out more about who we are please see our personal page
 <td><a href="personal/carol.php">Carol Griggs</a></td>
 <td>(Research Associate)</td>
 <td><a href="mailto:cbg4@cornell.edu">cbg4@cornell.edu</a></td>
-</tr>
-
-<tr>
-<td><a href="personal/maryanne.php">Maryanne Newton</a></td>
-<td>(on leave)</td>
-<td><a href="mailto:mwn3@cornell.edu">mwn3@cornell.edu</a></td>
 </tr>
 
 <tr>

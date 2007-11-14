@@ -12,27 +12,33 @@ include('phpinc/hub-header.php');
 	of the site section for which the hub page is the highest level.
 -->
 <div id="hub-description">
-<p>	
+<h3>	
 Welcome to the website of the Cornell Tree-Ring Laboratory, home of:
-</p>
+</h3>
 
 <ul>
 <li><a href="/projects/aegean.php">The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern Dendrochronology </a></li>
 <li> <a href="/projects/usa.php">The New York State and NE North American Dendrochronology Project</a></li>
 </ul>
 
-<p>
+<!--<p>
 Please use the links opposite to learn more about dendrochronology and how it is being used in the Cornell Tree-Ring Laboratory.
 </p>
+-->
 
-<p>
-If you have samples that you would like us to examine, please see our <a href="samples.php">'we need your samples'</a> page which includes sampling guidelines and instructions on how to send us your samples.
-</p>
 
-<p>
-<a href="course.php">Introduction to Dendrochronology</a> course. Each year Cornell students (Undergraduate
-or Graduate) can take an Introduction to Dendrochronology course in the Lab.
-</p>
+<h3>Teaching and Research</h3>
+<ul>
+<li>Each year we teach an  <a href="course.php">Introduction to Dendrochronology</a> course for Cornell graduate and undergraduate students.</li>
+<li>We also have opportunities for <a href="gradstudents.php">graduate research.</a></li>
+</ul>
+
+
+<h3>We need your samples!</h3>
+<ul>
+<li>
+If you have samples that you would like us to examine, please see our <a href="samples.php">'we need your samples'</a> page which includes sampling guidelines and instructions on how to send us your samples.</li>
+</ul>
 
 </div>
 
@@ -78,25 +84,27 @@ or Graduate) can take an Introduction to Dendrochronology course in the Lab.
 	the site section. The links are organized into unordered lists, which
 	are stacked in a horizontal row.
 -->
-	<h3>More information</h3>
+	<h3>Index</h3>
 	
 	<ul>    
-		<li><a href="whatisdendro.php">What is dendrochronology</a></li>
-		<li><a href="ourprojects.php">About our projects</a></li>
-		<li><a href="samples.php">We need your samples!</a></li>
-
-	</ul>
-		
-	<ul>    
 		<li><a href="reports.php">Annual reports</a></li>
-		<li><a href="contactus.php">Contact us</a></li>
 		<li><a href="bibliography.php">Bibliography</a></li>
-	</ul>	
-
-	<ul>
-		<li><a href="procedures.php">Laboratory procedures</a></li>
+		<li><a href="contactus.php">Contact us</a></li>
 		<li><a href="corina/index.php">Corina software</a></li>
+        </ul>
+
+        <ul>
+		<li><a href="projects/dendrochem.php">Dendrochemistry</a></li>
+		<li><a href="course.php">Dendrochronology course</a></li>
+		<li><a href="gradstudents.php">Graduate opportunities</a></li>
 		<li><a href="supporters.php">History &amp; Supporters</a></li>
+        </ul>
+
+        <ul>
+		<li><a href="procedures.php">Laboratory procedures</a></li>
+		<li><a href="links.php">Links</a></li>
+                <li><a href="ourprojects.php">Our projects</a></li>
+		<li><a href="samples.php">We need your samples!</a></li>
 	</ul>
 </div>	
 
