@@ -9,130 +9,151 @@
 //////*******************************************************************
 header('Content-Type: application/xhtml+xml; charset=utf-8');
 
-require_once("config.php");
 require_once("inc/dbsetup.php");
+require_once("config.php");
 require_once("inc/meta.php");
-require_once("inc/siteNote.php");
 require_once("inc/auth.php");
+require_once("inc/request.php");
+require_once("inc/output.php");
 
-$myAuth = new auth();
+require_once("inc/siteNote.php");
 
-// Extract parameters from request and ensure no SQL has been injected
-$theMode = strtolower(addslashes($_GET['mode']));
-$theID = (int) $_GET['id'];
-$theSiteID = (int) $_GET['siteid'];
-if(isset($_GET['note'])) $theNote = addslashes($_GET['note']);
-$theIsStandard = fromStringToPHPBool($_GET['isstandard']);
-
-// Create new meta object and check required input parameters and data types
-switch($theMode)
-{
-    case "read":
-        $myMetaHeader = new meta("read");
-        if($myAuth->isLoggedIn())
-        {
-            if(!(gettype($theID)=="integer") && !($theID==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
-            if(!($theID>0) && !($theID==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be a valid positive integer.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-    
-    case "update":
-        $myMetaHeader = new meta("update");
-        if($myAuth->isLoggedIn())
-        {
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if((gettype($theIsStandard)!="boolean") && ($theIsStandard!=NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'isstandard' must be a boolean.");
-            if(!(gettype($theID)=="integer") && !($theID)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-
-    case "delete":
-        $myMetaHeader = new meta("delete");
-        if($myAuth->isLoggedIn())
-        {
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if(!(gettype($theID)=="integer") && !(isset($theID))) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-
-    case "create":
-        $myMetaHeader = new meta("create");
-        if($myAuth->isLoggedIn())
-        {
-            // Set default value if not specified
-            if($theIsStandard == NULL) $theIsStandard = FALSE;
-            if($theNote == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'note' field is required.");
-            if(!(gettype($theIsStandard)=="boolean")) $myMetaHeader->setMessage("901", "Invalid parameter - 'isstandard' must be a boolean.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-    
-    case "assign":
-        $myMetaHeader = new meta("assign");
-        if($myAuth->isLoggedIn())
-        {
-            // Set default value if not specified
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if($theSiteID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'siteid' field is required.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-    
-    case "unassign":
-        $myMetaHeader = new meta("unassign");
-        if($myAuth->isLoggedIn())
-        {
-            // Set default value if not specified
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if($theSiteID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'siteid' field is required.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-
-    default:
-        $myMetaHeader = new meta("help");
-        $myMetaHeader->setUser("Guest", "", "");
-        // Output the resulting XML
-        echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        echo "<corina>\n";
-        echo $myMetaHeader->asXML();
-        echo "<help> Details of how to use this web service will be added here later! </help>";
-        echo "</corina>\n";
-        die;
-}
+// Create Authentication, Request and Header objects
+$myAuth         = new auth();
+$myMetaHeader   = new meta();
+$myRequest      = new siteNoteRequest($myMetaHeader);
 
 // Set user details
 if($myAuth->isLoggedIn())
 {
     $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
 }
+
+// **************
+// GET PARAMETERS
+// **************
+if(isset($_POST['xmlrequest']))
+{
+    // Extract parameters from XML request POST
+    $myRequest->getXMLParams();
+}
+else
+{
+    // Extract parameters from get request and ensure no SQL has been injected
+    $myRequest->getGetParams();
+}
+
+// ****************
+// CHECK PARAMETERS 
+// ****************
+// Create new meta object and check required input parameters and data types
+switch($myRequest->mode)
+{
+    case "read":
+        $myMetaHeader->setRequestType("read");
+        if($myAuth->isLoggedIn())
+        {
+            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
+            if(!($myRequest->id>0) && !($myRequest->id==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be a valid positive integer.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+    
+    case "update":
+        $myMetaHeader->setRequestType("update");
+        if($myAuth->isLoggedIn())
+        {
+            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if((gettype($myRequest->isstandard)!="boolean") && ($myRequest->isstandard!=NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'isstandard' must be a boolean.");
+            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+
+    case "delete":
+        $myMetaHeader->setRequestType("delete");
+        if($myAuth->isLoggedIn())
+        {
+            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if(!(gettype($myRequest->id)=="integer") && !(isset($myRequest->id))) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+
+    case "create":
+        $myMetaHeader->setRequestType("create");
+        if($myAuth->isLoggedIn())
+        {
+            // Set default value if not specified
+            if($myRequest->isstandard == NULL) $myRequest->isstandard = FALSE;
+            if($theNote == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'note' field is required.");
+            if(!(gettype($myRequest->isstandard)=="boolean")) $myMetaHeader->setMessage("901", "Invalid parameter - 'isstandard' must be a boolean.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+    
+    case "assign":
+        $myMetaHeader->setRequestType("assign");
+        if($myAuth->isLoggedIn())
+        {
+            // Set default value if not specified
+            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if($myRequest->siteid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'siteid' field is required.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+    
+    case "unassign":
+        $myMetaHeader->setRequestType("unassign");
+        if($myAuth->isLoggedIn())
+        {
+            // Set default value if not specified
+            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if($myRequest->siteid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'siteid' field is required.");
+            break;
+        }
+        else
+        {
+             $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+
+    case "failed":
+        $myMetaHeader->setRequestType("help");
+        break;
+
+    default:
+        $myMetaHeader->setRequestType("help");
+        // Output the resulting XML
+        $xmldata ="Details of how to use this web service will be added here later!";
+        writeHelpOutput($myMetaHeader,$xmldata);
+        die;
+}
+
+
+// *************
+// PERFORM QUERY
+// *************
 
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
@@ -143,9 +164,9 @@ if(!($myMetaHeader->status == "Error"))
     $parentTagEnd = $mySiteNote->getParentTagEnd();
 
     // Set existing parameters if updating or deleting from database
-    if($theMode=='update' || $theMode=='delete' || $theMode=='assign' || $theMode=='unassign') 
+    if($myRequest->mode=='update' || $myRequest->mode=='delete' || $myRequest->mode=='assign' || $myRequest->mode=='unassign') 
     {
-        $success = $mySiteNote->setParamsFromDB($theID);
+        $success = $mySiteNote->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
             $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
@@ -153,16 +174,16 @@ if(!($myMetaHeader->status == "Error"))
     }
 
     // Update parameters in object if updating or creating an object 
-    if($theMode=='update' || $theMode=='create')
+    if($myRequest->mode=='update' || $myRequest->mode=='create')
     {	
-        if(!($myAuth->isAdmin()) && ($theMode=='update'))
+        if(!($myAuth->isAdmin()) && ($myRequest->mode=='update'))
         {
             $myMetaHeader->setMessage("103", "Permission denied");
         }
         else
         {
             if (isset($theNote)) $mySiteNote->setNote($theNote);
-            if (isset($theIsStandard)) $mySiteNote->setIsStandard($theIsStandard);
+            if (isset($myRequest->isstandard)) $mySiteNote->setIsStandard($myRequest->isstandard);
 
             // Write to object to database
             $success = $mySiteNote->writeToDB();
@@ -177,20 +198,20 @@ if(!($myMetaHeader->status == "Error"))
         }
     }
 
-    if($theMode=='read')
+    if($myRequest->mode=='read')
     {
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
             // DB connection ok
             // Build SQL depending on parameters
-            if($theID==NULL)
+            if($myRequest->id==NULL)
             {
                 $sql="select * from tlkpsitenote order by sitenoteid";
             }
             else
             {
-                $sql="select * from tlkpsitenote where sitenoteid=$theID order by sitenoteid";
+                $sql="select * from tlkpsitenote where sitenoteid=".$myRequest->id." order by sitenoteid";
             }
 
             if($sql)
@@ -220,40 +241,35 @@ if(!($myMetaHeader->status == "Error"))
         }
     }
     
-    if($theMode=='assign')
+    if($myRequest->mode=='assign')
     {
-        if($myAuth->sitePermission($theSiteID, "update"))   
+        if($myAuth->sitePermission($myRequest->siteid, "update"))   
         {
-            $mySiteNote->assignToSite($theSiteID);     
+            $mySiteNote->assignToSite($myRequest->siteid);     
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on siteid=$theSiteID");
+            $myMetaHeader->setMessage("103", "Permission denied on siteid=."$myRequest->siteid);
         }
 
     }
     
-    if($theMode=='unassign')
+    if($myRequest->mode=='unassign')
     {
-        if($myAuth->sitePermission($theSiteID, "update"))   
+        if($myAuth->sitePermission($myRequest->siteid, "update"))   
         {
-            $mySiteNote->unassignToSite($theSiteID);     
+            $mySiteNote->unassignToSite($myRequest->siteid);     
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on siteid=$theSiteID");
+            $myMetaHeader->setMessage("103", "Permission denied on siteid=."$myRequest->siteid);
         }
 
     }
 }
 
-// Output the resulting XML
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-echo "<corina>\n";
-echo $myMetaHeader->asXML();
-echo "<data>\n";
-echo $parentTagBegin."\n";
-echo $xmldata;
-echo $parentTagEnd."\n";
-echo "</data>\n";
-echo "</corina>";
+
+// ***********
+// OUTPUT DATA
+// ***********
+writeOutput($myMetaHeader, $xmldata, $parentTagBegin, $parentTagEnd);
