@@ -3,7 +3,8 @@
 $title = "Carol Griggs";
 $news = "";
 $vertnavbarfilename = "phpinc/vert-navbar-contactus.php";
-$sideimagesarray["carol.jpg"] = "Carol Griggs (Research Associate)";
+$sideimagesarray["carolalbany.jpg"] = "Carol Griggs (Research Associate)";
+$sideimagesarray["carol.jpg"] = "";
 
 include('../phpinc/2col-header.php');
 

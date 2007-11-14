@@ -1,6 +1,7 @@
 <?php 
 // The absolute path of the base of the website
 $basepath="/var/www/website/";
+$basewebpath="http://dendro.cornell.edu/";
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -24,7 +25,7 @@ $basepath="/var/www/website/";
 	The following link tag should appear in the head of every page in the website. see
 	styles/screen.css.
 -->
-	<link rel="stylesheet" type="text/css" media="screen" href="/styles/screen.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="<?echo $basewebpath."/styles/screen.css";?>" />
 <?php
 
 if($includeDojo)
