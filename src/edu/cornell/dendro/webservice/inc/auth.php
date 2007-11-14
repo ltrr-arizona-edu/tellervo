@@ -67,12 +67,14 @@ class auth
             $_SESSION['lastname'] = $row['lastname'];
             $_SESSION['username'] = $row['username'];
             $this->loggedIn = TRUE;
+            $this->logRequest("loginSecure");
         }
     }
     else
     {
         // Login failed
         $this->loggedIn = FALSE;
+        $this->logRequest("loginFailure");
     }
 
     return $this->loggedIn;
@@ -110,12 +112,14 @@ class auth
             $_SESSION['lastname'] = $row['lastname'];
             $_SESSION['username'] = $row['username'];
             $this->loggedIn = TRUE;
+            $this->logRequest("loginPlain");
         }
     }
     else
     {
         // Login failed
         $this->loggedIn = FALSE;
+        $this->logRequest("loginFailure");
     }
 
     return $this->loggedIn;
@@ -129,7 +133,53 @@ class auth
     {
         setcookie(session_name(), '', time()-42000, '/');
     }
+    $this->logRequest("logout");
     $session_destroy;
+  }
+
+  function logRequest($type)
+  {
+    global $dbconn;
+    global $wsversion;
+
+    if ($type=="loginPlain")
+    {
+        $request = "Logged in using plain text";
+    }
+    elseif ($type=="loginSecure")
+    {
+        $request = "Logged in with security";
+    }
+    elseif ($type=="logout")
+    {
+        $request = "Logged out";
+    }
+    elseif ($type=="loginFailure")
+    {
+        $request = "Failed login attempt for username: '".$_POST['username']."'";
+    }
+    else
+    {
+        $request = "Unknown authentication request";
+    }
+
+    if ($this->getID()==NULL) 
+    {
+        $sql = "insert into tblrequestlog (request, ipaddr, wsversion) values ('".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion')";
+    }
+    else
+    {
+        $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion) values ('".$this->getID()."', '".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion')";
+    }
+
+    pg_send_query($dbconn, $sql);
+    $result = pg_get_result($dbconn);
+    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+    {
+        echo pg_result_error($result)."--- SQL was $sql";
+    }
+
+
   }
 
   function isLoggedIn()

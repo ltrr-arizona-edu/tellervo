@@ -13,19 +13,23 @@ class request
     var $xmlrequest                 = NULL;
     var $simplexml                  = NULL;
     var $metaHeader                 = NULL;
+    var $auth                       = NULL;
 
     var $mode                       = "failed";
     var $id                         = NULL;
     var $code                       = NULL;
     var $name                       = NULL;
     var $label                      = NULL;
+
     var $taxonid                    = NULL;
     var $subsiteid                  = NULL;
     var $siteid                     = NULL;
+    var $treeid                     = NULL;
+    var $readingid                  = NULL;
+
     var $latitude                   = NULL;
     var $longitude                  = NULL;
     var $precision                  = NULL;
-    var $treeid                     = NULL;
     var $collectedday               = NULL;
     var $collectedmonth             = NULL;
     var $collectedyear              = NULL;
@@ -47,9 +51,10 @@ class request
     var $note                       = NULL;
 
 
-    function request($metaHeader)
+    function request($metaHeader, $auth)
     {
         $this->metaHeader = $metaHeader;
+        $this->auth = $auth;
         $this->xmlrequest = stripslashes($_POST['xmlrequest']);
     }
 
@@ -83,11 +88,42 @@ class request
         }
     }
 
+    function logRequest()
+    {
+        global $dbconn;
+        global $wsversion;
+
+        if ($this->xmlrequest)
+        {
+            $request = $this->xmlrequest;
+        }
+        else
+        {
+            $request = $_SERVER['REQUEST_URI'];
+        }
+
+        $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion) values ('".$this->auth->getID()."', '".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion')";
+
+        pg_send_query($dbconn, $sql);
+        $result = pg_get_result($dbconn);
+        if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+        {
+            echo pg_result_error($result)."--- SQL was $sql";
+        }
+
+    }
+
     function setXMLErrors()
     { 
         $message = "XML errors";
         $this->metaHeader->setMessage("905", $message);
 
+    }
+
+    function getXMLParams()
+    {
+        $this->logRequest();
+        $this->readXML();
     }
 
     function getGetParams()
@@ -96,9 +132,10 @@ class request
         $this->mode = strtolower(addslashes($_GET['mode']));
         if(isset($_GET['id'])) $this->id = (int) $_GET['id'];
         if(isset($_GET['taxonid'])) $this->taxonid = (int) $_GET['label'];
-        if(isset($_GET['subsiteid'])) $this->subsiteid = (int) $_GET['subsite'];
-        if(isset($_GET['siteid'])) $this->siteid = (int) $_GET['site'];
-        if(isset($_GET['treeid'])) $this->treeid = (int) $_GET['tree'];
+        if(isset($_GET['subsiteid'])) $this->subsiteid = (int) $_GET['subsiteid'];
+        if(isset($_GET['siteid'])) $this->siteid = (int) $_GET['siteid'];
+        if(isset($_GET['treeid'])) $this->treeid = (int) $_GET['treeid'];
+        if(isset($_GET['readingid'])) $this->treeid = (int) $_GET['readingid'];
 
         if(isset($_GET['code'])) $this->code = addslashes($_GET['code']);
         if(isset($_GET['name'])) $this->name = addslashes($_GET['name']);
@@ -125,6 +162,8 @@ class request
         if(isset($_GET['isunmeasuredpostverified'])) $this->isunmeasurementpostverified = (bool) $_GET['isunmeasuredpostverified'];
         if(isset($_GET['isstandard'])) $this->isstandard = (bool) $_GET['isstandard'];
         if(isset($_GET['note'])) $this->note = addslashes($_GET['note']);
+
+        $this->logRequest();
     }
 
 }
@@ -138,13 +177,14 @@ class siteRequest extends request
     var $code       = NULL;
     var $name       = NULL;
 
-    function siteRequest($metaHeader)
+    function siteRequest($metaHeader, $auth)
     {
-        parent::request($metaHeader);
+        parent::request($metaHeader, $auth);
     }
 
     function getXMLParams()
     {
+        $this->logRequest();
         if($this->readXML())
         {   
             foreach($this->simplexml->xpath('request//site[1]') as $site)
@@ -167,13 +207,14 @@ class treeRequest extends request
     var $longitude  = NULL;
     var $precision  = NULL;
 
-    function treeRequest($metaHeader)
+    function treeRequest($metaHeader, $auth)
     {
-        parent::request($metaHeader);
+        parent::request($metaHeader, $auth);
     }
 
     function getXMLParams()
     {
+        $this->logRequest();
         if($this->readXML())
         {
             foreach($this->simplexml->xpath('request//tree[1]') as $tree)
@@ -200,13 +241,14 @@ class subSiteRequest extends request
     var $siteid     = NULL;
     var $name       = NULL;
 
-    function subSiteRequest($metaHeader)
+    function subSiteRequest($metaHeader, $auth)
     {
-        parent::request($metaHeader);
+        parent::request($metaHeader, $auth);
     }
 
     function getXMLParams()
     {
+        $this->logRequest();
         if($this->readXML())
         {
             foreach($this->simplexml->xpath('request//subsite[1]') as $subsite)
@@ -246,13 +288,14 @@ class specimenRequest extends request
     var $isunmeasuredpreverified    = NULL;
     var $isunmeasuredpostverified   = NULL;
 
-    function specimenRequest($metaHeader)
+    function specimenRequest($metaHeader, $auth)
     {
-        parent::request($metaHeader);
+        parent::request($metaHeader, $auth);
     }
 
     function getXMLParams()
     {
+        $this->logRequest();
         if($this->readXML())
         {
             foreach ($this->simplexml->xpath('request//specimen[1]') as $specimen)
@@ -294,20 +337,21 @@ class siteNoteRequest extends request
     var $note       = NULL;
     var $isstandard = NULL;
 
-    function siteNoteRequest($metaHeader)
+    function siteNoteRequest($metaHeader, $auth)
     {
-        parent::request($metaHeader);
+        parent::request($metaHeader, $auth);
     }
 
     function getXMLParams()
     {
+        $this->logRequest();
         if($this->readXML())
         {
-            foreach($this->simplexml->xpath('request//siteNote[1]') as $siteNote)
+            foreach($this->simplexml->xpath('request') as $request)
             {
-                if($siteNote['id'])            $this->id           = (int)         $siteNote['id'];
-                if($siteNote['note'])          $this->note         = addslashes(   $siteNote['note']);
-                if($siteNote['isStandard'])    $this->isstandard   = (bool)        $siteNote['isStandard'];
+                if($request->siteNote['id'])            $this->id           = (int)         $request->siteNote['id'];
+                if($request->siteNote)                  $this->note         = addslashes(   $request->siteNote);
+                if($request->siteNote['isStandard'])    $this->isstandard   = (bool)        $request->siteNote['isStandard'];
             }
 
             foreach($this->simplexml->xpath('request//site[1]') as $site)
@@ -318,5 +362,68 @@ class siteNoteRequest extends request
     }
 }
 
+class treeNoteRequest extends request
+{
+    var $id         = NULL;
+    var $treeid     = NULL;
+    var $note       = NULL;
+    var $isstandard = NULL;
+
+    function treeNoteRequest($metaHeader, $auth)
+    {
+        parent::request($metaHeader, $auth);
+    }
+
+    function getXMLParams()
+    {
+        $this->logRequest();
+        if($this->readXML())
+        {
+            foreach($this->simplexml->xpath('request') as $request)
+            {
+                if($request->treeNote['id'])            $this->id           = (int)         $request->treeNote['id'];
+                if($request->treeNote)                  $this->note         = addslashes(   $request->treeNote);
+                if($request->treeNote['isStandard'])    $this->isstandard   = (bool)        $request->treeNote['isStandard'];
+            }
+
+            foreach($this->simplexml->xpath('request//tree[1]') as $tree)
+            {
+                if($tree['id'])               $this->treeid       = (int)         $tree['id'];
+            }
+        }
+    }
+}
+
+class readingNoteRequest extends request
+{
+    var $id         = NULL;
+    var $readingid  = NULL;
+    var $note       = NULL;
+    var $isstandard = NULL;
+
+    function readingNoteRequest($metaHeader, $auth)
+    {
+        parent::request($metaHeader, $auth);
+    }
+
+    function getXMLParams()
+    {
+        $this->logRequest();
+        if($this->readXML())
+        {
+            foreach($this->simplexml->xpath('request') as $request)
+            {
+                if($request->readingNote['id'])            $this->id           = (int)         $request->readingNote['id'];
+                if($request->readingNote)                  $this->note         = addslashes(   $request->readingNote);
+                if($request->readingNote['isStandard'])    $this->isstandard   = (bool)        $request->readingNote['isStandard'];
+            }
+
+            foreach($this->simplexml->xpath('request//reading[1]') as $reading)
+            {
+                if($reading['id'])               $this->readingid       = (int)         $reading['id'];
+            }
+        }
+    }
+}
 
 ?>

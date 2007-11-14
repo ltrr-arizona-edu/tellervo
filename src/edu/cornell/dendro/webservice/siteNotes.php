@@ -21,7 +21,7 @@ require_once("inc/siteNote.php");
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
 $myMetaHeader   = new meta();
-$myRequest      = new siteNoteRequest($myMetaHeader);
+$myRequest      = new siteNoteRequest($myMetaHeader, $myAuth);
 
 // Set user details
 if($myAuth->isLoggedIn())
@@ -46,7 +46,6 @@ else
 // ****************
 // CHECK PARAMETERS 
 // ****************
-// Create new meta object and check required input parameters and data types
 switch($myRequest->mode)
 {
     case "read":
@@ -249,7 +248,7 @@ if(!($myMetaHeader->status == "Error"))
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on siteid=."$myRequest->siteid);
+            $myMetaHeader->setMessage("103", "Permission denied on siteid=".$myRequest->siteid);
         }
 
     }
@@ -262,7 +261,7 @@ if(!($myMetaHeader->status == "Error"))
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on siteid=."$myRequest->siteid);
+            $myMetaHeader->setMessage("103", "Permission denied on siteid=".$myRequest->siteid);
         }
 
     }

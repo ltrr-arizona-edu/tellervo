@@ -26,12 +26,13 @@ class meta
 
   function meta($theRequestType="")
   {
+    global $wsversion;
     $this->startTimestamp = microtime(true);
     $this->requestdate= date(DATE_ISO8601);
     $this->requesturl= htmlentities($_SERVER['REQUEST_URI']);
     $this->clientversion= htmlentities($_SERVER['HTTP_USER_AGENT']);
     if($theRequestType)  $this->requesttype= $theRequestType;
-    $this->wsversion = exec(svnversion);
+    $this->wsversion = $wsversion;
   }
   function setRequestType($theRequestType)
   {

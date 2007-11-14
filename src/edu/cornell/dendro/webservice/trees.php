@@ -23,7 +23,7 @@ require_once("inc/site.php");
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
 $myMetaHeader   = new meta();
-$myRequest      = new treeRequest($myMetaHeader);
+$myRequest      = new treeRequest($myMetaHeader, $myAuth);
 
 // Set user details
 if($myAuth->isLoggedIn())

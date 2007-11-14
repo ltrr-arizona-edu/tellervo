@@ -11,6 +11,9 @@ Type: <select id="action">
         <option>subsites.php</option>
         <option>trees.php</option>
         <option>specimens.php</option>
+        <option>siteNotes.php</option>
+        <option>treeNotes.php</option>
+        <option>readingNotes.php</option>
         </select>
 <br/>
 XML:  <textarea name="xmlrequest" rows="20" cols="80">

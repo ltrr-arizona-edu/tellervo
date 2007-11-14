@@ -135,6 +135,10 @@
 			<ref name="treeObject"/>	
 			<ref name="specimenObject"/>	
 			<ref name="radiusObject" />   	
+			<ref name="siteNoteObject" />   	
+			<ref name="treeNoteObject" />   	
+			<ref name="readingNoteObject" />   	
+			<ref name="vmeasurementNoteObject" />   	
        	</choice>
     </element>
 </define>

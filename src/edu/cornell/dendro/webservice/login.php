@@ -37,6 +37,10 @@ Password: <input type="password" name="plainpassword2" value="" id="plainpasswor
 <input type="button" value="submit" onclick="setHash();document.secureform.submit();">
 </form>
 
+<form name="logoutform" method="post" action="authenticate.php">
+<input type="hidden" name="mode" id="mode" value="logout">
+<input type="button" value="logout" onclick="document.logoutform.submit();">
+</form>
 
 </body>
 </html>

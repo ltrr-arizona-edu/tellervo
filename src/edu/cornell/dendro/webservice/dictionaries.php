@@ -9,9 +9,13 @@
 //////*******************************************************************
 header('Content-Type: application/xhtml+xml; charset=utf-8');
 
-require_once("config.php");
 require_once("inc/dbsetup.php");
+require_once("config.php");
 require_once("inc/meta.php");
+require_once("inc/auth.php");
+require_once("inc/request.php");
+require_once("inc/output.php");
+
 require_once("inc/dictionaries.php");
 require_once("inc/siteNote.php");
 require_once("inc/treeNote.php");
@@ -23,30 +27,57 @@ require_once("inc/specimenQuality.php");
 require_once("inc/specimenContinuity.php");
 require_once("inc/pith.php");
 
-// Extract parameters from request and ensure no SQL has been injected
-$theMode = strtolower(addslashes($_GET['mode']));
+// Create Authentication, Request and Header objects
+$myAuth         = new auth();
+$myMetaHeader   = new meta();
+$myRequest      = new request($myMetaHeader, $myAuth);
 
-switch($theMode)
+// Set user details
+if($myAuth->isLoggedIn())
+{
+    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
+}
+
+// **************
+// GET PARAMETERS
+// **************
+if(isset($_POST['xmlrequest']))
+{
+    // Extract parameters from XML request POST
+    $myRequest->getXMLParams();
+}
+else
+{
+    // Extract parameters from get request and ensure no SQL has been injected
+    $myRequest->getGetParams();
+}
+
+// ****************
+// CHECK PARAMETERS 
+// ****************
+
+switch($myRequest->mode)
 {
     case "read":
-        $myMetaHeader = new meta("read");
+        $myMetaHeader->setRequestType("read");
         break;
     
+    case "failed":
+        $myMetaHeader->setRequestType("help");
+        break;
+
     default:
-        $myMetaHeader = new meta("help");
-        $myMetaHeader->setUser("Guest", "", "");
+        $myMetaHeader->setRequestType("help");
         // Output the resulting XML
-        echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        echo "<corina>\n";
-        echo $myMetaHeader->asXML();
-        echo "<help> Details of how to use this web service will be added here later! In the mean time try access https:/dendro.cornell.edu/dictionaries.php?mode=read </help>";
-        echo "</corina>\n";
+        $xmldata ="Details of how to use this web service will be added here later!";
+        writeHelpOutput($myMetaHeader,$xmldata);
         die;
 }
 
-$myMetaHeader->setUser("Guest", "", "");
 
-$myXML="";
+// *************
+// PERFORM QUERY
+// *************
 
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
@@ -64,7 +95,7 @@ if(!($myMetaHeader->status == "Error"))
         if($sql)
         {
             $myDummySpecimenType = new specimenType();
-            $myXML.=$myDummySpecimenType->getParentTagBegin();
+            $xmldata.=$myDummySpecimenType->getParentTagBegin();
             // Run SQL
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
@@ -74,14 +105,14 @@ if(!($myMetaHeader->status == "Error"))
 
                 if($success)
                 {
-                    $myXML.=$mySpecimenType->asXML();
+                    $xmldata.=$mySpecimenType->asXML();
                 }
                 else
                 {
                     $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
                 }
             }
-            $myXML.=$myDummySpecimenType->getParentTagEnd();
+            $xmldata.=$myDummySpecimenType->getParentTagEnd();
         }
     }
     else
@@ -100,7 +131,7 @@ if(!($myMetaHeader->status == "Error"))
         if($sql)
         {
             $myDummyTerminalRing = new terminalRing();
-            $myXML.=$myDummyTerminalRing->getParentTagBegin();
+            $xmldata.=$myDummyTerminalRing->getParentTagBegin();
             // Run SQL
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
@@ -110,14 +141,14 @@ if(!($myMetaHeader->status == "Error"))
 
                 if($success)
                 {
-                    $myXML.=$myTerminalRing->asXML();
+                    $xmldata.=$myTerminalRing->asXML();
                 }
                 else
                 {
                     $myMetaHeader->setMessage($myTerminalRing->getLastErrorCode(), $myTerminalRing->getLastErrorMessage());
                 }
             }
-            $myXML.=$myDummyTerminalRing->getParentTagEnd();
+            $xmldata.=$myDummyTerminalRing->getParentTagEnd();
         }
     }
     else
@@ -137,7 +168,7 @@ if(!($myMetaHeader->status == "Error"))
         if($sql)
         {
             $myDummySpecimenQuality = new specimenQuality();
-            $myXML.=$myDummySpecimenQuality->getParentTagBegin();
+            $xmldata.=$myDummySpecimenQuality->getParentTagBegin();
             // Run SQL
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
@@ -147,14 +178,14 @@ if(!($myMetaHeader->status == "Error"))
 
                 if($success)
                 {
-                    $myXML.=$mySpecimenQuality->asXML();
+                    $xmldata.=$mySpecimenQuality->asXML();
                 }
                 else
                 {
                     $myMetaHeader->setMessage($mySpecimenQuality->getLastErrorCode(), $mySpecimenQuality->getLastErrorMessage());
                 }
             }
-            $myXML.=$myDummySpecimenQuality->getParentTagEnd();
+            $xmldata.=$myDummySpecimenQuality->getParentTagEnd();
         }
     }
     else
@@ -173,7 +204,7 @@ if(!($myMetaHeader->status == "Error"))
         if($sql)
         {
             $myDummyPith = new pith();
-            $myXML.=$myDummyPith->getParentTagBegin();
+            $xmldata.=$myDummyPith->getParentTagBegin();
             // Run SQL
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
@@ -183,14 +214,14 @@ if(!($myMetaHeader->status == "Error"))
 
                 if($success)
                 {
-                    $myXML.=$myPith->asXML();
+                    $xmldata.=$myPith->asXML();
                 }
                 else
                 {
                     $myMetaHeader->setMessage($myPith->getLastErrorCode(), $myPith->getLastErrorMessage());
                 }
             }
-            $myXML.=$myDummyPith->getParentTagEnd();
+            $xmldata.=$myDummyPith->getParentTagEnd();
         }
     }
     else
@@ -209,7 +240,7 @@ if(!($myMetaHeader->status == "Error"))
         if($sql)
         {
             $myDummySpecimenContinuity = new specimenContinuity();
-            $myXML.=$myDummySpecimenContinuity->getParentTagBegin();
+            $xmldata.=$myDummySpecimenContinuity->getParentTagBegin();
             // Run SQL
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
@@ -219,14 +250,14 @@ if(!($myMetaHeader->status == "Error"))
 
                 if($success)
                 {
-                    $myXML.=$mySpecimenContinuity->asXML();
+                    $xmldata.=$mySpecimenContinuity->asXML();
                 }
                 else
                 {
                     $myMetaHeader->setMessage($mySpecimenContinuity->getLastErrorCode(), $mySpecimenContinuity->getLastErrorMessage());
                 }
             }
-            $myXML.=$myDummySpecimenContinuity->getParentTagEnd();
+            $xmldata.=$myDummySpecimenContinuity->getParentTagEnd();
         }
     }
     else
@@ -245,7 +276,7 @@ if(!($myMetaHeader->status == "Error"))
         if($sql)
         {
             $myDummySiteNote = new siteNote();
-            $myXML.=$myDummySiteNote->getParentTagBegin();
+            $xmldata.=$myDummySiteNote->getParentTagBegin();
             // Run SQL
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
@@ -255,14 +286,14 @@ if(!($myMetaHeader->status == "Error"))
 
                 if($success)
                 {
-                    $myXML.=$mySiteNote->asXML();
+                    $xmldata.=$mySiteNote->asXML();
                 }
                 else
                 {
                     $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
                 }
             }
-            $myXML.=$myDummySiteNote->getParentTagEnd();
+            $xmldata.=$myDummySiteNote->getParentTagEnd();
         }
     }
     else
@@ -281,7 +312,7 @@ if(!($myMetaHeader->status == "Error"))
         if($sql)
         {
             $myDummyTreeNote = new treeNote();
-            $myXML.=$myDummyTreeNote->getParentTagBegin();
+            $xmldata.=$myDummyTreeNote->getParentTagBegin();
             // Run SQL
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
@@ -291,14 +322,14 @@ if(!($myMetaHeader->status == "Error"))
 
                 if($success)
                 {
-                    $myXML.=$myTreeNote->asXML();
+                    $xmldata.=$myTreeNote->asXML();
                 }
                 else
                 {
                     $myMetaHeader->setMessage($myTreeNote->getLastErrorCode(), $myTreeNote->getLastErrorMessage());
                 }
             }
-            $myXML.=$myDummyTreeNote->getParentTagEnd();
+            $xmldata.=$myDummyTreeNote->getParentTagEnd();
         }
     }
     else
@@ -317,7 +348,7 @@ if(!($myMetaHeader->status == "Error"))
         if($sql)
         {
             $myDummyVMeasurementNote = new vmeasurementNote();
-            $myXML.=$myDummyVMeasurementNote->getParentTagBegin();
+            $xmldata.=$myDummyVMeasurementNote->getParentTagBegin();
             // Run SQL
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
@@ -327,14 +358,14 @@ if(!($myMetaHeader->status == "Error"))
 
                 if($success)
                 {
-                    $myXML.=$myVMeasurementNote->asXML();
+                    $xmldata.=$myVMeasurementNote->asXML();
                 }
                 else
                 {
                     $myMetaHeader->setMessage($myVMeasurementNote->getLastErrorCode(), $myVMeasurementNote->getLastErrorMessage());
                 }
             }
-            $myXML.=$myDummyVMeasurementNote->getParentTagEnd();
+            $xmldata.=$myDummyVMeasurementNote->getParentTagEnd();
         }
     }
     else
@@ -353,7 +384,7 @@ if(!($myMetaHeader->status == "Error"))
         if($sql)
         {
             $myDummyReadingNote = new readingNote();
-            $myXML.=$myDummyReadingNote->getParentTagBegin();
+            $xmldata.=$myDummyReadingNote->getParentTagBegin();
             // Run SQL
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
@@ -363,14 +394,14 @@ if(!($myMetaHeader->status == "Error"))
 
                 if($success)
                 {
-                    $myXML.=$myReadingNote->asXML();
+                    $xmldata.=$myReadingNote->asXML();
                 }
                 else
                 {
                     $myMetaHeader->setMessage($myReadingNote->getLastErrorCode(), $myReadingNote->getLastErrorMessage());
                 }
             }
-            $myXML.=$myDummyReadingNote->getParentTagEnd();
+            $xmldata.=$myDummyReadingNote->getParentTagEnd();
         }
     }
     else
@@ -380,11 +411,8 @@ if(!($myMetaHeader->status == "Error"))
     }
 }
 
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-echo "<corina>\n";
-echo $myMetaHeader->asXML();
-echo "<content>\n";
-echo $myXML;
-echo "</content>\n";
-echo "</corina>\n";
-?>
+
+// ***********
+// OUTPUT DATA
+// ***********
+writeOutput($myMetaHeader, $xmldata);

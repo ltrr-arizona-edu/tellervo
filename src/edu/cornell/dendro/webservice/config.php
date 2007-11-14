@@ -12,7 +12,7 @@
 //error_reporting(E_ERROR);
 
 $debugFlag = false;
-
+$wsversion = "0.1.".exec(svnversion);
 $rngSchema = "/var/www/webservice/schemas/corina.rng";
 
 

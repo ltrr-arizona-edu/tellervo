@@ -19,7 +19,7 @@ require_once("inc/output.php");
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
 $myMetaHeader   = new meta();
-$myRequest      = new siteRequest($myMetaHeader);
+$myRequest      = new siteRequest($myMetaHeader, $myAuth);
 
 // Set user details
 if($myAuth->isLoggedIn())
@@ -36,6 +36,7 @@ if($myAuth->isLoggedIn())
 
 $theMode = strtolower(addslashes($_POST['mode']));
 
+if(isset($_POST['mode'])) $theMode = addslashes(strtolower($_POST['mode']));
 if(isset($_POST['username'])) $theUsername = addslashes($_POST['username']);
 if(isset($_POST['password'])) $thePassword = addslashes($_POST['password']);
 if(isset($_POST['hash'])) $theClientHash = addslashes($_POST['hash']);

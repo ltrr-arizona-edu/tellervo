@@ -21,7 +21,7 @@ require_once("inc/site.php");
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
 $myMetaHeader   = new meta();
-$myRequest      = new siteRequest($myMetaHeader);
+$myRequest      = new siteRequest($myMetaHeader, $myAuth);
 
 // Set user details
 if($myAuth->isLoggedIn())
