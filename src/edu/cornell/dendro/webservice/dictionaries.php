@@ -60,7 +60,15 @@ switch($myRequest->mode)
 {
     case "read":
         $myMetaHeader->setRequestType("read");
-        break;
+        if($myAuth->isLoggedIn())
+        {
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
     
     case "failed":
         $myMetaHeader->setRequestType("help");
