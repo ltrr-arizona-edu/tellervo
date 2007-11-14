@@ -10,20 +10,41 @@
 
 class request
 {
-    var $xmlrequest = NULL;
-    var $simplexml = NULL;
-    var $metaHeader =NULL;
+    var $xmlrequest                 = NULL;
+    var $simplexml                  = NULL;
+    var $metaHeader                 = NULL;
 
-    var $mode = "failed";
-    var $id = NULL;
-    var $code = NULL;
-    var $name = NULL;
-    var $label = NULL;
-    var $taxonid = NULL;
-    var $subsiteid = NULL;
-    var $latitude = NULL;
-    var $longitude = NULL;
-    var $precision = NULL;
+    var $mode                       = "failed";
+    var $id                         = NULL;
+    var $code                       = NULL;
+    var $name                       = NULL;
+    var $label                      = NULL;
+    var $taxonid                    = NULL;
+    var $subsiteid                  = NULL;
+    var $siteid                     = NULL;
+    var $latitude                   = NULL;
+    var $longitude                  = NULL;
+    var $precision                  = NULL;
+    var $treeid                     = NULL;
+    var $collectedday               = NULL;
+    var $collectedmonth             = NULL;
+    var $collectedyear              = NULL;
+    var $specimentype               = NULL;
+    var $terminalring               = NULL;
+    var $isterminalringverified     = NULL;
+    var $sapwoodcount               = NULL;
+    var $issapwoodcountverified     = NULL;
+    var $specimenquality            = NULL;
+    var $isspecimenqualityverified  = NULL;
+    var $specimencontinuity         = NULL;
+    var $pith                       = NULL;
+    var $ispithverified             = NULL;
+    var $unmeasuredpre              = NULL;
+    var $unmeasuredpost             = NULL;
+    var $isunmeasuredpreverified    = NULL;
+    var $isunmeasuredpostverified   = NULL;
+    var $isstandard                 = NULL;
+    var $note                       = NULL;
 
 
     function request($metaHeader)
@@ -78,6 +99,7 @@ class request
         if(isset($_GET['subsiteid'])) $this->subsiteid = (int) $_GET['subsite'];
         if(isset($_GET['siteid'])) $this->siteid = (int) $_GET['site'];
         if(isset($_GET['treeid'])) $this->treeid = (int) $_GET['tree'];
+
         if(isset($_GET['code'])) $this->code = addslashes($_GET['code']);
         if(isset($_GET['name'])) $this->name = addslashes($_GET['name']);
         if(isset($_GET['label'])) $this->label = addslashes($_GET['label']);
@@ -101,6 +123,8 @@ class request
         if(isset($_GET['unmeasuredpost'])) $this->unmeasuredpost = (int) $_GET['unmeasuredpost'];
         if(isset($_GET['isunmeasuredpreverified'])) $this->isunmeasurementpreverified = (bool) $_GET['isunmeasuredpreverified'];
         if(isset($_GET['isunmeasuredpostverified'])) $this->isunmeasurementpostverified = (bool) $_GET['isunmeasuredpostverified'];
+        if(isset($_GET['isstandard'])) $this->isstandard = (bool) $_GET['isstandard'];
+        if(isset($_GET['note'])) $this->note = addslashes($_GET['note']);
     }
 
 }
@@ -261,4 +285,38 @@ class specimenRequest extends request
         }
     }
 }
+
+
+class siteNoteRequest extends request
+{
+    var $id         = NULL;
+    var $siteid     = NULL;
+    var $note       = NULL;
+    var $isstandard = NULL;
+
+    function siteNoteRequest($metaHeader)
+    {
+        parent::request($metaHeader);
+    }
+
+    function getXMLParams()
+    {
+        if($this->readXML())
+        {
+            foreach($this->simplexml->xpath('request//siteNote[1]') as $siteNote)
+            {
+                if($siteNote['id'])            $this->id           = (int)         $siteNote['id'];
+                if($siteNote['note'])          $this->note         = addslashes(   $siteNote['note']);
+                if($siteNote['isStandard'])    $this->isstandard   = (bool)        $siteNote['isStandard'];
+            }
+
+            foreach($this->simplexml->xpath('request//site[1]') as $site)
+            {
+                if($site['id'])               $this->siteid       = (int)         $site['id'];
+            }
+        }
+    }
+}
+
+
 ?>

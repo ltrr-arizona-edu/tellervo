@@ -13,7 +13,7 @@ class meta
   var $username = NULL;
   var $firstname = NULL;
   var $lastname = NULL;
-  var $wsversion = 0.1;
+  var $wsversion = NULL;
   var $clientversion = NULL;
   var $requestdate = NULL;
   var $startTimestamp = NULL;
@@ -31,8 +31,8 @@ class meta
     $this->requesturl= htmlentities($_SERVER['REQUEST_URI']);
     $this->clientversion= htmlentities($_SERVER['HTTP_USER_AGENT']);
     if($theRequestType)  $this->requesttype= $theRequestType;
+    $this->wsversion = exec(svnversion);
   }
-
   function setRequestType($theRequestType)
   {
     $this->requesttype= $theRequestType;
@@ -86,7 +86,10 @@ class meta
   {
       // Get class as XML 
     $xml="<header>\n";
-    $xml.="<user username=\"".$this->username."\" firstname=\"".$this->firstname."\" lastname=\"".$this->lastname."\" />\n";
+    if (!($this->username==NULL))
+    {
+        $xml.="<user username=\"".$this->username."\" firstname=\"".$this->firstname."\" lastname=\"".$this->lastname."\" />\n";
+    }
     $xml.="<wsversion>".$this->wsversion."</wsversion>\n";
     $xml.="<clientversion>".$this->clientversion."</clientversion>\n";
     $xml.="<requestdate>".$this->requestdate."</requestdate>\n";
