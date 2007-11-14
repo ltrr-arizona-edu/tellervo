@@ -30,7 +30,7 @@ Please use the links opposite to learn more about dendrochronology and how it is
 <h3>Teaching and Research</h3>
 <ul>
 <li>Each year we teach an  <a href="course.php">Introduction to Dendrochronology</a> course for Cornell graduate and undergraduate students.</li>
-<li>We also have opportunities for <a href="gradstudents.php">graduate research.</a></li>
+<li><a href="gradstudents.php">Graduate research</a> in Dendrochronology at Cornell</li>
 </ul>
 
 

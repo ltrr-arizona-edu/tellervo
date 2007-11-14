@@ -6,10 +6,16 @@ $vertnavbarfilename = "phpinc/vert-navbar-contactus.php";
 
 $sideimagesarray["sturt.jpg"] = "Sturt Manning (Director)";
 $sideimagesarray["PotsherdMTSB.jpg"] = "Maroni Tsaroukkas Sea Bed survey, Cyprus: Late Cypriot IA ceramics from seabed deposit, 17-16th century BC.";
-$sideimagesarray["sturtinsnow.jpg"] = "Coring a <i>Pinus nigra</i> tree on Troodos, Cyprus.";
+$sideimagesarray["BRJug.jpg"] = "Jug from Maroni Tsaroukkas, Cyprus.";
 $sideimagesarray["EENC.jpg"] = "Field survey work for the Elaborating Early Neolithic Cyprus (EENC) Project, central Cyprus.";
 $sideimagesarray["sturtcoring2.jpg"] = "";
 $sideimagesarray["MTBuilding2Northend.jpg"] = "Detail of stratigraphy at the north end of the Late Bronze Age Building 2 at Maroni Tsaroukkas, Cyprus, c.1400-1200BC.";
+$sideimagesarray["MycenaeanJar.jpg"] = "Mycenaean jar from Maroni Tsaroukkas, Cyprus.";
+$sideimagesarray["sturtinsnow.jpg"] = "Coring a <i>Pinus nigra</i> tree on Troodos, Cyprus.";
+$sideimagesarray["ChurchGroup.jpg"] = "Cornell team in Cyprus after sampling wood from the church.";
+$sideimagesarray["LithicAVA.jpg"] = "Lithic from Ayia Varvara Asprokremos, Cyprus.";
+$sideimagesarray["SMNeolithic.jpg"] = "Sturt excavating an Early Neolithic site in central Cyprus.";
+$sideimagesarray["KohlTube.jpg"] = "Kohl Tube from Maroni Tsaroukkas, Cyprus.";
 
 
 include('../phpinc/2col-header.php');
@@ -23,14 +29,14 @@ include('../phpinc/2col-header.php');
 
 <p>Member of the following Graduate Fields at Cornell:</p>
 <ul>
-<li>Archaeology</li>
-<li>Classics</li>
-<li>Geological Sciences</li>
-<li>History of Art and Archaeology</li>
-<li>Medieval Studies</li>
+<li><a href="http://www.archaeology.cornell.edu">Archaeology</a></li>
+<li><a href="http://www.arts.cornell.edu/classics/">Classics</a></li>
+<li><a href="http://www.eas.cornell.edu/fbxk/grdglgc.cfm">Geological Sciences</a></li>
+<li><a href="http://www.arts.cornell.edu/histart/">History of Art and Archaeology</a></li>
+<li><a href="http://www.arts.cornell.edu/medieval">Medieval Studies</a></li>
 </ul>
 
-<p>I am interested in new graudate students wanting to work in any of these fields on dendrochronological, archaeological, geoarchaeological, archaeological science (or related) topics.  For a quick list of my research interests, see section on <a href="#interest">Areas of Academic Interest</a>.  For current dendrochronology (etc.) work in the Lab see our <a href="http://dendro.cornell.edu">webpages</a>.</p>
+<p>I am interested in new graduate students wanting to work in any of these fields on dendrochronological, archaeological, geoarchaeological, archaeological science (or related) topics.  For a quick list of my research interests, see section on <a href="#interest">Areas of Academic Interest</a>.  For current dendrochronology (etc.) work in the Lab see our <a href="http://dendro.cornell.edu">webpages</a>.</p>
 
 <p>You must apply for <a href="http://www.gradschool.cornell.edu/">graduate admission</a> to Cornell and to a Graduate Field at Cornell (I do not do admissions). For the Graduate Fields listed above please follow the links to find out more.</p>
 

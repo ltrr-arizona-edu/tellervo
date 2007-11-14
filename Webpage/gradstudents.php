@@ -1,7 +1,9 @@
 <?php
 
 $title = "Graduate Research Opportunities";
-$sideimagesarray["PIKYenikapa.jpg"] = "Peter Ian Kuniholm sampling wood from Yenikapa, Istanbul harbour.";
+$sideimagesarray["SturtCoring.jpg"] = "Sturt taking an increment core.";
+$sideimagesarray["AyiaMainSite.jpg"] = "Ayia Varvara Asprokremmos main site area, central Cyprus.";
+$sideimagesarray["CoringNYS.jpg"] = "Cornell team coring in New York State.";
 include('phpinc/2col-header.php');
 
 
@@ -13,14 +15,15 @@ include('phpinc/2col-header.php');
 
 <p>Sturt is a member of the following Graduate Fields at Cornell:<p>
 <ul>
-<li>Archaeology</li>
-<li>Classics</li>
-<li>Geological Sciences</li>
-<li>History of Art and Archaeology</li>
-<li>Medieval Studies</li>
+<li><a href="http://www.archaeology.cornell.edu">Archaeology</a></li>
+<li><a href="http://www.arts.cornell.edu/classics/">Classics</a></li>
+<li><a href="http://www.eas.cornell.edu/fbxk/grdglgc.cfm">Geological Sciences</a></li>
+<li><a href="http://www.arts.cornell.edu/histart/">History of Art and Archaeology</a></li>
+<li><a href="http://www.arts.cornell.edu/medieval">Medieval Studies</a></li>
 </ul>
 
-<p>Thus a prospective dendrochronology, dendroarchaeology, dendrochemistry, dendorclimatology graduate student wanting to work with Sturt in the Lab should look to apply to one of these fields.  Possibilities exist via other fields also - admitted students in other fields wanting to work in dendrochronology are welcome to contact Sturt to discuss.</p> 
+<p>Thus a prospective dendrochronology, dendroarchaeology, dendrochemistry, dendroclimatology graduate student wanting to work with Sturt in the Lab should look to apply to one of these fields.  Possibilities exist via other fields also - admitted students in other fields wanting to work in dendrochronology are welcome to contact Sturt to discuss.</p> 
+
 
 
 <?php
