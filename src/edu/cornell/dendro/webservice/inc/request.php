@@ -26,6 +26,7 @@ class request
     var $siteid                     = NULL;
     var $treeid                     = NULL;
     var $readingid                  = NULL;
+    var $specimenid                 = NULL;
 
     var $latitude                   = NULL;
     var $longitude                  = NULL;
@@ -138,11 +139,12 @@ class request
         // Extract Parameters from GET requests
         $this->mode = strtolower(addslashes($_GET['mode']));
         if(isset($_GET['id'])) $this->id = (int) $_GET['id'];
-        if(isset($_GET['taxonid'])) $this->taxonid = (int) $_GET['label'];
+        if(isset($_GET['taxonid'])) $this->taxonid = (int) $_GET['taxonid'];
         if(isset($_GET['subsiteid'])) $this->subsiteid = (int) $_GET['subsiteid'];
         if(isset($_GET['siteid'])) $this->siteid = (int) $_GET['siteid'];
         if(isset($_GET['treeid'])) $this->treeid = (int) $_GET['treeid'];
-        if(isset($_GET['readingid'])) $this->treeid = (int) $_GET['readingid'];
+        if(isset($_GET['readingid'])) $this->readingid = (int) $_GET['readingid'];
+        if(isset($_GET['specimenid'])) $this->specimenid = (int) $_GET['specimenid'];
 
         if(isset($_GET['code'])) $this->code = addslashes($_GET['code']);
         if(isset($_GET['name'])) $this->name = addslashes($_GET['name']);
@@ -336,6 +338,35 @@ class specimenRequest extends request
     }
 }
 
+class radiusRequest extends request
+{
+    var $id         = NULL;
+    var $specimenid = NULL;
+    var $label      = NULL;
+
+    function radiusRequest($metaHeader, $auth)
+    {
+        parent::request($metaHeader, $auth);
+    }
+
+    function getXMLParams()
+    {
+        $this->logRequest();
+        if($this->readXML())
+        {
+            foreach($this->simplexml->xpath('request//radius[1]') as $radius)
+            {
+                if($radius['id'])            $this->id           = (int)         $radius['id'];
+                if($radius['label'])         $this->label        = addslashes(   $radius['label']);
+            }
+
+            foreach($this->simplexml->xpath('request//specimen[1]') as $specimen)
+            {
+                if($specimen['id'])          $this->specimenid       = (int)     $specimen['id'];
+            }
+        }
+    }
+}
 
 class siteNoteRequest extends request
 {

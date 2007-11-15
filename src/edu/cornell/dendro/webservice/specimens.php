@@ -257,6 +257,7 @@ if(!($myMetaHeader->status == "Error"))
                 // Output one specimen with its parents
                 $sql="select * from tblspecimen order by specimenid";
                 $result = pg_query($dbconn, $sql);
+                $xmldata.=$parentTagBegin;
                 while ($row = pg_fetch_array($result))
                 {
                     // Check user has permission to read tree
@@ -279,6 +280,7 @@ if(!($myMetaHeader->status == "Error"))
                         $myMetaHeader->setMessage("103", "Permission denied on specimenid ".$row['specimenid'], "Warning");
                     }
                 }
+                $xmldata.=$parentTagEnd;
             }
         }
         else
@@ -292,4 +294,4 @@ if(!($myMetaHeader->status == "Error"))
 // ***********
 // OUTPUT DATA
 // ***********
-writeOutput($myMetaHeader, $xmldata, $parentTagBegin, $parentTagEnd);
+writeOutput($myMetaHeader, $xmldata);

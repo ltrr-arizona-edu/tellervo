@@ -13,7 +13,7 @@ class radius
 {
     var $id = NULL;
     var $label = NULL;
-    var $SpecimenID = NULL;
+    var $specimenID = NULL;
     
     var $measurementArray = array();
     var $createdTimeStamp = NULL;
@@ -39,7 +39,7 @@ class radius
     function setLabel($theLabel)
     {
         // Set the current objects note.
-        $this->name=$theLabel;
+        $this->label=$theLabel;
     }
     
     function setSpecimenID($theSpecimenID)
@@ -222,14 +222,14 @@ class radius
         global $dbconn;
         
         // Check for required parameters
-        if($this->name == NULL) 
+        if($this->label == NULL) 
         {
-            $this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
+            $this->setErrorMessage("902", "Missing parameter - 'label' field is required.");
             return FALSE;
         }
-        if($this->code == NULL) 
+        if($this->specimenID == NULL) 
         {
-            $this->setErrorMessage("902", "Missing parameter - 'code' field is required.");
+            $this->setErrorMessage("902", "Missing parameter - 'specimenid' field is required.");
             return FALSE;
         }
 
@@ -243,12 +243,12 @@ class radius
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tblradius (name, code) values ('".$this->name."', '".$this->code."')";
+                    $sql = "insert into tblradius (label, specimenid) values ('".$this->label."', '".$this->specimenID."')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tblradius set name='".$this->name."', code='".$this->code."' where radiusid=".$this->id;
+                    $sql = "update tblradius set label='".$this->label."', specimenid='".$this->specimenID."' where radiusid=".$this->id;
                 }
 
                 // Run SQL command
