@@ -34,23 +34,6 @@ if($myAuth->isLoggedIn())
 // GET PARAMETERS
 // **************
 
-$myRequest->mode = strtolower(addslashes($_POST['mode']));
-
-
-
-if($debugFlag)
-{
-    $myMetaHeader->setMessage("Username", $_POST['username'], "Warning");
-    $myMetaHeader->setMessage("Password", $_POST['password'], "Warning");
-    $myMetaHeader->setMessage("Hash", $_POST['hash'], "Warning");
-    $myMetaHeader->setMessage("Prehash", $_POST['prehash'], "Warning");
-    $myMetaHeader->setMessage("nonce", $_POST['nonce'], "Warning");
-}
-
-// **************
-// GET PARAMETERS
-// **************
-
 if(isset($_POST['xmlrequest']))
 {
     // Extract parameters from XML request POST
@@ -90,6 +73,10 @@ switch($myRequest->mode)
     case "nonce":
         $myMetaHeader->requestLogin($myAuth->nonce());
         break;        
+
+    case "nonce":
+        $myMetaHeader->requestLogin($myAuth->nonce(), "OK");
+        break;
 
     case "failed":
         $myMetaHeader->setRequestType("help");
