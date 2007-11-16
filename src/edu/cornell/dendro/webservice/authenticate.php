@@ -86,6 +86,10 @@ switch($myRequest->mode)
     case "logout":
         $myMetaHeader->setRequestType("logout");
         break;
+        
+    case "nonce":
+        $myMetaHeader->requestLogin($myAuth->nonce());
+        break;        
 
     case "failed":
         $myMetaHeader->setRequestType("help");
