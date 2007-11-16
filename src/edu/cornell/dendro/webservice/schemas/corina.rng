@@ -68,8 +68,7 @@
 	                <value>assigned</value>
 	                <value>unassign</value>
 	                <value>plainlogin</value>
-                    <value>securelogin</value>
-                    <value>nonce</value>                    
+                        <value>securelogin</value>
                         <value>nonce</value>
 	                <value>logout</value>
 	                <value>help</value>

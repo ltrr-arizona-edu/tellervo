@@ -71,10 +71,6 @@ switch($myRequest->mode)
         break;
         
     case "nonce":
-        $myMetaHeader->requestLogin($myAuth->nonce());
-        break;        
-
-    case "nonce":
         $myMetaHeader->requestLogin($myAuth->nonce(), "OK");
         break;
 
