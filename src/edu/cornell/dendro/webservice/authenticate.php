@@ -19,7 +19,7 @@ require_once("inc/output.php");
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
 $myMetaHeader   = new meta();
-$myRequest      = new siteRequest($myMetaHeader, $myAuth);
+$myRequest      = new authenticateRequest($myMetaHeader, $myAuth);
 
 // Set user details
 if($myAuth->isLoggedIn())
@@ -34,13 +34,9 @@ if($myAuth->isLoggedIn())
 // GET PARAMETERS
 // **************
 
-$theMode = strtolower(addslashes($_POST['mode']));
+$myRequest->mode = strtolower(addslashes($_POST['mode']));
 
-if(isset($_POST['mode'])) $theMode = addslashes(strtolower($_POST['mode']));
-if(isset($_POST['username'])) $theUsername = addslashes($_POST['username']);
-if(isset($_POST['password'])) $thePassword = addslashes($_POST['password']);
-if(isset($_POST['hash'])) $theClientHash = addslashes($_POST['hash']);
-if(isset($_POST['nonce'])) $theClientNonce = addslashes($_POST['nonce']);
+
 
 if($debugFlag)
 {
@@ -51,25 +47,40 @@ if($debugFlag)
     $myMetaHeader->setMessage("nonce", $_POST['nonce'], "Warning");
 }
 
+// **************
+// GET PARAMETERS
+// **************
+
+if(isset($_POST['xmlrequest']))
+{
+    // Extract parameters from XML request POST
+    $myRequest->getXMLParams();
+}
+else
+{
+    // Extract parameters from get request and ensure no SQL has been injected
+    $myRequest->getGetParams();
+}
+
 
 // ****************
 // CHECK PARAMETERS 
 // ****************
 
 // Create new meta object and check required input parameters and data types
-switch($theMode)
+switch($myRequest->mode)
 {
     case "plainlogin":
         $myMetaHeader->setRequestType("login");
-        if($theUsername == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'username' field is required.");
-        if($thePassword == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'password' field is required.");
+        if($myRequest->username == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'username' field is required.");
+        if($myRequest->password == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'password' field is required.");
         break;
     
     case "securelogin":
         $myMetaHeader->setRequestType("login");
-        if($theUsername == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'username' field is required.");
-        if($theClientHash == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'hash' field is required.");
-        if($theClientNonce == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'nonce' field is required.");
+        if($myRequest->username == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'username' field is required.");
+        if($myRequest->hash == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'hash' field is required.");
+        if($myRequest->nonce == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'nonce' field is required.");
         break;
 
     case "logout":
@@ -96,9 +107,9 @@ switch($theMode)
 if(!($myMetaHeader->status == "Error"))
 {
     // Update parameters in object if updating or creating an object 
-    if($theMode=='plainlogin')
+    if($myRequest->mode=='plainlogin')
     {
-        $myAuth->login($theUsername, $thePassword);
+        $myAuth->login($myRequest->username, $myRequest->password);
         if($myAuth->isLoggedIn())
         {
             // Log in worked
@@ -111,9 +122,9 @@ if(!($myMetaHeader->status == "Error"))
     }
     
     // Update parameters in object if updating or creating an object 
-    if($theMode=='securelogin')
+    if($myRequest->mode=='securelogin')
     {
-        $myAuth->loginWithNonce($theUsername, $theClientHash, $theClientNonce);
+        $myAuth->loginWithNonce($myRequest->username, $myRequest->hash, $myRequest->nonce);
         
         if($myAuth->isLoggedIn())
         {
@@ -127,7 +138,7 @@ if(!($myMetaHeader->status == "Error"))
     }
 
     // Destroy session
-    if($theMode=='logout')
+    if($myRequest->mode=='logout')
     {
         $myAuth->logout();
     }

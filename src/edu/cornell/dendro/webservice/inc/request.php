@@ -50,7 +50,10 @@ class request
     var $isunmeasuredpostverified   = NULL;
     var $isstandard                 = NULL;
     var $note                       = NULL;
-
+    var $password                   = NULL;
+    var $username                   = NULL;
+    var $hash                       = NULL;
+    var $nonce                      = NULL;
 
     function request($metaHeader, $auth)
     {
@@ -171,6 +174,12 @@ class request
         if(isset($_GET['isunmeasuredpostverified'])) $this->isunmeasurementpostverified = (bool) $_GET['isunmeasuredpostverified'];
         if(isset($_GET['isstandard'])) $this->isstandard = (bool) $_GET['isstandard'];
         if(isset($_GET['note'])) $this->note = addslashes($_GET['note']);
+
+        if(isset($_POST['username'])) $this->username = addslashes($_POST['username']);
+        if(isset($_POST['password'])) $this->password = addslashes($_POST['password']);
+        if(isset($_POST['hash']))     $this->hash = addslashes($_POST['hash']);
+        if(isset($_POST['nonce'])) $this->nonce = addslashes($_POST['nonce']);
+
 
         $this->logRequest();
     }
@@ -463,5 +472,34 @@ class readingNoteRequest extends request
         }
     }
 }
+
+class authenticateRequest extends request
+{
+    var $password   = NULL;
+    var $username   = NULL;
+    var $hash       = NULL;
+    var $nonce      = NULL;
+
+    function authenticateRequest($metaHeader, $auth)
+    {
+        parent::request($metaHeader, $auth);
+    }
+
+    function getXMLParams()
+    {
+        $this->logRequest();
+        if($this->readXML())
+        {
+            foreach($this->simplexml->xpath('//request') as $request)
+            {
+                if($request->authenticate['username'])            $this->username         = addslashes(   $request->authenticate['username']);
+                if($request->authenticate['password'])            $this->password         = addslashes(   $request->authenticate['password']);
+                if($request->authenticate['hash'])                $this->hash             = addslashes(   $request->authenticate['hash']);
+                if($request->authenticate['nonce'])               $this->nonce            = addslashes(   $request->authenticate['nonce']);
+            }
+        }
+    }
+}
+
 
 ?>

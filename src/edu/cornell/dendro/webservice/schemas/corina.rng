@@ -67,7 +67,8 @@
 	                <value>delete</value>
 	                <value>assigned</value>
 	                <value>unassign</value>
-	                <value>login</value>
+	                <value>plainlogin</value>
+                        <value>securelogin</value>
 	                <value>logout</value>
 	                <value>help</value>
 	            </choice>
@@ -123,10 +124,16 @@
     <element name="request">
         <attribute name="type">
             <choice>
-                <value>create</value>
-                <value>read</value>
-                <value>update</value>
-                <value>delete</value>
+                    <value>create</value>
+                    <value>read</value>
+                    <value>update</value>
+                    <value>delete</value>
+                    <value>assigned</value>
+                    <value>unassign</value>
+                    <value>plainlogin</value>
+                    <value>securelogin</value>
+                    <value>logout</value>
+                    <value>help</value>
             </choice>
         </attribute>
        	<choice>
@@ -139,6 +146,7 @@
 			<ref name="treeNoteObject" />   	
 			<ref name="readingNoteObject" />   	
 			<ref name="vmeasurementNoteObject" />   	
+                        <ref name="authenticateObject" />   
        	</choice>
     </element>
 </define>
@@ -578,6 +586,32 @@
 		</optional>
 		<optional>
 			<attribute name="legacyCode">
+				<text/>
+			</attribute>
+		</optional>	
+	<text/>	
+	</element>
+</define>
+
+<define name="authenticateObject"  datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+	<element name="authenticate">
+		<optional>
+			<attribute name="username">
+				<text/>
+			</attribute>
+		</optional>
+		<optional>
+			<attribute name="password">
+				<text/>
+			</attribute>
+		</optional>	
+		<optional>
+			<attribute name="hash">
+				<text/>
+			</attribute>
+		</optional>	
+		<optional>
+			<attribute name="nonce">
 				<text/>
 			</attribute>
 		</optional>	

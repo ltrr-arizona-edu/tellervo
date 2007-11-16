@@ -294,7 +294,6 @@ class auth
         {
             if(!($this->isAdmin()))
             {
-                echo "here";
                 $sql = "select * from securitygroupsitemaster($thePermissionID, ".$this->securityuserid.") where objectid=$theSiteID";
                 $dbconnstatus = pg_connection_status($dbconn);
                 if ($dbconnstatus ===PGSQL_CONNECTION_OK)
