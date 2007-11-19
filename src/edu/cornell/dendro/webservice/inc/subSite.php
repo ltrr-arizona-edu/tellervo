@@ -100,12 +100,9 @@ class subSite
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
-            pg_send_query($dbconn, $sql);
-            $result = pg_get_result($dbconn);
-            if(pg_num_rows($result)>0)
+            $result = pg_query($dbconn, $sql);
+            while ($row = pg_fetch_array($result))
             {
-                // Get all subSite note id's for this subSite and store 
-                $row = pg_fetch_array($result);
                 array_push($this->childArray, $row['treeid']);
             }
         }

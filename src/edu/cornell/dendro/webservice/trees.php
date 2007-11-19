@@ -68,7 +68,7 @@ switch($myRequest->mode)
         if($myAuth->isLoggedIn())
         {
             if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if(($myRequest->taxonid==NULL) && ($myRequest->subsiteid==NULL) && ($myRequest->latitude==NULL) && ($myRequest->longitude==NULL) && ($myRequest->precision==NULL))                 $myMetaHeader->setMessage("902", "Missing parameters - you haven't specified any parameters to update.");
+            if(($myRequest->taxonid==NULL) && ($myRequest->label==NULL) && ($myRequest->subsiteid==NULL) && ($myRequest->latitude==NULL) && ($myRequest->longitude==NULL) && ($myRequest->precision==NULL))                 $myMetaHeader->setMessage("902", "Missing parameters - you haven't specified any parameters to update.");
             break;
         }
         else

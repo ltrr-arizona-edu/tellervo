@@ -77,10 +77,13 @@ class meta
     array_push($this->timing, $message);
   }
 
-  function requestLogin($nonce)
+  function requestLogin($nonce, $messageType="Error")
   {
-        $this->nonce= $nonce;
-        $this->setMessage("102", "You must login to run this query.");
+      $this->nonce= $nonce;
+      if(!($messageType=="OK"))
+      {
+          $this->setMessage("102", "You must login to run this query.", $messageType);
+      }
   }
 
   function asXML()

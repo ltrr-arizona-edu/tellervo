@@ -198,7 +198,7 @@ if(!($myMetaHeader->status == "Error"))
                 while ($row = pg_fetch_array($result))
                 {
                     // Check user has permission to read subSite
-                    if($myAuth->subSiteReadPermission($row['subsiteid'], "read"))
+                    if($myAuth->subSitePermission($row['subsiteid'], "read"))
                     {
                         $mySubSite = new subSite();
                         $success = $mySubSite->setParamsFromDB($row['subsiteid']);

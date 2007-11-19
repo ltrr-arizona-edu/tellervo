@@ -314,13 +314,27 @@ class tree
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tbltree (taxonid, subsiteid, label, location) values ('".$this->taxonID."', '".$this->subSiteID."', '".$this->label."', geomfromtext('POINT(".$this->longitude." ".$this->latitude.")'))";
+                    if (($this->latitude) && ($this->longitude))
+                    {
+                        $sql = "insert into tbltree (taxonid, subsiteid, label, location) values ('".$this->taxonID."', '".$this->subSiteID."', '".$this->label."', setsrid(makepoint(".$this->longitude.", ".$this->latitude."), 4326))";
+                    }
+                    else
+                    {
+                        $sql = "insert into tbltree (taxonid, subsiteid, label) values ('".$this->taxonID."', '".$this->subSiteID."', '".$this->label."')";
+                    }
                     $sql2 = "select * from tbltree where treeid=currval('tbltree_treeid_seq')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tbltree set taxonid=".$this->taxonID.", subsiteid=".$this->subSiteID.", label='".$this->label."', location=geomfromtext('POINT(".$this->longitude." ".$this->latitude.")') where treeid=".$this->id;
+                    if (($this->latitude) && ($this->longitude))
+                    {
+                        $sql = "update tbltree set taxonid=".$this->taxonID.", subsiteid=".$this->subSiteID.", label='".$this->label."', location=setsrid(makepoint(".$this->longitude.", ".$this->latitude."), 4326) where treeid=".$this->id;
+                    }
+                    else
+                    {
+                        $sql = "update tbltree set taxonid=".$this->taxonID.", subsiteid=".$this->subSiteID.", label='".$this->label."' where treeid=".$this->id;
+                    }
                 }
 
                 // Run SQL command
