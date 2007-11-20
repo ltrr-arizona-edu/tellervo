@@ -144,6 +144,12 @@ if(!($myMetaHeader->status == "Error"))
         if (isset($myRequest->name)) $mySite->setName($myRequest->name);
         if (isset($myRequest->code)) $mySite->setCode($myRequest->code);
 
+        // If creating a new record include initial extent if latlong specified
+        if($myRequest->mode=='create')
+        {
+            if ((isset($myRequest->latitude))&& (isset($myRequest->longitude))) $mySite->setInitialExtent($myRequest->latitude, $myRequest->longitude);
+        }
+
         if( (($myRequest->mode=='update') && ($myAuth->sitePermission($myRequest->id, "update")))  || 
             (($myRequest->mode=='create') && ($myAuth->sitePermission($myRequest->id, "create")))    )
         {

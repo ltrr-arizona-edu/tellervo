@@ -136,11 +136,16 @@ class request
         $this->logRequest();
         $this->readXML();
     }
-
+    
     function getGetParams()
     {
         // Extract Parameters from GET requests
         $this->mode = strtolower(addslashes($_GET['mode']));
+        
+        // Loggin specific 
+        if(isset($_POST['mode'])) $this->mode = addslashes($_POST['mode']);
+
+        // ID values
         if(isset($_GET['id'])) $this->id = (int) $_GET['id'];
         if(isset($_GET['taxonid'])) $this->taxonid = (int) $_GET['taxonid'];
         if(isset($_GET['subsiteid'])) $this->subsiteid = (int) $_GET['subsiteid'];
@@ -194,6 +199,8 @@ class siteRequest extends request
     var $id         = NULL;
     var $code       = NULL;
     var $name       = NULL;
+    var $latitude   = NULL;
+    var $longitude  = NULL;
 
     function siteRequest($metaHeader, $auth)
     {
@@ -210,6 +217,8 @@ class siteRequest extends request
                 if($site['id'])   $this->id = (int) $site['id'];
                 if($site['code']) $this->code = addslashes($site['code']);
                 if($site['name']) $this->name = addslashes($site['name']);
+                if($site['latitude'])   $this->latitude = (float) $site['latitude'];
+                if($site['longitude'])   $this->longitude = (float) $site['longitude'];
             }
         }
     }

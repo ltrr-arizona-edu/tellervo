@@ -16,6 +16,8 @@ class site
     var $id = NULL;
     var $name = NULL;
     var $code = NULL;
+    var $latitude = NULL;
+    var $longitude = NULL;
     var $siteNoteArray = array();
     var $subSiteArray = array();
     var $createdTimeStamp = NULL;
@@ -41,14 +43,18 @@ class site
 
     function setName($theName)
     {
-        // Set the current objects note.
         $this->name=$theName;
     }
     
     function setCode($theCode)
     {
-        // Set the current objects note.
         $this->code=$theCode;
+    }
+    
+    function setInitialExtent($thelat, $thelong)
+    {
+        $this->latitude=$thelat;
+        $this->longitude=$thelong;
     }
 
     function setErrorMessage($theCode, $theMessage)
@@ -154,7 +160,7 @@ class site
                 $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
                 $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
                 $xml.= ">";
-                
+
                 // Include site notes if present
                 if ($this->siteNoteArray)
                 {
@@ -271,7 +277,21 @@ class site
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tblsite (name, code) values ('".$this->name."', '".$this->code."')";
+                    if (($this->latitude)&& ($this->longitude))
+                    {
+                        $polygonwkt = "POLYGON((";
+                        $polygonwkt.= ($this->longitude-0.5)." ".($this->latitude-0.5).", ";
+                        $polygonwkt.= ($this->longitude+0.5)." ".($this->latitude-0.5).", ";
+                        $polygonwkt.= ($this->longitude+0.5)." ".($this->latitude+0.5).", ";
+                        $polygonwkt.= ($this->longitude-0.5)." ".($this->latitude+0.5).", ";
+                        $polygonwkt.= ($this->longitude-0.5)." ".($this->latitude-0.5);
+                        $polygonwkt.= "))";
+                        $sql = "insert into tblsite (name, code, siteextent) values ('".$this->name."', '".$this->code."', polygonfromtext('$polygonwkt',4326))";
+                    }
+                    else
+                    {
+                        $sql = "insert into tblsite (name, code) values ('".$this->name."', '".$this->code."')";
+                    }
                     $sql2 = "select * from tblsite  where siteid=currval('tblsite_siteid_seq')";
                 }
                 else
