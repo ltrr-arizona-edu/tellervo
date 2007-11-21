@@ -213,6 +213,42 @@ class site
         }
     }
 
+    function asKML($mode="all")
+    {
+        // Return a string containing the current object in XML format
+        if (!isset($this->lastErrorCode))
+        {
+            global $dbconn;
+
+            $sql  = "select asKML(centroid(tblsite.siteextent)) as kml from tblsite where siteid=".$this->id." and tblsite.siteextent is not null";
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    $xml = "<Placemark>\n";
+                    $xml.= "<name>".$this->name."</name>\n";
+                    $xml.= "<visibility>1</visibility>\n";
+                    $xml.= "<styleURL>#redLineRedPoly</styleURL>\n";
+                    $xml.= $row['kml']."\n";
+                    $xml.= "</Placemark>\n";
+                    return $xml;
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+        }
+        else
+        {
+            return FALSE;
+        }
+    }
+
     function getParentTagBegin()
     {
         // Return a string containing the start XML tag for the current object's parent
@@ -280,12 +316,13 @@ class site
                     if (($this->latitude)&& ($this->longitude))
                     {
                         $polygonwkt = "POLYGON((";
-                        $polygonwkt.= ($this->longitude-0.5)." ".($this->latitude-0.5).", ";
-                        $polygonwkt.= ($this->longitude+0.5)." ".($this->latitude-0.5).", ";
-                        $polygonwkt.= ($this->longitude+0.5)." ".($this->latitude+0.5).", ";
-                        $polygonwkt.= ($this->longitude-0.5)." ".($this->latitude+0.5).", ";
-                        $polygonwkt.= ($this->longitude-0.5)." ".($this->latitude-0.5);
+                        $polygonwkt.= ($this->longitude-0.1)." ".($this->latitude-0.1).", ";
+                        $polygonwkt.= ($this->longitude+0.1)." ".($this->latitude-0.1).", ";
+                        $polygonwkt.= ($this->longitude+0.1)." ".($this->latitude+0.1).", ";
+                        $polygonwkt.= ($this->longitude-0.1)." ".($this->latitude+0.1).", ";
+                        $polygonwkt.= ($this->longitude-0.1)." ".($this->latitude-0.1);
                         $polygonwkt.= "))";
+                        echo $polygonwkt;
                         $sql = "insert into tblsite (name, code, siteextent) values ('".$this->name."', '".$this->code."', polygonfromtext('$polygonwkt',4326))";
                     }
                     else

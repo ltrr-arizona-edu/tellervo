@@ -11,6 +11,7 @@
 class request
 {
     var $xmlrequest                 = NULL;
+    var $format                     = NULL;
     var $simplexml                  = NULL;
     var $metaHeader                 = NULL;
     var $auth                       = NULL;
@@ -140,7 +141,8 @@ class request
     function getGetParams()
     {
         // Extract Parameters from GET requests
-        $this->mode = strtolower(addslashes($_GET['mode']));
+        $this->mode   = strtolower(addslashes($_GET['mode']));
+        $this->format = strtolower(addslashes($_GET['format']));
         
         // Loggin specific 
         if(isset($_POST['mode'])) $this->mode = addslashes($_POST['mode']);

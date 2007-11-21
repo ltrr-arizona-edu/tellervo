@@ -225,6 +225,31 @@
             </attribute>
         </optional>
         <optional>
+            <ref name="requestSection"/>
+        </optional>
+        <optional>
+                <attribute name="latitude">
+                        <choice>
+                                <data type="double">
+                                        <param name="maxInclusive">90</param>
+                                        <param name="minInclusive">-90</param>
+                                </data>
+                                <empty />
+                        </choice>
+                </attribute>
+        </optional>
+        <optional>
+                <attribute name="longitude">
+                        <choice>
+                                <data type="double">
+                                        <param name="maxInclusive">180</param>
+                                        <param name="minInclusive">-180</param>
+                                </data>
+                                <empty />
+                        </choice>
+                </attribute>
+        </optional>
+        <optional>
             <attribute name="createdTimeStamp">
                 <text />
             </attribute>
@@ -619,6 +644,43 @@
 		</optional>	
 	<text/>	
 	</element>
+</define>
+
+<define name="localityObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="locality">
+                <optional>
+                        <element name="centroid">
+                                <attribute name="latitude">
+                                    <data type="double">
+                                        <param name="maxInclusive">90</param>
+                                        <param name="minInclusive">-90</param>
+                                    </data>
+                                </attribute>
+                                <attribute name="longitude">
+                                    <data type="double">
+                                        <param name="maxInclusive">180</param>
+                                        <param name="minInclusive">-180</param>
+                                    </data>
+                                </attribute>
+                        </element>
+                </optional>
+                <optional>
+                        <element name="extent">
+                                <attribute name="xmin">
+                                    <data type="double"/>
+                                </attribute>
+                                <attribute name="ymin">
+                                    <data type="double"/>
+                                </attribute>
+                                <attribute name="xmax">
+                                    <data type="double"/>
+                                </attribute>
+                                <attribute name="ymax">
+                                    <data type="double"/>
+                                </attribute>
+                        </element>
+                </optional>
+        </element>
 </define>
 
 </grammar>

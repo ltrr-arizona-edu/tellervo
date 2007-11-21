@@ -217,7 +217,8 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $sql="select tblsite.* from (tblsite INNER JOIN securitygroupsitemaster(2,".$myAuth->getID().") on tblsite.siteid = securitygroupsitemaster.objectid) order by tblsite.siteid";
+                //$sql="select tblsite.* from (tblsite INNER JOIN securitygroupsitemaster(2,".$myAuth->getID().") on tblsite.siteid = securitygroupsitemaster.objectid) order by tblsite.siteid";
+                $sql="select tblsite.* from tblsite order by tblsite.siteid";
             }
 
             if($sql)
@@ -241,7 +242,14 @@ if(!($myMetaHeader->status == "Error"))
                         if($success && $success2)
                         {
                             $myMetaHeader->setTiming("Start XML build");
-                            $xmldata.=$mySite->asXML();
+                            if ($myRequest->format=='kml')
+                            {
+                                $xmldata.= $mySite->asKML();      
+                            }
+                            else
+                            {
+                                $xmldata.= $mySite->asXML();
+                            }
                             $myMetaHeader->setTiming("End XML build");
                         }
                         else
@@ -267,6 +275,12 @@ if(!($myMetaHeader->status == "Error"))
 // ***********
 // OUTPUT DATA
 // ***********
-writeOutput($myMetaHeader, $xmldata, $parentTagBegin, $parentTagEnd);
-
+if ($myRequest->format=='kml')
+{
+    writeKMLOutput($xmldata);
+}
+else
+{
+    writeOutput($myMetaHeader, $xmldata, $parentTagBegin, $parentTagEnd);
+}
 
