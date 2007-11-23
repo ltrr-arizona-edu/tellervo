@@ -138,18 +138,20 @@
                     <value>help</value>
             </choice>
         </attribute>
-       	<choice>
-			<ref name="siteObject"/>		
-			<ref name="subSiteObject"/>
-			<ref name="treeObject"/>	
-			<ref name="specimenObject"/>	
-			<ref name="radiusObject" />   	
-			<ref name="siteNoteObject" />   	
-			<ref name="treeNoteObject" />   	
-			<ref name="readingNoteObject" />   	
-			<ref name="vmeasurementNoteObject" />   	
-                        <ref name="authenticateObject" />   
-       	</choice>
+        <optional>
+	       	<choice>
+				<ref name="siteObject"/>		
+				<ref name="subSiteObject"/>
+				<ref name="treeObject"/>	
+				<ref name="specimenObject"/>	
+				<ref name="radiusObject" />   	
+				<ref name="siteNoteObject" />   	
+				<ref name="treeNoteObject" />   	
+				<ref name="readingNoteObject" />   	
+				<ref name="vmeasurementNoteObject" />   	
+        	                <ref name="authenticateObject" />
+        	</choice>   
+        </optional>
     </element>
 </define>
 
