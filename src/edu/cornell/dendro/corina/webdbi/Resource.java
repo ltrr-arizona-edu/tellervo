@@ -4,6 +4,8 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 import edu.cornell.dendro.corina.util.WeakEventListenerList;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+
 
 import java.io.IOException;
 
@@ -35,7 +37,11 @@ public class Resource {
 	public String getResourceName() { return resourceName; }
 	
 	public WebXMLDocumentAccessor getDocumentAccessor(String verb) {
-		return new WebXMLDocumentAccessor(resourceName, verb);
+		WebXMLDocumentAccessor wx = new WebXMLDocumentAccessor(resourceName);
+		
+		wx.createRequest(verb);
+		
+		return wx;
 	}
 	
 	/**
@@ -48,10 +54,30 @@ public class Resource {
 	 */
 	public void loadWait() {
 		try {
-			Document doc = getDocumentAccessor("read").query();
+			WebXMLDocumentAccessor wx = getDocumentAccessor("read");
+			Document doc;
 			
+			while(true) {
+				try {
+					doc = wx.query(); 
+					break;
+				} catch (LoginRequiredException lre) {
+					LoginDialog d = new LoginDialog();
+					
+					try {
+						d.doLogin("(for access to " + resourceName + ")", false);
+					} catch (UserCancelledException uce) {
+						loadFailed(uce);
+						return;
+					}
+				}
+			}
+			
+			/*
+			 * we do this already in the documentaccessor
 			if(doc.getRootElement().getName().compareToIgnoreCase("corina") != 0)
 				throw new IOException("Invalid XML document returned; Root element is not corina type.");
+				*/
 			
 			if(loadDocument(doc))
 				loadSucceeded(doc);
