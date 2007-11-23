@@ -104,6 +104,10 @@ public class WebXMLDocumentAccessor {
 				http.setDoOutput(true);
 			}
 			
+			String cookie = App.prefs.getPref("corina.webservice.cookie");
+			if(cookie != null)
+				http.setRequestProperty("Cookie", cookie);
+			
 			// Set any header fields and do other various setup
 			http.setRequestProperty("User-Agent", "Corina WSI " + Build.VERSION);
 			http.setUseCaches(false);
@@ -136,6 +140,14 @@ public class WebXMLDocumentAccessor {
 			if(responseCode != HttpURLConnection.HTTP_OK) {
 				throw new IOException("Unexpected response code " + responseCode + " while accessing " + url.toExternalForm());
 			}
+			
+			cookie = http.getHeaderField("Set-Cookie");
+			if(cookie != null) {
+				int idx = cookie.indexOf(';');
+				if(idx >= 0)
+					cookie = cookie.substring(0, idx);
+				App.prefs.setPref("corina.webservice.cookie", cookie);
+			}
 
 			//InputStream in = http.getInputStream();
 			// Wrap a bufferedreader around this, so the saxbuilder can't break our socket and hang
@@ -166,7 +178,7 @@ public class WebXMLDocumentAccessor {
 				System.out.println(sb.toString());
 			} catch (Exception e) {}
 			in.reset();
-			*/
+			/**/
 			
 			try {
 				// parse the input into an XML document
@@ -207,7 +219,7 @@ public class WebXMLDocumentAccessor {
 	 * @param requestVerb the verb to be used in request: create, read, update, delete, login
 	 * @return the Element "request"
 	 */
-	public Element createRequest(String requestVerb) {
+	public Element createRequest(ResourceQueryType queryType) {
 		requestMethod = METHOD_POST;
 		
 		// create the document
@@ -219,7 +231,7 @@ public class WebXMLDocumentAccessor {
 		
 		// create the request element
 		Element request = new Element("request");
-		request.setAttribute("type", requestVerb);
+		request.setAttribute("type", queryType.getVerb());
 		corina.addContent(request);
 		
 		return request;
@@ -252,11 +264,12 @@ public class WebXMLDocumentAccessor {
 			WebXMLDocumentAccessor a = new WebXMLDocumentAccessor("authenticate");
 			Element e;
 			
+			/*
 			e = a.createRequest("nonce");
 			e.addContent(new Element("authenticate"));
-			a.execute();
+			a.execute();*/
 			
-			e = a.createRequest("securelogin");
+			e = a.createRequest(new ResourceQueryType(ResourceQueryType.SECURELOGIN));//"securelogin");
 			Element auth = new Element("authenticate");
 			e.addContent(auth);			
 			auth.setAttribute("username", "kit");

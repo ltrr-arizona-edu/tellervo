@@ -51,7 +51,7 @@ public class DictionaryMetadataField extends MetadataField implements
 	}
 	
 	public void resourceChanged(ResourceEvent re) {
-		if(re.getEventType() == ResourceEvent.RESOURCE_LOADED) {
+		if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE) {
 			myDictionary = App.dictionary.getDictionary(dictionaryName);
 			loadTables();
 		}

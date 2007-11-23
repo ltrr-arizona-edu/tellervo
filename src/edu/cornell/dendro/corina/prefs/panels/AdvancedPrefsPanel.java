@@ -393,7 +393,7 @@ public class AdvancedPrefsPanel extends JPanel {
 			JButton reloadDict = new JButton("Force Reload Dictionary");
 			reloadDict.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					App.dictionary.load();
+					App.dictionary.query();
 					App.dictionary.debugDumpListeners();
 				}
 			});

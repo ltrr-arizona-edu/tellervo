@@ -10,7 +10,7 @@ import java.util.EventObject;
  *
  */
 public class ResourceEvent extends EventObject {
-	public static final int RESOURCE_LOADED = 1;
+	public static final int RESOURCE_QUERY_COMPLETE = 1;
 
 	private int eventType;
 	public int getEventType() {

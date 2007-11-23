@@ -690,7 +690,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 
 	public void resourceChanged(ResourceEvent re) {
 		// if our dictionary is reloaded, here's where we get notified!
-		if(re.getEventType() == ResourceEvent.RESOURCE_LOADED) {
+		if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					Iterator it = popups.keySet().iterator();

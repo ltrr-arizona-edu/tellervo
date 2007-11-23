@@ -25,10 +25,10 @@ import java.util.*;
 
 public class Dictionary extends CachedResource {
 	public Dictionary() {
-		super("dictionaries");
+		super("dictionaries");		
 	}
 	
-	public boolean loadDocument(Document doc) {
+	public boolean queryDocument(Document doc) {
 		Element root = doc.getRootElement();
 		Element dataElement = root.getChild("data");
 		

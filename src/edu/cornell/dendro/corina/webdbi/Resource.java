@@ -4,7 +4,9 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 import edu.cornell.dendro.corina.util.WeakEventListenerList;
+import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.ui.Alert;
 
 
 import java.io.IOException;
@@ -22,7 +24,8 @@ import java.io.IOException;
 public class Resource {
 	
 	private String resourceName; // the noun associated with this resource
-	private boolean resourceLoaded;
+	private boolean resourceQueried; /** true if we have received a response from the server */
+	protected ResourceQueryType queryType;
 	
 	/**
 	 * A resource that binds to the webservice for data
@@ -30,46 +33,95 @@ public class Resource {
 	 * @param resourceName the noun this resource binds to (ie, 'dictionaries')
 	 */
 	public Resource(String resourceName) {
+		this(resourceName, new ResourceQueryType(ResourceQueryType.READ));
+	}
+	
+	/**
+	 * A resource that binds to the webservice for data
+	 * 
+	 * @param resourceName the noun this resource binds to (ie, 'dictionaries')
+	 * @param queryType the query type (CRUD)
+	 */
+	public Resource(String resourceName, ResourceQueryType queryType) {
 		this.resourceName = resourceName;
-		this.resourceLoaded = false;
+		this.resourceQueried = false;
+		this.queryType = queryType;
 	}
 	
 	public String getResourceName() { return resourceName; }
 	
-	public WebXMLDocumentAccessor getDocumentAccessor(String verb) {
-		WebXMLDocumentAccessor wx = new WebXMLDocumentAccessor(resourceName);
+	/**
+	 * Handle the query exception.
+	 * 
+	 * This function is responsible for calling queryFailed. It must not pop up
+	 * any dialogs except for a login dialog.
+	 * 
+	 * @param w the exception
+	 * @return true if we should try accessing the resource again, false if not.
+	 */
+	private boolean handleQueryException(WebPermissionsException w) {
+		System.out.println(w);
+		int code = w.getMessageCode();
 		
-		wx.createRequest(verb);
+		if (code == WebInterfaceException.ERROR_LOGIN_REQUIRED ||
+			code == WebInterfaceException.ERROR_AUTHENTICATION_FAILED) {
+			
+			if(w.getNonce() == null) {
+				// the server requires a login, but no nonce? er.. ?
+				queryFailed(w);
+				return false;
+			}
+			
+			LoginDialog dialog = new LoginDialog();
+
+			try {
+				
+				if(code == WebInterfaceException.ERROR_AUTHENTICATION_FAILED)
+					dialog.doLogin("Invalid username or password", true);
+				else
+					dialog.doLogin("(for access to " + resourceName + ")", false);
+				
+				new Authenticate(dialog.getUsername(), dialog.getPassword(), w.getNonce()).queryWait();
+
+				return true;
+			} catch (UserCancelledException uce) {
+				queryFailed(uce);
+				return false;
+			}
+		}
 		
-		return wx;
+		queryFailed(w);
+		return false;
 	}
-	
+		
 	/**
 	 * This function queries the webservice with the 'read' verb.
-	 * The loadDocument function is called upon success; 
-	 * the loadFailed function is called upon failure.
+	 * The queryDocument function is called upon success; 
+	 * the queryFailed function is called upon failure.
 	 * 
-	 * loadWait does not return until loading has succeeded or until an error
+	 * queryWait does not return until query has succeeded or until an error
 	 * occurs.
 	 */
-	public void loadWait() {
+	public void queryWait() {
 		try {
-			WebXMLDocumentAccessor wx = getDocumentAccessor("read");
+			WebXMLDocumentAccessor wx = new WebXMLDocumentAccessor(resourceName);
 			Document doc;
 			
+			// we need to prepare the query
+			prepareQuery(wx.createRequest(queryType));
+			
+			/*
+			 * Keep trying to query the document until we get
+			 * a non-recoverable error.
+			 */
 			while(true) {
 				try {
+					// if we get no exceptions, break out of the loop.
 					doc = wx.query(); 
 					break;
-				} catch (LoginRequiredException lre) {
-					LoginDialog d = new LoginDialog();
-					
-					try {
-						d.doLogin("(for access to " + resourceName + ")", false);
-					} catch (UserCancelledException uce) {
-						loadFailed(uce);
+				} catch (WebPermissionsException wpe) {
+					if(!handleQueryException(wpe))
 						return;
-					}
 				}
 			}
 			
@@ -79,11 +131,28 @@ public class Resource {
 				throw new IOException("Invalid XML document returned; Root element is not corina type.");
 				*/
 			
-			if(loadDocument(doc))
-				loadSucceeded(doc);
+			if(processQueryResult(doc))
+				querySucceeded(doc);
 		} catch (IOException ioe) {
-			loadFailed(ioe);
+			queryFailed(ioe);
 		}
+	}
+
+	/**
+	 * Prepare the query document, which is in the format below.
+	 * The element passed is "request." 
+	 * This is returned so the method can be chained.
+	 * 
+	 * <corina>
+	 *    <request type="action">
+	 *    </request>
+	 * </corina>
+	 * 
+	 * @param requestElement 
+	 */
+	protected Element prepareQuery(Element requestElement) {
+		// this is meant to be overloaded, but defaults to reading everything...
+		return requestElement;
 	}
 	
 	/**
@@ -92,40 +161,40 @@ public class Resource {
 	 * WARNING: This function *must* be threadsafe. 
 	 * This means it must not change any class variables without synchronizing against them!
 	 * 
-	 * @param doc The XML JDOM document obtained by the load function
+	 * @param doc The XML JDOM document obtained by the query function
 	 * @return true on success, false on failure
 	 */
-	public boolean loadDocument(Document doc) {
+	protected boolean processQueryResult(Document doc) {
 		// this is meant to be overloaded.
 		return true;
 	}
 	
 	/**
-	 * Called if loadDocument returns true
+	 * Called if queryDocument returns true
 	 * Meant only to be overloaded by CachedResource
 	 * @param doc
 	 */
-	protected void loadSucceeded(Document doc) {
-		resourceLoaded = true;
-		fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_LOADED));
+	protected void querySucceeded(Document doc) {
+		resourceQueried = true;
+		fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_QUERY_COMPLETE));
 	}
 	
 	/**
 	 * In this function, handle any failure condition.
-	 * This is only called if loadDocument() is not called.
+	 * This is only called if queryDocument() is not called.
 	 */
-	public void loadFailed(Exception e) {
-		System.out.println("Failed to load resource " + resourceName);
+	protected void queryFailed(Exception e) {
+		System.out.println("Failed to query resource " + resourceName);
 		e.printStackTrace();
 	}
 	
 	/**
-	 * This procedure simply starts a new thread and calls loadWait
+	 * This procedure simply starts a new thread and calls queryWait
 	 */
-	public void load() {
+	public void query() {
 		new Thread() {
 			public void run() {
-				loadWait();
+				queryWait();
 			}
 		}.start();
 	}

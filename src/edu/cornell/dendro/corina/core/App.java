@@ -89,7 +89,7 @@ public class App {
         meter.setNote("Initializing Dictionary...");
     }
     dictionary = new Dictionary();
-    dictionary.load();
+    dictionary.query();
     if (meter != null) {
       meter.setProgress(4);
     }

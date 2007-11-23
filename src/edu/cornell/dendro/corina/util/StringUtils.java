@@ -261,4 +261,19 @@ public class StringUtils {
         int start = index, end = index + source.length();
         return str.substring(0, start) + target + str.substring(end);
     }
+    
+    private static final char[] hexChars ={'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
+    public static String bytesToHex(byte[] in) {
+    	StringBuffer hex = new StringBuffer();
+    	
+    	for(int i = 0; i < in.length; i++) {
+    		int msb = (in[i] & 0xFF) / 16;
+    		int lsb = (in[i] & 0xFF) % 16;
+    		
+    		hex.append(hexChars[msb]);
+    		hex.append(hexChars[lsb]);
+    	}
+    	
+    	return hex.toString();
+    }
 }

@@ -31,12 +31,12 @@ public class CachedResource extends Resource {
 				return;
 			}
 			
-			loadDocument(doc);
+			processQueryResult(doc);
 		}
 	}
 	
 	protected final void loadSucceeded(Document doc) {
-		super.loadSucceeded(doc);
+		super.querySucceeded(doc);
 		
 		// Simple: save everything to a file
 		

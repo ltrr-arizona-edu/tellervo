@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.webdbi;
+package edu.cornell.dendro.corina.gui;
 
 import java.awt.Dialog.ModalityType;
 import java.awt.Color;
@@ -33,7 +33,6 @@ import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.gui.UserCancelledException;
 
 
 public class LoginDialog extends JDialog {
@@ -396,6 +395,6 @@ public class LoginDialog extends JDialog {
 		if(cancelled)
 			throw new UserCancelledException();
 		
-		saveSettings();
+		saveSettings();		
 	}
 }
