@@ -198,71 +198,65 @@ if(!($myMetaHeader->status == "Error"))
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
             // DB connection ok
-            // Build SQL depending on parameters
-            if(!$myRequest->id==NULL)
+            // Build filter conditions
+            if(isset($myRequest->id))
             {
-                $sql="select * from tblsite where siteid=".$myRequest->id." order by siteid";
+                $filter="where siteid=".$myRequest->id;
             }
-            elseif((isset($myRequest->name)) && (isset($myRequest->code)))
+            if(isset($myRequest->name)) 
             {
-                $sql="select * from tblsite where name='$myRequest->name' and code='$myRequest->code' order by siteid";
+                if ($filter) {$filter.=" and ";} else {$filter.="where ";}
+                $filter.= "name='".$myRequest->name."'";
             }
-            elseif(isset($myRequest->name))
+            if(isset($myRequest->code)) 
             {
-                $sql="select * from tblsite where name ilike '%$myRequest->name%' order by siteid";
-            }
-            elseif(isset($myRequest->code))
-            {
-                $sql="select * from tblsite where code ilike '%$myRequest->code%' order by siteid";
-            }
-            else
-            {
-                //$sql="select tblsite.* from (tblsite INNER JOIN securitygroupsitemaster(2,".$myAuth->getID().") on tblsite.siteid = securitygroupsitemaster.objectid) order by tblsite.siteid";
-                $sql="select tblsite.* from tblsite order by tblsite.siteid";
+                if ($filter) {$filter.=" and ";} else {$filter.="where ";}
+                $filter.= "code='".$myRequest->code."'";
             }
 
-            if($sql)
+            // Construct SQL statement
+            $sql = "select * from tblsite $filter order by siteid";
+            echo $sql;
+            
+            // Run SQL
+            $result = pg_query($dbconn, $sql);
+            $myMetaHeader->setTiming("Start main SQL request");
+            while ($row = pg_fetch_array($result))
             {
-                // Run SQL
-                $result = pg_query($dbconn, $sql);
-                $myMetaHeader->setTiming("Start main SQL request");
-                while ($row = pg_fetch_array($result))
+                $myMetaHeader->setTiming("Found row match now check permission");
+                // Check user has permission to read tree
+                if($myAuth->sitePermission($row['siteid'], "read"))
                 {
-                    $myMetaHeader->setTiming("Found row match now check permission");
-                    // Check user has permission to read tree
-                    if($myAuth->sitePermission($row['siteid'], "read"))
-                    {
-                        $myMetaHeader->setTiming("Permission ok");
-                        $mySite = new site();
-                        $success = $mySite->setParamsFromDB($row['siteid']);
-                        $myMetaHeader->setTiming("Params set from DB");
-                        $success2 = $mySite->setChildParamsFromDB();
-                        $myMetaHeader->setTiming("Child object params set from DB");
+                    $myMetaHeader->setTiming("Permission ok");
+                    $mySite = new site();
+                    $success = $mySite->setParamsFromDB($row['siteid']);
+                    $myMetaHeader->setTiming("Params set from DB");
+                    $success2 = $mySite->setChildParamsFromDB();
+                    $myMetaHeader->setTiming("Child object params set from DB");
 
-                        if($success && $success2)
+                    if($success && $success2)
+                    {
+                        $myMetaHeader->setTiming("Start XML build");
+                        if ($myRequest->format=='kml')
                         {
-                            $myMetaHeader->setTiming("Start XML build");
-                            if ($myRequest->format=='kml')
-                            {
-                                $xmldata.= $mySite->asKML();      
-                            }
-                            else
-                            {
-                                $xmldata.= $mySite->asXML();
-                            }
-                            $myMetaHeader->setTiming("End XML build");
+                            $xmldata.= $mySite->asKML();      
                         }
                         else
                         {
-                            $myMetaHeader->setMessage($mySite->getLastErrorCode, $mySite->getLastErrorMessage);
+                            $xmldata.= $mySite->asXML();
                         }
+                        $myMetaHeader->setTiming("End XML build");
                     }
                     else
                     {
-                        $myMetaHeader->setMessage("103", "Permission denied on site id ".$row['siteid'], "Warning");
+                        $myMetaHeader->setMessage($mySite->getLastErrorCode, $mySite->getLastErrorMessage);
                     }
                 }
-            }
+                else
+                {
+                    $myMetaHeader->setMessage("103", "Permission denied on site id ".$row['siteid'], "Warning");
+                }
+            } 
         }
         else
         {
