@@ -24,7 +24,9 @@ public class UUID {
 	static {
 		try {
 			System.loadLibrary("cpgdb_uuid");
-			System.out.println("Successfully loaded native UUID driver.");
+			/* This is just noise in the log files.
+			 * System.out.println("Successfully loaded native UUID driver.");
+			 */
 			loaded = true;
 		} catch (UnsatisfiedLinkError e) {
 			System.out.println("Unable to load native UUID driver.");

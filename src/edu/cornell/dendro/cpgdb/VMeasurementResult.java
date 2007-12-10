@@ -198,9 +198,20 @@ public class VMeasurementResult {
 		}
 		break;
 			
-		case SUM:
-			// TODO: Implement these. :)
-			throw new SQLException("Sorry, these functions aren't implemented yet. :'(");
+		case SUM: 
+			// create a new VMeasurement, move the metadata
+			newVMeasurementResultID = dbq.createUUID();
+			
+			// create our vmeasurementresult...
+			dbq.execute("qappVMeasurementResultOpSum",
+					newVMeasurementResultID, VMeasurementID,
+					VMeasurementResultMasterID,
+					newVMeasurementResultGroupID);
+			
+			// create our vmeasurementreadingresult...
+			dbq.execute("qappVMeasurementResultReadingOpSum",
+					newVMeasurementResultGroupID, newVMeasurementResultID);
+			break;
 			
 		case CLEAN:
 			/*

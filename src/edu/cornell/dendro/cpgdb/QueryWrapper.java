@@ -137,6 +137,29 @@ public class QueryWrapper {
 		 */
 		addQuery("qacqVMeasurementReadingResult", 
 				"SELECT RelYear, Reading from tblVMeasurementReadingResult WHERE VMeasurementResultID=? ORDER BY RelYear ASC");
+		
+		/*
+		 * 1 = paramNewVMeasurementResultID
+		 * 2 = paramVMeasurementID
+		 * 3 = paramVMeasurementResultMasterID
+		 * 4 = paramVMeasurementResultGroupID
+		 */
+		addQuery("qappVMeasurementResultOpSum",
+				"INSERT INTO tblVMeasurementResult ( VMeasurementResultID, VMeasurementID, StartYear, IsRelYear, " +
+				"CreatedTimestamp, LastModifiedTimestamp, VMeasurementResultMasterID, OwnerUserID ) " +
+				"SELECT ? AS Expr1, ? AS Expr2, " +
+				"Min(tblVMeasurementResult.StartYear) AS MinOfStartYear, " +
+				"Max(tblVMeasurementResult.IsRelYear) AS MaxOfIsRelYear, " +
+				"Now() AS Expr3, Now() AS Expr4, " +
+				"? AS Expr5, 1 AS Expr6 FROM tblVMeasurementResult " +
+				"WHERE tblVMeasurementResult.VMeasurementResultGroupID=?");
+		
+		/*
+		 * 1 = strNewVMeasurementResultGroupID
+		 * 2 = strNewVMeasurementResultID
+		 */
+		addQuery("qappVMeasurementResultReadingOpSum",
+				"SELECT qappVMeasurementResultReadingOpSum(?, ?)");
 	}
 
 	/**
