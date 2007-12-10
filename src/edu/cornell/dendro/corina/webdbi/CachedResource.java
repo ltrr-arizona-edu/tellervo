@@ -15,7 +15,8 @@ public class CachedResource extends Resource {
 	private String cachedResourcePath;
 	
 	public CachedResource(String cachedResourceName) {
-		super(cachedResourceName);
+		// we only support read-only resources :>
+		super(cachedResourceName, new ResourceQueryType(ResourceQueryType.READ));
 
 		cachedResourcePath = App.prefs.getCorinaDir() + getResourceName() + ".xmlcache";
 		
@@ -35,7 +36,7 @@ public class CachedResource extends Resource {
 		}
 	}
 	
-	protected final void loadSucceeded(Document doc) {
+	protected final void querySucceeded(Document doc) {
 		super.querySucceeded(doc);
 		
 		// Simple: save everything to a file

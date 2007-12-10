@@ -96,7 +96,7 @@ public class Resource {
 		
 	/**
 	 * This function queries the webservice with the 'read' verb.
-	 * The queryDocument function is called upon success; 
+	 * The processQueryResult function is called upon success; 
 	 * the queryFailed function is called upon failure.
 	 * 
 	 * queryWait does not return until query has succeeded or until an error
@@ -170,7 +170,7 @@ public class Resource {
 	}
 	
 	/**
-	 * Called if queryDocument returns true
+	 * Called if processQueryResult returns true
 	 * Meant only to be overloaded by CachedResource
 	 * @param doc
 	 */
@@ -181,7 +181,7 @@ public class Resource {
 	
 	/**
 	 * In this function, handle any failure condition.
-	 * This is only called if queryDocument() is not called.
+	 * This is only called if processQueryResult() is not called.
 	 */
 	protected void queryFailed(Exception e) {
 		System.out.println("Failed to query resource " + resourceName);

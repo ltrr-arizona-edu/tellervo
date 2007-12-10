@@ -39,6 +39,9 @@ public class DictionaryMetadataField extends MetadataField implements
 	}
 	
 	public int getListSize() {
+		if(myDictionary == null)
+			return 0;
+		
 		return myDictionary.size();
 	}
 	

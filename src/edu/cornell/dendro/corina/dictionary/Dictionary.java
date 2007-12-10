@@ -28,12 +28,12 @@ public class Dictionary extends CachedResource {
 		super("dictionaries");		
 	}
 	
-	public boolean queryDocument(Document doc) {
+	public boolean processQueryResult(Document doc) {
 		Element root = doc.getRootElement();
-		Element dataElement = root.getChild("data");
+		Element dataElement = root.getChild("content");
 		
 		if(dataElement == null) {
-			System.out.println("No data element in dictionary; ignoring this.");
+			System.out.println("No content element in dictionary; ignoring this.");
 			return false;
 		}
 				
