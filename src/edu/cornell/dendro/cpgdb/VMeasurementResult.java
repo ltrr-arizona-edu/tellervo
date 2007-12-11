@@ -189,7 +189,8 @@ public class VMeasurementResult {
 
 			// prepare a statement for inserting our rows
 			
-			Statement bulkInsert = dbq.getConnection().createStatement();
+			PreparedStatement bulkInsert = dbq.getConnection().prepareStatement(
+				"INSERT into tblVMeasurementReadingResult (VMeasurementResultID,RelYear,Reading) VALUES (?,?,?)");
 
 			// prepare them in batch, and submit them all.
 			idx.batchAddStatements(bulkInsert, newVMeasurementResultID);
@@ -211,6 +212,10 @@ public class VMeasurementResult {
 			// create our vmeasurementreadingresult...
 			dbq.execute("qappVMeasurementResultReadingOpSum",
 					newVMeasurementResultGroupID, newVMeasurementResultID);
+
+			Statement b = dbq.getConnection().createStatement();
+			b.execute("SELECT qappVMeasurementResultReadingOpSum('asdf', 'asdf')");
+
 			break;
 			
 		case CLEAN:

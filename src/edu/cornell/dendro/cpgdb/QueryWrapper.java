@@ -145,11 +145,12 @@ public class QueryWrapper {
 		 * 4 = paramVMeasurementResultGroupID
 		 */
 		addQuery("qappVMeasurementResultOpSum",
-				"INSERT INTO tblVMeasurementResult ( VMeasurementResultID, VMeasurementID, StartYear, IsRelYear, " +
-				"CreatedTimestamp, LastModifiedTimestamp, VMeasurementResultMasterID, OwnerUserID ) " +
-				"SELECT ? AS Expr1, ? AS Expr2, " +
+				"INSERT INTO tblVMeasurementResult ( VMeasurementResultID, VMeasurementID, " +
+                                "RadiusID, StartYear, DatingTypeID, CreatedTimestamp, " +
+				"LastModifiedTimestamp, VMeasurementResultMasterID, OwnerUserID ) " +
+				"SELECT ? AS Expr1, ? AS Expr2, -1 as RadiusID, " +
 				"Min(tblVMeasurementResult.StartYear) AS MinOfStartYear, " +
-				"Max(tblVMeasurementResult.IsRelYear) AS MaxOfIsRelYear, " +
+				"Max(tblVMeasurementResult.DatingTypeID) AS MaxOfDatingTypeID, " +
 				"Now() AS Expr3, Now() AS Expr4, " +
 				"? AS Expr5, 1 AS Expr6 FROM tblVMeasurementResult " +
 				"WHERE tblVMeasurementResult.VMeasurementResultGroupID=?");
@@ -159,7 +160,7 @@ public class QueryWrapper {
 		 * 2 = strNewVMeasurementResultID
 		 */
 		addQuery("qappVMeasurementResultReadingOpSum",
-				"SELECT qappVMeasurementResultReadingOpSum(?, ?)");
+				"SELECT * from qappVMeasurementResultReadingOpSum(?, ?)");
 	}
 
 	/**

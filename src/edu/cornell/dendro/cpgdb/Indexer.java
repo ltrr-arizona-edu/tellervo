@@ -6,6 +6,7 @@ package edu.cornell.dendro.cpgdb;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,6 +116,18 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 			b.append(((Number) output.get(i)).intValue());
 			b.append(")");
 			s.addBatch(b.toString());
+		}
+	}
+
+	public void batchAddStatements(PreparedStatement s, String newVMeasurementResultID) throws SQLException {
+		int len = output.size();
+
+		for(int i = 0; i < len; i++) {
+			s.setString(1, newVMeasurementResultID);
+			s.setInt(2, ((Number) relYear.get(i)).intValue());
+			s.setInt(3, ((Number) output.get(i)).intValue());
+		
+			s.addBatch();
 		}
 	}
 }
