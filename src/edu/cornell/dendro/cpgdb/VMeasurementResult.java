@@ -210,11 +210,12 @@ public class VMeasurementResult {
 					newVMeasurementResultGroupID);
 			
 			// create our vmeasurementreadingresult...
-			dbq.execute("qappVMeasurementResultReadingOpSum",
-					newVMeasurementResultGroupID, newVMeasurementResultID);
+			res = dbq.query("qappVMeasurementResultReadingOpSum",
+					  newVMeasurementResultGroupID, newVMeasurementResultID);
 
-			Statement b = dbq.getConnection().createStatement();
-			b.execute("SELECT qappVMeasurementResultReadingOpSum('asdf', 'asdf')");
+			// trick the SQL server into executing this last query. Why? don't ask me.
+			res.next();
+			res.close();
 
 			break;
 			
