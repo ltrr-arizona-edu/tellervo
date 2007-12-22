@@ -16,7 +16,7 @@ public class UUID {
 			return null;
 
 		return generateUUID();
-        }
+	}
 
 	private static native String generateUUID();
 	private static boolean loaded = false;
@@ -29,7 +29,8 @@ public class UUID {
 			 */
 			loaded = true;
 		} catch (UnsatisfiedLinkError e) {
-			System.out.println("Unable to load native UUID driver.");
+			System.out.println("Unable to load native UUID driver from path " +
+					System.getProperty("java.library.path"));
 			loaded = false;
 		}
 	}

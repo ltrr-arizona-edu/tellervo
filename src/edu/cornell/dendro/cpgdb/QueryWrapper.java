@@ -161,6 +161,12 @@ public class QueryWrapper {
 		 */
 		addQuery("qappVMeasurementResultReadingOpSum",
 				"SELECT * from qappVMeasurementResultReadingOpSum(?, ?)");
+		
+		/*
+		 * 1 = VMeasurementResultID
+		 */
+		addQuery("qGetResultRow",
+				"SELECT * from tblVMeasurementResult WHERE VMeasurementResultID=?");
 	}
 
 	/**

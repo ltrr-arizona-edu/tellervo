@@ -10,36 +10,60 @@ public class VMeasurementResult {
 	private String result;
 	
 	// we keep this instantiated for easy access to the db
-	private DBQuery dbq;
-	/** true if we created the dbquery object, false if it was passed to us. */
-	private boolean ourDBQuery = false;
-	
-	public VMeasurementResult(int VMeasurementID, boolean cleanup) throws SQLException {
+	protected DBQuery dbq;
+
+	/**
+	 * 
+	 * @param VMeasurementID
+	 * @param safe true if we should attempt to rollback on error, false otherwise
+	 * @throws SQLException
+	 */
+	public VMeasurementResult(int VMeasurementID, boolean safe) throws SQLException {
+		this(VMeasurementID, safe, true);
+	}
+
+	/**
+	 * 
+	 * @param VMeasurementID
+	 * @param safe true if we should attempt to rollback on error, false otherwise
+	 * @param cleanup true if we should close all our queries immediately, false otherwise
+	 * @throws SQLException
+	 */
+	public VMeasurementResult(int VMeasurementID, boolean safe, boolean cleanup) throws SQLException {
 		this.dbq = new DBQuery();
 		try {
-			acquireVMeasurementResult(VMeasurementID, cleanup);
+			acquireVMeasurementResult(VMeasurementID, safe);
 		} finally {
-		// we created this dbquery object, it's our responsibility to clean it up.
-			dbq.cleanup();
+			if(cleanup)
+				// we created this dbquery object, it's our responsibility to clean it up.
+				dbq.cleanup();
 		}
 	}
 	
-	public VMeasurementResult(int VMeasurementID, boolean cleanup, DBQuery dbQuery) throws SQLException {
+	/**
+	 * 
+	 * @param VMeasurementID
+	 * @param safe
+	 * @param dbQuery
+	 * @throws SQLException
+	 */
+	public VMeasurementResult(int VMeasurementID, boolean safe, DBQuery dbQuery) throws SQLException {
 		this.dbq = dbQuery;		
-		acquireVMeasurementResult(VMeasurementID, cleanup);
+		acquireVMeasurementResult(VMeasurementID, safe);
 	}
 
 	/**
 	 * Starts the recursive process that gets the VMeasurementResult UUID
 	 * 
-	 * Why a routine for cleanup? Well, cleanup works under the native pl/java driver,
+	 * Why a routine for 'safe' cleanup? Well, cleanup works under the native pl/java driver,
 	 * but doesn't work under the postgresql jdbc driver. Thus making testing a nightmare!
 	 * 
 	 * @param VMeasurementID
+	 * @param safe true if we should attempt to rollback on failure
 	 * @throws SQLException
 	 */
-	private void acquireVMeasurementResult(int VMeasurementID, boolean cleanup) throws SQLException {
-		if(cleanup) {
+	private void acquireVMeasurementResult(int VMeasurementID, boolean safe) throws SQLException {
+		if(safe) {
 			// If we have an error, clean up any mess we made, but pass along the exception.
 			Savepoint beforeCreation = dbq.getConnection().setSavepoint();
 			
