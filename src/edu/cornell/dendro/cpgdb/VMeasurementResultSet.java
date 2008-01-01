@@ -3,8 +3,7 @@
  */
 package edu.cornell.dendro.cpgdb;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import org.postgresql.pljava.ResultSetHandle;
 
 /**
@@ -15,25 +14,31 @@ import org.postgresql.pljava.ResultSetHandle;
  * @author lucasm
  *
  */
-public class VMeasurementResultSet extends VMeasurementResult implements ResultSetHandle {
+public class VMeasurementResultSet implements ResultSetHandle {
+        private int VMeasurementID;
+        private Statement statement;
+
 	/**
 	 * @param VMeasurementID
-	 * @param cleanup
-	 * @throws SQLException
 	 */
-	public VMeasurementResultSet(int VMeasurementID)
-			throws SQLException {
-		super(VMeasurementID, true, false);
+	public VMeasurementResultSet(int VMeasurementID) {
+		this.VMeasurementID = VMeasurementID;
 	}
 	
 	public void close() throws SQLException {
-		dbq.cleanup();
+		statement.close();
 	}
 
 	public ResultSet getResultSet() throws SQLException {
-		String resid = getResult();
-		if(resid != null)
-			return dbq.query("qGetResultRow", resid);
+		VMeasurementResult result = new VMeasurementResult(VMeasurementID, false);
+		String resid = result.getResult();
+
+		if(resid != null) {
+			statement = DriverManager.getConnection("jdbc:default:connection").createStatement();
+			return statement.executeQuery(
+				"SELECT * FROM tblVMeasurementResult WHERE VMeasurementResultID = '" +
+				resid + "'");
+		}
 		return null;
 	}
 	
