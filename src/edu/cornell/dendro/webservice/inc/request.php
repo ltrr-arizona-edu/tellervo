@@ -28,7 +28,19 @@ class request
     var $treeid                     = NULL;
     var $readingid                  = NULL;
     var $specimenid                 = NULL;
+    var $measurementid              = NULL;
+    var $radiusid                   = NULL;
+    var $vmeasurementopid           = NULL;
+    var $ownerid                    = NULL;
+    var $readingsArray              = array();
 
+    var $vmeasurementop             = NULL;
+    var $description                = NULL;
+    var $startyearon                = NULL;
+    var $measuredby                 = NULL;
+    var $datingtype                 = NULL;
+    var $datingerrorpositive        = NULL;
+    var $datingerrornegative        = NULL;
     var $latitude                   = NULL;
     var $longitude                  = NULL;
     var $precision                  = NULL;
@@ -50,6 +62,9 @@ class request
     var $isunmeasuredpreverified    = NULL;
     var $isunmeasuredpostverified   = NULL;
     var $isstandard                 = NULL;
+    var $isreconciled               = NULL;
+    var $islegacycleaned            = NULL;
+    var $ispublished                = NULL;
     var $note                       = NULL;
     var $password                   = NULL;
     var $username                   = NULL;
@@ -155,6 +170,8 @@ class request
         if(isset($_GET['treeid'])) $this->treeid = (int) $_GET['treeid'];
         if(isset($_GET['readingid'])) $this->readingid = (int) $_GET['readingid'];
         if(isset($_GET['specimenid'])) $this->specimenid = (int) $_GET['specimenid'];
+        if(isset($_GET['measurementid'])) $this->measurementid = (int) $_GET['measurementid'];
+        if(isset($_GET['radiusid'])) $this->radiusid = (int) $_GET['radiusid'];
 
         if(isset($_GET['code'])) $this->code = addslashes($_GET['code']);
         if(isset($_GET['name'])) $this->name = addslashes($_GET['name']);
@@ -181,7 +198,16 @@ class request
         if(isset($_GET['isunmeasuredpostverified'])) $this->isunmeasurementpostverified = (bool) $_GET['isunmeasuredpostverified'];
         if(isset($_GET['isstandard'])) $this->isstandard = (bool) $_GET['isstandard'];
         if(isset($_GET['note'])) $this->note = addslashes($_GET['note']);
-
+        if(isset($_GET['description'])) $this->description = addslashes($_GET['description']);
+        if(isset($_GET['isreconciled'])) $this->isreconciled = (bool) $_GET['isreconciled'];
+        if(isset($_GET['ispublished'])) $this->ispublished = (bool) $_GET['ispublished'];
+        if(isset($_GET['islegacycleaned'])) $this->islegacycleaned = (bool) $_GET['islegacycleaned'];
+        if(isset($_GET['startyear'])) $this->startyear = (int) $_GET['startyear'];
+        if(isset($_GET['datingerrorpositive'])) $this->datingerrorpositive = (int) $_GET['datingerrorpostive'];
+        if(isset($_GET['datingerrornegative'])) $this->datingerrornegative = (int) $_GET['datingerrornegative'];
+        if(isset($_GET['measuredby'])) $this->measuredby = addslashes($_GET['measuredby']);
+        if(isset($_GET['datingtype'])) $this->datingtype = addslashes($_GET['datingtype']);
+        
         if(isset($_POST['username'])) $this->username = addslashes($_POST['username']);
         if(isset($_POST['password'])) $this->password = addslashes($_POST['password']);
         if(isset($_POST['hash']))     $this->hash = addslashes($_POST['hash']);
@@ -250,7 +276,7 @@ class treeRequest extends request
             {
                 if($tree['id'])            $this->id           = (int)         $tree['id'];
                 if($tree['label'])         $this->label        = addslashes(   $tree['label']);
-                if($tree['taxonID'])       $this->taxonid      = (int)         $tree['taxonid'];
+                if($tree['taxonID'])       $this->taxonid      = (int)         $tree['taxonID'];
                 if($tree['latitude'])      $this->latitude     = (double)      $tree['latitude'];
                 if($tree['longitude'])     $this->longitude    = (double)      $tree['longitude'];
                 if($tree['precision'])     $this->precision    = (int)         $tree['precision'];
@@ -507,6 +533,56 @@ class authenticateRequest extends request
                 if($request->authenticate['password'])            $this->password         = addslashes(   $request->authenticate['password']);
                 if($request->authenticate['hash'])                $this->hash             = addslashes(   $request->authenticate['hash']);
                 if($request->authenticate['nonce'])               $this->nonce            = addslashes(   $request->authenticate['nonce']);
+            }
+        }
+    }
+}
+
+class measurementRequest extends request
+{
+    var $password   = NULL;
+    var $username   = NULL;
+    var $hash       = NULL;
+    var $nonce      = NULL;
+
+    function authenticateRequest($metaHeader, $auth)
+    {
+        parent::request($metaHeader, $auth);
+    }
+
+    function getXMLParams()
+    {
+        $this->logRequest();
+        if($this->readXML())
+        {
+            foreach($this->simplexml->xpath('//request') as $request)
+            {
+                if($request->measurement['id'])                   $this->id                    = (int)         $request->measurement['id'];
+                if($request->measurement['radiusID'])             $this->radiusid              = (int)         $request->measurement['radiusID'];
+                if($request->measurement['isReconciled'])         $this->isreconciled          = (bool)        $request->measurement['isReconciled'];
+                if($request->measurement['startYear'])            $this->startyear             = (int)         $request->measurement['startYear'];
+                if($request->measurement['isLegacyCleaned'])      $this->islegacycleaned       = (bool)        $request->measurement['isLegacyCleaned'];
+                if($request->measurement['measuredByID'])         $this->measuredby            = (int)         $request->measurement['measuredByID'];
+                if($request->measurement['ownerID'])              $this->ownerid               = (int)         $request->measurement['ownerID'];
+                if($request->measurement['datingTypeID'])         $this->datingtypeid          = addslashes(   $request->measurement['datingTypeID']);
+                if($request->measurement['datingErrorPositive'])  $this->datingerrorpositive   = (int)         $request->measurement['datingErrorPositive'];
+                if($request->measurement['datingErrorNegative'])  $this->datingerrornegative   = (int)         $request->measurement['datingErrorNegative'];
+                if($request->measurement['name'])                 $this->name                  = addslashes(   $request->measurement['name']);
+                if($request->measurement['description'])          $this->description           = addslashes(   $request->measurement['description']);
+                if($request->measurement['isPublished'])          $this->ispublished           = (bool)        $request->measurement['isPublished'];
+            }
+            
+            foreach($this->simplexml->xpath('//request/measurement') as $measurement)
+            {
+                if($measurement->readings['operation'])           $this->vmeasurementop            = addslashes(   $measurement->readings['operation']);
+                if($measurement->readings['operationid'])         $this->vmeasurementopid          = (int)         $measurement->readings['operationid'];
+            }
+            
+            foreach($this->simplexml->xpath('//request/measurement/readings/value') as $value)
+            {
+                $theYear = (int) $value['year'];
+                $theValue = (int) $value;
+                $this->readingsArray[$theYear] = $theValue;
             }
         }
     }
