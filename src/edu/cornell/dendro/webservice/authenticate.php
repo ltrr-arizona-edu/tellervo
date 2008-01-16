@@ -81,7 +81,8 @@ switch($myRequest->mode)
     default:
         $myMetaHeader->setRequestType("help");
         // Output the resulting XML
-        $xmldata ="Details of how to use this web service will be added here later!";
+        //$xmldata ="Details of how to use this web service will be added here later!";
+        include("docs/authenticate.php");
         writeHelpOutput($myMetaHeader,$xmldata);
         die;
 }

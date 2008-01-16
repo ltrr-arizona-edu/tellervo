@@ -16,6 +16,7 @@ Type: <select id="action">
         <option>treeNotes.php</option>
         <option>readingNotes.php</option>
         <option>authenticate.php</option>
+        <option>measurements.php</option>
         <option>showpost.php</option>
         </select>
 <br/>

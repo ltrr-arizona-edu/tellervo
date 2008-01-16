@@ -3,6 +3,10 @@
 function writeOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd="")
 {
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    if ($metaHeader->status=="Error")
+    {
+        echo "<?xml-stylesheet type=\"text/css\" href=\"css/corina.css\"?>";
+    }
     echo "<corina>\n";
     echo $metaHeader->asXML();
     echo "<content>\n";
@@ -11,12 +15,14 @@ function writeOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd
     echo $parentTagEnd."\n";
     echo "</content>\n";
     echo "</corina>";
+    
 }
 
 
 function writeHelpOutput($metaHeader, $xmldata)
 {
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    echo "<?xml-stylesheet type=\"text/css\" href=\"css/corina.css\"?>";
     echo "<corina>\n";
     echo $metaHeader->asXML();
     echo "<help>\n";

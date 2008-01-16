@@ -149,7 +149,8 @@
 				<ref name="treeNoteObject" />   	
 				<ref name="readingNoteObject" />   	
 				<ref name="vmeasurementNoteObject" />   	
-        	                <ref name="authenticateObject" />
+        	    <ref name="authenticateObject" />
+        	    <ref name="measurementObject" />
         	</choice>   
         </optional>
     </element>
@@ -683,6 +684,122 @@
                         </element>
                 </optional>
         </element>
+</define>
+
+<define name="measurementObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="measurement">
+                <optional>
+                        <attribute name="id">
+                                <data type="positiveInteger" />
+                        </attribute>
+                </optional>
+                <optional>
+                        <attribute name="radiusID">
+                                <data type="integer">
+                                    <param name="minInclusive">0</param>
+                                </data>
+                        </attribute>
+                </optional>
+                <optional>
+                        <attribute name="isReconciled">
+                                <data type="boolean">
+                                </data>
+                        </attribute>
+                </optional>
+                <optional>
+                        <attribute name="startYear">
+                                <data type="integer">
+                                </data>
+                        </attribute>
+                </optional>
+                <optional>
+                        <attribute name="isLegacyCleaned">
+                                <data type="boolean">
+                                </data>
+                        </attribute>
+                </optional>
+                <optional>
+                        <attribute name="measuredBy">
+                            <text/>
+                        </attribute>
+                </optional>
+                <optional>
+                        <attribute name="datingTypeID">
+                            <text/>
+                        </attribute>
+                </optional>
+                <optional>
+                        <attribute name="datingErrorPositive">
+                                <data type="positiveInteger" />
+                        </attribute>
+                </optional>
+                <optional>
+                        <attribute name="datingErrorNegative">
+                                <data type="positiveInteger" />
+                        </attribute>
+                </optional>
+                <optional>
+                        <attribute name="name">
+                            <text/>
+                        </attribute>
+                </optional>
+                <optional>
+                        <attribute name="description">
+                            <text/>
+                        </attribute>
+                </optional>
+                <optional>
+                        <attribute name="isPublished">
+                                <data type="boolean">
+                                </data>
+                        </attribute>
+                </optional>
+                
+                <optional>
+                        <element name="readings">
+        			<zeroOrMore>
+        				<element name="value">
+        					<data type="integer">
+        					</data>
+        					<optional>
+        							<attribute name="year">
+        								<data type="integer">
+        								</data>
+        							</attribute>
+                                                </optional>
+        					<optional>
+        							<attribute name="wjInc">
+        								<data type="integer">
+        								</data>
+        							</attribute>
+                                                </optional>
+        					<optional>
+        							<attribute name="wjDec">
+        								<data type="integer">
+        								</data>
+        							</attribute>        	
+                                                </optional>
+        					<optional>
+        							<attribute name="count">
+        								<data type="integer">
+        								</data>
+        							</attribute>        													
+        					</optional>
+        				</element>
+                                </zeroOrMore>
+                        </element>
+        	</optional>
+        		
+        		<optional>
+        			<element name="references">
+        					<zeroOrMore>
+        						<ref name="measurementObject"/> 
+        					</zeroOrMore> 
+        			</element>
+        		</optional>
+        		
+        </element>
+
 </define>
 
 </grammar>

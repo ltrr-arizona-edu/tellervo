@@ -268,7 +268,7 @@ class auth
   
   function sitePermission($theSiteID, $theType)
   {
-        global $dbconn;
+      global $dbconn;
         
         switch($theType)
         {
@@ -298,8 +298,7 @@ class auth
                 $dbconnstatus = pg_connection_status($dbconn);
                 if ($dbconnstatus ===PGSQL_CONNECTION_OK)
                 {
-                    pg_send_query($dbconn, $sql);
-                    $result = pg_get_result($dbconn);
+                    $result = pg_query($dbconn, $sql);
                     if(pg_num_rows($result)==0)
                     {
                         // No records match the id specified

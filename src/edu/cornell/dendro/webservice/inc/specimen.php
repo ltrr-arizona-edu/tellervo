@@ -383,7 +383,7 @@ class specimen
                     $sql.= "pithid=".$this->pithid." ,";
                     $sql.= "ispithverified='".fromPHPtoPGBool($this->ispithverified)."' ,";
                     $sql.= "unmeaspre=".$this->unmeaspre." ,";
-                    $sql.= "usunmeaspreverified='".fromPHPtoPGBool($this->isunmeaspreverified)."' ,";
+                    $sql.= "unmeaspreverified='".fromPHPtoPGBool($this->isunmeaspreverified)."' ,";
                     $sql.= "unmeaspost=".$this->unmeaspost." ,";
                     $sql.= "isunmeaspostverified='".fromPHPtoPGBool($this->isunmeaspostverified)."' ,";
                 }

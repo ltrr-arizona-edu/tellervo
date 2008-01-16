@@ -206,7 +206,7 @@ if(!($myMetaHeader->status == "Error"))
             if(isset($myRequest->name)) 
             {
                 if ($filter) {$filter.=" and ";} else {$filter.="where ";}
-                $filter.= "name='".$myRequest->name."'";
+                $filter.= "name ilike '%".$myRequest->name."%'";
             }
             if(isset($myRequest->code)) 
             {
@@ -215,8 +215,7 @@ if(!($myMetaHeader->status == "Error"))
             }
 
             // Construct SQL statement
-            $sql = "select * from tblsite $filter order by siteid";
-            echo $sql;
+            $sql = "select siteid from tblsite $filter order by siteid";
             
             // Run SQL
             $result = pg_query($dbconn, $sql);
@@ -232,6 +231,7 @@ if(!($myMetaHeader->status == "Error"))
                     $success = $mySite->setParamsFromDB($row['siteid']);
                     $myMetaHeader->setTiming("Params set from DB");
                     $success2 = $mySite->setChildParamsFromDB();
+                    //$success2 = true;
                     $myMetaHeader->setTiming("Child object params set from DB");
 
                     if($success && $success2)
