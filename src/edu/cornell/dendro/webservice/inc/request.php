@@ -33,6 +33,7 @@ class request
     var $vmeasurementopid           = NULL;
     var $ownerid                    = NULL;
     var $readingsArray              = array();
+    var $referencesArray            = array();
 
     var $vmeasurementop             = NULL;
     var $description                = NULL;
@@ -81,7 +82,7 @@ class request
     function readXML()
     {
         global $rngSchema;
-
+        $origErrorLevel = error_reporting(E_ERROR);
         // Extract parameters from XML post
         $xmlstring = $this->xmlrequest;
         $doc = new DomDocument;
@@ -93,17 +94,22 @@ class request
             if($this->simplexml)
             {
                 $this->mode= strtolower($this->simplexml->request['type']);
+                error_reporting($origErrorLevel);
                 return true;
             }
             else
             {
                 $this->setXMLErrors($myMetaHeader);
+                error_reporting($origErrorLevel);
                 return false;
             }
         }
         else
         {
-            $this->metaHeader->setMessage("905", "XML does not validate against schema. ");
+            $myErrorObj = error_get_last();
+            $myError = explode(":", $myErrorObj['message']);
+            $this->metaHeader->setMessage("905", "XML does not validate against schema. ".end($myError).".");
+            error_reporting($origErrorLevel);
             return false;
         }
     }
@@ -572,17 +578,30 @@ class measurementRequest extends request
                 if($request->measurement['isPublished'])          $this->ispublished           = (bool)        $request->measurement['isPublished'];
             }
             
-            foreach($this->simplexml->xpath('//request/measurement') as $measurement)
+            foreach($this->simplexml->xpath('//request/measurement/references') as $references)
             {
-                if($measurement->readings['operation'])           $this->vmeasurementop            = addslashes(   $measurement->readings['operation']);
-                if($measurement->readings['operationid'])         $this->vmeasurementopid          = (int)         $measurement->readings['operationid'];
+                if($references['operationID']) $this->vmeasurementopid = (int) $references['operationID'];
+            }
+
+            foreach($this->simplexml->xpath('//request/measurement/references/measurement') as $refmeasurement)
+            {
+                if($refmeasurement['id']) array_push($this->referencesArray, $refmeasurement['id']);
             }
             
+            $theYear =-1;
             foreach($this->simplexml->xpath('//request/measurement/readings/value') as $value)
             {
-                $theYear = (int) $value['year'];
+                if ($value['year']!=NULL) 
+                {
+                    $theYear = (int) $value['year'];
+                }
+                else
+                {
+                    $theYear++; 
+                }
+
                 $theValue = (int) $value;
-                $this->readingsArray[$theYear] = $theValue;
+                $this->readingsArray[$theYear] = array('reading' => $theValue, 'wjinc' => NULL, 'wjdec' => NULL, 'count' => 1);
             }
         }
     }

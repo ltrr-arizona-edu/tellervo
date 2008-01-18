@@ -52,6 +52,7 @@ switch($myRequest->mode)
         $myMetaHeader = new meta("read");
         if($myAuth->isLoggedIn())
         {
+            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
             break;
         }
         else
@@ -65,6 +66,7 @@ switch($myRequest->mode)
         if($myAuth->isLoggedIn())
         {
             if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if(($myRequest->readingsArray) && (count($myRequest->readingsArray)< 10)) $myMetaHeader->setMessage("902", "Invalid parameter - You have only supplied ".count($myRequest->readingsArray)." readings.  Minimum number required is 10.");
             break;
         }
         else
@@ -91,6 +93,12 @@ switch($myRequest->mode)
         $myMetaHeader = new meta("create");
         if($myAuth->isLoggedIn())
         {
+            if(($myRequest->referencesArray == NULL) && ($myRequest->readingsArray == NULL)) $myMetaHeader->setMessage("902", "Missing parameter - you must specify either references or readings when creating a new measurement.");
+            if(($myRequest->readingsArray) && ($myRequest->radiusid== NULL)) $myMetaHeader->setMessage("902", "Missing parameter - a new direct measurement must include a radiusID.");
+            if(($myRequest->readingsArray) && ($myRequest->startyear== NULL) && ($myRequest->datingTypeID==1)) $myMetaHeader->setMessage("902", "Missing parameter - a new absolute direct measurement must include a startYear.");
+            if(($myRequest->readingsArray) && (count($myRequest->readingsArray)< 10)) $myMetaHeader->setMessage("902", "Invalid parameter - You have only supplied ".count($myRequest->readingsArray)." readings.  Minimum number required is 10.");
+            if(($myRequest->referencesArray) && ($myRequest->radiusid)) $myMetaHeader->setMessage("902", "Invalid parameter - a new measurement based on other measurements cannot include a radiusID.");
+            if(($myRequest->referencesArray) && ($myRequest->vmeasurementopid==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - a new measurement based on other measurements must include an operationID.");
             break;
         }
         else
@@ -147,9 +155,11 @@ if(!($myMetaHeader->status == "Error"))
         if (isset($myRequest->name))                $myMeasurement->setName($myRequest->name);
         if (isset($myRequest->description))         $myMeasurement->setDescription($myRequest->description);
         if (isset($myRequest->ispublished))         $myMeasurement->setIsPublished($myRequest->ispublished);
-        if (isset($myRequest->measurementopid))     $myMeasurement->setMeasurementOpID($myRequest->measurementopid);
+        if (isset($myRequest->vmeasurementopid))    $myMeasurement->setVMeasurementOpID($myRequest->vmeasurementopid);
         if (isset($myRequest->ownerid))             $myMeasurement->setOwnerID($myRequest->ownerid);
         if (isset($myRequest->readingsArray))       $myMeasurement->setReadingsArray($myRequest->readingsArray);
+        if (isset($myRequest->referencesArray))     $myMeasurement->setReferencesArray($myRequest->referencesArray);
+
 
         if( (($myRequest->mode=='update') && ($myAuth->vmeasurementPermission($myRequest->id, "update")))  || 
             (($myRequest->mode=='create') && ($myAuth->vmeasurementPermission($myRequest->id, "create")))    )
