@@ -792,6 +792,17 @@
         		
         		<optional>
         			<element name="references">
+                                    <optional>
+                                            <attribute name="operationID">
+                                                    <data type="positiveInteger">
+                                                    </data>
+                                            </attribute>
+                                    </optional>
+                                    <optional>
+                                            <attribute name="operation">
+                                                <text/>
+                                            </attribute>
+                                    </optional>
         					<zeroOrMore>
         						<ref name="measurementObject"/> 
         					</zeroOrMore> 
