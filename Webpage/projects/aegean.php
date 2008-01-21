@@ -24,7 +24,7 @@ Our key long-range goal is to build long multi-millennial scale tree-ring chrono
 We also aim to provide a fundamental climate and environmental studies resource for a region which was the cradle of a number of civilizations central to human history from the origins of agriculture through to the Classical period, the Medieval period, and beyond. 
 </p>
 
-<p>To date, more than 10 million tree-ring measurements have led to the compilation of chronologies covering (but not wholly covering) some 9,000 years. Our aim is to fill in the gaps. See our bargraph (in PDF format) to get an idea of the time periods covered. The most difficult periods for us are the first half millennium B.C. and the first millennium A.D. If you have relevant samples, <a href="/samples.php">please contact us</a>!
+<p>To date, more than 10 million tree-ring measurements have led to the compilation of chronologies covering (but not wholly covering) some 9,000 years. Our aim is to fill in the gaps. See our <a href="http://dendro.cornell.edu/photo.php?photourl=/images/charts/bargraph.jpg">bargraph</a> to get an idea of the time periods covered. The most difficult periods for us are the first half millennium B.C. and the first millennium A.D. If you have relevant samples, <a href="/samples.php">please contact us</a>!
 </p>
 
 <div id="gallery">
