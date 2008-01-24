@@ -72,6 +72,16 @@ class request
     var $hash                       = NULL;
     var $nonce                      = NULL;
 
+    var $returnObject               = NULL;
+    var $siteParamsArray            = array();
+    var $subsiteParamsArray         = array();
+    var $treeParamsArray            = array();
+    var $specimenParamsArray        = array();
+    var $radiusParamsArray          = array();
+    var $measurementParamsArray     = array();
+    var $limit                      = NULL;
+    var $skip                       = NULL;
+
     function request($metaHeader, $auth)
     {
         $this->metaHeader = $metaHeader;
@@ -179,6 +189,7 @@ class request
         if(isset($_GET['measurementid'])) $this->measurementid = (int) $_GET['measurementid'];
         if(isset($_GET['radiusid'])) $this->radiusid = (int) $_GET['radiusid'];
 
+        // Main data items
         if(isset($_GET['code'])) $this->code = addslashes($_GET['code']);
         if(isset($_GET['name'])) $this->name = addslashes($_GET['name']);
         if(isset($_GET['label'])) $this->label = addslashes($_GET['label']);
@@ -211,13 +222,28 @@ class request
         if(isset($_GET['startyear'])) $this->startyear = (int) $_GET['startyear'];
         if(isset($_GET['datingerrorpositive'])) $this->datingerrorpositive = (int) $_GET['datingerrorpostive'];
         if(isset($_GET['datingerrornegative'])) $this->datingerrornegative = (int) $_GET['datingerrornegative'];
-        if(isset($_GET['measuredby'])) $this->measuredby = addslashes($_GET['measuredby']);
-        if(isset($_GET['datingtype'])) $this->datingtype = addslashes($_GET['datingtype']);
-        
+        if(isset($_GET['measuredbyid'])) $this->measuredbyid = (int) $_GET['measuredbyid'];
+        if(isset($_GET['ownerid'])) $this->ownderid = (int) $_GET['ownerid'];
+        if(isset($_GET['datingtypeid'])) $this->datingtypeid = (int) $_GET['datingtypeid'];
+
+        // Login specific (note POST not GET)
         if(isset($_POST['username'])) $this->username = addslashes($_POST['username']);
         if(isset($_POST['password'])) $this->password = addslashes($_POST['password']);
         if(isset($_POST['hash']))     $this->hash = addslashes($_POST['hash']);
         if(isset($_POST['nonce'])) $this->nonce = addslashes($_POST['nonce']);
+
+        // Retrieve arrays
+        if(isset($_GET['references'])) $this->referencesArray = explode(",", $_GET['references']);
+        
+        if(isset($_GET['readings'])) 
+        {
+            $readings = explode(",", $_GET['readings']);
+            foreach($readings as $reading)
+            {
+                array_push($this->readingsArray, array('reading' => $reading, 'wkinc' => NULL , 'wjdec' => NULL, 'count' => '1'));
+            }
+        }
+        
 
 
         $this->logRequest();
@@ -602,6 +628,106 @@ class measurementRequest extends request
 
                 $theValue = (int) $value;
                 $this->readingsArray[$theYear] = array('reading' => $theValue, 'wjinc' => NULL, 'wjdec' => NULL, 'count' => 1);
+            }
+        }
+    }
+}
+
+class searchRequest extends request
+{
+    function authenticateRequest($metaHeader, $auth)
+    {
+        parent::request($metaHeader, $auth);
+    }
+
+    function getXMLParams()
+    {
+        $this->logRequest();
+        if($this->readXML())
+        {
+            if($this->simplexml->request->searchParams['returnObject'])  $this->returnObject  = addslashes ( $this->simplexml->request->searchParams['returnObject']);
+            if($this->simplexml->request->searchParams['limit'])         $this->limit         = (int) $this->simplexml->request->searchParams['limit'];
+            if($this->simplexml->request->searchParams['skip'])          $this->skip          = (int) $this->simplexml->request->searchParams['skip'];
+                        
+            foreach($this->simplexml->xpath('//request/searchParams/param') as $param)
+            {
+                // Site Parameters
+                if    ( ($param['name'] == 'siteid') || 
+                        ($param['name'] == 'sitename') || 
+                        ($param['name'] == 'sitecreated') || 
+                        ($param['name'] == 'sitelastmodified') )
+                {
+                    array_push($this->siteParamsArray, array ('name' => $param['name'], 'operator' => $param['operator'], 'value' => $param['value']));
+                }
+
+                // Subsite Parameters
+                elseif( ($param['name'] == 'subsiteid') || 
+                        ($param['name'] == 'subsitename') || 
+                        ($param['name'] == 'subsitecreated') || 
+                        ($param['name'] == 'subsitelastmodified'))
+                {
+                    array_push($this->subsiteParamsArray, array ('name' => $param['name'], 'operator' => $param['operator'], 'value' => $param['value']));
+                }
+
+                // Tree Parameters
+                elseif( ($param['name'] == 'treeid') || 
+                        ($param['name'] == 'treename') || 
+                        ($param['name'] == 'treecreated') || 
+                        ($param['name'] == 'treelastmodified') || 
+                        ($param['name'] == 'precision') || 
+                        ($param['name'] == 'latitude') || 
+                        ($param['name'] == 'longitude'))
+                {
+                    array_push($this->treeParamsArray, array ('name' => $param['name'], 'operator' => $param['operator'], 'value' => $param['value']));
+                }  
+
+                // Specimen parameters
+                elseif( ($param['name'] == 'specimenid') || 
+                        ($param['name'] == 'specimenname') || 
+                        ($param['name'] == 'datecollected') || 
+                        ($param['name'] == 'specimencreated') || 
+                        ($param['name'] == 'specimenlastmodified') || 
+                        ($param['name'] == 'specimentypeid') || 
+                        ($param['name'] == 'specimentype') || 
+                        ($param['name'] == 'isterminalringverified') || 
+                        ($param['name'] == 'sapwoodcount') || 
+                        ($param['name'] == 'issapwoodcountverified') || 
+                        ($param['name'] == 'isspecimenqualityverified') || 
+                        ($param['name'] == 'ispithverified') || 
+                        ($param['name'] == 'unmeaspre') || 
+                        ($param['name'] == 'unmeaspost') || 
+                        ($param['name'] == 'isunmeaspreverified') || 
+                        ($param['name'] == 'isunmeaspostverified') || 
+                        ($param['name'] == 'terminalringid') || 
+                        ($param['name'] == 'terminalring') || 
+                        ($param['name'] == 'specimenqualityid') || 
+                        ($param['name'] == 'specimenquality') || 
+                        ($param['name'] == 'specimencontinuityid') || 
+                        ($param['name'] == 'specimencontinuity') || 
+                        ($param['name'] == 'pithid') || 
+                        ($param['name'] == 'pith') || 
+                        ($param['name'] == 'isspecimencontinuityverified'))
+                {
+                    array_push($this->specimenParamsArray, array ('name' => $param['name'], 'operator' => $param['operator'], 'value' => $param['value']));
+                }
+
+                // Radius parameters
+                elseif( ($param['name'] == 'radiusid') || 
+                        ($param['name'] == 'radiusname') || 
+                        ($param['name'] == 'radiuscreated') || 
+                        ($param['name'] == 'radiuslastmodified'))
+                {
+                    array_push($this->radiusParamsArray, array ('name' => $param['name'], 'operator' => $param['operator'], 'value' => $param['value']));
+                }
+
+                // Measurement Parameters
+                elseif( ($param['name'] == 'measurementid') || 
+                        ($param['name'] == 'measurementname') || 
+                        ($param['name'] == 'measurementcreated') || 
+                        ($param['name'] == 'measurementlastmodified'))
+                {
+                    array_push($this->measurementParamsArray, array ('name' => $param['name'], 'operator' => $param['operator'], 'value' => $param['value']));
+                }
             }
         }
     }

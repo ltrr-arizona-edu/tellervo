@@ -60,7 +60,7 @@ class measurement
         $this->lastErrorMessage = $theMessage;
     }
 
-    function setParamsFromDB($theID)
+    function setParamsFromDB($theID, $format="full")
     {
         // Set the current objects parameters from the database
         global $dbconn;
@@ -100,9 +100,12 @@ class measurement
                 $this->setDatingTypeID($row['datingtypeid']);
                 $this->setOwnerUserID($row['owneruserid']);
                 $this->setMeasuredByID($row['measuredbyid']);
-
-                $this->setReadingsFromDB();
-                $this->setReferencesFromDB();
+                
+                if ($format=="full")
+                {
+                    $this->setReadingsFromDB();
+                    $this->setReferencesFromDB();
+                }
             }
 
         }
@@ -380,7 +383,7 @@ class measurement
     /*ACCESSORS*/
     /***********/
 
-    function asXML($mode="all", $recurseLevel=1)
+    function asXML($mode="all", $recurseLevel=0)
     {
         // Return a string containing the current object in XML format
 
@@ -424,13 +427,22 @@ class measurement
                     foreach($this->readingsArray as $key => $value)
                     {
                         // Calculate absolute year where possible
-                        // TODO : Deal with 0AD/BC problem
                         if ($this->startYear)
                         {
-                            $yearvalue = $key + $this->startYear;
+                            if($this->startYear+$key >= 0)
+                            {
+                                // Add 1 to year to cope with BC/AD transition issue (no 0bc/ad)
+                                $yearvalue = $key + $this->startYear + 1;
+                            }
+                            else
+                            {
+                                // Date is BC so fudge not required
+                                $yearvalue = $key + $this->startYear;
+                            }
                         }
                         else
                         {
+                            // Years are relative
                             $yearvalue = $key;
                         }
 
@@ -441,7 +453,7 @@ class measurement
                 
                 // Include all refences to other vmeasurements recursing if requested 
                 if ($this->referencesArray && $recurseLevel>0)
-                { 
+                {
                     // Decrement recurseLevel if necessary
                     if (is_numeric($recurseLevel))  $recurseLevel= $recurseLevel-1;
 
@@ -588,7 +600,7 @@ class measurement
                         // TODO : replace hard coded vmeasurementopid and owneruserid fields in following SQL
                         $sql3 = "insert into tblvmeasurement ( ";
                                                      $sql3.= "vmeasurementopid, ";
-                                                     $sql3.= "owneruserid, ";
+                            if($this->ownerUserID)   $sql3.= "owneruserid, ";
                             if($this->measurementID) $sql3.= "measurementid, ";
                             if($this->name)          $sql3.= "name, ";
                             if($this->description)   $sql3.= "description, ";
@@ -597,7 +609,7 @@ class measurement
                             $sql3 = substr($sql3, 0, -2);
                             $sql3.= ") values (";
                                                      $sql3.= "'5', "; 
-                                                     $sql3.= "'1', ";
+                            if($this->ownerUserID)   $sql3.= "'".$this->ownerUserID."', ";
                             if($this->measurementID) $sql3.= "'".$this->measurementID."', ";
                             if($this->name)          $sql3.= "'".$this->name."', ";
                             if($this->description)   $sql3.= "'".$this->description."', ";
@@ -647,10 +659,9 @@ class measurement
                     
                 elseif(($this->vmeasurementID == NULL) && $this->vmeasurementOp!='Direct' && $this->referencesArray)
                 {
-                    // TODO : replace hard coded owneruserid field in following SQL
                     $sql = "insert into tblvmeasurement ( ";
                         if($this->vmeasurementOpID) $sql.= "vmeasurementopid, ";
-                                                    $sql.= "owneruserid, ";
+                        if($this->ownerUserID)      $sql.= "ownerUserID, ";
                         if($this->measurementID)    $sql.= "measurementid, ";
                         if($this->name)             $sql.= "name, ";
                         if($this->description)      $sql.= "description, ";
@@ -659,7 +670,7 @@ class measurement
                         $sql = substr($sql, 0, -2);
                         $sql.= ") values (";
                         if($this->vmeasurementOpID) $sql.= "'".$this->vmeasurementOpID."', ";
-                                                    $sql.= "'1', ";
+                        if($this->ownerUserID)      $sql.= "'".$this->ownerUserID."', ";
                         if($this->measurementID)    $sql.= "'".$this->measurementID."', ";
                         if($this->name)             $sql.= "'".$this->name."', ";
                         if($this->description)      $sql.= "'".$this->description."', ";
