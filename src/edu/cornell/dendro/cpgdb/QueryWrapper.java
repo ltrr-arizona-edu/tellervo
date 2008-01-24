@@ -81,6 +81,16 @@ public class QueryWrapper {
 		
 		/*
 		 * 1 = paramVMeasurementID
+		 * 2 = paramCurrentVMeasurementResultID
+		 */
+		addQuery("qupdVMeasurementResultOpClean",
+				"UPDATE tblVMeasurementResult SET VMeasurementID = ?, " +
+				"CreatedTimestamp = Now(), " +
+				"LastModifiedTimestamp = Now() " +
+				"WHERE VMeasurementResultID=?");
+
+		/*
+		 * 1 = paramVMeasurementID
 		 * 2 = paramRedate
 		 * 3 = paramCurrentVMeasurementResultID
 		 */

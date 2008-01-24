@@ -247,8 +247,10 @@ public class VMeasurementResult {
 			/*
 			 * In the clean case, no changes are made to the measurement results themselves.
 			 * All we are doing is "cutting off" any information below us.
+			 * The SQL query changes the VMeasurement ID
 			 */
 			newVMeasurementResultID = lastWorkingVMeasurementResultID;
+			dbq.execute("qupdVMeasurementResultOpClean", VMeasurementID, lastWorkingVMeasurementResultID);
 			break;
 			
 		case REDATE:
