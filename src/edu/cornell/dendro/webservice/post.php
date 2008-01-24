@@ -17,6 +17,7 @@ Type: <select id="action">
         <option>readingNotes.php</option>
         <option>authenticate.php</option>
         <option>measurements.php</option>
+        <option>search.php</option>
         <option>showpost.php</option>
         </select>
 <br/>

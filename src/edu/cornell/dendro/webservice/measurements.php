@@ -67,6 +67,30 @@ switch($myRequest->mode)
         {
             if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
             if(($myRequest->readingsArray) && (count($myRequest->readingsArray)< 10)) $myMetaHeader->setMessage("902", "Invalid parameter - You have only supplied ".count($myRequest->readingsArray)." readings.  Minimum number required is 10.");
+            if($myRequest->readingsArray)
+            {
+                foreach ($myRequest->readingsArray as $reading)
+                {
+                    if(!is_numeric($reading)) 
+                    {
+                        $myMetaHeader->setMessage("902", "Invalid parameter - All your readings must be numbers.");
+                        break;
+                    }
+                }
+            }
+            
+            if($myRequest->referencesArray)
+            {
+                foreach ($myRequest->referencesArray as $reference)
+                {
+                    if(!is_numeric($reference)) 
+                    {
+                        $myMetaHeader->setMessage("902", "Invalid parameter - All your reference ID's must be numbers.");
+                        break;
+                    }
+                }
+            }
+
             break;
         }
         else
@@ -95,10 +119,38 @@ switch($myRequest->mode)
         {
             if(($myRequest->referencesArray == NULL) && ($myRequest->readingsArray == NULL)) $myMetaHeader->setMessage("902", "Missing parameter - you must specify either references or readings when creating a new measurement.");
             if(($myRequest->readingsArray) && ($myRequest->radiusid== NULL)) $myMetaHeader->setMessage("902", "Missing parameter - a new direct measurement must include a radiusID.");
+            if(($myRequest->name== NULL)) $myMetaHeader->setMessage("902", "Missing parameter - a new measurement requires the name parameter.");
             if(($myRequest->readingsArray) && ($myRequest->startyear== NULL) && ($myRequest->datingTypeID==1)) $myMetaHeader->setMessage("902", "Missing parameter - a new absolute direct measurement must include a startYear.");
+            if(($myRequest->readingsArray) && ($myRequest->datingtypeid==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - a new direct measurement must include a datingTypeID.");
             if(($myRequest->readingsArray) && (count($myRequest->readingsArray)< 10)) $myMetaHeader->setMessage("902", "Invalid parameter - You have only supplied ".count($myRequest->readingsArray)." readings.  Minimum number required is 10.");
             if(($myRequest->referencesArray) && ($myRequest->radiusid)) $myMetaHeader->setMessage("902", "Invalid parameter - a new measurement based on other measurements cannot include a radiusID.");
             if(($myRequest->referencesArray) && ($myRequest->vmeasurementopid==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - a new measurement based on other measurements must include an operationID.");
+            if((!$myRequest->referencesArray) && ($myRequest->vmeasurementopid!==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - you have included an operationID which suggests you are creating a new measurement based on others. However, you have not specified any references to other measurements.");
+            /*
+            if($myRequest->readingsArray)
+            {
+                foreach ($myRequest->readingsArray as $reading)
+                {
+                    if(!is_numeric($reading['reading'])) 
+                    {
+                        $myMetaHeader->setMessage("902", "Invalid parameter - All your readings must be numbers.");
+                        break;
+                    }
+                }
+            }
+            
+            if($myRequest->referencesArray)
+            {
+                foreach ($myRequest->referencesArray as $reference)
+                {
+                    if(!is_numeric($reference)) 
+                    {
+                        $myMetaHeader->setMessage("902", "Invalid parameter - All your reference ID's must be numbers.");
+                        break;
+                    }
+                }
+            }
+            */
             break;
         }
         else
@@ -148,7 +200,6 @@ if(!($myMetaHeader->status == "Error"))
         if (isset($myRequest->isreconciled))        $myMeasurement->setIsReconciled($myRequest->isreconciled);
         if (isset($myRequest->startyear))           $myMeasurement->setStartYear($myRequest->startyear);
         if (isset($myRequest->islegacycleaned))     $myMeasurement->setIsLegacyCleaned($myRequest->islegacycleaned);
-        if (isset($myRequest->measuredbyid))        $myMeasurement->setMeasuredByID($myRequest->measuredbyid);
         if (isset($myRequest->datingtypeid))        $myMeasurement->setDatingTypeID($myRequest->datingtypeid);
         if (isset($myRequest->datingerrorpositive)) $myMeasurement->setDatingErrorPositive($myRequest->datingerrorpositive);
         if (isset($myRequest->datingerrornegative)) $myMeasurement->setDatingErrorNegative($myRequest->datingerrornegative);
@@ -156,9 +207,26 @@ if(!($myMetaHeader->status == "Error"))
         if (isset($myRequest->description))         $myMeasurement->setDescription($myRequest->description);
         if (isset($myRequest->ispublished))         $myMeasurement->setIsPublished($myRequest->ispublished);
         if (isset($myRequest->vmeasurementopid))    $myMeasurement->setVMeasurementOpID($myRequest->vmeasurementopid);
-        if (isset($myRequest->ownerid))             $myMeasurement->setOwnerID($myRequest->ownerid);
         if (isset($myRequest->readingsArray))       $myMeasurement->setReadingsArray($myRequest->readingsArray);
         if (isset($myRequest->referencesArray))     $myMeasurement->setReferencesArray($myRequest->referencesArray);
+        
+        // Set Owner and Measurer IDs if specified otherwise use current user details
+        if (isset($myRequest->owneruserid))
+        {
+            $myMeasurement->setOwnerUserID($myRequest->owneruserid);
+        }
+        else
+        {
+            $myMeasurement->setOwnerUserID($myAuth->getID());
+        }
+        if (isset($myRequest->measuredbyid))
+        {
+            $myMeasurement->setMeasuredByID($myRequest->measuredbyid);
+        }
+        else
+        {
+            $myMeasurement->setMeasuredByID($myAuth->getID());
+        }
 
 
         if( (($myRequest->mode=='update') && ($myAuth->vmeasurementPermission($myRequest->id, "update")))  || 
