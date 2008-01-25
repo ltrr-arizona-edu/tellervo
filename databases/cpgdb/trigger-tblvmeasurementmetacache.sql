@@ -2,6 +2,10 @@ CREATE OR REPLACE FUNCTION cpgdb.VMeasurementModifiedCacheTrigger() RETURNS trig
 BEGIN
    PERFORM cpgdb.CreateMetaCache(NEW.VMeasurementID);
    RETURN NEW;
+EXCEPTION
+   WHEN internal_error THEN
+      RAISE NOTICE 'WARNING: Failed to create metacache for %', NEW.VMeasurementID;
+      RETURN NEW;
 END;
 $$ LANGUAGE 'plpgsql';
 

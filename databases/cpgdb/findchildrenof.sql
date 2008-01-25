@@ -30,7 +30,7 @@ BEGIN
       RAISE EXCEPTION 'Invalid search type %', stype;
    END IF;
 
-   query := 'SELECT tblVMeasurement.VMeasurementID FROM tblVMeasurement' 
+   query := 'SELECT DISTINCT tblVMeasurement.VMeasurementID FROM tblVMeasurement' 
             || joinClause || ' WHERE ' || whereClause || '=' || id;
 
    -- RAISE NOTICE 'Query: %', query;
