@@ -288,6 +288,18 @@ public class VMeasurementResult {
 		
 		if(recursionDepth == 0) {
 			// TODO: Warn about duplicate direct VMeasurements!
+			
+			// migrate cosmetic data over for certain types of VMeasurements
+			switch(op) {
+			case SUM:
+			case REDATE:
+			case CLEAN:
+				dbq.execute("qupdVMeasurementResultInfo", newVMeasurementResultID);	
+				break;
+				
+			default:
+				break;
+			}
 
 			// remove all our child results...
 			dbq.execute("qdelVMeasurementResultRemoveMasterID", VMeasurementResultMasterID, newVMeasurementResultID);

@@ -55,8 +55,7 @@ public class QueryWrapper {
 				"( VMeasurementResultID, VMeasurementID, RadiusID, IsReconciled, StartYear, " +
 				"DatingTypeID, DatingErrorPositive, DatingErrorNegative, " +
 				"IsLegacyCleaned, CreatedTimestamp, LastModifiedTimestamp, VMeasurementResultGroupID, " +
-				"VMeasurementResultMasterID, OwnerUserID, Name, Description, isPublished ) " +
-				
+				"VMeasurementResultMasterID, OwnerUserID, Name, Description, isPublished ) " +				
 				"SELECT ? AS Expr1, ? AS Expr2, m.RadiusID, m.IsReconciled, " +
 				"m.StartYear, m.DatingTypeID, m.DatingErrorPositive, " +
 				"m.DatingErrorNegative, m.IsLegacyCleaned, " +
@@ -156,7 +155,7 @@ public class QueryWrapper {
 				"r.DatingErrorNegative, r.IsLegacyCleaned, v.CreatedTimestamp, " +
 				"v.LastModifiedTimestamp, ? AS Expr5, ? AS Expr6, " +
 				"v.Name, v.Description, v.isPublished " +
-				"FROM tblVMeasurementResult r" +
+				"FROM tblVMeasurementResult r " +
 				"INNER JOIN tblVMeasurement AS v ON v.VMeasurementID = r.VMeasurementID " +
 				"WHERE r.VMeasurementResultID=?");
 		
@@ -177,14 +176,13 @@ public class QueryWrapper {
 				"INSERT INTO tblVMeasurementResult ( VMeasurementResultID, VMeasurementID, " +
                 "StartYear, DatingTypeID, CreatedTimestamp, " +
 				"LastModifiedTimestamp, VMeasurementResultMasterID, OwnerUserID, " +
-				"Name, Description, isPublished) " +
+				"Name) " +
 				"SELECT ? AS Expr1, ? AS Expr2, " +
 				"Min(r.StartYear) AS MinOfStartYear, " +
 				"Max(r.DatingTypeID) AS MaxOfDatingTypeID, " +
-				"v.CreatedTimestamp, v.LastModifiedTimestamp, " +
-				"? AS Expr5, ? AS Expr6, v.Name, v.Description, v.isPublished " + 
+				"now() AS CreatedTimestamp, now() AS LastModifiedTimestamp, " +
+				"? AS Expr5, ? AS Expr6, 'SUM' AS Name " + 
 				"FROM tblVMeasurementResult r " +
-				"INNER JOIN tblVMeasurement AS v ON v.VMeasurementID = r.VMeasurementID " +
 				"WHERE r.VMeasurementResultGroupID=?");
 		
 		/*
@@ -192,8 +190,14 @@ public class QueryWrapper {
 		 * 2 = strNewVMeasurementResultID
 		 */
 		addQuery("qappVMeasurementResultReadingOpSum",
-				"SELECT * from qappVMeasurementResultReadingOpSum(?, ?)");
+				"SELECT * from cpgdb.qappVMeasurementResultReadingOpSum(?, ?)");
 		
+		/*
+		 * 1 = VMeasurementResultID
+		 */
+		addQuery("qupdVMeasurementResultInfo", 
+				"SELECT * from cpgdb.qupdVMeasurementResultInfo(?)");
+				
 		/*
 		 * 1 = VMeasurementResultID
 		 */
