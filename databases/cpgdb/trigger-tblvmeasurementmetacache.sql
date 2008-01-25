@@ -1,5 +1,10 @@
 CREATE OR REPLACE FUNCTION cpgdb.VMeasurementModifiedCacheTrigger() RETURNS trigger AS $$
 BEGIN
+   -- If this VMeasurement is being generated, ignore it
+   IF NEW.isGenerating = TRUE THEN
+      RETURN NEW;
+   END IF;
+
    PERFORM cpgdb.CreateMetaCache(NEW.VMeasurementID);
    RETURN NEW;
 EXCEPTION
