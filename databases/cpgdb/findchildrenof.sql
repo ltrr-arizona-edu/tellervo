@@ -36,7 +36,7 @@ BEGIN
    -- RAISE NOTICE 'Query: %', query;
 
    FOR vmid IN EXECUTE query LOOP
-      FOR res IN SELECT * FROM cpgdb.FindVMChildren(vmid) LOOP
+      FOR res IN SELECT * FROM cpgdb.FindVMChildren(vmid, true) LOOP
          RETURN NEXT res;
       END LOOP;
    END LOOP;

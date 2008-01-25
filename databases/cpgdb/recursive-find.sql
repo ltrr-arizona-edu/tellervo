@@ -1,8 +1,35 @@
+CREATE OR REPLACE FUNCTION cpgdb.getSearchResultForID(tblVMeasurement.VMeasurementID%TYPE)
+RETURNS typVMeasurementSearchResult AS $$
+DECLARE
+    _vmid ALIAS FOR $1;
+    
+    res typVMeasurementSearchResult;
+    meta tblVMeasurementMetaCache%ROWTYPE;
+BEGIN
+    SELECT o.Name, vm.Name, vm.Description, vm.LastModifiedTimestamp
+    INTO res.Op, res.Name, res.Description, res.Modified
+    FROM tblVMeasurement AS vm
+      INNER JOIN tlkpVMeasurementOp AS o ON o.VMeasurementOpID = vm.VMeasurementOpID
+    WHERE vm.VMeasurementID = _vmid;
+
+    SELECT * INTO meta FROM cpgdb.GetMetaCache(_vmid);
+    IF FOUND THEN
+       res.StartYear := meta.StartYear;
+       res.ReadingCount := meta.ReadingCount;
+       res.MeasurementCount := meta.MeasurementCount;
+    END IF;
+
+    res.RecursionLevel = 0;
+    res.VMeasurementID = _vmid;
+    RETURN res;
+END;
+$$ LANGUAGE 'plpgsql' VOLATILE;
+
 CREATE OR REPLACE FUNCTION cpgdb.recurseFindVMChildren(tblVMeasurement.VMeasurementID%TYPE, integer) 
 RETURNS SETOF typVMeasurementSearchResult AS $$
 DECLARE
    _vmid ALIAS FOR $1;
-   _recursionlevel ALIAS FOR $2;
+   _recursionlevel INTEGER := $2;
 
    res typVMeasurementSearchResult;
    meta tblVMeasurementMetaCache%ROWTYPE;
@@ -14,12 +41,19 @@ BEGIN
       RAISE EXCEPTION 'Maximum recursion exceeded';
    END IF;
 
+   -- Tricky kludge: If we start with a recursion level of -1, show the search base, too.
+   IF _recursionlevel = -1 THEN
+      SELECT * INTO res FROM cpgdb.getSearchResultForID(_vmid);
+      RETURN NEXT res;
+      _recursionlevel := 1;
+   END IF;
+
    -- Loop through each of my direct descendents
 
    OPEN ref FOR SELECT
       vm.VMeasurementID, o.Name, vm.Name,
       vm.Description, vm.LastModifiedTimestamp
-      FROM tblVMeasurement as vm
+      FROM tblVMeasurement AS vm
          INNER JOIN tblVMeasurementGroup AS g ON g.VMeasurementID = vm.VMeasurementID
          INNER JOIN tlkpVMeasurementOp AS o ON o.VMeasurementOpID = vm.VMeasurementOpID
       WHERE g.MemberVMeasurementID = _vmid
@@ -60,7 +94,7 @@ CREATE OR REPLACE FUNCTION cpgdb.recurseFindVMParents(tblVMeasurement.VMeasureme
 RETURNS SETOF typVMeasurementSearchResult AS $$
 DECLARE
    _vmid ALIAS FOR $1;
-   _recursionlevel ALIAS FOR $2;
+   _recursionlevel INTEGER := $2;
 
    res typVMeasurementSearchResult;
    meta tblVMeasurementMetaCache%ROWTYPE;
@@ -70,6 +104,13 @@ DECLARE
 BEGIN
    IF _recursionlevel > 50 THEN
       RAISE EXCEPTION 'Maximum recursion exceeded';
+   END IF;
+
+   -- Tricky kludge: If we start with a recursion level of -1, show the search base, too.
+   IF _recursionlevel = -1 THEN
+      SELECT * INTO res FROM cpgdb.getSearchResultForID(_vmid);
+      RETURN NEXT res;
+      _recursionlevel := 1;
    END IF;
 
    -- Loop through each of my direct parents
@@ -119,12 +160,12 @@ BEGIN
 END;
 $$ LANGUAGE 'plpgsql' VOLATILE;
 
-CREATE OR REPLACE FUNCTION cpgdb.FindVMChildren(tblVMeasurement.VMeasurementID%TYPE)
+CREATE OR REPLACE FUNCTION cpgdb.FindVMChildren(tblVMeasurement.VMeasurementID%TYPE, boolean)
 RETURNS SETOF typVMeasurementSearchResult AS '
-SELECT * FROM cpgdb.recurseFindVMChildren($1, 0)
+SELECT * FROM cpgdb.recurseFindVMChildren($1, (SELECT CASE WHEN $2=TRUE THEN -1 ELSE 0 END))
 ' LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION cpgdb.FindVMParents(tblVMeasurement.VMeasurementID%TYPE)
+CREATE OR REPLACE FUNCTION cpgdb.FindVMParents(tblVMeasurement.VMeasurementID%TYPE, boolean)
 RETURNS SETOF typVMeasurementSearchResult AS '
-SELECT * FROM cpgdb.recurseFindVMParents($1, 0)
+SELECT * FROM cpgdb.recurseFindVMParents($1, (SELECT CASE WHEN $2=TRUE THEN -1 ELSE 0 END))
 ' LANGUAGE SQL;
