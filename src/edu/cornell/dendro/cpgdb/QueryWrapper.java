@@ -47,19 +47,33 @@ public class QueryWrapper {
 		 * 2 = paramvmeasurementid
 		 * 3 = paramvmeasurementresultgroupid
 		 * 4 = paramvmeasurementresultmasterid
-		 * 5 = paramMeasurementID
+		 * 5 = OwnerUserID (DEFAULT TO 1??)
+		 * 6 = paramMeasurementID
 		 */
 		addQuery("qappVMeasurementResult", 
 				"INSERT INTO tblVMeasurementResult " +
 				"( VMeasurementResultID, VMeasurementID, RadiusID, IsReconciled, StartYear, " +
 				"DatingTypeID, DatingErrorPositive, DatingErrorNegative, " +
 				"IsLegacyCleaned, CreatedTimestamp, LastModifiedTimestamp, VMeasurementResultGroupID, " +
-				"VMeasurementResultMasterID, OwnerUserID ) " +
+				"VMeasurementResultMasterID, OwnerUserID, Name, Description, isPublished ) " +
+				
+				"SELECT ? AS Expr1, ? AS Expr2, m.RadiusID, m.IsReconciled, " +
+				"m.StartYear, m.DatingTypeID, m.DatingErrorPositive, " +
+				"m.DatingErrorNegative, m.IsLegacyCleaned, " +
+				"vm.CreatedTimestamp, " +
+				"vm.LastModifiedTimestamp, " + 
+				"? AS Expr5, ? AS Expr6, ? AS Expr7, " + 
+				"vm.name, vm.description, vm.isPublished " +
+				"FROM tblMeasurement m " +
+				"INNER JOIN tblVMeasurement AS vm ON vm.MeasurementID = m.MeasurementID " +
+				"WHERE m.MeasurementID=?");
+				/*
 				"SELECT ? AS Expr1, ? AS Expr2, tblMeasurement.RadiusID, tblMeasurement.IsReconciled, " +
 				"tblMeasurement.StartYear, tblMeasurement.DatingTypeID, tblMeasurement.DatingErrorPositive, " +
 				"tblMeasurement.DatingErrorNegative, tblMeasurement.IsLegacyCleaned, " +
 				"Now() AS Expr3, Now() AS Expr4, ? AS Expr5, ? AS Expr6, 1 AS Expr7 " +
 				"FROM tblMeasurement WHERE tblMeasurement.MeasurementID=?");
+				*/
 		/*
 		 * 1 = paramVMeasurementResultID
 		 * 2 = paramMeasurementID
@@ -128,19 +142,23 @@ public class QueryWrapper {
 		 * 1 = paramNewVMeasurementResultID
 		 * 2 = paramVMeasurementID
 		 * 3 = paramVMeasurementResultMasterID
-		 * 4 = paramCurrentVMeasurementResultID
+		 * 4 = OwnerUserID
+		 * 5 = paramCurrentVMeasurementResultID
 		 */
 		addQuery("qappVMeasurementResultOpIndex",
 				"INSERT INTO tblVMeasurementResult ( VMeasurementResultID, VMeasurementID, RadiusID, " +
 				"IsReconciled, StartYear, DatingTypeID, DatingErrorPositive, DatingErrorNegative, " +
-				"IsLegacyCleaned, CreatedTimestamp, LastModifiedTimestamp, VMeasurementResultMasterID, OwnerUserID ) " +
+				"IsLegacyCleaned, CreatedTimestamp, LastModifiedTimestamp, VMeasurementResultMasterID, " +
+				"OwnerUserID, Name, Description, isPublished ) " +
 				"SELECT ? AS Expr1, ? AS Expr2, " +
-				"tblVMeasurementResult.RadiusID, tblVMeasurementResult.IsReconciled, tblVMeasurementResult.StartYear, " +
-				"tblVMeasurementResult.DatingTypeID, tblVMeasurementResult.DatingErrorPositive, " +
-				"tblVMeasurementResult.DatingErrorNegative, tblVMeasurementResult.IsLegacyCleaned, Now() AS Expr3, " +
-				"Now() AS Expr4, ? AS Expr5, 1 AS Expr6 " +
-				"FROM tblVMeasurementResult " +
-				"WHERE tblVMeasurementResult.VMeasurementResultID=?");
+				"r.RadiusID, r.IsReconciled, r.StartYear, " +
+				"r.DatingTypeID, r.DatingErrorPositive, " +
+				"r.DatingErrorNegative, r.IsLegacyCleaned, v.CreatedTimestamp, " +
+				"v.LastModifiedTimestamp, ? AS Expr5, ? AS Expr6, " +
+				"v.Name, v.Description, v.isPublished " +
+				"FROM tblVMeasurementResult r" +
+				"INNER JOIN tblVMeasurement AS v ON v.VMeasurementID = r.VMeasurementID " +
+				"WHERE r.VMeasurementResultID=?");
 		
 		/*
 		 * 1 = paramCurrentVMeasurementResultID
@@ -152,18 +170,22 @@ public class QueryWrapper {
 		 * 1 = paramNewVMeasurementResultID
 		 * 2 = paramVMeasurementID
 		 * 3 = paramVMeasurementResultMasterID
-		 * 4 = paramVMeasurementResultGroupID
+		 * 4 = OwnerUserID
+		 * 5 = paramVMeasurementResultGroupID
 		 */
 		addQuery("qappVMeasurementResultOpSum",
 				"INSERT INTO tblVMeasurementResult ( VMeasurementResultID, VMeasurementID, " +
-                                "RadiusID, StartYear, DatingTypeID, CreatedTimestamp, " +
-				"LastModifiedTimestamp, VMeasurementResultMasterID, OwnerUserID ) " +
-				"SELECT ? AS Expr1, ? AS Expr2, -1 as RadiusID, " +
-				"Min(tblVMeasurementResult.StartYear) AS MinOfStartYear, " +
-				"Max(tblVMeasurementResult.DatingTypeID) AS MaxOfDatingTypeID, " +
-				"Now() AS Expr3, Now() AS Expr4, " +
-				"? AS Expr5, 1 AS Expr6 FROM tblVMeasurementResult " +
-				"WHERE tblVMeasurementResult.VMeasurementResultGroupID=?");
+                "StartYear, DatingTypeID, CreatedTimestamp, " +
+				"LastModifiedTimestamp, VMeasurementResultMasterID, OwnerUserID, " +
+				"Name, Description, isPublished) " +
+				"SELECT ? AS Expr1, ? AS Expr2, " +
+				"Min(r.StartYear) AS MinOfStartYear, " +
+				"Max(r.DatingTypeID) AS MaxOfDatingTypeID, " +
+				"v.CreatedTimestamp, v.LastModifiedTimestamp, " +
+				"? AS Expr5, ? AS Expr6, v.Name, v.Description, v.isPublished " + 
+				"FROM tblVMeasurementResult r " +
+				"INNER JOIN tblVMeasurement AS v ON v.VMeasurementID = r.VMeasurementID " +
+				"WHERE r.VMeasurementResultGroupID=?");
 		
 		/*
 		 * 1 = strNewVMeasurementResultGroupID

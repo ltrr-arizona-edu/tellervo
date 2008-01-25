@@ -11,6 +11,9 @@ public class VMeasurementResult {
 	
 	// we keep this instantiated for easy access to the db
 	protected DBQuery dbq;
+	
+	// owner user ID (for later extension...)
+	private int ownerUserID = 1234;
 
 	/**
 	 * 
@@ -203,6 +206,7 @@ public class VMeasurementResult {
 			dbq.execute("qappVMeasurementResultOpIndex",
 					newVMeasurementResultID, VMeasurementID,
 					VMeasurementResultMasterID,
+					ownerUserID,
 					lastWorkingVMeasurementResultID);
 
 			// Now, acquire our working dataset and pass it to the indexer.
@@ -211,8 +215,7 @@ public class VMeasurementResult {
 			res.close();
 
 
-			// prepare a statement for inserting our rows
-			
+			// prepare a statement for inserting our rows	
 			PreparedStatement bulkInsert = dbq.getConnection().prepareStatement(
 				"INSERT into tblVMeasurementReadingResult (VMeasurementResultID,RelYear,Reading) VALUES (?,?,?)");
 
@@ -231,6 +234,7 @@ public class VMeasurementResult {
 			dbq.execute("qappVMeasurementResultOpSum",
 					newVMeasurementResultID, VMeasurementID,
 					VMeasurementResultMasterID,
+					ownerUserID,
 					newVMeasurementResultGroupID);
 			
 			// create our vmeasurementreadingresult...
@@ -321,7 +325,8 @@ public class VMeasurementResult {
 		
 		// Create a new VMeasurementResult
 		dbq.execute("qappVMeasurementResult", 
-				newVMeasurementResultID, VMeasurementID, VMeasurementResultGroupID, VMeasurementResultMasterID, MeasurementID);
+				newVMeasurementResultID, VMeasurementID, VMeasurementResultGroupID, 
+				VMeasurementResultMasterID, ownerUserID, MeasurementID);
 		
 		// Create new VMeasurementReadingResults...
 		dbq.execute("qappVMeasurementReadingResult", newVMeasurementResultID, MeasurementID);
