@@ -1,6 +1,9 @@
 -- Set up our basic functions
 \i misc.sql
+
+-- our functions that the java library uses
 \i sum.sql
+\i update-vmresultinfo.sql
 
 -- Make sure our types and tables are ready
 \i typesandtables.sql
