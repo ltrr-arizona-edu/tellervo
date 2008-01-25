@@ -294,7 +294,10 @@ public class VMeasurementResult {
 			case SUM:
 			case REDATE:
 			case CLEAN:
-				dbq.execute("qupdVMeasurementResultInfo", newVMeasurementResultID);	
+				res = dbq.query("qupdVMeasurementResultInfo", newVMeasurementResultID);	
+				// that trick to get the SQL server to actually execute...
+				res.next();
+				res.close();
 				break;
 				
 			default:
