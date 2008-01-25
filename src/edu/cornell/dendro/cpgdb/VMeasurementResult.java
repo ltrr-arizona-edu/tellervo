@@ -341,7 +341,7 @@ public class VMeasurementResult {
 		// Create a new VMeasurementResult
 		dbq.execute("qappVMeasurementResult", 
 				newVMeasurementResultID, VMeasurementID, VMeasurementResultGroupID, 
-				VMeasurementResultMasterID, ownerUserID, MeasurementID);
+				VMeasurementResultMasterID, ownerUserID, MeasurementID, VMeasurementID);
 		
 		// Create new VMeasurementReadingResults...
 		dbq.execute("qappVMeasurementReadingResult", newVMeasurementResultID, MeasurementID);

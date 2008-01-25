@@ -49,6 +49,7 @@ public class QueryWrapper {
 		 * 4 = paramvmeasurementresultmasterid
 		 * 5 = OwnerUserID (DEFAULT TO 1??)
 		 * 6 = paramMeasurementID
+		 * 7 = paramvmeasurementid
 		 */
 		addQuery("qappVMeasurementResult", 
 				"INSERT INTO tblVMeasurementResult " +
@@ -65,7 +66,7 @@ public class QueryWrapper {
 				"vm.name, vm.description, vm.isPublished " +
 				"FROM tblMeasurement m " +
 				"INNER JOIN tblVMeasurement AS vm ON vm.MeasurementID = m.MeasurementID " +
-				"WHERE m.MeasurementID=?");
+				"WHERE m.MeasurementID=? and vm.VMeasurementID=?");
 				/*
 				"SELECT ? AS Expr1, ? AS Expr2, tblMeasurement.RadiusID, tblMeasurement.IsReconciled, " +
 				"tblMeasurement.StartYear, tblMeasurement.DatingTypeID, tblMeasurement.DatingErrorPositive, " +
