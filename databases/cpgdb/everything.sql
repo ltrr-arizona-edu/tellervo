@@ -16,5 +16,8 @@
 \i vmeasurementmetacache.sql
 \i trigger-tblvmeasurementmetacache.sql
 
+-- Now, our functions for creating and changing vmeasurements
+\i vm-functions.sql
+
 -- Populate the cache and other setup.
 \i setup-db.sql
