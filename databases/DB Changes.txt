@@ -36,3 +36,5 @@ alter table tblvmeasurementresult alter column radiusid drop not null;
 alter table tblvmeasurementresult add column name varchar(255) not null;
 alter table tblvmeasurementresult add column description varchar(1000);
 alter table tblvmeasurementresult add column ispublished boolean not null default false;
+
+alter table tblvmeasurement add column isGenerating boolean not null default true;
