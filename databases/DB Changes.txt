@@ -31,3 +31,8 @@ alter table tblvmeasurementresult drop column vmeasurementresultgroupid;
 alter table tblvmeasurementresult add column vmeasurementresultgroupid char(36);
 alter table tblvmeasurementresult add column vmeasurementresultmasterid char(36) not null;
 alter table tblvmeasurementresult add column owneruserid int not null;
+
+alter table tblvmeasurementresult alter column radiusid drop not null;
+alter table tblvmeasurementresult add column name varchar(255) not null;
+alter table tblvmeasurementresult add column description varchar(1000);
+alter table tblvmeasurementresult add column ispublished boolean not null default false;
