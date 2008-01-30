@@ -31,7 +31,7 @@ class request
     var $measurementid              = NULL;
     var $radiusid                   = NULL;
     var $vmeasurementopid           = NULL;
-    var $ownerid                    = NULL;
+    var $owneruserid                = NULL;
     var $readingsArray              = array();
     var $referencesArray            = array();
 
@@ -45,6 +45,7 @@ class request
     var $latitude                   = NULL;
     var $longitude                  = NULL;
     var $precision                  = NULL;
+    var $islivetree                 = NULL;
     var $collectedday               = NULL;
     var $collectedmonth             = NULL;
     var $collectedyear              = NULL;
@@ -66,6 +67,7 @@ class request
     var $isreconciled               = NULL;
     var $islegacycleaned            = NULL;
     var $ispublished                = NULL;
+    var $sitecode                   = NULL;
     var $note                       = NULL;
     var $password                   = NULL;
     var $username                   = NULL;
@@ -223,7 +225,7 @@ class request
         if(isset($_GET['datingerrorpositive'])) $this->datingerrorpositive = (int) $_GET['datingerrorpostive'];
         if(isset($_GET['datingerrornegative'])) $this->datingerrornegative = (int) $_GET['datingerrornegative'];
         if(isset($_GET['measuredbyid'])) $this->measuredbyid = (int) $_GET['measuredbyid'];
-        if(isset($_GET['ownerid'])) $this->ownderid = (int) $_GET['ownerid'];
+        if(isset($_GET['owneruserid'])) $this->owneruserid = (int) $_GET['owneruserid'];
         if(isset($_GET['datingtypeid'])) $this->datingtypeid = (int) $_GET['datingtypeid'];
 
         // Login specific (note POST not GET)
@@ -595,7 +597,7 @@ class measurementRequest extends request
                 if($request->measurement['startYear'])            $this->startyear             = (int)         $request->measurement['startYear'];
                 if($request->measurement['isLegacyCleaned'])      $this->islegacycleaned       = (bool)        $request->measurement['isLegacyCleaned'];
                 if($request->measurement['measuredByID'])         $this->measuredby            = (int)         $request->measurement['measuredByID'];
-                if($request->measurement['ownerID'])              $this->ownerid               = (int)         $request->measurement['ownerID'];
+                if($request->measurement['ownerUserID'])          $this->owneruserid           = (int)         $request->measurement['ownerUserID'];
                 if($request->measurement['datingTypeID'])         $this->datingtypeid          = addslashes(   $request->measurement['datingTypeID']);
                 if($request->measurement['datingErrorPositive'])  $this->datingerrorpositive   = (int)         $request->measurement['datingErrorPositive'];
                 if($request->measurement['datingErrorNegative'])  $this->datingerrornegative   = (int)         $request->measurement['datingErrorNegative'];
@@ -654,10 +656,11 @@ class searchRequest extends request
                 // Site Parameters
                 if    ( ($param['name'] == 'siteid') || 
                         ($param['name'] == 'sitename') || 
+                        ($param['name'] == 'sitecode') || 
                         ($param['name'] == 'sitecreated') || 
                         ($param['name'] == 'sitelastmodified') )
                 {
-                    array_push($this->siteParamsArray, array ('name' => $param['name'], 'operator' => $param['operator'], 'value' => $param['value']));
+                    array_push($this->siteParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
                 }
 
                 // Subsite Parameters
@@ -666,7 +669,7 @@ class searchRequest extends request
                         ($param['name'] == 'subsitecreated') || 
                         ($param['name'] == 'subsitelastmodified'))
                 {
-                    array_push($this->subsiteParamsArray, array ('name' => $param['name'], 'operator' => $param['operator'], 'value' => $param['value']));
+                    array_push($this->subsiteParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
                 }
 
                 // Tree Parameters
@@ -675,10 +678,11 @@ class searchRequest extends request
                         ($param['name'] == 'treecreated') || 
                         ($param['name'] == 'treelastmodified') || 
                         ($param['name'] == 'precision') || 
+                        ($param['name'] == 'islivetree') || 
                         ($param['name'] == 'latitude') || 
                         ($param['name'] == 'longitude'))
                 {
-                    array_push($this->treeParamsArray, array ('name' => $param['name'], 'operator' => $param['operator'], 'value' => $param['value']));
+                    array_push($this->treeParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
                 }  
 
                 // Specimen parameters
@@ -708,7 +712,7 @@ class searchRequest extends request
                         ($param['name'] == 'pith') || 
                         ($param['name'] == 'isspecimencontinuityverified'))
                 {
-                    array_push($this->specimenParamsArray, array ('name' => $param['name'], 'operator' => $param['operator'], 'value' => $param['value']));
+                    array_push($this->specimenParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
                 }
 
                 // Radius parameters
@@ -717,7 +721,7 @@ class searchRequest extends request
                         ($param['name'] == 'radiuscreated') || 
                         ($param['name'] == 'radiuslastmodified'))
                 {
-                    array_push($this->radiusParamsArray, array ('name' => $param['name'], 'operator' => $param['operator'], 'value' => $param['value']));
+                    array_push($this->radiusParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
                 }
 
                 // Measurement Parameters
@@ -726,7 +730,7 @@ class searchRequest extends request
                         ($param['name'] == 'measurementcreated') || 
                         ($param['name'] == 'measurementlastmodified'))
                 {
-                    array_push($this->measurementParamsArray, array ('name' => $param['name'], 'operator' => $param['operator'], 'value' => $param['value']));
+                    array_push($this->measurementParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
                 }
             }
         }

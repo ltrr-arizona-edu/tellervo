@@ -208,7 +208,7 @@ if(!($myMetaHeader->status == "Error"))
         if (isset($myRequest->ispublished))         $myMeasurement->setIsPublished($myRequest->ispublished);
         if (isset($myRequest->vmeasurementopid))    $myMeasurement->setVMeasurementOpID($myRequest->vmeasurementopid);
         if (isset($myRequest->readingsArray))       $myMeasurement->setReadingsArray($myRequest->readingsArray);
-        if (isset($myRequest->referencesArray))     $myMeasurement->setReferencesArray($myRequest->referencesArray);
+        if (sizeof($myRequest->referencesArray)>0)  $myMeasurement->setReferencesArray($myRequest->referencesArray);
         
         // Set Owner and Measurer IDs if specified otherwise use current user details
         if (isset($myRequest->owneruserid))

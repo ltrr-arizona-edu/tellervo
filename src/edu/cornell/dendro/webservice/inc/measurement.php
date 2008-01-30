@@ -15,6 +15,7 @@ class measurement
     var $vmeasurementID = NULL;
     var $vmeasurementResultID = NULL;
     var $vmeasurementOpID = 5;
+    var $vmeasurementOpParam = NULL;
     var $vmeasurementOp = "Direct";
     var $radiusID = NULL;
     var $isReconciled = FALSE;
@@ -86,21 +87,28 @@ class measurement
                 $this->description = $row['description'];
                 $this->vmeasurementID = $row['vmeasurementid'];
                 $this->vmeasurementResultID = $row['vmeasurementresultid'];
+                $this->vmeasurementOpID = $row['vmeasurementopid'];
+                $this->vmeasurementOpParam = $row['vmeasurementparamid'];
                 $this->radiusID = $row['radiusid'];
-                $this->isReconciled = $row['isreconciled'];
+                $this->isReconciled = fromPGtoPHPBool($row['isreconciled']);
                 $this->startYear = $row['startyear'];
-                $this->isLegacyCleaned = $row['islegacycleaned'];
+                $this->isLegacyCleaned = fromPGtoPHPBool($row['islegacycleaned']);
                 $this->datingErrorPositive = $row['datingerrorpositive'];
                 $this->datingErrorNegative = $row['datingerrornegative'];
                 $this->createdTimeStamp = $row['createdtimestamp'];
                 $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
-                
-                $this->setMeasurementID($row['measurementid']);
-                $this->setVMeasurementOpID($row['vmeasurementopid']);
                 $this->setDatingTypeID($row['datingtypeid']);
-                $this->setOwnerUserID($row['owneruserid']);
                 $this->setMeasuredByID($row['measuredbyid']);
-                
+
+                // Get more parameters directly from tblvmeasurement
+                $sql2 = "select tblvmeasurement.* from tblvmeasurement where vmeasurementid=".$this->vmeasurementID;
+                pg_send_query($dbconn, $sql2);
+                $result2 = pg_get_result($dbconn);
+                $row2 = pg_fetch_array($result2);
+                $this->setMeasurementID();
+                $this->setVMeasurementOpID($row2['vmeasurementopid']);
+                $this->setOwnerUserID($row2['owneruserid']);
+
                 if ($format=="full")
                 {
                     $this->setReadingsFromDB();
@@ -154,11 +162,12 @@ class measurement
     {
         // Add any vmeasurements that the current measurement has been made from
         global $dbconn;
-
-        $sql  = "select * from cpgdb.findvmparents('".$this->vmeasurementID."', 'true')";
+        
+        $sql  = "select * from cpgdb.findvmparents('".$this->vmeasurementID."', 'false') where recursionlevel=0";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
+            $this->referencesArray = array();
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
             {
@@ -271,6 +280,7 @@ class measurement
     
     function setReferencesArray($theReferencesArray)
     {
+        $this->referencesArray = array();
         $this->referencesArray = $theReferencesArray;
     }
     
@@ -383,8 +393,9 @@ class measurement
     /*ACCESSORS*/
     /***********/
 
-    function asXML($mode="all", $recurseLevel=0)
+    function asXML($mode="all", $recurseLevel=99)
     {
+                //print_r($this->referencesArray);
         // Return a string containing the current object in XML format
 
         // $mode = all, begin or end to denote which section of XML you require
@@ -429,15 +440,15 @@ class measurement
                         // Calculate absolute year where possible
                         if ($this->startYear)
                         {
-                            if($this->startYear+$key >= 0)
+                            if($this->startYear+$key  >= 0)
                             {
                                 // Add 1 to year to cope with BC/AD transition issue (no 0bc/ad)
-                                $yearvalue = $key + $this->startYear + 1;
+                                $yearvalue = $key + $this->startYear;
                             }
                             else
                             {
                                 // Date is BC so fudge not required
-                                $yearvalue = $key + $this->startYear;
+                                $yearvalue = $key + $this->startYear - 1;
                             }
                         }
                         else
@@ -529,7 +540,6 @@ class measurement
     {
         // Write the current object to the database
 
-
         global $dbconn;
         
         // Check for required parameters
@@ -548,33 +558,106 @@ class measurement
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
                 // 
-                // New record - readings data and no references means a new direct measurement
+                // New record
                 //
-                if(($this->vmeasurementID == NULL) && $this->vmeasurementOp=='Direct' && $this->readingsArray && !$this->referencesArray)
+                if(($this->vmeasurementID == NULL))
                 {
-                    $sql = "insert into tblmeasurement  (  ";
-                        if($this->radiusID)            $sql.= "radiusid, "; 
-                        if($this->isReconciled)        $sql.= "isreconciled, "; 
-                        if($this->startYear)           $sql.= "startyear, "; 
-                        if($this->isLegacyCleaned)     $sql.= "islegacycleaned, "; 
-                        if($this->measuredByID)        $sql.= "measuredbyid, "; 
-                        if($this->datingErrorPositive) $sql.= "datingerrorpositive, "; 
-                        if($this->datingErrorNegative) $sql.= "datingerrornegative, "; 
-                        if($this->datingTypeID)        $sql.= "datingtypeid, "; 
-                    // Trim off trailing space and comma
-                    $sql = substr($sql, 0, -2);
-                    $sql.=") values (";
-                        if($this->radiusID)            $sql.= "'".$this->radiusID."', ";
-                        if($this->isReconciled)        $sql.= "'".fromPHPtoPGBool($this->isReconciled)."', ";
-                        if($this->startYear)           $sql.=     $this->startYear.", ";
-                        if($this->isLegacyCleaned)     $sql.= "'".fromPHPtoPGBool($this->isLegacyCleaned)."', ";
-                        if($this->measuredByID)        $sql.= "'".$this->measuredByID."', ";
-                        if($this->datingErrorPositive) $sql.= "'".$this->datingErrorPositive."', ";
-                        if($this->datingErrorNegative) $sql.= "'".$this->datingErrorNegative."', ";
-                        if($this->datingTypeID)        $sql.= "'".$this->datingTypeID."', ";
-                    // Trim off trailing space and comma
-                    $sql = substr($sql, 0, -2);
-                    $sql.=")";
+                    if($this->vmeasurementOp=='Direct')
+                    {
+                        // New direct measurement so create tblmeasurement record first
+
+                        $sql = "insert into tblmeasurement  (  ";
+                            if($this->radiusID)            $sql.= "radiusid, "; 
+                            if($this->isReconciled)        $sql.= "isreconciled, "; 
+                            if($this->startYear)           $sql.= "startyear, "; 
+                            if($this->isLegacyCleaned)     $sql.= "islegacycleaned, "; 
+                            if($this->measuredByID)        $sql.= "measuredbyid, "; 
+                            if($this->datingErrorPositive) $sql.= "datingerrorpositive, "; 
+                            if($this->datingErrorNegative) $sql.= "datingerrornegative, "; 
+                            if($this->datingTypeID)        $sql.= "datingtypeid, "; 
+                        // Trim off trailing space and comma
+                        $sql = substr($sql, 0, -2);
+                        $sql.=") values (";
+                            if($this->radiusID)            $sql.= "'".$this->radiusID."', ";
+                            if($this->isReconciled)        $sql.= "'".fromPHPtoPGBool($this->isReconciled)."', ";
+                            if($this->startYear)           $sql.=     $this->startYear.", ";
+                            if($this->isLegacyCleaned)     $sql.= "'".fromPHPtoPGBool($this->isLegacyCleaned)."', ";
+                            if($this->measuredByID)        $sql.= "'".$this->measuredByID."', ";
+                            if($this->datingErrorPositive) $sql.= "'".$this->datingErrorPositive."', ";
+                            if($this->datingErrorNegative) $sql.= "'".$this->datingErrorNegative."', ";
+                            if($this->datingTypeID)        $sql.= "'".$this->datingTypeID."', ";
+                        // Trim off trailing space and comma
+                        $sql = substr($sql, 0, -2);
+                        $sql.=")";
+
+                        // Run SQL 
+                        pg_send_query($dbconn, $sql);
+                        $result = pg_get_result($dbconn);
+                        if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                        {
+                            $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                            return FALSE;
+                        }
+                        else
+                        {
+                            // Insert successful so retrieve automated field values
+                            $sql2 = "select * from tblmeasurement where measurementid=currval('tblmeasurement_measurementid_seq')";
+                            $result = pg_query($dbconn, $sql2);
+                            while ($row = pg_fetch_array($result))
+                            {
+                                $this->measurementID=$row['measurementid'];   
+                            }
+                        }    
+                        
+                        // Insert new readings
+                        foreach($this->readingsArray as $key => $value)
+                        {
+                            $insertSQL = "insert into tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$key.", ".$value['reading'].")";
+                            pg_send_query($dbconn, $insertSQL);
+                            $result = pg_get_result($dbconn);
+                            if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                            {
+                                $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $insertSQL");
+                                return FALSE;
+                            }
+                        }
+                        
+                    }
+
+
+                    /*
+                        -- CreateNewVMeasurement(VMeasurementOp, VMeasurementOpParameter, OwnerUserID, Name,
+                        --                       Description, MeasurementID, Constituents)
+                        -- VMeasurementOp - Varchar - From tlkpVMeasurementOp
+                        -- VMeasurementOpParameter - Integer - Must be specified for REDATE or INDEX; otherwise NULL
+                        -- Name - Varchar - Must be specified
+                        -- Description - Varchar - May be NULL
+                        -- MeasurementID - Integer - For direct only; the measurement derived from.
+                        -- Constituents - Array of VMeasurementID - Must be NULL for DIRECT type, an array of one value for any type
+                        --                other than SUM and DIRECT, and an array of one or more values for SUM
+                        -- RETURNS: A new VMeasurementID
+                    */
+
+                    $sql = "select * from cpgdb.createnewvmeasurement(";
+                    $sql.= "'".$this->vmeasurementOp."', ";
+                    if($this->vmeasurementOpParam)      { $sql.= "'".$this->vmeasurementOpParam."', "; } else { $sql.= "NULL, "; }
+                    $sql.= $this->ownerUserID.", ";
+                    $sql.= "'".$this->name."', ";
+                    if($this->description)              { $sql.= "'".$this->description."', ";         } else { $sql.= "NULL, "; }
+                    if($this->vmeasurementOp=='Direct') { $sql.= $this->measurementID.", ";            } else { $sql.= "NULL, "; }
+                    if($this->vmeasurementOp!='Direct') 
+                    { 
+                        $sql.= "ARRAY[";
+                        foreach($this->referencesArray as $value)
+                        {
+                            $sql.= $value.", ";
+                        }
+                        $sql = substr($sql, 0, -2)."])";            
+                    } 
+                    else 
+                    { 
+                        $sql.= "NULL) "; 
+                    }
 
                     // Run SQL 
                     pg_send_query($dbconn, $sql);
@@ -586,185 +669,65 @@ class measurement
                     }
                     else
                     {
-                        // Insert successful so retrieve automated field values
-                        $sql2 = "select * from tblmeasurement where measurementid=currval('tblmeasurement_measurementid_seq')";
-                        $result = pg_query($dbconn, $sql2);
                         while ($row = pg_fetch_array($result))
                         {
-                            $this->measurementID=$row['measurementid'];   
-                            $this->createdTimeStamp=$row['createdtimestamp'];   
-                            $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
-                        }
-                        
-                        // Now create a matching vmeasurement record for this new entry
-                        // TODO : replace hard coded vmeasurementopid and owneruserid fields in following SQL
-                        $sql3 = "insert into tblvmeasurement ( ";
-                                                     $sql3.= "vmeasurementopid, ";
-                            if($this->ownerUserID)   $sql3.= "owneruserid, ";
-                            if($this->measurementID) $sql3.= "measurementid, ";
-                            if($this->name)          $sql3.= "name, ";
-                            if($this->description)   $sql3.= "description, ";
-                            if($this->ispublished)   $sql3.= "ispublished, ";
-                            // Trim off trailing space and comma
-                            $sql3 = substr($sql3, 0, -2);
-                            $sql3.= ") values (";
-                                                     $sql3.= "'5', "; 
-                            if($this->ownerUserID)   $sql3.= "'".$this->ownerUserID."', ";
-                            if($this->measurementID) $sql3.= "'".$this->measurementID."', ";
-                            if($this->name)          $sql3.= "'".$this->name."', ";
-                            if($this->description)   $sql3.= "'".$this->description."', ";
-                            if($this->ispublished)   $sql3.= "'".fromPHPtoPGBool($this->ispublished)."', ";
-                            // Trim off trailing space and comma
-                            $sql3 = substr($sql3, 0, -2);
-                                                     $sql3.= ")";
-                        pg_send_query($dbconn, $sql3);
-                        $result = pg_get_result($dbconn);
-                        if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-                        {
-                            $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql3");
-                            return FALSE;
-                        }
-                        else
-                        {
-                            // Insert successful so retrieve automated field values
-                            $sql4 = "select * from tblvmeasurement where vmeasurementid=currval('tblvmeasurement_vmeasurementid_seq')";
-                            $result = pg_query($dbconn, $sql4);
-                            while ($row = pg_fetch_array($result))
-                            {
-                                $this->vmeasurementID=$row['vmeasurementid'];   
-                                $this->createdTimeStamp=$row['createdtimestamp'];   
-                                $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
-                            }
-                            
-                            // Insert new readings
-                            foreach($this->readingsArray as $key => $value)
-                            {
-                                $insertSQL = "insert into tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$key.", ".$value['reading'].")";
-                                pg_send_query($dbconn, $insertSQL);
-                                $result = pg_get_result($dbconn);
-                                if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-                                {
-                                    $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $insertSQL");
-                                    return FALSE;
-                                }
-                            }
-                            
+                            $this->setParamsFromDB($row['createnewvmeasurement']);
                         }
                     }
                 }
-
-                //
-                // Adding a new vmeasurement based on other vmeasurements
-                //
+                else
+                {
+                    // Editing an exisiting record
                     
-                elseif(($this->vmeasurementID == NULL) && $this->vmeasurementOp!='Direct' && $this->referencesArray)
-                {
-                    $sql = "insert into tblvmeasurement ( ";
-                        if($this->vmeasurementOpID) $sql.= "vmeasurementopid, ";
-                        if($this->ownerUserID)      $sql.= "ownerUserID, ";
-                        if($this->measurementID)    $sql.= "measurementid, ";
-                        if($this->name)             $sql.= "name, ";
-                        if($this->description)      $sql.= "description, ";
-                        if($this->ispublished)      $sql.= "ispublished, ";
-                        // Trim off trailing space and comma
-                        $sql = substr($sql, 0, -2);
-                        $sql.= ") values (";
-                        if($this->vmeasurementOpID) $sql.= "'".$this->vmeasurementOpID."', ";
-                        if($this->ownerUserID)      $sql.= "'".$this->ownerUserID."', ";
-                        if($this->measurementID)    $sql.= "'".$this->measurementID."', ";
-                        if($this->name)             $sql.= "'".$this->name."', ";
-                        if($this->description)      $sql.= "'".$this->description."', ";
-                        if($this->ispublished)      $sql.= "'".fromPHPtoPGBool($this->ispublished)."', ";
-                        // Trim off trailing space and comma
-                        $sql = substr($sql, 0, -2);
-                                                 $sql.= ")";
-                    pg_send_query($dbconn, $sql);
-                    $result = pg_get_result($dbconn);
-                    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-                    {
-                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
-                        return FALSE;
-                    }
-                    else
-                    {
-                        // Insert successful so retrieve automated field values
-                        $sql2 = "select * from tblvmeasurement where vmeasurementid=currval('tblvmeasurement_vmeasurementid_seq')";
-                        $result = pg_query($dbconn, $sql2);
-                        while ($row = pg_fetch_array($result))
-                        {
-                            $this->vmeasurementID=$row['vmeasurementid'];   
-                            $this->createdTimeStamp=$row['createdtimestamp'];   
-                            $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
-                        }
-
-                        // Now add all references to other vmeasurements into tblvmeasurementgroup
-                        foreach($this->referencesArray as $value)
-                        {
-                            $insertSQL = "insert into tblvmeasurementgroup (vmeasurementid, membervmeasurementid) values (".$this->vmeasurementID.", ".$value.")"; 
-                            pg_send_query($dbconn, $insertSQL);
-                            $result = pg_get_result($dbconn);
-                            if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-                            {
-                                $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $insertSQL");
-                                return FALSE;
-                            }
-                        }
-                    }
-                }
-
-                //
-                // Editing an existing  measurement
-                //
-
-                elseif($this->vmeasurementID !== NULL) 
-                {
                     // First update the tblvmeasurement table
                     $updateSQL = "update tblvmeasurement set ";
-                    $updateSQL.= "name = '".$this->name."', ";
-                    $updateSQL.= "description = '".$this->description."' ";
-                    //$updateSQL.= "ispublished='".fromPHPtoPGBool($this->isPublished)."' ,";
-                    //$updateSQL.= "owneruserid = '".$this->owneruserid."' ";
-                    $updateSQL.= "where vmeasurementid=".$this->vmeasurementID;
-                   
+                    if($this->name)        $updateSQL.= "name = '".$this->name."', ";
+                    if($this->description) $updateSQL.= "description = '".$this->description."' ";
+                    if($this->isPublished) $updateSQL.= "ispublished='".fromPHPtoPGBool($this->isPublished)."' ,";
+                    if($this->owneruserid) $updateSQL.= "owneruserid = '".$this->owneruserid."', ";
+                    $updateSQL = substr($updateSQL, 0 , -2);
+                    $updateSQL.= " where vmeasurementid=".$this->vmeasurementID."; ";
 
                     // Then update references or readings depending on whether the measurement is direct or not
                     if ($this->vmeasurementOp!=="Direct")
                     {
                         // Update references to other vmeasurements
-                        $deleteSQL = "delete from tblvmeasurementgroup where measurementid=".$this->measurementid;
+                        $deleteSQL = "delete from tblvmeasurementgroup where vmeasurementid=".$this->vmeasurementID."; ";
                         $relyear = 0;
                         foreach($this->referencesArray as $key => $value)
                         {
-                            $insertSQL = "insert into tblvmeasurementgroup (vmeasurementid, membervmeasurementid) values (".$this->vmeasurementid.", ".$value.")";
+                            $insertSQL .= "insert into tblvmeasurementgroup (vmeasurementid, membervmeasurementid) values (".$this->vmeasurementID.", ".$value."); ";
                             $relyear++;
                         }
                     }
                     elseif($this->vmeasurementOp=="Direct")
                     {
                         // Update the tblmeasurement table
-                        $updateSQL = "update tblmeasurement set ";
-                        $updateSQL.= "radiusid = '".$this->radiusID."', ";
-                        $updateSQL.= "isreconciled='".fromPHPtoPGBool($this->isReconciled)."' ,";
-                        $updateSQL.= "startyear = '".$this->startYear."', ";
-                        $updateSQL.= "islegacycleaned='".fromPHPtoPGBool($this->isLegacyCleaned)."' ,";
-                        $updateSQL.= "measuredbyid = '".$this->measuredByID."', ";
-                        $updateSQL.= "datingtypeid = '".$this->datingTypeID."', ";
-                        $updateSQL.= "datingerrorpositive = '".$this->datingerrorpositive."', ";
-                        $updateSQL.= "datingerrornegative = '".$this->datingerrornegative."' ";
-                        $updateSQL.= "where measurementid=".$this->measurementID;
+                        $updateSQL.= "update tblmeasurement set ";
+                        if(isset($this->radiusID))            $updateSQL.= "radiusid = '".$this->radiusID."', ";
+                        if($this->isReconciled!='')           $updateSQL.= "isreconciled='".fromPHPtoPGBool($this->isReconciled)."', ";
+                        if(isset($this->startYear))           $updateSQL.= "startyear = '".$this->startYear."', ";
+                        if(isset($this->isLegacyCleaned))     $updateSQL.= "islegacycleaned='".fromPHPtoPGBool($this->isLegacyCleaned)."', ";
+                        if(isset($this->measuredByID))        $updateSQL.= "measuredbyid = '".$this->measuredByID."', ";
+                        if(isset($this->datingTypeID))        $updateSQL.= "datingtypeid = '".$this->datingTypeID."', ";
+                        if(isset($this->datingerrorpositive)) $updateSQL.= "datingerrorpositive = '".$this->datingerrorpositive."', ";
+                        if(isset($this->datingerrornegative)) $updateSQL.= "datingerrornegative = '".$this->datingerrornegative."', ";
+                        $updateSQL = substr($updateSQL, 0 , -2);
+                        $updateSQL.= " where measurementid=".$this->measurementID."; ";
 
                         // Update readings
-                        $deleteSQL = "delete from tblreading where measurementid=".$this->measurementid;
+                        $deleteSQL = "delete from tblreading where measurementid=".$this->measurementID."; ";
                         $relyear = 0;
                         foreach($this->readingsArray as $key => $value)
                         {
-                            $insertSQL = "insert in tblreading (measurementid, relyear, reading) values (".$this->measurementid.", ".$relyear.", ".$value.")";
+                            $insertSQL .= "insert in tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$relyear.", ".$value."); ";
                             $relyear++;
                         }
                     }
                     
                     // Perform query using transactions so that if anything goes wrong we can roll back
-                    $transaction = "begin; $updateSQL; $deleteSQL; $insertSQL;";
+                    $transaction = "begin; $updateSQL $deleteSQL $insertSQL";
+                    echo $transaction;
                     pg_send_query($dbconn, $transaction);
                     $result = pg_get_result($dbconn);
                     $status = pg_transaction_status($dbconn);
@@ -780,17 +743,7 @@ class measurement
                         // All gone well so commit transaction to db
                         pg_send_query($dbconn, "commit;");
                     }
-
                 }
-
-                // Shouldn't reach here
-                else
-                {
-                    $this->seterrormessage("XXX", "Unable to determine if the DB write request was for a new direct, new derived, existing direct or existing derived measurement.");
-                    return false;
-                }
-
-
             }
             else
             {

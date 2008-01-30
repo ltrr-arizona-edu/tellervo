@@ -64,6 +64,7 @@ function fromPHPtoPGBool($theValue)
     // Translates PHP Bool into PG Bool
     // Returns NULL if value is neither
 
+
     if($theValue===TRUE)
     {   
         $value = "t";

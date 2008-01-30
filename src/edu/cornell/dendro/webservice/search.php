@@ -140,8 +140,8 @@ if(!($myMetaHeader->status == "Error"))
             $xmldata .= "<sql>".$fullSQL."</sql>";
 
             // Do SQL Query
-            $result = pg_query($dbconn, $fullSQL);
-            while ($row = pg_fetch_array($result))
+            $result = @pg_query($dbconn, $fullSQL);
+            while ($row = @pg_fetch_array($result))
             {
                 // Check user has permission to read then create a new object
                 if( ($myRequest->returnObject=="site") && ($myAuth->sitePermission($row['id'], "read")) )
@@ -208,19 +208,19 @@ function paramsToFilterSQL($paramsArray, $paramName)
         // Set operator
         switch ($param['operator'])
         {
-        case "greaterthan":
+        case ">":
             $operator = ">";
             $value = " '".$param['value']."'";
             break;
-        case "lessthan":
+        case "<":
             $operator = "<";
             $value = " '".$param['value']."'";
             break;
-        case "equalto":
+        case "=":
             $operator = "=";
             $value = " '".$param['value']."'";
             break;
-        case "notequalto":
+        case "!=":
             $operator = "!=";
             $value = " '".$param['value']."'";
             break;
