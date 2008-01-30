@@ -720,14 +720,14 @@ class measurement
                         $relyear = 0;
                         foreach($this->readingsArray as $key => $value)
                         {
-                            $insertSQL .= "insert in tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$relyear.", ".$value."); ";
+                            $insertSQL .= "insert into tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$relyear.", ".$value."); ";
                             $relyear++;
                         }
                     }
                     
                     // Perform query using transactions so that if anything goes wrong we can roll back
                     $transaction = "begin; $updateSQL $deleteSQL $insertSQL";
-                    echo $transaction;
+                    //echo $transaction;
                     pg_send_query($dbconn, $transaction);
                     $result = pg_get_result($dbconn);
                     $status = pg_transaction_status($dbconn);
