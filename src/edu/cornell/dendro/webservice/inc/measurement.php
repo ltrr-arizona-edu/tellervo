@@ -155,7 +155,7 @@ class measurement
         // Add any vmeasurements that the current measurement has been made from
         global $dbconn;
 
-        $sql  = "select * from cpgdb.findvmparents('".$this->vmeasurementID."')";
+        $sql  = "select * from cpgdb.findvmparents('".$this->vmeasurementID."', 'true')";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -786,7 +786,7 @@ class measurement
                 // Shouldn't reach here
                 else
                 {
-                    $this->seterrormessage("XXX", "Unable to determine if the DB write request was for a new direct, new derived, exisiting direct or exisiting derived measurement.");
+                    $this->seterrormessage("XXX", "Unable to determine if the DB write request was for a new direct, new derived, existing direct or existing derived measurement.");
                     return false;
                 }
 
@@ -830,7 +830,7 @@ class measurement
                 // Check whether there are any vmeasurements that rely upon this one
                 if(pg_num_rows($result)!=0)
                 {
-                    $this->setErrorMessage("903", "There are exisiting measurements that rely upon this measurement.  You must delete all child measurements before deleting the parent.");
+                    $this->setErrorMessage("903", "There are existing measurements that rely upon this measurement.  You must delete all child measurements before deleting the parent.");
                     return FALSE;
                 }
                 else
