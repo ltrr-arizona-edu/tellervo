@@ -160,7 +160,7 @@ if(!($myMetaHeader->status == "Error"))
         if (isset($myRequest->isunmeasuredpostverified)) $mySpecimen->setIsUnmeasPostVerified($myRequest->isunmeasuredpostverified);
 
         if( (($myRequest->mode=='update') && ($myAuth->specimenPermission($myRequest->id, "update")))  || 
-            (($myRequest->mode=='create') && ($myAuth->specimenPermission($myRequest->id, "create")))    )
+            (($myRequest->mode=='create') && ($myAuth->treePermission($myRequest->treeid, "create")))    )
         {
             // Write to object to database
             $success = $mySpecimen->writeToDB();
@@ -175,7 +175,14 @@ if(!($myMetaHeader->status == "Error"))
         }  
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on specimenid ".$myRequest->id);
+            if(isset($myRequest->id))
+            {
+                $myMetaHeader->setMessage("103", "Permission denied on specimenid ".$myRequest->id);
+            }
+            else
+            {
+                $myMetaHeader->setMessage("103", "Permission denied on treeid ".$myRequest->treeid);
+            }
         }
     }
 

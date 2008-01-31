@@ -83,11 +83,11 @@ function fromPHPtoPGBool($theValue)
 
 function fromStringtoPHPBool($theValue)
 {
-    if($theValue=="t" || $theValue=="true" || $theValue=="TRUE" || $theValue=="True")
+    if($theValue=="t" || $theValue=="true" || $theValue=="TRUE" || $theValue=="True" || $theValue=="1"|| $theValue === TRUE)
     {
         return TRUE;
     }
-    elseif($theValue=="f" || $theValue=="false" || $theValue=="FALSE" || $theValue=="False")
+    elseif($theValue=="f" || $theValue=="false" || $theValue=="FALSE" || $theValue=="False" || $theValue=="0" || $theValue=== FALSE)
     {
         return FALSE;
     }

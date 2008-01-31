@@ -313,28 +313,37 @@ class tree
                 // If ID has not been set then we assume that we are writing a new record to the DB.  Otherwise updating.
                 if($this->id == NULL)
                 {
-                    // New record
-                    if (($this->latitude) && ($this->longitude))
-                    {
-                        $sql = "insert into tbltree (taxonid, subsiteid, label, location) values ('".$this->taxonID."', '".$this->subSiteID."', '".$this->label."', setsrid(makepoint(".$this->longitude.", ".$this->latitude."), 4326))";
-                    }
-                    else
-                    {
-                        $sql = "insert into tbltree (taxonid, subsiteid, label) values ('".$this->taxonID."', '".$this->subSiteID."', '".$this->label."')";
-                    }
+                    // New Record
+                    $sql = "insert into tbltree ( ";
+                        if (isset($this->taxonID))                                  $sql.= "taxonid, ";
+                        if (isset($this->subSiteID))                                $sql.= "subsiteid, ";
+                        if (isset($this->label))                                    $sql.= "label, ";
+                        if (isset($this->precision))                                $sql.= "precision, ";
+                        if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "location, ";
+                    // Trim off trailing space and comma
+                    $sql = substr($sql, 0, -2);
+                    $sql.=") values (";
+                        if (isset($this->taxonID))                                  $sql.= "'".$this->taxonID.   "', ";
+                        if (isset($this->subSiteID))                                $sql.= "'".$this->subSiteID. "', ";
+                        if (isset($this->label))                                    $sql.= "'".$this->label.     "', ";
+                        if (isset($this->precision))                                $sql.= "'".$this->precision. "', ";
+                        if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "setsrid(makepoint(".$this->longitude.", ".$this->latitude."), 4326), ";
+                    // Trim off trailing space and comma
+                    $sql = substr($sql, 0, -2);
+                    $sql.=")";
                     $sql2 = "select * from tbltree where treeid=currval('tbltree_treeid_seq')";
                 }
                 else
                 {
                     // Updating DB
-                    if (($this->latitude) && ($this->longitude))
-                    {
-                        $sql = "update tbltree set taxonid=".$this->taxonID.", subsiteid=".$this->subSiteID.", label='".$this->label."', location=setsrid(makepoint(".$this->longitude.", ".$this->latitude."), 4326) where treeid=".$this->id;
-                    }
-                    else
-                    {
-                        $sql = "update tbltree set taxonid=".$this->taxonID.", subsiteid=".$this->subSiteID.", label='".$this->label."' where treeid=".$this->id;
-                    }
+                    $sql = "update tbltree set ";
+                        if (isset($this->taxonID))                                  $sql.= "taxonid='".    $this->taxonID    ."', ";
+                        if (isset($this->subSiteID))                                $sql.= "subsiteid='".  $this->subSiteID  ."', ";
+                        if (isset($this->label))                                    $sql.= "label='".      $this->label      ."', ";
+                        if (isset($this->precision))                                $sql.= "precision='".  $this->precision  ."', ";
+                        if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "location=setsrid(makepoint(".$this->longitude.", ".$this->latitude."), 4326), ";
+                    // Trim off trailing space and comma
+                    $sql = substr($sql, 0, -2);
                 }
 
                 // Run SQL command

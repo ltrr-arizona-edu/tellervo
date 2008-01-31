@@ -8,7 +8,7 @@
 
 Type: <select id="action">
         <option>sites.php</option>
-        <option>subsites.php</option>
+        <option>subSites.php</option>
         <option>trees.php</option>
         <option>specimens.php</option>
         <option>radii.php</option>

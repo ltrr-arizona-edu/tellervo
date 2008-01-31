@@ -92,7 +92,8 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("create");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->name == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
+            if($myRequest->name == NULL)   $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
+            if($myRequest->siteid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'siteid' field is required.");
             break;
         }
         else
@@ -138,11 +139,11 @@ if(!($myMetaHeader->status == "Error"))
     // Update parameters in object if updating or creating an object 
     if($myRequest->mode=='update' || $myRequest->mode=='create')
     {
-        if (isset($myRequest->name)) $mySubSite->setName($myRequest->name);
-        if (isset($theCode)) $mySubSite->setCode($theCode);
+        if (isset($myRequest->name))    $mySubSite->setName($myRequest->name);
+        if (isset($myRequest->siteid))  $mySubSite->setSiteID($myRequest->siteid);
 
         if( (($myRequest->mode=='update') && ($myAuth->subSitePermission($myRequest->id, "update")))  || 
-            (($myRequest->mode=='create') && ($myAuth->subSitePermission($myRequest->id, "create")))    )
+            (($myRequest->mode=='create') && ($myAuth->sitePermission($myRequest->siteid, "create")))    )
         {
             // Check user has permission to update / create subsite before writing object to database
             $success = $mySubSite->writeToDB();
@@ -157,7 +158,14 @@ if(!($myMetaHeader->status == "Error"))
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on subsiteid $myRequest->id");
+            if($myRequest->id)
+            {
+                $myMetaHeader->setMessage("103", "Permission denied on subsiteid $myRequest->id");
+            }
+            else
+            {
+                $myMetaHeader->setMessage("103", "Permission denied on siteid $myRequest->siteid");
+            }
         }
     }
 
@@ -190,7 +198,7 @@ if(!($myMetaHeader->status == "Error"))
         {
             // DB connection ok
             // Build SQL depending on parameters
-            if(!$myRequest->id==NULL)
+            if($myRequest->id!=NULL)
             {
                 $sql="select tblsubsite.subsiteid, tblsubsite.siteid from tblsubsite  where subsiteid=$myRequest->id order by tblsubsite.subsiteid";
                 // Run SQL

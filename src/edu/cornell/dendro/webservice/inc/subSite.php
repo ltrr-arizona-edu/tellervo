@@ -42,6 +42,12 @@ class subSite
         $this->name=$theName;
     }
     
+    function setSiteID($theID)
+    {
+        // Set the current objects note.
+        $this->siteID=$theID;
+    }
+    
     function setErrorMessage($theCode, $theMessage)
     {
         // Set the error latest error message and code for this object.
@@ -73,6 +79,7 @@ class subSite
                 // Set parameters from db
                 $row = pg_fetch_array($result);
                 $this->name = $row['name'];
+                $this->siteID = $row['siteid'];
                 $this->createdTimeStamp = $row['createdtimestamp'];
                 $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
             }
@@ -218,9 +225,9 @@ class subSite
             $this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
             return FALSE;
         }
-        if($this->code == NULL) 
+        if($this->siteID == NULL) 
         {
-            $this->setErrorMessage("902", "Missing parameter - 'code' field is required.");
+            $this->setErrorMessage("902", "Missing parameter - 'siteid' field is required.");
             return FALSE;
         }
 
@@ -234,13 +241,13 @@ class subSite
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tblsubsite (name, code) values ('".$this->name."', '".$this->code."')";
+                    $sql = "insert into tblsubsite (name, siteid) values ('".$this->name."', '".$this->siteID."')";
                     $sql2 = "select * from tblsubsite where subsiteid=currval('tblsubsite_subsiteid_seq')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tblsubsite set name='".$this->name."', code='".$this->code."' where subsiteid=".$this->id;
+                    $sql = "update tblsubsite set name='".$this->name."' where subsiteid=".$this->id;
                 }
 
                 // Run SQL command

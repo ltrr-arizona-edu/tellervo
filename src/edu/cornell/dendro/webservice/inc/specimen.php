@@ -323,16 +323,11 @@ class specimen
         global $dbconn;
         
         // Check for required parameters
-        if($this->name == NULL) 
-        {
-            $this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
-            return FALSE;
-        }
-        if($this->code == NULL) 
-        {
-            $this->setErrorMessage("902", "Missing parameter - 'code' field is required.");
-            return FALSE;
-        }
+        //if($this->code == NULL) 
+        //{
+        //    $this->setErrorMessage("902", "Missing parameter - 'code' field is required.");
+        //    return FALSE;
+       // }
 
         //Only attempt to run SQL if there are no errors so far
         if($this->lastErrorCode == NULL)
@@ -344,48 +339,71 @@ class specimen
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tblspecimen (label, treeid, datecollected, specimentypeid, terminalringid, isterminalringverified, sapwoodcount, issapwoodcountverified, specimenqualityid, isspecimenqualityverified, specimencontinuityid, pithid, ispithverified, unmeaspre, isunmeaspreverified, unmeaspost, isunmeaspostverified)";
-                    $sql.= " values (";
-                    $sql.= "'".$this->label."', ";
-                    $sql.= $this->treeid." ,";
-                    $sql.= "'".$this->dateCollected."', ";
-                    $sql.= $this->specimentypeid." ,";
-                    $sql.= $this->terminalringid." ,";
-                    $sql.= "'".fromPHPtoPGBool($this->isterminalringverified)."' ,";
-                    $sql.= $this->sapwoodcount." ,";
-                    $sql.= "'".fromPHPtoPGBool($this->issapwoodcountverified)."' ,";
-                    $sql.= $this->specimenqualityid." ,";
-                    $sql.= "'".fromPHPtoPGBool($this->isspecimenqualityverified)."' ,";
-                    $sql.= $this->specimencontinuityid." ,";
-                    $sql.= $this->pithid." ,";
-                    $sql.= "'".fromPHPtoPGBool($this->ispithverified)."' ,";
-                    $sql.= $this->unmeaspre." ,";
-                    $sql.= "'".fromPHPtoPGBool($this->isunmeaspreverified)."' ,";
-                    $sql.= $this->unmeaspost." ,";
-                    $sql.= "'".fromPHPtoPGBool($this->isunmeaspostverified)."' ,";
+                    $sql = "insert into tblspecimen ( ";
+                        if(isset($this->label))                     $sql.="label, ";
+                        if(isset($this->treeID))                    $sql.="treeid, ";
+                        if(isset($this->dateCollected))             $sql.="datecollected, ";
+                        if(isset($this->specimenTypeID))            $sql.="specimentypeid, ";
+                        if(isset($this->terminalRingID))            $sql.="terminalringid, ";
+                        if(isset($this->isTerminalRingVerified))    $sql.="isterminalringverified, ";
+                        if(isset($this->sapwoodCount))              $sql.="sapwoodcount, ";
+                        if(isset($this->isSapwoodCountVerified))    $sql.="issapwoodcountverified, ";
+                        if(isset($this->specimenQualityID))         $sql.="specimenqualityid, ";
+                        if(isset($this->isSpecimenQualityVerified)) $sql.="isspecimenqualityverified, ";
+                        if(isset($this->specimenContinuityID))      $sql.="specimencontinuityid, ";
+                        if(isset($this->pithID))                    $sql.="pithid, ";
+                        if(isset($this->isPithVerified))            $sql.="ispithverified, ";
+                        if(isset($this->unmeasuredPre))             $sql.="unmeaspre, ";
+                        if(isset($this->isUnmeasuredPreVerified))   $sql.="isunmeaspreverified, ";
+                        if(isset($this->unmeasuredPost))            $sql.="unmeaspost, ";
+                        if(isset($this->isUnmeasuredPostVerified))  $sql.="isunmeaspostverified, ";
+                    // Trim off trailing space and comma
+                    $sql = substr($sql, 0, -2);
+                    $sql.=") values (";
+                        if(isset($this->label))                     $sql.="'".$this->label                                          ."', ";
+                        if(isset($this->treeID))                    $sql.="'".$this->treeID                                         ."', ";
+                        if(isset($this->dateCollected))             $sql.="'".$this->dateCollected                                  ."', ";
+                        if(isset($this->specimenTypeID))            $sql.="'".$this->specimenTypeID                                 ."', ";
+                        if(isset($this->terminalRingID))            $sql.="'".$this->terminalRingID                                 ."', ";
+                        if(isset($this->isTerminalRingVerified))    $sql.="'".fromPHPtoPGBool($this->isTerminalRingVerified)        ."', ";
+                        if(isset($this->sapwoodCount))              $sql.="'".$this->sapwoodCount                                   ."', ";
+                        if(isset($this->isSapwoodCountVerified))    $sql.="'".fromPHPtoPGBool($this->isSapwoodCountVerified)        ."', ";
+                        if(isset($this->specimenQualityID))         $sql.="'".$this->specimenQualityID                              ."', ";
+                        if(isset($this->isSpecimenQualityVerified)) $sql.="'".fromPHPtoPGBool($this->isSpecimenQualityVerified)     ."', ";
+                        if(isset($this->specimenContinuityID))      $sql.="'".$this->specimenContinuityID                           ."', ";
+                        if(isset($this->pithID))                    $sql.="'".$this->pithID                                         ."', ";
+                        if(isset($this->isPithVerified))            $sql.="'".fromPHPtoPGBool($this->isPithVerified)                ."', ";
+                        if(isset($this->unmeasuredPre))             $sql.="'".$this->unmeasuredPre                                  ."', ";
+                        if(isset($this->isUnmeasuredPreVerified))   $sql.="'".fromPHPtoPGBool($this->isUnmeasuredPreVerified)       ."', ";
+                        if(isset($this->unmeasuredPost))            $sql.="'".$this->unmeasuredPost                                 ."', ";
+                        if(isset($this->isUnmeasuredPostVerified))  $sql.="'".fromPHPtoPGBool($this->isUnmeasuredPostVerified)      ."', ";
+                    // Trim off trailing space and comma
+                    $sql = substr($sql, 0, -2);
                     $sql.=")";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tblspecimen set ";
-                    $sql.= "label='".$this->label."', ";
-                    $sql.= "treeid=".$this->treeid." ,";
-                    $sql.= "dateCollected='".$this->dateCollected."', ";
-                    $sql.= "specimentypeid=".$this->specimentypeid." ,";
-                    $sql.= "terminalringid=".$this->terminalringid." ,";
-                    $sql.= "isterminalringverified='".fromPHPtoPGBool($this->isterminalringverified)."' ,";
-                    $sql.= "sapwoodcount=".$this->sapwoodcount." ,";
-                    $sql.= "issapwoodcountverified='".fromPHPtoPGBool($this->issapwoodcountverified)."' ,";
-                    $sql.= "specimenqualityid=".$this->specimenqualityid." ,";
-                    $sql.= "isspecimenqualityverified='".fromPHPtoPGBool($this->isspecimenqualityverified)."' ,";
-                    $sql.= "specimencontinuityid=".$this->specimencontinuityid." ,";
-                    $sql.= "pithid=".$this->pithid." ,";
-                    $sql.= "ispithverified='".fromPHPtoPGBool($this->ispithverified)."' ,";
-                    $sql.= "unmeaspre=".$this->unmeaspre." ,";
-                    $sql.= "unmeaspreverified='".fromPHPtoPGBool($this->isunmeaspreverified)."' ,";
-                    $sql.= "unmeaspost=".$this->unmeaspost." ,";
-                    $sql.= "isunmeaspostverified='".fromPHPtoPGBool($this->isunmeaspostverified)."' ,";
+                    $sql.="update tblspecimen set ";
+                        if(isset($this->label))                     $sql.="label='"                     .$this->label                                          ."', ";
+                        if(isset($this->treeID))                    $sql.="treeid='"                    .$this->treeID                                         ."', ";
+                        if(isset($this->dateCollected))             $sql.="datecollected='"             .$this->dateCollected                                  ."', ";
+                        if(isset($this->specimenTypeID))            $sql.="specimentypeid='"            .$this->specimenTypeID                                 ."', ";
+                        if(isset($this->terminalRingID))            $sql.="terminalringid='"            .$this->terminalRingID                                 ."', ";
+                        if(isset($this->isTerminalRingVerified))    $sql.="isterminalringverified='"    .fromPHPtoPGBool($this->isTerminalRingVerified)        ."', ";
+                        if(isset($this->sapwoodCount))              $sql.="sapwoodcount='"              .$this->sapwoodCount                                   ."', ";
+                        if(isset($this->isSapwoodCountVerified))    $sql.="issapwoodcountverified='"    .fromPHPtoPGBool($this->isSapwoodCountVerified)        ."', ";
+                        if(isset($this->specimenQualityID))         $sql.="specimenqualityid='"         .$this->specimenQualityID                              ."', ";
+                        if(isset($this->isSpecimenQualityVerified)) $sql.="isspecimenqualityverified='" .fromPHPtoPGBool($this->isSpecimenQualityVerified)     ."', ";
+                        if(isset($this->specimenContinuityID))      $sql.="specimencontinuityid='"      .$this->specimenContinuityID                           ."', ";
+                        if(isset($this->pithID))                    $sql.="pithid='"                    .$this->pithID                                         ."', ";
+                        if(isset($this->isPithVerified))            $sql.="ispithverified='"            .fromPHPtoPGBool($this->isPithVerified)                ."', ";
+                        if(isset($this->unmeasuredPre))             $sql.="unmeaspre='"                 .$this->unmeasuredPre                                  ."', ";
+                        if(isset($this->isUnmeasuredPreVerified))   $sql.="isunmeaspreverified='"       .fromPHPtoPGBool($this->isUnmeasuredPreVerified)       ."', ";
+                        if(isset($this->unmeasuredPost))            $sql.="unmeaspost='"                .$this->unmeasuredPost                                 ."', ";
+                        if(isset($this->isUnmeasuredPostVerified))  $sql.="isunmeaspostverified='"      .fromPHPtoPGBool($this->isUnmeasuredPostVerified)      ."', ";
+                    $sql = substr($sql, 0, -2);
+                    $sql.= " where specimenid='".$this->id."'";
                 }
 
                 // Run SQL command

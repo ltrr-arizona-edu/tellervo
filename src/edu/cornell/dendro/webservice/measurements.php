@@ -196,6 +196,7 @@ if(!($myMetaHeader->status == "Error"))
     // Update parameters in object if updating or creating an object 
     if($myRequest->mode=='update' || $myRequest->mode=='create')
     {
+
         if (isset($myRequest->radiusid))            $myMeasurement->setRadiusID($myRequest->radiusid);
         if (isset($myRequest->isreconciled))        $myMeasurement->setIsReconciled($myRequest->isreconciled);
         if (isset($myRequest->startyear))           $myMeasurement->setStartYear($myRequest->startyear);

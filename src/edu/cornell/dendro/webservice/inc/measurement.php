@@ -291,7 +291,7 @@ class measurement
 
     function setIsReconciled($isReconciled)
     {
-        $this->isReconciled = $isReconciled;
+        $this->isReconciled = fromStringtoPHPBool($isReconciled);
     }
 
     function setStartYear($theStartYear)
@@ -301,7 +301,7 @@ class measurement
 
     function setIsLegacyCleaned($isLegacyCleaned)
     {
-        $this->isLegacyCleaned = $isLegacyCleaned;
+        $this->isLegacyCleaned = fromStringtoPHPBool($isLegacyCleaned);
     }
     
     function setMeasuredByID($theMeasuredByID)
@@ -365,7 +365,7 @@ class measurement
 
     function setDatingErrorPositive($theDatingErrorPositive)
     {
-        $this->datingErrorPositive = $theDatingPositive;
+        $this->datingErrorPositive = $theDatingErrorPositive;
     }
     
     function setDatingErrorNegative($theDatingErrorNegative)
@@ -385,7 +385,7 @@ class measurement
 
     function setIsPublished($isPublished)
     {
-        $this->isPublished = $isPublished;
+        $this->isPublished = fromStringtoPHPBool($isPublished);
     }
 
 
@@ -567,25 +567,25 @@ class measurement
                         // New direct measurement so create tblmeasurement record first
 
                         $sql = "insert into tblmeasurement  (  ";
-                            if($this->radiusID)            $sql.= "radiusid, "; 
-                            if($this->isReconciled)        $sql.= "isreconciled, "; 
-                            if($this->startYear)           $sql.= "startyear, "; 
-                            if($this->isLegacyCleaned)     $sql.= "islegacycleaned, "; 
-                            if($this->measuredByID)        $sql.= "measuredbyid, "; 
-                            if($this->datingErrorPositive) $sql.= "datingerrorpositive, "; 
-                            if($this->datingErrorNegative) $sql.= "datingerrornegative, "; 
-                            if($this->datingTypeID)        $sql.= "datingtypeid, "; 
+                            if($this->radiusID)              $sql.= "radiusid, "; 
+                            if($this->isReconciled!=NULL)    $sql.= "isreconciled, "; 
+                            if($this->startYear)             $sql.= "startyear, "; 
+                            if($this->isLegacyCleaned!=NULL) $sql.= "islegacycleaned, "; 
+                            if($this->measuredByID)          $sql.= "measuredbyid, "; 
+                            if($this->datingErrorPositive)   $sql.= "datingerrorpositive, "; 
+                            if($this->datingErrorNegative)   $sql.= "datingerrornegative, "; 
+                            if($this->datingTypeID)          $sql.= "datingtypeid, "; 
                         // Trim off trailing space and comma
                         $sql = substr($sql, 0, -2);
                         $sql.=") values (";
-                            if($this->radiusID)            $sql.= "'".$this->radiusID."', ";
-                            if($this->isReconciled)        $sql.= "'".fromPHPtoPGBool($this->isReconciled)."', ";
-                            if($this->startYear)           $sql.=     $this->startYear.", ";
-                            if($this->isLegacyCleaned)     $sql.= "'".fromPHPtoPGBool($this->isLegacyCleaned)."', ";
-                            if($this->measuredByID)        $sql.= "'".$this->measuredByID."', ";
-                            if($this->datingErrorPositive) $sql.= "'".$this->datingErrorPositive."', ";
-                            if($this->datingErrorNegative) $sql.= "'".$this->datingErrorNegative."', ";
-                            if($this->datingTypeID)        $sql.= "'".$this->datingTypeID."', ";
+                            if($this->radiusID)               $sql.= "'".$this->radiusID."', ";
+                            if($this->isReconciled!=NULL)     $sql.= "'".fromPHPtoPGBool($this->isReconciled)."', ";
+                            if($this->startYear)              $sql.=     $this->startYear.", ";
+                            if($this->isLegacyCleaned!=NULL)  $sql.= "'".fromPHPtoPGBool($this->isLegacyCleaned)."', ";
+                            if($this->measuredByID)           $sql.= "'".$this->measuredByID."', ";
+                            if($this->datingErrorPositive)    $sql.= "'".$this->datingErrorPositive."', ";
+                            if($this->datingErrorNegative)    $sql.= "'".$this->datingErrorNegative."', ";
+                            if($this->datingTypeID)           $sql.= "'".$this->datingTypeID."', ";
                         // Trim off trailing space and comma
                         $sql = substr($sql, 0, -2);
                         $sql.=")";
@@ -678,13 +678,13 @@ class measurement
                 else
                 {
                     // Editing an exisiting record
-                    
+
                     // First update the tblvmeasurement table
                     $updateSQL = "update tblvmeasurement set ";
-                    if($this->name)        $updateSQL.= "name = '".$this->name."', ";
-                    if($this->description) $updateSQL.= "description = '".$this->description."' ";
-                    if($this->isPublished) $updateSQL.= "ispublished='".fromPHPtoPGBool($this->isPublished)."' ,";
-                    if($this->owneruserid) $updateSQL.= "owneruserid = '".$this->owneruserid."', ";
+                    if($this->name)               $updateSQL.= "name = '".$this->name."', ";
+                    if($this->description)        $updateSQL.= "description = '".$this->description."' ";
+                    if(isset($this->isPublished)) $updateSQL.= "ispublished='".fromPHPtoPGBool($this->isPublished)."' ,";
+                    if($this->owneruserid)        $updateSQL.= "owneruserid = '".$this->owneruserid."', ";
                     $updateSQL = substr($updateSQL, 0 , -2);
                     $updateSQL.= " where vmeasurementid=".$this->vmeasurementID."; ";
 
@@ -705,7 +705,7 @@ class measurement
                         // Update the tblmeasurement table
                         $updateSQL.= "update tblmeasurement set ";
                         if(isset($this->radiusID))            $updateSQL.= "radiusid = '".$this->radiusID."', ";
-                        if($this->isReconciled!='')           $updateSQL.= "isreconciled='".fromPHPtoPGBool($this->isReconciled)."', ";
+                        if(isset($this->isReconciled))        $updateSQL.= "isreconciled='".fromPHPtoPGBool($this->isReconciled)."', ";
                         if(isset($this->startYear))           $updateSQL.= "startyear = '".$this->startYear."', ";
                         if(isset($this->isLegacyCleaned))     $updateSQL.= "islegacycleaned='".fromPHPtoPGBool($this->isLegacyCleaned)."', ";
                         if(isset($this->measuredByID))        $updateSQL.= "measuredbyid = '".$this->measuredByID."', ";
@@ -727,7 +727,7 @@ class measurement
                     
                     // Perform query using transactions so that if anything goes wrong we can roll back
                     $transaction = "begin; $updateSQL $deleteSQL $insertSQL";
-                    //echo $transaction;
+                    echo $transaction;
                     pg_send_query($dbconn, $transaction);
                     $result = pg_get_result($dbconn);
                     $status = pg_transaction_status($dbconn);
