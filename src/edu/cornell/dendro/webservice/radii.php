@@ -149,7 +149,7 @@ if(!($myMetaHeader->status == "Error"))
         if (!($myRequest->specimenid)==NULL) $myRadius->setSpecimenID($myRequest->specimenid);
         
         if( (($myRequest->mode=='update') && ($myAuth->radiusPermission($myRequest->id, "update")))  || 
-            (($myRequest->mode=='create') && ($myAuth->radiusPermission($myRequest->id, "create")))    )
+            (($myRequest->mode=='create') && ($myAuth->specimenPermission($myRequest->specimenid, "create")))    )
         {
             // Check user has permission to update / create radius before writing object to database
             $success = $myRadius->writeToDB();
@@ -164,7 +164,14 @@ if(!($myMetaHeader->status == "Error"))
         }  
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on radiusid ".$myRequest->id);
+            if($myRequest->mode=='update')
+            {
+                $myMetaHeader->setMessage("103", "Permission denied on radiusid ".$myRequest->id);
+            }
+            else
+            {
+                $myMetaHeader->setMessage("103", "Permission denied on specimenid ".$myRequest->specimenid);
+            }
         }
     }
 

@@ -141,23 +141,24 @@ if(!($myMetaHeader->status == "Error"))
     // Update parameters in object if updating or creating an object 
     if($myRequest->mode=='update' || $myRequest->mode=='create')
     {
-        if (isset($myRequest->label)) $mySpecimen->setLabel($myRequest->label);
-        if (isset($myRequest->treeid)) $mySpecimen->setTreeID($myRequest->treeid);
-        if ((isset($myRequest->collectedday)) && (isset($myRequest->collectedmonth)) && (isset($myRequest->collectedyear))) $mySpecimen->setCollectionDate($myRequest->collectedday, $myRequest->collectedmonth, $myRequest->collectedyear);
-        if (isset($myRequest->specimentype)) $mySpecimen->setSpecimenTypeID($myRequest->specimentype);
-        //if (isset($myRequest->terminalring)) $mySpecimen->setTerminalRingID($myRequest->terminalring);
-        if (isset($myRequest->isterminalringverified)) $mySpecimen->setIsTerminalRingVerified($myRequest->isterminalringverified);
-        if (isset($myRequest->sapwoodcount)) $mySpecimen->setSapwoodCount($myRequest->sapwoodcount);
-        if (isset($myRequest->issapwoodcountverified)) $mySpecimen->setIsSapwoodCountVerified($myRequest->issapwoodcountverified);
-        //if (isset($myRequest->specimenqualityid)) $mySpecimen->setSpecimenQualityID($myRequest->specimenqualityid);
-        if (isset($myRequest->isspecimenqualityverified)) $mySpecimen->setIsSpecimenQualityVerified($myRequest->isspecimenqualityverified);
-        //if (isset($myRequest->specimencontinuityid)) $mySpecimen->setSpecimenContinuityID($myRequest->specimencontinuityid);
-        //if (isset($myRequest->pith)) $mySpecimen->setPithID($myRequest->pith);
-        if (isset($myRequest->ispithverified)) $mySpecimen->setIsPithVerified($myRequest->ispithverified);
-        if (isset($myRequest->unmeasuredpre)) $mySpecimen->setUnmeasPre($myRequest->unmeasuredpre);
-        if (isset($myRequest->isunmeasuredpreverified)) $mySpecimen->setIsUnmeasPreVerified($myRequest->isunmeasuredpreverified);
-        if (isset($myRequest->unmeasuredpost)) $mySpecimen->setUnmeasPost($myRequest->unmeasuredpost);
-        if (isset($myRequest->isunmeasuredpostverified)) $mySpecimen->setIsUnmeasPostVerified($myRequest->isunmeasuredpostverified);
+        if (isset($myRequest->label))                           $mySpecimen->setLabel($myRequest->label);
+        if (isset($myRequest->treeid))                          $mySpecimen->setTreeID($myRequest->treeid);
+        if (isset($myRequest->datecollected))                   $mySpecimen->setDateCollected($myRequest->datecollected);
+        if (isset($myRequest->specimentypeid))                  $mySpecimen->setSpecimenTypeID($myRequest->specimentypeid);
+        if (isset($myRequest->isterminalringverified))          $mySpecimen->setIsTerminalRingVerified($myRequest->isterminalringverified);
+        if (isset($myRequest->sapwoodcount))                    $mySpecimen->setSapwoodCount($myRequest->sapwoodcount);
+        if (isset($myRequest->issapwoodcountverified))          $mySpecimen->setIsSapwoodCountVerified($myRequest->issapwoodcountverified);
+        if (isset($myRequest->isspecimenqualityverified))       $mySpecimen->setIsSpecimenQualityVerified($myRequest->isspecimenqualityverified);
+        if (isset($myRequest->isspecimencontinuityverified))    $mySpecimen->setIsSpecimenContinuityVerified($myRequest->isspecimencontinuityverified);
+        if (isset($myRequest->ispithverified))                  $mySpecimen->setIsPithVerified($myRequest->ispithverified);
+        if (isset($myRequest->unmeasuredpre))                   $mySpecimen->setUnmeasPre($myRequest->unmeasuredpre);
+        if (isset($myRequest->isunmeasuredpreverified))         $mySpecimen->setIsUnmeasPreVerified($myRequest->isunmeasuredpreverified);
+        if (isset($myRequest->unmeasuredpost))                  $mySpecimen->setUnmeasPost($myRequest->unmeasuredpost);
+        if (isset($myRequest->isunmeasuredpostverified))        $mySpecimen->setIsUnmeasPostVerified($myRequest->isunmeasuredpostverified);
+        if (isset($myRequest->specimencontinuityid))            $mySpecimen->setSpecimenContinuityID($myRequest->specimencontinuityid);
+        if (isset($myRequest->pithid))                          $mySpecimen->setPithID($myRequest->pithid);
+        if (isset($myRequest->specimenqualityid))               $mySpecimen->setSpecimenQualityID($myRequest->specimenqualityid);
+        if (isset($myRequest->terminalringid))                  $mySpecimen->setTerminalRingID($myRequest->terminalringid);
 
         if( (($myRequest->mode=='update') && ($myAuth->specimenPermission($myRequest->id, "update")))  || 
             (($myRequest->mode=='create') && ($myAuth->treePermission($myRequest->treeid, "create")))    )

@@ -23,7 +23,7 @@ class specimen
     var $dateCollected = NULL;
     var $specimenTypeID = NULL;
     var $terminalRingID = NULL;
-    var $terminalRingVerified = NULL;
+    var $isTerminalRingVerified = NULL;
     var $sapwoodCount = NULL;
     var $sapwoodCountVerified = NULL;
     var $specimenQualityID = NULL;
@@ -32,6 +32,7 @@ class specimen
     var $specimenContinuityVerified = NULL;
     var $pithID = NULL;
     var $pithVerified = NULL;
+    var $isPithVerified = NULL;
     var $unmeasuredPre = NULL;
     var $isUnmeasuredPreVerified = NULL;
     var $unmeasuredPost = NULL;
@@ -61,7 +62,7 @@ class specimen
     function setLabel($theLabel)
     {
         // Set the current objects note.
-        $this->name=$theLabel;
+        $this->label=$theLabel;
     }
     
     function setTreeID($theTreeID)
@@ -70,39 +71,130 @@ class specimen
         $this->treeID=$theTreeID;
     }
 
-    function setSpecimenTypeID($specimenType)
+    function setSpecimenType($specimenType)
     {
+        // Set speciemn type id from label
         $mySpecimenType = new specimenType;
         $mySpecimenType->setParamsFromLabel($specimenType);
         $this->specimenTypeID=$mySpecimenType->getID();
     }
 
-    function setTerminalRingID($terminalRing)
+    function setSpecimenTypeID($specimenTypeID)
     {
+        // Set specimen type id from id
+        $this->specimenTypeID=$specimenTypeID;
+    }
+
+    function setTerminalRing($terminalRing)
+    {
+        // Set terminal ring id from label
         $myTerminalRing = new terminalRing;
         $myTerminalRing->setParamsFromLabel($terminalRing);
         $this->terminalRingID=$myTerminalRing->getID();
     }
 
-    function setSpecimenQualityID($specimenQuality)
+    function setTerminalRingID($terminalRingID)
     {
+        // Set terminal ring id from id
+        $this->terminalRingID=$terminalRingID;
+    }
+
+    function setIsTerminalRingVerified($theBool)
+    {
+        $this->isTerminalRingVerified=$theBool;
+    }
+
+    function setSpecimenQuality($specimenQuality)
+    {
+        // Set specimen quality id from label
         $mySpecimenQuality = new specimenQuality;
         $mySpecimenQuality->setParamsFromLabel($specimenQuality);
         $this->specimenQualityID=$mySpecimenQuality->getID();
     }
 
-    function setSpecimenContinuityID($specimenContinuity)
+    function setSpecimenQualityID($specimenQualityID)
     {
-        $mySpecimenContinuity = new specimenContinuity;
-        $mySpecimenContinuity->setParamsFromLabel($specimenContinuity);
-        $this->$specimenContinuityID=$mySpecimenContinuity->getID();
+        // Set specimen quality id from id
+        $this->specimenQualityID=$specimenQualityID;
+    }
+    
+    function setIsSpecimenQualityVerified($theBool)
+    {
+        $this->isSpecimenQualityVerified=$theBool;
     }
 
-    function setPithID($pith)
+    function setSpecimenContinuity($specimenContinuity)
     {
+        // Set specimen continuity id from label
+        $mySpecimenContinuity = new specimenContinuity;
+        $mySpecimenContinuity->setParamsFromLabel($specimenContinuity);
+        $this->specimenContinuityID=$mySpecimenContinuity->getID();
+    }
+
+    function setSpecimenContinuityID($specimenContinuityID)
+    {
+        // Set specimen continuity id from id
+        $this->specimenContinuityID=$specimenContinuityID;
+    }
+    
+    function setIsSpecimenContinuityVerified($theBool)
+    {
+        $this->isSpecimenContinuityVerified=$theBool;
+    }
+
+    function setPith($pith)
+    {
+        // Set pith id from label
         $myPith = new specimenContinuity;
         $myPith->setParamsFromLabel($pith);
-        $this->$pithID=$myPith->getID();
+        $this->pithID=$myPith->getID();
+    }
+
+    function setPithID($pithID)
+    {
+        // Set pith id from id
+        $this->pithID=$pithID;
+    }
+    
+    function setIsPithVerified($theBool)
+    {
+        // Set pith id from id
+        $this->isPithVerified=$theBool;
+    }
+    
+    function setDateCollected($dateCollected)
+    {
+        $this->dateCollected = $dateCollected;
+    }
+    
+    function setSapwoodCount($sapwoodCount)
+    {
+        $this->sapwoodCount = $sapwoodCount;
+    }
+    
+    function setIsSapwoodCountVerified($theBool)
+    {
+        $this->isSapwoodCountVerified = $theBool;
+    }
+    
+    function setUnmeasPre($theValue)
+    {
+        $this->unmeasuredPre = $theValue;
+    }
+    
+    function setIsUnmeasPreVerified($theBool)
+    {
+        $this->isUnmeasuredPreVerified = $theBool;
+    }
+    
+    function setUnmeasPost($theValue)
+    {
+        $this->unmeasuredPost = $theValue;
+    }
+    
+    function setIsUnmeasPostVerified($theBool)
+    {
+        $this->isUnmeasuredPostVerified = $theBool;
     }
 
     function setErrorMessage($theCode, $theMessage)
@@ -224,15 +316,20 @@ class specimen
                 $xml.= "id=\"".$this->id."\" ";
                 $xml.= "label=\"".$this->label."\" ";
                 $xml.= "dateCollected=\"".$this->dateCollected."\" ";
+                $xml.= "specimenTypeID=\"".$this->specimenTypeID."\" ";
                 $xml.= "specimenType=\"".$mySpecimenType->getLabel()."\" ";
+                $xml.= "terminalRingID=\"".$this->terminalRingID."\" ";
                 $xml.= "terminalRing=\"".$myTerminalRing->getLabel()."\" ";
                 $xml.= "isTerminalRingVerified=\"".fromPGtoStringBool($this->isTerminalRingVerified)."\" ";
                 $xml.= "sapwoodCount=\"".$this->sapwoodCount."\" ";
                 $xml.= "isSapwoodCountVerified=\"".fromPHPtoStringBool($this->isSapwoodCountVerified)."\" ";
+                $xml.= "specimenQualityID=\"".$this->specimenQualityID."\" ";
                 $xml.= "specimenQuality=\"".$mySpecimenQuality->getLabel()."\" ";
                 $xml.= "isSpecimenQualityVerified=\"".fromPHPtoStringBool($this->isSpecimenQualityVerified)."\" ";
+                $xml.= "specimenContinuityID=\"".$this->specimenContinuityID."\" ";
                 $xml.= "specimenContinuity=\"".$mySpecimenContinuity->getLabel()."\" ";
                 $xml.= "isSpecimenContinuityVerified=\"".fromPHPtoStringBool($this->isSpecimenContinuityVerified)."\" ";
+                $xml.= "pithID=\"".$this->pithID."\" ";
                 $xml.= "pith=\"".$myPith->getLabel()."\" ";
                 $xml.= "isPithVerified=\"".fromPHPtoStringBool($this->isPithVerified)."\" ";
                 $xml.= "unmeasuredPre=\"".$this->unmeasuredPre."\" ";
@@ -380,6 +477,7 @@ class specimen
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
+                    $sql2 = "select * from tblspecimen where specimenid=currval('tblspecimen_specimenid_seq')";
                 }
                 else
                 {
@@ -416,6 +514,18 @@ class specimen
                     {
                         $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
                         return FALSE;
+                    }
+                }
+                // Retrieve automated field values when a new record has been inserted
+                if ($sql2)
+                {
+                    // Run SQL
+                    $result = pg_query($dbconn, $sql2);
+                    while ($row = pg_fetch_array($result))
+                    {
+                        $this->id=$row['specimenid'];   
+                        $this->createdTimeStamp=$row['createdtimestamp'];   
+                        $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
                     }
                 }
             }

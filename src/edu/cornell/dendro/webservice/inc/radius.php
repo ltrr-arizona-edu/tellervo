@@ -244,6 +244,7 @@ class radius
                 {
                     // New record
                     $sql = "insert into tblradius (label, specimenid) values ('".$this->label."', '".$this->specimenID."')";
+                    $sql2 = "select * from tblradius where radiusid=currval('tblradius_radiusid_seq')";
                 }
                 else
                 {
@@ -263,6 +264,19 @@ class radius
                         return FALSE;
                     }
                 }
+                // Retrieve automated field values when a new record has been inserted
+                if ($sql2)
+                {
+                    // Run SQL
+                    $result = pg_query($dbconn, $sql2);
+                    while ($row = pg_fetch_array($result))
+                    {
+                        $this->id=$row['radiusid'];   
+                        $this->createdTimeStamp=$row['createdtimestamp'];   
+                        $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
+                    }
+                }
+
             }
             else
             {

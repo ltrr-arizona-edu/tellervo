@@ -1,138 +1,136 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
-<start>
-    <element name="corina">
-        <choice>
-            <group>
-            	<ref name="headerSection"/>  
-            	<ref name="contentSection"/>
-            </group>          
-            <group>
-            	<ref name="requestSection"/>
-        	</group>
-        </choice>
-    </element>
-</start>
+    <start>
+        <element name="corina">
+            <choice>
+                <group>
+                    <ref name="headerSection"/>  
+                    <ref name="contentSection"/>
+                </group>          
+                <group>
+                    <ref name="requestSection"/>
+                </group>
+            </choice>
+        </element>
+    </start>
 
 
-<!-- HEADER SECTION -->
+    <!-- HEADER SECTION -->
 
-<define name="headerSection" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-    <element name="header">
-		<interleave>
-	        <element name="user">
-	            <attribute name="username">
-	                <text/>
-	            </attribute>
-	            <attribute name="firstname">
-	                <text/>
-	            </attribute>
-	            <attribute name="lastname">
-	                <text/>
-	            </attribute>
-	        </element>
-	
-	        <element name="wsversion">
-	            <data type="double" />
-	        </element>
-	
-	        <element name="clientversion">
-	            <text/>
-	        </element>
-	
-	        <element name="requestdate">
-	            <text />
-	        </element>
-	
-	        <element name="queryTime">
-	            <attribute name="unit">
-	                <choice>
-	                    <value>minutes</value>
-	                    <value>seconds</value>
-	                    <value>microns</value>
-	                </choice>
-	            </attribute>
-	            <data type="double"/>
-	        </element>
-	
-	        <element name="requesturl">
-	            <text/>
-	        </element>
-	
-	        <element name="requesttype">
-	            <choice>
-	                <value>create</value>
-	                <value>read</value>
-	                <value>update</value>
-	                <value>delete</value>
-	                <value>assigned</value>
-	                <value>unassign</value>
-	                <value>plainlogin</value>
+    <define name="headerSection" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="header">
+            <interleave>
+                <element name="user">
+                    <attribute name="username">
+                        <text/>
+                    </attribute>
+                    <attribute name="firstname">
+                        <text/>
+                    </attribute>
+                    <attribute name="lastname">
+                        <text/>
+                    </attribute>
+                </element>
+
+                <element name="wsversion">
+                    <data type="double" />
+                </element>
+
+                <element name="clientversion">
+                    <text/>
+                </element>
+
+                <element name="requestdate">
+                    <text />
+                </element>
+
+                <element name="queryTime">
+                    <attribute name="unit">
+                        <choice>
+                            <value>minutes</value>
+                            <value>seconds</value>
+                            <value>microns</value>
+                        </choice>
+                    </attribute>
+                    <data type="double"/>
+                </element>
+
+                <element name="requesturl">
+                    <text/>
+                </element>
+
+                <element name="requesttype">
+                    <choice>
+                        <value>create</value>
+                        <value>read</value>
+                        <value>update</value>
+                        <value>delete</value>
+                        <value>plainlogin</value>
                         <value>securelogin</value>
                         <value>nonce</value>
-	                <value>logout</value>
-	                <value>help</value>
-	                <value>search</value>
+                        <value>logout</value>
+                        <value>help</value>
+                        <value>search</value>
                         <value>getcapabilities</value>
-	            </choice>
-	        </element>
-	
-	        <element name="status">
-	            <choice>
-	                <value>OK</value>
-	                <value>Error</value>
-	                <value>Warning</value>
-	            </choice>
-	        </element>
-	
-	        <optional>
-	            <element name="nonce">
-	                <text/>
-	            </element>
-	        </optional>
-	        
-	        <zeroOrMore>
-	        	<element name="message">
-	        		<attribute name="code">
-	        			<data type="positiveInteger" />
-	        		</attribute>
-	        		<text />
-	        	</element>
-	        </zeroOrMore>
-		</interleave>
-    </element>
-</define>
+                        <value>assign</value>
+                        <value>unassign</value>
+                    </choice>
+                </element>
+
+                <element name="status">
+                    <choice>
+                        <value>OK</value>
+                        <value>Error</value>
+                        <value>Warning</value>
+                    </choice>
+                </element>
+
+                <optional>
+                    <element name="nonce">
+                        <text/>
+                    </element>
+                </optional>
+
+                <zeroOrMore>
+                    <element name="message">
+                        <attribute name="code">
+                            <data type="positiveInteger" />
+                        </attribute>
+                        <text />
+                    </element>
+                </zeroOrMore>
+            </interleave>
+        </element>
+    </define>
 
 
-<!-- CONTENT SECTION -->
+    <!-- CONTENT SECTION -->
 
-<define name="contentSection" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="content">
-		<choice>
-			<ref name="siteObject" />
-			<ref name="subSiteObject" />
-			<ref name="treeObject" />
-			<ref name="specimenObject" />
-			<ref name="radiusObject" />
-			<ref name="dictionariesSection" />
-		</choice>
-	</element>
-</define>
-
-
-
-<!-- REQUEST SECTION -->
-
-<define name="requestSection" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-    <element name="request">
-        <attribute name="type">
+    <define name="contentSection" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="content">
             <choice>
+                <ref name="siteObject" />
+                <ref name="subSiteObject" />
+                <ref name="treeObject" />
+                <ref name="specimenObject" />
+                <ref name="radiusObject" />
+                <ref name="dictionariesSection" />
+            </choice>
+        </element>
+    </define>
+
+
+
+    <!-- REQUEST SECTION -->
+
+    <define name="requestSection" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="request">
+            <attribute name="type">
+                <choice>
                     <value>create</value>
                     <value>read</value>
                     <value>update</value>
                     <value>delete</value>
-                    <value>assigned</value>
-                    <value>unassign</value>
                     <value>plainlogin</value>
                     <value>securelogin</value>
                     <value>nonce</value>
@@ -140,621 +138,643 @@
                     <value>help</value>
                     <value>search</value>
                     <value>getcapabilities</value>
-            </choice>
-        </attribute>
-        <optional>
-            <attribute name="returnObject">
-                <choice>
-                    <value>specimen</value>
-                    <value>site</value>
-                    <value>subsite</value>
-                    <value>tree</value>
-                    <value>radius</value>
-                    <value>measurement</value>
-                    <value>taxon</value>
+                    <value>assign</value>
+                    <value>unassign</value>
                 </choice>
             </attribute>
-        </optional>
-        <optional>
-            <attribute name="limit">
-                <data type="integer" />
-            </attribute>
-        </optional>
-        <optional>
-            <attribute name="skip">
-                <data type="integer" />
-            </attribute>
-        </optional>
-	<interleave>
             <optional>
-                <ref name="siteObject"/>
-            </optional>
-            <optional>
-				<ref name="subSiteObject"/>
-            </optional>
-            <optional>
-				<ref name="treeObject"/>	
-            </optional>
-            <optional>
-				<ref name="specimenObject"/>	
-            </optional>
-            <optional>
-				<ref name="radiusObject" />   	
-            </optional>
-            <optional>
-				<ref name="siteNoteObject" />   	
-            </optional>
-            <optional>
-				<ref name="treeNoteObject" />   	
-            </optional>
-            <optional>
-				<ref name="readingNoteObject" />   	
-            </optional>
-            <optional>
-				<ref name="vmeasurementNoteObject" />   	
-            </optional>
-            <optional>
-        	                <ref name="authenticateObject" />
-            </optional>
-            <optional>
-        	                <ref name="measurementObject" />
-            </optional>
-            <optional>
-        	                <ref name="siteParamsObject" />
-            </optional>
-            <optional>
-        	                <ref name="subsiteParamsObject" />
-            </optional>
-            <optional>
-        	                <ref name="treeParamsObject" />
-            </optional>
-            <optional>
-        	                <ref name="specimenParamsObject" />
-            </optional>
-            <optional>
-        	                <ref name="radiusParamsObject" />
-            </optional>
-            <optional>
-        	                <ref name="measurementParamsObject" />
-            </optional>
-            <optional>
-        	                <ref name="searchParamsObject" />
-            </optional>
-        </interleave>   
-    </element>
-</define>
-
-<!-- DICTIONARIES SECTION -->
-<define name="dictionariesSection" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<interleave>
-		<element name="specimenTypeDictionary">
-			<zeroOrMore>
-				<ref name="specimenTypeObject"/>
-			</zeroOrMore>
-		</element>
-		<element name="terminalRingDictionary">
-			<zeroOrMore>
-				<ref name="terminalRingObject"/>
-			</zeroOrMore>
-		</element>
-		<element name="specimenQualityDictionary">
-			<zeroOrMore>
-				<ref name="specimenQualityObject"/>
-			</zeroOrMore>
-		</element>
-		<element name="pithDictionary">
-			<zeroOrMore>
-				<ref name="pithObject"/>
-			</zeroOrMore>
-		</element>		
-		<element name="specimenContinuityDictionary">
-			<zeroOrMore>
-				<ref name="specimenContinuityObject"/>
-			</zeroOrMore>
-		</element>	
-		<element name="siteNoteDictionary">
-			<zeroOrMore>
-				<ref name="siteNoteObject"/>
-			</zeroOrMore>
-		</element>	
-		<element name="treeNoteDictionary">
-			<zeroOrMore>
-				<ref name="treeNoteObject"/>
-			</zeroOrMore>
-		</element>	
-		<element name="measurementNoteDictionary">
-			<zeroOrMore>
-				<ref name="vmeasurementNoteObject"/>
-			</zeroOrMore>
-		</element>	
-		<element name="readingNoteDictionary">
-			<zeroOrMore>
-				<ref name="readingNoteObject"/>
-			</zeroOrMore>
-		</element>
-	</interleave>	
-</define>
-
-
-<!-- DATA OBJECTS -->
-
-<define name="siteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-    <element name="site">
-        <optional>
-            <attribute name="id">
-                <data type="integer" />
-            </attribute>
-        </optional>
-        <optional>
-            <attribute name="code">
-                <text/>
-            </attribute>
-        </optional>
-        <optional>
-            <attribute name="name">
-                <text/>
-            </attribute>
-        </optional>
-        <optional>
-            <ref name="requestSection"/>
-        </optional>
-        <optional>
-                <attribute name="latitude">
-                        <choice>
-                                <data type="double">
-                                        <param name="maxInclusive">90</param>
-                                        <param name="minInclusive">-90</param>
-                                </data>
-                                <empty />
-                        </choice>
+                <attribute name="returnObject">
+                    <choice>
+                        <value>site</value>
+                        <value>subsite</value>
+                        <value>tree</value>
+                        <value>specimen</value>
+                        <value>radius</value>
+                        <value>measurement</value>
+                        <value>taxon</value>
+                    </choice>
                 </attribute>
-        </optional>
-        <optional>
-                <attribute name="longitude">
-                        <choice>
-                                <data type="double">
-                                        <param name="maxInclusive">180</param>
-                                        <param name="minInclusive">-180</param>
-                                </data>
-                                <empty />
-                        </choice>
+            </optional>
+            <optional>
+                <attribute name="limit">
+                    <data type="integer" />
                 </attribute>
-        </optional>
-        <optional>
-            <attribute name="createdTimeStamp">
-                <text />
-            </attribute>
-        </optional>
-        <optional>
-            <attribute name="lastModifiedTimeStamp">
-                <text />
-            </attribute>
-        </optional>        
-        <interleave>
-	        <zeroOrMore>
-	        	<ref name="subSiteObject"/>
-	        </zeroOrMore>
-	        <zeroOrMore>
-	        	<ref name="siteNoteObject"/>
-	        </zeroOrMore>
-        </interleave>
-    </element>
-</define> 
-
-<define name="subSiteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-    <element name="subSite">
-        <optional>
-            <attribute name="id">
-                <data type="integer" />
-            </attribute>
-        </optional>
-        <optional>
-            <attribute name="name">
-                <text/>
-            </attribute>
-        </optional>
-        <optional>
-            <attribute name="siteid">
-                <data type="integer" />
-            </attribute>
-        </optional>
-        <optional>
-            <attribute name="createdTimeStamp">
-                <text />
-            </attribute>
-        </optional>
-        <optional>
-            <attribute name="lastModifiedTimeStamp">
-                <text />
-            </attribute>
-        </optional>
-        <zeroOrMore>
-        	<ref name="treeObject"/>
-        </zeroOrMore>
-    </element>
-</define>
-
-<define name="treeObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="tree">
-		<optional>
-			<attribute name="id">
-				<data type="positiveInteger" />
-			</attribute>
-		</optional>
-        <optional>
-            <attribute name="label">
-                <text />
-            </attribute>
-        </optional>		
-		<optional> 
-			<attribute name="taxonID">
-				<data type="positiveInteger" />
-			</attribute>
-		</optional>
-		<optional>
-			<attribute name="latitude">
-				<choice>
-					<data type="double">
-						<param name="maxInclusive">90</param>
-						<param name="minInclusive">-90</param>
-					</data>
-					<empty />
-				</choice>
-			</attribute>
-		</optional>
-		<optional>
-			<attribute name="longitude">
-				<choice>
-					<data type="double">
-						<param name="maxInclusive">180</param>
-						<param name="minInclusive">-180</param>
-					</data>
-					<empty />
-				</choice>
-			</attribute>
-		</optional>
-		<optional> 
-			<attribute name="precision">
-				<data type="positiveInteger" />
-			</attribute>
-		</optional>		
-        <optional>
-            <attribute name="createdTimeStamp">
-                	<data type="dateTime" />
-            </attribute>
-        </optional>
-        <optional>
-            <attribute name="lastModifiedTimeStamp">
-                <data type="dateTime" />
-            </attribute>
-        </optional>
-        <interleave>	
-	        <zeroOrMore>
-	        	<ref name="specimenObject"/>
-	        </zeroOrMore>
-	        <zeroOrMore>
-	        	<ref name="treeNoteObject" />
-	        </zeroOrMore>
-        </interleave>        	
-	</element>
-</define>
-
-
-<define name="specimenObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="specimen">
-		<optional>
-			<attribute name="id">
-				<data type="positiveInteger" />
-			</attribute>
-	    </optional>
-		<optional>
-			<attribute name="label">
-				<text />
-			</attribute>
-	    </optional>	
-	    <optional>
-	        <attribute name="dateCollected">
-	            <data type="date" />
-	        </attribute>
-	    </optional>	
-        <optional>
-            <attribute name="createdTimeStamp">
-                	<data type="dateTime" />
-            </attribute>
-        </optional>
-        <optional>
-            <attribute name="lastModifiedTimeStamp">
-                <data type="dateTime" />
-            </attribute>
-        </optional>	
-		<optional>
-			<attribute name="specimenTypeID">
-				<data type="positiveInteger" />
-			</attribute>
-	    </optional>        
-		<optional>
-			<attribute name="terminalRingID">
-				<data type="positiveInteger" />
-			</attribute>
-			<attribute name="isTerminalRingVerified">
-				<data type="boolean" />
-			</attribute>			
-	    </optional>     
-		<optional>
-			<attribute name="sapwoodCount">
-				<data type="positiveInteger" />
-			</attribute>
-			<attribute name="isSapwoodCountVerified">
-				<data type="boolean" />
-			</attribute>			
-	    </optional> 
-		<optional>
-			<attribute name="specimenQualityID">
-				<data type="positiveInteger" />
-			</attribute>
-			<attribute name="isSpecimenQualityVerified">
-				<data type="boolean" />
-			</attribute>			
-	    </optional> 
-		<optional>
-			<attribute name="specimenContinuityID">
-				<data type="positiveInteger" />
-			</attribute>
-		</optional>
-		<optional>
-			<attribute name="pithID">
-				<data type="positiveInteger" />
-			</attribute>
-			<attribute name="isPithIDVerified">
-				<data type="boolean" />
-			</attribute>			
-	    </optional> 		
-		<optional>
-			<attribute name="unmeasuredPre">
-				<data type="positiveInteger" />
-			</attribute>
-			<attribute name="isUnmeasuredPreVerified">
-				<data type="boolean" />
-			</attribute>			
-	    </optional> 
-		<optional>
-			<attribute name="unmeasuredPost">
-				<data type="positiveInteger" />
-			</attribute>
-			<attribute name="isUnmeasuredPostVerified">
-				<data type="boolean" />
-			</attribute>			
-	    </optional>   
-        <optional>
-        	<ref name="radiusObject" />
-        </optional>	       
-    </element>
-</define>
-
-<define name="radiusObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="radius">
-		<optional>
-			<attribute name="id">
-				<data type="positiveInteger" />
-			</attribute>
-	    </optional>
-		<optional>
-			<attribute name="label">
-				<text />
-			</attribute>
-	    </optional>	
-        <optional>
-            <attribute name="createdTimeStamp">
-                	<data type="dateTime" />
-            </attribute>
-        </optional>
-        <optional>
-            <attribute name="lastModifiedTimeStamp">
-                <data type="dateTime" />
-            </attribute>
-        </optional>	
-	</element>
-</define>
-
-<define name="siteNoteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="siteNote">
-		<optional>
-			<attribute name="id">
-				<data type="positiveInteger"/>
-			</attribute>
-		</optional>
-		<optional>			
-			<attribute name="isStandard">
-				<data type="boolean" />
-			</attribute>
-		</optional>
-		<text/>
-	</element>
-</define>
-
-<define name="treeNoteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="treeNote">
-		<optional>
-			<attribute name="id">
-				<data type="positiveInteger"/>
-			</attribute>
-		</optional>
-		<optional>			
-			<attribute name="isStandard">
-				<data type="boolean" />
-			</attribute>
-		</optional>
-		<text/>		
-	</element>
-</define>
-
-<define name="vmeasurementNoteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="measurementNote">
-		<optional>
-			<attribute name="id">
-				<data type="positiveInteger"/>
-			</attribute>
-		</optional>
-		<optional>			
-			<attribute name="isStandard">
-				<data type="boolean" />
-			</attribute>
-		</optional>
-		<text/>		
-	</element>
-</define>
-
-<define name="readingNoteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="readingNote">
-		<optional>
-			<attribute name="id">
-				<data type="positiveInteger"/>
-			</attribute>
-		</optional>
-		<optional>			
-			<attribute name="isStandard">
-				<data type="boolean" />
-			</attribute>
-		</optional>
-		<text/>
-	</element>
-</define>
-
-<define name="specimenTypeObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="specimenType">
-		<optional>
-			<attribute name="id">
-				<data type="positiveInteger"/>
-			</attribute>
-		</optional>
-	<text/>
-	</element>
-</define>
-
-<define name="terminalRingObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="terminalRing">
-		<optional>
-			<attribute name="id">
-				<text/>
-			</attribute>
-		</optional>
-		<text/>		
-	</element>
-</define>
-
-<define name="specimenQualityObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="specimenQuality">
-		<optional>
-			<attribute name="id">
-				<text/>
-			</attribute>
-		</optional>
-	<text/>
-	</element>
-</define>
-
-<define name="specimenContinuityObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="specimenContinuity">
-		<optional>
-			<attribute name="id">
-				<text/>
-			</attribute>
-		</optional>
-	<text/>		
-	</element>
-</define>
-
-<define name="pithObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="pith">
-		<optional>
-			<attribute name="id">
-				<text/>
-			</attribute>
-		</optional>
-	<text/>
-	</element>
-</define>
-
-<define name="vmeasurementOpObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="operation">
-		<optional>
-			<attribute name="id">
-				<data type="positiveInteger"/>
-			</attribute>
-		</optional>
-		<optional>
-			<attribute name="legacyCode">
-				<text/>
-			</attribute>
-		</optional>	
-	<text/>	
-	</element>
-</define>
-
-<define name="authenticateObject"  datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<element name="authenticate">
-		<optional>
-			<attribute name="username">
-				<text/>
-			</attribute>
-		</optional>
-		<optional>
-			<attribute name="password">
-				<text/>
-			</attribute>
-		</optional>	
-		<optional>
-			<attribute name="hash">
-				<text/>
-			</attribute>
-		</optional>	
-		<optional>
-			<attribute name="nonce">
-				<text/>
-			</attribute>
-		</optional>	
-	<text/>	
-	</element>
-</define>
-
-<define name="localityObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-        <element name="locality">
+            </optional>
+            <optional>
+                <attribute name="skip">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+            <interleave>
                 <optional>
-                        <element name="centroid">
-                                <attribute name="latitude">
-                                    <data type="double">
-                                        <param name="maxInclusive">90</param>
-                                        <param name="minInclusive">-90</param>
-                                    </data>
-                                </attribute>
-                                <attribute name="longitude">
-                                    <data type="double">
-                                        <param name="maxInclusive">180</param>
-                                        <param name="minInclusive">-180</param>
-                                    </data>
-                                </attribute>
-                        </element>
+                    <ref name="siteObject"/>
                 </optional>
                 <optional>
-                        <element name="extent">
-                                <attribute name="xmin">
-                                    <data type="double"/>
-                                </attribute>
-                                <attribute name="ymin">
-                                    <data type="double"/>
-                                </attribute>
-                                <attribute name="xmax">
-                                    <data type="double"/>
-                                </attribute>
-                                <attribute name="ymax">
-                                    <data type="double"/>
-                                </attribute>
-                        </element>
+                    <ref name="subSiteObject"/>
                 </optional>
+                <optional>
+                    <ref name="treeObject"/>	
+                </optional>
+                <optional>
+                    <ref name="specimenObject"/>	
+                </optional>
+                <optional>
+                    <ref name="radiusObject" />   	
+                </optional>
+                <optional>
+                    <ref name="siteNoteObject" />   	
+                </optional>
+                <optional>
+                    <ref name="treeNoteObject" />   	
+                </optional>
+                <optional>
+                    <ref name="readingNoteObject" />   	
+                </optional>
+                <optional>
+                    <ref name="vmeasurementNoteObject" />   	
+                </optional>
+                <optional>
+                    <ref name="authenticateObject" />
+                </optional>
+                <optional>
+                    <ref name="measurementObject" />
+                </optional>
+                <optional>
+                    <ref name="siteParamsObject" />
+                </optional>
+                <optional>
+                    <ref name="subsiteParamsObject" />
+                </optional>
+                <optional>
+                    <ref name="treeParamsObject" />
+                </optional>
+                <optional>
+                    <ref name="specimenParamsObject" />
+                </optional>
+                <optional>
+                    <ref name="radiusParamsObject" />
+                </optional>
+                <optional>
+                    <ref name="measurementParamsObject" />
+                </optional>
+                <optional>
+                    <ref name="searchParamsObject" />
+                </optional>
+            </interleave>   
         </element>
-</define>
+    </define>
 
-<define name="siteParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <!-- DICTIONARIES SECTION -->
+    <define name="dictionariesSection" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <interleave>
+            <element name="specimenTypeDictionary">
+                <zeroOrMore>
+                    <ref name="specimenTypeObject"/>
+                </zeroOrMore>
+            </element>
+            <element name="terminalRingDictionary">
+                <zeroOrMore>
+                    <ref name="terminalRingObject"/>
+                </zeroOrMore>
+            </element>
+            <element name="specimenQualityDictionary">
+                <zeroOrMore>
+                    <ref name="specimenQualityObject"/>
+                </zeroOrMore>
+            </element>
+            <element name="pithDictionary">
+                <zeroOrMore>
+                    <ref name="pithObject"/>
+                </zeroOrMore>
+            </element>
+            <element name="specimenContinuityDictionary">
+                <zeroOrMore>
+                    <ref name="specimenContinuityObject"/>
+                </zeroOrMore>
+            </element>
+            <element name="siteNoteDictionary">
+                <zeroOrMore>
+                    <ref name="siteNoteObject"/>
+                </zeroOrMore>
+            </element>
+            <element name="treeNoteDictionary">
+                <zeroOrMore>
+                    <ref name="treeNoteObject"/>
+                </zeroOrMore>
+            </element>
+            <element name="measurementNoteDictionary">
+                <zeroOrMore>
+                    <ref name="vmeasurementNoteObject"/>
+                </zeroOrMore>
+            </element>
+            <element name="readingNoteDictionary">
+                <zeroOrMore>
+                    <ref name="readingNoteObject"/>
+                </zeroOrMore>
+            </element>
+        </interleave>
+    </define>
+
+
+    <!-- DATA OBJECTS -->
+
+    <define name="siteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="site">
+            <optional>
+                <attribute name="id">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="code">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="name">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="latitude">
+                    <choice>
+                        <data type="double">
+                            <param name="maxInclusive">90</param>
+                            <param name="minInclusive">-90</param>
+                        </data>
+                        <empty />
+                    </choice>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="longitude">
+                    <choice>
+                        <data type="double">
+                            <param name="maxInclusive">180</param>
+                            <param name="minInclusive">-180</param>
+                        </data>
+                        <empty />
+                    </choice>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="createdTimeStamp">
+                    <text />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="lastModifiedTimeStamp">
+                    <text />
+                </attribute>
+            </optional>        
+            <interleave>
+                <zeroOrMore>
+                    <ref name="subSiteObject"/>
+                </zeroOrMore>
+                <zeroOrMore>
+                    <ref name="siteNoteObject"/>
+                </zeroOrMore>
+            </interleave>
+        </element>
+    </define> 
+
+    <define name="subSiteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="subSite">
+            <optional>
+                <attribute name="id">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="name">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="siteid">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="createdTimeStamp">
+                    <text />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="lastModifiedTimeStamp">
+                    <text />
+                </attribute>
+            </optional>
+            <zeroOrMore>
+                <ref name="treeObject"/>
+            </zeroOrMore>
+        </element>
+    </define>
+
+    <define name="treeObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="tree">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="label">
+                    <text />
+                </attribute>
+            </optional>
+            <optional> 
+                <attribute name="taxonID">
+                    <data type="positiveInteger" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="latitude">
+                    <choice>
+                        <data type="double">
+                            <param name="maxInclusive">90</param>
+                            <param name="minInclusive">-90</param>
+                        </data>
+                        <empty />
+                    </choice>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="longitude">
+                    <choice>
+                        <data type="double">
+                            <param name="maxInclusive">180</param>
+                            <param name="minInclusive">-180</param>
+                        </data>
+                        <empty />
+                    </choice>
+                </attribute>
+            </optional>
+            <optional> 
+                <attribute name="precision">
+                    <data type="positiveInteger" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="createdTimeStamp">
+                    <data type="dateTime" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="lastModifiedTimeStamp">
+                    <data type="dateTime" />
+                </attribute>
+            </optional>
+            <interleave>
+                <zeroOrMore>
+                    <ref name="specimenObject"/>
+                </zeroOrMore>
+                <zeroOrMore>
+                    <ref name="treeNoteObject" />
+                </zeroOrMore>
+            </interleave>
+        </element>
+    </define>
+
+
+    <define name="specimenObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="specimen">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger" />
+                </attribute>
+            </optional>
+            
+            <optional>
+                <attribute name="createdTimeStamp">
+                    <data type="dateTime" />
+                </attribute>
+            </optional>
+
+            <optional>
+                <attribute name="lastModifiedTimeStamp">
+                    <data type="dateTime" />
+                </attribute>
+            </optional>
+
+            <optional>
+                <attribute name="label">
+                    <text />
+                </attribute>
+            
+            
+                <attribute name="dateCollected">
+                    <data type="date" />
+                </attribute>
+            
+            
+                <attribute name="specimenTypeID">
+                    <data type="positiveInteger" />
+                </attribute>
+                    
+            
+                <attribute name="terminalRingID">
+                    <text />
+                </attribute>
+                    
+            
+                <attribute name="isTerminalRingVerified">
+                    <data type="boolean" />
+                </attribute>
+                 
+            
+                <attribute name="sapwoodCount">
+                    <data type="positiveInteger" />
+                </attribute>
+                    
+            
+                <attribute name="isSapwoodCountVerified">
+                    <data type="boolean" />
+                </attribute>
+             
+            
+                <attribute name="specimenQualityID">
+                    <text />
+                </attribute>
+                    
+            
+                <attribute name="isSpecimenQualityVerified">
+                    <data type="boolean" />
+                </attribute>
+             
+            
+                <attribute name="specimenContinuityID">
+                    <text />
+                </attribute>
+            
+            
+                <attribute name="isSpecimenContinuityVerified">
+                    <data type="boolean" />
+                </attribute>
+            
+            
+                <attribute name="pithID">
+                    <text />
+                </attribute>
+                    
+            
+                <attribute name="isPithVerified">
+                    <data type="boolean" />
+                </attribute>
+            
+            
+                <attribute name="unmeasuredPre">
+                    <data type="positiveInteger" />
+                </attribute>
+            
+            
+                <attribute name="isUnmeasuredPreVerified">
+                    <data type="boolean" />
+                </attribute>
+             
+            
+                <attribute name="unmeasuredPost">
+                    <data type="positiveInteger" />
+                </attribute>
+            
+            
+                <attribute name="isUnmeasuredPostVerified">
+                    <data type="boolean" />
+                </attribute>
+
+            </optional>
+
+
+            <optional>
+                <ref name="radiusObject" />
+            </optional>       
+        </element>
+    </define>
+
+    <define name="radiusObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="radius">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="label">
+                    <text />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="createdTimeStamp">
+                    <data type="dateTime" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="lastModifiedTimeStamp">
+                    <data type="dateTime" />
+                </attribute>
+            </optional>
+        </element>
+    </define>
+
+    <define name="siteNoteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="siteNote">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger"/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="isStandard">
+                    <data type="boolean" />
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="treeNoteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="treeNote">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger"/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="isStandard">
+                    <data type="boolean" />
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="vmeasurementNoteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="measurementNote">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger"/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="isStandard">
+                    <data type="boolean" />
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="readingNoteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="readingNote">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger"/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="isStandard">
+                    <data type="boolean" />
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="specimenTypeObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="specimenType">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger"/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="terminalRingObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="terminalRing">
+            <optional>
+                <attribute name="id">
+                    <text/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="specimenQualityObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="specimenQuality">
+            <optional>
+                <attribute name="id">
+                    <text/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="specimenContinuityObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="specimenContinuity">
+            <optional>
+                <attribute name="id">
+                    <text/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="pithObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="pith">
+            <optional>
+                <attribute name="id">
+                    <text/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="vmeasurementOpObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="operation">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger"/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="legacyCode">
+                    <text/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="authenticateObject"  datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="authenticate">
+            <optional>
+                <attribute name="username">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="password">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="hash">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="nonce">
+                    <text/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="localityObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="locality">
+            <optional>
+                <element name="centroid">
+                    <attribute name="latitude">
+                        <data type="double">
+                            <param name="maxInclusive">90</param>
+                            <param name="minInclusive">-90</param>
+                        </data>
+                    </attribute>
+                    <attribute name="longitude">
+                        <data type="double">
+                            <param name="maxInclusive">180</param>
+                            <param name="minInclusive">-180</param>
+                        </data>
+                    </attribute>
+                </element>
+            </optional>
+            <optional>
+                <element name="extent">
+                    <attribute name="xmin">
+                        <data type="double"/>
+                    </attribute>
+                    <attribute name="ymin">
+                        <data type="double"/>
+                    </attribute>
+                    <attribute name="xmax">
+                        <data type="double"/>
+                    </attribute>
+                    <attribute name="ymax">
+                        <data type="double"/>
+                    </attribute>
+                </element>
+            </optional>
+        </element>
+    </define>
+
+    <define name="siteParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="siteParams">
             <oneOrMore>
                 <element name="param">
@@ -768,11 +788,11 @@
                     </attribute>
                     <attribute name="operator">
                         <choice>
-                            <value>greaterthan</value>
-                            <value>lessthan</value>
-                            <value>equalto</value>
+                            <value>&gt;</value>
+                            <value>&lt;</value>
+                            <value>=</value>
                             <value>like</value>
-                            <value>notequalto</value>
+                            <value>!=</value>
                         </choice>
                     </attribute>
                     <attribute name="value">
@@ -781,9 +801,9 @@
                 </element>
             </oneOrMore>
         </element>
-</define>   
+    </define>   
 
-<define name="subsiteParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <define name="subsiteParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="subsiteParams">
             <oneOrMore>
                 <element name="param">
@@ -797,11 +817,11 @@
                     </attribute>
                     <attribute name="operator">
                         <choice>
-                            <value>greaterthan</value>
-                            <value>lessthan</value>
-                            <value>equalto</value>
+                            <value>&gt;</value>
+                            <value>&lt;</value>
+                            <value>=</value>
                             <value>like</value>
-                            <value>notequalto</value>
+                            <value>!=</value>
                         </choice>
                     </attribute>
                     <attribute name="value">
@@ -810,9 +830,9 @@
                 </element>
             </oneOrMore>
         </element>
-</define>    
+    </define>    
 
-<define name="treeParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <define name="treeParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="treeParams">
             <oneOrMore>
                 <element name="param">
@@ -827,11 +847,11 @@
                     </attribute>
                     <attribute name="operator">
                         <choice>
-                            <value>greaterthan</value>
-                            <value>lessthan</value>
-                            <value>equalto</value>
+                            <value>&gt;</value>
+                            <value>&lt;</value>
+                            <value>=</value>
                             <value>like</value>
-                            <value>notequalto</value>
+                            <value>!=</value>
                         </choice>
                     </attribute>
                     <attribute name="value">
@@ -840,10 +860,10 @@
                 </element>
             </oneOrMore>
         </element>
-</define>    
+    </define>    
 
 
-<define name="specimenParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <define name="specimenParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="specimenParams">
             <oneOrMore>
                 <element name="param">
@@ -878,11 +898,11 @@
                     </attribute>
                     <attribute name="operator">
                         <choice>
-                            <value>greaterthan</value>
-                            <value>lessthan</value>
-                            <value>equalto</value>
+                            <value>&gt;</value>
+                            <value>&lt;</value>
+                            <value>=</value>
                             <value>like</value>
-                            <value>notequalto</value>
+                            <value>!=</value>
                         </choice>
                     </attribute>
                     <attribute name="value">
@@ -891,20 +911,20 @@
                 </element>
             </oneOrMore>
         </element>
-</define>    
+    </define>    
 
-<define name="searchParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <define name="searchParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="searchParams">
             <attribute name="returnObject">
-                    <choice>
-                        <value>specimen</value>
-                        <value>site</value>
-                        <value>subsite</value>
-                        <value>tree</value>
-                        <value>radius</value>
-                        <value>measurement</value>
-                        <value>taxon</value>
-                    </choice>
+                <choice>
+                    <value>specimen</value>
+                    <value>site</value>
+                    <value>subsite</value>
+                    <value>tree</value>
+                    <value>radius</value>
+                    <value>measurement</value>
+                    <value>taxon</value>
+                </choice>
             </attribute>
             <optional>
                 <attribute name="limit">
@@ -922,9 +942,10 @@
                         <choice>
                             <value>siteid</value>
                             <value>sitename</value>
+                            <value>sitecode</value>
                             <value>sitecreated</value>
                             <value>sitelastmodified</value>
-                            
+
                             <value>subsiteid</value>
                             <value>subsitename</value>
                             <value>subsitecreated</value>
@@ -978,11 +999,11 @@
                     </attribute>
                     <attribute name="operator">
                         <choice>
-                            <value>greaterthan</value>
-                            <value>lessthan</value>
-                            <value>equalto</value>
+                            <value>&gt;</value>
+                            <value>&lt;</value>
+                            <value>=</value>
                             <value>like</value>
-                            <value>notequalto</value>
+                            <value>!=</value>
                         </choice>
                     </attribute>
                     <attribute name="value">
@@ -991,9 +1012,9 @@
                 </element>
             </oneOrMore>
         </element>
-</define>    
+    </define>    
 
-<define name="radiusParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <define name="radiusParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="radiusParams">
             <oneOrMore>
                 <element name="param">
@@ -1007,11 +1028,11 @@
                     </attribute>
                     <attribute name="operator">
                         <choice>
-                            <value>greaterthan</value>
-                            <value>lessthan</value>
-                            <value>equalto</value>
+                            <value>&gt;</value>
+                            <value>&lt;</value>
+                            <value>=</value>
                             <value>like</value>
-                            <value>notequalto</value>
+                            <value>!=</value>
                         </choice>
                     </attribute>
                     <attribute name="value">
@@ -1020,9 +1041,9 @@
                 </element>
             </oneOrMore>
         </element>
-</define>   
+    </define>   
 
-<define name="measurementParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <define name="measurementParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="measurementParams">
             <oneOrMore>
                 <element name="param">
@@ -1036,11 +1057,11 @@
                     </attribute>
                     <attribute name="operator">
                         <choice>
-                            <value>greaterthan</value>
-                            <value>lessthan</value>
-                            <value>equalto</value>
+                            <value>&gt;</value>
+                            <value>&lt;</value>
+                            <value>=</value>
                             <value>like</value>
-                            <value>notequalto</value>
+                            <value>!=</value>
                         </choice>
                     </attribute>
                     <attribute name="value">
@@ -1049,133 +1070,129 @@
                 </element>
             </oneOrMore>
         </element>
-</define>   
+    </define>   
 
-<define name="measurementObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <define name="measurementObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="measurement">
-                <optional>
-                        <attribute name="id">
-                                <data type="positiveInteger" />
-                        </attribute>
-                </optional>
-                <optional>
-                        <attribute name="radiusID">
-                                <data type="integer">
-                                    <param name="minInclusive">0</param>
-                                </data>
-                        </attribute>
-                </optional>
-                <optional>
-                        <attribute name="isReconciled">
-                                <data type="boolean">
-                                </data>
-                        </attribute>
-                </optional>
-                <optional>
-                        <attribute name="startYear">
-                                <data type="integer">
-                                </data>
-                        </attribute>
-                </optional>
-                <optional>
-                        <attribute name="isLegacyCleaned">
-                                <data type="boolean">
-                                </data>
-                        </attribute>
-                </optional>
-                <optional>
-                        <attribute name="measuredBy">
-                            <text/>
-                        </attribute>
-                </optional>
-                <optional>
-                        <attribute name="datingTypeID">
-                            <text/>
-                        </attribute>
-                </optional>
-                <optional>
-                        <attribute name="datingErrorPositive">
-                                <data type="positiveInteger" />
-                        </attribute>
-                </optional>
-                <optional>
-                        <attribute name="datingErrorNegative">
-                                <data type="positiveInteger" />
-                        </attribute>
-                </optional>
-                <optional>
-                        <attribute name="name">
-                            <text/>
-                        </attribute>
-                </optional>
-                <optional>
-                        <attribute name="description">
-                            <text/>
-                        </attribute>
-                </optional>
-                <optional>
-                        <attribute name="isPublished">
-                                <data type="boolean">
-                                </data>
-                        </attribute>
-                </optional>
-                
-                <optional>
-                        <element name="readings">
-        			<zeroOrMore>
-        				<element name="value">
-        					<data type="integer">
-        					</data>
-        					<optional>
-        							<attribute name="year">
-        								<data type="integer">
-        								</data>
-        							</attribute>
-                                                </optional>
-        					<optional>
-        							<attribute name="wjInc">
-        								<data type="integer">
-        								</data>
-        							</attribute>
-                                                </optional>
-        					<optional>
-        							<attribute name="wjDec">
-        								<data type="integer">
-        								</data>
-        							</attribute>        	
-                                                </optional>
-        					<optional>
-        							<attribute name="count">
-        								<data type="integer">
-        								</data>
-        							</attribute>        													
-        					</optional>
-        				</element>
-                                </zeroOrMore>
-                        </element>
-        	</optional>
-        		
-        		<optional>
-        			<element name="references">
-                                    <optional>
-                                            <attribute name="operationID">
-                                                    <data type="positiveInteger">
-                                                    </data>
-                                            </attribute>
-                                    </optional>
-                                    <optional>
-                                            <attribute name="operation">
-                                                <text/>
-                                            </attribute>
-                                    </optional>
-        					<zeroOrMore>
-        						<ref name="measurementObject"/> 
-        					</zeroOrMore> 
-        			</element>
-        		</optional>
-        		
-        </element>
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="radiusID">
+                    <data type="integer">
+                        <param name="minInclusive">0</param>
+                    </data>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="isReconciled">
+                    <data type="boolean">
+                    </data>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="startYear">
+                    <data type="integer">
+                    </data>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="isLegacyCleaned">
+                    <data type="boolean">
+                    </data>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="measuredBy">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="measuredByID">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="datingTypeID">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="datingErrorPositive">
+                    <data type="positiveInteger" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="datingErrorNegative">
+                    <data type="positiveInteger" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="name">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="description">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="isPublished">
+                    <data type="boolean" />
+                </attribute>
+            </optional>
 
-</define>
+            <optional>
+                <element name="readings">
+                    <zeroOrMore>
+                        <element name="value">
+                            <data type="integer" />
+                            <optional>
+                                <attribute name="year">
+                                    <data type="integer" />
+                                </attribute>
+                            </optional>
+                            <optional>
+                                <attribute name="wjInc">
+                                    <data type="integer" />
+                                </attribute>
+                            </optional>
+                            <optional>
+                                <attribute name="wjDec">
+                                    <data type="integer" />
+                                </attribute>
+                            </optional>
+                            <optional>
+                                <attribute name="count">
+                                    <data type="integer" />
+                                </attribute>
+                            </optional>
+                        </element>
+                    </zeroOrMore>
+                </element>
+            </optional>
+
+            <optional>
+                <element name="references">
+                    <optional>
+                        <attribute name="operationID">
+                            <data type="positiveInteger" />                           
+                        </attribute>
+                    </optional>
+                    <optional>
+                        <attribute name="operation">
+                            <text/>
+                        </attribute>
+                    </optional>
+                    <zeroOrMore>
+                        <ref name="measurementObject"/> 
+                    </zeroOrMore> 
+                </element>
+            </optional>
+        </element>
+    </define>
 
 </grammar>

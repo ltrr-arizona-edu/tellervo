@@ -366,7 +366,6 @@ class tree
                     while ($row = pg_fetch_array($result))
                     {
                         $this->id=$row['treeid'];   
-                        $this->precision=$row['precision'];   
                         $this->createdTimeStamp=$row['createdtimestamp'];   
                         $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
                     }

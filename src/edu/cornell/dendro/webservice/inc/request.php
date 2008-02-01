@@ -46,18 +46,20 @@ class request
     var $longitude                  = NULL;
     var $precision                  = NULL;
     var $islivetree                 = NULL;
-    var $collectedday               = NULL;
-    var $collectedmonth             = NULL;
-    var $collectedyear              = NULL;
-    var $specimentype               = NULL;
-    var $terminalring               = NULL;
+    //var $collectedday               = NULL;
+    //var $collectedmonth             = NULL;
+    //var $collectedyear              = NULL;
+    var $datecollected              = NULL;
+    var $specimentypeid             = NULL;
+    var $terminalringid             = NULL;
     var $isterminalringverified     = NULL;
     var $sapwoodcount               = NULL;
     var $issapwoodcountverified     = NULL;
-    var $specimenquality            = NULL;
+    var $specimenqualityid          = NULL;
     var $isspecimenqualityverified  = NULL;
-    var $specimencontinuity         = NULL;
-    var $pith                       = NULL;
+    var $specimencontinuityid       = NULL;
+    var $isspecimencontinuityverified  = NULL;
+    var $pithid                     = NULL;
     var $ispithverified             = NULL;
     var $unmeasuredpre              = NULL;
     var $unmeasuredpost             = NULL;
@@ -352,25 +354,27 @@ class specimenRequest extends request
         {
             foreach ($this->simplexml->xpath('request//specimen[1]') as $specimen)
             {
-                if($specimen['id'])                        $this->id                           = (int)                  $specimen['id'];
-                if($specimen['label'])                     $this->label                        = addslashes(            $specimen['label']);
-                if($specimen['dateCollected'])             $this->collectedday                 = (int)                  date('j', strtotime($specimen['treeid']));
-                if($specimen['dateCollected'])             $this->collectedmonth               = (int)                  date('n', strtotime($specimen['treeid']));
-                if($specimen['dateCollected'])             $this->collectedyear                = (int)                  date('Y', strtotime($specimen['treeid']));
-                if($specimen['specimenType'])              $this->specimentype                 = addslashes(            $specimen['specimenType']);
-                if($specimen['terminalRing'])              $this->terminalring                 = addslashes(            $specimen['terminalRing']);
-                if($specimen['sapwoodCount'])              $this->sapwoodcount                 = (int)                  $specimen['sapwoodCount'];
-                if($specimen['specimenQuality'])           $this->specimenquality              = addslashes(            $specimen['specimenQuality']);
-                if($specimen['specimenContinuity'])        $this->specimenContinuity           = addslashes(            $specimen['specimenContinuity']);
-                if($specimen['pith'])                      $this->pith                         = addslashes(            $specimen['pith']);
-                if($specimen['unmeasuredPre'])             $this->unmeasuredPre                = (int)                  $specimen['unmeasurePre'];
-                if($specimen['unmeasuredPost'])            $this->unmeasuredPost               = (int)                  $specimen['unmeasurePost'];
-                if($specimen['isTerminalRingVerified'])    $this->isterminalringverified       = fromStringtoPHPBool(   $specimen['isTerminalRingVerified']);
-                if($specimen['isSapwoodCountVerified'])    $this->issapwoodcountverified       = fromStringtoPHPBool(   $specimen['isSapwoodCountVerified']);
-                if($specimen['isSpecimenQualityVerified']) $this->isspecimenqualityverified    = fromStringtoPHPBool(   $specimen['isSpecimenQualityVerified']);
-                if($specimen['isPithVerified'])            $this->ispithverified               = fromStringtoPHPBool(   $specimen['isPithVerified']);
-                if($specimen['isUnmeasuredPreVerified'])   $this->isunmeasuredPreVerified      = fromStringtoPHPBool(   $specimen['isUnmeasuredPreVerified']);
-                if($specimen['isUnmeasuredPostVerified'])  $this->isunmeasuredPostVerified     = fromStringtoPHPBool(   $specimen['isUnmeasuredPostVerified']);
+                if($specimen['id'])                             $this->id                               = (int)                  $specimen['id'];
+                if($specimen['label'])                          $this->label                            = addslashes(            $specimen['label']);
+                //if($specimen['dateCollected'])                $this->collectedday                     = (int)                  date('j', strtotime($specimen['treeid']));
+                //if($specimen['dateCollected'])                $this->collectedmonth                   = (int)                  date('n', strtotime($specimen['treeid']));
+                //if($specimen['dateCollected'])                $this->collectedyear                    = (int)                  date('Y', strtotime($specimen['treeid']));
+                if($specimen['dateCollected'])                  $this->datecollected                    = addslashes(            $specimen['dateCollected']);
+                if($specimen['specimenTypeID'])                 $this->specimentypeid                   = (int)                  $specimen['specimenTypeID'];
+                if($specimen['terminalRingID'])                 $this->terminalringid                   = addslashes(            $specimen['terminalRingID']);
+                if($specimen['sapwoodCount'])                   $this->sapwoodcount                     = (int)                  $specimen['sapwoodCount'];
+                if($specimen['specimenQualityID'])              $this->specimenqualityid                = addslashes(            $specimen['specimenQualityID']);
+                if($specimen['specimenContinuityID'])           $this->specimencontinuityid             = addslashes(            $specimen['specimenContinuityID']);
+                if($specimen['pithID'])                         $this->pithid                           = addslashes(            $specimen['pithID']);
+                if($specimen['unmeasuredPre'])                  $this->unmeasuredpre                    = (int)                  $specimen['unmeasuredPre'];
+                if($specimen['unmeasuredPost'])                 $this->unmeasuredpost                   = (int)                  $specimen['unmeasuredPost'];
+                if($specimen['isTerminalRingVerified'])         $this->isterminalringverified           = fromStringtoPHPBool(   $specimen['isTerminalRingVerified']);
+                if($specimen['isSapwoodCountVerified'])         $this->issapwoodcountverified           = fromStringtoPHPBool(   $specimen['isSapwoodCountVerified']);
+                if($specimen['isSpecimenQualityVerified'])      $this->isspecimenqualityverified        = fromStringtoPHPBool(   $specimen['isSpecimenQualityVerified']);
+                if($specimen['isSpecimenContinuityVerified'])   $this->isspecimencontinuityverified     = fromStringtoPHPBool(   $specimen['isSpecimenContinuityVerified']);
+                if($specimen['isPithVerified'])                 $this->ispithverified                   = fromStringtoPHPBool(   $specimen['isPithVerified']);
+                if($specimen['isUnmeasuredPreVerified'])        $this->isunmeasuredpreverified          = fromStringtoPHPBool(   $specimen['isUnmeasuredPreVerified']);
+                if($specimen['isUnmeasuredPostVerified'])       $this->isunmeasuredpostverified         = fromStringtoPHPBool(   $specimen['isUnmeasuredPostVerified']);
             }
 
             foreach ($this->simplexml->xpath('request/tree[1]') as $tree)
