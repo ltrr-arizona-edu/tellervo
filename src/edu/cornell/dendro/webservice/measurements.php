@@ -161,13 +161,11 @@ switch($myRequest->mode)
 
     case "failed":
         $myMetaHeader->setRequestType("help");
-        break;
 
     default:
         $myMetaHeader->setRequestType("help");
         // Output the resulting XML
-        $xmldata ="Details of how to use this web service will be added here later!";
-        writeHelpOutput($myMetaHeader,$xmldata);
+        writeHelpOutput($myMetaHeader);
         die;
 }
 

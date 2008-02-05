@@ -12,6 +12,7 @@ header('Content-Type: application/xhtml+xml; charset=utf-8');
 require_once("inc/dbsetup.php");
 require_once("config.php");
 require_once("inc/meta.php");
+require_once("inc/errors.php");
 require_once("inc/auth.php");
 require_once("inc/request.php");
 require_once("inc/output.php");
@@ -20,7 +21,6 @@ require_once("inc/treeNote.php");
 
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
-$myMetaHeader   = new meta();
 $myRequest      = new treeNoteRequest($myMetaHeader, $myAuth);
 
 // Set user details
@@ -98,9 +98,9 @@ switch($myRequest->mode)
         if($myAuth->isLoggedIn())
         {
             // Set default value if not specified
-            if($myRequest->isstandard == NULL) $myRequest->isstandard = FALSE;
-            if($theNote == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'note' field is required.");
-            if(!(gettype($myRequest->isstandard)=="boolean")) $myMetaHeader->setMessage("901", "Invalid parameter - 'isstandard' must be a boolean.");
+            if($myRequest->isstandard == NULL)                  $myRequest->isstandard = FALSE;
+            if($myRequest->note == NULL)                        $myMetaHeader->setMessage("902", "Missing parameter - 'note' field is required.");
+            if(!(gettype($myRequest->isstandard)=="boolean"))   $myMetaHeader->setMessage("901", "Invalid parameter - 'isstandard' must be a boolean.");
             break;
         }
         else
@@ -141,13 +141,11 @@ switch($myRequest->mode)
 
     case "failed":
         $myMetaHeader->setRequestType("help");
-        break;
 
     default:
         $myMetaHeader->setRequestType("help");
         // Output the resulting XML
-        $xmldata ="Details of how to use this web service will be added here later!";
-        writeHelpOutput($myMetaHeader,$xmldata);
+        writeHelpOutput($myMetaHeader);
         die;
 }
 
@@ -156,21 +154,22 @@ switch($myRequest->mode)
 // PERFORM QUERY
 // *************
 
+$xmldata = "";
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
 {
     // Create treeNote object 
-    $mySiteNote = new treeNote();
-    $parentTagBegin = $mySiteNote->getParentTagBegin();
-    $parentTagEnd = $mySiteNote->getParentTagEnd();
+    $myTreeNote = new treeNote();
+    $parentTagBegin = $myTreeNote->getParentTagBegin();
+    $parentTagEnd = $myTreeNote->getParentTagEnd();
 
     // Set existing parameters if updating or deleting from database
     if($myRequest->mode=='update' || $myRequest->mode=='delete' || $myRequest->mode=='assign' || $myRequest->mode=='unassign') 
     {
-        $success = $mySiteNote->setParamsFromDB($myRequest->id);
+        $success = $myTreeNote->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
-            $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
+            $myMetaHeader->setMessage($myTreeNote->getLastErrorCode(), $myTreeNote->getLastErrorMessage());
         }
     }
 
@@ -183,18 +182,18 @@ if(!($myMetaHeader->status == "Error"))
         }
         else
         {
-            if (isset($theNote)) $mySiteNote->setNote($theNote);
-            if (isset($myRequest->isstandard)) $mySiteNote->setIsStandard($myRequest->isstandard);
+            if (isset($myRequest->note))        $myTreeNote->setNote($myRequest->note);
+            if (isset($myRequest->isstandard))  $myTreeNote->setIsStandard($myRequest->isstandard);
 
             // Write to object to database
-            $success = $mySiteNote->writeToDB();
+            $success = $myTreeNote->writeToDB();
             if($success)
             {
-                $xmldata=$mySiteNote->asXML();
+                $xmldata=$myTreeNote->asXML();
             }
             else
             {
-                $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
+                $myMetaHeader->setMessage($myTreeNote->getLastErrorCode(), $myTreeNote->getLastErrorMessage());
             }
         }
     }
@@ -221,16 +220,16 @@ if(!($myMetaHeader->status == "Error"))
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    $mySiteNote = new treeNote();
-                    $success = $mySiteNote->setParamsFromDB($row['treenoteid']);
+                    $myTreeNote = new treeNote();
+                    $success = $myTreeNote->setParamsFromDB($row['treenoteid']);
 
                     if($success)
                     {
-                        $xmldata.=$mySiteNote->asXML();
+                        $xmldata.=$myTreeNote->asXML();
                     }
                     else
                     {
-                        $myMetaHeader->setMessage($mySiteNote->getLastErrorCode, $mySiteNote->getLastErrorMessage);
+                        $myMetaHeader->setMessage($myTreeNote->getLastErrorCode, $myTreeNote->getLastErrorMessage);
                     }
                 }
             }
@@ -242,31 +241,70 @@ if(!($myMetaHeader->status == "Error"))
         }
     }
     
+    
     if($myRequest->mode=='assign')
     {
         if($myAuth->treePermission($myRequest->treeid, "update"))   
         {
-            $mySiteNote->assignToTree($myRequest->treeid);     
+            $success = $myTreeNote->assignToTree($myRequest->treeid);     
+            if($success)
+            {
+                $xmldata=$myTreeNote->asXML();
+            }
+            else
+            {
+                trigger_error($myTreeNote->getLastErrorCode().$myTreeNote->getLastErrorMessage());
+            }
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on treeid=".$myRequest->treeid);
+            trigger_error("103"."Permission denied on treeid=".$myRequest->treeid);
         }
-
     }
     
     if($myRequest->mode=='unassign')
     {
         if($myAuth->treePermission($myRequest->treeid, "update"))   
         {
-            $mySiteNote->unassignToTree($myRequest->treeid);     
+            $success = $myTreeNote->unassignToTree($myRequest->treeid);     
+            if($success)
+            {
+                $xmldata=$myTreeNote->asXML();
+            }
+            else
+            {
+                trigger_error($myTreeNote->getLastErrorCode().$myTreeNote->getLastErrorMessage());
+            }
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on treeid=".$myRequest->treeid);
+            trigger_error("103"."Permission denied on treeid=".$myRequest->treeid);
+        }
+    }
+
+    if($myRequest->mode=='delete')
+    {
+        
+        if($myAuth->isAdmin()) 
+        {
+            // Write to Database
+            $success = $myTreeNote->deleteFromDB();
+            if($success)
+            {
+                $xmldata=$myTreeNote->asXML();
+            }
+            else
+            {
+                trigger_error($myTreeNote->getLastErrorCode().$myTreeNote->getLastErrorMessage());
+            }
+        }
+        else
+        {
+            trigger_error("103"."Permission denied on treenoteid ".$myRequest->id);
         }
 
     }
+
 }
 
 // ***********

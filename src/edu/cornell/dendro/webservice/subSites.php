@@ -12,6 +12,7 @@ header('Content-Type: application/xhtml+xml; charset=utf-8');
 require_once("inc/dbsetup.php");
 require_once("config.php");
 require_once("inc/meta.php");
+require_once("inc/errors.php");
 require_once("inc/auth.php");
 require_once("inc/request.php");
 require_once("inc/output.php");
@@ -21,7 +22,6 @@ require_once("inc/site.php");
 
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
-$myMetaHeader   = new meta();
 $myRequest      = new subSiteRequest($myMetaHeader, $myAuth);
 
 // Set user details
@@ -104,13 +104,11 @@ switch($myRequest->mode)
 
     case "failed":
         $myMetaHeader->setRequestType("help");
-        break;
 
     default:
         $myMetaHeader->setRequestType("help");
         // Output the resulting XML
-        $xmldata ="Details of how to use this web service will be added here later!";
-        writeHelpOutput($myMetaHeader,$xmldata);
+        writeHelpOutput($myMetaHeader);
         die;
 }
 
@@ -233,7 +231,7 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $xmldata.= $parentTagBegin."\n";
+                $xmldata = $parentTagBegin."\n";
                 $sql="select * from tblsubsite order by subsiteid";
                 // Run SQL
                 $result = pg_query($dbconn, $sql);

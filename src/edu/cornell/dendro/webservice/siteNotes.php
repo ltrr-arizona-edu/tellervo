@@ -12,6 +12,7 @@ header('Content-Type: application/xhtml+xml; charset=utf-8');
 require_once("inc/dbsetup.php");
 require_once("config.php");
 require_once("inc/meta.php");
+require_once("inc/errors.php");
 require_once("inc/auth.php");
 require_once("inc/request.php");
 require_once("inc/output.php");
@@ -20,7 +21,6 @@ require_once("inc/siteNote.php");
 
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
-$myMetaHeader   = new meta();
 $myRequest      = new siteNoteRequest($myMetaHeader, $myAuth);
 
 // Set user details
@@ -76,7 +76,7 @@ switch($myRequest->mode)
             $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
-
+    
     case "delete":
         $myMetaHeader->setRequestType("delete");
         if($myAuth->isLoggedIn())
@@ -96,9 +96,9 @@ switch($myRequest->mode)
         if($myAuth->isLoggedIn())
         {
             // Set default value if not specified
-            if($myRequest->isstandard == NULL) $myRequest->isstandard = FALSE;
-            if($theNote == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'note' field is required.");
-            if(!(gettype($myRequest->isstandard)=="boolean")) $myMetaHeader->setMessage("901", "Invalid parameter - 'isstandard' must be a boolean.");
+            if($myRequest->isstandard==NULL)                    $myRequest->isstandard = FALSE;
+            if($myRequest->note==NULL)                          $myMetaHeader->setMessage("902", "Missing parameter - 'note' field is required.");
+            if(!(gettype($myRequest->isstandard)=="boolean"))   $myMetaHeader->setMessage("901", "Invalid parameter - 'isstandard' must be a boolean.");
             break;
         }
         else
@@ -139,21 +139,19 @@ switch($myRequest->mode)
 
     case "failed":
         $myMetaHeader->setRequestType("help");
-        break;
 
     default:
         $myMetaHeader->setRequestType("help");
         // Output the resulting XML
-        $xmldata ="Details of how to use this web service will be added here later!";
-        writeHelpOutput($myMetaHeader,$xmldata);
+        writeHelpOutput($myMetaHeader);
         die;
 }
-
 
 // *************
 // PERFORM QUERY
 // *************
 
+$xmldata="";
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
 {
@@ -163,7 +161,7 @@ if(!($myMetaHeader->status == "Error"))
     $parentTagEnd = $mySiteNote->getParentTagEnd();
 
     // Set existing parameters if updating or deleting from database
-    if($myRequest->mode=='update' || $myRequest->mode=='delete' || $myRequest->mode=='assign' || $myRequest->mode=='unassign') 
+    if(($myRequest->mode=='update') || ($myRequest->mode=='delete') || ($myRequest->mode=='assign') || ($myRequest->mode=='unassign')) 
     {
         $success = $mySiteNote->setParamsFromDB($myRequest->id);
         if(!$success) 
@@ -181,8 +179,8 @@ if(!($myMetaHeader->status == "Error"))
         }
         else
         {
-            if (isset($theNote)) $mySiteNote->setNote($theNote);
-            if (isset($myRequest->isstandard)) $mySiteNote->setIsStandard($myRequest->isstandard);
+            if (isset($myRequest->note))        $mySiteNote->setNote($myRequest->note);
+            if (isset($myRequest->isstandard))  $mySiteNote->setIsStandard($myRequest->isstandard);
 
             // Write to object to database
             $success = $mySiteNote->writeToDB();
@@ -213,22 +211,29 @@ if(!($myMetaHeader->status == "Error"))
                 $sql="select * from tlkpsitenote where sitenoteid=".$myRequest->id." order by sitenoteid";
             }
 
-            if($sql)
+            if(isset($sql))
             {
                 // Run SQL
                 $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
+                if(pg_num_rows($result)==0)
                 {
-                    $mySiteNote = new siteNote();
-                    $success = $mySiteNote->setParamsFromDB($row['sitenoteid']);
+                    $myMetaHeader->setMessage("903", "No records match the specified id");
+                }
+                else
+                {
+                    while ($row = pg_fetch_array($result))
+                    {
+                        $mySiteNote = new siteNote();
+                        $success = $mySiteNote->setParamsFromDB($row['sitenoteid']);
 
-                    if($success)
-                    {
-                        $xmldata.=$mySiteNote->asXML();
-                    }
-                    else
-                    {
-                        $myMetaHeader->setMessage($mySiteNote->getLastErrorCode, $mySiteNote->getLastErrorMessage);
+                        if($success)
+                        {
+                            $xmldata.=$mySiteNote->asXML();
+                        }
+                        else
+                        {
+                            $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
+                        }
                     }
                 }
             }
@@ -244,24 +249,61 @@ if(!($myMetaHeader->status == "Error"))
     {
         if($myAuth->sitePermission($myRequest->siteid, "update"))   
         {
-            $mySiteNote->assignToSite($myRequest->siteid);     
+            $success = $mySiteNote->assignToSite($myRequest->siteid);     
+            if($success)
+            {
+                $xmldata.=$mySiteNote->asXML();
+            }
+            else
+            {
+                trigger_error($mySiteNote->getLastErrorCode().$mySiteNote->getLastErrorMessage());
+            }
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on siteid=".$myRequest->siteid);
+            trigger_error("103"."Permission denied on siteid=".$myRequest->siteid);
         }
-
     }
     
     if($myRequest->mode=='unassign')
     {
         if($myAuth->sitePermission($myRequest->siteid, "update"))   
         {
-            $mySiteNote->unassignToSite($myRequest->siteid);     
+            $success = $mySiteNote->unassignToSite($myRequest->siteid);     
+            if($success)
+            {
+                $xmldata.=$mySiteNote->asXML();
+            }
+            else
+            {
+                trigger_error($mySiteNote->getLastErrorCode().$mySiteNote->getLastErrorMessage());
+            }
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on siteid=".$myRequest->siteid);
+            trigger_error("103"."Permission denied on siteid=".$myRequest->siteid);
+        }
+    }
+
+    if($myRequest->mode=='delete')
+    {
+        
+        if($myAuth->isAdmin()) 
+        {
+            // Write to Database
+            $success = $mySiteNote->deleteFromDB();
+            if($success)
+            {
+                $xmldata=$mySiteNote->asXML();
+            }
+            else
+            {
+                trigger_error($mySiteNote->getLastErrorCode().$mySiteNote->getLastErrorMessage());
+            }
+        }
+        else
+        {
+            trigger_error("103"."Permission denied on sitenoteid ".$myRequest->id);
         }
 
     }

@@ -15,6 +15,8 @@ $debugFlag = false;
 $wsversion = "0.1.".exec(svnversion);
 $rngSchema = "/var/www/webservice/schemas/corina.rng";
 
+$domain = "dendro.cornell.edu";
+$wikiManualFolder = "corina-manual";
 
 
 ?>

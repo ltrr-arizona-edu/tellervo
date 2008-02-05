@@ -12,6 +12,7 @@ header('Content-Type: application/xhtml+xml; charset=utf-8');
 require_once("inc/dbsetup.php");
 require_once("config.php");
 require_once("inc/meta.php");
+require_once("inc/errors.php");
 require_once("inc/auth.php");
 require_once("inc/request.php");
 require_once("inc/output.php");
@@ -20,7 +21,6 @@ require_once("inc/site.php");
 
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
-$myMetaHeader   = new meta();
 $myRequest      = new siteRequest($myMetaHeader, $myAuth);
 
 // Set user details
@@ -112,7 +112,7 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("help");
         // Output the resulting XML
         $xmldata ="Details of how to use this web service will be added here later!";
-        writeHelpOutput($myMetaHeader,$xmldata);
+        writeHelpOutput($myMetaHeader);
         die;
 }
 
@@ -188,7 +188,7 @@ if(!($myMetaHeader->status == "Error"))
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on siteid". $myRequest->id);
+            $myMetaHeader->setMessage("103", "Permission denied on siteid ". $myRequest->id);
         }
     }
 
@@ -199,6 +199,7 @@ if(!($myMetaHeader->status == "Error"))
         {
             // DB connection ok
             // Build filter conditions
+            $filter = "";
             if(isset($myRequest->id))
             {
                 $filter="where siteid=".$myRequest->id;
@@ -239,11 +240,11 @@ if(!($myMetaHeader->status == "Error"))
                         $myMetaHeader->setTiming("Start XML build");
                         if ($myRequest->format=='kml')
                         {
-                            $xmldata.= $mySite->asKML();      
+                            $xmldata = $mySite->asKML();      
                         }
                         else
                         {
-                            $xmldata.= $mySite->asXML();
+                            $xmldata = $mySite->asXML();
                         }
                         $myMetaHeader->setTiming("End XML build");
                     }

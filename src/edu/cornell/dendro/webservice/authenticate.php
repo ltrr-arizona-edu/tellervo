@@ -76,14 +76,12 @@ switch($myRequest->mode)
 
     case "failed":
         $myMetaHeader->setRequestType("help");
-        break;
 
     default:
         $myMetaHeader->setRequestType("help");
         // Output the resulting XML
-        //$xmldata ="Details of how to use this web service will be added here later!";
-        include("docs/authenticate.php");
-        writeHelpOutput($myMetaHeader,$xmldata);
+        $xmlstring = getHelpDocbook('Authenticate');
+        writeHelpOutput($myMetaHeader,$out);
         die;
 }
 
