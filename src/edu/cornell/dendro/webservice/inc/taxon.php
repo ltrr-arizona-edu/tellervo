@@ -74,7 +74,7 @@ class taxon
                 $this->label = $row['label'];
                 $this->colID = $row['colid'];
                 $this->colParentID = $row['colparentid'];
-                $this->taxonRank = $row['taxonrankid'];
+                $this->taxonRank = $row['taxonrank'];
             }
         }
         else

@@ -90,7 +90,7 @@ class request
     {
         $this->metaHeader = $metaHeader;
         $this->auth = $auth;
-        $this->xmlrequest = stripslashes($_POST['xmlrequest']);
+        if(isset($_POST['xmlrequest'])) $this->xmlrequest = stripslashes($_POST['xmlrequest']);
     }
 
     function readXML()
@@ -98,33 +98,41 @@ class request
         global $rngSchema;
         $origErrorLevel = error_reporting(E_ERROR);
         // Extract parameters from XML post
-        $xmlstring = $this->xmlrequest;
-        $doc = new DomDocument;
-        $doc->loadXML($xmlstring);
-        if($doc->relaxNGValidate($rngSchema))
+        
+        if(isset($this->xmlrequest))
         {
-
-            $this->simplexml = simplexml_load_string($xmlstring);
-            if($this->simplexml)
+            $xmlstring = $this->xmlrequest;
+            $doc = new DomDocument;
+            $doc->loadXML($xmlstring);
+            if($doc->relaxNGValidate($rngSchema))
             {
-                $this->mode= strtolower($this->simplexml->request['type']);
-                error_reporting($origErrorLevel);
-                return true;
+
+                $this->simplexml = simplexml_load_string($xmlstring);
+                if($this->simplexml)
+                {
+                    $this->mode= strtolower($this->simplexml->request['type']);
+                    error_reporting($origErrorLevel);
+                    return true;
+                }
+                else
+                {
+                    $this->setXMLErrors($myMetaHeader);
+                    error_reporting($origErrorLevel);
+                    return false;
+                }
             }
             else
             {
-                $this->setXMLErrors($myMetaHeader);
+                $myErrorObj = error_get_last();
+                $myError = explode(":", $myErrorObj['message']);
+                $this->metaHeader->setMessage("905", "XML does not validate against schema. ".end($myError).".");
                 error_reporting($origErrorLevel);
                 return false;
             }
         }
         else
         {
-            $myErrorObj = error_get_last();
-            $myError = explode(":", $myErrorObj['message']);
-            $this->metaHeader->setMessage("905", "XML does not validate against schema. ".end($myError).".");
-            error_reporting($origErrorLevel);
-            return false;
+            $this->metaHeader->setMessage("905", "No XML supplied.");
         }
     }
 
@@ -176,8 +184,8 @@ class request
     function getGetParams()
     {
         // Extract Parameters from GET requests
-        $this->mode   = strtolower(addslashes($_GET['mode']));
-        $this->format = strtolower(addslashes($_GET['format']));
+        if(isset($_GET['mode']))   $this->mode   = strtolower(addslashes($_GET['mode']));
+        if(isset($_GET['format'])) $this->format = strtolower(addslashes($_GET['format']));
         
         // Loggin specific 
         if(isset($_POST['mode'])) $this->mode = addslashes($_POST['mode']);
@@ -246,9 +254,6 @@ class request
                 array_push($this->readingsArray, array('reading' => $reading, 'wkinc' => NULL , 'wjdec' => NULL, 'count' => '1'));
             }
         }
-        
-
-
         $this->logRequest();
     }
 
@@ -414,10 +419,6 @@ class radiusRequest extends request
 
 class siteNoteRequest extends request
 {
-    var $id         = NULL;
-    var $siteid     = NULL;
-    var $note       = NULL;
-    var $isstandard = NULL;
 
     function siteNoteRequest($metaHeader, $auth)
     {
@@ -429,13 +430,13 @@ class siteNoteRequest extends request
         $this->logRequest();
         if($this->readXML())
         {
-            foreach($this->simplexml->xpath('request') as $request)
+            foreach($this->simplexml->xpath('request//siteNote[1]') as $siteNote)
             {
-                if($request->siteNote['id'])            $this->id           = (int)         $request->siteNote['id'];
-                if($request->siteNote)                  $this->note         = addslashes(   $request->siteNote);
-                if($request->siteNote['isStandard'])    $this->isstandard   = fromStringtoPHPBool( $request->siteNote['isStandard']);
+                if(isset($siteNote['id']))            $this->id           = (int)                 $siteNote['id'];
+                if(isset($siteNote))                  $this->note         = addslashes(           $siteNote);
+                if(isset($siteNote['isStandard']))    $this->isstandard   = fromStringtoPHPBool(  $siteNote['isStandard']);
             }
-
+            
             foreach($this->simplexml->xpath('request//site[1]') as $site)
             {
                 if($site['id'])               $this->siteid       = (int)         $site['id'];
@@ -461,11 +462,11 @@ class treeNoteRequest extends request
         $this->logRequest();
         if($this->readXML())
         {
-            foreach($this->simplexml->xpath('request') as $request)
+            foreach($this->simplexml->xpath('request//treeNote') as $treeNote)
             {
-                if($request->treeNote['id'])            $this->id           = (int)         $request->treeNote['id'];
-                if($request->treeNote)                  $this->note         = addslashes(   $request->treeNote);
-                if($request->treeNote['isStandard'])    $this->isstandard   = fromStringtoPHPBool( $request->treeNote['isStandard']);
+                if($treeNote['id'])            $this->id           = (int)                $treeNote['id'];
+                if($treeNote)                  $this->note         = addslashes(          $treeNote);
+                if($treeNote['isStandard'])    $this->isstandard   = fromStringtoPHPBool( $treeNote['isStandard']);
             }
 
             foreach($this->simplexml->xpath('request//tree[1]') as $tree)

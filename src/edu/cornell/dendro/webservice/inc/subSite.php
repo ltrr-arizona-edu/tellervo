@@ -136,7 +136,7 @@ class subSite
             if(($mode=="all") || ($mode=="begin"))
             {
                 // Only return XML when there are no errors.
-                $xml.= "<subSite ";
+                $xml = "<subSite ";
                 $xml.= "id=\"".$this->id."\" ";
                 $xml.= "name=\"".$this->name."\" ";
                 $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";

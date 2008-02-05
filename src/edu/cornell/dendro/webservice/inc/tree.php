@@ -191,7 +191,7 @@ class tree
                 $myTaxon->setParamsFromDB($this->taxonID);
 
                 // Only return XML when there are no errors.
-                $xml.= "<tree ";
+                $xml = "<tree ";
                 $xml.= "id=\"".$this->id."\" ";
                 $xml.= "label=\"".$this->label."\" ";
                 $xml.= "taxon=\"".$myTaxon->getLabel()."\" ";

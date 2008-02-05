@@ -105,7 +105,7 @@ class siteNote
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml.= "<siteNote id=\"".$this->id."\" isStandard=\"".fromPGtoStringBool($this->isStandard)."\">".$this->note."</siteNote>\n";
+            $xml = "<siteNote id=\"".$this->id."\" isStandard=\"".fromPGtoStringBool($this->isStandard)."\">".$this->note."</siteNote>\n";
             return $xml;
         }
         else
@@ -180,7 +180,7 @@ class siteNote
                 }
 
                 // Run SQL command
-                if ($sql)
+                if (isset($sql))
                 {
                     // Run SQL 
                     pg_send_query($dbconn, $sql);
@@ -192,7 +192,7 @@ class siteNote
                     }
                 }
                 // Retrieve automated field values when a new record has been inserted
-                if ($sql2)
+                if (isset($sql2))
                 {
                     // Run SQL
                     $result = pg_query($dbconn, $sql2);
@@ -237,7 +237,7 @@ class siteNote
                 $sql = "delete from tlkpsitenote where sitenoteid=".$this->id;
 
                 // Run SQL command
-                if ($sql)
+                if (isset($sql))
                 {
                     // Run SQL 
                     pg_send_query($dbconn, $sql);
@@ -256,6 +256,10 @@ class siteNote
                 return FALSE;
             }
         }
+        else
+        {
+            $this->setErrorMessage("002", "Already errors so not deleting");
+        }
 
         // Return true as write to DB went ok.
         return TRUE;
@@ -270,13 +274,26 @@ class siteNote
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
-                $sql = "insert into tblsitesitenote (siteid, sitenoteid) values ($theSiteID, ".$this->id.")";
+                // First check this combination exisits
+                $sql = "select * from tblsitesitenote where siteid=$theSiteID and sitenoteid=".$this->id;
                 pg_send_query($dbconn, $sql);
                 $result = pg_get_result($dbconn);
-                if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                if(pg_num_rows($result)>0)
                 {
-                    $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                    $this->setErrorMessage("906", "This site note is already assigned to this site.");
                     return FALSE;
+                }
+                else
+                {
+                    // Add note
+                    $sql = "insert into tblsitesitenote (siteid, sitenoteid) values ($theSiteID, ".$this->id.")";
+                    pg_send_query($dbconn, $sql);
+                    $result = pg_get_result($dbconn);
+                    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                    {
+                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        return FALSE;
+                    }
                 }
             }
             else
@@ -286,6 +303,7 @@ class siteNote
                 return FALSE;
             }
         }
+        return TRUE;
     }
     
     function unassignToSite($theSiteID)
@@ -297,13 +315,25 @@ class siteNote
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
-                $sql = "delete from tblsitesitenote where siteid=$theSiteID and sitenoteid=".$this->id;
+                // First check this combination exists
+                $sql = "select * from tblsitesitenote where siteid=$theSiteID and sitenoteid=".$this->id;
                 pg_send_query($dbconn, $sql);
                 $result = pg_get_result($dbconn);
-                if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                if(pg_num_rows($result)==0)
                 {
-                    $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                    $this->setErrorMessage("906", "This site note is not assigned to this site.");
                     return FALSE;
+                }
+                else
+                {
+                    $sql = "delete from tblsitesitenote where siteid=$theSiteID and sitenoteid=".$this->id;
+                    pg_send_query($dbconn, $sql);
+                    $result = pg_get_result($dbconn);
+                    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                    {
+                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        return FALSE;
+                    }
                 }
             }
             else
@@ -313,6 +343,7 @@ class siteNote
                 return FALSE;
             }
         }
+        return TRUE;
     }
 
 // End of Class

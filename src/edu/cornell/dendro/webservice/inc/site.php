@@ -153,7 +153,7 @@ class site
             if(($mode=="all") || ($mode=="begin"))
             {
                 // Only return XML when there are no errors.
-                $xml.= "<site ";
+                $xml = "<site ";
                 $xml.= "id=\"".$this->id."\" ";
                 $xml.= "code=\"".$this->code."\" ";
                 $xml.= "name=\"".$this->name."\" ";

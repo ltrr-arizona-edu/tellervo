@@ -105,7 +105,7 @@ class treeNote
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml.= "<treeNote id=\"".$this->id."\" isStandard=\"".fromPGtoStringBool($this->isStandard)."\">".$this->note."</treeNote>\n";
+            $xml= "<treeNote id=\"".$this->id."\" isStandard=\"".fromPGtoStringBool($this->isStandard)."\">".$this->note."</treeNote>\n";
             return $xml;
         }
         else
@@ -179,7 +179,7 @@ class treeNote
                 }
 
                 // Run SQL command
-                if ($sql)
+                if (isset($sql))
                 {
                     // Run SQL 
                     pg_send_query($dbconn, $sql);
@@ -191,7 +191,7 @@ class treeNote
                     }
                 }
                 // Retrieve automated field values when a new record has been inserted
-                if ($sql2)
+                if (isset($sql2))
                 {
                     // Run SQL
                     $result = pg_query($dbconn, $sql2);
@@ -259,7 +259,7 @@ class treeNote
         // Return true as write to DB went ok.
         return TRUE;
     }
-
+    
     function assignToTree($theTreeID)
     {
         global $dbconn;
@@ -269,13 +269,26 @@ class treeNote
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
-                $sql = "insert into tbltreetreenote (treeid, treenoteid) values ($theTreeID, ".$this->id.")";
+                // First check this combination exisits
+                $sql = "select * from tbltreetreenote where treeid=$theTreeID and treenoteid=".$this->id;
                 pg_send_query($dbconn, $sql);
                 $result = pg_get_result($dbconn);
-                if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                if(pg_num_rows($result)>0)
                 {
-                    $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                    $this->setErrorMessage("906", "This tree note is already assigned to this tree.");
                     return FALSE;
+                }
+                else
+                {
+                    // Add note
+                    $sql = "insert into tbltreetreenote (treeid, treenoteid) values ($theTreeID, ".$this->id.")";
+                    pg_send_query($dbconn, $sql);
+                    $result = pg_get_result($dbconn);
+                    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                    {
+                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        return FALSE;
+                    }
                 }
             }
             else
@@ -285,6 +298,7 @@ class treeNote
                 return FALSE;
             }
         }
+        return TRUE;
     }
     
     function unassignToTree($theTreeID)
@@ -296,13 +310,25 @@ class treeNote
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
-                $sql = "delete from tbltreetreenote where treeid=$theTreeID and treenoteid=".$this->id;
+                // First check this combination exists
+                $sql = "select * from tbltreetreenote where treeid=$theTreeID and treenoteid=".$this->id;
                 pg_send_query($dbconn, $sql);
                 $result = pg_get_result($dbconn);
-                if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                if(pg_num_rows($result)==0)
                 {
-                    $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                    $this->setErrorMessage("906", "This tree note is not assigned to this tree.");
                     return FALSE;
+                }
+                else
+                {
+                    $sql = "delete from tbltreetreenote where treeid=$theTreeID and treenoteid=".$this->id;
+                    pg_send_query($dbconn, $sql);
+                    $result = pg_get_result($dbconn);
+                    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                    {
+                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        return FALSE;
+                    }
                 }
             }
             else
@@ -312,6 +338,7 @@ class treeNote
                 return FALSE;
             }
         }
+        return TRUE;
     }
 
 // End of Class

@@ -1,32 +1,55 @@
 <?php
 
+function getHelpDocbook($page)
+{
+    global $domain;
+    global $wikiManualFolder;
+
+    $filename = "http://".$domain."/".$wikiManualFolder."/Webservice-".$page."?action=format&mimetype=xml/docbook";
+    $file = file_get_contents($filename);
+    return substr($file, 21);
+}
+
 function writeOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd="")
 {
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    if ($metaHeader->status=="Error")
+    if ($metaHeader->status =="Error")
     {
         echo "<?xml-stylesheet type=\"text/css\" href=\"css/corina.css\"?>";
+        echo "<?xml-stylesheet type=\"text/css\" href=\"css/docbook/driver.css\"?>";
     }
     echo "<corina>\n";
     echo $metaHeader->asXML();
-    echo "<content>\n";
-    echo $parentTagBegin."\n";
-    echo $xmldata;
-    echo $parentTagEnd."\n";
-    echo "</content>\n";
+    
+    if($metaHeader->status !="Error")
+    {
+        echo "<content>\n";
+        echo $parentTagBegin."\n";
+        echo $xmldata;
+        echo $parentTagEnd."\n";
+        echo "</content>\n";
+    }
+    else
+    {
+        echo "<help>\n";
+        echo getHelpDocbook($metaHeader->getObjectName());
+        echo "</help>\n";
+    }
+    
     echo "</corina>";
     
 }
 
 
-function writeHelpOutput($metaHeader, $xmldata)
+function writeHelpOutput($metaHeader)
 {
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     echo "<?xml-stylesheet type=\"text/css\" href=\"css/corina.css\"?>";
+    echo "<?xml-stylesheet type=\"text/css\" href=\"css/docbook/driver.css\"?>";
     echo "<corina>\n";
     echo $metaHeader->asXML();
     echo "<help>\n";
-    echo $xmldata."\n";
+    echo getHelpDocbook($metaHeader->getObjectName());
     echo "</help>\n";
     echo "</corina>";
 }

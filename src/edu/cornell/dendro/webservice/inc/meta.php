@@ -8,6 +8,9 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 
+$myMetaHeader = new meta();
+
+
 class meta
 {
   var $username = NULL;
@@ -86,9 +89,22 @@ class meta
       }
   }
 
+  function getObjectName()
+  {
+      // Trim off all after the ?
+      $string = explode("?", $this->requesturl);
+      // Remove the first '/'
+      $string = substr($string[0], 1);
+      // Remove the .php
+      $string = substr($string, 0, -4);
+      // Uppercase the first letter
+      $string = ucfirst($string);
+      return $string;
+  }
+
   function asXML()
   {
-      // Get class as XML 
+    // Get class as XML 
     $xml="<header>\n";
     if (!($this->username==NULL))
     {
@@ -101,6 +117,9 @@ class meta
     $xml.="<requesturl>".$this->requesturl."</requesturl>\n";
     $xml.="<requesttype>".$this->requesttype."</requesttype>\n";
     $xml.="<status>".$this->status."</status>\n";
+
+    // Remove duplicate messages
+    $this->messages = array_unique($this->messages);
 
     foreach($this->messages as $item)
     {
