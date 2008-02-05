@@ -106,7 +106,6 @@ switch($myRequest->mode)
 
     case "failed":
         $myMetaHeader->setRequestType("help");
-        break;
 
     default:
         $myMetaHeader->setRequestType("help");
@@ -119,7 +118,7 @@ switch($myRequest->mode)
 // *************
 // PERFORM QUERY
 // *************
-
+$xmldata = "";
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
 {
