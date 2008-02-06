@@ -12,6 +12,7 @@ header('Content-Type: application/xhtml+xml; charset=utf-8');
 require_once("inc/dbsetup.php");
 require_once("config.php");
 require_once("inc/meta.php");
+require_once("inc/errors.php");
 require_once("inc/auth.php");
 require_once("inc/request.php");
 require_once("inc/output.php");
@@ -29,7 +30,6 @@ require_once("inc/pith.php");
 
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
-$myMetaHeader   = new meta();
 $myRequest      = new request($myMetaHeader, $myAuth);
 
 // Set user details
@@ -72,7 +72,6 @@ switch($myRequest->mode)
     
     case "failed":
         $myMetaHeader->setRequestType("help");
-        break;
 
     default:
         $myMetaHeader->setRequestType("help");
@@ -86,7 +85,7 @@ switch($myRequest->mode)
 // *************
 // PERFORM QUERY
 // *************
-
+$xmldata = "";
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
 {

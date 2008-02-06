@@ -101,6 +101,7 @@ class readingNote
 
     function asXML()
     {
+        $xml="";
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {

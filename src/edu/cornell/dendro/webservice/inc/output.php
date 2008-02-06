@@ -7,6 +7,7 @@ function getHelpDocbook($page)
 
     $filename = "http://".$domain."/".$wikiManualFolder."/Webservice-".$page."?action=format&mimetype=xml/docbook";
     $file = file_get_contents($filename);
+    // Remove XML header line
     return substr($file, 21);
 }
 
@@ -53,6 +54,20 @@ function writeHelpOutput($metaHeader)
     echo "</help>\n";
     echo "</corina>";
 }
+
+function writeIntroOutput($metaHeader)
+{
+    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    echo "<?xml-stylesheet type=\"text/css\" href=\"css/corina.css\"?>";
+    echo "<?xml-stylesheet type=\"text/css\" href=\"css/docbook/driver.css\"?>";
+    echo "<corina>\n";
+    echo $metaHeader->asXML();
+    echo "<help>\n";
+    echo getHelpDocbook("Introduction");
+    echo "</help>\n";
+    echo "</corina>";
+}
+
 
 function writeKMLOutput($xmldata)
 {

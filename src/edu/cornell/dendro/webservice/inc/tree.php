@@ -344,6 +344,7 @@ class tree
                         if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "location=setsrid(makepoint(".$this->longitude.", ".$this->latitude."), 4326), ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
+                    $sql .= " where treeid=".$this->id;
                 }
 
                 // Run SQL command

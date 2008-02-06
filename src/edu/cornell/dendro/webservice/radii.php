@@ -111,7 +111,6 @@ switch($myRequest->mode)
 
     case "failed":
         $myMetaHeader->setRequestType("help");
-        break;
 
     default:
         $myMetaHeader->setRequestType("help");
