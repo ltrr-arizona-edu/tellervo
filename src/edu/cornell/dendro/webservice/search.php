@@ -57,6 +57,7 @@ switch($myRequest->mode)
         $myMetaHeader = new meta("search");
         if($myAuth->isLoggedIn())
         {
+            if($myRequest->returnObject== NULL) trigger_error("902"."Missing parameter - 'returnObject' field is required.");
             break;
         }
         else
@@ -83,8 +84,7 @@ switch($myRequest->mode)
     default:
         $myMetaHeader->setRequestType("help");
         // Output the resulting XML
-        $xmldata ="Details of how to use this web service will be added here later!";
-        writeHelpOutput($myMetaHeader,$xmldata);
+        writeHelpOutput($myMetaHeader);
         die;
 }
 
@@ -97,6 +97,12 @@ if(!($myMetaHeader->status == "Error"))
 {
     if($myRequest->mode=='search')
     {
+        $orderBySQL="";
+        $groupBySQL="";
+        $filterSQL="";
+        $skipSQL="";
+        $xmldata="";
+        
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -109,12 +115,12 @@ if(!($myMetaHeader->status == "Error"))
             if ($myRequest->skip)  $skipSQL  = " offset ".$myRequest->skip;
             
             // Build "from..." section of SQL
-            if( ((getLowestRelationshipLevel()<=1) && (getHighestRelationshipLevel()>=1))    || ($myRequest->returnObject == 'measurement'))  $fromTableSQL .= tableName("measurement").", ";
-            if( ((getLowestRelationshipLevel()<=2) && (getHighestRelationshipLevel()>=2))    || ($myRequest->returnObject == 'radius'))       $fromTableSQL .= tableName("radius").", ";
-            if( ((getLowestRelationshipLevel()<=3) && (getHighestRelationshipLevel()>=3))    || ($myRequest->returnObject == 'specimen'))     $fromTableSQL .= tableName("specimen").", ";
-            if( ((getLowestRelationshipLevel()<=4) && (getHighestRelationshipLevel()>=4))    || ($myRequest->returnObject == 'tree'))         $fromTableSQL .= tableName("tree").", ";
-            if( ((getLowestRelationshipLevel()<=5) && (getHighestRelationshipLevel()>=5))    || ($myRequest->returnObject == 'subsite'))      $fromTableSQL .= tableName("subsite").", ";
-            if( ((getLowestRelationshipLevel()<=6) && (getHighestRelationshipLevel()>=6))    || ($myRequest->returnObject == 'site'))         $fromTableSQL .= tableName("site").", ";
+            if( ((getLowestRelationshipLevel()<=1) && (getHighestRelationshipLevel()>=1))    || ($myRequest->returnObject == 'measurement'))  $fromTableSQL = tableName("measurement").", ";
+            if( ((getLowestRelationshipLevel()<=2) && (getHighestRelationshipLevel()>=2))    || ($myRequest->returnObject == 'radius'))       $fromTableSQL = tableName("radius").", ";
+            if( ((getLowestRelationshipLevel()<=3) && (getHighestRelationshipLevel()>=3))    || ($myRequest->returnObject == 'specimen'))     $fromTableSQL = tableName("specimen").", ";
+            if( ((getLowestRelationshipLevel()<=4) && (getHighestRelationshipLevel()>=4))    || ($myRequest->returnObject == 'tree'))         $fromTableSQL = tableName("tree").", ";
+            if( ((getLowestRelationshipLevel()<=5) && (getHighestRelationshipLevel()>=5))    || ($myRequest->returnObject == 'subsite'))      $fromTableSQL = tableName("subsite").", ";
+            if( ((getLowestRelationshipLevel()<=6) && (getHighestRelationshipLevel()>=6))    || ($myRequest->returnObject == 'site'))         $fromTableSQL = tableName("site").", ";
                    
             // Trim off last ', ' from the 'form' clause SQL
             $fromTableSQL = substr($fromTableSQL, 0, -2);
@@ -202,6 +208,7 @@ if(!($myMetaHeader->status == "Error"))
 
 function paramsToFilterSQL($paramsArray, $paramName)
 {
+    $filterSQL="";
     foreach($paramsArray as $param)
     {
         // Set operator
@@ -356,6 +363,7 @@ function getRelationshipSQL()
 
     $lowestLevel  = getLowestRelationshipLevel();
     $highestLevel = getHighestRelationshipLevel();
+    $sql ="";
 
     //echo "high = $highestLevel\n";
     //echo "low = $lowestLevel\n";

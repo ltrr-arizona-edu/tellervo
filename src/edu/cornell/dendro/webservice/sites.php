@@ -239,11 +239,11 @@ if(!($myMetaHeader->status == "Error"))
                         $myMetaHeader->setTiming("Start XML build");
                         if ($myRequest->format=='kml')
                         {
-                            $xmldata = $mySite->asKML();      
+                            $xmldata .= $mySite->asKML();      
                         }
                         else
                         {
-                            $xmldata = $mySite->asXML();
+                            $xmldata .= $mySite->asXML();
                         }
                         $myMetaHeader->setTiming("End XML build");
                     }

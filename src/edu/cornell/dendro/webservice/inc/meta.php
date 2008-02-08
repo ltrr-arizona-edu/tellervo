@@ -102,6 +102,18 @@ class meta
       return $string;
   }
 
+  function getIsLoginRequired()
+  {
+     foreach($this->messages as $message)
+     {
+        if (isset($message[102]))
+        {
+           return True;
+        }
+     }
+     return False;
+  }
+
   function asXML()
   {
     // Get class as XML 

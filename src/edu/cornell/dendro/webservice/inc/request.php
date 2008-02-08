@@ -104,9 +104,9 @@ class request
             $xmlstring = $this->xmlrequest;
             $doc = new DomDocument;
             $doc->loadXML($xmlstring);
+            //$success = @$doc->relaxNGValidate($rngSchema));
             if($doc->relaxNGValidate($rngSchema))
             {
-
                 $this->simplexml = simplexml_load_string($xmlstring);
                 if($this->simplexml)
                 {
@@ -254,6 +254,12 @@ class request
                 array_push($this->readingsArray, array('reading' => $reading, 'wkinc' => NULL , 'wjdec' => NULL, 'count' => '1'));
             }
         }
+
+        // Search parameters
+        //if(isset($_GET['returnobject'])                 $this->returnobject                 = addslashes($_GET['returnobject']);
+
+
+        //Log request
         $this->logRequest();
     }
 
@@ -625,7 +631,7 @@ class searchRequest extends request
                         ($param['name'] == 'sitecreated') || 
                         ($param['name'] == 'sitelastmodified') )
                 {
-                    array_push($this->siteParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
+                    array_push($this->siteParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
                 }
 
                 // Subsite Parameters

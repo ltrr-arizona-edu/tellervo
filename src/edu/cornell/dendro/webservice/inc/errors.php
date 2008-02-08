@@ -39,7 +39,6 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
     $usererrors = array(E_USER_ERROR, E_USER_NOTICE);
     $userwarnings = array(E_USER_WARNING);
 
-
     // Generic PHP errors
     if (in_array($errno, $phperrors))
     {
@@ -53,13 +52,13 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
     // Corina specific errors
     elseif (in_array($errno, $usererrors))
     {
-        $errno = (int) substr($errno, 0, 3);
+        $errno = (int) substr($errmsg, 0, 3);
         $errmsg = substr($errmsg, 3);
         $myMetaHeader->setMessage($errno, $errmsg, "Error");
     }
     elseif (in_array($errno, $userwarnings))
     {
-        $errno = (int) substr($errno, 0, 3);
+        $errno = (int) substr($errmsg, 0, 3);
         $errmsg = substr($errmsg, 3);
         $myMetaHeader->setMessage($errno, $errmsg, "Warning");
     }

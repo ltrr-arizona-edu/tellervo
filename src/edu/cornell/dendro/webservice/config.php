@@ -8,15 +8,34 @@
 //// Requirements : PHP >= 5.0
 ////*******************************************************************
 
-// Only report errors
-//error_reporting(E_ERROR);
+//************************
+// USER EDITABLE VARIABLES
+//************************
 
-$debugFlag = false;
-$wsversion = "0.1.".exec(svnversion);
-$rngSchema = "/var/www/webservice/schemas/corina.rng";
+// Whether to display debug messages
+$debugFlag = false; 
 
+// Version number to be displayed in output headers
+$wsversion = "0.1.".exec(svnversion); 
+
+// Path to RelaxNG schema
+$rngSchema = "/var/www/webservice/schemas/corina.rng"; 
+
+// Timezone of the server this software is running on
+$serverTimezone = "America/New_York";
+
+// Domain name of the server this software is running on
 $domain = "dendro.cornell.edu";
+
+// Folder name where the wiki documentation is stored
 $wikiManualFolder = "corina-manual";
 
+
+//************************
+
+
+
+
+date_default_timezone_set($serverTimezone); // Default time zone 
 
 ?>

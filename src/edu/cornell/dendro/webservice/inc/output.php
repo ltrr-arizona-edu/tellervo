@@ -8,6 +8,8 @@ function getHelpDocbook($page)
     $filename = "http://".$domain."/".$wikiManualFolder."/Webservice-".$page."?action=format&mimetype=xml/docbook";
     $file = file_get_contents($filename);
     // Remove XML header line
+
+
     return substr($file, 21);
 }
 
@@ -33,7 +35,16 @@ function writeOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd
     else
     {
         echo "<help>\n";
-        echo getHelpDocbook($metaHeader->getObjectName());
+        if($metaHeader->getIsLoginRequired())
+        {
+            // WS Request failed because the user isn't authenticated. SHow authentication docs
+            echo getHelpDocbook('Authenticate');
+        }
+        else
+        {
+            // WS Request failed for another reason so show this objects docs
+            echo getHelpDocbook($metaHeader->getObjectName());
+        }
         echo "</help>\n";
     }
     
