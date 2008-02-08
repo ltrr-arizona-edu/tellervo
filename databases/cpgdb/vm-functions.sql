@@ -103,7 +103,7 @@ BEGIN
    -- Create the grouping
    FOR CVMId IN array_lower(Constituents, 1)..array_upper(Constituents,1) LOOP   
       INSERT INTO tblVMeasurementGroup(VMeasurementID, MemberVMeasurementID) 
-         VALUES (newID, CVMId);
+         VALUES (newID, Constituents[CVMId]);
    END LOOP;
 
    -- Mark the VMeasurement as completed
