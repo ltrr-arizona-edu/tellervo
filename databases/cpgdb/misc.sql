@@ -48,3 +48,15 @@ CREATE AGGREGATE first(anyelement) (
     STYPE = anyelement
 );
 
+-- An SQL function that turns an array into rows
+-- Makes it possible to JOIN arrays
+CREATE OR REPLACE FUNCTION ArrayToRows(arr anyarray) RETURNS SETOF anyelement AS $$
+DECLARE
+   idx integer;
+BEGIN
+   FOR idx IN array_lower(arr, 1)..array_upper(arr, 1) LOOP
+      RETURN NEXT arr[idx];
+   END LOOP;
+END;
+$$ LANGUAGE PLPGSQL IMMUTABLE;
+
