@@ -21,3 +21,7 @@
 
 -- Populate the cache and other setup.
 \i setup-db.sql
+
+-- Load GIS functions
+\i rastergisfunctions.sql
+
