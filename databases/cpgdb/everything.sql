@@ -25,3 +25,5 @@
 -- Load GIS functions
 \i rastergisfunctions.sql
 
+-- Load remaining GIS functions
+\i miscgisfunctions.sql

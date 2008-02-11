@@ -144,5 +144,3 @@ GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabytree(thetreeid integer) TO public
 GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabytree(thetreeid integer) TO aps03pwb;
 GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabytree(thetreeid integer) TO "Webgroup";
 
-
-
