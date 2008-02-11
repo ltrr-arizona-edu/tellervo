@@ -28,6 +28,9 @@ myCellValue = myA[myYcell][myXcell]
 return myCellValue$BODY$
 LANGUAGE 'plpythonu' VOLATILE;
 ALTER FUNCTION cpgdb.rasteratpoint(rasterfile character varying, latitude double precision, longitude double precision) OWNER TO aps03pwb;
+GRANT EXECUTE ON FUNCTION cpgdb.rasteratpoint(rasterfile character varying, latitude double precision, longitude double precision) TO public;
+GRANT EXECUTE ON FUNCTION cpgdb.rasteratpoint(rasterfile character varying, latitude double precision, longitude double precision) TO aps03pwb;
+GRANT EXECUTE ON FUNCTION cpgdb.rasteratpoint(rasterfile character varying, latitude double precision, longitude double precision) TO "Webgroup";
 
 
 
@@ -69,6 +72,9 @@ BEGIN
 END;$BODY$
 LANGUAGE 'plpgsql' VOLATILE;
 ALTER FUNCTION cpgdb.lookupenvdata(thetreeid integer, therasterlayerid integer) OWNER TO aps03pwb;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdata(thetreeid integer, therasterlayerid integer) TO public;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdata(thetreeid integer, therasterlayerid integer) TO aps03pwb;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdata(thetreeid integer, therasterlayerid integer) TO "Webgroup";
 
 
 
@@ -100,6 +106,9 @@ BEGIN
 END;$BODY$
 LANGUAGE 'plpgsql' VOLATILE;
 ALTER FUNCTION cpgdb.lookupenvdatabylayer(therasterlayerid integer) OWNER TO aps03pwb;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabylayer(therasterlayerid integer) TO public;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabylayer(therasterlayerid integer) TO aps03pwb;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabylayer(therasterlayerid integer) TO "Webgroup";
 
 
 
@@ -131,6 +140,9 @@ BEGIN
 END;$BODY$
 LANGUAGE 'plpgsql' VOLATILE;
 ALTER FUNCTION cpgdb.lookupenvdatabytree(thetreeid integer) OWNER TO aps03pwb;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabytree(thetreeid integer) TO public;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabytree(thetreeid integer) TO aps03pwb;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabytree(thetreeid integer) TO "Webgroup";
 
 
 
