@@ -320,7 +320,17 @@ class radius
                     $result = pg_get_result($dbconn);
                     if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
                     {
-                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        $PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
+                        switch($PHPErrorCode)
+                        {
+                        case 23503:
+                                // Foreign key violation
+                                $this->setErrorMessage("907", "Foreign key violation.  You must delete all associated measurements before deleting this radius.");
+                                break;
+                        default:
+                                // Any other error
+                                $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        }
                         return FALSE;
                     }
                 }

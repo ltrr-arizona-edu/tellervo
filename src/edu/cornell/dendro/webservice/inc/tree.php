@@ -355,7 +355,17 @@ class tree
                     $result = pg_get_result($dbconn);
                     if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
                     {
-                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        $PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
+                        switch($PHPErrorCode)
+                        {
+                        case 23514:
+                                // Foreign key violation
+                                $this->setErrorMessage("909", "Check constraint violation.  The location precision specified must be a postive integer.");
+                                break;
+                        default:
+                                // Any other error
+                                $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        }
                         return FALSE;
                     }
                 }
@@ -414,7 +424,17 @@ class tree
                     $result = pg_get_result($dbconn);
                     if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
                     {
-                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        $PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
+                        switch($PHPErrorCode)
+                        {
+                        case 23503:
+                                // Foreign key violation
+                                $this->setErrorMessage("907", "Foreign key violation.  You must delete all specimens associated with a tree before deleting the tree itself.");
+                                break;
+                        default:
+                                // Any other error
+                                $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        }
                         return FALSE;
                     }
                 }

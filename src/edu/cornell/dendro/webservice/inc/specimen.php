@@ -513,7 +513,17 @@ class specimen
                     $result = pg_get_result($dbconn);
                     if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
                     {
-                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        $PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
+                        switch($PHPErrorCode)
+                        {
+                        case 23514:
+                                // Foreign key violation
+                                $this->setErrorMessage("909", "Check constraint violation.  Sapwood count must be a positive integer.");
+                                break;
+                        default:
+                                // Any other error
+                                $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        }
                         return FALSE;
                     }
                 }
@@ -572,7 +582,17 @@ class specimen
                     $result = pg_get_result($dbconn);
                     if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
                     {
-                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        $PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
+                        switch($PHPErrorCode)
+                        {
+                        case 23503:
+                                // Foreign key violation
+                                $this->setErrorMessage("907", "Foreign key violation.  You must delete all associated radii before deleting this specimen.");
+                                break;
+                        default:
+                                // Any other error
+                                $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        }
                         return FALSE;
                     }
                 }

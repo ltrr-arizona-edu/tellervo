@@ -258,7 +258,17 @@ class subSite
                     $result = pg_get_result($dbconn);
                     if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
                     {
-                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        $PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
+                        switch($PHPErrorCode)
+                        {
+                        case 23505:
+                                // Foreign key violation
+                                $this->setErrorMessage("908", "Unique constraint violation.  A sub site with ihis name already exists.");
+                                break;
+                        default:
+                                // Any other error
+                                $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        }
                         return FALSE;
                     }
                 }
@@ -317,7 +327,17 @@ class subSite
                     $result = pg_get_result($dbconn);
                     if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
                     {
-                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        $PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
+                        switch($PHPErrorCode)
+                        {
+                        case 23503:
+                                // Foreign key violation
+                                $this->setErrorMessage("907", "Foreign key violation.  You must delete all trees from a sub site before deleting the sub site itself.");
+                                break;
+                        default:
+                                // Any other error
+                                $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        }
                         return FALSE;
                     }
                 }
