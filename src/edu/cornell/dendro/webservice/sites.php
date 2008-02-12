@@ -52,8 +52,8 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("read");
         if($myAuth->isLoggedIn())
         {
-            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
-            if(!($myRequest->id>0) && !($myRequest->id==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be a valid positive integer.");
+            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id==NULL)) trigger_error("901"."Invalid parameter - 'id' field must be an integer.");
+            if(!($myRequest->id>0) && !($myRequest->id==NULL)) trigger_error("901"."Invalid parameter - 'id' field must be a valid positive integer.");
             break;
         }
         else
@@ -66,8 +66,8 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("update");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if(($myRequest->name == NULL) && ($myRequest->code==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - either 'name' or 'code' fields (or both) must be specified.");
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.");
+            if(($myRequest->name == NULL) && ($myRequest->code==NULL)) trigger_error("902"."Missing parameter - either 'name' or 'code' fields (or both) must be specified.");
             break;
         }
         else
@@ -80,7 +80,7 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("delete");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.");
             break;
         }
         else
@@ -94,8 +94,8 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("create");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->name == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
-            if($myRequest->code == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'code' field is required.");
+            if($myRequest->name == NULL) trigger_error("902"."Missing parameter - 'name' field is required.");
+            if($myRequest->code == NULL) trigger_error("902"."Missing parameter - 'code' field is required.");
             break;
         }
         else
@@ -133,7 +133,7 @@ if(!($myMetaHeader->status == "Error"))
         $success = $mySite->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
-            $myMetaHeader->setMessage($mySite->getLastErrorCode(), $mySite->getLastErrorMessage());
+            trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
         }
     }
 
@@ -160,12 +160,12 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $myMetaHeader->setMessage($mySite->getLastErrorCode(), $mySite->getLastErrorMessage());
+                trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
             }
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on siteid". $myRequest->id);
+            trigger_error("103"."Permission denied on siteid". $myRequest->id);
         }
     }
 
@@ -182,12 +182,12 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $myMetaHeader->setMessage($mySite->getLastErrorCode(), $mySite->getLastErrorMessage());
+                trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
             }
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on siteid ". $myRequest->id);
+            trigger_error("103"."Permission denied on siteid ". $myRequest->id);
         }
     }
 
@@ -249,19 +249,19 @@ if(!($myMetaHeader->status == "Error"))
                     }
                     else
                     {
-                        $myMetaHeader->setMessage($mySite->getLastErrorCode, $mySite->getLastErrorMessage);
+                        trigger_error($mySite->getLastErrorCode.$mySite->getLastErrorMessage);
                     }
                 }
                 else
                 {
-                    $myMetaHeader->setMessage("103", "Permission denied on site id ".$row['siteid'], "Warning");
+                    trigger_error("103"."Permission denied on site id ".$row['siteid'], E_USER_WARNING);
                 }
             } 
         }
         else
         {
             // Connection bad
-            $myMetaHeader->setMessage("001", "Error connecting to database");
+            trigger_error("001"."Error connecting to database");
         }
     }
 }

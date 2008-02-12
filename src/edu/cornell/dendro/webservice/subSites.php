@@ -65,8 +65,8 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("update");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if($myRequest->name == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+            if($myRequest->name == NULL) trigger_error("902"."Missing parameter - 'name' field is required.", E_USER_ERROR);
             break;
         }
         else
@@ -79,7 +79,7 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("delete");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
             break;
         }
         else
@@ -92,8 +92,8 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("create");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->name == NULL)   $myMetaHeader->setMessage("902", "Missing parameter - 'name' field is required.");
-            if($myRequest->siteid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'siteid' field is required.");
+            if($myRequest->name == NULL)   trigger_error("902"."Missing parameter - 'name' field is required.", E_USER_ERROR);
+            if($myRequest->siteid == NULL) trigger_error("902"."Missing parameter - 'siteid' field is required.", E_USER_ERROR);
             break;
         }
         else
@@ -130,7 +130,7 @@ if(!($myMetaHeader->status == "Error"))
         $success = $mySubSite->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
-            $myMetaHeader->setMessage($mySubSite->getLastErrorCode(), $mySubSite->getLastErrorMessage());
+            trigger_error($mySubSite->getLastErrorCode().$mySubSite->getLastErrorMessage(), E_USER_ERROR);
         }
     }
 
@@ -151,18 +151,18 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $myMetaHeader->setMessage($mySubSite->getLastErrorCode(), $mySubSite->getLastErrorMessage());
+                trigger_error($mySubSite->getLastErrorCode().$mySubSite->getLastErrorMessage(), E_USER_ERROR);
             }
         }
         else
         {
             if($myRequest->id)
             {
-                $myMetaHeader->setMessage("103", "Permission denied on subsiteid $myRequest->id");
+                trigger_error("103"."Permission denied on subsiteid ".$myRequest->id, E_USER_ERROR);
             }
             else
             {
-                $myMetaHeader->setMessage("103", "Permission denied on siteid $myRequest->siteid");
+                trigger_error("103"."Permission denied on siteid ."$myRequest->siteid, E_USER_ERROR);
             }
         }
     }
@@ -180,12 +180,12 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $myMetaHeader->setMessage($mySubSite->getLastErrorCode(), $mySubSite->getLastErrorMessage());
+                trigger_error($mySubSite->getLastErrorCode().$mySubSite->getLastErrorMessage(), E_USER_ERROR);
             }
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on subsiteid $myRequest->id");
+            trigger_error("103"."Permission denied on subsiteid $myRequest->id", E_USER_ERROR);
         }
     }
 
@@ -220,12 +220,12 @@ if(!($myMetaHeader->status == "Error"))
                         }
                         else
                         {
-                            $myMetaHeader->setMessage($mySubSite->getLastErrorCode(), $mySubSite->getLastErrorMessage());
+                            trigger_error($mySubSite->getLastErrorCode().$mySubSite->getLastErrorMessage(), E_USER_ERROR);
                         }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage("103", "Permission denied on subsiteid ".$row['subsiteid'], "Warning");
+                        trigger_error("103"."Permission denied on subsiteid ".$row['subsiteid'], E_USER_WARNING);
                     }
                 }
             }
@@ -250,12 +250,12 @@ if(!($myMetaHeader->status == "Error"))
                         }
                         else
                         {
-                            $myMetaHeader->setMessage($mySubSite->getLastErrorCode(), $mySubSite->getLastErrorMessage());
+                            trigger_error($mySubSite->getLastErrorCode().$mySubSite->getLastErrorMessage(), E_USER_ERROR);
                         }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage("103", "Permission denied on subsiteid ".$row['subsiteid'], "Warning");
+                        trigger_error("103"."Permission denied on subsiteid ".$row['subsiteid'], E_USER_WARNING);
                     }
                 }
                 $xmldata.= $parentTagEnd."\n";
@@ -264,7 +264,7 @@ if(!($myMetaHeader->status == "Error"))
         else
         {
             // Connection bad
-            $myMetaHeader->setMessage("001", "Error connecting to database");
+            trigger_error("001"."Error connecting to database", E_USER_ERROR);
         }
     }
 }

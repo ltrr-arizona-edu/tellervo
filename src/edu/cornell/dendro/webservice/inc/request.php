@@ -192,51 +192,67 @@ class request
 
         // ID values
         if(isset($_GET['id']))              $this->id               = (int) $_GET['id'];
-        if(isset($_GET['taxonid']))         $this->taxonid          = (int) $_GET['taxonid'];
-        if(isset($_GET['subsiteid']))       $this->subsiteid        = (int) $_GET['subsiteid'];
-        if(isset($_GET['siteid']))          $this->siteid           = (int) $_GET['siteid'];
-        if(isset($_GET['treeid']))          $this->treeid           = (int) $_GET['treeid'];
-        if(isset($_GET['readingid']))       $this->readingid        = (int) $_GET['readingid'];
-        if(isset($_GET['specimenid']))      $this->specimenid       = (int) $_GET['specimenid'];
-        if(isset($_GET['measurementid']))   $this->measurementid    = (int) $_GET['measurementid'];
-        if(isset($_GET['radiusid']))        $this->radiusid         = (int) $_GET['radiusid'];
+       
+       
+       
+        // Disabling GET requests for anything other than read
+        /* 
+                if(isset($_GET['taxonid']))         $this->taxonid          = (int) $_GET['taxonid'];
+                if(isset($_GET['subsiteid']))       $this->subsiteid        = (int) $_GET['subsiteid'];
+                if(isset($_GET['siteid']))          $this->siteid           = (int) $_GET['siteid'];
+                if(isset($_GET['treeid']))          $this->treeid           = (int) $_GET['treeid'];
+                if(isset($_GET['readingid']))       $this->readingid        = (int) $_GET['readingid'];
+                if(isset($_GET['specimenid']))      $this->specimenid       = (int) $_GET['specimenid'];
+                if(isset($_GET['measurementid']))   $this->measurementid    = (int) $_GET['measurementid'];
+                if(isset($_GET['radiusid']))        $this->radiusid         = (int) $_GET['radiusid'];
 
-        // Main data items
-        if(isset($_GET['code']))                        $this->code                         = addslashes($_GET['code']);
-        if(isset($_GET['name']))                        $this->name                         = addslashes($_GET['name']);
-        if(isset($_GET['label']))                       $this->label                        = addslashes($_GET['label']);
-        if(isset($_GET['latitude']))                    $this->latitude                     = (double) $_GET['latitude'];
-        if(isset($_GET['longitude']))                   $this->longitude                    = (double) $_GET['longitude'];
-        if(isset($_GET['precision']))                   $this->precision                    = (int) $_GET['precision'];
-        if(isset($_GET['collectedday']))                $this->collectedday                 = (int) $_GET['collectedday'];
-        if(isset($_GET['collectedmonth']))              $this->collectedmonth               = (int) $_GET['collectedmonth'];
-        if(isset($_GET['collectedyear']))               $this->collectedyear                = (int) $_GET['collectedyear'];
-        if(isset($_GET['specimentype']))                $this->specimentype                 = addslashes($_GET['specimentype']);
-        if(isset($_GET['terminalring']))                $this->terminalring                 = addslashes($_GET['terminalring']);
-        if(isset($_GET['sapwoodcount']))                $this->sapwoodcount                 = (int) $_GET['sapwoodcount'];
-        if(isset($_GET['specimenquality']))             $this->specimenquality              = addslashes($_GET['specimenquality']);
-        if(isset($_GET['specimencontinuity']))          $this->specimencontinuity           = addslashes($_GET['specimencontinuity']);
-        if(isset($_GET['pith']))                        $this->pith                         = addslashes($_GET['pith']);
-        if(isset($_GET['unmeasuredpre']))               $this->unmeasuredpre                = (int) $_GET['unmeasuredpre'];
-        if(isset($_GET['unmeasuredpost']))              $this->unmeasuredpost               = (int) $_GET['unmeasuredpost'];
-        if(isset($_GET['note']))                        $this->note                         = addslashes($_GET['note']);
-        if(isset($_GET['description']))                 $this->description                  = addslashes($_GET['description']);
-        if(isset($_GET['startyear']))                   $this->startyear                    = (int) $_GET['startyear'];
-        if(isset($_GET['datingerrorpositive']))         $this->datingerrorpositive          = (int) $_GET['datingerrorpostive'];
-        if(isset($_GET['datingerrornegative']))         $this->datingerrornegative          = (int) $_GET['datingerrornegative'];
-        if(isset($_GET['measuredbyid']))                $this->measuredbyid                 = (int) $_GET['measuredbyid'];
-        if(isset($_GET['owneruserid']))                 $this->owneruserid                  = (int) $_GET['owneruserid'];
-        if(isset($_GET['datingtypeid']))                $this->datingtypeid                 = (int) $_GET['datingtypeid'];
-        if(isset($_GET['issapwoodcountverified']))      $this->issapwoodcountverified       = fromStringtoPHPBool($_GET['issapwoodcountverified']);
-        if(isset($_GET['isspecimenqualityverified']))   $this->isspecimenqualityverified    = fromStringtoPHPBool($_GET['isspecimenqualityverified']);
-        if(isset($_GET['ispithverified']))              $this->ispithverified               = fromStringtoPHPBool($_GET['ispithverified']);
-        if(isset($_GET['isunmeasuredpreverified']))     $this->isunmeasurementpreverified   = fromStringtoPHPBool($_GET['isunmeasuredpreverified']);
-        if(isset($_GET['isunmeasuredpostverified']))    $this->isunmeasurementpostverified  = fromStringtoPHPBool($_GET['isunmeasuredpostverified']);
-        if(isset($_GET['isstandard']))                  $this->isstandard                   = fromStringtoPHPBool($_GET['isstandard']);
-        if(isset($_GET['isterminalringverified']))      $this->isterminalringverified       = fromStringtoPHPBool($_GET['isterminalringverified']);
-        if(isset($_GET['isreconciled']))                $this->isreconciled                 = fromStringtoPHPBool($_GET['isreconciled']);
-        if(isset($_GET['ispublished']))                 $this->ispublished                  = fromStringtoPHPBool($_GET['ispublished']);
-        if(isset($_GET['islegacycleaned']))             $this->islegacycleaned              = fromStringtoPHPBool($_GET['islegacycleaned']);
+                // Main data items
+                if(isset($_GET['code']))                        $this->code                         = addslashes($_GET['code']);
+                if(isset($_GET['name']))                        $this->name                         = addslashes($_GET['name']);
+                if(isset($_GET['label']))                       $this->label                        = addslashes($_GET['label']);
+                if(isset($_GET['latitude']))                    $this->latitude                     = (double) $_GET['latitude'];
+                if(isset($_GET['longitude']))                   $this->longitude                    = (double) $_GET['longitude'];
+                if(isset($_GET['precision']))                   $this->precision                    = (int) $_GET['precision'];
+                if(isset($_GET['collectedday']))                $this->collectedday                 = (int) $_GET['collectedday'];
+                if(isset($_GET['collectedmonth']))              $this->collectedmonth               = (int) $_GET['collectedmonth'];
+                if(isset($_GET['collectedyear']))               $this->collectedyear                = (int) $_GET['collectedyear'];
+                if(isset($_GET['specimentype']))                $this->specimentype                 = addslashes($_GET['specimentype']);
+                if(isset($_GET['terminalring']))                $this->terminalring                 = addslashes($_GET['terminalring']);
+                if(isset($_GET['sapwoodcount']))                $this->sapwoodcount                 = (int) $_GET['sapwoodcount'];
+                if(isset($_GET['specimenquality']))             $this->specimenquality              = addslashes($_GET['specimenquality']);
+                if(isset($_GET['specimencontinuity']))          $this->specimencontinuity           = addslashes($_GET['specimencontinuity']);
+                if(isset($_GET['pith']))                        $this->pith                         = addslashes($_GET['pith']);
+                if(isset($_GET['unmeasuredpre']))               $this->unmeasuredpre                = (int) $_GET['unmeasuredpre'];
+                if(isset($_GET['unmeasuredpost']))              $this->unmeasuredpost               = (int) $_GET['unmeasuredpost'];
+                if(isset($_GET['note']))                        $this->note                         = addslashes($_GET['note']);
+                if(isset($_GET['description']))                 $this->description                  = addslashes($_GET['description']);
+                if(isset($_GET['startyear']))                   $this->startyear                    = (int) $_GET['startyear'];
+                if(isset($_GET['datingerrorpositive']))         $this->datingerrorpositive          = (int) $_GET['datingerrorpostive'];
+                if(isset($_GET['datingerrornegative']))         $this->datingerrornegative          = (int) $_GET['datingerrornegative'];
+                if(isset($_GET['measuredbyid']))                $this->measuredbyid                 = (int) $_GET['measuredbyid'];
+                if(isset($_GET['owneruserid']))                 $this->owneruserid                  = (int) $_GET['owneruserid'];
+                if(isset($_GET['datingtypeid']))                $this->datingtypeid                 = (int) $_GET['datingtypeid'];
+                if(isset($_GET['issapwoodcountverified']))      $this->issapwoodcountverified       = fromStringtoPHPBool($_GET['issapwoodcountverified']);
+                if(isset($_GET['isspecimenqualityverified']))   $this->isspecimenqualityverified    = fromStringtoPHPBool($_GET['isspecimenqualityverified']);
+                if(isset($_GET['ispithverified']))              $this->ispithverified               = fromStringtoPHPBool($_GET['ispithverified']);
+                if(isset($_GET['isunmeasuredpreverified']))     $this->isunmeasurementpreverified   = fromStringtoPHPBool($_GET['isunmeasuredpreverified']);
+                if(isset($_GET['isunmeasuredpostverified']))    $this->isunmeasurementpostverified  = fromStringtoPHPBool($_GET['isunmeasuredpostverified']);
+                if(isset($_GET['isstandard']))                  $this->isstandard                   = fromStringtoPHPBool($_GET['isstandard']);
+                if(isset($_GET['isterminalringverified']))      $this->isterminalringverified       = fromStringtoPHPBool($_GET['isterminalringverified']);
+                if(isset($_GET['isreconciled']))                $this->isreconciled                 = fromStringtoPHPBool($_GET['isreconciled']);
+                if(isset($_GET['ispublished']))                 $this->ispublished                  = fromStringtoPHPBool($_GET['ispublished']);
+                if(isset($_GET['islegacycleaned']))             $this->islegacycleaned              = fromStringtoPHPBool($_GET['islegacycleaned']);
+                // Retrieve arrays
+                if(isset($_GET['references'])) $this->referencesArray = explode(",", $_GET['references']);
+                if(isset($_GET['readings'])) 
+                {
+                    $readings = explode(",", $_GET['readings']);
+                    foreach($readings as $reading)
+                    {
+                        array_push($this->readingsArray, array('reading' => $reading, 'wkinc' => NULL , 'wjdec' => NULL, 'count' => '1'));
+                    }
+                }
+            */
 
         // Login specific (note POST not GET)
         if(isset($_POST['username']))                   $this->username                     = addslashes($_POST['username']);
@@ -244,20 +260,8 @@ class request
         if(isset($_POST['hash']))                       $this->hash                         = addslashes($_POST['hash']);
         if(isset($_POST['nonce']))                      $this->nonce                        = addslashes($_POST['nonce']);
 
-        // Retrieve arrays
-        if(isset($_GET['references'])) $this->referencesArray = explode(",", $_GET['references']);
-        if(isset($_GET['readings'])) 
-        {
-            $readings = explode(",", $_GET['readings']);
-            foreach($readings as $reading)
-            {
-                array_push($this->readingsArray, array('reading' => $reading, 'wkinc' => NULL , 'wjdec' => NULL, 'count' => '1'));
-            }
-        }
-
         // Search parameters
         //if(isset($_GET['returnobject'])                 $this->returnobject                 = addslashes($_GET['returnobject']);
-
 
         //Log request
         $this->logRequest();

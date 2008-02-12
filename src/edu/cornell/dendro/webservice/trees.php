@@ -13,6 +13,7 @@ require_once("config.php");
 require_once("inc/dbsetup.php");
 require_once("inc/meta.php");
 require_once("inc/auth.php");
+require_once("inc/errors.php");
 require_once("inc/request.php");
 require_once("inc/output.php");
 
@@ -22,7 +23,6 @@ require_once("inc/site.php");
 
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
-$myMetaHeader   = new meta();
 $myRequest      = new treeRequest($myMetaHeader, $myAuth);
 
 // Set user details
@@ -67,8 +67,8 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("update");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if(($myRequest->taxonid==NULL) && ($myRequest->label==NULL) && ($myRequest->subsiteid==NULL) && ($myRequest->latitude==NULL) && ($myRequest->longitude==NULL) && ($myRequest->precision==NULL))                 $myMetaHeader->setMessage("902", "Missing parameters - you haven't specified any parameters to update.");
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+            if(($myRequest->taxonid==NULL) && ($myRequest->label==NULL) && ($myRequest->subsiteid==NULL) && ($myRequest->latitude==NULL) && ($myRequest->longitude==NULL) && ($myRequest->precision==NULL))                 trigger_error("902"."Missing parameters - you haven't specified any parameters to update.", E_USER_ERROR);
             break;
         }
         else
@@ -81,7 +81,7 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("delete");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
             break;
         }
         else
@@ -94,9 +94,9 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("create");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->label == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'label' field is required.");
-            if($myRequest->taxonid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'taxonid' field is required.");
-            if($myRequest->subsiteid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'subsiteid' field is required.");
+            if($myRequest->label == NULL) trigger_error("902"."Missing parameter - 'label' field is required.", E_USER_ERROR);
+            if($myRequest->taxonid == NULL) trigger_error("902"."Missing parameter - 'taxonid' field is required.", E_USER_ERROR);
+            if($myRequest->subsiteid == NULL) trigger_error("902"."Missing parameter - 'subsiteid' field is required.", E_USER_ERROR);
             break;
         }
         else
@@ -133,7 +133,7 @@ if(!($myMetaHeader->status == "Error"))
         $success = $myTree->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
-            $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
+            trigger_error($myTree->getLastErrorCode().$myTree->getLastErrorMessage(), E_USER_ERROR);
         }
     }
 
@@ -158,12 +158,12 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-               $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
+               trigger_error($myTree->getLastErrorCode().$myTree->getLastErrorMessage(), E_USER_ERROR);
             }
         }  
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on treeid $myRequest->id");
+            trigger_error("103"."Permission denied on treeid $myRequest->id", E_USER_ERROR);
         }
     }
 
@@ -180,12 +180,12 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
+                trigger_error($myTree->getLastErrorCode().$myTree->getLastErrorMessage(), E_USER_ERROR);
             }
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on treeid $myRequest->id");
+            trigger_error("103"."Permission denied on treeid $myRequest->id", E_USER_ERROR);
         }
     }
 
@@ -224,12 +224,12 @@ if(!($myMetaHeader->status == "Error"))
                         }
                         else
                         {
-                            $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
+                            trigger_error($myTree->getLastErrorCode().$myTree->getLastErrorMessage(), E_USER_ERROR);
                         }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage("103", "Permission denied on treeid ".$row['treeid'], "Warning");
+                        trigger_error("103"."Permission denied on treeid ".$row['treeid'], E_USER_WARNING);
                     }
                 }
             }
@@ -254,12 +254,12 @@ if(!($myMetaHeader->status == "Error"))
                         }
                         else
                         {
-                            $myMetaHeader->setMessage($myTree->getLastErrorCode(), $myTree->getLastErrorMessage());
+                            trigger_error($myTree->getLastErrorCode().$myTree->getLastErrorMessage(), E_USER_WARNING);
                         }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage("103", "Permission denied on treeid ".$row['treeid'], "Warning");
+                        trigger_error("103"."Permission denied on treeid ".$row['treeid'], E_USER_WARNING);
                     }
                 }
                 $xmldata.= $parentTagEnd."\n";
@@ -268,7 +268,7 @@ if(!($myMetaHeader->status == "Error"))
         else
         {
             // Connection bad
-            $myMetaHeader->setMessage("001", "Error connecting to database");
+            trigger_error("001"."Error connecting to database", E_USER_ERROR);
         }
     }
 }

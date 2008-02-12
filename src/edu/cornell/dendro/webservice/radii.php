@@ -24,7 +24,6 @@ require_once("inc/tree.php");
 
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
-$myMetaHeader   = new meta();
 $myRequest      = new radiusRequest($myMetaHeader, $myAuth);
 
 // Set user details
@@ -56,8 +55,8 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("read");
         if($myAuth->isLoggedIn())
         {
-            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
-            if(!($myRequest->id>0) && !($myRequest->id==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be a valid positive integer.");
+            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id==NULL)) trigger_error("901", "Invalid parameter - 'id' field must be an integer.", E_USER_ERROR);
+            if(!($myRequest->id>0) && !($myRequest->id==NULL)) trigger_error("901", "Invalid parameter - 'id' field must be a valid positive integer.", E_USER_ERROR);
             break;
         }
         else
@@ -71,8 +70,8 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("update");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if(($myRequest->specimenid==NULL) && ($myRequest->label==NULL)) $myMetaHeader->setMessage("902", "Missing parameters - you haven't specified any parameters to update.");
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+            if(($myRequest->specimenid==NULL) && ($myRequest->label==NULL)) trigger_error("902"."Missing parameters - you haven't specified any parameters to update.", E_USER_ERROR);
             break;
         }
         else
@@ -99,8 +98,8 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("create");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->label == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'label' field is required.");
-            if($myRequest->specimenid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'specimenid' field is required.");
+            if($myRequest->label == NULL) trigger_error("902"."Missing parameter - 'label' field is required.", E_USER_ERROR);
+            if($myRequest->specimenid == NULL) trigger_error("902"."Missing parameter - 'specimenid' field is required.", E_USER_ERROR);
             break;
         }
         else
@@ -136,7 +135,7 @@ if(!($myMetaHeader->status == "Error"))
         $success = $myRadius->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
-            $myMetaHeader->setMessage($myRadius->getLastErrorCode(), $myRadius->getLastErrorMessage());
+            trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage(), E_USER_ERROR);
         }
     }
 
@@ -157,18 +156,18 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-               $myMetaHeader->setMessage($myRadius->getLastErrorCode(), $myRadius->getLastErrorMessage());
+               trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage(), E_USER_ERROR);
             }
         }  
         else
         {
             if($myRequest->mode=='update')
             {
-                $myMetaHeader->setMessage("103", "Permission denied on radiusid ".$myRequest->id);
+                trigger_error("103"."Permission denied on radiusid ".$myRequest->id, E_USER_ERROR);
             }
             else
             {
-                $myMetaHeader->setMessage("103", "Permission denied on specimenid ".$myRequest->specimenid);
+                trigger_error("103"."Permission denied on specimenid ".$myRequest->specimenid, E_USER_ERROR);
             }
         }
     }
@@ -186,12 +185,12 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $myMetaHeader->setMessage($myRadius->getLastErrorCode(), $myRadius->getLastErrorMessage());
+                trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage(), E_USER_ERROR);
             }
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on radiusid ".$myRequest->id);
+            trigger_error("103"."Permission denied on radiusid ".$myRequest->id, E_USER_ERROR);
         }
     }
 
@@ -239,12 +238,12 @@ if(!($myMetaHeader->status == "Error"))
                         }
                         else
                         {
-                            $myMetaHeader->setMessage($myRadius->getLastErrorCode(), $myRadius->getLastErrorMessage());
+                            trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage(), E_USER_ERROR);
                         }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage("103", "Permission denied on radiusid ".$row['radiusid'], "Warning");
+                        trigger_error("103"."Permission denied on radiusid ".$row['radiusid'], E_USER_WARNING);
                     }
                 }
             }
@@ -269,12 +268,12 @@ if(!($myMetaHeader->status == "Error"))
                         }
                         else
                         {
-                            $myMetaHeader->setMessage($myRadius->getLastErrorCode(), $myRadius->getLastErrorMessage());
+                            trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage(), E_USER_ERROR);
                         }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage("103", "Permission denied on radiusid ".$row['radiusid'], "Warning");
+                        trigger_error("103"."Permission denied on radiusid ".$row['radiusid'], E_USER_WARNING);
                     }
                 }
                 $xmldata.= $parentTagEnd;
@@ -283,7 +282,7 @@ if(!($myMetaHeader->status == "Error"))
         else
         {
             // Connection bad
-            $myMetaHeader->setMessage("001", "Error connecting to database");
+            trigger_error("001"."Error connecting to database", E_USER_ERROR);
         }
     }
 }

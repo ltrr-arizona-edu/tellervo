@@ -116,7 +116,7 @@ if(!($myMetaHeader->status == "Error"))
                 }
                 else
                 {
-                    $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
+                    trigger_error($mySiteNote->getLastErrorCode().$mySiteNote->getLastErrorMessage());
                 }
             }
             $xmldata.=$myDummySpecimenType->getParentTagEnd();
@@ -125,7 +125,7 @@ if(!($myMetaHeader->status == "Error"))
     else
     {
         // Connection bad
-        $myMetaHeader->setMessage("001", "Error connecting to database");
+        trigger_error("001"."Error connecting to database");
     }
     
     // Terminal Ring 
@@ -152,7 +152,7 @@ if(!($myMetaHeader->status == "Error"))
                 }
                 else
                 {
-                    $myMetaHeader->setMessage($myTerminalRing->getLastErrorCode(), $myTerminalRing->getLastErrorMessage());
+                    trigger_error($myTerminalRing->getLastErrorCode().$myTerminalRing->getLastErrorMessage());
                 }
             }
             $xmldata.=$myDummyTerminalRing->getParentTagEnd();
@@ -161,7 +161,7 @@ if(!($myMetaHeader->status == "Error"))
     else
     {
         // Connection bad
-        $myMetaHeader->setMessage("001", "Error connecting to database");
+        trigger_error("001"."Error connecting to database");
     }
     
     
@@ -189,7 +189,7 @@ if(!($myMetaHeader->status == "Error"))
                 }
                 else
                 {
-                    $myMetaHeader->setMessage($mySpecimenQuality->getLastErrorCode(), $mySpecimenQuality->getLastErrorMessage());
+                    trigger_error($mySpecimenQuality->getLastErrorCode().$mySpecimenQuality->getLastErrorMessage());
                 }
             }
             $xmldata.=$myDummySpecimenQuality->getParentTagEnd();
@@ -198,7 +198,7 @@ if(!($myMetaHeader->status == "Error"))
     else
     {
         // Connection bad
-        $myMetaHeader->setMessage("001", "Error connecting to database");
+        trigger_error("001"."Error connecting to database");
     }
 
     // Pith 
@@ -225,7 +225,7 @@ if(!($myMetaHeader->status == "Error"))
                 }
                 else
                 {
-                    $myMetaHeader->setMessage($myPith->getLastErrorCode(), $myPith->getLastErrorMessage());
+                    trigger_error($myPith->getLastErrorCode().$myPith->getLastErrorMessage());
                 }
             }
             $xmldata.=$myDummyPith->getParentTagEnd();
@@ -234,7 +234,7 @@ if(!($myMetaHeader->status == "Error"))
     else
     {
         // Connection bad
-        $myMetaHeader->setMessage("001", "Error connecting to database");
+        trigger_error("001"."Error connecting to database");
     }
     
     // Specimen Continuity 
@@ -261,7 +261,7 @@ if(!($myMetaHeader->status == "Error"))
                 }
                 else
                 {
-                    $myMetaHeader->setMessage($mySpecimenContinuity->getLastErrorCode(), $mySpecimenContinuity->getLastErrorMessage());
+                    trigger_error($mySpecimenContinuity->getLastErrorCode().$mySpecimenContinuity->getLastErrorMessage());
                 }
             }
             $xmldata.=$myDummySpecimenContinuity->getParentTagEnd();
@@ -270,7 +270,7 @@ if(!($myMetaHeader->status == "Error"))
     else
     {
         // Connection bad
-        $myMetaHeader->setMessage("001", "Error connecting to database");
+        trigger_error("001"."Error connecting to database");
     }
     
     // Site note 
@@ -297,7 +297,7 @@ if(!($myMetaHeader->status == "Error"))
                 }
                 else
                 {
-                    $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
+                    trigger_error($mySiteNote->getLastErrorCode().$mySiteNote->getLastErrorMessage());
                 }
             }
             $xmldata.=$myDummySiteNote->getParentTagEnd();
@@ -306,7 +306,7 @@ if(!($myMetaHeader->status == "Error"))
     else
     {
         // Connection bad
-        $myMetaHeader->setMessage("001", "Error connecting to database");
+        trigger_error("001"."Error connecting to database");
     }
     
     // Tree note 
@@ -333,7 +333,7 @@ if(!($myMetaHeader->status == "Error"))
                 }
                 else
                 {
-                    $myMetaHeader->setMessage($myTreeNote->getLastErrorCode(), $myTreeNote->getLastErrorMessage());
+                    trigger_error($myTreeNote->getLastErrorCode().$myTreeNote->getLastErrorMessage());
                 }
             }
             $xmldata.=$myDummyTreeNote->getParentTagEnd();
@@ -342,7 +342,7 @@ if(!($myMetaHeader->status == "Error"))
     else
     {
         // Connection bad
-        $myMetaHeader->setMessage("001", "Error connecting to database");
+        trigger_error("001"."Error connecting to database");
     }
     
     // VMeasurement note 
@@ -369,7 +369,7 @@ if(!($myMetaHeader->status == "Error"))
                 }
                 else
                 {
-                    $myMetaHeader->setMessage($myVMeasurementNote->getLastErrorCode(), $myVMeasurementNote->getLastErrorMessage());
+                    trigger_error($myVMeasurementNote->getLastErrorCode().$myVMeasurementNote->getLastErrorMessage());
                 }
             }
             $xmldata.=$myDummyVMeasurementNote->getParentTagEnd();
@@ -378,7 +378,7 @@ if(!($myMetaHeader->status == "Error"))
     else
     {
         // Connection bad
-        $myMetaHeader->setMessage("001", "Error connecting to database");
+        trigger_error("001"."Error connecting to database");
     }
     
     // Reading note 
@@ -405,7 +405,7 @@ if(!($myMetaHeader->status == "Error"))
                 }
                 else
                 {
-                    $myMetaHeader->setMessage($myReadingNote->getLastErrorCode(), $myReadingNote->getLastErrorMessage());
+                    trigger_error($myReadingNote->getLastErrorCode().$myReadingNote->getLastErrorMessage());
                 }
             }
             $xmldata.=$myDummyReadingNote->getParentTagEnd();
@@ -414,7 +414,7 @@ if(!($myMetaHeader->status == "Error"))
     else
     {
         // Connection bad
-        $myMetaHeader->setMessage("001", "Error connecting to database");
+        trigger_error("001"."Error connecting to database");
     }
 }
 

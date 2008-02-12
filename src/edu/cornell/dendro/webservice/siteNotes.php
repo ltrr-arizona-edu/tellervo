@@ -52,8 +52,8 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("read");
         if($myAuth->isLoggedIn())
         {
-            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
-            if(!($myRequest->id>0) && !($myRequest->id==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be a valid positive integer.");
+            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id==NULL))    trigger_error("901"."Invalid parameter - 'id' field must be an integer.");
+            if(!($myRequest->id>0) && !($myRequest->id==NULL))                      trigger_error("901"."Invalid parameter - 'id' field must be a valid positive integer.");
             break;
         }
         else
@@ -66,9 +66,9 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("update");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if((gettype($myRequest->isstandard)!="boolean") && ($myRequest->isstandard!=NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'isstandard' must be a boolean.");
-            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
+            if($myRequest->id == NULL)                                              trigger_error("902"."Missing parameter - 'id' field is required.");
+            if((gettype($myRequest->isstandard)!="boolean") && ($myRequest->isstandard!=NULL)) trigger_error("901", "Invalid parameter - 'isstandard' must be a boolean.");
+            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id))          trigger_error("901"."Invalid parameter - 'id' field must be an integer.");
             break;
         }
         else
@@ -81,8 +81,8 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("delete");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if(!(gettype($myRequest->id)=="integer") && !(isset($myRequest->id))) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
+            if($myRequest->id == NULL)                                              trigger_error("902"."Missing parameter - 'id' field is required.");
+            if(!(gettype($myRequest->id)=="integer") && !(isset($myRequest->id)))   trigger_error("901"."Invalid parameter - 'id' field must be an integer.");
             break;
         }
         else
@@ -97,8 +97,8 @@ switch($myRequest->mode)
         {
             // Set default value if not specified
             if($myRequest->isstandard==NULL)                    $myRequest->isstandard = FALSE;
-            if($myRequest->note==NULL)                          $myMetaHeader->setMessage("902", "Missing parameter - 'note' field is required.");
-            if(!(gettype($myRequest->isstandard)=="boolean"))   $myMetaHeader->setMessage("901", "Invalid parameter - 'isstandard' must be a boolean.");
+            if($myRequest->note==NULL)                          trigger_error("902"."Missing parameter - 'note' field is required.");
+            if(!(gettype($myRequest->isstandard)=="boolean"))   trigger_error("901"."Invalid parameter - 'isstandard' must be a boolean.");
             break;
         }
         else
@@ -112,8 +112,8 @@ switch($myRequest->mode)
         if($myAuth->isLoggedIn())
         {
             // Set default value if not specified
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if($myRequest->siteid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'siteid' field is required.");
+            if($myRequest->id == NULL)                          trigger_error("902"."Missing parameter - 'id' field is required.");
+            if($myRequest->siteid == NULL)                      trigger_error("902"."Missing parameter - 'siteid' field is required.");
             break;
         }
         else
@@ -127,8 +127,8 @@ switch($myRequest->mode)
         if($myAuth->isLoggedIn())
         {
             // Set default value if not specified
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if($myRequest->siteid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'siteid' field is required.");
+            if($myRequest->id == NULL)                          trigger_error("902"."Missing parameter - 'id' field is required.");
+            if($myRequest->siteid == NULL)                      trigger_error("902"."Missing parameter - 'siteid' field is required.");
             break;
         }
         else
@@ -166,7 +166,7 @@ if(!($myMetaHeader->status == "Error"))
         $success = $mySiteNote->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
-            $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
+            trigger_error($mySiteNote->getLastErrorCode().$mySiteNote->getLastErrorMessage());
         }
     }
 
@@ -175,7 +175,7 @@ if(!($myMetaHeader->status == "Error"))
     {	
         if(!($myAuth->isAdmin()) && ($myRequest->mode=='update'))
         {
-            $myMetaHeader->setMessage("103", "Permission denied");
+            trigger_error("103"."Permission denied");
         }
         else
         {
@@ -190,7 +190,7 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
+                trigger_error($mySiteNote->getLastErrorCode().$mySiteNote->getLastErrorMessage());
             }
         }
     }
@@ -217,7 +217,7 @@ if(!($myMetaHeader->status == "Error"))
                 $result = pg_query($dbconn, $sql);
                 if(pg_num_rows($result)==0)
                 {
-                    $myMetaHeader->setMessage("903", "No records match the specified id");
+                    trigger_error("903"."No records match the specified id");
                 }
                 else
                 {
@@ -232,7 +232,7 @@ if(!($myMetaHeader->status == "Error"))
                         }
                         else
                         {
-                            $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
+                            trigger_error($mySiteNote->getLastErrorCode().$mySiteNote->getLastErrorMessage());
                         }
                     }
                 }
@@ -241,7 +241,7 @@ if(!($myMetaHeader->status == "Error"))
         else
         {
             // Connection bad
-            $myMetaHeader->setMessage("001", "Error connecting to database");
+            trigger_error("101"."Error connecting to database");
         }
     }
     

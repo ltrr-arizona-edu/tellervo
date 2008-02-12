@@ -415,6 +415,11 @@
                     <data type="positiveInteger" />
                 </attribute>
             </optional>
+            <optional> 
+                <attribute name="isLiveTree">
+                    <data type="boolean" />
+                </attribute>
+            </optional>
             <optional>
                 <attribute name="createdTimeStamp">
                     <data type="dateTime" />
@@ -999,11 +1004,11 @@
                     </attribute>
                     <attribute name="operator">
                         <choice>
+                            <value>like</value>
+                            <value>!=</value>
                             <value>&gt;</value>
                             <value>&lt;</value>
                             <value>=</value>
-                            <value>like</value>
-                            <value>!=</value>
                         </choice>
                     </attribute>
                     <attribute name="value">
@@ -1148,7 +1153,7 @@
             <optional>
                 <element name="readings">
                     <zeroOrMore>
-                        <element name="value">
+                        <element name="reading">
                             <data type="integer" />
                             <optional>
                                 <attribute name="year">
@@ -1170,6 +1175,9 @@
                                     <data type="integer" />
                                 </attribute>
                             </optional>
+                                <attribute name="value">
+                                    <data type="integer" />
+                                </attribute>
                         </element>
                     </zeroOrMore>
                 </element>

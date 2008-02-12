@@ -21,6 +21,7 @@ class tree
     var $latitude = NULL;
     var $longitude = NULL;
     var $precision = NULL;
+    var $isLiveTree = NULL;
     var $specimenArray = array();
     var $treeNoteArray = array();
     var $createdTimeStamp = NULL;
@@ -198,6 +199,7 @@ class tree
                 $xml.= "latitude=\"".$this->latitude."\" ";
                 $xml.= "longitude=\"".$this->longitude."\" ";
                 $xml.= "precision=\"".$this->precision."\" ";
+                $xml.= "isLiveTree=\"".$this->isLiveTree."\" ";
                 $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
                 $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
                 $xml.= ">";
@@ -319,6 +321,7 @@ class tree
                         if (isset($this->subSiteID))                                $sql.= "subsiteid, ";
                         if (isset($this->label))                                    $sql.= "label, ";
                         if (isset($this->precision))                                $sql.= "precision, ";
+                        if (isset($this->isLiveTree))                               $sql.= "islivetree, ";
                         if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "location, ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
@@ -327,6 +330,7 @@ class tree
                         if (isset($this->subSiteID))                                $sql.= "'".$this->subSiteID. "', ";
                         if (isset($this->label))                                    $sql.= "'".$this->label.     "', ";
                         if (isset($this->precision))                                $sql.= "'".$this->precision. "', ";
+                        if (isset($this->isLiveTree))                               $sql.="'".fromPHPtoPGBool($this->isLiveTree)."', ";
                         if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "setsrid(makepoint(".$this->longitude.", ".$this->latitude."), 4326), ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);

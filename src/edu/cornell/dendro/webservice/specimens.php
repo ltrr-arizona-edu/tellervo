@@ -9,10 +9,11 @@
 //////*******************************************************************
 header('Content-Type: application/xhtml+xml; charset=utf-8');
 
-require_once("inc/dbsetup.php");
 require_once("config.php");
+require_once("inc/dbsetup.php");
 require_once("inc/meta.php");
 require_once("inc/auth.php");
+require_once("inc/errors.php");
 require_once("inc/request.php");
 require_once("inc/output.php");
 
@@ -66,7 +67,7 @@ switch($myRequest->mode)
         $myMetaHeader = new meta("update");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
             break;
         }
         else
@@ -79,7 +80,7 @@ switch($myRequest->mode)
         $myMetaHeader = new meta("delete");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
             break;
         }
         else
@@ -93,8 +94,8 @@ switch($myRequest->mode)
         $myMetaHeader = new meta("create");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->label == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'label' field is required.");
-            if($myRequest->treeid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'treeid' field is required.");
+            if($myRequest->label == NULL) trigger_error("902"."Missing parameter - 'label' field is required.", E_USER_ERROR);
+            if($myRequest->treeid == NULL) trigger_error("902"."Missing parameter - 'treeid' field is required.", E_USER_ERROR);
             break;
         }
         else
@@ -131,7 +132,7 @@ if(!($myMetaHeader->status == "Error"))
         $success = $mySpecimen->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
-            $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
+            trigger_error($mySpecimen->getLastErrorCode().$mySpecimen->getLastErrorMessage(), E_USER_ERROR);
         }
     }
 
@@ -168,18 +169,18 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
+                trigger_error($mySpecimen->getLastErrorCode().$mySpecimen->getLastErrorMessage(), E_USER_ERROR);
             }
         }  
         else
         {
             if(isset($myRequest->id))
             {
-                $myMetaHeader->setMessage("103", "Permission denied on specimenid ".$myRequest->id);
+                trigger_error("103"."Permission denied on specimenid ".$myRequest->id, E_USER_ERROR);
             }
             else
             {
-                $myMetaHeader->setMessage("103", "Permission denied on treeid ".$myRequest->treeid);
+                trigger_error("103"."Permission denied on treeid ".$myRequest->treeid, E_USER_ERROR);
             }
         }
     }
@@ -197,12 +198,12 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
+                trigger_error($mySpecimen->getLastErrorCode().$mySpecimen->getLastErrorMessage(), E_USER_ERROR);
             }
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on specimenid ".$myRequest->id);
+            trigger_error("103"."Permission denied on specimenid ".$myRequest->id, E_USER_ERROR);
         }
     }
 
@@ -248,12 +249,12 @@ if(!($myMetaHeader->status == "Error"))
                         }
                         else
                         {
-                            $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
+                            trigger_error($mySpecimen->getLastErrorCode().$mySpecimen->getLastErrorMessage(), E_USER_ERROR);
                         }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage("103", "Permission denied on specimenid ".$row['specimenid'], "Warning");
+                        trigger_error("103"."Permission denied on specimenid ".$row['specimenid'], E_USER_WARNING);
                     }
                 }
             }
@@ -277,12 +278,12 @@ if(!($myMetaHeader->status == "Error"))
                         }
                         else
                         {
-                            $myMetaHeader->setMessage($mySpecimen->getLastErrorCode(), $mySpecimen->getLastErrorMessage());
+                            trigger_error($mySpecimen->getLastErrorCode().$mySpecimen->getLastErrorMessage(), E_USER_ERROR);
                         }
                     }
                     else
                     {
-                        $myMetaHeader->setMessage("103", "Permission denied on specimenid ".$row['specimenid'], "Warning");
+                        trigger_error("103"."Permission denied on specimenid ".$row['specimenid'], E_USER_WARNING);
                     }
                 }
                 $xmldata.=$parentTagEnd;
@@ -291,7 +292,7 @@ if(!($myMetaHeader->status == "Error"))
         else
         {
             // Connection bad
-            $myMetaHeader->setMessage("001", "Error connecting to database");
+            trigger_error("001"."Error connecting to database", E_USER_ERROR);
         }
     }
 }

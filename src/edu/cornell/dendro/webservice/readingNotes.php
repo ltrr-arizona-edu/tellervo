@@ -12,6 +12,7 @@ header('Content-Type: application/xhtml+xml; charset=utf-8');
 require_once("inc/dbsetup.php");
 require_once("config.php");
 require_once("inc/meta.php");
+require_once("inc/errors.php");
 require_once("inc/auth.php");
 require_once("inc/request.php");
 require_once("inc/output.php");
@@ -20,7 +21,6 @@ require_once("inc/readingNote.php");
 
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
-$myMetaHeader   = new meta();
 $myRequest      = new readingNoteRequest($myMetaHeader, $myAuth);
 
 // Set user details
@@ -46,16 +46,16 @@ else
 // ****************
 // CHECK PARAMETERS 
 // ****************
+
+// Create new meta object and check required input parameters and data types
 switch($myRequest->mode)
 {
-    case "update":
-        $myMetaHeader->setRequestType("update");
+    case "read":
+        $myMetaHeader->setRequestType("read");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->note == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'note' field is required.");
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if((gettype($myRequest->isstandard)!="boolean") && ($myRequest->isstandard!=NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'isstandard' must be a boolean.");
-            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
+            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id==NULL)) trigger_error("901"."Invalid parameter - 'id' field must be an integer.");
+            if(!($myRequest->id>0) && !($myRequest->id==NULL)) trigger_error("901"."Invalid parameter - 'id' field must be a valid positive integer.");
             break;
         }
         else
@@ -63,13 +63,14 @@ switch($myRequest->mode)
             $myMetaHeader->requestLogin($myAuth->nonce());
             break;
         }
-
-    case "read":
-        $myMetaHeader->setRequestType("read");
+    
+    case "update":
+        $myMetaHeader->setRequestType("update");
         if($myAuth->isLoggedIn())
         {
-            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
-            if(!($myRequest->id>0) && !($myRequest->id==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be a valid positive integer.");
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.");
+            if((gettype($myRequest->isstandard)!="boolean") && ($myRequest->isstandard!=NULL)) trigger_error("901"."Invalid parameter - 'isstandard' must be a boolean.");
+            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id)) trigger_error("901"."Invalid parameter - 'id' field must be an integer.");
             break;
         }
         else
@@ -82,8 +83,8 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("delete");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if(!(gettype($myRequest->id)=="integer") && !(isset($myRequest->id))) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.");
+            if(!(gettype($myRequest->id)=="integer") && !(isset($myRequest->id))) trigger_error("901"."Invalid parameter - 'id' field must be an integer.");
             break;
         }
         else
@@ -97,24 +98,9 @@ switch($myRequest->mode)
         if($myAuth->isLoggedIn())
         {
             // Set default value if not specified
-            if($myRequest->isstandard == NULL) $myRequest->isstandard = FALSE;
-            if($myRequest->note == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'note' field is required.");
-            if(!(gettype($myRequest->isstandard)=="boolean")) $myMetaHeader->setMessage("901", "Invalid parameter - 'isstandard' must be a boolean.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->requestLogin($myAuth->nonce());
-            break;
-        }
-
-    case "assign":
-        $myMetaHeader->setRequestType("assign");
-        if($myAuth->isLoggedIn())
-        {
-            // Set default value if not specified
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if($myRequest->measurementid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'siteid' field is required.");
+            if($myRequest->isstandard == NULL)                  $myRequest->isstandard = FALSE;
+            if($myRequest->note == NULL)                        trigger_error("902"."Missing parameter - 'note' field is required.");
+            if(!(gettype($myRequest->isstandard)=="boolean"))   trigger_error("901"."Invalid parameter - 'isstandard' must be a boolean.");
             break;
         }
         else
@@ -123,21 +109,6 @@ switch($myRequest->mode)
             break;
         }
     
-    case "unassign":
-        $myMetaHeader->setRequestType("unassign");
-        if($myAuth->isLoggedIn())
-        {
-            // Set default value if not specified
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if($myRequest->siteid == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'siteid' field is required.");
-            break;
-        }
-        else
-        {
-             $myMetaHeader->requestLogin($myAuth->nonce());
-            break;
-        }
-
     case "failed":
         $myMetaHeader->setRequestType("help");
 
@@ -153,55 +124,47 @@ switch($myRequest->mode)
 // PERFORM QUERY
 // *************
 
+$xmldata = "";
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
 {
     // Create readingNote object 
-    $mySiteNote = new readingNote();
-    $parentTagBegin = $mySiteNote->getParentTagBegin();
-    $parentTagEnd = $mySiteNote->getParentTagEnd();
+    $myReadingNote = new readingNote();
+    $parentTagBegin = $myReadingNote->getParentTagBegin();
+    $parentTagEnd = $myReadingNote->getParentTagEnd();
 
     // Set existing parameters if updating or deleting from database
-    if($myRequest->mode=='update' || $myRequest->mode=='delete') 
+    if($myRequest->mode=='update' || $myRequest->mode=='delete' || $myRequest->mode=='assign' || $myRequest->mode=='unassign') 
     {
-        $success = $mySiteNote->setParamsFromDB($myRequest->id);
+        $success = $myReadingNote->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
-            $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
+            trigger_error($myReadingNote->getLastErrorCode().$myReadingNote->getLastErrorMessage());
         }
-
     }
 
     // Update parameters in object if updating or creating an object 
     if($myRequest->mode=='update' || $myRequest->mode=='create')
     {	
-        if (isset($myRequest->note)) $mySiteNote->setNote($myRequest->note);
-        if (isset($myRequest->isstandard)) $mySiteNote->setIsStandard($myRequest->isstandard);
-
-        // Write to object to database
-        $success = $mySiteNote->writeToDB();
-        if($success)
+        if(!($myAuth->isAdmin()) && ($myRequest->mode=='update'))
         {
-            $xmldata=$mySiteNote->asXML();
+            trigger_error("103"."Permission denied");
         }
         else
         {
-            $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
-        }
-    }
+            if (isset($myRequest->note))        $myReadingNote->setNote($myRequest->note);
+            if (isset($myRequest->isstandard))  $myReadingNote->setIsStandard($myRequest->isstandard);
 
-    // Delete record from db if requested
-    if($myRequest->mode=='delete')
-    {
-        // Write to Database
-        $success = $mySiteNote->deleteFromDB();
-        if($success)
-        {
-            $xmldata=$mySiteNote->asXML();
-        }
-        else
-        {
-            $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
+            // Write to object to database
+            $success = $myReadingNote->writeToDB();
+            if($success)
+            {
+                $xmldata=$myReadingNote->asXML();
+            }
+            else
+            {
+                trigger_error($myReadingNote->getLastErrorCode().$myReadingNote->getLastErrorMessage());
+            }
         }
     }
 
@@ -227,16 +190,16 @@ if(!($myMetaHeader->status == "Error"))
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    $mySiteNote = new readingNote();
-                    $success = $mySiteNote->setParamsFromDB($row['readingnoteid']);
+                    $myReadingNote = new readingNote();
+                    $success = $myReadingNote->setParamsFromDB($row['readingnoteid']);
 
                     if($success)
                     {
-                        $xmldata.=$mySiteNote->asXML();
+                        $xmldata.=$myReadingNote->asXML();
                     }
                     else
                     {
-                        $myMetaHeader->setMessage($mySiteNote->getLastErrorCode, $mySiteNote->getLastErrorMessage);
+                        trigger_error($myReadingNote->getLastErrorCode().$myReadingNote->getLastErrorMessage());
                     }
                 }
             }
@@ -244,19 +207,71 @@ if(!($myMetaHeader->status == "Error"))
         else
         {
             // Connection bad
-            $myMetaHeader->setMessage("001", "Error connecting to database");
+            trigger_error("001"."Error connecting to database");
+        }
+    }
+    
+    
+    if($myRequest->mode=='assign')
+    {
+        if($myAuth->treePermission($myRequest->readingnoteid, "update"))   
+        {
+            $success = $myReadingNote->assignToTree($myRequest->readingnoteid);     
+            if($success)
+            {
+                $xmldata=$myReadingNote->asXML();
+            }
+            else
+            {
+                trigger_error($myReadingNote->getLastErrorCode().$myReadingNote->getLastErrorMessage());
+            }
+        }
+        else
+        {
+            trigger_error("103"."Permission denied on readingnoteid=".$myRequest->readingnoteid);
+        }
+    }
+    
+    if($myRequest->mode=='unassign')
+    {
+        if($myAuth->treePermission($myRequest->readingnoteid, "update"))   
+        {
+            $success = $myReadingNote->unassignToTree($myRequest->readingnoteid);     
+            if($success)
+            {
+                $xmldata=$myReadingNote->asXML();
+            }
+            else
+            {
+                trigger_error($myReadingNote->getLastErrorCode().$myReadingNote->getLastErrorMessage());
+            }
+        }
+        else
+        {
+            trigger_error("103"."Permission denied on readingnoteid=".$myRequest->readingnoteid);
         }
     }
 
-    if($myRequest->mode=='assign')
+    if($myRequest->mode=='delete')
     {
-
-
-    }
-
-    if($myRequest->mode=='unassign')
-    {
-
+        
+        if($myAuth->isAdmin()) 
+        {
+            // Write to Database
+            $success = $myReadingNote->deleteFromDB();
+            if($success)
+            {
+                $xmldata=$myReadingNote->asXML();
+            }
+            else
+            {
+                trigger_error($myReadingNote->getLastErrorCode().$myReadingNote->getLastErrorMessage());
+            }
+        }
+        else
+        {
+            trigger_error("103"."Permission denied on readingnoteid ".$myRequest->id);
+        }
 
     }
 

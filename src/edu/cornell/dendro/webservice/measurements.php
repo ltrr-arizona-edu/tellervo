@@ -52,7 +52,7 @@ switch($myRequest->mode)
         $myMetaHeader = new meta("read");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.");
             break;
         }
         else
@@ -65,15 +65,15 @@ switch($myRequest->mode)
         $myMetaHeader = new meta("update");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if(($myRequest->readingsArray) && (count($myRequest->readingsArray)< 10)) $myMetaHeader->setMessage("902", "Invalid parameter - You have only supplied ".count($myRequest->readingsArray)." readings.  Minimum number required is 10.");
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.");
+            if(($myRequest->readingsArray) && (count($myRequest->readingsArray)< 10)) trigger_error("902"."Invalid parameter - You have only supplied ".count($myRequest->readingsArray)." readings.  Minimum number required is 10.");
             if($myRequest->readingsArray)
             {
                 foreach ($myRequest->readingsArray as $reading)
                 {
                     if(!is_numeric($reading)) 
                     {
-                        $myMetaHeader->setMessage("902", "Invalid parameter - All your readings must be numbers.");
+                        trigger_error("902"."Invalid parameter - All your readings must be numbers.");
                         break;
                     }
                 }
@@ -85,7 +85,7 @@ switch($myRequest->mode)
                 {
                     if(!is_numeric($reference)) 
                     {
-                        $myMetaHeader->setMessage("902", "Invalid parameter - All your reference ID's must be numbers.");
+                        trigger_error("902"."Invalid parameter - All your reference ID's must be numbers.");
                         break;
                     }
                 }
@@ -103,7 +103,7 @@ switch($myRequest->mode)
         $myMetaHeader = new meta("delete");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->id == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.");
             break;
         }
         else
@@ -117,15 +117,15 @@ switch($myRequest->mode)
         $myMetaHeader = new meta("create");
         if($myAuth->isLoggedIn())
         {
-            if(($myRequest->referencesArray == NULL) && ($myRequest->readingsArray == NULL)) $myMetaHeader->setMessage("902", "Missing parameter - you must specify either references or readings when creating a new measurement.");
-            if(($myRequest->readingsArray) && ($myRequest->radiusid== NULL)) $myMetaHeader->setMessage("902", "Missing parameter - a new direct measurement must include a radiusID.");
-            if(($myRequest->name== NULL)) $myMetaHeader->setMessage("902", "Missing parameter - a new measurement requires the name parameter.");
-            if(($myRequest->readingsArray) && ($myRequest->startyear== NULL) && ($myRequest->datingTypeID==1)) $myMetaHeader->setMessage("902", "Missing parameter - a new absolute direct measurement must include a startYear.");
-            if(($myRequest->readingsArray) && ($myRequest->datingtypeid==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - a new direct measurement must include a datingTypeID.");
-            if(($myRequest->readingsArray) && (count($myRequest->readingsArray)< 10)) $myMetaHeader->setMessage("902", "Invalid parameter - You have only supplied ".count($myRequest->readingsArray)." readings.  Minimum number required is 10.");
-            if(($myRequest->referencesArray) && ($myRequest->radiusid)) $myMetaHeader->setMessage("902", "Invalid parameter - a new measurement based on other measurements cannot include a radiusID.");
-            if(($myRequest->referencesArray) && ($myRequest->vmeasurementopid==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - a new measurement based on other measurements must include an operationID.");
-            if((!$myRequest->referencesArray) && ($myRequest->vmeasurementopid!==NULL)) $myMetaHeader->setMessage("902", "Missing parameter - you have included an operationID which suggests you are creating a new measurement based on others. However, you have not specified any references to other measurements.");
+            if(($myRequest->referencesArray == NULL) && ($myRequest->readingsArray == NULL)) trigger_error("902"."Missing parameter - you must specify either references or readings when creating a new measurement.");
+            if(($myRequest->readingsArray) && ($myRequest->radiusid== NULL)) trigger_error("902"."Missing parameter - a new direct measurement must include a radiusID.");
+            if(($myRequest->name== NULL)) trigger_error("902"."Missing parameter - a new measurement requires the name parameter.");
+            if(($myRequest->readingsArray) && ($myRequest->startyear== NULL) && ($myRequest->datingTypeID==1)) trigger_error("902"."Missing parameter - a new absolute direct measurement must include a startYear.");
+            if(($myRequest->readingsArray) && ($myRequest->datingtypeid==NULL)) trigger_error("902"."Missing parameter - a new direct measurement must include a datingTypeID.");
+            if(($myRequest->readingsArray) && (count($myRequest->readingsArray)< 10)) trigger_error("902"."Invalid parameter - You have only supplied ".count($myRequest->readingsArray)." readings.  Minimum number required is 10.");
+            if(($myRequest->referencesArray) && ($myRequest->radiusid)) trigger_error("902"."Invalid parameter - a new measurement based on other measurements cannot include a radiusID.");
+            if(($myRequest->referencesArray) && ($myRequest->vmeasurementopid==NULL)) trigger_error("902"."Missing parameter - a new measurement based on other measurements must include an operationID.");
+            if((!$myRequest->referencesArray) && ($myRequest->vmeasurementopid!==NULL)) trigger_error("902"."Missing parameter - you have included an operationID which suggests you are creating a new measurement based on others. However, you have not specified any references to other measurements.");
             /*
             if($myRequest->readingsArray)
             {
@@ -133,7 +133,7 @@ switch($myRequest->mode)
                 {
                     if(!is_numeric($reading['reading'])) 
                     {
-                        $myMetaHeader->setMessage("902", "Invalid parameter - All your readings must be numbers.");
+                        trigger_error("902"."Invalid parameter - All your readings must be numbers.");
                         break;
                     }
                 }
@@ -145,7 +145,7 @@ switch($myRequest->mode)
                 {
                     if(!is_numeric($reference)) 
                     {
-                        $myMetaHeader->setMessage("902", "Invalid parameter - All your reference ID's must be numbers.");
+                        trigger_error("902"."Invalid parameter - All your reference ID's must be numbers.");
                         break;
                     }
                 }
@@ -187,7 +187,7 @@ if(!($myMetaHeader->status == "Error"))
         $success = $myMeasurement->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
-            $myMetaHeader->setMessage($myMeasurement->getLastErrorCode(), $myMeasurement->getLastErrorMessage());
+            trigger_error($myMeasurement->getLastErrorCode().$myMeasurement->getLastErrorMessage());
         }
     }
 
@@ -239,12 +239,12 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $myMetaHeader->setMessage($myMeasurement->getLastErrorCode(), $myMeasurement->getLastErrorMessage());
+                trigger_error($myMeasurement->getLastErrorCode().$myMeasurement->getLastErrorMessage());
             }
         }  
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on vmeasurementid ".$myRequest->id);
+            trigger_error("103"."Permission denied on vmeasurementid ".$myRequest->id);
         }
     }
 
@@ -261,12 +261,12 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                $myMetaHeader->setMessage($myMeasurement->getLastErrorCode(), $myMeasurement->getLastErrorMessage());
+                trigger_error($myMeasurement->getLastErrorCode().$myMeasurement->getLastErrorMessage());
             }
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on vmeasurementid ".$myRequest->id);
+            trigger_error("103"."Permission denied on vmeasurementid ".$myRequest->id);
         }
     }
 
@@ -289,18 +289,18 @@ if(!($myMetaHeader->status == "Error"))
                     }
                     else
                     {
-                        $myMetaHeader->setMessage($myMeasurement->getLastErrorCode(), $myMeasurement->getLastErrorMessage());
+                        trigger_error($myMeasurement->getLastErrorCode().$myMeasurement->getLastErrorMessage());
                     }
                 }
                 else
                 {
-                    $myMetaHeader->setMessage("103", "Permission denied on measurementid ".$myRequest->id, "Warning");
+                    trigger_error("103"."Permission denied on measurementid ".$myRequest->id, E_USER_WARNING);
                 }
         }
         else
         {
             // Connection bad
-            $myMetaHeader->setMessage("001", "Error connecting to database");
+            trigger_error("001"."Error connecting to database");
         }
     }
 }

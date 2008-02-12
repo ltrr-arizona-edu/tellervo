@@ -457,7 +457,7 @@ class measurement
                             $yearvalue = $key;
                         }
 
-                            $xml.="<value year=\"".$yearvalue."\" wjinc=\"".$value['wjinc']."\" wjdec=\"".$value['wjdec']."\" count=\"".$value['count']."\">".$value['reading']."</value>";
+                            $xml.="<reading year=\"".$yearvalue."\" wjinc=\"".$value['wjinc']."\" wjdec=\"".$value['wjdec']."\" count=\"".$value['count']."\" value=\"".$value['reading']."\"></reading>";
                     }
                     $xml.="</readings>";
                 }
