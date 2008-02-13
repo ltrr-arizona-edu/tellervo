@@ -1154,7 +1154,6 @@
                 <element name="readings">
                     <zeroOrMore>
                         <element name="reading">
-                            <data type="integer" />
                             <optional>
                                 <attribute name="year">
                                     <data type="integer" />
@@ -1178,6 +1177,13 @@
                                 <attribute name="value">
                                     <data type="integer" />
                                 </attribute>
+                            <zeroOrMore>
+                                <element name="readingNote">
+                                    <attribute name="id">
+                                        <data type="integer" />
+                                    </attribute>
+                                </element>
+                            </zeroOrMore>
                         </element>
                     </zeroOrMore>
                 </element>

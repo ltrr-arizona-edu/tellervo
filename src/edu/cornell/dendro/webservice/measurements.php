@@ -13,6 +13,7 @@ require_once("inc/dbsetup.php");
 require_once("config.php");
 require_once("inc/meta.php");
 require_once("inc/auth.php");
+require_once("inc/errors.php");
 require_once("inc/request.php");
 require_once("inc/output.php");
 
@@ -20,7 +21,6 @@ require_once("inc/measurement.php");
 
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
-$myMetaHeader   = new meta();
 $myRequest      = new measurementRequest($myMetaHeader, $myAuth);
 
 // Set user details
@@ -122,7 +122,7 @@ switch($myRequest->mode)
             if(($myRequest->name== NULL)) trigger_error("902"."Missing parameter - a new measurement requires the name parameter.");
             if(($myRequest->readingsArray) && ($myRequest->startyear== NULL) && ($myRequest->datingTypeID==1)) trigger_error("902"."Missing parameter - a new absolute direct measurement must include a startYear.");
             if(($myRequest->readingsArray) && ($myRequest->datingtypeid==NULL)) trigger_error("902"."Missing parameter - a new direct measurement must include a datingTypeID.");
-            if(($myRequest->readingsArray) && (count($myRequest->readingsArray)< 10)) trigger_error("902"."Invalid parameter - You have only supplied ".count($myRequest->readingsArray)." readings.  Minimum number required is 10.");
+            if(($myRequest->readingsArray) && (count($myRequest->readingsArray)< 10)) trigger_error("902"."Invalid parameter - You have only supplied ".count($myRequest->readingsArray)." readings.  Minimum number required is 10.", E_USER_ERROR);
             if(($myRequest->referencesArray) && ($myRequest->radiusid)) trigger_error("902"."Invalid parameter - a new measurement based on other measurements cannot include a radiusID.");
             if(($myRequest->referencesArray) && ($myRequest->vmeasurementopid==NULL)) trigger_error("902"."Missing parameter - a new measurement based on other measurements must include an operationID.");
             if((!$myRequest->referencesArray) && ($myRequest->vmeasurementopid!==NULL)) trigger_error("902"."Missing parameter - you have included an operationID which suggests you are creating a new measurement based on others. However, you have not specified any references to other measurements.");

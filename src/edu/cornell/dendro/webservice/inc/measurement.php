@@ -87,8 +87,8 @@ class measurement
                 $this->description = $row['description'];
                 $this->vmeasurementID = $row['vmeasurementid'];
                 $this->vmeasurementResultID = $row['vmeasurementresultid'];
-                $this->vmeasurementOpID = $row['vmeasurementopid'];
-                $this->vmeasurementOpParam = $row['vmeasurementparamid'];
+                //$this->vmeasurementOpID = $row['vmeasurementopid'];
+                //$this->vmeasurementOpParam = $row['vmeasurementparamid'];
                 $this->radiusID = $row['radiusid'];
                 $this->isReconciled = fromPGtoPHPBool($row['isreconciled']);
                 $this->startYear = $row['startyear'];
@@ -98,7 +98,7 @@ class measurement
                 $this->createdTimeStamp = $row['createdtimestamp'];
                 $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
                 $this->setDatingTypeID($row['datingtypeid']);
-                $this->setMeasuredByID($row['measuredbyid']);
+                //$this->setMeasuredByID($row['measuredbyid']);
 
                 // Get more parameters directly from tblvmeasurement
                 $sql2 = "select tblvmeasurement.* from tblvmeasurement where vmeasurementid=".$this->vmeasurementID;
@@ -139,16 +139,28 @@ class measurement
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
             {
-                // Get add all reading values to array 
+                // Get all reading values to array 
                 $this->readingsArray[$row['relyear']] = array('reading' => $row['reading'], 
                                                               'wjinc' => $row['wjinc'], 
                                                               'wjdec' => $row['wjdec'], 
-                                                              'count' => $row['count']
+                                                              'count' => $row['count'],
+                                                              'notesArray' => array()
                                                              );
+            }
+
+            // If this is a direct measurement then add any notes as a subarray
+            if($row['readingid'])
+            {
+                $noteSQL = "SELECT tlkpreadingnote.*, tblreadingreadingnote.readingid FROM tlkpreadingnote, tblreadingreadingnote WHERE tblreadingreadingnote.readingid = ".$row['readingid'];
+                $noteResult = pg_query($dbconn, $noteSQL);
+                while($noteRow = pg_fetch_array($noteResult))
+                {
+                    // Get all reading values to array 
+                    array_push($this->readingsArray[$row['relyear']][notesArray], $noteRow['readingnoteid']); 
+                }
             }
         }
         else
-            
         {
             // Connection bad
             $this->setErrorMessage("001", "Error connecting to database");
@@ -395,7 +407,7 @@ class measurement
 
     function asXML($mode="all", $recurseLevel=99)
     {
-                //print_r($this->referencesArray);
+        //print_r($this->referencesArray);
         // Return a string containing the current object in XML format
 
         // $mode = all, begin or end to denote which section of XML you require
@@ -404,13 +416,12 @@ class measurement
         //      in your XML output.  
         //      Default = 1 
 
-
         if (!isset($this->lastErrorCode))
         {
             if(($mode=="all") || ($mode=="begin"))
             {
                 // Only return XML when there are no errors.
-                $xml.= "<measurement ";
+                $xml = "<measurement ";
                 $xml.= "id=\"".$this->vmeasurementID."\" ";
                 $xml.= "radiusID=\"".$this->radiusID."\" ";
                 $xml.= "isReconciled=\"".fromPHPtoStringBool($this->isReconciled)."\" ";
@@ -457,7 +468,29 @@ class measurement
                             $yearvalue = $key;
                         }
 
-                            $xml.="<reading year=\"".$yearvalue."\" wjinc=\"".$value['wjinc']."\" wjdec=\"".$value['wjdec']."\" count=\"".$value['count']."\" value=\"".$value['reading']."\"></reading>";
+                        $xml.="<reading year=\"".$yearvalue."\" wjinc=\"".$value['wjinc']."\" wjdec=\"".$value['wjdec']."\" count=\"".$value['count']."\" value=\"".$value['reading']."\">";
+
+                        // Add any notes that are in the notesArray subarray
+                        if(count($value['notesArray']) > 0)
+                        {
+                            foreach($value['notesArray'] as $notevalue)
+                            {
+                                $myReadingNote = new readingNote;
+                                $success = $myReadingNote->setParamsFromDB($notevalue);
+
+                                if($success)
+                                {
+                                    $xml.=$myReadingNote->asXML();
+                                }
+                                else
+                                {
+                                    $myMetaHeader->setErrorMessage($myReadingNote->getLastErrorCode(), $myReadingNote->getLastErrorMessage());
+                                }
+                            }
+                        }
+
+                        $xml.="</reading>";
+
                     }
                     $xml.="</readings>";
                 }
@@ -565,7 +598,6 @@ class measurement
                     if($this->vmeasurementOp=='Direct')
                     {
                         // New direct measurement so create tblmeasurement record first
-
                         $sql = "insert into tblmeasurement  (  ";
                             if($this->radiusID)              $sql.= "radiusid, "; 
                             if($this->isReconciled!=NULL)    $sql.= "isreconciled, "; 
@@ -612,16 +644,52 @@ class measurement
                         // Insert new readings
                         foreach($this->readingsArray as $key => $value)
                         {
+                            // First loop through the readingsArray and create insert statement for tblreading table
                             $insertSQL = "insert into tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$key.", ".$value['reading'].")";
+                            
+                            // Do tblreading inserts
                             pg_send_query($dbconn, $insertSQL);
                             $result = pg_get_result($dbconn);
                             if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
                             {
+                                // Insert failed
                                 $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $insertSQL");
                                 return FALSE;
                             }
+                            else
+                            {
+                                // Insert successful
+                                if(count($value['notesArray']) > 0)
+                                {
+                                    // There are notes associated with this reading.  Before insert new notes we first need the pkey of the newly inserted record
+                                    $sql3 = "SELECT * from tblreading where readingid=currval('tblreading_readingid_seq')";
+                                    $result3 = pg_query($dbconn, $sql3);
+                                    while ($row3 = pg_fetch_array($result3))
+                                    {
+                                        $thisReadingID = $row3['readingid'];
+                                    }
+
+                                    foreach($value['notesArray'] as $noteKey )
+                                    {
+                                        // Looping through notes and creating SQL insert statements
+                                        $insertSQL = "INSERT INTO tblreadingreadingnote (readingid, readingnoteid) value(".$thisReadingID.", ".$noteKey.")";
+                                    
+                                        // Do tblreadingreadingnote inserts
+                                        pg_send_query($dbconn, $insertSQL);
+                                        $result4 = pg_get_result($dbconn);
+                                        if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                                        {
+                                            // Insert failed
+                                            $this->setErrorMessage("002", pg_result_error($result4)."--- SQL was $insertSQL");
+                                            return FALSE;
+                                        }
+                                    }
+                                }
+                            }
                         }
-                        
+                        // End of Readings insert
+
+
                     }
 
 
@@ -669,6 +737,7 @@ class measurement
                     }
                     else
                     {
+                        // Successful to retrieve the automated fields for this new vmeasurement
                         while ($row = pg_fetch_array($result))
                         {
                             $this->setParamsFromDB($row['createnewvmeasurement']);
@@ -835,8 +904,9 @@ class measurement
         }
         
         // Return true as write to DB went ok.
-        return TRUE;
     }
+
 // End of Class
 } 
+
 ?>

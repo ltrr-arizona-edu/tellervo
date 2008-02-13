@@ -592,19 +592,31 @@ class measurementRequest extends request
             }
             
             $theYear =-1;
-            foreach($this->simplexml->xpath('//request/measurement/readings/value') as $value)
+            foreach($this->simplexml->xpath('//request/measurement/readings/reading') as $reading)
             {
-                if ($value['year']!=NULL) 
+                if ($reading['year']!=NULL) 
                 {
-                    $theYear = (int) $value['year'];
+                    // If the XML includes a year attribute use it
+                    $theYear = (int) $reading['year'];
                 }
                 else
                 {
+                    // Otherwise use relative years - base 0
                     $theYear++; 
                 }
 
-                $theValue = (int) $value;
-                $this->readingsArray[$theYear] = array('reading' => $theValue, 'wjinc' => NULL, 'wjdec' => NULL, 'count' => 1);
+                $theValue = (int) $reading;
+                $this->readingsArray[$theYear] = array('reading' => $theValue, 'wjinc' => NULL, 'wjdec' => NULL, 'count' => 1, 'notesArray' => array());
+                    
+                if(isset($reading->readingNote))
+                {
+                    foreach($reading->readingNote as $readingNote)
+                    {
+                        array_push($this->readingsArray[$theYear][notesArray], (int) $readingNote['id']); 
+                    }
+
+                }
+
             }
         }
     }
