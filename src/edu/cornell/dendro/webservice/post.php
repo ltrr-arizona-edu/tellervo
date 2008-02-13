@@ -15,6 +15,7 @@ Type: <select id="action">
         <option>siteNotes.php</option>
         <option>treeNotes.php</option>
         <option>readingNotes.php</option>
+        <option>measurementNotes.php</option>
         <option>dictionaries.php</option>
         <option>authenticate.php</option>
         <option>measurements.php</option>

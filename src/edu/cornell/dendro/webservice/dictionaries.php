@@ -21,7 +21,7 @@ require_once("inc/dictionaries.php");
 require_once("inc/siteNote.php");
 require_once("inc/treeNote.php");
 require_once("inc/readingNote.php");
-require_once("inc/vMeasurementNote.php");
+require_once("inc/vmeasurementNote.php");
 require_once("inc/specimenType.php");
 require_once("inc/terminalRing.php");
 require_once("inc/specimenQuality.php");

@@ -9,124 +9,19 @@
 //////*******************************************************************
 header('Content-Type: application/xhtml+xml; charset=utf-8');
 
-require_once("config.php");
 require_once("inc/dbsetup.php");
+require_once("config.php");
 require_once("inc/meta.php");
-require_once("inc/vMeasurementNote.php");
+require_once("inc/errors.php");
 require_once("inc/auth.php");
+require_once("inc/request.php");
+require_once("inc/output.php");
 
-$myAuth = new auth();
+require_once("inc/vmeasurementNote.php");
 
-// Extract parameters from request and ensure no SQL has been injected
-$theMode = strtolower(addslashes($_GET['mode']));
-$theID = (int) $_GET['id'];
-$theVMeasurementID = (int) $_GET['vmeasurementid'];
-if(isset($_GET['note'])) $theNote = addslashes($_GET['note']);
-$theIsStandard = fromStringToPHPBool($_GET['isstandard']);
-
-// Create new meta object and check required input parameters and data types
-switch($theMode)
-{
-    case "read":
-        $myMetaHeader = new meta("read");
-        if($myAuth->isLoggedIn())
-        {
-            if(!(gettype($theID)=="integer") && !($theID==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
-            if(!($theID>0) && !($theID==NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be a valid positive integer.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-    
-    case "update":
-        $myMetaHeader = new meta("update");
-        if($myAuth->isLoggedIn())
-        {
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if((gettype($theIsStandard)!="boolean") && ($theIsStandard!=NULL)) $myMetaHeader->setMessage("901", "Invalid parameter - 'isstandard' must be a boolean.");
-            if(!(gettype($theID)=="integer") && !($theID)) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-
-    case "delete":
-        $myMetaHeader = new meta("delete");
-        if($myAuth->isLoggedIn())
-        {
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if(!(gettype($theID)=="integer") && !(isset($theID))) $myMetaHeader->setMessage("901", "Invalid parameter - 'id' field must be an integer.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-
-    case "create":
-        $myMetaHeader = new meta("create");
-        if($myAuth->isLoggedIn())
-        {
-            // Set default value if not specified
-            if($theIsStandard == NULL) $theIsStandard = FALSE;
-            if($theNote == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'note' field is required.");
-            if(!(gettype($theIsStandard)=="boolean")) $myMetaHeader->setMessage("901", "Invalid parameter - 'isstandard' must be a boolean.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-    
-    case "assign":
-        $myMetaHeader = new meta("assign");
-        if($myAuth->isLoggedIn())
-        {
-            // Set default value if not specified
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if($theVMeasurementID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'vmeasurementid' field is required.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-    
-    case "unassign":
-        $myMetaHeader = new meta("unassign");
-        if($myAuth->isLoggedIn())
-        {
-            // Set default value if not specified
-            if($theID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'id' field is required.");
-            if($theVMeasurementID == NULL) $myMetaHeader->setMessage("902", "Missing parameter - 'vmeasurementid' field is required.");
-            break;
-        }
-        else
-        {
-            $myMetaHeader->setMessage("102", "You must login to run this query.");
-            break;
-        }
-
-    default:
-        $myMetaHeader = new meta("help");
-        $myMetaHeader->setUser("Guest", "", "");
-        // Output the resulting XML
-        echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        echo "<corina>\n";
-        echo $myMetaHeader->asXML();
-        echo "<help> Details of how to use this web service will be added here later! </help>";
-        echo "</corina>\n";
-        die;
-}
+// Create Authentication, Request and Header objects
+$myAuth         = new auth();
+$myRequest      = new vmeasurementNoteRequest($myMetaHeader, $myAuth);
 
 // Set user details
 if($myAuth->isLoggedIn())
@@ -134,63 +29,159 @@ if($myAuth->isLoggedIn())
     $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
 }
 
+// **************
+// GET PARAMETERS
+// **************
+if(isset($_POST['xmlrequest']))
+{
+    // Extract parameters from XML request POST
+    $myRequest->getXMLParams();
+}
+else
+{
+    // Extract parameters from get request and ensure no SQL has been injected
+    $myRequest->getGetParams();
+}
+
+// ****************
+// CHECK PARAMETERS 
+// ****************
+
+// Create new meta object and check required input parameters and data types
+switch($myRequest->mode)
+{
+    case "read":
+        $myMetaHeader->setRequestType("read");
+        if($myAuth->isLoggedIn())
+        {
+            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id==NULL)) trigger_error("901"."Invalid parameter - 'id' field must be an integer.");
+            if(!($myRequest->id>0) && !($myRequest->id==NULL)) trigger_error("901"."Invalid parameter - 'id' field must be a valid positive integer.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+    
+    case "update":
+        $myMetaHeader->setRequestType("update");
+        if($myAuth->isLoggedIn())
+        {
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.");
+            if((gettype($myRequest->isstandard)!="boolean") && ($myRequest->isstandard!=NULL)) trigger_error("901"."Invalid parameter - 'isstandard' must be a boolean.");
+            if(!(gettype($myRequest->id)=="integer") && !($myRequest->id)) trigger_error("901"."Invalid parameter - 'id' field must be an integer.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+
+    case "delete":
+        $myMetaHeader->setRequestType("delete");
+        if($myAuth->isLoggedIn())
+        {
+            if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.");
+            if(!(gettype($myRequest->id)=="integer") && !(isset($myRequest->id))) trigger_error("901"."Invalid parameter - 'id' field must be an integer.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+
+    case "create":
+        $myMetaHeader->setRequestType("create");
+        if($myAuth->isLoggedIn())
+        {
+            // Set default value if not specified
+            if($myRequest->isstandard == NULL)                  $myRequest->isstandard = FALSE;
+            if($myRequest->note == NULL)                        trigger_error("902"."Missing parameter - 'note' field is required.");
+            if(!(gettype($myRequest->isstandard)=="boolean"))   trigger_error("901"."Invalid parameter - 'isstandard' must be a boolean.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+    
+    case "failed":
+        $myMetaHeader->setRequestType("help");
+
+    default:
+        $myMetaHeader->setRequestType("help");
+        // Output the resulting XML
+        writeHelpOutput($myMetaHeader);
+        die;
+}
+
+
+// *************
+// PERFORM QUERY
+// *************
+
+$xmldata = "";
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
 {
-    // Create vMeasurementNote object 
-    $mySiteNote = new vMeasurementNote();
-    $parentTagBegin = $mySiteNote->getParentTagBegin();
-    $parentTagEnd = $mySiteNote->getParentTagEnd();
+    // Create vmeasurementNote object 
+    $myMeasurementNote = new vmeasurementNote();
+    $parentTagBegin = $myMeasurementNote->getParentTagBegin();
+    $parentTagEnd = $myMeasurementNote->getParentTagEnd();
 
     // Set existing parameters if updating or deleting from database
-    if($theMode=='update' || $theMode=='delete' || $theMode=='assign' || $theMode=='unassign') 
+    if($myRequest->mode=='update' || $myRequest->mode=='delete' || $myRequest->mode=='assign' || $myRequest->mode=='unassign') 
     {
-        $success = $mySiteNote->setParamsFromDB($theID);
+        $success = $myMeasurementNote->setParamsFromDB($myRequest->id);
         if(!$success) 
         {
-            $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
+            trigger_error($myMeasurementNote->getLastErrorCode().$myMeasurementNote->getLastErrorMessage());
         }
     }
 
     // Update parameters in object if updating or creating an object 
-    if($theMode=='update' || $theMode=='create')
+    if($myRequest->mode=='update' || $myRequest->mode=='create')
     {	
-        if(!($myAuth->isAdmin()) && ($theMode=='update'))
+        if(!($myAuth->isAdmin()) && ($myRequest->mode=='update'))
         {
-            $myMetaHeader->setMessage("103", "Permission denied");
+            trigger_error("103"."Permission denied");
         }
         else
         {
-            if (isset($theNote)) $mySiteNote->setNote($theNote);
-            if (isset($theIsStandard)) $mySiteNote->setIsStandard($theIsStandard);
+            if (isset($myRequest->note))        $myMeasurementNote->setNote($myRequest->note);
+            if (isset($myRequest->isstandard))  $myMeasurementNote->setIsStandard($myRequest->isstandard);
 
             // Write to object to database
-            $success = $mySiteNote->writeToDB();
+            $success = $myMeasurementNote->writeToDB();
             if($success)
             {
-                $xmldata=$mySiteNote->asXML();
+                $xmldata=$myMeasurementNote->asXML();
             }
             else
             {
-                $myMetaHeader->setMessage($mySiteNote->getLastErrorCode(), $mySiteNote->getLastErrorMessage());
+                trigger_error($myMeasurementNote->getLastErrorCode().$myMeasurementNote->getLastErrorMessage());
             }
         }
     }
 
-    if($theMode=='read')
+    if($myRequest->mode=='read')
     {
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
             // DB connection ok
             // Build SQL depending on parameters
-            if($theID==NULL)
+            if($myRequest->id==NULL)
             {
                 $sql="select * from tlkpvmeasurementnote order by vmeasurementnoteid";
             }
             else
             {
-                $sql="select * from tlkpvmeasurementnote where vmeasurementnoteid=$theID order by vmeasurementnoteid";
+                $sql="select * from tlkpvmeasurementnote where vmeasurementnoteid=".$myRequest->id." order by vmeasurementnoteid";
             }
 
             if($sql)
@@ -199,16 +190,16 @@ if(!($myMetaHeader->status == "Error"))
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    $mySiteNote = new vMeasurementNote();
-                    $success = $mySiteNote->setParamsFromDB($row['vmeasurementnoteid']);
+                    $myMeasurementNote = new vmeasurementNote();
+                    $success = $myMeasurementNote->setParamsFromDB($row['vmeasurementnoteid']);
 
                     if($success)
                     {
-                        $xmldata.=$mySiteNote->asXML();
+                        $xmldata.=$myMeasurementNote->asXML();
                     }
                     else
                     {
-                        $myMetaHeader->setMessage($mySiteNote->getLastErrorCode, $mySiteNote->getLastErrorMessage);
+                        trigger_error($myMeasurementNote->getLastErrorCode().$myMeasurementNote->getLastErrorMessage());
                     }
                 }
             }
@@ -216,44 +207,77 @@ if(!($myMetaHeader->status == "Error"))
         else
         {
             // Connection bad
-            $myMetaHeader->setMessage("001", "Error connecting to database");
+            trigger_error("001"."Error connecting to database");
         }
     }
     
-    if($theMode=='assign')
+    
+    if($myRequest->mode=='assign')
     {
-        if($myAuth->vMeasurementPermission($theVMeasurementID, "update"))   
+        if($myAuth->treePermission($myRequest->vmeasurementnoteid, "update"))   
         {
-            $mySiteNote->assignToVMeasurement($theVMeasurementID);     
+            $success = $myMeasurementNote->assignToTree($myRequest->vmeasurementnoteid);     
+            if($success)
+            {
+                $xmldata=$myMeasurementNote->asXML();
+            }
+            else
+            {
+                trigger_error($myMeasurementNote->getLastErrorCode().$myMeasurementNote->getLastErrorMessage());
+            }
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on vmeasurementid=$theVMeasurementID");
+            trigger_error("103"."Permission denied on measurementnoteid=".$myRequest->vmeasurementnoteid);
         }
-
     }
     
-    if($theMode=='unassign')
+    if($myRequest->mode=='unassign')
     {
-        if($myAuth->vMeasurementPermission($theVNeasurementID, "update"))   
+        if($myAuth->treePermission($myRequest->vmeasurementnoteid, "update"))   
         {
-            $mySiteNote->unassignToVMeasurement($theVMeasurementID);     
+            $success = $myMeasurementNote->unassignToTree($myRequest->vmeasurementnoteid);     
+            if($success)
+            {
+                $xmldata=$myMeasurementNote->asXML();
+            }
+            else
+            {
+                trigger_error($myMeasurementNote->getLastErrorCode().$myMeasurementNote->getLastErrorMessage());
+            }
         }
         else
         {
-            $myMetaHeader->setMessage("103", "Permission denied on vmeasurementid=$theVMeasurementID");
+            trigger_error("103"."Permission denied on measurementnoteid=".$myRequest->vmeasurementnoteid);
+        }
+    }
+
+    if($myRequest->mode=='delete')
+    {
+        
+        if($myAuth->isAdmin()) 
+        {
+            // Write to Database
+            $success = $myMeasurementNote->deleteFromDB();
+            if($success)
+            {
+                $xmldata=$myMeasurementNote->asXML();
+            }
+            else
+            {
+                trigger_error($myMeasurementNote->getLastErrorCode().$myMeasurementNote->getLastErrorMessage());
+            }
+        }
+        else
+        {
+            trigger_error("103"."Permission denied on measurementnoteid ".$myRequest->id);
         }
 
     }
+
 }
 
-// Output the resulting XML
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-echo "<corina>\n";
-echo $myMetaHeader->asXML();
-echo "<data>\n";
-echo $parentTagBegin."\n";
-echo $xmldata;
-echo $parentTagEnd."\n";
-echo "</data>\n";
-echo "</corina>";
+// ***********
+// OUTPUT DATA
+// ***********
+writeOutput($myMetaHeader, $xmldata, $parentTagBegin, $parentTagEnd);

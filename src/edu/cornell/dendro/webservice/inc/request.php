@@ -519,6 +519,38 @@ class readingNoteRequest extends request
     }
 }
 
+class vmeasurementNoteRequest extends request
+{
+    var $id             = NULL;
+    var $vmeasurementid = NULL;
+    var $note           = NULL;
+    var $isstandard     = NULL;
+
+    function vmeasurementNoteRequest($metaHeader, $auth)
+    {
+        parent::request($metaHeader, $auth);
+    }
+
+    function getXMLParams()
+    {
+        $this->logRequest();
+        if($this->readXML())
+        {
+            foreach($this->simplexml->xpath('request//measurementNote[1]') as $measurementNote)
+            {
+                if(isset($measurementNote['id']))            $this->id           = (int)                 $measurementNote['id'];
+                if(isset($measurementNote))                  $this->note         = addslashes(           $measurementNote);
+                if(isset($measurementNote['isStandard']))    $this->isstandard   = fromStringtoPHPBool(  $measurementNote['isStandard']);
+            }
+            
+            foreach($this->simplexml->xpath('request//measurement[1]') as $measurement)
+            {
+                if($measurement['id'])               $this->measurementid       = (int)         $measurement['id'];
+            }
+        }
+    }
+}
+
 class authenticateRequest extends request
 {
     var $password   = NULL;

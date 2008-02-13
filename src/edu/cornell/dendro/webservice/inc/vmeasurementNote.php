@@ -9,12 +9,12 @@
 //////*******************************************************************
 require_once('dbhelper.php');
 
-class readingNote 
+class vmeasurementNote 
 {
     var $id = NULL;
     var $note = NULL;
     var $isStandard = NULL; 
-    var $parentXMLTag = "readingNoteDictionary"; 
+    var $parentXMLTag = "measurementNoteDictionary"; 
     var $lastErrorMessage = NULL;
     var $lastErrorCode = NULL;
 
@@ -22,7 +22,7 @@ class readingNote
     /* CONSTRUCTOR */
     /***************/
 
-    function readingNote()
+    function vmeasurementNote()
     {
         // Constructor for this class.
         $this->isStandard = FALSE;
@@ -64,7 +64,7 @@ class readingNote
         global $dbconn;
         
         $this->id=$theID;
-        $sql = "select * from tlkpreadingnote where readingnoteid=$theID";
+        $sql = "select * from tlkpvmeasurementnote where vmeasurementnoteid=$theID";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -106,7 +106,7 @@ class readingNote
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml.= "<readingNote id=\"".$this->id."\" isStandard=\"".fromPGtoStringBool($this->isStandard)."\">".$this->note."</readingNote>\n";
+            $xml.= "<measurementNote id=\"".$this->id."\" isStandard=\"".fromPGtoStringBool($this->isStandard)."\">".$this->note."</measurementNote>\n";
             return $xml;
         }
         else
@@ -170,13 +170,13 @@ class readingNote
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tlkpreadingnote (note, isstandard) values ('".$this->note."', '".fromPHPtoPGBool($this->isStandard)."')";
-                    $sql2 = "select * from tlkpreadingnote where readingnoteid=currval('tlkpreadingnote_readingnoteid_seq')";
+                    $sql = "insert into tlkpvmeasurementnote (note, isstandard) values ('".$this->note."', '".fromPHPtoPGBool($this->isStandard)."')";
+                    $sql2 = "select * from tlkpvmeasurementnote where vmeasurementnoteid=currval('tlkpvmeasurementnote_vmeasurementnoteid_seq')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tlkpreadingnote set note='".$this->note."', isstandard='".fromPHPtoPGBool($this->isStandard)."' where readingnoteid=".$this->id;
+                    $sql = "update tlkpvmeasurementnote set note='".$this->note."', isstandard='".fromPHPtoPGBool($this->isStandard)."' where vmeasurementnoteid=".$this->id;
                 }
 
                 // Run SQL command
@@ -198,7 +198,7 @@ class readingNote
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
                     {
-                        $this->id=$row['readingnoteid'];   
+                        $this->id=$row['vmeasurementnoteid'];   
                     }
                 }
             }
@@ -234,7 +234,7 @@ class readingNote
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tlkpreadingnote where readingnoteid=".$this->id;
+                $sql = "delete from tlkpvmeasurementnote where vmeasurementnoteid=".$this->id;
 
                 // Run SQL command
                 if ($sql)

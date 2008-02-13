@@ -188,6 +188,9 @@
                     <ref name="treeNoteObject" />   	
                 </optional>
                 <optional>
+                    <ref name="measurementObject" />
+                </optional>
+                <optional>
                     <ref name="readingNoteObject" />   	
                 </optional>
                 <optional>
@@ -195,9 +198,6 @@
                 </optional>
                 <optional>
                     <ref name="authenticateObject" />
-                </optional>
-                <optional>
-                    <ref name="measurementObject" />
                 </optional>
                 <optional>
                     <ref name="siteParamsObject" />
@@ -1150,62 +1150,67 @@
                 </attribute>
             </optional>
 
-            <optional>
-                <element name="readings">
-                    <zeroOrMore>
-                        <element name="reading">
-                            <optional>
-                                <attribute name="year">
-                                    <data type="integer" />
-                                </attribute>
-                            </optional>
-                            <optional>
-                                <attribute name="wjInc">
-                                    <data type="integer" />
-                                </attribute>
-                            </optional>
-                            <optional>
-                                <attribute name="wjDec">
-                                    <data type="integer" />
-                                </attribute>
-                            </optional>
-                            <optional>
-                                <attribute name="count">
-                                    <data type="integer" />
-                                </attribute>
-                            </optional>
-                                <attribute name="value">
-                                    <data type="integer" />
-                                </attribute>
-                            <zeroOrMore>
-                                <element name="readingNote">
-                                    <attribute name="id">
+            <interleave>
+                <zeroOrMore>
+                    <ref name="vmeasurementNoteObject"/>
+                </zeroOrMore>
+                <optional>
+                    <element name="readings">
+                        <zeroOrMore>
+                            <element name="reading">
+                                <optional>
+                                    <attribute name="year">
                                         <data type="integer" />
                                     </attribute>
-                                </element>
-                            </zeroOrMore>
-                        </element>
-                    </zeroOrMore>
-                </element>
-            </optional>
+                                </optional>
+                                <optional>
+                                    <attribute name="wjInc">
+                                        <data type="integer" />
+                                    </attribute>
+                                </optional>
+                                <optional>
+                                    <attribute name="wjDec">
+                                        <data type="integer" />
+                                    </attribute>
+                                </optional>
+                                <optional>
+                                    <attribute name="count">
+                                        <data type="integer" />
+                                    </attribute>
+                                </optional>
+                                    <attribute name="value">
+                                        <data type="integer" />
+                                    </attribute>
+                                <zeroOrMore>
+                                    <element name="readingNote">
+                                        <attribute name="id">
+                                            <data type="integer" />
+                                        </attribute>
+                                    </element>
+                                </zeroOrMore>
+                            </element>
+                        </zeroOrMore>
+                    </element>
+                </optional>
 
-            <optional>
-                <element name="references">
-                    <optional>
-                        <attribute name="operationID">
-                            <data type="positiveInteger" />                           
-                        </attribute>
-                    </optional>
-                    <optional>
-                        <attribute name="operation">
-                            <text/>
-                        </attribute>
-                    </optional>
-                    <zeroOrMore>
-                        <ref name="measurementObject"/> 
-                    </zeroOrMore> 
-                </element>
-            </optional>
+                <optional>
+                    <element name="references">
+                        <optional>
+                            <attribute name="operationID">
+                                <data type="positiveInteger" />                           
+                            </attribute>
+                        </optional>
+                        <optional>
+                            <attribute name="operation">
+                                <text/>
+                            </attribute>
+                        </optional>
+                        <zeroOrMore>
+                            <ref name="measurementObject"/> 
+                        </zeroOrMore> 
+                    </element>
+                </optional>
+            </interleave>
         </element>
     </define>
 
