@@ -109,6 +109,37 @@ switch($myRequest->mode)
             break;
         }
     
+    case "assign":
+        $myMetaHeader->setRequestType("assign");
+        if($myAuth->isLoggedIn())
+        {
+            // Set default value if not specified
+            if($myRequest->id == NULL)                          trigger_error("902"."Missing parameter - 'id' field is required.");
+            if($myRequest->measurementid == NULL)               trigger_error("902"."Missing parameter - 'measurementid' field is required.");
+            break;
+        }
+        else
+        {
+            $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+    
+    case "unassign":
+        $myMetaHeader->setRequestType("unassign");
+        if($myAuth->isLoggedIn())
+        {
+            // Set default value if not specified
+            if($myRequest->id == NULL)                          trigger_error("902"."Missing parameter - 'id' field is required.");
+            if($myRequest->measurementid == NULL)               trigger_error("902"."Missing parameter - 'measurementid' field is required.");
+            break;
+        }
+        else
+        {
+             $myMetaHeader->requestLogin($myAuth->nonce());
+            break;
+        }
+
+    
     case "failed":
         $myMetaHeader->setRequestType("help");
 
@@ -214,9 +245,9 @@ if(!($myMetaHeader->status == "Error"))
     
     if($myRequest->mode=='assign')
     {
-        if($myAuth->treePermission($myRequest->vmeasurementnoteid, "update"))   
+        if($myAuth->vmeasurementPermission($myRequest->measurementid, "update"))   
         {
-            $success = $myMeasurementNote->assignToTree($myRequest->vmeasurementnoteid);     
+            $success = $myMeasurementNote->assignToVMeasurement($myRequest->measurementid);     
             if($success)
             {
                 $xmldata=$myMeasurementNote->asXML();
@@ -228,15 +259,15 @@ if(!($myMetaHeader->status == "Error"))
         }
         else
         {
-            trigger_error("103"."Permission denied on measurementnoteid=".$myRequest->vmeasurementnoteid);
+            trigger_error("103"."Permission denied on measurementid=".$myRequest->measurementid);
         }
     }
     
     if($myRequest->mode=='unassign')
     {
-        if($myAuth->treePermission($myRequest->vmeasurementnoteid, "update"))   
+        if($myAuth->vmeasurementPermission($myRequest->measurementid, "update"))   
         {
-            $success = $myMeasurementNote->unassignToTree($myRequest->vmeasurementnoteid);     
+            $success = $myMeasurementNote->unassignToVMeasurement($myRequest->measurementid);     
             if($success)
             {
                 $xmldata=$myMeasurementNote->asXML();

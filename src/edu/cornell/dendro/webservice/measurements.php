@@ -173,6 +173,7 @@ switch($myRequest->mode)
 // PERFORM QUERY
 // *************
 
+$xmldata ="";
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
 {
@@ -283,7 +284,8 @@ if(!($myMetaHeader->status == "Error"))
                 {
                     $myMeasurement = new measurement();
                     $success = $myMeasurement->setParamsFromDB($myRequest->id);
-                    if($success)
+                    $success2 = $myMeasurement->setChildParamsFromDB();
+                    if($success && $success2)
                     {
                         $xmldata.=$myMeasurement->asXML();
                     }

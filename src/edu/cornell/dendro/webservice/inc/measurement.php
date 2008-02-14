@@ -8,6 +8,7 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 require_once('dbhelper.php');
+require_once('inc/vmeasurementNote.php');
 
 class measurement 
 {
@@ -25,12 +26,14 @@ class measurement
     var $datingType = "Relative";
     var $datingErrorPositive = NULL;
     var $datingErrorNegative = NULL;
+    var $isPublished = NULL;
     var $measuredByID = NULL;
     var $measuredBy = NULL;
     var $ownerUserID = NULL;
     var $owner = NULL;
     var $readingsArray = array();
     var $referencesArray = array();
+    var $vmeasurementNoteArray = array();
     var $createdTimeStamp = NULL;
     var $lastModifiedTimeStamp = NULL;
     var $name = NULL;
@@ -400,6 +403,33 @@ class measurement
         $this->isPublished = fromStringtoPHPBool($isPublished);
     }
 
+    function setChildParamsFromDB()
+    {
+        // Add the id's of the current objects direct children from the database
+
+        global $dbconn;
+
+        $sql  = "select vmeasurementnoteid from tblvmeasurementvmeasurementnote where vmeasurementid=".$this->vmeasurementID;
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);
+            while ($row = pg_fetch_array($result))
+            {
+                // Get all tree note id's for this tree and store 
+                array_push($this->vmeasurementNoteArray, $row['vmeasurementnoteid']);
+            }
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
 
     /***********/
     /*ACCESSORS*/
@@ -441,6 +471,25 @@ class measurement
                 $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
                 $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
                 $xml.= ">";
+                
+                // Include site notes if present
+                if ($this->vmeasurementNoteArray)
+                {
+                    foreach($this->vmeasurementNoteArray as $value)
+                    {
+                        $myVMeasurementNote = new vmeasurementNote();
+                        $success = $myVMeasurementNote->setParamsFromDB($value);
+
+                        if($success)
+                        {
+                            $xml.=$myVMeasurementNote->asXML();
+                        }
+                        else
+                        {
+                            $myMetaHeader->setErrorMessage($myVMeasurementNote->getLastErrorCode, $myVMeasurementNote->getLastErrorMessage);
+                        }
+                    }
+                }
 
                 // Include all readings 
                 if ($this->readingsArray)

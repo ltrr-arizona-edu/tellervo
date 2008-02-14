@@ -93,6 +93,87 @@ class vmeasurementNote
 
         return TRUE;
     }
+    
+    function assignToVMeasurement($theVMeasurementID)
+    {
+        global $dbconn;
+        //Only attempt to run SQL if there are no errors so far
+        if($this->lastErrorCode == NULL)
+        {
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                // First check that this combination doesn't already exists
+                $sql = "select * from tblvmeasurementvmeasurementnote where vmeasurementid=$theVMeasurementID and vmeasurementnoteid=".$this->id;
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn);
+                if(pg_num_rows($result)>0)
+                {
+                    $this->setErrorMessage("906", "This note is already assigned to this measurement.");
+                    return FALSE;
+                }
+                else
+                {
+                    // Add note
+                    $sql = "INSERT INTO tblvmeasurementvmeasurementnote (vmeasurementid, vmeasurementnoteid) values ($theVMeasurementID, ".$this->id.")";
+                    pg_send_query($dbconn, $sql);
+                    $result = pg_get_result($dbconn);
+                    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                    {
+                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        return FALSE;
+                    }
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+        }
+        return TRUE;
+    }
+    
+    function unassignToVMeasurement($theVMeasurementID)
+    {
+        global $dbconn;
+        //Only attempt to run SQL if there are no errors so far
+        if($this->lastErrorCode == NULL)
+        {
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                // First check this combination exists
+                $sql = "SELECT * FROM tblvmeasurementvmeasurementnote where vmeasurementid=$theVMeasurementID and vmeasurementnoteid=".$this->id;
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn);
+                if(pg_num_rows($result)==0)
+                {
+                    $this->setErrorMessage("906", "This note is not assigned to this measurement.");
+                    return FALSE;
+                }
+                else
+                {
+                    $sql = "DELETE FROM tblvmeasurementvmeasurementnote where vmeasurementid=$theVMeasurementID and vmeasurementnoteid=".$this->id;
+                    pg_send_query($dbconn, $sql);
+                    $result = pg_get_result($dbconn);
+                    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                    {
+                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        return FALSE;
+                    }
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+        }
+        return TRUE;
+    }
 
 
     /***********/
