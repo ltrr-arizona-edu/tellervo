@@ -119,6 +119,7 @@ switch($myRequest->mode)
 // PERFORM QUERY
 // *************
 
+$xmldata ="";
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
 {

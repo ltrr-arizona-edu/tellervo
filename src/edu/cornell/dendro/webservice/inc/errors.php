@@ -9,7 +9,7 @@
 //////*******************************************************************
 
 // Remove standard PHP error reporting
-error_reporting(0);
+//error_reporting(0);
 
 // Set up our own error handling
 $old_error_handler = set_error_handler("userErrorHandler");

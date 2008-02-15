@@ -207,185 +207,13 @@ class auth
     return $this->securityuserid;
   }
 
-  function vmeasurementPermission($theVMeasurementID, $theType)
-  {
-        global $dbconn;
-        
-        switch($theType)
-        {
-        case "create":
-            return true;
-            break;
-
-        case "read":
-            $thePermissionID=2;
-            break;
-
-        case "update":
-            $thePermissionID=4;
-            break;
-
-        case "delete":
-            $thePermissionID=5;
-            break;
-        } 
-        
-        // Check user is logged in first
-        if ($this->isLoggedIn())
-        {
-            if(!($this->isAdmin()))
-            {
-                $sql = "select * from securitygroupvmeasurementmaster($thePermissionID, ".$this->securityuserid.") where objectid=$theVMeasurementID";
-                
-                $dbconnstatus = pg_connection_status($dbconn);
-                if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-                {
-                    pg_send_query($dbconn, $sql);
-                    $result = pg_get_result($dbconn);
-                    if(pg_num_rows($result)==0)
-                    {
-                        // No records match the id specified
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-            else
-            {
-                // Admin user so give permission
-                return true;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    return false;
-  }
   
-  function sitePermission($theSiteID, $theType)
+  function sitePermission($theSiteID, $thePermissionType)
   {
-      global $dbconn;
-        
-        switch($theType)
-        {
-        case "create":
-            return true;
-            break;
-
-        case "read":
-            $thePermissionID=2;
-            break;
-
-        case "update":
-            $thePermissionID=4;
-            break;
-
-        case "delete":
-            $thePermissionID=5;
-            break;
-        } 
-        
-        // Check user is logged in first
-        if ($this->isLoggedIn())
-        {
-            if(!($this->isAdmin()))
-            {
-                $sql = "select * from securitygroupsitemaster($thePermissionID, ".$this->securityuserid.") where objectid=$theSiteID";
-                $dbconnstatus = pg_connection_status($dbconn);
-                if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-                {
-                    $result = pg_query($dbconn, $sql);
-                    if(pg_num_rows($result)==0)
-                    {
-                        // No records match the id specified
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-            else
-            {
-                return true;
-            }
-        }
-        else
-        {
-            return true;
-        }
-    return false;
+      return $this->getPermission($thePermissionType, 'site', $theSiteID); 
   }
 
-  function treePermission($theTreeID, $theType)
-  {
-        global $dbconn;
-
-        switch($theType)
-        {
-        case "create":
-            return true;
-            break;
-
-        case "read":
-            $thePermissionID=2;
-            break;
-
-        case "update":
-            $thePermissionID=4;
-            break;
-
-        case "delete":
-            $thePermissionID=5;
-            break;
-        } 
-        
-        // Check user is logged in first
-        if ($this->isLoggedIn())
-        {
-            if(!($this->isAdmin()))
-            {
-                $sql = "select * from securitypermstree(".$this->securityuserid.", $thePermissionID, $theTreeID)";
-                
-                $dbconnstatus = pg_connection_status($dbconn);
-                if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-                {
-                    pg_send_query($dbconn, $sql);
-                    $result = pg_get_result($dbconn);
-                    if(pg_num_rows($result)==0)
-                    {
-                        // No records match the id specified
-                        return false;
-                    }
-                    else
-                    {
-                        $result = pg_query($dbconn, $sql);
-                        while ($row = pg_fetch_array($result))
-                        {
-                            return fromPGtoPHPBool($row['securitypermstree']);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                // Admin user so give permission
-                return true;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    return false;
-  }
-
-  function subSitePermission($theSubSiteID, $theType)
+  function subSitePermission($theSubSiteID, $thePermissionType)
   {
 
         global $dbconn;
@@ -405,14 +233,19 @@ class auth
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    return $this->sitePermission($row['siteid'], $theType);
+                    return $this->getPermission($thePermissionType, 'site', $row['siteid']);
                 }
             }
         }
         return false;
   }
+  
+  function treePermission($theTreeID, $thePermissionType)
+  {
+      return $this->getPermission($thePermissionType, 'tree', $theTreeID); 
+  }
 
-  function specimenPermission($theSpecimenID, $theType)
+  function specimenPermission($theSpecimenID, $thePermissionType)
   {
         global $dbconn;
         $sql = "select treeid from tblspecimen where specimenid=$theSpecimenID";
@@ -431,14 +264,14 @@ class auth
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    return $this->treePermission($row['treeid'], $theType);
+                    return $this->getPermission($thePermissionType, 'tree', $row['treeid']);
                 }
             }
         }
         return false;
   }
   
-  function radiusPermission($theRadiusID, $theType)
+  function radiusPermission($theRadiusID, $thePermissionType)
   {
         global $dbconn;
         $sql = "select tblradius.radiusid, tblspecimen.treeid from tblradius, tblspecimen where tblradius.radiusid=$theRadiusID and tblradius.specimenid=tblspecimen.specimenid";
@@ -457,11 +290,52 @@ class auth
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    return $this->treePermission($row['treeid'], $theType);
+                    return $this->getPermission($thePermissionType, 'tree', $row['treeid']);
                 }
             }
         }
         return false;
+  }
+  
+  function vmeasurementPermission($theVMeasurementID, $thePermissionType)
+  {
+      return $this->getPermission($thePermissionType, 'vmeasurement', $theVmeasurementID); 
+  }
+  
+  function getPermission($thePermissionType, $theObjectType, $theObjectID)
+  {
+        // $theObjectType should be one of site,tree, vmeasurement, default
+
+        global $dbconn;
+        // Check user is logged in first
+        if ($this->isLoggedIn())
+        {
+            if(!($this->isAdmin()))
+            {
+                // Not an admin user so do perms lookup
+                $sql = "select * from cpgdb.getuserpermissions($this->securityuserid, $theObjectType, $theObjectID)";
+                $dbconnstatus = pg_connection_status($dbconn);
+                if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+                {
+                    $result = pg_query($dbconn, $sql);
+                    $row = pg_fetch_array($result);
+                    return (bool) preg_match(ucfirst($thePermissionType), $row['getuserpermissions']);
+                }
+                else
+                {
+                    return False;
+                }
+            }
+            else
+            {
+                // User is admin so return true
+                return True;
+            }
+        }
+        else
+        {
+            return false;
+        }
   }
 
   function isAdmin()
