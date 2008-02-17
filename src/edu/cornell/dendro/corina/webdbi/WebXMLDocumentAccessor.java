@@ -11,6 +11,7 @@ import org.jdom.input.*;
 import org.jdom.output.XMLOutputter;
 
 import java.net.*;
+
 import javax.net.ssl.*;
 import java.io.*;
 
@@ -113,7 +114,7 @@ public class WebXMLDocumentAccessor {
 				http.setRequestProperty("Cookie", cookie);
 			
 			// Set any header fields and do other various setup
-			http.setRequestProperty("User-Agent", "Corina WSI " + Build.VERSION);
+			http.setRequestProperty("User-Agent", "Corina WSI " + URLEncoder.encode(Build.VERSION, "UTF-8"));
 			http.setUseCaches(false);
 
 			// if we're using an https connection, we're going to have to be careful
@@ -167,7 +168,7 @@ public class WebXMLDocumentAccessor {
 				in.mark(4096);
 			}
 
-			/*
+			
 			//debug
 			in.mark(16384);
 			try {
@@ -178,10 +179,9 @@ public class WebXMLDocumentAccessor {
 					sb.append((char) v);
 				}
 				
-				System.out.println(sb.toString());
+				System.out.println("\nIncoming Document:\n" + sb.toString());
 			} catch (Exception e) {}
 			in.reset();
-			/**/
 			
 			try {
 				// parse the input into an XML document
