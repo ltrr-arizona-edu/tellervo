@@ -34,6 +34,8 @@ public class WebXMLDocumentAccessor {
 	 * 
 	 * For POST queries, use the constructor that only requires a noun
 	 * 
+	 * @deprecated use POST queries instead
+	 * 
 	 * @param noun 
 	 * What we are affecting here. For example, dictionary, sample, etc.
 	 * @param verb
@@ -48,12 +50,7 @@ public class WebXMLDocumentAccessor {
 				path += "/";
 			path += noun + ".php" + "?mode=" + verb;
 
-			// debug
-			//path = "http://www.negaverse.org:8080/cows.php";			
-			
-			url = new URL(path);
-			
-			System.out.println("Access URL: " + url);
+			url = new URL(path);			
 		} catch (MalformedURLException e) {
 			new Bug(e);
 		}
@@ -78,12 +75,19 @@ public class WebXMLDocumentAccessor {
 			
 			url = new URL(path);
 			
+			// debug
 			System.out.println("Access URL: " + url);
 		} catch (MalformedURLException e) {
 			new Bug(e);
 		}		
 	}
 		
+	/**
+	 * The important part of this: query the server. This is a blocking call.
+	 * 
+	 * @return A DOM document
+	 * @throws IOException
+	 */
 	public Document query() throws IOException {
 		return doRequest();
 	}
@@ -130,9 +134,8 @@ public class WebXMLDocumentAccessor {
 	
 				http.getOutputStream().write("xmlrequest=".getBytes());
 				outp.output(requestDocument, new URLEncodingOutputStream(http.getOutputStream()));
-				// useful for debugging
-				//outp.output(requestDocument, http.getOutputStream());
-				
+
+				// debug
 				outp.output(requestDocument, System.out);
 			}
 			
