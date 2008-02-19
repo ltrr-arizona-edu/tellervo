@@ -46,172 +46,172 @@ import edu.cornell.dendro.corina.ui.CorinaAction;
 
 public class Macintosh {
 
-    /**
-       Uses the other methods of this class to set up the About,
-       Preferences, and Quit menu items.
+	/**
+	   Uses the other methods of this class to set up the About,
+	   Preferences, and Quit menu items.
 
-       <p>"About" calls "new AboutBox()".  Preferences calls
-       "PrefsDialog.showPreferences()".  Quit calls "XCorina.quit();
-       System.exit(0);".</p>
+	   <p>"About" calls "new AboutBox()".  Preferences calls
+	   "PrefsDialog.showPreferences()".  Quit calls "XCorina.quit();
+	   System.exit(0);".</p>
 
-       <p>If this system is not a Mac, does nothing.</p>
-    */
-    public static void configureMenus() {
-        if (App.platform.isMac()) {
-            // register "about" menuitem
-            Macintosh.registerAboutHandler(HelpMenu.ABOUT_ACTION);/*new Runnable() {
-                public void run() {
-                    AboutBox.getInstance().show();
-                }
-            });*/
+	   <p>If this system is not a Mac, does nothing.</p>
+	 */
+	public static void configureMenus() {
+		if (App.platform.isMac()) {
+			// register "about" menuitem
+			Macintosh.registerAboutHandler(HelpMenu.ABOUT_ACTION);/*new Runnable() {
+			                public void run() {
+			                    AboutBox.getInstance().show();
+			                }
+			            });*/
 
-            // and "preferences"
-            Macintosh.registerPrefsHandler(new Runnable() {
-                public void run() {
-                    PrefsDialog.showPreferences();
-                }
-            });
+			// and "preferences"
+			Macintosh.registerPrefsHandler(new Runnable() {
+				public void run() {
+					PrefsDialog.showPreferences();
+				}
+			});
 
-            // and "quit"
-            Macintosh.registerQuitHandler(new Runnable() {
-                public void run() {
-                    XCorina.quit();
-                    System.exit(0);
-                }
-            });
-        }
-    }
-    
-    // assumes:
-    // -- this is actually a mac we're running on
-    // -- about.run() throws no exceptions
-    // what i do: basically the same as:
-    /*
-        import com.apple.mrj.*;
-        ...
-            MRJApplicationUtils.registerAboutHandler(new MRJAboutHandler() {
-                public void handleAbout() {
-                    about.run();
-                }
-            });
-    */
-
-  public static void registerAboutHandler(final CorinaAction about) {
-    try {
-      InvocationHandler handler = new InvocationHandler() {
-        public Object invoke(Object proxy, Method method, Object[] args) {
-          if (method.getName().equals("handleAbout"))
-            about.perform(null);
-			return null;
-		    }
-		};
-
-	    Class appUtils = Class.forName("com.apple.mrj.MRJApplicationUtils");
-	    Class paramTypes[] = new Class[] { Class.forName("com.apple.mrj.MRJAboutHandler") };
-	    Object aboutHandler = Proxy.newProxyInstance(getClassLoader(), paramTypes, handler);
-	    Method register = appUtils.getMethod("registerAboutHandler", paramTypes);
-	    register.invoke(appUtils.newInstance(), new Object[] { aboutHandler });
-	} catch (Exception e) {
-	    // can't happen <=> bug!
-	    new Bug(e);
+			// and "quit"
+			Macintosh.registerQuitHandler(new Runnable() {
+				public void run() {
+					XCorina.quit();
+					System.exit(0);
+				}
+			});
+		}
 	}
-    }
 
-    // --------------------------------------------------
+	// assumes:
+	// -- this is actually a mac we're running on
+	// -- about.run() throws no exceptions
+	// what i do: basically the same as:
+	/*
+	    import com.apple.mrj.*;
+	    ...
+	        MRJApplicationUtils.registerAboutHandler(new MRJAboutHandler() {
+	            public void handleAbout() {
+	                about.run();
+	            }
+	        });
+	 */
 
-    // same thing, but for quit:
-    /*
-        import com.apple.mrj.*;
-        ...
+	public static void registerAboutHandler(final CorinaAction about) {
+		try {
+			InvocationHandler handler = new InvocationHandler() {
+				public Object invoke(Object proxy, Method method, Object[] args) {
+					if (method.getName().equals("handleAbout"))
+						about.perform(null);
+					return null;
+				}
+			};
+
+			Class appUtils = Class.forName("com.apple.mrj.MRJApplicationUtils");
+			Class paramTypes[] = new Class[] { Class.forName("com.apple.mrj.MRJAboutHandler") };
+			Object aboutHandler = Proxy.newProxyInstance(getClassLoader(), paramTypes, handler);
+			Method register = appUtils.getMethod("registerAboutHandler", paramTypes);
+			register.invoke(appUtils.newInstance(), new Object[] { aboutHandler });
+		} catch (Exception e) {
+			// can't happen <=> bug!
+			new Bug(e);
+		}
+	}
+
+	// --------------------------------------------------
+
+	// same thing, but for quit:
+	/*
+	    import com.apple.mrj.*;
+	    ...
 	    MRJApplicationUtils.registerQuitHandler(new MRJQuitHandler() {
-                public void handleQuit() {
-                    (new Thread() { // needs to run in its own thread, for reasons i don't entirely understand.
-                        public void run() {
-                            try {
-                                XCorina.quit();
-                                System.exit(0);
-                            } catch (IllegalStateException ise) {
+	            public void handleQuit() {
+	                (new Thread() { // needs to run in its own thread, for reasons i don't entirely understand.
+	                    public void run() {
+	                        try {
+	                            XCorina.quit();
+	                            System.exit(0);
+	                        } catch (IllegalStateException ise) {
 			        // don't do anything
-                            }
-                        }
-                    }).start();
-                }
-            });
-     */
+	                        }
+	                    }
+	                }).start();
+	            }
+	        });
+	 */
 
-    // -- why does it have to be run in its own thread?
-    // -- what's with the ISEx?  is that how i cancel?  if yes, say so.
-    public static void registerQuitHandler(Runnable quit) {
-	final Runnable glue = quit;
+	// -- why does it have to be run in its own thread?
+	// -- what's with the ISEx?  is that how i cancel?  if yes, say so.
+	public static void registerQuitHandler(Runnable quit) {
+		final Runnable glue = quit;
 
-	try {
-	    InvocationHandler handler = new InvocationHandler() {
-		    public Object invoke(Object proxy, Method method, Object[] args) {
-			if (method.getName().equals("handleQuit")) {
-			    // needs to run in its own thread, for reasons i don't entirely understand.
-			    (new Thread() {
-				    public void run() {
-					try {
-					    glue.run();
-					} catch (IllegalStateException ise) {
-					    // don't quit -- i guess this doesn't need to be rethrown,
-					    // though again, no idea why.
+		try {
+			InvocationHandler handler = new InvocationHandler() {
+				public Object invoke(Object proxy, Method method, Object[] args) {
+					if (method.getName().equals("handleQuit")) {
+						// needs to run in its own thread, for reasons i don't entirely understand.
+						(new Thread() {
+							public void run() {
+								try {
+									glue.run();
+								} catch (IllegalStateException ise) {
+									// don't quit -- i guess this doesn't need to be rethrown,
+									// though again, no idea why.
+								}
+							}
+						}).start();
 					}
-				    }
-				}).start();
-			}
-			return null;
-		    }
-		};
+					return null;
+				}
+			};
 
-	    Class appUtils = Class.forName("com.apple.mrj.MRJApplicationUtils");
-	    Class paramTypes[] = new Class[] { Class.forName("com.apple.mrj.MRJQuitHandler") };
-	    Object quitHandler = Proxy.newProxyInstance(getClassLoader(), paramTypes, handler);
-	    Method register = appUtils.getMethod("registerQuitHandler", paramTypes);
-	    register.invoke(appUtils.newInstance(), new Object[] { quitHandler });
-	} catch (Exception e) {
-	    // can't happen <=> bug!
-	    new Bug(e);
+			Class appUtils = Class.forName("com.apple.mrj.MRJApplicationUtils");
+			Class paramTypes[] = new Class[] { Class.forName("com.apple.mrj.MRJQuitHandler") };
+			Object quitHandler = Proxy.newProxyInstance(getClassLoader(), paramTypes, handler);
+			Method register = appUtils.getMethod("registerQuitHandler", paramTypes);
+			register.invoke(appUtils.newInstance(), new Object[] { quitHandler });
+		} catch (Exception e) {
+			// can't happen <=> bug!
+			new Bug(e);
+		}
 	}
-    }
 
-    // --------------------------------------------------
-    // finally, for prefs:
-    /*
-        import com.apple.mrj.*;
-        ...
-             MRJApplicationUtils.registerPrefsHandler(new MRJPrefsHandler() {
-                public void handlePrefs() {
-                    prefs.run();
-                }
-     */
+	// --------------------------------------------------
+	// finally, for prefs:
+	/*
+	    import com.apple.mrj.*;
+	    ...
+	         MRJApplicationUtils.registerPrefsHandler(new MRJPrefsHandler() {
+	            public void handlePrefs() {
+	                prefs.run();
+	            }
+	 */
 
-    public static void registerPrefsHandler(Runnable prefs) {
-	final Runnable glue = prefs;
+	public static void registerPrefsHandler(Runnable prefs) {
+		final Runnable glue = prefs;
 
-	try {
-	    InvocationHandler handler = new InvocationHandler() {
-		    public Object invoke(Object proxy, Method method, Object[] args) {
-			if (method.getName().equals("handlePrefs"))
-			    glue.run();
-			return null;
-		    }
-		};
+		try {
+			InvocationHandler handler = new InvocationHandler() {
+				public Object invoke(Object proxy, Method method, Object[] args) {
+					if (method.getName().equals("handlePrefs"))
+						glue.run();
+					return null;
+				}
+			};
 
-	    Class appUtils = Class.forName("com.apple.mrj.MRJApplicationUtils");
-	    Class paramTypes[] = new Class[] { Class.forName("com.apple.mrj.MRJPrefsHandler") };
-	    Object prefsHandler = Proxy.newProxyInstance(getClassLoader(), paramTypes, handler);
-	    Method register = appUtils.getMethod("registerPrefsHandler", paramTypes);
-	    register.invoke(appUtils.newInstance(), new Object[] { prefsHandler });
-	} catch (Exception e) {
-	    // can't happen <=> bug!
-	    new Bug(e);
+			Class appUtils = Class.forName("com.apple.mrj.MRJApplicationUtils");
+			Class paramTypes[] = new Class[] { Class.forName("com.apple.mrj.MRJPrefsHandler") };
+			Object prefsHandler = Proxy.newProxyInstance(getClassLoader(), paramTypes, handler);
+			Method register = appUtils.getMethod("registerPrefsHandler", paramTypes);
+			register.invoke(appUtils.newInstance(), new Object[] { prefsHandler });
+		} catch (Exception e) {
+			// can't happen <=> bug!
+			new Bug(e);
+		}
 	}
-    }
 
-    // --------------------------------------------------
-    // common code:
-    private static ClassLoader getClassLoader() {
-	    return edu.cornell.dendro.corina.platform.Macintosh.class.getClassLoader();
-    }
+	// --------------------------------------------------
+	// common code:
+	private static ClassLoader getClassLoader() {
+		return edu.cornell.dendro.corina.platform.Macintosh.class.getClassLoader();
+	}
 }

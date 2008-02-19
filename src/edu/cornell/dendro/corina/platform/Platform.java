@@ -15,167 +15,170 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
  * @author Aaron Hamid
  */
 public class Platform extends AbstractSubsystem {
-  private static final CorinaLog log = new CorinaLog(Platform.class);
+	private static final CorinaLog log = new CorinaLog(Platform.class);
 
-  private boolean isMac;
-  private boolean isWindows;
-  private boolean isUnix;
+	private boolean isMac;
+	private boolean isWindows;
+	private boolean isUnix;
 
-  public String getName() {
-    return "Platform";
-  }
+	public String getName() {
+		return "Platform";
+	}
 
-  public void init() {
-    super.init();
+	public void init() {
+		super.init();
 
-    //method from TN2042, http://developer.apple.com/technotes/tn/tn2042.html
-    isMac = System.getProperty("mrj.version") != null;
-    String osname = System.getProperty("os.name");
-    isWindows = osname != null && osname.indexOf("Windows") != -1;
-    isUnix = !isMac && !isWindows; // assume it's one of mac, win32, unix
+		//method from TN2042, http://developer.apple.com/technotes/tn/tn2042.html
+		isMac = System.getProperty("mrj.version") != null;
+		String osname = System.getProperty("os.name");
+		isWindows = osname != null && osname.indexOf("Windows") != -1;
+		isUnix = !isMac && !isWindows; // assume it's one of mac, win32, unix
 
-    // this stuff moved from Startup
+		// try to get the native L&F
+		String slafclassname = UIManager.getSystemLookAndFeelClassName();
 
-    // on a mac, always use the mac menubar -- see TN2031
-    // (http://developer.apple.com/technotes/tn/tn2031.html)
-    // REFACTOR: move this to Platform?
-    if (isMac) {
-      // REFACTOR: make a Platform.JVMVersion field?
-      String version = System.getProperty("java.version"); 
-      if (version != null && version.startsWith("1.4"))
-        System.setProperty("apple.laf.useScreenMenuBar", "true");
-      else
-        System.setProperty("com.apple.macos.useScreenMenuBar", "true");
+		/**
+		// smooth look and feel, anyone?
+		if(isWindows) {
+			slafclassname = "smooth.windows.SmoothLookAndFeel";
+		}
+		 **/
 
-      // this sets the "about..." name only -- not "hide", "quit", or in the dock.
-      // have to use -X args for those, anyway, so this is useless.
-      System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Corina");
-      // System.setProperty("com.apple.mrj.application.live-resize", "true");
+		if (slafclassname != null)
+			try {
+				UIManager.setLookAndFeel(slafclassname);
+			} catch (Exception e) {
+				log.error("Error setting system look and feel class", e);
+			}
 
-      // also, treat apps as files, not folders (duh -- why's this not default, steve?)
-      System.setProperty("com.apple.macos.use-file-dialog-packages", "false"); // for AWT
-      UIManager.put("JFileChooser.packageIsTraversable", "never"); // for swing
-    }
+		// this stuff moved from Startup
 
-    // try to get the native L&F
-    String slafclassname = UIManager.getSystemLookAndFeelClassName();
-    
-    /**
-    // smooth look and feel, anyone?
-    if(isWindows) {
-    	slafclassname = "smooth.windows.SmoothLookAndFeel";
-    }
-    **/
-    
-    if (slafclassname != null) try {
-      UIManager.setLookAndFeel(slafclassname);
-    } catch (Exception e) {
-      log.error("Error setting system look and feel class", e);
-    }
+		// on a mac, always use the mac menubar -- see TN2031
+		// (http://developer.apple.com/technotes/tn/tn2031.html)
+		// REFACTOR: move this to Platform?
+		if (isMac) {
+			// Use the right kind of menu bars
+			System.setProperty("apple.laf.useScreenMenuBar", "true");
 
-    // using windows with netware, netware doesn't tell windows the real
-    // username
-    // and home directory. here's an ugly workaround to set user.* properties,
-    // if they're there. (old way: always call with "java -Duser.home=...",
-    // and have the user type in her name -- ugh.) by doing this after the
-    // prefs
-    // loading, i override anything the user set in the prefs (unless they
-    // set it again -- hence it should be removed).
-    // try {
-    Netware.workaround();
-    // } catch (IOException ioe) {
-    // Bug.bug(ioe);
-    // }
+			// this sets the "about..." name only -- not "hide", "quit", or in the dock.
+			// have to use -X args for those, anyway, so this is useless.
+			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Corina");
+			// System.setProperty("com.apple.mrj.application.live-resize", "true");
 
-    // set up mac menubar
-    Macintosh.configureMenus();
-    
-    setInitialized(true);
-  }
+			// also, treat apps as files, not folders (duh -- why's this not default, steve?)
+			System.setProperty("com.apple.macos.use-file-dialog-packages", "false"); // for AWT
+			UIManager.put("JFileChooser.packageIsTraversable", "never"); // for swing
+		}
 
-  public void destroy() {
-    super.destroy();
-    setInitialized(false);
-    // don't need to do anything on destroy
-  }
+		// using windows with netware, netware doesn't tell windows the real
+		// username
+		// and home directory. here's an ugly workaround to set user.* properties,
+		// if they're there. (old way: always call with "java -Duser.home=...",
+		// and have the user type in her name -- ugh.) by doing this after the
+		// prefs
+		// loading, i override anything the user set in the prefs (unless they
+		// set it again -- hence it should be removed).
+		// try {
+		Netware.workaround();
+		// } catch (IOException ioe) {
+		// Bug.bug(ioe);
+		// }
 
-  public boolean isMac() {
-    return isMac;
-  }
-  public boolean isWindows() {
-    return isWindows;
-  }
-  public boolean isUnix() {
-    return isUnix;
-  }
+		// set up mac menubar
+		Macintosh.configureMenus();
 
-  /**
-   * Open a folder in the system file browser
-   */
-  public void open(String folder) {
-    String[] command;
-    if (isWindows) {
-      // if file, "explorer /select,FILENAME"
-      // else, "explorer FILENAME"
-      boolean isDir = new File(folder).isDirectory();
-      command = new String[] { "explorer", (isDir ? folder : "/select," + folder)};
+		setInitialized(true);
+	}
 
-      // TODO: this is completely untested!
+	public void destroy() {
+		super.destroy();
+		setInitialized(false);
+		// don't need to do anything on destroy
+	}
 
-      // note: in my old SiteInfo.java, i used
-      // ("c:\\winnt\\system32\\cmd.exe" "/c" "start" folder)
-    } else if (isMac) {
-      command = new String[] { "open", "-a", "/System/Library/CoreServices/Finder.app/", folder };
+	public boolean isMac() {
+		return isMac;
+	}
 
-      // REFACTOR: make into methods openFolder(folder, file), openFolder(folder)?
+	public boolean isWindows() {
+		return isWindows;
+	}
 
-      // TODO: should i snarf up stdout/stderr?
-      // i think mac is smart enough i don't have to.
+	public boolean isUnix() {
+		return isUnix;
+	}
 
-      // (don't bother watching return value; it can't fail)
+	/**
+	 * Open a folder in the system file browser
+	 */
+	public void open(String folder) {
+		String[] command;
+		if (isWindows) {
+			// if file, "explorer /select,FILENAME"
+			// else, "explorer FILENAME"
+			boolean isDir = new File(folder).isDirectory();
+			command = new String[] { "explorer",
+					(isDir ? folder : "/select," + folder) };
 
-      // note: in my old SiteInfo.java, i used
-      // ("/usr/bin/open" folder)
-    } else {
-      // what to do on unix?  gmc, konqueror, xterm?
-      new Bug(new IllegalArgumentException("Platform.open() not implemented on unix yet!"));
-      return;
-    }
+			// TODO: this is completely untested!
 
-    try {
-      Runtime.getRuntime().exec(command);
-    } catch (IOException ioe) {
-      new Bug(ioe);
-    }
-  }
+			// note: in my old SiteInfo.java, i used
+			// ("c:\\winnt\\system32\\cmd.exe" "/c" "start" folder)
+		} else if (isMac) {
+			command = new String[] { "open", "-a",
+					"/System/Library/CoreServices/Finder.app/", folder };
 
-  // get the name of the trash folder
-  public String getTrash() {
-    if (isWindows)
-      return "C:\\recycled\\"; // do they still not have a per-user trash?  just use the trash on C:\.
+			// REFACTOR: make into methods openFolder(folder, file), openFolder(folder)?
 
-    if (isMac)
-      return System.getProperty("user.home") + "/.Trash/";
+			// TODO: should i snarf up stdout/stderr?
+			// i think mac is smart enough i don't have to.
 
-    return null; // what to do on unix?
-  }
+			// (don't bother watching return value; it can't fail)
 
-  // mac-only -- windows prepends "* "
-  public void setModified(JFrame window, boolean mod) {
-    if (isMac)
-      window.getRootPane().putClientProperty("windowModified", mod ? Boolean.TRUE : Boolean.TRUE);
-    // no news is good news
+			// note: in my old SiteInfo.java, i used
+			// ("/usr/bin/open" folder)
+		} else {
+			// what to do on unix?  gmc, konqueror, xterm?
+			new Bug(new IllegalArgumentException(
+					"Platform.open() not implemented on unix yet!"));
+			return;
+		}
 
-    // REFACTOR: add this to xframe, or whatever my document window is
-    // (is that really what i want?)
-  }
+		try {
+			Runtime.getRuntime().exec(command);
+		} catch (IOException ioe) {
+			new Bug(ioe);
+		}
+	}
 
-  // for DnD, the key you press to copy, instead of move.
-  public String getCopyModifier() {
-    if (isMac)
-      return "alt"; // option, really
-    else
-      return "control";
-    // i have no idea what it is on generic unix.  does motif specify?
-  }
+	// get the name of the trash folder
+	public String getTrash() {
+		if (isWindows)
+			return "C:\\recycled\\"; // do they still not have a per-user trash?  just use the trash on C:\.
+
+		if (isMac)
+			return System.getProperty("user.home") + "/.Trash/";
+
+		return null; // what to do on unix?
+	}
+
+	// mac-only -- windows prepends "* "
+	public void setModified(JFrame window, boolean mod) {
+		if (isMac)
+			window.getRootPane().putClientProperty("windowModified",
+					mod ? Boolean.TRUE : Boolean.TRUE);
+		// no news is good news
+
+		// REFACTOR: add this to xframe, or whatever my document window is
+		// (is that really what i want?)
+	}
+
+	// for DnD, the key you press to copy, instead of move.
+	public String getCopyModifier() {
+		if (isMac)
+			return "alt"; // option, really
+		else
+			return "control";
+		// i have no idea what it is on generic unix.  does motif specify?
+	}
 }
