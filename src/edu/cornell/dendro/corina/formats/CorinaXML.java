@@ -68,7 +68,7 @@ public class CorinaXML implements Filetype {
 	public Sample load(BufferedReader r) throws IOException {		
 		// new empty sample
 		Sample s = new Sample();
-		s.meta.clear();
+		s.resetMeta();
 
 		Document doc;
 		
@@ -109,9 +109,9 @@ public class CorinaXML implements Filetype {
 	private void saveReferences(Sample s, Document doc, Node parent) {
 		Element data = doc.createElement("references");
 
-		if(s.elements != null) {
-			for (int i = 0; i < s.elements.size(); i++) {
-				edu.cornell.dendro.corina.Element el = (edu.cornell.dendro.corina.Element) s.elements.get(i);
+		if(s.getElements() != null) {
+			for (int i = 0; i < s.getElements().size(); i++) {
+				edu.cornell.dendro.corina.Element el = (edu.cornell.dendro.corina.Element) s.getElements().get(i);
 				URI uri = el.getURI();
 				Element e = doc.createElement("element");
 			
@@ -142,7 +142,7 @@ public class CorinaXML implements Filetype {
 	private String createStringWeiserjahreDataset(Sample s) {
 		StringBuffer sb = new StringBuffer();
 		
-		for (int i = 0; i < s.data.size(); i++) {
+		for (int i = 0; i < s.getData().size(); i++) {
 			if (i != 0)
 				sb.append(CXML_FIELDSEPARATOR);
 			sb.append(Weiserjahre.toString(s, i));;
@@ -157,19 +157,19 @@ public class CorinaXML implements Filetype {
 		Text t;
 		
 		data.setAttribute("type", "sample");
-		data.setAttribute("startYear", s.range.getStart().toString());
-		data.setAttribute("count", Integer.toString(s.range.span()));
+		data.setAttribute("startYear", s.getRange().getStart().toString());
+		data.setAttribute("count", Integer.toString(s.getRange().span()));
 		
 		e = doc.createElement("value");
-		t = doc.createTextNode(createStringDataset(s.data));
+		t = doc.createTextNode(createStringDataset(s.getData()));
 		e.appendChild(t);
 		data.appendChild(e);
 
 		// write out the counts for each data point
-		if(s.count != null)
+		if(s.getCount() != null)
 		{
 			e = doc.createElement("count");
-			t = doc.createTextNode(createStringDataset(s.count));
+			t = doc.createTextNode(createStringDataset(s.getCount()));
 			e.appendChild(t);
 			data.appendChild(e);			
 		}
@@ -194,7 +194,7 @@ public class CorinaXML implements Filetype {
 		while (i.hasNext()) {
 		    MetadataField f = (MetadataField) i.next();
 		    String fieldName = f.getVariable();
-		    Object fieldValue = s.meta.get(fieldName);
+		    Object fieldValue = s.getMeta(fieldName);
 		    
 		    if(fieldValue != null) {
 		    	Element e = doc.createElement(fieldName);
@@ -320,8 +320,8 @@ public class CorinaXML implements Filetype {
 			this.sample = sample;
 			
 			// If the sample already has a guid, get it. Otherwise, generate one. 
-			if(sample.meta.containsKey("guid"))
-				this.GUID = sample.meta.get("guid").toString();
+			if(sample.hasMeta("guid"))
+				this.GUID = sample.getMeta("guid").toString();
 			else
 				this.GUID = GUIDGenerator.makeGUID();
 			

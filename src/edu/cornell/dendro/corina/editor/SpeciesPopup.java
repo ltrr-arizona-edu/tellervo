@@ -49,11 +49,11 @@ public class SpeciesPopup extends JComboBox {
         addItem(I18n.getText("meta.unspecified"));
 
         // parse and normalize
-        String species = (String) s.meta.get("species");
+        String species = (String) s.getMeta("species");
         if (species != null) {
             try {
                 String code = Species.getCode(species);
-                s.meta.put("species", code);
+                s.setMeta("species", code);
                 species = code;
             } catch (UnknownSpeciesException use) {
                 // ignore.
@@ -83,7 +83,7 @@ public class SpeciesPopup extends JComboBox {
             public void actionPerformed(ActionEvent e) {
                 // for undo
                 final boolean wasMod = glue.isModified();
-                final String oldSpecies = (String) glue.meta.get("species");
+                final String oldSpecies = (String) glue.getMeta("species");
                 String newSpecies = null; // to be set later...
 
                 // from selected index, choose the species
@@ -91,13 +91,13 @@ public class SpeciesPopup extends JComboBox {
                 if (i == 0) {
                     // not spec: remove
                     removeCustomEntry();
-                    glue.meta.remove("species");
+                    glue.removeMeta("species");
                     // newSpecies is null, no need to change
                     glue.fireSampleMetadataChanged();
                 } else if (i == m-1) {
                     // "Other..." dialog
                     new OtherDialog(parent);
-                    newSpecies = (String) glue.meta.get("species");
+                    newSpecies = (String) glue.getMeta("species");
                     selectSpecies(newSpecies);
                 } else if (i == 1 && customSpecies) {
                     // custom species: user must have cancelled, right?
@@ -107,7 +107,7 @@ public class SpeciesPopup extends JComboBox {
                 } else {
                     i -= (customSpecies ? 2 : 1);
                     // common species |i|
-                    glue.meta.put("species", Species.common.get(i));
+                    glue.setMeta("species", Species.common.get(i));
                     removeCustomEntry();
                     newSpecies = (String) Species.common.get(i);
                     glue.fireSampleMetadataChanged();
@@ -299,7 +299,7 @@ public class SpeciesPopup extends JComboBox {
 
                     // just set the sample; when this returns, the popup calls selectSpecies(),
                     // so i don't have to worry about that here.
-                    sample.meta.put("species", species);
+                    sample.setMeta("species", species);
                     sample.fireSampleMetadataChanged();
 
                     // dispose after i find out what the species was.

@@ -47,8 +47,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.db.Convert;
-import edu.cornell.dendro.corina.db.DBBrowser;
+//import edu.cornell.dendro.corina.db.Convert;
+//import edu.cornell.dendro.corina.db.DBBrowser;
 import edu.cornell.dendro.corina.gui.layouts.DialogLayout;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -203,7 +203,7 @@ public class SourcesTable extends JTable {
 		    Connection con = connect();
 
 		    // create a db browser
-		    return new DBBrowser(con);
+		    return null; //new DBBrowser(con);
 		} catch (Exception se) {
 		    return new JLabel("couldn't connect"); // what to return?
 		}
@@ -230,7 +230,7 @@ public class SourcesTable extends JTable {
 		Connection connection = DriverManager.getConnection(uri, username, password);;
 
 		// dump into database
-		Convert.dump(f, connection);
+		//Convert.dump(f, connection);
 
 		// close connection
 		connection.close();

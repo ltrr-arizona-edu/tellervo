@@ -44,11 +44,11 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 		// plot elements
 		plotElements = new JMenuItem(new CorinaAction("graph_elements") {
 			public void actionPerformed(ActionEvent e) {
-				new GraphWindow(sample.elements);
+				new GraphWindow(sample.getElements());
 			}
 
 			public boolean isEnabled() {
-				return sample.elements != null && sample.elements.size() > 0;
+				return sample.getElements() != null && sample.getElements().size() > 0;
 			}
 		});
 		add(plotElements);
@@ -56,11 +56,11 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 		// plot all
 		plotAll = new JMenuItem(new CorinaAction("graph_everything") {
 			public void actionPerformed(ActionEvent e) {
-				new GraphWindow(sample, sample.elements);
+				new GraphWindow(sample, sample.getElements());
 			}
 
 			public boolean isEnabled() {
-				return sample.elements != null && sample.elements.size() > 0;
+				return sample.getElements() != null && sample.getElements().size() > 0;
 			}
 		});
 		add(plotAll);
@@ -70,11 +70,11 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 			public void actionPerformed(ActionEvent e) {
 				// FIXME: pass my title here so the bargraph
 				// has my name as its title.
-				new BargraphFrame(sample.elements);
+				new BargraphFrame(sample.getElements());
 			}
 
 			public boolean isEnabled() {
-				return sample.elements != null && sample.elements.size() > 0;
+				return sample.getElements() != null && sample.getElements().size() > 0;
 			}
 		});
 		add(bargraphAll);
@@ -92,8 +92,8 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 	public void sampleMetadataChanged(SampleEvent e) {
 		// re-en/disable menuitems based on whether the editor's sample
 		// is summed.
-		boolean hasElements = (sample.elements != null)
-				&& (sample.elements.size() > 0);
+		boolean hasElements = (sample.getElements() != null)
+				&& (sample.getElements().size() > 0);
 		// FIXME: didn't i want to have a hasElements() method in sample?
 
 		plotElements.setEnabled(hasElements);

@@ -85,19 +85,19 @@ public class TruncateDialog extends JDialog {
 
         try {
             n1 = Integer.parseInt(tf1.getText());
-            start = s.range.getStart().add(n1);
+            start = s.getRange().getStart().add(n1);
             n2 = Integer.parseInt(tf3.getText());
         } catch (NumberFormatException nfe) {
             r = null;
             return;
         }
 
-        if (n1 < 0 || n2 < 0 || (n1+n2 >= s.data.size())) {
+        if (n1 < 0 || n2 < 0 || (n1+n2 >= s.getData().size())) {
             r = null;
             return;
         }
 
-        Year end = s.range.getEnd().add(-n2);
+        Year end = s.getRange().getEnd().add(-n2);
 
         r = new Range(start, end);
 
@@ -123,10 +123,10 @@ public class TruncateDialog extends JDialog {
             return;
         }
 
-        int n1 = start.diff(s.range.getStart());
-        int n2 = s.range.getEnd().diff(end);
+        int n1 = start.diff(s.getRange().getStart());
+        int n2 = s.getRange().getEnd().diff(end);
 
-        if (n1 < 0 || n2 < 0 || (n1+n2 >= s.data.size())) {
+        if (n1 < 0 || n2 < 0 || (n1+n2 >= s.getData().size())) {
             r = null;
             return;
         }
@@ -187,7 +187,7 @@ public class TruncateDialog extends JDialog {
         f1.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // "to year [ xxx ]"
-        tf2 = new JTextField(s.range.getStart().toString(), 5);
+        tf2 = new JTextField(s.getRange().getStart().toString(), 5);
         tf2.getDocument().addDocumentListener(updater2);
 	JPanel f2 = Layout.flowLayoutL("to year ", tf2);
         f2.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -207,7 +207,7 @@ public class TruncateDialog extends JDialog {
         f3.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // "to year [ xxx ]"
-        tf4 = new JTextField(s.range.getEnd().toString(), 5);
+        tf4 = new JTextField(s.getRange().getEnd().toString(), 5);
         tf4.getDocument().addDocumentListener(updater2);
 	JPanel f4 = Layout.flowLayoutL("to year ", tf4);
         f4.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -233,7 +233,7 @@ public class TruncateDialog extends JDialog {
         // build primary panel
         pri.add(Box.createVerticalStrut(8));
 	String text = I18n.getText("before") + ": " +
-	              s.range + " (n=" + s.range.span() + ")";
+	              s.getRange() + " (n=" + s.getRange().span() + ")";
 	JLabel tmp = new JLabel(text);
         // center the label
         tmp.setHorizontalAlignment(SwingConstants.CENTER);
@@ -266,7 +266,7 @@ public class TruncateDialog extends JDialog {
         ok.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 // nothing to do?
-                if (r.equals(s.range)) {
+                if (r.equals(s.getRange())) {
                     dispose();
                     return;
                 }
@@ -277,10 +277,10 @@ public class TruncateDialog extends JDialog {
 
                 // undo
                 s.postEdit(new AbstractUndoableEdit() {
-                    private String filename = (String) s.meta.get("filename");
+                    private String filename = (String) s.getMeta("filename");
                     private boolean wasMod = s.isModified();
                     public void undo() throws CannotUndoException {
-                        s.meta.put("filename", filename);
+                        s.setMeta("filename", filename);
                         t.uncrop();
                         s.fireSampleRedated();
                         s.fireSampleDataChanged();
@@ -288,7 +288,7 @@ public class TruncateDialog extends JDialog {
                             s.clearModified();
                     }
                     public void redo() throws CannotRedoException {
-                        s.meta.remove("filename");
+                        s.removeMeta("filename");
                         t.cropTo(r);
                         s.fireSampleRedated();
                         s.fireSampleDataChanged();
@@ -303,7 +303,7 @@ public class TruncateDialog extends JDialog {
                 });
 
                 // clear filename
-                s.meta.remove("filename");
+                s.removeMeta("filename");
 
                 // fire off some events
                 s.fireSampleRedated();
@@ -324,7 +324,7 @@ public class TruncateDialog extends JDialog {
 
         // get sample, range
         this.s = s;
-        r = s.range;
+        r = s.getRange();
 
         // setup
         JPanel guts = setup();

@@ -278,8 +278,8 @@ public abstract class Cross implements Runnable {
         this.moving = moving;
  
         // set the range (= end date of moving sample)
-        Year start = fixed.range.getStart();
-        Year end = fixed.range.getEnd().add(moving.range.span() - 1);
+        Year start = fixed.getRange().getStart();
+        Year end = fixed.getRange().getEnd().add(moving.getRange().span() - 1);
 
 	// TESTING: shrink it by 14 _more_, for min overlap = 15
 	// start = start.add(14);
@@ -311,16 +311,16 @@ public abstract class Cross implements Runnable {
     */
     public final String toString() {
 	// get filenames of both samples
-	String f = (String) fixed.meta.get("filename");
-	String m = (String) moving.meta.get("filename");
+	String f = (String) fixed.getMeta("filename");
+	String m = (String) moving.getMeta("filename");
 
 	// remove folder names
         f = (new File(f)).getName();
         m = (new File(m)).getName();
 
 	// add range to string
-        f = f + " (" + fixed.range + ")";
-        m = m + " (" + moving.range + ")";
+        f = f + " (" + fixed.getRange() + ")";
+        m = m + " (" + moving.getRange() + ")";
 
 	// make it in the form "Cross: %1 versus %2"
 	String result = I18n.getText("cross") + ": " + f + " "
@@ -397,16 +397,16 @@ public abstract class Cross implements Runnable {
       // careful: it can be true that n>0 but there are 0 crosses
       // that should be run here.  check first:
       int overlap = getOverlap(); //App.prefs.getIntPref("corina.cross.overlap", 15);
-      if (fixed.data.size() < overlap || moving.data.size() < overlap) {
-        String problem = "These samples (n=" + fixed.data.size() + ", " +
-            "n=" + moving.data.size() + ") aren't long enough for " +
+      if (fixed.getData().size() < overlap || moving.getData().size() < overlap) {
+        String problem = "These samples (n=" + fixed.getData().size() + ", " +
+            "n=" + moving.getData().size() + ") aren't long enough for " +
             "your minimum specified overlap (n=" + overlap + ")";
 	      // and say how to fix it!
 	      throw new IllegalArgumentException(problem);
       }
 
       // allocate space for data
-      int n = fixed.data.size() + moving.data.size() - 1; // was: ...-2*getMinimumOverlap();
+      int n = fixed.getData().size() + moving.getData().size() - 1; // was: ...-2*getMinimumOverlap();
       if (n <= 0) {
         data = new float[0];
         signifigance = new int[0];
@@ -428,14 +428,14 @@ public abstract class Cross implements Runnable {
       // equal-sized; split in half (maybe even-odd?).
 
       // phase 1:
-      for (int i=moving.data.size()-1 /*getMinimumOverlap()*/; i>0; i--)
+      for (int i=moving.getData().size()-1 /*getMinimumOverlap()*/; i>0; i--)
       {
         data[done] = compute(0, i);
         signifigance[done++] = this.getSignifigant();
       }
 
       // phase 2:
-      for (int i=0; i<fixed.data.size()-1 /*getMinimumOverlap()*/; i++)
+      for (int i=0; i<fixed.getData().size()-1 /*getMinimumOverlap()*/; i++)
       {
         data[done] = compute(i, 0);
         signifigance[done++] = this.getSignifigant();
@@ -461,8 +461,8 @@ public abstract class Cross implements Runnable {
         preamble();
 
         // temps
-        Year fixedStart = fixed.range.getStart();
-        Year movingStart = moving.range.getStart();
+        Year fixedStart = fixed.getRange().getStart();
+        Year movingStart = moving.getRange().getStart();
 
         // calculate offsets
         int offset_fixed, offset_moving;

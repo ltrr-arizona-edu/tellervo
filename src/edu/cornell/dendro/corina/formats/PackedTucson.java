@@ -76,17 +76,17 @@ public class PackedTucson extends Tucson implements PackedFileType {
     	for(int i = 0; i < sl.size(); i++) {
     		Sample s = (Sample) sl.get(i);
     		
-    		if(s.elements != null) {
-    			for(int j = 0; j < s.elements.size(); j++) {
-    				Sample tmp = ((Element) s.elements.get(j)).load();
+    		if(s.getElements() != null) {
+    			for(int j = 0; j < s.getElements().size(); j++) {
+    				Sample tmp = ((Element) s.getElements().get(j)).load();
     				
     				try {
     					if(prefix == null)
-    						prefix = tmp.meta.get("id").toString();
+    						prefix = tmp.getMeta("id").toString();
     					else
-    						prefix = commonPrefix(prefix, tmp.meta.get("id").toString());
+    						prefix = commonPrefix(prefix, tmp.getMeta("id").toString());
     				} catch (NullPointerException npe) {
-    					throw new IOException("Invalid META ID in file " + tmp.meta.get("filename"));
+    					throw new IOException("Invalid META ID in file " + tmp.getMeta("filename"));
     				}
     				
     				outsamples.add(tmp);
@@ -94,11 +94,11 @@ public class PackedTucson extends Tucson implements PackedFileType {
     		} else {
     			try {
     				if(prefix == null)
-    					prefix = s.meta.get("id").toString();
+    					prefix = s.getMeta("id").toString();
     				else
-    					prefix = commonPrefix(prefix, s.meta.get("id").toString());
+    					prefix = commonPrefix(prefix, s.getMeta("id").toString());
     			} catch (NullPointerException npe) {
-    				throw new IOException("Invalid META ID in file " + s.meta.get("filename"));
+    				throw new IOException("Invalid META ID in file " + s.getMeta("filename"));
     			}
 				
 				outsamples.add(s);    			
@@ -114,22 +114,22 @@ public class PackedTucson extends Tucson implements PackedFileType {
 
     public void save(Sample s, BufferedWriter w) throws IOException {
         // make sure it's a master, else ioe
-        if (s.elements == null)
+        if (s.getElements() == null)
             throw new IOException("Packed Tucson format is only available " +
 				  "for summed samples with Elements");
 
         // load all samples into a buffer.  (this way, i can make the
         // 3-line header the maximal common prefix instead of a
         // generic "000")
-        int n = s.elements.size();
+        int n = s.getElements().size();
         Sample buf[] = new Sample[n];
         for (int i=0; i<n; i++)
-            buf[i] = ((Element) s.elements.get(i)).load();
+            buf[i] = ((Element) s.getElements().get(i)).load();
 
         // figure out the common prefix (ugh, it's 'reduce again!)
-        String prefix = buf[0].meta.get("id").toString();
+        String prefix = buf[0].getMeta("id").toString();
         for (int i=1; i<n; i++)
-            prefix = commonPrefix(prefix, buf[i].meta.get("id").toString());
+            prefix = commonPrefix(prefix, buf[i].getMeta("id").toString());
         // (save3lineheader() automatically makes sure it's 6 chars long)
 
         // save the header, using that prefix

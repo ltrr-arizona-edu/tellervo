@@ -147,7 +147,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		JMenuItem copy = Builder.makeMenuItem("copy");
 		copy.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				CopyDialog d = new CopyDialog(editor, sample.range);
+				CopyDialog d = new CopyDialog(editor, sample.getRange());
 				if(d.isOk())
 					TextClipboard.copy(asTwoColumn(d.getChosenRange()));
 				// copy the sample to the clipboard, as 2-column
@@ -346,7 +346,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 
 			// copy it here, except for the filename
 			Sample.copy(tmp, sample);
-			sample.meta.remove("filename");
+			sample.removeMeta("filename");
 		} catch (WrongFiletypeException wfte) {
 			// unreadable format.  tell user.
 			Alert.error("Problem Pasting",
@@ -394,7 +394,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	// return the sample in 2-column format, as a string
 	private String asTwoColumn() {
 		try {
-			int estimatedLength = 10 * sample.data.size();
+			int estimatedLength = 10 * sample.getData().size();
 			PureStringWriter w = new PureStringWriter(estimatedLength);
 			BufferedWriter b = new BufferedWriter(w);
 			new TwoColumn().save(sample, b);
@@ -408,17 +408,17 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 
 	private String asTwoColumn(Range range) {
 		try {
-			int inindex = range.getStart().compareTo(sample.range.getStart());
+			int inindex = range.getStart().compareTo(sample.getRange().getStart());
 			
-			List tmpData = sample.data.subList(inindex, inindex + range.span());
-			List tmpCount = (sample.count == null) ? null : sample.count.subList(inindex, inindex + range.span());
+			List tmpData = sample.getData().subList(inindex, inindex + range.span());
+			List tmpCount = (sample.getCount() == null) ? null : sample.getCount().subList(inindex, inindex + range.span());
 			Sample tmpSample = new Sample();
 			
-			tmpSample.range = range;
-			tmpSample.data = tmpData;
-			tmpSample.count = tmpCount;
+			tmpSample.setRange(range);
+			tmpSample.setData(tmpData);
+			tmpSample.setCount(tmpCount);
 			
-			int estimatedLength = 10 * tmpSample.data.size();
+			int estimatedLength = 10 * tmpSample.getData().size();
 			PureStringWriter w = new PureStringWriter(estimatedLength);
 			BufferedWriter b = new BufferedWriter(w);
 			new TwoColumn().save(tmpSample, b);

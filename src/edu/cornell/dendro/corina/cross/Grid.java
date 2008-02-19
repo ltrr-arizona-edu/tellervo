@@ -172,7 +172,7 @@ public class Grid implements Runnable, Previewable {
 		public Sample getFixed() { return fixed; }
 		
 		public HeaderCell(Sample fixed) {
-			String name = (String) fixed.meta.get("filename");
+			String name = (String) fixed.getMeta("filename");
 			
 			// crop directory
 			int index = name.lastIndexOf(File.separatorChar);
@@ -208,7 +208,7 @@ public class Grid implements Runnable, Previewable {
 
 		public HeaderRangeCell(Sample fixed) {
 			super(fixed);
-			this.range = fixed.range;
+			this.range = fixed.getRange();
 		}
 
 		public void print(Graphics2D g2, int x, int y, int width, int height, float scale) {
@@ -642,25 +642,25 @@ public class Grid implements Runnable, Previewable {
 			Sample fixed = buffer[row];
 
 			// ignore nulls here -- kind of a hack
-			if (fixed == null || fixed.meta.get("filename") == null)
+			if (fixed == null || fixed.getMeta("filename") == null)
 				continue;
 
 			// set headers -- if you want straight-across headers (as
 			// opposed to down-the-diagonal headers),
 			// s/[row][row+1]/[0][row+1]/
-			String filename = (String) fixed.meta.get("filename");
+			String filename = (String) fixed.getMeta("filename");
 			cell[row + 1][0] = new HeaderCell(fixed);
 			cell[row][row + 1] = new HeaderRangeCell(fixed);
 
 			// set length
-			cell[row + 1][row + 1] = new LengthCell(fixed.data.size());
+			cell[row + 1][row + 1] = new LengthCell(fixed.getData().size());
 
 			for (int col = 0; col < row; col++) {
 				// "load" moving
 				Sample moving = buffer[col];
 
 				// ignore nulls here -- kind of a hack
-				if (moving == null || moving.meta.get("filename") == null)
+				if (moving == null || moving.getMeta("filename") == null)
 					continue;
 
 				// run the single cross, and put it in the grid

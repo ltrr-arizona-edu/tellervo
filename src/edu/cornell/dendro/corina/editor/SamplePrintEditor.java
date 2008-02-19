@@ -511,7 +511,7 @@ public class SamplePrintEditor extends JPanel {
 		
 		if(bits.wantTitle()) {
 			sb.setLength(0);
-			sb.append(s.meta.get("title").toString());
+			sb.append(s.getMeta("title").toString());
 			
 			sb.append("\n");
 			textpane.append("title", sb.toString());
@@ -548,7 +548,7 @@ public class SamplePrintEditor extends JPanel {
 		if(bits.wantSampleHeader() && !s.isIndexed()) {
 	        // print radius, avg width, but only for non-indexed samples
 	        float radius = s.computeRadius() / 1000f;
-	        float average = radius / s.data.size();
+	        float average = radius / s.getData().size();
 	        DecimalFormat df = new DecimalFormat("0.000"); // to 3 places
 
 	        sb.setLength(0);
@@ -589,7 +589,7 @@ public class SamplePrintEditor extends JPanel {
 			stringDoc.append(weiser);
 		}
 		
-		if(bits.wantElements() && s.elements != null) {
+		if(bits.wantElements() && s.getElements() != null) {
 			String elements = getElements();
 			
 			textpane.append("elements", elements);
@@ -710,9 +710,9 @@ public class SamplePrintEditor extends JPanel {
 	private String getSummed(boolean doubleSpace) {
 		StringBuffer sb = new StringBuffer();
 		
-		for (Year y = s.range.getStart(); s.range.contains(y); y = y.add(1)) {
+		for (Year y = s.getRange().getStart(); s.getRange().contains(y); y = y.add(1)) {
 			
-			if (!y.equals(s.range.getStart()) && y.column() != 0)
+			if (!y.equals(s.getRange().getStart()) && y.column() != 0)
 				continue;
 
 			Year decade = y;
@@ -726,17 +726,17 @@ public class SamplePrintEditor extends JPanel {
 			// data
 			for (int i = 0; i < 10; i++) {
 				sb.append("\t");
-				if (s.range.contains(decade.add(i)))
-					sb.append( ((Number) s.data.get(decade.add(i).diff(
-							s.range.getStart()))).intValue());
+				if (s.getRange().contains(decade.add(i)))
+					sb.append( ((Number) s.getData().get(decade.add(i).diff(
+							s.getRange().getStart()))).intValue());
 			}
 			sb.append("\t");
 			// count
 			for (int i = 0; i < 10; i++) {
 				sb.append("\t");
-				if (s.range.contains(decade.add(i)))
-					sb.append( ((Number) s.count.get(decade.add(i).diff(
-							s.range.getStart()))).intValue());
+				if (s.getRange().contains(decade.add(i)))
+					sb.append( ((Number) s.getCount().get(decade.add(i).diff(
+							s.getRange().getStart()))).intValue());
 			}
 			sb.append(doubleSpace ? "\n\n" : "\n");
 		}
@@ -747,11 +747,11 @@ public class SamplePrintEditor extends JPanel {
 		StringBuffer sb = new StringBuffer();
 		// extra data for summed files
 		sb.append("Number of samples in data set: "
-				+ (s.elements == null ? "unknown" : String.valueOf(s.elements
+				+ (s.getElements() == null ? "unknown" : String.valueOf(s.getElements()
 						.size())) + "\n");
 		sb.append("Number of rings in data set: "
 				+ s.countRings() + "\n");
-		sb.append("Length of data set: " + s.range.span()
+		sb.append("Length of data set: " + s.getRange().span()
 				+ " years\n\n");
 		
 		return sb.toString();
@@ -763,8 +763,8 @@ public class SamplePrintEditor extends JPanel {
 		// header...
 		sb.append("\t\t0\t1\t2\t3\t4\t5\t6\t7\t8\t9\n");
 
-		for (Year y = s.range.getStart(); s.range.contains(y); y = y.add(1)) {
-			if (!y.equals(s.range.getStart()) && y.column() != 0)
+		for (Year y = s.getRange().getStart(); s.getRange().contains(y); y = y.add(1)) {
+			if (!y.equals(s.getRange().getStart()) && y.column() != 0)
 				continue;
 
 			sb.append(y.toString());
@@ -777,8 +777,8 @@ public class SamplePrintEditor extends JPanel {
 			// loop through years
 			for (int i = 0; i < 10; i++) {
 				sb.append("\t");
-				if (s.range.contains(decade.add(i)))
-					sb.append((Number) s.data.get(decade.add(i).diff(s.range.getStart())));
+				if (s.getRange().contains(decade.add(i)))
+					sb.append((Number) s.getData().get(decade.add(i).diff(s.getRange().getStart())));
 			}
 
 			sb.append(doubleSpace ? "\n\n" : "\n");
@@ -798,8 +798,8 @@ public class SamplePrintEditor extends JPanel {
 			sb.append("      " + i);
 		sb.append("\n");
 		
-		for (Year y = s.range.getStart(); s.range.contains(y); y = y.add(1)) {
-			if (!y.equals(s.range.getStart()) && y.column() != 0)
+		for (Year y = s.getRange().getStart(); s.getRange().contains(y); y = y.add(1)) {
+			if (!y.equals(s.getRange().getStart()) && y.column() != 0)
 				continue;
 
 			String tmp = y.toString();
@@ -815,8 +815,8 @@ public class SamplePrintEditor extends JPanel {
 
 			// loop through years
 			for (int i = 0; i < 10; i++) {
-				if (s.range.contains(decade.add(i))) {
-					String val = ((Number) s.data.get(decade.add(i).diff(s.range.getStart()))).toString();
+				if (s.getRange().contains(decade.add(i))) {
+					String val = ((Number) s.getData().get(decade.add(i).diff(s.getRange().getStart()))).toString();
 					for(int j = 0; j < 7 - val.length(); j++)
 						sb.append(" ");
 					sb.append(val);
@@ -834,25 +834,24 @@ public class SamplePrintEditor extends JPanel {
 	private String getMetadata() {
 		StringBuffer sb = new StringBuffer();
 		
-		if (s.meta.containsKey("id"))
-			sb.append("ID Number " + s.meta.get("id") + "\n");
-		if (s.meta.containsKey("title"))
-			sb.append("Title of sample: " + s.meta.get("title") + "\n");
+		if (s.hasMeta("id"))
+			sb.append("ID Number " + s.getMeta("id") + "\n");
+		if (s.hasMeta("title"))
+			sb.append("Title of sample: " + s.getMeta("title") + "\n");
 		sb.append(s.isAbsolute() ? "Absolutely dated\n"
 				: "Relatively dated\n");
-		if (s.meta.containsKey("unmeas_pre"))
-			sb.append(s.meta.get("unmeas_pre")
+		if (s.hasMeta("unmeas_pre"))
+			sb.append(s.getMeta("unmeas_pre")
 					+ " unmeasured rings at beginning of sample.\n");
-		if (s.meta.containsKey("unmeas_post"))
-			sb.append(s.meta.get("unmeas_post")
+		if (s.hasMeta("unmeas_post"))
+			sb.append(s.getMeta("unmeas_post")
 					+ " unmeasured rings at end of sample.\n");
-		if (s.meta.containsKey("filename"))
-			sb.append("File saved as " + s.meta.get("filename") + "\n");
+		if (s.hasMeta("filename"))
+			sb.append("File saved as " + s.getMeta("filename") + "\n");
 
 		// - comments -- loop
-		if (s.meta.containsKey("comments")) {
-			String comments[] = StringUtils.splitByLines((String) s.meta
-					.get("comments"));
+		if (s.hasMeta("comments")) {
+			String comments[] = StringUtils.splitByLines((String) s.getMeta("comments"));
 			for (int i = 0; i < comments.length; i++) {
 				if(i == 0)
 					sb.append("Comments:\t" + comments[i] + "\n");
@@ -861,23 +860,23 @@ public class SamplePrintEditor extends JPanel {
 			}
 		}
 
-		if (s.meta.containsKey("type"))
-			sb.append("Type of sample " + s.meta.get("type") + "\n");
-		if (s.meta.containsKey("species"))
-			sb.append("Species: " + s.meta.get("species") + "\n");
+		if (s.hasMeta("type"))
+			sb.append("Type of sample " + s.getMeta("type") + "\n");
+		if (s.hasMeta("species"))
+			sb.append("Species: " + s.getMeta("species") + "\n");
 		// TODO: look up species name (if it's a code)
-		if (s.meta.containsKey("format")) { // use a switch?
-			if (s.meta.get("format").equals("R"))
+		if (s.hasMeta("format")) { // use a switch?
+			if (s.getMeta("format").equals("R"))
 				sb.append("Raw format\n");
 			else if (s.isIndexed())
 				sb.append("Indexed format\n");
 			else
 				sb.append("Unknown format\n");
 		}
-		if (s.meta.containsKey("sapwood"))
-			sb.append(s.meta.get("sapwood") + " sapwood rings.\n");
-		if (s.meta.containsKey("pith")) {
-			String p = (String) s.meta.get("pith");
+		if (s.hasMeta("sapwood"))
+			sb.append(s.getMeta("sapwood") + " sapwood rings.\n");
+		if (s.hasMeta("pith")) {
+			String p = (String) s.getMeta("pith");
 			if (p.equals("P"))
 				sb.append("Pith present and datable\n");
 			else if (p.equals("*"))
@@ -887,19 +886,19 @@ public class SamplePrintEditor extends JPanel {
 			else
 				sb.append("Unknown pith\n");
 		}
-		if (s.meta.containsKey("terminal"))
+		if (s.hasMeta("terminal"))
 			sb.append("Last ring measured "
-					+ s.meta.get("terminal") + "\n");
-		if (s.meta.containsKey("continuous")) {
-			String c = (String) s.meta.get("continuous");
+					+ s.getMeta("terminal") + "\n");
+		if (s.hasMeta("continuous")) {
+			String c = (String) s.getMeta("continuous");
 			if (c.equals("C")) // uppercase only?
 				sb.append("Last ring measured is continuous\n");
 			else if (c.equals("R")) // uppercase only?
 				sb.append("Last ring measured is partially continuous\n");
 		}
-		if (s.meta.containsKey("quality"))
+		if (s.hasMeta("quality"))
 			sb.append("The quality of the sample is "
-					+ s.meta.get("quality") + "\n");
+					+ s.getMeta("quality") + "\n");
 
 		sb.append("\n");
 		
@@ -909,8 +908,8 @@ public class SamplePrintEditor extends JPanel {
 	private String getWeiserjahre(boolean doubleSpace) {
 		StringBuffer sb = new StringBuffer();
 
-		for (Year y = s.range.getStart(); s.range.contains(y); y = y.add(1)) {
-			if (!y.equals(s.range.getStart()) && y.column() != 0)
+		for (Year y = s.getRange().getStart(); s.getRange().contains(y); y = y.add(1)) {
+			if (!y.equals(s.getRange().getStart()) && y.column() != 0)
 				continue;
 
 			sb.append(y.toString());
@@ -924,15 +923,15 @@ public class SamplePrintEditor extends JPanel {
 			// loop through years
 			for (int i = 0; i < 10; i++) {
 				sb.append("\t");
-				if (s.range.contains(decade.add(i))) {
+				if (s.getRange().contains(decade.add(i))) {
 					String wval =
-						((Number) s.incr.get(decade.add(i).diff(
-							s.range.getStart()))).toString() +
+						((Number) s.getWJIncr().get(decade.add(i).diff(
+							s.getRange().getStart()))).toString() +
 						(Weiserjahre.isSignificant(s, decade.add(i).diff(
-								s.range.getStart())) ? Weiserjahre.SIGNIFICANT
+								s.getRange().getStart())) ? Weiserjahre.SIGNIFICANT
 									: Weiserjahre.INSIGNIFICANT) + 							
-						((Number) s.decr.get(decade.add(i).diff(
-							s.range.getStart()))).toString();
+						((Number) s.getWJDecr().get(decade.add(i).diff(
+							s.getRange().getStart()))).toString();
 					sb.append(wval);
 				}
 			}
@@ -974,8 +973,8 @@ public class SamplePrintEditor extends JPanel {
 		sb.append("ID\t\tFilename\tPith\t\tRange\t\tTerminal\n"); // FIXME: i18n me!
 
 		// write out all elements
-		for (int i = 0; i < s.elements.size(); i++) {
-			edu.cornell.dendro.corina.Element e = (edu.cornell.dendro.corina.Element) s.elements.get(i);
+		for (int i = 0; i < s.getElements().size(); i++) {
+			edu.cornell.dendro.corina.Element e = (edu.cornell.dendro.corina.Element) s.getElements().get(i);
 
 			if (e.details == null) {
 				try {

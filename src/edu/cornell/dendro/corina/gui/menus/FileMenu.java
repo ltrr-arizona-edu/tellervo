@@ -303,7 +303,7 @@ public class FileMenu extends JMenu {
 					// fall through...
 
 				case 2: // export everything.
-					elements = base.elements;
+					elements = base.getElements();
 
 					errorsamples = "";
 
@@ -392,8 +392,8 @@ public class FileMenu extends JMenu {
 				Bug.bug(e); // REMOVE ME: this never happens
 				return;
 			}
-			if (testSample.elements != null) // if summed (has elements),
-				s.addAll(testSample.elements); // add all elements
+			if (testSample.getElements() != null) // if summed (has elements),
+				s.addAll(testSample.getElements()); // add all elements
 			else
 				s.add(new Element(filename));
 		}

@@ -81,9 +81,9 @@ public class TSAPMatrix implements Filetype {
         // TSAP-MATRIX-FORMAT files are summed, so make wj and count
         // Lists, too.
         Sample s = new Sample();
-        s.incr = new ArrayList(); // are all TSAP-MATRIX files summed?
-        s.decr = new ArrayList();
-        s.count = new ArrayList();
+        s.setWJIncr(new ArrayList()); // are all TSAP-MATRIX files summed?
+        s.setWJDecr(new ArrayList());
+        s.setCount(new ArrayList());
 
         // after the TSAP-... header line, there are a series of "Tag:
         // value" lines, then an empty line
@@ -96,10 +96,10 @@ public class TSAPMatrix implements Filetype {
 
             // as a temporary fix, so we don't lose data, let's just
             // append all the metadata lines to the comments field.
-            if (!s.meta.containsKey("comments"))
-                s.meta.put("comments", line.trim());
+            if (!s.hasMeta("comments"))
+                s.setMeta("comments", line.trim());
             else
-                s.meta.put("comments", s.meta.get("comments") + "\n" + line.trim());
+                s.setMeta("comments", s.getMeta("comments") + "\n" + line.trim());
 
             // -- TODO: store metadata lines appropriately here
         }
@@ -149,17 +149,17 @@ public class TSAPMatrix implements Filetype {
 	    }
 
 	    // insert this data
-	    s.data.add(new Integer(datum));
-	    s.count.add(new Integer(count));
-	    s.incr.add(new Integer(up));
-	    s.decr.add(new Integer(dn));
+	    s.getData().add(new Integer(datum));
+	    s.getCount().add(new Integer(count));
+	    s.getWJIncr().add(new Integer(up));
+	    s.getWJDecr().add(new Integer(dn));
 	}
 
 	// might it be indexed?  suuuure...
 	s.guessIndexed();
 
 	// set range
-	s.range = new Range(start, s.data.size());
+	s.setRange(new Range(start, s.getData().size()));
 
 	// return the result
 	return s;
@@ -182,14 +182,14 @@ public class TSAPMatrix implements Filetype {
         w.newLine();
         w.write("    Year,       100 Val        100 Nos        100 Nois       100 Nods");
         w.newLine();
-        for (int i=0; i<s.data.size(); i++) {
+        for (int i=0; i<s.getData().size(); i++) {
 	    // format: "     820,            129,              1,              0,              0"
 	    // (year,width,count,up,down)
 
 	    String year = s.getStart().add(i).toString();
 	    year = StringUtils.leftPad(year, 8);
 
-	    String width = s.data.get(i).toString();
+	    String width = s.getData().get(i).toString();
 	    width = StringUtils.leftPad(width, 15);
 
 	    // WRITEME: count, up, dn
@@ -197,16 +197,16 @@ public class TSAPMatrix implements Filetype {
 	    // BUG: zero year is incorrect -- -5..+5 gets printed as -5..+4, should be -4..+5
             w.write(StringUtils.leftPad(s.getStart().add(i).toString(), 8)); // zero year
             w.write(',');
-            w.write(StringUtils.leftPad(s.data.get(i).toString(), 15));
+            w.write(StringUtils.leftPad(s.getData().get(i).toString(), 15));
             w.write(',');
-            w.write(StringUtils.leftPad(s.count==null ? "1" : s.count.get(i).toString(), 15)); // count may be null?
+            w.write(StringUtils.leftPad(s.getCount()==null ? "1" : s.getCount().get(i).toString(), 15)); // count may be null?
             w.write(',');
 	    // REFACTOR: this is way too low-level.  move to superclass?
 
             // may not have wj
-            w.write(StringUtils.leftPad(s.hasWeiserjahre() ? s.incr.get(i).toString() : "0", 15));
+            w.write(StringUtils.leftPad(s.hasWeiserjahre() ? s.getWJIncr().get(i).toString() : "0", 15));
             w.write(',');
-            w.write(StringUtils.leftPad(s.hasWeiserjahre() ? s.decr.get(i).toString() : "0", 15));
+            w.write(StringUtils.leftPad(s.hasWeiserjahre() ? s.getWJDecr().get(i).toString() : "0", 15));
 
             // newline
             w.newLine();

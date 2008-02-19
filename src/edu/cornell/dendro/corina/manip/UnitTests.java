@@ -44,25 +44,25 @@ public class UnitTests extends TestCase {
         try {
             // load sample
             Sample s = new Sample("Demo Data/chil/chil001.crn");
-            assertTrue(s.count != null);
+            assertTrue(s.getCount() != null);
 
             // clean it
             UndoableEdit undo = Clean.clean(s);
-            assertEquals(s.incr, null);
-            assertEquals(s.decr, null);
-            assertEquals(s.elements, null);
-            assertEquals(s.count, null);
-            assertTrue(!s.meta.containsKey("filename"));
+            assertEquals(s.getWJIncr(), null);
+            assertEquals(s.getWJDecr(), null);
+            assertEquals(s.getElements(), null);
+            assertEquals(s.getCount(), null);
+            assertTrue(!s.hasMeta("filename"));
 
             // undo it
             undo.undo();
-            assertTrue(s.count != null);
-            assertTrue(s.meta.containsKey("filename"));
+            assertTrue(s.getCount() != null);
+            assertTrue(s.hasMeta("filename"));
 
             // redo it
             undo.redo();
-            assertEquals(s.count, null);
-            assertTrue(!s.meta.containsKey("filename"));
+            assertEquals(s.getCount(), null);
+            assertTrue(!s.hasMeta("filename"));
         } catch (IOException ioe) {
             fail();
         }

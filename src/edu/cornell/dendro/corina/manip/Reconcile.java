@@ -117,7 +117,7 @@ public class Reconcile {
         this.s2 = c;
 
         // compute total length of first sample
-        n = s1.data.size();
+        n = s1.getData().size();
 
         checkLength();
 
@@ -173,7 +173,7 @@ public class Reconcile {
     // BUG: this isn't the sort of length rule i want to have
     // i want to report _missing_years_
     private void checkLength() {
-        int m = s2.data.size();
+        int m = s2.getData().size();
 	if (m != n)
 	    length.add(new LengthRule(n, m));
     }
@@ -207,16 +207,16 @@ public class Reconcile {
     // check trends
     private void checkTrends() {
 
-        int w1 = ((Number) s1.data.get(0)).intValue();
-        int w2 = ((Number) s2.data.get(0)).intValue();
+        int w1 = ((Number) s1.getData().get(0)).intValue();
+        int w2 = ((Number) s2.getData().get(0)).intValue();
         for (int i=1; i<n; i++) {
             // store widths/"previous"
             int w1p = w1;
             int w2p = w2;
 
             // get next year's widths
-            w1 = ((Number) s1.data.get(i)).intValue();
-            w2 = ((Number) s2.data.get(i)).intValue();
+            w1 = ((Number) s1.getData().get(i)).intValue();
+            w2 = ((Number) s2.getData().get(i)).intValue();
 
             // compute trends -- possible (desireable) to use cross.Trend here?
             int trend1 = trend(w1p, w1);
@@ -225,7 +225,7 @@ public class Reconcile {
             // compare trends -- "with trends like these, who needs ..."
             if (trend1 != trend2) {
                 // report bad trend
-		trends.add(new TrendRule(s1.range.getStart().add(i-1)));
+		trends.add(new TrendRule(s1.getRange().getStart().add(i-1)));
 	    }
 	}
     }
@@ -253,8 +253,8 @@ public class Reconcile {
 
 	for (int i=0; i<n; i++) {
 	    // get widths, as floats
-	    float w1 = ((Number) s1.data.get(i)).floatValue();
-	    float w2 = ((Number) s2.data.get(i)).floatValue();
+	    float w1 = ((Number) s1.getData().get(i)).floatValue();
+	    float w2 = ((Number) s2.getData().get(i)).floatValue();
 
 	    // w_min = minimum(w1, w2); w_max = max.
 	    float w_min = Math.min(w1, w2);
@@ -266,7 +266,7 @@ public class Reconcile {
 	    // is w_max <= w_min + threePct?
 	    if (w_max > w_min + threePct) {
 		// report bad 3%
-		percents.add(new PercentRule(s1.range.getStart().add(i), (int) w1, (int) w2));
+		percents.add(new PercentRule(s1.getRange().getStart().add(i), (int) w1, (int) w2));
 	    }
 	}
     }
@@ -278,8 +278,8 @@ public class Reconcile {
     // -- set ;RECONCILED field to Y
     // -- rename to ".REC", if possible
     public void markAsReconciled() throws IOException {
-	s1.meta.put("reconciled", "Y");
-	s2.meta.put("reconciled", "Y");
+	s1.setMeta("reconciled", "Y");
+	s2.setMeta("reconciled", "Y");
 
 	// change each filename to ".rec"
 	changeExtension(s1, "REC");
@@ -302,7 +302,7 @@ public class Reconcile {
 
     private void changeExtension(Sample s, String ext) throws IOException {
 	// -- make .rec filename
-	File f = new File((String) s.meta.get("filename"));
+	File f = new File((String) s.getMeta("filename"));
 	int dot = f.getName().indexOf('.');
 	String rec;
 	if (dot == -1)
@@ -311,7 +311,7 @@ public class Reconcile {
 	    rec = f.getName().substring(0, dot) + "." + ext;
 
 	// -- set my filename to that
-	s.meta.put("filename", f.getParent() + File.separator + rec);
+	s.setMeta("filename", f.getParent() + File.separator + rec);
 
 	// -- rename old file to that file
 	f.renameTo(new File(f.getParent() + File.separator + rec));

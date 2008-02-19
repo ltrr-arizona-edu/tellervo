@@ -166,9 +166,9 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 
 			// if it's the same, do nothing
 			try {
-				if (value.equals(s.meta.get(f.getVariable())))
+				if (value.equals(s.getMeta(f.getVariable())))
 					return;
-				if (!s.meta.containsKey(f.getVariable())
+				if (!s.hasMeta(f.getVariable())
 						&& ((String) value).length() == 0)
 					return;
 			} catch (NullPointerException npe) {
@@ -185,9 +185,9 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 
 			// store it, and dirty the sample
 			if (value instanceof String && ((String) value).length() == 0)
-				s.meta.remove(f.getVariable());
+				s.removeMeta(f.getVariable());
 			else
-				s.meta.put(f.getVariable(), value);
+				s.setMeta(f.getVariable(), value);
 			s.setModified();
 			s.fireSampleMetadataChanged();
 		}
@@ -223,15 +223,15 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 	
 	private void popupChanged(JComboBox popup, final MetadataField f) {
 		final int selectedIndex = popup.getSelectedIndex();
-		final Object oldValue = s.meta.get(f.getVariable());
+		final Object oldValue = s.getMeta(f.getVariable());
 		final boolean wasAlreadyModified = s.isModified();
 		final String field = f.getVariable();
 		
 		// do the actual change...
 		if (selectedIndex == 0)
-			s.meta.remove(field);
+			s.removeMeta(field);
 		else
-			s.meta.put(field, f.getListItemValue(selectedIndex - 1));
+			s.setMeta(field, f.getListItemValue(selectedIndex - 1));
 		
 		s.setModified();
 		s.fireSampleMetadataChanged();
@@ -239,9 +239,9 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 		s.postEdit(new AbstractUndoableEdit() {
 			public void undo() throws CannotUndoException {
 				if (oldValue == null)
-					s.meta.remove(field);
+					s.removeMeta(field);
 				else
-					s.meta.put(field, oldValue);
+					s.setMeta(field, oldValue);
 				
 				if(!wasAlreadyModified)
 					s.clearModified();
@@ -251,9 +251,9 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 			
 			public void redo() throws CannotRedoException {
 				if(selectedIndex == 0)
-					s.meta.remove(field);
+					s.removeMeta(field);
 				else
-					s.meta.put(field, f.getListItemValue(selectedIndex - 1));
+					s.setMeta(field, f.getListItemValue(selectedIndex - 1));
 
 				s.setModified();
 				s.fireSampleMetadataChanged();
@@ -300,16 +300,16 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 
 							int tmp = 0; // also in resetPopup() -- refactor?
 							for (int i = 0; i < glue.getValues().length; i++)
-								if (glue.getValues()[i].equals(s.meta.get(glue
+								if (glue.getValues()[i].equals(s.getMeta(glue
 										.getVariable())))
 									break;
 							// fall-through?
 							final int oldWhich = tmp + 1; // index into values[] of the current value -- isn't there a method to compute this somewhere?  refactor.
 
 							if (which == 0)
-								s.meta.remove(field);
+								s.removeMeta(field);
 							else
-								s.meta.put(field, glue.getValues()[which - 1]);
+								s.setMeta(field, glue.getValues()[which - 1]);
 
 							// undoable
 							s.postEdit(new AbstractUndoableEdit() {
@@ -317,9 +317,9 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 
 								public void undo() throws CannotUndoException {
 									if (oldWhich == 0)
-										s.meta.remove(field);
+										s.removeMeta(field);
 									else
-										s.meta.put(field,
+										s.setMeta(field,
 												glue.getValues()[oldWhich - 1]);
 									if (!wasMod)
 										s.clearModified();
@@ -331,9 +331,9 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 
 								public void redo() throws CannotRedoException {
 									if (which == 0)
-										s.meta.remove(field);
+										s.removeMeta(field);
 									else
-										s.meta.put(field,
+										s.setMeta(field,
 												glue.getValues()[which - 1]);
 									System.out.println("redo called, now at "
 											+ which);
@@ -386,7 +386,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 		String field = f.getVariable();
 		JComboBox popup = (JComboBox) popups.get(f.getVariable());
 		// newValue can be a String, Integer, or null...
-		Object nvTmp = s.meta.get(field);
+		Object nvTmp = s.getMeta(field);
 		String newValue;
 		
 		// maybe it's null
@@ -404,7 +404,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 		// (because the cheat sheet on the wall said this)
 		// so i'll do that one for you.
 		if (field.equals("PITH") && newValue.equals("+")) {
-			s.meta.put("PITH", "*");
+			s.setMeta("PITH", "*");
 			s.setModified();
 			s.fireSampleMetadataChanged();
 			newValue = "*";
@@ -423,7 +423,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 
 		// finally, "?" sounds pretty unspecified to me.
 		if (newValue.equals("?")) {
-			s.meta.remove(field);
+			s.removeMeta(field);
 			popup.setSelectedIndex(0);
 			return;
 		}
@@ -456,9 +456,9 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 
 		// result (x) is index into f.values -- store this.
 		if (x == 0)
-			s.meta.remove(field);
+			s.removeMeta(field);
 		else
-			s.meta.put(field, f.getListItemValue(x - 1));
+			s.setMeta(field, f.getListItemValue(x - 1));
 		s.setModified();
 		s.fireSampleMetadataChanged();
 
@@ -591,7 +591,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 		int lines = f.getLines();
 
 		// value -- REFACTOR?
-		Object hash = s.meta.get(f.getVariable());
+		Object hash = s.getMeta(f.getVariable());
 		String value = (hash == null ? "" : hash.toString());
 
 		// HACK2: index_type gets looked up now; add index_type.options=-1,1,2,... to metadata properties file, perhaps
@@ -654,7 +654,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 				}
 
 				// get value -- DUPLICATE CODE, REFACTOR
-				Object hash = s.meta.get(f.getVariable());
+				Object hash = s.getMeta(f.getVariable());
 				String value = (hash == null ? "" : hash.toString());
 
 				// get component

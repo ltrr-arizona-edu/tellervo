@@ -38,33 +38,33 @@ public class Weiserjahre {
        @return true, iff this interval is significant
     */
     public static boolean isSignificant(Sample s, int i) {
-	int total = ((Number) s.count.get(i)).intValue();
+	int total = ((Number) s.getCount().get(i)).intValue();
 	if (total < 4)
 	    return false;
 
-	int incr = ((Number) s.incr.get(i)).intValue();
-	int decr = ((Number) s.decr.get(i)).intValue();
+	int incr = ((Number) s.getWJIncr().get(i)).intValue();
+	int decr = ((Number) s.getWJDecr().get(i)).intValue();
 	return (incr >= decr*3 || decr >= incr*3);
     }
     public static boolean isSignificant(Sample s, Year y) {
-	return isSignificant(s, y.diff(s.range.getStart()));
+	return isSignificant(s, y.diff(s.getRange().getStart()));
     }
 
     public static String toString(Sample s, int i) {
-	int incr = ((Number) s.incr.get(i)).intValue();
-	int decr = ((Number) s.decr.get(i)).intValue();
+	int incr = ((Number) s.getWJIncr().get(i)).intValue();
+	int decr = ((Number) s.getWJDecr().get(i)).intValue();
 	return incr + (isSignificant(s, i) ? SIGNIFICANT : INSIGNIFICANT) + decr;
     }
 
     public static String toString(Sample s, Year y) {
-	return toString(s, y.diff(s.range.getStart()));
+	return toString(s, y.diff(s.getRange().getStart()));
     }
 
     // 10/36, 9 => "  10/36  "; if width is even, undefined result.
     // TODO: why don't i just write 'format for java?
     public static String toStringFixed(Sample s, int i, int width, String c) {
-	String incr = s.incr.get(i).toString();
-	String decr = s.decr.get(i).toString();
+	String incr = s.getWJIncr().get(i).toString();
+	String decr = s.getWJDecr().get(i).toString();
 
 	while (incr.length() < width/2)
 	    incr = ' ' + incr;

@@ -83,12 +83,12 @@ public class Hohenheim implements Filetype {
 	Sample s = new Sample();
 
 	// first line has the title after the "+" (padded)
-	s.meta.put("title", line.substring(1).trim());
+	s.setMeta("title", line.substring(1).trim());
 
 	// second line has all the metadata, range, etc.
 	line = r.readLine();
-	s.meta.put("species", line.substring(34, 37)); // #4: species
-	// s.meta.put("sapwood", new Integer(line.substring(40, 43)));
+	s.setMeta("species", line.substring(34, 37)); // #4: species
+	// s.setMeta("sapwood", new Integer(line.substring(40, 43)));
 	   // #6: sapwood
 	// WHY is this disabled?
 
@@ -114,7 +114,7 @@ public class Hohenheim implements Filetype {
 	// it's summed, make a new List for the counts.
 	boolean isSummed = (line.length() > 70);
 	if (isSummed)
-	    s.count = new ArrayList();
+	    s.setCount(new ArrayList());
 
 	if (!isSummed) {
 
@@ -138,7 +138,7 @@ public class Hohenheim implements Filetype {
 		    break;
 
 		// add this data
-		s.data.add(new Integer(datum));
+		s.getData().add(new Integer(datum));
 
 		// next column: 4 spaces away.  4 10's are 40, so skip
 		// back to 0.
@@ -152,8 +152,8 @@ public class Hohenheim implements Filetype {
 	} else {
 
 	    // data -- summed
-	    s.incr = new ArrayList();
-	    s.decr = new ArrayList();
+	    s.setWJIncr(new ArrayList());
+	    s.setWJDecr(new ArrayList());
 	    for (;;) {
 		// datum, count, up, down
 		int datum=0, count=0, up=0, dn=0;
@@ -171,10 +171,10 @@ public class Hohenheim implements Filetype {
 		    break;
 
 		// insert this data
-		s.data.add(new Integer(datum));
-		s.count.add(new Integer(count));
-		s.incr.add(new Integer(up));
-		s.decr.add(new Integer(dn));
+		s.getData().add(new Integer(datum));
+		s.getCount().add(new Integer(count));
+		s.getWJIncr().add(new Integer(up));
+		s.getWJDecr().add(new Integer(dn));
 
 		// next column: 19 spaces away.  4 19's are 76, so
 		// skip back to 0.
@@ -187,7 +187,7 @@ public class Hohenheim implements Filetype {
 	}
 
 	// compute range
-	s.range = new Range(start, s.data.size());
+	s.setRange(new Range(start, s.getData().size()));
 
 	// return it
 	return s;
@@ -205,21 +205,21 @@ public class Hohenheim implements Filetype {
 				 "                                      ");
 
 	// write out the range/start/end, "%5d"-style
-	line2.replace(47, 52, StringUtils.leftPad(String.valueOf(sample.range.span()), 5));
-	line2.replace(53, 58, StringUtils.leftPad(sample.range.getStart().toString(), 5));
-	line2.replace(59, 64, StringUtils.leftPad(sample.range.getEnd().toString(), 5));
+	line2.replace(47, 52, StringUtils.leftPad(String.valueOf(sample.getRange().span()), 5));
+	line2.replace(53, 58, StringUtils.leftPad(sample.getRange().getStart().toString(), 5));
+	line2.replace(59, 64, StringUtils.leftPad(sample.getRange().getEnd().toString(), 5));
 
 	w.write(line2.toString());
 	w.newLine();
 
 	if (sample.isSummed()) {
 
-	    int i, n = sample.data.size();
+	    int i, n = sample.getData().size();
 	    for (i=0; i<n; i++) {
-		w.write(StringUtils.leftPad(sample.data.get(i).toString(), 4));
-		w.write(StringUtils.leftPad(sample.count.get(i).toString(), 5));
-		w.write(StringUtils.leftPad(sample.incr.get(i).toString(), 5));
-		w.write(StringUtils.leftPad(sample.decr.get(i).toString(), 5));
+		w.write(StringUtils.leftPad(sample.getData().get(i).toString(), 4));
+		w.write(StringUtils.leftPad(sample.getCount().get(i).toString(), 5));
+		w.write(StringUtils.leftPad(sample.getWJIncr().get(i).toString(), 5));
+		w.write(StringUtils.leftPad(sample.getWJDecr().get(i).toString(), 5));
 
 		if (i % 4 == 3)
 		    w.newLine();
@@ -234,9 +234,9 @@ public class Hohenheim implements Filetype {
 
 	} else { // not summed
 
-	    int i, n = sample.data.size();
+	    int i, n = sample.getData().size();
 	    for (i=0; i<n; i++) {
-		String x = StringUtils.leftPad(sample.data.get(i).toString(), 4);
+		String x = StringUtils.leftPad(sample.getData().get(i).toString(), 4);
 		w.write(x);
 
 		if (i % 10 == 9)

@@ -134,8 +134,8 @@ public class TucsonSimple implements Filetype {
 	private String make6digitCode(Sample s) {
 		String code;
 
-		if (s.meta.containsKey("id"))
-			code = s.meta.get("id").toString();
+		if (s.hasMeta("id"))
+			code = s.getMeta("id").toString();
 		else
 			code = "000000";
 
@@ -153,8 +153,8 @@ public class TucsonSimple implements Filetype {
 	private void saveRowHeader(BufferedWriter w, Sample s, String code,
 			int yearWidth, Year y) throws IOException {
 		String prefix; // don't print the decade for the first one
-		if (y.compareTo(s.range.getStart()) < 0)
-			prefix = s.range.getStart().toString();
+		if (y.compareTo(s.getRange().getStart()) < 0)
+			prefix = s.getRange().getStart().toString();
 		else
 			prefix = y.toString();
 		while (prefix.length() < yearWidth)
@@ -203,12 +203,12 @@ public class TucsonSimple implements Filetype {
 				}
 			} else { // in range
 				// data: "%4d" / %6d
-				w.write(StringUtils.leftPad(s.data.get(y.diff(start))
+				w.write(StringUtils.leftPad(s.getData().get(y.diff(start))
 						.toString(), (isProcessed ? 4 : 6)));
 
 				// count: "%3d" (right-align)
 				if (isSummed)
-					w.write(StringUtils.leftPad(s.count.get(y.diff(start))
+					w.write(StringUtils.leftPad(s.getCount().get(y.diff(start))
 							.toString(), 3));
 				else if (isProcessed) // which is really isIndexed
 					w.write("   ");
@@ -237,18 +237,18 @@ public class TucsonSimple implements Filetype {
 	// -- if start+8000>=1, use range+8000 (some labs do this, right?)
 	// -- if even that doesn't work, just start at 1001
 	private Range computeRange(Sample s) {
-		Year start = s.range.getStart();
+		Year start = s.getRange().getStart();
 
 		// if it's AD-only, we're fine
 		if (start.compareTo(new Year(1)) >= 0)
-			return s.range;
+			return s.getRange();
 
 		// if adding 8000 makes it AD, do that
 		if (start.add(8000).compareTo(new Year(1)) >= 0)
-			return s.range.redateBy(8000);
+			return s.getRange().redateBy(8000);
 
 		// ouch.  just start it at 1001.
-		return s.range.redateStartTo(new Year(1001));
+		return s.getRange().redateStartTo(new Year(1001));
 	}
 
 	public void save(Sample s, BufferedWriter w) throws IOException {

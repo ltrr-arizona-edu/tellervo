@@ -44,8 +44,8 @@ public class Redate extends AbstractUndoableEdit {
 
     private Redate(Sample s, Range range, String dating) {
 	this.s = s;
-	this.oldRange = s.range;
-	this.oldDating = (String) s.meta.get("dating");
+	this.oldRange = s.getRange();
+	this.oldDating = (String) s.getMeta("dating");
 	if (oldDating == null)
 	    oldDating = "R"; // BUG: why do this?
 	this.oldMod = s.isModified();
@@ -55,8 +55,8 @@ public class Redate extends AbstractUndoableEdit {
 
 	// do it a first time -- can't just call redo() because
 	// that calls super.redo() (REFACTOR)
-	s.range = newRange;
-	s.meta.put("dating", newDating);
+	s.setRange(newRange);
+	s.setMeta("dating", newDating);
 	s.fireSampleRedated();
 	s.setModified();
 	s.fireSampleMetadataChanged(); // for mod flag
@@ -69,8 +69,8 @@ public class Redate extends AbstractUndoableEdit {
     private boolean oldMod;
     public void undo() throws CannotUndoException {
 	super.undo();
-	s.range = oldRange;
-	s.meta.put("dating", oldDating);
+	s.setRange(oldRange);
+	s.setMeta("dating", oldDating);
 	s.fireSampleRedated();
 	if (!oldMod) {
 	    s.clearModified();
@@ -79,8 +79,8 @@ public class Redate extends AbstractUndoableEdit {
     }
     public void redo() throws CannotRedoException {
 	super.redo();
-	s.range = newRange;
-	s.meta.put("dating", newDating);
+	s.setRange(newRange);
+	s.setMeta("dating", newDating);
 	s.fireSampleRedated();
 	s.setModified();
 	s.fireSampleMetadataChanged(); // for mod flag

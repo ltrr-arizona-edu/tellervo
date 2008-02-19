@@ -80,8 +80,8 @@ public class Files {
           br.close();
   
           String filetype = format.toString();
-          s.meta.put("filetype", filetype); // (used only for preview)
-          s.meta.put("filename", filename);          
+          s.setMeta("filetype", filetype); // (used only for preview)
+          s.setMeta("filename", filename);          
   
           // if we made it this far without throwing a
           // WrongFiletypeException or IOException (or any other

@@ -44,8 +44,8 @@ class CrossSigsTableModel extends AbstractTableModel {
   public String getColumnName(int col) {
     switch (col) {
       case 0: return I18n.getText("number");
-      case 1: return I18n.getText("fixed") + " (" + this.view.getCrossdate().getFixed().range + ")";
-      case 2: return I18n.getText("moving") + " (" + this.view.getCrossdate().getMoving().range + ")";
+      case 1: return I18n.getText("fixed") + " (" + this.view.getCrossdate().getFixed().getRange() + ")";
+      case 2: return I18n.getText("moving") + " (" + this.view.getCrossdate().getMoving().getRange() + ")";
       case 3: return this.view.getCrossdate().getName();
       case 4: return I18n.getText("overlap");
       case 5:
@@ -96,8 +96,8 @@ class CrossSigsTableModel extends AbstractTableModel {
 
     switch (col) {
       case 0: return new Integer(s.number);
-      case 1: return (this.view.isFixedFloats() ? s.fixedRange : this.view.getCrossdate().getFixed().range);
-      case 2: return (this.view.isMovingFloats() ? s.movingRange : this.view.getCrossdate().getMoving().range);
+      case 1: return (this.view.isFixedFloats() ? s.fixedRange : this.view.getCrossdate().getFixed().getRange());
+      case 2: return (this.view.isMovingFloats() ? s.movingRange : this.view.getCrossdate().getMoving().getRange());
       case 3: 
     	  {
     	  	// this is pretty gross.

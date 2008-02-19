@@ -107,18 +107,18 @@ public class Modeline extends JPanel
 	Year y = ((DecadalModel) table.getModel()).getYear(row, col);
 
 	// get index from year
-	int i = y.diff(sample.range.getStart());
+	int i = y.diff(sample.getRange().getStart());
 
 	// bail out if out of range
-	if (i<0 || i>=sample.data.size()) {
+	if (i<0 || i>=sample.getData().size()) {
 	    label.setText(EMPTY);
 	    return;
 	}
 
 	// get modeline from year, index
-	String modeline = y + ": " + sample.data.get(i);
-	if (sample.count != null)
-	    modeline += " [" + sample.count.get(i) + "]";
+	String modeline = y + ": " + sample.getData().get(i);
+	if (sample.getCount() != null)
+	    modeline += " [" + sample.getCount().get(i) + "]";
 	if (sample.hasWeiserjahre())
 	    modeline += " " + Weiserjahre.toString(sample, i);
 

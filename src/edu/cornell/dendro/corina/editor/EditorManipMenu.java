@@ -117,7 +117,7 @@ public class EditorManipMenu extends JMenu implements SampleListener {
 			// hack for bug 228: filename may be null, and sequence
 			// uses it to hash, so let's make up a fake
 			// filename that can't be a real filename.
-			String filename = (String) sample.meta.get("filename");
+			String filename = (String) sample.getMeta("filename");
 			if (filename == null)
 			    filename = "\u011e"; // this can't begin a word!
 
@@ -135,8 +135,8 @@ public class EditorManipMenu extends JMenu implements SampleListener {
 	crossElements.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    // n-by-n cross
-		    Sequence seq = new Sequence(sample.elements,
-						sample.elements);
+		    Sequence seq = new Sequence(sample.getElements(),
+						sample.getElements());
 		    new CrossdateWindow(seq);
 		}
 	    });
@@ -157,7 +157,7 @@ public class EditorManipMenu extends JMenu implements SampleListener {
 					// EXTRACT: why isn't this part of reconciledialog?
 
 					// check for filename
-					String filename = (String) sample.meta.get("filename");
+					String filename = (String) sample.getMeta("filename");
 
 					// (do we need to ask the user?)
 					boolean askUser = false;
@@ -224,7 +224,7 @@ public class EditorManipMenu extends JMenu implements SampleListener {
     }
     public void sampleElementsChanged(SampleEvent e) {
 	// cross elements: only if elements present, and at least 2 elements
-	crossElements.setEnabled(sample.elements != null &&
-				 sample.elements.size() >= 2);
+	crossElements.setEnabled(sample.getElements() != null &&
+				 sample.getElements().size() >= 2);
     }
 }

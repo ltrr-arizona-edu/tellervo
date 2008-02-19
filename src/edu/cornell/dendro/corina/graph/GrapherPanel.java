@@ -778,8 +778,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			// make sure sapwood and unmeas_pre are integers			
 			if (cg.graph instanceof Sample) {
 				Sample s = (Sample) ((Graph) graphs.get(i)).graph;
-				Object sap = s.meta.get("sapwood");
-				Object pre = s.meta.get("unmeas_pre");
+				Object sap = s.getMeta("sapwood");
+				Object pre = s.getMeta("unmeas_pre");
 
 				boolean sapBad = (sap != null && !(sap instanceof Integer));
 				boolean preBad = (pre != null && !(pre instanceof Integer));

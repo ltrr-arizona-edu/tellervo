@@ -101,9 +101,9 @@ public class Sum {
     */
     private static Range computeRange(Sample elements[]) {
         // yup, it's just (reduce #'range-union elements #'sample-range).
-        Range range = elements[0].range;
+        Range range = elements[0].getRange();
         for (int i=1; i<elements.length; i++)
-            range = range.union(elements[i].range);
+            range = range.union(elements[i].getRange());
         return range;
     }
 
@@ -148,14 +148,14 @@ public class Sum {
 	// special case: zero elements!
 	if (buf.length == 0) {
 	    // "skip to step 6" would be nice...
-	    result.range = new Range(); // default empty range (1001-1000)
-	    result.data = new ArrayList();
-	    result.count = new ArrayList();
-	    result.incr = new ArrayList();
-	    result.decr = new ArrayList();
+	    result.setRange(new Range()); // default empty range (1001-1000)
+	    result.setData(new ArrayList());
+	    result.setCount(new ArrayList());
+	    result.setWJIncr(new ArrayList());
+	    result.setWJDecr(new ArrayList());
 
-	    result.elements = elements;
-	    result.meta.put("format", "R"); // let's say no data = raw
+	    result.setElements(elements);
+	    result.setMeta("format", "R"); // let's say no data = raw
 	    result.setModified();
 	    result.fireSampleDataChanged();
 	    result.fireSampleMetadataChanged();
@@ -186,7 +186,7 @@ public class Sum {
             Sample s = buf[i];
 
             // index into the sum (data[]) that this element (s.data[]) starts
-            int startIndex = s.range.getStart().diff(range.getStart());
+            int startIndex = s.getRange().getStart().diff(range.getStart());
 
             // each iteration:
             // -- prevData is s.data[elemIndex-1]
@@ -195,14 +195,14 @@ public class Sum {
 
             // elemIndex is the counter into s.data (the element)
             // sumIndex is nthe counter into data (the sum)
-            int elemIndex = Math.max(0, range.getStart().diff(s.range.getStart()));
+            int elemIndex = Math.max(0, range.getStart().diff(s.getRange().getStart()));
             int sumIndex = elemIndex + startIndex;
 
-            while (elemIndex<s.range.span() && sumIndex<range.span()) {
+            while (elemIndex<s.getRange().span() && sumIndex<range.span()) {
 
                 // this year's data; also copy thisData->prevData
                 prevData = thisData;
-                thisData = ((Number) s.data.get(elemIndex)).intValue();
+                thisData = ((Number) s.getData().get(elemIndex)).intValue();
 
                 // add element's data; increment count
                 data[sumIndex] += thisData;
@@ -235,22 +235,22 @@ public class Sum {
             data[i] = (int) Math.round((double) data[i] / count[i]);
 
         // step 6: set range, and copy array back into (list) result.data
-        result.range = range;
-        result.data = new ArrayList(n);
-        result.count = new ArrayList(n);
-        result.incr = new ArrayList(n);
-        result.decr = new ArrayList(n);
+        result.setRange(range);
+        result.setData(new ArrayList(n));
+        result.setCount(new ArrayList(n));
+        result.setWJIncr(new ArrayList(n));
+        result.setWJDecr(new ArrayList(n));
         for (int i=0; i<n; i++) {
-            result.data.add(new Integer(data[i]));
-            result.count.add(new Integer(count[i]));
-            result.incr.add(new Integer(incr[i]));
-            result.decr.add(new Integer(decr[i]));
+            result.getData().add(new Integer(data[i]));
+            result.getCount().add(new Integer(count[i]));
+            result.getWJIncr().add(new Integer(incr[i]));
+            result.getWJDecr().add(new Integer(decr[i]));
         }
         // (data,count,incr,decr can get gc'd now)
 
         // step 7: set elements, and misc meta
-        result.elements = elements;
-        result.meta.put("format", isIndexed ? "I" : "R");
+        result.setElements(elements);
+        result.setMeta("format", isIndexed ? "I" : "R");
         // FIXME: combine species
         // FIXME: compute ++, sapwood, etc. information
         result.setModified();
@@ -286,6 +286,6 @@ public class Sum {
        the sum, or if the units are inconsistent
     */
     public static Sample sum(Sample m) throws IOException {
-        return sum(m, m.elements);
+        return sum(m, m.getElements());
     }
 }

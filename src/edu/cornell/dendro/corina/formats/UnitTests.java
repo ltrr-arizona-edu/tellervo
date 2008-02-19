@@ -26,7 +26,7 @@ public class UnitTests extends TestCase {
 	// add n (random length) new random ints
 	int n = r.nextInt(100) + 500;
 	for (int i=0; i<n; i++) {
-	    s.data.add(new Integer(1 + r.nextInt(200))); // no 0's!
+	    s.getData().add(new Integer(1 + r.nextInt(200))); // no 0's!
 	}
 	return s;
     }
@@ -66,7 +66,7 @@ public class UnitTests extends TestCase {
 	    // importantly, because i only want to test some parts of
 	    // the sample (those which heidelberg can handle), i'll do
 	    // this myself.
-	    assertEquals(s1.data, s2.data);
+	    assertEquals(s1.getData(), s2.getData());
 	} catch (IOException ioe) {
 	    fail();
 	}

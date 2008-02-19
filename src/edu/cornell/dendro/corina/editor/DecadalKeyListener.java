@@ -58,7 +58,7 @@ public class DecadalKeyListener extends KeyAdapter {
 
 	private void selectYear(Year y) {
 		// compute (row,col)
-		int row = y.row() - _sample.range.getStart().row();
+		int row = y.row() - _sample.getRange().getStart().row();
 		int col = y.column() + 1;
 
 		// move selection
@@ -143,25 +143,25 @@ public class DecadalKeyListener extends KeyAdapter {
 			e.consume();
 			break;
 		case KeyEvent.VK_HOME:
-			target = _sample.range.getStart();
+			target = _sample.getRange().getStart();
 			e.consume();
 			break;
 		case KeyEvent.VK_END:
-			target = _sample.range.getEnd();
+			target = _sample.getRange().getEnd();
 			e.consume();
 			break;
 		}
 
 		// move to target, if set
 		if (target != null) {
-			if (target.compareTo(_sample.range.getStart()) < 0)
-				target = _sample.range.getStart();
-			if (target.compareTo(_sample.range.getEnd().add(1)) > 0)
-				target = _sample.range.getEnd().add(1);
+			if (target.compareTo(_sample.getRange().getStart()) < 0)
+				target = _sample.getRange().getStart();
+			if (target.compareTo(_sample.getRange().getEnd().add(1)) > 0)
+				target = _sample.getRange().getEnd().add(1);
 			selectYear(target);
 
 			// scroll to visible
-			int row = target.row() - _sample.range.getStart().row();
+			int row = target.row() - _sample.getRange().getStart().row();
 			_table.scrollRectToVisible(_table.getCellRect(row, 0, true));
 		}
 

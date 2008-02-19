@@ -20,9 +20,7 @@
 
 package edu.cornell.dendro.corina.metadata;
 
-import edu.cornell.dendro.corina.util.StringUtils;
-import edu.cornell.dendro.corina.ui.I18n;
-
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -108,6 +106,7 @@ public class MetadataTemplate {
 	}
 
 	// metadata fields -- order matters!
+	// Order matters because we generate our metadata editing dialog in this order...
 	private static final MetadataField FIELDS[] = {
 		
 		// variable, editable?, [values | lines]
@@ -131,21 +130,34 @@ public class MetadataTemplate {
 		new MetadataField("author", false),
 		new MetadataField("comments", true, 4), 
 	};
+	
+	private static HashMap<String, MetadataField> fieldMap;
+	
+	// set up our fieldmap
+	static {
+		fieldMap = new HashMap<String, MetadataField>();
+		
+		Iterator<MetadataField> i = getFields();
+		while (i.hasNext()) {
+			MetadataField f = i.next();
+			fieldMap.put(f.getVariable(), f);
+		}		
+	}
 
 	/**
 	 Return all of the fields, in order.
 
 	 @return an Iterator which lists all of the metadata fields
 	 */
-	public static Iterator getFields() {
-		return new Iterator() {
+	public static Iterator<MetadataField> getFields() {
+		return new Iterator<MetadataField>() {
 			private int i = 0;
 
 			public boolean hasNext() {
 				return (i < FIELDS.length);
 			}
 
-			public Object next() {
+			public MetadataField next() {
 				if (hasNext())
 					return FIELDS[i++];
 				else
@@ -162,11 +174,11 @@ public class MetadataTemplate {
 	/**
 	 * Return true if the given string is the name of a field, like "species".
 	 * 
-	 * @param f
-	 *            a string to check
+	 * @param f a string to check
 	 * @return true, iff it's the name of a metadata field
 	 */
 	public static boolean isField(String field) {
+		/*
 		if (field == null)
 			return false;
 
@@ -178,6 +190,9 @@ public class MetadataTemplate {
 		}
 
 		return false;
+		*/
+		
+		return fieldMap.containsKey(field);
 	}
 
 	/**
@@ -188,13 +203,23 @@ public class MetadataTemplate {
 	 @exception ???
 	 */
 	public static MetadataField getField(String field) {
+		MetadataField f = fieldMap.get(field);
+		
+		if(f == null)
+			throw new NullPointerException(); // apparently, this shouldn't happen
+		
+		return f;
+		
+		/*
 		Iterator i = getFields();
 		while (i.hasNext()) {
 			MetadataField f = (MetadataField) i.next();
 			if (f.getVariable().equals(field))
 				return f;
 		}
+				throw new NullPointerException(); // ???
 
-		throw new NullPointerException(); // ???
+		*/
+
 	}
 }

@@ -72,6 +72,8 @@ public class Scripts {
     // split even/odd years into "-early" and "-late" files
     public static void splitIntoEarlyLate(String filename) {
 	// load it
+    Alert.error("Broken", "This is broken.");
+    /*	
 	Sample raw;
 	try {
 	    raw = new Sample(filename);
@@ -107,11 +109,11 @@ public class Scripts {
 	late.range = new Range(start, late.data.size());
 
 	// copy meta, and set titles
-	early.meta = new Hashtable(raw.meta);
-	late.meta = new Hashtable(raw.meta);
-	String rawTitle = (String) raw.meta.get("title");
-	early.meta.put("title", rawTitle + " - Earlywood");
-	late.meta.put("title", rawTitle + " - Latewood");
+	early.meta = new Hashtable(raw);
+	late.meta = new Hashtable(raw);
+	String rawTitle = (String) raw.getMeta("title");
+	early.setMeta("title", rawTitle + " - Earlywood");
+	late.setMeta("title", rawTitle + " - Latewood");
 
 	// make the new filenames
 	String earlyName = filename + " - early";
@@ -189,11 +191,11 @@ public class Scripts {
 	raw.range = new Range(start, raw.data.size());
 
 	// adjust title
-	String title = (String) raw.meta.get("title");
+	String title = (String) raw.getMeta("title");
 	if (title == null || title.equals(""))
 	    title = "Untitled";
 	title = title + " - joined";
-	raw.meta.put("title", title);
+	raw.setMeta("title", title);
 
 	// BUG: doList doesn't update if summary is changed, e.g., n=63->n=64
 
@@ -251,7 +253,7 @@ public class Scripts {
 	}
     }
     */
-
+    }
     // BUG: what if it's already indexed?
 
     public static void indexManyFiles(List elements) {
@@ -287,13 +289,13 @@ public class Scripts {
 	    index.apply();
 
 	    // add "(indexed)" to the title, so they know later
-	    s.meta.put("title", s.meta.get("title") + " (indexed)");
+	    s.setMeta("title", s.getMeta("title") + " (indexed)");
 
 	    // take the filename, and make it end in .IND.
-	    String name = new File((String) s.meta.get("filename")).getPath();
+	    String name = new File((String) s.getMeta("filename")).getPath();
 
 	    // change the extension, or add one if it didn't have one
-	    name = changeExtension(name, "IND");;
+	    //name = changeExtension(name, "IND");;
 
 	    try {
 		// make sure it's safe to write here

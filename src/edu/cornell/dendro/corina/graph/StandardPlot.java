@@ -150,11 +150,11 @@ public class StandardPlot implements CorinaGraphPlotter {
 			// -- do them once, and store that info in the Graph object, perhaps.
 			if (sample.isOak()) {
 				try {
-					if (sample.meta.containsKey("sapwood"))
-						sapwoodCount = ((Integer) sample.meta.get("sapwood"))
+					if (sample.hasMeta("sapwood"))
+						sapwoodCount = ((Integer) sample.getMeta("sapwood"))
 								.intValue();
-					if (sample.meta.containsKey("unmeas_post"))
-						unmeasPost = ((Integer) sample.meta.get("unmeas_post"))
+					if (sample.hasMeta("unmeas_post"))
+						unmeasPost = ((Integer) sample.getMeta("unmeas_post"))
 								.intValue();
 				} catch (ClassCastException cce) {
 					// we've already warned the user before, ignore it now.

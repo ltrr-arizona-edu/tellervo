@@ -107,17 +107,17 @@ public class Spreadsheet implements Filetype, PackedFileType {
     // deprecated! this is a packed sample format!
 	public void save(Sample s, BufferedWriter w) throws IOException {
 		// verify it's a master
-		if (s.elements == null)
+		if (s.getElements() == null)
 			throw new IOException("Spreadsheet format is only available "
 					+ "for summed samples with Elements");
 
 		// load all the samples into a list
 		List slist = new ArrayList();		
-		for (int i = 0; i < s.elements.size(); i++) {
+		for (int i = 0; i < s.getElements().size(); i++) {
 			try {
-				slist.add(((Element) s.elements.get(i)).load());
+				slist.add(((Element) s.getElements().get(i)).load());
 			} catch (IOException ioe) {
-				String filename = ((Element) s.elements.get(i)).getFilename();
+				String filename = ((Element) s.getElements().get(i)).getFilename();
 				throw new IOException("Can't load element " + filename);
 			}			
 		}
@@ -135,15 +135,15 @@ public class Spreadsheet implements Filetype, PackedFileType {
 		// make range a union of all the ranges.		
 		for (int i = 0; i < n; i++) {
 			if(r == null)
-				r = ((Sample)sl.get(i)).range;
+				r = ((Sample)sl.get(i)).getRange();
 			else
-				r = r.union(((Sample)sl.get(i)).range);
+				r = r.union(((Sample)sl.get(i)).getRange());
 		}
 
 		// write header
 		w.write(I18n.getText("year"));
 		for (int i = 0; i < n; i++)
-			w.write("\t" + ((Sample)sl.get(i)).meta.get("title"));
+			w.write("\t" + ((Sample)sl.get(i)).getMeta("title"));
 		w.newLine();
 
 		// save line(=year)-at-a-time
@@ -159,10 +159,10 @@ public class Spreadsheet implements Filetype, PackedFileType {
 				Sample s = (Sample) sl.get(i);
 				
 				// data[y]
-				if (s.range.contains(y)) {
-					Year start = s.range.getStart();
+				if (s.getRange().contains(y)) {
+					Year start = s.getRange().getStart();
 					int index = y.diff(start);
-					w.write(s.data.get(index).toString());
+					w.write(s.getData().get(index).toString());
 				}
 			}
 

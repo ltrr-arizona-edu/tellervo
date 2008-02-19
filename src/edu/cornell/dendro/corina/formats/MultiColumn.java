@@ -205,7 +205,7 @@ public class MultiColumn implements Filetype {
       }
     }
     if (isCrap)
-      s.meta.put("comments", "Header line was: \"" + l + "\"");
+      s.setMeta("comments", "Header line was: \"" + l + "\"");
     else
       r.reset();
   }
@@ -246,9 +246,9 @@ public class MultiColumn implements Filetype {
   }
     
   public void save(Sample s, BufferedWriter w) throws IOException {
-    Year y = s.range.getStart();
+    Year y = s.getRange().getStart();
     System.out.println("Range start: " + y);
-    boolean hasCount = (s.count != null);
+    boolean hasCount = (s.getCount() != null);
     System.out.println("Has count: " + hasCount);
 
     // write out the header
@@ -267,7 +267,7 @@ public class MultiColumn implements Filetype {
     int datapos = 0;
     int countpos = 0;
     
-    while (datapos < s.data.size()) {
+    while (datapos < s.getData().size()) {
 
       System.out.println("Datapos: " + datapos);
       System.out.println("Countpos: " + countpos);
@@ -304,11 +304,11 @@ public class MultiColumn implements Filetype {
       }
         
       for (int i = column; i < 10; i++, y.add(1)) {
-        System.out.print("year: " + y + " column: " + i + " datapos " + datapos + " data size " + s.data.size());
-        if (datapos < s.data.size()) {
-          String datastring = s.data.get(datapos).toString();
+        System.out.print("year: " + y + " column: " + i + " datapos " + datapos + " data size " + s.getData().size());
+        if (datapos < s.getData().size()) {
+          String datastring = s.getData().get(datapos).toString();
           System.out.print("...writing data: " + datastring);
-          w.write(s.data.get(datapos).toString());
+          w.write(s.getData().get(datapos).toString());
           datapos++;
         }
         System.out.println();      
@@ -328,9 +328,9 @@ public class MultiColumn implements Filetype {
       }
 
       for (int i = column; i < 10; i++) {
-        if (hasCount && countpos < s.count.size()) {
-          System.out.print("year: " + y + " column: " + i + " countpos " + countpos + " count size " + s.count.size());
-          String countstring = s.count.get(countpos).toString(); 
+        if (hasCount && countpos < s.getCount().size()) {
+          System.out.print("year: " + y + " column: " + i + " countpos " + countpos + " count size " + s.getCount().size());
+          String countstring = s.getCount().get(countpos).toString(); 
           System.out.println("writing count: " + countstring);
           w.write(countstring);
           countpos++;

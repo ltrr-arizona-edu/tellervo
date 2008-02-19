@@ -117,7 +117,7 @@ public class Tree extends JLabel implements DragGestureListener {
 	// start the drag
         drag.startDrag(event,
 		       DragSource.DefaultMoveDrop,
-		       new TransferableFile((String) s.meta.get("filename")),
+		       new TransferableFile((String) s.getMeta("filename")),
 		       new EmptyDragSourceListener());
     }
 

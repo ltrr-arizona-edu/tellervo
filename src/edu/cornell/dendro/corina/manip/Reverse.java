@@ -47,12 +47,12 @@ public class Reverse extends AbstractUndoableEdit {
 
     private static void reverseSample(Sample s) {
 	// reverse stuff
-	Collections.reverse(s.data);
-	if (s.count != null)
-	    Collections.reverse(s.count);
+	Collections.reverse(s.getData());
+	if (s.getCount() != null)
+	    Collections.reverse(s.getCount());
 	if (s.hasWeiserjahre()) {
-	    Collections.reverse(s.incr);
-	    Collections.reverse(s.decr);
+	    Collections.reverse(s.getWJIncr());
+	    Collections.reverse(s.getWJDecr());
 	}
 
 	// fire events

@@ -256,7 +256,7 @@ public class ExportDialog extends JDialog {
 		this.sample = s;
 		this.sample_list = null;
 
-		commonSetup((sample.elements == null ? EXPORTERS_RAW : EXPORTERS_SUM));
+		commonSetup((sample.getElements() == null ? EXPORTERS_RAW : EXPORTERS_SUM));
 
 		ok.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
@@ -293,7 +293,7 @@ public class ExportDialog extends JDialog {
 			this.sample = (Sample) samples.get(0);
 			this.sample_list = samples;
 			
-			commonSetup(sample.elements == null ? EXPORTERS_RAW : EXPORTERS_SUM);
+			commonSetup(sample.getElements() == null ? EXPORTERS_RAW : EXPORTERS_SUM);
 			
 			setTitle(getTitle() + " [first sample shown, choose format for all]");
 		}

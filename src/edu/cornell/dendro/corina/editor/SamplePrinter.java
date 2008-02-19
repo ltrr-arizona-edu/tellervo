@@ -119,7 +119,7 @@ public class SamplePrinter extends Printer {
 
 		// elements
 		if (elements)
-			if (s.elements != null)
+			if (s.getElements() != null)
 				printElements();
 	}
 
@@ -128,14 +128,14 @@ public class SamplePrinter extends Printer {
 	//
 
 	private void printHeader() {
-		lines.add(new TextLine(s.meta.get("title").toString(),
+		lines.add(new TextLine(s.getMeta("title").toString(),
 				Line.SECTION_SIZE));
 		lines.add(new ByLine());
 		lines.add(new EmptyLine());
 
 		// print radius, avg width, but only for non-indexed samples
 		float radius = s.computeRadius() / 1000f;
-		float average = radius / s.data.size();
+		float average = radius / s.getData().size();
 		DecimalFormat df = new DecimalFormat("0.000"); // to 3 places
 		if (!s.isIndexed()) {
 			// FIXME: i18n!
@@ -158,8 +158,8 @@ public class SamplePrinter extends Printer {
 
 		// i really want a pure-data decade model here!
 
-		for (Year y = s.range.getStart(); s.range.contains(y); y = y.add(1)) {
-			if (!y.equals(s.range.getStart()) && y.column() != 0)
+		for (Year y = s.getRange().getStart(); s.getRange().contains(y); y = y.add(1)) {
+			if (!y.equals(s.getRange().getStart()) && y.column() != 0)
 				continue;
 
 			String data = y.toString();
@@ -171,11 +171,11 @@ public class SamplePrinter extends Printer {
 
 			// loop through years
 			for (int i = 0; i < 10; i++) {
-				if (!s.range.contains(fake.add(i)))
+				if (!s.getRange().contains(fake.add(i)))
 					data += "\t ";
 				else
 					data += "\t"
-							+ s.data.get(fake.add(i).diff(s.range.getStart()));
+							+ s.getData().get(fake.add(i).diff(s.getRange().getStart()));
 			}
 
 			lines.add(f.makeLine(data));
@@ -206,8 +206,8 @@ public class SamplePrinter extends Printer {
 			// "0 \t 1 \t 2 \t 3 \t 4 \t 5 \t 6 \t 7 \t 8 \t 9"));
 
 			// data
-			for (Year y = s.range.getStart(); s.range.contains(y); y = y.add(1)) {
-				if (!y.equals(s.range.getStart()) && y.column() != 0)
+			for (Year y = s.getRange().getStart(); s.getRange().contains(y); y = y.add(1)) {
+				if (!y.equals(s.getRange().getStart()) && y.column() != 0)
 					continue;
 
 				Year decade = y;
@@ -219,16 +219,16 @@ public class SamplePrinter extends Printer {
 				// data
 				for (int i = 0; i < 10; i++) {
 					vals += "\t";
-					if (s.range.contains(decade.add(i)))
-						vals += ((Number) s.data.get(decade.add(i).diff(
-								s.range.getStart()))).intValue();
+					if (s.getRange().contains(decade.add(i)))
+						vals += ((Number) s.getData().get(decade.add(i).diff(
+								s.getRange().getStart()))).intValue();
 				}
 				// count
 				for (int i = 0; i < 10; i++) {
 					vals += "\t";
-					if (s.range.contains(decade.add(i)))
-						vals += ((Number) s.count.get(decade.add(i).diff(
-								s.range.getStart()))).intValue();
+					if (s.getRange().contains(decade.add(i)))
+						vals += ((Number) s.getCount().get(decade.add(i).diff(
+								s.getRange().getStart()))).intValue();
 				}
 				lines.add(f.makeLine(vals));
 			}
@@ -236,12 +236,12 @@ public class SamplePrinter extends Printer {
 
 		// extra data for summed files
 		lines.add(new TextLine("Number of samples in data set: "
-				+ (s.elements == null ? "unknown" : String.valueOf(s.elements
+				+ (s.getElements() == null ? "unknown" : String.valueOf(s.getElements()
 						.size()))));
 		lines
 				.add(new TextLine("Number of rings in data set: "
 						+ s.countRings()));
-		lines.add(new TextLine("Length of data set: " + s.range.span()
+		lines.add(new TextLine("Length of data set: " + s.getRange().span()
 				+ " years"));
 		// TODO: line up these 3 values?
 		/* i'd think it might be easier on the eyes just to make a bullet list with units:
@@ -253,25 +253,24 @@ public class SamplePrinter extends Printer {
 	}
 
 	private void printMetadata() {
-		if (s.meta.containsKey("id"))
-			lines.add(new TextLine("ID Number " + s.meta.get("id")));
-		if (s.meta.containsKey("title"))
-			lines.add(new TextLine("Title of sample: " + s.meta.get("title")));
+		if (s.hasMeta("id"))
+			lines.add(new TextLine("ID Number " + s.getMeta("id")));
+		if (s.hasMeta("title"))
+			lines.add(new TextLine("Title of sample: " + s.getMeta("title")));
 		lines.add(new TextLine(s.isAbsolute() ? "Absolutely dated"
 				: "Relatively dated"));
-		if (s.meta.containsKey("unmeas_pre"))
-			lines.add(new TextLine(s.meta.get("unmeas_pre")
+		if (s.hasMeta("unmeas_pre"))
+			lines.add(new TextLine(s.getMeta("unmeas_pre")
 					+ " unmeasured rings at beginning of sample."));
-		if (s.meta.containsKey("unmeas_post"))
-			lines.add(new TextLine(s.meta.get("unmeas_post")
+		if (s.hasMeta("unmeas_post"))
+			lines.add(new TextLine(s.getMeta("unmeas_post")
 					+ " unmeasured rings at end of sample."));
-		if (s.meta.containsKey("filename"))
-			lines.add(new TextLine("File saved as " + s.meta.get("filename")));
+		if (s.hasMeta("filename"))
+			lines.add(new TextLine("File saved as " + s.getMeta("filename")));
 
 		// - comments -- loop
-		if (s.meta.containsKey("comments")) {
-			String comments[] = StringUtils.splitByLines((String) s.meta
-					.get("comments"));
+		if (s.hasMeta("comments")) {
+			String comments[] = StringUtils.splitByLines((String) s.getMeta("comments"));
 			for (int i = 0; i < comments.length; i++)
 				lines.add(new TextLine("Comments: " + comments[i]));
 			// this repeats "Comments:" every line -- we don't really want that, do we?
@@ -279,23 +278,23 @@ public class SamplePrinter extends Printer {
 			// following line using spaces.
 		}
 
-		if (s.meta.containsKey("type"))
-			lines.add(new TextLine("Type of sample " + s.meta.get("type")));
-		if (s.meta.containsKey("species"))
-			lines.add(new TextLine("Species: " + s.meta.get("species")));
+		if (s.hasMeta("type"))
+			lines.add(new TextLine("Type of sample " + s.getMeta("type")));
+		if (s.hasMeta("species"))
+			lines.add(new TextLine("Species: " + s.getMeta("species")));
 		// TODO: look up species name (if it's a code)
-		if (s.meta.containsKey("format")) { // use a switch?
-			if (s.meta.get("format").equals("R"))
+		if (s.hasMeta("format")) { // use a switch?
+			if (s.getMeta("format").equals("R"))
 				lines.add(new TextLine("Raw format"));
 			else if (s.isIndexed())
 				lines.add(new TextLine("Indexed format"));
 			else
 				lines.add(new TextLine("Unknown format"));
 		}
-		if (s.meta.containsKey("sapwood"))
-			lines.add(new TextLine(s.meta.get("sapwood") + " sapwood rings."));
-		if (s.meta.containsKey("pith")) {
-			String p = (String) s.meta.get("pith");
+		if (s.hasMeta("sapwood"))
+			lines.add(new TextLine(s.getMeta("sapwood") + " sapwood rings."));
+		if (s.hasMeta("pith")) {
+			String p = (String) s.getMeta("pith");
 			if (p.equals("P"))
 				lines.add(new TextLine("Pith present and datable"));
 			else if (p.equals("*"))
@@ -305,20 +304,20 @@ public class SamplePrinter extends Printer {
 			else
 				lines.add(new TextLine("Unknown pith"));
 		}
-		if (s.meta.containsKey("terminal"))
+		if (s.hasMeta("terminal"))
 			lines.add(new TextLine("Last ring measured "
-					+ s.meta.get("terminal")));
-		if (s.meta.containsKey("continuous")) {
-			String c = (String) s.meta.get("continuous");
+					+ s.getMeta("terminal")));
+		if (s.hasMeta("continuous")) {
+			String c = (String) s.getMeta("continuous");
 			if (c.equals("C")) // uppercase only?
 				lines.add(new TextLine("Last ring measured is continuous"));
 			else if (c.equals("R")) // uppercase only?
 				lines.add(new TextLine(
 						"Last ring measured is partially continuous"));
 		}
-		if (s.meta.containsKey("quality"))
+		if (s.hasMeta("quality"))
 			lines.add(new TextLine("The quality of the sample is "
-					+ s.meta.get("quality")));
+					+ s.getMeta("quality")));
 
 		lines.add(new EmptyLine());
 	}
@@ -326,8 +325,8 @@ public class SamplePrinter extends Printer {
 	private void printWeiserjahre() {
 		lines.add(new TextLine("Weiserjahre data", Line.SECTION_SIZE));
 
-		for (Year y = s.range.getStart(); s.range.contains(y); y = y.add(1)) {
-			if (!y.equals(s.range.getStart()) && y.column() != 0)
+		for (Year y = s.getRange().getStart(); s.getRange().contains(y); y = y.add(1)) {
+			if (!y.equals(s.getRange().getStart()) && y.column() != 0)
 				continue;
 			lines.add(new WeiserjahreLine(y));
 		}
@@ -372,8 +371,8 @@ public class SamplePrinter extends Printer {
 		// lines.add(new ThinLine(0f, 1f)); -- see problem with thinline, below
 
 		// write out all elements
-		for (int i = 0; i < s.elements.size(); i++) {
-			Element e = (Element) s.elements.get(i);
+		for (int i = 0; i < s.getElements().size(); i++) {
+			Element e = (Element) s.getElements().get(i);
 
 			if (e.details == null) {
 				try {
@@ -477,21 +476,21 @@ public class SamplePrinter extends Printer {
 			// loop through years
 			for (int i = 0; i < 10; i++) {
 				// don't draw it, if it ain't there
-				if (!s.range.contains(fake.add(i)))
+				if (!s.getRange().contains(fake.add(i)))
 					continue;
 
 				// draw right-aligned "x1" + left-aligned "/x2"
 				float position = (float) (pf.getImageableX() + col1 + width
 						* (i + 0.5)); // the "/" starts here
 
-				String x1 = ((Number) s.incr.get(fake.add(i).diff(
-						s.range.getStart()))).toString();
-				String x2 = ((Number) s.decr.get(fake.add(i).diff(
-						s.range.getStart()))).toString();
+				String x1 = ((Number) s.getWJIncr().get(fake.add(i).diff(
+						s.getRange().getStart()))).toString();
+				String x2 = ((Number) s.getWJDecr().get(fake.add(i).diff(
+						s.getRange().getStart()))).toString();
 
 				// separatar char -- (this seems clunky to me)
 				String c = (Weiserjahre.isSignificant(s, fake.add(i).diff(
-						s.range.getStart())) ? Weiserjahre.SIGNIFICANT
+						s.getRange().getStart())) ? Weiserjahre.SIGNIFICANT
 						: Weiserjahre.INSIGNIFICANT);
 				int c_width = g.getFontMetrics().stringWidth(c);
 

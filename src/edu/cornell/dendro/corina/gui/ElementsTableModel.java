@@ -231,7 +231,7 @@ public class ElementsTableModel extends AbstractTableModel {
 				return;
 			}
 
-			s.meta.put(key, value);
+			s.setMeta(key, value);
 
 			try {
 				s.save();

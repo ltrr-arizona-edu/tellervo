@@ -76,7 +76,7 @@ public class RangesOnly implements Filetype {
 
     public void save(Sample s, BufferedWriter w) throws IOException {
         // verify it's a master
-        if (s.elements == null)
+        if (s.getElements() == null)
             throw new IOException("Ranges-only format is only available " +
 				  "for summed samples with Elements");
 
@@ -90,9 +90,9 @@ public class RangesOnly implements Filetype {
 	w.write(I18n.getText("browser_length"));
 	w.newLine();
 
-        int n = s.elements.size();
+        int n = s.getElements().size();
         for (int i=0; i<n; i++) {
-            Element e = (Element) s.elements.get(i);
+            Element e = (Element) s.getElements().get(i);
 	    // OBSOLETE: getRange(), etc., now load the file automatically.
 	    // but BUG: they don't throw anything if it fails.
 	    // (and i don't have a getMeta() yet, so it's not unnecessary.)

@@ -151,13 +151,13 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 				}
 
 				// new elements, if needed
-				if (sample.elements == null)
-					sample.elements = new ArrayList();
+				if (sample.getElements() == null)
+					sample.setElements(new ArrayList());
 
 				// ADD CHECK: make sure indexed+indexed, or raw+raw
 
 				// remember how many elements there used to be
-				int numOld = sample.elements.size();
+				int numOld = sample.getElements().size();
 
 				// add -- if summed, add each one
 				Sample testSample = null;
@@ -173,11 +173,11 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 				}
 
 				// for a summed sample, don't add it, but add its elements
-				if (testSample.elements != null) {
-					for (int i = 0; i < testSample.elements.size(); i++)
-						sample.elements.add(testSample.elements.get(i)); // copy ref only
+				if (testSample.getElements() != null) {
+					for (int i = 0; i < testSample.getElements().size(); i++)
+						sample.getElements().add(testSample.getElements().get(i)); // copy ref only
 				} else {
-					sample.elements.add(new Element(filename));
+					sample.getElements().add(new Element(filename));
 				}
 
 				// modified, and update
@@ -214,7 +214,7 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 	public void sampleMetadataChanged(SampleEvent e) {
 		// resum: only if elements present
 		// QUESTION: what if it has zero elements?
-		resumMenu.setEnabled(sample.elements != null);
+		resumMenu.setEnabled(sample.getElements() != null);
 
 		// clean: if summed (what's that mean, exactly?)
 		cleanMenu.setEnabled(sample.isSummed());

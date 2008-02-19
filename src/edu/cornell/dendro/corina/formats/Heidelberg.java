@@ -102,9 +102,9 @@ public class Heidelberg implements Filetype {
 			// WRITE ME: parse other tags and interpret metadata as
 			// intelligently as possible
 			if(tag.equals("Species"))
-				s.meta.put("species", value);
+				s.setMeta("species", value);
 			else if(tag.equals("Location"))
-				s.meta.put("title", value);
+				s.setMeta("title", value);
 		}
 
 		// if we got here, line starts with DATA:...
@@ -135,7 +135,7 @@ public class Heidelberg implements Filetype {
 		}
 
 		// set range, and return
-		s.range = new Range(end.add(1 - s.data.size()), end);
+		s.setRange(new Range(end.add(1 - s.getData().size()), end));
 		return s;
 	}
 
@@ -144,9 +144,9 @@ public class Heidelberg implements Filetype {
 
 		// data -- i'll assume all data is (width,count,up,down)
 
-		s.count = new ArrayList();
-		s.incr = new ArrayList();
-		s.decr = new ArrayList();
+		s.setCount(new ArrayList());
+		s.setWJIncr(new ArrayList());
+		s.setWJDecr(new ArrayList());
 		
 		for (;;) {
 			// parse (datum, count, up, dn)
@@ -169,10 +169,10 @@ public class Heidelberg implements Filetype {
 				break;
 
 			// add to lists
-			s.data.add(new Integer(datum));
-			s.count.add(new Integer(count));
-			s.incr.add(new Integer(up));
-			s.decr.add(new Integer(dn));
+			s.getData().add(new Integer(datum));
+			s.getCount().add(new Integer(count));
+			s.getWJIncr().add(new Integer(up));
+			s.getWJDecr().add(new Integer(dn));
 
 			idx++;
 
@@ -202,7 +202,7 @@ public class Heidelberg implements Filetype {
 				break;
 
 			// add to lists
-			s.data.add(new Integer(datum));
+			s.getData().add(new Integer(datum));
 
 			idx++;
 
@@ -218,7 +218,7 @@ public class Heidelberg implements Filetype {
 
 		// data -- i'll assume all data is (width,count)
 
-		s.count = new ArrayList();
+		s.setCount(new ArrayList());
 		
 		for (;;) {
 			// parse (datum, count)
@@ -237,8 +237,8 @@ public class Heidelberg implements Filetype {
 				break;
 
 			// add to lists
-			s.data.add(new Integer(datum));
-			s.count.add(new Integer(count));
+			s.getData().add(new Integer(datum));
+			s.getCount().add(new Integer(count));
 
 			idx++;
 
@@ -254,17 +254,17 @@ public class Heidelberg implements Filetype {
 		// header
 		w.write("HEADER:");
 		w.newLine();
-		w.write("DateEnd=" + s.range.getEnd());
+		w.write("DateEnd=" + s.getRange().getEnd());
 		w.newLine();
-		w.write("Length=" + s.data.size());
+		w.write("Length=" + s.getData().size());
 		w.newLine();
 		
 		String tmp;
-		if((tmp = (String) s.meta.get("title")) != null) {
+		if((tmp = (String) s.getMeta("title")) != null) {
 			w.write("Location=" + tmp);
 			w.newLine();
 		}
-		if((tmp = (String) s.meta.get("species")) != null) {
+		if((tmp = (String) s.getMeta("species")) != null) {
 			w.write("Species=" + tmp);
 			w.newLine();
 		}
@@ -280,13 +280,13 @@ public class Heidelberg implements Filetype {
 		
 		// We're writing out a 'tree' or a 'single'...
 		// Data is for a single sample, not a sum or anything.
-		if(s.count == null) {
+		if(s.getCount() == null) {
 			w.write("DATA:Tree");
 			w.newLine();
 			int column = 0;
 
-			for (int i = 0; i < s.data.size(); i++) {
-				String datum = s.data.get(i).toString();
+			for (int i = 0; i < s.getData().size(); i++) {
+				String datum = s.getData().get(i).toString();
 				if (datum.equals("0"))
 					datum = "1"; 
 				
@@ -313,14 +313,14 @@ public class Heidelberg implements Filetype {
 			w.newLine();
 			int column = 0;
 
-			for (int i = 0; i < s.data.size(); i++) {
-				String datum = s.data.get(i).toString();
+			for (int i = 0; i < s.getData().size(); i++) {
+				String datum = s.getData().get(i).toString();
 				if (datum.equals("0"))
 					datum = "1"; 
 				
 				// six space padding in this type of file
 				writeDatum6(w, datum);
-				writeDatum6(w, s.count.get(i));
+				writeDatum6(w, s.getCount().get(i));
 				
 				// newline every 5
 				if (column % 5 == 4)
@@ -338,31 +338,31 @@ public class Heidelberg implements Filetype {
 			
 		}
 		else {
-			boolean countIsNull = (s.count == null);
+			boolean countIsNull = (s.getCount() == null);
 			boolean wjIsNull = !s.hasWeiserjahre();
 			
 			// data
 			w.write("DATA:Chrono"); // what's "chrono" mean?
 			w.newLine();
 			int column = 0;
-			for (int i = 0; i < s.data.size(); i++) {
-				String datum = s.data.get(i).toString();
+			for (int i = 0; i < s.getData().size(); i++) {
+				String datum = s.getData().get(i).toString();
 				if (datum.equals("0"))
 					datum = "1"; // DOCUMENT me!
 				// (BUG: what if it's negative?)
 				// (ICK: if it changes the data, it's harder to test)
-				String count = (countIsNull ? "0" : s.count.get(i).toString());
-				String up = (wjIsNull ? "0" : s.incr.get(i).toString());
-				String dn = (wjIsNull ? "0" : s.decr.get(i).toString());
+				String count = (countIsNull ? "0" : s.getCount().get(i).toString());
+				String up = (wjIsNull ? "0" : s.getWJIncr().get(i).toString());
+				String dn = (wjIsNull ? "0" : s.getWJDecr().get(i).toString());
 
 				// output ("%-5d%-5d%-5d%-5d", datum, count, up, dn)
 				writeDatum5(w, datum);
 				// WAS: w.write(StringUtils.leftPad(s.data.get(i).toString(), 5));
-				writeDatum5(w, (countIsNull ? "0" : s.count.get(i)));
+				writeDatum5(w, (countIsNull ? "0" : s.getCount().get(i)));
 				// WAS: w.write(StringUtils.leftPad(countIsNull ? "0" : s.count.get(i).toString(), 5));
-				w.write(StringUtils.leftPad(wjIsNull ? "0" : s.incr.get(i)
+				w.write(StringUtils.leftPad(wjIsNull ? "0" : s.getWJIncr().get(i)
 						.toString(), 5));
-				w.write(StringUtils.leftPad(wjIsNull ? "0" : s.decr.get(i)
+				w.write(StringUtils.leftPad(wjIsNull ? "0" : s.getWJDecr().get(i)
 						.toString(), 5));
 
 				// newline every 4

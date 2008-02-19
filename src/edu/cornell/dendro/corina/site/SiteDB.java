@@ -403,7 +403,7 @@ public class SiteDB { // implements PrintableDocument {
 	}
 
 	public Site getSite(Sample sample) throws SiteNotFoundException {
-		String filename = (String) sample.meta.get("filename");
+		String filename = (String) sample.getMeta("filename");
 
 		// make sure it's been saved
 		if (filename == null)

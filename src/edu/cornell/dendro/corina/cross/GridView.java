@@ -209,8 +209,8 @@ public class GridView extends JPanel {
 
 					// make graph
 					List list = new ArrayList();
-					list.add(new Element((String)cross.getFixed().meta.get("filename")));
-					list.add(new Element((String)cross.getMoving().meta.get("filename")));
+					list.add(new Element((String)cross.getFixed().getMeta("filename")));
+					list.add(new Element((String)cross.getMoving().getMeta("filename")));
 					
 					new GraphWindow(list);
 				}

@@ -145,7 +145,7 @@ public class TRML implements Filetype {
 		end = new Year(data.toString());
 	    if (start!=null && end!=null && range==null) {
 		range = new Range(start, end);
-		s.range = range;
+		s.setRange(range);
 	    }
 	    if (name.equals("start") || name.equals("end")) {
 		data = new StringBuffer();
@@ -158,7 +158,7 @@ public class TRML implements Filetype {
 		MetadataField f = (MetadataField) i.next();
 
 		if (f.getVariable().equals(name)) {
-		    s.meta.put(name, data.toString().trim());
+		    s.setMeta(name, data.toString().trim());
 		    data = new StringBuffer();
 		    return;
 		}
@@ -167,17 +167,17 @@ public class TRML implements Filetype {
 	    // count/incr/decr field
 	    if (name.equals("v")) {
 		// if list doesn't exist, create
-		if (type.equals("width") && s.data==null) {
-		    s.data = new ArrayList();
+		if (type.equals("width") && s.getData()==null) {
+		    s.setData(new ArrayList());
 		}
-		if (type.equals("count") && s.count==null) {
-		    s.count = new ArrayList();
+		if (type.equals("count") && s.getCount()==null) {
+		    s.setCount(new ArrayList());
 		}
-		if (type.equals("incr") && s.incr==null) {
-		    s.incr = new ArrayList();
+		if (type.equals("incr") && s.getWJIncr()==null) {
+		    s.setWJIncr(new ArrayList());
 		}
-		if (type.equals("decr") && s.decr==null) {
-		    s.decr = new ArrayList();
+		if (type.equals("decr") && s.getWJDecr()==null) {
+		    s.setWJDecr(new ArrayList());
 		}
 
 		// parse value
@@ -185,13 +185,13 @@ public class TRML implements Filetype {
 
 		// add this value to list
 		if (type.equals("width"))
-		    s.data.add(new Integer(x));
+		    s.getData().add(new Integer(x));
 		if (type.equals("count"))
-		    s.count.add(new Integer(x));
+		    s.getCount().add(new Integer(x));
 		if (type.equals("incr"))
-		    s.incr.add(new Integer(x));
+		    s.getWJIncr().add(new Integer(x));
 		if (type.equals("decr"))
-		    s.decr.add(new Integer(x));
+		    s.getWJDecr().add(new Integer(x));
 
 		data = new StringBuffer();
 		return;
@@ -199,11 +199,11 @@ public class TRML implements Filetype {
 
 	    // elements field
 	    if (name.equals("element")) {
-		if (s.elements == null)
-		    s.elements = new ArrayList();
+		if (s.getElements() == null)
+		    s.setElements(new ArrayList());
 		Element e = new Element(data.toString().trim(), active);
 		// REFACTOR toString().trim()?
-		s.elements.add(e);
+		s.getElements().add(e);
 		active = true;
 		data = new StringBuffer();
 	    }
@@ -241,9 +241,9 @@ public class TRML implements Filetype {
 	w.newLine();
 
 	// range
-	w.write("      <start>" + s.range.getStart() + "</start>");
+	w.write("      <start>" + s.getRange().getStart() + "</start>");
 	w.newLine();
-	w.write("      <end>" + s.range.getEnd() + "</end>");
+	w.write("      <end>" + s.getRange().getEnd() + "</end>");
 	w.newLine();
 
 	// other fields
@@ -251,7 +251,7 @@ public class TRML implements Filetype {
 	while (i.hasNext()) {
 	    MetadataField f = (MetadataField) i.next();
 
-	    Object x = s.meta.get(f.getVariable());
+	    Object x = s.getMeta(f.getVariable());
 	    if (x != null) {
 		String v = StringUtils.escapeForXML(x.toString());
 		String t = f.getVariable();
@@ -270,47 +270,47 @@ public class TRML implements Filetype {
 	w.newLine();
 	w.write("   <data type=\"width\" units=\"0.01mm\">");
 	w.newLine();
-	saveData(w, s.data);
+	saveData(w, s.getData());
 	w.write("   </data>");
 	w.newLine();
 	// TODO: add per-year comments?
 
 	// count
-	if (s.count != null) {
+	if (s.getCount() != null) {
 	    w.newLine();
 	    w.write("   <data type=\"count\" units=\"number\">");
 	    w.newLine();
-	    saveData(w, s.count);
+	    saveData(w, s.getCount());
 	    w.write("   </data>");
 	    w.newLine();
 	}
 
 	// weiserjahre
-	if (s.incr != null) {
+	if (s.getWJIncr() != null) {
 	    w.newLine();
 	    w.write("   <data type=\"incr\" units=\"number\">");
 	    w.newLine();
-	    saveData(w, s.incr);
+	    saveData(w, s.getWJIncr());
 	    w.write("   </data>");
 	    w.newLine();
 
 	    w.newLine();
 	    w.write("   <data type=\"decr\" units=\"number\">");
 	    w.newLine();
-	    saveData(w, s.decr);
+	    saveData(w, s.getWJDecr());
 	    w.write("   </data>");
 	    w.newLine();
 	}
 
 	// elements
-	if (s.elements != null) {
+	if (s.getElements() != null) {
 	    w.newLine();
 
 	    w.write("   <elements>");
 	    w.newLine();
 
-	    for (int ii=0; ii<s.elements.size(); ii++) {
-		Element e = (Element) s.elements.get(ii);
+	    for (int ii=0; ii<s.getElements().size(); ii++) {
+		Element e = (Element) s.getElements().get(ii);
 		w.write("      <element" +
 			(e.isActive() ? "" : " active=\"false\"") + ">" +
 			e + "</element>");

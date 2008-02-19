@@ -155,7 +155,7 @@ public class RedateDialog extends JDialog {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         // grab data
-        range = sample.range;
+        range = sample.getRange();
         isAbsolute = sample.isAbsolute();
 
         // dialog is a boxlayout
@@ -176,11 +176,11 @@ public class RedateDialog extends JDialog {
         JPanel rangePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
         startListener = new StartListener();
-        startField = new JTextField(sample.range.getStart().toString(), 5);
+        startField = new JTextField(sample.getRange().getStart().toString(), 5);
         startField.getDocument().addDocumentListener(startListener);
 
         endListener = new EndListener();
-        endField = new JTextField(sample.range.getEnd().toString(), 5);
+        endField = new JTextField(sample.getRange().getEnd().toString(), 5);
         endField.getDocument().addDocumentListener(endListener);
 
         // can't do this with dialoglayout! -- firstLabel.setLabelFor(endField); // :-)
@@ -230,7 +230,7 @@ public class RedateDialog extends JDialog {
         // OUCH.  that's about as dangerous a weapon as i've ever thought about handing the lusers.
         // (permanently disabled, now) -ken
         // re-enabled with preliminary access control 10/7/04 -aaron
-        if (sample.elements == null || !allowElementsToo)
+        if (sample.getElements() == null || !allowElementsToo)
           elementsToo.setEnabled(false);
         	
 
@@ -244,7 +244,7 @@ public class RedateDialog extends JDialog {
         ActionListener buttonListener = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 boolean isOk = (e.getSource() == ok);
-                boolean rangeChanged = !sample.range.equals(range);
+                boolean rangeChanged = !sample.getRange().equals(range);
                 boolean absRelChanged = (sample.isAbsolute() != isAbsolute);
 
                 if (isOk && (rangeChanged || absRelChanged))

@@ -34,7 +34,7 @@ public class DebugInstantiator extends JDialog implements ResourceEventListener 
 			ResourceObject<Sample> r = new DummyResource();
 		
 			// create a dumb sample
-			s.meta.put("id", "123451234");
+			s.setMeta("id", "123451234");
 		
 			// associate our DummyResource with it
 			r.setObject(s);
@@ -47,7 +47,7 @@ public class DebugInstantiator extends JDialog implements ResourceEventListener 
 		}
 		
 		// another example
-		if(true) {
+		if(false) {
 			Resource r = new Authenticate("kit", "yourmom", "123412903481239nonce");
 		
 			// make sure we're listening to status information

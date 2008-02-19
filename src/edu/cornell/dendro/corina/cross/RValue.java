@@ -212,8 +212,8 @@ public class RValue extends Cross {
 	// FIXME: preamble() in Cross is dumb; make it just a lazy-evaluation in RValue's compute()
 	protected void preamble() {
 		// normalize (while copying to mutable arrays)
-		fixedData = normalize(getFixed().data);
-		movingData = normalize(getMoving().data);
+		fixedData = normalize(getFixed().getData());
+		movingData = normalize(getMoving().getData());
 
 		// compute means (used later by compute())
 		fixedMean = mean(fixedData);

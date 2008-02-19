@@ -102,7 +102,7 @@ public class DBBrowser extends JPanel {
 				for (int i=0; i<samples.size(); i++) {
 				    int sid = ((Integer) samples.get(i)).intValue();
 				    Sample s = SQLize.load(sid, c);
-				    System.out.println("loaded sample title=" + s.meta.get("id"));
+				    System.out.println("loaded sample title=" + s.getMeta("id"));
 				}
 				*/
 			    } catch (SQLException se) {

@@ -246,7 +246,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				rolodex.remove(wjPanel);
 			else if (rolodex.indexOfComponent(wjPanel) == -1)
 				rolodex.add(wjPanel, I18n.getText("tab_weiserjahre"));
-			if (sample.elements == null) {
+			if (sample.getElements() == null) {
 				rolodex.remove(elemPanel);
 				initElemPanel();
 				editorViewMenu.setElementsPanel(elemPanel);
@@ -275,11 +275,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 	public void setFilename(String fn) {
-		sample.meta.put("filename", fn);
+		sample.setMeta("filename", fn);
 	}
 
 	public String getFilename() {
-		return (String) sample.meta.get("filename");
+		return (String) sample.getMeta("filename");
 	}
 
 	public String getDocumentTitle() {
@@ -290,7 +290,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				fn = fn.substring(lastSlash + 1);
 			return fn;
 		} else {
-			return (String) sample.meta.get("title");
+			return (String) sample.getMeta("title");
 		}
 	}
 	
@@ -306,13 +306,13 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		
 		// make sure they're all numbers -- no nulls, strings, etc.
 		// abstract this out as "boolean verifyOnlyNumbers()" or something?
-		for (int i = 0; i < sample.data.size(); i++) {
-			Object o = sample.data.get(i);
+		for (int i = 0; i < sample.getData().size(); i++) {
+			Object o = sample.getData().get(i);
 			if (o == null || !(o instanceof Integer)) { // integer?  or number?
 				// BUT: didn't i used to pass in |this| as the owner?  is this worse?
 				Alert.error("Bad Data",
 						"One or more years had bad (non-numeric) data, or no data:\n"
-								+ "- year " + sample.range.getStart().add(i)
+								+ "- year " + sample.getRange().getStart().add(i)
 								+ " has "
 								+ (o == null ? "no value" : "value " + o));
 				return;
@@ -324,7 +324,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		}
 
 		// get filename from sample; fall back to user's choice
-		String filename = (String) sample.meta.get("filename"); // BUG: why not containsKey()?
+		String filename = (String) sample.getMeta("filename"); // BUG: why not containsKey()?
 		if (filename == null) {
 
 			// make sure metadata was entered
@@ -359,7 +359,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				return;
 			}
 
-			sample.meta.put("filename", filename);
+			sample.setMeta("filename", filename);
 		}
 
 		save(filename);
@@ -370,7 +370,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		try {
 			// BUG?  do i mean to ignore the filename args?
 			// FIXME: isn't this just sample.save()?
-			sample.save((String) sample.meta.get("filename"));
+			sample.save((String) sample.getMeta("filename"));
 		} catch (IOException ioe) {
 			Alert.error("I/O Error",
 					"There was an error while saving the file: \n"
@@ -417,14 +417,14 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		if (sample.hasWeiserjahre()) {
 			wjTable.setRowSelectionInterval(0, 0);
 			wjTable.setColumnSelectionInterval(
-					sample.range.getStart().column() + 1, sample.range
+					sample.getRange().getStart().column() + 1, sample.getRange()
 							.getStart().column() + 1);
 		}
 
 		// make the "Nr" column renderer a progress bar -- this recomputes max(count)!!!
 		int max = 0;
-		if (sample.count != null)
-			max = ((Integer) Collections.max(sample.count)).intValue();
+		if (sample.getCount() != null)
+			max = ((Integer) Collections.max(sample.getCount())).intValue();
 		wjTable.getColumnModel().getColumn(11).setCellRenderer(
 				new CountRenderer(max));
 
@@ -447,7 +447,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 	private void initElemPanel() {
-		if (sample.elements != null) {
+		if (sample.getElements() != null) {
 			elemPanel = new ElementsPanel(this);
 			sample.addSampleListener(elemPanel);
 		}
@@ -470,7 +470,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// wj and elements, if it's summed
 		if (sample.hasWeiserjahre())
 			rolodex.add(wjPanel, I18n.getText("tab_weiserjahre"));
-		if (sample.elements != null)
+		if (sample.getElements() != null)
 			rolodex.add(elemPanel, I18n.getText("tab_elements"));
 	}
 
@@ -653,7 +653,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// make dataset ref, with our title
 		sample = new Sample();
-		sample.meta.put("title", title);
+		sample.setMeta("title", title);
 
 		// pass
 		setup();
@@ -672,7 +672,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// make dataset ref, with our title
 		sample = new Sample();
-		sample.meta.put("title", title);
+		sample.setMeta("title", title);
 
 		// pass
 		setup();
@@ -882,7 +882,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				def == 3);
 		// dim sections which aren't available
 		s3.setEnabled(s.hasWeiserjahre());
-		s4.setEnabled(s.elements != null); // FIXME: hasElements method!
+		s4.setEnabled(s.getElements() != null); // FIXME: hasElements method!
 		// FIXME: if s1-4 is an array, i can simply say s[def].setEnabled(true)
 		// -- if def=0..3
 		final JButton cancel = Builder.makeButton("cancel");

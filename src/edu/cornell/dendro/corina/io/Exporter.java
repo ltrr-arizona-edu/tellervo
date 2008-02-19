@@ -70,9 +70,8 @@ public class Exporter {
 		// use the default title...
 		
 		String etext = "";
-		if (exportee.meta.get("filename") != null) {
-			File oldfile = new File((String) exportee.meta
-					.get("filename"));
+		if (exportee.getMeta("filename") != null) {
+			File oldfile = new File((String) exportee.getMeta("filename"));
 			etext = " (" + oldfile.getName() + ")";
 		}
 
@@ -89,7 +88,7 @@ public class Exporter {
 			String suggestedfn = 
 				exportDirectory + 
 				File.separator + 
-				new File((String)exportee.meta.get("filename")).getName() +
+				new File((String)exportee.getMeta("filename")).getName() +
 				f.getDefaultExtension();
 			
 			System.out.println(suggestedfn);
@@ -231,7 +230,7 @@ public class Exporter {
 			for (int i = 0; i < slist.size(); i++) {
 				Sample s = (Sample) slist.get(i);
 				String progress = "Processing "
-						+ ((String) s.meta.get("filename")) + " (" + i
+						+ ((String) s.getMeta("filename")) + " (" + i
 						+ "/" + slist.size() + ")";
 				//preview.setText(progress);
 				
@@ -239,7 +238,7 @@ public class Exporter {
 				// gross, but this is what people wanted.
 				String fn = dir.getAbsolutePath() +
 					File.separator +
-					new File((String)s.meta.get("filename")).getName() +
+					new File((String)s.getMeta("filename")).getName() +
 					f.getDefaultExtension();		
 				
 				savedNames.add(fn);

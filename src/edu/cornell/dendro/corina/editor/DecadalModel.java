@@ -95,8 +95,8 @@ public class DecadalModel extends AbstractTableModel {
 
 	// query the Sample to figure out row_min, row_max
 	protected void countRows() {
-		row_min = s.range.getStart().row();
-		row_max = s.range.getEnd().row();
+		row_min = s.getRange().getStart().row();
+		row_max = s.getRange().getEnd().row();
 	}
 
 	/** Return the row count.  For the Data tab of a Sample (i.e., not
@@ -113,7 +113,7 @@ public class DecadalModel extends AbstractTableModel {
 
 		// always give a blank space for more data entry; if the last year
 		// is the last year of this decade, we'll need another decade
-		if (s.range.getEnd().column() == 9)
+		if (s.getRange().getEnd().column() == 9)
 			n++;
 
 		return n;
@@ -153,26 +153,26 @@ public class DecadalModel extends AbstractTableModel {
 
 	protected final Integer getMean(int row) {
 		// if no count, just return zero
-		if (s.count == null)
+		if (s.getCount() == null)
 			return ZERO;
 
 		// compute left end of range
 		Year y1 = getYear(row, 1);
 		if (row == 0)
-			y1 = s.range.getStart();
+			y1 = s.getRange().getStart();
 		else if (row + row_min == 0)
 			y1 = new Year(1);
 
 		// compute right end of range: min(10th column, end)
 		Year y2 = getYear(row, 10);
-		y2 = Year.min(y2, s.range.getEnd());
+		y2 = Year.min(y2, s.getRange().getEnd());
 
 		// compute span (assumed nonzero), sum, mean
 		int sum = 0, span = y2.diff(y1) + 1;
-		int left = y1.diff(s.range.getStart());
-		int right = y2.diff(s.range.getStart());
+		int left = y1.diff(s.getRange().getStart());
+		int right = y2.diff(s.getRange().getStart());
 		for (int i = left; i <= right; i++)
-			sum += ((Integer) s.count.get(i)).intValue();
+			sum += ((Integer) s.getCount().get(i)).intValue();
 
 		// in a very rare case it can be zero!  (when?  the n+1 year of a sum that ends in -9.)
 		// (actually, though, sums shouldn't have the n+1 cell, so this special case belongs elsewhere!)
@@ -189,7 +189,7 @@ public class DecadalModel extends AbstractTableModel {
 	public Object getValueAt(int row, int col) {
 		if (col == 0) {
 			if (row == 0)
-				return s.range.getStart();
+				return s.getRange().getStart();
 			else if (row + row_min == 0) // special case
 				return "1";
 			else {
@@ -204,10 +204,10 @@ public class DecadalModel extends AbstractTableModel {
 		} else {
 			// System.out.println("getYear() called (b=" + __b++ + ")");
 			Year y = getYear(row, col); // 479 -- THIS GETS CALLED TOO MANY TIMES!
-			if (!s.range.contains(y))
+			if (!s.getRange().contains(y))
 				return null;
 			else
-				return s.data.get(y.diff(s.range.getStart()));
+				return s.getData().get(y.diff(s.getRange().getStart()));
 		}
 	}
 
@@ -246,7 +246,7 @@ public class DecadalModel extends AbstractTableModel {
 		Year y = getYear(row, col);
 
 		// okay if in range, or one beyond end
-		return (s.range.contains(y) || s.range.getEnd().add(1).equals(y));
+		return (s.getRange().contains(y) || s.getRange().getEnd().add(1).equals(y));
 	}
 
 	// oldval from /previous/ edit -- because typing into a cell
@@ -262,10 +262,10 @@ public class DecadalModel extends AbstractTableModel {
 				Year newYear = new Year((String) value);
 
 				// if we don't change it at all, don't mark it as modified...
-				if(newYear.equals(s.range.getStart()))
+				if(newYear.equals(s.getRange().getStart()))
 					return;
 				
-				Range newRange = s.range.redateStartTo(newYear);
+				Range newRange = s.getRange().redateStartTo(newYear);
 
 				// redate, and post undo
 				s.postEdit(Redate.redate(s, newRange));
@@ -281,7 +281,7 @@ public class DecadalModel extends AbstractTableModel {
 		}
 
 		// if user just typed into end+1, we'll need to increase the size!
-		final boolean bigger = s.range.getEnd().add(+1).equals(
+		final boolean bigger = s.getRange().getEnd().add(+1).equals(
 				getYear(row, col));
 
 		// if we get a String, make it into an Integer
@@ -295,8 +295,8 @@ public class DecadalModel extends AbstractTableModel {
 				Bug.bug(e);
 			}
 
-		final Year y = (bigger ? s.range.getEnd().add(+1) : getYear(row, col));
-		Object tmp = (bigger ? null : s.data.get(y.diff(s.range.getStart())));
+		final Year y = (bigger ? s.getRange().getEnd().add(+1) : getYear(row, col));
+		Object tmp = (bigger ? null : s.getData().get(y.diff(s.getRange().getStart())));
 		if (tmp != null && tmp.toString().length() == 0) {
 			tmp = lastOldVal;
 		} else {
@@ -305,13 +305,13 @@ public class DecadalModel extends AbstractTableModel {
 		final Object oldVal = tmp;
 
 		if (bigger) {
-			s.data.add(value);
+			s.getData().add(value);
 			// s.range.end = s.range.getEnd().add(+1);
-			s.range = new Range(s.range.getStart(), s.range.getEnd().add(+1));
+			s.setRange(new Range(s.getRange().getStart(), s.getRange().getEnd().add(+1)));
 		} else {
 			if(value.equals(oldVal))
 				return;
-			s.data.set(y.diff(s.range.getStart()), value);
+			s.getData().set(y.diff(s.getRange().getStart()), value);
 		}
 		fireTableCellUpdated(row, col);
 
@@ -335,11 +335,11 @@ public class DecadalModel extends AbstractTableModel {
 				System.out.println("undo, grew=" + grew);
 
 				if (grew) {
-					s.data.remove(s.data.size() - 1);
-					s.range = new Range(s.range.getStart(), s.range.getEnd()
-							.add(-1));
+					s.getData().remove(s.getData().size() - 1);
+					s.setRange(new Range(s.getRange().getStart(), s.getRange().getEnd()
+							.add(-1)));
 				} else {
-					s.data.set(y.diff(s.range.getStart()), oldVal);
+					s.getData().set(y.diff(s.getRange().getStart()), oldVal);
 					// selectYear(y);
 				}
 
@@ -353,11 +353,11 @@ public class DecadalModel extends AbstractTableModel {
 				System.out.println("redo, grew=" + grew);
 
 				if (grew) {
-					s.data.add(newVal);
-					s.range = new Range(s.range.getStart(), s.range.getEnd()
-							.add(+1));
+					s.getData().add(newVal);
+					s.setRange(new Range(s.getRange().getStart(), s.getRange().getEnd()
+							.add(+1)));
 				} else {
-					s.data.set(y.diff(s.range.getStart()), newVal);
+					s.getData().set(y.diff(s.getRange().getStart()), newVal);
 				}
 
 				s.fireSampleDataChanged();

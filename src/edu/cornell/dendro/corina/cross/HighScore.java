@@ -32,10 +32,10 @@ public class HighScore {
     Year firstCross = cross.getRange().getStart();
     Year thisCross = firstCross.add(index);
 
-    int movedBy = thisCross.diff(cross.getMoving().range.getEnd());
+    int movedBy = thisCross.diff(cross.getMoving().getRange().getEnd());
 
-    fixedRange = cross.getFixed().range.redateBy(-movedBy);
-    movingRange = cross.getMoving().range.redateEndTo(thisCross);
+    fixedRange = cross.getFixed().getRange().redateBy(-movedBy);
+    movingRange = cross.getMoving().getRange().redateEndTo(thisCross);
 
     // WAS: score = cross.getScoreOLD(index);
     //System.out.println("highscore: old: " + cross.getScoreOLD(index) + " new: " + cross.getScore(thisCross));
@@ -43,7 +43,7 @@ public class HighScore {
     score = cross.getScore(thisCross);
     signifigant = cross.getScoreSignifigance(thisCross);
 
-    span = cross.getFixed().range.overlap(movingRange);
+    span = cross.getFixed().getRange().overlap(movingRange);
 
     confidence = Bayesian.getSignificance(cross, score);
     // FIXME: this throws exceptions(?)

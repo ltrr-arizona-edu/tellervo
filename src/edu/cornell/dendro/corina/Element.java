@@ -329,8 +329,8 @@ public class Element implements Comparable {
 		// load sample, and grab reference to fields (data gets GC'd)
 		try {
 			Sample s = load();
-			details = s.meta;
-			range = s.range;
+			details = s.cloneMeta();
+			range = s.getRange();
 			lastModified = new File(filename).lastModified();
 		} catch (IOException ioe) {
 			dead = true;

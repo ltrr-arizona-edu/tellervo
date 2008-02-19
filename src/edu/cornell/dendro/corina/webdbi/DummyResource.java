@@ -60,7 +60,7 @@ public class DummyResource extends ResourceObject<Sample> {
 		 */
 		case READ:
 		case DELETE:
-			id = (String) s.meta.get("id");
+			id = (String) s.getMeta("id");
 			if(id == null)
 				throw new ResourceException("Reading in a null id?");
 			
@@ -75,14 +75,14 @@ public class DummyResource extends ResourceObject<Sample> {
 		 * </corina>
 		 */
 		case UPDATE: // Update is CREATE with an ID
-			id = (String) s.meta.get("id");
+			id = (String) s.getMeta("id");
 			if(id == null)
 				throw new ResourceException("Reading in a null id?");
 			
 			requestElement.setAttribute("id", id);
 			// drop through!
 		case CREATE: {
-			String title = (String) s.meta.get("title");
+			String title = (String) s.getMeta("title");
 			
 			if(title != null) {
 				Element titleElem = new Element("title");

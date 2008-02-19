@@ -154,8 +154,8 @@ public class TScore extends RValue {
 	 */
 	public float compute(int offsetFixed, int offsetMoving) {
 
-		int overlap = Math.min(getFixed().data.size() - offsetFixed,
-				getMoving().data.size() - offsetMoving);
+		int overlap = Math.min(getFixed().getData().size() - offsetFixed,
+				getMoving().getData().size() - offsetMoving);
 
 		// already know how to compute r
 		rval = super.compute(offsetFixed, offsetMoving);

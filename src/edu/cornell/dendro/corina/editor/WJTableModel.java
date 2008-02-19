@@ -82,7 +82,7 @@ public class WJTableModel extends DecadalModel implements SampleListener {
     public Object getValueAt(int row, int col) { 
 	if (col == 0) {
 	    if (row == 0)
-		return s.range.getStart();
+		return s.getRange().getStart();
 	    else if (row + row_min == 0) // special case
 		return "1";
 	    else
@@ -91,7 +91,7 @@ public class WJTableModel extends DecadalModel implements SampleListener {
 	    return getMean(row);
 	} else {
 	    Year y = getYear(row, col);
-	    return (s.range.contains(y) ? Weiserjahre.toString(s, y) : null);
+	    return (s.getRange().contains(y) ? Weiserjahre.toString(s, y) : null);
 	}
     }
 

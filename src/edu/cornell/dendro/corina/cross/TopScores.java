@@ -60,8 +60,8 @@ public class TopScores {
 
     Sample fixed = c.getFixed();
     Sample moving = c.getMoving();
-    Range fixedRange = fixed.range;
-    Range movingRange = moving.range.redateEndTo(fixedRange.getStart()); // .add(getMinimumOverlap()-1));
+    Range fixedRange = fixed.getRange();
+    Range movingRange = moving.getRange().redateEndTo(fixedRange.getStart()); // .add(getMinimumOverlap()-1));
     //System.out.println("fixed: "+ fixed);
     //System.out.println("moving: "+ moving);
     //System.out.println("fixedRange: "+ fixedRange);

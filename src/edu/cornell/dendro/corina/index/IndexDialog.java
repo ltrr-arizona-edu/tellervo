@@ -267,7 +267,7 @@ public class IndexDialog extends JDialog {
 
         // make sure there's data here
         // BETTER: make this "==0", and have individual indexes throw if they can't handle size==2, etc.
-        if (sample.data.size() < 3) {
+        if (sample.getData().size() < 3) {
             Alert.error(I18n.getText("no_data_title"),
 			I18n.getText("no_data_text"));
             dispose();
@@ -275,7 +275,7 @@ public class IndexDialog extends JDialog {
         }
 
         // title
-        String title = sample.meta.get("title").toString();
+        String title = sample.getMeta("title").toString();
 	if (title == null) // (DESIGN: can i do better than "untitled"?)
 	    title = I18n.getText("Untitled");
         setTitle(MessageFormat.format(I18n.getText("index_of"),
@@ -340,7 +340,7 @@ public class IndexDialog extends JDialog {
             p2.add(Box.createHorizontalStrut(24));
             Vector sums = getSums();
             int numSums = sums.size();
-            UserFriendlyFile me = new UserFriendlyFile((String) s.meta.get("filename")); // BUG:
+            UserFriendlyFile me = new UserFriendlyFile((String) s.getMeta("filename")); // BUG:
 	    // fails if this file hasn't been saved (but shouldn't i probably warn, then, anyway?)
             sums.add(0, me);
             sums.add("Other...");
@@ -372,8 +372,8 @@ public class IndexDialog extends JDialog {
                             System.out.println("oops, can't load or something...");
                         } catch (RuntimeException re) { // ICK!
 			    Alert.error("Proxy Dataset Too Short",
-					"That proxy dataset (" + proxy.range + ") doesn't cover\n" +
-					"the entire range of the sample (" + sample.range + ") you're indexing.");
+					"That proxy dataset (" + proxy.getRange() + ") doesn't cover\n" +
+					"the entire range of the sample (" + sample.getRange() + ") you're indexing.");
                             proxyPopup.setSelectedIndex(oldSelection);
                             return;
                         }
@@ -396,8 +396,8 @@ public class IndexDialog extends JDialog {
                             // FIXME: runtimeexception?  what was i smoking?
 			    // REFACTOR: this looks awfully familiar
 			    Alert.error("Proxy Dataset Too Short",
-					"That proxy dataset (" + proxy.range + ") doesn't cover\n" +
-					"the entire range of the sample (" + sample.range + ") you're indexing.");
+					"That proxy dataset (" + proxy.getRange() + ") doesn't cover\n" +
+					"the entire range of the sample (" + sample.getRange() + ") you're indexing.");
                             // that wasn't very localizeable
                             proxyPopup.setSelectedIndex(oldSelection);
                             return;
@@ -462,7 +462,7 @@ public class IndexDialog extends JDialog {
 
                 // also: clear filename, set modified
                 sample.setModified();
-                sample.meta.remove("filename"); // BUG: this should be in Index.apply()
+                sample.removeMeta("filename"); // BUG: this should be in Index.apply()
 		// (otherwise undo doesn't put the filename back)
 
                 // tell editor, and close
@@ -488,7 +488,7 @@ public class IndexDialog extends JDialog {
     // (why a Vector?  because jcombobox takes a vector, but not a list.  yeah, suck.)
     private Vector getSums() {
         // get files in this directory
-        String filename = (String) sample.meta.get("filename");
+        String filename = (String) sample.getMeta("filename");
 
         // whoops!  what if no filename?  abort!
         if (filename == null)

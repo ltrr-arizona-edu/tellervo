@@ -85,18 +85,18 @@ public class Clean extends AbstractUndoableEdit {
 
     private void cleanSample() {
 	// make backups for undo
-	incr = s.incr;
-	decr = s.decr;
-	elements = s.elements;
-	count = s.count;
-	filename = (String) s.meta.get("filename");
+	incr = s.getWJIncr();
+	decr = s.getWJDecr();
+	elements = s.getElements();
+	count = s.getCount();
+	filename = (String) s.getMeta("filename");
 	wasMod = s.isModified();
 
 	// erase wj, elements, count, filename
-	s.incr = s.decr = null;
-	s.elements = null;
-	s.count = null;
-	s.meta.remove("filename");
+	s.setWJIncr(s.setWJDecr(null));
+	s.setElements(null);
+	s.setCount(null);
+	s.removeMeta("filename");
 	s.setModified();
 
 	// tell watchers
@@ -107,11 +107,11 @@ public class Clean extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
 	super.undo();
-	s.incr = incr;
-	s.decr = decr;
-	s.elements = elements;
-	s.count = count;
-	s.meta.put("filename", filename);
+	s.setWJIncr(incr);
+	s.setWJDecr(decr);
+	s.setElements(elements);
+	s.setCount(count);
+	s.setMeta("filename", filename);
 	if (!wasMod)
 	    s.clearModified();
 
@@ -122,10 +122,10 @@ public class Clean extends AbstractUndoableEdit {
     }
     public void redo() throws CannotRedoException {
 	super.redo();
-	s.incr = s.decr = null;
-	s.elements = null;
-	s.count = null;
-	s.meta.remove("filename");
+	s.setWJIncr(s.setWJDecr(null));
+	s.setElements(null);
+	s.setCount(null);
+	s.removeMeta("filename");
 	s.setModified();
 
 	// tell watchers

@@ -250,12 +250,11 @@ public class Corina implements Filetype {
 		if (tag.equals("NAME")) // ...Mecki likes "TITLE"...
 			tag = "TITLE";
 		if (tag.startsWith("COMMENTS")) { // append comments
-			String soFar = (String) s.meta.get("comments");
-			s.meta
-					.put("comments", soFar == null ? value : soFar + '\n'
+			String soFar = (String) s.getMeta("comments");
+			s.setMeta("comments", soFar == null ? value : soFar + '\n'
 							+ value);
 		} else { // store value
-			s.meta.put(tag.toLowerCase(), o);
+			s.setMeta(tag.toLowerCase(), o);
 		}
 	}
 
@@ -267,7 +266,7 @@ public class Corina implements Filetype {
 		// assume for now that we'll need to save the count, because
 		// we don't know yet.  we'll delete this when the whole load
 		// is done if it turns out to be a raw sample.
-		s.count = new ArrayList();
+		s.setCount(new ArrayList());
 
 		// read start
 		int x = t.nextToken();
@@ -296,7 +295,7 @@ public class Corina implements Filetype {
 					break;
 				}
 
-				s.data.add(new Integer(width));
+				s.getData().add(new Integer(width));
 			}
 
 			// read a decade of counts
@@ -309,13 +308,13 @@ public class Corina implements Filetype {
 					break loop;
 				x = t.nextToken(); // ]
 
-				s.count.add(new Integer(count));
+				s.getCount().add(new Integer(count));
 			}
 		}
 
 		t.wordChars(' ', ' '); // done
 
-		s.range = new Range(start, s.data.size());
+		s.setRange(new Range(start, s.getData().size()));
 	}
 
 	// in the original version of loadElements, i called r.mark(120),
@@ -330,7 +329,7 @@ public class Corina implements Filetype {
 
 	private void loadElements(Sample s, BufferedReader r) throws IOException {
 		// create elements
-		s.elements = new ArrayList();
+		s.setElements(new ArrayList());
 
 		for (;;) {
 			// check first char for ';'-ness
@@ -347,18 +346,18 @@ public class Corina implements Filetype {
 
 			// add to elements
 			if (line.charAt(0) == '*') // disabled element, if first char is '*'
-				s.elements.add(new Element(line.substring(1), false));
+				s.getElements().add(new Element(line.substring(1), false));
 			else
-				s.elements.add(new Element(line));
+				s.getElements().add(new Element(line));
 		}
 	}
 
 	private void loadWeiserjahre(Sample s, BufferedReader r) throws IOException {
 		// create wj; add 0/0
-		s.incr = new ArrayList();
-		s.decr = new ArrayList();
-		s.incr.add(new Integer(0));
-		s.decr.add(new Integer(0));
+		s.setWJIncr(new ArrayList());
+		s.setWJDecr(new ArrayList());
+		s.getWJIncr().add(new Integer(0));
+		s.getWJDecr().add(new Integer(0));
 
 		// ";weiserjahre" is followed by some spaces -- eat them
 		r.readLine();
@@ -395,7 +394,7 @@ public class Corina implements Filetype {
 		}
 
 		// number of values left to read
-		int left = s.data.size() - 1;
+		int left = s.getData().size() - 1;
 
 		// now just read data until i'm done
 		String line = r.readLine();
@@ -412,8 +411,8 @@ public class Corina implements Filetype {
 				String inc = line.substring(col - numDigits, col).trim();
 				String dec = line.substring(col + 1, col + 1 + numDigits)
 						.trim();
-				s.incr.add(new Integer(inc));
-				s.decr.add(new Integer(dec));
+				s.getWJIncr().add(new Integer(inc));
+				s.getWJDecr().add(new Integer(dec));
 			} catch (StringIndexOutOfBoundsException sioobe) {
 				System.out.println("line=" + line);
 				System.out.println("numDigits=" + numDigits);
@@ -433,13 +432,13 @@ public class Corina implements Filetype {
 		String author = r.readLine();
 		if (author == null)
 			return; // is to just end with a ~?
-		s.meta.put("author", author.trim());
+		s.setMeta("author", author.trim());
 	}
 
 	public Sample load(BufferedReader r) throws IOException {
 		// new empty sample
 		Sample s = new Sample();
-		s.meta.clear();
+		s.resetMeta();
 
 		// make sure the first line is ok.  i don't strictly need
 		// this, but it's great for checking the filetype (binary
@@ -482,10 +481,10 @@ public class Corina implements Filetype {
 				loadAuthor(s, r);
 				break; // author is always last
 			} else if (x != StreamTokenizer.TT_EOF) { // no metadata found in 4 lines -> problem
-				if (s.meta.isEmpty() && t.lineno() > 4)
+				if (s.emptyMeta() && t.lineno() > 4)
 					throw new WrongFiletypeException();
 			} else { // (x == StreamTokenizer.TT_EOF)
-				if (t.lineno() >= 3 && s.meta.containsKey("title")) // if 3 lines + ;TITLE, it's Corina-format
+				if (t.lineno() >= 3 && s.hasMeta("title")) // if 3 lines + ;TITLE, it's Corina-format
 					throw new IOException(
 							"Early end-of-file detected (at line " + t.lineno()
 									+ ")");
@@ -501,19 +500,19 @@ public class Corina implements Filetype {
 		// if this is a raw sample (not summed), delete s.count, which
 		// serves no purpose (it's a List of Integer(1)'s).  first,
 		// make sure there's no WJ or elements.
-		if (!s.hasWeiserjahre() && s.elements == null) {
+		if (!s.hasWeiserjahre() && s.getElements() == null) {
 			boolean delete = true; // ok to delete s.count?
 
 			// then make sure the count really is all [1]'s (or [0]'s, i suppose)
-			for (int i = 0; i < s.count.size(); i++)
-				if (((Integer) s.count.get(i)).intValue() > 1) {
+			for (int i = 0; i < s.getCount().size(); i++)
+				if (((Integer) s.getCount().get(i)).intValue() > 1) {
 					delete = false;
 					break;
 				}
 
 			// okay?  now we can delete it.
 			if (delete)
-				s.count = null;
+				s.setCount(null);
 		}
 
 		// return
@@ -528,14 +527,14 @@ public class Corina implements Filetype {
 	private void saveTag(Sample s, BufferedWriter w, String tag)
 			throws IOException {
 		// get value, and print it, as long as it's not null
-		Object o = s.meta.get(tag);
+		Object o = s.getMeta(tag);
 		if (o != null)
 			w.write(";" + tag.toUpperCase() + " " + o);
 	}
 
 	private void saveMeta(Sample s, BufferedWriter w) throws IOException {
-		if (s.meta.containsKey("title"))
-			w.write(s.meta.get("title").toString());
+		if (s.hasMeta("title"))
+			w.write(s.getMeta("title").toString());
 		w.newLine();
 
 		w.newLine();
@@ -545,8 +544,8 @@ public class Corina implements Filetype {
 		// (so move the special case out to saveTag?)
 
 		saveTag(s, w, "id");
-		if (s.meta.containsKey("title")) // special case (!)
-			w.write(";NAME " + s.meta.get("title"));
+		if (s.hasMeta("title")) // special case (!)
+			w.write(";NAME " + s.getMeta("title"));
 		saveTag(s, w, "dating");
 		saveTag(s, w, "unmeas_pre");
 		saveTag(s, w, "unmeas_post");
@@ -576,11 +575,10 @@ public class Corina implements Filetype {
 
 	// save any number of ;COMMENTS fields, for each line of text
 	private void saveComments(Sample s, BufferedWriter w) throws IOException {
-		if (s.meta.containsKey("comments")) {
+		if (s.hasMeta("comments")) {
 			// split comments by lines
 			// BUG: won't this fail if the comments line is a Number?
-			String comments[] = StringUtils.splitByLines((String) s.meta
-					.get("comments"));
+			String comments[] = StringUtils.splitByLines((String) s.getMeta("comments"));
 			int n = 1; // the comment number, starting at 1
 			for (int i = 0; i < comments.length; i++) {
 				String line = comments[i];
@@ -617,18 +615,18 @@ public class Corina implements Filetype {
 		// sorts of problems, and it would be a huge mess to handle it
 		// in a special case.)
 		List data = new ArrayList();
-		data.addAll(s.data);
+		data.addAll(s.getData());
 		data.add(new Integer(9990));
 
 		// clone and update the range, too
-		Range range = new Range(s.range.getStart(), s.range.getEnd().add(1));
+		Range range = new Range(s.getRange().getStart(), s.getRange().getEnd().add(1));
 
 		// count for 9990 is the same as the last count, for reasons i
 		// don't claim to understand.
 		List count = null;
-		if (s.count != null) {
+		if (s.getCount() != null) {
 			count = new ArrayList();
-			count.addAll(s.count);
+			count.addAll(s.getCount());
 			count.add(count.get(count.size() - 1));
 		}
 
@@ -693,7 +691,7 @@ public class Corina implements Filetype {
 	}
 
 	private void saveElements(Sample s, BufferedWriter w) throws IOException {
-		if (s.elements == null)
+		if (s.getElements() == null)
 			return;
 				
 		// if relative paths are on, save elements with relative paths!
@@ -701,9 +699,9 @@ public class Corina implements Filetype {
 
 		w.write(";ELEMENTS ");
 		w.newLine();
-		for (int i = 0; i < s.elements.size(); i++) {
+		for (int i = 0; i < s.getElements().size(); i++) {
 			// if disabled, write '*' before filename
-			Element el = (Element) s.elements.get(i);
+			Element el = (Element) s.getElements().get(i);
 			w.write((el.isActive() ? "" : "*") + (relativepath ? el.getRelativeFilename() : el.getFilename()));
 			w.newLine();
 		}
@@ -717,27 +715,27 @@ public class Corina implements Filetype {
 		w.write(";weiserjahre   ");
 		w.newLine();
 
-		for (Year y = s.range.getStart(); y.compareTo(s.range.getEnd()) < 0; y = y
+		for (Year y = s.getRange().getStart(); y.compareTo(s.getRange().getEnd()) < 0; y = y
 				.add(1)) {
 
 			// year: "%5d"
-			if (s.range.startOfRow(y))
+			if (s.getRange().startOfRow(y))
 				w.write(StringUtils.leftPad(y.toString(), 5));
 
-			int i = y.diff(s.range.getStart()) + 1; // first is 0/0, so add 1 to index
+			int i = y.diff(s.getRange().getStart()) + 1; // first is 0/0, so add 1 to index
 
 			// always use '/' in corina files
 			w.write(Weiserjahre.toStringFixed(s, i, 9, "/"));
 
 			// newline
-			if (y.column() == 9 || y.equals(s.range.getEnd().add(-1)))
+			if (y.column() == 9 || y.equals(s.getRange().getEnd().add(-1)))
 				w.newLine();
 		}
 	}
 
 	private void saveAuthor(Sample s, BufferedWriter w) throws IOException {
 		w.write("~");
-		String author = (String) s.meta.get("author");
+		String author = (String) s.getMeta("author");
 		if (author != null)
 			w.write(" " + author);
 		w.newLine();

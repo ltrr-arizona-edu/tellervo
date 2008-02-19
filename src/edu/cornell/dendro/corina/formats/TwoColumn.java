@@ -121,9 +121,9 @@ public class TwoColumn implements Filetype {
             start = Year.DEFAULT;
 
         // hasData
-        s.data = new ArrayList();
+        s.setData(new ArrayList());
         if (hasCount)
-            s.count = new ArrayList();
+            s.setCount(new ArrayList());
 
         for (;;) {
             String line = r.readLine();
@@ -166,11 +166,11 @@ public class TwoColumn implements Filetype {
 	    } catch (NumberFormatException nfe) { // not a number
 		throw new WrongFiletypeException();
 	    }
-            s.data.add(new Integer(Math.round(f)));
+            s.getData().add(new Integer(Math.round(f)));
             
             if (hasCount) {
                 int c = Integer.parseInt(tok.nextToken());
-                s.count.add(new Integer(c));
+                s.getCount().add(new Integer(c));
             }
         }
 
@@ -178,7 +178,7 @@ public class TwoColumn implements Filetype {
         s.guessIndexed();
 
         // set range
-        s.range = new Range(start, s.data.size());
+        s.setRange(new Range(start, s.getData().size()));
 
         // return it
         return s;
@@ -200,7 +200,7 @@ public class TwoColumn implements Filetype {
             }
         }
         if (isCrap)
-            s.meta.put("comments", "Header line was: \"" + l + "\"");
+            s.setMeta("comments", "Header line was: \"" + l + "\"");
         else
             r.reset();
     }
@@ -220,13 +220,13 @@ public class TwoColumn implements Filetype {
     }
     
     public void save(Sample s, BufferedWriter w) throws IOException {
-        Year y = s.range.getStart();
-        boolean hasCount = (s.count != null);
+        Year y = s.getRange().getStart();
+        boolean hasCount = (s.getCount() != null);
 
-        for (int i=0; i<s.data.size(); i++) {
-            w.write(y + "\t" + s.data.get(i));
+        for (int i=0; i<s.getData().size(); i++) {
+            w.write(y + "\t" + s.getData().get(i));
             if (hasCount)
-                w.write("\t" + s.count.get(i));
+                w.write("\t" + s.getCount().get(i));
             w.newLine();
 
             y = y.add(+1);

@@ -133,23 +133,23 @@ public class HTML implements Filetype {
 
 	// BUG: this probably breaks at BC/AD boundary
 
-	Range r = s.range;
+	Range r = s.getRange();
 	for (Year y=r.getStart(); y.compareTo(r.getEnd())<=0; y=y.add(+1)) {
-	    if (s.range.startOfRow(y)) {
+	    if (s.getRange().startOfRow(y)) {
 		w.write("  <tr><th align=\"left\">" + y + "</th>");
 		w.newLine();
 		w.write("  ");
 	    }
 
-	    if (y.equals(s.range.getStart()))
-		for (int i=0; i<s.range.getStart().column(); i++)
+	    if (y.equals(s.getRange().getStart()))
+		for (int i=0; i<s.getRange().getStart().column(); i++)
 		    w.write("<td align=\"right\"></td>");
 
-	    int index = y.diff(s.range.getStart());
-	    w.write("<td align=\"right\">" + s.data.get(index) + "</td>");
+	    int index = y.diff(s.getRange().getStart());
+	    w.write("<td align=\"right\">" + s.getData().get(index) + "</td>");
 
 	    // end-of-line or end-of-sample
-	    if (s.range.endOfRow(y)) {
+	    if (s.getRange().endOfRow(y)) {
 		w.write("</tr>");
 		w.newLine();
 	    }
@@ -171,7 +171,7 @@ public class HTML implements Filetype {
 	w.write("</tr>");
 	w.newLine();
 
-	Range r = s.range;
+	Range r = s.getRange();
 	for (Year y=r.getStart(); y.compareTo(r.getEnd())<=0; y=y.add(+1)) {
 	    if (r.startOfRow(y)) {
 		w.write("  <tr><th align=\"left\">" + y + "</th>");
@@ -200,7 +200,7 @@ public class HTML implements Filetype {
     // return the metadata field |key| from |s|, as a string;
     // if that metadata field is empty or null, return "".
     private String emptyIfNull(Sample s, String key) {
-	Object value = s.meta.get(key);
+	Object value = s.getMeta(key);
 	return (value == null ? "" : value.toString());
     }
 
@@ -214,13 +214,13 @@ public class HTML implements Filetype {
 	w.newLine();
 
 	// a row for each element...
-	for (int i=0; i<s.elements.size(); i++) {
+	for (int i=0; i<s.getElements().size(); i++) {
 
 	    // start row
 	    w.write("  <tr>");
 
 	    // load element, and print a summary
-	    Element e = (Element) s.elements.get(i);
+	    Element e = (Element) s.getElements().get(i);
 
 	    // TODO: use real Element summaries here, in case the
 	    // summaries are already loaded!
@@ -230,9 +230,9 @@ public class HTML implements Filetype {
 		w.write("<td><input type=\"checkbox\" checked=\"" +
 			            e.isActive() + "\"/></td>");
 		w.write("<td>" + emptyIfNull(sample, "id") + "</td>");
-		w.write("<td>" + sample.meta.get("filename") + "</td>");
+		w.write("<td>" + sample.getMeta("filename") + "</td>");
 		w.write("<td>" + emptyIfNull(sample, "unmeas_pre") + "</td>");
-		w.write("<td>" + sample.range + "</td>");
+		w.write("<td>" + sample.getRange() + "</td>");
 		w.write("<td>" + emptyIfNull(sample, "unmeas_post") + "</td>");
 		w.write("<td>" + emptyIfNull(sample, "terminal") + "</td>");
 	    } catch (IOException ioe) {
@@ -296,9 +296,9 @@ public class HTML implements Filetype {
 	w.write("</tr>");
 	w.newLine();
 
-	Range r = s.range;
+	Range r = s.getRange();
 	for (Year y=r.getStart(); y.compareTo(r.getEnd())<=0; y=y.add(+1)) {
-	    if (s.range.startOfRow(y)) {
+	    if (s.getRange().startOfRow(y)) {
 		w.write("<tr><th align=\"left\">" + y + "</th>");
 		w.newLine();
 	    }
@@ -308,7 +308,7 @@ public class HTML implements Filetype {
 		    w.write("<td></td>");
 
 	    int index = y.diff(r.getStart());
-	    w.write("<td align=\"right\">" + s.count.get(index) + "</td>");
+	    w.write("<td align=\"right\">" + s.getCount().get(index) + "</td>");
 
 	    if (r.endOfRow(y)) {
 		w.write("</tr>");
@@ -348,7 +348,7 @@ public class HTML implements Filetype {
 	    w.newLine();
 	    w.write("    <td align=\"left\">" + f.getFieldDescription() + "</td>");
 	    w.newLine();
-	    Object v = s.meta.get(f.getVariable());
+	    Object v = s.getMeta(f.getVariable());
 	    w.write("    <td align=\"left\">" + (v==null ? "" : v) + "</td>");
 	    w.newLine();
 	    w.write("  </tr>");
@@ -379,7 +379,7 @@ public class HTML implements Filetype {
 	// header
 	if (!s.isIndexed()) {
 	    float radius = ((float) s.computeRadius()) / 1000f;
-	    float average = radius / (float) s.data.size();
+	    float average = radius / (float) s.getData().size();
 	    DecimalFormat df = new DecimalFormat("0.000");
 	    w.write("Radius: " + df.format(radius) + " cm, " +
 		    "Average ring width: " + df.format(average) + " cm");
@@ -396,8 +396,8 @@ public class HTML implements Filetype {
 	    printSummedData(s, w);
 	w.write("<p>Total number of rings: " + s.countRings() + "</p>");
 	w.newLine();
-	if (s.elements != null) {
-	    int n = s.elements.size();
+	if (s.getElements() != null) {
+	    int n = s.getElements().size();
 	    w.write("<p>Total number of elements: " + n + "</p>");
 	    w.newLine();
 	}
@@ -417,7 +417,7 @@ public class HTML implements Filetype {
 	}
 
 	// h2: elements (optional)
-	if (s.elements != null) {
+	if (s.getElements() != null) {
 	    w.write("<h2>" + I18n.getText("tab_elements") + "</h2>");
 	    w.newLine();
 	    printElements(s, w);

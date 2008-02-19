@@ -249,7 +249,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
 	// given: editor
 	public ElementsPanel(Editor e) {
-		this(e.getSample(), e.getSample().elements);
+		this(e.getSample(), e.getSample().getElements());
 	}
 
 	// given: Sample, and list of Elements (well, this never happens,
@@ -263,9 +263,9 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			elements = el;
 		} else {
 			this.sample = s;
-			if (sample.elements == null)
-				sample.elements = new ArrayList();
-			elements = sample.elements;
+			if (sample.getElements() == null)
+				sample.setElements(new ArrayList());
+			elements = sample.getElements();
 		}
 
 		// table

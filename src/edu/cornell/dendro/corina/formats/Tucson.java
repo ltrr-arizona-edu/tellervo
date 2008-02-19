@@ -123,7 +123,7 @@ public class Tucson implements Filetype {
 	}
 
 	// load 0-3 lines of header, if available, and fill meta appropriately
-	private void loadHeader(BufferedReader r, Map meta) throws IOException {
+	private void loadHeader(BufferedReader r, Sample s) throws IOException {
 		// if first 2 lines start with the same 6 chars, no header
 		boolean readFirstLine = true; // read a header line?  usually...
 		{
@@ -161,25 +161,25 @@ public class Tucson implements Filetype {
 					// read 4-letter species code
 					if (l1.length() >= 65) { // also make sure it's in " ABCD " form?
 						String species = l1.substring(61, 65);
-						meta.put("species", species);
+						s.setMeta("species", species);
 						title = l1.substring(9, 61).trim();
 					}
 
-					meta.put("title", title);
+					s.setMeta("title", title);
 				}
 
 				// ignore country?  (it's l2:9..22)
 
 				// old way to do species: doesn't work?
 				//		if (l2.length() >= 40)
-				//		    meta.put("species", l2.substring(22, 40).trim());
+				//		    setMeta("species", l2.substring(22, 40).trim());
 
 				// altitude -- just dump in comments for now
 				// lat/long -- just dump in comments for now
 				if (l2.length() >= 57) {
 					String alt = l2.substring(40, 45).trim();
 					String latlong = l2.substring(47, 57).trim(); // decode me!
-					meta.put("comments", "Altitude = " + alt + ", Lat/Long = "
+					s.setMeta("comments", "Altitude = " + alt + ", Lat/Long = "
 							+ latlong);
 				}
 
@@ -187,13 +187,13 @@ public class Tucson implements Filetype {
 
 				// author, and use 6-digit code
 				if (l3.length() >= 10)
-					meta.put("author", l3.substring(9).trim());
+					s.setMeta("author", l3.substring(9).trim());
 				// don't load id here: it's per-sample, not per-file
 
 				// other stuff: if it's in the ITRDB, it's probably
 				// Absolute, and Reconciled
-				meta.put("dating", "A");
-				meta.put("reconciled", "Y");
+				s.setMeta("dating", "A");
+				s.setMeta("reconciled", "Y");
 			} else {
 				r.reset();
 			}
@@ -203,10 +203,10 @@ public class Tucson implements Filetype {
 		else {
 			String firstLine = r.readLine();
 			if (firstLine.length() > 80) { // title + RELAT/ABSOL
-				meta.put("title", firstLine.substring(0, 80).trim());
-				meta.put("dating", firstLine.substring(80, 81));
+				s.setMeta("title", firstLine.substring(0, 80).trim());
+				s.setMeta("dating", firstLine.substring(80, 81));
 			} else { // just title
-				meta.put("title", firstLine.trim());
+				s.setMeta("title", firstLine.trim());
 			}
 		}
 	}
@@ -218,10 +218,10 @@ public class Tucson implements Filetype {
 		// gah! don't do this!
 		//s.meta.clear();
 		
-		s.meta.put("dating", "R");
+		s.setMeta("dating", "R");
 
 		// !!! load any header lines; below here is data only
-		loadHeader(r, s.meta);
+		loadHeader(r, s);
 
 		// just load the data for one sample
 		loadOneSample(r, s); // OOPS: this returns NULL to mean no-data-present
@@ -274,19 +274,19 @@ public class Tucson implements Filetype {
 					isIndexed = true; // right?
 
 				// get id
-				s.meta.put("id", line.substring(0, 6).trim());
+				s.setMeta("id", line.substring(0, 6).trim());
 
 				// set format -- bug: doesn't this get overridden by guessIndexed() every time?
 				if (isSummed)
-					s.meta.put("format", "S");
+					s.setMeta("format", "S");
 				else if (isIndexed)
-					s.meta.put("format", "I");
+					s.setMeta("format", "I");
 				else
-					s.meta.put("format", "R");
+					s.setMeta("format", "R");
 
 				// make a count List, if it's summed
 				if (isSummed)
-					s.count = new ArrayList();
+					s.setCount(new ArrayList());
 
 				// don't come back here
 				firstLine = false;
@@ -345,7 +345,7 @@ public class Tucson implements Filetype {
 						// corrupted file, no?
 					}
 					if (value != 999)
-						s.data.add(new Integer(value));
+						s.getData().add(new Integer(value));
 					else
 						break loop; // sometimes there's "999 0 0 0", so explicitly stop
 				}
@@ -371,7 +371,7 @@ public class Tucson implements Filetype {
 						throw new WrongFiletypeException();
 					}
 					if (value != 9990) {
-						s.data.add(new Integer(value));
+						s.getData().add(new Integer(value));
 
 						// count
 						if (isSummed) {
@@ -379,9 +379,9 @@ public class Tucson implements Filetype {
 									.lastIndexOf(' ');
 							stringlet = line.substring(j + 4 + lastSpace + 1,
 									j + 7);
-							s.count.add(new Integer(stringlet));
+							s.getCount().add(new Integer(stringlet));
 						}
-					} else if (!s.data.isEmpty()) {
+					} else if (!s.getData().isEmpty()) {
 						// last line might be len=80, padded with spaces.  so 9990 + (already have data) => break.
 						break loop;
 					}
@@ -400,7 +400,7 @@ public class Tucson implements Filetype {
 		// finished (EOF).
 
 		// no data read?  return a null, i suppose
-		if (s.data.isEmpty()) {
+		if (s.getData().isEmpty()) {
 			s = null;
 			// this is the other end of the super-subtle bug.  load()
 			// was expecting a wfte!
@@ -411,7 +411,7 @@ public class Tucson implements Filetype {
 		s.guessIndexed();
 
 		// set range
-		s.range = new Range(start, s.data.size());
+		s.setRange(new Range(start, s.getData().size()));
 	}
 
 	// -------------------- end composite loader --------------------
@@ -419,7 +419,7 @@ public class Tucson implements Filetype {
 	// ------------------------ start saver -------------------------
 
 	private void saveFirstLine(Sample s, BufferedWriter w) throws IOException {
-		StringBuffer line1 = new StringBuffer((String) s.meta.get("title"));
+		StringBuffer line1 = new StringBuffer((String) s.getMeta("title"));
 		line1.ensureCapacity(86);
 
 		if (line1.length() > 80) {
@@ -443,8 +443,8 @@ public class Tucson implements Filetype {
 	private String make6digitCode(Sample s) {
 		String code;
 
-		if (s.meta.containsKey("id"))
-			code = s.meta.get("id").toString();
+		if (s.hasMeta("id"))
+			code = s.getMeta("id").toString();
 		else
 			code = "000000";
 
@@ -462,8 +462,8 @@ public class Tucson implements Filetype {
 	private void saveRowHeader(BufferedWriter w, Sample s, String code,
 			int yearWidth, Year y) throws IOException {
 		String prefix; // don't print the decade for the first one
-		if (y.compareTo(s.range.getStart()) < 0)
-			prefix = s.range.getStart().toString();
+		if (y.compareTo(s.getRange().getStart()) < 0)
+			prefix = s.getRange().getStart().toString();
 		else
 			prefix = y.toString();
 		while (prefix.length() < yearWidth)
@@ -511,12 +511,12 @@ public class Tucson implements Filetype {
 				}
 			} else { // in range
 				// data: "%4d" / %6d
-				w.write(StringUtils.leftPad(s.data.get(y.diff(start))
+				w.write(StringUtils.leftPad(s.getData().get(y.diff(start))
 						.toString(), (isProcessed ? 4 : 6)));
 
 				// count: "%3d" (right-align)
 				if (isSummed)
-					w.write(StringUtils.leftPad(s.count.get(y.diff(start))
+					w.write(StringUtils.leftPad(s.getCount().get(y.diff(start))
 							.toString(), 3));
 				else if (isProcessed) // which is really isIndexed
 					w.write("   ");
@@ -545,18 +545,18 @@ public class Tucson implements Filetype {
 	// -- if start+8000>=1, use range+8000 (some labs do this, right?)
 	// -- if even that doesn't work, just start at 1001
 	private Range computeRange(Sample s) {
-		Year start = s.range.getStart();
+		Year start = s.getRange().getStart();
 
 		// if it's AD-only, we're fine
 		if (start.compareTo(new Year(1)) >= 0)
-			return s.range;
+			return s.getRange();
 
 		// if adding 8000 makes it AD, do that
 		if (start.add(8000).compareTo(new Year(1)) >= 0)
-			return s.range.redateBy(8000);
+			return s.getRange().redateBy(8000);
 
 		// ouch.  just start it at 1001.
-		return s.range.redateStartTo(new Year(1001));
+		return s.getRange().redateStartTo(new Year(1001));
 	}
 
 	public void save(Sample s, BufferedWriter w) throws IOException {

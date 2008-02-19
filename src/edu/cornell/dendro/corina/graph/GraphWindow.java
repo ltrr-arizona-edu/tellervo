@@ -670,7 +670,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 		// summed -- add count, too
 		if (s.isSummed())
-			samples.add(new Graph(s.count, s.range.getStart(), I18n
+			samples.add(new Graph(s.getCount(), s.getRange().getStart(), I18n
 					.getText("number_of_samples")));
 
 		// observe
@@ -739,7 +739,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 		// summed -- add count, too
 		if (s.isSummed())
-			samples.add(new Graph(s.count, s.range.getStart(), I18n
+			samples.add(new Graph(s.getCount(), s.getRange().getStart(), I18n
 					.getText("number_of_samples")));
 
 		// observe
@@ -862,7 +862,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		samples.add(tmp = new Graph(c.getMoving()));
 
 		// compute offset of moving sample
-		tmp.xoffset = movingPosition.diff(c.getMoving().range.getEnd());
+		tmp.xoffset = movingPosition.diff(c.getMoving().getRange().getEnd());
 
 		// go
 		createPanelAndDisplay();

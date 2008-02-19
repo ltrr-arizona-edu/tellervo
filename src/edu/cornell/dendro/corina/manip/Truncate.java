@@ -44,81 +44,82 @@ public class Truncate {
 	startDecr = new Stack();
 
 	// sapwood
-	if (s.meta.containsKey("sapwood")) {
-	    int sapwood = ((Number) s.meta.get("sapwood")).intValue();
+	if (s.hasMeta("sapwood")) {
+	    int sapwood = ((Number) s.getMeta("sapwood")).intValue();
 	    oldSapwood = new Integer(sapwood);
-	    sapwood -= s.range.getEnd().diff(r.getEnd()); // -= numCropEnd
-	    s.meta.put("sapwood", new Integer(sapwood));
+	    sapwood -= s.getRange().getEnd().diff(r.getEnd()); // -= numCropEnd
+	    s.setMeta("sapwood", new Integer(sapwood));
 	}
 
 	// crop the end
-	int numCropEnd = s.range.getEnd().diff(r.getEnd());
+	int numCropEnd = s.getRange().getEnd().diff(r.getEnd());
 	while (numCropEnd-- > 0) {
-	    int i = s.data.size()-1;
-	    endData.push(s.data.remove(i));
-	    if (s.count != null)
-		endCount.push(s.count.remove(i));
+	    int i = s.getData().size()-1;
+	    endData.push(s.getData().remove(i));
+	    if (s.getCount() != null)
+		endCount.push(s.getCount().remove(i));
 	    if (s.hasWeiserjahre()) {
-		endIncr.push(s.incr.remove(i));
-		endDecr.push(s.decr.remove(i));
+		endIncr.push(s.getWJIncr().remove(i));
+		endDecr.push(s.getWJDecr().remove(i));
 	    }
 	}
 
 	// crop the start
-	int numCropStart = r.getStart().diff(s.range.getStart());
+	int numCropStart = r.getStart().diff(s.getRange().getStart());
 	while (numCropStart-- > 0) {
-	    startData.push(s.data.remove(0));
-	    if (s.count != null)
-		startCount.push(s.count.remove(0));
+	    startData.push(s.getData().remove(0));
+	    if (s.getCount() != null)
+		startCount.push(s.getCount().remove(0));
 	    if (s.hasWeiserjahre()) {
-		startIncr.push(s.incr.remove(0));
-		startDecr.push(s.decr.remove(0));
+		startIncr.push(s.getWJIncr().remove(0));
+		startDecr.push(s.getWJDecr().remove(0));
 	    }
 	}
 
 	// set the new range
-	oldRange = s.range;
-	s.range = r;
+	oldRange = s.getRange();
+	s.setRange(r);
     }
 
     // undo
     private Range oldRange; // redundant, but helpful
     // FIXME: i think i only really need one stack, not 8 (though then
     // i probably need cropStart/cropEnd ints)
-    private Stack endData, endCount;
-    private Stack startIncr, startDecr, endIncr, endDecr;
-    private Stack startData, startCount;
+    private Stack<Object> endData, startData; 
+    private Stack<Integer> endCount;
+    private Stack<Integer> startIncr, startDecr, endIncr, endDecr;
+    private Stack<Integer> startCount;
     private Integer oldSapwood=null;
 
     public void uncrop() {
 	// end
 	while (!endData.empty()) {
-	    s.data.add(endData.pop());
-	    if (s.count != null)
-		s.count.add(endCount.pop());
+	    s.getData().add(endData.pop());
+	    if (s.getCount() != null)
+		s.getCount().add(endCount.pop());
 	    if (s.hasWeiserjahre()) {
-		s.incr.add(endIncr.pop());
-		s.decr.add(endDecr.pop());
+		s.getWJIncr().add(endIncr.pop());
+		s.getWJDecr().add(endDecr.pop());
 	    }
 	}
 
 	// start
 	while (!startData.empty()) {
-	    s.data.add(0, startData.pop());
-	    if (s.count != null)
-		s.count.add(0, startCount.pop());
+	    s.getData().add(0, startData.pop());
+	    if (s.getCount() != null)
+		s.getCount().add(0, startCount.pop());
 	    if (s.hasWeiserjahre()) {
-		s.incr.add(0, startIncr.pop());
-		s.decr.add(0, startDecr.pop());
+		s.getWJIncr().add(0, startIncr.pop());
+		s.getWJDecr().add(0, startDecr.pop());
 	    }
 	}
 
 	// sapwood
 	if (oldSapwood != null)
-	    s.meta.put("sapwood", oldSapwood);
+	    s.setMeta("sapwood", oldSapwood);
 
 	// restore range
-	s.range = oldRange;
+	s.setRange(oldRange);
     }
 
 }

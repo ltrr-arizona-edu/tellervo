@@ -87,7 +87,7 @@ public class Single {
 	// run a single crossdate between 2 samples
 	public Single(Sample fixed, Sample moving) {
 		// fill in crosses, if they overlap
-		n = fixed.range.overlap(moving.range);
+		n = fixed.getRange().overlap(moving.getRange());
 		if (n > 0) {
 			// this use of single() is kind of hackish.  since it's only used here, it should be REFACTORED.
 			t = new TScore(fixed, moving).single();

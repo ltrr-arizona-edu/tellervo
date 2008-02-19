@@ -74,7 +74,7 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 	   @see Graphable
 	   @return index's start date (same as its Sample's) */
 	public final Year getStart() {
-		return target.range.getStart();
+		return target.getRange().getStart();
 	}
 
 	/** Return the default scale for the index: always 1.0.
@@ -116,7 +116,7 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 
 	public void run() {
 		// verify ranges
-		if (source != target && !source.range.contains(target.range)) {
+		if (source != target && !source.getRange().contains(target.getRange())) {
 			throw new RuntimeException(
 					"Proxy dataset doesn't cover this sample's range.");
 		}
@@ -128,9 +128,9 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 		// -- crop (sample.start-master.start) from the start
 		// -- crop (master.end-sample.end) from the end
 		if (source != target) {
-			int fromStart = target.range.getStart().diff(
-					source.range.getStart());
-			int fromEnd = source.range.getEnd().diff(target.range.getEnd());
+			int fromStart = target.getRange().getStart().diff(
+					source.getRange().getStart());
+			int fromEnd = source.getRange().getEnd().diff(target.getRange().getEnd());
 			for (int i = 0; i < fromStart; i++)
 				getData().remove(0);
 			for (int i = 0; i < fromEnd; i++)
@@ -170,8 +170,8 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 	@return &chi;<sup>2</sup> */
 	public final double getChi2() {
 		// not computed yet?
-		if (chi2 < 0 && getData().size() == target.data.size()) // BUG: not exactly threadsafe here
-			chi2 = computeChi2(getData(), target.data);
+		if (chi2 < 0 && getData().size() == target.getData().size()) // BUG: not exactly threadsafe here
+			chi2 = computeChi2(getData(), target.getData());
 
 		return chi2;
 	}
@@ -204,7 +204,7 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 
 	public final double getR() {
 		if (r == null) // see getChi2()
-			r = new Double(computeR(getData(), target.data));
+			r = new Double(computeR(getData(), target.getData()));
 		return r.doubleValue();
 	}
 
@@ -252,7 +252,7 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 		// back up the old data
 		if (backup == null) {
 			backup = new ArrayList();
-			backup.addAll(target.data);
+			backup.addAll(target.getData());
 		}
 		// INEFFICIENT: make a copy of the old data, then overwrite it all.
 		// why not just move the old data, and create a new list for the new stuff?
@@ -261,9 +261,9 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 		// target[i] = ind[i] / raw[i] * 1000
 		for (int i = 0; i < getData().size(); i++) {
 			double ind = ((Number) getData().get(i)).doubleValue();
-			double raw = ((Number) target.data.get(i)).doubleValue();
+			double raw = ((Number) target.getData().get(i)).doubleValue();
 			double ratio = raw / ind;
-			target.data.set(i, new Integer((int) Math.round(ratio * 1000)));
+			target.getData().set(i, new Integer((int) Math.round(ratio * 1000)));
 		}
 
 		// set modified flag
@@ -271,11 +271,11 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 		target.setModified();
 
 		// format
-		oldFormat = (String) target.meta.get("format");
-		target.meta.put("format", "I");
+		oldFormat = (String) target.getMeta("format");
+		target.setMeta("format", "I");
 
 		// index_type
-		target.meta.put("index_type", new Integer(ixFunction.getLegacyID()));
+		target.setMeta("index_type", new Integer(ixFunction.getLegacyID()));
 		// should i fire a metadataChanged event here?
 	}
 
@@ -284,17 +284,17 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 
 	public final void unapply() {
 		// restore target.data
-		target.data = new ArrayList();
-		target.data.addAll(backup);
+		target.setData(new ArrayList());
+		target.getData().addAll(backup);
 
 		// restore meta/format
 		if (oldFormat == null)
-			target.meta.remove("format");
+			target.removeMeta("format");
 		else
-			target.meta.put("format", oldFormat);
+			target.setMeta("format", oldFormat);
 
 		// remove meta/index_type
-		target.meta.remove("index_type");
+		target.removeMeta("index_type");
 
 		// unset modified flag, maybe.  BUG: DOESN'T WORK!  after
 		// unapply(), firing any events sets it again.  how to fix?

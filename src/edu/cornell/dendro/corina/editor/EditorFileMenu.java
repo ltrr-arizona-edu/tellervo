@@ -154,8 +154,8 @@ public class EditorFileMenu extends FileMenu {
 						String errorsamples = "";
 						boolean problem = false;
 
-						for (int i = 0; i < s.elements.size(); i++) {
-							Element e = (Element) s.elements.get(i);
+						for (int i = 0; i < s.getElements().size(); i++) {
+							Element e = (Element) s.getElements().get(i);
 
 							if (!e.isActive()) // skip inactive
 								continue;
@@ -264,8 +264,8 @@ public class EditorFileMenu extends FileMenu {
 						String errorsamples = "";
 						boolean problem = false;
 
-						for (int i = 0; i < s.elements.size(); i++) {
-							Element e = (Element) s.elements.get(i);
+						for (int i = 0; i < s.getElements().size(); i++) {
+							Element e = (Element) s.getElements().get(i);
 
 							if (!e.isActive()) // skip inactive
 								continue;

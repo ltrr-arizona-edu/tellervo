@@ -903,7 +903,7 @@ public class Browser extends XFrame {
 		// misc stuff (formerly "scripts", formerly "misc")
 		// TODO: integrate with browser better!
 		JMenu misc = Builder.makeMenu("manip");
-		JMenuItem index = new JMenuItem("Index Selected Files");
+		JMenuItem index = new JMenuItem("Index Selected Files (broken)");
 		index.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				// TODO: enabled only if multiple files are selected?
@@ -931,7 +931,7 @@ public class Browser extends XFrame {
 				// TODO: this should be undoable
 			}
 		});
-		JMenuItem split = new JMenuItem("Split into Early/Late");
+		JMenuItem split = new JMenuItem("Split into Early/Late (broken)");
 		split.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				// TODO: only enabled when exactly 1 file selected (closure?)
@@ -956,7 +956,7 @@ public class Browser extends XFrame {
 				// TODO: this should be undoable
 			}
 		});
-		JMenuItem join = new JMenuItem("Join Early/Late");
+		JMenuItem join = new JMenuItem("Join Early/Late (broken)");
 		join.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				// TODO: only enabled when there are exactly 2 files selected (closure?)
@@ -970,7 +970,7 @@ public class Browser extends XFrame {
 				String filename = ((Row) visibleFiles.get(selected)).getPath();
 				// REFACTOR: why don't i have a getSelectedFile() method?
 
-				Scripts.joinEarlyLate(filename);
+				//Scripts.joinEarlyLate(filename);
 
 				// kick browser to update itself
 				doList();
@@ -1023,8 +1023,8 @@ public class Browser extends XFrame {
 				Sample test = new Sample(filename);
 
 				// if this sample has elements, use its elements, else just add this element.
-				if (test.elements != null)
-					elements.addAll(test.elements);
+				if (test.getElements() != null)
+					elements.addAll(test.getElements());
 				else
 					elements.add(new Element(filename));
 			}

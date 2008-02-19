@@ -249,7 +249,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		// select the first year
 		myTable.setRowSelectionInterval(0, 0);
 		myTable.setColumnSelectionInterval(
-				mySample.range.getStart().column() + 1, mySample.range
+				mySample.getRange().getStart().column() + 1, mySample.getRange()
 						.getStart().column() + 1);
 		
 
@@ -259,8 +259,8 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 		// make the last column a jprogressbar, % of max
 		int max = 0;
-		if (mySample.count != null)
-			max = ((Integer) Collections.max(mySample.count)).intValue();
+		if (mySample.getCount() != null)
+			max = ((Integer) Collections.max(mySample.getCount())).intValue();
 		// DISABLED: use column-header renderer for first column (pseudo-row-headers)
 		// -- it doesn't look that great, since there are still gridlines between
 		// rows; what i should really do is make a real table-row-header, which isn't too hard.
@@ -328,20 +328,20 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 		// get year => get data index
 		Year y = ((DecadalModel) myModel).getYear(row, col);
-		int i = y.diff(mySample.range.getStart());
+		int i = y.diff(mySample.getRange().getStart());
 
 		// make sure it's a valid place to insert a year
-		if (!mySample.range.contains(y)
-				&& !mySample.range.getEnd().add(+1).equals(y)) {
+		if (!mySample.getRange().contains(y)
+				&& !mySample.getRange().getEnd().add(+1).equals(y)) {
 			// Alert.error("Can't insert here",
 			//    "This isn't a valid place to insert a year.");
 			return;
 		}
 
 		// insert 0
-		mySample.data.add(i, val); // new Integer(0));
-		mySample.range = new Range(mySample.range.getStart(), mySample.range
-				.getEnd().add(+1));
+		mySample.getData().add(i, val); // new Integer(0));
+		mySample.setRange(new Range(mySample.getRange().getStart(), mySample.getRange()
+				.getEnd().add(+1)));
 		// REFACTOR: by LoD, should be range.extend()
 
 		// fire event -- obsolete?
@@ -364,7 +364,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 			y = y.add(1);
 
 			// where's it located?
-			row = y.row() - mySample.range.getStart().row();
+			row = y.row() - mySample.getRange().getStart().row();
 			col = y.column() + 1;
 
 			myTable.setRowSelectionInterval(row, row);
@@ -386,11 +386,11 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 		// get year => get data index
 		Year y = ((DecadalModel) myModel).getYear(row, col);
-		int i = y.diff(mySample.range.getStart());
+		int i = y.diff(mySample.getRange().getStart());
 
 		// make sure it's a valid place to insert a year
-		if (!mySample.range.contains(y)
-				&& !mySample.range.getEnd().add(nYears).equals(y)) {
+		if (!mySample.getRange().contains(y)
+				&& !mySample.getRange().getEnd().add(nYears).equals(y)) {
 			// Alert.error("Can't insert here",
 			//    "This isn't a valid place to insert a year.");
 			return;
@@ -398,9 +398,9 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 		// insert 0, nyears times...
 		for(int j = 0; j < nYears; j++)
-			mySample.data.add(i, val); // new Integer(0));
-		mySample.range = new Range(mySample.range.getStart(), mySample.range
-				.getEnd().add(nYears));
+			mySample.getData().add(i, val); // new Integer(0));
+		mySample.setRange(new Range(mySample.getRange().getStart(), mySample.getRange()
+				.getEnd().add(nYears)));
 		// REFACTOR: by LoD, should be range.extend()
 
 		// fire event -- obsolete?
@@ -435,20 +435,20 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 		// get year => get data index
 		Year y = ((DecadalModel) myModel).getYear(row, col);
-		int i = y.diff(mySample.range.getStart());
+		int i = y.diff(mySample.getRange().getStart());
 
 		// make sure there's data to delete
-		if (!mySample.range.contains(y)) {
+		if (!mySample.getRange().contains(y)) {
 			// Alert.error("Can't delete here",
 			//    "This isn't a value that can be deleted.");
 			return;
 		}
 
 		// delete value
-		mySample.data.remove(i);
+		mySample.getData().remove(i);
 		// mySample.range.end = mySample.range.end.add(-1);
-		mySample.range = new Range(mySample.range.getStart(), mySample.range
-				.getEnd().add(-1));
+		mySample.setRange(new Range(mySample.getRange().getStart(), mySample.getRange()
+				.getEnd().add(-1)));
 
 		// fire event
 		((DecadalModel) myModel).fireTableDataChanged();
@@ -530,15 +530,15 @@ public class SampleDataView extends JPanel implements SampleListener,
 		// mySample.range.setEnd(end.add(1));
 		// mySample.data.add(new Integer(0));
 		// }
-		if (!mySample.range.contains(y)) {
-			mySample.range = new Range(mySample.range.getStart(),
-					mySample.range.getEnd().add(1));
-			mySample.data.add(new Integer(0));
+		if (!mySample.getRange().contains(y)) {
+			mySample.setRange(new Range(mySample.getRange().getStart(),
+					mySample.getRange().getEnd().add(1)));
+			mySample.getData().add(new Integer(0));
 		}
 
 		// set the value
-		int i = y.diff(mySample.range.getStart());
-		mySample.data.set(i, new Integer(x));
+		int i = y.diff(mySample.getRange().getStart());
+		mySample.getData().set(i, new Integer(x));
 		
 		// this is the year we return...
 		Year retYear = y;
@@ -558,7 +558,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		y = y.add(1);
 
 		// where's it located?
-		int row = y.row() - mySample.range.getStart().row();
+		int row = y.row() - mySample.getRange().getStart().row();
 		int col = y.column() + 1;
 
 		// fire sample events first, so the table update below gets the good data

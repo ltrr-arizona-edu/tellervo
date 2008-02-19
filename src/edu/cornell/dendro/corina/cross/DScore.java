@@ -186,9 +186,9 @@ public class DScore extends Cross {
         // figure out what index (into the cross data) we're talking about
         int index;
         if (offset_fixed == 0) { // phase 1
-            index = (getMoving().data.size() - overlap) - (offset_moving);
+            index = (getMoving().getData().size() - overlap) - (offset_moving);
         } else { // phase 2
-            index = offset_fixed + (getMoving().data.size() - overlap);
+            index = offset_fixed + (getMoving().getData().size() - overlap);
         }
 
         // get the t, tr, and compute d
