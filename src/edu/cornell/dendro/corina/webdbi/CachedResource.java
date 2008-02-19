@@ -11,12 +11,12 @@ import java.io.*;
  * A cached resource
  */
 
-public class CachedResource extends Resource {
+public abstract class CachedResource extends Resource {
 	private String cachedResourcePath;
 	
 	public CachedResource(String cachedResourceName) {
 		// we only support read-only resources :>
-		super(cachedResourceName, new ResourceQueryType(ResourceQueryType.READ));
+		super(cachedResourceName, ResourceQueryType.READ);
 
 		cachedResourcePath = App.prefs.getCorinaDir() + getResourceName() + ".xmlcache";
 		
@@ -27,12 +27,12 @@ public class CachedResource extends Resource {
 				System.out.println("Loading cache for '" + getResourceName() + "'");
 				SAXBuilder builder = new SAXBuilder();
 				doc = builder.build(cachedResourceFile);
+				
+				processQueryResult(doc);
 			} catch (Exception e) {
 				System.out.println("Unable to load cache for '" + getResourceName() + "': " + e);
 				return;
 			}
-			
-			processQueryResult(doc);
 		}
 	}
 	

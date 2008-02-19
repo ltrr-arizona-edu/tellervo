@@ -21,10 +21,9 @@ import java.io.IOException;
  * @author Lucas Madar
  *
  */
-public class Resource {
+public abstract class Resource {
 	
 	private String resourceName; // the noun associated with this resource
-	private boolean resourceQueried; /** true if we have received a response from the server */
 	protected ResourceQueryType queryType;
 	
 	/**
@@ -33,7 +32,7 @@ public class Resource {
 	 * @param resourceName the noun this resource binds to (ie, 'dictionaries')
 	 */
 	public Resource(String resourceName) {
-		this(resourceName, new ResourceQueryType(ResourceQueryType.READ));
+		this(resourceName, ResourceQueryType.READ);
 	}
 	
 	/**
@@ -44,12 +43,27 @@ public class Resource {
 	 */
 	public Resource(String resourceName, ResourceQueryType queryType) {
 		this.resourceName = resourceName;
-		this.resourceQueried = false;
 		this.queryType = queryType;
 	}
 	
-	public String getResourceName() { return resourceName; }
+	public String getResourceName() { 
+		return resourceName; 
+	}
 	
+	/**
+	 * @return the queryType
+	 */
+	public ResourceQueryType getQueryType() {
+		return queryType;
+	}
+
+	/**
+	 * @param queryType the queryType to set
+	 */
+	public void setQueryType(ResourceQueryType queryType) {
+		this.queryType = queryType;
+	}
+
 	/**
 	 * Handle the query exception.
 	 * 
@@ -68,7 +82,7 @@ public class Resource {
 			
 			if(w.getNonce() == null) {
 				// the server requires a login, but no nonce? er.. ?
-				queryFailed(w);
+				doQueryFailed(w);
 				return false;
 			}
 			
@@ -85,12 +99,12 @@ public class Resource {
 
 				return true;
 			} catch (UserCancelledException uce) {
-				queryFailed(uce);
+				doQueryFailed(uce);
 				return false;
 			}
 		}
 		
-		queryFailed(w);
+		doQueryFailed(w);
 		return false;
 	}
 		
@@ -108,8 +122,11 @@ public class Resource {
 			Document doc;
 			
 			// we need to prepare the query
-			prepareQuery(wx.createRequest(queryType));
-			
+			prepareQuery(queryType, wx.createRequest(queryType));
+
+			// notify debug listeners!
+			fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_DEBUG_OUT, wx.getRequestDocument()));
+
 			/*
 			 * Keep trying to query the document until we get
 			 * a non-recoverable error.
@@ -124,18 +141,26 @@ public class Resource {
 						return;
 				}
 			}
-			
-			/*
-			 * we do this already in the documentaccessor
-			if(doc.getRootElement().getName().compareToIgnoreCase("corina") != 0)
-				throw new IOException("Invalid XML document returned; Root element is not corina type.");
-				*/
+
+			// notify debug listeners!
+			fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_DEBUG_IN, doc));
 			
 			if(processQueryResult(doc))
 				querySucceeded(doc);
+			else 
+				// we had a parsing error
+				fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_QUERY_FAILED));
 		} catch (IOException ioe) {
-			queryFailed(ioe);
+			doQueryFailed(ioe);
 		}
+	}
+	
+	private void doQueryFailed(Exception e) {
+		// Call our (potentially overridden) queryFailed method
+		queryFailed(e);
+		
+		// Notify listeners that our query failed
+		fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_QUERY_FAILED, e));
 	}
 
 	/**
@@ -148,12 +173,19 @@ public class Resource {
 	 *    </request>
 	 * </corina>
 	 * 
-	 * @param requestElement 
+	 * @param queryType enum ResourceQueryType
+	 * @param requestElement an XML root element
+	 * @throws ResourceException if error preparing query
 	 */
-	protected Element prepareQuery(Element requestElement) {
-		// this is meant to be overloaded, but defaults to reading everything...
+	protected abstract Element prepareQuery(ResourceQueryType queryType, Element requestElement) 
+	throws ResourceException;
+	
+	/* EX:
+	{
+		// this is meant to be overloaded, but defaults to above
 		return requestElement;
 	}
+	*/
 	
 	/**
 	 * In this function, parse the document and populate any internal variables.
@@ -161,13 +193,22 @@ public class Resource {
 	 * WARNING: This function *must* be threadsafe. 
 	 * This means it must not change any class variables without synchronizing against them!
 	 * 
+	 * If this function returns false, queryFailed is not called
+	 * If it throws an exception, queryFailed IS called
+	 * 
 	 * @param doc The XML JDOM document obtained by the query function
 	 * @return true on success, false on failure
+	 * @throws ResourceException if error parsing
 	 */
-	protected boolean processQueryResult(Document doc) {
+	protected abstract boolean processQueryResult(Document doc)
+	throws ResourceException; 
+	
+	/* EX:
+	{
 		// this is meant to be overloaded.
 		return true;
 	}
+	*/
 	
 	/**
 	 * Called if processQueryResult returns true
@@ -175,7 +216,6 @@ public class Resource {
 	 * @param doc
 	 */
 	protected void querySucceeded(Document doc) {
-		resourceQueried = true;
 		fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_QUERY_COMPLETE));
 	}
 	
@@ -184,8 +224,13 @@ public class Resource {
 	 * This is only called if processQueryResult() is not called.
 	 */
 	protected void queryFailed(Exception e) {
-		System.out.println("Failed to query resource " + resourceName);
+		System.err.println("Failed to query resource " + resourceName);
 		e.printStackTrace();
+		
+		if(e instanceof ResourceException && e.getCause() != null) {
+			System.err.println("Caused by:");
+			e.getCause().printStackTrace();
+		}
 	}
 	
 	/**

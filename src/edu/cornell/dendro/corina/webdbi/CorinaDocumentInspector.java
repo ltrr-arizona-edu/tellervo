@@ -19,7 +19,7 @@ public class CorinaDocumentInspector {
 		this.document = xmlReply;
 	}
 	
-	public void verifyDocument() throws IOException {
+	public void verifyDocument() throws ResourceException {
 		// debug!
 		/*
 		try {
@@ -51,7 +51,7 @@ public class CorinaDocumentInspector {
 		if(e.getText().compareToIgnoreCase("ok") == 0)
 			return;		
 		
-		List messages = header.getChildren("message");
+		List<Element> messages = header.getChildren("message");
 		for(int i = 0; i < messages.size(); i++) {
 			e = (Element) messages.get(i);
 			

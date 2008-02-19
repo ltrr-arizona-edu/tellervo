@@ -6,6 +6,7 @@ package edu.cornell.dendro.corina.webdbi;
 import java.security.MessageDigest;
 import java.util.Random;
 
+import org.jdom.Document;
 import org.jdom.Element;
 
 import edu.cornell.dendro.corina.gui.Bug;
@@ -21,7 +22,7 @@ public class Authenticate extends Resource {
 	private String hash;
 	
 	public Authenticate(String username, String password, String nonce) {
-		super("authenticate", new ResourceQueryType(ResourceQueryType.SECURELOGIN));
+		super("authenticate", ResourceQueryType.SECURELOGIN);
 		
 		// generate a random client nonce
 		byte[] randomBytes = new byte[10];
@@ -38,7 +39,7 @@ public class Authenticate extends Resource {
 		this.username = username;
 	}
 
-	protected Element prepareQuery(Element requestElement) {
+	protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) {
 		Element auth = new Element("authenticate");
 		
 		auth.setAttribute("username", username);
@@ -48,7 +49,12 @@ public class Authenticate extends Resource {
 		requestElement.addContent(auth);
 		return requestElement;
 	}
-
+	
+	protected boolean processQueryResult(Document doc) {
+		// We don't do anything with this data (we know it just says succeeded)
+		return true;
+	}
+	
 	private String md5(String in) {
 		String value;
 		

@@ -9,7 +9,7 @@ import java.io.IOException;
  * @author Lucas Madar
  *
  */
-public class MalformedDocumentException extends IOException {
+public class MalformedDocumentException extends ResourceException {
 	public MalformedDocumentException() {
 		super();
 	}

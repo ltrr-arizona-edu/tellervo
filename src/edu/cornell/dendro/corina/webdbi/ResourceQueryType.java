@@ -1,13 +1,20 @@
-/**
- * 
- */
 package edu.cornell.dendro.corina.webdbi;
 
 /**
  * @author Lucas Madar
  *
  */
-public class ResourceQueryType {
+
+public enum ResourceQueryType {
+	CREATE, READ, UPDATE, DELETE, SECURELOGIN;
+	
+	// Return the verb in lower case
+	public String getVerb() {
+		return this.toString().toLowerCase();
+	}
+}
+
+/*public class ResourceQueryType {
 	private int queryType;
 	
 	public ResourceQueryType(int queryType) {
@@ -41,3 +48,4 @@ public class ResourceQueryType {
 	public static final int DELETE = 4;
 	public static final int SECURELOGIN = 5;
 }
+*/

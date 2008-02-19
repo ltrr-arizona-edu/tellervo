@@ -248,6 +248,13 @@ public class WebXMLDocumentAccessor {
 		return requestDocument.getRootElement().getChild("request");
 	}
 
+	/**
+	 * @return the XML document of our request
+	 */
+	public Document getRequestDocument() {
+		return requestDocument;
+	}
+	
 	// for defining our request type...
 	private static final int METHOD_POST = 1;
 	private static final int METHOD_GET = 2;
@@ -272,7 +279,7 @@ public class WebXMLDocumentAccessor {
 			e.addContent(new Element("authenticate"));
 			a.execute();*/
 			
-			e = a.createRequest(new ResourceQueryType(ResourceQueryType.SECURELOGIN));//"securelogin");
+			e = a.createRequest(ResourceQueryType.SECURELOGIN);//"securelogin");
 			Element auth = new Element("authenticate");
 			e.addContent(auth);			
 			auth.setAttribute("username", "kit");
