@@ -299,7 +299,7 @@ class auth
   
   function vmeasurementPermission($theVMeasurementID, $thePermissionType)
   {
-      return $this->getPermission($thePermissionType, 'vmeasurement', $theVmeasurementID); 
+      return $this->getPermission($thePermissionType, 'vmeasurement', $theVMeasurementID); 
   }
   
   function getPermission($thePermissionType, $theObjectType, $theObjectID)

@@ -152,11 +152,11 @@ class request
 
         if($this->auth->getID()==NULL)
         {
-            $sql = "insert into tblrequestlog (request, ipaddr, wsversion) values ('".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion')";
+            $sql = "insert into tblrequestlog (request, ipaddr, wsversion, page) values ('".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion', '".$_SERVER['SCRIPT_NAME']."')";
         }
         else
         {
-            $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion) values ('".$this->auth->getID()."', '".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion')";
+            $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion, page) values ('".$this->auth->getID()."', '".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion', '".$_SERVER['SCRIPT_NAME']."')";
         }
 
         pg_send_query($dbconn, $sql);

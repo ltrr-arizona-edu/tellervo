@@ -435,6 +435,26 @@ class measurement
     /*ACCESSORS*/
     /***********/
 
+    function getEndYear()
+    {
+        $length = count($this->readingsArray);
+        return $this->startYear + $length;
+    }
+
+    function asTimelineXML()
+    {
+            // Only return XML when there are no errors.
+            $xml = "<event ";
+            $xml.= "isDuration='true' ";
+            $xml.= "start='".$this->startYear."' ";
+            $xml.= "end='".$this->getEndYear()."' ";
+            $xml.= "title='".$this->name."' ";
+            $xml.= ">".$this->name."</event>\n";
+        
+       return $xml;     
+
+    }
+
     function asXML($mode="all", $recurseLevel=99)
     {
         //print_r($this->referencesArray);
