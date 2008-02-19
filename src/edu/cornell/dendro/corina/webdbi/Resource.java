@@ -6,6 +6,8 @@ import org.jdom.Element;
 import edu.cornell.dendro.corina.util.WeakEventListenerList;
 import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+
+import java.awt.EventQueue;
 import java.io.IOException;
 
 /*
@@ -257,14 +259,21 @@ public abstract class Resource {
 		listenerList.remove(ResourceEventListener.class, rel);
 	}
 	
-	protected void fireResourceEvent(ResourceEvent re) {
-		Object[] listeners = listenerList.getListenerList();
+	protected void fireResourceEvent(final ResourceEvent re) {
+		// listeners is a copy; its contents are threadsafe
+		final Object[] listeners = listenerList.getListenerList();
 		
-		// For some reason, this array is stored oddly. ookay, java...
-		for(int i = 0; i < listeners.length; i += 2) {
-			if(listeners[i] == ResourceEventListener.class)
-				((ResourceEventListener)listeners[i+1]).resourceChanged(re);
-		}
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				// For some reason, this array is stored oddly. ookay, java...
+				for(int i = 0; i < listeners.length; i += 2) {
+					if(listeners[i] == ResourceEventListener.class) {
+						((ResourceEventListener)listeners[i+1]).resourceChanged(re);
+					}
+				}
+
+			}			
+		});
 	}
 	
 	public void debugDumpListeners() {
