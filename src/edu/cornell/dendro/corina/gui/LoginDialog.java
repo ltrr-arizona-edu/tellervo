@@ -1,6 +1,6 @@
 package edu.cornell.dendro.corina.gui;
 
-import java.awt.Dialog.ModalityType;
+//import java.awt.Dialog.ModalityType;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -71,12 +71,13 @@ public class LoginDialog extends JDialog {
 	public LoginDialog() {
 		super();
 		
-		setIconImage(Builder.getImage("Tree.png"));
+		//setIconImage(Builder.getImage("Tree.png"));
 		setResizable(false);
 
 		getContentPane().setLayout(new GridBagLayout());
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		setModalityType(ModalityType.APPLICATION_MODAL);
+		//setModalityType(APPLICATION_MODAL);
+		this.setModal(true);
 		setModal(true);
 		setTitle("Corina Login");
 		

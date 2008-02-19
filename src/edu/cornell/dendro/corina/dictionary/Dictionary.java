@@ -28,7 +28,17 @@ public class Dictionary extends CachedResource {
 		super("dictionaries");		
 	}
 	
-	public boolean processQueryResult(Document doc) {
+	// Nothing fancy here, just use the defaults
+	protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) {
+		return requestElement;
+	}
+	
+	protected void queryFailed(Exception e) {
+		System.out.println("Could not load dictionaries:");
+		e.printStackTrace();
+	}
+	
+	protected boolean processQueryResult(Document doc) {
 		Element root = doc.getRootElement();
 		Element dataElement = root.getChild("content");
 		
