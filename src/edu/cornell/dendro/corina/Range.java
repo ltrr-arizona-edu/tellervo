@@ -192,7 +192,8 @@ public class Range implements Comparable {
 
        @return a string representation of the range
     */
-    public String toString() {
+    @Override
+	public String toString() {
         // this tends to get called a lot, so we'll memoize it.
 	if (memo == null)
 	    memo = start + " - " + end;  // use \u2014 EM DASH?
@@ -297,7 +298,8 @@ public class Range implements Comparable {
        @param r range to compare with this
        @return true, if the ranges are equal, else false
     */
-    public boolean equals(Object o) {
+    @Override
+	public boolean equals(Object o) {
 	if (o instanceof Range) {
 	    Range r = (Range) o;
 	    return start.equals(r.start) && end.equals(r.end);
@@ -313,7 +315,8 @@ public class Range implements Comparable {
         
        @return a hash code for this Range
     */
-    public int hashCode() {
+    @Override
+	public int hashCode() {
 	return start.hashCode() + 2*end.hashCode();
     }
 

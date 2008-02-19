@@ -36,7 +36,6 @@ import edu.cornell.dendro.corina.gui.menus.EditMenu;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.io.SerialSampleIO;
-import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.core.App;
 
 import java.io.File;
@@ -45,7 +44,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
@@ -54,8 +52,6 @@ import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
 
 import java.util.List;
-import java.util.ArrayList;
-
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.DataFlavor;
@@ -85,7 +81,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
  on addNotify()?
  </ul>
 
- @see corina.formats.TwoColumn
+ @see edu.cornell.dendro.corina.formats.TwoColumn
 
  @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
  @version $Id$
@@ -114,6 +110,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		sample.addSampleListener(this);
 	}
 
+	@Override
 	protected void addUndo() {
 		undoMenu = Builder.makeMenuItem("undo");
 		undoMenu.addActionListener(new AbstractAction() {
@@ -126,6 +123,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		add(undoMenu);
 	}
 
+	@Override
 	protected void addRedo() {
 		redoMenu = Builder.makeMenuItem("redo");
 		redoMenu.addActionListener(new AbstractAction() {
@@ -142,6 +140,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	 Add a Copy menuitem that copies this Sample to the clipboard
 	 in 2-column format.
 	 */
+	@Override
 	protected void addCopy() {
 		// copy: put all data unto clipboard in 2-column format
 		JMenuItem copy = Builder.makeMenuItem("copy");
@@ -161,6 +160,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	 Add a Paste menuitem that replaces this data with whatever
 	 is on the clipboard.
 	 */
+	@Override
 	protected void addPaste() {
 		// paste: replace (insert?) data from clipboard (any format) into this sample
 		JMenuItem paste = Builder.makeMenuItem("paste");
@@ -176,6 +176,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	 Put all the normal items in the menu, along with Insert,
 	 Insert MR, and Delete.
 	 */
+	@Override
 	protected void init() {
 		addUndoRedo();
 		addSeparator();

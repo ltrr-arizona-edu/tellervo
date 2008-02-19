@@ -45,7 +45,7 @@ public class FileLength implements Comparable {
             return length + " bytes";
         }
 
-        double b = (float) length;
+        double b = length;
         for (int i=0; i<PREFIXES.length; i++) {
             b /= K;
             if (b < K)
@@ -60,7 +60,8 @@ public class FileLength implements Comparable {
     private static int K = 1024;
 
     // format it prettily.
-    public String toString() {
+    @Override
+	public String toString() {
         // never called before => compute and store
         if (string == null)
             string = format(length);

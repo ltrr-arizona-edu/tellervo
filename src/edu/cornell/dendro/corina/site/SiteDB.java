@@ -24,7 +24,6 @@ import java.awt.print.Printable;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -310,6 +309,7 @@ public class SiteDB { // implements PrintableDocument {
 
 		private Site site = null;
 
+		@Override
 		public void startElement(String uri, String name, String qName,
 				Attributes atts) {
 			if (name.equals("site"))
@@ -318,6 +318,7 @@ public class SiteDB { // implements PrintableDocument {
 				state = name;
 		}
 
+		@Override
 		public void endElement(String uri, String name, String qName) {
 			if (name.equals("site")) {
 				sites.add(site);
@@ -365,6 +366,7 @@ public class SiteDB { // implements PrintableDocument {
 			}
 		}
 
+		@Override
 		public void characters(char ch[], int start, int length) {
 			// stringify
 			data += new String(ch, start, length);

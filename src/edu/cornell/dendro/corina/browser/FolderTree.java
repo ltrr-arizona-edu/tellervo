@@ -48,12 +48,14 @@ public class FolderTree extends JPanel {
 	    this.name = new File(folder).getName();
 	}
 	private boolean childrenDefined = false;
+	@Override
 	public int getChildCount() {
 	    if (!childrenDefined) {
 		defineChildNodes();
 	    }
 	    return super.getChildCount();
 	}
+	@Override
 	public boolean isLeaf() {
 	    return false;
 	}
@@ -79,6 +81,7 @@ public class FolderTree extends JPanel {
 	    for (int i=0; i<buf.size(); i++)
 		add(new FolderNode((String) buf.get(i)));
 	}
+	@Override
 	public String toString() {
 	    return name;
 	}
@@ -193,7 +196,8 @@ public class FolderTree extends JPanel {
 	    });
     }
     
-    public void setEnabled(boolean enabled) {
+    @Override
+	public void setEnabled(boolean enabled) {
     	disabled = !enabled;
     	tree.setEnabled(enabled);
     }

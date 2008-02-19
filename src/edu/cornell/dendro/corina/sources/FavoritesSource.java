@@ -1,8 +1,6 @@
 package edu.cornell.dendro.corina.sources;
 
 import edu.cornell.dendro.corina.ui.Builder;
-import edu.cornell.dendro.corina.ui.I18n;
-
 import javax.swing.Icon;
 
 public class FavoritesSource implements Source {

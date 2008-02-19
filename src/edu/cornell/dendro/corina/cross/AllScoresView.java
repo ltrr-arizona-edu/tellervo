@@ -33,6 +33,7 @@ import java.text.DecimalFormat;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -95,6 +96,7 @@ public class AllScoresView extends JPanel implements PrefsListener {
 
 	// The column name: "Year" for the first column, and a digit
 	// (0-9) for the others.
+	@Override
 	public String getColumnName(int col) {
 	    if (col == 0)
 		return I18n.getText("year");
@@ -166,7 +168,8 @@ public class AllScoresView extends JPanel implements PrefsListener {
             back = App.prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white); // WAS: ...cross...
             lite = App.prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR, Color.green);
         }
-        public Component getTableCellRendererComponent(JTable table,
+        @Override
+		public Component getTableCellRendererComponent(JTable table,
 						       Object value,
                                                        boolean isSelected,
 						       boolean hasFocus,
@@ -204,7 +207,8 @@ public class AllScoresView extends JPanel implements PrefsListener {
 
             return this;
         }
-        public void paintComponent(Graphics g) {
+        @Override
+		public void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
 
 	    // FIXME: why, even with setOpaque(true), do i still need
@@ -230,9 +234,9 @@ public class AllScoresView extends JPanel implements PrefsListener {
 
 	JScrollPane scroll = new JScrollPane(table);
 	scroll.setVerticalScrollBarPolicy(
-			 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+			 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	scroll.setHorizontalScrollBarPolicy(
-			   JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			   ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 	setLayout(new BorderLayout());
 	add(scroll);
@@ -272,7 +276,8 @@ public class AllScoresView extends JPanel implements PrefsListener {
     private void makeDoubleClickable() {
         // double-click-able
         table.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
+            @Override
+			public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) // double-clicks only
 		    graphSelectedCrossdate();
             }
@@ -376,13 +381,15 @@ public class AllScoresView extends JPanel implements PrefsListener {
         }
     }
     
-    public void addNotify() {
+    @Override
+	public void addNotify() {
         super.addNotify();
         
         App.prefs.addPrefsListener(this);
     }
     
-    public void removeNotify() {
+    @Override
+	public void removeNotify() {
         super.removeNotify();
         
         App.prefs.removePrefsListener(this);

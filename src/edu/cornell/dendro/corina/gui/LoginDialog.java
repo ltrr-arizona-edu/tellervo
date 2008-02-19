@@ -13,11 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.net.URL;
-
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -25,8 +20,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.text.JTextComponent;
-
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -221,6 +214,7 @@ public class LoginDialog extends JDialog {
 		
 		// auto-select the entire box for password/username when we select it
 		FocusListener focusListener = new FocusAdapter() {
+			@Override
 			public void focusGained(FocusEvent fe) {
 				Component c = fe.getComponent();
 				

@@ -64,6 +64,7 @@ public class Polynomial extends IndexFunction implements SolverFunction {
 	}
 
 	/** Compute the index. */
+	@Override
 	public void index() {
 		final List in = input.getData();
 		// init x, y
@@ -71,7 +72,7 @@ public class Polynomial extends IndexFunction implements SolverFunction {
 		double x[] = new double[n];
 		double y[] = new double[n];
 		for (int i = 0; i < n; i++) {
-			x[i] = (double) i;
+			x[i] = i;
 			y[i] = ((Number) in.get(i)).doubleValue();
 		}
 
@@ -94,14 +95,17 @@ public class Polynomial extends IndexFunction implements SolverFunction {
 		}
 	}
 
+	@Override
 	public int getLegacyID() {
 		return degree;
 	}
 	
+	@Override
 	public String getI18nTag() {
 		return "polynomial";
 	}
 	
+	@Override
 	public String getI18nTagTrailer() {
 		return new Integer(degree).toString();
 	}

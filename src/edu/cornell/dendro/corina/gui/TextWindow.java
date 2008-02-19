@@ -29,6 +29,8 @@ import java.awt.Font;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.WindowConstants;
 
 import edu.cornell.dendro.corina.Build;
 
@@ -61,8 +63,8 @@ public class TextWindow extends JFrame {
     public TextWindow(String filename) throws IOException {
 	JTextArea a = new JTextArea();
 	JScrollPane s = new JScrollPane(a);
-	s.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	s.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	s.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	s.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	setContentPane(s);
 
 	String buf = readFile(filename);
@@ -73,7 +75,7 @@ public class TextWindow extends JFrame {
         Font oldFont = a.getFont();
         a.setFont(new Font("monospaced", oldFont.getStyle(), oldFont.getSize()));
 
-	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 	setTitle(filename + " - " + Build.VERSION + " " + Build.TIMESTAMP);
 	setSize(640, 480);
 	show();

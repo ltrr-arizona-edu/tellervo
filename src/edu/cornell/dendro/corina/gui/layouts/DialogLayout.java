@@ -243,7 +243,8 @@ public class DialogLayout implements LayoutManager2 {
         HeaderRow(Component h) {
             this.h = h;
         }
-        int getHeight(boolean isPreferred) {
+        @Override
+		int getHeight(boolean isPreferred) {
 	    int headerHeight = (isPreferred ? h.getPreferredSize().height
 				            : h.getMinimumSize().height);
             return headerHeight;
@@ -260,7 +261,8 @@ public class DialogLayout implements LayoutManager2 {
             this.l = l;
             this.c = c;
         }
-        int getHeight(boolean isPreferred) {
+        @Override
+		int getHeight(boolean isPreferred) {
 
             int labelHeight = (isPreferred ? l.getPreferredSize().height
 			                   : l.getMinimumSize().height);

@@ -284,7 +284,8 @@ public class Snapshot {
                 f.setForeground(valid ? defaultColor : Color.red);
                 return valid;
             }
-            public void update(DocumentEvent e) {
+            @Override
+			public void update(DocumentEvent e) {
                 // check both -- if one becomes valid,
                 // i still need to know the state of the other one.
 

@@ -21,8 +21,6 @@
 package edu.cornell.dendro.corina.gui;
 
 import java.net.URL;
-import java.net.MalformedURLException;
-
 import javax.help.HelpSet;
 import javax.help.HelpBroker;
 

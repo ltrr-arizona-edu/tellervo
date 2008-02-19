@@ -3,11 +3,6 @@ package edu.cornell.dendro.corina.site;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.JDialog;
-// and others...
-import javax.swing.*;
-import java.awt.*;
-
 // MOVE ME: this class belongs in corina.util, not corina.site
 
 /**

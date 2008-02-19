@@ -33,7 +33,6 @@ import java.awt.Stroke;
 import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 
 // TODO: rename?  it's just the scale, not really a legend.  (or: no, later it can be more full-featured)
 
@@ -65,7 +64,8 @@ public class LegendLayer extends Layer {
        @param g2 the Graphics2D object to draw to
        @param r the projection to use
     */
-    public void draw(Graphics2D g2, Projection r) {
+    @Override
+	public void draw(Graphics2D g2, Projection r) {
 	drawScale(g2, r);
     }
 

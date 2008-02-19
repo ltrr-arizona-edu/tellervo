@@ -7,14 +7,8 @@ import edu.cornell.dendro.corina.map.MapFile;
 import edu.cornell.dendro.corina.map.Palette;
 
 import edu.cornell.dendro.corina.site.Location;
-import edu.cornell.dendro.corina.util.ColorUtils;
-
 import java.awt.Graphics2D;
 import java.awt.Color;
-import java.awt.BasicStroke;
-import java.awt.image.BufferedImage;
-import java.awt.Shape;
-
 import java.io.IOException; // !!!
 
 import java.util.Iterator;
@@ -26,7 +20,8 @@ public class MapLayer extends Layer {
     // may be slow -- draws to g2, but doesn't change buf, used where you need to
     // draw to an arbitrary g2, but performance isn't critical, e.g., printing;
     // subclasses implement this.
-    public void draw(Graphics2D g2, Projection r) {
+    @Override
+	public void draw(Graphics2D g2, Projection r) {
 	// use strokes appropriate for this zoom: thicker lines for closer zoom
 	// NORMAL: g2.setStroke(new BasicStroke(r.view.zoom/10f));
 	// g2.setStroke(new BasicStroke(2)); // TEMP: THICK, for maryanne's presentations

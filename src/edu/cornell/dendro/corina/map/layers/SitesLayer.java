@@ -39,7 +39,6 @@ import java.util.Iterator;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -93,7 +92,8 @@ public class SitesLayer extends Layer {
        @param g2 the Graphics2D object to draw to
        @param r the Projection to use
     */
-    public void draw(Graphics2D g2, Projection r) {
+    @Override
+	public void draw(Graphics2D g2, Projection r) {
 	drawSites(g2, r);
     }
 

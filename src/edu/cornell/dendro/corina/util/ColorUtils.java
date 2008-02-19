@@ -81,7 +81,7 @@ public class ColorUtils {
 	@return a transparent version of the input color
     */
     public static Color addAlpha(Color c, float alpha) {
-        return addAlpha(c, (int) Math.round(255*alpha));
+        return addAlpha(c, Math.round(255*alpha));
     }
 
     /** Return true if the color is really dark.  (Technically, if its

@@ -22,7 +22,6 @@ import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
-import edu.cornell.dendro.corina.graph.Graph;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.CanOpener;
 import edu.cornell.dendro.corina.gui.FileDialog;
@@ -591,6 +590,7 @@ public class FileMenu extends JMenu {
 
 		// print (in background thread)
 		(new Thread() {
+			@Override
 			public void run() {
 				try {
 					printJob.print();

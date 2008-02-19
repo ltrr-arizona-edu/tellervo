@@ -37,7 +37,7 @@ import java.util.EventListener;
     Prefs.removePrefsListener(pl);
     </pre>
 
-    @see corina.prefs.PrefsEvent
+    @see edu.cornell.dendro.corina.prefs.PrefsEvent
 
     @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
     @version $Id$

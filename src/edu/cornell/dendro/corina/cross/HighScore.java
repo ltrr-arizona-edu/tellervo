@@ -55,7 +55,8 @@ public class HighScore {
   /*
    * -- something like this later? public String toString() { return new DecimalFormat(getFormat()).format(score); }
    */
-  public String toString() {
+  @Override
+public String toString() {
     return "[HighScore: number=" + number + ", fixedRange=" + fixedRange + ", movingRange="
            + movingRange + ", score=" + score + ", span=" + span + ", confidence=" + confidence;
   }

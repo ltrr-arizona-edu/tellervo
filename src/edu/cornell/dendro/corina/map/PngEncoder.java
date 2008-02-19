@@ -36,8 +36,6 @@ package edu.cornell.dendro.corina.map;
 
 import java.awt.*;
 import java.awt.image.*;
-import java.awt.image.DirectColorModel;
-import java.util.*;
 import java.util.zip.*;
 import java.io.*;
 

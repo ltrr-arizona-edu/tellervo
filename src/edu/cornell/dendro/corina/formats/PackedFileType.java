@@ -22,7 +22,6 @@ package edu.cornell.dendro.corina.formats;
 
 import edu.cornell.dendro.corina.Sample;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.List;

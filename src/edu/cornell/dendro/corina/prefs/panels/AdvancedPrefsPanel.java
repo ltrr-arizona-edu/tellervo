@@ -20,7 +20,6 @@
 
 package edu.cornell.dendro.corina.prefs.panels;
 
-import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -34,20 +33,15 @@ import java.io.File;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
-import javax.swing.JScrollPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.filechooser.FileFilter;
 
@@ -185,6 +179,7 @@ public class AdvancedPrefsPanel extends JPanel {
 
 			usernameField.getDocument().addDocumentListener(
 					new DocumentListener2() {
+						@Override
 						public void update(DocumentEvent e) {
 							App.prefs.setPref("corina.user.name", usernameField
 									.getText());
@@ -212,6 +207,7 @@ public class AdvancedPrefsPanel extends JPanel {
 			smtpField.setText(App.prefs.getPref("corina.mail.mailhost", ""));
 			smtpField.getDocument().addDocumentListener(
 					new DocumentListener2() {
+						@Override
 						public void update(DocumentEvent e) {
 							App.prefs.setPref("corina.mail.mailhost", smtpField.getText());
 						}
@@ -237,7 +233,7 @@ public class AdvancedPrefsPanel extends JPanel {
 					.createTitledBorder("Measuring device configuration"));
 
 			gbc.gridy = gbc.gridx = 0;
-			gbc.anchor = gbc.EAST;
+			gbc.anchor = GridBagConstraints.EAST;
 
 			boolean addedPort = false;
 			JLabel label = new JLabel("Sample Recorder Data Port");
@@ -269,7 +265,7 @@ public class AdvancedPrefsPanel extends JPanel {
 			label.setLabelFor(comports);
 			box.add(label, gbc);
 
-			gbc.anchor = gbc.WEST;
+			gbc.anchor = GridBagConstraints.WEST;
 			gbc.gridx++;
 
 			box.add(comports, gbc);
@@ -278,8 +274,8 @@ public class AdvancedPrefsPanel extends JPanel {
 			if (addedPort) {
 				gbc.gridy++;
 				gbc.gridx = 1;
-				gbc.gridwidth = gbc.REMAINDER;
-				gbc.fill = gbc.VERTICAL;
+				gbc.gridwidth = GridBagConstraints.REMAINDER;
+				gbc.fill = GridBagConstraints.VERTICAL;
 
 				label = new JLabel(
 						"<html>The communications port '"
@@ -288,7 +284,7 @@ public class AdvancedPrefsPanel extends JPanel {
 								+ "you may experience problems if you attempt to use it.");
 				box.add(label, gbc);
 
-				gbc.fill = gbc.NONE;
+				gbc.fill = GridBagConstraints.NONE;
 				gbc.gridwidth = 1;
 			}
 			content.add(box);
@@ -302,7 +298,7 @@ public class AdvancedPrefsPanel extends JPanel {
 			box.setBorder(BorderFactory.createTitledBorder("COREM (COFECHA) Integration"));
 			
 			gbc.gridx = gbc.gridy = 0;
-			gbc.anchor = gbc.WEST;
+			gbc.anchor = GridBagConstraints.WEST;
 			
 			Component c = new BoolPrefComponent(
 					"Enable COREM Integration [requires Corina restart]",
@@ -379,6 +375,7 @@ public class AdvancedPrefsPanel extends JPanel {
 			
 			weburlField.getDocument().addDocumentListener(
 					new DocumentListener2() {
+						@Override
 						public void update(DocumentEvent e) {
 							App.prefs.setPref("corina.webservice.url", weburlField.getText());
 						}
@@ -428,6 +425,7 @@ public class AdvancedPrefsPanel extends JPanel {
 		add(content);
 	}
 	
+	@Override
 	public void addNotify() {
 		fontprefcomponent.setParent(getTopLevelAncestor());
 		super.addNotify();
@@ -439,11 +437,13 @@ public class AdvancedPrefsPanel extends JPanel {
 	    Container parent = getTopLevelAncestor();
 	    JFileChooser chooser = new JFileChooser();
 	    FileFilter filter = new FileFilter() {
-	    	public boolean accept(File f) {
+	    	@Override
+			public boolean accept(File f) {
 	            return f.getName().toLowerCase().equals("corem.exe") || f.isDirectory();
 	        }
 	        
-	        public String getDescription() {
+	        @Override
+			public String getDescription() {
 	            return "COREM Program files";
 	        }
 	    };

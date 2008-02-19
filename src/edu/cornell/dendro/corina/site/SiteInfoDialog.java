@@ -60,8 +60,8 @@ import javax.swing.*;
    <li>make "masters"/"nonfits" on a tab (or 2 tabs)?
 </ul>
 
-   @see corina.site.CountryPopup
-   @see corina.site.Country
+   @see edu.cornell.dendro.corina.site.CountryPopup
+   @see edu.cornell.dendro.corina.site.Country
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
@@ -209,7 +209,7 @@ public class SiteInfoDialog extends JDialog {
 		name.selectAll();
 		setResizable(false);
 		OKCancel.addKeyboardDefaults(ok);
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		pack();
 		if (window != null)

@@ -15,12 +15,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.swing.AbstractAction;
@@ -44,7 +42,6 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.JDisclosureTriangle;
 import edu.cornell.dendro.corina.util.WeakEventListenerList;
-import edu.cornell.dendro.corina.webdbi.ResourceEventListener;
 
 /**
  * Storage and access of user preferences.
@@ -107,7 +104,8 @@ public class Prefs extends AbstractSubsystem {
   /**
    * Initializes the preferences system. This should be called upon startup.
    */
-  public void init() {
+  @Override
+public void init() {
     super.init();
 
     // NOTE: Platform should have ensured user.home is legit at this point
@@ -179,13 +177,15 @@ public class Prefs extends AbstractSubsystem {
     setInitialized(true);
   }
 
-  public void destroy() {
+  @Override
+public void destroy() {
     // don't need to prevent double destroys, just resave
     if (!initialized) log.debug("being destroyed more than once!");
     save();
   }
 
-  public void finalize() throws Throwable {
+  @Override
+public void finalize() throws Throwable {
     save();
     super.finalize();
   }

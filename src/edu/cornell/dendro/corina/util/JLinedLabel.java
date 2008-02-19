@@ -3,8 +3,6 @@ package edu.cornell.dendro.corina.util;
 import java.util.List;
 import java.util.ArrayList;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.GridBagLayout;
@@ -14,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
-import javax.swing.Box;
 
 // interface:
 // -- alignment: left/center/right/(leading/trailing?)
@@ -86,7 +83,8 @@ public class JLinedLabel extends JPanel {
     private List lines = new ArrayList();
 
     // also set fonts for all sub-jlabels
-    public void setFont(Font f) {
+    @Override
+	public void setFont(Font f) {
 	super.setFont(f);
 	if (lines != null) // lines==null the first time this is called
 	    for (int i=0; i<lines.size(); i++)

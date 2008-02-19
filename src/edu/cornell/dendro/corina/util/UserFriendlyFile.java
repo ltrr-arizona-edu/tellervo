@@ -44,7 +44,8 @@ public class UserFriendlyFile extends File {
 
     /** Return the name of this file.
 	@return the name of this file (<i>not</i> including all of its parent folders)  */
-    public String toString() {
+    @Override
+	public String toString() {
         return getName();
     }
 }

@@ -20,11 +20,8 @@
 
 package edu.cornell.dendro.corina.formats;
 
-import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Weiserjahre;
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.util.StringUtils;
@@ -35,7 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
-import java.io.StreamTokenizer;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,6 +56,7 @@ public class CorinaXML implements Filetype {
 	public static final String CXML_WHITESPACE = "\r\n\t ";
 	public static final String CXML_SAMPLECOUNTSEPARATOR = "+";
 
+	@Override
 	public String toString() {
 		return I18n.getText("format.corina");
 	}
@@ -111,7 +108,7 @@ public class CorinaXML implements Filetype {
 
 		if(s.getElements() != null) {
 			for (int i = 0; i < s.getElements().size(); i++) {
-				edu.cornell.dendro.corina.Element el = (edu.cornell.dendro.corina.Element) s.getElements().get(i);
+				edu.cornell.dendro.corina.Element el = s.getElements().get(i);
 				URI uri = el.getURI();
 				Element e = doc.createElement("element");
 			

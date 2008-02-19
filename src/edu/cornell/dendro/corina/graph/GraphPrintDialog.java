@@ -6,8 +6,6 @@ package edu.cornell.dendro.corina.graph;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.prefs.PrefsDialog;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.Center;
 
@@ -31,14 +29,10 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.text.DecimalFormat;
-
-import java.awt.event.*;
 
 import java.awt.print.*;
 
-import javax.swing.text.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
 
@@ -72,7 +66,7 @@ public class GraphPrintDialog extends JPanel {
 		d = new JDialog(parent, "Printing / Exporting options...", true);
 		d.setContentPane(this);
 		d.setUndecorated(false);
-		d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		d.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setLayout(new BorderLayout());
 		
 		preview = new PreviewPanel(plot, gInfo);
@@ -150,10 +144,12 @@ public class GraphPrintDialog extends JPanel {
 		final JFileChooser chooser = new JFileChooser();
 		final Container me = getParent();
 		chooser.setFileFilter(new FileFilter() {
+			@Override
 			public boolean accept(File f) {
 				return f.getName().endsWith(".pdf");
 			}
 
+			@Override
 			public String getDescription() {
 				return "PDF Document files (*.pdf)";
 			}
@@ -186,8 +182,8 @@ public class GraphPrintDialog extends JPanel {
 				// create a PDF document
 				
 				Rectangle rect = new Rectangle(0, 0,
-						(int) (pinfo.getDrawRange().span() * pinfo.getYearWidth()),
-						(int) (pinfo.getPrintHeight()));
+						(pinfo.getDrawRange().span() * pinfo.getYearWidth()),
+						(pinfo.getPrintHeight()));
 				com.lowagie.text.Rectangle pageSize = new com.lowagie.text.Rectangle(
 						rect.width, rect.height);
 				Document document = new Document(pageSize);
@@ -241,10 +237,12 @@ public class GraphPrintDialog extends JPanel {
 		final JFileChooser chooser = new JFileChooser();
 		final Container me = getParent();
 		chooser.setFileFilter(new FileFilter() {
+			@Override
 			public boolean accept(File f) {
 				return f.getName().endsWith(".png");
 			}
 
+			@Override
 			public String getDescription() {
 				return "PNG Image files (*.png)";
 			}
@@ -271,8 +269,8 @@ public class GraphPrintDialog extends JPanel {
 				pm.setNote("Creating PNG document...");
 				
 				Rectangle rect = new Rectangle(0, 0,
-						(int) (pinfo.getDrawRange().span() * pinfo.getYearWidth()),
-						(int) (pinfo.getPrintHeight()));
+						(pinfo.getDrawRange().span() * pinfo.getYearWidth()),
+						(pinfo.getPrintHeight()));
 				
 				BufferedImage fileImage = new BufferedImage(rect.width,
 						rect.height, BufferedImage.TYPE_INT_RGB);
@@ -444,7 +442,7 @@ public class GraphPrintDialog extends JPanel {
 		    inchheight = new JTextField(6);
 		    float ih = 0;
 		    try {
-		    	ih = (float) gInfo.getPrintHeight() / Float.parseFloat(dpi.getText());
+		    	ih = gInfo.getPrintHeight() / Float.parseFloat(dpi.getText());
 		    } catch (Exception e) { }
 		    inchheight.setText(dfmt.format(ih));
 		    inchheight.getDocument().addDocumentListener(this);
@@ -504,8 +502,8 @@ public class GraphPrintDialog extends JPanel {
 
 				gbc.gridy++;
 				gbc.gridx = 0;
-				gbc.fill = gbc.HORIZONTAL;
-				gbc.gridwidth = gbc.REMAINDER;
+				gbc.fill = GridBagConstraints.HORIZONTAL;
+				gbc.gridwidth = GridBagConstraints.REMAINDER;
 				
 				co.add(new JLabel("<html>When specifying paper size during printing, " +
 						"make sure to use <i>at least</i> the following paper width and height:<br>"),
@@ -513,7 +511,7 @@ public class GraphPrintDialog extends JPanel {
 				
 				gbc.gridy++;
 				gbc.gridx = 0;
-				gbc.gridwidth = gbc.REMAINDER;
+				gbc.gridwidth = GridBagConstraints.REMAINDER;
 				
 				printWidthHeight = new JLabel("n/a");
 				co.add(printWidthHeight, gbc);
@@ -534,7 +532,7 @@ public class GraphPrintDialog extends JPanel {
 		    
 		    float pgraphWidth = 0.0f;
 			try {
-		    	pgraphWidth = (float) gInfo.getPrintHeight() / Float.parseFloat(dpi.getText());
+		    	pgraphWidth = gInfo.getPrintHeight() / Float.parseFloat(dpi.getText());
 			} catch (Exception e) {	}		 
 			
 			// half an inch on each side!
@@ -551,7 +549,7 @@ public class GraphPrintDialog extends JPanel {
 		}
 		
 		private void recalc(DocumentEvent d) {
-			javax.swing.text.Document doc = (javax.swing.text.Document) d.getDocument();
+			javax.swing.text.Document doc = d.getDocument();
 			String source = (String) doc.getProperty("propname");
 			
 			if(source.equals("pixelsperyear")) {
@@ -578,7 +576,7 @@ public class GraphPrintDialog extends JPanel {
 					float fppy = Float.parseFloat(pixelsperyear.getText());
 					yearsperinch.setText(dfmt.format(fdpi / fppy));
 					
-			    	float ih = (float) gInfo.getPrintHeight() / Float.parseFloat(dpi.getText());
+			    	float ih = gInfo.getPrintHeight() / Float.parseFloat(dpi.getText());
 					inchheight.setText(dfmt.format(ih));
 					
 				    float iw = 0;
@@ -594,7 +592,7 @@ public class GraphPrintDialog extends JPanel {
 			else if(source.equals("pixelheight")) {
 				try {
 					gInfo.setPrintHeight(Integer.parseInt(pixelheight.getText()));
-			    	float ih = (float) gInfo.getPrintHeight() / Float.parseFloat(dpi.getText());
+			    	float ih = gInfo.getPrintHeight() / Float.parseFloat(dpi.getText());
 					inchheight.setText(dfmt.format(ih));
 				} catch (Exception e) {					
 				}
@@ -664,11 +662,12 @@ public class GraphPrintDialog extends JPanel {
 			}
 			
 			public void preparePreview(int scale) {
-				this.scale = 72.0 / (float) scale;
+				this.scale = 72.0 / scale;
 				
 				preparePreview();
 			}
 			
+			@Override
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
 				((Graphics2D)g).scale(fullscale, fullscale);
@@ -701,11 +700,13 @@ public class GraphPrintDialog extends JPanel {
 
 			// allow clicking on these!
 			large.addMouseListener(new MouseAdapter() {
+				@Override
 				public void mouseClicked(MouseEvent e) {
 					slider.setValue(slider.getValue() + 5);
 				}
 			});
 			small.addMouseListener(new MouseAdapter() {
+				@Override
 				public void mouseClicked(MouseEvent e) {
 					slider.setValue(slider.getValue() - 5);
 				}
@@ -770,7 +771,7 @@ public class GraphPrintDialog extends JPanel {
 		    // we need to make a scale from 72nds of an inch to "DPI" of an inch...
 		    h = gInfo.getDrawRange().span() * gInfo.getYearWidth();
 		    w = gInfo.getPrintHeight();
-		    pscale = 72.0 / (double) params.getDPI();
+		    pscale = 72.0 / params.getDPI();
 		    
 		    // width, height is now in pixels.. 
 		    // convert it to inches and then multiply by 72

@@ -99,7 +99,7 @@ public class IndexSet implements Runnable {
     public IndexSet(Sample sample, Sample proxy) {
         this(sample);
         for (int i=0; i<indexes.size(); i++)
-            ((Index) indexes.get(i)).setProxy(proxy);
+            (indexes.get(i)).setProxy(proxy);
     }
 
     /** Run all the indexes. */
@@ -109,6 +109,6 @@ public class IndexSet implements Runnable {
         // so no, it's probably not worth it.
         // TODO: put this in the constructor.
         for (int i=0; i<indexes.size(); i++)
-            ((Index) indexes.get(i)).run();
+            (indexes.get(i)).run();
     }
 }

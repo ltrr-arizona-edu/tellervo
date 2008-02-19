@@ -1,7 +1,5 @@
 package edu.cornell.dendro.corina.util;
 
-import java.util.List;
-
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.FileInputStream;

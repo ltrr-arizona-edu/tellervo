@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.gui;
 
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -73,7 +74,7 @@ public class WindowMenu extends JMenu {
         minimize.setAccelerator(KeyStroke.getKeyStroke("meta M")); // macize!
         minimize.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                w.setState(JFrame.ICONIFIED);
+                w.setState(Frame.ICONIFIED);
             }
         });
         add(minimize);
@@ -107,8 +108,8 @@ public class WindowMenu extends JMenu {
             final JFrame glue = frame;
             window.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
-                    if (glue.getState() == JFrame.ICONIFIED)
-                        glue.setState(JFrame.NORMAL);
+                    if (glue.getState() == Frame.ICONIFIED)
+                        glue.setState(Frame.NORMAL);
                     glue.toFront();
                 }
             });
@@ -122,8 +123,8 @@ public class WindowMenu extends JMenu {
             JMenuItem window = new JMenuItem(w.getTitle());
             window.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
-                    if (w.getState() == JFrame.ICONIFIED)
-                        w.setState(JFrame.NORMAL);
+                    if (w.getState() == Frame.ICONIFIED)
+                        w.setState(Frame.NORMAL);
                     w.toFront();
                 }
             });
@@ -133,7 +134,8 @@ public class WindowMenu extends JMenu {
 
         // to me: add window listener
         w.addWindowListener(new WindowAdapter() {
-            public void windowClosed(WindowEvent e) {
+            @Override
+			public void windowClosed(WindowEvent e) {
                 // remove me from all other windows
                 for (int i=0; i<menus.size(); i++) {
                     WindowMenu m = (WindowMenu) menus.get(i);

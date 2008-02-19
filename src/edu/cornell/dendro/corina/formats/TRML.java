@@ -24,7 +24,6 @@ import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -57,7 +56,8 @@ import org.xml.sax.helpers.DefaultHandler;
 */
 public class TRML implements Filetype {
 
-    public String toString() {
+    @Override
+	public String toString() {
 	return I18n.getText("format.trml");
     }
 
@@ -104,7 +104,8 @@ public class TRML implements Filetype {
 	    return s;
 	}
 
-        public void startElement(String uri, String name,
+        @Override
+		public void startElement(String uri, String name,
 				 String qName,
 				 Attributes atts) throws SAXException {
             // something has been read!  make sure it's a trml file
@@ -132,12 +133,14 @@ public class TRML implements Filetype {
 	private boolean active = true;
 	private String type;
 	private StringBuffer data = new StringBuffer();
+	@Override
 	public void characters(char ch[], int start, int length) {
             data.append(new String(ch, start, length));
 	}
 	private Year start=null, end=null;
 	private Range range=null;
-        public void endElement(String uri, String name, String qName) {
+        @Override
+		public void endElement(String uri, String name, String qName) {
 	    // range
 	    if (name.equals("start"))
 		start = new Year(data.toString());
@@ -310,7 +313,7 @@ public class TRML implements Filetype {
 	    w.newLine();
 
 	    for (int ii=0; ii<s.getElements().size(); ii++) {
-		Element e = (Element) s.getElements().get(ii);
+		Element e = s.getElements().get(ii);
 		w.write("      <element" +
 			(e.isActive() ? "" : " active=\"false\"") + ">" +
 			e + "</element>");

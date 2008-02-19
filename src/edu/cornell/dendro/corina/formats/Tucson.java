@@ -27,9 +27,6 @@ import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -114,6 +111,7 @@ import java.io.IOException;
  */
 public class Tucson implements Filetype {
 
+	@Override
 	public String toString() {
 		return I18n.getText("format.tucson");
 	}

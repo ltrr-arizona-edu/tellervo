@@ -26,7 +26,7 @@ import java.util.HashSet;
      <li>Move getLocations() to Site?  (Law of Demeter.)  Or better: make it getVisibleLocations().
    </ul>
  
-   @see corina.site.Site
+   @see edu.cornell.dendro.corina.site.Site
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$

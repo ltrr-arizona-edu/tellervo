@@ -9,7 +9,6 @@ import java.awt.Cursor;
 import java.awt.Toolkit;
 import java.awt.Point;
 import java.awt.Image;
-import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
@@ -23,30 +22,37 @@ public class ZoomOutTool extends Tool {
         this.v = v;
     }
 
-    Icon getIcon() {
+    @Override
+	Icon getIcon() {
 	return Builder.getIcon("zoom.png");
     }
-    Cursor getCursor() {
+    @Override
+	Cursor getCursor() {
 	Image image = Builder.getImage("zoom-small.png");
 	return Toolkit.getDefaultToolkit().createCustomCursor(image,
 							      new Point(0, 0),
 							      "Zoomer");
     }
-    String getTooltip() {
+    @Override
+	String getTooltip() {
         return "Zoom Out Tool";
     }
-    String getName() {
+    @Override
+	String getName() {
         return "Zoom Out";
     }
-    Character getKey() {
+    @Override
+	Character getKey() {
         return null;
     }
-    KeyStroke getFastKey() {
+    @Override
+	KeyStroke getFastKey() {
         return null;
     } // KeyStroke.getKeyStroke(new Character(' '), Event.META_MASK); // cmd-space
     // return KeyStroke.getKeyStroke("meta space"); // meta-space on mac, control-space elsewhere
 
-    public void mouseClicked(MouseEvent e) {
+    @Override
+	public void mouseClicked(MouseEvent e) {
         // recenter on this point
         Projection r = Projection.makeProjection(v);
         r.unproject(e.getPoint(), v.center);

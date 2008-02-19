@@ -42,8 +42,8 @@ import edu.cornell.dendro.corina.ui.I18n;
    </table>
    </blockquote>
 
-   @see corina.cross.TScore
-   @see corina.cross.Trend
+   @see edu.cornell.dendro.corina.cross.TScore
+   @see edu.cornell.dendro.corina.cross.Trend
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
@@ -99,30 +99,35 @@ public class DScore extends Cross {
 	this.trend = tr;
     }
 
-    public String getName() {
+    @Override
+	public String getName() {
 	return I18n.getText("dscore");
     }
 
-    public String getFormat() {
+    @Override
+	public String getFormat() {
 	    return App.prefs.getPref("corina.cross.dscore.format", "0.00");
     }
 
-    public boolean isSignificant(float score, int overlap) {
+    @Override
+	public boolean isSignificant(float score, int overlap) {
 	// return 100.0; // said by PIK on 8-may-2002 at 10:18am
         return score > 40; // said by PIK on 9-may-2002 at 11:37am
     }
 
-    public float getMinimumSignificant() {
+    @Override
+	public float getMinimumSignificant() {
         return 40;
     }
 
     /**
        Run any un-run crosses.
 
-       @see corina.cross.TScore
-       @see corina.cross.Trend
+       @see edu.cornell.dendro.corina.cross.TScore
+       @see edu.cornell.dendro.corina.cross.Trend
     */
-    protected void preamble() {
+    @Override
+	protected void preamble() {
 	// run any un-run crosses --
 	// BUG: uh-oh, what if they're running now?  need runningNow flag?
 	if (!tscore.isFinished())
@@ -131,7 +136,8 @@ public class DScore extends Cross {
 	    trend.run();
     }
 
-    public int getOverlap() {
+    @Override
+	public int getOverlap() {
     	return App.prefs.getIntPref("corina.cross.d-overlap", 100);
     }
     
@@ -161,7 +167,8 @@ public class DScore extends Cross {
       (3) profit!
      */
 
-    public float single() {
+    @Override
+	public float single() {
 	// what happens if one of those single()s fails?  can it?
 
         // return the score
@@ -182,7 +189,8 @@ public class DScore extends Cross {
        @param offset_moving index into the moving sample to start
        @return D-score for these offsets
     */
-    public float compute(int offset_fixed, int offset_moving) {
+    @Override
+	public float compute(int offset_fixed, int offset_moving) {
         // figure out what index (into the cross data) we're talking about
         int index;
         if (offset_fixed == 0) { // phase 1

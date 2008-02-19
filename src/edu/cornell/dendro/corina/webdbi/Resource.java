@@ -6,9 +6,6 @@ import org.jdom.Element;
 import edu.cornell.dendro.corina.util.WeakEventListenerList;
 import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
-import edu.cornell.dendro.corina.ui.Alert;
-
-
 import java.io.IOException;
 
 /*
@@ -238,6 +235,7 @@ public abstract class Resource {
 	 */
 	public void query() {
 		new Thread() {
+			@Override
 			public void run() {
 				queryWait();
 			}

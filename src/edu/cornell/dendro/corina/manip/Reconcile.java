@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 /**
    <p>Class for assisting users in reconciling two Samples (actually
@@ -134,7 +133,8 @@ public class Reconcile {
 
        @return this reconciliation's title
     */
-    public String toString() {
+    @Override
+	public String toString() {
         return "Reconciliation of \"" + s1 + "\" and \"" + s2 + "\""; // DOES THIS EVER GET USED?
     }
 
@@ -154,6 +154,7 @@ public class Reconcile {
 	    this.n = n;
 	    this.m = m;
 	}
+	@Override
 	public String toString() {
 	    return "Lengths don't match: " + n + " versus " + m;
 	}
@@ -196,6 +197,7 @@ public class Reconcile {
 	public TrendRule(Year y) {
 	    this.y = y;
 	}
+	@Override
 	public String toString() {
 	    return "Differing trend between years " + y + " and " + (y.add(1));
 	}
@@ -240,6 +242,7 @@ public class Reconcile {
 	    this.a = a;
 	    this.c = c;
 	}
+	@Override
 	public String toString() {
 	    return "Differing measurements in year " + y + ": " + a + " versus " + c;
 	}

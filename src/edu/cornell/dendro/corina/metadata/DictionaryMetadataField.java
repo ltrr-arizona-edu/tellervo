@@ -34,10 +34,12 @@ public class DictionaryMetadataField extends MetadataField implements
 	private void loadTables() {
 	}
 	
+	@Override
 	public String[] getValues() {
 		return null;
 	}
 	
+	@Override
 	public int getListSize() {
 		if(myDictionary == null)
 			return 0;
@@ -45,10 +47,12 @@ public class DictionaryMetadataField extends MetadataField implements
 		return myDictionary.size();
 	}
 	
+	@Override
 	public String getListItemValue(int index) {
 		return ((BasicDictionaryElement) myDictionary.get(index)).getInternalRepresentation();
 	}
 
+	@Override
 	public String getListItemDescription(int index) {
 		return ((BasicDictionaryElement) myDictionary.get(index)).getValue() + " [dict: " + getListItemValue(index) + "]";
 	}

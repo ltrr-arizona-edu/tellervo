@@ -71,16 +71,19 @@ public class RValue extends Cross {
 
 	/** Return a prettier name for this cross: "R-Value".
 	 @return the name of this cross, "R-Value" */
+	@Override
 	public String getName() {
 		return I18n.getText("rvalue");
 	}
 
 	/** A format string for R-values.
 	 @return a format string for R-values */
+	@Override
 	public String getFormat() {
 		return App.prefs.getPref("corina.cross.rvalue.format", "0.00");
 	}
 
+	@Override
 	public boolean isSignificant(float score, int overlap) {
 		if (overlap == 0) // it happens...
 			return false;
@@ -90,6 +93,7 @@ public class RValue extends Cross {
 	}
 
 	// FIXME: shouldn't need both of these!
+	@Override
 	public float getMinimumSignificant() {
 		return 0.25f; // FIXME: what's a sig r-value?
 	}
@@ -159,6 +163,7 @@ public class RValue extends Cross {
 	/** Given offsets into the fixed and moving data, compute a single
 	 R-value for that position.
 	 @return the R-value for this possible cross */
+	@Override
 	public float compute(int offsetFixed, int offsetMoving) {
 		int i = offsetFixed, j = offsetMoving;
 		int overlap = 0;
@@ -210,6 +215,7 @@ public class RValue extends Cross {
 	/** Preamble: copy all data to (mutable) float arrays, normalize
 	 the data, and compute means of the series. */
 	// FIXME: preamble() in Cross is dumb; make it just a lazy-evaluation in RValue's compute()
+	@Override
 	protected void preamble() {
 		// normalize (while copying to mutable arrays)
 		fixedData = normalize(getFixed().getData());

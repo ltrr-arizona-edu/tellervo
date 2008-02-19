@@ -23,25 +23,19 @@ package edu.cornell.dendro.corina.io;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.layouts.DialogLayout;
-import edu.cornell.dendro.corina.gui.UserCancelledException;
-import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.util.OKCancel;
-import edu.cornell.dendro.corina.util.Overwrite;
 import edu.cornell.dendro.corina.util.TextClipboard;
 import edu.cornell.dendro.corina.util.PureStringWriter;
 import edu.cornell.dendro.corina.browser.FileLength;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.formats.Filetype;
 import edu.cornell.dendro.corina.formats.PackedFileType;
 
-import java.io.File;
 import java.io.StringWriter;
 import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
@@ -49,7 +43,6 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import javax.swing.JDialog;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -57,10 +50,8 @@ import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JPanel;
 import javax.swing.JButton;
-import javax.swing.Box;
 import javax.swing.BorderFactory;
 import javax.swing.AbstractAction;
-import javax.swing.JFileChooser;
 
 /*
  notes on this implementation:
@@ -189,6 +180,7 @@ public class ExportDialog extends JDialog {
 
 		// text preview
 		preview = new JTextArea(12, 80) {
+			@Override
 			public boolean isManagingFocus() { // what's this for?  i've forgotten, document me!
 				return false;
 			}

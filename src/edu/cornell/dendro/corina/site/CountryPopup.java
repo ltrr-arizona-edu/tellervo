@@ -45,8 +45,8 @@ import java.awt.event.ActionEvent;
      <li>use a custom renderer to show flags, too?
    </ul>
 
-   @see corina.site.Country
-   @see corina.site.CountryDialog
+   @see edu.cornell.dendro.corina.site.Country
+   @see edu.cornell.dendro.corina.site.CountryDialog
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$

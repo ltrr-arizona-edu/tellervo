@@ -185,6 +185,7 @@ public class CubicSpline extends IndexFunction {
 	}
 
 	/** Compute the cubic spline. */
+	@Override
 	public void index() {
 		// run computation
 		smooth();
@@ -206,10 +207,12 @@ public class CubicSpline extends IndexFunction {
 		}
 	}
 
+	@Override
 	public String getI18nTag() {
 		return "cubic_spline";
 	}
 
+	@Override
 	public int getLegacyID() {
 		return 10;
 	}

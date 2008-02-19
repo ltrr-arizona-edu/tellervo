@@ -30,7 +30,7 @@ import java.util.EventObject;
         <li>rename to PrefChangedEvent?
     </ul>
 
-    @see corina.prefs.PrefsListener
+    @see edu.cornell.dendro.corina.prefs.PrefsListener
 
     @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
     @version $Id$

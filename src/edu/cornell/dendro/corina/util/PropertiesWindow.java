@@ -13,6 +13,7 @@ import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.Box;
 import javax.swing.BorderFactory;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
@@ -93,7 +94,8 @@ public class PropertiesWindow extends JDialog {
 	    Property p = (Property) props.get(row);
 	    return (column==0 ? p.key : p.value);
 	  }
-	  public String getColumnName(int column) {
+	  @Override
+	public String getColumnName(int column) {
 	    return (column==0 ? "Property" : "Value");
 	  }
   }
@@ -118,8 +120,8 @@ public class PropertiesWindow extends JDialog {
 	  JTable table = new JTable(model);
 
 	  JScrollPane sp = new JScrollPane(table);
-    sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-	  sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+	  sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 	  JLabel label = new JLabel("Here are your system properties:");
     label.setHorizontalAlignment(SwingConstants.CENTER);

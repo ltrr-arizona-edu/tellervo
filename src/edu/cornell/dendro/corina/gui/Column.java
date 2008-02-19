@@ -7,8 +7,8 @@ import javax.swing.event.*;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.Icon;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import java.util.*;
@@ -154,10 +154,11 @@ public class Column extends JPanel {
 		}
 	    });
 	add(new JScrollPane(list,
-			    JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-			    JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
+			    ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+			    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
 
 	addComponentListener(new ComponentAdapter() {
+		@Override
 		public void componentResized(ComponentEvent e) {
 		    if (useLists && e.getComponent().getHeight()<THRESHOLD) {
 			useLists = false;
@@ -193,8 +194,8 @@ public class Column extends JPanel {
 				}
 			    });
 			add(new JScrollPane(list,
-					    JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-					    JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
+					    ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+					    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
 		    } else {
 			return;
 		    }

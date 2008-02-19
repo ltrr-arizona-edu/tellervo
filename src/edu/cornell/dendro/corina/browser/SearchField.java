@@ -63,7 +63,8 @@ public class SearchField extends JTextField {
         // pass arrow-key, etc., events on to eventTarget
         final Component table = eventTarget;
         addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
+            @Override
+			public void keyPressed(KeyEvent e) {
                 int code = e.getKeyCode();
                 if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_UP ||
                     code == KeyEvent.VK_PAGE_UP || code == KeyEvent.VK_PAGE_DOWN ||

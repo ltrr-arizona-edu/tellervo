@@ -66,7 +66,7 @@ public class TextLine implements Line {
 
     public void print(Graphics g, PageFormat pf, float y) {
         // baseline
-        float baseline = (float) (y + height(g));
+        float baseline = (y + height(g));
         Graphics2D g2 = (Graphics2D) g; // needed for drawString()
 
 	g2.setFont(font);

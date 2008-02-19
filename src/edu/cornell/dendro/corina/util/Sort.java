@@ -109,7 +109,7 @@ Sort.sort(list, "label");
    @see java.lang.Comparable
    @see java.util.Comparator
    @see java.text.Collator
-   @see corina.util.NaturalSort
+   @see edu.cornell.dendro.corina.util.NaturalSort
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$

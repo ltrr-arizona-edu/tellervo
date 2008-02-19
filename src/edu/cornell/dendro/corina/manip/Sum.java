@@ -20,7 +20,6 @@
 
 package edu.cornell.dendro.corina.manip;
 
-import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Element;

@@ -27,11 +27,6 @@ import edu.cornell.dendro.corina.ui.I18n;
 
 import edu.cornell.dendro.corina_indexing.Indexable;
 
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.Reader;
-import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
@@ -41,12 +36,7 @@ import java.util.Vector;
 import java.util.Map;
 import java.util.HashMap;
 
-import java.net.URL;
-
 import java.lang.reflect.Method;
-
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
 
 import javax.swing.undo.*;
 
@@ -154,7 +144,7 @@ public class Sample implements Previewable, Graphable, Indexable {
 	 <code>wj</code>, and <code>elements</code> aren't stored in
 	 <code>meta</code> - they're their own members.
 
-	 @see corina.formats.Corina */
+	 @see edu.cornell.dendro.corina.formats.Corina */
 	private Map<String, Object> meta;
 	
 	/** Number of samples in the sum at any given point. */
@@ -260,7 +250,7 @@ public class Sample implements Previewable, Graphable, Indexable {
 		int n = count.size();
 		int three = 0;
 		for (int i = 0; i < n; i++)
-			if (((Integer) count.get(i)).intValue() > 3)
+			if ((count.get(i)).intValue() > 3)
 				three++;
 		return three;
 	}
@@ -280,7 +270,7 @@ public class Sample implements Previewable, Graphable, Indexable {
 		// ... (apply '+ count))
 		int n = 0, size = count.size();
 		for (int i = 0; i < size; i++)
-			n += ((Integer) count.get(i)).intValue();
+			n += (count.get(i)).intValue();
 		return n;
 	}
 
@@ -405,6 +395,7 @@ public class Sample implements Previewable, Graphable, Indexable {
 	/**
 	 * @deprecated
 	 */
+	@Deprecated
 	public Integer getInteger(String field) {
 		// TODO: load, if needed.
 
@@ -420,6 +411,7 @@ public class Sample implements Previewable, Graphable, Indexable {
 	/**
 	 * @deprecated
 	 */
+	@Deprecated
 	public List getList(String field) {
 		// TODO: load, if needed.
 
@@ -693,6 +685,7 @@ public class Sample implements Previewable, Graphable, Indexable {
 
 	/** Return the sample's title.
 	 @return the "title" tag from meta */
+	@Override
 	public String toString() {
 		String name = meta.get("title") + " " + range.toStringWithSpan();
 		if (isModified()) // not aqua-ish, but how to do it the real way?

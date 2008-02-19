@@ -28,6 +28,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -87,7 +89,8 @@ public class HistogramView extends JPanel implements PrefsListener {
             @param col the column to query
             @return the column's name
         */
-        public String getColumnName(int col) {
+        @Override
+		public String getColumnName(int col) {
             switch (col) {
                 case 0: return crossdate.getName();
                 case 1: return I18n.getText("quantity");
@@ -108,7 +111,8 @@ public class HistogramView extends JPanel implements PrefsListener {
         }
 
 	// column class; so ints are right-aligned
-        public Class getColumnClass(int col) {
+        @Override
+		public Class getColumnClass(int col) {
             switch (col) {
                 case 0: return String.class;
                 case 1: return Integer.class;
@@ -160,7 +164,7 @@ public class HistogramView extends JPanel implements PrefsListener {
 	setLayout(new BorderLayout());
 	JScrollPane scroll = new JScrollPane(table);
 	scroll.setVerticalScrollBarPolicy(
-			 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+			 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	add(scroll);
     }
 
@@ -229,7 +233,7 @@ public class HistogramView extends JPanel implements PrefsListener {
     private static DefaultTableCellRenderer centerRenderer;
     static {
         centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     public void prefChanged(PrefsEvent e) {
@@ -241,13 +245,15 @@ public class HistogramView extends JPanel implements PrefsListener {
             refreshFormat();
     }
     
-    public void addNotify() {
+    @Override
+	public void addNotify() {
         super.addNotify();
         
         App.prefs.addPrefsListener(this);
     }
     
-    public void removeNotify() {
+    @Override
+	public void removeNotify() {
         super.removeNotify();
         
         App.prefs.removePrefsListener(this);

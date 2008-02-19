@@ -62,7 +62,8 @@ import java.io.IOException;
 */
 public class TwoColumn implements Filetype {
 
-    public String toString() {
+    @Override
+	public String toString() {
 	return I18n.getText("format.two_column");
     }
 

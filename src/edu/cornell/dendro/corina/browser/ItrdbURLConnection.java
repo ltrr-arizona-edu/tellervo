@@ -1,7 +1,5 @@
 package edu.cornell.dendro.corina.browser;
 
-import edu.cornell.dendro.corina.Sample;
-
 import java.net.URLConnection;
 import java.net.*;
 
@@ -13,11 +11,13 @@ public class ItrdbURLConnection extends URLConnection {
         super(url);
     }
 
-    public String getContentType() {
+    @Override
+	public String getContentType() {
         return guessContentTypeFromName(url.getPath());
     }
 
-    public synchronized InputStream getInputStream() throws IOException {
+    @Override
+	public synchronized InputStream getInputStream() throws IOException {
         if (!connected)
             connect();
 
@@ -32,7 +32,8 @@ public class ItrdbURLConnection extends URLConnection {
             realURL = new URL("ftp://ftp.ngdc.noaa.gov/paleo/treering/" + url.toString().substring(8));
     }
 
-    public synchronized void connect() throws IOException {
+    @Override
+	public synchronized void connect() throws IOException {
         mungURL();
 
         realURL.openConnection();
@@ -45,7 +46,8 @@ public class ItrdbURLConnection extends URLConnection {
             public URLStreamHandler createURLStreamHandler(String protocol) {
                 if (protocol.equalsIgnoreCase("itrdb"))
                     return new URLStreamHandler() {
-                        protected URLConnection openConnection(URL url) throws IOException {
+                        @Override
+						protected URLConnection openConnection(URL url) throws IOException {
                             return new ItrdbURLConnection(url);
                         }
                     };

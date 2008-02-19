@@ -40,17 +40,20 @@ import java.util.List;
 */
 public class PackedTucson extends Tucson implements PackedFileType {
 
-    public String toString() {
+    @Override
+	public String toString() {
         return I18n.getText("format.packed_tucson");
     }
 
-    public String getDefaultExtension() {
+    @Override
+	public String getDefaultExtension() {
 	return ".TUC"; // ???
     }
 
     // can't load a packed tucson file (yet).  this should never get called,
     // but in case it does...
-    public Sample load(BufferedReader r) throws IOException {
+    @Override
+	public Sample load(BufferedReader r) throws IOException {
         throw new WrongFiletypeException();
     }
 
@@ -78,7 +81,7 @@ public class PackedTucson extends Tucson implements PackedFileType {
     		
     		if(s.getElements() != null) {
     			for(int j = 0; j < s.getElements().size(); j++) {
-    				Sample tmp = ((Element) s.getElements().get(j)).load();
+    				Sample tmp = (s.getElements().get(j)).load();
     				
     				try {
     					if(prefix == null)
@@ -112,7 +115,8 @@ public class PackedTucson extends Tucson implements PackedFileType {
         	saveData((Sample) outsamples.get(i), w);
     }
 
-    public void save(Sample s, BufferedWriter w) throws IOException {
+    @Override
+	public void save(Sample s, BufferedWriter w) throws IOException {
         // make sure it's a master, else ioe
         if (s.getElements() == null)
             throw new IOException("Packed Tucson format is only available " +
@@ -124,7 +128,7 @@ public class PackedTucson extends Tucson implements PackedFileType {
         int n = s.getElements().size();
         Sample buf[] = new Sample[n];
         for (int i=0; i<n; i++)
-            buf[i] = ((Element) s.getElements().get(i)).load();
+            buf[i] = (s.getElements().get(i)).load();
 
         // figure out the common prefix (ugh, it's 'reduce again!)
         String prefix = buf[0].getMeta("id").toString();

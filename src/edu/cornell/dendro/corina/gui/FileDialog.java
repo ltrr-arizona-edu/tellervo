@@ -63,7 +63,7 @@ import edu.cornell.dendro.corina.ui.I18n;
  * 
  * </ul>
  * 
- * @see corina.gui.UserCancelledException
+ * @see edu.cornell.dendro.corina.gui.UserCancelledException
  * @see javax.swing.JFileChooser
  * 
  * @author Ken Harris &lt;kbh7 <i style="color: gray">at </i> cornell <i
@@ -110,6 +110,7 @@ public class FileDialog {
 		 *          the file to test
 		 * @return true, if and only if the filename ends in the TLA
 		 */
+		@Override
 		public boolean accept(File f) {
 			// users can always traverse a directory
 			if (f.isDirectory())
@@ -124,6 +125,7 @@ public class FileDialog {
 		 * (*.TLA)".
 		 * @return the user-readable name of this filter
 		 */
+		@Override
 		public String getDescription() {
 			return name;
 		}
@@ -353,6 +355,7 @@ public class FileDialog {
 
 		// make double-clicking a file call MultiPreview's addClicked() method
 		JFileChooser f = new JFileChooser(getWorkingDirectory(function)) {
+			@Override
 			public void approveSelection() {
 				mp.addClicked(); // heh heh heh...
 			}

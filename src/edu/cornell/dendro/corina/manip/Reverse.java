@@ -77,7 +77,8 @@ public class Reverse extends AbstractUndoableEdit {
 	wasMod = sample.isModified();
     }
 
-    public void undo() throws CannotUndoException {
+    @Override
+	public void undo() throws CannotUndoException {
 	super.undo();
 	reverseSample(sample);
 	if (!wasMod)
@@ -86,7 +87,8 @@ public class Reverse extends AbstractUndoableEdit {
 	// watchers
 	sample.fireSampleMetadataChanged();
     }
-    public void redo() throws CannotRedoException {
+    @Override
+	public void redo() throws CannotRedoException {
 	super.redo();
 	reverseSample(sample);
 	sample.setModified();
@@ -94,7 +96,8 @@ public class Reverse extends AbstractUndoableEdit {
 	// watchers
 	sample.fireSampleMetadataChanged();
     }
-    public String getPresentationName() {
+    @Override
+	public String getPresentationName() {
 	return I18n.getText("reverse");
     }
 }

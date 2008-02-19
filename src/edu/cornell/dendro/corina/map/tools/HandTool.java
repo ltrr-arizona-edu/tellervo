@@ -1,20 +1,13 @@
 package edu.cornell.dendro.corina.map.tools;
 
-import edu.cornell.dendro.corina.map.Point3D;
 import edu.cornell.dendro.corina.map.View;
 import edu.cornell.dendro.corina.map.Projection;
 import edu.cornell.dendro.corina.map.MapPanel;
 import edu.cornell.dendro.corina.site.Location;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.SiteNotFoundException;
-import edu.cornell.dendro.corina.util.Angle;
 import edu.cornell.dendro.corina.ui.Builder;
 
 import java.awt.Cursor;
-import java.awt.Point;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
@@ -32,22 +25,28 @@ public class HandTool extends Tool {
         this.v = v;
     }
 
-    Icon getIcon() {
+    @Override
+	Icon getIcon() {
 	return Builder.getIcon("hand.png");
     }
-    Cursor getCursor() {
+    @Override
+	Cursor getCursor() {
         return new Cursor(Cursor.HAND_CURSOR);
     }
-    String getTooltip() {
+    @Override
+	String getTooltip() {
         return "Hand Tool";
     }
-    String getName() {
+    @Override
+	String getName() {
         return "Scroll";
     }
-    Character getKey() {
+    @Override
+	Character getKey() {
         return new Character('h');
     }
-    KeyStroke getFastKey() {
+    @Override
+	KeyStroke getFastKey() {
         return KeyStroke.getKeyStroke(new Character(' '), 0);  // space
     }
 
@@ -57,7 +56,8 @@ public class HandTool extends Tool {
     boolean popup = false;
     boolean drag = false; // was it dragged at all?
 
-    public void mousePressed(MouseEvent e) {
+    @Override
+	public void mousePressed(MouseEvent e) {
         // (popup)
         if (maybeShowPopup(e, v)) {
             popup = true;
@@ -74,7 +74,8 @@ public class HandTool extends Tool {
 
     private Location diff = new Location();
 
-    public void mouseDragged(MouseEvent e) {
+    @Override
+	public void mouseDragged(MouseEvent e) {
         // BUG: this doesn't let you right-click-and-drag to get the popup on win32,
         // because the win32 popup trigger is on mouse-released.  (how to deal with that?)
         if (popup)
@@ -100,7 +101,8 @@ public class HandTool extends Tool {
         p.repaint();
     }
 
-    public void mouseReleased(MouseEvent e) {
+    @Override
+	public void mouseReleased(MouseEvent e) {
         if (popup)
             return;
 
@@ -121,5 +123,6 @@ public class HandTool extends Tool {
 	// p.repaint();
     }
 
-    public void decorate(Graphics g) { } // no decorations
+    @Override
+	public void decorate(Graphics g) { } // no decorations
 }

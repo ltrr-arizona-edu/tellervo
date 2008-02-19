@@ -345,6 +345,7 @@ public class Element implements Comparable {
 
 	 @return the filename
 	 */
+	@Override
 	public String toString() {
 		return filename;
 	}

@@ -25,6 +25,7 @@ public class Platform extends AbstractSubsystem {
 		return "Platform";
 	}
 
+	@Override
 	public void init() {
 		super.init();
 
@@ -90,6 +91,7 @@ public class Platform extends AbstractSubsystem {
 		setInitialized(true);
 	}
 
+	@Override
 	public void destroy() {
 		super.destroy();
 		setInitialized(false);

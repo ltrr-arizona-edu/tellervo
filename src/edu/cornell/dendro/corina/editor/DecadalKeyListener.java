@@ -23,6 +23,7 @@ package edu.cornell.dendro.corina.editor;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Sample;
 
+import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JTable;
@@ -83,15 +84,17 @@ public class DecadalKeyListener extends KeyAdapter {
 	// this fixes a bug where menu shortcuts get inserted into the table..
 	// this an obnoxious java mnemonic: pressed events are consumed by the
 	// menu accelerator, typed events are not.
+	@Override
 	public void keyTyped(KeyEvent e) {
 		// just EAT any modifiers that aren't shift
-		int notshiftdown = ~KeyEvent.SHIFT_DOWN_MASK;
+		int notshiftdown = ~InputEvent.SHIFT_DOWN_MASK;
 		if(!((e.getModifiers() & notshiftdown) == 0)) {
 			e.consume();
 			return;
 		}
 	}
 	
+	@Override
 	public void keyPressed(KeyEvent e) {
 		Year y, target = null;
 
@@ -107,7 +110,7 @@ public class DecadalKeyListener extends KeyAdapter {
 		*/
 		
 		// just ignore any modifiers that aren't shift
-		int notshiftdown = ~KeyEvent.SHIFT_DOWN_MASK;
+		int notshiftdown = ~InputEvent.SHIFT_DOWN_MASK;
 		if(!((e.getModifiers() & notshiftdown) == 0)) {
 			return;
 		}

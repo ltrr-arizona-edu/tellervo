@@ -34,33 +34,39 @@ public class Weiserjahre extends Cross {
     	super(fixed, moving);
     }
 
-    public String getFormat() {
+    @Override
+	public String getFormat() {
         // FIXME: this should be a pref, as well
         return App.prefs.getPref("corina.cross.weiserjahre.format", "0.0%") +
         	"of 0000";
     }
 
     // same as trend?  (this is old-style trend, even -- very obsolete!)
-    public boolean isSignificant(float score, int overlap) {
+    @Override
+	public boolean isSignificant(float score, int overlap) {
         return score > 0.65f;
 	// WRITEME: it's more sophisticated than this, i think
     }
-    public float getMinimumSignificant() {
+    @Override
+	public float getMinimumSignificant() {
         return 0.65f;
     }
 
-    public String getName() {
+    @Override
+	public String getName() {
 	return I18n.getText("weiserjahre");
     }
 
     private int signifigantcount = 0;
 
     // returns the number of signifigant intervals of the last compute()
-    public int getSignifigant() {
+    @Override
+	public int getSignifigant() {
     	return signifigantcount;
     }
     
-    public float compute(int offset_fixed, int offset_moving) {
+    @Override
+	public float compute(int offset_fixed, int offset_moving) {
 	// value = (# trends synchronous with signature years) /
 	//         (# signature years in overlap)
 
@@ -82,10 +88,10 @@ public class Weiserjahre extends Cross {
 	while (i<getFixed().getData().size()-1 && j<getMoving().getData().size()-1) {
 
 	    // number of samples: need n>3
-	    int n = ((Integer) getFixed().getCount().get(i)).intValue();
+	    int n = (getFixed().getCount().get(i)).intValue();
 
 	    // fraction with increasing trend: need pct<25% OR pct>75%
-	    double pct = ((Number) getFixed().getWJIncr().get(i)).doubleValue() / (double) n;
+	    double pct = ((Number) getFixed().getWJIncr().get(i)).doubleValue() / n;
 
 	    // signature year?  (j==0 is bad, too)
 	    if (n>3 && (pct<=0.25 || pct>=0.75) && j>0) { // REFACTOR: use Weiserjahre.isSignificant() here somehow?

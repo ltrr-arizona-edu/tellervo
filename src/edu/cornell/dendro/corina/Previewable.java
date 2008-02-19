@@ -25,8 +25,8 @@ package edu.cornell.dendro.corina;
    These are shown, for example, in a file-chooser dialog or other
    file browser.</p>
 
-   @see corina.Preview
-   @see corina.gui.PreviewComponent
+   @see edu.cornell.dendro.corina.Preview
+   @see edu.cornell.dendro.corina.gui.PreviewComponent
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$

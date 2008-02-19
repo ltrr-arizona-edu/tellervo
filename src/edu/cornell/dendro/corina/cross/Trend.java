@@ -54,28 +54,33 @@ public class Trend extends Cross {
 
     // REFACTOR: this is ok here, because it's how these formulas are written,
     // but it's lousy higher-up.  i should have an isSig(int index) or even isSig(Year).
-    public boolean isSignificant(float score, int overlap) {
+    @Override
+	public boolean isSignificant(float score, int overlap) {
         return score >= (50. + SIGMA * 50./Math.sqrt(overlap))/100.;
     }
 
     // OBSOLETE soon -- i hope?
     // still used by: AllScoresView, CrossdatePrinter
-    public float getMinimumSignificant() {
+    @Override
+	public float getMinimumSignificant() {
         return 0.65f;
     }
 
-    public String getName() {
+    @Override
+	public String getName() {
 	return I18n.getText("trend");
     }
 
-    public String getFormat() {
+    @Override
+	public String getFormat() {
 	     return App.prefs.getPref("corina.cross.trend.format", "0.0%");
     }
 
     // same data, but in arrays
     private float fixedData[], movingData[];
 
-    protected void preamble() {
+    @Override
+	protected void preamble() {
 	fixedData = makeArray(getFixed().getData());
 	movingData = makeArray(getMoving().getData());
 
@@ -115,7 +120,8 @@ public class Trend extends Cross {
        @param offset_moving index into the moving sample to start
        @return trend score for these offsets
     */
-    public float compute(int offset_fixed, int offset_moving) {
+    @Override
+	public float compute(int offset_fixed, int offset_moving) {
         int i=offset_fixed, j=offset_moving;
         float agree=0;
         int total=0;

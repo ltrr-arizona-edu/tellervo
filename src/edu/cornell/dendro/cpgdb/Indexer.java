@@ -41,6 +41,7 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 		return reading;
 	}
 
+	@Override
 	protected void operate() throws SQLException {
 		IndexFunction func;
 		

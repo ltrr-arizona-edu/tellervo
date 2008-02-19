@@ -48,6 +48,7 @@ public class Horizontal extends IndexFunction {
 	}
 
 	/** Run the index. */
+	@Override
 	public void index() {
 		// compute mean; make a flyweight for the list
 		Double mean = new Double(getDatasetMean(input.getData()));
@@ -66,10 +67,12 @@ public class Horizontal extends IndexFunction {
 		return (double) sum / (double) n;
 	}
 	
+	@Override
 	public String getI18nTag() {
 		return "horizontal";
 	}
 
+	@Override
 	public int getLegacyID() {
 		return 0;
 	}

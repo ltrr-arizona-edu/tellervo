@@ -31,7 +31,7 @@ public class FontSizePopup extends JComboBox {
 	    }
 
 	    int size = Integer.parseInt((String) value);
-	    setFont(getFont().deriveFont(Font.PLAIN, (float) size));
+	    setFont(getFont().deriveFont(Font.PLAIN, size));
 	    setText((String) value);
 
 	    return this;

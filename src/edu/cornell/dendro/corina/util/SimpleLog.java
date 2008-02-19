@@ -112,6 +112,7 @@ import org.apache.commons.logging.LogConfigurationException;
  * @deprecated Jakarta Commons Logging v1.0.4 introduced the write() delegate method I needed
  * so I don't have to rely on this slightly modified class anymore! - aaron
  */
+@Deprecated
 public class SimpleLog implements Log, Serializable {
 
 

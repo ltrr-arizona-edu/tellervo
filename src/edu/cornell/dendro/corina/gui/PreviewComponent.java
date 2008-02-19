@@ -37,8 +37,8 @@ import edu.cornell.dendro.corina.core.App;
    text, and then lists each of the items below that, indented and
    preceded by a bullet.
 
-   @see corina.Preview
-   @see corina.Previewable
+   @see edu.cornell.dendro.corina.Preview
+   @see edu.cornell.dendro.corina.Previewable
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$

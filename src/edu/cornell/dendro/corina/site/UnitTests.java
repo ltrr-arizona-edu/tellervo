@@ -28,7 +28,8 @@ public class UnitTests extends TestCase {
         super(name);
     }
 
-    protected void setUp() throws Exception {
+    @Override
+	protected void setUp() throws Exception {
       super.setUp();
       if (!App.isInitialized()) App.init(null);
     }

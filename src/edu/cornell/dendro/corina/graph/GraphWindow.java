@@ -66,7 +66,6 @@ import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
-import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.index.Index;
@@ -331,6 +330,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		elemPanel.setSelectedIndex(plot.current);
 	}
 
+	@Override
 	public void remove(int idx) {
 		samples.remove(idx);
 		
@@ -540,7 +540,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		black.setBackground(Color.getColor("corina.graph.background",
 				Color.black));
 		black.setOpaque(true);
-		scroller.setCorner(JScrollPane.LOWER_LEFT_CORNER, black);
+		scroller.setCorner(ScrollPaneConstants.LOWER_LEFT_CORNER, black);
 
 		// to turn on baselines and vert axis, if enabled...
 		plot.postScrollpanedInit();		
@@ -574,6 +574,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// context menu
 		final SamplePopupMenu popup = new SamplePopupMenu();
 		plot.addMouseListener(new PopupListener() {
+			@Override
 			public void showPopup(MouseEvent e) {
 				// select this graph
 				int n = plot.getGraphAt(e.getPoint());
@@ -939,6 +940,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		repaint();
 	}
 
+	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
 		App.prefs.removePrefsListener(this);

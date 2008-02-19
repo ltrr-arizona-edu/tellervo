@@ -151,12 +151,14 @@ public class GraphInfo {
 	 *
 	 * @deprecated use setYearWidth(t)
 	 */		
+	@Deprecated
 	public void setYearSize(int size) { yearWidth = size; unitHeight = size; }
 	/**
 	 * Old interface! -- fix all occurances of this, then remove.
 	 *
 	 * @deprecated use getYearWidth(t)
 	 */	
+	@Deprecated
 	public int getYearSize() { return yearWidth; }
 
 	public void setYearWidth(int size) { yearWidth = size; }

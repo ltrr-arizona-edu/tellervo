@@ -99,7 +99,8 @@ public class LogViewer extends JPanel
   } //}}}
 
   //{{{ addNotify() method
-  public void addNotify()
+  @Override
+public void addNotify()
   {
     super.addNotify();
     if(tailIsOn)
@@ -211,7 +212,8 @@ public class LogViewer extends JPanel
       setAutoscrolls(true);
     }
 
-    public void processMouseEvent(MouseEvent evt)
+    @Override
+	public void processMouseEvent(MouseEvent evt)
     {
       if(evt.getID() == MouseEvent.MOUSE_PRESSED)
       {
@@ -221,7 +223,8 @@ public class LogViewer extends JPanel
       super.processMouseEvent(evt);
     }
 
-    public void processMouseMotionEvent(MouseEvent evt)
+    @Override
+	public void processMouseMotionEvent(MouseEvent evt)
     {
       if(evt.getID() == MouseEvent.MOUSE_DRAGGED)
       {

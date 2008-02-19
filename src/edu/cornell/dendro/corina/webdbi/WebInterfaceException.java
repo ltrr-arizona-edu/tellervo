@@ -1,7 +1,5 @@
 package edu.cornell.dendro.corina.webdbi;
 
-import java.io.IOException;
-
 public class WebInterfaceException extends ResourceException {
 
 	protected int messageCode;

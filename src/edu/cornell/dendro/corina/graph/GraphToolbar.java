@@ -9,6 +9,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 
 import edu.cornell.dendro.corina.ui.Builder;
 
@@ -25,7 +26,7 @@ public class GraphToolbar extends JToolBar {
 	}
 	
 	public GraphToolbar(GraphWindow window) {
-		super(JToolBar.HORIZONTAL);
+		super(SwingConstants.HORIZONTAL);
 		this.window = window;
 		
 		// oh god, this is annoying!

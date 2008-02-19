@@ -8,9 +8,6 @@ import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import java.awt.dnd.DropTargetListener;
-import java.awt.dnd.*; // HACK
-
 import javax.swing.JPanel;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -66,6 +63,7 @@ public class JDisclosureTriangle extends JPanel /*implements DropTargetListener*
 
 	// clicking on label shows or hides component
 	label.addMouseListener(new MouseAdapter() {
+		@Override
 		public void mouseClicked(MouseEvent e) {
 		    // update visible flag
 		    visible = !visible;
@@ -89,7 +87,8 @@ public class JDisclosureTriangle extends JPanel /*implements DropTargetListener*
     // (possible to close it when the drop is done, then?)
 
     // width when closed should be same as width when opened
-    public Dimension getPreferredSize() {
+    @Override
+	public Dimension getPreferredSize() {
 	Dimension d = super.getPreferredSize();
 	d.width = component.getPreferredSize().width;
 	return d;

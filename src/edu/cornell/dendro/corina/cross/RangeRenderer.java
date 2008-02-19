@@ -37,7 +37,8 @@ public class RangeRenderer extends DefaultTableCellRenderer {
 
   private int preferredWidth;
 
-  public Component getTableCellRendererComponent(JTable table, Object value,
+  @Override
+public Component getTableCellRendererComponent(JTable table, Object value,
       boolean isSelected, boolean hasFocus, int row, int column) {
     this.range = (Range) value;
     final FontMetrics fm = table.getGraphics().getFontMetrics();
@@ -45,13 +46,15 @@ public class RangeRenderer extends DefaultTableCellRenderer {
     return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
   }
 
-  public Dimension getPreferredSize() {
+  @Override
+public Dimension getPreferredSize() {
     Dimension d = super.getPreferredSize();
     d.width = preferredWidth;
     return d;
   }
 
-  public void paintComponent(Graphics g) {
+  @Override
+public void paintComponent(Graphics g) {
     //final Graphics2D g2 = (Graphics2D) g;
 
     final FontMetrics fm = g.getFontMetrics();

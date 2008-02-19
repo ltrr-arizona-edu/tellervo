@@ -260,7 +260,8 @@ public class Bug extends JDialog {
    *
    * @deprecated use new Bug(t)
    */
-  public static void bug(Throwable t) {
+  @Deprecated
+public static void bug(Throwable t) {
 	  new Bug(t);
   }
 }

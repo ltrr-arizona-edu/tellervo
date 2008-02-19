@@ -121,10 +121,12 @@ public class LoadSave {
 	float scale;
 	int xoffset, yoffset;
 	String filename;
+	@Override
 	public void startDocument() {
 	    // start a fresh list
 	    samples = new ArrayList();
 	}
+	@Override
 	public void startElement(String uri, String name, String qName, Attributes atts)
 	    throws SAXException {
 	    // "graphs" is toplevel; ignore it
@@ -138,9 +140,11 @@ public class LoadSave {
 		yoffset = Integer.parseInt(atts.getValue("yoffset"));
 	    }
 	}
+	@Override
 	public void characters(char ch[], int start, int length) {
 	    filename = new String(ch, start, length).trim(); // stringify
 	}
+	@Override
 	public void endElement(String uri, String name, String qName) {
 	    // it's a <graph/>, right?
 	    if (!name.equals("graph"))

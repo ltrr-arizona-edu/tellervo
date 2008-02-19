@@ -13,12 +13,14 @@ public class Logging extends AbstractSubsystem {
   public String getName() {
     return "Logging";
   }
-  public void init() {
+  @Override
+public void init() {
     super.init();
     CorinaLog.init();
     setInitialized(true);
   }
-  public void destroy() {
+  @Override
+public void destroy() {
     super.destroy();
     setInitialized(false);
     // nothing to destroy

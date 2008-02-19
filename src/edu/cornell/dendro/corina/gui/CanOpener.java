@@ -30,9 +30,6 @@ import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 
 import java.io.IOException;
 
-import java.io.*;
-import java.net.*;
-
 // try to open a file, given its filename.  if we can (get it?), open
 // it, else throw an IOException
 

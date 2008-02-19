@@ -34,12 +34,9 @@ import edu.cornell.dendro.corina.util.PopupListener;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
-
 import java.io.IOException;
 
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JPopupMenu;
@@ -100,6 +97,7 @@ public class BrowserContextMenu extends JPopupMenu {
 	initMenuItems();
 
 	browser.table.addMouseListener(new PopupListener(this) {
+		@Override
 		public void showPopup(MouseEvent e) {
 		    // enable/disable the menuitems on the popup, as necessary
 		    enableDisable();

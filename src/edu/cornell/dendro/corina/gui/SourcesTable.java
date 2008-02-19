@@ -499,12 +499,14 @@ public class SourcesTable extends JTable {
 	    return 1;
 	}
 	public Object getValueAt(int row, int column) {
-	    return (Source) sources.get(row);
+	    return sources.get(row);
 	}
+	@Override
 	public void setValueAt(Object value, int row, int col) {
 	    Source s = (Source) sources.get(row);
 	    s.setName((String) value);
 	}
+	@Override
 	public String getColumnName(int column) {
 	    return "Source";
 	}
@@ -539,6 +541,7 @@ public class SourcesTable extends JTable {
 
 	// display as [icon name], with tooltip.
 	setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value,
 							       boolean isSelected, boolean hasFocus,
 							       int row, int column) {
@@ -721,6 +724,7 @@ public class SourcesTable extends JTable {
 	popup.add(info);
 
 	addMouseListener(new PopupListener() {
+		@Override
 		public void showPopup(MouseEvent e) {
 		    // figure out what row was clicked, and select it
 		    int row = rowAtPoint(e.getPoint());

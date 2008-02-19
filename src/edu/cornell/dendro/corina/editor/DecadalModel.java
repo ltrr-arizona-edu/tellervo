@@ -27,8 +27,6 @@ import edu.cornell.dendro.corina.manip.Redate;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.gui.Bug;
 
-import java.awt.event.*;
-import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotUndoException;
@@ -84,6 +82,7 @@ public class DecadalModel extends AbstractTableModel {
 	 through 9.
 	 @param col the JTable column number to query
 	 @return the column's name */
+	@Override
 	public String getColumnName(int col) {
 		if (col == 0)
 			return I18n.getText("year");
@@ -172,7 +171,7 @@ public class DecadalModel extends AbstractTableModel {
 		int left = y1.diff(s.getRange().getStart());
 		int right = y2.diff(s.getRange().getStart());
 		for (int i = left; i <= right; i++)
-			sum += ((Integer) s.getCount().get(i)).intValue();
+			sum += (s.getCount().get(i)).intValue();
 
 		// in a very rare case it can be zero!  (when?  the n+1 year of a sum that ends in -9.)
 		// (actually, though, sums shouldn't have the n+1 cell, so this special case belongs elsewhere!)
@@ -216,6 +215,7 @@ public class DecadalModel extends AbstractTableModel {
 	 <code>String.class</code>
 	 @param col the column to query
 	 @return the column's class */
+	@Override
 	public Class getColumnClass(int col) {
 		return ((col >= 1 && col <= 10) ? Integer.class : String.class);
 	}
@@ -226,6 +226,7 @@ public class DecadalModel extends AbstractTableModel {
 		editingOff = !enable;
 	}
 	
+	@Override
 	public boolean isCellEditable(int row, int col) {
 		// REFACTOR this whole method.  i'd like to see a couple temps, then something simple
 		// like return a||b||c||d;
@@ -253,6 +254,7 @@ public class DecadalModel extends AbstractTableModel {
 	// counts as 2 edits, oldvalue->"", ""->newvalue
 	private Object lastOldVal = null;
 
+	@Override
 	public void setValueAt(Object value, int row, int col) {
 		// new feature: (0,0) redates
 		if (row == 0 && col == 0) {
@@ -330,6 +332,7 @@ public class DecadalModel extends AbstractTableModel {
 
 			private boolean grew = bigger; // BIGGER IS ALWAYS FALSE HERE -- LASTVAL PROBLEM!
 
+			@Override
 			public void undo() throws CannotUndoException {
 				// debugging
 				System.out.println("undo, grew=" + grew);
@@ -348,6 +351,7 @@ public class DecadalModel extends AbstractTableModel {
 					s.fireSampleRedated();
 			}
 
+			@Override
 			public void redo() throws CannotRedoException {
 				// debugging
 				System.out.println("redo, grew=" + grew);
@@ -365,10 +369,12 @@ public class DecadalModel extends AbstractTableModel {
 					s.fireSampleRedated();
 			}
 
+			@Override
 			public boolean canRedo() {
 				return true;
 			}
 
+			@Override
 			public String getPresentationName() {
 				return I18n.getText("edit");
 				// that's silly, that's the edit menu title -- well, it works...

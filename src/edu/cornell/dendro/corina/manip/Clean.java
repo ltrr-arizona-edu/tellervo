@@ -105,7 +105,8 @@ public class Clean extends AbstractUndoableEdit {
 	s.fireSampleElementsChanged();
     }
 
-    public void undo() throws CannotUndoException {
+    @Override
+	public void undo() throws CannotUndoException {
 	super.undo();
 	s.setWJIncr(incr);
 	s.setWJDecr(decr);
@@ -120,7 +121,8 @@ public class Clean extends AbstractUndoableEdit {
 	s.fireSampleMetadataChanged();
 	s.fireSampleElementsChanged();
     }
-    public void redo() throws CannotRedoException {
+    @Override
+	public void redo() throws CannotRedoException {
 	super.redo();
 	s.setWJIncr(s.setWJDecr(null));
 	s.setElements(null);
@@ -133,7 +135,8 @@ public class Clean extends AbstractUndoableEdit {
 	s.fireSampleMetadataChanged();
 	s.fireSampleElementsChanged();
     }
-    public String getPresentationName() {
+    @Override
+	public String getPresentationName() {
 	return I18n.getText("clean");
     }
 

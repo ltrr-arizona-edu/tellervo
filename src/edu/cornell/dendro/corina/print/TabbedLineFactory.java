@@ -219,7 +219,7 @@ public class TabbedLineFactory {
 			g.setFont(font);
 
 			// boilerplate Line stuff
-			float baseline = (float) (y + g.getFontMetrics().getHeight());
+			float baseline = (y + g.getFontMetrics().getHeight());
 			float left = (float) pf.getImageableX();
 			float width = (float) pf.getImageableWidth();
 			Graphics2D g2 = (Graphics2D) g;

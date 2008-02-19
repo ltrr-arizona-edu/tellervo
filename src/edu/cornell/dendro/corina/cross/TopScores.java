@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 
 /**

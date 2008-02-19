@@ -1,7 +1,5 @@
 package edu.cornell.dendro.corina.dictionary;
 
-import edu.cornell.dendro.corina.SampleEvent;
-import edu.cornell.dendro.corina.SampleListener;
 import edu.cornell.dendro.corina.webdbi.*;
 
 import org.jdom.*;
@@ -29,15 +27,18 @@ public class Dictionary extends CachedResource {
 	}
 	
 	// Nothing fancy here, just use the defaults
+	@Override
 	protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) {
 		return requestElement;
 	}
 	
+	@Override
 	protected void queryFailed(Exception e) {
 		System.out.println("Could not load dictionaries:");
 		e.printStackTrace();
 	}
 	
+	@Override
 	protected boolean processQueryResult(Document doc) {
 		Element root = doc.getRootElement();
 		Element dataElement = root.getChild("content");

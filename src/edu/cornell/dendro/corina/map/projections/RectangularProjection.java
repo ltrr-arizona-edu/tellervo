@@ -67,7 +67,8 @@ public class RectangularProjection extends Projection {
        @param location the Location to project
        @param point the point to project it into
     */
-    public void project(Location location, Point3D point) {
+    @Override
+	public void project(Location location, Point3D point) {
         float zoom = view.getZoom() * EXTRA_ZOOM;
 
         // PERF: this is called thousands of times.  would it help to extract
@@ -98,7 +99,8 @@ public class RectangularProjection extends Projection {
        @param point the Point to unproject.
        @param location the Location to store it in
     */
-    public void unproject(Point point, Location location) {
+    @Override
+	public void unproject(Point point, Location location) {
         location.setLongitudeAsDegrees(view.center.getLongitudeAsDegrees() +
                                   (point.x - view.size.width/2)/(view.getZoom()*EXTRA_ZOOM));
         location.setLatitudeAsDegrees(view.center.getLatitudeAsDegrees() +

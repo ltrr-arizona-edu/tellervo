@@ -7,15 +7,14 @@ import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.WindowConstants;
 
-import org.apache.commons.logging.Log;
 import org.jdom.Document;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.Authenticate;
 import edu.cornell.dendro.corina.webdbi.DummyResource;
@@ -68,10 +67,10 @@ public class DebugInstantiator extends JDialog implements ResourceEventListener 
 		text.setLineWrap(true);
 		text.setWrapStyleWord(true);
 
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		getContentPane().add(
-				new JScrollPane(text, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), 
+				new JScrollPane(text, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), 
 				BorderLayout.CENTER);
 		pack();
 		setSize(600, 500);

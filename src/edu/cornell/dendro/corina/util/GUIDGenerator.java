@@ -3,7 +3,6 @@ package edu.cornell.dendro.corina.util;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.SecureRandom;
-import java.util.HashMap;
 import java.util.Random;
 
 public class GUIDGenerator {

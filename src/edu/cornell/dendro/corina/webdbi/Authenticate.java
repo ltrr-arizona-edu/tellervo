@@ -39,6 +39,7 @@ public class Authenticate extends Resource {
 		this.username = username;
 	}
 
+	@Override
 	protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) {
 		Element auth = new Element("authenticate");
 		
@@ -50,6 +51,7 @@ public class Authenticate extends Resource {
 		return requestElement;
 	}
 	
+	@Override
 	protected boolean processQueryResult(Document doc) {
 		// We don't do anything with this data (we know it just says succeeded)
 		return true;

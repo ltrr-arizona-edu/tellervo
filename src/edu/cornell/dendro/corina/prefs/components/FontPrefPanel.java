@@ -20,7 +20,8 @@ public class FontPrefPanel extends JComponent {
     add(components.getButton());
   }
   
-  public void addNotify() {
+  @Override
+public void addNotify() {
     components.setParent(getTopLevelAncestor());
     super.addNotify();
   }

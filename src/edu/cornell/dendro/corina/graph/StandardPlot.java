@@ -27,12 +27,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.GeneralPath;
 
-import javax.swing.JPanel;
-
-import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.index.Index;
 import edu.cornell.dendro.corina.util.ColorUtils;
 
@@ -69,7 +65,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 
 	// returns the maximum size, in pixels, that the graph will take up.
 	public int getYRange(GraphInfo gInfo, Graph g, int bottom) {
-		float unitScale = (float) gInfo.get10UnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
+		float unitScale = gInfo.get10UnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
 		int miny = 0; // minimum always starts at zero...
 		int maxy = -100000;
 		int value;
@@ -83,7 +79,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 				// BAD!  instead: (1) draw what i've got so far, and (2) NEXT point is a move-to.
 				// -- try to parse String as an integer?
 			}
-			int y = (int) value - g.yoffset;//bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale);			
+			int y = value - g.yoffset;//bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale);			
 			if(y < miny)
 				miny = y;
 			if(y > maxy)
@@ -95,7 +91,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 	public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, Graph g, int thickness, int xscroll) {
 		// cache yearsize, we use this a lot
 		int yearWidth = gInfo.getYearWidth(); // the size of a year, in pixels
-		float unitScale = (float) gInfo.get10UnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
+		float unitScale = gInfo.get10UnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
 		
 		// set pen
 		boolean dotted = (gInfo.indexesDotted() && (g.graph instanceof Index));
@@ -281,7 +277,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 	}
 
 	private int getYValue(GraphInfo gInfo, Graph g, int value, int bottom) {
-		float unitScale = (float) gInfo.get10UnitHeight() / 10.0f;
+		float unitScale = gInfo.get10UnitHeight() / 10.0f;
 		return bottom - (int) (yTransform(value * g.scale) * unitScale) - 
 						(int) (g.yoffset * unitScale); // DUPLICATE: this line appears above 3 times
 	}

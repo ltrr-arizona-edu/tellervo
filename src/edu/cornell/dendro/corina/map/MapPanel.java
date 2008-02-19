@@ -20,8 +20,6 @@
 
 package edu.cornell.dendro.corina.map;
 
-import edu.cornell.dendro.corina.gui.ProgressMeter;
-import edu.cornell.dendro.corina.gui.Splash;
 import edu.cornell.dendro.corina.map.tools.Tool;
 import edu.cornell.dendro.corina.map.layers.GridlinesLayer;
 import edu.cornell.dendro.corina.map.layers.MapLayer;
@@ -37,8 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import java.awt.EventQueue;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Color;
 import java.awt.Font;
@@ -50,16 +46,13 @@ import java.awt.RenderingHints;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
 import javax.swing.ProgressMonitor;
-import javax.swing.RepaintManager;
 import javax.swing.filechooser.FileFilter;
 import javax.imageio.*;
 
@@ -145,10 +138,12 @@ public class MapPanel extends JPanel {
         public void actionPerformed(ActionEvent ae) {
           final JFileChooser chooser = new JFileChooser();
           chooser.setFileFilter(new FileFilter() {
-            public boolean accept(File f) {
+            @Override
+			public boolean accept(File f) {
               return f.getName().endsWith(".png");
             }
-            public String getDescription() {
+            @Override
+			public String getDescription() {
               return "PNG image files";
             }
           });
@@ -259,7 +254,8 @@ public class MapPanel extends JPanel {
       popup.add(save);
 
       addMouseListener(new MouseAdapter() {
-        public void mouseReleased(MouseEvent e) {
+        @Override
+		public void mouseReleased(MouseEvent e) {
           System.out.println(e);
           if (!e.isPopupTrigger()) return;
     
@@ -519,6 +515,7 @@ public class MapPanel extends JPanel {
     private Layer currentLayer = null;
 
     private class WorkerThread extends Thread {
+	@Override
 	public void run() {
 	    // make an r
 	    Projection r = Projection.makeProjection(view);
@@ -571,7 +568,8 @@ public class MapPanel extends JPanel {
     // change, don't recompute it!
 
     // blit out the buffer, and draw Extra Crap.
-    public void paintComponent(Graphics g) {
+    @Override
+	public void paintComponent(Graphics g) {
 	// -- draw all clean layers
 	// -- if no worker thread, start one -- FIXME: either i should do this, or i shouldn't claim to.
     

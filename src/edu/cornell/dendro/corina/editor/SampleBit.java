@@ -64,8 +64,8 @@ public class SampleBit {
 		checkboxpanel = new JPanel(new GridBagLayout());
 		checkboxpanel.setBorder(BorderFactory.createTitledBorder("Data options"));
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.anchor = gbc.WEST;
-		gbc.fill = gbc.NONE;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.NONE;
 		gbc.insets = new Insets(2, 2, 2, 2);
 		gbc.gridy = 0;
 		

@@ -5,18 +5,14 @@ package edu.cornell.dendro.corina.editor;
 
 import javax.print.*;
 import javax.print.attribute.*;
-import javax.print.attribute.standard.MediaSize;
 import javax.print.attribute.standard.MediaSizeName;
-import javax.print.attribute.standard.MediaSize.ISO;
-import javax.print.attribute.standard.MediaSize.NA;
-import javax.swing.*;
 import java.awt.Rectangle;
-import java.awt.Font;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.ScrollPaneConstants;
+
 import java.awt.BorderLayout;
 import javax.swing.JTextPane;
 import java.awt.Dimension;
@@ -24,8 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
@@ -36,8 +30,6 @@ import javax.swing.text.*;
 
 import java.awt.FlowLayout;
 import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.Rectangle;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -49,10 +41,6 @@ import java.awt.print.PageFormat;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.print.EmptyLine;
-import edu.cornell.dendro.corina.print.Line;
-import edu.cornell.dendro.corina.print.TabbedLineFactory;
-import edu.cornell.dendro.corina.print.TextLine;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.StringUtils;
 
@@ -77,7 +65,8 @@ public class SamplePrintEditor extends JPanel {
 	 * decimal point tab stops. Makes Weiserjahre data line up nicely.
 	 */
 	private class SPEditorKit extends StyledEditorKit {
-	    public ViewFactory getViewFactory() {
+	    @Override
+		public ViewFactory getViewFactory() {
 	    	return new SPViewFactory();
 	    }
 	}
@@ -197,7 +186,8 @@ public class SamplePrintEditor extends JPanel {
 			mutantTabChars[0] = '\t';
 		}
 			    
-	    public float nextTabStop(float x, int tabOffset) {
+	    @Override
+		public float nextTabStop(float x, int tabOffset) {
 	    	float tabBase = this.getTabBase();
 
 			// If the text isn't left justified, offset by 10 pixels!
@@ -214,7 +204,7 @@ public class SamplePrintEditor extends JPanel {
 			TabSet tabs = getTabSet();
 			if (tabs == null) {
 				// a tab every 72 pixels.
-				return (float) (tabBase + (((int) x / 72 + 1) * 72));
+				return (tabBase + (((int) x / 72 + 1) * 72));
 			}
 			TabStop tab = tabs.getTabAfter(x + .01f);
 			if (tab == null) {
@@ -281,6 +271,7 @@ public class SamplePrintEditor extends JPanel {
 	        } catch (BadLocationException e) {} 
 		}
 		
+		@Override
 		public void paintComponent(Graphics g) {
 			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
 					RenderingHints.VALUE_ANTIALIAS_ON);
@@ -425,8 +416,8 @@ public class SamplePrintEditor extends JPanel {
 		textpane.setMinimumSize(new Dimension(width, 300));
 		textpane.setPreferredSize(new Dimension(width, 600));
 		
-		add(new JScrollPane(textpane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
+		add(new JScrollPane(textpane, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, 
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
 				
 		// create our various styles
 		createStyles();	
@@ -778,7 +769,7 @@ public class SamplePrintEditor extends JPanel {
 			for (int i = 0; i < 10; i++) {
 				sb.append("\t");
 				if (s.getRange().contains(decade.add(i)))
-					sb.append((Number) s.getData().get(decade.add(i).diff(s.getRange().getStart())));
+					sb.append(s.getData().get(decade.add(i).diff(s.getRange().getStart())));
 			}
 
 			sb.append(doubleSpace ? "\n\n" : "\n");
@@ -974,7 +965,7 @@ public class SamplePrintEditor extends JPanel {
 
 		// write out all elements
 		for (int i = 0; i < s.getElements().size(); i++) {
-			edu.cornell.dendro.corina.Element e = (edu.cornell.dendro.corina.Element) s.getElements().get(i);
+			edu.cornell.dendro.corina.Element e = s.getElements().get(i);
 
 			if (e.details == null) {
 				try {

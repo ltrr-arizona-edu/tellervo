@@ -62,6 +62,7 @@ public class HighPass extends IndexFunction {
 	private int weights[];
 
 	/** Compute the index. */
+	@Override
 	public void index() {
 		output = filter(input.getData(), weights);
 	}
@@ -102,10 +103,12 @@ public class HighPass extends IndexFunction {
 		return output;
 	}
 	
+	@Override
 	public String getI18nTag() {
 		return "high_pass";
 	}
 	
+	@Override
 	public String getI18nTagTrailer() {
 		// this is basically the opposite of StringUtils.extractInts() -- consolidate?
 		StringBuffer buf = new StringBuffer();
@@ -118,6 +121,7 @@ public class HighPass extends IndexFunction {
 		return buf.toString();
 	}
 
+	@Override
 	public int getLegacyID() {
 		return 9;
 	}

@@ -68,7 +68,7 @@ public class Search implements Runnable {
 	long t1 = System.currentTimeMillis();
 	search(folder);
 	long t2 = System.currentTimeMillis();
-	float time = (float) ((t2-t1) / 1000f);
+	float time = ((t2-t1) / 1000f);
 	System.out.println("(search took " + time + " sec, for " + count + " files and folders)");
 
 	System.out.println("done ... " + matches.size() + " matches:");
@@ -171,7 +171,8 @@ public class Search implements Runnable {
 	return sql.toString();
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
 	StringBuffer r = new StringBuffer();
 	// BUG?: what if criteria.size()==0?
 

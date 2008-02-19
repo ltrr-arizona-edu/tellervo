@@ -23,7 +23,7 @@ package edu.cornell.dendro.corina;
 /**
    Exception thrown if a species lookup fails.
 
-   @see corina.Species
+   @see edu.cornell.dendro.corina.Species
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$

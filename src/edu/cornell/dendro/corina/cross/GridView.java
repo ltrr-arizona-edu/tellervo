@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,14 +24,12 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
-import java.awt.event.MouseAdapter;
-
 import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.graph.GraphWindow;
@@ -124,7 +121,8 @@ public class GridView extends JPanel {
 		final GridViewPopup gridViewPopup = new GridViewPopup();
 		
 		table.addMouseListener(new PopupListener(gridViewPopup) {
-		    public void showPopup(MouseEvent e) {
+		    @Override
+			public void showPopup(MouseEvent e) {
 		    	// if table, and this row not selected, select this row
 		    	if (e.getSource() instanceof JTable) {
 		    	    JTable table = (JTable) e.getSource();
@@ -321,8 +319,8 @@ public class GridView extends JPanel {
 
 		// put the table in a scroller
 		scroll = new JScrollPane(table);
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	}
 
 	private void setCellSizes() {
@@ -366,6 +364,7 @@ public class GridView extends JPanel {
 
 		private Grid.Cell cell;
 
+		@Override
 		public void paintComponent(Graphics g) {
 			// set font: get original font, and scale it
 			// PERF: new font each time is bad!
@@ -427,6 +426,7 @@ public class GridView extends JPanel {
 
 	 @return a title for this view
 	 */
+	@Override
 	public String toString() {
 		return I18n.getText("crossdating_grid");
 	}

@@ -51,6 +51,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -89,7 +90,6 @@ import edu.cornell.dendro.corina.util.DocumentListener2;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.Overwrite;
 import edu.cornell.dendro.corina.io.SerialSampleIO;
-import edu.cornell.dendro.corina.io.SerialSampleIOEvent;
 import edu.cornell.dendro.corina.Year;
 
 /*
@@ -266,6 +266,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 	// SaveableDocument
+	@Override
 	public String toString() {
 		return sample.toString();
 	}
@@ -424,7 +425,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// make the "Nr" column renderer a progress bar -- this recomputes max(count)!!!
 		int max = 0;
 		if (sample.getCount() != null)
-			max = ((Integer) Collections.max(sample.getCount())).intValue();
+			max = (Collections.max(sample.getCount())).intValue();
 		wjTable.getColumnModel().getColumn(11).setCellRenderer(
 				new CountRenderer(max));
 
@@ -477,7 +478,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private void initRolodex() {
 		// try also: BOTTOM, but that's worse, by Fitt's Law, isn't it?
 		// (excel, for example, does that.)
-		rolodex = new JTabbedPane(JTabbedPane.TOP);
+		rolodex = new JTabbedPane(SwingConstants.TOP);
 		// rolodex.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0)); -- but the old frame is still there!  hmm...
 		addCards();
 		getContentPane().add(rolodex, BorderLayout.CENTER);
@@ -538,6 +539,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		ok.setEnabled(false);
 
 		input.getDocument().addDocumentListener(new DocumentListener2() {
+			@Override
 			public void update(DocumentEvent e) {
 				try {
 					Document doc = e.getDocument();
@@ -700,6 +702,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		
 		// first, make sure we stop measuring if the window is closed.
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent we) {
 				stopMeasuring();
 			}
@@ -985,6 +988,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		}
 	}
 	
+	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
 		App.prefs.removePrefsListener(this);

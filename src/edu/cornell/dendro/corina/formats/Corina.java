@@ -175,6 +175,7 @@ import java.io.IOException;
  */
 public class Corina implements Filetype {
 
+	@Override
 	public String toString() {
 		return I18n.getText("format.corina");
 	}
@@ -505,7 +506,7 @@ public class Corina implements Filetype {
 
 			// then make sure the count really is all [1]'s (or [0]'s, i suppose)
 			for (int i = 0; i < s.getCount().size(); i++)
-				if (((Integer) s.getCount().get(i)).intValue() > 1) {
+				if ((s.getCount().get(i)).intValue() > 1) {
 					delete = false;
 					break;
 				}
@@ -701,7 +702,7 @@ public class Corina implements Filetype {
 		w.newLine();
 		for (int i = 0; i < s.getElements().size(); i++) {
 			// if disabled, write '*' before filename
-			Element el = (Element) s.getElements().get(i);
+			Element el = s.getElements().get(i);
 			w.write((el.isActive() ? "" : "*") + (relativepath ? el.getRelativeFilename() : el.getFilename()));
 			w.newLine();
 		}

@@ -63,7 +63,6 @@ import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.OldCrossdateMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
-import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.OKCancel;
@@ -181,6 +180,7 @@ public class XCorina extends JFrame {
 		}
 
 		JPanel panel = new JPanel() {
+			@Override
 			protected void paintComponent(Graphics g) {
 				if (backgroundImage != null) {
 					g.drawImage(backgroundImage.getImage(), 0, 0, null);
@@ -246,6 +246,7 @@ public class XCorina extends JFrame {
 
 		// exit when this window closes
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent e) {
 				quit();
 			}

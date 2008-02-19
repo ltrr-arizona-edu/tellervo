@@ -66,7 +66,8 @@ public class WJTableModel extends DecadalModel implements SampleListener {
 
        @return the number of rows
     */
-    public int getRowCount() {
+    @Override
+	public int getRowCount() {
 	countRows();
 	return (row_max - row_min + 1);
     }
@@ -79,7 +80,8 @@ public class WJTableModel extends DecadalModel implements SampleListener {
        @return the value of this cell: the decade title, the
        Weiserjahre value, or the count
     */
-    public Object getValueAt(int row, int col) { 
+    @Override
+	public Object getValueAt(int row, int col) { 
 	if (col == 0) {
 	    if (row == 0)
 		return s.getRange().getStart();
@@ -103,7 +105,8 @@ public class WJTableModel extends DecadalModel implements SampleListener {
        @param row the column to query
        @return false, meaning that no Weiserjahre cell is editable
     */
-    public boolean isCellEditable(int row, int col) {
+    @Override
+	public boolean isCellEditable(int row, int col) {
 	return false;
     }
 

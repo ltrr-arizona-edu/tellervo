@@ -13,10 +13,12 @@ import java.util.NoSuchElementException;
  * @author Aaron Hamid arh14 at cornell.edu
  */
 public class DefaultResourceBundle extends ResourceBundle {
-  protected Object handleGetObject(String key) {
+  @Override
+protected Object handleGetObject(String key) {
     return key;
   }
-  public Enumeration getKeys() {
+  @Override
+public Enumeration getKeys() {
     return EMPTY_ENUMERATION;
   }
   

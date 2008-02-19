@@ -26,21 +26,14 @@ import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.ui.Alert;
 
 import java.io.IOException;
-import java.io.File;
-
 import java.util.List;
-import java.util.ArrayList;
-
 import java.awt.Component;
 import java.awt.Color;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.AbstractTableModel;
 
@@ -108,6 +101,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	}
 
 	// column name
+	@Override
 	public String getColumnName(int col) {
 		switch (col) {
 		case 0:
@@ -168,6 +162,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	}
 
 	// is editable?
+	@Override
 	public boolean isCellEditable(int row, int col) {
 		// only after refresh?  no, assume refresh is always "done".  (threadme)
 
@@ -175,6 +170,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	}
 
 	// column class
+	@Override
 	public Class getColumnClass(int col) {
 		switch (col) {
 		case 0:
@@ -188,6 +184,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	}
 
 	// set cell (row,col)
+	@Override
 	public void setValueAt(Object value, int row, int col) {
 		// get element
 		Element e = (Element) elements.get(row);

@@ -108,7 +108,8 @@ public class PopupListener extends MouseAdapter {
 	popup events on mouse-down.
 	@param e the mouse-pressed event
     */
-    public void mousePressed(MouseEvent e) { // mac
+    @Override
+	public void mousePressed(MouseEvent e) { // mac
 	maybeShowPopup(e);
     }
 
@@ -119,7 +120,8 @@ public class PopupListener extends MouseAdapter {
 	right-click-drag-release-select-from-menu.
 	@param e the mouse-released event
     */
-    public void mouseReleased(MouseEvent e) { // win32
+    @Override
+	public void mouseReleased(MouseEvent e) { // win32
 	maybeShowPopup(e);
     }
 

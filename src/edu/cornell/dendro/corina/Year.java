@@ -116,7 +116,8 @@ public final class Year implements Comparable {
        @return this year as a String
        @see java.lang.String
     */
-    public String toString() {
+    @Override
+	public String toString() {
         return String.valueOf(y);
     }
 
@@ -288,12 +289,14 @@ public final class Year implements Comparable {
        @return <code>true</code> if <code>this</code> is equal to
        <code>y2</code>, else <code>false</code>
     */
-    public boolean equals(Object y2) {
+    @Override
+	public boolean equals(Object y2) {
         return (y == ((Year) y2).y);
     }
 
     // since i define equals(), i need to define hashCode()
-    public int hashCode() {
+    @Override
+	public int hashCode() {
 	// returning something based on y is logical, but returning y
 	// itself might make people mistakenly think this is like
 	// intValue(), so let's do something weird to it first.

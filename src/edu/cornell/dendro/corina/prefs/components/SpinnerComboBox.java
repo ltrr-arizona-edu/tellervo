@@ -70,7 +70,8 @@ public class SpinnerComboBox extends JComboBox {
     }
   };
   private FocusListener focusListener = new FocusAdapter() {
-    public void focusLost(FocusEvent fe) {
+    @Override
+	public void focusLost(FocusEvent fe) {
       //System.out.println("textfield focus lost");
       setEditable(false);
       repaint();
@@ -138,11 +139,13 @@ public class SpinnerComboBox extends JComboBox {
   }
 
   private class SpinnerComboBoxEditor extends BasicComboBoxEditor {
-    public Component getEditorComponent() {
+    @Override
+	public Component getEditorComponent() {
       return spinner; 
     }
 
-    public Object getItem() {
+    @Override
+	public Object getItem() {
       Object value = spinner.getValue();
       //System.out.println("getItem: " + value + " " + value.getClass());
       Object o = outputFormat.format(value);
@@ -150,7 +153,8 @@ public class SpinnerComboBox extends JComboBox {
       return o;
     }
 
-    public void setItem(Object anObject) {
+    @Override
+	public void setItem(Object anObject) {
       //System.out.println("setItem: " + anObject + " " + anObject.getClass());
       if (anObject instanceof String) {
         try {
@@ -230,7 +234,8 @@ public class SpinnerComboBox extends JComboBox {
   private void initComboBox() {
     setEditor(scbeditor);
     addMouseListener(new MouseAdapter() {
-      public void mouseClicked(MouseEvent me) {
+      @Override
+	public void mouseClicked(MouseEvent me) {
         SwingUtilities.invokeLater(new Runnable() {
           public void run() {
             setEditable(true);

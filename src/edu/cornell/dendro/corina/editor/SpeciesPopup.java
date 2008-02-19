@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JComboBox;
@@ -23,7 +22,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.BorderFactory;
@@ -121,7 +119,8 @@ public class SpeciesPopup extends JComboBox {
                 // undoability!
                 final String newSpeciesGlue = newSpecies; // augh!
                 parent.postEdit(new AbstractUndoableEdit() {
-                    public void undo() throws CannotUndoException {
+                    @Override
+					public void undo() throws CannotUndoException {
                         // -- set species back to old one
                         selectSpecies(oldSpecies);
                         // -- set/clear modified
@@ -133,7 +132,8 @@ public class SpeciesPopup extends JComboBox {
                         glue.fireSampleMetadataChanged();
                         // HEY, this is a really common pattern.  can it be shoved up into Sample, maybe?
                     }
-                    public void redo() throws CannotRedoException {
+                    @Override
+					public void redo() throws CannotRedoException {
                         // -- set species back to new one
                         selectSpecies(newSpeciesGlue);
                         // -- set modified
@@ -141,10 +141,12 @@ public class SpeciesPopup extends JComboBox {
                         // -- fire meta-changed
                         glue.fireSampleMetadataChanged();
                     }
-                    public boolean canRedo() {
+                    @Override
+					public boolean canRedo() {
                         return true;
                     }
-                    public String getPresentationName() {
+                    @Override
+					public String getPresentationName() {
                         return "Species Change";
                     }
                 });

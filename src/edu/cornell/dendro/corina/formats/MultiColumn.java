@@ -21,15 +21,10 @@
 package edu.cornell.dendro.corina.formats;
 
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 
-import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.util.NoSuchElementException;
-
-import java.io.StreamTokenizer;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -62,7 +57,8 @@ import java.io.IOException;
  */
 public class MultiColumn implements Filetype {
 
-  public String toString() {
+  @Override
+public String toString() {
     return I18n.getText("format.multi_column");
   }
 

@@ -16,7 +16,6 @@ import edu.cornell.dendro.corina.SampleEvent;
 import edu.cornell.dendro.corina.SampleListener;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.manip.MeanSensitivity;
-import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.ui.I18n;
 
 /*
@@ -44,6 +43,7 @@ public class Statistics extends JLabel implements SampleListener {
 	final JLabel label = this; // ...
 
 	addMouseListener(new MouseAdapter() {
+		@Override
 		public void mousePressed(MouseEvent e) {
 		    JPopupMenu popup = new JPopupMenu();
 

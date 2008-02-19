@@ -24,8 +24,6 @@ import java.awt.Toolkit;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -37,9 +35,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.graph.GraphWindow;
 
 /**
  * Bootstrap for Corina. It all starts here...

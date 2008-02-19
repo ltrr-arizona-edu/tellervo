@@ -138,7 +138,7 @@ public class ProgressMeter {
         if (dT >= millisToDecideToPopup) {
           int predictedCompletionTime;
           if (value > min) {
-            predictedCompletionTime = (int)((long)dT *
+            predictedCompletionTime = (int)(dT *
                                             (max - min) /
                                             (value - min));
           } else {

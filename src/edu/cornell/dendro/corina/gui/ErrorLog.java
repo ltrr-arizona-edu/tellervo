@@ -21,16 +21,10 @@
 package edu.cornell.dendro.corina.gui;
 
 import java.awt.BorderLayout;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.util.Date;
-
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
+import javax.swing.WindowConstants;
 
-import org.apache.commons.logging.Log;
-
-import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.util.Center;
 
 /**
@@ -66,7 +60,7 @@ public class ErrorLog extends JDialog {
 
     center.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
 
-    setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
     getContentPane().add(center, BorderLayout.CENTER);
     pack();

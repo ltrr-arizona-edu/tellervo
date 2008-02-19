@@ -54,7 +54,8 @@ public class PureStringWriter extends StringWriter {
 	@param cbuf the character array to read from
 	@param off the offset into the array to start reading
 	@param len the number of characters to read out of the array */
-    public void write(char[] cbuf, int off, int len) {        
+    @Override
+	public void write(char[] cbuf, int off, int len) {        
         for (int i=off; i<off+len; i++) {
             char c = cbuf[i];
             if (c != '\r')

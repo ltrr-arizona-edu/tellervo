@@ -21,11 +21,9 @@
 package edu.cornell.dendro.corina.site;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.util.ColorUtils;
 import edu.cornell.dendro.corina.util.StringUtils;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.io.File;
 
 /*
@@ -259,6 +257,7 @@ public class Site implements Cloneable {
 
 	/** A pretty-printer for sites.
 	 @return the site in human-readable form */
+	@Override
 	public String toString() {
 		StringBuffer result = new StringBuffer();
 		result.append("[Site: ");
@@ -379,6 +378,7 @@ public class Site implements Cloneable {
 	//
 	// equals/hashCode
 	//
+	@Override
 	public boolean equals(Object o2) {
 		// WRITEME: compare name,code,id,location,altitude,country,species,type,comments,folder?
 		Site s2 = (Site) o2;
@@ -403,6 +403,7 @@ public class Site implements Cloneable {
 			return o1.equals(o2);
 	}
 
+	@Override
 	public int hashCode() {
 		int x = 0;
 		x += hash(name) + hash(code) + hash(id);
@@ -419,6 +420,7 @@ public class Site implements Cloneable {
 	}
 	
 	// make a duplicate copy of this site.
+	@Override
 	public Object clone() {
 		Site clone = new Site();
 

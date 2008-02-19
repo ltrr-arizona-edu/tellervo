@@ -34,9 +34,6 @@ import java.util.Map;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import java.awt.FlowLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -222,7 +219,8 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
                     // undoable
                     s.postEdit(new AbstractUndoableEdit() {
                         private boolean wasMod = s.isModified();
-                        public void undo() throws CannotUndoException {
+                        @Override
+						public void undo() throws CannotUndoException {
                             if (oldWhich == 0)
                                 s.removeMeta(field);
                             else
@@ -233,7 +231,8 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
                             s.setModified();
                             s.fireSampleMetadataChanged();
                         }
-                        public void redo() throws CannotRedoException {
+                        @Override
+						public void redo() throws CannotRedoException {
                             if (which == 0)
                                 s.removeMeta(field);
                             else
@@ -242,10 +241,12 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
                             s.setModified();
                             s.fireSampleMetadataChanged();
                         }
-                        public boolean canRedo() {
+                        @Override
+						public boolean canRedo() {
                             return true;
                         }
-                        public String getPresentationName() {
+                        @Override
+						public String getPresentationName() {
                             return glue.getFieldDescription() + " Change";
                         }
                     });
@@ -415,7 +416,8 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
 	// FIXME: shouldn't this be an addNotify(), then?
         final JScrollPane glue = this;
         addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent e) {
+            @Override
+			public void componentResized(ComponentEvent e) {
 		/*
                 GridBagLayout gbl = (GridBagLayout) p.getLayout();
                 int h = gbl.getLayoutDimensions()[1][0]; // (1=height, 0=first row)  "Most applications do not call this method directly."  (I'm special.)

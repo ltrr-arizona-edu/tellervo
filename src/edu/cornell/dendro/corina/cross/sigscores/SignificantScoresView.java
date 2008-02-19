@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
@@ -39,7 +40,6 @@ import javax.swing.table.TableColumnModel;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.cross.Cross;
-import edu.cornell.dendro.corina.cross.Weiserjahre;
 import edu.cornell.dendro.corina.cross.HighScore;
 import edu.cornell.dendro.corina.cross.RangeRenderer;
 import edu.cornell.dendro.corina.graph.GraphWindow;
@@ -130,8 +130,8 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
     fixedmovingpanel.add(fixedcheckbox);
     fixedmovingpanel.add(movingcheckbox);
     JScrollPane scroll = new JScrollPane(table);
-    scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-    scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+    scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
     setLayout(new BorderLayout());
     add(fixedmovingpanel, BorderLayout.NORTH);
@@ -364,13 +364,15 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
       refreshBackground();
   }
 
-  public void addNotify() {
+  @Override
+public void addNotify() {
     super.addNotify();
 
     App.prefs.addPrefsListener(this);
   }
 
-  public void removeNotify() {
+  @Override
+public void removeNotify() {
     super.removeNotify();
 
     App.prefs.removePrefsListener(this);

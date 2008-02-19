@@ -26,7 +26,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -158,7 +157,8 @@ public class GridFrame extends XFrame
         }
 
         private Grid.Cell cell;
-        public void paintComponent(Graphics g) {
+        @Override
+		public void paintComponent(Graphics g) {
             // set font: get original font, and scale it
             Font origFont = (App.prefs.getPref("corina.grid.font")==null ? g.getFont() : Font.decode(App.prefs.getPref("corina.grid.font")));
             Font scaledFont = origFont.deriveFont(origFont.getSize() * scale);
@@ -218,6 +218,7 @@ public class GridFrame extends XFrame
 
 	// respond to double-clicks
 	output.addMouseListener(new MouseAdapter() {
+		@Override
 		public void mouseClicked(MouseEvent e) {
 		    if (e.getClickCount() == 2) {
 			// get the (row,col) of the click
@@ -373,7 +374,8 @@ public class GridFrame extends XFrame
     repaint();
 	}
   
-  protected void finalize() throws Throwable {
+  @Override
+protected void finalize() throws Throwable {
     super.finalize();
     App.prefs.removePrefsListener(this); 
   }

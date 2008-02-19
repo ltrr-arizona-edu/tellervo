@@ -29,6 +29,7 @@ import java.awt.Graphics2D;
 import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.Icon;
+import javax.swing.SwingConstants;
 
 /**
     A table header renderer which adds a small triangle to the "sort" column.
@@ -200,7 +201,7 @@ public class SortedHeaderRenderer implements TableCellRenderer {
         if(c instanceof JLabel) {
         	JLabel l = (JLabel) c;
         	
-        	l.setHorizontalTextPosition(JLabel.LEFT);
+        	l.setHorizontalTextPosition(SwingConstants.LEFT);
         	
         	if(sortColumn.equals(value)) 
         		l.setIcon(new SortArrowIcon(reversed, l.getFont().getSize()));

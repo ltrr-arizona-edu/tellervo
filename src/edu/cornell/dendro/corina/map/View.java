@@ -84,7 +84,8 @@ public class View implements Cloneable {
     // REFACTOR: why do i need clone?  wouldn't a copy-constructor be simpler?
     // USED BY: MapPanel (for printing - making detailedView), MapFrame (png export)
     // so what i really want is "make a copy, but with X factor more detail"
-    public Object clone() {
+    @Override
+	public Object clone() {
         View v2;
         try {
           v2 = (View) super.clone();

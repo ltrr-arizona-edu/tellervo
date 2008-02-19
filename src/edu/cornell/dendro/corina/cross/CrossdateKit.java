@@ -1,7 +1,6 @@
 package edu.cornell.dendro.corina.cross;
 
 import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.util.JLine;
 import edu.cornell.dendro.corina.util.UserFriendlyFile;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.gui.Layout;
@@ -23,13 +22,13 @@ import javax.swing.JList;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JCheckBox;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
 import javax.swing.BorderFactory;
-import java.awt.BorderLayout;
+import javax.swing.ScrollPaneConstants;
+
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -37,7 +36,6 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListModel;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.ListModel;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListDataListener;
@@ -63,8 +61,8 @@ import java.awt.Component;
    samples (e.g., T-score or trend).  A "Run" button will run the
    requested crossdates, i.e., in a CrossdateWindow.
 
-   @see corina.cross.Sequence
-   @see corina.cross.CrossdateWindow
+   @see edu.cornell.dendro.corina.cross.Sequence
+   @see edu.cornell.dendro.corina.cross.CrossdateWindow
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
@@ -127,9 +125,10 @@ public class CrossdateKit extends JDialog {
             model = new DefaultListModel();
             list = new JList(model);
 	    JScrollPane sp = new JScrollPane(list,
-					     JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-					     JScrollPane.HORIZONTAL_SCROLLBAR_NEVER) {
-		    public void paint(Graphics g) {
+					     ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+					     ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER) {
+		    @Override
+			public void paint(Graphics g) {
 			super.paint(g); // component, border, children
 			if (hilite) {
 			    final int THICKNESS = 3; // extract me?  (Platform?  UniversalConsts?)
@@ -155,7 +154,8 @@ public class CrossdateKit extends JDialog {
 		    // TODO: good; also put this icon to the right of "fixed/moving"
 		    // text above the list, so if one that's scrolled off is bogus,
 		    // they can still see it.
-		    public Component getListCellRendererComponent(JList list,
+		    @Override
+			public Component getListCellRendererComponent(JList list,
 								  Object value,
 								  int index,
 								  boolean isSelected,
@@ -222,7 +222,8 @@ public class CrossdateKit extends JDialog {
 
             // delete => removeSelectedRows()
             list.addKeyListener(new KeyAdapter() {
-                public void keyReleased(KeyEvent e) {
+                @Override
+				public void keyReleased(KeyEvent e) {
                     if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
                         removeSelectedRows();
                 }
@@ -685,7 +686,7 @@ public class CrossdateKit extends JDialog {
        Make a new crossdating kit, with no samples, and the default
        algorithms checked.
 
-       @see corina.cross.Cross#DEFAULT_CROSSDATES
+       @see edu.cornell.dendro.corina.cross.Cross#DEFAULT_CROSSDATES
     */
     public CrossdateKit() {
 	initEnabled();

@@ -22,8 +22,6 @@ package edu.cornell.dendro.corina.cross;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Year;
@@ -90,7 +88,8 @@ public abstract class Cross implements Runnable {
        @param index the index of the score to get
        @return the score at that index
     */
-    public float getScoreOLD(int index) {
+    @Deprecated
+	public float getScoreOLD(int index) {
 	return data[index];
     }
 
@@ -309,7 +308,8 @@ public abstract class Cross implements Runnable {
 
        @return a String value of the cross
     */
-    public final String toString() {
+    @Override
+	public final String toString() {
 	// get filenames of both samples
 	String f = (String) fixed.getMeta("filename");
 	String m = (String) moving.getMeta("filename");
@@ -356,7 +356,8 @@ public abstract class Cross implements Runnable {
        @deprecated This method ignores the overlap, which it shouldn't
        do.  Use isSignificant() instead.
     */
-    public abstract float getMinimumSignificant();
+    @Deprecated
+	public abstract float getMinimumSignificant();
     // temporary hack -- used only by crossprinter and crossframe(all-scores)
 
     /**
@@ -365,7 +366,8 @@ public abstract class Cross implements Runnable {
 
        @deprecated the preamble was always kind of silly
     */
-    protected void preamble() {
+    @Deprecated
+	protected void preamble() {
         // nothing need be done by default
 
 	// DELETE ME!

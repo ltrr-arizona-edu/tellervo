@@ -20,39 +20,29 @@
 
 package edu.cornell.dendro.corina.graph;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.geom.GeneralPath;
-
-import javax.swing.JPanel;
-
-import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.index.Index;
-import edu.cornell.dendro.corina.util.ColorUtils;
 
 public class DensityPlot extends StandardPlot implements CorinaGraphPlotter {	
 	public DensityPlot() {
 		super();
 	}
 
+	@Override
 	protected int yTransform(float y) {
 		return (int) y;
 	}
 	
+	@Override
 	protected boolean validValue(int value) {
 		return true;
 	}
 
+	@Override
 	public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, Graph g, int thickness, int xscroll) {
 		// cache yearsize, we use this a lot
 		int yearWidth = gInfo.getYearWidth(); // the size of a year, in pixels
-		float unitScale = (float) gInfo.get10UnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
+		float unitScale = gInfo.get10UnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
 												   // using another var in case these become independent
 		
 		// set pen

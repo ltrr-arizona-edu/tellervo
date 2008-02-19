@@ -34,7 +34,8 @@ public class SlashedIfNullRenderer extends DefaultTableCellRenderer {
     private Sample sample;
     private TableModel model;
 
-    public Component getTableCellRendererComponent(JTable table,
+    @Override
+	public Component getTableCellRendererComponent(JTable table,
                                                    Object value,
                                                    boolean isSelected, boolean hasFocus,
                                                    int row, int column) {
@@ -57,6 +58,7 @@ public class SlashedIfNullRenderer extends DefaultTableCellRenderer {
     private static final int THICK = 5;
 
     private static JComponent slasher = new JComponent() {
+	@Override
 	public void paintComponent(Graphics g) {
 	    setOpaque(true);
 

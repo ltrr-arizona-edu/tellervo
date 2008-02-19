@@ -103,6 +103,7 @@ public class MetadataField {
 	// awt/swing sometimes lets you use objects directly,
 	// and use the toString() value as their label.
 	// so let's provide that.
+	@Override
 	public String toString() {
 		return fieldDescription;
 	}
@@ -168,6 +169,7 @@ public class MetadataField {
 	 * @deprecated
 	 * @return
 	 */
+	@Deprecated
 	public String[] getValues() {
 		return values;
 	}

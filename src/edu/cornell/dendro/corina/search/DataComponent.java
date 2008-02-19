@@ -3,22 +3,14 @@ package edu.cornell.dendro.corina.search;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.metadata.*;
-import edu.cornell.dendro.corina.util.ColorUtils;
-import edu.cornell.dendro.corina.ui.I18n;
-
 import java.util.Date;
 import java.util.Vector;
 import java.util.Iterator;
 
 import java.text.DateFormat;
-import java.text.ParseException;
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Color;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.DocumentEvent;
 import javax.swing.Box;
 import javax.swing.JTextField;
 import javax.swing.JPanel;

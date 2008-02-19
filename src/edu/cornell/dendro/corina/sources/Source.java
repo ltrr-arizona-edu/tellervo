@@ -1,8 +1,5 @@
 package edu.cornell.dendro.corina.sources;
 
-import edu.cornell.dendro.corina.Element;
-
-import java.awt.event.ActionListener;
 import javax.swing.Icon;
 
 // in a FavList, right-click, "Show original"

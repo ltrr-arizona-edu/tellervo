@@ -36,6 +36,7 @@ public abstract class CachedResource extends Resource {
 		}
 	}
 	
+	@Override
 	protected final void querySucceeded(Document doc) {
 		super.querySucceeded(doc);
 		

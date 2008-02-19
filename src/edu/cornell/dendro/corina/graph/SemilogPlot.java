@@ -20,28 +20,13 @@
 
 package edu.cornell.dendro.corina.graph;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.geom.GeneralPath;
-
-import javax.swing.JPanel;
-
-import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.index.Index;
-import edu.cornell.dendro.corina.util.ColorUtils;
-
 public class SemilogPlot extends StandardPlot implements CorinaGraphPlotter {	
 	public SemilogPlot() {
 		super();
 	}
 
 	// This is only useful for indexed things...
+	@Override
 	protected int yTransform(float y) {
 		/*
 		int tval = 1000 + (int) (1000.0 * Math.log(y / 1000.0));
@@ -50,6 +35,7 @@ public class SemilogPlot extends StandardPlot implements CorinaGraphPlotter {
 		return (int) (Math.log10(y) * 100.0);
 	}
 	
+	@Override
 	protected boolean validValue(int value) {
 		return true;
 	}

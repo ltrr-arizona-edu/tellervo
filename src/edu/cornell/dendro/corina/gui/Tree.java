@@ -26,10 +26,7 @@ import edu.cornell.dendro.corina.editor.Editor;
 import java.io.File;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Collections;
-
-import java.net.URL;
 
 import java.awt.Image;
 import javax.swing.JLabel;
@@ -44,9 +41,7 @@ import java.awt.dnd.DragSourceListener;
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DragGestureEvent;
-import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.DragSourceDropEvent;
 import java.awt.dnd.DragSourceDragEvent;
@@ -97,7 +92,8 @@ public class Tree extends JLabel implements DragGestureListener {
 
         // double-click
         addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
+            @Override
+			public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2)
                     new Editor(s);
             }
@@ -179,6 +175,7 @@ public class Tree extends JLabel implements DragGestureListener {
 	    super(null); // HACK, but i need to call something (see previous comment)
 	    this.files = files; // should i copy it?
 	}
+	@Override
 	public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
 	    if (!flavor.equals(DataFlavor.javaFileListFlavor))
 		throw new UnsupportedFlavorException(flavor);

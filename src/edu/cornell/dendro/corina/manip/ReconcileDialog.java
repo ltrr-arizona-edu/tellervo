@@ -29,9 +29,7 @@ import edu.cornell.dendro.corina.util.ColorUtils;
 
 import java.io.IOException;
 
-import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.FlowLayout;
 import java.awt.Component;
 import javax.swing.JDialog;
 import javax.swing.JCheckBox;
@@ -102,9 +100,11 @@ public class ReconcileDialog extends JDialog {
 					    bottom));
 
 	final SampleAdapter watcher = new SampleAdapter() {
+		@Override
 		public void sampleRedated(SampleEvent e) {
 		    recompute();
 		}
+		@Override
 		public void sampleDataChanged(SampleEvent e) {
 		    recompute();
 		}
@@ -117,6 +117,7 @@ public class ReconcileDialog extends JDialog {
 	setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	final Sample glue1=s1, glue2=s2;
 	addWindowListener(new WindowAdapter() {
+		@Override
 		public void windowClosing(WindowEvent e) {
 		    glue1.removeSampleListener(watcher);
 		    glue2.removeSampleListener(watcher);
@@ -198,18 +199,18 @@ public class ReconcileDialog extends JDialog {
 		return "These samples are correctly reconciled";
 
 	    if (lengthVisible && index < r.length.size())
-		return ((Reconcile.Rule) r.length.get(index));
+		return (r.length.get(index));
 
 	    if (lengthVisible)
 		index -= r.length.size();
 
 	    if (trendsVisible && index < r.trends.size())
-		return ((Reconcile.Rule) r.trends.get(index));
+		return (r.trends.get(index));
 
 	    if (trendsVisible)
 		index -= r.trends.size();
 
-	    return ((Reconcile.Rule) r.percents.get(index));
+	    return (r.percents.get(index));
 	}
 	public int getSize() {
 		// special case: no problems

@@ -29,16 +29,11 @@ import edu.cornell.dendro.corina.print.Line;
 import edu.cornell.dendro.corina.print.EmptyLine;
 import edu.cornell.dendro.corina.print.TextLine;
 import edu.cornell.dendro.corina.print.ByLine;
-import edu.cornell.dendro.corina.print.ThinLine;
 import edu.cornell.dendro.corina.print.TabbedLineFactory;
 import edu.cornell.dendro.corina.print.Printer;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Date;
 
 import java.text.DecimalFormat;
 
@@ -372,7 +367,7 @@ public class SamplePrinter extends Printer {
 
 		// write out all elements
 		for (int i = 0; i < s.getElements().size(); i++) {
-			Element e = (Element) s.getElements().get(i);
+			Element e = s.getElements().get(i);
 
 			if (e.details == null) {
 				try {
@@ -456,7 +451,7 @@ public class SamplePrinter extends Printer {
 
 		public void print(Graphics g, PageFormat pf, float y) {
 			// baseline
-			float baseline = (float) (y + height(g));
+			float baseline = (y + height(g));
 			Graphics2D g2 = (Graphics2D) g; // DO I NEED THIS?  why?
 
 			g2.setFont(new Font("serif", Font.PLAIN, 9));
@@ -496,14 +491,14 @@ public class SamplePrinter extends Printer {
 
 				// right-aligned x1
 				int w = g.getFontMetrics().stringWidth(x1);
-				g2.drawString(x1, (float) (position - w - c_width / 2),
+				g2.drawString(x1, (position - w - c_width / 2),
 						baseline);
 
 				// centered c
-				g2.drawString(c, (float) (position - c_width / 2), baseline);
+				g2.drawString(c, (position - c_width / 2), baseline);
 
 				// left-aligned x2
-				g2.drawString(x2, (float) (position + c_width / 2), baseline);
+				g2.drawString(x2, (position + c_width / 2), baseline);
 			}
 		}
 

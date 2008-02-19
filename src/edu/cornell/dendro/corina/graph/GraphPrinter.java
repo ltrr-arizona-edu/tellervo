@@ -5,7 +5,6 @@ import java.awt.print.Printable;
 import java.awt.print.PageFormat;
 
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 
 // pageable, not printable, because we know we're just 1 page, and we want the user to know this, too.
 public class GraphPrinter implements Pageable {

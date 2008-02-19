@@ -19,12 +19,14 @@ public class URLEncodingOutputStream extends FilterOutputStream {
 		super(out);
 	}
 
+	@Override
 	public void write(int b) throws IOException {
 		byte[] bytes = new byte[] { (byte) b };
 		
 		write(bytes);
 	}
 	
+	@Override
 	public void write(byte[] bytes) throws IOException {
 		String output = URLEncoder.encode(new String(bytes), "UTF-8");
 		

@@ -4,13 +4,10 @@
 package edu.cornell.dendro.corina.site;
 
 import java.awt.Dimension;
-import java.awt.Window;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JMenuBar;
-import javax.swing.JScrollPane;
-
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.XFrame;
@@ -54,6 +51,7 @@ public class SiteEditor extends XFrame implements SaveableDocument {
         setVisible(true);
 	}
 	
+	@Override
 	public void setTitle(String appendage) {
 		if(appendage != null)
 			super.setTitle("Site List " + appendage + " - " + Build.VERSION + " " + Build.TIMESTAMP);

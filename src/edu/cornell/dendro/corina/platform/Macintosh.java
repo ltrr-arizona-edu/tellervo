@@ -150,6 +150,7 @@ public class Macintosh {
 					if (method.getName().equals("handleQuit")) {
 						// needs to run in its own thread, for reasons i don't entirely understand.
 						(new Thread() {
+							@Override
 							public void run() {
 								try {
 									glue.run();

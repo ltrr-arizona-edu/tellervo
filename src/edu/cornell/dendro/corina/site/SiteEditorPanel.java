@@ -1,9 +1,7 @@
 package edu.cornell.dendro.corina.site;
 
 import edu.cornell.dendro.corina.map.MapFrame;
-import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.SiteDB;
 import edu.cornell.dendro.corina.site.Country;
 import edu.cornell.dendro.corina.site.SiteInfoDialog;
 import edu.cornell.dendro.corina.util.PopupListener;
@@ -22,10 +20,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Font;
 import java.awt.event.ActionListener;
-import java.awt.event.AdjustmentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -168,6 +164,7 @@ public class SiteEditorPanel extends JPanel {
 	}
 
 	private final class SiteEditorSorter extends MouseAdapter {
+		@Override
 		public void mouseClicked(MouseEvent e) {
 			// which column was clicked?
 			int column = table.getTableHeader().columnAtPoint(e.getPoint());
@@ -415,6 +412,7 @@ public class SiteEditorPanel extends JPanel {
 
 		private long total = 0, number = 0;
 
+		@Override
 		public void setValueAt(Object object, int row, int column) {
 			Site s = (Site) allSites.get(row);
 			String field = (String) columns.get(column);
@@ -455,6 +453,7 @@ public class SiteEditorPanel extends JPanel {
 			updateLabel();
 		}
 		
+		@Override
 		public Class getColumnClass(int column) {
 			String field = (String) columns.get(column);
 			
@@ -467,12 +466,14 @@ public class SiteEditorPanel extends JPanel {
 			return String.class;
 		}
 
+		@Override
 		public String getColumnName(int column) {
 			String field = (String) columns.get(column);
 
 			return field;
 		}
 
+		@Override
 		public boolean isCellEditable(int row, int column) {
 			String field = (String) columns.get(column);
 			
@@ -512,6 +513,7 @@ public class SiteEditorPanel extends JPanel {
 		// override it!
 		if(font != null) {
 			table = new JTable() {
+				@Override
 				public Component prepareEditor(TableCellEditor editor, int row, int column) {
 					Component c = super.prepareEditor(editor, row, column);
 					
@@ -539,8 +541,8 @@ public class SiteEditorPanel extends JPanel {
 		}
 		
 		JScrollPane scroll = new JScrollPane(table);
-		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		// click-to-sort
 		table.getTableHeader().addMouseListener(new SiteEditorSorter());
@@ -549,6 +551,7 @@ public class SiteEditorPanel extends JPanel {
 		JPopupMenu sitePopup = new SitePopup();
 		table.addMouseListener(new PopupListener(sitePopup));
 		table.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					int i = table.getSelectedRow();
@@ -753,6 +756,7 @@ public class SiteEditorPanel extends JPanel {
 	// QUESTION: what's a jcheckbox with background=blue look like?
 	// (i.e., do i need to make col 0 non-opaque, and paint blue first?)
 	private static class EvenOddRenderer extends DefaultTableCellRenderer {
+		@Override
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column) {
@@ -813,7 +817,8 @@ public class SiteEditorPanel extends JPanel {
 	private class CountryRenderer extends EvenOddRenderer {
 	    public CountryRenderer() { super(); }
 
-	    public void setValue(Object value) {
+	    @Override
+		public void setValue(Object value) {
 	    	if(value instanceof String) {
 	    		String country = (String) value;
 				try {

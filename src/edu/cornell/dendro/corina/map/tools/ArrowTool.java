@@ -29,7 +29,6 @@ import edu.cornell.dendro.corina.site.Site;
 import edu.cornell.dendro.corina.site.SiteDB;
 import edu.cornell.dendro.corina.site.SiteInfoDialog;
 import edu.cornell.dendro.corina.site.SiteNotFoundException;
-import edu.cornell.dendro.corina.util.Angle;
 import edu.cornell.dendro.corina.ui.Builder;
 
 import java.awt.Color;
@@ -39,7 +38,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
 import java.awt.Rectangle;
-import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
@@ -81,27 +79,34 @@ public class ArrowTool extends Tool {
         this.v = v;
     }
 
-    Icon getIcon() {
+    @Override
+	Icon getIcon() {
 	return Builder.getIcon("arrow.png");
     }
-    Cursor getCursor() {
+    @Override
+	Cursor getCursor() {
         return new Cursor(Cursor.DEFAULT_CURSOR);
     }
-    String getTooltip() {
+    @Override
+	String getTooltip() {
         return "Selection Tool";
     }
-    String getName() {
+    @Override
+	String getName() {
         return "Info";
     }
-    Character getKey() {
+    @Override
+	Character getKey() {
         return new Character('v');
     }
-    KeyStroke getFastKey() {
+    @Override
+	KeyStroke getFastKey() {
         return null; // should i have a NoShortcutException or singleton/flyweight or something?
     }
 
     // mouse
-    public void mouseClicked(MouseEvent e) {
+    @Override
+	public void mouseClicked(MouseEvent e) {
         // what site am i looking at?
         // if control, add this to the selected-set
         // if no control, this becomes the selected-set
@@ -149,7 +154,8 @@ public class ArrowTool extends Tool {
     Site site=null;
     Point down=null;
 
-    public void mousePressed(MouseEvent e) {
+    @Override
+	public void mousePressed(MouseEvent e) {
         // if there is a site here, record that
         try {
             r = Projection.makeProjection(v);
@@ -169,7 +175,8 @@ public class ArrowTool extends Tool {
         maybeShowPopup(e, v);
     }
 
-    public void mouseDragged(MouseEvent e) {
+    @Override
+	public void mouseDragged(MouseEvent e) {
         if (site != null) {
 	    // no drag -> do nothing
 	    if (e.getPoint().equals(down))
@@ -253,7 +260,8 @@ public class ArrowTool extends Tool {
 
     private Point down2 = null;
 
-    public void mouseReleased(MouseEvent e) {
+    @Override
+	public void mouseReleased(MouseEvent e) {
         if (site != null) {
 	    // no drag -> do nothing
 	    if (e.getPoint().equals(down)) {
@@ -284,7 +292,8 @@ public class ArrowTool extends Tool {
 
     // TODO: decorate selected site(s)
     // TODO: don't draw this label!  it's already being drawn!
-    public void decorate(Graphics g) {
+    @Override
+	public void decorate(Graphics g) {
         if (site != null) {
             // draw the site here myself.
             // this is a performance hack: really, i should just revalidate the layer.
@@ -292,7 +301,7 @@ public class ArrowTool extends Tool {
             Graphics2D g2 = (Graphics2D) g;
 
             g2.setColor(site.getSiteColor());
-            p.setFontForLabel(g2, v);
+            MapPanel.setFontForLabel(g2, v);
 
             //                int numSites = p.sitesForPoint(site).size();
 

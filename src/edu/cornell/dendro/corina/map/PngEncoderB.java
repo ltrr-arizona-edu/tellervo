@@ -38,9 +38,7 @@ package edu.cornell.dendro.corina.map;
  * @version 1.4, 31 March 2000
  */
 
-import java.awt.*;
 import java.awt.image.*;
-import java.util.*;
 import java.util.zip.*;
 import java.io.*;
 
@@ -130,7 +128,8 @@ public class PngEncoderB extends PngEncoder
      * @param encodeAlpha boolean false=no alpha, true=encode alpha
      * @return an array of bytes, or null if there was a problem
      */
-    public byte[] pngEncode( boolean encodeAlpha )
+    @Override
+	public byte[] pngEncode( boolean encodeAlpha )
     {
         byte[]  pngIdBytes = { -119, 80, 78, 71, 13, 10, 26, 10 };
         int     i;
@@ -181,7 +180,8 @@ public class PngEncoderB extends PngEncoder
      *
      * @return an array of bytes, or null if there was a problem
      */
-    public byte[] pngEncode()
+    @Override
+	public byte[] pngEncode()
     {
         return pngEncode( encodeAlpha );
     }
@@ -225,7 +225,8 @@ public class PngEncoderB extends PngEncoder
     /**
      * Write a PNG "IHDR" chunk into the pngBytes array.
      */
-    protected void writeHeader()
+    @Override
+	protected void writeHeader()
     {
         int startPos;
 
@@ -289,7 +290,8 @@ public class PngEncoderB extends PngEncoder
      *
      * @return true if no errors; false if error grabbing pixels
      */
-    protected boolean writeImageData()
+    @Override
+	protected boolean writeImageData()
     {
         int rowsLeft = height;  // number of rows remaining to write
         int startRow = 0;       // starting row to process this time through

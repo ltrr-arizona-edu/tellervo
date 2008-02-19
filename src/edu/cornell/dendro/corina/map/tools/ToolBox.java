@@ -89,7 +89,8 @@ public class ToolBox extends JToolBar {
 
         // let user press the key to select a tool (H => hand, etc.)
         f.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
+            @Override
+			public void keyPressed(KeyEvent e) {
                 // get the letter he typed
                 char c = Character.toUpperCase(e.getKeyChar());
 
@@ -110,7 +111,8 @@ public class ToolBox extends JToolBar {
         // let user temporarily get a tool by holding down a certain key combination (space => hand, etc.)
         f.addKeyListener(new KeyAdapter() {
             private Tool oldTool = null;
-            public void keyPressed(KeyEvent e) {
+            @Override
+			public void keyPressed(KeyEvent e) {
                 // oldTool non-null?  then something was already pressed
                 if (oldTool != null)
                     return;
@@ -142,7 +144,8 @@ public class ToolBox extends JToolBar {
                     }
                 }
             }
-            public void keyReleased(KeyEvent e) {
+            @Override
+			public void keyReleased(KeyEvent e) {
                 // if the user was using this feature,
                 if (oldTool != null) {
                     // go back to whatever the old tool was

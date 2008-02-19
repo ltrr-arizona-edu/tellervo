@@ -1,7 +1,6 @@
 package edu.cornell.dendro.cpgdb;
 
 import java.sql.*;
-import java.util.Properties;
 
 public class DBQuery {
 	// our connection via jdbc to the server

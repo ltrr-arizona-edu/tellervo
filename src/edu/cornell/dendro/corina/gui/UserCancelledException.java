@@ -48,8 +48,8 @@ package edu.cornell.dendro.corina.gui;
    clauses which make it much harder to follow the flow of a function.
    Besides, "user cancelled" <i>is</i> an exceptional situation.)</p>
 
-   @see corina.gui.FileDialog
-   @see corina.util.Overwrite
+   @see edu.cornell.dendro.corina.gui.FileDialog
+   @see edu.cornell.dendro.corina.util.Overwrite
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$

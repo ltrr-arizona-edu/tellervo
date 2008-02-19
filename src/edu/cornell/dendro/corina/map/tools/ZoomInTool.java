@@ -13,7 +13,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Image;
-import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
@@ -34,32 +33,39 @@ public class ZoomInTool extends Tool {
         this.v = v;
     }
 
-    Icon getIcon() {
+    @Override
+	Icon getIcon() {
 	return Builder.getIcon("zoom.png");
     }
-    Cursor getCursor() {
+    @Override
+	Cursor getCursor() {
 	Image image = Builder.getImage("zoom-small.png");
 	return Toolkit.getDefaultToolkit().createCustomCursor(image,
 							      new Point(0, 0),
 							      "Zoomer");
     }
-    String getTooltip() {
+    @Override
+	String getTooltip() {
         return "Zoom In Tool";
     }
-    String getName() {
+    @Override
+	String getName() {
         return "Zoom In";
     }
-    Character getKey() {
+    @Override
+	Character getKey() {
         return new Character('z');
     }
-    KeyStroke getFastKey() {
+    @Override
+	KeyStroke getFastKey() {
         return KeyStroke.getKeyStroke(new Character(' '), Event.META_MASK);
     }
     // cmd-space
     // return KeyStroke.getKeyStroke("meta space"); // meta-space on mac, control-space elsewhere
 
     // keyboard
-    public void keyPressed(KeyEvent e) {
+    @Override
+	public void keyPressed(KeyEvent e) {
         System.out.println("key pressed, zoom-in tool sees it");
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             aborted = true;
@@ -71,7 +77,8 @@ public class ZoomInTool extends Tool {
     
     // mouse
     private Projection r;
-    public void mouseClicked(MouseEvent e) {
+    @Override
+	public void mouseClicked(MouseEvent e) {
         // recenter on this point
         r.unproject(e.getPoint(), v.center);
 
@@ -89,7 +96,8 @@ public class ZoomInTool extends Tool {
     boolean aborted = false;
     Point p1, p2;
 
-    public void mousePressed(MouseEvent e) {
+    @Override
+	public void mousePressed(MouseEvent e) {
         r = Projection.makeProjection(v);
 
         // store mouse-down point
@@ -99,7 +107,8 @@ public class ZoomInTool extends Tool {
         aborted = false;
     }
 
-    public void mouseDragged(MouseEvent e) {
+    @Override
+	public void mouseDragged(MouseEvent e) {
         if (aborted)
             return;
 
@@ -110,7 +119,8 @@ public class ZoomInTool extends Tool {
         p.repaint();
     }
 
-    public void mouseReleased(MouseEvent e) {
+    @Override
+	public void mouseReleased(MouseEvent e) {
         // i wasn't just dragging?  bah.
         if (!draw)
             return;
@@ -147,7 +157,8 @@ public class ZoomInTool extends Tool {
 	p.repaint();
     }
 
-    public void decorate(Graphics g) {
+    @Override
+	public void decorate(Graphics g) {
         if (aborted)
             return;
 

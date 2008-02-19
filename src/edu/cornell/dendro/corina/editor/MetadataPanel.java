@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.event.*;
@@ -237,6 +236,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 		s.fireSampleMetadataChanged();
 
 		s.postEdit(new AbstractUndoableEdit() {
+			@Override
 			public void undo() throws CannotUndoException {
 				if (oldValue == null)
 					s.removeMeta(field);
@@ -249,6 +249,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 				s.fireSampleMetadataChanged();
 			}			
 			
+			@Override
 			public void redo() throws CannotRedoException {
 				if(selectedIndex == 0)
 					s.removeMeta(field);
@@ -259,10 +260,12 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 				s.fireSampleMetadataChanged();
 			}
 
+			@Override
 			public boolean canRedo() {
 				return true;
 			}
 
+			@Override
 			public String getPresentationName() {
 				return f.getFieldDescription() + " Change";
 			}
@@ -576,6 +579,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 		// FIXME: shouldn't this be an addNotify(), then?
 		final JScrollPane glue = this;
 		addComponentListener(new ComponentAdapter() {
+			@Override
 			public void componentResized(ComponentEvent e) {
 				GridBagLayout gbl = (GridBagLayout) p.getLayout();
 				int h = gbl.getLayoutDimensions()[1][0]; // (1=height, 0=first row)  "Most applications do not call this method directly."  (I'm special.)

@@ -24,7 +24,6 @@ import edu.cornell.dendro.corina.ui.Builder;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
@@ -63,6 +62,7 @@ public abstract class XFrame extends JFrame {
     public XFrame() {
 	setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 	addWindowListener(new WindowAdapter() {
+		@Override
 		public void windowClosing(WindowEvent e) {
 		    //
 		    // if closing an unsaved document, make sure that's what the user wants.

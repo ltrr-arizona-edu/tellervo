@@ -10,14 +10,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Icon;
-import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
-
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.graph.GraphInfo.colorPair;
 
 /**
  * @author Lucas Madar

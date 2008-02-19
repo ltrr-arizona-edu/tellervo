@@ -32,9 +32,6 @@ import edu.cornell.dendro.corina.ui.I18n;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -145,7 +142,8 @@ public class TruncateDialog extends JDialog {
 
     // when something is typed, update everything from the numbers
     DocumentListener2 updater1 = new DocumentListener2() {
-	    public void update(DocumentEvent e) {
+	    @Override
+		public void update(DocumentEvent e) {
 		updateFromNumbers();
 		updateResult();
 	    }
@@ -153,7 +151,8 @@ public class TruncateDialog extends JDialog {
 
     // when something is typed, update everything from the years
     DocumentListener2 updater2 = new DocumentListener2() {
-	    public void update(DocumentEvent e) {
+	    @Override
+		public void update(DocumentEvent e) {
 		updateFromYears();
 		updateResult();
 	    }
@@ -221,7 +220,7 @@ public class TruncateDialog extends JDialog {
         sec.add(Box.createHorizontalStrut(16));
         sec.add(startPanel);
         sec.add(Box.createHorizontalStrut(12));
-        sec.add(new JLine(JLine.VERTICAL));
+        sec.add(new JLine(SwingConstants.VERTICAL));
         sec.add(Box.createHorizontalStrut(12));
         sec.add(endPanel);
         sec.add(Box.createHorizontalStrut(16));
@@ -279,7 +278,8 @@ public class TruncateDialog extends JDialog {
                 s.postEdit(new AbstractUndoableEdit() {
                     private String filename = (String) s.getMeta("filename");
                     private boolean wasMod = s.isModified();
-                    public void undo() throws CannotUndoException {
+                    @Override
+					public void undo() throws CannotUndoException {
                         s.setMeta("filename", filename);
                         t.uncrop();
                         s.fireSampleRedated();
@@ -287,17 +287,20 @@ public class TruncateDialog extends JDialog {
                         if (!wasMod)
                             s.clearModified();
                     }
-                    public void redo() throws CannotRedoException {
+                    @Override
+					public void redo() throws CannotRedoException {
                         s.removeMeta("filename");
                         t.cropTo(r);
                         s.fireSampleRedated();
                         s.fireSampleDataChanged();
                         s.setModified();
                     }
-                    public boolean canRedo() {
+                    @Override
+					public boolean canRedo() {
                         return true;
                     }
-                    public String getPresentationName() {
+                    @Override
+					public String getPresentationName() {
                         return I18n.getText("truncate");
                     }
                 });

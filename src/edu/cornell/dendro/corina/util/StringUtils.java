@@ -21,7 +21,6 @@
 package edu.cornell.dendro.corina.util;
 
 import java.util.StringTokenizer;
-import java.io.UnsupportedEncodingException;
 
 
 /**
@@ -191,7 +190,7 @@ public class StringUtils {
 			else
 				output.append("&#x");
 
-		    String hex = Integer.toHexString((int) c);
+		    String hex = Integer.toHexString(c);
 		    for (int ii=0; ii<4-hex.length(); ii++)
 			output.append("0");
 		    output.append(hex);

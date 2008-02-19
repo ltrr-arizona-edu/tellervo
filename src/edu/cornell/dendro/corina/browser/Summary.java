@@ -26,15 +26,12 @@ import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.util.GreedyProgressMonitor;
 import edu.cornell.dendro.corina.util.GZIP;
 import edu.cornell.dendro.corina.metadata.*;
-import edu.cornell.dendro.corina.site.Lock; // REFACTOR: move to util!
 import edu.cornell.dendro.corina.core.App;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.Writer;
 import java.io.Reader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.OutputStreamWriter;
@@ -50,8 +47,6 @@ import java.util.Hashtable; // consolidate my maps!  at least explain why i pick
 import java.util.Iterator;
 
 import java.awt.Component;
-import javax.swing.JOptionPane;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.XMLReader;
 import org.xml.sax.InputSource;
@@ -369,15 +364,18 @@ public class Summary {
 
 		private Element element;
 
+		@Override
 		public void startDocument() {
 			items = new HashMap();
 			// Q: what if items already exists?  can that ever happen?  (i think that's ok now)
 		}
 
+		@Override
 		public void endDocument() {
 			// do nothing
 		}
 
+		@Override
 		public void startElement(String uri, String name, String qName,
 				Attributes atts) throws SAXException {
 			data = new StringBuffer();
@@ -406,6 +404,7 @@ public class Summary {
 			}
 		}
 
+		@Override
 		public void endElement(String uri, String name, String qName) {
 			if (name.equals("sample")) {
 				// add to list, and reset for next element
@@ -446,6 +445,7 @@ public class Summary {
 			// -- also need to deal with sample's filename="..." attribute.
 		}
 
+		@Override
 		public void characters(char ch[], int start, int length) {
 			data.append(new String(ch, start, length));
 		}

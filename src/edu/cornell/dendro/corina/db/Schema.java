@@ -181,7 +181,7 @@ import java.sql.*;
 
    </ul>
 
-   @see corina.db.DB
+   @see edu.cornell.dendro.corina.db.DB
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$

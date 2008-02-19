@@ -48,7 +48,8 @@ public class RelativeDate implements Comparable {
     private static int called=0; // THIS METHOD IS CALLED FAR TOO MANY TIMES!
 
     private String memo=null;
-    public String toString() {
+    @Override
+	public String toString() {
 	called++;
 
 	// naive memoization

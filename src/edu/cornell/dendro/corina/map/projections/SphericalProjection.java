@@ -61,10 +61,10 @@ public class SphericalProjection extends Projection {
 
         // BACKWARDS!
         // ALSO, view.center.* should be floats already -- don't cast!
-        rotation = Matrix.makeRotateX((float) -view.center.getLatitudeAsDegrees());
+        rotation = Matrix.makeRotateX(-view.center.getLatitudeAsDegrees());
 
         // BACKWARDS, AND NEGATIVE!
-        rotation = Matrix.multiply(Matrix.makeRotateY((float) view.center.getLongitudeAsDegrees()), rotation);
+        rotation = Matrix.multiply(Matrix.makeRotateY(view.center.getLongitudeAsDegrees()), rotation);
 
         // is there a better way?  (it's upside-down!)
         rotation = Matrix.multiply(Matrix.makeRotateZ(180f), rotation);
@@ -81,7 +81,8 @@ public class SphericalProjection extends Projection {
 
     private Point3D vv = new Point3D();
     
-    public void project(Location location, Point3D point) {
+    @Override
+	public void project(Location location, Point3D point) {
         // put location into rectangular coordinates
         vv.setFromLocation(location);
         vv.scale(FAKE_EARTH_RADIUS / Location.EARTH_RADIUS);
@@ -112,7 +113,8 @@ public class SphericalProjection extends Projection {
 
     // REWRITE: it should be fairly easy to do a direct (non-iterative) computation here
     private static final int EPSILON = 2; // (find location to within |EPSILON| pixels of |pt|)
-    public void unproject(Point point, Location location) {
+    @Override
+	public void unproject(Point point, Location location) {
         // quick-n-dirty: binary search!
         // (assume zrot=0)
         // might fail if zoom<<10 (lat/long aren't very vert/horiz then), but it seems to work

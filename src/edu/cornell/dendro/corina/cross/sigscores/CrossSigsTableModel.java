@@ -41,7 +41,8 @@ class CrossSigsTableModel extends AbstractTableModel {
   /*
    * columns names: -- nr. -- fixed (start - end) -- moving (start - end) -- algorithm name -- overlap -- confidence
    */
-  public String getColumnName(int col) {
+  @Override
+public String getColumnName(int col) {
     switch (col) {
       case 0: return I18n.getText("number");
       case 1: return I18n.getText("fixed") + " (" + this.view.getCrossdate().getFixed().getRange() + ")";
@@ -69,7 +70,8 @@ class CrossSigsTableModel extends AbstractTableModel {
 
   // used so Integer columns get rendered right-aligned.
   // TODO: can i do this for other classes/columns? if not, why not?
-  public Class getColumnClass(int col) {
+  @Override
+public Class getColumnClass(int col) {
     switch (col) {
       case 0: return Integer.class;
       case 1:

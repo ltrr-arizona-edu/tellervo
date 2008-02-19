@@ -168,6 +168,7 @@ public class TableView extends JPanel {
 		// make a table.
 		table = new Table(fixed, moving);
 		jtable = new JTable(table) {
+			@Override
 			public void addNotify() {
 				super.addNotify();
 				System.out.println("width=" + getWidth()); // 0!
@@ -220,6 +221,7 @@ public class TableView extends JPanel {
 
 	 @return a title for this view
 	 */
+	@Override
 	public String toString() {
 		return I18n.getText("crossdating_table");
 	}
@@ -239,7 +241,7 @@ public class TableView extends JPanel {
 
 					// get moving
 					int j = jtable.getSelectedRow();
-					Element m = new Element((String) table.getFilenameOfRow(j));
+					Element m = new Element(table.getFilenameOfRow(j));
 
 					// make graph
 					List list = new ArrayList();
@@ -262,7 +264,7 @@ public class TableView extends JPanel {
 					try {
 						// get moving, make sample, put in editor
 						int j = jtable.getSelectedRow();
-						Sample s = new Sample((String) table
+						Sample s = new Sample(table
 								.getFilenameOfRow(j));
 						new Editor(s);
 					} catch (IOException ioe) {

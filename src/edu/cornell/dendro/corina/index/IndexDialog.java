@@ -46,6 +46,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
 import edu.cornell.dendro.corina.Sample;
@@ -100,7 +101,8 @@ public class IndexDialog extends JDialog {
         public IndexTableModel(IndexSet iset) {
             this.iset = iset;
         }
-        public String getColumnName(int col) {
+        @Override
+		public String getColumnName(int col) {
             switch (col) {
                 case 0:
 		    return I18n.getText("algorithm");
@@ -126,7 +128,7 @@ public class IndexDialog extends JDialog {
             return 3;
         }
         public Object getValueAt(int row, int col) {
-            Index i = (Index) iset.indexes.get(row);
+            Index i = iset.indexes.get(row);
             switch (col) {
 	    case 0: return i.getName();
 	    case 1: return fmtChi2.format(i.getChi2()); // (is defined, as long as N!=0)
@@ -147,7 +149,7 @@ public class IndexDialog extends JDialog {
     // label, centered
     private JComponent makeLabel() {
         JPanel b = new JPanel(new BorderLayout());
-        b.add(new JLabel(I18n.getText("choose_index"), JLabel.LEFT));
+        b.add(new JLabel(I18n.getText("choose_index"), SwingConstants.LEFT));
         return b;
     }
 
@@ -182,7 +184,7 @@ public class IndexDialog extends JDialog {
         // select exponential, because that's probably the one that's going to get used
         // (and we should encourage that)
         for (int i=0; i<iset.indexes.size(); i++) {
-            if (((Index)iset.indexes.get(i)).getIndexFunction() instanceof Exponential) {
+            if ((iset.indexes.get(i)).getIndexFunction() instanceof Exponential) {
                 table.setRowSelectionInterval(i, i);
                 break;
             }
@@ -198,7 +200,7 @@ public class IndexDialog extends JDialog {
 		int row = table.getSelectedRow();
 
                 // graph the index (and target -- see GraphWindow(Index))
-                new GraphWindow((Index) iset.indexes.get(row));
+                new GraphWindow(iset.indexes.get(row));
             }
         });
         return preview;
@@ -219,7 +221,7 @@ public class IndexDialog extends JDialog {
     private void copyIndex() {
         // get the index
         int row = table.getSelectedRow();
-        Index ind = (Index) iset.indexes.get(row);
+        Index ind = iset.indexes.get(row);
 
         // convert it to a 1-column string
         // -- add title here?
@@ -454,7 +456,7 @@ public class IndexDialog extends JDialog {
                 int row = table.getSelectedRow();
 
                 // apply it
-                Index index = (Index) iset.indexes.get(row);
+                Index index = iset.indexes.get(row);
                 index.apply();
 
                 // undo (index implements undoable)

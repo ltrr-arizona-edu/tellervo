@@ -30,12 +30,8 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 
-import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Toolkit;
-import java.awt.BasicStroke;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Image;
 import javax.swing.ImageIcon;
@@ -46,7 +42,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JPopupMenu;
 import javax.swing.JMenuItem;
 
-import java.awt.Event;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;

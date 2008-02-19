@@ -10,7 +10,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableModel;
 
-import edu.cornell.dendro.corina.graph.GraphInfo.colorPair;
 import edu.cornell.dendro.corina.util.ColorPair;
 
 import java.util.List;
@@ -170,11 +169,12 @@ public class ElemColorTable extends JScrollPane {
 			setPreferredSize(new Dimension(30, 20));
 		}
 		
+		@Override
 		public void paint(Graphics g1) {
 			Graphics2D g = (Graphics2D) g1;
 
 			g.clearRect(0, 0, getWidth(), getHeight());
-			g.setStroke(new BasicStroke((float) myThickness));
+			g.setStroke(new BasicStroke(myThickness));
 			g.setColor(new Color(0, 0, 0));
 			g.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2);			
 		}
@@ -196,11 +196,12 @@ public class ElemColorTable extends JScrollPane {
 			setOpaque(true);
 		}
 
+		@Override
 		public void paint(Graphics g1) {
 			Graphics2D g = (Graphics2D) g1;
 
 			g.clearRect(0, 0, getWidth(), getHeight());
-			g.setStroke(new BasicStroke((float) myThickness));
+			g.setStroke(new BasicStroke(myThickness));
 			g.setColor(new Color(0, 0, 0));
 			g.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2);			
 		}
@@ -237,6 +238,7 @@ public class ElemColorTable extends JScrollPane {
 			return parent.getGraphs().size();
 		}
 		
+		@Override
 		public String getColumnName(int col) {
 			switch(col) {
 			case 0:
@@ -249,6 +251,7 @@ public class ElemColorTable extends JScrollPane {
 			return null;
 		}
 		
+		@Override
 		public boolean isCellEditable(int row, int col) {
 			return true;
 		}
@@ -257,6 +260,7 @@ public class ElemColorTable extends JScrollPane {
 			return 3;
 		}
 		
+		@Override
 		public void setValueAt(Object value, int row, int col) {
 			switch(col) {
 			case 0:
@@ -272,6 +276,7 @@ public class ElemColorTable extends JScrollPane {
 			}
 		}
 		
+		@Override
 		public Class getColumnClass(int col) {
 			switch(col) {
 			case 0:

@@ -64,12 +64,14 @@ public class CorinaLog extends SimpleLog {
 
   private static PrintStream createPrintStream(final Log log, final boolean error) {
     return new PrintStream(new OutputStream() {
-      public void write(int b) {
+      @Override
+	public void write(int b) {
         byte[] barray = { (byte)b };
         write(barray,0,1);
       }
 
-      public void write(byte[] b, int off, int len) {
+      @Override
+	public void write(byte[] b, int off, int len) {
         String str = new String(b,off,len);
         // skip any trailing EOL
         if ("\r".equals(str) ||
@@ -204,7 +206,8 @@ public class CorinaLog extends SimpleLog {
   /**
    * Log to central log buffer.
    */
-  protected void write(StringBuffer buf) {
+  @Override
+protected void write(StringBuffer buf) {
     String str = buf.toString();
     //  If multiple threads log stuff, we don't want
     // the output to get mixed up
@@ -227,7 +230,8 @@ public class CorinaLog extends SimpleLog {
   /**
    * Override default dispatching to also call chained instance, if any.
    */
-  protected void log(int type, Object message, Throwable t) {
+  @Override
+protected void log(int type, Object message, Throwable t) {
     super.log(type, message, t);
     if (chained == null) return;
     switch (type) {

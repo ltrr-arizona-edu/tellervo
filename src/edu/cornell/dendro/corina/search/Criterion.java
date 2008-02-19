@@ -3,8 +3,6 @@ package edu.cornell.dendro.corina.search;
 import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.browser.Summary;
-
 import java.io.File;
 
 import java.util.Date;
@@ -127,7 +125,7 @@ public abstract class Criterion {
 		// Criterion c = (Criterion) criteria[i].clone(); -- but it's not cloneable
 		try {
 		    // basically, clone and set fields -- ick!
-		    Criterion c = (Criterion) criteria[i].getClass().newInstance();
+		    Criterion c = criteria[i].getClass().newInstance();
 		    c.lhsField = field;
 		    c.rhs = rhs;
 		    return c;
@@ -255,8 +253,11 @@ public abstract class Criterion {
     // REFACTOR: make a static list of (lhsType, comparison, rhsType, Criterion), and make Criterion just the closure.
 
     static class StringContains extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.TEXT; }
+	@Override
 	String getComparison() {		return "contains"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    // String s1 = (String) lhs;
 	    String s1 = lhs.toString(); // is this indicitave of a BUG?
@@ -269,18 +270,23 @@ public abstract class Criterion {
 	    // (DESIGN: is what i really want "contains all these words"?)
 	    // (DESIGN: should it be case-sensitive if there are any capital letters?)
 	}
+	@Override
 	public String toSQL() {
    	    return "m." + lhsField + " like '~" + rhs + "~'";
 	    // BUG: lhsField is on "m." sometimes, but sometimes on "r."
 	    // (DESIGN: is this a schema problem?  should start/end/span be in meta, too?)
 	}
+	@Override
 	public String toString() {
 	    return lhsField + "=*" + rhs + "*";
 	}
     }
     static class StringStartsWith extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.TEXT; }
+	@Override
 	String getComparison() {		return "starts with"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    String s1 = (String) lhs;
 	    String s2 = (String) rhs;
@@ -289,16 +295,21 @@ public abstract class Criterion {
 
 	    return s1.startsWith(s2);
 	}
+	@Override
 	public String toSQL() {
    	    return "m." + lhsField + " like '" + rhs + "~'";
 	}
+	@Override
 	public String toString() {
 	    return lhsField + "=" + rhs + "*";
 	}
     }
     static class StringEndsWith extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.TEXT; }
+	@Override
 	String getComparison() {		return "ends with"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    String s1 = (String) lhs;
 	    String s2 = (String) rhs;
@@ -307,16 +318,21 @@ public abstract class Criterion {
 
 	    return s1.endsWith(s2);
 	}
+	@Override
 	public String toSQL() {
    	    return "m." + lhsField + " like '~" + rhs + "'";
 	}
+	@Override
 	public String toString() {
 	    return lhsField + "=*" + rhs;
 	}
     }
     static class StringIs extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.TEXT; }
+	@Override
 	String getComparison() {		return "is"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    String s1 = (String) lhs;
 	    String s2 = (String) rhs;
@@ -325,9 +341,11 @@ public abstract class Criterion {
 
 	    return s1.equals(s2);
 	}
+	@Override
 	public String toSQL() {
    	    return "m." + lhsField + " = '" + rhs + "'";
 	}
+	@Override
 	public String toString() {
 	    return lhsField + "=" + rhs;
 	}
@@ -336,49 +354,64 @@ public abstract class Criterion {
     // ----
 
     static class YearIsBefore extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.YEAR; }
+	@Override
 	String getComparison() {		return "is before"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    Year y1 = (Year) lhs;
 	    Year y2 = (Year) rhs;
 
 	    return (y1.compareTo(y2) < 0);
 	}
+	@Override
 	public String toSQL() {
    	    return "r." + lhsField + " < " + rhs;
 	}
+	@Override
 	public String toString() {
 	    return lhsField + "<" + rhs;
 	}
     }
     static class YearIsAfter extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.YEAR; }
+	@Override
 	String getComparison() {		return "is after"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    Year y1 = (Year) lhs;
 	    Year y2 = (Year) rhs;
 
 	    return (y1.compareTo(y2) > 0);
 	}
+	@Override
 	public String toSQL() {
    	    return "r." + lhsField + " > " + rhs;
 	}
+	@Override
 	public String toString() {
 	    return lhsField + ">" + rhs;
 	}
     }
     static class YearIsExactly extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.YEAR; }
+	@Override
 	String getComparison() {		return "is exactly"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    Year y1 = (Year) lhs;
 	    Year y2 = (Year) rhs;
 
 	    return y1.equals(y2);
 	}
+	@Override
 	public String toSQL() {
    	    return "r." + lhsField + " = '" + rhs + "'";
 	}
+	@Override
 	public String toString() {
 	    return lhsField + "=" + rhs;
 	}
@@ -387,33 +420,43 @@ public abstract class Criterion {
     // ----
 
     static class LengthIsGreaterThan extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.LENGTH; }
+	@Override
 	String getComparison() {		return "is greater than"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    Integer l1 = (Integer) lhs;
 	    Integer l2 = (Integer) rhs;
 
 	    return (l1.compareTo(l2) > 0);
 	}
+	@Override
 	public String toSQL() {
    	    return "r." + lhsField + " > " + rhs;
 	}
+	@Override
 	public String toString() {
 	    return lhsField + ">" + rhs;
 	}
     }
     static class LengthIsLessThan extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.LENGTH; }
+	@Override
 	String getComparison() {		return "is less than"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    Integer l1 = (Integer) lhs;
 	    Integer l2 = (Integer) rhs;
 
 	    return (l1.compareTo(l2) < 0);
 	}
+	@Override
 	public String toSQL() {
    	    return "r." + lhsField + " < " + rhs;
 	}
+	@Override
 	public String toString() {
 	    return lhsField + "<" + rhs;
 	}
@@ -422,65 +465,85 @@ public abstract class Criterion {
     // ----
 
     static class NumberIsGreaterThan extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.NUMBER; }
+	@Override
 	String getComparison() {		return "is greater than"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    Integer l1 = (Integer) lhs;
 	    Integer l2 = (Integer) rhs;
 
 	    return (l1.compareTo(l2) > 0);
 	}
+	@Override
 	public String toSQL() {
    	    return "m." + lhsField + " > " + rhs; // m or r?
 	}
+	@Override
 	public String toString() {
 	    return lhsField + ">" + rhs;
 	}
     }
     static class NumberIsLessThan extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.NUMBER; }
+	@Override
 	String getComparison() {		return "is less than"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    Integer l1 = (Integer) lhs;
 	    Integer l2 = (Integer) rhs;
 
 	    return (l1.compareTo(l2) < 0);
 	}
+	@Override
 	public String toSQL() {
    	    return "m." + lhsField + " < " + rhs; // m or r?
 	}
+	@Override
 	public String toString() {
 	    return lhsField + "<" + rhs;
 	}
     }
     static class NumberIsEqualTo extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.NUMBER; }
+	@Override
 	String getComparison() {		return "is equal to"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    Integer l1 = (Integer) lhs;
 	    Integer l2 = (Integer) rhs;
 
 	    return l1.equals(l2);
 	}
+	@Override
 	public String toSQL() {
    	    return "m." + lhsField + " = '" + rhs + "'"; // m or r?
 	}
+	@Override
 	public String toString() {
 	    return lhsField + "=" + rhs;
 	}
     }
     static class NumberIsNotEqualTo extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.NUMBER; }
+	@Override
 	String getComparison() {		return "is not equal to"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    Integer l1 = (Integer) lhs;
 	    Integer l2 = (Integer) rhs;
 
 	    return !l1.equals(l2);
 	}
+	@Override
 	public String toSQL() {
    	    return "NOT m." + lhsField + " = '" + rhs + "'"; // m or r?
 	}
+	@Override
 	public String toString() {
 	    return lhsField + "\u2260" + rhs; // "NOT EQUAL TO"
 	}
@@ -496,9 +559,13 @@ public abstract class Criterion {
     }
 
     static class DateIsToday extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.DATE; }
+	@Override
 	String getComparison() {		return "is today"; }
+	@Override
 	protected int getRHSType() {		return SearchDialog.NONE; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    Date d1 = (Date) lhs;
 	    // rhs is null
@@ -514,25 +581,32 @@ public abstract class Criterion {
 	    resetToMidnight(now);
 	    return target.equals(now);
 	}
+	@Override
 	public String toSQL() {
 	    return "???";
 	}
+	@Override
 	public String toString() {
 	    return lhsField + " modified today";
 	}
     }
     static class DateIsWithin extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.DATE; }
+	@Override
 	String getComparison() {		return "is within"; }
+	@Override
 	protected int getRHSType() {		return SearchDialog.POPUP; }
 	private static String VALUES[] = new String[] {
 	    "1 day", "2 days", "3 days",
 	    "1 week", "2 weeks", "3 weeks",
 	    "1 month", "2 month", "3 month", "6 months",
 	};
+	@Override
 	public String[] getRHSValues() {
-	    return (String[]) VALUES.clone();
+	    return VALUES.clone();
 	}
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    Date d1 = (Date) lhs;
 
@@ -542,7 +616,7 @@ public abstract class Criterion {
 	    // today
 	    Calendar now = Calendar.getInstance();
 	    int x=0; // index into VALUES
-	    while (!VALUES[x].equals((String) rhs))
+	    while (!VALUES[x].equals(rhs))
 		x++;
 
 	    // normalize -- correct?
@@ -569,16 +643,21 @@ public abstract class Criterion {
 	    // but that doesn't exist, so make one by hand.
 	    return now.before(target) || now.equals(target);
 	}
+	@Override
 	public String toSQL() {
 	    return "???";
 	}
+	@Override
 	public String toString() {
 	    return lhsField + " modified within " + rhs;
 	}
     }
     static class DateIsBefore extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.DATE; }
+	@Override
 	String getComparison() {		return "is before"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    Date d1 = (Date) lhs;
 	    Date d2 = (Date) rhs;
@@ -596,16 +675,21 @@ public abstract class Criterion {
 	    // compare and return
 	    return c1.before(c2);
 	}
+	@Override
 	public String toSQL() {
 	    return "???";
 	}
+	@Override
 	public String toString() {
 	    return lhsField + " modified before " + rhs;
 	}
     }
     static class DateIsAfter extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.DATE; }
+	@Override
 	String getComparison() {		return "is after"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    Date d1 = (Date) lhs;
 	    Date d2 = (Date) rhs;
@@ -623,16 +707,21 @@ public abstract class Criterion {
 	    // compare and return
 	    return c1.after(c2);
 	}
+	@Override
 	public String toSQL() {
 	    return "???";
 	}
+	@Override
 	public String toString() {
 	    return lhsField + " modified after " + rhs;
 	}
     }
     static class DateIsExactly extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.DATE; }
+	@Override
 	String getComparison() {		return "is exactly"; }
+	@Override
 	public boolean test(Object lhs, Object rhs) {
 	    Date d1 = (Date) lhs;
 	    Date d2 = (Date) rhs;
@@ -648,9 +737,11 @@ public abstract class Criterion {
 
 	    return c1.equals(c2);
 	}
+	@Override
 	public String toSQL() {
 	    return "???";
 	}
+	@Override
 	public String toString() {
 	    return lhsField + " modified on " + rhs;
 	}
@@ -659,8 +750,11 @@ public abstract class Criterion {
     // ----
 
     static class OneOfIs extends Criterion {
+	@Override
 	int getLHSType() {		return SearchDialog.POPUP; }
+	@Override
 	String getComparison() {		return "is"; }
+	@Override
 	public String[] getRHSValues() {
 	    return null; // WRITEME
 	}

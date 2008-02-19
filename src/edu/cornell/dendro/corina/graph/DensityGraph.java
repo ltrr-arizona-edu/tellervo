@@ -30,7 +30,8 @@ public class DensityGraph implements Graphable {
         return 1.0f;
     }
     
-    public String toString() {
+    @Override
+	public String toString() {
         return gname;
     }
 }

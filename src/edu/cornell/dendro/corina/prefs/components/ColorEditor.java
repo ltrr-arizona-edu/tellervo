@@ -2,7 +2,6 @@ package edu.cornell.dendro.corina.prefs.components;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.table.TableCellEditor;
-import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JTable;

@@ -6,7 +6,6 @@ package edu.cornell.dendro.corina.graph;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 
 
@@ -25,7 +24,8 @@ public class GraphFileMenu extends FileMenu {
     	this.window = win;
     }
 
-    public void addPrintMenu() {
+    @Override
+	public void addPrintMenu() {
 		JMenuItem print1 = Builder.makeMenuItem("plot_print");
 		print1.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {

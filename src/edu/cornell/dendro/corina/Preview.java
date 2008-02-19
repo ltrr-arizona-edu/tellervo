@@ -51,8 +51,8 @@ import java.util.ArrayList;
      <li>I18n for inner classes
    </ul>
 
-   @see corina.gui.PreviewComponent
-   @see corina.Previewable
+   @see edu.cornell.dendro.corina.gui.PreviewComponent
+   @see edu.cornell.dendro.corina.Previewable
  
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$

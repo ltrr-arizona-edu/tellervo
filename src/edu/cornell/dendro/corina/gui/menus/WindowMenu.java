@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.gui.menus;
 
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -46,7 +47,7 @@ public class WindowMenu extends JMenu {
         minimize.setAccelerator(KeyStroke.getKeyStroke("meta M")); // macize!
         minimize.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                w.setState(JFrame.ICONIFIED);
+                w.setState(Frame.ICONIFIED);
             }
         });
         add(minimize);
@@ -105,8 +106,8 @@ public class WindowMenu extends JMenu {
 		    JCheckBoxMenuItem s = (JCheckBoxMenuItem) e.getSource();
 		    setSelected(false); // !s.isSelected());
 
-                    if (glue.getState() == JFrame.ICONIFIED)
-                        glue.setState(JFrame.NORMAL);
+                    if (glue.getState() == Frame.ICONIFIED)
+                        glue.setState(Frame.NORMAL);
                     glue.toFront();
 		    // how to get focus?  requestFocus() doesn't work!
                 }
@@ -128,8 +129,8 @@ public class WindowMenu extends JMenu {
 		    // BUG: if you select yourself, it should do nothing.
 		    // BUG: this doesn't restore the state of .selected
 
-                    if (w.getState() == JFrame.ICONIFIED)
-                        w.setState(JFrame.NORMAL);
+                    if (w.getState() == Frame.ICONIFIED)
+                        w.setState(Frame.NORMAL);
                     w.toFront();
 		    // how to get focus?  requestFocus() doesn't work!
 		    // idea: do-click in the titlebar?  in some safe place?
@@ -143,7 +144,8 @@ public class WindowMenu extends JMenu {
 
         // to me: add window listener
         w.addWindowListener(new WindowAdapter() {
-            public void windowClosed(WindowEvent e) {
+            @Override
+			public void windowClosed(WindowEvent e) {
                 // remove me from all other windows
                 for (int i=0; i<menus.size(); i++) {
                     WindowMenu m = (WindowMenu) menus.get(i);

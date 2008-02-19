@@ -2,7 +2,6 @@ package edu.cornell.dendro.corina;
 
 import junit.framework.TestCase;
 
-import java.util.List;
 import java.util.Iterator;
 
 import edu.cornell.dendro.corina.metadata.MetadataTemplate;

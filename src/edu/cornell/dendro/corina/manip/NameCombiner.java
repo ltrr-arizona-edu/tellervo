@@ -23,7 +23,8 @@ public class NameCombiner {
         List numbers; // Integer(1), Integer(2), etc.
 
         // e.g., "ZKB 1,2"
-        public String toString() {
+        @Override
+		public String toString() {
             // sort numbers
             Collections.sort(numbers);
 

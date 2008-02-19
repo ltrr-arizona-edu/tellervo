@@ -4,12 +4,11 @@ import java.io.*;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Vector;
 
 import java.awt.*;
 import javax.swing.*;
+
 import java.awt.event.*;
 import javax.swing.event.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -114,6 +113,7 @@ public class ColumnBrowser extends JPanel {
 	l.setMaximumSize(new Dimension(100, 10000)); // BAD!
 
 	l.setCellRenderer(new DefaultListCellRenderer() {
+		@Override
 		public Component getListCellRendererComponent(JList list, Object value,
 							      int index,
 							      boolean isSelected, boolean cellHasFocus) {
@@ -162,13 +162,14 @@ public class ColumnBrowser extends JPanel {
 	    return;
 
 	JScrollPane sp = new JScrollPane(list);
-	sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+	sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	sp.setMinimumSize(new Dimension(100, 0));
 	sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 	foldersPanel.add(sp);
 
 	list.addKeyListener(new KeyAdapter() {
+		@Override
 		public void keyPressed(KeyEvent e) {
 		    if (e.getKeyCode() == KeyEvent.VK_RIGHT)
 			System.out.println("-- right!"); // WRITEME: descend into this folder
@@ -189,6 +190,7 @@ public class ColumnBrowser extends JPanel {
 	addFolder(folder);
 
 	addComponentListener(new ComponentAdapter() {
+		@Override
 		public void componentResized(ComponentEvent e) {
 		    if (useLists && e.getComponent().getHeight()<THRESHOLD) {
 			// System.out.println("switch to popups");

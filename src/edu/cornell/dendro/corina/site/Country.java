@@ -3,7 +3,6 @@ package edu.cornell.dendro.corina.site;
 import edu.cornell.dendro.corina.gui.Bug;
 
 import java.util.Properties;
-import java.io.IOException;
 
 /**
    Class for converting between country codes (like "GR") and country
@@ -44,7 +43,7 @@ public class Country {
             Bug.bug(e); // can't happen
         }
 
-        String keys[] = (String []) prop.keySet().toArray(new String[0]);
+        String keys[] = prop.keySet().toArray(new String[0]);
         n = keys.length;
         countries = new Country[n];
         for (int i=0; i<n; i++) {

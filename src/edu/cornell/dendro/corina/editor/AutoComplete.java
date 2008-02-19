@@ -23,8 +23,6 @@ package edu.cornell.dendro.corina.editor;
 import edu.cornell.dendro.corina.site.SiteDB;
 
 import java.util.List;
-import java.util.ArrayList;
-
 import javax.swing.JTextField;
 
 import java.awt.EventQueue;
@@ -42,7 +40,7 @@ import javax.swing.event.DocumentEvent;
          eventually come up first?
    </ul>
 
-   @see corina.site.SiteDB
+   @see edu.cornell.dendro.corina.site.SiteDB
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$

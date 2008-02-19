@@ -10,7 +10,8 @@ final class TableGraphMouseListener extends MouseAdapter {
     this.view = view;
   }
 
-  public void mouseClicked(MouseEvent e) {
+  @Override
+public void mouseClicked(MouseEvent e) {
     if (e.getClickCount() == 2) // double-clicks only
       this.view.graphSelectedCrossdate();
   }

@@ -67,7 +67,8 @@ public class Redate extends AbstractUndoableEdit {
     private Range oldRange, newRange;
     private String oldDating, newDating;
     private boolean oldMod;
-    public void undo() throws CannotUndoException {
+    @Override
+	public void undo() throws CannotUndoException {
 	super.undo();
 	s.setRange(oldRange);
 	s.setMeta("dating", oldDating);
@@ -77,7 +78,8 @@ public class Redate extends AbstractUndoableEdit {
 	    s.fireSampleMetadataChanged(); // for mod flag
 	}
     }
-    public void redo() throws CannotRedoException {
+    @Override
+	public void redo() throws CannotRedoException {
 	super.redo();
 	s.setRange(newRange);
 	s.setMeta("dating", newDating);
@@ -85,7 +87,8 @@ public class Redate extends AbstractUndoableEdit {
 	s.setModified();
 	s.fireSampleMetadataChanged(); // for mod flag
     }
-    public String getPresentationName() {
+    @Override
+	public String getPresentationName() {
 	return I18n.getText("redate");
     }
 }

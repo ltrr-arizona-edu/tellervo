@@ -42,7 +42,6 @@ import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.Preview;
 import edu.cornell.dendro.corina.Previewable;
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Preview.TooManySelectedPreview;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.cross.Grid;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;

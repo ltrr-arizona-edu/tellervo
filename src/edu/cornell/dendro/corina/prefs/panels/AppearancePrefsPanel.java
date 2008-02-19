@@ -167,7 +167,8 @@ public class AppearancePrefsPanel extends JComponent {
     return c;
   }
   
-  public void addNotify() {
+  @Override
+public void addNotify() {
     fpce.setParent(getTopLevelAncestor());
     fpct.setParent(getTopLevelAncestor());
     super.addNotify();

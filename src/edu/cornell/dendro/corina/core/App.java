@@ -3,9 +3,6 @@
 
 package edu.cornell.dendro.corina.core;
 
-import javax.swing.ProgressMonitor;
-import javax.swing.UIManager;
-
 import edu.cornell.dendro.corina.gui.ProgressMeter;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.logging.Logging;

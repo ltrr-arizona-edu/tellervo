@@ -55,11 +55,13 @@ public class UIDefaultsEditor extends AbstractCellEditor implements TableCellEdi
     return chosenEditor.getCellEditorValue();
   }
 
-  public void cancelCellEditing() {
+  @Override
+public void cancelCellEditing() {
     chosenEditor.cancelCellEditing();
   }
 
-  public boolean stopCellEditing() {
+  @Override
+public boolean stopCellEditing() {
     return chosenEditor.stopCellEditing();
   }
 

@@ -42,7 +42,8 @@ public class CountRenderer extends DefaultTableCellRenderer {
     }
 
     // me!
-    public Component getTableCellRendererComponent(JTable table,
+    @Override
+	public Component getTableCellRendererComponent(JTable table,
                                                    Object value,
                                                    boolean isSelected, boolean hasFocus,
                                                    int row, int column) {
@@ -58,7 +59,8 @@ public class CountRenderer extends DefaultTableCellRenderer {
 
     // make it look like an aqua relevence control.  see:
     // http://developer.apple.com/techpubs/macosx/Essentials/AquaHIGuidelines/AHIGControls/Progress_In_ce_Controls.html
-    public void paintComponent(Graphics g) {
+    @Override
+	public void paintComponent(Graphics g) {
         int w=getWidth(), h=getHeight();
         double frac = (double) val / (double) max;
         int stop = (int) (frac * w);

@@ -2,7 +2,6 @@ package edu.cornell.dendro.corina.editor;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -11,7 +10,6 @@ import edu.cornell.dendro.corina.SampleEvent;
 import edu.cornell.dendro.corina.SampleListener;
 import edu.cornell.dendro.corina.graph.BargraphFrame;
 import edu.cornell.dendro.corina.graph.GraphWindow;
-import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -47,6 +45,7 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 				new GraphWindow(sample.getElements());
 			}
 
+			@Override
 			public boolean isEnabled() {
 				return sample.getElements() != null && sample.getElements().size() > 0;
 			}
@@ -59,6 +58,7 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 				new GraphWindow(sample, sample.getElements());
 			}
 
+			@Override
 			public boolean isEnabled() {
 				return sample.getElements() != null && sample.getElements().size() > 0;
 			}
@@ -73,6 +73,7 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 				new BargraphFrame(sample.getElements());
 			}
 
+			@Override
 			public boolean isEnabled() {
 				return sample.getElements() != null && sample.getElements().size() > 0;
 			}

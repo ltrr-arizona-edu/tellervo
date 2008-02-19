@@ -20,6 +20,7 @@
 
 package edu.cornell.dendro.corina.map;
 
+import java.awt.Adjustable;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -158,7 +159,7 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
         ToolBox tools = new ToolBox(mapPanel.getView(), mapPanel, this);
 
         // scrollbars -- need more complex layout for this stuff now
-        JScrollBar sb1 = new JScrollBar(JScrollBar.HORIZONTAL,
+        JScrollBar sb1 = new JScrollBar(Adjustable.HORIZONTAL,
                                         (int) mapPanel.getView().center.getLongitudeAsDegrees(),
                                         10, // changes -- augh!
                                         -180, 180);
@@ -170,7 +171,7 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
                 mapPanel.repaint();
             }
         });
-        JScrollBar sb2 = new JScrollBar(JScrollBar.VERTICAL,
+        JScrollBar sb2 = new JScrollBar(Adjustable.VERTICAL,
                                         - (int) mapPanel.getView().center.getLatitudeAsDegrees(),
                                         10, // changes -- augh!
                                         -90, 90);
@@ -227,13 +228,15 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
 
 	    // allow clicking on these!
 	    large.addMouseListener(new MouseAdapter() {
-		    public void mouseClicked(MouseEvent e) {
+		    @Override
+			public void mouseClicked(MouseEvent e) {
 			slider.setValue(slider.getValue() + 100);
 			mapPanel.updateBuffer();
 		    }
 		});
 	    small.addMouseListener(new MouseAdapter() {
-		    public void mouseClicked(MouseEvent e) {
+		    @Override
+			public void mouseClicked(MouseEvent e) {
 			slider.setValue(slider.getValue() - 100);
 			mapPanel.updateBuffer();
 		    }
@@ -291,7 +294,8 @@ private class MapFileMenu extends FileMenu {
 	}
 
         // see how easy this is?
-        public void addCloseSaveMenus() {
+        @Override
+		public void addCloseSaveMenus() {
             super.addCloseSaveMenus();
 
             addExportPNGMenu();
@@ -329,7 +333,8 @@ private class MapFileMenu extends FileMenu {
         // TODO: implement select-all
         // TODO: dim get-info if nothing is selected -- (extend LabelSet to do selection first)
 
-        protected void init() {
+        @Override
+		protected void init() {
             addUndoRedo();
             addSeparator();
 

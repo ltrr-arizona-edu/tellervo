@@ -87,7 +87,8 @@ public class Spreadsheet implements Filetype, PackedFileType {
         throw new WrongFiletypeException();
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return I18n.getText("format.spreadsheet");
     }
 
@@ -115,9 +116,9 @@ public class Spreadsheet implements Filetype, PackedFileType {
 		List slist = new ArrayList();		
 		for (int i = 0; i < s.getElements().size(); i++) {
 			try {
-				slist.add(((Element) s.getElements().get(i)).load());
+				slist.add((s.getElements().get(i)).load());
 			} catch (IOException ioe) {
-				String filename = ((Element) s.getElements().get(i)).getFilename();
+				String filename = (s.getElements().get(i)).getFilename();
 				throw new IOException("Can't load element " + filename);
 			}			
 		}

@@ -14,8 +14,6 @@ import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.util.Overwrite;
-
 import javax.swing.JMenuItem;
 import javax.swing.AbstractAction;
 
@@ -47,6 +45,7 @@ public class EditorFileMenu extends FileMenu {
 		super(e);
 	}
 
+	@Override
 	public void addCloseSaveMenus() {
 		super.addCloseSaveMenus();
 
@@ -155,7 +154,7 @@ public class EditorFileMenu extends FileMenu {
 						boolean problem = false;
 
 						for (int i = 0; i < s.getElements().size(); i++) {
-							Element e = (Element) s.getElements().get(i);
+							Element e = s.getElements().get(i);
 
 							if (!e.isActive()) // skip inactive
 								continue;
@@ -265,7 +264,7 @@ public class EditorFileMenu extends FileMenu {
 						boolean problem = false;
 
 						for (int i = 0; i < s.getElements().size(); i++) {
-							Element e = (Element) s.getElements().get(i);
+							Element e = s.getElements().get(i);
 
 							if (!e.isActive()) // skip inactive
 								continue;

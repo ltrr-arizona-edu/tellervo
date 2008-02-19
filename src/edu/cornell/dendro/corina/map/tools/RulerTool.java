@@ -20,7 +20,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.Image;
-import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 import javax.swing.JToolTip;
@@ -41,25 +40,31 @@ public class RulerTool extends Tool {
         this.v = v;
     }
 
-    Icon getIcon() {
+    @Override
+	Icon getIcon() {
 	return Builder.getIcon("ruler.png");
     }
-    Cursor getCursor() {
+    @Override
+	Cursor getCursor() {
 	Image image = Builder.getImage("ruler-pointer.png");
 	return Toolkit.getDefaultToolkit().createCustomCursor(image,
 							      new Point(0, 0),
 							      "Ruler");
     }
-    String getTooltip() {
+    @Override
+	String getTooltip() {
         return "Measure Tool";
     }
-    String getName() {
+    @Override
+	String getName() {
         return "Distance";
     }
-    Character getKey() {
+    @Override
+	Character getKey() {
         return new Character('m');
     }
-    KeyStroke getFastKey() {
+    @Override
+	KeyStroke getFastKey() {
         return null;
     }
 
@@ -72,7 +77,8 @@ public class RulerTool extends Tool {
     Projection r;
     Site siteA=null, siteB=null;
 
-    public void mousePressed(MouseEvent e) {
+    @Override
+	public void mousePressed(MouseEvent e) {
         r = Projection.makeProjection(v);
         pointA = e.getPoint();
 
@@ -106,7 +112,8 @@ public class RulerTool extends Tool {
         return site;
     }
     
-    public void mouseDragged(MouseEvent e) {
+    @Override
+	public void mouseDragged(MouseEvent e) {
         pointB = e.getPoint();
 
         // if this point is a site label, use that location!  decorate it somehow, too,
@@ -123,7 +130,8 @@ public class RulerTool extends Tool {
         p.repaint();
     }
 
-    public void mouseReleased(MouseEvent e) {
+    @Override
+	public void mouseReleased(MouseEvent e) {
         // stop drawing line
         mouseIsDown = false;
 
@@ -141,13 +149,14 @@ public class RulerTool extends Tool {
         GeneralPath arrow = new GeneralPath();
         arrow.moveTo((float) (head.x + dist*Math.cos(theta+angle)),
                      (float) (head.y + dist*Math.sin(theta+angle)));
-        arrow.lineTo((float) head.x, (float) head.y);
+        arrow.lineTo(head.x, head.y);
         arrow.lineTo((float) (head.x + dist*Math.cos(theta-angle)),
                      (float) (head.y + dist*Math.sin(theta-angle)));
         g2.draw(arrow);
     }
 
-    public void decorate(Graphics g) {
+    @Override
+	public void decorate(Graphics g) {
         if (mouseIsDown) {
 
             Graphics2D g2 = (Graphics2D) g;
@@ -175,13 +184,13 @@ public class RulerTool extends Tool {
                 // REFACTOR: major refactoring needed here!
                 int numSites = p.sitesForPoint(siteA).size(); // probably shouldn't rebuild list every time, just to count it -- memoize int
                 g2.setColor(Color.yellow);
-                p.setFontForLabel(g2, v);
+                MapPanel.setFontForLabel(g2, v);
                 p.drawLabel(g2, pointA, siteA, numSites, v);
 	    }
             if (siteB != null) {
                 int numSites = p.sitesForPoint(siteB).size();
                 g2.setColor(Color.yellow); // (often called twice -- do i care?)
-                p.setFontForLabel(g2, v); // (often called twice -- do i care?)
+                MapPanel.setFontForLabel(g2, v); // (often called twice -- do i care?)
                 p.drawLabel(g2, pointB, siteB, numSites, v);
 	    }
 

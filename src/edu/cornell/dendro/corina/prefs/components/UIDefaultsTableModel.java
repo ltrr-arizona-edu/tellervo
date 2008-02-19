@@ -82,12 +82,14 @@ public class UIDefaultsTableModel extends AbstractTableModel {
     });
   }
 
-  public boolean isCellEditable(int rowIndex, int columnIndex) {
+  @Override
+public boolean isCellEditable(int rowIndex, int columnIndex) {
     log.trace("isCellEditable " + columnIndex + " " + (columnIndex == 1));
     return columnIndex == 1;
   }
   
-  public void setValueAt(Object value, int row, int col) {
+  @Override
+public void setValueAt(Object value, int row, int col) {
     Object original = data[row][col + 1];
     log.trace("value: " + value);
     log.trace("original: " + value);
@@ -163,14 +165,16 @@ public class UIDefaultsTableModel extends AbstractTableModel {
     });
   }
 
-  public String getColumnName(int columnIndex) {
+  @Override
+public String getColumnName(int columnIndex) {
     if (columnIndex == 0)
       return "Property";
     else
       return "Value";
   }
 
-  public Class getColumnClass(int c) {
+  @Override
+public Class getColumnClass(int c) {
     log.trace("getColumnClass: " + c);
     if (c == 0) return String.class;
     else return UIDefaultsTableModel.class;

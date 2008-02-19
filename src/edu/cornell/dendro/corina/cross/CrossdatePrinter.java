@@ -253,7 +253,7 @@ public class CrossdatePrinter extends Printer {
 			float right = (float) (pf.getImageableX() +
 					       pf.getImageableWidth());
 			int dx = (int) (frac * (right - histoGuide));
-			g2.drawRect((int) histoGuide - 10, y0,
+			g2.drawRect(histoGuide - 10, y0,
 				    dx, g2.getFontMetrics().getHeight());
 			// WHY -10?
 		    }
@@ -282,7 +282,7 @@ public class CrossdatePrinter extends Printer {
         }
         public void print(Graphics g, PageFormat pf, float y) {
             // baseline
-            float baseline = (float) (y + height(g));
+            float baseline = (y + height(g));
             Graphics2D g2 = (Graphics2D) g;
             float colWidth = (float) (pf.getImageableWidth() / 11.);
             g2.setFont(NORMAL);
@@ -323,8 +323,8 @@ public class CrossdatePrinter extends Printer {
                         g2.setStroke(new BasicStroke(0)); // !!!
                         g2.fillRect((int) (pf.getImageableX() + colWidth*(i+2)-width - EPS),
 				    (int) (baseline - ascent - EPS),
-                                    (int) (width + 2*EPS),
-				    (int) (ascent + 2*EPS));
+                                    (width + 2*EPS),
+				    (ascent + 2*EPS));
                         g2.setColor(old);
                     }
 

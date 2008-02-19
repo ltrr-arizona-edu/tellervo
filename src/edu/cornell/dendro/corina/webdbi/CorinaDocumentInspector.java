@@ -1,11 +1,9 @@
 package edu.cornell.dendro.corina.webdbi;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.output.XMLOutputter;
 
 /*
  * This class verifies Corina XML document structure, 
@@ -53,7 +51,7 @@ public class CorinaDocumentInspector {
 		
 		List<Element> messages = header.getChildren("message");
 		for(int i = 0; i < messages.size(); i++) {
-			e = (Element) messages.get(i);
+			e = messages.get(i);
 			
 			int code;
 			String s = e.getAttributeValue("code");

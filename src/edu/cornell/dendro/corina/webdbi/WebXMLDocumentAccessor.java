@@ -42,6 +42,7 @@ public class WebXMLDocumentAccessor {
 	 * @param verb
 	 * What type of action we're making (create, read, update, delete)
 	 */
+	@Deprecated
 	public WebXMLDocumentAccessor(String noun, String verb) {
 		requestMethod = METHOD_GET;
 		

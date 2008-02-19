@@ -7,7 +7,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.ui.Alert;
 
 /**
  * @author lucasm
@@ -43,6 +42,7 @@ public class DummyResource extends ResourceObject<Sample> {
 	 * 
 	 * @param requestElement 
 	 */
+	@Override
 	protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) throws ResourceException {
 		Sample s = this.getObject();
 		String id;
@@ -114,6 +114,7 @@ public class DummyResource extends ResourceObject<Sample> {
 	 * @return true on success, false on failure
 	 * @throws ResourceException if error parsing
 	 */
+	@Override
 	protected boolean processQueryResult(Document doc) throws ResourceException {
 		if(getQueryType() != ResourceQueryType.READ)
 			return true;
@@ -143,6 +144,7 @@ public class DummyResource extends ResourceObject<Sample> {
 	 * NO dialogs or anything here, just internal stuff. UI responses should
 	 * use a ResourceListener
 	 */
+	@Override
 	protected void queryFailed(Exception e) {
 		super.queryFailed(e);
 	}

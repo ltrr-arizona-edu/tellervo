@@ -22,7 +22,6 @@ package edu.cornell.dendro.corina.browser;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -68,7 +67,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
-import javax.swing.ProgressMonitor;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -285,11 +285,13 @@ public class Browser extends XFrame {
 		Geometry.decode(this, geom); // FIXME: bad interface!  (really?)
 		final JFrame glue = this;
 		addComponentListener(new ComponentAdapter() {
+			@Override
 			public void componentMoved(ComponentEvent e) {
 				App.prefs.setPref("corina.browser.geometry", Geometry
 						.encode(glue));
 			}
 
+			@Override
 			public void componentResized(ComponentEvent e) {
 				App.prefs.setPref("corina.browser.geometry", Geometry
 						.encode(glue));
@@ -318,7 +320,7 @@ public class Browser extends XFrame {
 		label1.setFont(label1.getFont().deriveFont(
 				label1.getFont().getSize() * 1.4f)); // (!)
 		label1.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8)); // WHY?
-		label2 = new JLabel("", JLabel.CENTER); // WHY?
+		label2 = new JLabel("", SwingConstants.CENTER); // WHY?
 		label2.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8)); // WHY?
 
 		{
@@ -339,6 +341,7 @@ public class Browser extends XFrame {
 			// center is the table (but searchfield needs this, so put it here)
 			browserModel = new BrowserTableModel();
 			table = new JTable(browserModel) {
+				@Override
 				public boolean isManagingFocus() {
 					return false; // don't let the table see tab/ctrl-tab -- DOESN'T WORK ON WIN32?
 				}
@@ -374,6 +377,7 @@ public class Browser extends XFrame {
 			// REFACTOR: EXTRACT CLASS/METHOD?
 			table.setDefaultRenderer(Object.class,
 					new DefaultTableCellRenderer() {
+						@Override
 						public Component getTableCellRendererComponent(
 								JTable table, Object value, boolean isSelected,
 								boolean hasFocus, int row, int column) {
@@ -433,6 +437,7 @@ public class Browser extends XFrame {
 
 			// table: double-click opens, too.
 			table.addMouseListener(new MouseAdapter() {
+				@Override
 				public void mouseClicked(MouseEvent e) {
 					if (e.getClickCount() == 2 && !e.isPopupTrigger()) {
 						openCurrentFile();
@@ -445,10 +450,12 @@ public class Browser extends XFrame {
 			table.getTableHeader().addMouseListener(new MouseAdapter() {
 				private boolean wasPopup = false;
 
+				@Override
 				public void mousePressed(MouseEvent e) { // mac
 					maybeShowPopup(e);
 				}
 
+				@Override
 				public void mouseReleased(MouseEvent e) { // win32
 					maybeShowPopup(e);
 				}
@@ -467,6 +474,7 @@ public class Browser extends XFrame {
 					}
 				}
 
+				@Override
 				public void mouseClicked(MouseEvent e) {
 					if (e.getClickCount() != 1)
 						// should double-click count as 2 clicks?  users might find that natural.
@@ -488,8 +496,8 @@ public class Browser extends XFrame {
 			// TODO: make option "show/hide non-dendro files" -- don't show *.grf,.. files at all
 
 			JScrollPane sp = new JScrollPane(table,
-					JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+					ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			JPanel main = Layout.borderLayout(north, null, sp, null, null);
 			p.add(main);
 		}
@@ -669,6 +677,7 @@ public class Browser extends XFrame {
 	private void addIconsForFirstColumn() {
 		table.getColumnModel().getColumn(0).setCellRenderer(
 				new DefaultTableCellRenderer() {
+					@Override
 					public Component getTableCellRendererComponent(
 							JTable table, Object value, boolean isSelected,
 							boolean hasFocus, int row, int column) {
@@ -696,6 +705,7 @@ public class Browser extends XFrame {
 
 	// watch for cmd-/digit/
 	private class KeyboardSorter extends KeyAdapter {
+		@Override
 		public void keyTyped(KeyEvent e) {
 			// FIXME: isn't there a way to get the default accel on this platform?
 			// (OAOO in corina.ui, at least)
@@ -1225,11 +1235,13 @@ public class Browser extends XFrame {
 
 		// getColumnName() gets called only once per column, typically, so it
 		// doesn't matter if it's not the fastest method on the block.
+		@Override
 		public String getColumnName(int column) {
 			String field = (String) fields.get(column);
 			return nameOfField(field);
 		}
 
+		@Override
 		public Class getColumnClass(int column) {
 			// DISABLED: when the coloring problem is solved, re-enable this:
 			// if (fields.get(column).equals("range"))
@@ -1627,6 +1639,7 @@ public class Browser extends XFrame {
 		// EXTRACT! -- Printer.printInBackground(PrinterJob).
 		final PrinterJob glue = printJob;
 		(new Thread() {
+			@Override
 			public void run() {
 				try {
 					glue.print();
@@ -1695,7 +1708,7 @@ public class Browser extends XFrame {
 			int tableWidth = table.getWidth();
 			for (int col = 0; col < fields.size(); col++) {
 				int colWidth = table.getColumnModel().getColumn(col).getWidth();
-				float pct = 100f * colWidth / (float) tableWidth;
+				float pct = 100f * colWidth / tableWidth;
 				spec += ">" + pct + "%";
 			}
 			TabbedLineFactory f = new TabbedLineFactory(spec);

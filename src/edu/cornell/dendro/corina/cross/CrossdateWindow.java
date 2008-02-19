@@ -139,11 +139,11 @@ import edu.cornell.dendro.corina.util.Overwrite;
  * so I won't even need to talk about them here.
  * </p>
  * 
- * @see corina.cross.TableView
- * @see corina.cross.GridView
- * @see corina.cross.sigscores.SignificantScoresView
- * @see corina.cross.AllScoresView
- * @see corina.cross.HistogramView
+ * @see edu.cornell.dendro.corina.cross.TableView
+ * @see edu.cornell.dendro.corina.cross.GridView
+ * @see edu.cornell.dendro.corina.cross.sigscores.SignificantScoresView
+ * @see edu.cornell.dendro.corina.cross.AllScoresView
+ * @see edu.cornell.dendro.corina.cross.HistogramView
  * 
  * @author Ken Harris &lt;kbh7 <i style="color: gray">at </i> cornell <i style="color: gray">dot </i> edu&gt;
  * @version $Id$
@@ -562,6 +562,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument,
 			super(w);
 		}
 		
+		@Override
 		public void addCloseSaveMenus() {
 			super.addCloseSaveMenus();
 			
@@ -587,6 +588,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument,
 	// our Edit menu has the additional menu item "Edit this Crossdate" (or
 	// something like that) which brings up a CrossdateKit.
 	private class CrossdateEditMenu extends EditMenu {
+		@Override
 		protected void init() {
 			// BETTER: addTop(), addBottom()?
 

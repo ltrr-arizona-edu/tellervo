@@ -2,30 +2,17 @@
 package edu.cornell.dendro.corina.graph;
 
 import javax.swing.JFrame;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JDialog;
 import javax.swing.JTable;
-import javax.swing.BorderFactory;
-import javax.swing.border.Border;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollBar;
+import javax.swing.WindowConstants;
 import javax.swing.JScrollPane;
-import javax.swing.ProgressMonitor;
-import javax.swing.RepaintManager;
-import javax.swing.Scrollable;
-import javax.swing.filechooser.FileFilter;
 import java.awt.BorderLayout;
-import edu.cornell.dendro.corina.Sample;
 import java.util.List;
-import java.util.ArrayList;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JComboBox;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Color;
 import javax.swing.table.TableCellRenderer;
 import java.awt.Component;
@@ -142,11 +129,12 @@ public class GraphExportDialog extends JPanel {
 			setPreferredSize(new Dimension(30, 20));
 		}
 		
+		@Override
 		public void paint(Graphics g1) {
 			Graphics2D g = (Graphics2D) g1;
 
 			g.clearRect(0, 0, getWidth(), getHeight());
-			g.setStroke(new BasicStroke((float) myThickness));
+			g.setStroke(new BasicStroke(myThickness));
 			g.setColor(new Color(0, 0, 0));
 			g.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2);			
 		}
@@ -168,11 +156,12 @@ public class GraphExportDialog extends JPanel {
 			setOpaque(true);
 		}
 
+		@Override
 		public void paint(Graphics g1) {
 			Graphics2D g = (Graphics2D) g1;
 
 			g.clearRect(0, 0, getWidth(), getHeight());
-			g.setStroke(new BasicStroke((float) myThickness));
+			g.setStroke(new BasicStroke(myThickness));
 			g.setColor(new Color(0, 0, 0));
 			g.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2);			
 		}
@@ -209,6 +198,7 @@ public class GraphExportDialog extends JPanel {
 			return parent.graphs.size();
 		}
 		
+		@Override
 		public String getColumnName(int col) {
 			switch(col) {
 			case 0:
@@ -221,6 +211,7 @@ public class GraphExportDialog extends JPanel {
 			return null;
 		}
 		
+		@Override
 		public boolean isCellEditable(int row, int col) {
 			return true;
 		}
@@ -229,6 +220,7 @@ public class GraphExportDialog extends JPanel {
 			return 3;
 		}
 		
+		@Override
 		public void setValueAt(Object value, int row, int col) {
 			switch(col) {
 			case 0:
@@ -243,6 +235,7 @@ public class GraphExportDialog extends JPanel {
 			}
 		}
 		
+		@Override
 		public Class getColumnClass(int col) {
 			switch(col) {
 			case 0:
@@ -288,7 +281,7 @@ public class GraphExportDialog extends JPanel {
 		
 		myframe = new JDialog(parent, "Graph export controls...", true);
 		myframe.setContentPane(this);		
-		myframe.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		myframe.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		
 		setLayout(new BorderLayout());		
 		
@@ -346,6 +339,7 @@ public class GraphExportDialog extends JPanel {
 		add(buttonpanel, BorderLayout.SOUTH);
 				
 		myframe.addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent e) {
 				success = false;
 				myframe.dispose();

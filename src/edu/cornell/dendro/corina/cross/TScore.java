@@ -109,12 +109,14 @@ public class TScore extends RValue {
 
 	/** Return a prettier name for this cross: "T-Score".
 	 @return the name of this cross, "T-Score" */
+	@Override
 	public String getName() {
 		return I18n.getText("tscore");
 	}
 
 	/** A format string for T-scores.
 	 @return a format string for T-scores */
+	@Override
 	public String getFormat() {
 		return App.prefs.getPref("corina.cross.tscore.format", "0.00");
 	}
@@ -130,6 +132,7 @@ public class TScore extends RValue {
 			2.819f, 2.807f, 2.797f, 2.787f, 2.779f, 2.771f, 2.763f, 2.756f,
 			2.750f, };
 
+	@Override
 	public boolean isSignificant(float score, int overlap) {
 		if (overlap == 0) // it happens...
 			return false;
@@ -142,6 +145,7 @@ public class TScore extends RValue {
 	}
 
 	// OBSOLETE! -- but still used by CrossPrinter, CrossFrame
+	@Override
 	public float getMinimumSignificant() {
 		return 2.55f;
 	}
@@ -152,6 +156,7 @@ public class TScore extends RValue {
 
 	 @return the T-score for this possible cross
 	 */
+	@Override
 	public float compute(int offsetFixed, int offsetMoving) {
 
 		int overlap = Math.min(getFixed().getData().size() - offsetFixed,

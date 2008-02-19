@@ -11,8 +11,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import java.text.*;
-
 import java.lang.reflect.Constructor;
 
 // wrapper for corina.formats: load() and save() a file, given only its filename
@@ -138,7 +136,7 @@ public class Files {
     /**
        Default Filetype class to use for saving files.  Value is "corina.formats.Corina".
 
-       @see corina.formats.Corina
+       @see edu.cornell.dendro.corina.formats.Corina
     */
     private final static String DEFAULT_SAVER = "edu.cornell.dendro.corina.formats.Corina";
     // FIXME: make pref: "default save format: corina, tucson, ..., whatever it was before.

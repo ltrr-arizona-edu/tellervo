@@ -121,6 +121,7 @@ public class FontChooser extends JDialog {
 	    if (fonts[i].compareToIgnoreCase(_name) == 0)
 		nameList.setSelectedIndex(i);
 	nameList.setCellRenderer(new DefaultListCellRenderer() {
+		@Override
 		public Component getListCellRendererComponent(JList list,
 							      Object value,
 							      int index,

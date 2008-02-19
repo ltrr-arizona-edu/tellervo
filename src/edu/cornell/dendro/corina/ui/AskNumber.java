@@ -1,26 +1,18 @@
 package edu.cornell.dendro.corina.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.Component;
 import java.awt.Frame;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.util.Center;
@@ -41,7 +33,7 @@ public class AskNumber extends JDialog {
 		
 		JLabel label = new JLabel(text);
 		label.setLabelFor(spinner);
-		label.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
+		label.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 		
 		top = Layout.borderLayout(null, label, null, spinner, null);

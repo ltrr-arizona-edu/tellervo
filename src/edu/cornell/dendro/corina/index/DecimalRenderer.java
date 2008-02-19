@@ -46,7 +46,8 @@ public class DecimalRenderer extends DefaultTableCellRenderer {
     this.sample = sample;
   }
 
-  public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+  @Override
+public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
     // hack!
     if (!offsetSet) {
       final FontMetrics fm = table.getGraphics().getFontMetrics();
@@ -78,7 +79,8 @@ public class DecimalRenderer extends DefaultTableCellRenderer {
     return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
   }
 
-  public void paintComponent(Graphics g) {
+  @Override
+public void paintComponent(Graphics g) {
     final FontMetrics fm = g.getFontMetrics();
     // compute baseline
     final int baseline = getHeight() - fm.getDescent(); // (is this right?)

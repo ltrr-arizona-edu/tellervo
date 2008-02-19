@@ -11,7 +11,6 @@ import java.awt.event.MouseEvent;
 import java.util.Collections;
 
 import edu.cornell.dendro.corina.cross.HighScore;
-import edu.cornell.dendro.corina.cross.TopScores;
 import edu.cornell.dendro.corina.util.Sort;
 
 
@@ -46,7 +45,8 @@ final class TableHeaderSortMouseListener extends MouseAdapter {
     }
   }
 
-  public void mouseClicked(MouseEvent e) {
+  @Override
+public void mouseClicked(MouseEvent e) {
     int col = this.view.getTable().getColumnModel().getColumnIndexAtX(e.getX());
 
     // if the user clicked on a range column, well, what does that mean?

@@ -12,7 +12,6 @@ import java.util.StringTokenizer;
 import java.awt.event.ActionEvent;
 
 import edu.cornell.dendro.corina.gui.Layout;
-import edu.cornell.dendro.corina.site.*;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.OKCancel;
@@ -170,7 +169,7 @@ public class LocationEditorDialog extends JDialog {
 
 		setResizable(false);
 		OKCancel.addKeyboardDefaults(ok);
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		pack();
 		if (parent != null)

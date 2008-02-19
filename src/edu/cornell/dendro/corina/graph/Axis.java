@@ -23,7 +23,6 @@ package edu.cornell.dendro.corina.graph;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Color;
 import javax.swing.JPanel;
 
 public class Axis extends JPanel {
@@ -157,6 +156,7 @@ public class Axis extends JPanel {
 	// this doesn't get drawn very often: maybe half a dozen times,
 	// max, even with resizing and scrolling.  so don't worry about
 	// efficiency here.
+	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		

@@ -55,7 +55,8 @@ ZKB-3   1011    1099    89
 */
 public class RangesOnly implements Filetype {
 
-    public String toString() {
+    @Override
+	public String toString() {
         return I18n.getText("format.ranges_only");
     }
 
@@ -92,7 +93,7 @@ public class RangesOnly implements Filetype {
 
         int n = s.getElements().size();
         for (int i=0; i<n; i++) {
-            Element e = (Element) s.getElements().get(i);
+            Element e = s.getElements().get(i);
 	    // OBSOLETE: getRange(), etc., now load the file automatically.
 	    // but BUG: they don't throw anything if it fails.
 	    // (and i don't have a getMeta() yet, so it's not unnecessary.)

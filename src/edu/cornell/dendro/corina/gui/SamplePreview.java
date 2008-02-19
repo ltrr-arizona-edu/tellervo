@@ -75,7 +75,8 @@ public class SamplePreview extends JPanel implements PropertyChangeListener {
     // --- using preview component now --- label.setOpaque(false);
 
     sp = new JScrollPane() {
-      public Dimension getPreferredSize () {
+      @Override
+	public Dimension getPreferredSize () {
         Dimension pref = super.getPreferredSize();
         Dimension max = super.getMaximumSize();
         if (pref.height > max.height) pref.height = max.height;

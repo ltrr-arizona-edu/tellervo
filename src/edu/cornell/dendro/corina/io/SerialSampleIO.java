@@ -1,12 +1,8 @@
 package edu.cornell.dendro.corina.io;
 
 import java.util.*;
-import java.lang.reflect.*;
 import java.io.*;
 
-import edu.cornell.dendro.corina.prefs.Prefs;
-import edu.cornell.dendro.corina.prefs.PrefsEvent;
-import edu.cornell.dendro.corina.prefs.PrefsListener;
 import gnu.io.*;
 
 /*
@@ -60,6 +56,7 @@ implements SerialPortEventListener {
 	}
 	
 	// on shutdown, make sure we closed the port.
+	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
 		

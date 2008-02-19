@@ -23,9 +23,7 @@ package edu.cornell.dendro.corina.editor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 
@@ -40,10 +38,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.ListSelectionModel;
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.SampleEvent;
@@ -82,6 +76,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 	private TableModel myModel;
 
 	// pass this along to the table
+	@Override
 	public void requestFocus() {
 		myTable.requestFocus();
 	}
@@ -166,6 +161,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 		// mouse listener for table
 		myTable.addMouseListener(new PopupListener() {
+			@Override
 			public void showPopup(MouseEvent e) {
 				int row = myTable.rowAtPoint(e.getPoint());
 				int col = myTable.columnAtPoint(e.getPoint());
@@ -260,7 +256,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		// make the last column a jprogressbar, % of max
 		int max = 0;
 		if (mySample.getCount() != null)
-			max = ((Integer) Collections.max(mySample.getCount())).intValue();
+			max = (Collections.max(mySample.getCount())).intValue();
 		// DISABLED: use column-header renderer for first column (pseudo-row-headers)
 		// -- it doesn't look that great, since there are still gridlines between
 		// rows; what i should really do is make a real table-row-header, which isn't too hard.

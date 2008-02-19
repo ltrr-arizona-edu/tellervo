@@ -17,11 +17,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 
-import java.awt.ActiveEvent;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.BorderLayout;
-import java.awt.Event;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -240,6 +238,7 @@ public class SiteListPanel extends JPanel {
 
 		private long total = 0, number = 0;
 
+		@Override
 		public void setValueAt(Object object, int row, int column) {
 			Site site = (Site) allSites.get(row);
 
@@ -257,6 +256,7 @@ public class SiteListPanel extends JPanel {
 			panel.updateBufferLabelsOnly();
 		}
 
+		@Override
 		public Class getColumnClass(int column) {
 			String field = (String) columns.get(column);
 			if (field.equals("show?"))
@@ -274,6 +274,7 @@ public class SiteListPanel extends JPanel {
 			 */
 		}
 
+		@Override
 		public String getColumnName(int column) {
 			String field = (String) columns.get(column);
 
@@ -291,6 +292,7 @@ public class SiteListPanel extends JPanel {
 		}
 
 		// FIXME: should i make the "show?" column not-editable if there's no location for it?
+		@Override
 		public boolean isCellEditable(int row, int column) {
 			String field = (String) columns.get(column);
 			Site site = (Site) allSites.get(row);
@@ -360,8 +362,8 @@ public class SiteListPanel extends JPanel {
 		table.setGridColor(Color.lightGray);
 
 		JScrollPane scroll = new JScrollPane(table);
-		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		// click-to-sort
 		table.getTableHeader().addMouseListener(new SiteListSorter());
@@ -370,6 +372,7 @@ public class SiteListPanel extends JPanel {
 		JPopupMenu sitePopup = new SitePopup();
 		table.addMouseListener(new PopupListener(sitePopup));
 		table.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					int i = table.getSelectedRow();
@@ -529,6 +532,7 @@ public class SiteListPanel extends JPanel {
 	// QUESTION: what's a jcheckbox with background=blue look like?
 	// (i.e., do i need to make col 0 non-opaque, and paint blue first?)
 	private static class EvenOddRenderer extends DefaultTableCellRenderer {
+		@Override
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column) {
@@ -560,6 +564,7 @@ public class SiteListPanel extends JPanel {
 	// easier to write little spikes.
 	
 	private final class SiteListSorter extends MouseAdapter {
+		@Override
 		public void mouseClicked(MouseEvent e) {
 			// which column was clicked?
 			int column = table.getTableHeader().columnAtPoint(e.getPoint());

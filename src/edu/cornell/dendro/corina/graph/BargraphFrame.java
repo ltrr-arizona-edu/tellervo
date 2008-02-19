@@ -77,6 +77,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
 import javax.swing.JViewport;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
@@ -213,10 +214,12 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 	    setOpaque(true);
         }
 
+	@Override
 	public void addNotify() {
 	    super.addNotify();
 	    configureEnclosingScrollPane();
 	}
+	@Override
 	public void removeNotify() {
 	    unconfigureEnclosingScrollPane();
 	    super.removeNotify();
@@ -248,7 +251,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 		JLabel white = new JLabel();
 		white.setBackground(Color.white);
 		white.setOpaque(true);
-		scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, white);
+		scrollPane.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, white);
 
 		// JViewport viewPort = (JViewport) getParent();
 		this.addMouseListener(spaceDragger);
@@ -350,7 +353,8 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 		setPreferredSize(new Dimension(Integer.MAX_VALUE, HEIGHT)); // Q: is MAX_VALUE right here?
 	    }
 	    // timing: usually 1-10 ms, rarely up to around 30 ms
-	    public void paintComponent(Graphics g) {
+	    @Override
+		public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		int l = g2.getClipBounds().x;
 		int r = l + g2.getClipBounds().width;
@@ -406,17 +410,20 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 	    }
 	}
 
-        public boolean isFocusTraversable() { // WHY?
+        @Override
+		public boolean isFocusTraversable() { // WHY?
             return true;
         }
 
 	// TEMP: ONLY VALID when b.yfixed, b.xfixed (but isn't that always true now?)
+	@Override
 	public Dimension getMinimumSize() {
 	    Dimension d = super.getMinimumSize();
 	    d.width = (int) (range.span() * X_SCALE);
 	    d.height = bars.size() * (BAR_HEIGHT + BAR_SPACING) + BAR_SPACING;
 	    return d;
 	}
+	@Override
 	public Dimension getPreferredSize() { // REFACTOR: aren't these 2 methods identical?
 	    Dimension d = super.getPreferredSize();
 	    d.width = (int) (range.span() * X_SCALE);
@@ -439,7 +446,8 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 	private Rectangle barRect = new Rectangle();
 	private Rectangle labelRect = new Rectangle();
 
-        public void paintComponent(Graphics g) {
+        @Override
+		public void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
             int w = getWidth();
@@ -770,8 +778,8 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 	range = computeRange();
 
 	final JScrollPane sp = new JScrollPane(bgp,
-					       JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-					       JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+					       ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+					       ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 	sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         getContentPane().add(sp, BorderLayout.CENTER);
 
@@ -811,6 +819,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
         // create popup
         popup = new SamplePopupMenu();
 	bgp.addMouseListener(new PopupListener() {
+		@Override
 		public void showPopup(MouseEvent e) {
 		    // store what bar we're looking at.  abort if null (=no bar here).
 		    currentBar = bgp.getBar(e.getPoint());

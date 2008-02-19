@@ -20,22 +20,17 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.index.Index;
 import edu.cornell.dendro.corina_indexing.Exponential; // extract const! -- better: let user pick!
 import edu.cornell.dendro.corina.util.Overwrite;
-import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.Alert;
 
 import java.io.File;
 import java.io.IOException;
 
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Hashtable;
 
 /*
   3 things which used to be written as python scripts, but should be

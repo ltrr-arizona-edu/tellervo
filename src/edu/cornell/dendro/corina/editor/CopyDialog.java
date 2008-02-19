@@ -6,6 +6,7 @@ package edu.cornell.dendro.corina.editor;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -33,7 +34,7 @@ public class CopyDialog extends JDialog {
 	public CopyDialog(JFrame parent, Range sampleRange) {
 		super(parent, "Copy range...", true);
 		range = sampleRange;
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
 		setLayout(new BorderLayout());
 		

@@ -25,47 +25,31 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Insets;
 import java.awt.Stroke;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.font.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.ProgressMonitor;
-import javax.swing.RepaintManager;
 import javax.swing.Scrollable;
-import javax.swing.filechooser.FileFilter;
-
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
@@ -74,7 +58,6 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.ui.Alert;
-import edu.cornell.dendro.corina.util.ColorUtils;
 
 public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		MouseMotionListener, AdjustmentListener, Scrollable {
@@ -173,11 +156,13 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	/** Returns true, to indicate that this panel can accept focus.
 	 (Needed to respond to KeyEvents.)
 	 @return true, meaning can-accept-focus */
+	@Override
 	public boolean isFocusTraversable() {
 		return true;
 	}
 
 	// ok, this is the magic bullet i was looking for.
+	@Override
 	public boolean isManagingFocus() {
 		return true;
 	}
@@ -366,7 +351,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			dx = (int) (e.getX() - dragStart.getX());
 			dx -= dx % gInfo.getYearWidth();
 		}
-		((Graph) graphs.get(current)).xoffset = startX + (int) dx / gInfo.getYearWidth();
+		((Graph) graphs.get(current)).xoffset = startX + dx / gInfo.getYearWidth();
 		//        recomputeDrops(); -- writeme?
 
 		// repaint
@@ -456,7 +441,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// then i wouldn't need these nested if/case statements.
 
 		// parse it...ugh
-		if (m == KeyEvent.SHIFT_MASK) { // shift keys
+		if (m == InputEvent.SHIFT_MASK) { // shift keys
 			switch (k) {
 			case KeyEvent.VK_TAB:
 				current = (current == 0 ? graphs.size() - 1 : current - 1);
@@ -477,7 +462,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			default:
 				unknown = true;
 			}
-		} else if (m == KeyEvent.CTRL_MASK) { // control keys
+		} else if (m == InputEvent.CTRL_MASK) { // control keys
 			switch (k) {
 			// change the graph scale!
 			case KeyEvent.VK_W: {
@@ -727,8 +712,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		for(i = 0; i < graphs.size(); i++) {
 			Graph g = (Graph) graphs.get(i);
 			
-			g.setColor(gInfo.screenColors[i % gInfo.screenColors.length].getColor(),
-					gInfo.printerColors[i % gInfo.printerColors.length].getColor());
+			g.setColor(GraphInfo.screenColors[i % GraphInfo.screenColors.length].getColor(),
+					GraphInfo.printerColors[i % GraphInfo.printerColors.length].getColor());
 		}
 	}
 
@@ -1058,7 +1043,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			return;
 		
 		int[] overlaps = new int[graphs.size()];		
-		float unitScale = (float) info.get10UnitHeight() / 10.0f;			
+		float unitScale = info.get10UnitHeight() / 10.0f;			
 		Stroke oldstroke;
 		Font oldfont;
 		BasicStroke connectorLine = new BasicStroke(1, BasicStroke.CAP_BUTT,
@@ -1129,6 +1114,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		g2.setFont(oldfont);
 	}
 	
+	@Override
 	public void paintComponent(Graphics g) {
 		ensureScrollerExists();
 
@@ -1350,8 +1336,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 						
 			// assign the new graph a color
 			if(newgraph)
-				cg.setColor(gInfo.screenColors[i % gInfo.screenColors.length].getColor(),
-				 		gInfo.printerColors[i % gInfo.printerColors.length].getColor());	
+				cg.setColor(GraphInfo.screenColors[i % GraphInfo.screenColors.length].getColor(),
+				 		GraphInfo.printerColors[i % GraphInfo.printerColors.length].getColor());	
 		}
 		
 		if(vertaxis != null)

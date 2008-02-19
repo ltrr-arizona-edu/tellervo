@@ -23,7 +23,6 @@ package edu.cornell.dendro.corina.formats;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -55,6 +54,7 @@ import java.io.IOException;
 */
 public class Heidelberg implements Filetype {
 
+	@Override
 	public String toString() {
 		return I18n.getText("format.heidelberg");
 	}

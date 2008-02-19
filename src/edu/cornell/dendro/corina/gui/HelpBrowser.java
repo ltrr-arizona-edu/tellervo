@@ -20,12 +20,9 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import java.io.File;
 import java.io.IOException;
 
 import java.net.URL;
-import java.net.MalformedURLException;
-
 import java.util.Stack;
 
 import java.awt.Dimension;
@@ -41,6 +38,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JEditorPane;
 import javax.swing.JButton;
 import javax.swing.AbstractAction;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.html.HTMLDocument;
@@ -88,6 +86,7 @@ public class HelpBrowser extends JFrame {
     private static final String HELP_PAGE = "corina/manual/index.html";
 
     private static class JPrettyEditorPane extends JEditorPane {
+	@Override
 	public void paintComponent(Graphics g) {
 	    Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -130,7 +129,7 @@ public class HelpBrowser extends JFrame {
 
 	// make it scrollable
 	JScrollPane editorScrollPane = new JScrollPane(editorPane);
-	editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	editorScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	editorScrollPane.setPreferredSize(new Dimension(600, 500));
 	getContentPane().add(editorScrollPane, BorderLayout.CENTER);
 

@@ -288,18 +288,21 @@ public class CrossdatingPrefsPanel extends Container {
         return spinner;
       }
       
-      public Component getEditorComponent() {
+      @Override
+	public Component getEditorComponent() {
         /*System.out.println(spinner.getEditor());
         System.out.println(((JSpinner.NumberEditor) spinner.getEditor()).getFormat().toPattern());
         System.out.println(spinner.getModel());*/
         return spinner; 
       }
 
-      public Object getItem() {
+      @Override
+	public Object getItem() {
         //System.out.println("Getting spinner value: " + spinner.getValue());
         return spinner.getValue();
       }
-      public void setItem(Object anObject) {
+      @Override
+	public void setItem(Object anObject) {
         //System.out.println(anObject.getClass());
         if (anObject instanceof String) {
           String theObject = (String) anObject;
@@ -425,7 +428,8 @@ public class CrossdatingPrefsPanel extends Container {
 
             popup.setEditor(scbe);
             popup.addFocusListener(new FocusAdapter() {
-              public void focusLost(FocusEvent fe) {
+              @Override
+			public void focusLost(FocusEvent fe) {
                 //System.out.println("Combobox lost focus");
                 if (!SwingUtilities.isDescendingFrom(fe.getOppositeComponent(), popup)) {
                   //System.out.println("Combobox lost focus to non-child component");
@@ -434,13 +438,15 @@ public class CrossdatingPrefsPanel extends Container {
                 }
               }
               
-              public void focusGained(FocusEvent fe) {
+              @Override
+			public void focusGained(FocusEvent fe) {
                 //System.out.println("Combobox gained focus");
               }
             });
             
             popup.addMouseListener(new MouseAdapter() {
-              public void mouseClicked(MouseEvent me) {
+              @Override
+			public void mouseClicked(MouseEvent me) {
                 //System.out.println("mouse clicked " + me.getSource() + ", setting editable to true");
                 SwingUtilities.invokeLater(new Runnable() {
                   public void run() {

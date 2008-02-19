@@ -27,9 +27,7 @@ import edu.cornell.dendro.corina.site.Location;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.Font;
-import java.awt.image.BufferedImage;
 import java.awt.BasicStroke;
 import java.awt.Stroke;
 import java.awt.Point;
@@ -69,7 +67,8 @@ public class GridlinesLayer extends Layer {
         @param g2 the Graphics2D object to draw to
         @param r the projection to use
     */
-    public void draw(Graphics2D g2, Projection r) {
+    @Override
+	public void draw(Graphics2D g2, Projection r) {
 	// DISABLED: clip(g2, r);
 	drawGridlines(g2, r);
 	// DISABLED: unclip(g2);

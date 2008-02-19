@@ -63,7 +63,8 @@ public class OKCancel {
         
         // esc => cancel
         dialog.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
+            @Override
+			public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
                     dialog.dispose();
             }

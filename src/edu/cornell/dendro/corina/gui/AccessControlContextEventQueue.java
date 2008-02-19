@@ -17,14 +17,16 @@ public class AccessControlContextEventQueue extends EventQueue {
   }
   private final AccessControlContext aContext = AccessController.getContext();
   private final ThreadLocal threadlocal = new ThreadLocal() {
-    protected synchronized Object initialValue() {
+    @Override
+	protected synchronized Object initialValue() {
       return new PrivilegedActionEvent();
     }
   };
   private void superDispatchEvent(final AWTEvent event) {
     super.dispatchEvent(event);
   }
-  protected void dispatchEvent(final AWTEvent event){
+  @Override
+protected void dispatchEvent(final AWTEvent event){
     PrivilegedActionEvent pae = (PrivilegedActionEvent) threadlocal.get();
     pae.event = event;
     AccessController.doPrivileged(pae, aContext);

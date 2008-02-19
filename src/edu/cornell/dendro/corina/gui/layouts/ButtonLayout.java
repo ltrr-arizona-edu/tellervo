@@ -84,7 +84,7 @@ import java.awt.Insets;
     </ul>
 
     @see java.awt.BorderLayout
-    @see corina.gui.Layout
+    @see edu.cornell.dendro.corina.gui.Layout
 
     @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
     @version $Id$

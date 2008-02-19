@@ -23,7 +23,6 @@ package edu.cornell.dendro.corina.editor;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Weiserjahre;
-import edu.cornell.dendro.corina.gui.Tree;
 import edu.cornell.dendro.corina.gui.ElementsPanel;
 
 import javax.swing.JPanel;

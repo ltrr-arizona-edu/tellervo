@@ -57,7 +57,6 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.StringUtils;
-import javax.swing.JLabel;
 
 /**
    A crossdating grid.
@@ -153,6 +152,7 @@ public class Grid implements Runnable, Previewable {
 			return "<empty/>";
 		}
 		
+		@Override
 		public String toString() {
 			return null;
 		}
@@ -193,6 +193,7 @@ public class Grid implements Runnable, Previewable {
 			return "<header name=\"" + name + "\"/>";
 		}
 		
+		@Override
 		public String toString() {
 			return name;
 		}
@@ -211,6 +212,7 @@ public class Grid implements Runnable, Previewable {
 			this.range = fixed.getRange();
 		}
 
+		@Override
 		public void print(Graphics2D g2, int x, int y, int width, int height, float scale) {
 			// clip this cell 
 			g2.setClip(x, y, width, height);
@@ -224,10 +226,12 @@ public class Grid implements Runnable, Previewable {
 					+ (int) ((getCellHeight() / 2 + getLineHeight()) * scale));
 		}
 
+		@Override
 		public String toXML() {
 			return "<header name=\"" + name + "\" range=\"" + range + "\"/>";
 		}
 		
+		@Override
 		public String toString() {
 			return name.toString() + " " + range.toString();
 		}
@@ -315,6 +319,7 @@ public class Grid implements Runnable, Previewable {
 		
 		// err... cross already has this?
 		
+		@Override
 		public String toString() {
 			String s;
 			
@@ -364,6 +369,7 @@ public class Grid implements Runnable, Previewable {
 			return "<length n=\"" + length + "\"/>";
 		}
 		
+		@Override
 		public String toString() {
 			return String.valueOf(length);
 		}
@@ -769,6 +775,7 @@ public class Grid implements Runnable, Previewable {
 
 		private EmptyCell e = new EmptyCell(); // flyweight for empty cells
 
+		@Override
 		public void startElement(String uri, String name, String qName,
 				Attributes atts) throws SAXException {
 			System.out.println("startElement");
@@ -816,6 +823,7 @@ public class Grid implements Runnable, Previewable {
 			}
 		}
 
+		@Override
 		public void endElement(String uri, String name, String qName) {
 			System.out.println("endElement");
 			// if ending input section, compute num
@@ -1014,6 +1022,7 @@ public class Grid implements Runnable, Previewable {
 			}
 		}				
 		
+		@Override
 		public String toString() {
 			return null;
 		}

@@ -32,7 +32,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-import java.util.List;
 import java.util.Iterator;
 
 import java.text.DecimalFormat;
@@ -110,7 +109,8 @@ import java.text.DecimalFormat;
 */
 public class HTML implements Filetype {
 
-    public String toString() {
+    @Override
+	public String toString() {
 	return I18n.getText("format.html");
     }
 
@@ -220,7 +220,7 @@ public class HTML implements Filetype {
 	    w.write("  <tr>");
 
 	    // load element, and print a summary
-	    Element e = (Element) s.getElements().get(i);
+	    Element e = s.getElements().get(i);
 
 	    // TODO: use real Element summaries here, in case the
 	    // summaries are already loaded!
@@ -378,8 +378,8 @@ public class HTML implements Filetype {
 
 	// header
 	if (!s.isIndexed()) {
-	    float radius = ((float) s.computeRadius()) / 1000f;
-	    float average = radius / (float) s.getData().size();
+	    float radius = (s.computeRadius()) / 1000f;
+	    float average = radius / s.getData().size();
 	    DecimalFormat df = new DecimalFormat("0.000");
 	    w.write("Radius: " + df.format(radius) + " cm, " +
 		    "Average ring width: " + df.format(average) + " cm");

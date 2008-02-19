@@ -70,10 +70,12 @@ public class Exponential extends IndexFunction implements SolverFunction {
 		super(s);
 	}
 
+	@Override
 	public String getI18nTag() {
 		return "exponential";
 	}
 	
+	@Override
 	public String getI18nTagTrailer() {
 		return new Double(p).toString();
 	}
@@ -88,7 +90,7 @@ public class Exponential extends IndexFunction implements SolverFunction {
 		double x[] = new double[n]; // don't worry, this is only called once
 		double y[] = new double[n];
 		for (int i = 0; i < n; i++) {
-			x[i] = (double) i;
+			x[i] = i;
 			y[i] = ((Number)indata.get(i)).doubleValue();
 		}
 
@@ -154,6 +156,7 @@ public class Exponential extends IndexFunction implements SolverFunction {
 	   Run the index; do a search in two passes to find a good
 	   &Chi;<sup>2</sup>.
 	 */
+	@Override
 	public void index() {
 		// big steps
 		search(BIG_START, BIG_STOP, BIG_STEP);
@@ -166,6 +169,7 @@ public class Exponential extends IndexFunction implements SolverFunction {
 		compute(true);
 	}
 
+	@Override
 	public int getLegacyID() {
 		return 7;
 	}

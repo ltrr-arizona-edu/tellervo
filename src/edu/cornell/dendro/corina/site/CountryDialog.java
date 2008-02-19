@@ -47,7 +47,7 @@ import edu.cornell.dendro.corina.util.OKCancel;
 /**
    Display a dialog allowing the user to choose a country, or "None".
 
-   @see corina.site.Country
+   @see edu.cornell.dendro.corina.site.Country
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
@@ -159,6 +159,7 @@ public class CountryDialog {
 
 		// double-click = ok
 		countryList.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					// is it null?

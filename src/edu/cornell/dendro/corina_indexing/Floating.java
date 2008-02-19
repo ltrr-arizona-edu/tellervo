@@ -64,16 +64,19 @@ public class Floating extends IndexFunction {
 		this.window = window;
 	}
 
+	@Override
 	public String getI18nTag() {
 		return "floating";
 	}
 	
+	@Override
 	public String getI18nTagTrailer() {
 		return new Integer(window).toString();
 	}
 
 	/** Calculate the index, by computing the average at each
 	point. */
+	@Override
 	public void index() {
 		// make array weights={1,1,1,...}
 		int weights[] = new int[window];
@@ -89,6 +92,7 @@ public class Floating extends IndexFunction {
 	   a more accurate tree-growth estimate.  but all the docs say to
 	   do what i'm doing, so until they tell me to stop... */
 
+	@Override
 	public int getLegacyID() {
 		return 8;
 	}

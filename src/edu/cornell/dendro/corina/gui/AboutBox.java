@@ -215,7 +215,8 @@ public class AboutBox extends JDialog {
     setResizable(false);
 
     addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent ke) {
+      @Override
+	public void keyPressed(KeyEvent ke) {
         if (ke.getKeyCode() == KeyEvent.VK_ESCAPE) {
           hide();
         }

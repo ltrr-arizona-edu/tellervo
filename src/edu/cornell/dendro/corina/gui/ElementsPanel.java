@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Comparator;
 
-import java.awt.FlowLayout;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Color;
@@ -48,7 +47,6 @@ import java.awt.dnd.*;
 import java.awt.datatransfer.*;
 import javax.swing.*;
 import javax.swing.table.*;
-import javax.swing.event.*;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CannotRedoException;
@@ -282,6 +280,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		// popup, mouselistener for it
 		popup = new ContextPopup();
 		MouseListener popupListener = new PopupListener() {
+			@Override
 			public void showPopup(MouseEvent e) {
 				popup.show(e.getComponent(), e.getX(), e.getY());
 			}
@@ -331,6 +330,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			sample.postEdit(new AbstractUndoableEdit() {
 				List before = save, after;
 
+				@Override
 				public void undo() throws CannotUndoException {
 					after = new ArrayList();
 					after.addAll(elements);
@@ -339,16 +339,19 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					update();
 				}
 
+				@Override
 				public void redo() throws CannotRedoException {
 					elements.clear();
 					elements.addAll(after);
 					update();
 				}
 
+				@Override
 				public boolean canRedo() {
 					return true;
 				}
 
+				@Override
 				public String getPresentationName() {
 					return "Remove"; // (rows.length==1 ?  "Remove Element" : "Remove Elements");
 				}
@@ -459,6 +462,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		chx.setOpaque(true);
 		table.getColumnModel().getColumn(0).setCellEditor(
 				new DefaultCellEditor(chx) {
+					@Override
 					public Component getTableCellEditorComponent(JTable table,
 							Object value, boolean isSelected, int row,
 							int column) {
@@ -503,6 +507,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
 	private void addClickToSort() {
 		table.getTableHeader().addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() != 1)
 					return;
@@ -574,7 +579,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 				return -1;
 			else if (v1 == null && v2 == null)
 				return 0;
-			int x = ((Comparable) v1).compareTo((Comparable) v2);
+			int x = ((Comparable) v1).compareTo(v2);
 			return (rev ? -x : x);
 		}
 	}

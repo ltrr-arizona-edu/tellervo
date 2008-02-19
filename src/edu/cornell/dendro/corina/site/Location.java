@@ -116,7 +116,8 @@ public final class Location implements Cloneable {
 
        @return a Location with the same latitude and longitude as this one
     */
-    public Object clone() {
+    @Override
+	public Object clone() {
         Location clone = new Location();
         clone.latitude = this.latitude;
         clone.longitude = this.longitude;
@@ -394,7 +395,8 @@ public final class Location implements Cloneable {
      
        @return this location as a string
     */
-    public String toString() {
+    @Override
+	public String toString() {
     	return getLatitudeAsString() + " " + getLongitudeAsString();
     }
 
@@ -458,7 +460,8 @@ public final class Location implements Cloneable {
        @param object the other Location to compare this against
        @return true, if the object is a Location and equal to this, else false
     */
-    public boolean equals(Object object) {
+    @Override
+	public boolean equals(Object object) {
         // make sure it's a Location
         if (!(object instanceof Location))
             return false;
@@ -473,7 +476,8 @@ public final class Location implements Cloneable {
 
        @return a hash code for this Location
     */
-    public int hashCode() {
+    @Override
+	public int hashCode() {
         return latitude*latitude*latitude + 3*longitude*longitude*longitude;
     }
 
@@ -521,7 +525,7 @@ public final class Location implements Cloneable {
     // roundTo(x, 10) rounds x to the nearest 10, for example.
     // WRITEME: unit test for this method?
     private int roundTo(float value, int place) {
-        return place * (int) Math.round(value / (float) place);
+        return place * Math.round(value / place);
     }
 
     /**

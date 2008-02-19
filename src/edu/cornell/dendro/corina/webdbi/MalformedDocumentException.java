@@ -3,8 +3,6 @@
  */
 package edu.cornell.dendro.corina.webdbi;
 
-import java.io.IOException;
-
 /**
  * @author Lucas Madar
  *

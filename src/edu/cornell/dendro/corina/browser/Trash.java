@@ -20,7 +20,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
 
 /*

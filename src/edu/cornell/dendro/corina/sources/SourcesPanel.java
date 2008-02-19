@@ -42,6 +42,7 @@ public class SourcesPanel extends JPanel {
     }
 
     private static class SourceRenderer extends DefaultListCellRenderer {
+	@Override
 	public Component getListCellRendererComponent(JList list, Object value,
 						      int index,
 						      boolean isSelected, boolean cellHasFocus) {

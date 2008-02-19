@@ -1,36 +1,6 @@
 package edu.cornell.dendro.corina.index;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.graph.Graph;
-import edu.cornell.dendro.corina.graph.GrapherPanel;
-import edu.cornell.dendro.corina.gui.Layout;
-import edu.cornell.dendro.corina.prefs.PrefsEvent;
-import edu.cornell.dendro.corina.prefs.PrefsListener;
-import edu.cornell.dendro.corina.ui.Builder;
 
 // south=buttons
 // center=graph (preview)

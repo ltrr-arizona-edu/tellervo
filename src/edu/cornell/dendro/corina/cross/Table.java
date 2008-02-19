@@ -168,7 +168,8 @@ public class Table extends AbstractTableModel {
         return rows.size();
     }
 
-    public String getColumnName(int col) {
+    @Override
+	public String getColumnName(int col) {
         switch (col) {
 	case 0: return I18n.getText("sample");
 
@@ -261,7 +262,8 @@ public class Table extends AbstractTableModel {
         Table for sampleTitle"</code> (for the title
         <code>sampleTitle</code> of the singleton).
 	@return the title of this table */
-    public String toString() {
+    @Override
+	public String toString() {
 	return I18n.getText("crossdating_table") + " for " + singleton;
 	// WHAT is this used for?  -- saveHTML, printing, ...?
     }
