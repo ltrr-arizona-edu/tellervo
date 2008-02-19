@@ -15,11 +15,11 @@ include('phpinc/2col-header.php');
 
 <p>Sturt is a member of the following Graduate Fields at Cornell:<p>
 <ul>
-<li><a href="http://www.archaeology.cornell.edu">Archaeology</a></li>
-<li><a href="http://www.arts.cornell.edu/classics/">Classics</a></li>
-<li><a href="http://www.eas.cornell.edu/fbxk/grdglgc.cfm">Geological Sciences</a></li>
-<li><a href="http://www.arts.cornell.edu/histart/">History of Art and Archaeology</a></li>
-<li><a href="http://www.arts.cornell.edu/medieval">Medieval Studies</a></li>
+<li><a href="http://www.gradschool.cornell.edu/fields.php?a=4&id=97">Archaeology</a></li>
+<li><a href="http://www.gradschool.cornell.edu/fields.php?a=3&id=03">Classics</a></li>
+<li><a href="http://www.gradschool.cornell.edu/fields.php?a=4&id=30">Geological Sciences</a></li>
+<li><a href="http://www.gradschool.cornell.edu/fields.php?a=4&id=10">History of Art and Archaeology</a></li>
+<li><a href="http://www.gradschool.cornell.edu/fields.php?a=3&id=11">Medieval Studies</a></li>
 </ul>
 
 <p>Thus a prospective dendrochronology, dendroarchaeology, dendrochemistry, dendroclimatology graduate student wanting to work with Sturt in the Lab should look to apply to one of these fields.  Possibilities exist via other fields also - admitted students in other fields wanting to work in dendrochronology are welcome to contact Sturt to discuss.</p> 

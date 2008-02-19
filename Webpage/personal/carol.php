@@ -9,6 +9,10 @@ $sideimagesarray["carol.jpg"] = "";
 include('../phpinc/2col-header.php');
 
 ?>
+<p>
+Tel. (Lab): 60-255-8650<br/>
+Email: <a href="mailto:cbg4@cornell.edu">cbg4@cornell.edu</a>
+</p>
 
 <h4>Education</h4>
 

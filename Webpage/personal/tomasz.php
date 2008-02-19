@@ -10,6 +10,10 @@ $sideimagesarray["tomaszcoring.jpg"] = "";
 include('../phpinc/2col-header.php');
 
 ?>
+<p>
+Tel. (Lab): 60-255-8650<br/>
+Email: <a href="mailto:tjw42@cornell.edu">tjw42@cornell.edu</a>
+</p>
 <p>	
 Tomasz joined the lab as a Research Associate in 2006 from the Nicolaus Copernicus University in Torun, Poland.  He has 25 years of experience in dendrochronology and wood science working extensively in Europe from Portugal to Poland, but also East Asia, with work from alpine zones to the tropics.  He has worked and published on a wide variety of dendro topics - from works of art through shipwrecks to climate reconstruction on the basis of historical timbers.
 </p> 

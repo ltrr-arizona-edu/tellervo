@@ -28,7 +28,74 @@ $basewebpath="http://dendro.cornell.edu/";
 <link rel="stylesheet" type="text/css" media="screen" href="<?echo $basewebpath."/styles/screen.css";?>" />
 <?php
 
-if($includeDojo)
+if($includeTimeline)
+{
+    ?>
+    <script src="http://simile.mit.edu/timeline/api/timeline-api.js" type="text/javascript"></script>
+    <script>
+    var tl;
+    function onLoad() {
+        var eventSource = new Timeline.DefaultEventSource();        
+        var bandInfos = [
+            Timeline.createBandInfo({
+                eventSource:    eventSource,
+                date:           "1000",
+                width:          "50%", 
+                intervalUnit:   Timeline.DateTime.CENTURY, 
+                durationColor: "#FF0000",
+                intervalPixels: 200
+            }),
+        
+            Timeline.createBandInfo({
+                eventSource:    eventSource,
+                date:           "1000",
+                width:          "30%", 
+                intervalUnit:   Timeline.DateTime.CENTURY, 
+                intervalPixels: 50
+            }),
+
+            Timeline.createBandInfo({
+                eventSource:    eventSource,
+                date:           "1000",
+                width:          "20%", 
+                intervalUnit:   Timeline.DateTime.MILLENNIUM, 
+                intervalPixels: 50,
+                showEventText : false,
+                trackGap:       0.2,
+                trackHeight:    0.5
+            })
+        ];
+        
+        bandInfos[1].syncWith = 0;
+        bandInfos[2].syncWith = 1;
+        bandInfos[1].highlight = true;
+        bandInfos[2].highlight = true;
+
+
+
+
+        tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
+        Timeline.loadXML("http://dendro.cornell.edu/data.xml", function(xml, url) {eventSource.loadXML(xml, url); });
+    }
+
+    var resizeTimerID = null;
+    function onResize() {
+        if (resizeTimerID == null) {
+            resizeTimerID = window.setTimeout(function() {
+                resizeTimerID = null;
+                tl.layout();
+            }, 500);
+        }
+    }
+
+
+
+    </script>
+    <body onload="onLoad();" onresize="onResize();">
+
+<?php
+}
+elseif($includeDojo)
 {
 ?>
     <script type="text/javascript" src="../js/dojo/dojo.js" djConfig="parseOnLoad:true"></script>

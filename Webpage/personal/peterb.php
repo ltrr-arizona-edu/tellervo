@@ -9,6 +9,10 @@ $sideimagesarray["peterb.jpg"] = "Peter Brewer (Research Associate)";
 include('../phpinc/2col-header.php');
 
 ?>
+<p>
+Tel. (Lab): 60-255-8650<br/>
+Email: <a href="mailto:p.brewer@cornell.edu">p.brewer@cornell.edu</a>
+</p>
 
 <h4>Education</h4>
 

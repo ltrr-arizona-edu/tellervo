@@ -8,6 +8,10 @@ $sideimagesarray["charlotte.jpg"] = "Charlotte Pearson (Research Associate)";
 include('../phpinc/2col-header.php');
 
 ?>
+<p>
+Tel. (Lab): 60-255-8650<br/>
+Email: <a href="mailto:clp66@cornell.edu">clp66@cornell.edu</a>
+</p>
 <p>	
 Charlotte joined the lab as a Research Associate in July 2007 from the University of Reading, UK, where she was manager of <a href="http://www.afess.co.uk">Archaeological, Forensic, and Environmental Scientific Services</a> within the School of Human and Environmental Sciences.</p>
 

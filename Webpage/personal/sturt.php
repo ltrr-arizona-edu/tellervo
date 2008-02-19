@@ -21,7 +21,13 @@ $sideimagesarray["KohlTube.jpg"] = "Kohl Tube from Maroni Tsaroukkas, Cyprus.";
 include('../phpinc/2col-header.php');
 
 ?>
+<p>
+Tel. (Lab): 60-255-8650<br/>
+Email: <a href="mailto:sm456@cornell.edu">sm456@cornell.edu</a>
+</p>
 <h4>Positions</h4>
+
+
 <ul>
 <li>Director of the Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern Dendrochronology, and the Cornell Tree Ring Laboratory</li>
 <li>Goldwin Smith Professor of Classical Archaeology, Department of Classics</li>
@@ -29,11 +35,11 @@ include('../phpinc/2col-header.php');
 
 <p>Member of the following Graduate Fields at Cornell:</p>
 <ul>
-<li><a href="http://www.archaeology.cornell.edu">Archaeology</a></li>
-<li><a href="http://www.arts.cornell.edu/classics/">Classics</a></li>
-<li><a href="http://www.eas.cornell.edu/fbxk/grdglgc.cfm">Geological Sciences</a></li>
-<li><a href="http://www.arts.cornell.edu/histart/">History of Art and Archaeology</a></li>
-<li><a href="http://www.arts.cornell.edu/medieval">Medieval Studies</a></li>
+<li><a href="http://www.gradschool.cornell.edu/fields.php?a=4&id=97">Archaeology</a></li>
+<li><a href="http://www.gradschool.cornell.edu/fields.php?a=3&id=03">Classics</a></li>
+<li><a href="http://www.gradschool.cornell.edu/fields.php?a=4&id=30">Geological Sciences</a></li>
+<li><a href="http://www.gradschool.cornell.edu/fields.php?a=4&id=10">History of Art and Archaeology</a></li>
+<li><a href="http://www.gradschool.cornell.edu/fields.php?a=3&id=11">Medieval Studies</a></li>
 </ul>
 
 <p>I am interested in new graduate students wanting to work in any of these fields on dendrochronological, archaeological, geoarchaeological, archaeological science (or related) topics.  For a quick list of my research interests, see section on <a href="#interest">Areas of Academic Interest</a>.  For current dendrochronology (etc.) work in the Lab see our <a href="http://dendro.cornell.edu">webpages</a>.</p>
