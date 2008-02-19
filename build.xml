@@ -254,7 +254,7 @@
     <javadoc sourcepath="src"
            classpathref="compile.classpath"
                 destdir="${dist.home}/docs/api"
-           packagenames="edu.cornell.dendro.corina.*"
+           packagenames="edu.cornell.dendro.corina.*,edu.cornell.dendro.corina_indexing.*"
                  access="public"
                  author="true"
                 version="true"
