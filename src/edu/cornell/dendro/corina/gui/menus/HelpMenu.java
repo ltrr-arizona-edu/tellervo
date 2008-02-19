@@ -105,6 +105,7 @@ public class HelpMenu extends JMenu {
     protected void addErrorLogMenu() {
         add(Builder.makeMenuItem("error_log...", "edu.cornell.dendro.corina.gui.ErrorLog.showLogViewer()"));
         add(Builder.makeMenuItem("error_log_mail...", "edu.cornell.dendro.corina.util.EmailBugReport.submitBugReport()"));
+        add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.DebugInstantiator.showMe()"));
     }
 
     /**
