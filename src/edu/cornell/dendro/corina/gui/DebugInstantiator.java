@@ -33,8 +33,8 @@ public class DebugInstantiator extends JDialog implements ResourceEventListener 
 			ResourceObject<Sample> r = new DummyResource();
 		
 			// create a dumb sample
-			s.setMeta("id", "123451234");
-		
+			s.setMeta("id", "1");
+		 
 			// associate our DummyResource with it
 			r.setObject(s);
 		
@@ -75,7 +75,7 @@ public class DebugInstantiator extends JDialog implements ResourceEventListener 
 		pack();
 		setSize(600, 500);
 		
-		text.append("Hello world!\n");
+		text.append("Starting debug...:\n");
 
 		do_it();
 	}

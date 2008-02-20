@@ -3,9 +3,8 @@
  */
 package edu.cornell.dendro.corina.webdbi;
 
-import org.jdom.Document;
-import org.jdom.Element;
-
+import org.jdom.*;
+import java.util.*;
 import edu.cornell.dendro.corina.Sample;
 
 /**
@@ -19,7 +18,7 @@ public class DummyResource extends ResourceObject<Sample> {
 	 * Constructor for getting information from the server
 	 */
 	public DummyResource() {
-		super("useless", ResourceQueryType.READ);
+		super("specimens", ResourceQueryType.READ);
 	}
 
 	/**
@@ -27,7 +26,7 @@ public class DummyResource extends ResourceObject<Sample> {
 	 * @param queryType
 	 */
 	public DummyResource(ResourceQueryType queryType) {
-		super("useless", queryType);
+		super("specimens", queryType);
 	}
 
 	/**
@@ -64,7 +63,10 @@ public class DummyResource extends ResourceObject<Sample> {
 			if(id == null)
 				throw new ResourceException("Reading in a null id?");
 			
-			requestElement.setAttribute("id", id);
+			Element specimenElement = new Element("specimen");
+			specimenElement.setAttribute("id", id);
+			requestElement.addContent(specimenElement);
+			
 			break;
 
 		/*
@@ -80,6 +82,7 @@ public class DummyResource extends ResourceObject<Sample> {
 				throw new ResourceException("Reading in a null id?");
 			
 			requestElement.setAttribute("id", id);
+			requestElement.setAttribute("limit", "5");
 			// drop through!
 		case CREATE: {
 			String title = (String) s.getMeta("title");
@@ -118,23 +121,41 @@ public class DummyResource extends ResourceObject<Sample> {
 	protected boolean processQueryResult(Document doc) throws ResourceException {
 		if(getQueryType() != ResourceQueryType.READ)
 			return true;
-			
-		Sample s = new Sample();
-		/*
-		 * blah blah blah
-		 * put stuff in to sample
-		 */
-		
-		/*
-		 * Oh no! Unrecoverable error?
-		 * throw new ResourceException("something bad happened, notify queryFailed!");
-		 */
-		
-		/*
-		 * oh no! an error that I just don't want to continue with?
-		 * return false
-		 */
 
+		// Create new sample to hold data
+		Sample s = new Sample();
+		
+		// Extract root and specimen elements from returned XML file
+		Element root = doc.getRootElement();
+		Element specimenElement = root.getChild("specimen");
+		
+		// Set meta data values 
+		if(specimenElement.getAttribute("id") == null ){
+			s.setMeta("id", specimenElement.getAttribute("id"));
+		}
+		if(specimenElement.getAttribute("unmeasuredPre") == null ){	
+			s.setMeta("unmeas_pre", specimenElement.getAttribute("unmeasuredPre"));
+		}
+		if(specimenElement.getAttribute("unmeasuredPost") == null ){
+			s.setMeta("unmeas_post", specimenElement.getAttribute("unmeasuredPost"));
+		}
+		if(specimenElement.getAttribute("sapwoodCount") == null ){
+			s.setMeta("sapwood", specimenElement.getAttribute("sapwoodCount"));
+		}
+		if(specimenElement.getAttribute("pithID") == null ){
+			s.setMeta("pith", specimenElement.getAttribute("pithID"));
+		}
+		if(specimenElement.getAttribute("terminalRingID") == null ){
+			s.setMeta("terminal", specimenElement.getAttribute("terminalRingID"));
+		}
+		if(specimenElement.getAttribute("specimenContinuityID") == null ){
+			s.setMeta("continuous", specimenElement.getAttribute("specimenContinuityID"));
+		}
+		if(specimenElement.getAttribute("specimenQualityID") == null ){
+			s.setMeta("quality", specimenElement.getAttribute("specimenQualityID"));
+		}
+		
+		// Synchronise object
 		setObject(s);
 		return true;
 	}
