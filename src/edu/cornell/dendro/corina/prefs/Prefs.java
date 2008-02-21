@@ -155,7 +155,7 @@ public void init() {
     }
     else {
       // plain ol' unix
-      CORINADIR = home + ".corina";    	
+      CORINADIR = home + ".corina/";    	
       FILENAME = home + ".corina/.preferences";
       MACHINEFILENAME = "/etc/corina_system_preferences";
 
