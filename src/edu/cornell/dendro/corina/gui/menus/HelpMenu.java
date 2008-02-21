@@ -106,7 +106,7 @@ public class HelpMenu extends JMenu {
         add(Builder.makeMenuItem("error_log...", "edu.cornell.dendro.corina.gui.ErrorLog.showLogViewer()"));
         add(Builder.makeMenuItem("error_log_mail...", "edu.cornell.dendro.corina.util.EmailBugReport.submitBugReport()"));
         //add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.DebugInstantiator.showMe()"));
-        add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.newui.SampleDetails.showMe()"));
+        add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.newui.NewJFrame1.main()"));
     }
 
     /**
