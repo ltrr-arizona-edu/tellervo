@@ -35,5 +35,6 @@
 	<classpathentry kind="lib" path="Libraries/jdom.jar"/>
 	<classpathentry kind="lib" path="Libraries/pljava.jar"/>
 	<classpathentry kind="lib" path="Libraries/forms-1.1.0.jar"/>
+	<classpathentry kind="lib" path="Libraries/swing-layout-1.0.3.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
