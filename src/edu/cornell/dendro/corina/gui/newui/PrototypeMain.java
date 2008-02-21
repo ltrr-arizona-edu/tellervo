@@ -28,6 +28,7 @@ public class PrototypeMain extends JDialog {
 	
 	public PrototypeMain(String string) {
 		// TODO Auto-generated constructor stub
+		this((Frame) null);
 	}
 
 	public static void showMe(){
