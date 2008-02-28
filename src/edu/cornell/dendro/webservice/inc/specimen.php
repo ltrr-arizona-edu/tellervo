@@ -21,7 +21,7 @@ class specimen
     var $label = NULL;
     var $treeID = NULL;
     var $dateCollected = NULL;
-    var $specimenTypeID = NULL;
+    var $specimenType = NULL;
     var $terminalRingID = NULL;
     var $isTerminalRingVerified = NULL;
     var $sapwoodCount = NULL;
@@ -76,7 +76,7 @@ class specimen
         // Set speciemn type id from label
         $mySpecimenType = new specimenType;
         $mySpecimenType->setParamsFromLabel($specimenType);
-        $this->specimenTypeID=$mySpecimenType->getID();
+        $this->specimenType=$mySpecimenType->getLabel();
     }
 
     function setSpecimenTypeID($specimenTypeID)
@@ -230,7 +230,7 @@ class specimen
                 $this->label = $row['label'];
                 $this->id = $row['specimenid'];
                 $this->dateCollected = $row['datecollected'];
-                $this->specimenTypeID = $row['specimentypeid'];
+                $this->specimenType = $row['specimentype'];
                 $this->terminalRingID = $row['terminalringid'];
                 $this->isTerminalRingVerified = $row['isterminalringverified'];
                 $this->sapwoodCount = $row['sapwoodcount'];
@@ -293,81 +293,56 @@ class specimen
     /*ACCESSORS*/
     /***********/
 
-    function asXML($mode="all")
+    function asXML($style="full")
     {
+        global $domain;
         $xml ="";
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
-            if(($mode=="all") || ($mode=="begin"))
+            // Only return XML when there are no errors.
+            $mySpecimenType = new specimenType;
+            $mySpecimenType->setParamsFromDB($this->specimenType);
+            $myTerminalRing = new terminalRing;
+            $myTerminalRing->setParamsFromDB($this->terminalRingID);
+            $mySpecimenQuality = new specimenQuality;
+            $mySpecimenQuality->setParamsFromDB($this->specimenQualityID);
+            $mySpecimenContinuity = new specimenContinuity;
+            $mySpecimenContinuity->setParamsFromDB($this->specimenContinuityID);
+            $myPith = new pith;
+            $myPith->setParamsFromDB($this->pithID);
+    
+            if($style=="full")
             {
-                $mySpecimenType = new specimenType;
-                $mySpecimenType->setParamsFromDB($this->specimenTypeID);
-                $myTerminalRing = new terminalRing;
-                $myTerminalRing->setParamsFromDB($this->terminalRingID);
-                $mySpecimenQuality = new specimenQuality;
-                $mySpecimenQuality->setParamsFromDB($this->specimenQualityID);
-                $mySpecimenContinuity = new specimenContinuity;
-                $mySpecimenContinuity->setParamsFromDB($this->specimenContinuityID);
-                $myPith = new pith;
-                $myPith->setParamsFromDB($this->pithID);
-
-                // Only return XML when there are no errors.
                 $xml.= "<specimen ";
                 $xml.= "id=\"".$this->id."\" ";
-                $xml.= "label=\"".$this->label."\" ";
-                $xml.= "dateCollected=\"".$this->dateCollected."\" ";
-                $xml.= "specimenTypeID=\"".$this->specimenTypeID."\" ";
-                $xml.= "specimenType=\"".$mySpecimenType->getLabel()."\" ";
-                $xml.= "terminalRingID=\"".$this->terminalRingID."\" ";
-                $xml.= "terminalRing=\"".$myTerminalRing->getLabel()."\" ";
-                $xml.= "isTerminalRingVerified=\"".fromPGtoStringBool($this->isTerminalRingVerified)."\" ";
-                $xml.= "sapwoodCount=\"".$this->sapwoodCount."\" ";
-                $xml.= "isSapwoodCountVerified=\"".fromPHPtoStringBool($this->isSapwoodCountVerified)."\" ";
-                $xml.= "specimenQualityID=\"".$this->specimenQualityID."\" ";
-                $xml.= "specimenQuality=\"".$mySpecimenQuality->getLabel()."\" ";
-                $xml.= "isSpecimenQualityVerified=\"".fromPHPtoStringBool($this->isSpecimenQualityVerified)."\" ";
-                $xml.= "specimenContinuityID=\"".$this->specimenContinuityID."\" ";
-                $xml.= "specimenContinuity=\"".$mySpecimenContinuity->getLabel()."\" ";
-                $xml.= "isSpecimenContinuityVerified=\"".fromPHPtoStringBool($this->isSpecimenContinuityVerified)."\" ";
-                $xml.= "pithID=\"".$this->pithID."\" ";
-                $xml.= "pith=\"".$myPith->getLabel()."\" ";
-                $xml.= "isPithVerified=\"".fromPHPtoStringBool($this->isPithVerified)."\" ";
-                $xml.= "unmeasuredPre=\"".$this->unmeasuredPre."\" ";
-                $xml.= "isUnmeasuredPreVerified=\"".fromPHPtoStringBool($this->isUnmeasuredPreVerified)."\" ";
-                $xml.= "unmeasuredPost=\"".$this->unmeasuredPost."\" ";
-                $xml.= "isUnmeasuredPostVerified=\"".fromPHPtoStringBool($this->isUnmeasuredPostVerified)."\" ";
-
-                $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
-                $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
-                $xml.= ">";
-
-                /*
-                // Include radii if present
-                if ($this->radiusArray)
-                {
-                    foreach($this->radiusArray as $value)
-                    {
-                        $myRadius = new radius();
-                        $success = $myRadius->setParamsFromDB($value);
-
-                        if($success)
-                        {
-                            $xml.=$myRadius->asXML();
-                        }
-                        else
-                        {
-                            $myMetaHeader->setErrorMessage($myRadius->getLastErrorCode, $myRadius->getLastErrorMessage);
-                        }
-                    }
-                }
-                */
-            }
-
-            if(($mode=="all") || ($mode=="end"))
-            {
-                // End XML tag
+                $xml.= "url=\"http://$domain/specimen/".$this->id."\" > ";
+                $xml.= "<name>".$this->label."</name>\n";
+                $xml.= "<dateCollected>".$this->dateCollected."</dateCollected>\n";
+                $xml.= "<specimenType>".$this->specimenType."</specimenType>\n";
+                $xml.= "<terminalRing>".$myTerminalRing->getLabel()."</terminalRing>\n";
+                $xml.= "<isTerminalRingVerified>".fromPGtoStringBool($this->isTerminalRingVerified)."</isTerminalRingVerified>";
+                $xml.= "<sapwoodCount>".$this->sapwoodCount."</sapwoodCount>\n";
+                $xml.= "<isSapwoodCountVerified>".fromPHPtoStringBool($this->isSapwoodCountVerified)."</isSapwoodCountVerified>";
+                $xml.= "<specimenQuality>".$mySpecimenQuality->getLabel()."</specimenQuality>\n";
+                $xml.= "<isSpecimenQualityVerified>".fromPHPtoStringBool($this->isSpecimenQualityVerified)."</isSpecimenQualityVerified>\n";
+                $xml.= "<specimenContinuity>".$mySpecimenContinuity->getLabel()."</specimenContinuity>\n";
+                $xml.= "<isSpecimenContinuityVerified>".fromPHPtoStringBool($this->isSpecimenContinuityVerified)."</isSpecimenContinuityVerified>\n";
+                $xml.= "<pith>".$myPith->getLabel()."</pith>\n";
+                $xml.= "<isPithVerified>".fromPHPtoStringBool($this->isPithVerified)."</isPithVerified>\n";
+                $xml.= "<unmeasuredPre>".$this->unmeasuredPre."</unmeasuredPre>\n";
+                $xml.= "<isUnmeasuredPreVerified>".fromPHPtoStringBool($this->isUnmeasuredPreVerified)."</isUnmeasuredPreVerified>\n";
+                $xml.= "<unmeasuredPost>".$this->unmeasuredPost."</unmeasuredPost>\n";
+                $xml.= "<isUnmeasuredPostVerified>".fromPHPtoStringBool($this->isUnmeasuredPostVerified)."</isUnmeasuredPostVerified>\n";
+                $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+                $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
                 $xml.= "</specimen>\n";
+            }
+            elseif($style=="brief")
+            {
+                $xml.= "<specimen ";
+                $xml.= "id=\"".$this->id."\" ";
+                $xml.= "url=\"http://$domain/specimen/".$this->id."\" /> ";
             }
 
             return $xml;

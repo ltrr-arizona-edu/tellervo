@@ -130,6 +130,8 @@ class subSite
 
     function asXML($mode="all")
     {
+        global $domain;
+        $xml="";
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
@@ -138,14 +140,15 @@ class subSite
                 // Only return XML when there are no errors.
                 $xml = "<subSite ";
                 $xml.= "id=\"".$this->id."\" ";
-                $xml.= "name=\"".$this->name."\" ";
-                $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
-                $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
-                $xml.= ">";
+                $xml.= "url=\"http://$domain/subSite/".$this->id."\">\n";
+                $xml.= "<name>".$this->name."</name>\n";
+                $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+                $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>";
                 
                 // Include subSite notes if present
                 if ($this->childArray)
                 {
+                    $xml.="<references>\n";
                     foreach($this->childArray as $value)
                     {
                         $myTree = new tree();
@@ -160,6 +163,7 @@ class subSite
                             $myMetaHeader->setErrorMessage($myTree->getLastErrorCode, $myTree->getLastErrorMessage);
                         }
                     }
+                    $xml.="</references>\n";
                 }
             }
 

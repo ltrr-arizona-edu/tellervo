@@ -162,7 +162,7 @@ if(!($myMetaHeader->status == "Error"))
             }
             else
             {
-                trigger_error("103"."Permission denied on siteid ."$myRequest->siteid, E_USER_ERROR);
+                trigger_error("103"."Permission denied on siteid ".$myRequest->siteid, E_USER_ERROR);
             }
         }
     }
@@ -214,9 +214,9 @@ if(!($myMetaHeader->status == "Error"))
 
                         if($success && $success2 && $success3 )
                         {
-                            $xmldata.= $mySite->asXML("begin");
+                            //$xmldata.= $mySite->asXML("begin");
                             $xmldata.= $mySubSite->asXML();
-                            $xmldata.= $mySite->asXML("end");
+                            //$xmldata.= $mySite->asXML("end");
                         }
                         else
                         {
@@ -272,6 +272,6 @@ if(!($myMetaHeader->status == "Error"))
 // ***********
 // OUTPUT DATA
 // ***********
-writeOutput($myMetaHeader, $xmldata, $parentTagBegin, $parentTagEnd);
+writeOutput($myMetaHeader, $xmldata);
 
 

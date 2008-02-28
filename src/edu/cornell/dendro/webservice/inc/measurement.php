@@ -455,7 +455,7 @@ class measurement
 
     }
 
-    function asXML($mode="all", $recurseLevel=99)
+    function asXML($recurseLevel=1, $style="full")
     {
         //print_r($this->referencesArray);
         // Return a string containing the current object in XML format
@@ -465,36 +465,63 @@ class measurement
         // $recurseLevel = the number of levels of references tags you would like 
         //      in your XML output.  
         //      Default = 1 
+        global $domain;
+        $xml = "";
 
         if (!isset($this->lastErrorCode))
         {
-            if(($mode=="all") || ($mode=="begin"))
+            // Only return XML when there are no errors.
+            $xml.= "<measurement ";
+            $xml.= "id=\"".$this->vmeasurementID."\" ";
+            $xml.= "url=\"http://$domain/measurement/".$this->vmeasurementID."\">";
+
+            // Brief Format so just give minimal XML for all references and nothing else
+            if($style=="brief")
             {
-                // Only return XML when there are no errors.
-                $xml = "<measurement ";
-                $xml.= "id=\"".$this->vmeasurementID."\" ";
-                $xml.= "radiusID=\"".$this->radiusID."\" ";
-                $xml.= "isReconciled=\"".fromPHPtoStringBool($this->isReconciled)."\" ";
-                $xml.= "startYear=\"".$this->startYear."\" ";
-                $xml.= "isLegacyCleaned=\"".fromPHPtoStringBool($this->isLegacyCleaned)."\" ";
-                $xml.= "measuredByID=\"".$this->measuredByID."\" ";
-                $xml.= "measuredBy=\"".$this->measuredBy."\" ";
-                $xml.= "ownerUserID=\"".$this->ownerUserID."\" ";
-                $xml.= "owner=\"".$this->owner."\" ";
-                $xml.= "datingTypeID=\"".$this->datingTypeID."\" ";
-                $xml.= "datingType=\"".$this->datingType."\" ";
-                $xml.= "datingErrorPositive=\"".$this->datingErrorPositive."\" ";
-                $xml.= "datingErrorNegative=\"".$this->datingErrorNegative."\" ";
-                $xml.= "name=\"".$this->name."\" ";
-                $xml.= "description=\"".$this->description."\" ";
-                $xml.= "isPublished=\"".fromPHPtoStringBool($this->isPublished)."\" ";
-                $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
-                $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
-                $xml.= ">";
-                
+                foreach($this->referencesArray as $value)
+                {
+                    $myReference = new measurement();
+                    $success = $myReference->setParamsFromDB($value);
+
+                    if($success)
+                    {
+                        $xml.=$myReference->asXML($recurseLevel, "brief");
+                    }
+                    else
+                    {
+                        $myMetaHeader->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
+                    }
+                }
+                $xml.= "</measurement>\n";
+                return $xml;
+            }
+
+            // Full format so give the whole lot
+            elseif($style=="full")
+            {
+                $xml.= "<metadata>\n";
+                $xml.= "<name>".$this->name."</name>\n";
+                $xml.= "<isReconciled>".fromPHPtoStringBool($this->isReconciled)."</isReconciled>\n";
+                $xml.= "<startYear>".$this->startYear."</startYear>\n";
+                $xml.= "<isLegacyCleaned>".fromPHPtoStringBool($this->isLegacyCleaned)."</isLegacyCleaned>\n";
+                $xml.= "<measuredByID>".$this->measuredByID."</measuredByID>\n";
+                $xml.= "<measuredBy>".$this->measuredBy."</measuredBy>\n";
+                $xml.= "<ownerUserID>".$this->ownerUserID."</ownerUserID>\n";
+                $xml.= "<owner>".$this->owner."</owner>\n";
+                $xml.= "<datingTypeID>".$this->datingTypeID."</datingTypeID>\n";
+                $xml.= "<datingType>".$this->datingType."</datingType>\n";
+                $xml.= "<datingErrorPositive>".$this->datingErrorPositive."</datingErrorPositive>\n";
+                $xml.= "<datingErrorNegative>".$this->datingErrorNegative."</datingErrorNegative>\n";
+                $xml.= "<description>".$this->description."</description>\n";
+                $xml.= "<isPublished>".fromPHPtoStringBool($this->isPublished)."</isPublished>\n";
+                $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+                $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+                $xml.= "<type>".$this->vmeasurementOp."</type>\n";
+            
                 // Include site notes if present
                 if ($this->vmeasurementNoteArray)
                 {
+                    $xml.= "<siteNotes>\n";
                     foreach($this->vmeasurementNoteArray as $value)
                     {
                         $myVMeasurementNote = new vmeasurementNote();
@@ -509,12 +536,45 @@ class measurement
                             $myMetaHeader->setErrorMessage($myVMeasurementNote->getLastErrorCode, $myVMeasurementNote->getLastErrorMessage);
                         }
                     }
+                    $xml.= "</siteNotes>\n";
                 }
+                
+                // Include all refences to other vmeasurements recursing if requested 
+                if ($this->referencesArray)
+                {
+                    // Decrement recurseLevel if necessary
+                    if (is_numeric($recurseLevel))  $recurseLevel=$recurseLevel-1;
+
+                    $xml.="<references>\n";
+                    foreach($this->referencesArray as $value)
+                    {
+                        $myReference = new measurement();
+                        $success = $myReference->setParamsFromDB($value);
+
+                        if($success)
+                        {
+                            $xml.=$myReference->asXML($recurseLevel, "brief");
+                        }
+                        else
+                        {
+                            $myMetaHeader->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
+                        }
+                    }
+                    $xml.="</references>\n";
+                }
+                else
+                {
+                    $xml.="<references>\n";
+                    $xml.= "<radius id=\"".$this->radiusID."\" url=\"http://$domain/radius/".$this->radiusID."\" />\n";
+                    $xml.="</references>\n";
+                }
+                
+                $xml.= "</metadata>\n";
 
                 // Include all readings 
                 if ($this->readingsArray)
                 {
-                    $xml.="<readings>";
+                    $xml.="<readings type=\"annual\" units=\"-6\">\n";
                     foreach($this->readingsArray as $key => $value)
                     {
                         // Calculate absolute year where possible
@@ -537,7 +597,12 @@ class measurement
                             $yearvalue = $key;
                         }
 
-                        $xml.="<reading year=\"".$yearvalue."\" wjinc=\"".$value['wjinc']."\" wjdec=\"".$value['wjdec']."\" count=\"".$value['count']."\" value=\"".$value['reading']."\">";
+                        $xml.="<reading year=\"".$yearvalue."\" ";
+                        if ($value['wjinc'] || $value['wjdec'])
+                        {
+                            $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
+                        }
+                        $xml .="count=\"".$value['count']."\" value=\"".$value['reading']."\">";
 
                         // Add any notes that are in the notesArray subarray
                         if(count($value['notesArray']) > 0)
@@ -558,46 +623,24 @@ class measurement
                             }
                         }
 
-                        $xml.="</reading>";
+                        $xml.="</reading>\n";
 
                     }
-                    $xml.="</readings>";
-                }
-                
-                // Include all refences to other vmeasurements recursing if requested 
-                if ($this->referencesArray && $recurseLevel>0)
-                {
-                    // Decrement recurseLevel if necessary
-                    if (is_numeric($recurseLevel))  $recurseLevel= $recurseLevel-1;
-
-                    $xml.="<references>";
-                    foreach($this->referencesArray as $value)
-                    {
-                        $myReference = new measurement();
-                        $success = $myReference->setParamsFromDB($value);
-
-                        if($success)
-                        {
-                            $xml.=$myReference->asXML("all", $recurseLevel);
-                        }
-                        else
-                        {
-                            $myMetaHeader->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
-                        }
-                    }
-                    $xml.="</references>";
-                }
-            }
-
-            if(($mode=="all") || ($mode=="end"))
-            {
-                // End XML tag
+                    $xml.="</readings>\n";
+                }    
                 $xml.= "</measurement>\n";
+                return $xml;
             }
-            return $xml;
+            else
+            {
+                //Brief XML output
+
+
+            }
         }
         else
         {
+            // Errors so returning false
             return FALSE;
         }
     }

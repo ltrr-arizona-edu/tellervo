@@ -147,6 +147,8 @@ class site
 
     function asXML($mode="all")
     {
+        global $domain;
+        $xml ="";
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
@@ -155,11 +157,11 @@ class site
                 // Only return XML when there are no errors.
                 $xml = "<site ";
                 $xml.= "id=\"".$this->id."\" ";
-                $xml.= "code=\"".$this->code."\" ";
-                $xml.= "name=\"".$this->name."\" ";
-                $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
-                $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
-                $xml.= ">";
+                $xml.= "url=\"http://$domain/site/".$this->id."\" >\n ";
+                $xml.= "<name>".$this->name."</name>\n";
+                $xml.= "<code>".$this->code."</code>\n";
+                $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+                $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
 
                 // Include site notes if present
                 if ($this->siteNoteArray)
@@ -183,6 +185,7 @@ class site
                 // Include subsites if present
                 if ($this->subSiteArray)
                 {
+                    $xml.="<references>\n";
                     foreach($this->subSiteArray as $value)
                     {
                         $mySubSite = new subSite();
@@ -197,6 +200,7 @@ class site
                             $myMetaHeader->setErrorMessage($mySubSite->getLastErrorCode, $mySubSite->getLastErrorMessage);
                         }
                     }
+                    $xml.="</references>\n";
                 }
             }
 

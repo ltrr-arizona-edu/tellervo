@@ -76,14 +76,13 @@ class specimenType
         return TRUE;
     }
 
-    function setParamsFromDB($theID)
+    function setParamsFromDB($theLabel)
     {
         // Set the current objects parameters from the database
 
         global $dbconn;
         
-        $this->id=$theID;
-        $sql = "select * from tlkpspecimentype where specimentypeid=$theID";
+        $sql = "select * from tlkpspecimentype where label='$theLabel'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -92,7 +91,7 @@ class specimenType
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No records match the specified id");
+                $this->setErrorMessage("903", "No records match") ;
                 return FALSE;
             }
             else
@@ -124,7 +123,7 @@ class specimenType
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml.= "<specimenType id=\"".$this->id."\">".$this->label."</specimenType>\n";
+            $xml.= "<specimenType>".$this->label."</specimenType>\n";
             return $xml;
         }
         else

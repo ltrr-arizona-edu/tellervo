@@ -183,6 +183,8 @@ class tree
 
     function asXML($mode="all")
     {
+        global $domain;
+        $xml ="";
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
@@ -194,15 +196,15 @@ class tree
                 // Only return XML when there are no errors.
                 $xml = "<tree ";
                 $xml.= "id=\"".$this->id."\" ";
-                $xml.= "label=\"".$this->label."\" ";
-                $xml.= "taxon=\"".$myTaxon->getLabel()."\" ";
-                $xml.= "latitude=\"".$this->latitude."\" ";
-                $xml.= "longitude=\"".$this->longitude."\" ";
-                $xml.= "precision=\"".$this->precision."\" ";
-                $xml.= "isLiveTree=\"".$this->isLiveTree."\" ";
-                $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
-                $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
-                $xml.= ">";
+                $xml.= "url=\"http://$domain/tree/".$this->id."\">\n ";
+                $xml.= "<name>".$this->label."</name>\n";
+                $xml.= "<taxon>".$myTaxon->getLabel()."</taxon>\n";
+                $xml.= "<latitude>".$this->latitude."</latitude>\n";
+                $xml.= "<longitude>".$this->longitude."</longitude>\n";
+                $xml.= "<precision>".$this->precision."</precision>\n";
+                $xml.= "<isLiveTree>".$this->isLiveTree."</isLiveTree>\n";
+                $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+                $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
                 
                 // Include tree notes if present
                 if ($this->treeNoteArray)
@@ -226,6 +228,7 @@ class tree
                 // Include specimens if present
                 if ($this->specimenArray)
                 {
+                    $xml.="<references>\n";
                     foreach($this->specimenArray as $value)
                     {
                         $mySpecimen = new specimen();
@@ -233,13 +236,14 @@ class tree
 
                         if($success)
                         {
-                            $xml.=$mySpecimen->asXML();
+                            $xml.=$mySpecimen->asXML("brief");
                         }
                         else
                         {
                             $myMetaHeader->setErrorMessage($mySpecimen->getLastErrorCode, $mySpecimen->getLastErrorMessage);
                         }
                     }
+                    $xml.="</references>\n";
                 }
             }
 

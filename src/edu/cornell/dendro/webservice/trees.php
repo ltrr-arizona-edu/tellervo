@@ -197,31 +197,18 @@ if(!($myMetaHeader->status == "Error"))
         {
             // DB connection ok
             // Build SQL depending on parameters
-            if(!$myRequest->id==NULL)
+            if($myRequest->id!=NULL)
             {
-                $sql="select tbltree.*, tblsubsite.subsiteid, tblsubsite.siteid from tbltree, tblsubsite  where treeid=$myRequest->id and tbltree.subsiteid=tblsubsite.subsiteid order by tbltree.treeid";
-                // Run SQL
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
                     // Check user has permission to read tree
-                    if($myAuth->treePermission($row['treeid'], "read"))
+                    if($myAuth->treePermission($myRequest->id, "read"))
                     {
                         $myTree = new tree();
-                        $success = $myTree->setParamsFromDB($row['treeid']);
+                        $success = $myTree->setParamsFromDB($myRequest->id);
                         $success2 = $myTree->setChildParamsFromDB();
-                        $mySubSite = new subSite();
-                        $success3 = $mySubSite->setParamsFromDB($row['subsiteid']);
-                        $mySite = new site();
-                        $success4 = $mySite->setParamsFromDB($row['siteid']);
 
-                        if($success && $success2 && $success3 && success4 )
+                        if($success && $success2)
                         {
-                            $xmldata.= $mySite->asXML("begin");
-                            $xmldata.= $mySubSite->asXML("begin");
                             $xmldata.= $myTree->asXML();
-                            $xmldata.= $mySubSite->asXML("end");
-                            $xmldata.= $mySite->asXML("end");
                         }
                         else
                         {
@@ -230,9 +217,8 @@ if(!($myMetaHeader->status == "Error"))
                     }
                     else
                     {
-                        trigger_error("103"."Permission denied on treeid ".$row['treeid'], E_USER_WARNING);
+                        trigger_error("103"."Permission denied on treeid ".$myRequest->id, E_USER_WARNING);
                     }
-                }
             }
             else
             {

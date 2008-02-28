@@ -201,50 +201,27 @@ if(!($myMetaHeader->status == "Error"))
         {
             // DB connection ok
             // Build SQL depending on parameters
-            if(!$myRequest->id==NULL)
+            if($myRequest->id!=NULL)
             {
-                $sql="select tblradius.*, tblspecimen.specimenid, tbltree.treeid, tblsubsite.subsiteid, tblsubsite.siteid from tblradius, tblspecimen, tbltree, tblsubsite where radiusid=".$myRequest->id."  
-                    and tblradius.specimenid=tblspecimen.specimenid and tblspecimen.treeid=tbltree.treeid and tbltree.subsiteid=tblsubsite.subsiteid order by tblradius.radiusid";
-                // Run SQL
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
+                // Check user has permission to read radius
+                if($myAuth->radiusPermission($myRequest->id, "read"))
                 {
-                    // Check user has permission to read radius
-                    if($myAuth->radiusPermission($row['radiusid'], "read"))
-                    {
-                        $myRadius = new radius();
-                        $mySpecimen = new specimen();
-                        $myTree = new tree();
-                        $mySubSite = new subSite();
-                        $mySite = new site();
-                        $success = $myRadius->setParamsFromDB($row['radiusid']);
-                        $success2 = $myRadius->setChildParamsFromDB();
-                        $success3 = $mySpecimen->setParamsFromDB($row['specimenid']);
-                        $success4 = $myTree->setParamsFromDB($row['treeid']);
-                        $success5 = $mySubSite->setParamsFromDB($row['subsiteid']);
-                        $success6 = $mySite->setParamsFromDB($row['siteid']);
+                    $myRadius = new radius();
+                    $success = $myRadius->setParamsFromDB($myRequest->id);
+                    $success2 = $myRadius->setChildParamsFromDB();
 
-                        if($success && $success2 && $success3 && $success4 && $success5 && $success6 )
-                        {
-                            $xmldata.= $mySite->asXML("begin");
-                            $xmldata.= $mySubSite->asXML("begin");
-                            $xmldata.= $myTree->asXML("begin");
-                            $xmldata.= $mySpecimen->asXML("begin");
-                            $xmldata.= $myRadius->asXML();
-                            $xmldata.= $mySpecimen->asXML("end");
-                            $xmldata.= $myTree->asXML("end");
-                            $xmldata.= $mySubSite->asXML("end");
-                            $xmldata.= $mySite->asXML("end");
-                        }
-                        else
-                        {
-                            trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage(), E_USER_ERROR);
-                        }
+                    if($success && $success2)
+                    {
+                        $xmldata.= $myRadius->asXML();
                     }
                     else
                     {
-                        trigger_error("103"."Permission denied on radiusid ".$row['radiusid'], E_USER_WARNING);
+                        trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage(), E_USER_ERROR);
                     }
+                }
+                else
+                {
+                    trigger_error("103"."Permission denied on radiusid ".$myRequest->id, E_USER_WARNING);
                 }
             }
             else

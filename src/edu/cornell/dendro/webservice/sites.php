@@ -275,6 +275,6 @@ if ($myRequest->format=='kml')
 }
 else
 {
-    writeOutput($myMetaHeader, $xmldata, $parentTagBegin, $parentTagEnd);
+    writeOutput($myMetaHeader, $xmldata);
 }
 

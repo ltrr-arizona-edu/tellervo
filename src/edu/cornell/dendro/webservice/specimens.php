@@ -118,6 +118,7 @@ switch($myRequest->mode)
 // PERFORM QUERY
 // *************
 
+$xmldata ="";
 //Only attempt to run SQL if there are no errors so far
 if(!($myMetaHeader->status == "Error"))
 {
@@ -142,7 +143,7 @@ if(!($myMetaHeader->status == "Error"))
         if (isset($myRequest->label))                           $mySpecimen->setLabel($myRequest->label);
         if (isset($myRequest->treeid))                          $mySpecimen->setTreeID($myRequest->treeid);
         if (isset($myRequest->datecollected))                   $mySpecimen->setDateCollected($myRequest->datecollected);
-        if (isset($myRequest->specimentypeid))                  $mySpecimen->setSpecimenTypeID($myRequest->specimentypeid);
+        if (isset($myRequest->specimentype))                    $mySpecimen->setSpecimenType($myRequest->specimentype);
         if (isset($myRequest->isterminalringverified))          $mySpecimen->setIsTerminalRingVerified($myRequest->isterminalringverified);
         if (isset($myRequest->sapwoodcount))                    $mySpecimen->setSapwoodCount($myRequest->sapwoodcount);
         if (isset($myRequest->issapwoodcountverified))          $mySpecimen->setIsSapwoodCountVerified($myRequest->issapwoodcountverified);
@@ -214,60 +215,39 @@ if(!($myMetaHeader->status == "Error"))
         {
             // DB connection ok
             // Build SQL depending on parameters
-            if(!$myRequest->id==NULL)
+            if($myRequest->id!=NULL)
             {
-                // Output multiple specimens as XML
-
-                $sql = "select tblsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblspecimen.specimenid ";
-                $sql.= "from tblsite, tblsubsite, tbltree, tblspecimen ";
-                $sql.= "where tblspecimen.specimenid=$myRequest->id and tblspecimen.treeid=tbltree.treeid and tbltree.subsiteid=tblsubsite.subsiteid and tblsubsite.siteid=tblsite.siteid";
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
+                // Check user has permission to read tree
+                if($myAuth->specimenPermission($myRequest->id, "read"))
                 {
-                    // Check user has permission to read tree
-                    if($myAuth->specimenPermission($row['specimenid'], "read"))
-                    {
-                        $mySpecimen = new specimen();
-                        $myTree = new tree();
-                        $mySubSite = new subSite();
-                        $mySite = new site();
-                        $success = $mySpecimen->setParamsFromDB($row['specimenid']);
-                        $success2 = $mySpecimen->setChildParamsFromDB();
-                        $success3 = $myTree->setParamsFromDB($row['treeid']);
-                        $success4 = $mySubSite->setParamsFromDB($row['subsiteid']);
-                        $success5 = $mySite->setParamsFromDB($row['siteid']);
+                    $mySpecimen = new specimen();
+                    $success = $mySpecimen->setParamsFromDB($myRequest->id);
+                    $success2 = $mySpecimen->setChildParamsFromDB();
 
-                        if($success && $success2 && $success3 && $success4 && $success5)
-                        {
-                            $xmldata.=$mySite->asXML("begin");
-                            $xmldata.=$mySubSite->asXML("begin");
-                            $xmldata.=$myTree->asXML("begin");
-                            $xmldata.=$mySpecimen->asXML();
-                            $xmldata.=$myTree->asXML("end");
-                            $xmldata.=$mySubSite->asXML("end");
-                            $xmldata.=$mySite->asXML("end");
-                        }
-                        else
-                        {
-                            trigger_error($mySpecimen->getLastErrorCode().$mySpecimen->getLastErrorMessage(), E_USER_ERROR);
-                        }
+                    if($success && $success2)
+                    {
+                        $xmldata.=$mySpecimen->asXML();
                     }
                     else
                     {
-                        trigger_error("103"."Permission denied on specimenid ".$row['specimenid'], E_USER_WARNING);
+                        trigger_error($mySpecimen->getLastErrorCode().$mySpecimen->getLastErrorMessage(), E_USER_ERROR);
                     }
+                }
+                else
+                {
+                    trigger_error("103"."Permission denied on specimenid ".$myRequest->id, E_USER_WARNING);
                 }
             }
             else
             {
-                // Output one specimen with its parents
+                // Output all specimens
                 $sql="select * from tblspecimen order by specimenid";
                 $result = pg_query($dbconn, $sql);
                 $xmldata.=$parentTagBegin;
                 while ($row = pg_fetch_array($result))
                 {
-                    // Check user has permission to read tree
-                    if($myAuth->treePermission($row['treeid'], "read"))
+                    // Check user has permission to read specimen
+                    if($myAuth->specimenPermission($row['specimenid'], "read"))
                     {
                         $mySpecimen = new specimen();
                         $success = $mySpecimen->setParamsFromDB($row['specimenid']);

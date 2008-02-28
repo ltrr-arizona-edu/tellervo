@@ -42,11 +42,11 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
     // Generic PHP errors
     if (in_array($errno, $phperrors))
     {
-        $myMetaHeader->setMessage("P".$errno, "PHP ".$errortype[$errno]." - ".$errmsg.". See line $linenum in file $filename", "Warning");
+        $myMetaHeader->setMessage($errno, "PHP ".$errortype[$errno]." - ".$errmsg.". See line $linenum in file $filename", "Warning");
     }
     elseif (in_array($errno, $phpwarnings))
     {
-        $myMetaHeader->setMessage("P".$errno, "PHP ".$errortype[$errno]." - ".$errmsg.". See line $linenum in file $filename ", "Warning");
+        $myMetaHeader->setMessage($errno, "PHP ".$errortype[$errno]." - ".$errmsg.". See line $linenum in file $filename ", "Warning");
     }
 
     // Corina specific errors

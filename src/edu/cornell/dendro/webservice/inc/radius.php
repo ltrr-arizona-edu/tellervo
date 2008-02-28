@@ -129,47 +129,30 @@ class radius
     /*ACCESSORS*/
     /***********/
 
-    function asXML($mode="all")
+    function asXML($style="full")
     {
+        global $domain;
+        $xml ="";
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
-            if(($mode=="all") ||($mode=="begin"))
+            if($style=="full")
             {
                 // Only return XML when there are no errors.
                 $xml.= "<radius ";
                 $xml.= "id=\"".$this->id."\" ";
-                $xml.= "label=\"".$this->label."\" ";
-                $xml.= "createdTimeStamp=\"".$this->createdTimeStamp."\" ";
-                $xml.= "lastModifiedTimeStamp=\"".$this->lastModifiedTimeStamp."\" ";
-                $xml.= ">";
-                
-                /*
-                // Include radii if present
-                if ($this->radiusArray)
-                {
-                    foreach($this->radiusArray as $value)
-                    {
-                        $myRadius = new radius();
-                        $success = $myRadius->setParamsFromDB($value);
-
-                        if($success)
-                        {
-                            $xml.=$myRadius->asXML();
-                        }
-                        else
-                        {
-                            $myMetaHeader->setErrorMessage($myRadius->getLastErrorCode, $myRadius->getLastErrorMessage);
-                        }
-                    }
-                }
- */
-            }
-
-            if(($mode=="all") || ($mode=="end"))
-            {
-                // End XML tag
+                $xml.= "url=\"http://$domain/radius/".$this->id."\" >\n ";
+                $xml.= "<name>".$this->label."</name>\n";
+                $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+                $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
                 $xml.= "</radius>\n";
+            }
+            elseif($style=="brief")
+            {
+                $xml.= "<radius ";
+                $xml.= "id=\"".$this->id."\" ";
+                $xml.= "url=\"http://$domain/radius/".$this->id."\" />\n ";
+
             }
             return $xml;
         }
