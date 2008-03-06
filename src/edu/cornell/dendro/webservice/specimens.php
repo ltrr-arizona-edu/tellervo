@@ -154,10 +154,10 @@ if(!($myMetaHeader->status == "Error"))
         if (isset($myRequest->isunmeasuredpreverified))         $mySpecimen->setIsUnmeasPreVerified($myRequest->isunmeasuredpreverified);
         if (isset($myRequest->unmeasuredpost))                  $mySpecimen->setUnmeasPost($myRequest->unmeasuredpost);
         if (isset($myRequest->isunmeasuredpostverified))        $mySpecimen->setIsUnmeasPostVerified($myRequest->isunmeasuredpostverified);
-        if (isset($myRequest->specimencontinuityid))            $mySpecimen->setSpecimenContinuityID($myRequest->specimencontinuityid);
-        if (isset($myRequest->pithid))                          $mySpecimen->setPithID($myRequest->pithid);
-        if (isset($myRequest->specimenqualityid))               $mySpecimen->setSpecimenQualityID($myRequest->specimenqualityid);
-        if (isset($myRequest->terminalringid))                  $mySpecimen->setTerminalRingID($myRequest->terminalringid);
+        if (isset($myRequest->specimencontinuity))              $mySpecimen->setSpecimenContinuity($myRequest->specimencontinuity);
+        if (isset($myRequest->pith))                            $mySpecimen->setPith($myRequest->pith);
+        if (isset($myRequest->specimenquality))                 $mySpecimen->setSpecimenQuality($myRequest->specimenquality);
+        if (isset($myRequest->terminalring))                    $mySpecimen->setTerminalRing($myRequest->terminalring);
 
         if( (($myRequest->mode=='update') && ($myAuth->specimenPermission($myRequest->id, "update")))  || 
             (($myRequest->mode=='create') && ($myAuth->treePermission($myRequest->treeid, "create")))    )
