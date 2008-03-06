@@ -32,6 +32,18 @@ title {
 	font-weight:bolder;
 	margin-bottom:.5em;
 }
+articleinfo>title{
+    background-color : #FFFFFF;
+    font-family: verdana, arial, helvetica, sans-serif;
+    font-size: 1.7em;
+    font-weight: normal;
+    color: #73736c;
+    display : block;
+    margin-bottom : 20px;
+}
+articleinfo>title:before{
+    content: "Corina Documentation : ";
+}
 
 /*
  * Sectioning elements that may contain paragraph-level elements get left/right
@@ -383,7 +395,6 @@ blockquote>para:last-child:after {
 
 itemizedlist {
         padding-left: 1em;
-        list-style-type: disc;
 }
 
 listitem+listitem {
@@ -392,7 +403,6 @@ listitem+listitem {
 
 /* 2 deep nested lists */
 itemizedlist itemizedlist {
-        list-style-type: circle;
 }
 
 /* 3 or more deep nested lists */
@@ -402,7 +412,6 @@ itemizedlist itemizedlist itemizedlist {
 
 
 itemizedlist>listitem {
-	display:list-item;
 }
 
 orderedlist {
@@ -420,7 +429,6 @@ orderedlist>listitem {
  */
 calloutlist {
         padding-left: 1em;
-        list-style-type: disc;
 }
 calloutlist>callout {
 	display:list-item;
@@ -433,11 +441,9 @@ calloutlist>callout {
  * and "bullet" are used in T.D.G. example
  */
 itemizedlist[mark="opencircle"], listitem[override="opencircle"] {
-        list-style-type: circle;
 }
 
 itemizedlist[mark="bullet"], listitem[override="bullet"] {
-        list-style-type: disc;
 }
 
 
