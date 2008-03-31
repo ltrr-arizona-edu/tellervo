@@ -67,10 +67,14 @@ echo "<html>";
 
 
 $speciesstringsfile = "/tmp/search.txt";
-$notfoundlog = "/tmp/notfound.txt";
+$notfoundlog = "/tmp/colimportlogs/notfound.txt";
+$dubiouslog = "/tmp/colimportlogs/dubiousmatches.txt";
+$synonymlog = "/tmp/colimportlogs/synonym.txt";
 
 $handle = @fopen($speciesstringsfile, "r");
-$notfoundhandle = @fopen($notfoundlog, "a");
+$notfoundhandle = @fopen($notfoundlog, "w");
+$dubioushandle = @fopen($dubiouslog, "w");
+$synonymhandle = @fopen($synonymlog, "w");
 
 if ($handle) 
 {
@@ -94,35 +98,97 @@ if ($handle)
 
 
                 }
+                elseif($colXML['total_number_of_results']>1)
+                {
+                    echo "Multiple matches for $species<br>";
+                    fwrite($dubioushandle, $species."\n");
+                    ob_flush();
+                    flush();
+                }
                 else
                 {
                     echo "Match found for $species<br>";
 
-                    // Write Higher taxon records
-                    $parentID = NULL;
-                    foreach ($colXML->result->classification->taxon as $currentTaxon)
+                    if($colXML->result->name_status!='accepted name')
                     {
-                        if(!taxonRecordExists($currentTaxon->id))
+                        // Synonym!!
+                        fwrite($synonymhandle, $species."\n");
+
+                        // Write Higher taxon records
+                        $parentID = NULL;
+                        foreach ($colXML->result->accepted_name->classification->taxon as $currentTaxon)
+                        {
+                            if(!taxonRecordExists($currentTaxon->id))
+                            {
+                                echo "Written to DB - ";
+                                dbWriteTaxa($currentTaxon->id, $parentID, $currentTaxon->rank, $currentTaxon->name." ".$currentTaxon->author);
+                            }
+                            else
+                            {
+                                echo "Already in DB<br>";
+                            }
+                            ob_flush();
+                            flush();
+                            $parentID = $currentTaxon->id;
+                        }
+
+                        // Write requested taxon details
+                        if(!taxonRecordExists($colXML->result->accepted_name->id))
                         {
                             echo "Written to DB - ";
-                            dbWriteTaxa($currentTaxon->id, $parentID, $currentTaxon->rank, $currentTaxon->name);
+                            if($colXML->result->accepted_name->rank=="Infraspecies")
+                            {
+                                $rank = $colXML->result->accepted_name->infraspecies_marker;
+                            }
+                            else
+                            {
+                                $rank = $colXML->result->accepted_name->rank;
+                            }
+                            dbWriteTaxa($colXML->result->accepted_name->id, $parentID, $rank, $colXML->result->accepted_name->name." ".$colXML->result->accepted_name->author);
+                            ob_flush();
+                            flush();
                         }
-                        else
-                        {
-                            echo "Already in DB<br>";
-                        }
-                        ob_flush();
-                        flush();
-                        $parentID = $currentTaxon->id;
-                    }
 
-                    // Write requested taxon details
-                    if(!taxonRecordExists($colXML->result->id))
+                    }
+                    else
                     {
-                        echo "Written to DB - ";
-                        dbWriteTaxa($colXML->result->id, $parentID, $colXML->result->rank, $colXML->result->name);
-                        ob_flush();
-                        flush();
+                        //Accepted name
+
+                        // Write Higher taxon records
+                        $parentID = NULL;
+                        foreach ($colXML->result->classification->taxon as $currentTaxon)
+                        {
+                            if(!taxonRecordExists($currentTaxon->id))
+                            {
+                                echo "Written to DB - ";
+                                dbWriteTaxa($currentTaxon->id, $parentID, $currentTaxon->rank, $currentTaxon->name);
+                            }
+                            else
+                            {
+                                echo "Already in DB<br>";
+                            }
+                            ob_flush();
+                            flush();
+                            $parentID = $currentTaxon->id;
+                        }
+
+                        // Write requested taxon details
+                        if(!taxonRecordExists($colXML->result->id))
+                        {
+                            if($colXML->result->rank=="Infraspecies")
+                            {
+                                // This needs to change
+                                $rank = $colXML->result->infraspecies_marker;
+                            }
+                            else
+                            {
+                                $rank = $colXML->result->rank;
+                            }
+                            echo "Written to DB - ";
+                            dbWriteTaxa($colXML->result->id, $parentID, $rank, $colXML->result->name);
+                            ob_flush();
+                            flush();
+                        }
                     }
 
                 }
