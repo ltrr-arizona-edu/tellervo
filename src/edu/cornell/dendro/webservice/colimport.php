@@ -65,6 +65,13 @@ switch($myRequest->mode)
 
 echo "<html>";
 
+$searchCount = 0;
+$speciesFoundCount = 0;
+$dbEntryCount = 0;
+$synonymCount = 0;
+$dubiousCount = 0;
+$notFoundCount = 0;
+
 
 $speciesstringsfile = "/tmp/search.txt";
 $notfoundlog = "/tmp/colimportlogs/notfound.txt";
@@ -86,12 +93,15 @@ if ($handle)
             //Only lookup if string has not got crud in it
             if(strlen($species)>3)
             {
+                $searchCount++;
+
                 // Get CoL WS XML
                 $colURL="http://webservice.catalogueoflife.org/annual-checklist/2008/search.php?response=full&name=".urlencode($species);
                 $colXML = simplexml_load_file($colURL);
                 if($colXML['total_number_of_results']==0)
                 {
-                    echo "No match for $species<br>";
+                    $notFoundCount++;
+                    echo "<br><b><font color=\"red\">No match for $species</font></b><br>";
                     fwrite($notfoundhandle, $species."\n");
                     ob_flush();
                     flush();
@@ -100,17 +110,20 @@ if ($handle)
                 }
                 elseif($colXML['total_number_of_results']>1)
                 {
-                    echo "Multiple matches for $species<br>";
+                    $dubiousCount++;
+                    echo "<br><b><font color=\"red\">Multiple matches for $species</font></b><br>";
                     fwrite($dubioushandle, $species."\n");
                     ob_flush();
                     flush();
                 }
                 else
                 {
-                    echo "Match found for $species<br>";
+                    echo "<br><b>Match found for $species</b><br>";
+                    $speciesFoundCount++;
 
                     if($colXML->result->name_status!='accepted name')
                     {
+                        $synonymCount++;
                         // Synonym!!
                         fwrite($synonymhandle, $species."\n");
 
@@ -120,12 +133,9 @@ if ($handle)
                         {
                             if(!taxonRecordExists($currentTaxon->id))
                             {
-                                echo "Written to DB - ";
-                                dbWriteTaxa($currentTaxon->id, $parentID, $currentTaxon->rank, $currentTaxon->name." ".$currentTaxon->author);
-                            }
-                            else
-                            {
-                                echo "Already in DB<br>";
+                                echo "Written '".$currentTaxon->name."' to DB<br>";
+                                dbWriteTaxa($currentTaxon->id, $parentID, $currentTaxon->rank, $currentTaxon->name);
+                                $dbEntryCount++;
                             }
                             ob_flush();
                             flush();
@@ -135,7 +145,7 @@ if ($handle)
                         // Write requested taxon details
                         if(!taxonRecordExists($colXML->result->accepted_name->id))
                         {
-                            echo "Written to DB - ";
+                            echo "Written '".$colXML->result->accepted_name->name."' to DB<br>";
                             if($colXML->result->accepted_name->rank=="Infraspecies")
                             {
                                 $rank = $colXML->result->accepted_name->infraspecies_marker;
@@ -145,6 +155,7 @@ if ($handle)
                                 $rank = $colXML->result->accepted_name->rank;
                             }
                             dbWriteTaxa($colXML->result->accepted_name->id, $parentID, $rank, $colXML->result->accepted_name->name." ".$colXML->result->accepted_name->author);
+                            $dbEntryCount++;
                             ob_flush();
                             flush();
                         }
@@ -160,12 +171,9 @@ if ($handle)
                         {
                             if(!taxonRecordExists($currentTaxon->id))
                             {
-                                echo "Written to DB - ";
+                                echo "Written '".$currentTaxon->name."' to DB<br>";
                                 dbWriteTaxa($currentTaxon->id, $parentID, $currentTaxon->rank, $currentTaxon->name);
-                            }
-                            else
-                            {
-                                echo "Already in DB<br>";
+                                $dbEntryCount++;
                             }
                             ob_flush();
                             flush();
@@ -184,8 +192,9 @@ if ($handle)
                             {
                                 $rank = $colXML->result->rank;
                             }
-                            echo "Written to DB - ";
-                            dbWriteTaxa($colXML->result->id, $parentID, $rank, $colXML->result->name);
+                            echo "Written '".$colXML->result->name."' to DB<br>";
+                            dbWriteTaxa($colXML->result->id, $parentID, $rank, $colXML->result->name." ".$colXML->result->author);
+                            $dbEntryCount++;
                             ob_flush();
                             flush();
                         }
@@ -204,7 +213,7 @@ echo "</html>";
 function taxonRecordExists($colID)
 {
     global $dbconn;
-    $sql="select count(*) from tlkptaxontest where colid=$colID";
+    $sql="select count(*) from tlkptaxon where colid=$colID";
     
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -254,7 +263,7 @@ function dbWriteTaxa($colID, $colParentID, $taxonRank, $label)
     // Lookup parent taxon id
     if ($colParentID)
     {
-        $sql = "select taxonid from tlkptaxontest where colid=$colParentID";
+        $sql = "select taxonid from tlkptaxon where colid=$colParentID";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -274,14 +283,13 @@ function dbWriteTaxa($colID, $colParentID, $taxonRank, $label)
 
     if ($colParentID)
     {
-        $sql = "insert into tlkptaxontest (colid, colparentid, taxonrankid, label, parenttaxonid) VALUES ('$colID', '$colParentID', '$taxonRankID', '$label', '$parentTaxonID')"; 
+        $sql = "insert into tlkptaxon (colid, colparentid, taxonrankid, label, parenttaxonid) VALUES ('$colID', '$colParentID', '$taxonRankID', '$label', '$parentTaxonID')"; 
     }
     else
     {
-        $sql = "insert into tlkptaxontest (colid, taxonrankid, label) VALUES ('$colID', '$taxonRankID', '$label' )"; 
+        $sql = "insert into tlkptaxon (colid, taxonrankid, label) VALUES ('$colID', '$taxonRankID', '$label' )"; 
     }
             
-    echo $sql."<br>";
     // Run SQL command
     if ($sql)
     {
@@ -295,4 +303,13 @@ function dbWriteTaxa($colID, $colParentID, $taxonRank, $label)
  
 
 }
+
+echo "<hr><table>";
+echo "<tr><td><b>Total number of searches</b></td> <td>$searchCount </td></tr>";
+echo "<tr><td><b>Total species found</b></td> <td>$speciesFoundCount </td></tr>";
+echo "<tr><td><b>Database entries made</b></td> <td>$dbEntryCount </td></tr>";
+echo "<tr><td><b>Number of synonyms</b></td> <td>$synonymCount </td></tr>";
+echo "<tr><td><b>Number of ambiguous searches</b></td> <td>$dubiousCount </td></tr>";
+echo "<tr><td><b>Number of names not found</b></td> <td>$notFoundCount </td></tr>";
+echo "</table><hr>";
 ?>
