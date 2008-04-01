@@ -123,9 +123,6 @@ if ($handle)
 
                     if($colXML->result->name_status!='accepted name')
                     {
-                        $synonymCount++;
-                        // Synonym!!
-                        fwrite($synonymhandle, $species."\n");
 
                         // Write Higher taxon records
                         $parentID = NULL;
@@ -141,6 +138,10 @@ if ($handle)
                             flush();
                             $parentID = $currentTaxon->id;
                         }
+                        
+                        // Add to synonym count and log
+                        $synonymCount++;
+                        fwrite($synonymhandle, $species." - synonym of ".$colXML->result->accepted_name->name." ".$colXML->result->accepted_name->author."\n");
 
                         // Write requested taxon details
                         if(!taxonRecordExists($colXML->result->accepted_name->id))
