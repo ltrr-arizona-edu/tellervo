@@ -19,3 +19,13 @@ CREATE TABLE tblVMeasurementMetaCache (
     MeasurementCount integer DEFAULT 1 NOT NULL
 );
 
+DROP TYPE typPermissionSet CASCADE;
+CREATE TYPE typPermissionSet AS (
+   denied boolean,      -- Explicit no permissions
+   canCreate boolean,
+   canRead boolean,
+   canUpdate boolean,
+   canDelete boolean,
+   decidedBy text
+);
+

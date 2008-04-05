@@ -27,3 +27,6 @@
 
 -- Load remaining GIS functions
 \i miscgisfunctions.sql
+
+-- Load security stuff
+\i newsecurity.sql
