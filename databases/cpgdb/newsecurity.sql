@@ -1,4 +1,3 @@
-
 CREATE OR REPLACE FUNCTION cpgdb.AndPermissionSets(origset typPermissionSet, newset typPermissionSet) 
 RETURNS typPermissionSet AS $$
 DECLARE
@@ -159,9 +158,9 @@ BEGIN
       perms.canDelete := false;
       perms.canUpdate := false;
       perms.canCreate := false;
-      
+
       LOOP
-         IF perm = 'No Permission' THEN
+         IF perm = 'No permission' THEN
  	    perms.denied = true;
          ELSIF perm = 'Read' THEN
             perms.canRead := true;
