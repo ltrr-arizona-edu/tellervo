@@ -15,7 +15,8 @@ class auth
   var $lastname = "Unknown";
   var $username = "Guest";
   var $dbPasswordHash = NULL;
-  var $loggedIn = FALSE;
+  var $isLoggedIn = FALSE;
+  var $isAdmin = FALSE;
 
   function auth()
   {
@@ -27,12 +28,13 @@ class auth
         $this->firstname = $_SESSION['firstname'];
         $this->lastname = $_SESSION['lastname'];
         $this->username = $_SESSION['username'];
-        $this->loggedIn = TRUE;
+        $this->isLoggedIn = TRUE;
+        $this->isAdmin = $this->isAdmin();
     }
     else
     {
         // Need to log in 
-        $this->loggedIn = FALSE;
+        $this->isLoggedIn = FALSE;
     }
   }
 
@@ -66,20 +68,19 @@ class auth
             $_SESSION['firstname'] = $row['firstname'];
             $_SESSION['lastname'] = $row['lastname'];
             $_SESSION['username'] = $row['username'];
-            $this->loggedIn = TRUE;
+            $this->isLoggedIn = TRUE;
             $this->logRequest("loginSecure");
+            $this->isAdmin = $this->isAdmin();
         }
     }
     else
     {
         // Login failed
-        $this->loggedIn = FALSE;
+        $this->isLoggedIn = FALSE;
         $this->logRequest("loginFailure");
     }
 
-    return $this->loggedIn;
-
-
+    return $this->isLoggedIn;
   }
 
   function login($theUsername, $thePassword)
@@ -111,23 +112,23 @@ class auth
             $_SESSION['firstname'] = $row['firstname'];
             $_SESSION['lastname'] = $row['lastname'];
             $_SESSION['username'] = $row['username'];
-            $this->loggedIn = TRUE;
+            $this->isLoggedIn = TRUE;
             $this->logRequest("loginPlain");
         }
     }
     else
     {
         // Login failed
-        $this->loggedIn = FALSE;
+        $this->isLoggedIn = FALSE;
         $this->logRequest("loginFailure");
     }
 
-    return $this->loggedIn;
+    return $this->isLoggedIn;
   }
 
   function logout()
   {
-    $this->loggedIn = FALSE;
+    $this->isLoggedIn = FALSE;
     $_SESSION = array();
     if(isset($_COOKIE[session_name()]))
     {
@@ -184,7 +185,7 @@ class auth
 
   function isLoggedIn()
   {
-    return $this->loggedIn;
+    return $this->isLoggedIn;
   }
 
   function getFirstname()
@@ -308,21 +309,42 @@ class auth
 
         global $dbconn;
         // Check user is logged in first
-        if ($this->isLoggedIn())
+        if ($this->isLoggedIn)
         {
-            if(!($this->isAdmin()))
+            if(!($this->isAdmin))
             {
                 // Not an admin user so do perms lookup
-                $sql = "select * from cpgdb.getuserpermissions($this->securityuserid, $theObjectType, $theObjectID)";
+                $sql = "select * from cpgdb.getuserpermissionset($this->securityuserid, $theObjectType, $theObjectID)";
                 $dbconnstatus = pg_connection_status($dbconn);
                 if ($dbconnstatus ===PGSQL_CONNECTION_OK)
                 {
                     $result = pg_query($dbconn, $sql);
                     $row = pg_fetch_array($result);
-                    return (bool) preg_match(ucfirst($thePermissionType), $row['getuserpermissions']);
+                    
+                    if($row['denied']===FALSE)
+                    {
+                        // Check whether 'denied' over rules.
+                        return False;
+                    }
+
+                    switch ($thePermissionType)
+                    {
+                    case "create":
+                        return (bool) $row['cancreate'];
+                    case "read":
+                        return (bool) $row['canread'];
+                    case "update":
+                        return (bool) $row['canupdate'];
+                    case "delete":
+                        return (bool) $row['candelete'];
+                    default:
+                        // Incorrect permission type specified returning false
+                        return False;
+                    }
                 }
                 else
                 {
+                    // DB connection failed returning false
                     return False;
                 }
             }
@@ -334,6 +356,7 @@ class auth
         }
         else
         {
+            // Not logged in so returning false
             return false;
         }
   }
