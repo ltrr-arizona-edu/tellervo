@@ -23,6 +23,9 @@ class request
     var $label                      = NULL;
 
     var $taxonid                    = NULL;
+    var $parentid                   = NULL;
+    var $colid                      = NULL;
+    var $colparentid                = NULL;
     var $subsiteid                  = NULL;
     var $siteid                     = NULL;
     var $treeid                     = NULL;
@@ -71,6 +74,8 @@ class request
     var $ispublished                = NULL;
     var $sitecode                   = NULL;
     var $note                       = NULL;
+    var $taxonrank                  = NULL;
+
     var $password                   = NULL;
     var $username                   = NULL;
     var $hash                       = NULL;
@@ -91,6 +96,7 @@ class request
         $this->metaHeader = $metaHeader;
         $this->auth = $auth;
         if(isset($_POST['xmlrequest'])) $this->xmlrequest = stripslashes($_POST['xmlrequest']);
+        $this->getParams();
     }
 
     function readXML()
@@ -174,12 +180,30 @@ class request
         $this->metaHeader->setMessage("905", $message);
 
     }
+    
+    function getParams()
+    {
+
+        if(isset($_POST['xmlrequest']))
+        {
+            // Extract parameters from XML request POST
+            $this->getXMLParams();
+        }
+        else
+        {
+            // Extract parameters from get request and ensure no SQL has been injected
+            $this->getGetParams();
+        }
+
+    }
+
 
     function getXMLParams()
     {
         $this->logRequest();
         $this->readXML();
     }
+
     
     function getGetParams()
     {
@@ -192,6 +216,7 @@ class request
 
         // ID values
         if(isset($_GET['id']))              $this->id               = (int) $_GET['id'];
+        if(isset($_GET['colid']))           $this->colid            = (int) $_GET['colid'];
        
        
        
@@ -265,6 +290,66 @@ class request
 
         //Log request
         $this->logRequest();
+    }
+    
+    function getMeasurementXMLParams()
+    {
+        $this->logRequest();
+        if($this->readXML())
+        {
+            foreach($this->simplexml->xpath('//request') as $request)
+            {
+                if($request->measurement['id'])                     $this->id                    = (int)                $request->measurement['id'];
+                if($request->measurement['radiusID'])               $this->radiusid              = (int)                $request->measurement['radiusID'];
+                if($request->measurement['startYear'])              $this->startyear             = (int)                $request->measurement['startYear'];
+                if($request->measurement['measuredByID'])           $this->measuredbyid          = (int)                $request->measurement['measuredByID'];
+                if($request->measurement['ownerUserID'])            $this->owneruserid           = (int)                $request->measurement['ownerUserID'];
+                if($request->measurement['datingTypeID'])           $this->datingtypeid          = addslashes(          $request->measurement['datingTypeID']);
+                if($request->measurement['datingErrorPositive'])    $this->datingerrorpositive   = (int)                $request->measurement['datingErrorPositive'];
+                if($request->measurement['datingErrorNegative'])    $this->datingerrornegative   = (int)                $request->measurement['datingErrorNegative'];
+                if($request->measurement['name'])                   $this->name                  = addslashes(          $request->measurement['name']);
+                if($request->measurement['description'])            $this->description           = addslashes(          $request->measurement['description']);
+                if(isset($request->measurement['isLegacyCleaned'])) $this->islegacycleaned       = fromStringtoPHPBool( $request->measurement['isLegacyCleaned']);
+                if(isset($request->measurement['isReconciled']))    $this->isreconciled          = fromStringtoPHPBool( $request->measurement['isReconciled']);
+                if(isset($request->measurement['isPublished']))     $this->ispublished           = fromStringtoPHPBool( $request->measurement['isPublished']);
+            }
+            
+            foreach($this->simplexml->xpath('//request/measurement/references') as $references)
+            {
+                if($references['operationID']) $this->vmeasurementopid = (int) $references['operationID'];
+            }
+
+            foreach($this->simplexml->xpath('//request/measurement/references/measurement') as $refmeasurement)
+            {
+                if($refmeasurement['id']) array_push($this->referencesArray, $refmeasurement['id']);
+            }
+            
+            $theYear =-1;
+            foreach($this->simplexml->xpath('//request/measurement/readings/reading') as $reading)
+            {
+                if ($reading['year']!=NULL) 
+                {
+                    // If the XML includes a year attribute use it
+                    $theYear = (int) $reading['year'];
+                }
+                else
+                {
+                    // Otherwise use relative years - base 0
+                    $theYear++; 
+                }
+
+                $theValue = (int) $reading;
+                $this->readingsArray[$theYear] = array('reading' => $theValue, 'wjinc' => NULL, 'wjdec' => NULL, 'count' => 1, 'notesArray' => array());
+                    
+                if(isset($reading->readingNote))
+                {
+                    foreach($reading->readingNote as $readingNote)
+                    {
+                        array_push($this->readingsArray[$theYear][notesArray], (int) $readingNote['id']); 
+                    }
+                }
+            }
+        }
     }
 
 }
@@ -751,6 +836,52 @@ class searchRequest extends request
                 {
                     array_push($this->measurementParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
                 }
+            }
+        }
+    }
+}
+
+
+class importColRequest extends request
+{
+
+    function authenticateRequest($metaHeader, $auth)
+    {
+        parent::request($metaHeader, $auth);
+    }
+
+    function getXMLParams()
+    {
+        $this->logRequest();
+        if($this->readXML())
+        {
+            foreach($this->simplexml->xpath('//request') as $request)
+            {
+            }
+        }
+    }
+}
+
+class taxonRequest extends request
+{
+
+    function authenticateRequest($metaHeader, $auth)
+    {
+        parent::request($metaHeader, $auth);
+    }
+
+    function getXMLParams()
+    {
+        $this->logRequest();
+        if($this->readXML())
+        {
+            foreach($this->simplexml->xpath('//request/taxon') as $taxon)
+            {
+                if($taxon['id'])        $this->id           = (int) $taxon['id'];
+                if($taxon['parentID'])  $this->parentid     = (int) $taxon['parentID'];
+                if($taxon['colID'])     $this->colid        = (int) $taxon['colID'];
+                if($taxon['taxonRank']) $this->taxonrank    = addslashes($taxon['taxonRank']);
+                if($taxon)              $this->label        = addslashes($taxon);
             }
         }
     }

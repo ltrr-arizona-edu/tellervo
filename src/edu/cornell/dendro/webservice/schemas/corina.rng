@@ -115,6 +115,7 @@
                 <ref name="specimenObject" />
                 <ref name="radiusObject" />
                 <ref name="dictionariesSection" />
+                <ref name="taxonObject" />
             </choice>
         </element>
     </define>
@@ -220,6 +221,9 @@
                 <optional>
                     <ref name="searchParamsObject" />
                 </optional>
+                <optional>
+                    <ref name="taxonObject" />
+                </optional>
             </interleave>   
         </element>
     </define>
@@ -278,6 +282,40 @@
 
     <!-- DATA OBJECTS -->
 
+    <define name="taxonObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="taxon">
+            <optional>
+                <attribute name="id">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="colID">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="colParentID">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="parentID">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="taxonRank">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <text />
+            </optional>
+        </element>
+    </define>
+
+    
     <define name="siteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="site">
             <optional>

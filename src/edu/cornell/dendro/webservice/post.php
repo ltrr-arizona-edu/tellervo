@@ -10,6 +10,7 @@ Type: <select id="action">
         <option>sites.php</option>
         <option>subSites.php</option>
         <option>trees.php</option>
+        <option>taxa.php</option>
         <option>specimens.php</option>
         <option>radii.php</option>
         <option>siteNotes.php</option>

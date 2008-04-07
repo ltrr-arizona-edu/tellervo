@@ -29,20 +29,6 @@ if($myAuth->isLoggedIn())
     $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
 }
 
-// **************
-// GET PARAMETERS
-// **************
-if(isset($_POST['xmlrequest']))
-{
-    // Extract parameters from XML request POST
-    $myRequest->getXMLParams();
-}
-else
-{
-    // Extract parameters from get request and ensure no SQL has been injected
-    $myRequest->getGetParams();
-}
-
 // ****************
 // CHECK PARAMETERS 
 // ****************
