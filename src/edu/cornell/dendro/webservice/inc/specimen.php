@@ -299,25 +299,26 @@ class specimen
                 $xml.= "<specimen ";
                 $xml.= "id=\"".$this->id."\" ";
                 $xml.= "url=\"http://$domain/specimen/".$this->id."\" > ";
-                $xml.= "<name>".$this->label."</name>\n";
-                $xml.= "<dateCollected>".$this->dateCollected."</dateCollected>\n";
-                $xml.= "<specimenType>".$this->specimenType."</specimenType>\n";
-                $xml.= "<terminalRing>".$this->terminalRing."</terminalRing>\n";
-                $xml.= "<isTerminalRingVerified>".fromPGtoStringBool($this->isTerminalRingVerified)."</isTerminalRingVerified>";
-                $xml.= "<sapwoodCount>".$this->sapwoodCount."</sapwoodCount>\n";
-                $xml.= "<isSapwoodCountVerified>".fromPHPtoStringBool($this->isSapwoodCountVerified)."</isSapwoodCountVerified>";
-                $xml.= "<specimenQuality>".$this->specimenQuality."</specimenQuality>\n";
-                $xml.= "<isSpecimenQualityVerified>".fromPHPtoStringBool($this->isSpecimenQualityVerified)."</isSpecimenQualityVerified>\n";
-                $xml.= "<specimenContinuity>".$this->specimenContinuity."</specimenContinuity>\n";
-                $xml.= "<isSpecimenContinuityVerified>".fromPHPtoStringBool($this->isSpecimenContinuityVerified)."</isSpecimenContinuityVerified>\n";
-                $xml.= "<pith>".$this->pith."</pith>\n";
-                $xml.= "<isPithVerified>".fromPHPtoStringBool($this->isPithVerified)."</isPithVerified>\n";
-                $xml.= "<unmeasuredPre>".$this->unmeasuredPre."</unmeasuredPre>\n";
-                $xml.= "<isUnmeasuredPreVerified>".fromPHPtoStringBool($this->isUnmeasuredPreVerified)."</isUnmeasuredPreVerified>\n";
-                $xml.= "<unmeasuredPost>".$this->unmeasuredPost."</unmeasuredPost>\n";
-                $xml.= "<isUnmeasuredPostVerified>".fromPHPtoStringBool($this->isUnmeasuredPostVerified)."</isUnmeasuredPostVerified>\n";
-                $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
-                $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+              
+                if(isset($this->label))                         $xml.= "<name>".$this->label."</name>\n";
+                if(isset($this->dateCollected))                 $xml.= "<dateCollected>".$this->dateCollected."</dateCollected>\n";
+                if(isset($this->specimenType))                  $xml.= "<specimenType>".$this->specimenType."</specimenType>\n";
+                if(isset($this->terminalRing))                  $xml.= "<terminalRing>".$this->terminalRing."</terminalRing>\n";
+                if(isset($this->isTerminalRingVerified))        $xml.= "<isTerminalRingVerified>".fromPGtoStringBool($this->isTerminalRingVerified)."</isTerminalRingVerified>";
+                if(isset($this->sapwoodCount))                  $xml.= "<sapwoodCount>".$this->sapwoodCount."</sapwoodCount>\n";
+                if(isset($this->isSapwoodCountVerified))        $xml.= "<isSapwoodCountVerified>".fromPHPtoStringBool($this->isSapwoodCountVerified)."</isSapwoodCountVerified>";
+                if(isset($this->specimenQuality))               $xml.= "<specimenQuality>".$this->specimenQuality."</specimenQuality>\n";
+                if(isset($this->isSpecimenQualityVerified))     $xml.= "<isSpecimenQualityVerified>".fromPHPtoStringBool($this->isSpecimenQualityVerified)."</isSpecimenQualityVerified>\n";
+                if(isset($this->specimenContinuity))            $xml.= "<specimenContinuity>".$this->specimenContinuity."</specimenContinuity>\n";
+                if(isset($this->isSpecimenContinuityVerified))  $xml.= "<isSpecimenContinuityVerified>".fromPHPtoStringBool($this->isSpecimenContinuityVerified)."</isSpecimenContinuityVerified>\n";
+                if(isset($this->pith))                          $xml.= "<pith>".$this->pith."</pith>\n";
+                if(isset($this->isPithVerified))                $xml.= "<isPithVerified>".fromPHPtoStringBool($this->isPithVerified)."</isPithVerified>\n";
+                if(isset($this->unmeasuredPre))                 $xml.= "<unmeasuredPre>".$this->unmeasuredPre."</unmeasuredPre>\n";
+                if(isset($this->isUnmeasuredPreVerified))       $xml.= "<isUnmeasuredPreVerified>".fromPHPtoStringBool($this->isUnmeasuredPreVerified)."</isUnmeasuredPreVerified>\n";
+                if(isset($this->unmeasuredPost))                $xml.= "<unmeasuredPost>".$this->unmeasuredPost."</unmeasuredPost>\n";
+                if(isset($this->isUnmeasuredPostVerified))      $xml.= "<isUnmeasuredPostVerified>".fromPHPtoStringBool($this->isUnmeasuredPostVerified)."</isUnmeasuredPostVerified>\n";
+                if(isset($this->createdTimeStamp))              $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+                if(isset($this->lastModifiedTimeStamp))         $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
                 $xml.= "</specimen>\n";
             }
             elseif($style=="brief")
