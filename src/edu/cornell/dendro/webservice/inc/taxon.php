@@ -20,6 +20,14 @@ class taxon
     var $parentXMLTag = "taxonDictionary"; 
     var $lastErrorMessage = NULL;
     var $lastErrorCode = NULL;
+    var $kingdom = NULL;
+    var $phylum = NULL;
+    var $class = NULL;
+    var $order = NULL;
+    var $family = NULL;
+    var $genus = NULL;
+    var $species = NULL;
+   
 
     /***************/
     /* CONSTRUCTOR */
@@ -113,6 +121,46 @@ class taxon
         }
     }
     
+    function setHigherTaxonomy()
+    {
+        global $dbconn;
+        
+        $sql = "select * from cpgdb.qrytaxonomy(".$this->id.")";
+        //echo $sql;
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            if(pg_num_rows($result)==0)
+            {
+                // No records match the id specified
+                $this->setErrorMessage("903", "No records match the specified id");
+                return FALSE;
+            }
+            else
+            {
+                // Set parameters from db
+                $row = pg_fetch_array($result);
+                $this->kingdom  = $row['kingdom'];
+                $this->phylum   = $row['phylum'];
+                $this->class    = $row['class'];
+                $this->order    = $row['txorder'];
+                $this->family   = $row['family'];
+                $this->genus    = $row['genus'];
+                $this->species  = $row['species'];
+            }
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+
+        return TRUE;
+
+    }
     
 
 
@@ -263,6 +311,49 @@ class taxon
     function getLabel()
     {
         return $this->label;
+    }
+    
+    function getHigherTaxonXML($theRank)
+    {
+        $xml = "<higherTaxon rank=\"$theRank\" >";
+        switch($theRank)
+        {
+            case "kingdom":
+                return $xml.$this->kingdom."</higherTaxon>";
+            case "phylum":
+                return $xml.$this->phylum."</higherTaxon>";
+            case "class":
+                return $xml.$this->class."</higherTaxon>";
+            case "order":
+                return $xml.$this->order."</higherTaxon>";
+            case "family":
+                return $xml.$this->family."</higherTaxon>";
+            case "genus":
+                return $xml.$this->genus."</higherTaxon>";
+            default:
+                return false;
+        }
+    }
+
+    function getHigherTaxon($theRank)
+    {
+        switch($theRank)
+        {
+            case "kingdom":
+                return $this->kingdom;
+            case "phylum":
+                return $this->phylum;
+            case "class":
+                return $this->class;
+            case "order":
+                return $this->order;
+            case "family":
+                return $this->family;
+            case "genus":
+                return $this->genus;
+            default:
+                return false;
+        }
     }
 
     function getParentTagBegin()

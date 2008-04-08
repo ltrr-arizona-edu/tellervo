@@ -123,7 +123,7 @@ class specimenQuality
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml.= "<specimenQuality id=\"".$this->id."\">".$this->label."</specimenQuality>\n";
+            $xml.= "<specimenQuality>".$this->label."</specimenQuality>\n";
             return $xml;
         }
         else

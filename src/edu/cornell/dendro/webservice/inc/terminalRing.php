@@ -123,7 +123,7 @@ class terminalRing
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml.= "<terminalRing id=\"".$this->id."\">".$this->label."</terminalRing>\n";
+            $xml.= "<terminalRing>".$this->label."</terminalRing>\n";
             return $xml;
         }
         else

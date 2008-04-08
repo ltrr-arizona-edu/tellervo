@@ -91,7 +91,7 @@ class specimenContinuity
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml.= "<specimenContinuity id=\"".$this->id."\">".$this->label."</specimenContinuity>\n";
+            $xml.= "<specimenContinuity>".$this->label."</specimenContinuity>\n";
             return $xml;
         }
         else

@@ -27,6 +27,7 @@ require_once("inc/terminalRing.php");
 require_once("inc/specimenQuality.php");
 require_once("inc/specimenContinuity.php");
 require_once("inc/pith.php");
+require_once("inc/taxon.php");
 
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
@@ -108,7 +109,7 @@ if(!($myMetaHeader->status == "Error"))
             while ($row = pg_fetch_array($result))
             {
                 $mySpecimenType = new specimenType();
-                $success = $mySpecimenType->setParamsFromDB($row['specimentypeid']);
+                $success = $mySpecimenType->setParamsFromDB($row['label']);
 
                 if($success)
                 {
@@ -116,7 +117,7 @@ if(!($myMetaHeader->status == "Error"))
                 }
                 else
                 {
-                    trigger_error($mySiteNote->getLastErrorCode().$mySiteNote->getLastErrorMessage());
+                //   trigger_error($mySpecimenType->getLastErrorCode().$mySpecimenType->getLastErrorMessage());
                 }
             }
             $xmldata.=$myDummySpecimenType->getParentTagEnd();
@@ -409,6 +410,42 @@ if(!($myMetaHeader->status == "Error"))
                 }
             }
             $xmldata.=$myDummyReadingNote->getParentTagEnd();
+        }
+    }
+    else
+    {
+        // Connection bad
+        trigger_error("001"."Error connecting to database");
+    }
+    
+    // Taxon 
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+        // DB connection ok
+        $sql="select * from tlkptaxon order by taxonrankid, label";
+
+        if($sql)
+        {
+            $myDummyTaxon = new taxon();
+            $xmldata.=$myDummyTaxon->getParentTagBegin();
+            // Run SQL
+            $result = pg_query($dbconn, $sql);
+            while ($row = pg_fetch_array($result))
+            {
+                $myTaxon = new taxon();
+                $success = $myTaxon->setParamsFromDB($row['taxonid']);
+
+                if($success)
+                {
+                    $xmldata.=$myTaxon->asXML();
+                }
+                else
+                {
+                    trigger_error($myTaxon->getLastErrorCode().$myTaxon->getLastErrorMessage());
+                }
+            }
+            $xmldata.=$myDummyTaxon->getParentTagEnd();
         }
     }
     else

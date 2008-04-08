@@ -123,7 +123,7 @@ class pith
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml.= "<pith id=\"".$this->id."\">".$this->label."</pith>\n";
+            $xml.= "<pith>".$this->label."</pith>\n";
             return $xml;
         }
         else

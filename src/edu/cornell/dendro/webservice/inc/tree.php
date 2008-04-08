@@ -16,6 +16,7 @@ class tree
 {
     var $id = NULL;
     var $taxonID = NULL;
+    var $originalTaxonLabel = NULL;
     var $subSiteID = NULL;
     var $label = NULL;
     var $latitude = NULL;
@@ -97,7 +98,7 @@ class tree
         global $dbconn;
         
         $this->id=$theID;
-        $sql = "select treeid, taxonid, subsiteid, label, X(location) as long, Y(location) as lat, precision, createdtimestamp, lastmodifiedtimestamp from tbltree where treeid=$theID";
+        $sql = "select originaltaxonlabel, treeid, taxonid, subsiteid, label, X(location) as long, Y(location) as lat, precision, createdtimestamp, lastmodifiedtimestamp from tbltree where treeid=$theID";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -114,6 +115,7 @@ class tree
                 // Set parameters from db
                 $row = pg_fetch_array($result);
                 $this->taxonID = $row['taxonid'];
+                $this->originalTaxonLabel = $row['originaltaxonlabel'];
                 $this->subSiteID = $row['subsiteid'];
                 $this->label = $row['label'];
                 $this->latitude = $row['lat'];
@@ -192,19 +194,34 @@ class tree
             {
                 $myTaxon = new taxon;
                 $myTaxon->setParamsFromDB($this->taxonID);
+                $hasHigherTaxonomy = $myTaxon->setHigherTaxonomy();
 
                 // Only return XML when there are no errors.
                 $xml = "<tree ";
                 $xml.= "id=\"".$this->id."\" ";
                 $xml.= "url=\"http://$domain/tree/".$this->id."\">\n ";
-                $xml.= "<name>".$this->label."</name>\n";
-                $xml.= "<taxon>".$myTaxon->getLabel()."</taxon>\n";
-                $xml.= "<latitude>".$this->latitude."</latitude>\n";
-                $xml.= "<longitude>".$this->longitude."</longitude>\n";
-                $xml.= "<precision>".$this->precision."</precision>\n";
-                $xml.= "<isLiveTree>".$this->isLiveTree."</isLiveTree>\n";
-                $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
-                $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+                
+                if(isset($this->name))                  $xml.= "<name>".$this->label."</name>\n";
+                if(isset($this->taxonID))               $xml.= "<validatedTaxonLabel>".$myTaxon->getLabel()."</validatedTaxonLabel>\n";
+                if(isset($this->originalTaxonLabel))    $xml.= "<originalTaxonLabel>".$this->originalTaxonLabel."</originalTaxonLabel>\n";
+
+                if($hasHigherTaxonomy)
+                {
+                    $xml.=$myTaxon->getHigherTaxonXML('kingdom');   
+                    $xml.=$myTaxon->getHigherTaxonXML('phylum');   
+                    $xml.=$myTaxon->getHigherTaxonXML('class');   
+                    $xml.=$myTaxon->getHigherTaxonXML('order');   
+                    $xml.=$myTaxon->getHigherTaxonXML('family');   
+                    $xml.=$myTaxon->getHigherTaxonXML('genus');   
+                    $xml.=$myTaxon->getHigherTaxonXML('species');   
+                }
+
+                if(isset($this->latitude))              $xml.= "<latitude>".$this->latitude."</latitude>\n";
+                if(isset($this->longitude))             $xml.= "<longitude>".$this->longitude."</longitude>\n";
+                if(isset($this->precision))             $xml.= "<precision>".$this->precision."</precision>\n";
+                if(isset($this->isLiveTree))            $xml.= "<isLiveTree>".$this->isLiveTree."</isLiveTree>\n";
+                if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+                if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
                 
                 // Include tree notes if present
                 if ($this->treeNoteArray)
