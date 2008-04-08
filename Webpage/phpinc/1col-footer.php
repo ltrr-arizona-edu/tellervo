@@ -19,5 +19,6 @@ if($_SERVER['SCRIPT_FILENAME'])
 </div>
 </div>
 
+<?php include('googleanalytics.php'); ?>
 </body>
 </html>
