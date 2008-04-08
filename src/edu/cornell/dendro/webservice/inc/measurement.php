@@ -474,6 +474,25 @@ class measurement
             $xml.= "<measurement ";
             $xml.= "id=\"".$this->vmeasurementID."\" ";
             $xml.= "url=\"http://$domain/measurement/".$this->vmeasurementID."\">";
+            
+            $xml.= "<metadata>\n";
+            if(isset($this->name))                  $xml.= "<name>".$this->name."</name>\n";
+            if(isset($this->isReconciled))          $xml.= "<isReconciled>".fromPHPtoStringBool($this->isReconciled)."</isReconciled>\n";
+            if(isset($this->startYear))             $xml.= "<startYear>".$this->startYear."</startYear>\n";
+            if(isset($this->isLegacyCleaned))       $xml.= "<isLegacyCleaned>".fromPHPtoStringBool($this->isLegacyCleaned)."</isLegacyCleaned>\n";
+            if(isset($this->measuredByID))          $xml.= "<measuredByID>".$this->measuredByID."</measuredByID>\n";
+            if(isset($this->measuredBy))            $xml.= "<measuredBy>".$this->measuredBy."</measuredBy>\n";
+            if(isset($this->ownerUserID))           $xml.= "<ownerUserID>".$this->ownerUserID."</ownerUserID>\n";
+            if(isset($this->owner))                 $xml.= "<owner>".$this->owner."</owner>\n";
+            if(isset($this->datingTypeID))          $xml.= "<datingTypeID>".$this->datingTypeID."</datingTypeID>\n";
+            if(isset($this->datingType))            $xml.= "<datingType>".$this->datingType."</datingType>\n";
+            if(isset($this->datingErrorPositive))   $xml.= "<datingErrorPositive>".$this->datingErrorPositive."</datingErrorPositive>\n";
+            if(isset($this->datingErrorNegative))   $xml.= "<datingErrorNegative>".$this->datingErrorNegative."</datingErrorNegative>\n";
+            if(isset($this->description))           $xml.= "<description>".$this->description."</description>\n";
+            if(isset($this->isPublished))           $xml.= "<isPublished>".fromPHPtoStringBool($this->isPublished)."</isPublished>\n";
+            if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+            if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+            if(isset($this->vmeasurementOp))        $xml.= "<type>".$this->vmeasurementOp."</type>\n";
 
             // Brief Format so just give minimal XML for all references and nothing else
             if($style=="brief")
@@ -492,6 +511,7 @@ class measurement
                         $myMetaHeader->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
                     }
                 }
+                $xml.="</metadata>\n";
                 $xml.= "</measurement>\n";
                 return $xml;
             }
@@ -499,24 +519,6 @@ class measurement
             // Full format so give the whole lot
             elseif($style=="full")
             {
-                $xml.= "<metadata>\n";
-                $xml.= "<name>".$this->name."</name>\n";
-                $xml.= "<isReconciled>".fromPHPtoStringBool($this->isReconciled)."</isReconciled>\n";
-                $xml.= "<startYear>".$this->startYear."</startYear>\n";
-                $xml.= "<isLegacyCleaned>".fromPHPtoStringBool($this->isLegacyCleaned)."</isLegacyCleaned>\n";
-                $xml.= "<measuredByID>".$this->measuredByID."</measuredByID>\n";
-                $xml.= "<measuredBy>".$this->measuredBy."</measuredBy>\n";
-                $xml.= "<ownerUserID>".$this->ownerUserID."</ownerUserID>\n";
-                $xml.= "<owner>".$this->owner."</owner>\n";
-                $xml.= "<datingTypeID>".$this->datingTypeID."</datingTypeID>\n";
-                $xml.= "<datingType>".$this->datingType."</datingType>\n";
-                $xml.= "<datingErrorPositive>".$this->datingErrorPositive."</datingErrorPositive>\n";
-                $xml.= "<datingErrorNegative>".$this->datingErrorNegative."</datingErrorNegative>\n";
-                $xml.= "<description>".$this->description."</description>\n";
-                $xml.= "<isPublished>".fromPHPtoStringBool($this->isPublished)."</isPublished>\n";
-                $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
-                $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
-                $xml.= "<type>".$this->vmeasurementOp."</type>\n";
             
                 // Include site notes if present
                 if ($this->vmeasurementNoteArray)
