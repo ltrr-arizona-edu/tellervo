@@ -219,24 +219,18 @@ if(!($myMetaHeader->status == "Error"))
             
             // Run SQL
             $result = pg_query($dbconn, $sql);
-            $myMetaHeader->setTiming("Start main SQL request");
             while ($row = pg_fetch_array($result))
             {
-                $myMetaHeader->setTiming("Found row match now check permission");
                 // Check user has permission to read tree
                 if($myAuth->sitePermission($row['siteid'], "read"))
                 {
-                    $myMetaHeader->setTiming("Permission ok");
                     $mySite = new site();
                     $success = $mySite->setParamsFromDB($row['siteid']);
-                    $myMetaHeader->setTiming("Params set from DB");
                     $success2 = $mySite->setChildParamsFromDB();
                     //$success2 = true;
-                    $myMetaHeader->setTiming("Child object params set from DB");
 
                     if($success && $success2)
                     {
-                        $myMetaHeader->setTiming("Start XML build");
                         if ($myRequest->format=='kml')
                         {
                             $xmldata .= $mySite->asKML();      
@@ -245,7 +239,6 @@ if(!($myMetaHeader->status == "Error"))
                         {
                             $xmldata .= $mySite->asXML();
                         }
-                        $myMetaHeader->setTiming("End XML build");
                     }
                     else
                     {
