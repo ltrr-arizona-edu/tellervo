@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
+    <start>
+      <ref name="treeNoteObject"/>	
+    </start>
+    
+   <define name="treeNoteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="treeNote">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger"/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="isStandard">
+                    <data type="boolean" />
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+</grammar>

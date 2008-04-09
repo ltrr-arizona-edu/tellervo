@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
+
+<start>
+  <ref name="headerSection"/>
+</start>
+
+
+
+    <define name="headerSection" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="header">
+            <interleave>
+                <element name="user">
+                    <attribute name="username">
+                        <text/>
+                    </attribute>
+                    <attribute name="firstname">
+                        <text/>
+                    </attribute>
+                    <attribute name="lastname">
+                        <text/>
+                    </attribute>
+                </element>
+
+                <element name="wsversion">
+                    <data type="double" />
+                </element>
+
+                <element name="clientversion">
+                    <text/>
+                </element>
+
+                <element name="requestdate">
+                    <text />
+                </element>
+
+                <element name="queryTime">
+                    <attribute name="unit">
+                        <choice>
+                            <value>minutes</value>
+                            <value>seconds</value>
+                            <value>microns</value>
+                        </choice>
+                    </attribute>
+                    <data type="double"/>
+                </element>
+
+                <element name="requesturl">
+                    <text/>
+                </element>
+
+                <element name="requesttype">
+                    <choice>
+                        <value>create</value>
+                        <value>read</value>
+                        <value>update</value>
+                        <value>delete</value>
+                        <value>plainlogin</value>
+                        <value>securelogin</value>
+                        <value>nonce</value>
+                        <value>logout</value>
+                        <value>help</value>
+                        <value>search</value>
+                        <value>getcapabilities</value>
+                        <value>assign</value>
+                        <value>unassign</value>
+                    </choice>
+                </element>
+
+                <element name="status">
+                    <choice>
+                        <value>OK</value>
+                        <value>Error</value>
+                        <value>Warning</value>
+                    </choice>
+                </element>
+
+                <optional>
+                    <element name="nonce">
+                        <text/>
+                    </element>
+                </optional>
+
+                <zeroOrMore>
+                    <element name="message">
+                        <attribute name="code">
+                            <data type="positiveInteger" />
+                        </attribute>
+                        <text />
+                    </element>
+                </zeroOrMore>
+            </interleave>
+        </element>
+    </define>
+
+
+</grammar>

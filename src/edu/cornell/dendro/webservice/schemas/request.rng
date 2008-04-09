@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
+
+<start>
+  <ref name="requestSection"/>
+</start>
+
+    <define name="requestSection" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="request">
+            <attribute name="type">
+                <choice>
+                    <value>create</value>
+                    <value>read</value>
+                    <value>update</value>
+                    <value>delete</value>
+                    <value>plainlogin</value>
+                    <value>securelogin</value>
+                    <value>nonce</value>
+                    <value>logout</value>
+                    <value>help</value>
+                    <value>search</value>
+                    <value>getcapabilities</value>
+                    <value>assign</value>
+                    <value>unassign</value>
+                </choice>
+            </attribute>
+            <optional>
+                <attribute name="return.rng">
+                    <choice>
+                        <value>site</value>
+                        <value>subsite</value>
+                        <value>tree</value>
+                        <value>specimen</value>
+                        <value>radius</value>
+                        <value>measurement</value>
+                        <value>taxon</value>
+                    </choice>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="limit">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="skip">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+            <interleave>
+                <optional>
+                    <externalRef href="site.rng"/>
+                </optional>
+                <optional>
+                    <externalRef href="subSite.rng"/>
+                </optional>
+                <optional>
+                    <externalRef href="tree.rng"/>	
+                </optional>
+                <optional>
+                    <externalRef href="specimen.rng"/>	
+                </optional>
+                <optional>
+                    <externalRef href="radius.rng" />   	
+                </optional>
+                <optional>
+                    <externalRef href="siteNote.rng" />   	
+                </optional>
+                <optional>
+                    <externalRef href="treeNote.rng" />   	
+                </optional>
+                <optional>
+                    <externalRef href="measurement.rng" />
+                </optional>
+                <optional>
+                    <externalRef href="readingNote.rng" />   	
+                </optional>
+                <optional>
+                    <externalRef href="measurementNote.rng" />   	
+                </optional>
+                <optional>
+                    <externalRef href="authenticate.rng" />
+                </optional>
+                <optional>
+                    <externalRef href="taxon.rng" />
+                </optional>               
+               
+                <oneOrMore>
+	                <optional>
+	                    <externalRef href="searchParams.rng" />
+	                </optional>
+                </oneOrMore>
+
+            </interleave>   
+        </element>
+    </define>
+    
+</grammar>

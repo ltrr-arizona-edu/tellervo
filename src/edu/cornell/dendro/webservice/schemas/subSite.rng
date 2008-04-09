@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
+    <start>
+      <ref name="subSiteObject"/>	
+    </start>
+
+   <define name="subSiteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="subSite">
+            <optional>
+                <attribute name="id">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="name">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="siteid">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="createdTimeStamp">
+                    <text />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="lastModifiedTimeStamp">
+                    <text />
+                </attribute>
+            </optional>
+            <zeroOrMore>
+                <externalRef href="tree.rng"/>
+            </zeroOrMore>
+        </element>
+    </define>
+
+</grammar>

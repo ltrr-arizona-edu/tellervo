@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
+    <start>
+      <ref name="specimenObject"/>	
+    </start>
+
+    <define name="specimenObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="specimen">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger" />
+                </attribute>
+            </optional>
+            
+            <optional>
+                <attribute name="createdTimeStamp">
+                    <data type="dateTime" />
+                </attribute>
+            </optional>
+
+            <optional>
+                <attribute name="lastModifiedTimeStamp">
+                    <data type="dateTime" />
+                </attribute>
+            </optional>
+
+            <optional>
+                <attribute name="label">
+                    <text />
+                </attribute>
+            
+            
+                <attribute name="dateCollected">
+                    <data type="date" />
+                </attribute>
+            
+            
+                <attribute name="specimenTypeID">
+                    <data type="positiveInteger" />
+                </attribute>
+                    
+            
+                <attribute name="terminalRingID">
+                    <text />
+                </attribute>
+                    
+            
+                <attribute name="isTerminalRingVerified">
+                    <data type="boolean" />
+                </attribute>
+                 
+            
+                <attribute name="sapwoodCount">
+                    <data type="positiveInteger" />
+                </attribute>
+                    
+            
+                <attribute name="isSapwoodCountVerified">
+                    <data type="boolean" />
+                </attribute>
+             
+            
+                <attribute name="specimenQualityID">
+                    <text />
+                </attribute>
+                    
+            
+                <attribute name="isSpecimenQualityVerified">
+                    <data type="boolean" />
+                </attribute>
+             
+            
+                <attribute name="specimenContinuityID">
+                    <text />
+                </attribute>
+            
+            
+                <attribute name="isSpecimenContinuityVerified">
+                    <data type="boolean" />
+                </attribute>
+            
+            
+                <attribute name="pithID">
+                    <text />
+                </attribute>
+                    
+            
+                <attribute name="isPithVerified">
+                    <data type="boolean" />
+                </attribute>
+            
+            
+                <attribute name="unmeasuredPre">
+                    <data type="positiveInteger" />
+                </attribute>
+            
+            
+                <attribute name="isUnmeasuredPreVerified">
+                    <data type="boolean" />
+                </attribute>
+             
+            
+                <attribute name="unmeasuredPost">
+                    <data type="positiveInteger" />
+                </attribute>
+            
+            
+                <attribute name="isUnmeasuredPostVerified">
+                    <data type="boolean" />
+                </attribute>
+
+            </optional>
+
+
+            <optional>
+                <externalRef href="radius.rng" />
+            </optional>       
+        </element>
+    </define>
+ </grammar>

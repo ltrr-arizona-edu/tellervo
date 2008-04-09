@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
+    <start>
+      <ref name="measurementObject"/>	
+    </start>
+
+    <define name="measurementObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="measurement">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="radiusID">
+                    <data type="integer">
+                        <param name="minInclusive">0</param>
+                    </data>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="isReconciled">
+                    <data type="boolean">
+                    </data>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="startYear">
+                    <data type="integer">
+                    </data>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="isLegacyCleaned">
+                    <data type="boolean">
+                    </data>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="measuredBy">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="measuredByID">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="datingTypeID">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="datingErrorPositive">
+                    <data type="positiveInteger" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="datingErrorNegative">
+                    <data type="positiveInteger" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="name">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="description">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="isPublished">
+                    <data type="boolean" />
+                </attribute>
+            </optional>
+
+            <interleave>
+                <zeroOrMore>
+                    <externalRef href="measurementNote.rng"/>
+                </zeroOrMore>
+                <optional>
+                    <element name="readings">
+                        <zeroOrMore>
+                            <element name="reading">
+                                <optional>
+                                    <attribute name="year">
+                                        <data type="integer" />
+                                    </attribute>
+                                </optional>
+                                <optional>
+                                    <attribute name="wjInc">
+                                        <data type="integer" />
+                                    </attribute>
+                                </optional>
+                                <optional>
+                                    <attribute name="wjDec">
+                                        <data type="integer" />
+                                    </attribute>
+                                </optional>
+                                <optional>
+                                    <attribute name="count">
+                                        <data type="integer" />
+                                    </attribute>
+                                </optional>
+                                    <attribute name="value">
+                                        <data type="integer" />
+                                    </attribute>
+                                <zeroOrMore>
+                                    <element name="readingNote">
+                                        <attribute name="id">
+                                            <data type="integer" />
+                                        </attribute>
+                                    </element>
+                                </zeroOrMore>
+                            </element>
+                        </zeroOrMore>
+                    </element>
+                </optional>
+
+                <optional>
+                    <element name="references">
+                        <optional>
+                            <attribute name="operationID">
+                                <data type="positiveInteger" />                           
+                            </attribute>
+                        </optional>
+                        <optional>
+                            <attribute name="operation">
+                                <text/>
+                            </attribute>
+                        </optional>
+                        <zeroOrMore>
+                            <ref name="measurementObject"/> 
+                        </zeroOrMore> 
+                    </element>
+                </optional>
+            </interleave>
+        </element>
+    </define>
+</grammar>
