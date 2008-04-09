@@ -92,6 +92,7 @@ switch($myRequest->mode)
 
     case "create":
         $myMetaHeader->setRequestType("create");
+        $myRequest->id == NULL;
         if($myAuth->isLoggedIn())
         {
             if($myRequest->name == NULL) trigger_error("902"."Missing parameter - 'name' field is required.");

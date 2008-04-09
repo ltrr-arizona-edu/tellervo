@@ -12,28 +12,36 @@
                 </attribute>
             </optional>
             <optional>
-                <attribute name="name">
+                <attribute name="url">
                     <text/>
                 </attribute>
             </optional>
-            <optional>
-                <attribute name="siteid">
-                    <data type="integer" />
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="createdTimeStamp">
-                    <text />
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="lastModifiedTimeStamp">
-                    <text />
-                </attribute>
-            </optional>
-            <zeroOrMore>
-                <externalRef href="tree.rng"/>
-            </zeroOrMore>
+            
+            <interleave>
+	            <optional>
+	                <element name="name">
+	                    <text/>
+	                </element>
+	            </optional>            
+	            <optional>
+	                <element name="siteid">
+	                    <data type="integer" />
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="createdTimeStamp">
+	                    <text />
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="lastModifiedTimeStamp">
+	                    <text />
+	                </element>
+	            </optional>
+	            <zeroOrMore>
+	                <externalRef href="tree.rng"/>
+	            </zeroOrMore>
+            </interleave>
         </element>
     </define>
 

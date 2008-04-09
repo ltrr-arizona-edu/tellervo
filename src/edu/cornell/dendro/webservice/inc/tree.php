@@ -16,9 +16,9 @@ class tree
 {
     var $id = NULL;
     var $taxonID = NULL;
-    var $originalTaxonLabel = NULL;
+    var $originalTaxonName = NULL;
     var $subSiteID = NULL;
-    var $label = NULL;
+    var $name = NULL;
     var $latitude = NULL;
     var $longitude = NULL;
     var $precision = NULL;
@@ -46,10 +46,10 @@ class tree
     /* SETTERS */
     /***********/
 
-    function setLabel($theLabel)
+    function setName($theName)
     {
-        // Set the current objects label
-        $this->label=$theLabel;
+        // Set the current objects name
+        $this->name=$theName;
     }
     
     function setTaxonID($theTaxonID)
@@ -98,7 +98,7 @@ class tree
         global $dbconn;
         
         $this->id=$theID;
-        $sql = "select originaltaxonlabel, treeid, taxonid, subsiteid, label, X(location) as long, Y(location) as lat, precision, createdtimestamp, lastmodifiedtimestamp from tbltree where treeid=$theID";
+        $sql = "select originaltaxonname, treeid, taxonid, subsiteid, name, X(location) as long, Y(location) as lat, precision, createdtimestamp, lastmodifiedtimestamp from tbltree where treeid=$theID";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -115,9 +115,9 @@ class tree
                 // Set parameters from db
                 $row = pg_fetch_array($result);
                 $this->taxonID = $row['taxonid'];
-                $this->originalTaxonLabel = $row['originaltaxonlabel'];
+                $this->originalTaxonName = $row['originaltaxonname'];
                 $this->subSiteID = $row['subsiteid'];
-                $this->label = $row['label'];
+                $this->name = $row['name'];
                 $this->latitude = $row['lat'];
                 $this->longitude = $row['long'];
                 $this->precision = $row['precision'];
@@ -201,9 +201,9 @@ class tree
                 $xml.= "id=\"".$this->id."\" ";
                 $xml.= "url=\"http://$domain/tree/".$this->id."\">\n ";
                 
-                if(isset($this->name))                  $xml.= "<name>".$this->label."</name>\n";
-                if(isset($this->taxonID))               $xml.= "<validatedTaxonLabel>".$myTaxon->getLabel()."</validatedTaxonLabel>\n";
-                if(isset($this->originalTaxonLabel))    $xml.= "<originalTaxonLabel>".$this->originalTaxonLabel."</originalTaxonLabel>\n";
+                if(isset($this->name))                  $xml.= "<name>".$this->name."</name>\n";
+                if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".$myTaxon->getName()."</validatedTaxon>\n";
+                if(isset($this->originalTaxonName))    $xml.= "<originalTaxonName>".$this->originalTaxonName."</originalTaxonName>\n";
 
                 if($hasHigherTaxonomy)
                 {
@@ -321,9 +321,9 @@ class tree
         global $dbconn;
 
         // Check for required parameters
-        if($this->label == NULL) 
+        if($this->name == NULL) 
         {
-            $this->setErrorMessage("902", "Missing parameter - 'label' field is required.");
+            $this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
             return FALSE;
         }
 
@@ -340,7 +340,7 @@ class tree
                     $sql = "insert into tbltree ( ";
                         if (isset($this->taxonID))                                  $sql.= "taxonid, ";
                         if (isset($this->subSiteID))                                $sql.= "subsiteid, ";
-                        if (isset($this->label))                                    $sql.= "label, ";
+                        if (isset($this->name))                                     $sql.= "name, ";
                         if (isset($this->precision))                                $sql.= "precision, ";
                         if (isset($this->isLiveTree))                               $sql.= "islivetree, ";
                         if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "location, ";
@@ -349,7 +349,7 @@ class tree
                     $sql.=") values (";
                         if (isset($this->taxonID))                                  $sql.= "'".$this->taxonID.   "', ";
                         if (isset($this->subSiteID))                                $sql.= "'".$this->subSiteID. "', ";
-                        if (isset($this->label))                                    $sql.= "'".$this->label.     "', ";
+                        if (isset($this->name))                                     $sql.= "'".$this->name.     "', ";
                         if (isset($this->precision))                                $sql.= "'".$this->precision. "', ";
                         if (isset($this->isLiveTree))                               $sql.="'".fromPHPtoPGBool($this->isLiveTree)."', ";
                         if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "setsrid(makepoint(".$this->longitude.", ".$this->latitude."), 4326), ";
@@ -364,7 +364,7 @@ class tree
                     $sql = "update tbltree set ";
                         if (isset($this->taxonID))                                  $sql.= "taxonid='".    $this->taxonID    ."', ";
                         if (isset($this->subSiteID))                                $sql.= "subsiteid='".  $this->subSiteID  ."', ";
-                        if (isset($this->label))                                    $sql.= "label='".      $this->label      ."', ";
+                        if (isset($this->name))                                     $sql.= "name='".      $this->name      ."', ";
                         if (isset($this->precision))                                $sql.= "precision='".  $this->precision  ."', ";
                         if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "location=setsrid(makepoint(".$this->longitude.", ".$this->latitude."), 4326), ";
                     // Trim off trailing space and comma

@@ -12,7 +12,7 @@ require_once('dbhelper.php');
 class radius 
 {
     var $id = NULL;
-    var $label = NULL;
+    var $name = NULL;
     var $specimenID = NULL;
     
     var $measurementArray = array();
@@ -36,10 +36,10 @@ class radius
     /* SETTERS */
     /***********/
 
-    function setLabel($theLabel)
+    function setName($theName)
     {
         // Set the current objects note.
-        $this->label=$theLabel;
+        $this->name=$theName;
     }
     
     function setSpecimenID($theSpecimenID)
@@ -78,7 +78,7 @@ class radius
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->label = $row['label'];
+                $this->name = $row['name'];
                 $this->id = $row['radiusid'];
                 $this->specimenID = $row['specimenid'];
                 $this->createdTimeStamp = $row['createdtimestamp'];
@@ -142,7 +142,7 @@ class radius
                 $xml.= "<radius ";
                 $xml.= "id=\"".$this->id."\" ";
                 $xml.= "url=\"http://$domain/radius/".$this->id."\" >\n ";
-                $xml.= "<name>".$this->label."</name>\n";
+                $xml.= "<name>".$this->name."</name>\n";
                 $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
                 $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
                 $xml.= "</radius>\n";
@@ -205,9 +205,9 @@ class radius
         global $dbconn;
         
         // Check for required parameters
-        if($this->label == NULL) 
+        if($this->name == NULL) 
         {
-            $this->setErrorMessage("902", "Missing parameter - 'label' field is required.");
+            $this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
             return FALSE;
         }
         if($this->specimenID == NULL) 
@@ -226,13 +226,13 @@ class radius
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tblradius (label, specimenid) values ('".$this->label."', '".$this->specimenID."')";
+                    $sql = "insert into tblradius (name, specimenid) values ('".$this->name."', '".$this->specimenID."')";
                     $sql2 = "select * from tblradius where radiusid=currval('tblradius_radiusid_seq')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tblradius set label='".$this->label."', specimenid='".$this->specimenID."' where radiusid=".$this->id;
+                    $sql = "update tblradius set name='".$this->name."', specimenid='".$this->specimenID."' where radiusid=".$this->id;
                 }
 
                 // Run SQL command

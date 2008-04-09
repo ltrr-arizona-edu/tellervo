@@ -11,78 +11,105 @@
                     <data type="positiveInteger" />
                 </attribute>
             </optional>
+            
             <optional>
-                <attribute name="radiusID">
-                    <data type="integer">
-                        <param name="minInclusive">0</param>
-                    </data>
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="isReconciled">
-                    <data type="boolean">
-                    </data>
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="startYear">
-                    <data type="integer">
-                    </data>
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="isLegacyCleaned">
-                    <data type="boolean">
-                    </data>
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="measuredBy">
+                <attribute name="url">
                     <text/>
                 </attribute>
             </optional>
-            <optional>
-                <attribute name="measuredByID">
-                    <text/>
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="datingTypeID">
-                    <text/>
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="datingErrorPositive">
-                    <data type="positiveInteger" />
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="datingErrorNegative">
-                    <data type="positiveInteger" />
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="name">
-                    <text/>
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="description">
-                    <text/>
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="isPublished">
-                    <data type="boolean" />
-                </attribute>
-            </optional>
-
+                       
             <interleave>
+            	<optional>
+		            <element name="name">
+		            	<text/>
+		            </element>
+	            </optional>
+	            
+	            <optional>
+	                <element name="radiusID">
+	                    <data type="positiveInteger">
+	                    </data>
+	                </element>
+	            </optional>
+	            
+	            <optional>
+	                <element name="isReconciled">
+	                    <data type="boolean">
+	                    </data>
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="startYear">
+	                    <data type="integer">
+	                    </data>
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="isLegacyCleaned">
+	                    <data type="boolean">
+	                    </data>
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="measuredBy">
+	                	<attribute name="id">
+	                		<data type="positiveInteger"></data>
+	                	</attribute>
+	                    <text/>
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="owner">
+	                	<attribute name="id">
+	                		<data type="positiveInteger"></data>
+	                	</attribute>
+	                    <text/>
+	                </element>
+	            </optional>	            
+	            <optional>
+	                <element name="datingType">
+	                	<optional>
+	                		<attribute name="id">
+	                			<data type="positiveInteger"></data>
+	                		</attribute>
+	                	</optional>
+	                    <text/>
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="datingErrorPositive">
+	                    <data type="positiveInteger" />
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="datingErrorNegative">
+	                    <data type="positiveInteger" />
+	                </element>
+	            </optional>
+	
+	            <optional>
+	                <element name="description">
+	                    <text/>
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="isPublished">
+	                    <data type="boolean" />
+	                </element>
+	            </optional>
+            
                 <zeroOrMore>
                     <externalRef href="measurementNote.rng"/>
                 </zeroOrMore>
+               
                 <optional>
                     <element name="readings">
+                    
+                    	<optional>
+                    		<attribute name="units">
+                    			<data type="negativeInteger"></data>
+                    		</attribute>
+                    	</optional>
                         <zeroOrMore>
                             <element name="reading">
                                 <optional>
@@ -91,13 +118,8 @@
                                     </attribute>
                                 </optional>
                                 <optional>
-                                    <attribute name="wjInc">
-                                        <data type="integer" />
-                                    </attribute>
-                                </optional>
-                                <optional>
-                                    <attribute name="wjDec">
-                                        <data type="integer" />
+                                    <attribute name="weiserjahre">
+                                        <text />
                                     </attribute>
                                 </optional>
                                 <optional>
@@ -122,19 +144,17 @@
 
                 <optional>
                     <element name="references">
-                        <optional>
-                            <attribute name="operationID">
-                                <data type="positiveInteger" />                           
-                            </attribute>
-                        </optional>
-                        <optional>
-                            <attribute name="operation">
-                                <text/>
-                            </attribute>
-                        </optional>
-                        <zeroOrMore>
+	            		<attribute name="operation">
+	            			<text/>
+	            		</attribute>
+	            		<optional>
+		            		<attribute name="param">
+		            			<text/>
+		            		</attribute>
+	            		</optional>
+                        <oneOrMore>
                             <ref name="measurementObject"/> 
-                        </zeroOrMore> 
+                        </oneOrMore> 
                     </element>
                 </optional>
             </interleave>

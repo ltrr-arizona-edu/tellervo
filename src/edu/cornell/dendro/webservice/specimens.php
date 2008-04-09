@@ -94,7 +94,7 @@ switch($myRequest->mode)
         $myMetaHeader = new meta("create");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->label == NULL) trigger_error("902"."Missing parameter - 'label' field is required.", E_USER_ERROR);
+            if($myRequest->name == NULL) trigger_error("902"."Missing parameter - 'name' field is required.", E_USER_ERROR);
             if($myRequest->treeid == NULL) trigger_error("902"."Missing parameter - 'treeid' field is required.", E_USER_ERROR);
             break;
         }
@@ -140,7 +140,7 @@ if(!($myMetaHeader->status == "Error"))
     // Update parameters in object if updating or creating an object 
     if($myRequest->mode=='update' || $myRequest->mode=='create')
     {
-        if (isset($myRequest->label))                           $mySpecimen->setLabel($myRequest->label);
+        if (isset($myRequest->name))                            $mySpecimen->setName($myRequest->name);
         if (isset($myRequest->treeid))                          $mySpecimen->setTreeID($myRequest->treeid);
         if (isset($myRequest->datecollected))                   $mySpecimen->setDateCollected($myRequest->datecollected);
         if (isset($myRequest->specimentype))                    $mySpecimen->setSpecimenType($myRequest->specimentype);

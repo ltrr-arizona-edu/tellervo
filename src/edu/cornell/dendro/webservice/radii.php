@@ -71,7 +71,7 @@ switch($myRequest->mode)
         if($myAuth->isLoggedIn())
         {
             if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
-            if(($myRequest->specimenid==NULL) && ($myRequest->label==NULL)) trigger_error("902"."Missing parameters - you haven't specified any parameters to update.", E_USER_ERROR);
+            if(($myRequest->specimenid==NULL) && ($myRequest->name==NULL)) trigger_error("902"."Missing parameters - you haven't specified any parameters to update.", E_USER_ERROR);
             break;
         }
         else
@@ -98,7 +98,7 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("create");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->label == NULL) trigger_error("902"."Missing parameter - 'label' field is required.", E_USER_ERROR);
+            if($myRequest->name == NULL) trigger_error("902"."Missing parameter - 'name' field is required.", E_USER_ERROR);
             if($myRequest->specimenid == NULL) trigger_error("902"."Missing parameter - 'specimenid' field is required.", E_USER_ERROR);
             break;
         }
@@ -142,7 +142,7 @@ if(!($myMetaHeader->status == "Error"))
     // Update parameters in object if updating or creating an object 
     if($myRequest->mode=='update' || $myRequest->mode=='create')
     {
-        if (isset($myRequest->label)) $myRadius->setLabel($myRequest->label);
+        if (isset($myRequest->name)) $myRadius->setName($myRequest->name);
         if (!($myRequest->specimenid)==NULL) $myRadius->setSpecimenID($myRequest->specimenid);
         
         if( (($myRequest->mode=='update') && ($myAuth->radiusPermission($myRequest->id, "update")))  || 

@@ -18,6 +18,7 @@ class measurement
     var $vmeasurementOpID = 5;
     var $vmeasurementOpParam = NULL;
     var $vmeasurementOp = "Direct";
+    var $vmeasurementUnits = NULL;
     var $radiusID = NULL;
     var $isReconciled = FALSE;
     var $startYear = NULL;
@@ -109,7 +110,7 @@ class measurement
                 $result2 = pg_get_result($dbconn);
                 $row2 = pg_fetch_array($result2);
                 $this->setMeasurementID();
-                $this->setVMeasurementOpID($row2['vmeasurementopid']);
+                $this->setVMeasurementOp($row2['vmeasurementopid']);
                 $this->setOwnerUserID($row2['owneruserid']);
 
                 if ($format=="full")
@@ -230,14 +231,14 @@ class measurement
         return FALSE;
     }
 
-    function setVMeasurementOpID($theVMeasurementOpID)
-    {
-        if($theVMeasurementOpID)
+    function setVMeasurementOp($theVMeasurementOp)
+    {    
+        if(is_numeric($theVMeasurementOp))
         {
-            //Only run if valid parameter has been provided
+            // ID provided
             global $dbconn;
 
-            $this->vmeasurementOpID = $theVMeasurementOpID;
+            $this->vmeasurementOpID = $theVMeasurementOp;
             
             $sql  = "select name from tlkpvmeasurementop where vmeasurementopid=".$this->vmeasurementOpID;
             $dbconnstatus = pg_connection_status($dbconn);
@@ -257,7 +258,34 @@ class measurement
             }
             return TRUE;
         }
-        return FALSE;
+        elseif(is_string($theVMeasurementOp))
+        {
+            global $dbconn;
+
+            $this->vmeasurementOp = $theVMeasurementOp;
+            
+            $sql  = "select vmeasurementopid from tlkpvmeasurementop where name ilike'".$theVMeasurementOp."'";
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    $this->vmeasurementOpID = $row['vmeasurementopid'];
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+            return TRUE;
+        }
+        else
+        {
+            return FALSE;
+        }
     }
     
     function setMeasurementID()
@@ -375,8 +403,8 @@ class measurement
             return TRUE;
         }
         return FALSE;
+     }
 
-    }
 
     function setDatingErrorPositive($theDatingErrorPositive)
     {
@@ -480,19 +508,15 @@ class measurement
             if(isset($this->isReconciled))          $xml.= "<isReconciled>".fromPHPtoStringBool($this->isReconciled)."</isReconciled>\n";
             if(isset($this->startYear))             $xml.= "<startYear>".$this->startYear."</startYear>\n";
             if(isset($this->isLegacyCleaned))       $xml.= "<isLegacyCleaned>".fromPHPtoStringBool($this->isLegacyCleaned)."</isLegacyCleaned>\n";
-            if(isset($this->measuredByID))          $xml.= "<measuredByID>".$this->measuredByID."</measuredByID>\n";
-            if(isset($this->measuredBy))            $xml.= "<measuredBy>".$this->measuredBy."</measuredBy>\n";
-            if(isset($this->ownerUserID))           $xml.= "<ownerUserID>".$this->ownerUserID."</ownerUserID>\n";
-            if(isset($this->owner))                 $xml.= "<owner>".$this->owner."</owner>\n";
-            if(isset($this->datingTypeID))          $xml.= "<datingTypeID>".$this->datingTypeID."</datingTypeID>\n";
-            if(isset($this->datingType))            $xml.= "<datingType>".$this->datingType."</datingType>\n";
+            if(isset($this->measuredByID))          $xml.= "<measuredBy id=\"".$this->measuredByID."\">".$this->measuredBy."</measuredByID>\n";
+            if(isset($this->ownerUserID))           $xml.= "<owner id=\"".$this->ownerUserID."\">".$this->owner."</owner>\n";
+            if(isset($this->datingTypeID))          $xml.= "<datingType id=\"".$this->datingTypeID."\">".$this->datingType."</datingType>\n";
             if(isset($this->datingErrorPositive))   $xml.= "<datingErrorPositive>".$this->datingErrorPositive."</datingErrorPositive>\n";
             if(isset($this->datingErrorNegative))   $xml.= "<datingErrorNegative>".$this->datingErrorNegative."</datingErrorNegative>\n";
             if(isset($this->description))           $xml.= "<description>".$this->description."</description>\n";
             if(isset($this->isPublished))           $xml.= "<isPublished>".fromPHPtoStringBool($this->isPublished)."</isPublished>\n";
             if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
             if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
-            if(isset($this->vmeasurementOp))        $xml.= "<type>".$this->vmeasurementOp."</type>\n";
 
             // Brief Format so just give minimal XML for all references and nothing else
             if($style=="brief")
@@ -547,7 +571,9 @@ class measurement
                     // Decrement recurseLevel if necessary
                     if (is_numeric($recurseLevel))  $recurseLevel=$recurseLevel-1;
 
-                    $xml.="<references>\n";
+                    $xml.="<references";
+                    if(isset($this->vmeasurementOp)) $xml.= " operation=\"".$this->vmeasurementOp."\"";
+                    $xml.=">";
                     foreach($this->referencesArray as $value)
                     {
                         $myReference = new measurement();

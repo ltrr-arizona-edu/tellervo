@@ -68,7 +68,7 @@ switch($myRequest->mode)
         if($myAuth->isLoggedIn())
         {
             if($myRequest->id == NULL) trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
-            if(($myRequest->taxonid==NULL) && ($myRequest->label==NULL) && ($myRequest->subsiteid==NULL) && ($myRequest->latitude==NULL) && ($myRequest->longitude==NULL) && ($myRequest->precision==NULL))                 trigger_error("902"."Missing parameters - you haven't specified any parameters to update.", E_USER_ERROR);
+            if(($myRequest->taxonid==NULL) && ($myRequest->name==NULL) && ($myRequest->subsiteid==NULL) && ($myRequest->latitude==NULL) && ($myRequest->longitude==NULL) && ($myRequest->precision==NULL))                 trigger_error("902"."Missing parameters - you haven't specified any parameters to update.", E_USER_ERROR);
             break;
         }
         else
@@ -94,7 +94,7 @@ switch($myRequest->mode)
         $myMetaHeader->setRequestType("create");
         if($myAuth->isLoggedIn())
         {
-            if($myRequest->label == NULL) trigger_error("902"."Missing parameter - 'label' field is required.", E_USER_ERROR);
+            if($myRequest->name == NULL) trigger_error("902"."Missing parameter - 'name' field is required.", E_USER_ERROR);
             if($myRequest->taxonid == NULL) trigger_error("902"."Missing parameter - 'taxonid' field is required.", E_USER_ERROR);
             if($myRequest->subsiteid == NULL) trigger_error("902"."Missing parameter - 'subsiteid' field is required.", E_USER_ERROR);
             break;
@@ -141,7 +141,7 @@ if(!($myMetaHeader->status == "Error"))
     // Update parameters in object if updating or creating an object 
     if($myRequest->mode=='update' || $myRequest->mode=='create')
     {
-        if (isset($myRequest->label)) $myTree->setLabel($myRequest->label);
+        if (isset($myRequest->name)) $myTree->setName($myRequest->name);
         if (!($myRequest->latitude)==NULL) $myTree->setLatitude($myRequest->latitude);
         if (!($myRequest->longitude)==NULL) $myTree->setLongitude($myRequest->longitude);
         if (!($myRequest->precision)==NULL) $myTree->setPrecision($myRequest->precision);

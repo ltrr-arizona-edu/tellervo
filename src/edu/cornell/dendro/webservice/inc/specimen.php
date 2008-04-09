@@ -18,7 +18,7 @@ require_once('inc/pith.php');
 class specimen 
 {
     var $id = NULL;
-    var $label = NULL;
+    var $name = NULL;
     var $treeID = NULL;
     var $dateCollected = NULL;
     var $specimenType = NULL;
@@ -59,10 +59,10 @@ class specimen
     /* SETTERS */
     /***********/
 
-    function setLabel($theLabel)
+    function setName($theName)
     {
         // Set the current objects note.
-        $this->label=$theLabel;
+        $this->name=$theName;
     }
     
     function setTreeID($theTreeID)
@@ -73,10 +73,10 @@ class specimen
 
     function setSpecimenType($specimenType)
     {
-        // Set speciemn type id from label
+        // Set speciemn type id from name
         $mySpecimenType = new specimenType;
-        $mySpecimenType->setParamsFromLabel($specimenType);
-        $this->specimenType=$mySpecimenType->getLabel();
+        $mySpecimenType->setParamsFromName($specimenType);
+        $this->specimenType=$mySpecimenType->getName();
     }
 
     function setSpecimenTypeID($specimenTypeID)
@@ -87,7 +87,7 @@ class specimen
 
     function setTerminalRing($terminalRing)
     {
-        // Set terminal ring  from label
+        // Set terminal ring  from name
         $this->terminalRing=$terminalRing;
     }
 
@@ -104,7 +104,7 @@ class specimen
 
     function setSpecimenQuality($specimenQuality)
     {
-        // Set specimen quality from label
+        // Set specimen quality from name
         $this->specimenQuality=$specimenQuality;
     }
 
@@ -121,7 +121,7 @@ class specimen
 
     function setSpecimenContinuity($specimenContinuity)
     {
-        // Set specimen continuity from label
+        // Set specimen continuity from name
         $this->specimenContinuity=$specimenContinuity;
     }
 
@@ -138,7 +138,7 @@ class specimen
 
     function setPith($pith)
     {
-        // Set pith id from label
+        // Set pith id from name
         $this->pith=$pith;
     }
 
@@ -219,7 +219,7 @@ class specimen
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->label = $row['label'];
+                $this->name = $row['name'];
                 $this->id = $row['specimenid'];
                 $this->dateCollected = $row['datecollected'];
                 $this->specimenType = $row['specimentype'];
@@ -300,7 +300,7 @@ class specimen
                 $xml.= "id=\"".$this->id."\" ";
                 $xml.= "url=\"http://$domain/specimen/".$this->id."\" > ";
               
-                if(isset($this->label))                         $xml.= "<name>".$this->label."</name>\n";
+                if(isset($this->name))                         $xml.= "<name>".$this->name."</name>\n";
                 if(isset($this->dateCollected))                 $xml.= "<dateCollected>".$this->dateCollected."</dateCollected>\n";
                 if(isset($this->specimenType))                  $xml.= "<specimenType>".$this->specimenType."</specimenType>\n";
                 if(isset($this->terminalRing))                  $xml.= "<terminalRing>".$this->terminalRing."</terminalRing>\n";
@@ -396,7 +396,7 @@ class specimen
                 {
                     // New record
                     $sql = "insert into tblspecimen ( ";
-                        if(isset($this->label))                     $sql.="label, ";
+                        if(isset($this->name))                     $sql.="name, ";
                         if(isset($this->treeID))                    $sql.="treeid, ";
                         if(isset($this->dateCollected))             $sql.="datecollected, ";
                         if(isset($this->specimenType))              $sql.="specimentype, ";
@@ -416,7 +416,7 @@ class specimen
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                        if(isset($this->label))                     $sql.="'".$this->label                                          ."', ";
+                        if(isset($this->name))                     $sql.="'".$this->name                                          ."', ";
                         if(isset($this->treeID))                    $sql.="'".$this->treeID                                         ."', ";
                         if(isset($this->dateCollected))             $sql.="'".$this->dateCollected                                  ."', ";
                         if(isset($this->specimenType))              $sql.="'".$this->specimenType                                   ."', ";
@@ -442,7 +442,7 @@ class specimen
                 {
                     // Updating DB
                     $sql.="update tblspecimen set ";
-                        if(isset($this->label))                     $sql.="label='"                     .$this->label                                          ."', ";
+                        if(isset($this->name))                     $sql.="name='"                     .$this->name                                          ."', ";
                         if(isset($this->treeID))                    $sql.="treeid='"                    .$this->treeID                                         ."', ";
                         if(isset($this->dateCollected))             $sql.="datecollected='"             .$this->dateCollected                                  ."', ";
                         if(isset($this->specimenTypeID))            $sql.="specimentypeid='"            .$this->specimenTypeID                                 ."', ";

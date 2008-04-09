@@ -110,8 +110,8 @@ switch($myRequest->mode)
             if(($myRequest->readingsArray) && ($myRequest->datingtypeid==NULL)) trigger_error("902"."Missing parameter - a new direct measurement must include a datingTypeID.");
             if(($myRequest->readingsArray) && (count($myRequest->readingsArray)< 10)) trigger_error("902"."Invalid parameter - You have only supplied ".count($myRequest->readingsArray)." readings.  Minimum number required is 10.", E_USER_ERROR);
             if(($myRequest->referencesArray) && ($myRequest->radiusid)) trigger_error("902"."Invalid parameter - a new measurement based on other measurements cannot include a radiusID.");
-            if(($myRequest->referencesArray) && ($myRequest->vmeasurementopid==NULL)) trigger_error("902"."Missing parameter - a new measurement based on other measurements must include an operationID.");
-            if((!$myRequest->referencesArray) && ($myRequest->vmeasurementopid!==NULL)) trigger_error("902"."Missing parameter - you have included an operationID which suggests you are creating a new measurement based on others. However, you have not specified any references to other measurements.");
+            if(($myRequest->referencesArray) && ($myRequest->vmeasurementop==NULL)) trigger_error("902"."Missing parameter - a new measurement based on other measurements must include an operation.");
+            if((!$myRequest->referencesArray) && ($myRequest->vmeasurementop!==NULL)) trigger_error("902"."Missing parameter - you have included an operation which suggests you are creating a new measurement based on others. However, you have not specified any references to other measurements.");
             /*
             if($myRequest->readingsArray)
             {
@@ -192,7 +192,7 @@ if(!($myMetaHeader->status == "Error"))
         if (isset($myRequest->name))                $myMeasurement->setName($myRequest->name);
         if (isset($myRequest->description))         $myMeasurement->setDescription($myRequest->description);
         if (isset($myRequest->ispublished))         $myMeasurement->setIsPublished($myRequest->ispublished);
-        if (isset($myRequest->vmeasurementopid))    $myMeasurement->setVMeasurementOpID($myRequest->vmeasurementopid);
+        if (isset($myRequest->vmeasurementop))      $myMeasurement->setVMeasurementOp($myRequest->vmeasurementop);
         if (sizeof($myRequest->readingsArray)>0)    $myMeasurement->setReadingsArray($myRequest->readingsArray);
         if (sizeof($myRequest->referencesArray)>0)  $myMeasurement->setReferencesArray($myRequest->referencesArray);
         

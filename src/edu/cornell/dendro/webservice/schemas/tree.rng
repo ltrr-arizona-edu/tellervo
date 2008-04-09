@@ -12,61 +12,101 @@
                 </attribute>
             </optional>
             <optional>
-                <attribute name="label">
+                <attribute name="url">
                     <text />
                 </attribute>
             </optional>
-            <optional> 
-                <attribute name="taxonID">
-                    <data type="positiveInteger" />
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="latitude">
-                    <choice>
-                        <data type="double">
-                            <param name="maxInclusive">90</param>
-                            <param name="minInclusive">-90</param>
-                        </data>
-                        <empty />
-                    </choice>
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="longitude">
-                    <choice>
-                        <data type="double">
-                            <param name="maxInclusive">180</param>
-                            <param name="minInclusive">-180</param>
-                        </data>
-                        <empty />
-                    </choice>
-                </attribute>
-            </optional>
-            <optional> 
-                <attribute name="precision">
-                    <data type="positiveInteger" />
-                </attribute>
-            </optional>
-            <optional> 
-                <attribute name="isLiveTree">
-                    <data type="boolean" />
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="createdTimeStamp">
-                    <data type="dateTime" />
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="lastModifiedTimeStamp">
-                    <data type="dateTime" />
-                </attribute>
-            </optional>
+            
             <interleave>
-                <zeroOrMore>
-                    <externalRef href="specimen.rng"/>
-                </zeroOrMore>
+	            <optional>
+	                <element name="name">
+	                    <text />
+	                </element>
+	            </optional>
+
+	    	    <optional>
+	                <element name="validatedTaxon">
+	                	<optional>
+	                		<attribute name="id">
+	                			<data type="positiveInteger"></data>
+	                		</attribute>
+	                	</optional>
+	                    <text />
+	                </element>
+	            </optional>        
+	    	    <optional>
+	                <element name="originalTaxonName">
+	                    <text />
+	                </element>
+	            </optional>   
+	            
+	            <zeroOrMore>
+	            	<element name="higherTaxon">
+	            		<attribute name="rank">
+	            			<choice>
+	            				<value>Kingdom</value>
+	            				<value>Phylum</value>
+	            				<value>Class</value>
+	            				<value>Order</value>
+	            				<value>Family</value>
+	            				<value>Genus</value>
+	            			</choice>
+	            		</attribute>
+	            		<text/>
+	            	</element>
+	            </zeroOrMore>
+	            
+	            <optional>
+	                <element name="latitude">
+	                    <choice>
+	                        <data type="double">
+	                            <param name="maxInclusive">90</param>
+	                            <param name="minInclusive">-90</param>
+	                        </data>
+	                        <empty />
+	                    </choice>
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="longitude">
+	                    <choice>
+	                        <data type="double">
+	                            <param name="maxInclusive">180</param>
+	                            <param name="minInclusive">-180</param>
+	                        </data>
+	                        <empty />
+	                    </choice>
+	                </element>
+	            </optional>
+	            <optional> 
+	                <element name="precision">
+	                    <data type="positiveInteger" />
+	                </element>
+	            </optional>
+	            <optional> 
+	                <element name="isLiveTree">
+	                    <data type="boolean" />
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="createdTimeStamp">
+	                    <data type="dateTime" />
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="lastModifiedTimeStamp">
+	                    <data type="dateTime" />
+	                </element>
+	            </optional>
+	            
+	            <optional>
+	            	<element name="references">
+		                <zeroOrMore>
+		                    <externalRef href="specimen.rng"/>
+		                </zeroOrMore>
+	                </element>
+                </optional>
+                
                 <zeroOrMore>
                     <externalRef href="treeNote.rng" />
                 </zeroOrMore>

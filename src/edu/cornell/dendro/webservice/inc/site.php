@@ -326,7 +326,7 @@ class site
                         $polygonwkt.= ($this->longitude-0.1)." ".($this->latitude+0.1).", ";
                         $polygonwkt.= ($this->longitude-0.1)." ".($this->latitude-0.1);
                         $polygonwkt.= "))";
-                        echo $polygonwkt;
+                        //echo $polygonwkt;
                         $sql = "insert into tblsite (name, code, siteextent) values ('".$this->name."', '".$this->code."', polygonfromtext('$polygonwkt',4326))";
                     }
                     else

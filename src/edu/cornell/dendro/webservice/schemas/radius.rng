@@ -12,20 +12,28 @@
                 </attribute>
             </optional>
             <optional>
-                <attribute name="label">
+                <attribute name="url">
                     <text />
                 </attribute>
             </optional>
-            <optional>
-                <attribute name="createdTimeStamp">
-                    <data type="dateTime" />
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="lastModifiedTimeStamp">
-                    <data type="dateTime" />
-                </attribute>
-            </optional>
+            
+            <interleave>
+	            <optional>
+	                <element name="name">
+	                    <text />
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="createdTimeStamp">
+	                    <data type="dateTime" />
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="lastModifiedTimeStamp">
+	                    <data type="dateTime" />
+	                </element>
+	            </optional>
+            </interleave>
         </element>
     </define>
 
