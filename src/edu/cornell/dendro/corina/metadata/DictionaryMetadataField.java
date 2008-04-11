@@ -25,6 +25,8 @@ public class DictionaryMetadataField extends MetadataField implements
 		this.hasSetValues = true;
 		
 		myDictionary = App.dictionary.getDictionary(dictionaryName);
+		if(myDictionary == null)
+			System.out.println("Null dictionary for " + variableName + " [" + dictionaryName + "]");
 		loadTables();
 	}
 
@@ -32,6 +34,7 @@ public class DictionaryMetadataField extends MetadataField implements
 	private volatile List myDictionary; 
 	
 	private void loadTables() {
+		// do we need to do anything here? I think this function can probably be deleted!
 	}
 	
 	@Override
