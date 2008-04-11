@@ -20,7 +20,7 @@ foreach($_GET as $requestParam => $requestVariable)
 }
 
 // Do authentication checks
-include('/var/www/webservice/inc/dbsetup.php');
+include('inc/dbsetup.php');
 
 // Check for IP address that have been authenticated in the last hour
 $sql = "select * from tbliptracking where ipaddr='".$_SERVER['REMOTE_ADDR']."' and timestamp>(now()- interval '1 hour')";
@@ -34,7 +34,7 @@ if(pg_num_rows($result)==0)
 else
 {
     // Building request URL, collect XML and return to user
-    $requestURL="http://dendro.cornell.edu/cgi-bin/mapserv?map=/var/www/phpmapserver/mapfiles/mymap.map".$requestParameters;
+    $requestURL="http://dendro.cornell.edu/cgi-bin/mapserv?map=/var/www/webservice/mapfiles/sitemap.map".$requestParameters;
     $xml = simplexml_load_file($requestURL);
     echo $xml->asXML();
 }
