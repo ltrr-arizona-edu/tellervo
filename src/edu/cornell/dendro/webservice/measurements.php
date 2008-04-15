@@ -69,7 +69,7 @@ switch($myRequest->mode)
             {
                 foreach ($myRequest->referencesArray as $reference)
                 {
-                    if(!is_numeric($reference)) 
+                    if(!is_numeric( (int) $reference[0])) 
                     {
                         trigger_error("902"."Invalid parameter - All your reference ID's must be numbers.");
                         break;

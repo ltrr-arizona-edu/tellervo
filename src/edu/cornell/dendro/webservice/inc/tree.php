@@ -202,7 +202,7 @@ class tree
                 $xml.= "url=\"http://$domain/tree/".$this->id."\">\n ";
                 
                 if(isset($this->name))                  $xml.= "<name>".$this->name."</name>\n";
-                if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".$myTaxon->getName()."</validatedTaxon>\n";
+                if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".$myTaxon->getLabel()."</validatedTaxon>\n";
                 if(isset($this->originalTaxonName))    $xml.= "<originalTaxonName>".$this->originalTaxonName."</originalTaxonName>\n";
 
                 if($hasHigherTaxonomy)
@@ -319,6 +319,9 @@ class tree
         // Write the current object to the database
 
         global $dbconn;
+        $sql = "";
+        $sql2 = "";
+
 
         // Check for required parameters
         if($this->name == NULL) 

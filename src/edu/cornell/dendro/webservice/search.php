@@ -101,6 +101,7 @@ if(!($myMetaHeader->status == "Error"))
         $groupBySQL="";
         $filterSQL="";
         $skipSQL="";
+        $limitSQL="";
         $xmldata="";
         
         $dbconnstatus = pg_connection_status($dbconn);
@@ -108,14 +109,14 @@ if(!($myMetaHeader->status == "Error"))
         {
         
             // Build return object dependent SQL
-            $returnObjectSQL = tableName($myRequest->returnObject).".".$myRequest->returnObject."id as id ";
-            $orderBySQL      = " order by ".tableName($myRequest->returnObject).".".$myRequest->returnObject."id asc ";
-            $groupBySQL      = " group by ".tableName($myRequest->returnObject).".".$myRequest->returnObject."id" ;
+            $returnObjectSQL = tableName($myRequest->returnObject).".".variableName($myRequest->returnObject)."id as id ";
+            $orderBySQL      = " order by ".tableName($myRequest->returnObject).".".variableName($myRequest->returnObject)."id asc ";
+            $groupBySQL      = " group by ".tableName($myRequest->returnObject).".".variableName($myRequest->returnObject)."id" ;
             if ($myRequest->limit) $limitSQL = " limit ".$myRequest->limit;
             if ($myRequest->skip)  $skipSQL  = " offset ".$myRequest->skip;
             
             // Build "from..." section of SQL
-            if( ((getLowestRelationshipLevel()<=1) && (getHighestRelationshipLevel()>=1))    || ($myRequest->returnObject == 'measurement'))  $fromTableSQL = tableName("measurement").", ";
+            if( ((getLowestRelationshipLevel()<=1) && (getHighestRelationshipLevel()>=1))    || ($myRequest->returnObject == 'measurement'))  $fromTableSQL = tableName("measurement").", tblmeasurement, ";
             if( ((getLowestRelationshipLevel()<=2) && (getHighestRelationshipLevel()>=2))    || ($myRequest->returnObject == 'radius'))       $fromTableSQL = tableName("radius").", ";
             if( ((getLowestRelationshipLevel()<=3) && (getHighestRelationshipLevel()>=3))    || ($myRequest->returnObject == 'specimen'))     $fromTableSQL = tableName("specimen").", ";
             if( ((getLowestRelationshipLevel()<=4) && (getHighestRelationshipLevel()>=4))    || ($myRequest->returnObject == 'tree'))         $fromTableSQL = tableName("tree").", ";
@@ -169,7 +170,7 @@ if(!($myMetaHeader->status == "Error"))
                 {
                     $myReturnObject = new radius();
                 }
-                elseif( ($myRequest->returnObject=="measurement") && ($myAuth->measurementPermission($row['id'], "read")) )
+                elseif( ($myRequest->returnObject=="measurement") && ($myAuth->vmeasurementPermission($row['id'], "read")) )
                 {
                     $myReturnObject = new measurement();
                 }
@@ -244,6 +245,35 @@ function paramsToFilterSQL($paramsArray, $paramName)
     return $filterSQL;
 }
 
+function variableName($objectName)
+{
+
+    switch($objectName)
+    {
+    case "site":
+        return "site";
+        break;
+    case "subsite":
+        return "subsite";
+        break;
+    case "tree":
+        return "tree";
+        break;
+    case "specimen":
+        return "specimen";
+        break;
+    case "radius":
+        return "radius";
+        break;
+    case "measurement":
+        return "vmeasurement";
+        break;
+    default:
+        return false;
+    }
+
+}
+
 function tableName($objectName)
 {
 
@@ -265,7 +295,7 @@ function tableName($objectName)
         return "vwtblradius";
         break;
     case "measurement":
-        return "tblvmeasurementresult";
+        return "vwvmeasurement";
         break;
     default:
         return false;
@@ -370,11 +400,11 @@ function getRelationshipSQL()
 
     if (($lowestLevel==1) && ($highestLevel>=1))
     {
-        $sql .= "tblvmeasurement.measurementid=tblmeasurement.measurementid and ";
+        $sql .= "vwvmeasurement.measurementid=tblmeasurement.measurementid and ";
     }
     if (($lowestLevel<=1) && ($highestLevel>1))
     {
-        $sql .= "tblmeasurement.radiusid=vwtblradius.radiusid and ";
+        $sql .= "vwvmeasurement.radiusid=vwtblradius.radiusid and ";
     }
     if (($lowestLevel<=2) && ($highestLevel>2))
     {

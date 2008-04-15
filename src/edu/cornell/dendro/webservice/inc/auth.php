@@ -30,6 +30,7 @@ class auth
         $this->username = $_SESSION['username'];
         $this->isLoggedIn = TRUE;
         $this->isAdmin = $this->isAdmin();
+        $this->logIP();
     }
     else
     {
@@ -65,10 +66,16 @@ class auth
             session_start();
             $_SESSION['initiated'] = TRUE;
             $_SESSION["securityuserid"] = $row['securityuserid'];
+            $this->securityuserid = $row['securityuserid'];
             $_SESSION['firstname'] = $row['firstname'];
+            $this->firstname = $row['firstname'];
             $_SESSION['lastname'] = $row['lastname'];
+            $this->lastname = $row['lastname'];
             $_SESSION['username'] = $row['username'];
+            $this->username = $row['username'];
+            
             $this->isLoggedIn = TRUE;
+            $this->logIP();
             $this->logRequest("loginSecure");
             $this->isAdmin = $this->isAdmin();
         }
@@ -109,9 +116,16 @@ class auth
             session_start();
             $_SESSION['initiated'] = TRUE;
             $_SESSION["securityuserid"] = $row['securityuserid'];
+            $this->securityuserid = $row['securityuserid'];
             $_SESSION['firstname'] = $row['firstname'];
+            $this->firstname = $row['firstname'];
             $_SESSION['lastname'] = $row['lastname'];
+            $this->lastname = $row['lastname'];
             $_SESSION['username'] = $row['username'];
+            $this->username = $row['username'];
+
+
+            $this->logIP();
             $this->isLoggedIn = TRUE;
             $this->logRequest("loginPlain");
         }
@@ -135,7 +149,36 @@ class auth
         setcookie(session_name(), '', time()-42000, '/');
     }
     $this->logRequest("logout");
+    $this->logIP('logout');
     $session_destroy;
+  }
+  
+  function logIP($method="login")
+  {
+      global $dbconn;
+
+      // Delete exisitng log entry for this IP 
+      $sql = "delete from tbliptracking where ipaddr='".$_SERVER['REMOTE_ADDR']."'; ";
+          
+      if($method=="login")
+      {
+          // Add entry to IP tracking table
+          $sql.= "insert into tbliptracking (ipaddr, securityuserid) values ('".$_SERVER['REMOTE_ADDR']."', ".$this->getID().")";
+      }
+
+      pg_send_query($dbconn, $sql);
+
+      // Get 'delete' result then 'insert' result, ignoring delete result as we don't need to know
+      $result = pg_get_result($dbconn);
+      $result = pg_get_result($dbconn);
+      if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+      {
+          return false;
+      }
+      else
+      {
+          return true;
+      }
   }
 
   function logRequest($type)

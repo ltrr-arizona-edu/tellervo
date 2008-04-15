@@ -508,7 +508,7 @@ class measurement
             if(isset($this->isReconciled))          $xml.= "<isReconciled>".fromPHPtoStringBool($this->isReconciled)."</isReconciled>\n";
             if(isset($this->startYear))             $xml.= "<startYear>".$this->startYear."</startYear>\n";
             if(isset($this->isLegacyCleaned))       $xml.= "<isLegacyCleaned>".fromPHPtoStringBool($this->isLegacyCleaned)."</isLegacyCleaned>\n";
-            if(isset($this->measuredByID))          $xml.= "<measuredBy id=\"".$this->measuredByID."\">".$this->measuredBy."</measuredByID>\n";
+            if(isset($this->measuredByID))          $xml.= "<measuredBy id=\"".$this->measuredByID."\">".$this->measuredBy."</measuredBy>\n";
             if(isset($this->ownerUserID))           $xml.= "<owner id=\"".$this->ownerUserID."\">".$this->owner."</owner>\n";
             if(isset($this->datingTypeID))          $xml.= "<datingType id=\"".$this->datingTypeID."\">".$this->datingType."</datingType>\n";
             if(isset($this->datingErrorPositive))   $xml.= "<datingErrorPositive>".$this->datingErrorPositive."</datingErrorPositive>\n";
@@ -532,7 +532,7 @@ class measurement
                     }
                     else
                     {
-                        $myMetaHeader->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
+                        $this->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
                     }
                 }
                 $xml.="</metadata>\n";
@@ -559,7 +559,7 @@ class measurement
                         }
                         else
                         {
-                            $myMetaHeader->setErrorMessage($myVMeasurementNote->getLastErrorCode, $myVMeasurementNote->getLastErrorMessage);
+                            $this->setErrorMessage($myVMeasurementNote->getLastErrorCode, $myVMeasurementNote->getLastErrorMessage);
                         }
                     }
                     $xml.= "</siteNotes>\n";
@@ -585,7 +585,7 @@ class measurement
                         }
                         else
                         {
-                            $myMetaHeader->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
+                            $this->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
                         }
                     }
                     $xml.="</references>\n";
@@ -646,7 +646,7 @@ class measurement
                                 }
                                 else
                                 {
-                                    $myMetaHeader->setErrorMessage($myReadingNote->getLastErrorCode(), $myReadingNote->getLastErrorMessage());
+                                    $this->setErrorMessage($myReadingNote->getLastErrorCode(), $myReadingNote->getLastErrorMessage());
                                 }
                             }
                         }
@@ -890,10 +890,11 @@ class measurement
 
                     // First update the tblvmeasurement table
                     $updateSQL = "update tblvmeasurement set ";
+                    $insertSQL="";
                     if($this->name)               $updateSQL.= "name = '".$this->name."', ";
                     if($this->description)        $updateSQL.= "description = '".$this->description."' ";
                     if(isset($this->isPublished)) $updateSQL.= "ispublished='".fromPHPtoPGBool($this->isPublished)."' ,";
-                    if($this->owneruserid)        $updateSQL.= "owneruserid = '".$this->owneruserid."', ";
+                    if($this->ownerUserID)        $updateSQL.= "owneruserid = '".$this->ownerUserID."', ";
                     $updateSQL = substr($updateSQL, 0 , -2);
                     $updateSQL.= " where vmeasurementid=".$this->vmeasurementID."; ";
 
@@ -936,7 +937,7 @@ class measurement
                     
                     // Perform query using transactions so that if anything goes wrong we can roll back
                     $transaction = "begin; $updateSQL $deleteSQL $insertSQL";
-                    echo $transaction;
+                    //echo $transaction;
                     pg_send_query($dbconn, $transaction);
                     $result = pg_get_result($dbconn);
                     $status = pg_transaction_status($dbconn);

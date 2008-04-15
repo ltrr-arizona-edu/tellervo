@@ -99,6 +99,7 @@ if(!($myMetaHeader->status == "Error"))
         if($myAuth->isLoggedIn())
         {
             // Log in worked
+            $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
         }
         else
         {
@@ -115,6 +116,7 @@ if(!($myMetaHeader->status == "Error"))
         if($myAuth->isLoggedIn())
         {
             // Log in worked
+            $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
         }
         else
         {

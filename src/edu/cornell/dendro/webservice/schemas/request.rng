@@ -25,7 +25,7 @@
                 </choice>
             </attribute>
             <optional>
-                <attribute name="return.rng">
+                <attribute name="returnObject">
                     <choice>
                         <value>site</value>
                         <value>subsite</value>
