@@ -767,12 +767,16 @@ class searchRequest extends request
                 }
 
                 // Measurement Parameters
-                elseif( ($param['name'] == 'measurementid') || 
-                        ($param['name'] == 'measurementname') || 
+                elseif( ($param['name'] == 'measurementname') || 
                         ($param['name'] == 'measurementcreated') || 
                         ($param['name'] == 'measurementlastmodified'))
                 {
                     array_push($this->measurementParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
+                }
+                
+                elseif( ($param['name'] == 'measurementid') ) 
+                {
+                    array_push($this->measurementParamsArray, array ('name' => addslashes('vmeasurementid'), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
                 }
             }
         }
