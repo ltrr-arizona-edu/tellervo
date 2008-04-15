@@ -7,7 +7,7 @@ NAME "Corina"
     SHAPEPATH "/var/www/webservice/mapserver/mapdata"
 
     WEB
-        IMAGEPATH "/var/www/phpmapserver/tmp"
+        IMAGEPATH "/var/www/mapserver/tmp"
         IMAGEURL "/mapserver/tmp/"
         METADATA
           "wfs_title"            "Cornell Tree Ring Laboratory Map Server"  ## REQUIRED
