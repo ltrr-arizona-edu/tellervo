@@ -12,6 +12,9 @@ class request
 {
     var $xmlrequest                 = NULL;
     var $format                     = NULL;
+    var $mapwidth                   = NULL;
+    var $mapheight                  = NULL;
+    var $maptype                    = NULL;
     var $simplexml                  = NULL;
     var $metaHeader                 = NULL;
     var $auth                       = NULL;
@@ -143,6 +146,15 @@ class request
             $this->metaHeader->setMessage("905", "No XML supplied.");
         }
     }
+    
+
+    function getGetMapRequest()
+    {
+        if(isset($this->simplexml->request['format']))           $this->format       = addslashes($this->simplexml->request['format']);
+        if(isset($this->simplexml->request->mapParams->width))   $this->mapwidth     = (int) $this->simplexml->request->mapParams->width;
+        if(isset($this->simplexml->request->mapParams->height))  $this->mapheight    = (int) $this->simplexml->request->mapParams->height;
+        if(isset($this->simplexml->request->mapParams->type))    $this->maptype      = addslashes($this->simplexml->request->mapParams->type);
+    }
 
     function logRequest()
     {
@@ -212,6 +224,8 @@ class request
         // Extract Parameters from GET requests
         if(isset($_GET['mode']))   $this->mode   = strtolower(addslashes($_GET['mode']));
         if(isset($_GET['format'])) $this->format = strtolower(addslashes($_GET['format']));
+        if(isset($_GET['mapwidth'])) $this->mapwidth = (int) $_GET['mapwidth'];
+        if(isset($_GET['mapheight'])) $this->mapheight = (int) $_GET['mapheight'];
         
         // Loggin specific 
         if(isset($_POST['mode'])) $this->mode = addslashes($_POST['mode']);
@@ -336,6 +350,9 @@ class treeRequest extends request
         $this->logRequest();
         if($this->readXML())
         {
+            
+            $this->getGetMapRequest();
+
             foreach($this->simplexml->xpath('request//tree[1]') as $tree)
             {
                 if($tree['id'])                 $this->id           = (int)         $tree['id'];

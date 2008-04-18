@@ -7,7 +7,6 @@
 //////
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
-header('Content-Type: application/xhtml+xml; charset=utf-8');
 
 require_once("config.php");
 require_once("inc/dbsetup.php");
@@ -263,4 +262,18 @@ if(!($myMetaHeader->status == "Error"))
 // ***********
 // OUTPUT DATA
 // ***********
-writeOutput($myMetaHeader, $xmldata);
+switch ($myRequest->format)
+{
+    case "kml":
+        writeKMLOutput($xmldata);
+        break;
+    case "data":
+        writeOutput($myMetaHeader, $xmldata);
+        break;
+    case "map":
+        writeGMapOutput(createOutput($myMetaHeader, $xmldata), $myRequest);
+        break;
+    default:
+        writeOutput($myMetaHeader, $xmldata);
+}
+

@@ -16,13 +16,16 @@ class site
     var $id = NULL;
     var $name = NULL;
     var $code = NULL;
-    var $latitude = NULL;
-    var $longitude = NULL;
+    var $centroidLat = NULL;
+    var $centroidLong = NULL;
     var $siteNoteArray = array();
     var $subSiteArray = array();
     var $createdTimeStamp = NULL;
     var $lastModifiedTimeStamp = NULL;
-
+    var $minLat = NULL;
+    var $maxLat = NULL;
+    var $minLong = NULL;
+    var $maxLong = NULL;
 
     var $parentXMLTag = "sites"; 
     var $lastErrorMessage = NULL;
@@ -51,10 +54,10 @@ class site
         $this->code=$theCode;
     }
     
-    function setInitialExtent($thelat, $thelong)
+    function setInitialCentroid($thelat, $thelong)
     {
-        $this->latitude=$thelat;
-        $this->longitude=$thelong;
+        $this->centroidLat=$thelat;
+        $this->centroidLong=$thelong;
     }
 
     function setErrorMessage($theCode, $theMessage)
@@ -71,7 +74,7 @@ class site
         global $dbconn;
         
         $this->id=$theID;
-        $sql = "select * from tblsite where siteid=$theID";
+        $sql = "select tblsite.*, xmin(tblsite.extent) as xmin, xmax(tblsite.extent) as xmax, ymin(tblsite.extent) as ymin, ymax(tblsite.extent) as ymax from tblsite where siteid=$theID";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -91,6 +94,11 @@ class site
                 $this->code = $row['code'];
                 $this->createdTimeStamp = $row['createdtimestamp'];
                 $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
+                $this->minLat = $row['ymin'];
+                $this->maxLat = $row['ymax'];
+                $this->minLong = $row['xmin'];
+                $this->maxLong = $row['xmax'];
+                
             }
 
         }
@@ -162,6 +170,11 @@ class site
                 $xml.= "<code>".$this->code."</code>\n";
                 $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
                 $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+
+                if (isset($this->minLat))
+                {
+                    $xml.= "<extent minLat=\"".$this->minLat."\" maxLat=\"".$this->maxLat."\" minLong=\"".$this->minLong."\" maxLong=\"".$this->maxLong."\" />";
+                }
 
                 // Include site notes if present
                 if ($this->siteNoteArray)
@@ -317,14 +330,14 @@ class site
                 if($this->id == NULL)
                 {
                     // New record
-                    if (($this->latitude)&& ($this->longitude))
+                    if (($this->centroidLat)&& ($this->centroidLong))
                     {
                         $polygonwkt = "POLYGON((";
-                        $polygonwkt.= ($this->longitude-0.1)." ".($this->latitude-0.1).", ";
-                        $polygonwkt.= ($this->longitude+0.1)." ".($this->latitude-0.1).", ";
-                        $polygonwkt.= ($this->longitude+0.1)." ".($this->latitude+0.1).", ";
-                        $polygonwkt.= ($this->longitude-0.1)." ".($this->latitude+0.1).", ";
-                        $polygonwkt.= ($this->longitude-0.1)." ".($this->latitude-0.1);
+                        $polygonwkt.= ($this->centroidLong-0.1)." ".($this->centroidLat-0.1).", ";
+                        $polygonwkt.= ($this->centroidLong+0.1)." ".($this->centroidLat-0.1).", ";
+                        $polygonwkt.= ($this->centroidLong+0.1)." ".($this->centroidLat+0.1).", ";
+                        $polygonwkt.= ($this->centroidLong-0.1)." ".($this->centroidLat+0.1).", ";
+                        $polygonwkt.= ($this->centroidLong-0.1)." ".($this->centroidLat-0.1);
                         $polygonwkt.= "))";
                         //echo $polygonwkt;
                         $sql = "insert into tblsite (name, code, siteextent) values ('".$this->name."', '".$this->code."', polygonfromtext('$polygonwkt',4326))";

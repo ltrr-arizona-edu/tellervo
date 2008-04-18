@@ -24,6 +24,17 @@
                     <value>unassign</value>
                 </choice>
             </attribute>
+               
+            <optional>
+                <attribute name="format">
+                    <choice>
+                        <value>map</value>
+                        <value>xml</value>
+                        <value>kml</value>
+                    </choice>
+                </attribute>
+            </optional>                    
+            
             <optional>
                 <attribute name="returnObject">
                     <choice>
@@ -48,6 +59,9 @@
                 </attribute>
             </optional>
             <interleave>
+            	<optional>
+            		<externalRef href="mapParams.rng" />
+            	</optional>
                 <optional>
                     <externalRef href="site.rng"/>
                 </optional>
