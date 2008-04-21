@@ -1,11 +1,15 @@
 package edu.cornell.dendro.corina.browser;
 
+import edu.cornell.dendro.corina.BaseSample;
 import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.SampleHandle;
 import edu.cornell.dendro.corina.metadata.*;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Date;
 import java.util.Iterator;
@@ -22,7 +26,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 public class Row {
 
     private File file;
-    private Element element=null;
+    private SampleHandle sampleHandle=null;
     private Browser browser;
 
     // use browser for (1) visible fields, and (2) matchesAny() method.
@@ -32,9 +36,9 @@ public class Row {
     }
 
     // new interface: Summary is responsible for loading
-    public Row(Element e, Browser browser) {
-	this.file = new File(e.getFilename());
-	this.element = e; // don't load again!
+    public Row(SampleHandle sh, Browser browser) {
+	this.file = new File(sh.getElement().getFilename());
+	this.sampleHandle = sh; // don't load again!
 	this.browser = browser;
     }
 
@@ -50,7 +54,7 @@ public class Row {
 
     // this makes bargraphs from the browser, for example, *much* more efficient
     public Element getElement() {
-	return element;
+	return sampleHandle.getElement();
     }
 
     private static Icon leafIcon, closedIcon, treeIcon;
@@ -60,14 +64,14 @@ public class Row {
 	closedIcon = tcr.getClosedIcon();
 
         // tree.java does exactly the same thing ... REFACTOR
-        ImageIcon tmp = new ImageIcon(Row.class.getClassLoader().getResource("Images/Tree.png"));
+        ImageIcon tmp = (ImageIcon) Builder.getIcon("Tree.png"); //new ImageIcon(Row.class.getClassLoader().getResource("Images/Tree.png"));
         int height = new JTable().getFont().getSize() + 4; // EXTRACT CONST!
         treeIcon = new ImageIcon(tmp.getImage().getScaledInstance(height, height, Image.SCALE_SMOOTH));
     }
     public Icon getIcon() {
 	if (file.isDirectory())
 	    return closedIcon;
-        if (element == null)
+        if (sampleHandle == null)
             return leafIcon;
         else
             return treeIcon;
@@ -175,9 +179,16 @@ public class Row {
         if (field.equals("modified"))
             return getModified(); // AsString(); // should return the Date -- a RelativeDate, actually.
 
-        if (element != null) {
+        BaseSample bs;
+        try {
+        	bs = sampleHandle.getBaseSample();
+        } catch (IOException ioe) {
+        	bs = null;
+        }
+        
+        if (bs != null) {
             // range, in some form?
-            Range range = element.getRange(); // can't be null if element is loaded
+            Range range = bs.getRange(); // can't be null if element is loaded
             if (field.equals("range"))
                 // i'd like this to use toStringWithSpan(), but how?  oh well.
                 // (anonymous/inner class with tostring=tostringwithspan?
@@ -190,7 +201,7 @@ public class Row {
                 return new Integer(range.span()); // PERF: new() called on each view!
 
             // if it's null, they get null
-            Object value = element.details.get(field);
+            Object value = bs.getMeta(field);
             if (value == null)
                 return null;
 

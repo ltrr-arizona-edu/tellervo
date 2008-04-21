@@ -482,7 +482,7 @@ public class Corina implements Filetype {
 				loadAuthor(s, r);
 				break; // author is always last
 			} else if (x != StreamTokenizer.TT_EOF) { // no metadata found in 4 lines -> problem
-				if (s.emptyMeta() && t.lineno() > 4)
+				if (s.metaIsEmpty() && t.lineno() > 4)
 					throw new WrongFiletypeException();
 			} else { // (x == StreamTokenizer.TT_EOF)
 				if (t.lineno() >= 3 && s.hasMeta("title")) // if 3 lines + ;TITLE, it's Corina-format

@@ -80,6 +80,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.SampleHandle;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.cross.RangeRenderer;
 import edu.cornell.dendro.corina.editor.Editor;
@@ -1358,11 +1359,11 @@ public class Browser extends XFrame {
 				Iterator filenames = summary.getFilenames();
 				while (filenames.hasNext()) {
 					String fn = (String) filenames.next();
-					Element e = summary.getElement(fn);
-					if (e != null)
+					SampleHandle sh = summary.getSampleHandle(fn);
+					if (sh != null)
 					{
 						monitor.setProgressGreedy(++idx);
-						files.add(new Row(e, _parent));
+						files.add(new Row(sh, _parent));
 					}
 				}
 

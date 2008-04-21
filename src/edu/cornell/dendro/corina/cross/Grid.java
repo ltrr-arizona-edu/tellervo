@@ -527,7 +527,7 @@ public class Grid implements Runnable, Previewable {
 		// (count-if files #'active)
 		num = 0;
 		for (int i = 0; i < files.size(); i++)
-			if (((Element) files.get(i)).active)
+			if (((Element) files.get(i)).isActive())
 				num++;
 
 		// create outputs

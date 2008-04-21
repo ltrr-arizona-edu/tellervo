@@ -20,8 +20,10 @@
 
 package edu.cornell.dendro.corina.browser;
 
+import edu.cornell.dendro.corina.BaseSample;
 import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.SampleHandle;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.util.GreedyProgressMonitor;
 import edu.cornell.dendro.corina.util.GZIP;
@@ -84,23 +86,24 @@ public class Summary {
 	 @param w the writer to save it to
 	 @exception IOException if something goes wrong
 	 */
-	private void saveElement(Element e, BufferedWriter w) throws IOException {
-		String name = StringUtils.escapeForXML(new File(e.getFilename())
-				.getName());
+	private void saveElement(SampleHandle sh, BufferedWriter w) throws IOException {
+		String name = StringUtils.escapeForXML(sh.getElement().getBasename());
 		w.write("  <sample filename=\"" + name + "\" " + "modified=\""
-				+ e.lastModified + "\">");
+				+ sh.getLastModified() + "\">");
 		w.newLine();
 
+		BaseSample bs = sh.getBaseSample();
+		
 		// extras, for which no metadata field exists (???)
-		w.write("    <range>" + e.getRange() + "</range>");
+		w.write("    <range>" + bs.getRange() + "</range>");
 		w.newLine();
 
 		Iterator i = MetadataTemplate.getFields();
 		while (i.hasNext()) {
 			MetadataField f = (MetadataField) i.next();
 			String field = f.getVariable();
-			if (e.details != null && e.details.containsKey(field)) { // |details| should be |meta|
-				Object value = e.details.get(field);
+			if (bs.hasMeta(field)) { // |details| should be |meta|
+				Object value = bs.getMeta(field);
 				String text = StringUtils.escapeForXML(value.toString());
 				w.write("    <" + field + ">" + text + "</" + field + ">");
 				w.newLine();
@@ -109,7 +112,7 @@ public class Summary {
 
 		// filetype isn't a normal metadata field (yet),
 		// so i have to store that by hand, as well.
-		w.write("    <filetype>" + e.details.get("filetype") + "</filetype>");
+		w.write("    <filetype>" + bs.getMeta("filetype") + "</filetype>");
 		w.newLine();
 
 		w.write("  </sample>");
@@ -119,7 +122,7 @@ public class Summary {
 	}
 
 	/** The filename to store cache files under: ".Corina_Cache". */
-	public static final String CACHE_FILENAME = ".Corina_Cache";
+	//public static final String CACHE_FILENAME = ".Corina_Cache";
 	
 	private Component parent;
 
@@ -139,7 +142,7 @@ public class Summary {
 
 	 (TODO: add public interface for getting folders, other files?)
 	 */
-	private Map items = new HashMap(); // String filename => {MyFolder, MyFile, Element}
+	private Map<String, Object> items = new HashMap(); // String filename => {MyFolder, MyFile, Element}
 
 	private static final String FOLDER = "--folder--";
 
@@ -157,10 +160,10 @@ public class Summary {
 		return items.keySet().iterator();
 	}
 
-	public Element getElement(String filename) { // or null, if it's not an element -- FIXME?
+	public SampleHandle getSampleHandle(String filename) { // or null, if it's not an element -- FIXME?
 		Object o = items.get(filename);
-		if (o instanceof Element)
-			return (Element) o;
+		if (o instanceof SampleHandle)
+			return (SampleHandle) o;
 		else
 			return null;
 	}
@@ -238,8 +241,8 @@ public class Summary {
 							.getName());
 					w.write("  <folder filename=\"" + encodedFilename + "\"/>");
 					w.newLine();
-				} else if (item instanceof Element) {
-					saveElement((Element) item, w);
+				} else if (item instanceof SampleHandle) {
+					saveElement((SampleHandle) item, w);
 				} else { // instanceof MyFile
 					long mod = ((MyFile) item).lastMod;
 					File f = new File(filename);
@@ -363,6 +366,8 @@ public class Summary {
 		private StringBuffer data;
 
 		private Element element;
+		private SampleHandle sampleHandle;
+		private BaseSample baseSample;
 
 		@Override
 		public void startDocument() {
@@ -392,10 +397,14 @@ public class Summary {
 			} else if (name.equals("sample")) {
 				element = new Element(folder + File.separator
 						+ atts.getValue("filename"));
+				sampleHandle = new SampleHandle(element);
+				
+				// we're creating a base sample here
+				baseSample = new BaseSample();
+				sampleHandle.setBaseSample(baseSample);
+				
 				// -- legal?  (why?)  (why not?)
-				element.lastModified = Long
-						.parseLong(atts.getValue("modified"));
-				element.details = new Hashtable();
+				sampleHandle.setLastModified(Long.parseLong(atts.getValue("modified")));
 				// ooooh.  i guess i'll have to hold temps until i'm ready
 				// to make the element, then do it all at once.
 			} else {
@@ -408,8 +417,10 @@ public class Summary {
 		public void endElement(String uri, String name, String qName) {
 			if (name.equals("sample")) {
 				// add to list, and reset for next element
-				items.put(new File(element.filename).getName(), element);
+				items.put(element.getBasename(), sampleHandle);
+				sampleHandle = null;
 				element = null;
+				baseSample = null;
 			} else if (name.equals("folder")) {
 				// folder: ignore
 			} else if (name.equals("file")) {
@@ -418,19 +429,19 @@ public class Summary {
 				// end of file: ignore
 			} else if (MetadataTemplate.isField(field)) {
 				// TODO: if it's an int, parse it, right?
-				element.details.put(field, data.toString());
+				baseSample.setMeta(field, data.toString());
 			} else if (field != null && field.equals("range")) {
 				// it's a range
 
 				// TESTING: i've got nulls still... (why?)
 				if (!data.toString().equals("null")) {
 					Range r = new Range(data.toString());
-					element.setRange(r);
+					baseSample.setRange(r);
 				}
 			} else if (field != null && field.equals("filetype")) {
 				// it's the filetype -- (not a normal metadata field, yet)
 				if (!data.toString().equals("null")) {
-					element.details.put("filetype", data.toString());
+					baseSample.setMeta("filetype", data.toString());
 				}
 			} else {
 				System.out.println("not a field: what's this mean?  |" + field
@@ -570,6 +581,7 @@ public class Summary {
 			Object o = items.get(fn);
 			if (o instanceof MyFile) {
 				Element e = new Element(folder + File.separator + fn);
+				SampleHandle sh = new SampleHandle(e);
 
 				// if disk copy isn't newer, skip it.
 				long diskModDate = new File(e.getFilename()).lastModified();
@@ -580,8 +592,9 @@ public class Summary {
 				try {
 					if (verbose)
 						System.out.println("reloading " + fn);
-					e.loadMeta();
-					items.put(fn, e);
+					sh.getBaseSample();
+					sh.setLastModified(diskModDate);
+					items.put(fn, sh);
 				} catch (IOException ioe) {
 					// can't load -> stays |FILE|.
 					// just update the moddate.
@@ -596,14 +609,16 @@ public class Summary {
 		for (Iterator i = items.keySet().iterator(); i.hasNext(); /*--*/) {
 			String fn = (String) i.next();
 			Object o = items.get(fn);
-			if (o instanceof Element) {
-				Element e = (Element) o;
-				long diskMod = new File(e.filename).lastModified();
-				if (e.lastModified < diskMod) {
+			if (o instanceof SampleHandle) {
+				SampleHandle sh = (SampleHandle) o;
+				long diskMod = new File(sh.getElement().getFilename()).lastModified();
+				if (sh.getLastModified() < diskMod) {
 					try {
 						if (verbose)
-							System.out.println("reloading " + fn);
-						e.reloadMeta();
+							System.out.println("reloading(2) " + fn);
+						sh.reset();
+						sh.getBaseSample();
+						sh.setLastModified(diskMod);
 					} catch (IOException ioe) {
 						items.put(fn, new MyFile(diskMod));
 					}

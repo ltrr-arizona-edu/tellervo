@@ -27,16 +27,17 @@ import edu.cornell.dendro.corina.ui.I18n;
 
 import edu.cornell.dendro.corina_indexing.Indexable;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Vector;
-import java.util.Map;
 import java.util.HashMap;
 
 import java.lang.reflect.Method;
+import java.net.URI;
 
 import javax.swing.undo.*;
 
@@ -60,11 +61,11 @@ import javax.swing.undo.*;
 // the same object.  better yet, an editor factory so a second
 // editor(sample) bringstofront the existing editor.
 
-public class Sample implements Previewable, Graphable, Indexable {
+public class Sample extends BaseSample implements Previewable, Graphable, Indexable {
 
 	private static class SamplePreview extends Preview {
 		SamplePreview(Sample s) {
-			title = s.meta.get("title").toString();
+			title = s.getMeta("title").toString();
 
 			// range -- toStringWithSpan() does "(a - b, n=c)", i want "a - b (n=c)"
 			items.add(s.getRange() + " (n=" + s.getRange().span() + ")");
@@ -72,10 +73,10 @@ public class Sample implements Previewable, Graphable, Indexable {
 			// species
 			if (s.hasMeta("species"))
 				items.add(I18n.getText("species") + ": "
-						+ s.meta.get("species"));
+						+ s.getMeta("species"));
 
 			// format
-			items.add(I18n.getText("format") + ": " + s.meta.get("filetype"));
+			items.add(I18n.getText("format") + ": " + s.getMeta("filetype"));
 
 			// indexed, summed
 			if (s.isIndexed())
@@ -94,13 +95,16 @@ public class Sample implements Previewable, Graphable, Indexable {
 	 to this value is considered a MR. */
 	public static final int MR = 2;
 
+	private boolean metadataChanged = true;
+	
 	// copy each part of source to target.  shallow copy, no events, etc.
 	// used only by editor (paste) -- bad interface!
 	public static void copy(Sample source, Sample target) {
+		// copy our base data
+		BaseSample.copy(source, target);
+		
 		target.data = source.data;
-		target.range = source.range;
 		target.count = source.count;
-		target.meta = source.meta;
 		target.incr = source.incr;
 		target.decr = source.decr;
 		target.elements = source.elements;
@@ -111,42 +115,7 @@ public class Sample implements Previewable, Graphable, Indexable {
 	 * We put floats in here occasionally, as well as strings.
 	 */
 	private List<Object> data;
-	
-	/** Data range. */
-	private Range range;
-	
-	/** Sample metadata, as a (String, Object) Map.  The following
-	 table lists the standard keys, their data types, and valid values:
-
-	 <table border="1">
-	 <tr> <th>Key</th>         <th>Type</th>    <th>Valid values</th> </tr>
-	 <tr> <td>id</td>          <td>Integer</td> <td></td>             </tr>
-	 <tr> <td>title</td>       <td>String</td>  <td></td>             </tr>
-	 <tr> <td>dating</td>      <td>String</td>  <td>A, R</td>         </tr>
-	 <tr> <td>unmeas_pre</td>  <td>Integer</td> <td></td>             </tr>
-	 <tr> <td>unmeas_post</td> <td>Integer</td> <td></td>             </tr>
-	 <tr> <td>filename</td>    <td>String</td>  <td></td>             </tr>
-	 <tr> <td>comments</td>    <td>String</td>  <td></td>             </tr>
-	 <tr> <td>type</td>        <td>String</td>  <td>S, H, C</td>      </tr>
-	 <tr> <td>species</td>     <td>String</td>  <td></td>             </tr>
-	 <tr> <td>sapwood</td>     <td>Integer</td> <td></td>             </tr>
-	 <tr> <td>pith</td>        <td>String</td>  <td>+, *, N</td>      </tr>
-	 <tr> <td>terminal</td>    <td>String</td>  <td>v, vv, B, W</td>  </tr>
-	 <tr> <td>continuous</td>  <td>String</td>  <td>C, R, N</td>      </tr>
-	 <tr> <td>quality</td>     <td>String</td>  <td>+, ++</td>        </tr>
-	 <tr> <td>format</td>      <td>String</td>  <td>R, I</td>         </tr>
-	 <tr> <td>index_type</td>  <td>Integer</td> <td></td>             </tr>
-	 <tr> <td>reconciled</td>  <td>String</td>  <td>Y,N</td>          </tr>
-	 <tr> <td>author</td>      <td>String</td>  <td></td>             </tr>
-	 </table>
-
-	 <code>data</code>, <code>count</code>, <code>range</code>,
-	 <code>wj</code>, and <code>elements</code> aren't stored in
-	 <code>meta</code> - they're their own members.
-
-	 @see edu.cornell.dendro.corina.formats.Corina */
-	private Map<String, Object> meta;
-	
+		
 	/** Number of samples in the sum at any given point. */
 	private List<Integer> count = null;
 	
@@ -166,8 +135,8 @@ public class Sample implements Previewable, Graphable, Indexable {
 
 	private Vector listeners = new Vector();
 
-	// see if the metadata was changed -- true (loaded samples) unless zero-arg constructor called
-	private boolean metadataChanged = true;
+	/** The URI that determines where we came from */
+	private URI sourceURI;
 
 	/* FUTURE: */
 	private UndoableEditSupport undoSupport = new UndoableEditSupport();
@@ -187,23 +156,45 @@ public class Sample implements Previewable, Graphable, Indexable {
 	 </ul>
 	 @see #meta */
 	public Sample() {
+		super();
+		
 		// make defaults: empty
 		data = new ArrayList<Object>();
-		range = new Range();
-		meta = new HashMap<String, Object>();
 
 		// store username, if known
 		if (System.getProperty("user.name") != null)
-			meta.put("author", System.getProperty("user.name"));
+			setMeta("author", System.getProperty("user.name"));
 
 		// initialize empty metadata with defaults?
-		meta.put("title", I18n.getText("Untitled"));
+		setMeta("title", I18n.getText("Untitled"));
 
 		// metadata NOT changed
 		metadataChanged = false;
 	}
 
-	// create a new sample, from a file on disk
+	public Sample(URI source) throws IOException {
+		if(source.getScheme().equals("file")) {
+			// construct a file from this URI
+			File srcFile = new File(source);
+			
+			// load the sample like we did before (easy!)
+			Sample s = Files.load(srcFile.getAbsolutePath());
+			copy(s, this);
+			trimAllToSize();
+		}
+		else {
+			throw new IOException("I don't know how to open samples using the '" + 
+					source.getScheme() + "' scheme");
+		}
+	}
+	
+	/**
+	 * Creates a new sample from a file on disk
+	 * @param filename
+	 * @throws IOException
+	 * 
+	 * @deprecated use Sample(URI) instead!
+	 */
 	public Sample(String filename) throws IOException {
 		// new @-notation
 		if (filename.startsWith("@"))
@@ -224,10 +215,6 @@ public class Sample implements Previewable, Graphable, Indexable {
 	/** Clear the modified flag. */
 	public void clearModified() {
 		modified = false;
-	}
-
-	public Map<String, Object> cloneMeta() {
-		return new HashMap<String, Object>(meta);
 	}
 
 	// radius of the sample; only relevant for raw samples (better to
@@ -284,10 +271,6 @@ public class Sample implements Previewable, Graphable, Indexable {
 			if (Weiserjahre.isSignificant(this, i))
 				sig++;
 		return sig;
-	}
-
-	public boolean emptyMeta() {
-		return meta.isEmpty();
 	}
 
 	public void fireSampleDataChanged() {
@@ -399,7 +382,7 @@ public class Sample implements Previewable, Graphable, Indexable {
 	public Integer getInteger(String field) {
 		// TODO: load, if needed.
 
-		Object val = meta.get(field);
+		Object val = getMeta(field);
 		if (val != null && val instanceof Integer)
 			return (Integer) val;
 
@@ -427,19 +410,8 @@ public class Sample implements Previewable, Graphable, Indexable {
 		return null;
 	}
 
-	public Object getMeta(String key) {
-		return meta.get(key);
-	}
-
 	public Preview getPreview() {
 		return new SamplePreview(this);
-	}
-
-	/**
-	 * @return the range
-	 */
-	public Range getRange() {
-		return range;
 	}
 
 	/** Return the default scale factor for graphing.
@@ -451,14 +423,14 @@ public class Sample implements Previewable, Graphable, Indexable {
 	/** Return the start date for a graph.
 	 @return start date of data to graph */
 	public Year getStart() {
-		return range.getStart();
+		return getRange().getStart();
 	}
 
 	// get a string field from this sample.
 	public String getString(String field) {
 		// TODO: load, if needed.
 
-		Object val = meta.get(field);
+		Object val = getMeta(field);
 		if (val != null && val instanceof String)
 			return (String) val;
 
@@ -521,11 +493,7 @@ public class Sample implements Previewable, Graphable, Indexable {
 	 summed indexed formats for tucson.  but he wants it back in,
 	 so we give it to him. */
 	public void guessIndexed() {
-		meta.put("format", computeRadius() / data.size() > 800 ? "I" : "R");
-	}
-
-	public boolean hasMeta(String key) {
-		return meta.containsKey(key);
+		setMeta("format", computeRadius() / data.size() > 800 ? "I" : "R");
 	}
 
 	// does it have weiserjahre?
@@ -536,7 +504,7 @@ public class Sample implements Previewable, Graphable, Indexable {
 	/** Return true if the sample is absolutely dated, else false.
 	 @return true if the sample is absolutely dated */
 	public boolean isAbsolute() {
-		String dating = (String) meta.get("dating");
+		String dating = (String) getMeta("dating");
 		return (dating != null && Character.toUpperCase(dating.charAt(0)) == 'A');
 	}
 
@@ -548,7 +516,7 @@ public class Sample implements Previewable, Graphable, Indexable {
 	/** Return true if the sample is indexed, else false.
 	 @return true if the sample is indexed */
 	public boolean isIndexed() {
-		String type = (String) meta.get("format");
+		String type = (String) getMeta("format");
 		return (type != null && Character.toUpperCase(type.charAt(0)) == 'I');
 	}
 
@@ -561,12 +529,16 @@ public class Sample implements Previewable, Graphable, Indexable {
 	public boolean isModified() {
 		return modified;
 	}
+	
+	public boolean wasMetadataChanged() {
+		return metadataChanged;
+	}
 
 	// is this sample oak?  (assumes meta/species is a string, if present)
 	// (FIXME: if it's not a string, it's not oak.)
 	// checks for "oak" or "quercus".
 	public boolean isOak() {
-		String species = (String) meta.get("species");
+		String species = (String) getMeta("species");
 		if (species == null)
 			return false;
 		species = species.toLowerCase();
@@ -588,21 +560,9 @@ public class Sample implements Previewable, Graphable, Indexable {
 		undoSupport.postEdit(e);
 	}
 
-	public void removeMeta(String key) {
-		meta.remove(key);
-	}
-
 	public synchronized void removeSampleListener(SampleListener l) {
 		listeners.remove(l);
 	}
-
-	public void resetMeta() {
-		meta.clear();
-	}
-
-	//
-	// miscellaneous procedures that are better off here than elsewhere
-	//
 
 	/**
 	 Save this Sample to disk to the same filename it had
@@ -612,7 +572,7 @@ public class Sample implements Previewable, Graphable, Indexable {
 	 */
 	public void save() throws IOException {
 		// BUG!  assumes filename exists in meta map -- what if it doesn't?
-		save((String) meta.get("filename"));
+		save((String) getMeta("filename"));
 	}
 
 	/**
@@ -650,23 +610,9 @@ public class Sample implements Previewable, Graphable, Indexable {
 		this.elements = elements;
 	}
 
-	public void setMeta(String key, Object value) {
-		meta.put(key, value);
-	}
-
-	// there's an elegant refactoring waiting to be done here, but i'm too wired on caffiene right now to see it.
-	// => see also mapframe's toolbox decorators.
-
 	/** Set the modified flag. */
 	public void setModified() {
 		modified = true;
-	}
-
-	/**
-	 * @param range the range to set
-	 */
-	public void setRange(Range range) {
-		this.range = range;
 	}
 
 	/**
@@ -687,7 +633,7 @@ public class Sample implements Previewable, Graphable, Indexable {
 	 @return the "title" tag from meta */
 	@Override
 	public String toString() {
-		String name = meta.get("title") + " " + range.toStringWithSpan();
+		String name = getMeta("title") + " " + getRange().toStringWithSpan();
 		if (isModified()) // not aqua-ish, but how to do it the real way?
 			name = "* " + name;
 		return name;
@@ -740,7 +686,7 @@ public class Sample implements Previewable, Graphable, Indexable {
 	// make sure data/count/wj are the same size as range.span, and
 	// contain all legit Numbers.  turns nulls/non-numbers into 0's.
 	public void verify() {
-		int n = range.span();
+		int n = getRange().span();
 
 		// what to do if they're the wrong size -- adjust range if the data
 		// are all the same size, but pad with zeros if only one is off?
@@ -753,9 +699,5 @@ public class Sample implements Previewable, Graphable, Indexable {
 		}
 
 		// TODO: do count, WJ as well
-	}
-
-	public boolean wasMetadataChanged() {
-		return metadataChanged;
 	}
 }

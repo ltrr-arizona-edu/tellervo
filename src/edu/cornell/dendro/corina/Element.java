@@ -29,6 +29,7 @@ import java.net.URISyntaxException;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.io.Files;
 
 /**
    An Element, basically a reference to a Sample (stored on disk).
@@ -85,14 +86,10 @@ import edu.cornell.dendro.corina.gui.Bug;
 public class Element implements Comparable {
 
 	// these members should probably be PRIVATE!
-	public boolean active;
+	private boolean active;
 
-	public Map details = null;
+	public Map<String, Object> details = null;
 
-	public long lastModified = -1;
-
-	private Range range = null;
-	
 	// filename is the full path (ie, G:\DATA\ACM\asdf.moo)
 	public final String filename;	
 	
@@ -105,6 +102,7 @@ public class Element implements Comparable {
 	// basename is the name of the file without any path information
 	public final String basename;
 
+	private Range range;
 	public Range getRange() { // i really should USE this!
 		// lazy-load!
 		if (details == null)
@@ -130,8 +128,6 @@ public class Element implements Comparable {
 	}
 
 	public Exception error = null; // not used here!  (but probably should be!)
-
-	// public Element() { filename=null; } // HACK!  just for Summary.java
 
 	/**
 	 Construct an Element from a filename.  This Element will, by
@@ -171,6 +167,18 @@ public class Element implements Comparable {
 				this.filename = filename;
 				this.basename = new File(filename).getName();
 			}
+		} else if(filename.startsWith("@")) {
+			/* this is from undocumented code in sample.java
+			 * I don't know if it means anything, or if it's even used
+			 * But, I'm going to wrap this here because I'm forcing everything
+			 * to use elements as a go-between for samples for the new databasing
+			 * - lucas
+			 */
+			
+			// new @-notation
+			// (assumes c.d.r ends with file.sep!)
+			this.filename = System.getProperty("corina.dir.data", ".") + filename.substring(1);
+			this.basename = new File(this.filename).getName();
 		}
 		// otherwise, we got passed a whole file name. try and parse it up.
 		else {
@@ -210,7 +218,7 @@ public class Element implements Comparable {
 				this.folder = fn.substring(0, pos);
 				this.basename = fn.substring(pos + 1, fn.length());
 				
-				this.filename = App.prefs.getPref("corina.dir.data") + File.separator +
+				this.filename = App.prefs.getPref("corina.dir.data", ".") + File.separator +
 								this.folder.replace(":", File.separator) + File.separator +
 								this.basename;
 			}
@@ -228,6 +236,14 @@ public class Element implements Comparable {
 	 */
 	public boolean isActive() {
 		return active;
+	}
+	
+	/**
+	 * Change the state of the Element's active flag
+	 * @param active
+	 */
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	/**
@@ -271,18 +287,19 @@ public class Element implements Comparable {
 		
 		return "?" + folder + ":" + basename;
 	}
-
+	
 	/**
 	 @return the filename, with ?'s
 	 */
-	public URI getURI() {
-		
+	public URI getURI() {	
 		try {
+			URI baseURI = new File(App.prefs.getPref("corina.dir.data", ".")).toURI();
+			
 			// no basename or folder? return relative path...
 			if(basename == null || folder == null)
-				return new URI("absfile", filename, null);
-
-			return new URI("relfile", folder + ":" + basename, null);
+				return new URI("file", filename, null);
+			
+			return baseURI.relativize(new File(filename).toURI());
 		} catch (URISyntaxException e) {
 			// this shouldn't happen...
 			new Bug(e);			
@@ -301,7 +318,13 @@ public class Element implements Comparable {
 	 */
 	public Sample load() throws IOException {
 		// save metadata before i go?
-		return new Sample(filename);
+		//return new Sample(filename)
+		return Files.load(filename);
+	}
+	
+	public BaseSample loadBasic() throws IOException {
+		Sample s = load();
+		return new BaseSample(s);
 	}
 
 	// dead samples should be dimmed or something
@@ -331,7 +354,6 @@ public class Element implements Comparable {
 			Sample s = load();
 			details = s.cloneMeta();
 			range = s.getRange();
-			lastModified = new File(filename).lastModified();
 		} catch (IOException ioe) {
 			dead = true;
 			error = ioe;
@@ -373,26 +395,51 @@ public class Element implements Comparable {
 		return (sapwood == null ? 0 : sapwood.intValue());
 	}
 
-	//
-	// NEW: lazy-load interface
-	//
-	public Object getMeta(String field) {
-		if (details == null)
+	private boolean verifyLoaded() {
+		if(dead)
+			return false;
+		
+		if (details == null) {
 			try {
 				loadMeta();
 			} catch (WrongFiletypeException wfte) {
 				// System.out.println("wfte!");
-				return null;
+				return false;
 				// ignore?
 			} catch (IOException ioe) {
 				System.out.println("on " + filename + ", " + ioe);
 				ioe.printStackTrace();
-				return null; // !!!
+				return false; // !!!
 			}
+		}
+			
+		return true;
+	}
+	
+	//
+	// NEW: lazy-load interface
+	//
+	public Object getMeta(String field) {
+		if(!verifyLoaded())
+			return null;
 
 		return details.get(field);
 	}
+	
+	public boolean hasMeta(String field) {
+		if(!verifyLoaded())
+			return false;
 
+		return details.containsKey(field);
+	}
+	
+	public void setMeta(String field, Object value) {
+		if(!verifyLoaded())
+			return;
+		
+		details.put(field, value);
+	}
+	
 	// does this object represent a real sample?
 	public boolean isSample() {
 		// if we've already loaded it, it's a sample.

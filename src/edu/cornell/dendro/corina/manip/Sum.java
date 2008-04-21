@@ -75,7 +75,7 @@ public class Sum {
         // load active elements into buffer
         int numLoaded=0;
         for (int i=0; i<numTotal; i++)
-            if (((Element) elements.get(i)).active)
+            if (((Element) elements.get(i)).isActive())
                 buf[numLoaded++] = ((Element) elements.get(i)).load();
 
         // return array

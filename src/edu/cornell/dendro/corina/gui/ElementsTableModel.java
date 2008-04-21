@@ -192,7 +192,7 @@ public class ElementsTableModel extends AbstractTableModel {
 		switch (col) {
 
 		case 0: // filename + active-flag
-			e.active = ((Boolean) value).booleanValue();
+			e.setActive(((Boolean) value).booleanValue());
 			break;
 
 		// case 1: ignore, range isn't editable

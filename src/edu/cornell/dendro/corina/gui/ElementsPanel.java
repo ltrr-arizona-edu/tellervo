@@ -467,7 +467,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 							Object value, boolean isSelected, int row,
 							int column) {
 						Element e = (Element) value;
-						chx.setSelected(e.active);
+						chx.setSelected(e.isActive());
 						lab.setText(new File(e.getFilename()).getName()); // filename only (not fq)
 
 						Color fore = (isSelected ? table
