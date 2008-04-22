@@ -1,6 +1,6 @@
 package edu.cornell.dendro.corina.search;
 
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 
 import java.io.File;
 
@@ -105,14 +105,14 @@ public class Search implements Runnable {
     // remember: ANY = stop(pass) on true, ALL = stop(fail) on false.
     private void testFile(File f) {
 	// test element |e|
-	Element e = new Element(f.getPath());
+	ObsFileElement e = new ObsFileElement(f.getPath());
 	testElement(e);
     }
 
     // test an element, and add it to |matches| if it meets all necessary criteria.
     // note: e.isSample() calls slow it down noticably, but not horribly, if the
     // result set is small.
-    private void testElement(Element e) {
+    private void testElement(ObsFileElement e) {
 	for (int i=0; i<criteria.size(); i++) {
 	    Criterion c = (Criterion) criteria.get(i);
 	    boolean test = c.test(e);

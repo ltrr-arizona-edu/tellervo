@@ -21,7 +21,7 @@
 package edu.cornell.dendro.corina.cross;
 
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 
 import java.io.File;
 import java.io.IOException;
@@ -181,8 +181,8 @@ public class Sequence {
     private void addElement(List list, Object obj) {
 	if (obj instanceof String)
 	    list.add(obj);
-	else if (((Element) obj).isActive())
-	    list.add(((Element) obj).getFilename());
+	else if (((ObsFileElement) obj).isActive())
+	    list.add(((ObsFileElement) obj).getFilename());
     }
 
     // |fixed| and |moving| contain lists of filenames;

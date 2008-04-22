@@ -23,7 +23,7 @@ package edu.cornell.dendro.corina.gui;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.SampleListener;
 import edu.cornell.dendro.corina.SampleEvent;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.util.Sort;
@@ -130,7 +130,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					List l = (List) o; // a List of Files
 
 					for (int i = 0; i < l.size(); i++) {
-						elements.add(new Element(((File) l.get(i)).getPath()));
+						elements.add(new ObsFileElement(((File) l.get(i)).getPath()));
 						// fire update?
 					}
 					event.getDropTargetContext().dropComplete(true);
@@ -158,7 +158,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 				public void actionPerformed(ActionEvent ae) {
 					// get selected element
 					int i = table.getSelectedRow(); // BUG: if nothing's selected, nothing gets selected, returns -1 here
-					Element e = (Element) elements.get(i);
+					ObsFileElement e = (ObsFileElement) elements.get(i);
 
 					// load it
 					Sample s = null;
@@ -184,11 +184,11 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			changeDir.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent ae) {
 					// figure out what the base directory is for the samples
-					String prefix = ((Element) elements.get(0)).getFilename();
+					String prefix = ((ObsFileElement) elements.get(0)).getFilename();
 					for (int i = 1; i < elements.size(); i++) {
 
 						// crop prefix by directories until it really is a prefix
-						while (!((Element) elements.get(i)).getFilename()
+						while (!((ObsFileElement) elements.get(i)).getFilename()
 								.startsWith(prefix)) {
 							int slash = prefix.lastIndexOf(File.separatorChar);
 							if (slash == -1) {
@@ -220,11 +220,11 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					// change all filenames to the new directory (s/prefix/target/).
 					// elements are now immutable, so make a new one from the old name.
 					for (int i = 0; i < elements.size(); i++) {
-						Element oldEl = (Element) elements.get(i);
+						ObsFileElement oldEl = (ObsFileElement) elements.get(i);
 						String newFilename = target
 								+ oldEl.getFilename()
 										.substring(prefix.length());
-						Element newEl = new Element(newFilename, oldEl
+						ObsFileElement newEl = new ObsFileElement(newFilename, oldEl
 								.isActive());
 						elements.set(i, newEl);
 					}
@@ -314,7 +314,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		final int rows[] = table.getSelectedRows();
 		int deleted = 0; // number of rows already deleted
 		for (int i = 0; i < rows.length; i++) { // remove those rows
-			String s = ((Element)elements.get(rows[i] - deleted)).getFilename();
+			String s = ((ObsFileElement)elements.get(rows[i] - deleted)).getFilename();
 			System.out.println(s);
 			elements.remove(rows[i] - deleted);
 			deleted++;
@@ -466,7 +466,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					public Component getTableCellEditorComponent(JTable table,
 							Object value, boolean isSelected, int row,
 							int column) {
-						Element e = (Element) value;
+						ObsFileElement e = (ObsFileElement) value;
 						chx.setSelected(e.isActive());
 						lab.setText(new File(e.getFilename()).getName()); // filename only (not fq)
 
@@ -513,8 +513,8 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					return;
 				int col = table.getColumnModel().getColumnIndexAtX(e.getX());
 
-				Element first = (Element) elements.get(0);
-				Element last = (Element) elements.get(elements.size() - 1);
+				ObsFileElement first = (ObsFileElement) elements.get(0);
+				ObsFileElement last = (ObsFileElement) elements.get(elements.size() - 1);
 
 				switch (col) {
 				case 0: // filename
@@ -571,8 +571,8 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		}
 
 		public int compare(Object o1, Object o2) {
-			Object v1 = ((Element) o1).details.get(field); // what about null HERE?
-			Object v2 = ((Element) o2).details.get(field);
+			Object v1 = ((ObsFileElement) o1).details.get(field); // what about null HERE?
+			Object v2 = ((ObsFileElement) o2).details.get(field);
 			if (v1 == null && v2 != null) // deal with nulls ... ick
 				return +1;
 			else if (v1 != null && v2 == null)

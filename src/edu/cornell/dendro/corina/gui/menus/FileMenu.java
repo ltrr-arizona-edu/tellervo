@@ -18,7 +18,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
@@ -199,7 +199,7 @@ public class FileMenu extends JMenu {
 			List elements = FileDialog.showMulti(I18n.getText("open"));
 
 			for (int i = 0; i < elements.size(); i++) {
-				Element e = (Element) elements.get(i);
+				ObsFileElement e = (ObsFileElement) elements.get(i);
 
 				if (!e.isActive()) // skip inactive
 					continue;
@@ -228,7 +228,7 @@ public class FileMenu extends JMenu {
 			String errorsamples = "";
 
 			for (int i = 0; i < elements.size(); i++) {
-				Element e = (Element) elements.get(i);
+				ObsFileElement e = (ObsFileElement) elements.get(i);
 
 				if (!e.isActive()) // skip inactive
 					continue;
@@ -307,7 +307,7 @@ public class FileMenu extends JMenu {
 					errorsamples = "";
 
 					for (int i = 0; i < elements.size(); i++) {
-						Element e = (Element) elements.get(i);
+						ObsFileElement e = (ObsFileElement) elements.get(i);
 
 						if (!e.isActive()) // skip inactive
 							continue;
@@ -373,7 +373,7 @@ public class FileMenu extends JMenu {
 		// get sampleset, and copy to new, loading elements as needed
 		List s = new ArrayList();
 		for (int i = 0; i < tmp.size(); i++) {
-			String filename = ((Element) tmp.get(i)).getFilename();
+			String filename = ((ObsFileElement) tmp.get(i)).getFilename();
 			Sample testSample;
 			try {
 				testSample = new Sample(filename); // BETTER: .load()
@@ -394,7 +394,7 @@ public class FileMenu extends JMenu {
 			if (testSample.getElements() != null) // if summed (has elements),
 				s.addAll(testSample.getElements()); // add all elements
 			else
-				s.add(new Element(filename));
+				s.add(new ObsFileElement(filename));
 		}
 
 		// sort, by filename (is that really what i want?)

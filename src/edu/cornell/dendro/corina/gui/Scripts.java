@@ -21,7 +21,7 @@
 package edu.cornell.dendro.corina.gui;
 
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.index.Index;
 import edu.cornell.dendro.corina_indexing.Exponential; // extract const! -- better: let user pick!
 import edu.cornell.dendro.corina.util.Overwrite;
@@ -259,7 +259,7 @@ public class Scripts {
 
 	// index each one as exponential, and save it as .IND
 	for (int i=0; i<elements.size(); i++) {
-	    Element e = (Element) elements.get(i);
+	    ObsFileElement e = (ObsFileElement) elements.get(i);
 	    Sample s;
 	    try {
 		s = e.load();

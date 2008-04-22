@@ -46,7 +46,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Preview;
 import edu.cornell.dendro.corina.Previewable;
 import edu.cornell.dendro.corina.Range;
@@ -527,7 +527,7 @@ public class Grid implements Runnable, Previewable {
 		// (count-if files #'active)
 		num = 0;
 		for (int i = 0; i < files.size(); i++)
-			if (((Element) files.get(i)).isActive())
+			if (((ObsFileElement) files.get(i)).isActive())
 				num++;
 
 		// create outputs
@@ -562,13 +562,13 @@ public class Grid implements Runnable, Previewable {
 		// add all fixed
 		List fixed = seq.getAllFixed();
 		for (int i = 0; i < fixed.size(); i++)
-			files.add(new Element((String) fixed.get(i)));
+			files.add(new ObsFileElement((String) fixed.get(i)));
 
 		// add all (non-duplicate) moving
 		List moving = seq.getAllMoving();
 		for (int i = 0; i < moving.size(); i++)
 			if (!fixed.contains(moving.get(i)))
-				files.add(new Element((String) moving.get(i)));
+				files.add(new ObsFileElement((String) moving.get(i)));
 
 		// create cell array
 		num = files.size();
@@ -614,7 +614,7 @@ public class Grid implements Runnable, Previewable {
 		
 		for (int i = 0; i < files.size(); i++) {
 			// get an element
-			Element e = (Element) files.get(i);
+			ObsFileElement e = (ObsFileElement) files.get(i);
 			// ABSTRACTION: i'd sure like to grab an enumeration of
 			// active elements (well, sort of).  what i really want is
 			// a filter.  i'll get rid of the active flag someday, but
@@ -761,7 +761,7 @@ public class Grid implements Runnable, Previewable {
 					items.add("...");
 					break;
 				}
-				String filename = ((Element) g.files.get(i)).getFilename();
+				String filename = ((ObsFileElement) g.files.get(i)).getFilename();
 				items.add(new File(filename).getName());
 			}
 		}
@@ -799,7 +799,7 @@ public class Grid implements Runnable, Previewable {
 
 			// if a sample (input section), add to list
 			if (name.equals("sample")) {
-				files.add(new Element(atts.getValue("filename"))); // --> doesn't care about inactive files?
+				files.add(new ObsFileElement(atts.getValue("filename"))); // --> doesn't care about inactive files?
 				return;
 			}
 

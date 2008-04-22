@@ -2,7 +2,7 @@ package edu.cornell.dendro.corina.graph;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range; // ...
-import edu.cornell.dendro.corina.Element; // !
+import edu.cornell.dendro.corina.ObsFileElement; // !
 
 import java.util.List;
 
@@ -51,9 +51,9 @@ public class BargraphPager extends Book {
 	    int lastBar = Math.min(firstBar+barsPerPage, bargraph.bars.size()-1);
 
 	    // firstYear = min(bargraph.bars[i].range.start)
-	    Year firstYear = ((Element) bargraph.bars.get(0)).getRange().getStart();
+	    Year firstYear = ((ObsFileElement) bargraph.bars.get(0)).getRange().getStart();
 	    for (int i=1; i<lastBar; i++) {
-		Year tmp = ((Element) bargraph.bars.get(i)).getRange().getStart();
+		Year tmp = ((ObsFileElement) bargraph.bars.get(i)).getRange().getStart();
 		firstYear = Year.min(firstYear, tmp);
 	    }
 	    // (TODO: it should back off to the century, though, right?)
@@ -75,7 +75,7 @@ public class BargraphPager extends Book {
 	Range r = new Range(year1, yearN);
 
 	for (int i=bar1; i<=barN; i++) {
-	    Element e = (Element) bars.get(i);
+	    ObsFileElement e = (ObsFileElement) bars.get(i);
 	    if (e.getRange().intersection(r).span() == 0)
 		return false;
 	}
@@ -156,7 +156,7 @@ public class BargraphPager extends Book {
 		    break;
 
 		// the bar, and its title
-		Element bar = (Element) bargraph.bars.get(firstBar + i);
+		ObsFileElement bar = (ObsFileElement) bargraph.bars.get(firstBar + i);
 		String title = (String) bar.details.get("title"); // BUG: assumes exists, nonnull!
 
 		// edges of box

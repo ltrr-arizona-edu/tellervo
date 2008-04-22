@@ -23,7 +23,7 @@ package edu.cornell.dendro.corina.formats;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
@@ -347,9 +347,9 @@ public class Corina implements Filetype {
 
 			// add to elements
 			if (line.charAt(0) == '*') // disabled element, if first char is '*'
-				s.getElements().add(new Element(line.substring(1), false));
+				s.getElements().add(new ObsFileElement(line.substring(1), false));
 			else
-				s.getElements().add(new Element(line));
+				s.getElements().add(new ObsFileElement(line));
 		}
 	}
 
@@ -702,7 +702,7 @@ public class Corina implements Filetype {
 		w.newLine();
 		for (int i = 0; i < s.getElements().size(); i++) {
 			// if disabled, write '*' before filename
-			Element el = s.getElements().get(i);
+			ObsFileElement el = s.getElements().get(i);
 			w.write((el.isActive() ? "" : "*") + (relativepath ? el.getRelativeFilename() : el.getFilename()));
 			w.newLine();
 		}

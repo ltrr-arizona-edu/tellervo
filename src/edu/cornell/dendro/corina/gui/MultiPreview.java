@@ -38,7 +38,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Preview;
 import edu.cornell.dendro.corina.Previewable;
 import edu.cornell.dendro.corina.Sample;
@@ -69,7 +69,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 		if(files != null) {			
 			for(int i = 0; i < files.length; i++)
 				// add to set
-				set.add(new Element(files[i].getPath()));
+				set.add(new ObsFileElement(files[i].getPath()));
 
 			// update view
 			panel.update();
@@ -117,7 +117,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 				if(files != null) {			
 					for(int i = 0; i < files.length; i++)
 						// add to set
-						set.add(new Element(files[i].getPath()));
+						set.add(new ObsFileElement(files[i].getPath()));
 
 					// update view
 					panel.update();

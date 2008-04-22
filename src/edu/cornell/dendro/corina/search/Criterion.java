@@ -1,6 +1,6 @@
 package edu.cornell.dendro.corina.search;
 
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import java.io.File;
@@ -205,7 +205,7 @@ public abstract class Criterion {
     // clear the text field -- that is, if the RHS type doesn't change, don't change the component.
 
     // get the LHS, based on the field.
-    private Object getLHS(Element e) {
+    private Object getLHS(ObsFileElement e) {
 	// REFACTOR: this seems awkward.  by LOD, this mess belongs in Element -- ok?
 	Object lhs=null;
 	if (lhsField.equals("start") || lhsField.equals("end") || lhsField.equals("length")) {
@@ -229,7 +229,7 @@ public abstract class Criterion {
     }
 
     // finally, it'll need to be able to say whether a given sample/file (which??) passes, given the third field
-    public boolean test(Element e) {
+    public boolean test(ObsFileElement e) {
 	// get the LHS
 	Object lhs = getLHS(e);
 

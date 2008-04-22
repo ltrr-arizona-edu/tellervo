@@ -21,7 +21,7 @@
 package edu.cornell.dendro.corina.formats;
 
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import java.io.BufferedReader;

@@ -1,7 +1,7 @@
 package edu.cornell.dendro.corina.cross;
 
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 // IDEA: what if i got rid of Element?  it's either a sample, or a
 // filename.  no, that's bad, i wouldn't be able to load massive
 // amounts of metadata, as browser requires...
@@ -237,11 +237,11 @@ public class TableView extends JPanel {
 				public void actionPerformed(ActionEvent e) {
 					// get fixed
 					int i = fixedPopup.getSelectedIndex();
-					Element f = new Element((String) fixedAsList.get(i));
+					ObsFileElement f = new ObsFileElement((String) fixedAsList.get(i));
 
 					// get moving
 					int j = jtable.getSelectedRow();
-					Element m = new Element(table.getFilenameOfRow(j));
+					ObsFileElement m = new ObsFileElement(table.getFilenameOfRow(j));
 
 					// make graph
 					List list = new ArrayList();

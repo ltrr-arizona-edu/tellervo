@@ -108,7 +108,7 @@ public class CorinaXML implements Filetype {
 
 		if(s.getElements() != null) {
 			for (int i = 0; i < s.getElements().size(); i++) {
-				edu.cornell.dendro.corina.Element el = s.getElements().get(i);
+				edu.cornell.dendro.corina.ObsFileElement el = s.getElements().get(i);
 				URI uri = el.getURI();
 				Element e = doc.createElement("element");
 			

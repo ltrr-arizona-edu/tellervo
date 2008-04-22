@@ -45,7 +45,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import edu.cornell.dendro.corina.Build;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.gui.FileDialog;
@@ -228,8 +228,8 @@ public class GridFrame extends XFrame
 			// figure out what samples are there
 			// (REFACTOR: LoD says this should be in grid:
 			// grid.getElement(i)?)
-			Element e1 = (Element) grid.getFiles().get(row-1);
-			Element e2 = (Element) grid.getFiles().get(col-1);
+			ObsFileElement e1 = (ObsFileElement) grid.getFiles().get(row-1);
+			ObsFileElement e2 = (ObsFileElement) grid.getFiles().get(col-1);
 
 			// make a graph
 			List list = new ArrayList(2);

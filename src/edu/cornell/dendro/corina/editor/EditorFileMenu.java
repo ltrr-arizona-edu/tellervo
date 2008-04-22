@@ -1,6 +1,6 @@
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.io.Exporter;
 import edu.cornell.dendro.corina.io.ExportDialog;
@@ -154,7 +154,7 @@ public class EditorFileMenu extends FileMenu {
 						boolean problem = false;
 
 						for (int i = 0; i < s.getElements().size(); i++) {
-							Element e = s.getElements().get(i);
+							ObsFileElement e = s.getElements().get(i);
 
 							if (!e.isActive()) // skip inactive
 								continue;
@@ -264,7 +264,7 @@ public class EditorFileMenu extends FileMenu {
 						boolean problem = false;
 
 						for (int i = 0; i < s.getElements().size(); i++) {
-							Element e = s.getElements().get(i);
+							ObsFileElement e = s.getElements().get(i);
 
 							if (!e.isActive()) // skip inactive
 								continue;

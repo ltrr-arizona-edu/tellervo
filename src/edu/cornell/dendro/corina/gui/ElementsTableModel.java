@@ -20,7 +20,7 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -74,7 +74,7 @@ public class ElementsTableModel extends AbstractTableModel {
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column) {
-			Element e = (Element) value;
+			ObsFileElement e = (ObsFileElement) value;
 			check.setSelected(e.isActive());
 
 			label.setText(e.getBasename());
@@ -133,7 +133,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	// value of cell (row,col)
 	public Object getValueAt(int row, int col) {
 		// element to look at
-		Element e = (Element) elements.get(row);
+		ObsFileElement e = (ObsFileElement) elements.get(row);
 
 		switch (col) {
 		case 0: 
@@ -174,7 +174,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	public Class getColumnClass(int col) {
 		switch (col) {
 		case 0:
-			return Element.class; // ???
+			return ObsFileElement.class; // ???
 		case 1:
 		case 2:
 			return String.class; // well, it's a range or a folder...
@@ -187,7 +187,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	@Override
 	public void setValueAt(Object value, int row, int col) {
 		// get element
-		Element e = (Element) elements.get(row);
+		ObsFileElement e = (ObsFileElement) elements.get(row);
 
 		switch (col) {
 

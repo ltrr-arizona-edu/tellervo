@@ -84,7 +84,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import edu.cornell.dendro.corina.Build;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Year;
@@ -141,7 +141,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 
     // the popup
     private SamplePopupMenu popup;
-    private Element currentBar; // bar under pointer
+    private ObsFileElement currentBar; // bar under pointer
 
     // constants used for drawing
     private static final Font BAR_FONT = new Font("dialog", Font.PLAIN, 12);
@@ -198,11 +198,11 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
         // return the Bar at the given Point, if one exists, else null.
         // => FIXME: shouldn't call a hit if x-position not in range
 	// DESIGN: return null?  ugh.  NoNullBeyondMethodScope!
-        public Element getBar(Point p) {
+        public ObsFileElement getBar(Point p) {
             int i = (int) p.getY() / dy;
             if (i > bars.size()-1)
                 return null;
-            return (Element) bars.get(i);
+            return (ObsFileElement) bars.get(i);
         }
 
         public BargraphPanel() {
@@ -467,7 +467,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
             // draw bars
 	    // timing: 50-100 ms, or as low as 1-2 ms if there aren't any visible
             for (int i=0; i<bars.size(); i++) {
-                Element bar = (Element) bars.get(i);
+                ObsFileElement bar = (ObsFileElement) bars.get(i);
 
 		// start of the row for this bar (??)
                 int y = i*(BAR_HEIGHT + BAR_SPACING) + BAR_SPACING; //  + BAR_HEIGHT/2;
@@ -616,7 +616,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 
     // color, based on species.
     // REFACTOR: shouldn't this belong in Species.java?
-    private Color speciesToColor(Element bar) {
+    private Color speciesToColor(ObsFileElement bar) {
 	Object species = bar.details.get("species");
 	if (species == null || !(species instanceof String))
 	    return unColor;
@@ -676,7 +676,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
                     for (int i=0; i<l.size(); i++) {
                         String pathname = ((File) l.get(i)).getPath();
                         try {
-                            Element e = new Element(pathname);
+                            ObsFileElement e = new ObsFileElement(pathname);
                             e.loadMeta();
                             bars.add(e);
                         } catch (IOException ioe) {
@@ -706,7 +706,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 
 	    // figure out what's being dragged
 	    Point p = event.getDragOrigin();
-	    Element bar = bgp.getBar(p);
+	    ObsFileElement bar = bgp.getBar(p);
 
 	    // make a Transferable to send
 	    Transferable transfer = new Tree.TransferableFile(bar.filename);
@@ -762,7 +762,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 	    // make sure they've got details
 	    // OBSOLETE: getRange() now does this as needed (does it?)
 	    for (int i=0; i<bars.size(); i++) {
-		((Element) bars.get(i)).loadMeta();
+		((ObsFileElement) bars.get(i)).loadMeta();
 	    }
         } catch (IOException ioe) {
 	    Bug.bug(ioe);
@@ -872,9 +872,9 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
     private Range computeRange() {
 	// ASSUMES bars has at least 1 element
 	// BUG: if it doesn't, what's the range?
-	Range tmp = ((Element) bars.get(0)).getRange();
+	Range tmp = ((ObsFileElement) bars.get(0)).getRange();
 	for (int i=1; i<bars.size(); i++)
-	    tmp = tmp.union(((Element) bars.get(i)).getRange());
+	    tmp = tmp.union(((ObsFileElement) bars.get(i)).getRange());
 
 	// ick, this isn't terribly pretty...
 	Year early = tmp.getStart().cropToCentury();

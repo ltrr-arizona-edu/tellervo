@@ -52,7 +52,7 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.SampleEvent;
@@ -303,7 +303,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// samples
 		boolean problem = false;
 		for (int i = 0; i < ns.size(); i++) {
-			Element e = (Element) ns.get(i);
+			ObsFileElement e = (ObsFileElement) ns.get(i);
 
 			if (!e.isActive()) // skip inactive
 				continue;
@@ -692,7 +692,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		boolean problem = false;
 		samples = new ArrayList(ss.size());
 		for (int i = 0; i < ss.size(); i++) {
-			Element e = (Element) ss.get(i);
+			ObsFileElement e = (ObsFileElement) ss.get(i);
 
 			if (!e.isActive()) // skip inactive
 				continue;
@@ -747,7 +747,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		s.addSampleListener(this);
 		
 		for (int i = 0; i < ss.size(); i++) {
-			Element e = (Element) ss.get(i);
+			ObsFileElement e = (ObsFileElement) ss.get(i);
 
 			if (!e.isActive()) // skip inactive
 				continue;
@@ -797,7 +797,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		boolean problem = false;
 		samples = new ArrayList(ss.size());
 		for (int i = 0; i < ss.size(); i++) {
-			Element e = (Element) ss.get(i);
+			ObsFileElement e = (ObsFileElement) ss.get(i);
 
 			if (!e.isActive()) // skip inactive
 				continue;

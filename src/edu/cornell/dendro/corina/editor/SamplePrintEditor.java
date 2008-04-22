@@ -965,7 +965,7 @@ public class SamplePrintEditor extends JPanel {
 
 		// write out all elements
 		for (int i = 0; i < s.getElements().size(); i++) {
-			edu.cornell.dendro.corina.Element e = s.getElements().get(i);
+			edu.cornell.dendro.corina.ObsFileElement e = s.getElements().get(i);
 
 			if (e.details == null) {
 				try {

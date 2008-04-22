@@ -3,12 +3,12 @@ package edu.cornell.dendro.corina;
 import java.io.IOException;
 
 public class SampleHandle {
-	private Element element;
+	private ObsFileElement element;
 	private Sample sample;
 	private BaseSample baseSample;
 	private boolean loaded;
 	
-	public SampleHandle(Element element) {
+	public SampleHandle(ObsFileElement element) {
 		this.element = element;
 		this.baseSample = this.sample = null;
 
@@ -16,7 +16,7 @@ public class SampleHandle {
 		lastModified = -1;
 	}
 	
-	public Element getElement() {
+	public ObsFileElement getElement() {
 		return element;
 	}
 	
@@ -33,8 +33,7 @@ public class SampleHandle {
 			baseSample = new BaseSample(sample);
 		else
 			baseSample = element.loadBasic();
-		if(!loaded)
-			System.out.println("SampleHandle: gbs: " + element.getFilename());
+
 		loaded = true;
 		return baseSample;
 	}

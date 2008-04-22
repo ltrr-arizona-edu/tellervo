@@ -21,7 +21,7 @@
 package edu.cornell.dendro.corina.formats;
 
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import java.io.BufferedReader;
@@ -93,7 +93,7 @@ public class RangesOnly implements Filetype {
 
         int n = s.getElements().size();
         for (int i=0; i<n; i++) {
-            Element e = s.getElements().get(i);
+            ObsFileElement e = s.getElements().get(i);
 	    // OBSOLETE: getRange(), etc., now load the file automatically.
 	    // but BUG: they don't throw anything if it fails.
 	    // (and i don't have a getMeta() yet, so it's not unnecessary.)

@@ -77,7 +77,7 @@ import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.SampleHandle;
@@ -927,7 +927,7 @@ public class Browser extends XFrame {
 
 				// convert to Elements
 				for (int i = 0; i < selection.size(); i++)
-					selection.set(i, new Element((String) selection.get(i)));
+					selection.set(i, new ObsFileElement((String) selection.get(i)));
 
 				// pass selected files to index-many method
 				Scripts.indexManyFiles(selection);
@@ -1037,7 +1037,7 @@ public class Browser extends XFrame {
 				if (test.getElements() != null)
 					elements.addAll(test.getElements());
 				else
-					elements.add(new Element(filename));
+					elements.add(new ObsFileElement(filename));
 			}
 
 			// make sum (don't sort here: it's already sorted somehow)

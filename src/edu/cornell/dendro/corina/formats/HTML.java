@@ -23,7 +23,7 @@ package edu.cornell.dendro.corina.formats;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -220,7 +220,7 @@ public class HTML implements Filetype {
 	    w.write("  <tr>");
 
 	    // load element, and print a summary
-	    Element e = s.getElements().get(i);
+	    ObsFileElement e = s.getElements().get(i);
 
 	    // TODO: use real Element summaries here, in case the
 	    // summaries are already loaded!

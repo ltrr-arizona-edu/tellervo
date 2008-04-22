@@ -83,7 +83,7 @@ import edu.cornell.dendro.corina.io.Files;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
  */
-public class Element implements Comparable {
+public class ObsFileElement implements Comparable, SampleLoader {
 
 	// these members should probably be PRIVATE!
 	private boolean active;
@@ -135,7 +135,7 @@ public class Element implements Comparable {
 
 	 @param filename the filename of the Sample to reference
 	 */
-	public Element(String filename) {
+	public ObsFileElement(String filename) {
 		this(filename, true);
 	}
 
@@ -145,7 +145,7 @@ public class Element implements Comparable {
 	 @param filename the filename of the Sample to reference
 	 @param active true if this Element is to be active
 	 */
-	public Element(String filename, boolean active) {
+	public ObsFileElement(String filename, boolean active) {
 		this.active = active;
 		
 		// if it starts with a ?, this is a relative path, using :'s as separators
@@ -374,7 +374,7 @@ public class Element implements Comparable {
 
 	// comparable
 	public int compareTo(Object o) {
-		return filename.compareTo(((Element) o).filename);
+		return filename.compareTo(((ObsFileElement) o).filename);
 	}
 
 	// these used to be in Bargraph.java, but LoD pushes them up here.
@@ -453,5 +453,9 @@ public class Element implements Comparable {
 		} catch (IOException ioe) {
 			return false;
 		}
+	}
+	
+	public String getLocationRepresentation() {
+		return filename;
 	}
 }

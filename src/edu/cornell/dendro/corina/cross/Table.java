@@ -21,7 +21,7 @@
 package edu.cornell.dendro.corina.cross;
 
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.print.*; // !!!
 
@@ -214,7 +214,7 @@ public class Table extends AbstractTableModel {
         for (int i=0; i<moving.size(); i++) {
             String m = (String) moving.get(i);
             if (!fixed.equals(m))
-                ss.add(new Element(m));
+                ss.add(new ObsFileElement(m));
         }
 
         // -- create table list
@@ -236,7 +236,7 @@ public class Table extends AbstractTableModel {
     // overlap, and distance (if available) between sites.
     private void compute() {
         for (int i=0; i<ss.size(); i++) {
-	    Element e = (Element) ss.get(i);
+	    ObsFileElement e = (ObsFileElement) ss.get(i);
 
             // skip inactive elements -- DUMB: elements aren't
 	    // "inactive", only elements-in-sums are.

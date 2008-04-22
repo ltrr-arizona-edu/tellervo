@@ -22,7 +22,7 @@ package edu.cornell.dendro.corina.manip;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 
 import java.io.IOException;
 
@@ -49,7 +49,7 @@ import java.util.ArrayList;
 
    </ul>
 
-   @see Element
+   @see ObsFileElement
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
@@ -66,7 +66,7 @@ public class Sum {
         // count number of active elements
         int numActive=0, numTotal=elements.size();
         for (int i=0; i<numTotal; i++)
-            if (((Element) elements.get(i)).isActive())
+            if (((ObsFileElement) elements.get(i)).isActive())
                 numActive++;
 
         // allocate buffer
@@ -75,8 +75,8 @@ public class Sum {
         // load active elements into buffer
         int numLoaded=0;
         for (int i=0; i<numTotal; i++)
-            if (((Element) elements.get(i)).isActive())
-                buf[numLoaded++] = ((Element) elements.get(i)).load();
+            if (((ObsFileElement) elements.get(i)).isActive())
+                buf[numLoaded++] = ((ObsFileElement) elements.get(i)).load();
 
         // return array
         return buf;

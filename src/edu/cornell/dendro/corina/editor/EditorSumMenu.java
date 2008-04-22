@@ -3,7 +3,7 @@ package edu.cornell.dendro.corina.editor;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.SampleEvent;
 import edu.cornell.dendro.corina.SampleListener;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -177,7 +177,7 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 					for (int i = 0; i < testSample.getElements().size(); i++)
 						sample.getElements().add(testSample.getElements().get(i)); // copy ref only
 				} else {
-					sample.getElements().add(new Element(filename));
+					sample.getElements().add(new ObsFileElement(filename));
 				}
 
 				// modified, and update

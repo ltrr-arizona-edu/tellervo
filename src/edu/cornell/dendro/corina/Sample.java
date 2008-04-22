@@ -124,7 +124,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	private List<Integer> incr = null;
 	
 	/** Elements (in a List) that were put into this sum. */
-	private List<Element> elements = null;
+	private List<ObsFileElement> elements = null;
 	
 	private boolean modified = false;
 
@@ -369,7 +369,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	/**
 	 * @return the elements
 	 */
-	public List<Element> getElements() {
+	public List<ObsFileElement> getElements() {
 		return elements;
 	}
 
@@ -606,7 +606,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	/**
 	 * @param elements the elements to set
 	 */
-	public void setElements(List<Element> elements) {
+	public void setElements(List<ObsFileElement> elements) {
 		this.elements = elements;
 	}
 

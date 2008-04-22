@@ -23,7 +23,7 @@ package edu.cornell.dendro.corina.formats;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -204,7 +204,7 @@ public class TRML implements Filetype {
 	    if (name.equals("element")) {
 		if (s.getElements() == null)
 		    s.setElements(new ArrayList());
-		Element e = new Element(data.toString().trim(), active);
+		ObsFileElement e = new ObsFileElement(data.toString().trim(), active);
 		// REFACTOR toString().trim()?
 		s.getElements().add(e);
 		active = true;
@@ -313,7 +313,7 @@ public class TRML implements Filetype {
 	    w.newLine();
 
 	    for (int ii=0; ii<s.getElements().size(); ii++) {
-		Element e = s.getElements().get(ii);
+		ObsFileElement e = s.getElements().get(ii);
 		w.write("      <element" +
 			(e.isActive() ? "" : " active=\"false\"") + ">" +
 			e + "</element>");

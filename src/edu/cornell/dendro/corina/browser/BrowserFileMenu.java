@@ -21,7 +21,7 @@
 package edu.cornell.dendro.corina.browser;
 
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.graph.GraphWindow;
@@ -200,7 +200,7 @@ public class BrowserFileMenu extends JMenu {
                 Iterator iter = browser.getSelectedRows();
                 while (iter.hasNext()) {
                     Row row = (Row) iter.next();
-                    elements.add(new Element(row.getPath())); // PERF: why not just pass in row.getElement()?
+                    elements.add(new ObsFileElement(row.getPath())); // PERF: why not just pass in row.getElement()?
                 }
 
                 // BUG: not all rows will be loadable ... only get samples

@@ -1,7 +1,7 @@
 package edu.cornell.dendro.corina.browser;
 
 import edu.cornell.dendro.corina.BaseSample;
-import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.SampleHandle;
 import edu.cornell.dendro.corina.metadata.*;
@@ -53,7 +53,7 @@ public class Row {
     }
 
     // this makes bargraphs from the browser, for example, *much* more efficient
-    public Element getElement() {
+    public ObsFileElement getElement() {
 	return sampleHandle.getElement();
     }
 
