@@ -39,6 +39,12 @@ class measurement
     var $lastModifiedTimeStamp = NULL;
     var $name = NULL;
     var $description = NULL;
+    var $centroidLat = NULL;
+    var $centroidLong = NULL;
+    var $minLat = NULL;
+    var $maxLat = NULL;
+    var $minLong = NULL;
+    var $maxLong = NULL;
 
     var $parentXMLTag = "measurement"; 
     var $lastErrorMessage = NULL;

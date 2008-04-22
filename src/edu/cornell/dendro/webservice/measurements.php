@@ -296,4 +296,17 @@ if(!($myMetaHeader->status == "Error"))
 // ***********
 // OUTPUT DATA
 // ***********
-writeOutput($myMetaHeader, $xmldata);
+switch ($myRequest->format)
+{
+    case "kml":
+        writeKMLOutput($xmldata);
+        break;
+    case "data":
+        writeOutput($myMetaHeader, $xmldata);
+        break;
+    case "map":
+        writeGMapOutput(createOutput($myMetaHeader, $xmldata), $myRequest);
+        break;
+    default:
+        writeOutput($myMetaHeader, $xmldata);
+}

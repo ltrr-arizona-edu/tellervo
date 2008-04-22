@@ -68,13 +68,13 @@ class tree
     function setLatitude($theLatitude)
     {
         // Set the current objects latitude 
-        $this->latitude=$theLatitude;
+        $this->latitude= (float) $theLatitude;
     }
     
     function setLongitude($theLongitude)
     {
         // Set the current objects longitude 
-        $this->longitude=$theLongitude;
+        $this->longitude= (float) $theLongitude;
     }
     
     function setPrecision($thePrecision)
@@ -355,7 +355,7 @@ class tree
                         if (isset($this->name))                                     $sql.= "'".$this->name.     "', ";
                         if (isset($this->precision))                                $sql.= "'".$this->precision. "', ";
                         if (isset($this->isLiveTree))                               $sql.="'".fromPHPtoPGBool($this->isLiveTree)."', ";
-                        if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "setsrid(makepoint(".$this->longitude.", ".$this->latitude."), 4326), ";
+                        if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "setsrid(makepoint(".sprintf("%1.8f",$this->longitude).", ".sprintf("%1.8f",$this->latitude)."), 4326), ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
@@ -369,11 +369,12 @@ class tree
                         if (isset($this->subSiteID))                                $sql.= "subsiteid='".  $this->subSiteID  ."', ";
                         if (isset($this->name))                                     $sql.= "name='".      $this->name      ."', ";
                         if (isset($this->precision))                                $sql.= "precision='".  $this->precision  ."', ";
-                        if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "location=setsrid(makepoint(".$this->longitude.", ".$this->latitude."), 4326), ";
+                        if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "location=setsrid(makepoint(".sprintf("%1.8f",$this->longitude).", ".sprintf("%1.8f",$this->latitude)."), 4326), ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql .= " where treeid=".$this->id;
                 }
+                //echo $sql;
 
                 // Run SQL command
                 if ($sql)

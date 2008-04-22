@@ -45,6 +45,24 @@ function gMapDataFromXML($xmlstring)
         }
     }
     
+    if ($xmldata->xpath('/content/measurement'))
+    {
+        foreach($xmldata->xpath('/content/measurement') as $measurement)
+        {
+           if ((isset($measurement->extent[minLat])) && (isset($measurement->extent[maxLat])) && (isset($measurement->extent[minLong])) && (isset($measurement->extent[maxLong])))
+           {
+                $returnString .= "\nvar polygon = new GPolygon([";
+                $returnString .= "new GLatLng(".$measurement->extent[minLat].",".$measurement->extent['minLong']."), ";
+                $returnString .= "new GLatLng(".$measurement->extent[maxLat].",".$measurement->extent['minLong']."), ";
+                $returnString .= "new GLatLng(".$measurement->extent[maxLat].",".$measurement->extent['maxLong']."), ";
+                $returnString .= "new GLatLng(".$measurement->extent[minLat].",".$measurement->extent['maxLong']."), ";
+                $returnString .= "new GLatLng(".$measurement->extent[minLat].",".$measurement->extent['minLong'].")";
+                $returnString .= "], \"#ff0000\", 1, 1, \"#FF0000\", 0.3);\n";
+                $returnString .= "map.addOverlay(polygon);\n\n"; 
+           }
+        }
+    }
+    
     return $returnString;
 
 }
@@ -81,7 +99,22 @@ function gMapExtentFromXML($xmlstring, $type)
                if ( $site->extent[maxLat]  > $maxLat ) $maxLat  = (float) $site->extent[maxLat];
                if ( $site->extent[maxLong] > $maxLong) $maxLong = (float) $site->extent[maxLong];
                if ( $site->extent[minLat]  < $minLat ) $minLat  = (float) $site->extent[minLat];
-               if ( $tree->extent[minLong] < $minLong) $minLong = (float) $site->extent[minLong];
+               if ( $site->extent[minLong] < $minLong) $minLong = (float) $site->extent[minLong];
+           }
+
+        }
+    }
+    
+    if ($xmldata->xpath('/content/measurement'))
+    {
+        foreach($xmldata->xpath('/content/measurement') as $measurement)
+        {
+           if ((isset($measurement->extent[minLat])) && (isset($measurement->extent[maxLat])) && (isset($measurement->extent[minLong])) && (isset($measurement->extent[maxLong])))
+           {
+               if ( $measurement->extent[maxLat]  > $maxLat ) $maxLat  = (float) $measurement->extent[maxLat];
+               if ( $measurement->extent[maxLong] > $maxLong) $maxLong = (float) $measurement->extent[maxLong];
+               if ( $measurement->extent[minLat]  < $minLat ) $minLat  = (float) $measurement->extent[minLat];
+               if ( $measurement->extent[minLong] < $minLong) $minLong = (float) $measurement->extent[minLong];
            }
 
         }

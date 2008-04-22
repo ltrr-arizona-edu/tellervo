@@ -325,6 +325,7 @@ class siteRequest extends request
         $this->logRequest();
         if($this->readXML())
         {   
+            $this->getGetMapRequest();
             foreach($this->simplexml->xpath('request//site[1]') as $site)
             {
                 if($site['id'])         $this->id = (int) $site['id'];

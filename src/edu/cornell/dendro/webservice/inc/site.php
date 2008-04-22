@@ -10,6 +10,7 @@
 require_once('dbhelper.php');
 require_once('inc/siteNote.php');
 require_once('inc/subSite.php');
+require_once('inc/region.php');
 
 class site 
 {
@@ -20,6 +21,7 @@ class site
     var $centroidLong = NULL;
     var $siteNoteArray = array();
     var $subSiteArray = array();
+    var $regionArray = array();
     var $createdTimeStamp = NULL;
     var $lastModifiedTimeStamp = NULL;
     var $minLat = NULL;
@@ -74,7 +76,7 @@ class site
         global $dbconn;
         
         $this->id=$theID;
-        $sql = "select tblsite.*, xmin(tblsite.extent) as xmin, xmax(tblsite.extent) as xmax, ymin(tblsite.extent) as ymin, ymax(tblsite.extent) as ymax from tblsite where siteid=$theID";
+        $sql = "select tblsite.*, xmin(tblsite.siteextent) as xmin, xmax(tblsite.siteextent) as xmax, ymin(tblsite.siteextent) as ymin, ymax(tblsite.siteextent) as ymax from tblsite where siteid=$theID";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -121,6 +123,7 @@ class site
 
         $sql  = "select sitenoteid from tblsitesitenote where siteid=".$this->id;
         $sql2 = "select subsiteid from tblsubsite where siteid=".$this->id;
+        $sql3 = "select regionid from tblsiteregion where siteid=".$this->id;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -136,6 +139,12 @@ class site
             {
                 // Get all tree note id's for this tree and store 
                 array_push($this->subSiteArray, $row['subsiteid']);
+            }
+            $result = pg_query($dbconn, $sql3);
+            while ($row = pg_fetch_array($result))
+            {
+                // Get all tree note id's for this tree and store 
+                array_push($this->regionArray, $row['regionid']);
             }
         }
         else
@@ -174,6 +183,25 @@ class site
                 if (isset($this->minLat))
                 {
                     $xml.= "<extent minLat=\"".$this->minLat."\" maxLat=\"".$this->maxLat."\" minLong=\"".$this->minLong."\" maxLong=\"".$this->maxLong."\" />";
+                }
+                
+                // Include regions if present
+                if ($this->regionArray)
+                {
+                    foreach($this->regionArray as $value)
+                    {
+                        $myRegion = new region();
+                        $success = $myRegion->setParamsFromDB($value);
+
+                        if($success)
+                        {
+                            $xml.=$myRegion->asXML();
+                        }
+                        else
+                        {
+                            $myMetaHeader->setErrorMessage($myRegion->getLastErrorCode, $myRegion->getLastErrorMessage);
+                        }
+                    }
                 }
 
                 // Include site notes if present

@@ -28,6 +28,7 @@ require_once("inc/specimenQuality.php");
 require_once("inc/specimenContinuity.php");
 require_once("inc/pith.php");
 require_once("inc/taxon.php");
+require_once("inc/region.php");
 
 // Create Authentication, Request and Header objects
 $myAuth         = new auth();
@@ -230,6 +231,42 @@ if(!($myMetaHeader->status == "Error"))
                 }
             }
             $xmldata.=$myDummyPith->getParentTagEnd();
+        }
+    }
+    else
+    {
+        // Connection bad
+        trigger_error("001"."Error connecting to database");
+    }
+    
+    // Specimen Continuity 
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+        // DB connection ok
+        $sql="select distinct(tblsiteregion.regionid), tblregion.regionname from tblsiteregion, tblregion where tblsiteregion.regionid=tblregion.regionid";
+
+        if($sql)
+        {
+            $myDummyRegion = new region();
+            $xmldata.=$myDummyRegion->getParentTagBegin();
+            // Run SQL
+            $result = pg_query($dbconn, $sql);
+            while ($row = pg_fetch_array($result))
+            {
+                $myRegion = new region();
+                $success = $myRegion->setParamsFromDB($row['regionid']);
+
+                if($success)
+                {
+                    $xmldata.=$myRegion->asXML();
+                }
+                else
+                {
+                    trigger_error($myRegion->getLastErrorCode().$myRegion->getLastErrorMessage());
+                }
+            }
+            $xmldata.=$myDummyRegion->getParentTagEnd();
         }
     }
     else
