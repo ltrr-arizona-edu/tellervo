@@ -2,27 +2,29 @@
 
 function gMapDataFromXML($xmlstring)
 {
-    $returnString = "// Creates a marker at the given point 
-                    function createMarker(point, popup) 
-                    {
-                        var marker = new GMarker(point, iconred);
-                        GEvent.addListener(marker, \"click\", function() {
-                        marker.openInfoWindowHtml(popup);
-                        });
-                        return marker;
-                    }";
+    $returnString = "
+// Creates a marker at the given point 
+function createMarker(point, popup) 
+{
+    var marker = new GMarker(point, iconred);
+    GEvent.addListener(marker, \"click\", function() {
+    marker.openInfoWindowHtml(popup);
+});
+return marker;
+}\n";
 
     $xmldata = simplexml_load_string($xmlstring);
 
+    $returnString.="\n// Add the actual data\n";
     if ($xmldata->xpath('//tree'))
     {
         foreach($xmldata->xpath('//tree') as $tree)
         {
            if ((isset($tree->latitude)) && (isset($tree->longitude)))
            {
-               $returnString.= "\nvar point = new GLatLng(".$tree->latitude.", ".$tree->longitude.");\n";
+               $returnString.= "var point = new GLatLng(".$tree->latitude.", ".$tree->longitude.");\n";
                $htmlString = "<b>".$tree->validatedTaxon."</b><br>";
-               $returnString.= "map.addOverlay(createMarker(point,'$htmlString'));\n\n";
+               $returnString.= "map.addOverlay(createMarker(point,'$htmlString'));\n";
            }
         }
     }
@@ -33,32 +35,32 @@ function gMapDataFromXML($xmlstring)
         {
            if ((isset($site->extent[minLat])) && (isset($site->extent[maxLat])) && (isset($site->extent[minLong])) && (isset($site->extent[maxLong])))
            {
-                $returnString .= "\nvar polygon = new GPolygon([";
+                $returnString .= "var polygon = new GPolygon([";
                 $returnString .= "new GLatLng(".$site->extent[minLat].",".$site->extent['minLong']."), ";
                 $returnString .= "new GLatLng(".$site->extent[maxLat].",".$site->extent['minLong']."), ";
                 $returnString .= "new GLatLng(".$site->extent[maxLat].",".$site->extent['maxLong']."), ";
                 $returnString .= "new GLatLng(".$site->extent[minLat].",".$site->extent['maxLong']."), ";
                 $returnString .= "new GLatLng(".$site->extent[minLat].",".$site->extent['minLong'].")";
                 $returnString .= "], \"#ff0000\", 1, 1, \"#FF0000\", 0.3);\n";
-                $returnString .= "map.addOverlay(polygon);\n\n"; 
+                $returnString .= "map.addOverlay(polygon);\n"; 
            }
         }
     }
     
-    if ($xmldata->xpath('/content/measurement'))
+    if ($xmldata->xpath('//measurement'))
     {
-        foreach($xmldata->xpath('/content/measurement') as $measurement)
+        foreach($xmldata->xpath('//measurement') as $measurement)
         {
-           if ((isset($measurement->extent[minLat])) && (isset($measurement->extent[maxLat])) && (isset($measurement->extent[minLong])) && (isset($measurement->extent[maxLong])))
+           if ((isset($measurement->metadata->extent[minLat])) && (isset($measurement->metadata->extent[maxLat])) && (isset($measurement->metadata->extent[minLong])) && (isset($measurement->metadata->extent[maxLong])))
            {
-                $returnString .= "\nvar polygon = new GPolygon([";
-                $returnString .= "new GLatLng(".$measurement->extent[minLat].",".$measurement->extent['minLong']."), ";
-                $returnString .= "new GLatLng(".$measurement->extent[maxLat].",".$measurement->extent['minLong']."), ";
-                $returnString .= "new GLatLng(".$measurement->extent[maxLat].",".$measurement->extent['maxLong']."), ";
-                $returnString .= "new GLatLng(".$measurement->extent[minLat].",".$measurement->extent['maxLong']."), ";
-                $returnString .= "new GLatLng(".$measurement->extent[minLat].",".$measurement->extent['minLong'].")";
+                $returnString .= "var polygon = new GPolygon([";
+                $returnString .= "new GLatLng(".$measurement->metadata->extent[minLat].",".$measurement->metadata->extent['minLong']."), ";
+                $returnString .= "new GLatLng(".$measurement->metadata->extent[maxLat].",".$measurement->metadata->extent['minLong']."), ";
+                $returnString .= "new GLatLng(".$measurement->metadata->extent[maxLat].",".$measurement->metadata->extent['maxLong']."), ";
+                $returnString .= "new GLatLng(".$measurement->metadata->extent[minLat].",".$measurement->metadata->extent['maxLong']."), ";
+                $returnString .= "new GLatLng(".$measurement->metadata->extent[minLat].",".$measurement->metadata->extent['minLong'].")";
                 $returnString .= "], \"#ff0000\", 1, 1, \"#FF0000\", 0.3);\n";
-                $returnString .= "map.addOverlay(polygon);\n\n"; 
+                $returnString .= "map.addOverlay(polygon);\n"; 
            }
         }
     }
@@ -69,10 +71,10 @@ function gMapDataFromXML($xmlstring)
 
 function gMapExtentFromXML($xmlstring, $type)
 {
-    $minLat = 10000;
-    $minLong = 10000;
-    $maxLat = -10000;
-    $maxLong = -10000;
+    $minLat = 90;
+    $minLong = 180;
+    $maxLat = -90;
+    $maxLong = -180;
     
     $xmldata = simplexml_load_string($xmlstring);
     
@@ -105,16 +107,16 @@ function gMapExtentFromXML($xmlstring, $type)
         }
     }
     
-    if ($xmldata->xpath('/content/measurement'))
+    if ($xmldata->xpath('//measurement'))
     {
-        foreach($xmldata->xpath('/content/measurement') as $measurement)
+        foreach($xmldata->xpath('//measurement') as $measurement)
         {
-           if ((isset($measurement->extent[minLat])) && (isset($measurement->extent[maxLat])) && (isset($measurement->extent[minLong])) && (isset($measurement->extent[maxLong])))
+           if ((isset($measurement->metadata->extent[minLat])) && (isset($measurement->metadata->extent[maxLat])) && (isset($measurement->metadata->extent[minLong])) && (isset($measurement->metadata->extent[maxLong])))
            {
-               if ( $measurement->extent[maxLat]  > $maxLat ) $maxLat  = (float) $measurement->extent[maxLat];
-               if ( $measurement->extent[maxLong] > $maxLong) $maxLong = (float) $measurement->extent[maxLong];
-               if ( $measurement->extent[minLat]  < $minLat ) $minLat  = (float) $measurement->extent[minLat];
-               if ( $measurement->extent[minLong] < $minLong) $minLong = (float) $measurement->extent[minLong];
+               if ( $measurement->metadata->extent[maxLat]  > $maxLat ) $maxLat  = (float) $measurement->metadata->extent[maxLat];
+               if ( $measurement->metadata->extent[maxLong] > $maxLong) $maxLong = (float) $measurement->metadata->extent[maxLong];
+               if ( $measurement->metadata->extent[minLat]  < $minLat ) $minLat  = (float) $measurement->metadata->extent[minLat];
+               if ( $measurement->metadata->extent[minLong] < $minLong) $minLong = (float) $measurement->metadata->extent[minLong];
            }
 
         }

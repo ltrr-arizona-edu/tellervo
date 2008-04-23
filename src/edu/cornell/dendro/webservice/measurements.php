@@ -7,7 +7,6 @@
 //////
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
-header('Content-Type: application/xhtml+xml; charset=utf-8');
 
 require_once("inc/dbsetup.php");
 require_once("config.php");

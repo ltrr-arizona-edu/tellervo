@@ -180,7 +180,7 @@ class site
                 $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
                 $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
 
-                if (isset($this->minLat))
+                if( (isset($this->minLat)) && (isset($this->minLong)) && (isset($this->maxLat)) && (isset($this->maxLong)))
                 {
                     $xml.= "<extent minLat=\"".$this->minLat."\" maxLat=\"".$this->maxLat."\" minLong=\"".$this->minLong."\" maxLong=\"".$this->maxLong."\" />";
                 }

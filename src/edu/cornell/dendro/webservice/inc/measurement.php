@@ -121,6 +121,17 @@ class measurement
 
                 if ($format=="full")
                 {
+                    $sql = "select x(centroid(vmextent)), y(centroid(vmextent)), xmin(vmextent), xmax(vmextent), ymin(vmextent), ymax(vmextent) from tblvmeasurementmetacache where vmeasurementid=".$this->vmeasurementID;
+                    pg_send_query($dbconn, $sql);
+                    $result = pg_get_result($dbconn);
+                    $row = pg_fetch_array($result);
+                    $this->minLat = $row['ymin'];
+                    $this->maxLat = $row['ymax'];
+                    $this->minLong = $row['xmin'];
+                    $this->maxLong = $row['xmax'];
+                    $this->centroidLat = $row['y'];
+                    $this->centroidLong = $row['x'];
+
                     $this->setReadingsFromDB();
                     $this->setReferencesFromDB();
                 }
@@ -523,6 +534,10 @@ class measurement
             if(isset($this->isPublished))           $xml.= "<isPublished>".fromPHPtoStringBool($this->isPublished)."</isPublished>\n";
             if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
             if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+            if( (isset($this->minLat)) && (isset($this->minLong)) && (isset($this->maxLat)) && (isset($this->maxLong)))
+            {
+                $xml.= "<extent minLat=\"".$this->minLat."\" maxLat=\"".$this->maxLat."\" minLong=\"".$this->minLong."\" maxLong=\"".$this->maxLong."\" />";
+            }
 
             // Brief Format so just give minimal XML for all references and nothing else
             if($style=="brief")
@@ -956,8 +971,12 @@ class measurement
                     }
                     else
                     {   
+                        do {    
+                            $result = pg_get_result($dbconn);
+                        } while ($result!=FALSE); 
                         // All gone well so commit transaction to db
                         pg_send_query($dbconn, "commit;");
+                        $result = pg_get_result($dbconn);
                     }
                 }
             }
