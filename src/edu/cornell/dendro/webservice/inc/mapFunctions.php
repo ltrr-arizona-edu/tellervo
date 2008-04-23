@@ -29,6 +29,7 @@ return marker;
         }
     }
     
+    
     if ($xmldata->xpath('//site'))
     {
         foreach($xmldata->xpath('//site') as $site)
@@ -43,13 +44,16 @@ return marker;
                 $returnString .= "new GLatLng(".$site->extent[minLat].",".$site->extent['minLong'].")";
                 $returnString .= "], \"#ff0000\", 1, 1, \"#FF0000\", 0.3);\n";
                 $returnString .= "map.addOverlay(polygon);\n"; 
+                $returnString .= "var point = new GLatLng(".$site->extent['centroidLat'].", ".$site->extent['centroidLong'].");\n";
+                $htmlString = "<b>".$site->name."</b><br>";
+                $returnString.= "map.addOverlay(createMarker(point,'$htmlString'));\n";
            }
         }
     }
     
-    if ($xmldata->xpath('//measurement'))
+    if ($xmldata->xpath('content/measurement'))
     {
-        foreach($xmldata->xpath('//measurement') as $measurement)
+        foreach($xmldata->xpath('content/measurement') as $measurement)
         {
            if ((isset($measurement->metadata->extent[minLat])) && (isset($measurement->metadata->extent[maxLat])) && (isset($measurement->metadata->extent[minLong])) && (isset($measurement->metadata->extent[maxLong])))
            {
@@ -61,6 +65,9 @@ return marker;
                 $returnString .= "new GLatLng(".$measurement->metadata->extent[minLat].",".$measurement->metadata->extent['minLong'].")";
                 $returnString .= "], \"#ff0000\", 1, 1, \"#FF0000\", 0.3);\n";
                 $returnString .= "map.addOverlay(polygon);\n"; 
+                $returnString .= "var point = new GLatLng(".$measurement->metadata->extent['centroidLat'].", ".$measurement->metadata->extent['centroidLong'].");\n";
+                $htmlString = "<b>".$measurement->metadata->name."</b><br>";
+                $returnString.= "map.addOverlay(createMarker(point,'$htmlString'));\n";
            }
         }
     }

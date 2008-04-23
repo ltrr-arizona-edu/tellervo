@@ -76,7 +76,7 @@ class site
         global $dbconn;
         
         $this->id=$theID;
-        $sql = "select tblsite.*, xmin(tblsite.siteextent) as xmin, xmax(tblsite.siteextent) as xmax, ymin(tblsite.siteextent) as ymin, ymax(tblsite.siteextent) as ymax from tblsite where siteid=$theID";
+        $sql = "select tblsite.*, x(centroid(expand(tblsite.siteextent, 0.1))) as centroidx, y(centroid(expand(tblsite.siteextent, 0.1))) as centroidy, xmin(tblsite.siteextent) as xmin, xmax(tblsite.siteextent) as xmax, ymin(tblsite.siteextent) as ymin, ymax(tblsite.siteextent) as ymax from tblsite where siteid=$theID";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -100,6 +100,8 @@ class site
                 $this->maxLat = $row['ymax'];
                 $this->minLong = $row['xmin'];
                 $this->maxLong = $row['xmax'];
+                $this->centroidLong = $row['centroidx'];
+                $this->centroidLat  = $row['centroidy'];
                 
             }
 
@@ -182,7 +184,7 @@ class site
 
                 if( (isset($this->minLat)) && (isset($this->minLong)) && (isset($this->maxLat)) && (isset($this->maxLong)))
                 {
-                    $xml.= "<extent minLat=\"".$this->minLat."\" maxLat=\"".$this->maxLat."\" minLong=\"".$this->minLong."\" maxLong=\"".$this->maxLong."\" />";
+                    $xml.= "<extent minLat=\"".$this->minLat."\" maxLat=\"".$this->maxLat."\" minLong=\"".$this->minLong."\" maxLong=\"".$this->maxLong."\" centroidLat=\"".$this->centroidLat."\" centroidLong=\"".$this->centroidLong."\" />";
                 }
                 
                 // Include regions if present
