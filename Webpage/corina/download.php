@@ -20,7 +20,7 @@ Corina runs best on Java version 1.6 or later.  Java is installed on most comput
 <a href="http://dendro.cornell.edu/corina-app/corina.jnlp">Download Corina</a> - v1.1 (August 2007) 
 </blockquote>
 
-<p>If Corina fails to start download the version of Java Runtime Environment for your operating system from the <a href="http://jdl.sun.com/webapps/getjava/BrowserRedirect?locale=en&host=www.java.com">Java website</a>.</p>
+<p>If Corina fails to start, download the version of Java Runtime Environment for your operating system from the <a href="http://jdl.sun.com/webapps/getjava/BrowserRedirect?locale=en&host=www.java.com">Java website</a>.</p>
 
 
 <?php

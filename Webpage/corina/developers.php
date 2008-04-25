@@ -33,6 +33,8 @@ If you are interested in contributing to Corina please <a href="mailto:general@d
 <li>svn+ssh://username@dendro.cornell.edu/svn/corina/trunk</li>
 </ul>
 
+<p>Discussion about the development of Corina is hosted on our <a href="http://dendro.cornell.edu/corina-manual/DevelopersPages">Developers Wiki</a>.
+
 <?php
 
 include('../phpinc/2col-footer.php');
