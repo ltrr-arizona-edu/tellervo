@@ -33,6 +33,7 @@ import javax.swing.JToolBar;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -323,9 +324,9 @@ public class FileDialog {
 	 * @exception UserCancelledException
 	 *              if the user cancelled
 	 */
-	public static List showMulti(String prompt) throws UserCancelledException {
+	public static ElementList showMulti(String prompt) throws UserCancelledException {
 		// create a new list to use
-		List list = new ArrayList();
+		ElementList list = new ElementList();
 		return showMultiReal(prompt, list, "export");
 	}
 
@@ -342,13 +343,13 @@ public class FileDialog {
 	 * @exception UserCancelledException
 	 *              if the user cancelled
 	 */
-	public static List showMulti(String prompt, List list)
+	public static ElementList showMulti(String prompt, ElementList list)
 			throws UserCancelledException { // to edit a list
 		// use the given list
 		return showMultiReal(prompt, list, "general");
 	}
 
-	private static List showMultiReal(String prompt, List list, String function)
+	private static ElementList showMultiReal(String prompt, ElementList list, String function)
 			throws UserCancelledException {
 		// big-preview-list-component-thingy ... yeah.
 		final MultiPreview mp = new MultiPreview(list);
@@ -389,16 +390,14 @@ public class FileDialog {
 		saveConfiguredMode(f, MULTI_VIEWMODE_PREF);
 
 		// store wd, if ok
-		if (mp.getSamples() != null) {
+		if (mp.getElementList() != null) {
 			setWorkingDirectory(function, f.getCurrentDirectory().getPath());
 		}
-
+		else
 		// null? have to deal, now.
-		if (mp.getSamples() == null)
 			throw new UserCancelledException();
 
 		// return samples
-		return mp.getSamples();
+		return mp.getElementList();
 	}
-
 }

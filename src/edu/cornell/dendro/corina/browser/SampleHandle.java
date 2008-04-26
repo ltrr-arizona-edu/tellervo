@@ -1,14 +1,18 @@
-package edu.cornell.dendro.corina;
+package edu.cornell.dendro.corina.browser;
 
 import java.io.IOException;
 
+import edu.cornell.dendro.corina.BaseSample;
+import edu.cornell.dendro.corina.FileElement;
+import edu.cornell.dendro.corina.Sample;
+
 public class SampleHandle {
-	private ObsFileElement element;
+	private FileElement element;
 	private Sample sample;
 	private BaseSample baseSample;
 	private boolean loaded;
 	
-	public SampleHandle(ObsFileElement element) {
+	public SampleHandle(FileElement element) {
 		this.element = element;
 		this.baseSample = this.sample = null;
 
@@ -16,7 +20,7 @@ public class SampleHandle {
 		lastModified = -1;
 	}
 	
-	public ObsFileElement getElement() {
+	public FileElement getElement() {
 		return element;
 	}
 	

@@ -261,8 +261,12 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			elements = el;
 		} else {
 			this.sample = s;
-			if (sample.getElements() == null)
-				sample.setElements(new ArrayList());
+			if (sample.getElements() == null) {
+				// err... this shouldn't happen!!!!
+				// should it?
+				throw new UnsupportedOperationException("ElementsPanel creation for a sample with no Elements!");
+				//sample.setElements(new ArrayList());
+			}
 			elements = sample.getElements();
 		}
 

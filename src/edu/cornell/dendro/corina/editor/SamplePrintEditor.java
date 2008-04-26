@@ -38,6 +38,7 @@ import java.awt.event.ActionListener;
 import java.awt.print.Printable;
 import java.awt.print.PageFormat;
 
+import edu.cornell.dendro.corina.BaseSample;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.Year;
@@ -965,49 +966,51 @@ public class SamplePrintEditor extends JPanel {
 
 		// write out all elements
 		for (int i = 0; i < s.getElements().size(); i++) {
-			edu.cornell.dendro.corina.ObsFileElement e = s.getElements().get(i);
+			edu.cornell.dendro.corina.Element e = s.getElements().get(i);
+			BaseSample bs;
+			Exception error = null;
 
-			if (e.details == null) {
-				try {
-					e.loadMeta();
-				} catch (FileNotFoundException fnfe) {
-					e.error = fnfe;
-					footnote = true;
-				} catch (IOException ioe) {
-					e.error = ioe;
-					footnote2 = true;
-				}
+			try {
+				bs = e.loadBasic();
+			} catch (FileNotFoundException fnfe) {
+				bs = null;
+				error = fnfe;
+				footnote = true;
+			} catch (IOException ioe) {
+				bs = null;
+				error = ioe;
+				footnote2 = true;
 			}
 
 			// not loaded?
-			if (e.details == null) {
-				String mark = ((e.error instanceof FileNotFoundException) ? footnoteSymbol1
+			if (error != null) {
+				String mark = ((error instanceof FileNotFoundException) ? footnoteSymbol1
 						: footnoteSymbol2);
 				mark = mark + " ";
-				sb.append("\t" + mark + "\t" + e.filename + "\n");
+				sb.append("\t" + mark + "\t" + e.toString() + "\n");
 			} else {
 				String x = "";
 
-				x += (e.details.containsKey("id") ? e.details.get("id")
+				x += (bs.hasMeta("id") ? bs.getMeta("id")
 						.toString() : "");
 				x += "\t";
 				x += ""; // no footnote
 				x += "\t";
-				x += (e.details.containsKey("filename") ? e.details.get(
+				x += (bs.hasMeta("filename") ? bs.getMeta(
 						"filename").toString() : ""); // title?
 				x += "\t";
-				x += (e.details.containsKey("pith") ? "+"
-						+ e.details.get("pith").toString() : "");
+				x += (bs.hasMeta("pith") ? "+"
+						+ bs.getMeta("pith").toString() : "");
 				x += "\t";
-				x += (e.details.containsKey("unmeas_pre") ? "+"
-						+ e.details.get("unmeas_pre").toString() : "");
+				x += (bs.hasMeta("unmeas_pre") ? "+"
+						+ bs.getMeta("unmeas_pre").toString() : "");
 				x += "\t";
-				x += e.getRange().toString();
+				x += bs.getRange().toString();
 				x += "\t";
-				x += (e.details.containsKey("unmeas_post") ? "+"
-						+ e.details.get("unmeas_post").toString() : "");
+				x += (bs.hasMeta("unmeas_post") ? "+"
+						+ bs.getMeta("unmeas_post").toString() : "");
 				x += "\t";
-				x += (e.details.containsKey("terminal") ? e.details.get(
+				x += (bs.hasMeta("terminal") ? bs.getMeta(
 						"terminal").toString() : "");
 
 				sb.append(x + "\n");

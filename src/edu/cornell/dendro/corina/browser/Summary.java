@@ -21,9 +21,8 @@
 package edu.cornell.dendro.corina.browser;
 
 import edu.cornell.dendro.corina.BaseSample;
-import edu.cornell.dendro.corina.ObsFileElement;
+import edu.cornell.dendro.corina.FileElement;
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.SampleHandle;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.util.GreedyProgressMonitor;
 import edu.cornell.dendro.corina.util.GZIP;
@@ -365,7 +364,7 @@ public class Summary {
 
 		private StringBuffer data;
 
-		private ObsFileElement element;
+		private FileElement element;
 		private SampleHandle sampleHandle;
 		private BaseSample baseSample;
 
@@ -395,7 +394,7 @@ public class Summary {
 				items.put(atts.getValue("filename"), new MyFile(Long
 						.parseLong(atts.getValue("modified"))));
 			} else if (name.equals("sample")) {
-				element = new ObsFileElement(folder + File.separator
+				element = new FileElement(folder + File.separator
 						+ atts.getValue("filename"));
 				sampleHandle = new SampleHandle(element);
 				
@@ -580,7 +579,7 @@ public class Summary {
 			String fn = (String) i.next();
 			Object o = items.get(fn);
 			if (o instanceof MyFile) {
-				ObsFileElement e = new ObsFileElement(folder + File.separator + fn);
+				FileElement e = new FileElement(folder + File.separator + fn);
 				SampleHandle sh = new SampleHandle(e);
 
 				// if disk copy isn't newer, skip it.

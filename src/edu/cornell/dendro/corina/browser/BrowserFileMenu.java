@@ -20,8 +20,10 @@
 
 package edu.cornell.dendro.corina.browser;
 
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.ObsFileElement;
+import edu.cornell.dendro.corina.SampleLoader;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.graph.GraphWindow;
@@ -196,11 +198,11 @@ public class BrowserFileMenu extends JMenu {
         graph.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 // get selected samples
-                List elements = new ArrayList();
-                Iterator iter = browser.getSelectedRows();
+                ElementList elements = new ElementList();
+                Iterator<Row> iter = browser.getSelectedRows();
                 while (iter.hasNext()) {
                     Row row = (Row) iter.next();
-                    elements.add(new ObsFileElement(row.getPath())); // PERF: why not just pass in row.getElement()?
+                    elements.add(new Element(row.getElement())); // PERF: why not just pass in row.getElement()?
                 }
 
                 // BUG: not all rows will be loadable ... only get samples
@@ -226,7 +228,7 @@ public class BrowserFileMenu extends JMenu {
         JMenuItem bargraph = Builder.makeMenuItem("bargraph");
         bargraph.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                List list = new ArrayList();
+                List<SampleLoader> list = new ArrayList<SampleLoader>();
                 Iterator iter = browser.getSelectedRows();
                 while (iter.hasNext()) {
                     Row row = (Row) iter.next();

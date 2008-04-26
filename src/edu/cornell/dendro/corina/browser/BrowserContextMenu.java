@@ -20,6 +20,10 @@
 
 package edu.cornell.dendro.corina.browser;
 
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementFactory;
+import edu.cornell.dendro.corina.ElementList;
+import edu.cornell.dendro.corina.FileElement;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.cross.CrossdateKit;
@@ -126,8 +130,9 @@ public class BrowserContextMenu extends JPopupMenu {
 	open.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    try {
-                        String filename = browser.getSelectedRow().getPath();
-			new Editor(new Sample(filename));
+		    	String filename = browser.getSelectedRow().getPath();
+		    	Element el = ElementFactory.createElement(filename);
+		    	new Editor(el.load());
 		    } catch (IOException ioe) {
 			// TODO: display USER error message
 			Bug.bug(ioe);
@@ -138,14 +143,14 @@ public class BrowserContextMenu extends JPopupMenu {
 	graph = Builder.makeMenuItem("graph");
 	graph.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
-		    List list = browser.getSelectedElements();
+		    ElementList list = browser.getSelectedElements();
 		    new GraphWindow(list);
 		}
 	    });
 	bargraph = Builder.makeMenuItem("bargraph");
 	bargraph.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
-		    List list = browser.getSelectedElements();
+		    ElementList list = browser.getSelectedElements();
 		    // here, i re-use elements, which makes this really fast
 		    new BargraphFrame(list);
 		}

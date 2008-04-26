@@ -44,11 +44,13 @@ public class BaseSample {
 	public static void copy(BaseSample source, BaseSample target) {
 		target.range = source.range;
 		target.meta = source.meta;
+		target.loader = source.loader;
 	}
 
 	public BaseSample() {
 		meta = new HashMap<String, Object>();
 		range = new Range();
+		loader = null; // no default loader!
 	}
 	
 	public BaseSample(BaseSample source) {
@@ -99,5 +101,15 @@ public class BaseSample {
 	public Range getRange() {
 		return range;
 	}
-
+	
+	// loader
+	private SampleLoader loader;
+	
+	public SampleLoader getLoader() {
+		return loader;
+	}
+	
+	public void setLoader(SampleLoader loader) {
+		this.loader = loader;
+	}
 }

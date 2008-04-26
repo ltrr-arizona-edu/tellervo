@@ -20,6 +20,7 @@
 
 package edu.cornell.dendro.corina.graph;
 
+import edu.cornell.dendro.corina.BaseSample;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.ui.Builder;

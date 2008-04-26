@@ -108,13 +108,12 @@ public class CorinaXML implements Filetype {
 
 		if(s.getElements() != null) {
 			for (int i = 0; i < s.getElements().size(); i++) {
-				edu.cornell.dendro.corina.ObsFileElement el = s.getElements().get(i);
-				URI uri = el.getURI();
+				edu.cornell.dendro.corina.Element el = s.getElements().get(i);
 				Element e = doc.createElement("element");
 			
 				if(!el.isActive())
 					e.setAttribute("active", "false");
-				e.setAttribute("path", uri.toString());
+				e.setAttribute("path", el.toString());
 				data.appendChild(e);
 			}
 		}

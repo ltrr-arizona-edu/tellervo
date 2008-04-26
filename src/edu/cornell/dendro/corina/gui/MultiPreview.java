@@ -28,7 +28,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -38,7 +37,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import edu.cornell.dendro.corina.ObsFileElement;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementFactory;
+import edu.cornell.dendro.corina.ElementList;
+import edu.cornell.dendro.corina.FileElement;
 import edu.cornell.dendro.corina.Preview;
 import edu.cornell.dendro.corina.Previewable;
 import edu.cornell.dendro.corina.Sample;
@@ -62,14 +64,14 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 	//private File file;
 	private File files[];
 
-	private List set;
+	private ElementList set;
 
 	// because only FileDialog knows what happens when a file is double-clicked...blah
 	public void addClicked() {
 		if(files != null) {			
 			for(int i = 0; i < files.length; i++)
 				// add to set
-				set.add(new ObsFileElement(files[i].getPath()));
+				set.add(ElementFactory.createElement(files[i].getPath()));
 
 			// update view
 			panel.update();
@@ -81,7 +83,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 		chooser.addPropertyChangeListener(this);
 	}
 
-	public MultiPreview(List ss) {
+	public MultiPreview(ElementList ss) {
 		// boilerplate
 		set = ss;
 
@@ -117,7 +119,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 				if(files != null) {			
 					for(int i = 0; i < files.length; i++)
 						// add to set
-						set.add(new ObsFileElement(files[i].getPath()));
+						set.add(ElementFactory.createElement(files[i].getPath()));
 
 					// update view
 					panel.update();
@@ -218,7 +220,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 	}
 
 	// get the result
-	public List getSamples() {
+	public ElementList getElementList() {
 		return set;
 	}
 }

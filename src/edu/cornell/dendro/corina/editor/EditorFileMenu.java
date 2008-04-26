@@ -1,5 +1,7 @@
 package edu.cornell.dendro.corina.editor;
 
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.io.Exporter;
@@ -134,7 +136,7 @@ public class EditorFileMenu extends FileMenu {
 									labels[0]);
 
 					Sample base = s;
-					List samples = new ArrayList();
+					List<Sample> samples = new ArrayList<Sample>();
 
 					switch (action) {
 					case JOptionPane.CLOSED_OPTION:
@@ -153,10 +155,11 @@ public class EditorFileMenu extends FileMenu {
 						String errorsamples = "";
 						boolean problem = false;
 
-						for (int i = 0; i < s.getElements().size(); i++) {
-							ObsFileElement e = s.getElements().get(i);
+						ElementList elements = s.getElements();
+						for (int i = 0; i < elements.size(); i++) {
+							Element e = s.getElements().get(i);
 
-							if (!e.isActive()) // skip inactive
+							if (elements.isActive(e)) // skip inactive
 								continue;
 
 							try {
@@ -166,7 +169,7 @@ public class EditorFileMenu extends FileMenu {
 								problem = true;
 								if (errorsamples.length() != 0)
 									errorsamples += ", ";
-								errorsamples += e.getFilename();
+								errorsamples += e.toString();
 							}
 						}
 
@@ -246,7 +249,7 @@ public class EditorFileMenu extends FileMenu {
 									labels, labels[0]);
 
 					Sample base = s;
-					List samples = new ArrayList();
+					List<Sample> samples = new ArrayList<Sample>();
 
 					switch (action) {
 					case JOptionPane.CLOSED_OPTION:
@@ -263,10 +266,11 @@ public class EditorFileMenu extends FileMenu {
 						String errorsamples = "";
 						boolean problem = false;
 
-						for (int i = 0; i < s.getElements().size(); i++) {
-							ObsFileElement e = s.getElements().get(i);
+						ElementList elements = s.getElements();
+						for (int i = 0; i < elements.size(); i++) {
+							Element e = elements.get(i);
 
-							if (!e.isActive()) // skip inactive
+							if (!elements.isActive(e)) // skip inactive
 								continue;
 
 							try {
@@ -276,7 +280,7 @@ public class EditorFileMenu extends FileMenu {
 								problem = true;
 								if (errorsamples.length() != 0)
 									errorsamples += ", ";
-								errorsamples += e.getFilename();
+								errorsamples += e.toString();
 							}
 						}
 

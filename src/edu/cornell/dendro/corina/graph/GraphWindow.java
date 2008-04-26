@@ -52,11 +52,13 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 
-import edu.cornell.dendro.corina.ObsFileElement;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.SampleEvent;
 import edu.cornell.dendro.corina.SampleListener;
+import edu.cornell.dendro.corina.SampleLoader;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.cross.Cross;
@@ -156,7 +158,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 	private JScrollPane scroller; // scroller enclosing the plot
 
 	// data
-	private List samples; // of Graph
+	private List<Graph> samples; // of Graph
 
 	// adjust vertical spacing
 	public void squeezeTogether() {
@@ -299,13 +301,13 @@ public class GraphWindow extends XFrame implements SampleListener,
 	}
 
 	// add a List of ELEMENTS
-	public void add(List ns) {
+	public void add(ElementList ns) {
 		// samples
 		boolean problem = false;
 		for (int i = 0; i < ns.size(); i++) {
-			ObsFileElement e = (ObsFileElement) ns.get(i);
+			Element e = ns.get(i);
 
-			if (!e.isActive()) // skip inactive
+			if (!ns.isActive(e)) // skip inactive
 				continue;
 
 			try {
@@ -666,7 +668,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 	 */
 	public GraphWindow(Sample s) {
 		// samples
-		samples = new ArrayList(2); // 2 things, max
+		samples = new ArrayList<Graph>(2); // 2 things, max
 		samples.add(new Graph(s));
 
 		// summed -- add count, too
@@ -684,17 +686,26 @@ public class GraphWindow extends XFrame implements SampleListener,
 	/**
 	 * Graph all the files in a List of Elements.
 	 * 
-	 * @param ss
-	 *            the List to get the Elements from
+	 * @param ss the List to get the Elements from
 	 */
-	public GraphWindow(List ss) {
+	public GraphWindow(ElementList ss) {
+		// Empty list? Open a dialog to create it
+		if(ss == null) {
+			try {
+				ss = FileDialog.showMulti(I18n.getText("plot"));
+			} catch (UserCancelledException uce) {
+				dispose();
+				return;
+			}
+		}
+
 		// samples
 		boolean problem = false;
-		samples = new ArrayList(ss.size());
+		samples = new ArrayList<Graph>(ss.size());
 		for (int i = 0; i < ss.size(); i++) {
-			ObsFileElement e = (ObsFileElement) ss.get(i);
+			Element e = ss.get(i);
 
-			if (!e.isActive()) // skip inactive
+			if (!ss.isActive(e)) // skip inactive
 				continue;
 
 			try {
@@ -732,10 +743,10 @@ public class GraphWindow extends XFrame implements SampleListener,
 	 * @param ss
 	 *            the List to get the Elements from
 	 */
-	public GraphWindow(Sample s, List ss) {
+	public GraphWindow(Sample s, ElementList ss) {
 		// samples
 		boolean problem = false;
-		samples = new ArrayList(ss.size() + 2);
+		samples = new ArrayList<Graph>(ss.size() + 2);
 		samples.add(new Graph(s));
 
 		// summed -- add count, too
@@ -747,9 +758,9 @@ public class GraphWindow extends XFrame implements SampleListener,
 		s.addSampleListener(this);
 		
 		for (int i = 0; i < ss.size(); i++) {
-			ObsFileElement e = (ObsFileElement) ss.get(i);
+			Element e = ss.get(i);
 
-			if (!e.isActive()) // skip inactive
+			if (!ss.isActive(e)) // skip inactive
 				continue;
 
 			try {
@@ -781,50 +792,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 	 * Graph any files the user chooses.
 	 */
 	public GraphWindow() {
-		// get samples
-		List ss = null;
-		try {
-			ss = FileDialog.showMulti(I18n.getText("plot"));
-		} catch (UserCancelledException uce) {
-			dispose();
-			return;
-		}
-
-		// REFACTOR: everything below this point is the same as
-		// GraphWindow(List)
-
-		// samples
-		boolean problem = false;
-		samples = new ArrayList(ss.size());
-		for (int i = 0; i < ss.size(); i++) {
-			ObsFileElement e = (ObsFileElement) ss.get(i);
-
-			if (!e.isActive()) // skip inactive
-				continue;
-
-			try {
-				Sample s = e.load();
-				samples.add(new Graph(s));
-				s.addSampleListener(this);
-			} catch (IOException ioe) {
-				problem = true; // ick.
-			}
-		}
-
-		// problem?
-		if (problem) {
-			Alert.error("Error loading sample(s)",
-					"Some samples were not able to be loaded.");
-		}
-
-		// no samples => don't bother doing anything
-		if (samples.isEmpty()) {
-			dispose();
-			return;
-		}
-
-		// go
-		createPanelAndDisplay();
+		this((ElementList) null);
 	}
 
 	/**
@@ -835,7 +803,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 	 */
 	public GraphWindow(Index i) {
 		// samples
-		samples = new ArrayList(2);
+		samples = new ArrayList<Graph>(2);
 		samples.add(new Graph(i.getTarget()));
 		samples.add(new Graph(i));
 
@@ -858,7 +826,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		Graph tmp;
 
 		// samples
-		samples = new ArrayList(2);
+		samples = new ArrayList<Graph>(2);
 		samples.add(new Graph(c.getFixed()));
 		samples.add(tmp = new Graph(c.getMoving()));
 
@@ -878,7 +846,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 	public GraphWindow(String filename) throws WrongFiletypeException {
 		// load
 		try {
-			samples = LoadSave.load(filename);
+			samples = (List<Graph>) LoadSave.load(filename);
 		} catch (IOException ioe) {
 			throw new WrongFiletypeException();
 		}

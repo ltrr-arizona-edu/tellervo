@@ -1,5 +1,9 @@
 package edu.cornell.dendro.corina.editor;
 
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementFactory;
+import edu.cornell.dendro.corina.ElementList;
+import edu.cornell.dendro.corina.FileElement;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.SampleEvent;
 import edu.cornell.dendro.corina.SampleListener;
@@ -152,7 +156,7 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 
 				// new elements, if needed
 				if (sample.getElements() == null)
-					sample.setElements(new ArrayList());
+					sample.setElements(new ElementList());
 
 				// ADD CHECK: make sure indexed+indexed, or raw+raw
 
@@ -160,9 +164,11 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 				int numOld = sample.getElements().size();
 
 				// add -- if summed, add each one
+				Element src = ElementFactory.createElement(filename);
 				Sample testSample = null;
 				try {
-					testSample = new Sample(filename);
+					// TODO: Use an ElementFactory and then load!
+					testSample = src.load();
 				} catch (IOException ioe) {
 					int x = JOptionPane.showConfirmDialog(null,
 							"The file \"" + filename
@@ -177,7 +183,7 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 					for (int i = 0; i < testSample.getElements().size(); i++)
 						sample.getElements().add(testSample.getElements().get(i)); // copy ref only
 				} else {
-					sample.getElements().add(new ObsFileElement(filename));
+					sample.getElements().add(src);
 				}
 
 				// modified, and update

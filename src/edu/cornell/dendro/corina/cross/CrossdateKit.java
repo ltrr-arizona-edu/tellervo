@@ -1,5 +1,7 @@
 package edu.cornell.dendro.corina.cross;
 
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.util.UserFriendlyFile;
 import edu.cornell.dendro.corina.util.OKCancel;
@@ -189,9 +191,9 @@ public class CrossdateKit extends JDialog {
             add.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        List chosen = FileDialog.showMulti("Add");
+                        ElementList chosen = FileDialog.showMulti("Add");
                         for (int i=0; i<chosen.size(); i++) {
-			    ObsFileElement el = (ObsFileElement) chosen.get(i);
+                        	Element el = chosen.get(i);
                             model.addElement(new UserFriendlyFile(el.getFilename()));
 			}
                     } catch (UserCancelledException uce) {

@@ -20,6 +20,10 @@
 
 package edu.cornell.dendro.corina.formats;
 
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementFactory;
+import edu.cornell.dendro.corina.ElementList;
+import edu.cornell.dendro.corina.FileElement;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
@@ -330,7 +334,8 @@ public class Corina implements Filetype {
 
 	private void loadElements(Sample s, BufferedReader r) throws IOException {
 		// create elements
-		s.setElements(new ArrayList());
+		ElementList elist = new ElementList();
+		s.setElements(elist);
 
 		for (;;) {
 			// check first char for ';'-ness
@@ -346,10 +351,16 @@ public class Corina implements Filetype {
 				continue;
 
 			// add to elements
-			if (line.charAt(0) == '*') // disabled element, if first char is '*'
-				s.getElements().add(new ObsFileElement(line.substring(1), false));
-			else
-				s.getElements().add(new ObsFileElement(line));
+			if (line.charAt(0) == '*') { // disabled element, if first char is '*'
+				Element e = ElementFactory.createElement(line.substring(1));
+				
+				elist.add(e);
+				elist.setActive(e, false);
+			}
+			else {
+				Element e = ElementFactory.createElement(line);
+				elist.add(e);
+			}
 		}
 	}
 
@@ -692,7 +703,9 @@ public class Corina implements Filetype {
 	}
 
 	private void saveElements(Sample s, BufferedWriter w) throws IOException {
-		if (s.getElements() == null)
+		ElementList elist = s.getElements();
+		
+		if (elist == null)
 			return;
 				
 		// if relative paths are on, save elements with relative paths!
@@ -700,10 +713,17 @@ public class Corina implements Filetype {
 
 		w.write(";ELEMENTS ");
 		w.newLine();
-		for (int i = 0; i < s.getElements().size(); i++) {
+		for (int i = 0; i < elist.size(); i++) {
 			// if disabled, write '*' before filename
-			ObsFileElement el = s.getElements().get(i);
-			w.write((el.isActive() ? "" : "*") + (relativepath ? el.getRelativeFilename() : el.getFilename()));
+			Element el = elist.get(i);
+			
+			// write out active flag
+			w.write((elist.isActive(el) ? "" : "*"));
+			
+			if(el.getaLoader() instanceof FileElement) {
+				FileElement fel = (FileElement) el.getaLoader();
+				w.write((relativepath ? fel.getRelativeFilename() : fel.getFilename()));
+			}
 			w.newLine();
 		}
 	}

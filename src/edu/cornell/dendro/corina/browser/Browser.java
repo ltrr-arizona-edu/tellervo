@@ -77,10 +77,12 @@ import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import edu.cornell.dendro.corina.ObsFileElement;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementFactory;
+import edu.cornell.dendro.corina.ElementList;
+import edu.cornell.dendro.corina.FileElement;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.SampleHandle;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.cross.RangeRenderer;
 import edu.cornell.dendro.corina.editor.Editor;
@@ -609,23 +611,26 @@ public class Browser extends XFrame {
 
 	// return all of the selected files, as a List of filenames
 	// DEPRECATE?  who uses this?
-	/*private*/List getSelectedFilenames() {
+	/*private*/
+	/*private*/
+	
+	public List<String> getSelectedFilenames() {
 		int rows[] = table.getSelectedRows();
 		int n = rows.length;
-		List list = new ArrayList();
+		List<String> list = new ArrayList<String>();
 		for (int i = 0; i < n; i++)
 			list.add(((Row) visibleFiles.get(rows[i])).getPath());
 		return list;
 	}
-
-	// return all of the selected files, as a List of Elements
-	// DEPRECATE?  who uses this?
-	/*private*/List getSelectedElements() {
+	
+	public ElementList getSelectedElements() {
 		int rows[] = table.getSelectedRows();
 		int n = rows.length;
-		List list = new ArrayList();
+		ElementList list = new ElementList();
+		
 		for (int i = 0; i < n; i++)
-			list.add(((Row) visibleFiles.get(rows[i])).getElement());
+			list.add(ElementFactory.createElement((visibleFiles.get(rows[i])).getPath()));
+		
 		return list;
 	}
 
@@ -926,8 +931,10 @@ public class Browser extends XFrame {
 					return; // FIXME: don't allow this!
 
 				// convert to Elements
+				/* BROKEN!!
 				for (int i = 0; i < selection.size(); i++)
 					selection.set(i, new ObsFileElement((String) selection.get(i)));
+					*/
 
 				// pass selected files to index-many method
 				Scripts.indexManyFiles(selection);
@@ -1037,7 +1044,7 @@ public class Browser extends XFrame {
 				if (test.getElements() != null)
 					elements.addAll(test.getElements());
 				else
-					elements.add(new ObsFileElement(filename));
+					elements.add(ElementFactory.createElement(filename));
 			}
 
 			// make sum (don't sort here: it's already sorted somehow)
@@ -1301,9 +1308,9 @@ public class Browser extends XFrame {
 	}
 
 	// files to view
-	List files = new ArrayList(); // of Element
+	List<Row> files = new ArrayList<Row>(); // of Element
 
-	List visibleFiles = new ArrayList(); // of Element
+	List<Row> visibleFiles = new ArrayList<Row>(); // of Element
 
 	Summary summary = null;
 	FolderTree tree = null;

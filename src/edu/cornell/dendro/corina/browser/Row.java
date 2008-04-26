@@ -1,9 +1,9 @@
 package edu.cornell.dendro.corina.browser;
 
 import edu.cornell.dendro.corina.BaseSample;
+import edu.cornell.dendro.corina.FileElement;
 import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.SampleHandle;
 import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -53,8 +53,8 @@ public class Row {
     }
 
     // this makes bargraphs from the browser, for example, *much* more efficient
-    public ObsFileElement getElement() {
-	return sampleHandle.getElement();
+    public FileElement getElement() {
+    	return sampleHandle.getElement();
     }
 
     private static Icon leafIcon, closedIcon, treeIcon;
