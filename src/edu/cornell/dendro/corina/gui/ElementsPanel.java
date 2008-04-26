@@ -23,7 +23,6 @@ package edu.cornell.dendro.corina.gui;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.SampleListener;
 import edu.cornell.dendro.corina.SampleEvent;
-import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.util.Sort;

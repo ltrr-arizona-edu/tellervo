@@ -2,7 +2,6 @@ package edu.cornell.dendro.corina.browser;
 
 import edu.cornell.dendro.corina.BaseSample;
 import edu.cornell.dendro.corina.FileElement;
-import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -25,87 +24,92 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 public class Row {
 
-    private File file;
-    private SampleHandle sampleHandle=null;
-    private Browser browser;
+	private File file;
+	private SampleHandle sampleHandle = null;
+	private Browser browser;
 
-    // use browser for (1) visible fields, and (2) matchesAny() method.
-    public Row(File file, Browser browser) {
-        this.file = file;
-        this.browser = browser;
-    }
+	// use browser for (1) visible fields, and (2) matchesAny() method.
+	public Row(File file, Browser browser) {
+		this.file = file;
+		this.browser = browser;
+	}
 
-    // new interface: Summary is responsible for loading
-    public Row(SampleHandle sh, Browser browser) {
-	this.file = new File(sh.getElement().getFilename());
-	this.sampleHandle = sh; // don't load again!
-	this.browser = browser;
-    }
+	// new interface: Summary is responsible for loading
+	public Row(SampleHandle sh, Browser browser) {
+		this.file = new File(sh.getElement().getFilename());
+		this.sampleHandle = sh; // don't load again!
+		this.browser = browser;
+	}
 
-    public String getName() { // in File
-        return file.getName();
-    }
-    public String getPath() { //     "
-        return file.getPath();
-    }
-    public boolean isDirectory() { //     "
-        return file.isDirectory();
-    }
+	public String getName() { // in File
+		return file.getName();
+	}
 
-    // this makes bargraphs from the browser, for example, *much* more efficient
-    public FileElement getElement() {
-    	return sampleHandle.getElement();
-    }
+	public String getPath() { //     "
+		return file.getPath();
+	}
 
-    private static Icon leafIcon, closedIcon, treeIcon;
-    static {
-	DefaultTreeCellRenderer tcr = new DefaultTreeCellRenderer();
-	leafIcon = tcr.getLeafIcon();
-	closedIcon = tcr.getClosedIcon();
+	public boolean isDirectory() { //     "
+		return file.isDirectory();
+	}
 
-        // tree.java does exactly the same thing ... REFACTOR
-        ImageIcon tmp = (ImageIcon) Builder.getIcon("Tree.png"); //new ImageIcon(Row.class.getClassLoader().getResource("Images/Tree.png"));
-        int height = new JTable().getFont().getSize() + 4; // EXTRACT CONST!
-        treeIcon = new ImageIcon(tmp.getImage().getScaledInstance(height, height, Image.SCALE_SMOOTH));
-    }
-    public Icon getIcon() {
-	if (file.isDirectory())
-	    return closedIcon;
-        if (sampleHandle == null)
-            return leafIcon;
-        else
-            return treeIcon;
-    }
+	// this makes bargraphs from the browser, for example, *much* more efficient
+	public FileElement getElement() {
+		return sampleHandle.getElement();
+	}
 
-    private FileLength size=null;
-    private FileLength getSize() { // in File -- but override
-        if (size == null)
-            size = new FileLength(file);
-        return size;
-    }
+	private static Icon leafIcon, closedIcon, treeIcon;
+	static {
+		DefaultTreeCellRenderer tcr = new DefaultTreeCellRenderer();
+		leafIcon = tcr.getLeafIcon();
+		closedIcon = tcr.getClosedIcon();
 
-    public String getKind() {
-        if (file.isDirectory())
-            return "Folder";
+		// tree.java does exactly the same thing ... REFACTOR
+		ImageIcon tmp = (ImageIcon) Builder.getIcon("Tree.png"); //new ImageIcon(Row.class.getClassLoader().getResource("Images/Tree.png"));
+		int height = new JTable().getFont().getSize() + 4; // EXTRACT CONST!
+		treeIcon = new ImageIcon(tmp.getImage().getScaledInstance(height, height, Image.SCALE_SMOOTH));
+	}
 
-        // WRITEME?
-        return "Document";
-    }
+	public Icon getIcon() {
+		if (file.isDirectory())
+			return closedIcon;
+		if (sampleHandle == null)
+			return leafIcon;
+		else
+			return treeIcon;
+	}
 
-    private RelativeDate modified = null;
-    private RelativeDate getModified() {
-        if (modified == null)
-            modified = new RelativeDate(new Date(file.lastModified()));
-        return modified;
-    }
+	private FileLength size = null;
 
-    // FIXME: it'd be better to do nothing here if it's a folder, than to
-    // say if (!r.isDirectory()) r.load();.
-    /*
-    public void load() {
-        try {
-            // create the element, and load its metadata
-            element = new Element(file.getPath());
+	private FileLength getSize() { // in File -- but override
+		if (size == null)
+			size = new FileLength(file);
+		return size;
+	}
+
+	public String getKind() {
+		if (file.isDirectory())
+			return "Folder";
+
+		// WRITEME?
+		return "Document";
+	}
+
+	private RelativeDate modified = null;
+
+	private RelativeDate getModified() {
+		if (modified == null)
+			modified = new RelativeDate(new Date(file.lastModified()));
+		return modified;
+	}
+
+	// FIXME: it'd be better to do nothing here if it's a folder, than to
+	// say if (!r.isDirectory()) r.load();.
+	/*
+	public void load() {
+	    try {
+	        // create the element, and load its metadata
+	        element = new Element(file.getPath());
 	    //            element.loadMeta();
 
 	    // WORKING HERE:
@@ -149,146 +153,146 @@ public class Row {
 	    // -- if not, load sample normally, and tell Browser to update Summary
 	    // -- when done, Browser should tell the Summary to re-save itself
 
-            // add other stuff to the meta-map
-            // -- or make my own meta map?
-            // -- or use an array?
-            // WRITE ME
-        } catch (IOException ioe) {
-            // what to do?  better dim it or something.  oh, and kind="Unknown file" or "Not a sample" now.
+	        // add other stuff to the meta-map
+	        // -- or make my own meta map?
+	        // -- or use an array?
+	        // WRITE ME
+	    } catch (IOException ioe) {
+	        // what to do?  better dim it or something.  oh, and kind="Unknown file" or "Not a sample" now.
 	    System.out.println("in row.load (" + file.getName() + "), got ioe, so it must not be a dendro file");
-            element = null;
-        }
-    }
-*/
+	        element = null;
+	    }
+	}
+	 */
 
-    // valid fields are:
-    // -- any metadata field
-    // -- "name", "size", "kind", "modified"
-    // -- "range", "start", "end", "length"
-    // how about just making an array(list) of all of these?  the metadata fields exist in a fixed order,
-    // and then this method is just a table lookup.  plus sorting is a snap.
-    // -- IT COULD BE A LOT FASTER, TOO.
-    public Object getField(String field) {
-        // file metadata
-        if (field.equals("name"))
-            return getName();
-        if (field.equals("size"))
-            return getSize();
-        if (field.equals("kind"))
-            return getKind();
-        if (field.equals("modified"))
-            return getModified(); // AsString(); // should return the Date -- a RelativeDate, actually.
+	// valid fields are:
+	// -- any metadata field
+	// -- "name", "size", "kind", "modified"
+	// -- "range", "start", "end", "length"
+	// how about just making an array(list) of all of these?  the metadata fields exist in a fixed order,
+	// and then this method is just a table lookup.  plus sorting is a snap.
+	// -- IT COULD BE A LOT FASTER, TOO.
+	public Object getField(String field) {
+		// file metadata
+		if (field.equals("name"))
+			return getName();
+		if (field.equals("size"))
+			return getSize();
+		if (field.equals("kind"))
+			return getKind();
+		if (field.equals("modified"))
+			return getModified(); // AsString(); // should return the Date -- a RelativeDate, actually.
 
-        BaseSample bs;
-        try {
-        	bs = sampleHandle.getBaseSample();
-        } catch (IOException ioe) {
-        	bs = null;
-        }
-        
-        if (bs != null) {
-            // range, in some form?
-            Range range = bs.getRange(); // can't be null if element is loaded
-            if (field.equals("range"))
-                // i'd like this to use toStringWithSpan(), but how?  oh well.
-                // (anonymous/inner class with tostring=tostringwithspan?
-                return range;
-            if (field.equals("start"))
-                return range.getStart(); // PERF: year.tostring isn't memoed, so this involves new(), too!
-            if (field.equals("end"))
-                return range.getEnd(); // PERF: year.tostring isn't memoed, so this involves new(), too!
-            if (field.equals("length"))
-                return new Integer(range.span()); // PERF: new() called on each view!
+		BaseSample bs;
+		try {
+			bs = sampleHandle.getBaseSample();
+		} catch (IOException ioe) {
+			bs = null;
+		}
 
-            // if it's null, they get null
-            Object value = bs.getMeta(field);
-            if (value == null)
-                return null;
+		if (bs != null) {
+			// range, in some form?
+			Range range = bs.getRange(); // can't be null if element is loaded
+			if (field.equals("range"))
+				// i'd like this to use toStringWithSpan(), but how?  oh well.
+				// (anonymous/inner class with tostring=tostringwithspan?
+				return range;
+			if (field.equals("start"))
+				return range.getStart(); // PERF: year.tostring isn't memoed, so this involves new(), too!
+			if (field.equals("end"))
+				return range.getEnd(); // PERF: year.tostring isn't memoed, so this involves new(), too!
+			if (field.equals("length"))
+				return new Integer(range.span()); // PERF: new() called on each view!
 
-            // maybe it has no translation
-            boolean match = false;
-	    Iterator i = MetadataTemplate.getFields();
-	    while (i.hasNext()) {
-		MetadataField f = (MetadataField) i.next();
-                if (f.getVariable().equals(field)) {
-		    // REFACTOR: looks familiar -- isField() or something?
-                    match = true;
-                    break;
-                }
-            }
-            if (match)
-                return value;
+			// if it's null, they get null
+			Object value = bs.getMeta(field);
+			if (value == null)
+				return null;
 
-            // if it's a species, try looking it up with the Species object,
-            // so 4-letter codes show as names.  if that doesn't work, just show the value.
-            if (field.equals("species")) {
-		// try {
-		// return Species.getName(value.toString());
-		// } catch (UnknownSpeciesException use) {
-		return value.toString();
-		// }
-            }
+			// maybe it has no translation
+			boolean match = false;
+			Iterator i = MetadataTemplate.getFields();
+			while (i.hasNext()) {
+				MetadataField f = (MetadataField) i.next();
+				if (f.getVariable().equals(field)) {
+					// REFACTOR: looks familiar -- isField() or something?
+					match = true;
+					break;
+				}
+			}
+			if (match)
+				return value;
 
-	    // the comments field will often have newlines in it,
-	    // which render as empty boxes; replace them with spaces
-	    // or something.
-	    // TODO: why only the comments field?
-	    if (field.equals("comments"))
-		return value.toString().replace('\n', ' ');
+			// if it's a species, try looking it up with the Species object,
+			// so 4-letter codes show as names.  if that doesn't work, just show the value.
+			if (field.equals("species")) {
+				// try {
+				// return Species.getName(value.toString());
+				// } catch (UnknownSpeciesException use) {
+				return value.toString();
+				// }
+			}
 
-	    // ms-dos corina allowed "?" to mean "unspecified"
-	    if (value.toString().equals("?"))
+			// the comments field will often have newlines in it,
+			// which render as empty boxes; replace them with spaces
+			// or something.
+			// TODO: why only the comments field?
+			if (field.equals("comments"))
+				return value.toString().replace('\n', ' ');
+
+			// ms-dos corina allowed "?" to mean "unspecified"
+			if (value.toString().equals("?"))
+				return null;
+
+			// it's a valid field -- find it, and look up the string
+			MetadataField f = MetadataTemplate.getField(field);
+			if (f.isValidValue(value.toString()))
+				return I18n.getText("meta." + field + "." + value);
+
+			// it's an unknown value -- let's just spit it out
+			return value.toString();
+		}
+
+		// element = null ... something's wrong, i think.
 		return null;
+	}
 
-	    // it's a valid field -- find it, and look up the string
-	    MetadataField f = MetadataTemplate.getField(field);
-	    if (f.isValidValue(value.toString()))
-	        return I18n.getText("meta." + field + "." + value);
+	// true if this file matches all of the words, with any of its visible fields.
+	// (how am i to know what's visible here?)  (pass in the list of visible fields, too?)
+	// no, better: if i pass a reference to the list-of-visible-fields with the constructor,
+	// with the price of exactly one reference, i ... oh, wait, wrong concept.
+	// i'm thinking i can change one field, implement compareTo() here, and it'll always work.
+	// i'd need a reference back to the Browser, and Browser.getSortField().
 
-	    // it's an unknown value -- let's just spit it out
-	    return value.toString();
-        }
+	public boolean matches(String words[]) {
+		// foreach field f in visiblefields[] -- element.meta.values()?
 
-        // element = null ... something's wrong, i think.
-        return null;
-    }
+		// task: need to match across fields.
+		// strategy: append all fields together, with spaces between them.
 
-    // true if this file matches all of the words, with any of its visible fields.
-    // (how am i to know what's visible here?)  (pass in the list of visible fields, too?)
-    // no, better: if i pass a reference to the list-of-visible-fields with the constructor,
-    // with the price of exactly one reference, i ... oh, wait, wrong concept.
-    // i'm thinking i can change one field, implement compareTo() here, and it'll always work.
-    // i'd need a reference back to the Browser, and Browser.getSortField().
-    
-    public boolean matches(String words[]) {
-        // foreach field f in visiblefields[] -- element.meta.values()?
+		StringBuffer buf = new StringBuffer();
 
-        // task: need to match across fields.
-        // strategy: append all fields together, with spaces between them.
-        
-        StringBuffer buf = new StringBuffer();
+		// use name, modified, kind.  (don't use size, or any range view.)
+		buf.append(getName() + " ");
+		buf.append(getModified() + " ");
+		buf.append(getField("kind") + " ");
 
-        // use name, modified, kind.  (don't use size, or any range view.)
-        buf.append(getName() + " ");
-        buf.append(getModified() + " ");
-        buf.append(getField("kind") + " ");
+		// only look at visible fields
+		// BUG: this lists all fields, not just metadata fields -- range, etc.
+		// -- this is bad because: i already put in name,mod,kind, so they get searched twice, but
+		// more importantly: this searches RANGE, etc., which i specifically don't want to search.
+		List visible = browser.getVisibleFields();
+		for (int i = 0; i < visible.size(); i++) {
+			Object value = getField((String) visible.get(i));
+			if (value == null)
+				continue;
+			if (value instanceof Number || value instanceof Range) // skip all numbers and ranges
+				continue;
+			buf.append(value + " ");
+		}
 
-        // only look at visible fields
-        // BUG: this lists all fields, not just metadata fields -- range, etc.
-        // -- this is bad because: i already put in name,mod,kind, so they get searched twice, but
-        // more importantly: this searches RANGE, etc., which i specifically don't want to search.
-        List visible = browser.getVisibleFields();
-        for (int i=0; i<visible.size(); i++) {
-            Object value = getField((String) visible.get(i));
-            if (value == null)
-                continue;
-            if (value instanceof Number || value instanceof Range) // skip all numbers and ranges
-                continue;
-            buf.append(value + " ");
-        }
+		return Browser.matchesAny(buf.toString(), words);
+	}
 
-        return Browser.matchesAny(buf.toString(), words);
-    }
-
-    // why didn't i just overload File?
+	// why didn't i just overload File?
 }

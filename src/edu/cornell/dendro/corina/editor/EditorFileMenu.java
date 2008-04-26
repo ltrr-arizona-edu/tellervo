@@ -2,7 +2,6 @@ package edu.cornell.dendro.corina.editor;
 
 import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.ElementList;
-import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.io.Exporter;
 import edu.cornell.dendro.corina.io.ExportDialog;

@@ -21,7 +21,6 @@
 package edu.cornell.dendro.corina.gui;
 
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.index.Index;
 import edu.cornell.dendro.corina_indexing.Exponential; // extract const! -- better: let user pick!
 import edu.cornell.dendro.corina.util.Overwrite;

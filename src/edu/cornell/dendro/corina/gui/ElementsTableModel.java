@@ -20,7 +20,6 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.ui.Alert;

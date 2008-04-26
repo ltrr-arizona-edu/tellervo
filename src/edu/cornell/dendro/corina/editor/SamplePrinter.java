@@ -21,7 +21,6 @@
 package edu.cornell.dendro.corina.editor;
 
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.util.StringUtils;

@@ -1,7 +1,6 @@
 package edu.cornell.dendro.corina.cross;
 
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.ObsFileElement;
 // IDEA: what if i got rid of Element?  it's either a sample, or a
 // filename.  no, that's bad, i wouldn't be able to load massive
 // amounts of metadata, as browser requires...
