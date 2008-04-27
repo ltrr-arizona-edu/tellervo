@@ -122,8 +122,6 @@ public class CorinaXML implements Filetype {
 			String key = e.getName();
 			String value = e.getValue();
 			
-			System.out.println("Metadata for " + s + ": " + key + " -> " + value);
-
 			if(key.equals("name"))
 				s.setMeta("title", value);
 			else if(key.equals("owner"))
@@ -138,6 +136,7 @@ public class CorinaXML implements Filetype {
 			else if(value != null){
 				// store this anyway?
 				s.setMeta("__:" + key, value);
+				System.out.println("Unknown Metadata for " + s + ": " + key + " -> " + value);
 			}
 		}
 	}
