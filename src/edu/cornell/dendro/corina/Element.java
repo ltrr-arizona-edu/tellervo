@@ -54,7 +54,7 @@ public class Element implements Comparable<Element> {
 	
 	private SampleLoader loader;
 
-	public SampleLoader getaLoader() {
+	public SampleLoader getLoader() {
 		return loader;
 	}
 	

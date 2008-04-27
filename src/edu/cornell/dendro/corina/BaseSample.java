@@ -3,9 +3,6 @@ package edu.cornell.dendro.corina;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.cornell.dendro.corina.graph.Graphable;
-import edu.cornell.dendro.corina_indexing.Indexable;
-
 public class BaseSample {
 
 	/** Sample metadata, as a (String, Object) Map.  The following

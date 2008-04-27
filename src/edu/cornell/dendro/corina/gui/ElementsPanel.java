@@ -222,7 +222,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					
 					// make a list of file elements only
 					for(Element e : elements) {
-						if(e.getaLoader() instanceof FileElement)
+						if(e.getLoader() instanceof FileElement)
 							flist.add(e);
 					}
 					
@@ -232,11 +232,11 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					}
 					
 					// figure out what the base directory is for the samples
-					String prefix = ((FileElement) flist.get(0).getaLoader()).getFilename();
+					String prefix = ((FileElement) flist.get(0).getLoader()).getFilename();
 					for (int i = 1; i < flist.size(); i++) {
 
 						// crop prefix by directories until it really is a prefix
-						while (!((FileElement) flist.get(i).getaLoader()).getFilename()
+						while (!((FileElement) flist.get(i).getLoader()).getFilename()
 								.startsWith(prefix)) {
 							int slash = prefix.lastIndexOf(File.separatorChar);
 							if (slash == -1) {
@@ -268,7 +268,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					// change all filenames to the new directory (s/prefix/target/).
 					// elements are now immutable, so make a new one from the old name.
 					for (int i = 0; i < flist.size(); i++) {
-						FileElement oldEl = (FileElement) elements.get(i).getaLoader();
+						FileElement oldEl = (FileElement) elements.get(i).getLoader();
 						String newFilename = target
 								+ oldEl.getFilename()
 										.substring(prefix.length());

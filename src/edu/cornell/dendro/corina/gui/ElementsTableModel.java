@@ -159,8 +159,8 @@ public class ElementsTableModel extends AbstractTableModel {
 			return e;
 
 		case 1:
-			if(e.getaLoader() instanceof FileElement)
-				return ((FileElement) e.getaLoader()).getFolder();
+			if(e.getLoader() instanceof FileElement)
+				return ((FileElement) e.getLoader()).getFolder();
 			
 			return null;
 
@@ -190,7 +190,7 @@ public class ElementsTableModel extends AbstractTableModel {
 		BaseSample bs = elementMap.get(e);
 		
 		// File Elements only!
-		if(!(e.getaLoader() instanceof FileElement))
+		if(!(e.getLoader() instanceof FileElement))
 			return false;
 		
 		// only after refresh?  no, assume refresh is always "done".  (threadme)

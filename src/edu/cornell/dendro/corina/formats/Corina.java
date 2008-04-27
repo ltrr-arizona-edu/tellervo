@@ -719,8 +719,8 @@ public class Corina implements Filetype {
 			// write out active flag
 			w.write((elist.isActive(el) ? "" : "*"));
 			
-			if(el.getaLoader() instanceof FileElement) {
-				FileElement fel = (FileElement) el.getaLoader();
+			if(el.getLoader() instanceof FileElement) {
+				FileElement fel = (FileElement) el.getLoader();
 				w.write((relativepath ? fel.getRelativeFilename() : fel.getFilename()));
 			}
 			w.newLine();
