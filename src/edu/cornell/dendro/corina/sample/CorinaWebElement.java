@@ -9,9 +9,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JList;
-import javax.swing.JPanel;
 
-import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.*;
 
