@@ -14,7 +14,7 @@ import org.jdom.Document;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.Authenticate;
 import edu.cornell.dendro.corina.webdbi.DummyResource;

@@ -9,9 +9,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.Color;
 
-import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import java.awt.event.ActionEvent;

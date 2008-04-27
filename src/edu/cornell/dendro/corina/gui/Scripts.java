@@ -20,11 +20,11 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.ElementList;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.index.Index;
 import edu.cornell.dendro.corina_indexing.Exponential; // extract const! -- better: let user pick!
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.Overwrite;
 import edu.cornell.dendro.corina.ui.Alert;
 

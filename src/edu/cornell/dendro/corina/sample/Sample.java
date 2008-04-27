@@ -18,8 +18,12 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina;
+package edu.cornell.dendro.corina.sample;
 
+import edu.cornell.dendro.corina.Preview;
+import edu.cornell.dendro.corina.Previewable;
+import edu.cornell.dendro.corina.Weiserjahre;
+import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.io.Files;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.graph.Graphable;

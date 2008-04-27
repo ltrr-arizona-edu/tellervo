@@ -26,8 +26,8 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.sample.Sample;
 
 /**
  * <h2>Left to do</h2>

@@ -23,8 +23,8 @@ package edu.cornell.dendro.corina.index;
 import edu.cornell.dendro.corina_indexing.IndexFunction;
 
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.graph.Graphable;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import java.util.List;

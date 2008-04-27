@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina;
+package edu.cornell.dendro.corina.sample;
 
 /**
    An implementation of SampleListener, with all method bodies empty.

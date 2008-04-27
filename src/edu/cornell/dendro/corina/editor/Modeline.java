@@ -21,9 +21,9 @@
 package edu.cornell.dendro.corina.editor;
 
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.gui.ElementsPanel;
+import edu.cornell.dendro.corina.sample.Sample;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;

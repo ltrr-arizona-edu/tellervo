@@ -1,12 +1,12 @@
 package edu.cornell.dendro.corina.gui.menus;
 
-import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.ElementList;
-import edu.cornell.dendro.corina.FileElement;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.cross.Sequence;
 import edu.cornell.dendro.corina.cross.CrossdateWindow;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.ui.Alert;

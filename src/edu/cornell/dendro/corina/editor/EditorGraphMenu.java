@@ -5,11 +5,11 @@ import java.awt.event.ActionEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.SampleEvent;
-import edu.cornell.dendro.corina.SampleListener;
 import edu.cornell.dendro.corina.graph.BargraphFrame;
 import edu.cornell.dendro.corina.graph.GraphWindow;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleEvent;
+import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
 

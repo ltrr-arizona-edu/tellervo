@@ -1,7 +1,7 @@
 package edu.cornell.dendro.corina.cross;
 
-import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.ElementList;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.util.UserFriendlyFile;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.gui.Layout;

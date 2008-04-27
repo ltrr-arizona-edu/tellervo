@@ -23,8 +23,8 @@ package edu.cornell.dendro.corina.index;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.StringUtils;
 
 import edu.cornell.dendro.corina_indexing.*;

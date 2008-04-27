@@ -38,10 +38,10 @@ import java.awt.event.ActionListener;
 import java.awt.print.Printable;
 import java.awt.print.PageFormat;
 
-import edu.cornell.dendro.corina.BaseSample;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.StringUtils;
 
@@ -966,7 +966,7 @@ public class SamplePrintEditor extends JPanel {
 
 		// write out all elements
 		for (int i = 0; i < s.getElements().size(); i++) {
-			edu.cornell.dendro.corina.Element e = s.getElements().get(i);
+			edu.cornell.dendro.corina.sample.Element e = s.getElements().get(i);
 			BaseSample bs;
 			Exception error = null;
 

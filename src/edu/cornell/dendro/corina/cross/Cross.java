@@ -23,9 +23,9 @@ package edu.cornell.dendro.corina.cross;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 
 /**

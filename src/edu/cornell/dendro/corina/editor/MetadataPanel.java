@@ -20,13 +20,13 @@
 
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.SampleListener;
-import edu.cornell.dendro.corina.SampleEvent;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.metadata.MetadataTemplate;
 import edu.cornell.dendro.corina.metadata.MetadataField;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleEvent;
+import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.webdbi.ResourceEvent;
 import edu.cornell.dendro.corina.webdbi.ResourceEventListener;

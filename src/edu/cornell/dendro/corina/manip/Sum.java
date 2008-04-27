@@ -20,9 +20,9 @@
 
 package edu.cornell.dendro.corina.manip;
 
-import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.Sample;
 
 import java.io.IOException;
 

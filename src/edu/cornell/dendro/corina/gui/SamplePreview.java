@@ -39,10 +39,10 @@ import javax.swing.JScrollPane;
 
 import edu.cornell.dendro.corina.Preview;
 import edu.cornell.dendro.corina.Previewable;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.cross.Grid;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.sample.Sample;
 
 public class SamplePreview extends JPanel implements PropertyChangeListener {
   private static final CorinaLog log = new CorinaLog(SamplePreview.class);

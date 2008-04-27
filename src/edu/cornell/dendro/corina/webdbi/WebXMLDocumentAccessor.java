@@ -171,7 +171,8 @@ public class WebXMLDocumentAccessor {
 
 			
 			//debug
-			in.mark(16384);
+			/**
+			in.mark(163840);
 			try {
 				StringBuffer sb = new StringBuffer();
 				int v;
@@ -183,6 +184,7 @@ public class WebXMLDocumentAccessor {
 				System.out.println("\nIncoming Document:\n" + sb.toString());
 			} catch (Exception e) {}
 			in.reset();
+			**/
 			
 			try {
 				// parse the input into an XML document

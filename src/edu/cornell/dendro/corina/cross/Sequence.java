@@ -20,10 +20,10 @@
 
 package edu.cornell.dendro.corina.cross;
 
-import edu.cornell.dendro.corina.CachedElement;
-import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.ElementList;
-import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.sample.CachedElement;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.Sample;
 
 import java.io.IOException;
 

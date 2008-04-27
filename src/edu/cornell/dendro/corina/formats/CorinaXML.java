@@ -20,10 +20,10 @@
 
 package edu.cornell.dendro.corina.formats;
 
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.metadata.*;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.util.GUIDGenerator;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -108,7 +108,7 @@ public class CorinaXML implements Filetype {
 
 		if(s.getElements() != null) {
 			for (int i = 0; i < s.getElements().size(); i++) {
-				edu.cornell.dendro.corina.Element el = s.getElements().get(i);
+				edu.cornell.dendro.corina.sample.Element el = s.getElements().get(i);
 				Element e = doc.createElement("element");
 			
 				if(!s.getElements().isActive(el))

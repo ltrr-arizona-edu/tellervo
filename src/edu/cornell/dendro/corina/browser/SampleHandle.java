@@ -2,9 +2,9 @@ package edu.cornell.dendro.corina.browser;
 
 import java.io.IOException;
 
-import edu.cornell.dendro.corina.BaseSample;
-import edu.cornell.dendro.corina.FileElement;
-import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.FileElement;
+import edu.cornell.dendro.corina.sample.Sample;
 
 public class SampleHandle {
 	private FileElement element;

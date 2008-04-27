@@ -20,13 +20,13 @@
 
 package edu.cornell.dendro.corina.formats;
 
-import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.ElementFactory;
-import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.metadata.*;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementFactory;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -209,7 +209,7 @@ public class TRML implements Filetype {
 			if (name.equals("element")) {
 				if (s.getElements() == null)
 					s.setElements(new ElementList());
-				edu.cornell.dendro.corina.Element e = 
+				edu.cornell.dendro.corina.sample.Element e = 
 					ElementFactory.createElement(data.toString().trim());
 				s.getElements().setActive(e, active);
 				// REFACTOR toString().trim()?
@@ -318,7 +318,7 @@ public class TRML implements Filetype {
 			w.newLine();
 
 			for (int ii = 0; ii < s.getElements().size(); ii++) {
-				edu.cornell.dendro.corina.Element e = s.getElements().get(ii);
+				edu.cornell.dendro.corina.sample.Element e = s.getElements().get(ii);
 				w.write("      <element" + (s.getElements().isActive(e) ? "" : " active=\"false\"") + ">" + e + "</element>");
 				w.newLine();
 			}

@@ -20,7 +20,7 @@
 
 package edu.cornell.dendro.corina.formats;
 
-import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.sample.Sample;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

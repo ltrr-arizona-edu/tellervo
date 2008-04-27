@@ -20,16 +20,16 @@
 
 package edu.cornell.dendro.corina.browser;
 
-import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.ElementList;
-import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.SampleLoader;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.graph.BargraphFrame;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.site.Site;
 import edu.cornell.dendro.corina.site.SiteDB;
 import edu.cornell.dendro.corina.site.SiteNotFoundException;

@@ -33,9 +33,9 @@ import javax.swing.JToolBar;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
-import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.ui.I18n;
 
 /**

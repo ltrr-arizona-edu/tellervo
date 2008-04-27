@@ -1,6 +1,6 @@
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.sample.Sample;
 
 import java.awt.Component;
 import javax.swing.JTable;

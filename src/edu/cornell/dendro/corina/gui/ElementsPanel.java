@@ -20,17 +20,17 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import edu.cornell.dendro.corina.BaseSample;
-import edu.cornell.dendro.corina.CachedElement;
-import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.ElementList;
-import edu.cornell.dendro.corina.FileElement;
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.SampleListener;
-import edu.cornell.dendro.corina.SampleEvent;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.metadata.*;
+import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.CachedElement;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.FileElement;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleEvent;
+import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.util.Sort;
 import edu.cornell.dendro.corina.util.PopupListener;
 import edu.cornell.dendro.corina.ui.Alert;

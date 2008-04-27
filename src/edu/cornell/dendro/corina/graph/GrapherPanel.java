@@ -52,11 +52,11 @@ import javax.swing.JScrollPane;
 import javax.swing.Scrollable;
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.XFrame;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 
 public class GrapherPanel extends JPanel implements KeyListener, MouseListener,

@@ -20,10 +20,10 @@
 
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.BaseSample;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Weiserjahre;
+import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.print.Line;
 import edu.cornell.dendro.corina.print.EmptyLine;
@@ -366,7 +366,7 @@ public class SamplePrinter extends Printer {
 		// lines.add(new ThinLine(0f, 1f)); -- see problem with thinline, below
 
 		for (int i = 0; i < s.getElements().size(); i++) {
-			edu.cornell.dendro.corina.Element e = s.getElements().get(i);
+			edu.cornell.dendro.corina.sample.Element e = s.getElements().get(i);
 			BaseSample bs;
 			Exception error = null;
 

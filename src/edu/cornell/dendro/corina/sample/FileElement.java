@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina;
+package edu.cornell.dendro.corina.sample;
 
 import java.io.File;
 import java.io.IOException;

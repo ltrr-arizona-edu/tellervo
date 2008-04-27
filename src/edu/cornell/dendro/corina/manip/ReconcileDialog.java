@@ -20,11 +20,11 @@
 
 package edu.cornell.dendro.corina.manip;
 
-import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.SampleAdapter;
-import edu.cornell.dendro.corina.SampleEvent;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleAdapter;
+import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.util.ColorUtils;
 
 import java.io.IOException;

@@ -27,9 +27,9 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.GeneralPath;
 
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.index.Index;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.ColorUtils;
 
 public class StandardPlot implements CorinaGraphPlotter {

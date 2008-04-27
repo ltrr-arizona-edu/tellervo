@@ -21,10 +21,10 @@
 package edu.cornell.dendro.corina.editor;
 
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.SampleListener;
-import edu.cornell.dendro.corina.SampleEvent;
 import edu.cornell.dendro.corina.Weiserjahre;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleEvent;
+import edu.cornell.dendro.corina.sample.SampleListener;
 
 /**
    Special DecadalModel for Weiserjahre.

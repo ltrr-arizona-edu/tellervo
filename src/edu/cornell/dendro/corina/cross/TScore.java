@@ -20,8 +20,8 @@
 
 package edu.cornell.dendro.corina.cross;
 
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 
 /**

@@ -22,8 +22,8 @@ package edu.cornell.dendro.corina.editor;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.manip.Redate;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.gui.Bug;
 

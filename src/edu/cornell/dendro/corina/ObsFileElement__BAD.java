@@ -30,6 +30,8 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.io.Files;
+import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.Sample;
 
 /**
    An Element, basically a reference to a Sample (stored on disk).

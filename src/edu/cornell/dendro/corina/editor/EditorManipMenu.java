@@ -14,14 +14,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.CachedElement;
 import edu.cornell.dendro.corina.CorinaPermission;
-import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.ElementFactory;
-import edu.cornell.dendro.corina.ElementList;
-import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.SampleEvent;
-import edu.cornell.dendro.corina.SampleListener;
 import edu.cornell.dendro.corina.cross.CrossdateWindow;
 import edu.cornell.dendro.corina.cross.Sequence;
 import edu.cornell.dendro.corina.gui.Bug;
@@ -33,6 +26,13 @@ import edu.cornell.dendro.corina.manip.ReconcileDialog;
 import edu.cornell.dendro.corina.manip.RedateDialog;
 import edu.cornell.dendro.corina.manip.Reverse;
 import edu.cornell.dendro.corina.manip.TruncateDialog;
+import edu.cornell.dendro.corina.sample.CachedElement;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementFactory;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleEvent;
+import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 

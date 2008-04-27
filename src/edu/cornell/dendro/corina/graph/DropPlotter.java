@@ -20,7 +20,7 @@
 
 package edu.cornell.dendro.corina.graph;
 
-import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.sample.Sample;
 
 import java.io.File;
 import java.io.IOException;

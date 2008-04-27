@@ -20,12 +20,12 @@
 
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.SampleListener;
-import edu.cornell.dendro.corina.SampleEvent;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.layouts.DialogLayout;
 import edu.cornell.dendro.corina.metadata.*;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleEvent;
+import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import java.util.List;

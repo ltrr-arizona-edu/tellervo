@@ -22,8 +22,8 @@ package edu.cornell.dendro.corina.manip;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.JLine;
 import edu.cornell.dendro.corina.util.DocumentListener2;

@@ -1,8 +1,8 @@
 package edu.cornell.dendro.corina.graph;
 
-import edu.cornell.dendro.corina.BaseSample;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range; // ...
+import edu.cornell.dendro.corina.sample.BaseSample;
 
 import java.util.List;
 

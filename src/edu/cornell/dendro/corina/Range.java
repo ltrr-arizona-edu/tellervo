@@ -20,6 +20,8 @@
 
 package edu.cornell.dendro.corina;
 
+import edu.cornell.dendro.corina.sample.Sample;
+
 /**
    A range of years.  Ranges are immutable; all otherwise-destructive
    operations on a Range return a new Range.

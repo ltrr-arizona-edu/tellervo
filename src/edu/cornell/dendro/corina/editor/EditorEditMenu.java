@@ -20,10 +20,10 @@
 
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.SampleEvent;
-import edu.cornell.dendro.corina.SampleListener;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleEvent;
+import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.ui.AskNumber;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;

@@ -1,12 +1,12 @@
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.ElementFactory;
-import edu.cornell.dendro.corina.ElementList;
-import edu.cornell.dendro.corina.FileElement;
-import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.SampleEvent;
-import edu.cornell.dendro.corina.SampleListener;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementFactory;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.FileElement;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleEvent;
+import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.ui.Alert;

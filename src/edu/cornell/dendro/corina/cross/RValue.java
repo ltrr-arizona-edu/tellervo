@@ -23,9 +23,9 @@ package edu.cornell.dendro.corina.cross;
 import java.util.Arrays;
 import java.util.List;
 
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina_indexing.HighPass;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 
 /**

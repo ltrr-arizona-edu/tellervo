@@ -1,7 +1,9 @@
-package edu.cornell.dendro.corina;
+package edu.cornell.dendro.corina.sample;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import edu.cornell.dendro.corina.Range;
 
 public class BaseSample {
 

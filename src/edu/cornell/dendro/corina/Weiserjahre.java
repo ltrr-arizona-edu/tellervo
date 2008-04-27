@@ -20,6 +20,8 @@
 
 package edu.cornell.dendro.corina;
 
+import edu.cornell.dendro.corina.sample.Sample;
+
 /**
    Some useful utility functions for dealing with Sample's incr/decr
    fields.

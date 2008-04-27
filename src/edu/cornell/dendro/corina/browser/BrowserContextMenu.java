@@ -20,11 +20,6 @@
 
 package edu.cornell.dendro.corina.browser;
 
-import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.ElementFactory;
-import edu.cornell.dendro.corina.ElementList;
-import edu.cornell.dendro.corina.FileElement;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.cross.CrossdateKit;
 import edu.cornell.dendro.corina.cross.CrossdateWindow;
@@ -33,6 +28,11 @@ import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.graph.BargraphFrame;
 import edu.cornell.dendro.corina.gui.TextWindow;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementFactory;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.FileElement;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.PopupListener;
 

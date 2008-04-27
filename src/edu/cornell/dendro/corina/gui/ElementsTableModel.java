@@ -20,12 +20,12 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import edu.cornell.dendro.corina.BaseSample;
-import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.ElementList;
-import edu.cornell.dendro.corina.FileElement;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.metadata.*;
+import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.FileElement;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 
 import java.io.IOException;

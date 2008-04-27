@@ -1,6 +1,6 @@
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.site.Site;
 import edu.cornell.dendro.corina.site.SiteDB;
 import edu.cornell.dendro.corina.site.SiteInfoDialog;

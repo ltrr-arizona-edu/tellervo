@@ -20,8 +20,8 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.sample.Sample;
 
 import java.io.File;
 

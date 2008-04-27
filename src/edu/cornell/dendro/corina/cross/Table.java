@@ -20,9 +20,9 @@
 
 package edu.cornell.dendro.corina.cross;
 
-import edu.cornell.dendro.corina.Element;
-import edu.cornell.dendro.corina.ElementList;
-import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.print.*; // !!!

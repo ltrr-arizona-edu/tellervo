@@ -5,7 +5,8 @@ package edu.cornell.dendro.corina.webdbi;
 
 import org.jdom.*;
 import java.util.*;
-import edu.cornell.dendro.corina.Sample;
+
+import edu.cornell.dendro.corina.sample.Sample;
 
 /**
  * @author lucasm

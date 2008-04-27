@@ -20,8 +20,8 @@
 
 package edu.cornell.dendro.corina.graph;
 
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.sample.Sample;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

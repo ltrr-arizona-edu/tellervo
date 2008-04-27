@@ -1,6 +1,6 @@
 package edu.cornell.dendro.corina.browser;
 
-import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.sample.Sample;
 
 import java.util.List;
 import java.util.ArrayList;

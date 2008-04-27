@@ -2,9 +2,9 @@ package edu.cornell.dendro.corina.editor;
 
 import edu.cornell.dendro.corina.Species;
 import edu.cornell.dendro.corina.UnknownSpeciesException;
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;

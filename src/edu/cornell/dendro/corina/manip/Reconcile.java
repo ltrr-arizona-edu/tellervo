@@ -21,7 +21,7 @@
 package edu.cornell.dendro.corina.manip;
 
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.Sample;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Builder;
 
 import java.io.File;

@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina;
+package edu.cornell.dendro.corina.sample;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;

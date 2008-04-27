@@ -20,11 +20,11 @@
 
 package edu.cornell.dendro.corina.io;
 
-import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.layouts.DialogLayout;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.Help;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.TextClipboard;
 import edu.cornell.dendro.corina.util.PureStringWriter;
