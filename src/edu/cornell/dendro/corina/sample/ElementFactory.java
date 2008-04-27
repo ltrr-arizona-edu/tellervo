@@ -5,6 +5,8 @@ import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import edu.cornell.dendro.corina.gui.Bug;
+
 public class ElementFactory {
 	/**
 	 * @param filename 
@@ -31,6 +33,15 @@ public class ElementFactory {
 				File file = new File(uri);
 				
 				return spawnElement(clazz, new FileElement(file.getPath()));
+			}
+			
+			if(uri.getScheme().equals("corinaweb") ||
+			   uri.getScheme().equals("http")) {
+				try {
+					return spawnElement(clazz, new CorinaWebElement(filename));
+				} catch (URISyntaxException use) {
+					new Bug(use);
+				}
 			}
 			
 			throw new UnsupportedOperationException("No support for loading URL schema " + uri.toString());

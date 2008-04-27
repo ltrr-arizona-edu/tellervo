@@ -179,7 +179,7 @@ public class Files {
     };
 
     private final static String LOADERS[] = {
-    // (not yet!) "edu.cornell.dendro.corina.formats.CorinaXML",
+    "edu.cornell.dendro.corina.formats.CorinaXML",
 	"edu.cornell.dendro.corina.formats.Corina",
 	"edu.cornell.dendro.corina.formats.TRML",
 	"edu.cornell.dendro.corina.formats.TSAPMatrix",

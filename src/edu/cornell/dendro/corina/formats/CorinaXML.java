@@ -20,290 +20,286 @@
 
 package edu.cornell.dendro.corina.formats;
 
-import edu.cornell.dendro.corina.Weiserjahre;
-import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.metadata.*;
-import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.util.StringUtils;
-import edu.cornell.dendro.corina.util.GUIDGenerator;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.sample.*;
 import edu.cornell.dendro.corina.ui.I18n;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import java.net.URI;
-
-import org.w3c.dom.*;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import javax.xml.parsers.*; 
-import javax.xml.transform.*; 
-import javax.xml.transform.dom.DOMSource; 
-import javax.xml.transform.stream.StreamResult; 
+import org.jdom.*;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.XMLOutputter;
 
 
 /**
  */
 public class CorinaXML implements Filetype {
 
-	// Defaults
-	public static final String CXML_FIELDSEPARATOR = ",";
-	public static final String CXML_WHITESPACE = "\r\n\t ";
-	public static final String CXML_SAMPLECOUNTSEPARATOR = "+";
-
 	@Override
 	public String toString() {
 		return I18n.getText("format.corina");
 	}
+
+	/**
+	 * Quickly check to see if it's an XML document
+	 * @param r
+	 * @throws IOException
+	 */
+	private void quickVerify(BufferedReader r) throws IOException {
+		r.mark(4096);
+
+		String firstLine = r.readLine();
+		if(firstLine == null || !firstLine.startsWith("<?xml"))
+			throw new WrongFiletypeException();
+		
+		r.reset();
+	}
 	
+	private void loadReferences(Sample s, List<Element> references) {
+		for(Element ref : references) {
+			if(ref.getName().equals("measurement")) {
+				BaseSample bs = new BaseSample();
+				Element innerMeta;
+				String attr;
+				
+				// load basic information needed for a loader :)
+				attr = ref.getAttributeValue("url");
+				if(attr == null) {
+					// should we do anything without an url? I don't think so.
+					continue;
+				}
 
-	public Sample load(BufferedReader r) throws IOException {		
-		// new empty sample
-		Sample s = new Sample();
-		s.resetMeta();
+				System.out.println("Loading measurement element" + attr);
 
-		Document doc;
-		
-		// create our document builder and our transformer.
-		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			doc = dbf.newDocumentBuilder().parse(new InputSource(r));
-		} catch (ParserConfigurationException e) {
-			new Bug(e);
-			throw new WrongFiletypeException();
-		} catch (SAXException e) {
-			// not the write file type (no document root, probably)
-			throw new WrongFiletypeException();
+				bs.setMeta("filename", attr);
+				bs.setMeta("title", attr); // hopefully we change this later :)
+				
+				// id? is this useful at all?
+				attr = ref.getAttributeValue("id");
+				if(attr != null)
+					bs.setMeta("id", attr);
+				
+				// create an element!
+				if((innerMeta = ref.getChild("metadata")) != null) {
+					loadMetadata(bs, innerMeta);
+					
+					// create an elements list
+					if(s.getElements() == null)
+						s.setElements(new ElementList());
+					
+					edu.cornell.dendro.corina.sample.Element tmpElement, cachedElement;
+
+					// kludge: use the loader by creating a new element.
+					tmpElement = ElementFactory.createElement(
+							(String)bs.getMeta("filename"));
+					
+					// now, assign the loader to our sample
+					bs.setLoader(tmpElement.getLoader());
+					
+					// use that to make a cached element...
+					cachedElement = new CachedElement(bs);
+					
+					// and add it to the elements list of our parent
+					s.getElements().add(cachedElement);
+				}
+			} else {
+				System.out.println("Reference type " + ref.getName() + " ignored.");
+			}
 		}
-		catch (FactoryConfigurationError e) { 
-			new Bug(e);
-			throw new WrongFiletypeException();			
-		}
+	}
+	
+	private void loadMetadata(BaseSample s, Element meta) {
+		List<Element> elements = (List<Element>) meta.getChildren();
 
-		//doc
-		
-		/*
-		try {
-			xformer = TransformerFactory.newInstance().newTransformer();
-			xformer.setOutputProperty("indent", "yes");
-		} catch (TransformerConfigurationException e) {
-			new Bug(e);
-			throw new WrongFiletypeException();
-		}
-		*/
+		for(Element e : elements) {
+			String key = e.getName();
+			String value = e.getValue();
+			
+			System.out.println("Metadata for " + s + ": " + key + " -> " + value);
 
-		// return
-		return s;
+			if(key.equals("name"))
+				s.setMeta("title", value);
+			else if(key.equals("owner"))
+				s.setMeta("author", value);
+			else if(key.equals("references")) {
+				List<Element> references = e.getChildren();
+				
+				// sorry, no nesting
+				if(s instanceof Sample)
+					loadReferences((Sample) s, references);
+			}
+			else if(value != null){
+				// store this anyway?
+				s.setMeta("__:" + key, value);
+			}
+		}
 	}
 
-	// ****************************************
-	
-	private void saveReferences(Sample s, Document doc, Node parent) {
-		Element data = doc.createElement("references");
+	private void loadAnnualReadings(Sample s, Element readingSet) throws IOException {
+		List<Object> dataset = new ArrayList<Object>();
+		List<Integer> countset = new ArrayList<Integer>();
+		List<Integer> wjinc = null, wjdec = null;
+		Integer lastYear = null;
+		Year firstYear = null;
+		boolean haveWeiserjahre = false;
+		
+		List<Element> readings = readingSet.getChildren();
+		for(Element r : readings) {
+			String yearStr = r.getAttributeValue("year");
+			String countStr = r.getAttributeValue("count");
+			String valStr = r.getAttributeValue("value");
+			String wjStr = r.getAttributeValue("weiserjahre");
+			Integer year, count, val;
 
-		if(s.getElements() != null) {
-			for (int i = 0; i < s.getElements().size(); i++) {
-				edu.cornell.dendro.corina.sample.Element el = s.getElements().get(i);
-				Element e = doc.createElement("element");
+			if(yearStr == null || countStr == null || valStr == null)
+				throw new IOException("Missing values in readings!");
 			
-				if(!s.getElements().isActive(el))
-					e.setAttribute("active", "false");
-				e.setAttribute("path", el.toString());
-				data.appendChild(e);
+			try {
+				year = Integer.parseInt(yearStr, 10);
+				count = Integer.parseInt(countStr, 10);
+				val = Integer.parseInt(valStr, 10);
+			} catch (NumberFormatException nfe) {
+				throw new IOException("Invalid values in readings!");
+			}
+			
+			if(lastYear == null) {
+				firstYear = new Year(year);
+				lastYear = year;
+			} else if(year - lastYear > 1) {
+				throw new IOException("Readings are not contiguous!");
+			}
+			
+			lastYear = year;
+			dataset.add(val);
+			countset.add(count);
+			
+			if(wjStr != null && !haveWeiserjahre) {
+				// initialize
+				wjinc = new ArrayList<Integer>();
+				wjdec = new ArrayList<Integer>();
+				
+				// wj always starts with 0/0
+				wjinc.add(new Integer(0));
+				wjdec.add(new Integer(0));
+				haveWeiserjahre = true;
+			}
+			
+			if(haveWeiserjahre && wjStr == null)
+				throw new IOException("WJ is not contiguous!");
+			
+			if(haveWeiserjahre) {
+				int slashIndex = wjStr.indexOf("/");
+				
+				if(slashIndex < 0)
+					throw new IOException("WJ is malformed");
+	
+				wjinc.add(new Integer(wjStr.substring(0, slashIndex)));
+				wjdec.add(new Integer(wjStr.substring(slashIndex + 1, wjStr.length())));
 			}
 		}
 		
-		//TODO: Save image, document, etc references?
+		// copy our data into our sample
+		s.setData(dataset);
+		s.setCount(countset);
+		s.setRange(new Range(firstYear, dataset.size()));
 		
-		parent.appendChild(data);
+		if(haveWeiserjahre) {
+			s.setWJIncr(wjinc);
+			s.setWJDecr(wjdec);
+		}
 	}
 	
-	private String createStringDataset(List l) {
-		StringBuffer sb = new StringBuffer();
+	private void loadMeasurement(Sample s, Element root) throws IOException {
+		String attr;
 		
-		for (int i = 0; i < l.size(); i++) {
-			if (i != 0)
-				sb.append(CXML_FIELDSEPARATOR);
-			sb.append(l.get(i).toString());
-		}
+		// load basic information needed for a loader :)
+		attr = root.getAttributeValue("url");
+		if(attr == null)
+			throw new WrongFiletypeException("No URL in measurement!");
+		s.setMeta("filename", attr);
+		s.setMeta("title", attr); // hopefully we change this later :)
 		
-		return sb.toString();
-	}
-	
-	private String createStringWeiserjahreDataset(Sample s) {
-		StringBuffer sb = new StringBuffer();
+		// id? is this useful at all?
+		attr = root.getAttributeValue("id");
+		if(attr != null)
+			s.setMeta("id", attr);
 		
-		for (int i = 0; i < s.getData().size(); i++) {
-			if (i != 0)
-				sb.append(CXML_FIELDSEPARATOR);
-			sb.append(Weiserjahre.toString(s, i));;
-		}
+		// load metadata
+		Element metadata = root.getChild("metadata");		
+		if(metadata == null)
+			throw new WrongFiletypeException("No metadata in measurement!");
+		loadMetadata(s, metadata);
 		
-		return sb.toString();
-	}
-	
-	private void saveData(Sample s, Document doc, Node parent) {
-		Element data = doc.createElement("data");
-		Element e;
-		Text t;
-		
-		data.setAttribute("type", "sample");
-		data.setAttribute("startYear", s.getRange().getStart().toString());
-		data.setAttribute("count", Integer.toString(s.getRange().span()));
-		
-		e = doc.createElement("value");
-		t = doc.createTextNode(createStringDataset(s.getData()));
-		e.appendChild(t);
-		data.appendChild(e);
-
-		// write out the counts for each data point
-		if(s.getCount() != null)
-		{
-			e = doc.createElement("count");
-			t = doc.createTextNode(createStringDataset(s.getCount()));
-			e.appendChild(t);
-			data.appendChild(e);			
-		}
-
-		// write out the counts for each data point
-		if(s.hasWeiserjahre())
-		{
-			e = doc.createElement("weiserjahre");
-			t = doc.createTextNode(createStringWeiserjahreDataset(s));
-			e.appendChild(t);
-			data.appendChild(e);			
-		}
-		
-		parent.appendChild(data);
-	}
-
-
-	private void saveMeta(Sample s, Document doc, Node parent) {
-		Element meta = doc.createElement("meta");
-		
-		Iterator i = MetadataTemplate.getFields();
-		while (i.hasNext()) {
-		    MetadataField f = (MetadataField) i.next();
-		    String fieldName = f.getVariable();
-		    Object fieldValue = s.getMeta(fieldName);
-		    
-		    if(fieldValue != null) {
-		    	Element e = doc.createElement(fieldName);
-		    	Text t;
-		    	
-		    	if(f.isList()) {
-		    		e.setAttribute("value", fieldValue.toString());
-		    		t = doc.createTextNode(f.getReadableValue(fieldValue.toString()));
-		    	} else {
-		    		t = doc.createTextNode(fieldValue.toString());
-		    	}
-		    	e.appendChild(t);
-		    	meta.appendChild(e);
-		    }
-		}
-		parent.appendChild(meta);
-	}
-	
-	private void saveContainer(CXMLContainer c, Document doc, Node parent) {
-		Sample s = c.sample;
-		
-		saveMeta(s, doc, parent);
-		saveData(s, doc, parent);
-		saveReferences(s, doc, parent);
-	}
-	
-	public void saveContainers(List<CXMLContainer> l, Document doc, Node parent) {
-		Element contents = doc.createElement("contents");
-		
-		for(int i = 0; i < l.size(); i++) {
-			CXMLContainer c = l.get(i);
+		// load readings...
+		List<Element> readings = root.getChildren("readings");
+		for(Element rs : readings) {
+			String rtype = rs.getAttributeValue("type");
+			String unitsStr = rs.getAttributeValue("units");
+			Integer units;
 			
-			Element obj = doc.createElement("object");
-			obj.setAttribute("type", "corina-sample");
-			obj.setAttribute("guid", c.GUID);
+			if(rtype == null) {
+				System.out.println("Readings without type; ignoring.");
+				continue;
+			}
 			
-			saveContainer(c, doc, obj);
-
-			contents.appendChild(obj);
+			try {
+				units = Integer.parseInt(unitsStr);
+			} catch (NumberFormatException nfe) {
+				units = -6; // magic number? why not.
+			}
+			
+			if(rtype.equals("annual")) {
+				loadAnnualReadings(s, rs);
+				
+				// if no elements and no weiserjahre, 
+				// get rid of count; it's 1 for everything.
+				if(!s.hasWeiserjahre() && s.getElements() == null)
+					s.setCount(null);
+			}
+			else
+				System.out.println("Unknown reading type: " + rtype);
 		}
-		
-		parent.appendChild(contents);
-	}
-
-	public void saveHeader(List<CXMLContainer> l, Document doc, Node parent) throws IOException {
-		Element header = doc.createElement("header");
-		
-		for(int i = 0; i < l.size(); i++) {
-			CXMLContainer c = l.get(i);
-			
-			Element e = doc.createElement("object");
-			e.setAttribute("type", "corina-sample");
-			e.setAttribute("guid", c.GUID);
-			Text t = doc.createTextNode(c.name);
-			e.appendChild(t);
-			header.appendChild(e);
-			
-		}
-		parent.appendChild(header);
 	}
 	
-	public void save(Sample s, BufferedWriter w) throws IOException {
-		ArrayList<Sample> dummy = new ArrayList<Sample>(1);
-		
-		dummy.add(s);
-		save(dummy, w);
-	}
 	
-	public void save(List samples, BufferedWriter w) throws IOException {
-		ArrayList<CXMLContainer> containers = new ArrayList();
+	public Sample load(BufferedReader r) throws IOException {		
+		// first, quickly verify it without the overhead of an xml parser
+		quickVerify(r);
+
+		Sample s = new Sample();
 		Document doc;
-		Transformer xformer;
 		
-		// create our document builder and our transformer.
 		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			doc = dbf.newDocumentBuilder().newDocument();
-		} catch (ParserConfigurationException e) {
-			new Bug(e);
-			return;
+			doc = new SAXBuilder().build(r);
+		} catch (JDOMException jdome) {
+			System.out.println("JDOME: " + jdome);
+			throw new WrongFiletypeException();
+		}
+		
+		Element root = doc.getRootElement();
+		
+		// no root element??
+		if(root == null)
+			throw new WrongFiletypeException();
+		
+		if(root.getName().equals("measurement")) {
+			loadMeasurement(s, root);
 		}
 
-		try {
-			xformer = TransformerFactory.newInstance().newTransformer();
-			xformer.setOutputProperty("indent", "yes");
-		} catch (TransformerConfigurationException e) {
-			new Bug(e);
-			return;
-		}
+		return s;
+	}
 
-		// Make containers for all of our samples.
-		for(int i = 0; i < samples.size(); i++) {
-			Sample s = (Sample) samples.get(i);
-			CXMLContainer c = new CXMLContainer(s);
-			
-			containers.add(c);
-		}
-		
-		Element root = doc.createElement("dendrocontainer");
-		root.setAttribute("format", "corina-packed-guid");
-		doc.appendChild(root);
-
-		saveHeader(containers, doc, root);
-		saveContainers(containers, doc, root);
-		
-		Source src = new DOMSource(doc);
-		Result output = new StreamResult(w);
-		try {
-			xformer.transform(src, output);
-		} catch (TransformerException e) {
-			new Bug(e);
-		}
-		
+	public void save(Sample s, BufferedWriter w) throws IOException {
+	}
+	
+	public void save(List<Sample> samples, BufferedWriter w) throws IOException {
 	}
 
 	// default extension -- well, there isn't really one...
@@ -311,24 +307,4 @@ public class CorinaXML implements Filetype {
 		return ".cdx";
 	}
 		
-	private class CXMLContainer {
-		public CXMLContainer(Sample sample) {
-			this.sample = sample;
-			
-			// If the sample already has a guid, get it. Otherwise, generate one. 
-			if(sample.hasMeta("guid"))
-				this.GUID = sample.getMeta("guid").toString();
-			else
-				this.GUID = GUIDGenerator.makeGUID();
-			
-			this.name = StringUtils.escapeForXML(sample.toString());
-			
-			
-		}
-		
-		public Sample sample;
-		public String GUID;	
-		public String name;
-	}	
-
 }

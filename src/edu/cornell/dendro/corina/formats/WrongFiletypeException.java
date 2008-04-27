@@ -35,4 +35,9 @@ public class WrongFiletypeException extends IOException {
     public WrongFiletypeException() {
         // nothing needed (this only exists for the javadoc tag)
     }
+    
+    public WrongFiletypeException(String s) {
+    	// For now, just dump debug info
+    	System.out.println("WFTE: " + s);
+    }
 }
