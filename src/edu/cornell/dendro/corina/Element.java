@@ -72,11 +72,19 @@ public class Element implements Comparable<Element> {
 	
 	/**
 	 * Gets the name of the element
-	 * For a FileElement, returns the filename
+	 * For a FileElement, returns the full path name
 	 * @return
 	 */
 	public String getName() {
 		return loader.getName();
+	}
+	
+	/**
+	 * Gets the short name of the element
+	 * For a FileElement, returns the file's base name
+	 */
+	public String getShortName() {
+		return loader.getShortName();
 	}
 	
 	public String toString() {

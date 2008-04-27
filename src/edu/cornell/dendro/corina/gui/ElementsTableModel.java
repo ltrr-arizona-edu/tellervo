@@ -62,6 +62,10 @@ public class ElementsTableModel extends AbstractTableModel {
 		return elements.isActive(e);
 	}
 
+	public boolean elementIsBad(Element e) {
+		return !elementMap.containsKey(e);
+	}
+
 	// this is a really bad place for this...
 	// HEY: why can't i use a jcheckbox here?
 	public static class FilenameRenderer extends JPanel implements
@@ -90,7 +94,7 @@ public class ElementsTableModel extends AbstractTableModel {
 			Element e = (Element) value;
 
 			check.setSelected(((ElementsTableModel) table.getModel()).elementIsActive(e));
-			label.setText(e.getName());
+			label.setText(e.getShortName());
 
 			// REFACTOR: new UserFriendlyFile avoids this problem
 
@@ -99,6 +103,8 @@ public class ElementsTableModel extends AbstractTableModel {
 			Color back = (isSelected ? table.getSelectionBackground() : table
 					.getBackground());
 
+			if(((ElementsTableModel) table.getModel()).elementIsBad(e))
+				fore = Color.red;
 			/*
 			 * // light-blue-ish if (row % 2 == 0) back = new
 			 * Color(back.getRed() - 16, back.getGreen() - 16, back.getBlue());
@@ -124,7 +130,7 @@ public class ElementsTableModel extends AbstractTableModel {
 		case 2:
 			return "Range";
 		default:
-			return ((MetadataField) fields.get(col - 2))
+			return ((MetadataField) fields.get(col - 3))
 					.getFieldDescription();
 		}
 	}
@@ -170,7 +176,7 @@ public class ElementsTableModel extends AbstractTableModel {
 			if (bs == null)
 				return null;
 
-			String key = ((MetadataField) fields.get(col - 2)).getVariable();
+			String key = ((MetadataField) fields.get(col - 3)).getVariable();
 			return bs.getMeta(key);
 		}
 		}
@@ -183,7 +189,8 @@ public class ElementsTableModel extends AbstractTableModel {
 		Element e = elements.get(row);
 		BaseSample bs = elementMap.get(e);
 		
-		if(e.getaLoader() instanceof FileElement)
+		// File Elements only!
+		if(!(e.getaLoader() instanceof FileElement))
 			return false;
 		
 		// only after refresh?  no, assume refresh is always "done".  (threadme)
@@ -196,7 +203,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	public Class getColumnClass(int col) {
 		switch (col) {
 		case 0:
-			return Element.class; // ???
+			return Element.class; // meaning, the value is here; we render it in FilenameRenderer
 		case 1:
 		case 2:
 			return String.class; // well, it's a range or a folder...

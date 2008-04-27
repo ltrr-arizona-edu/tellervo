@@ -177,12 +177,20 @@ public class FileElement implements SampleLoader {
 	public String toString() {
 		return getFilename();
 	}
-	
-	public String getName() {
-		return getFilename();
-	}
-	
+
 	public String getFolder() {
 		return folder;
+	}
+	
+	/**
+	 * Public interface!!! (As a sampleLoader!)
+	 */
+	
+	public String getName() {
+		return filename;
+	}
+	
+	public String getShortName() {
+		return basename;
 	}
 }

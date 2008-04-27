@@ -187,7 +187,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 			try {
 				s = new Grid(files[0].getPath());
 			} catch (WrongFiletypeException wfte) {
-				s = new Sample(files[0].getPath());
+				s = ElementFactory.createElement(files[0].getPath()).load();
 			} // but can't string catches here ... darn
 
 			// get preview, and show it.

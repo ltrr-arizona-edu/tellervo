@@ -526,7 +526,7 @@ public class Grid implements Runnable, Previewable {
 	 */
 	public Grid(ElementList elements) {
 		// copy set
-		this.elements = elements.toListClass(elements, CachedElement.class);
+		this.elements = elements.toListClassCopy(elements, CachedElement.class);
 
 		// number of active samples in the grid
 		// (count-if files #'active)

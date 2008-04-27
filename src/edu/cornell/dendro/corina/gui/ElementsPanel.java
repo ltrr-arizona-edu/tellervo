@@ -38,6 +38,7 @@ import edu.cornell.dendro.corina.ui.Alert;
 import java.io.File;
 import java.io.IOException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -104,7 +105,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 	public void sampleMetadataChanged(SampleEvent e) {
 	}
 
-	public void sampleElementsChanged(SampleEvent e) {
+	public void sampleElementsChanged(SampleEvent se) {
 		((AbstractTableModel) table.getModel()).fireTableDataChanged();
 	}
 
@@ -112,6 +113,24 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
 	// randomness...
 	public void update() {
+		// new: try and load the new sample's metadata
+		// otherwise, we end up with empty stuff in our table
+		// when we add new elements.
+		
+		for(Element e : elements) {
+			// if it's already there, don't bother :)
+			if(elementMap.containsKey(e))
+				continue;
+			
+			try {
+				BaseSample bs = e.loadBasic();
+				
+				elementMap.put(e, bs);
+			} catch (IOException ioe) {
+				// don't do anything; it won't show up in the hash
+			}
+		}
+		
 		// no no no! YES table data changed, you removed stuff that it POINTS TO! ACK!
 		// You must re-initialize the table from scratch, with is oddly just a setView() call...
 		// ((AbstractTableModel) table.getModel()).fireTableDataChanged();
@@ -286,7 +305,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
 		// data
 		if (s == null) {
-			elements = el.toListClass(CachedElement.class);
+			elements = el;
 		} else {
 			this.sample = s;
 			if (sample.getElements() == null) {
@@ -295,10 +314,11 @@ public class ElementsPanel extends JPanel implements SampleListener {
 				throw new UnsupportedOperationException("ElementsPanel creation for a sample with no Elements!");
 				//sample.setElements(new ArrayList());
 			}
-			elements = sample.getElements().toListClass(CachedElement.class);
+			elements = sample.getElements();
 		}
 		
 		// try stealthily loading all of our basic info
+		elementMap = new HashMap<Element, BaseSample>();
 		for(Element e : elements) {
 			try {
 				BaseSample bs = e.loadBasic();
@@ -507,7 +527,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 							int column) {
 						Element e = (Element) value;
 						chx.setSelected(elements.isActive(e));
-						lab.setText(e.getName()); // filename only (not fq)
+						lab.setText(e.getShortName()); // filename only (not fq)
 
 						Color fore = (isSelected ? table
 								.getSelectionForeground() : table

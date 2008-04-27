@@ -82,7 +82,7 @@ public class ElementList extends ArrayList<Element> {
 	 * @param clazz
 	 * @return
 	 */
-	public static ElementList toListClass(ElementList src, Class<? extends Element> clazz) {
+	public static ElementList toListClassCopy(ElementList src, Class<? extends Element> clazz) {
 		ElementList dest = new ElementList();
 		Constructor<? extends Element> constructor;
 		
@@ -109,8 +109,54 @@ public class ElementList extends ArrayList<Element> {
 		return dest;
 	}
 	
-	public ElementList toListClass(Class<? extends Element> clazz) {
-		return toListClass(this, clazz);
+	/**
+	 * Force all elements in this list to be of a particular class
+	 * Useful to upclass in place!
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	public void forceListClass(Class<? extends Element> clazz) {
+		ArrayList<Element> oldList = new ArrayList<Element>(this.size());
+		HashMap<Element, Boolean> oldMap = new HashMap<Element, Boolean>();
+		Constructor<? extends Element> constructor;
+		
+		// copy our list over
+		oldList.addAll(this);
+		oldMap.putAll(activeMap);
+		this.clear();
+		activeMap.clear();
+
+		try {
+			constructor = clazz.getConstructor(new Class[] { Element.class });
+			
+			for(Element olde : oldList) {
+				
+				// is it the same? don't clone it 
+				if(olde.getClass().getName().equals(clazz.getName())) {
+					add(olde);
+					if(oldMap.containsKey(olde))
+						activeMap.put(olde, oldMap.get(olde));
+					
+					continue;
+				}
+			
+				// ok, create a new instance
+				Element newe = constructor.newInstance(new Object[] { olde });
+				Boolean isActive = oldMap.get(olde);
+
+				// add it to ourselves
+				add(newe);
+				if(isActive != null)
+					activeMap.put(newe, isActive);
+			}
+		} catch (Exception e) {
+			new Bug(e);
+		}		
+		
+		// force quick cleanup
+		oldList.clear();
+		oldMap.clear();
 	}
 	
 	private HashMap<Element, Boolean> activeMap = new HashMap<Element, Boolean>();
