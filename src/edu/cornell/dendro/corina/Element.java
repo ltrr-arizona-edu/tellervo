@@ -20,7 +20,7 @@ import java.io.IOException;
  * 					throws IOException on failure
  */
 
-public class Element {
+public class Element implements Comparable<Element> {
 	
 	/**
 	 * Construct an element from a loader
@@ -58,6 +58,10 @@ public class Element {
 		return loader;
 	}
 	
+	public void setLoader(SampleLoader loader) {
+		this.loader = loader;
+	}
+	
 	public Sample load() throws IOException {
 		return loader.load();
 	}
@@ -77,5 +81,25 @@ public class Element {
 	
 	public String toString() {
 		return getName();
+	}
+
+	/**
+	 * Compares names of one element against another
+	 */
+	public int compareTo(Element o) {
+		if(o == this)
+			return 0;
+		
+		return o.getName().compareTo(getName());
+	}
+	
+	public boolean equals(Object o) {
+		if(o == this)
+			return true;
+		
+		if(o instanceof Element)
+			return (compareTo((Element)o) == 0);
+		
+		return super.equals(o);
 	}
 }

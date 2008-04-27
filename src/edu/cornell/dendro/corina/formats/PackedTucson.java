@@ -21,7 +21,6 @@
 package edu.cornell.dendro.corina.formats;
 
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import java.io.BufferedReader;
@@ -67,8 +66,8 @@ public class PackedTucson extends Tucson implements PackedFileType {
         return s1.substring(0, i);
     }
     
-    public void saveSamples(List sl, BufferedWriter w) throws IOException {
-    	List outsamples = new ArrayList(sl.size());
+    public void saveSamples(List<Sample> sl, BufferedWriter w) throws IOException {
+    	List<Sample> outsamples = new ArrayList<Sample>(sl.size());
     	String prefix = null;
     	
     	// iterate through the samples, making a list of them and

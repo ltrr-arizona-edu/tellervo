@@ -20,6 +20,7 @@
 
 package edu.cornell.dendro.corina.manip;
 
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 
@@ -61,11 +62,11 @@ public class Sum {
 
 	// load all elements, and stuff 'em into a buffer.
 	// (OBSOLETE once element-sample is no longer an important distinction!)
-	private static Sample[] loadIntoBuffer(List elements) throws IOException {
+	private static Sample[] loadIntoBuffer(ElementList elements) throws IOException {
 		// count number of active elements
 		int numActive = 0, numTotal = elements.size();
 		for (int i = 0; i < numTotal; i++)
-			if (((ObsFileElement) elements.get(i)).isActive())
+			if (elements.isActive(elements.get(i)))
 				numActive++;
 
 		// allocate buffer
@@ -74,8 +75,8 @@ public class Sum {
 		// load active elements into buffer
 		int numLoaded = 0;
 		for (int i = 0; i < numTotal; i++)
-			if (((ObsFileElement) elements.get(i)).isActive())
-				buf[numLoaded++] = ((ObsFileElement) elements.get(i)).load();
+			if (elements.isActive(elements.get(i)))
+				buf[numLoaded++] = elements.get(i).load();
 
 		// return array
 		return buf;
@@ -139,7 +140,7 @@ public class Sum {
 	}
 
 	// load elements, sum them, and store into result (returns result, too)
-	private static Sample sum(Sample result, List elements) throws IOException {
+	private static Sample sum(Sample result, ElementList elements) throws IOException {
 		// step 0: load all elements, and stuff 'em into a buffer
 		Sample buf[] = loadIntoBuffer(elements);
 
@@ -147,10 +148,10 @@ public class Sum {
 		if (buf.length == 0) {
 			// "skip to step 6" would be nice...
 			result.setRange(new Range()); // default empty range (1001-1000)
-			result.setData(new ArrayList());
-			result.setCount(new ArrayList());
-			result.setWJIncr(new ArrayList());
-			result.setWJDecr(new ArrayList());
+			result.setData(new ArrayList<Object>());
+			result.setCount(new ArrayList<Integer>());
+			result.setWJIncr(new ArrayList<Integer>());
+			result.setWJDecr(new ArrayList<Integer>());
 
 			result.setElements(elements);
 			result.setMeta("format", "R"); // let's say no data = raw
@@ -234,10 +235,10 @@ public class Sum {
 
 		// step 6: set range, and copy array back into (list) result.data
 		result.setRange(range);
-		result.setData(new ArrayList(n));
-		result.setCount(new ArrayList(n));
-		result.setWJIncr(new ArrayList(n));
-		result.setWJDecr(new ArrayList(n));
+		result.setData(new ArrayList<Object>(n));
+		result.setCount(new ArrayList<Integer>(n));
+		result.setWJIncr(new ArrayList<Integer>(n));
+		result.setWJDecr(new ArrayList<Integer>(n));
 		for (int i = 0; i < n; i++) {
 			result.getData().add(new Integer(data[i]));
 			result.getCount().add(new Integer(count[i]));
@@ -269,7 +270,7 @@ public class Sum {
 	   @exception IllegalArgumentException if there would be a gap in
 	   the sum, or if the units are inconsistent
 	 */
-	public static Sample sum(List e) throws IOException {
+	public static Sample sum(ElementList e) throws IOException {
 		return sum(new Sample(), e);
 	}
 

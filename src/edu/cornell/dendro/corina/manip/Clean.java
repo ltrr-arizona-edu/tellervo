@@ -20,6 +20,7 @@
 
 package edu.cornell.dendro.corina.manip;
 
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -68,8 +69,8 @@ public class Clean extends AbstractUndoableEdit {
 	private Sample s;
 
 	// undo data
-	private List incr, decr;
-	private List elements, count;
+	private List<Integer> incr, decr, count;
+	private ElementList elements;
 	private String filename;
 	private boolean wasMod;
 

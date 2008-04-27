@@ -37,7 +37,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -46,7 +48,10 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import edu.cornell.dendro.corina.ObsFileElement;
+import edu.cornell.dendro.corina.CachedElement;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementFactory;
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.Preview;
 import edu.cornell.dendro.corina.Previewable;
 import edu.cornell.dendro.corina.Range;
@@ -121,7 +126,7 @@ public class Grid implements Runnable, Previewable {
 	private static final CorinaLog log = new CorinaLog(Grid.class);
 
 	// inputs
-	private List files;
+	private ElementList elements;
 
 	private int num; // number of active files
 
@@ -131,8 +136,8 @@ public class Grid implements Runnable, Previewable {
 	private Exception error = null;
 
 	// (used when creating graph of these samples)
-	public List getFiles() {
-		return files;
+	public ElementList getElements() {
+		return elements;
 	}
 
 	// ----------------------------------------
@@ -519,15 +524,15 @@ public class Grid implements Runnable, Previewable {
 
 	 @param elements the List of Elements to use
 	 */
-	public Grid(List elements) {
+	public Grid(ElementList elements) {
 		// copy set
-		files = elements;
+		this.elements = elements.toListClass(elements, CachedElement.class);
 
 		// number of active samples in the grid
 		// (count-if files #'active)
 		num = 0;
-		for (int i = 0; i < files.size(); i++)
-			if (((ObsFileElement) files.get(i)).isActive())
+		for (Element e : this.elements) 
+			if(this.elements.isActive(e))
 				num++;
 
 		// create outputs
@@ -557,21 +562,32 @@ public class Grid implements Runnable, Previewable {
 		// NO, DON'T!
 		// the right way: add all-fixed, then add all-moving, but with no duplicates (quickly!)
 
-		files = new ArrayList();
+		// fast hash-set for dupe detecting
+		Set<String> nodupes = new HashSet<String>();
+
+		elements = new ElementList();		
+
+		// Sequences only contain CachedElements
 
 		// add all fixed
-		List fixed = seq.getAllFixed();
-		for (int i = 0; i < fixed.size(); i++)
-			files.add(new ObsFileElement((String) fixed.get(i)));
+		for(Element e : seq.getAllFixed()) {
+			nodupes.add(e.getName());
+			elements.add(e);
+		}
 
 		// add all (non-duplicate) moving
-		List moving = seq.getAllMoving();
-		for (int i = 0; i < moving.size(); i++)
-			if (!fixed.contains(moving.get(i)))
-				files.add(new ObsFileElement((String) moving.get(i)));
+		for(Element e : seq.getAllMoving()) {
+			if(nodupes.contains(e.getName()))
+				continue;
+			
+			nodupes.add(e.getName());
+			elements.add(e);
+		}
+		
+		// don't worry about active here; fixed and moving only contain active!
 
 		// create cell array
-		num = files.size();
+		num = elements.size();
 		cell = new Cell[num + 1][num + 1];
 		// (later?) run crosses
 		run();
@@ -612,9 +628,7 @@ public class Grid implements Runnable, Previewable {
 		Sample buffer[] = new Sample[num];
 		int read = 0;
 		
-		for (int i = 0; i < files.size(); i++) {
-			// get an element
-			ObsFileElement e = (ObsFileElement) files.get(i);
+		for (Element e : elements) {
 			// ABSTRACTION: i'd sure like to grab an enumeration of
 			// active elements (well, sort of).  what i really want is
 			// a filter.  i'll get rid of the active flag someday, but
@@ -622,7 +636,7 @@ public class Grid implements Runnable, Previewable {
 			//    public static List Element.activeOnly(List)
 
 			// skip inactive elements
-			if (!e.isActive())
+			if (elements.isActive(e))
 				continue;
 
 			// it's active: try to load
@@ -654,7 +668,7 @@ public class Grid implements Runnable, Previewable {
 			// set headers -- if you want straight-across headers (as
 			// opposed to down-the-diagonal headers),
 			// s/[row][row+1]/[0][row+1]/
-			String filename = (String) fixed.getMeta("filename");
+			// String filename = (String) fixed.getMeta("filename");
 			cell[row + 1][0] = new HeaderCell(fixed);
 			cell[row][row + 1] = new HeaderRangeCell(fixed);
 
@@ -753,15 +767,15 @@ public class Grid implements Runnable, Previewable {
 		GridPreview(Grid g) {
 			title = I18n.getText("crossdating_grid");
 			items = new ArrayList();
-			items.add("(" + g.files.size() + " " + I18n.getText("total") + ")");
+			items.add("(" + g.elements.size() + " " + I18n.getText("total") + ")");
 
 			// up to 5
-			for (int i = 0; i < g.files.size(); i++) {
-				if (i == 4 && g.files.size() > 5) {
+			for (int i = 0; i < g.elements.size(); i++) {
+				if (i == 4 && g.elements.size() > 5) {
 					items.add("...");
 					break;
 				}
-				String filename = ((ObsFileElement) g.files.get(i)).getFilename();
+				String filename = g.elements.get(i).getName();
 				items.add(new File(filename).getName());
 			}
 		}
@@ -793,13 +807,14 @@ public class Grid implements Runnable, Previewable {
 
 			// if starting inputs, create list for files
 			if (name.equals("input")) {
-				files = new ArrayList();
+				elements = new ElementList();
 				return;
 			}
 
 			// if a sample (input section), add to list
 			if (name.equals("sample")) {
-				files.add(new ObsFileElement(atts.getValue("filename"))); // --> doesn't care about inactive files?
+				elements.add(ElementFactory.createElement(atts.getValue("filename"), 
+						CachedElement.class)); // --> doesn't care about inactive files?
 				return;
 			}
 
@@ -828,7 +843,7 @@ public class Grid implements Runnable, Previewable {
 			System.out.println("endElement");
 			// if ending input section, compute num
 			if (name.equals("input")) {
-				num = files.size();
+				num = elements.size();
 				return;
 			}
 
@@ -898,8 +913,8 @@ public class Grid implements Runnable, Previewable {
 
 			// input: filenames
 			w.write("  <input>\n");
-			for (int i = 0; i < files.size(); i++) {
-				w.write("    <sample filename=\"" + files.get(i) + "\"/>\n");
+			for (int i = 0; i < elements.size(); i++) {
+				w.write("    <sample filename=\"" + elements.get(i) + "\"/>\n");
 			}
 			w.write("  </input>\n");
 			w.write("\n");

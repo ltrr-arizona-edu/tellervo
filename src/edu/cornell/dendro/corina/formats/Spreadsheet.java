@@ -23,7 +23,6 @@ package edu.cornell.dendro.corina.formats;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import java.io.BufferedReader;
@@ -113,12 +112,12 @@ public class Spreadsheet implements Filetype, PackedFileType {
 					+ "for summed samples with Elements");
 
 		// load all the samples into a list
-		List slist = new ArrayList();		
+		List<Sample> slist = new ArrayList<Sample>();		
 		for (int i = 0; i < s.getElements().size(); i++) {
 			try {
 				slist.add((s.getElements().get(i)).load());
 			} catch (IOException ioe) {
-				String filename = (s.getElements().get(i)).getFilename();
+				String filename = (s.getElements().get(i)).toString();
 				throw new IOException("Can't load element " + filename);
 			}			
 		}
@@ -128,7 +127,7 @@ public class Spreadsheet implements Filetype, PackedFileType {
 	}
 
 	// for PackedFileType
-    public void saveSamples(List sl, BufferedWriter w) throws IOException {
+    public void saveSamples(List<Sample> sl, BufferedWriter w) throws IOException {
 		// load all the elements into a buffer
 		int n = sl.size();
 		Range r = null;

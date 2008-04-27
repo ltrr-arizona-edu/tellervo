@@ -111,7 +111,7 @@ public class CorinaXML implements Filetype {
 				edu.cornell.dendro.corina.Element el = s.getElements().get(i);
 				Element e = doc.createElement("element");
 			
-				if(!el.isActive())
+				if(!s.getElements().isActive(el))
 					e.setAttribute("active", "false");
 				e.setAttribute("path", el.toString());
 				data.appendChild(e);

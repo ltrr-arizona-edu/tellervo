@@ -20,6 +20,9 @@
 
 package edu.cornell.dendro.corina.manip;
 
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementFactory;
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.Sample;
 
 import junit.framework.TestCase;
@@ -73,11 +76,11 @@ public class UnitTests extends TestCase {
 	public void testSum() {
 		try {
 			// FIXME: i don't want to use some ill-defined "Demo Data" here
-			ObsFileElement e1 = new ObsFileElement("Demo Data/chil/chil001.crn");
-			ObsFileElement e2 = new ObsFileElement("Demo Data/chil/chil002.crn");
-			ObsFileElement e3 = new ObsFileElement("Demo Data/chil/chil006.crn");
-			ObsFileElement e4 = new ObsFileElement("Demo Data/chil/chil007.crn");
-			List l = new ArrayList();
+			Element e1 = ElementFactory.createElement("Demo Data/chil/chil001.crn");
+			Element e2 = ElementFactory.createElement("Demo Data/chil/chil002.crn");
+			Element e3 = ElementFactory.createElement("Demo Data/chil/chil006.crn");
+			Element e4 = ElementFactory.createElement("Demo Data/chil/chil007.crn");
+			ElementList l = new ElementList();
 			l.add(e1);
 			l.add(e2);
 			l.add(e3);

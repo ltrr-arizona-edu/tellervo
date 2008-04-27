@@ -27,7 +27,6 @@ import edu.cornell.dendro.corina.FileElement;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
@@ -271,7 +270,7 @@ public class Corina implements Filetype {
 		// assume for now that we'll need to save the count, because
 		// we don't know yet.  we'll delete this when the whole load
 		// is done if it turns out to be a raw sample.
-		s.setCount(new ArrayList());
+		s.setCount(new ArrayList<Integer>());
 
 		// read start
 		int x = t.nextToken();
@@ -366,8 +365,8 @@ public class Corina implements Filetype {
 
 	private void loadWeiserjahre(Sample s, BufferedReader r) throws IOException {
 		// create wj; add 0/0
-		s.setWJIncr(new ArrayList());
-		s.setWJDecr(new ArrayList());
+		s.setWJIncr(new ArrayList<Integer>());
+		s.setWJDecr(new ArrayList<Integer>());
 		s.getWJIncr().add(new Integer(0));
 		s.getWJDecr().add(new Integer(0));
 
@@ -626,7 +625,7 @@ public class Corina implements Filetype {
 		// modify the data in-place, because that could cause all
 		// sorts of problems, and it would be a huge mess to handle it
 		// in a special case.)
-		List data = new ArrayList();
+		List<Object> data = new ArrayList<Object>();
 		data.addAll(s.getData());
 		data.add(new Integer(9990));
 
@@ -635,9 +634,9 @@ public class Corina implements Filetype {
 
 		// count for 9990 is the same as the last count, for reasons i
 		// don't claim to understand.
-		List count = null;
+		List<Integer> count = null;
 		if (s.getCount() != null) {
-			count = new ArrayList();
+			count = new ArrayList<Integer>();
 			count.addAll(s.getCount());
 			count.add(count.get(count.size() - 1));
 		}

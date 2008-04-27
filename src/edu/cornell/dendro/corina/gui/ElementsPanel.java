@@ -20,6 +20,12 @@
 
 package edu.cornell.dendro.corina.gui;
 
+import edu.cornell.dendro.corina.BaseSample;
+import edu.cornell.dendro.corina.CachedElement;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementList;
+import edu.cornell.dendro.corina.FileElement;
+import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.SampleListener;
 import edu.cornell.dendro.corina.SampleEvent;
@@ -37,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Comparator;
+import java.util.Map;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -65,10 +72,20 @@ import javax.swing.undo.CannotRedoException;
  @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
  @version $Id$
  */
-public class ElementsPanel extends JPanel implements SampleListener {
 
+/*
+ * This is particularly annoying:
+ * 
+ * The Elements Panel contains a list of Elements.
+ * However, it really relies on metadata. So, we need to maintain a list
+ * of elements and a hash from Element->BaseSample and load in the beginning.
+ * Urgh!
+ */
+
+public class ElementsPanel extends JPanel implements SampleListener {	
 	// data
-	private List elements;
+	private ElementList elements;
+	private Map<Element, BaseSample> elementMap;
 
 	private Sample sample = null;
 
@@ -129,7 +146,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					List l = (List) o; // a List of Files
 
 					for (int i = 0; i < l.size(); i++) {
-						elements.add(new ObsFileElement(((File) l.get(i)).getPath()));
+						elements.add(new Element(new FileElement(((File) l.get(i)).getPath())));
 						// fire update?
 					}
 					event.getDropTargetContext().dropComplete(true);
@@ -157,12 +174,12 @@ public class ElementsPanel extends JPanel implements SampleListener {
 				public void actionPerformed(ActionEvent ae) {
 					// get selected element
 					int i = table.getSelectedRow(); // BUG: if nothing's selected, nothing gets selected, returns -1 here
-					ObsFileElement e = (ObsFileElement) elements.get(i);
+					Element e = elements.get(i);
 
 					// load it
 					Sample s = null;
 					try {
-						s = new Sample(e.getFilename());
+						s = e.load();
 					} catch (IOException ioe) {
 						Alert.error("Error Loading Sample",
 								"Can't open this file: " + ioe.getMessage());
@@ -182,12 +199,25 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			JMenuItem changeDir = new JMenuItem("Change directory...");
 			changeDir.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent ae) {
+					List<Element> flist = new ArrayList<Element>();
+					
+					// make a list of file elements only
+					for(Element e : elements) {
+						if(e.getaLoader() instanceof FileElement)
+							flist.add(e);
+					}
+					
+					if(flist.isEmpty()) {
+						Alert.error("Error", "Can only change directories on file elements!");
+						return;
+					}
+					
 					// figure out what the base directory is for the samples
-					String prefix = ((ObsFileElement) elements.get(0)).getFilename();
-					for (int i = 1; i < elements.size(); i++) {
+					String prefix = ((FileElement) flist.get(0).getaLoader()).getFilename();
+					for (int i = 1; i < flist.size(); i++) {
 
 						// crop prefix by directories until it really is a prefix
-						while (!((ObsFileElement) elements.get(i)).getFilename()
+						while (!((FileElement) flist.get(i).getaLoader()).getFilename()
 								.startsWith(prefix)) {
 							int slash = prefix.lastIndexOf(File.separatorChar);
 							if (slash == -1) {
@@ -218,14 +248,13 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
 					// change all filenames to the new directory (s/prefix/target/).
 					// elements are now immutable, so make a new one from the old name.
-					for (int i = 0; i < elements.size(); i++) {
-						ObsFileElement oldEl = (ObsFileElement) elements.get(i);
+					for (int i = 0; i < flist.size(); i++) {
+						FileElement oldEl = (FileElement) elements.get(i).getaLoader();
 						String newFilename = target
 								+ oldEl.getFilename()
 										.substring(prefix.length());
-						ObsFileElement newEl = new ObsFileElement(newFilename, oldEl
-								.isActive());
-						elements.set(i, newEl);
+						FileElement newEl = new FileElement(newFilename); //, oldEl.isActive());
+						elements.get(i).setLoader(newEl);
 					}
 
 					// fire event so table gets changed
@@ -240,7 +269,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 	// --- ContextPopup ----------------------------------------
 
 	// given: list of elements
-	public ElementsPanel(List el) {
+	public ElementsPanel(ElementList el) {
 		this(null, el);
 	}
 
@@ -251,13 +280,13 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
 	// given: Sample, and list of Elements (well, this never happens,
 	// but it's the common subset.)
-	private ElementsPanel(Sample s, List el) {
+	private ElementsPanel(Sample s, ElementList el) {
 		// boilerplate
 		setLayout(new BorderLayout());
 
 		// data
 		if (s == null) {
-			elements = el;
+			elements = el.toListClass(CachedElement.class);
 		} else {
 			this.sample = s;
 			if (sample.getElements() == null) {
@@ -266,7 +295,18 @@ public class ElementsPanel extends JPanel implements SampleListener {
 				throw new UnsupportedOperationException("ElementsPanel creation for a sample with no Elements!");
 				//sample.setElements(new ArrayList());
 			}
-			elements = sample.getElements();
+			elements = sample.getElements().toListClass(CachedElement.class);
+		}
+		
+		// try stealthily loading all of our basic info
+		for(Element e : elements) {
+			try {
+				BaseSample bs = e.loadBasic();
+				
+				elementMap.put(e, bs);
+			} catch (IOException ioe) {
+				// don't do anything; it won't show up in the hash
+			}
 		}
 
 		// table
@@ -299,8 +339,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
 	public void removeSelectedRows() {
 		// save backup -- only a shallow copy (but that's good)
-		final List save = new ArrayList();
-		save.addAll(elements);
+		final ElementList save = new ElementList(elements);
 		/*
 		 DESIGN: saving a before-list and an after-list means the
 		 amount of change (=speed/memory) is proportional to the
@@ -317,7 +356,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		final int rows[] = table.getSelectedRows();
 		int deleted = 0; // number of rows already deleted
 		for (int i = 0; i < rows.length; i++) { // remove those rows
-			String s = ((ObsFileElement)elements.get(rows[i] - deleted)).getFilename();
+			String s = elements.get(rows[i] - deleted).getName();
 			System.out.println(s);
 			elements.remove(rows[i] - deleted);
 			deleted++;
@@ -331,21 +370,18 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
 			// add undoable edit -- not the most efficient way, but not bad, either.
 			sample.postEdit(new AbstractUndoableEdit() {
-				List before = save, after;
+				ElementList before = save, after;
 
 				@Override
 				public void undo() throws CannotUndoException {
-					after = new ArrayList();
-					after.addAll(elements);
-					elements.clear();
-					elements.addAll(before);
+					after = new ElementList(elements);
+					elements.copyFrom(before);
 					update();
 				}
 
 				@Override
 				public void redo() throws CannotRedoException {
-					elements.clear();
-					elements.addAll(after);
+					elements.copyFrom(after);
 					update();
 				}
 
@@ -364,7 +400,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		update();
 	}
 
-	private List fields;
+	private List<MetadataField> fields;
 
 	public final static int VIEW_FILENAMES_MINIMAL = 0;
 	public final static int VIEW_FILENAMES = 1;
@@ -377,7 +413,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		switch (view) {
 		case VIEW_FILENAMES:
 		case VIEW_FILENAMES_MINIMAL:
-			fields = new ArrayList();
+			fields = new ArrayList<MetadataField>();
 			table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 			break;
 			
@@ -385,14 +421,14 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			// (later, this will use BrowserComponent, so this
 			// won't be needed at all)
 
-			fields = new ArrayList();
+			fields = new ArrayList<MetadataField>();
 
 			// these are the "preview" fields
 			final String PREVIEW_FIELDS[] = new String[] { "unmeas_pre",
 					"unmeas_post", "species", "sapwood", "terminal", "quality", };
 
 			// add all fields in |PREVIEW_FIELDS| to |fields|
-			Iterator i = MetadataTemplate.getFields();
+			Iterator<MetadataField> i = MetadataTemplate.getFields();
 			while (i.hasNext()) {
 				MetadataField f = (MetadataField) i.next();
 
@@ -406,10 +442,10 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			break;
 		}
 		case VIEW_ALL: {
-			fields = new ArrayList();
+			fields = new ArrayList<MetadataField>();
 
 			// add all fields to |fields|
-			Iterator i = MetadataTemplate.getFields();
+			Iterator<MetadataField> i = MetadataTemplate.getFields();
 			while (i.hasNext()) {
 				MetadataField f = (MetadataField) i.next();
 				fields.add(f);
@@ -424,7 +460,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		
 		currentView = view;
 
-		table.setModel(new ElementsTableModel(elements, fields, currentView));
+		table.setModel(new ElementsTableModel(elements, elementMap, fields, currentView));
 
 		// renderer
 		table.getColumnModel().getColumn(0).setCellRenderer(
@@ -469,9 +505,9 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					public Component getTableCellEditorComponent(JTable table,
 							Object value, boolean isSelected, int row,
 							int column) {
-						ObsFileElement e = (ObsFileElement) value;
-						chx.setSelected(e.isActive());
-						lab.setText(new File(e.getFilename()).getName()); // filename only (not fq)
+						Element e = (Element) value;
+						chx.setSelected(elements.isActive(e));
+						lab.setText(e.getName()); // filename only (not fq)
 
 						Color fore = (isSelected ? table
 								.getSelectionForeground() : table
@@ -516,17 +552,17 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					return;
 				int col = table.getColumnModel().getColumnIndexAtX(e.getX());
 
-				ObsFileElement first = (ObsFileElement) elements.get(0);
-				ObsFileElement last = (ObsFileElement) elements.get(elements.size() - 1);
+				Element first = elements.get(0);
+				Element last = elements.get(elements.size() - 1);
 
 				switch (col) {
 				case 0: // filename
 				{
 					// sort by basename, since we don't want to sort by
 					// the directory the files are in (which isn't displayed!)
-					boolean reverse = (lastSortCol == col && first.basename
-							.compareTo(last.basename) < 0);
-					Sort.sort(elements, "basename", reverse);
+					boolean reverse = (lastSortCol == col && first.getName()
+							.compareTo(last.getName()) < 0);
+					Sort.sort(elements, "name", reverse);
 					break;
 				}
 				
@@ -538,10 +574,11 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
 				case 2: // range
 				{
-					// IDEA: this reverse is getting pretty popular ... could it be integrated into my sort() wrapper?
-					boolean reverse = (lastSortCol == col && first.getRange()
-							.compareTo(last.getRange()) < 0);
-					Sort.sort(elements, "range", reverse);
+					Rangesorter sorter = new Rangesorter(elementMap, false);
+					boolean reverse = (lastSortCol == col && sorter.compare(first, last) < 0);
+					
+					sorter.setReverse(reverse);
+					Collections.sort(elements, sorter);
 					break;
 				}
 
@@ -551,10 +588,11 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					// method, like lisp does, and implement it in an anonymous class here, but that's more
 					// work than just sorting by hand.  gah.
 					String key = ((MetadataField) fields.get(col - 2)).getVariable();
-					Comparable v0 = (Comparable) first.details.get(key);
-					Comparable vn = (Comparable) last.details.get(key);
-					boolean reverse = (lastSortCol == col && v0.compareTo(vn) < 0);
-					Collections.sort(elements, new Metasorter(key, reverse));
+					Metasorter sorter = new Metasorter(key, elementMap, false);
+					boolean reverse = (lastSortCol == col && sorter.compare(first, last) < 0);
+					
+					sorter.setReverse(reverse);
+					Collections.sort(elements, sorter);
 				}
 
 				lastSortCol = col;
@@ -563,19 +601,55 @@ public class ElementsPanel extends JPanel implements SampleListener {
 	}
 
 	// (if you see gosling, kick him for me for not giving java closures)
-	private static class Metasorter implements Comparator { // by meta field
+	private static class Metasorter implements Comparator<Element> { // by meta field
 		private boolean rev;
-
 		private String field;
+		private Map<Element, BaseSample> emap;
 
-		public Metasorter(String field, boolean reverse) {
+		public Metasorter(String field, Map<Element, BaseSample> emap, boolean reverse) {
 			rev = reverse;
 			this.field = field;
+			this.emap = emap;
+		}
+		
+		public void setReverse(boolean reverse) {
+			this.rev = reverse;
 		}
 
-		public int compare(Object o1, Object o2) {
-			Object v1 = ((ObsFileElement) o1).details.get(field); // what about null HERE?
-			Object v2 = ((ObsFileElement) o2).details.get(field);
+		public int compare(Element o1, Element o2) {
+			BaseSample bs1 = emap.get(o1);
+			BaseSample bs2 = emap.get(o2);
+			Object v1 = (bs1 != null) ? bs1.getMeta(field) : null;
+			Object v2 = (bs2 != null) ? bs2.getMeta(field) : null;
+			if (v1 == null && v2 != null) // deal with nulls ... ick
+				return +1;
+			else if (v1 != null && v2 == null)
+				return -1;
+			else if (v1 == null && v2 == null)
+				return 0;
+			int x = ((Comparable) v1).compareTo(v2);
+			return (rev ? -x : x);
+		}
+	}
+
+	private static class Rangesorter implements Comparator<Element> { // by meta field
+		private boolean rev;
+		private Map<Element, BaseSample> emap;
+
+		public Rangesorter(Map<Element, BaseSample> emap, boolean reverse) {
+			rev = reverse;
+			this.emap = emap;
+		}
+		
+		public void setReverse(boolean reverse) {
+			this.rev = reverse;
+		}
+
+		public int compare(Element o1, Element o2) {
+			BaseSample bs1 = emap.get(o1);
+			BaseSample bs2 = emap.get(o2);
+			Range v1 = (bs1 != null) ? bs1.getRange() : null;
+			Range v2 = (bs2 != null) ? bs2.getRange() : null;
 			if (v1 == null && v2 != null) // deal with nulls ... ick
 				return +1;
 			else if (v1 != null && v2 == null)

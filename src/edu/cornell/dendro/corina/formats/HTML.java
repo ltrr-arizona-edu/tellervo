@@ -20,10 +20,10 @@
 
 package edu.cornell.dendro.corina.formats;
 
+import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -220,7 +220,7 @@ public class HTML implements Filetype {
 	    w.write("  <tr>");
 
 	    // load element, and print a summary
-	    ObsFileElement e = s.getElements().get(i);
+	    Element e = s.getElements().get(i);
 
 	    // TODO: use real Element summaries here, in case the
 	    // summaries are already loaded!
@@ -228,7 +228,7 @@ public class HTML implements Filetype {
 	    try {
 		Sample sample = e.load();
 		w.write("<td><input type=\"checkbox\" checked=\"" +
-			            e.isActive() + "\"/></td>");
+			            s.getElements().isActive(e) + "\"/></td>");
 		w.write("<td>" + emptyIfNull(sample, "id") + "</td>");
 		w.write("<td>" + sample.getMeta("filename") + "</td>");
 		w.write("<td>" + emptyIfNull(sample, "unmeas_pre") + "</td>");
@@ -241,7 +241,7 @@ public class HTML implements Filetype {
 		// (BUG: what if one of the write() calls threw the ioe?)
 		w.write("<td></td>");
 		w.write("<td></td>");
-		w.write("<td>" + e.getFilename() + "</td>");
+		w.write("<td>" + e.getName() + "</td>");
 		w.write("<td></td>");
 		w.write("<td></td>");
 		w.write("<td></td>");

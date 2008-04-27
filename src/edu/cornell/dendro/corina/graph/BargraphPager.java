@@ -1,8 +1,8 @@
 package edu.cornell.dendro.corina.graph;
 
+import edu.cornell.dendro.corina.BaseSample;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range; // ...
-import edu.cornell.dendro.corina.ObsFileElement; // !
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class BargraphPager extends Book {
 														// Years?
 
 		int firstBar = 0;
-		int x = 0; // DEBUG!
+		//int x = 0; // DEBUG!
 		while (firstBar < bargraph.bars.size()) {
 			// for each set of bars, use number of horiz pages required
 
@@ -55,9 +55,9 @@ public class BargraphPager extends Book {
 			int lastBar = Math.min(firstBar + barsPerPage, bargraph.bars.size() - 1);
 
 			// firstYear = min(bargraph.bars[i].range.start)
-			Year firstYear = ((ObsFileElement) bargraph.bars.get(0)).getRange().getStart();
+			Year firstYear = bargraph.bars.get(0).getRange().getStart();
 			for (int i = 1; i < lastBar; i++) {
-				Year tmp = ((ObsFileElement) bargraph.bars.get(i)).getRange().getStart();
+				Year tmp = bargraph.bars.get(i).getRange().getStart();
 				firstYear = Year.min(firstYear, tmp);
 			}
 			// (TODO: it should back off to the century, though, right?)
@@ -73,12 +73,11 @@ public class BargraphPager extends Book {
 	}
 
 	// are the elements bars[bar1..barN] covered by the range year1..yearN?
-	private boolean coversAllRanges(List bars, int bar1, int barN, Year year1, Year yearN) {
+	private boolean coversAllRanges(List<BaseSample> bars, int bar1, int barN, Year year1, Year yearN) {
 		Range r = new Range(year1, yearN);
 
 		for (int i = bar1; i <= barN; i++) {
-			ObsFileElement e = (ObsFileElement) bars.get(i);
-			if (e.getRange().intersection(r).span() == 0)
+			if (bars.get(i).getRange().intersection(r).span() == 0)
 				return false;
 		}
 
@@ -163,8 +162,8 @@ public class BargraphPager extends Book {
 						break;
 
 					// the bar, and its title
-					ObsFileElement bar = (ObsFileElement) bargraph.bars.get(firstBar + i);
-					String title = (String) bar.details.get("title"); // BUG:
+					BaseSample bar = bargraph.bars.get(firstBar + i);
+					String title = (String) bar.getMeta("title"); // BUG:
 																		// assumes
 																		// exists,
 																		// nonnull!

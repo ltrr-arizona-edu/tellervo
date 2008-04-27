@@ -2,7 +2,6 @@ package edu.cornell.dendro.corina.cross;
 
 import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.ElementList;
-import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.util.UserFriendlyFile;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.gui.Layout;
@@ -11,6 +10,7 @@ import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.Tree;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.Help;
+import edu.cornell.dendro.corina.ui.Alert;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,6 +104,7 @@ import java.awt.Component;
 
 public class CrossdateKit extends JDialog {
 
+	/*
 	// a label, a (scrollable) list of samples, and add/remove buttons.
 	// supports keys (delete, cmd-A, ...), and drag-n-drop (opt-drag=copy).
 	private static class SampleList extends JPanel {
@@ -117,7 +118,7 @@ public class CrossdateKit extends JDialog {
 		DefaultListModel model;
 		private boolean hilite = false; // ="something is being dragged over me"
 
-		SampleList(String title) {
+		public SampleList(String title) {
 			super();
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -170,7 +171,7 @@ public class CrossdateKit extends JDialog {
 						    g.drawImage
 						}
 					    };
-					 */
+					 * /
 
 					return normal;
 				}
@@ -184,7 +185,7 @@ public class CrossdateKit extends JDialog {
 						ElementList chosen = FileDialog.showMulti("Add");
 						for (int i = 0; i < chosen.size(); i++) {
 							Element el = chosen.get(i);
-							model.addElement(new UserFriendlyFile(el.getFilename()));
+							model.addElement(el.getName());
 						}
 					} catch (UserCancelledException uce) {
 						// do nothing
@@ -359,7 +360,7 @@ public class CrossdateKit extends JDialog {
 			  public void dragOver(DragSourceDragEvent event) { }
 			  public void dropActionChanged(DragSourceDragEvent event) { }
 			  }
-			 */
+			 * /
 		}
 
 		private DragSource drag;
@@ -692,10 +693,13 @@ public class CrossdateKit extends JDialog {
 	   @see edu.cornell.dendro.corina.cross.Cross#DEFAULT_CROSSDATES
 	 */
 	public CrossdateKit() {
+		Alert.error("Broken", "This is broken :(");
+		/*
 		initEnabled();
 		setup();
 		pack();
 		show();
+		*/
 	}
 
 	/**
@@ -706,6 +710,8 @@ public class CrossdateKit extends JDialog {
 	   samples and algorithms to use
 	 */
 	public CrossdateKit(Sequence sequence) {
+		Alert.error("Broken", "This is broken :(");
+		/*
 		initEnabled();
 
 		// this needs to run before makeCheckboxes(), which setup() calls
@@ -732,5 +738,8 @@ public class CrossdateKit extends JDialog {
 
 		pack();
 		show();
+		*/
 	}
+	
+	
 }

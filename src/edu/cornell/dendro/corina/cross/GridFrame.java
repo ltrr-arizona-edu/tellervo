@@ -45,7 +45,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import edu.cornell.dendro.corina.Build;
-import edu.cornell.dendro.corina.ObsFileElement;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.gui.FileDialog;
@@ -238,11 +239,11 @@ public class GridFrame extends XFrame implements SaveableDocument, PrintableDocu
 					// figure out what samples are there
 					// (REFACTOR: LoD says this should be in grid:
 					// grid.getElement(i)?)
-					ObsFileElement e1 = (ObsFileElement) grid.getFiles().get(row - 1);
-					ObsFileElement e2 = (ObsFileElement) grid.getFiles().get(col - 1);
+					Element e1 = grid.getElements().get(row - 1);
+					Element e2 = grid.getElements().get(col - 1);
 
 					// make a graph
-					List list = new ArrayList(2);
+					ElementList list = new ElementList();
 					list.add(e1);
 					list.add(e2);
 					new GraphWindow(list);
@@ -258,7 +259,7 @@ public class GridFrame extends XFrame implements SaveableDocument, PrintableDocu
 	}
 
 	// used by elementspanel -- shortcut for new gridframe(new grid(list))
-	public GridFrame(List s) {
+	public GridFrame(ElementList s) {
 		grid = new Grid(s);
 		grid.run(); // change cursor to WAIT?
 		init();
@@ -276,7 +277,7 @@ public class GridFrame extends XFrame implements SaveableDocument, PrintableDocu
 	public GridFrame() {
 		try {
 			// get args
-			List samples = FileDialog.showMulti(I18n.getText("grid"));
+			ElementList samples = FileDialog.showMulti(I18n.getText("grid"));
 
 			grid = new Grid(samples);
 			grid.run(); // change cursor to WAIT?
@@ -320,7 +321,7 @@ public class GridFrame extends XFrame implements SaveableDocument, PrintableDocu
 			JMenuItem graph = Builder.makeMenuItem("graph_all");
 			graph.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					new GraphWindow(grid.getFiles());
+					new GraphWindow(grid.getElements());
 				}
 			});
 			add(graph);

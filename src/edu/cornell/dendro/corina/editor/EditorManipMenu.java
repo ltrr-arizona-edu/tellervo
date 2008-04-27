@@ -14,7 +14,11 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.CachedElement;
 import edu.cornell.dendro.corina.CorinaPermission;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementFactory;
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.SampleEvent;
 import edu.cornell.dendro.corina.SampleListener;
@@ -108,7 +112,7 @@ public class EditorManipMenu extends JMenu implements SampleListener {
 		public void actionPerformed(ActionEvent ae) {
 		    try {
 			// select moving files
-			List ss = FileDialog.showMulti("Crossdate " +
+			ElementList ss = FileDialog.showMulti("Crossdate " +
 						       "\"" + sample + "\"" +
 						       " against:");
 
@@ -117,11 +121,11 @@ public class EditorManipMenu extends JMenu implements SampleListener {
 			// hack for bug 228: filename may be null, and sequence
 			// uses it to hash, so let's make up a fake
 			// filename that can't be a real filename.
-			String filename = (String) sample.getMeta("filename");
-			if (filename == null)
-			    filename = "\u011e"; // this can't begin a word!
+			//String filename = (String) sample.getMeta("filename");
+			//if (filename == null)
+			//    filename = "\u011e"; // this can't begin a word!
 
-			Sequence seq = new Sequence(Collections.singletonList(filename), ss);
+			Sequence seq = new Sequence(ElementList.singletonList(new CachedElement(sample)), ss);
 			new CrossdateWindow(seq);
 		    } catch (UserCancelledException uce) {
 			// do nothing
@@ -183,14 +187,14 @@ public class EditorManipMenu extends JMenu implements SampleListener {
 									.getText("other_reading"));
 
 						// reconcile this and target
-						new ReconcileDialog(sample, new Sample(target));
+						new ReconcileDialog(sample, ElementFactory.createElement(target).load());
 					} catch (IOException ioe) {
 						// BUG: why does reconciledialog throw ioe's?
-						Bug.bug(ioe);
+						new Bug(ioe);
 					} catch (UserCancelledException uce) {
 						// do nothing
 					} catch (Exception ex) {
-						Bug.bug(ex);
+						new Bug(ex);
 					}
 					/*
 					 * here's how the reconcile UI should work: -- auto-tile

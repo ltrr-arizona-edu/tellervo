@@ -20,12 +20,17 @@
 
 package edu.cornell.dendro.corina.gui;
 
+import edu.cornell.dendro.corina.BaseSample;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementList;
+import edu.cornell.dendro.corina.FileElement;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.metadata.*;
 import edu.cornell.dendro.corina.ui.Alert;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.awt.Component;
 import java.awt.Color;
 import java.awt.BorderLayout;
@@ -38,16 +43,23 @@ import javax.swing.table.AbstractTableModel;
 
 public class ElementsTableModel extends AbstractTableModel {
 
-	private List elements; // list of Elements
-	private List fields; // list of preview fields
+	private ElementList elements; // list of Elements
+	private List<MetadataField> fields; // list of preview fields
+	private Map<Element, BaseSample> elementMap;
 	private int view; // ElementsPanel.currentView...
 
 	// constructor -- fields to use are given; fields cannot be null:
 	// pass an empty List if you don't want anything else.
-	public ElementsTableModel(List elements, List fields, int view) {
+	public ElementsTableModel(ElementList elements, Map<Element, BaseSample> elementMap,
+			List<MetadataField> fields, int view) {
 		this.elements = elements;
+		this.elementMap = elementMap;
 		this.fields = fields;
 		this.view = view;
+	}
+	
+	public boolean elementIsActive(Element e) {
+		return elements.isActive(e);
 	}
 
 	// this is a really bad place for this...
@@ -55,10 +67,12 @@ public class ElementsTableModel extends AbstractTableModel {
 	public static class FilenameRenderer extends JPanel implements
 			TableCellRenderer {
 		private JLabel label = new JLabel();
-
 		private JCheckBox check = new JCheckBox();
+		private JTable table;
 
 		public FilenameRenderer(JTable table) {
+			this.table = table;
+
 			setLayout(new BorderLayout());
 
 			label.setFont(table.getFont());
@@ -67,16 +81,16 @@ public class ElementsTableModel extends AbstractTableModel {
 			check.setOpaque(true);
 
 			add(check, BorderLayout.WEST);
-			add(label, BorderLayout.CENTER);
+			add(label, BorderLayout.CENTER);			
 		}
 
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column) {
-			ObsFileElement e = (ObsFileElement) value;
-			check.setSelected(e.isActive());
+			Element e = (Element) value;
 
-			label.setText(e.getBasename());
+			check.setSelected(((ElementsTableModel) table.getModel()).elementIsActive(e));
+			label.setText(e.getName());
 
 			// REFACTOR: new UserFriendlyFile avoids this problem
 
@@ -132,37 +146,46 @@ public class ElementsTableModel extends AbstractTableModel {
 	// value of cell (row,col)
 	public Object getValueAt(int row, int col) {
 		// element to look at
-		ObsFileElement e = (ObsFileElement) elements.get(row);
+		Element e = elements.get(row);
 
 		switch (col) {
 		case 0: 
 			return e;
+
 		case 1:
-			return e.getFolder();
-		case 2:
-			return e.getRange(); // (lazy-loads)
-		default:
-			// might need more metadata
-			if (e.details == null)
-				try {
-					e.loadMeta();
-				} catch (IOException ioe) {
-					// System.out.println("ERROR: " + e + " won't refresh");
-				}
+			if(e.getaLoader() instanceof FileElement)
+				return ((FileElement) e.getaLoader()).getFolder();
+			
+			return null;
+
+		case 2: {
+			BaseSample bs = this.elementMap.get(e);
+			return (bs != null) ? bs.getRange() : null;
+		}
+
+		default: {
+			BaseSample bs = this.elementMap.get(e);
 
 			// refresh failed -- is this a redundant test?
-			if (e.details == null)
+			if (bs == null)
 				return null;
 
-			String key = ((MetadataField) fields.get(col - 2))
-					.getVariable();
-			return e.details.get(key);
+			String key = ((MetadataField) fields.get(col - 2)).getVariable();
+			return bs.getMeta(key);
+		}
 		}
 	}
 
 	// is editable?
 	@Override
 	public boolean isCellEditable(int row, int col) {
+		// get element
+		Element e = elements.get(row);
+		BaseSample bs = elementMap.get(e);
+		
+		if(e.getaLoader() instanceof FileElement)
+			return false;
+		
 		// only after refresh?  no, assume refresh is always "done".  (threadme)
 
 		return (col != 1 && col != 2); // everything except folder, and range
@@ -173,7 +196,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	public Class getColumnClass(int col) {
 		switch (col) {
 		case 0:
-			return ObsFileElement.class; // ???
+			return Element.class; // ???
 		case 1:
 		case 2:
 			return String.class; // well, it's a range or a folder...
@@ -186,12 +209,13 @@ public class ElementsTableModel extends AbstractTableModel {
 	@Override
 	public void setValueAt(Object value, int row, int col) {
 		// get element
-		ObsFileElement e = (ObsFileElement) elements.get(row);
+		Element e = elements.get(row);
+		BaseSample bs = elementMap.get(e);
 
 		switch (col) {
 
 		case 0: // filename + active-flag
-			e.setActive(((Boolean) value).booleanValue());
+			elements.setActive(e, ((Boolean) value).booleanValue());
 			break;
 
 		// case 1: ignore, range isn't editable
@@ -201,10 +225,15 @@ public class ElementsTableModel extends AbstractTableModel {
 			String key = ((MetadataField) fields.get(col - 2))
 					.getVariable();
 
+			// err...?
+			if(bs == null)
+				return;
+		
 			// null?  remove it.  (q: are there any cases where it's assumed key exists, like title?)
 			if (value == null
 					|| (value instanceof String && ((String) value).length() == 0)) {
-				e.details.remove(key);
+				bs.removeMeta(key);
+				value = null;
 			} else {
 				// try to squeeze the string into an integer
 				try {
@@ -214,7 +243,7 @@ public class ElementsTableModel extends AbstractTableModel {
 				}
 
 				// store it in the Element
-				e.details.put(key, value);
+				bs.setMeta(key, value);
 			}
 
 			// update the disk file -- do this in a background thread, or delayed?  see jwz.
@@ -227,7 +256,10 @@ public class ElementsTableModel extends AbstractTableModel {
 				return;
 			}
 
-			s.setMeta(key, value);
+			if(value == null)
+				s.removeMeta(key);
+			else
+				s.setMeta(key, value);
 
 			try {
 				s.save();

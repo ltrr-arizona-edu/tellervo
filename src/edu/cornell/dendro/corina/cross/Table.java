@@ -20,8 +20,11 @@
 
 package edu.cornell.dendro.corina.cross;
 
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.print.*; // !!!
 
 import java.io.BufferedWriter;
@@ -108,10 +111,10 @@ public class Table extends AbstractTableModel {
 
 	// input
 	private Sample singleton;
-	private List ss; // List of Elements to use
+	private ElementList ss; // List of Elements to use
 
 	// output
-	private List rows; // of Table.Row
+	private List<Table.Row> rows; // of Table.Row
 
 	/*
 	  A row of the 1-by-N table, which holds the sample's title, and
@@ -125,29 +128,42 @@ public class Table extends AbstractTableModel {
 	 */
 	private static class Row extends Single {
 		/** The row's (sample's) title. */
-		String title;
+		private String title;
 
 		// (make private, with getTitle() method?  make this toString()?)
-
-		Row(Sample fixed, Sample moving) {
+		
+		public Row(Sample fixed, Sample moving, Element movingElement) {
 			super(fixed, moving); // here's where all the computations get done
 			title = moving.toString();
 
-			this.movingFilename = (String) moving.getMeta("filename");
+			this.movingFilename = moving.getMeta("filename").toString();
+			this.movingElement = movingElement;
 		}
 
 		private String movingFilename;
+		private Element movingElement;
 
 		// return the moving sample
-		String getSample() {
+		public String getMovingSampleFilename() {
 			return movingFilename;
 		}
+		
+		public Element getMovingElement() {
+			return movingElement;
+		}
+		
 	}
 
 	// get the sample in a certain row
 	public String getFilenameOfRow(int row) {
 		Row r = (Row) rows.get(row);
-		return r.getSample();
+		return r.getMovingSampleFilename();
+	}
+
+	// get the sample in a certain row
+	public Element getElementOfRow(int row) {
+		Row r = (Row) rows.get(row);
+		return r.getMovingElement();
 	}
 
 	//
@@ -218,21 +234,20 @@ public class Table extends AbstractTableModel {
 	//
 
 	// new c'tor: takes any (fixed, moving[]) combo from a seq.
-	public Table(String fixed, List moving) throws IOException {
+	public Table(Element fixed, ElementList moving) throws IOException {
 		super();
 		// set singleton -- fixed sample
-		singleton = new Sample(fixed);
+		singleton = fixed.load();
 
 		// set ss -- all moving samples (excluding the fixed one)
-		ss = new ArrayList();
-		for (int i = 0; i < moving.size(); i++) {
-			String m = (String) moving.get(i);
+		ss = new ElementList();
+		for (Element m : moving) {
 			if (!fixed.equals(m))
-				ss.add(new ObsFileElement(m));
+				ss.add(m);
 		}
 
 		// -- create table list
-		rows = new ArrayList();
+		rows = new ArrayList<Table.Row>();
 
 		// -- compute table?  no, not yet -- compute() computes table
 		compute(); // no, do this later!
@@ -249,19 +264,18 @@ public class Table extends AbstractTableModel {
 	// run all computations for the table.  computes t, trend, d,
 	// overlap, and distance (if available) between sites.
 	private void compute() {
-		for (int i = 0; i < ss.size(); i++) {
-			ObsFileElement e = (ObsFileElement) ss.get(i);
-
+		for (Element e : ss) {
 			// skip inactive elements -- DUMB: elements aren't
 			// "inactive", only elements-in-sums are.
-			if (!e.isActive())
-				continue;
+			//if (!e.isActive())
+			//	continue;
+			// not useful: ss is assembled above regardless of active flag
 
 			try {
-				Sample movingSample = new Sample(e.getFilename());
+				Sample movingSample = e.load();
 
 				// add new row to table
-				rows.add(new Row(singleton, movingSample));
+				rows.add(new Row(singleton, movingSample, e));
 			} catch (IOException ioe) {
 				// can't load it?  ignore it!  -- DO SOMETHING BETTER!
 			}

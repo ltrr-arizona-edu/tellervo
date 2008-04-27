@@ -21,6 +21,37 @@ public class CachedElement extends Element {
 			this.baseSample = sample;
 	}
 	
+	/**
+	 * Construct an element from another element
+	 * (shallow copy!)
+	 * @param element
+	 */
+	public CachedElement(Element element) {
+		super(element);
+
+		if(element instanceof CachedElement) {
+			baseSample = ((CachedElement) element).baseSample;
+			fullSample = ((CachedElement) element).fullSample;
+		} else {
+			baseSample = null;
+			fullSample = null;
+		}
+	}
+	
+	@Override
+	public void setLoader(SampleLoader loader) {
+		super.setLoader(loader);
+
+		// maybe this fixes our loading problems? :)
+		dead = false;
+		
+		if(baseSample != null)
+			baseSample.setLoader(loader);
+		if(fullSample != null)
+			fullSample.setLoader(loader);
+	}
+
+
 	@Override
 	public Sample load() throws IOException {
 		if(fullSample != null)

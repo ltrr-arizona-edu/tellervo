@@ -20,10 +20,11 @@
 
 package edu.cornell.dendro.corina.cross;
 
+import edu.cornell.dendro.corina.CachedElement;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.ObsFileElement;
 
-import java.io.File;
 import java.io.IOException;
 
 import java.util.List;
@@ -93,16 +94,16 @@ import java.util.HashSet;
  @version $Id$
  */
 public class Sequence {
-	// lists of strings (filenames)
-	private List fixed = new ArrayList();
-	private List moving = new ArrayList();
+	// lists of Elements
+	private ElementList fixed = new ElementList();
+	private ElementList moving = new ElementList();
 
 	/**
 	   Returns a list of all fixed samples.
 
 	   @return all fixed samples of this sequence
 	 */
-	public List getAllFixed() {
+	public ElementList getAllFixed() {
 		return fixed; // FIXME: exposes internal representation!
 	}
 
@@ -111,7 +112,7 @@ public class Sequence {
 
 	   @return all moving samples of this sequence
 	 */
-	public List getAllMoving() {
+	public ElementList getAllMoving() {
 		return moving; // FIXME: exposes internal representation!
 	}
 
@@ -125,7 +126,7 @@ public class Sequence {
 		}
 	}
 
-	private List pairings = new ArrayList();
+	private List<Pairing> pairings = new ArrayList<Pairing>();
 
 	// the current pairing (pointer into |pairings| list)
 	private int pairingNr = 0;
@@ -146,7 +147,7 @@ public class Sequence {
 	   @param fixed the fixed samples
 	   @param moving the moving samples
 	 */
-	public Sequence(List fixed, List moving) {
+	public Sequence(ElementList fixed, ElementList moving) {
 		/*
 		 SOLUTION:
 		 -- also accept Samples in the list
@@ -161,10 +162,10 @@ public class Sequence {
 		setAlgorithms(Cross.DEFAULT_CROSSDATES);
 
 		// copy active elements to filenames
-		for (int i = 0; i < fixed.size(); i++)
-			addElement(this.fixed, fixed.get(i));
-		for (int i = 0; i < moving.size(); i++)
-			addElement(this.moving, moving.get(i));
+		for (Element e : fixed) 
+			addElement(this.fixed, e, fixed.isActive(e));
+		for (Element e : moving)
+			addElement(this.moving, e, moving.isActive(e));
 
 		// special case: some idiot is trying to crossdate exactly one file
 		// against itself.  ok, whatever...
@@ -179,11 +180,9 @@ public class Sequence {
 	// add an element to a list, as a filename (string).
 	// the element may be an element, or a filename.
 	// (if the element is "inactive", we'll skip it, of course.)
-	private void addElement(List list, Object obj) {
-		if (obj instanceof String)
-			list.add(obj);
-		else if (((ObsFileElement) obj).isActive())
-			list.add(((ObsFileElement) obj).getFilename());
+	private void addElement(ElementList list, Element e, boolean isActive) {
+		if (isActive)
+			list.add(new CachedElement(e));
 	}
 
 	// |fixed| and |moving| contain lists of filenames;
@@ -192,24 +191,24 @@ public class Sequence {
 	private void computePairings() {
 		// a hash of "sample1:sample2", only used to keep track of
 		// what crosses have been recorded so far.
-		Set used = new HashSet();
+		Set<String> used = new HashSet<String>();
 
 		for (int i = 0; i < fixed.size(); i++) {
 			for (int j = 0; j < moving.size(); j++) {
 				// use filenames for hashing
-				String s1 = (String) fixed.get(i);
-				String s2 = (String) moving.get(j);
+				String s1 = (String) fixed.get(i).getName();
+				String s2 = (String) moving.get(j).getName();
 
 				// crossing against myself?
 				if (s1.equals(s2))
 					continue;
 
 				// already used?  fuggedaboutit!
-				if (used.contains(s1 + File.pathSeparator + s2) || used.contains(s2 + File.pathSeparator + s1))
+				if (used.contains(s1 + "::" + s2) || used.contains(s2 + "::" + s1))
 					continue;
 
 				// ok, it's a good cross, add it
-				used.add(s1 + File.pathSeparator + s2);
+				used.add(s1 + "::" + s2);
 				pairings.add(new Pairing(i, j));
 			}
 		}
@@ -224,17 +223,15 @@ public class Sequence {
 	// EXCEPT THEY'RE UNNECESSARY AND HORRIBLY INEFFICIENT.  SUCK!
 	// (5-50ms per load(), for small local files)
 	private Sample getFixed() throws IOException {
-		Pairing p = (Pairing) pairings.get(pairingNr);
-		String fn = (String) fixed.get(p.f);
-		Sample s = new Sample(fn); // PERF: calls load()!
-		return s;
+		Pairing p = pairings.get(pairingNr);
+		Element e = fixed.get(p.f);
+		return e.load();
 	}
 
 	private Sample getMoving() throws IOException {
-		Pairing p = (Pairing) pairings.get(pairingNr);
-		String fn = (String) moving.get(p.m);
-		Sample s = new Sample(fn); // PERF: calls load()!
-		return s;
+		Pairing p = pairings.get(pairingNr);
+		Element e = moving.get(p.m);
+		return e.load();
 	}
 
 	/**

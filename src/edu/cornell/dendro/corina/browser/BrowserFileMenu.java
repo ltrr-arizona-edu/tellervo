@@ -228,11 +228,11 @@ public class BrowserFileMenu extends JMenu {
         JMenuItem bargraph = Builder.makeMenuItem("bargraph");
         bargraph.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                List<SampleLoader> list = new ArrayList<SampleLoader>();
+                ElementList list = new ElementList();
                 Iterator iter = browser.getSelectedRows();
                 while (iter.hasNext()) {
                     Row row = (Row) iter.next();
-                    list.add(row.getElement()); // re-use elements, which makes this really fast!
+                    list.add(new Element(row.getElement())); // re-use elements, which makes this really fast!
                 }
                 new BargraphFrame(list);
             }

@@ -85,7 +85,6 @@ import javax.swing.event.ChangeListener;
 
 import edu.cornell.dendro.corina.BaseSample;
 import edu.cornell.dendro.corina.Build;
-import edu.cornell.dendro.corina.CachedElement;
 import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.ElementFactory;
 import edu.cornell.dendro.corina.ElementList;
@@ -146,7 +145,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 
 	// the popup
 	private SamplePopupMenu popup;
-	private Element currentBar; // bar under pointer
+	private BaseSample currentBar; // bar under pointer
 
 	// constants used for drawing
 	private static final Font BAR_FONT = new Font("dialog", Font.PLAIN, 12);
@@ -208,11 +207,11 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 		// return the Bar at the given Point, if one exists, else null.
 		// => FIXME: shouldn't call a hit if x-position not in range
 		// DESIGN: return null?  ugh.  NoNullBeyondMethodScope!
-		public Element getBar(Point p) {
+		public BaseSample getBar(Point p) {
 			int i = (int) p.getY() / dy;
 			if (i > bars.size() - 1)
 				return null;
-			return (Element) bars.get(i);
+			return bars.get(i);
 		}
 
 		public BargraphPanel() {
@@ -458,7 +457,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 		// of any reason to, though, and it never seems to get called, anyway.
 		// ----
 
-		private List clipStack = new ArrayList(); // (of Shape)
+		private List<Shape> clipStack = new ArrayList<Shape>(); // (of Shape)
 
 		private void saveClip(Graphics g) {
 			clipStack.add(0, g.getClip());
@@ -476,8 +475,8 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			Graphics2D g2 = (Graphics2D) g;
-			int w = getWidth();
-			int h = getHeight();
+			//int w = getWidth();
+			//int h = getHeight();
 			saveClip(g2);
 
 			// force antialiasing -- ??
@@ -492,15 +491,8 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 			// draw bars
 			// timing: 50-100 ms, or as low as 1-2 ms if there aren't any visible
 			for (int i = 0; i < bars.size(); i++) {
-				BaseSample bs;
+				BaseSample bs = bars.get(i);
 				
-				try {
-					// this shouldn't fail, as we already cached it
-					bs = bars.get(i).loadBasic();
-				} catch (IOException ioe) {
-					continue;
-				}
-
 				// start of the row for this bar (??)
 				int y = i * (BAR_HEIGHT + BAR_SPACING) + BAR_SPACING; //  + BAR_HEIGHT/2;
 
@@ -676,7 +668,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 	/*private?*/Range range;
 
 	// the bars, as a List of Elements
-	public List<Element> bars;
+	public List<BaseSample> bars;
 
 	// --- DropAdder ----------------------------------------
 	public class DropAdder implements DropTargetListener {
@@ -706,9 +698,8 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 					for (int i = 0; i < l.size(); i++) {
 						String pathname = ((File) l.get(i)).getPath();
 						try {
-							Element e = ElementFactory.createElement(pathname, CachedElement.class);
-							e.loadBasic(); // ensure it's cached; handle error here
-							bars.add(e);
+							Element e = ElementFactory.createElement(pathname);
+							bars.add(e.loadBasic());
 						} catch (IOException ioe) {
 							new Bug(ioe); // FIXME: need better error handling!
 						}
@@ -737,13 +728,13 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 
 			// figure out what's being dragged
 			Point p = event.getDragOrigin();
-			Element bar = bgp.getBar(p);
+			BaseSample bar = bgp.getBar(p);
 
 			// this only makes sense with Files...
-			if(bar.getaLoader() instanceof FileElement) {
+			if(bar.getLoader() instanceof FileElement) {
 				// make a Transferable to send
 				Transferable transfer = new Tree.TransferableFile(
-						((FileElement)bar.getaLoader()).getFilename());
+						((FileElement)bar.getLoader()).getFilename());
 
 				// let the drag begin!
 				event.startDrag(DragSource.DefaultCopyDrop, transfer, this);
@@ -796,12 +787,12 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 		// create panel
 		bgp = new BargraphPanel();
 
-		bars = ss.toListClass(ss, CachedElement.class);
+		bars = new ArrayList<BaseSample>();
 		// load bars
 		try {
 			// make sure they're loaded/cached
 			for (int i = 0; i < ss.size(); i++) {
-				bars.get(i).loadBasic();
+				bars.add(ss.get(i).loadBasic());
 			}
 		} catch (IOException ioe) {
 			new Bug(ioe);
@@ -863,7 +854,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 
 				// update title, range
 				try {
-					Sample s = currentBar.load(); // ***
+					Sample s = new Element(currentBar).load(); // ***
 					// PERF: this (***) loads the sample, when we only want its
 					// summary info, and we already have that.  ouch.
 					// this isn't true, because SamplePopup requires a full sample (to pass to graph window, etc)
@@ -908,22 +899,10 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 	private Range computeRange() {
 		// ASSUMES bars has at least 1 element
 		// BUG: if it doesn't, what's the range?
-		Range fullRange;
-		
-		try {
-			fullRange = bars.get(0).loadBasic().getRange();
-		} catch (Exception ioe) {
-			// why not? this shouldn't happen
-			fullRange = new Range(new Year(-500), 1000);
-		}
-		
-		for (int i = 1; i < bars.size(); i++) {
-			try {
-				fullRange = fullRange.union(bars.get(i).loadBasic().getRange());
-			} catch (IOException ioe) {
-				continue;
-			}
-		}
+		Range fullRange = bars.get(0).getRange();
+				
+		for (int i = 1; i < bars.size(); i++)
+			fullRange = fullRange.union(bars.get(i).getRange());
 
 		// ick, this isn't terribly pretty...
 		Year early = fullRange.getStart().cropToCentury();

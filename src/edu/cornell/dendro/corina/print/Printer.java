@@ -51,7 +51,7 @@ import java.util.ArrayList;
 public abstract class Printer implements Printable {
 
     /** Subclasses should add lines to this. */
-    protected List lines = new ArrayList();
+    protected List<Line> lines = new ArrayList<Line>();
 
     /** Construct a new Printer, with no lines. */
     public Printer() {

@@ -20,8 +20,9 @@
 
 package edu.cornell.dendro.corina.formats;
 
+import edu.cornell.dendro.corina.BaseSample;
+import edu.cornell.dendro.corina.Element;
 import edu.cornell.dendro.corina.Sample;
-import edu.cornell.dendro.corina.ObsFileElement;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import java.io.BufferedReader;
@@ -93,27 +94,25 @@ public class RangesOnly implements Filetype {
 
         int n = s.getElements().size();
         for (int i=0; i<n; i++) {
-            ObsFileElement e = s.getElements().get(i);
-	    // OBSOLETE: getRange(), etc., now load the file automatically.
-	    // but BUG: they don't throw anything if it fails.
-	    // (and i don't have a getMeta() yet, so it's not unnecessary.)
+            Element e = s.getElements().get(i);
+            BaseSample bs;
             try {
-                e.loadMeta(); // this aborts if element can't be loaded.
+                bs = e.loadBasic(); // this aborts if element can't be loaded.
             } catch (IOException ioe) {
-                throw new IOException("Can't load element " + e.getFilename());
+                throw new IOException("Can't load element " + e);
             }
 
             // output (name, start, end)
-            if (e.details.containsKey("title"))
-                w.write(e.details.get("title").toString());
+            if (bs.hasMeta("title"))
+                w.write(bs.getMeta("title").toString());
             else
-                w.write(e.details.get("filename").toString());
+                w.write(bs.getMeta("filename").toString());
             w.write("\t");
-            w.write(e.getRange().getStart().toString());
+            w.write(bs.getRange().getStart().toString());
             w.write("\t");
-            w.write(e.getRange().getEnd().toString());
+            w.write(bs.getRange().getEnd().toString());
             w.write("\t");
-            w.write(String.valueOf(e.getRange().span()));
+            w.write(String.valueOf(bs.getRange().span()));
 	    w.newLine();
         }
     }

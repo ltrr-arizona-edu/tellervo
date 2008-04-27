@@ -926,7 +926,7 @@ public class Browser extends XFrame {
 				// TODO: indexManyFiles() method should live in corina.index
 
 				// get selection
-				List selection = getSelectedFilenames();
+				ElementList selection = getSelectedElements();
 				if (selection.size() == 0)
 					return; // FIXME: don't allow this!
 
@@ -1031,7 +1031,7 @@ public class Browser extends XFrame {
 		// make list of elements
 		int selected[] = table.getSelectedRows();
 		int n = selected.length;
-		List elements = new ArrayList(n);
+		ElementList elements = new ElementList();
 
 		try {
 			// loop, adding elements to list
@@ -1465,7 +1465,7 @@ public class Browser extends XFrame {
 		// preamble: save stored rows
 		saveSelection();
 
-		Collections.sort(files, new Comparator() {
+		Collections.sort(files, new Comparator<Object>() {
 			public int compare(Object o1, Object o2) {
 				Object f1 = ((Row) o1).getField(sortField);
 				Object f2 = ((Row) o2).getField(sortField);

@@ -9,6 +9,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.Color;
 
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -59,7 +60,7 @@ public class GraphElementsPanel extends JPanel {
 	    addButtonContainer.add(addButton);
 	    addButton.addActionListener(new AbstractAction() {
 	    	public void actionPerformed(ActionEvent ae) {
-	    		List ss = null;
+	    		ElementList ss = null;
 	    		try {
 	    			ss = FileDialog.showMulti(I18n.getText("plot"));
 	    		} catch (UserCancelledException uce) {

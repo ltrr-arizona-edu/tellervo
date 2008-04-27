@@ -29,7 +29,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
-import edu.cornell.dendro.corina.ObsFileElement;
+
+import edu.cornell.dendro.corina.CachedElement;
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.graph.GraphWindow;
@@ -206,9 +208,9 @@ public class GridView extends JPanel {
 							table.getSelectedRow(), table.getSelectedColumn());					
 
 					// make graph
-					List list = new ArrayList();
-					list.add(new ObsFileElement((String)cross.getFixed().getMeta("filename")));
-					list.add(new ObsFileElement((String)cross.getMoving().getMeta("filename")));
+					ElementList list = new ElementList();
+					list.add(new CachedElement(cross.getFixed()));
+					list.add(new CachedElement(cross.getMoving()));
 					
 					new GraphWindow(list);
 				}

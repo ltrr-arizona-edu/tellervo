@@ -181,4 +181,8 @@ public class FileElement implements SampleLoader {
 	public String getName() {
 		return getFilename();
 	}
+	
+	public String getFolder() {
+		return folder;
+	}
 }

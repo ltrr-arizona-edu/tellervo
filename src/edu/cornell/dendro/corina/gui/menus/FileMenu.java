@@ -18,7 +18,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import edu.cornell.dendro.corina.ObsFileElement;
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
@@ -196,16 +197,16 @@ public class FileMenu extends JMenu {
 			 * get a list of elements; open each.
 			 */
 
-			List elements = FileDialog.showMulti(I18n.getText("open"));
+			ElementList elements = FileDialog.showMulti(I18n.getText("open"));
 
 			for (int i = 0; i < elements.size(); i++) {
-				ObsFileElement e = (ObsFileElement) elements.get(i);
+				Element e = elements.get(i);
 
-				if (!e.isActive()) // skip inactive
+				if (!elements.isActive(e)) // skip inactive
 					continue;
 
 				try {
-					CanOpener.open(e.getFilename());
+					CanOpener.open(e.getName());
 				} catch (IOException ioe) {
 					Alert.error("I/O Error", "Can't open file: "
 							+ ioe.getMessage());
@@ -220,17 +221,17 @@ public class FileMenu extends JMenu {
 	public static void bulkexport() {
 		try {
 			// get a list of elements
-			List elements = FileDialog.showMulti(I18n.getText("bulkexport..."));
+			ElementList elements = FileDialog.showMulti(I18n.getText("bulkexport..."));
 
 			// convert them to samples
 			boolean problem = false;
-			List samples = new ArrayList(elements.size());
+			List<Sample> samples = new ArrayList<Sample>(elements.size());
 			String errorsamples = "";
 
 			for (int i = 0; i < elements.size(); i++) {
-				ObsFileElement e = (ObsFileElement) elements.get(i);
+				Element e = elements.get(i);
 
-				if (!e.isActive()) // skip inactive
+				if (!elements.isActive(e)) // skip inactive
 					continue;
 
 				try {
@@ -240,7 +241,7 @@ public class FileMenu extends JMenu {
 					problem = true;
 					if (errorsamples.length() != 0)
 						errorsamples += ", ";
-					errorsamples += e.getFilename();
+					errorsamples += e.getName();
 				}
 			}
 
@@ -307,9 +308,9 @@ public class FileMenu extends JMenu {
 					errorsamples = "";
 
 					for (int i = 0; i < elements.size(); i++) {
-						ObsFileElement e = (ObsFileElement) elements.get(i);
+						Element e = elements.get(i);
 
-						if (!e.isActive()) // skip inactive
+						if (!elements.isActive(e)) // skip inactive
 							continue;
 
 						try {
@@ -319,7 +320,7 @@ public class FileMenu extends JMenu {
 							problem = true;
 							if (errorsamples.length() != 0)
 								errorsamples += ", ";
-							errorsamples += e.getFilename();
+							errorsamples += e.getName();
 						}
 					}
 
@@ -360,7 +361,7 @@ public class FileMenu extends JMenu {
 	// ask user for some files to sum, and make the sum
 	// REFACTOR: why isn't this in manip.Sum?
 	public static void sum() {
-		List tmp;
+		ElementList tmp;
 		try {
 			// get files for sum
 			tmp = FileDialog.showMulti(I18n.getText("sum"));
@@ -370,15 +371,18 @@ public class FileMenu extends JMenu {
 
 		// DESIGN: what if the user picks exactly 1 sample?  is a sum of 1 sample a sum?
 
+		Collections.sort(tmp);
+		
 		// get sampleset, and copy to new, loading elements as needed
-		List s = new ArrayList();
+		ElementList s = new ElementList();
 		for (int i = 0; i < tmp.size(); i++) {
-			String filename = ((ObsFileElement) tmp.get(i)).getFilename();
+			Element e = tmp.get(i);
+			
 			Sample testSample;
 			try {
-				testSample = new Sample(filename); // BETTER: .load()
+				testSample = e.load();
 			} catch (IOException ioe) {
-				Alert.error("Can't load file", "The file \"" + filename
+				Alert.error("Can't load file", "The file \"" + e
 						+ "\" could not be loaded.");
 				return;
 				// FIXME: this error-handling is really piss-poor.
@@ -387,14 +391,21 @@ public class FileMenu extends JMenu {
 				// -- if >1 couldn't be loaded, present list
 				// choices are "remove", "replace...", ??
 				// ALSO: use Finder.java here (and RENAME it, because i can't ever think of its name)
-			} catch (Exception e) {
-				Bug.bug(e); // REMOVE ME: this never happens
+			} catch (Exception ex) {
+				new Bug(ex); // REMOVE ME: this never happens
 				return;
 			}
-			if (testSample.getElements() != null) // if summed (has elements),
-				s.addAll(testSample.getElements()); // add all elements
-			else
-				s.add(new ObsFileElement(filename));
+			if (testSample.getElements() != null) { // if summed (has elements),
+				// s.addAll(testSample.getElements()); // add all elements
+				for(Element el : testSample.getElements()) {
+					s.add(el);
+					s.setActive(el, testSample.getElements().isActive(el));
+				}
+			}
+			else {
+				s.add(e);
+				s.setActive(e, tmp.isActive(e));
+			}
 		}
 
 		// sort, by filename (is that really what i want?)

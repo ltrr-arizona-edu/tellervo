@@ -1,5 +1,8 @@
 package edu.cornell.dendro.corina.gui.menus;
 
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementList;
+import edu.cornell.dendro.corina.FileElement;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.cross.Sequence;
@@ -19,99 +22,91 @@ import javax.swing.JMenu;
 
 public class OldCrossdateMenu extends JMenu {
 
-    public OldCrossdateMenu() {
-	super(I18n.getText("crossdate"));
+	public OldCrossdateMenu() {
+		super(I18n.getText("crossdate"));
 
-        add(Builder.makeMenuItem("1_by_n",
-				 "edu.cornell.dendro.corina.gui.menus.OldCrossdateMenu.cross1byN()"));
-        add(Builder.makeMenuItem("n_by_n",
-				 "edu.cornell.dendro.corina.gui.menus.OldCrossdateMenu.crossNbyN()"));
-        add(Builder.makeMenuItem("1_by_1",
-				 "edu.cornell.dendro.corina.gui.menus.OldCrossdateMenu.cross1by1()"));
-        add(Builder.makeMenuItem("n_by_1",
-				 "edu.cornell.dendro.corina.gui.menus.OldCrossdateMenu.crossNby1()"));
-        addSeparator();
-        add(Builder.makeMenuItem("crossdate_kit",
-				 "new edu.cornell.dendro.corina.cross.CrossdateKit()"));
-    }
-
-    // !!!
-    // ugly, ugly, ugly
-    // - should be in corina.cross?
-
-    public static void cross1byN() {
-	try {
-	    // select fixed file
-	    String fixed = FileDialog.showSingle(I18n.getText("fixed"));
-
-	    // select moving files
-	    List ss = FileDialog.showMulti(I18n.getText("moving"));
-
-            // the Peter-catcher: if the 'fixed' file is relatively
-            // dated, he really wanted an Nx1.  d'oh!  DWIM.
-            /*
-	      if (!fixedSample.isAbsolute())
-	      new CrossdateWindow(new Sequence(f, ss));
-	      else
-	      new CrossdateWindow(new Sequence(ss, f));
-	    */
-
-	    // new Cross
-	    new CrossdateWindow(new Sequence(Collections.singletonList(fixed), ss));
-	} catch (UserCancelledException uce) {
-	    // do nothing
+		add(Builder.makeMenuItem("1_by_n", "edu.cornell.dendro.corina.gui.menus.OldCrossdateMenu.cross1byN()"));
+		add(Builder.makeMenuItem("n_by_n", "edu.cornell.dendro.corina.gui.menus.OldCrossdateMenu.crossNbyN()"));
+		add(Builder.makeMenuItem("1_by_1", "edu.cornell.dendro.corina.gui.menus.OldCrossdateMenu.cross1by1()"));
+		add(Builder.makeMenuItem("n_by_1", "edu.cornell.dendro.corina.gui.menus.OldCrossdateMenu.crossNby1()"));
+		addSeparator();
+		add(Builder.makeMenuItem("crossdate_kit", "new edu.cornell.dendro.corina.cross.CrossdateKit()"));
 	}
-    }
 
-    public static void crossNbyN() {
-	try {
-	    // select files
-	    List ss = FileDialog.showMulti(I18n.getText("crossdate"));
+	// !!!
+	// ugly, ugly, ugly
+	// - should be in corina.cross?
 
-	    // watch out: need at least 2 samples
-	    if (ss.size() < 2) {
-		Alert.error("Not enough samples",
-			    "For N-by-N crossdating, you must\n" +
-			    "select at least 2 samples");
-		return;
-	    }
+	public static void cross1byN() {
+		try {
+			// select fixed file
+			Element fixed = new Element(new FileElement(FileDialog.showSingle(I18n.getText("fixed"))));
 
-	    // new Cross
-	    new CrossdateWindow(new Sequence(ss, ss));
-	} catch (UserCancelledException uce) {
-	    // do nothing
+			// select moving files
+			ElementList ss = FileDialog.showMulti(I18n.getText("moving"));
+
+			// the Peter-catcher: if the 'fixed' file is relatively
+			// dated, he really wanted an Nx1.  d'oh!  DWIM.
+			/*
+			if (!fixedSample.isAbsolute())
+			new CrossdateWindow(new Sequence(f, ss));
+			else
+			new CrossdateWindow(new Sequence(ss, f));
+			 */
+
+			// new Cross
+			new CrossdateWindow(new Sequence(ElementList.singletonList(fixed), ss));
+		} catch (UserCancelledException uce) {
+			// do nothing
+		}
 	}
-    }
 
-    public static void cross1by1() {
-	try {
-	    // select fixed file
-	    String fixed = FileDialog.showSingle(I18n.getText("fixed"));
+	public static void crossNbyN() {
+		try {
+			// select files
+			ElementList ss = FileDialog.showMulti(I18n.getText("crossdate"));
 
-	    // select moving file
-	    String moving = FileDialog.showSingle(I18n.getText("moving"));
+			// watch out: need at least 2 samples
+			if (ss.size() < 2) {
+				Alert.error("Not enough samples", "For N-by-N crossdating, you must\n" + "select at least 2 samples");
+				return;
+			}
 
-	    // new Cross
-	    new CrossdateWindow(new Sequence(Collections.singletonList(fixed),
-					Collections.singletonList(moving)));
-	} catch (UserCancelledException uce) {
-	    // do nothing
+			// new Cross
+			new CrossdateWindow(new Sequence(ss, ss));
+		} catch (UserCancelledException uce) {
+			// do nothing
+		}
 	}
-    }
 
-    public static void crossNby1() {
-	try {
-	    // select fixed files
-	    List ss = FileDialog.showMulti(I18n.getText("fixed"));
+	public static void cross1by1() {
+		try {
+			// select fixed file
+			Element fixed = new Element(new FileElement(FileDialog.showSingle(I18n.getText("fixed"))));
 
-	    // select moving file
-	    String moving = FileDialog.showSingle(I18n.getText("moving"));
+			// select moving file
+			Element moving = new Element(new FileElement(FileDialog.showSingle(I18n.getText("moving"))));
 
-	    // new Cross
-	    new CrossdateWindow(new Sequence(ss,
-					     Collections.singletonList(moving)));
-	} catch (UserCancelledException uce) {
-	    // do nothing
+			// new Cross
+			new CrossdateWindow(new Sequence(ElementList.singletonList(fixed), 
+					ElementList.singletonList(moving)));
+		} catch (UserCancelledException uce) {
+			// do nothing
+		}
 	}
-    }
+
+	public static void crossNby1() {
+		try {
+			// select fixed files
+			ElementList ss = FileDialog.showMulti(I18n.getText("fixed"));
+
+			// select moving file
+			Element moving = new Element(new FileElement(FileDialog.showSingle(I18n.getText("moving"))));
+
+			// new Cross
+			new CrossdateWindow(new Sequence(ss, ElementList.singletonList(moving)));
+		} catch (UserCancelledException uce) {
+			// do nothing
+		}
+	}
 }

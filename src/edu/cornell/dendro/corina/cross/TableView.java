@@ -1,5 +1,7 @@
 package edu.cornell.dendro.corina.cross;
 
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.Sample;
 // IDEA: what if i got rid of Element?  it's either a sample, or a
 // filename.  no, that's bad, i wouldn't be able to load massive
@@ -81,8 +83,6 @@ import java.awt.print.Printable;
  */
 public class TableView extends JPanel {
 
-	private List moving;
-
 	// this could get confusing making tables out of tables, so
 	// in this file, let's call JTables "jtable", and Tables "table".
 	private JTable jtable;
@@ -117,7 +117,8 @@ public class TableView extends JPanel {
 
 	private JComboBox fixedPopup;
 
-	private List fixedAsList;
+	private ElementList fixed;
+	private ElementList moving;
 
 	/**
 	 Make a new table view for a sequence.
@@ -127,21 +128,23 @@ public class TableView extends JPanel {
 	 @exception IOException I have no excuse: fix me
 	 */
 	public TableView(Sequence sequence) throws IOException {
+		// NOTE: SEQUENCE uses CachedElements!!
 		// put all "fixed" samples in a popup -- EXTRACT METHOD!
-		fixedAsList = new ArrayList(sequence.getAllFixed());
-		String names[] = new String[fixedAsList.size()];
+		fixed = sequence.getAllFixed();
+		String names[] = new String[fixed.size()];
 		for (int i = 0; i < names.length; i++)
-			names[i] = new Sample((String) fixedAsList.get(i)).toString();
+			names[i] = fixed.get(i).toString();
+		
 		fixedPopup = new JComboBox(names);
 		fixedPopup.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				// -- figure out what sample to use
 				int selection = fixedPopup.getSelectedIndex();
-				String fixed = (String) fixedAsList.get(selection);
+				Element tfixed = fixed.get(selection);
 
 				try {
 					// -- make new Table object
-					table = new Table(fixed, moving);
+					table = new Table(tfixed, moving);
 
 					// -- call table.setModel(t)
 					int widths[] = saveColumnWidths();
@@ -161,11 +164,11 @@ public class TableView extends JPanel {
 		add(top, BorderLayout.NORTH);
 
 		// first fixed one
-		String fixed = (String) sequence.getAllFixed().get(0);
+		Element tfixed = sequence.getAllFixed().get(0);
 		moving = sequence.getAllMoving();
 
 		// make a table.
-		table = new Table(fixed, moving);
+		table = new Table(tfixed, moving);
 		jtable = new JTable(table) {
 			@Override
 			public void addNotify() {
@@ -236,14 +239,14 @@ public class TableView extends JPanel {
 				public void actionPerformed(ActionEvent e) {
 					// get fixed
 					int i = fixedPopup.getSelectedIndex();
-					ObsFileElement f = new ObsFileElement((String) fixedAsList.get(i));
+					Element f = fixed.get(i);
 
 					// get moving
 					int j = jtable.getSelectedRow();
-					ObsFileElement m = new ObsFileElement(table.getFilenameOfRow(j));
+					Element m = table.getElementOfRow(j);
 
 					// make graph
-					List list = new ArrayList();
+					ElementList list = new ElementList();
 					list.add(f);
 					list.add(m);
 					new GraphWindow(list);
@@ -263,9 +266,7 @@ public class TableView extends JPanel {
 					try {
 						// get moving, make sample, put in editor
 						int j = jtable.getSelectedRow();
-						Sample s = new Sample(table
-								.getFilenameOfRow(j));
-						new Editor(s);
+						new Editor(table.getElementOfRow(j).load());
 					} catch (IOException ioe) {
 						// FIXME
 						System.out.println("ioe!");

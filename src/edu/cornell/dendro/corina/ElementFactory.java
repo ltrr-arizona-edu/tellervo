@@ -49,7 +49,7 @@ public class ElementFactory {
 	
 	private static Element spawnElement(Class<? extends Element> clazz, SampleLoader loader) {
 		try {
-			Constructor<? extends Element> c = clazz.getConstructor(new Class[] { String.class });
+			Constructor<? extends Element> c = clazz.getConstructor(new Class[] { SampleLoader.class });
 			return c.newInstance(new Object[] { loader });
 		} catch (Exception e) {
 			e.printStackTrace();

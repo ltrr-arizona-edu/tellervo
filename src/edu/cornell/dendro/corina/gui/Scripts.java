@@ -20,6 +20,8 @@
 
 package edu.cornell.dendro.corina.gui;
 
+import edu.cornell.dendro.corina.Element;
+import edu.cornell.dendro.corina.ElementList;
 import edu.cornell.dendro.corina.Sample;
 import edu.cornell.dendro.corina.index.Index;
 import edu.cornell.dendro.corina_indexing.Exponential; // extract const! -- better: let user pick!
@@ -250,7 +252,7 @@ public class Scripts {
     }
     // BUG: what if it's already indexed?
 
-    public static void indexManyFiles(List elements) {
+    public static void indexManyFiles(ElementList elements) {
 	// keep a count of how many were already indexed, so i can
 	// tell the user nicely at the end, once, instead of bugging
 	// him at each file
@@ -258,12 +260,12 @@ public class Scripts {
 
 	// index each one as exponential, and save it as .IND
 	for (int i=0; i<elements.size(); i++) {
-	    ObsFileElement e = (ObsFileElement) elements.get(i);
+	    Element e = elements.get(i);
 	    Sample s;
 	    try {
 		s = e.load();
 	    } catch (IOException ioe) {
-		String f = removeFolders(e.getFilename());
+		String f = removeFolders(e.getName());
 		Alert.error("Error loading sample",
 			    "The sample \"" + f + "\" could not be loaded.");
 		continue;
@@ -298,7 +300,7 @@ public class Scripts {
 		// save it
 		s.save(name);
 	    } catch (IOException ioe) {
-		String f = removeFolders(e.getFilename());
+		String f = removeFolders(e.getName());
 		Alert.error("Error saving sample",
 			    "The sample \"" + f + "\" could not be saved.");
 	    } catch (UserCancelledException uce) {
