@@ -76,7 +76,7 @@ public class CorinaXML implements Filetype {
 					continue;
 				}
 
-				System.out.println("Loading measurement element" + attr);
+				System.out.println("Loading measurement element " + attr);
 
 				bs.setMeta("filename", attr);
 				bs.setMeta("title", attr); // hopefully we change this later :)
@@ -216,7 +216,7 @@ public class CorinaXML implements Filetype {
 		}
 	}
 	
-	private void loadMeasurement(Sample s, Element root) throws IOException {
+	public void loadMeasurement(Sample s, Element root) throws IOException {
 		String attr;
 		
 		// load basic information needed for a loader :)

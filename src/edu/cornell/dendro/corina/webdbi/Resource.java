@@ -115,7 +115,7 @@ public abstract class Resource {
 	 * queryWait does not return until query has succeeded or until an error
 	 * occurs.
 	 */
-	public void queryWait() {
+	public boolean queryWait() {
 		try {
 			WebXMLDocumentAccessor wx = new WebXMLDocumentAccessor(resourceName);
 			Document doc;
@@ -137,21 +137,25 @@ public abstract class Resource {
 					break;
 				} catch (WebPermissionsException wpe) {
 					if(!handleQueryException(wpe))
-						return;
+						return false;
 				}
 			}
 
 			// notify debug listeners!
 			fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_DEBUG_IN, doc));
 			
-			if(processQueryResult(doc))
+			if(processQueryResult(doc)) {
 				querySucceeded(doc);
+				return true;
+			}
 			else 
 				// we had a parsing error
 				fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_QUERY_FAILED));
 		} catch (IOException ioe) {
 			doQueryFailed(ioe);
 		}
+		
+		return false;
 	}
 	
 	private void doQueryFailed(Exception e) {

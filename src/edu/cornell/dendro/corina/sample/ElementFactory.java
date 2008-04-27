@@ -35,8 +35,10 @@ public class ElementFactory {
 				return spawnElement(clazz, new FileElement(file.getPath()));
 			}
 			
-			if(uri.getScheme().equals("corinaweb") ||
-			   uri.getScheme().equals("http")) {
+			if((uri.getScheme().equals("corinaweb") ||
+			   uri.getScheme().equals("http"))
+			   && uri.getPath().startsWith("/measurement/")) {
+				
 				try {
 					return spawnElement(clazz, new CorinaWebElement(filename));
 				} catch (URISyntaxException use) {
