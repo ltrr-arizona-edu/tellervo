@@ -19,7 +19,8 @@ public class BrowserComponent extends JTable {
     }
     
     public static void main(String args[]) {
-        List l = new ArrayList();
+/* TODO: Delete this file, maybe?
+    	List l = new ArrayList();
         for (int i=0; i<args.length; i++) {
             try {
                 Sample s = new Sample(args[i]);
@@ -35,5 +36,6 @@ public class BrowserComponent extends JTable {
         f.getContentPane().add(sp);
         f.pack();
         f.show();
+*/
     }
 }

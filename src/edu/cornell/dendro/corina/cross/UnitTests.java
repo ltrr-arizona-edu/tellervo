@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.cross;
 
+import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 
 import junit.framework.TestCase;
@@ -21,8 +22,8 @@ public class UnitTests extends TestCase {
         try {
             // try an unreasonably big overlap for some medium-length samples
             System.setProperty("corina.cross.overlap", "500");
-            Sample s1 = new Sample("Demo Data/chil/chil001.crn"); // these are <500 years long
-            Sample s2 = new Sample("Demo Data/chil/chil002.crn");
+            Sample s1 = new FileElement("Demo Data/chil/chil001.crn").load(); // these are <500 years long
+            Sample s2 = new FileElement("Demo Data/chil/chil002.crn").load();
             Cross c = new Trend(s1, s2);
             c.run();
             fail();

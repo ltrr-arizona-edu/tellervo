@@ -54,6 +54,7 @@ import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -315,7 +316,7 @@ public class IndexDialog extends JDialog {
                                 iset = new IndexSet(sample);
                             } else {
                                 File f = (File) proxyPopup.getSelectedItem();
-                                Sample proxy = new Sample(f.getPath());
+                                Sample proxy = new FileElement(f.getPath()).load();
                                 iset = new IndexSet(sample, proxy);
                             }
                             iset.run(); // can't be bad here, afaik -- are you sure?
@@ -358,7 +359,7 @@ public class IndexDialog extends JDialog {
                         try {
                             String fn = FileDialog.showSingle("Proxy");
                             // load it, etc.
-                            proxy = new Sample(fn);
+                            proxy = new FileElement(fn).load();
                             iset = new IndexSet(sample, proxy);
                             iset.run();
                             model.setIndexSet(iset);
@@ -387,7 +388,7 @@ public class IndexDialog extends JDialog {
                                 iset = new IndexSet(sample);
                             } else {
                                 File f = (File) proxyPopup.getSelectedItem();
-                                proxy = new Sample(f.getPath());
+                                proxy = new FileElement(f.getPath()).load();
                                 iset = new IndexSet(sample, proxy);
                             }
                             iset.run();

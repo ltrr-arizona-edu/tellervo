@@ -21,6 +21,7 @@
 package edu.cornell.dendro.corina.graph;
 
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.Sample;
 
 import java.io.BufferedWriter;
@@ -152,7 +153,7 @@ public class LoadSave {
 
 	    try {
 		// construct a Graph
-		Graph g = new Graph(new Sample(filename));
+		Graph g = new Graph(ElementFactory.createElement(filename).load());
 		g.scale = scale;
 		g.xoffset = xoffset;
 		g.yoffset = yoffset;

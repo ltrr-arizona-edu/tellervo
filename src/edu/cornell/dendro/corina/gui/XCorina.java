@@ -108,7 +108,7 @@ public class XCorina extends JFrame {
 					for (int i = 0; i < l.size(); i++) {
 						String pathname = ((File) l.get(i)).getPath();
 						try {
-							new Editor(new Sample(pathname));
+							CanOpener.open(pathname);
 						} catch (IOException ioe) {
 							System.out.println("error on " + pathname + "!"); // NEED BETTER ERROR HANDLING!
 						}

@@ -173,22 +173,6 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		metadataChanged = false;
 	}
 
-	public Sample(URI source) throws IOException {
-		if(source.getScheme().equals("file")) {
-			// construct a file from this URI
-			File srcFile = new File(source);
-			
-			// load the sample like we did before (easy!)
-			Sample s = Files.load(srcFile.getAbsolutePath());
-			copy(s, this);
-			trimAllToSize();
-		}
-		else {
-			throw new IOException("I don't know how to open samples using the '" + 
-					source.getScheme() + "' scheme");
-		}
-	}
-	
 	/**
 	 * Creates a new sample from a file on disk
 	 * @param filename
@@ -196,7 +180,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * 
 	 * @deprecated use Sample(URI) instead!
 	 */
-	public Sample(String filename) throws IOException {
+	private Sample(String filename) throws IOException {
 		// new @-notation
 		if (filename.startsWith("@"))
 			filename = System.getProperty("corina.dir.data", ".")
@@ -380,7 +364,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @deprecated
 	 */
 	@Deprecated
-	public Integer getInteger(String field) {
+	private Integer getInteger(String field) {
 		// TODO: load, if needed.
 
 		Object val = getMeta(field);
@@ -396,7 +380,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @deprecated
 	 */
 	@Deprecated
-	public List getList(String field) {
+	private List getList(String field) {
 		// TODO: load, if needed.
 
 		if (field.equals("data"))

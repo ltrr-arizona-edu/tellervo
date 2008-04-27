@@ -21,6 +21,7 @@
 package edu.cornell.dendro.corina.editor;
 
 import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
@@ -343,7 +344,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			}
 
 			// now try to load it
-			Sample tmp = new Sample(tmpFilename);
+			Sample tmp = new FileElement(tmpFilename).load();
 
 			// copy it here, except for the filename
 			Sample.copy(tmp, sample);

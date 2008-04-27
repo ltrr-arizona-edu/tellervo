@@ -30,6 +30,18 @@ public class ElementList extends ArrayList<Element> {
 		copyFrom(src);
 	}
 	
+	/**
+	 * Copy an entire elementlist, preserving activeMap
+	 * @param src
+	 */
+	public void addAll(ElementList src) {
+		for(Element e : src) {
+			add(e);
+			if(src.activeMap.containsKey(e))
+				activeMap.put(e, src.activeMap.get(e));
+		}
+	}
+	
 	public void copyFrom(ElementList src) {
 		// clear out my info
 		clear();

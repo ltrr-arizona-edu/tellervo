@@ -7,6 +7,7 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterAbortException;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +21,7 @@ import javax.swing.JOptionPane;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.CanOpener;
 import edu.cornell.dendro.corina.gui.FileDialog;
@@ -174,16 +176,23 @@ public class FileMenu extends JMenu {
 
 	// ask the user for a file to open, and open it
 	public static void open() {
+		String filename = "";
+		
 		try {
+			filename = FileDialog.showSingle(I18n.getText("open"));
 			// get filename, and load
-			CanOpener.open(FileDialog.showSingle(I18n.getText("open")));
+			CanOpener.open(filename);
 		} catch (UserCancelledException uce) {
 			// do nothing
+		} catch (WrongFiletypeException wfte) {
+			Alert.error("Can't open file", "Can't open the file " + 
+					new File(filename).getName() + ".\n" +
+					"Corina does not recognize that file type.");
 		} catch (IOException ioe) {
 			// BUG: this should never happen.  loading is so fast, it'll get displayed
 			// in the preview component, and if it can't be loaded, "ok" should be dimmed.
 			// (is that possible with jfilechooser?)
-			Alert.error("I/O Error", "Can't open file: " + ioe.getMessage());
+			Alert.error("I/O Error", "Can't open file " + filename + ":\n" + ioe.getMessage());
 			// (so why not use Bug.bug()?)
 		}
 	}
@@ -207,8 +216,11 @@ public class FileMenu extends JMenu {
 
 				try {
 					CanOpener.open(e.getName());
+				} catch (WrongFiletypeException wfte) {
+					Alert.error("Can't open file", "Can't open the file " + e.getShortName() + ":\n"
+							+ "Unsupported file type.");
 				} catch (IOException ioe) {
-					Alert.error("I/O Error", "Can't open file: "
+					Alert.error("I/O Error", "Can't open file " + e.getShortName() + ":\n"
 							+ ioe.getMessage());
 				}
 			}
@@ -241,7 +253,7 @@ public class FileMenu extends JMenu {
 					problem = true;
 					if (errorsamples.length() != 0)
 						errorsamples += ", ";
-					errorsamples += e.getName();
+					errorsamples += e.getShortName();
 				}
 			}
 

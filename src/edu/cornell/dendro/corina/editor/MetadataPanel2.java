@@ -23,6 +23,7 @@ package edu.cornell.dendro.corina.editor;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.layouts.DialogLayout;
 import edu.cornell.dendro.corina.metadata.*;
+import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
@@ -538,7 +539,7 @@ public class MetadataPanel2 extends JScrollPane implements SampleListener {
 
     // DEBUG
     public static void main(String args[]) throws Exception {
-	Sample s = new Sample(args[0]);
+	Sample s = new FileElement(args[0]).load();
 	MetadataPanel2 p = new MetadataPanel2(s);
 	JFrame f = new JFrame("MetadataPanel2: " + s);
 	f.setContentPane(p);

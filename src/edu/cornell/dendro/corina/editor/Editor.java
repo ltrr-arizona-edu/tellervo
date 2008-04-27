@@ -78,6 +78,7 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
@@ -996,7 +997,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 	public static void main(String args[]) throws Exception {
 		try {
-			Sample s = new Sample(args[0]);
+			Sample s = new FileElement(args[0]).load();
 
 			boolean x[] = askWhichPages(s, 3);
 			System.out.print("x[] = { ");

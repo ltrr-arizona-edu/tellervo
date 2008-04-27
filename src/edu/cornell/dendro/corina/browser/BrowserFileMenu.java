@@ -179,9 +179,7 @@ public class BrowserFileMenu extends JMenu {
         open.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String filename = browser.getSelectedRow().getPath();
-
-                    new Editor(new Sample(filename));
+                    new Editor(browser.getSelectedRow().getElement().load());
                 } catch (IOException ioe) {
                     // TODO: display USER error message
                     new Bug(ioe);

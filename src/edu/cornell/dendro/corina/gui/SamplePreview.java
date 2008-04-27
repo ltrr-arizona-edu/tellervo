@@ -43,6 +43,7 @@ import edu.cornell.dendro.corina.cross.Grid;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.ElementFactory;
 
 public class SamplePreview extends JPanel implements PropertyChangeListener {
   private static final CorinaLog log = new CorinaLog(SamplePreview.class);
@@ -137,7 +138,8 @@ public class SamplePreview extends JPanel implements PropertyChangeListener {
 			} catch (WrongFiletypeException wfte) {
 				// um.. no. this is annoying!
 				// wfte.printStackTrace();
-				s = new Sample(file.getPath());
+				s = ElementFactory.createElement(file.getPath()).load();
+				//s = new Sample(file.getPath());
 			} // but can't string catches here ... darn
 
 			// get preview, and show it.

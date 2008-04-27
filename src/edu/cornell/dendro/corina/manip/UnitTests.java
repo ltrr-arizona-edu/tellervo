@@ -23,6 +23,7 @@ package edu.cornell.dendro.corina.manip;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 
 import junit.framework.TestCase;
@@ -45,7 +46,7 @@ public class UnitTests extends TestCase {
 	public void testClean() {
 		try {
 			// load sample
-			Sample s = new Sample("Demo Data/chil/chil001.crn");
+			Sample s = new FileElement("Demo Data/chil/chil001.crn").load();
 			assertTrue(s.getCount() != null);
 
 			// clean it

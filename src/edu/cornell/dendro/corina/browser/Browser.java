@@ -95,6 +95,7 @@ import edu.cornell.dendro.corina.print.Printer;
 import edu.cornell.dendro.corina.print.TabbedLineFactory;
 import edu.cornell.dendro.corina.print.TextLine;
 import edu.cornell.dendro.corina.print.ThinLine;
+import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
@@ -1036,15 +1037,14 @@ public class Browser extends XFrame {
 		try {
 			// loop, adding elements to list
 			for (int i = 0; i < n; i++) {
-				String filename = ((Row) visibleFiles.get(selected[i]))
-						.getPath();
-				Sample test = new Sample(filename);
+				Element e = new CachedElement(visibleFiles.get(selected[i]).getElement());
+				Sample test = e.load();
 
 				// if this sample has elements, use its elements, else just add this element.
 				if (test.getElements() != null)
 					elements.addAll(test.getElements());
 				else
-					elements.add(ElementFactory.createElement(filename));
+					elements.add(e);
 			}
 
 			// make sum (don't sort here: it's already sorted somehow)
@@ -1193,7 +1193,8 @@ public class Browser extends XFrame {
 
 		// nope, it's a file, so try to open that.  BETTER: use the canopener so you can load grids, too.
 		try {
-			new Editor(new Sample(r.getPath()));
+			Sample s = r.getElement().load();
+			new Editor(s);
 			// FIXME: this editor is just a JFrame, so add a close listener to update this row when it closes,
 			// iff the modified date changes.
 			// (or even: as long as it's open, add a thread to watch it by statting the file every (10?) sec.)

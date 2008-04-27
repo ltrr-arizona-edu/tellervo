@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.browser;
 
+import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 
 import java.util.List;
@@ -101,7 +102,8 @@ public class ITRDB {
 	f.get(local.getPath(), ITRDB_DIR + filename);
 
 	// load local temp file
-	Sample s = new Sample(local.getPath());
+	FileElement fe = new FileElement(local.getPath());
+	Sample s = fe.load();
 
 	// delete local temp file
 	local.delete();

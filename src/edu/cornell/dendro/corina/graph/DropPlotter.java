@@ -20,6 +20,7 @@
 
 package edu.cornell.dendro.corina.graph;
 
+import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 
 import java.io.File;
@@ -63,7 +64,7 @@ public final class DropPlotter implements DropTargetListener {
 		for (int i=0; i<l.size(); i++) {
 		    String pathname = ((File) l.get(i)).getPath();
 		    try {
-			_g.add(new Sample(pathname));
+			_g.add(new FileElement(pathname).load());
 		    } catch (IOException ioe) {
 			System.out.println("error on " + pathname + "!"); // NEED BETTER ERROR HANDLING!
 		    }

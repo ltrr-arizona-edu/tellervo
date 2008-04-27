@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.cross;
 
+import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 
 import java.io.File;
@@ -336,7 +337,7 @@ public class Bayesian {
 			done = true;
 			break;
 		    }
-		    s = new Sample((String) filenames.get(A));
+		    s = new FileElement((String) filenames.get(A)).load();
 		    // next line is skipped if it couldn't be loaded
 		    done = true;
 		} catch (IOException ioe) {
@@ -360,7 +361,7 @@ public class Bayesian {
 			done = true;
 			break;
 		    }
-		    s = new Sample((String) filenames.get(B));
+		    s = new FileElement((String) filenames.get(B)).load();
 		    // next line is skipped if it couldn't be loaded
 		    done = true;
 		} catch (IOException ioe) {

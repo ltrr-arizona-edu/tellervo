@@ -26,6 +26,8 @@ import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.menus.OpenRecent;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.Sample;
 
 import java.io.IOException;
@@ -37,7 +39,8 @@ public class CanOpener {
 
     public static void open(String filename) throws WrongFiletypeException, IOException {
 	try {// is it a sample?
-	    Sample s = new Sample(filename);
+		Element e = ElementFactory.createElement(filename);
+	    Sample s = e.load();
 	    new Editor(s);
 	    OpenRecent.fileOpened(filename);
 	    return;
