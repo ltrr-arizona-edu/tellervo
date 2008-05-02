@@ -9,9 +9,11 @@ public class Dispatch {
 
 	public static String GetVMeasurementResult(int VMeasurementID) throws SQLException {
 		// Simple and clean. Pass in the ID, return the result string.
-		VMeasurementResult result = new VMeasurementResult(VMeasurementID, true);
-		
+try{
+		VMeasurementResult result = new VMeasurementResult(VMeasurementID, false);
 		return result.getResult();
+} catch (Exception e) { e.printStackTrace();  if (e instanceof SQLException) throw (SQLException) e; }		
+return "<error>";
 	}
 	
 	public static void main(String[] args) {

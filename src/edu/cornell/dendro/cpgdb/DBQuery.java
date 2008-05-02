@@ -10,7 +10,7 @@ public class DBQuery {
 	private QueryWrapper queries;
 	
 	// in debug mode, we print out a bunch of stuff to stdout.
-	private boolean debug = false;
+	private boolean debug = true;
 	
 	public DBQuery(Connection sqlConnection) throws SQLException {
 		this.sqlConnection = sqlConnection;
@@ -28,6 +28,9 @@ public class DBQuery {
 
 		if(nativeUUID != null)
 			return nativeUUID;
+
+		if(nativeUUID == null)
+			throw new SQLException("Could not generate UUID");
 
 		Statement stmt = sqlConnection.createStatement();
 		ResultSet res = stmt.executeQuery("SELECT uuid()");

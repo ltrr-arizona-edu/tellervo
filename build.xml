@@ -59,7 +59,7 @@
 -->
 
   <property name="app.name"      value="corina"/>
-  <property name="app.version"   value="dev"/>
+  <property name="app.version"   value="bleedingedge"/>
   <property name="app.keystore"  value="corina.keystore.set.in.build.properties"/>
   <property name="build.home"    value="build"/>
   <property name="deploy.home"   value="deploy"/>
