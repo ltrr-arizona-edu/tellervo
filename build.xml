@@ -140,6 +140,8 @@
   <property name="itext.jar" value="(set this in build.properties!)"/>
   <property name="jdom.jar" value="(set this in build.properties!)"/>
   <property name="pljava.jar" value="(set this in build.properties!)"/>
+  <property name="swing-layout.jar" value="(set this in build.properties!)"/>
+  <property name="jgoodies-forms.jar" value="(set this in build.properties!)"/>
 	
 <!-- ==================== Compilation Classpath =========================== -->
 
@@ -166,6 +168,8 @@
     <pathelement location="${RXTXcomm.jar}"/> 
     <pathelement location="${jdom.jar}"/> 
     <pathelement location="${pljava.jar}"/> 
+    <pathelement location="${swing-layout.jar}"/> 
+    <pathelement location="${jgoodies-forms.jar}"/> 
   </path>
 
 <!-- ==================== All Target ====================================== -->
@@ -314,7 +318,7 @@
 	<format property="deploy.releaseid" pattern="yyyyMMdd-hhmm"/>
     </tstamp>
 
-    <echo file="Source/Timestamp" message="${deploy.releaseid}"/>
+    <echo file="src/Timestamp" message="${deploy.releaseid}"/>
 
     <jar jarfile="${deploy.home}/${app.name}-${app.version}.jar"
          basedir="${build.home}" index="true" compress="true">
