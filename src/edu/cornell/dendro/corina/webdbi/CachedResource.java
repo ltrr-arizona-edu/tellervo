@@ -45,7 +45,9 @@ public abstract class CachedResource extends Resource {
 		System.out.println("Saving cache for '" + getResourceName() + "' to " + cachedResourcePath);
 		
 		try {
-			FileWriter writer = new FileWriter(cachedResourcePath);
+			// We can't use a FileWriter here, because it munges UTF-8!
+			//FileWriter writer = new FileWriter(cachedResourcePath);
+			OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(cachedResourcePath, false), "UTF8");
 			XMLOutputter outputter = new XMLOutputter();
 			
 			outputter.output(doc, writer);
