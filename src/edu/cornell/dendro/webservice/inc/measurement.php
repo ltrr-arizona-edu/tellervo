@@ -38,6 +38,8 @@ class measurement
     var $createdTimeStamp = NULL;
     var $lastModifiedTimeStamp = NULL;
     var $name = NULL;
+    var $readingCount = NULL;
+    var $measurementCount = NULL;
     var $description = NULL;
     var $centroidLat = NULL;
     var $centroidLong = NULL;
@@ -121,7 +123,7 @@ class measurement
 
                 if ($format=="full")
                 {
-                    $sql = "select x(centroid(vmextent)), y(centroid(vmextent)), xmin(vmextent), xmax(vmextent), ymin(vmextent), ymax(vmextent) from tblvmeasurementmetacache where vmeasurementid=".$this->vmeasurementID;
+                    $sql = "select readingcount, measurementcount, x(centroid(vmextent)), y(centroid(vmextent)), xmin(vmextent), xmax(vmextent), ymin(vmextent), ymax(vmextent) from tblvmeasurementmetacache where vmeasurementid=".$this->vmeasurementID;
                     pg_send_query($dbconn, $sql);
                     $result = pg_get_result($dbconn);
                     $row = pg_fetch_array($result);
@@ -131,6 +133,8 @@ class measurement
                     $this->maxLong = $row['xmax'];
                     $this->centroidLat = $row['y'];
                     $this->centroidLong = $row['x'];
+                    $this->readingCount = $row['readingcount'];
+                    $this->measurementCount = $row['measurementcount'];
 
                     $this->setReadingsFromDB();
                     $this->setReferencesFromDB();
@@ -523,7 +527,7 @@ class measurement
             $xml.= "<metadata>\n";
             if(isset($this->name))                  $xml.= "<name>".$this->name."</name>\n";
             if(isset($this->isReconciled))          $xml.= "<isReconciled>".fromPHPtoStringBool($this->isReconciled)."</isReconciled>\n";
-            if(isset($this->startYear))             $xml.= "<startYear>".$this->startYear."</startYear>\n";
+            if(isset($this->startYear))             $xml.= "<dateRange year=\"".$this->startYear."\" count=\"".$this->readingCount."\" />\n";
             if(isset($this->isLegacyCleaned))       $xml.= "<isLegacyCleaned>".fromPHPtoStringBool($this->isLegacyCleaned)."</isLegacyCleaned>\n";
             if(isset($this->measuredByID))          $xml.= "<measuredBy id=\"".$this->measuredByID."\">".$this->measuredBy."</measuredBy>\n";
             if(isset($this->ownerUserID))           $xml.= "<owner id=\"".$this->ownerUserID."\">".$this->owner."</owner>\n";
@@ -593,7 +597,7 @@ class measurement
                     if (is_numeric($recurseLevel))  $recurseLevel=$recurseLevel-1;
 
                     $xml.="<references";
-                    if(isset($this->vmeasurementOp)) $xml.= " operation=\"".$this->vmeasurementOp."\"";
+                    if(isset($this->vmeasurementOp)) $xml.= " operation=\"".strtolower($this->vmeasurementOp)."\"";
                     $xml.=">";
                     foreach($this->referencesArray as $value)
                     {
