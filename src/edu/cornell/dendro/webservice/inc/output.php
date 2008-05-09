@@ -189,12 +189,8 @@ echo gMapDataFromXML($xmldata);
 //]]>
 </script>
 </head>
-
-
   <body onload="load()" onunload="GUnload()">
-<?
-    echo "    <div id=\"map\" style=\"width: ".$mapWidth."px; height: ".$mapHeight."px\"></div>\n";
-?>
+  <div id="map" style="margin-left:0px;margin-bottom:0px;height:100%;background:#f90"></div>
   </body>
 </html>
 <?
