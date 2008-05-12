@@ -1,5 +1,14 @@
 package edu.cornell.dendro.corina.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.ListSelectionModel;
+
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.dictionary.SiteRegion;
+import edu.cornell.dendro.corina.site.Site;
+
 public class DBBrowser extends javax.swing.JDialog{
     /** A return status code - returned if Cancel button has been pressed */
     public static final int RET_CANCEL = 0;
@@ -10,6 +19,51 @@ public class DBBrowser extends javax.swing.JDialog{
     public DBBrowser(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        populateComponents();
+    }
+
+    private void populateComponents() {
+    	List<SiteRegion> regions = (List<SiteRegion>) App.dictionary.getDictionary("Regions");
+    	List<SiteRegion> regionList = new ArrayList<SiteRegion>();
+
+    	// single selection on site list
+		lstSites.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    	
+    	// Duplicate the region list; create an 'All Regions' 
+    	regionList.add(new SiteRegion("ALL", "All Regions"));
+    	
+    	// null regions shouldn't happen, but be safe
+    	if(regions != null) 
+        	regionList.addAll(regions);
+    	
+    	// and make the regions combo box reflect it
+		cboBrowseBy.setModel(new javax.swing.DefaultComboBoxModel(regionList.toArray()));
+		
+		// select the first thing in the list
+		// TODO: Should we store the last region we used?
+		// populate our site list (done automatically by choosing an index)
+		cboBrowseBy.setSelectedIndex(0);
+		
+    }
+    
+    private void populateSiteList() {
+    	List<Site> sites = App.sites.getSites();
+    	SiteRegion region = (SiteRegion) cboBrowseBy.getSelectedItem();
+
+    	// have we selected 'all regions?'
+    	if(region.getInternalRepresentation().equals("ALL")) {    		
+    		lstSites.setModel(new javax.swing.DefaultComboBoxModel(sites.toArray()));
+    	} else {
+    		List<Site> filteredSites = new ArrayList<Site>();
+    		
+    		// filter the sites...
+    		for(Site s : sites) {
+    			if(s.inRegion(region.getInternalRepresentation()))
+    				filteredSites.add(s);
+    		}
+    		
+    		lstSites.setModel(new javax.swing.DefaultComboBoxModel(filteredSites.toArray()));
+    	}
     }
     
     /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
@@ -240,7 +294,8 @@ public class DBBrowser extends javax.swing.JDialog{
     }//GEN-LAST:event_closeDialog
 
     private void cboBrowseByActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboBrowseByActionPerformed
-        // TODO add your handling code here:
+    	// repopulate our site list
+    	populateSiteList();
     }//GEN-LAST:event_cboBrowseByActionPerformed
 
     private void btnSelectAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelectAllActionPerformed

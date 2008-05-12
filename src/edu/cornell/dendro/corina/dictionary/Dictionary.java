@@ -149,7 +149,7 @@ public class Dictionary extends CachedResource {
 		 * Kludge: 
 		 * regions isn't a regionsDictionary.
 		 */
-		if(dictionaryType.equalsIgnoreCase("regions"))
+		if(dictionaryType.equalsIgnoreCase("Regions"))
 			localName = "regions";
 		
 		try {

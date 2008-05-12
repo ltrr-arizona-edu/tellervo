@@ -24,11 +24,12 @@ public abstract class CachedResource extends Resource {
 		File cachedResourceFile = new File(cachedResourcePath);
 		if(cachedResourceFile.exists()) {
 			try {
-				System.out.println("Loading cache for '" + getResourceName() + "'");
 				SAXBuilder builder = new SAXBuilder();
 				doc = builder.build(cachedResourceFile);
 				
 				processQueryResult(doc);
+				
+				System.out.println("Loaded cache for '" + getResourceName() + "'");
 			} catch (Exception e) {
 				System.out.println("Unable to load cache for '" + getResourceName() + "': " + e);
 				return;

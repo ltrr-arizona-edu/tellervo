@@ -24,7 +24,7 @@ public class SiteList extends CachedResource {
 	 * @param cachedResourceName
 	 */
 	public SiteList() {
-		super("sites");
+		super("sites");		
 	}
 
 	/* (non-Javadoc)
@@ -35,6 +35,12 @@ public class SiteList extends CachedResource {
 		return requestElement;
 	}
 
+	@Override
+	protected void queryFailed(Exception e) {
+		System.out.println("Could not load sites:");
+		e.printStackTrace();
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.cornell.dendro.corina.webdbi.Resource#processQueryResult(org.jdom.Document)
 	 */
@@ -78,13 +84,15 @@ public class SiteList extends CachedResource {
 			// catch a region tag (can we have more than one??)
 			// FIXME: Can we have more than one region?
 			child = se.getChild("region");
-			if(child != null && ((val = se.getAttributeValue("id")) != null)) {
+			if(child != null && ((val = child.getAttributeValue("id")) != null)) {
 				site.setRegion(val, child.getText());
 			}
 			
 			newsites.add(site);
 		}
 
+		System.out.println("Sites: " + newsites.size());
+		
 		// set our current list to our new list; discard the old list
 		sites = newsites;
 		
@@ -92,8 +100,9 @@ public class SiteList extends CachedResource {
 	}
 	
 	public List<Site> getSites() {
+		System.out.println("Getsites: " + sites.size());
 		return sites;
 	}
 
-	private volatile List<Site> sites = new ArrayList<Site>();
+	private List<Site> sites;
 }
