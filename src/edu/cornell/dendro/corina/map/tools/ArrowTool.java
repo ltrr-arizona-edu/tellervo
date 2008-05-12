@@ -25,8 +25,8 @@ import edu.cornell.dendro.corina.map.View;
 import edu.cornell.dendro.corina.map.Projection;
 import edu.cornell.dendro.corina.map.MapPanel;
 import edu.cornell.dendro.corina.site.Location;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.LegacySite;
+import edu.cornell.dendro.corina.site.LegacySiteDB;
 import edu.cornell.dendro.corina.site.SiteInfoDialog;
 import edu.cornell.dendro.corina.site.SiteNotFoundException;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -116,7 +116,7 @@ public class ArrowTool extends Tool {
             try {
                 Projection r = Projection.makeProjection(v);
                 Point pt = e.getPoint();
-                Site site = p.siteForPoint(r, pt, 20*((int) v.getZoom())); // from popup trigger, below
+                LegacySite site = p.siteForPoint(r, pt, 20*((int) v.getZoom())); // from popup trigger, below
                 new SiteInfoDialog(site, p.getFrame());
                 p.notifyLabelsChanged();
                 p.updateBufferLabelsOnly();
@@ -151,7 +151,7 @@ public class ArrowTool extends Tool {
 
     // temps here?
     Projection r;
-    Site site=null;
+    LegacySite site=null;
     Point down=null;
 
     @Override
@@ -234,9 +234,9 @@ public class ArrowTool extends Tool {
              TODO: deselect other sites
              TODO: memoize projections, so as you drag, this doesn't change
             */
-            java.util.List sites = SiteDB.getSiteDB().sites;
+            java.util.List sites = LegacySiteDB.getSiteDB().sites;
             for (int i=0; i<sites.size(); i++) {
-                Site s = (Site) sites.get(i);
+                LegacySite s = (LegacySite) sites.get(i);
                 Location l = s.getLocation();
                 if (l == null)
                     continue;

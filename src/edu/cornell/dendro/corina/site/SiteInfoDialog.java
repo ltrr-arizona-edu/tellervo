@@ -72,8 +72,8 @@ public class SiteInfoDialog extends JDialog {
 		return Box.createHorizontalStrut(width);
 	}
 
-	private Site site;
-	private Site originalSite;
+	private LegacySite site;
+	private LegacySite originalSite;
 
 	private JTextField name, code, id;
 
@@ -96,12 +96,12 @@ public class SiteInfoDialog extends JDialog {
 
 	// display info for |site|;
 	// center over |window|, or on screen if null.
-	public SiteInfoDialog(Site infosite, Window window) {
+	public SiteInfoDialog(LegacySite infosite, Window window) {
 		super((Frame) window, infosite.getName(), true);
 
 		// save site reference
 		this.site = infosite;
-		this.originalSite = (Site) infosite.clone();
+		this.originalSite = (LegacySite) infosite.clone();
 
 		// set dialog title
 		setTitle(site.getName());

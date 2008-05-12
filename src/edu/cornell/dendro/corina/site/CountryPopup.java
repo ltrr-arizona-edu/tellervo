@@ -133,7 +133,7 @@ public class CountryPopup extends JComboBox {
     
     // returns an array of the country names in the sitedb, sorted
     private String[] getCountryNames() {
-        String codes[] = SiteDB.getSiteDB().getCountries();
+        String codes[] = LegacySiteDB.getSiteDB().getCountries();
         String countries[] = new String[codes.length];
         for (int i=0; i<codes.length; i++) {
         	try {

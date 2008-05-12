@@ -30,8 +30,8 @@ import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.LegacySite;
+import edu.cornell.dendro.corina.site.LegacySiteDB;
 import edu.cornell.dendro.corina.site.SiteNotFoundException;
 
 import java.io.File;
@@ -143,9 +143,9 @@ public class BrowserFileMenu extends JMenu {
             public void actionPerformed(ActionEvent e) {
                 // try to figure out what site this is (from the folder)
 
-                Site s = null;
+                LegacySite s = null;
                 try {
-                    s = SiteDB.getSiteDB().getSite(new File(browser.getFolder()));
+                    s = LegacySiteDB.getSiteDB().getSite(new File(browser.getFolder()));
                 } catch (SiteNotFoundException snfe) {
                     // can't tell what site: so just leave it blank.
                 }

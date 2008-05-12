@@ -1,7 +1,7 @@
 package edu.cornell.dendro.corina.map;
 
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.LegacySite;
+import edu.cornell.dendro.corina.site.LegacySiteDB;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -26,7 +26,7 @@ import java.util.HashSet;
      <li>Move getLocations() to Site?  (Law of Demeter.)  Or better: make it getVisibleLocations().
    </ul>
  
-   @see edu.cornell.dendro.corina.site.Site
+   @see edu.cornell.dendro.corina.site.LegacySite
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
@@ -50,7 +50,7 @@ public class LabelSet {
     public LabelSet(List sitelist) {
         Iterator all = sitelist.iterator();
         while (all.hasNext()) {
-            Site site = (Site) all.next();
+            LegacySite site = (LegacySite) all.next();
             if (site.getLocation() != null) {
                 visibleSites.add(site);
                 visibleLocations.add(site.getLocation());
@@ -100,7 +100,7 @@ public class LabelSet {
        @param site the Site to check
        @return true, if the site is visible, else false
     */
-    public boolean isVisible(Site site) {
+    public boolean isVisible(LegacySite site) {
         return visibleSites.contains(site);
     }
 
@@ -110,7 +110,7 @@ public class LabelSet {
        @param site the Site to change
        @param visible if true, set it to visible; if false, invisible
     */
-    public void setVisible(Site site, boolean visible) {
+    public void setVisible(LegacySite site, boolean visible) {
         if (visible) {
         	visibleSites.add(site);
             visibleLocations.add(site.getLocation());
@@ -138,9 +138,9 @@ public class LabelSet {
         // anyway, so it wouldn't really hurt anything.)
         // since it's a set, so it doesn't matter that some of these
         // are probably already there.
-        Iterator all = SiteDB.getSiteDB().sites.iterator();
+        Iterator all = LegacySiteDB.getSiteDB().sites.iterator();
         while (all.hasNext()) {
-            Site site = (Site) all.next();
+            LegacySite site = (LegacySite) all.next();
             if (site.getLocation() != null && site.getLocation().valid()) {
                 visibleSites.add(site);
                 visibleLocations.add(site.getLocation());
@@ -157,7 +157,7 @@ public class LabelSet {
     	Iterator iter = visibleSites.iterator();
     	
     	while(iter.hasNext()) {
-    		visibleLocations.add(((Site)iter.next()).getLocation());
+    		visibleLocations.add(((LegacySite)iter.next()).getLocation());
     	}
     }
     
@@ -173,7 +173,7 @@ public class LabelSet {
      @param site the Site to check
      @return true, if the site is visible, else false
      */
-    public boolean isSelected(Site site) {
+    public boolean isSelected(LegacySite site) {
         return selectedSites.contains(site);
     }
 
@@ -183,7 +183,7 @@ public class LabelSet {
        @param site the Site to change
        @param selected if true, select it; if false, deselect it
     */
-    public void setSelected(Site site, boolean selected) {
+    public void setSelected(LegacySite site, boolean selected) {
         if (selected)
             selectedSites.add(site);
         else
@@ -200,9 +200,9 @@ public class LabelSet {
     }
 
     public void selectAllSites() {
-        Iterator all = SiteDB.getSiteDB().sites.iterator();
+        Iterator all = LegacySiteDB.getSiteDB().sites.iterator();
         while (all.hasNext()) {
-            Site site = (Site) all.next();
+            LegacySite site = (LegacySite) all.next();
             if (site.getLocation() != null)
                 selectedSites.add(site);
         }

@@ -64,8 +64,8 @@ import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.map.MapFrame;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.LegacySite;
+import edu.cornell.dendro.corina.site.LegacySiteDB;
 import edu.cornell.dendro.corina.site.SiteNotFoundException;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -189,8 +189,8 @@ public class CrossdateWindow extends XFrame implements PrintableDocument,
 		public void actionPerformed(ActionEvent ae) {
 			try {
 				// figure out the locations
-				Site s1 = SiteDB.getSiteDB().getSite(crossdate.getFixed());
-				Site s2 = SiteDB.getSiteDB().getSite(crossdate.getMoving());
+				LegacySite s1 = LegacySiteDB.getSiteDB().getSite(crossdate.getFixed());
+				LegacySite s2 = LegacySiteDB.getSiteDB().getSite(crossdate.getMoving());
 
 				// draw the map
 				new MapFrame(s1, s2);
@@ -534,8 +534,8 @@ public class CrossdateWindow extends XFrame implements PrintableDocument,
 	private boolean mapAvailable() {
 		// REFACTOR: should it be sample.getSite(), or Site.getSite(sample)?
 		try {
-			Site s1 = SiteDB.getSiteDB().getSite(crossdate.getFixed());
-			Site s2 = SiteDB.getSiteDB().getSite(crossdate.getMoving());
+			LegacySite s1 = LegacySiteDB.getSiteDB().getSite(crossdate.getFixed());
+			LegacySite s2 = LegacySiteDB.getSiteDB().getSite(crossdate.getMoving());
 			return (s1.getLocation() != null && s2.getLocation() != null);
 		} catch (SiteNotFoundException snfe) {
 			return false;

@@ -101,8 +101,8 @@ import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.LegacySite;
+import edu.cornell.dendro.corina.site.LegacySiteDB;
 import edu.cornell.dendro.corina.site.SiteNotFoundException;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -212,7 +212,7 @@ public class Browser extends XFrame {
 	private void updateSummary() {
 		// label 1: "<code>: <site name>"
 		try {
-			Site site = SiteDB.getSiteDB().getSite(new File(folder));
+			LegacySite site = LegacySiteDB.getSiteDB().getSite(new File(folder));
 			String code = site.getCode();
 			String name = site.getName();
 			label1.setText(code + ": " + name);

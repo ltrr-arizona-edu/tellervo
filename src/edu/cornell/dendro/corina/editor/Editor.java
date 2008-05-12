@@ -82,7 +82,7 @@ import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
-import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.LegacySite;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -663,7 +663,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 	// new sample for site -- not used yet
-	public Editor(Site s) {
+	public Editor(LegacySite s) {
 		// ask user for title
 		String title;
 		try {

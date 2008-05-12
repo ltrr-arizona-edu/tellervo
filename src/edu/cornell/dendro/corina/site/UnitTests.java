@@ -68,7 +68,7 @@ public class UnitTests extends TestCase {
         if (App.prefs.getPref("corina.dir.data") == null)
             App.prefs.setPref("corina.dir.data", "Demo Data");
         try {
-	    SiteDB db = SiteDB.getSiteDB(); // this is SLOW!
+	    LegacySiteDB db = LegacySiteDB.getSiteDB(); // this is SLOW!
 	    assertTrue(db != null);
 	    assertTrue(db.sites != null);
         } catch (Exception e) {

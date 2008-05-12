@@ -57,7 +57,7 @@ import java.util.List;
 </table>
 </blockquote>
 
-   @see Site
+   @see LegacySite
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
@@ -106,7 +106,7 @@ public class SitePrinter extends Printer {
 	table = new TabbedLineFactory("> 6% > 6% > 85% < 3% <");
 
 	// print each country
-	List countries = SiteDB.getSiteDB().getCountriesInOrder();
+	List countries = LegacySiteDB.getSiteDB().getCountriesInOrder();
 	for (int i=0; i<countries.size(); i++) {
 	    String country = (String) countries.get(i);
 	    printCountry(country);
@@ -138,7 +138,7 @@ public class SitePrinter extends Printer {
 	// print each site in this country.
 	// TODO: put them in alphabetical order by name.
 	for (int i=0; i<sites.size(); i++) {
-	    Site site = (Site) sites.get(i);
+	    LegacySite site = (LegacySite) sites.get(i);
 	    if (site.getCountry().equals(country))
 		printSite(site);
 	}
@@ -151,7 +151,7 @@ public class SitePrinter extends Printer {
     private int countSitesInCountry(String country) {
 	int num = 0;
 	for (int i=0; i<sites.size(); i++) {
-	    Site site = (Site) sites.get(i);
+	    LegacySite site = (LegacySite) sites.get(i);
 	    if (site.getCountry().equals(country))
 		num++;
 	}
@@ -159,7 +159,7 @@ public class SitePrinter extends Printer {
     }
 
     // print one site, as a table row.
-    private void printSite(Site site) {
+    private void printSite(LegacySite site) {
 	String args[] = new String[] {
 	    site.getCode(),
 	    site.getId(),

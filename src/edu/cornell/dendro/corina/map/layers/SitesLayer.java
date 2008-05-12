@@ -27,8 +27,8 @@ import edu.cornell.dendro.corina.map.View;
 import edu.cornell.dendro.corina.map.LabelSet;
 
 import edu.cornell.dendro.corina.site.Location;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.LegacySite;
+import edu.cornell.dendro.corina.site.LegacySiteDB;
 
 import edu.cornell.dendro.corina.util.ColorUtils;
 
@@ -114,14 +114,14 @@ public class SitesLayer extends Layer {
         setFontForLabel(g2, r.view);
         
         // draw all (visible) sites
-        List allSites = SiteDB.getSiteDB().sites;
+        List allSites = LegacySiteDB.getSiteDB().sites;
         Iterator iter = allSites.iterator(); // this iterator gives me all the sites
         /* WAS: Iterator iter = siteHash.values().iterator(); // this iterator gives me lists of sites */
 
         while (iter.hasNext() && !abort) {
             // WAS: List list = (List) iter.next();
             // WAS: Site top = (Site) list.get(0);
-            Site site = (Site) iter.next();
+            LegacySite site = (LegacySite) iter.next();
 
             // if its location is null (unknown), skip it.
             if (site.getLocation() == null)
@@ -160,7 +160,7 @@ public class SitesLayer extends Layer {
     }
 
     // draw a label using this mappanel's offset hash
-    private void drawLabel(Graphics2D g2, Point p, Site site, int numSites, View view) {
+    private void drawLabel(Graphics2D g2, Point p, LegacySite site, int numSites, View view) {
         // get offsets
 	Offset o = getOffset(site.getLocation());
 
@@ -192,7 +192,7 @@ public class SitesLayer extends Layer {
     /** Set your sites on this! */
     public void setSites(List sites) {
         for (int i=0; i<sites.size(); i++) {
-            Site s = (Site) sites.get(i);
+            LegacySite s = (LegacySite) sites.get(i);
             if (s.getLocation() == null)
                 continue; // ignore these
             String loc = s.getLocation().toString();
@@ -222,7 +222,7 @@ public class SitesLayer extends Layer {
     // -- (i.e., 2/3 ms per label for text)
     // IDEA: move label (text part, not dot+line) into its own layer?
     public static void drawLabelSR(Graphics2D g2,
-                                   Point p /* site point */, Site site, int numSites,
+                                   Point p /* site point */, LegacySite site, int numSites,
                                    View view /* used only for clipping */,
                                    Point t /* bubble center */,
                                    boolean selected) {
@@ -262,7 +262,7 @@ public class SitesLayer extends Layer {
     }
 
     // TODO: i'll want the option of "code" or "name"
-    private static String getLabel(Site site, View view) {
+    private static String getLabel(LegacySite site, View view) {
         String text = (view.getZoom() > 10 ? site.getName() : site.getCode());
         if (text == null)
             text = ""; // BUG: but isn't there a java2d bug that disallows even this?

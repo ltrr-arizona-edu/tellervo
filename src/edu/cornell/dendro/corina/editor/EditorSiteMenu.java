@@ -1,8 +1,8 @@
 package edu.cornell.dendro.corina.editor;
 
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.LegacySite;
+import edu.cornell.dendro.corina.site.LegacySiteDB;
 import edu.cornell.dendro.corina.site.SiteInfoDialog;
 import edu.cornell.dendro.corina.site.SiteNotFoundException;
 import edu.cornell.dendro.corina.map.MapFrame;
@@ -35,7 +35,7 @@ public class EditorSiteMenu extends JMenu {
 		public void actionPerformed(ActionEvent ae) {
 		    try {
 			// get site
-			Site mySite = SiteDB.getSiteDB().getSite(sample);
+			LegacySite mySite = LegacySiteDB.getSiteDB().getSite(sample);
 
 			// draw map there
 			new MapFrame(mySite, mySite);
@@ -57,7 +57,7 @@ public class EditorSiteMenu extends JMenu {
 		public void actionPerformed(ActionEvent ae) {
 		    try {
 			// get my site -- FIXME: LoD says this should be sample.getSite();
-			Site mySite = SiteDB.getSiteDB().getSite(sample);
+			LegacySite mySite = LegacySiteDB.getSiteDB().getSite(sample);
 
 			// show props
 			new SiteInfoDialog(mySite, null);

@@ -20,7 +20,7 @@
 
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.LegacySiteDB;
 
 import java.util.List;
 import javax.swing.JTextField;
@@ -40,7 +40,7 @@ import javax.swing.event.DocumentEvent;
          eventually come up first?
    </ul>
 
-   @see edu.cornell.dendro.corina.site.SiteDB
+   @see edu.cornell.dendro.corina.site.LegacySiteDB
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
@@ -61,7 +61,7 @@ public class AutoComplete extends JTextField {
 	super(text, columns);
 
 	try {
-	    List l = SiteDB.getSiteDB().getSiteNames();
+	    List l = LegacySiteDB.getSiteDB().getSiteNames();
 	    useDictionary(l);
 	} catch (NullPointerException npe) {
 	    // apparently this is what happens if it can't load the

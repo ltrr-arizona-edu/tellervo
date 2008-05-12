@@ -64,13 +64,13 @@ public class SiteEditor extends XFrame implements SaveableDocument {
 	}
 
 	private void createImmutableSitelist() {
-		List refSites = SiteDB.getSiteDB().sites;
+		List refSites = LegacySiteDB.getSiteDB().sites;
 		mySites = new ArrayList(refSites.size());
 		
 		// our list of sites should be immutable!
 		mySites = new ArrayList(refSites.size());
 		for(int i = 0; i < refSites.size(); i++)
-			mySites.add(((Site)refSites.get(i)).clone());
+			mySites.add(((LegacySite)refSites.get(i)).clone());
 	}
 	
 	private List mySites; // immutable site list
@@ -99,7 +99,7 @@ public class SiteEditor extends XFrame implements SaveableDocument {
 	
 	public void save() {
 		// set our sites to be the global list of sites
-		SiteDB.getSiteDB().sites = mySites;
+		LegacySiteDB.getSiteDB().sites = mySites;
 		
 		// create a new cloned list of sites (from the ones we just installed!)
 		createImmutableSitelist();
@@ -108,7 +108,7 @@ public class SiteEditor extends XFrame implements SaveableDocument {
 		// Save the new site list to disk
 		// if we're successful, 
 		// notify that we're no longer modified, plus we should redraw.
-		if(SiteDB.getSiteDB().save())
+		if(LegacySiteDB.getSiteDB().save())
 			sitePanel.setDataModified(false);		
 	}
 }

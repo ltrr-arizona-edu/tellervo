@@ -42,7 +42,7 @@ import java.io.File;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-public class Site implements Cloneable {
+public class LegacySite implements Cloneable {
 	public String getId() {
 		return id;
 	}
@@ -371,7 +371,7 @@ public class Site implements Cloneable {
 
 	// for law of demeter, because 99% of the time you want my
 	// location, you want it for the distance to another site.
-	public int distanceTo(Site s2) {
+	public int distanceTo(LegacySite s2) {
 		return location.distanceTo(s2.location);
 	}
 
@@ -381,7 +381,7 @@ public class Site implements Cloneable {
 	@Override
 	public boolean equals(Object o2) {
 		// WRITEME: compare name,code,id,location,altitude,country,species,type,comments,folder?
-		Site s2 = (Site) o2;
+		LegacySite s2 = (LegacySite) o2;
 		return eq(name, s2.name) && eq(code, s2.code) && eq(id, s2.id)
 				&& eq(location, s2.location) && eq(altitude, s2.altitude)
 				&& eq(country, s2.country) && eq(species, s2.species)
@@ -422,7 +422,7 @@ public class Site implements Cloneable {
 	// make a duplicate copy of this site.
 	@Override
 	public Object clone() {
-		Site clone = new Site();
+		LegacySite clone = new LegacySite();
 
 		clone.id = new String(id);
 		clone.code = new String(code);

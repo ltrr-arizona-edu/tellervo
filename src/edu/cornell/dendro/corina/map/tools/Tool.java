@@ -23,7 +23,7 @@ package edu.cornell.dendro.corina.map.tools;
 import edu.cornell.dendro.corina.map.View;
 import edu.cornell.dendro.corina.map.Projection;
 import edu.cornell.dendro.corina.map.MapPanel;
-import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.LegacySite;
 import edu.cornell.dendro.corina.site.SiteNotFoundException;
 
 import java.util.List;
@@ -126,14 +126,14 @@ public abstract class Tool implements MouseListener, MouseMotionListener, KeyLis
                 // get site, and look up all sites at that location
                 Projection r = Projection.makeProjection(v);
                 Point pt = e.getPoint();
-                Site site = p.siteForPoint(r, pt, 20*((int) v.getZoom())); // what's 20*...?
+                LegacySite site = p.siteForPoint(r, pt, 20*((int) v.getZoom())); // what's 20*...?
                 List sites = p.sitesForPoint(site);
 
                 // sort by "code: name"
                 Collections.sort(sites, new Comparator() {
                     public int compare(Object o1, Object o2) {
-                        Site s1 = (Site) o1;
-                        Site s2 = (Site) o2;
+                        LegacySite s1 = (LegacySite) o1;
+                        LegacySite s2 = (LegacySite) o2;
                         String name1 = s1.getCode() + (s1.getName()==null ? "" : (": " + s1.getName())); // REFACTOR!
                         String name2 = s2.getCode() + (s2.getName()==null ? "" : (": " + s2.getName()));
                         return name1.compareTo(name2);
@@ -143,7 +143,7 @@ public abstract class Tool implements MouseListener, MouseMotionListener, KeyLis
                 // make a popup menu with all the sites, and show it
                 JPopupMenu popup = new JPopupMenu();
                 for (int i=0; i<sites.size(); i++) {
-                    final Site s = (Site) sites.get(i);
+                    final LegacySite s = (LegacySite) sites.get(i);
                     JMenuItem menuitem = popup.add(s.getCode() + (s.getName()==null ? "" : (": " + s.getName()))); // "
                     menuitem.addActionListener(new AbstractAction() {
                         public void actionPerformed(ActionEvent e) {

@@ -1,7 +1,7 @@
 package edu.cornell.dendro.corina.site;
 
 import edu.cornell.dendro.corina.map.MapFrame;
-import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.LegacySite;
 import edu.cornell.dendro.corina.site.Country;
 import edu.cornell.dendro.corina.site.SiteInfoDialog;
 import edu.cornell.dendro.corina.util.PopupListener;
@@ -135,11 +135,11 @@ public class SiteEditorPanel extends JPanel {
 
 	// "distance" = distance from this site;
 	// the user can pick any site for this.
-	private Site target;
+	private LegacySite target;
 	
 	private SiteEditor parent;
 	
-	private void setTarget(Site s) {
+	private void setTarget(LegacySite s) {
 		target = s;
 		model.fireTableDataChanged();
 	}
@@ -185,8 +185,8 @@ public class SiteEditorPanel extends JPanel {
 		
 						// EXTRACT: put all "targeT" stuff in one place -- its own class
 		
-						Site s1 = (Site) o1;
-						Site s2 = (Site) o2;
+						LegacySite s1 = (LegacySite) o1;
+						LegacySite s2 = (LegacySite) o2;
 		
 						// target goes at the beginning
 						if (s1 == target)
@@ -224,8 +224,8 @@ public class SiteEditorPanel extends JPanel {
 		
 						// EXTRACT: put all "targeT" stuff in one place -- its own class
 		
-						Site s1 = (Site) o1;
-						Site s2 = (Site) o2;
+						LegacySite s1 = (LegacySite) o1;
+						LegacySite s2 = (LegacySite) o2;
 		
 						// nulls go at the end
 						if (s1.getLocation() == null
@@ -254,8 +254,8 @@ public class SiteEditorPanel extends JPanel {
 				Collections.sort(allSites, new Comparator() {
 					public int compare(Object o1, Object o2) {
 		
-						Site s1 = (Site) o1;
-						Site s2 = (Site) o2;
+						LegacySite s1 = (LegacySite) o1;
+						LegacySite s2 = (LegacySite) o2;
 		
 						// nulls go at the end
 						if (s1.getLocation() == null
@@ -284,8 +284,8 @@ public class SiteEditorPanel extends JPanel {
 		
 					Collections.sort(allSites, new Comparator() {
 						public int compare(Object o1, Object o2) {
-							Site s1 = (Site) o1;
-							Site s2 = (Site) o2;
+							LegacySite s1 = (LegacySite) o1;
+							LegacySite s2 = (LegacySite) o2;
 		
 							// nulls at end
 							if (s1.getCountry() == null
@@ -355,7 +355,7 @@ public class SiteEditorPanel extends JPanel {
 			long t1 = System.currentTimeMillis();
 			try {
 
-				Site s = (Site) allSites.get(row);
+				LegacySite s = (LegacySite) allSites.get(row);
 
 				// PERF: why can't i store the field/column(?) by an int, instead of a string?
 				String field = (String) columns.get(column);
@@ -414,7 +414,7 @@ public class SiteEditorPanel extends JPanel {
 
 		@Override
 		public void setValueAt(Object object, int row, int column) {
-			Site s = (Site) allSites.get(row);
+			LegacySite s = (LegacySite) allSites.get(row);
 			String field = (String) columns.get(column);
 			Object oldval = getValueAt(row, column);
 						
@@ -496,7 +496,7 @@ public class SiteEditorPanel extends JPanel {
 		init();
 		
 		// and we start with our first target.
-		target = (Site) allSites.get(0);		
+		target = (LegacySite) allSites.get(0);		
 	}
 	
 	public void reloadSitelist() {
@@ -555,7 +555,7 @@ public class SiteEditorPanel extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					int i = table.getSelectedRow();
-					Site site = (Site) allSites.get(i);
+					LegacySite site = (LegacySite) allSites.get(i);
 					SiteInfoDialog sid = new SiteInfoDialog(site, (JFrame) table.getTopLevelAncestor());
 					
 					if(sid.shouldSave())
@@ -578,7 +578,7 @@ public class SiteEditorPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				// same as double-click: REFACTOR
 				int i = table.getSelectedRow();
-				Site site = (Site) allSites.get(i);
+				LegacySite site = (LegacySite) allSites.get(i);
 				SiteInfoDialog sid = new SiteInfoDialog(site, (JFrame) table.getTopLevelAncestor());
 				
 				if(sid.shouldSave())
@@ -601,7 +601,7 @@ public class SiteEditorPanel extends JPanel {
 				if(i < 0)
 					return;
 					
-				Site site = (Site) allSites.get(i);
+				LegacySite site = (LegacySite) allSites.get(i);
 				
 				int ret = JOptionPane.showConfirmDialog(table.getTopLevelAncestor(), 
 						"Are you sure you wish to delete information for the site:\n" +
@@ -620,7 +620,7 @@ public class SiteEditorPanel extends JPanel {
 		
 		plus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Site site = new Site();
+				LegacySite site = new LegacySite();
 				SiteInfoDialog sid = new SiteInfoDialog(site, (JFrame) table.getTopLevelAncestor());
 				
 				if(sid.shouldSave()) {
@@ -687,7 +687,7 @@ public class SiteEditorPanel extends JPanel {
 			minus.setEnabled(true);
 			editit.setEnabled(true);
 			
-			Site site = (Site) allSites.get(i);
+			LegacySite site = (LegacySite) allSites.get(i);
 			text.append(" " + site.getName() + " selected.");
 		}
 		
@@ -709,7 +709,7 @@ public class SiteEditorPanel extends JPanel {
 				public void actionPerformed(ActionEvent e) {
 					// same as double-click: REFACTOR
 					int i = table.getSelectedRow();
-					Site site = (Site) allSites.get(i);
+					LegacySite site = (LegacySite) allSites.get(i);
 					SiteInfoDialog sid = new SiteInfoDialog(site, (JFrame) table.getTopLevelAncestor());
 					
 					if(sid.shouldSave())
@@ -723,7 +723,7 @@ public class SiteEditorPanel extends JPanel {
 			show.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
 					int i = table.getSelectedRow();
-					Site site = (Site) allSites.get(i);
+					LegacySite site = (LegacySite) allSites.get(i);
 					// ahhh! horrible kludge, but it works ;)
 					new MapFrame(site, site);
 				}
@@ -745,7 +745,7 @@ public class SiteEditorPanel extends JPanel {
 	public void markSelectionAsTarget() {
 		// get selected site -- EXTRACT METHOD
 		int i = table.getSelectedRow();
-		Site site = (Site) allSites.get(i);
+		LegacySite site = (LegacySite) allSites.get(i);
 
 		// set target
 		setTarget(site);
@@ -784,7 +784,7 @@ public class SiteEditorPanel extends JPanel {
 	
 	class LocationEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 	    private JButton button;
-	    private Site site;
+	    private LegacySite site;
 	    protected static final String EDIT = "edit";
 
 	    public LocationEditor() {
@@ -809,7 +809,7 @@ public class SiteEditorPanel extends JPanel {
 		public Component getTableCellEditorComponent(JTable table,
 				Object value, boolean isSelected, int row, int column) {
 
-			site = (Site) allSites.get(row);
+			site = (LegacySite) allSites.get(row);
 			return button;
 		}
 	}	
@@ -857,7 +857,7 @@ public class SiteEditorPanel extends JPanel {
 		public Component getTableCellEditorComponent(JTable table,
 				Object value, boolean isSelected, int row, int column) {
 
-			country = ((Site) allSites.get(row)).getCountry();
+			country = ((LegacySite) allSites.get(row)).getCountry();
 			return button;
 		}
 	}	

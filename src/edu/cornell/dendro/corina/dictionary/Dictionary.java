@@ -48,8 +48,8 @@ public class Dictionary extends CachedResource {
 			return false;
 		}
 				
-		List data = dataElement.getChildren();
-		Iterator itr = data.iterator();
+		List<?> data = dataElement.getChildren();
+		Iterator<?> itr = data.iterator();
 		
 
 		// For each child element, call it's loader if it exists (ie, specimenTypeDictionaryLoader)
@@ -57,8 +57,8 @@ public class Dictionary extends CachedResource {
 			Element child = (Element) itr.next();
 			
 			Field targetField;
-			Class targetClass;
-			Constructor targetConstructor;
+			Class<? extends BasicDictionaryElement> targetClass;
+			Constructor<? extends BasicDictionaryElement> targetConstructor;
 
 			// Check to see if we have a class variable with the dictionary name
 			try {
@@ -76,12 +76,21 @@ public class Dictionary extends CachedResource {
 			if(className.endsWith("Dictionary"))
 				className = className.substring(0, className.length() - 10);
 			className = Character.toUpperCase(className.charAt(0)) + className.substring(1);
+			
+			/*
+			 * Kludge:
+			 * Regions isn't a dictionary
+			 */
+			if(className.equalsIgnoreCase("Regions"))
+				className = "SiteRegion";
 
 			// Find our class
 			try {
-				targetClass = Class.forName("edu.cornell.dendro.corina.dictionary." + className);
+				Class<?> baseClass = Class.forName("edu.cornell.dendro.corina.dictionary." + className);
+				targetClass = baseClass.asSubclass(BasicDictionaryElement.class);
+				//targetClass = Class.forName("edu.cornell.dendro.corina.dictionary." + className);
 			} catch (Exception e) {
-				System.out.println("Dictionary exists for " + child.getName() + ", but no corresponding class");
+				System.out.println("Dictionary exists for " + className + ", but no corresponding class");
 				continue;
 			}
 			
@@ -93,8 +102,8 @@ public class Dictionary extends CachedResource {
 			}
 			
 			// Now, finally, loop through our child elements and make new objects for each
-			ArrayList l = new ArrayList();
-			List elements = child.getChildren();
+			ArrayList<BasicDictionaryElement> l = new ArrayList<BasicDictionaryElement>();
+			List<?> elements = child.getChildren();
 			try {
 				for(int i = 0; i < elements.size(); i++) {
 					Element e = (Element) elements.get(i);
@@ -104,7 +113,7 @@ public class Dictionary extends CachedResource {
 					if(id == null)
 						continue;
 					
-					Object obj = targetConstructor.newInstance(new Object[] {id.getValue(), e.getText()});
+					BasicDictionaryElement obj = targetConstructor.newInstance(new Object[] {id.getValue(), e.getText()});
 					l.add(obj);
 					
 					// If we have an element that can be standard or not, set it
@@ -130,27 +139,55 @@ public class Dictionary extends CachedResource {
 	 * @param dictionaryType
 	 * @return A List of dictionaryType classes
 	 */
-	public List getDictionary(String dictionaryType) {
+	@SuppressWarnings("unchecked")
+	public List<? extends BasicDictionaryElement> getDictionary(String dictionaryType) {
 		String localName = Character.toLowerCase(dictionaryType.charAt(0)) + dictionaryType.substring(1) + "Dictionary";
 		Field dField;
+		List<BasicDictionaryElement> retList;
+		
+		/*
+		 * Kludge: 
+		 * regions isn't a regionsDictionary.
+		 */
+		if(dictionaryType.equalsIgnoreCase("regions"))
+			localName = "regions";
 		
 		try {
 			dField = this.getClass().getDeclaredField(localName);
-			return (List) dField.get(this);
+			retList = (List) dField.get(this);
+			return retList;
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	private Integer assDictionary;
-	
-	private volatile List specimenTypeDictionary;
-	private volatile List terminalRingDictionary;
-	private volatile List specimenQualityDictionary;
-	private volatile List pithDictionary;
-	private volatile List specimenContinuityDictionary;
-	private volatile List treeNoteDictionary;
-	private volatile List measurementNoteDictionary;
-	private volatile List readingNoteDictionary;
-	private volatile List siteNoteDictionary;
+	@SuppressWarnings("unused")
+	private volatile List<SpecimenType> specimenTypeDictionary;
+
+	@SuppressWarnings("unused")
+	private volatile List<TerminalRing> terminalRingDictionary;
+
+	@SuppressWarnings("unused")
+	private volatile List<SpecimenQuality> specimenQualityDictionary;
+
+	@SuppressWarnings("unused")
+	private volatile List<Pith> pithDictionary;
+
+	@SuppressWarnings("unused")
+	private volatile List<SpecimenContinuity> specimenContinuityDictionary;
+
+	@SuppressWarnings("unused")
+	private volatile List<TreeNote> treeNoteDictionary;
+
+	@SuppressWarnings("unused")
+	private volatile List<MeasurementNote> measurementNoteDictionary;
+
+	@SuppressWarnings("unused")
+	private volatile List<ReadingNote> readingNoteDictionary;
+
+	@SuppressWarnings("unused")
+	private volatile List<SiteNote> siteNoteDictionary;
+
+	@SuppressWarnings("unused")
+	private volatile List<SiteRegion> regions;
 }

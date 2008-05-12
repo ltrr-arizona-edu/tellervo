@@ -2,8 +2,8 @@ package edu.cornell.dendro.corina.cross;
 
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.LegacySite;
+import edu.cornell.dendro.corina.site.LegacySiteDB;
 import edu.cornell.dendro.corina.site.SiteNotFoundException;
 
 import java.text.DecimalFormat;
@@ -101,8 +101,8 @@ public class Single {
 
 		// distance
 		try {
-			Site s1 = SiteDB.getSiteDB().getSite(fixed);
-			Site s2 = SiteDB.getSiteDB().getSite(moving);
+			LegacySite s1 = LegacySiteDB.getSiteDB().getSite(fixed);
+			LegacySite s2 = LegacySiteDB.getSiteDB().getSite(moving);
 			dist = new Integer(s1.distanceTo(s2));
 		} catch (SiteNotFoundException snfe) {
 			dist = null;

@@ -27,19 +27,19 @@ public class LocationEditorDialog extends JDialog {
 	private final static String[] N_S = {"N", "S"};
 	private final static String[] E_W = {"E", "W"};
 
-	public LocationEditorDialog(Site site, Dialog window) {
+	public LocationEditorDialog(LegacySite site, Dialog window) {
 		super(window, site.getName(), true);
 		
 		init(site, window);
 	}
 	
-	public LocationEditorDialog(Site site) {
+	public LocationEditorDialog(LegacySite site) {
 		super((Frame) null, site.getName(), true);
 		
 		init(site, null);
 	}
 	
-	private void init(Site site, Window parent) {
+	private void init(LegacySite site, Window parent) {
 		String location;
 		if(site.getLocation() == null)
 			location = new String("0,0,N,0,0,E");
@@ -128,7 +128,7 @@ public class LocationEditorDialog extends JDialog {
 		JButton cancel = Builder.makeButton("cancel");
 		final JButton ok = Builder.makeButton("ok");
 		final JDialog dlg = this;
-		final Site _site = site;
+		final LegacySite _site = site;
 		AbstractAction buttonAction = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				// if 'ok' clicked, writeback

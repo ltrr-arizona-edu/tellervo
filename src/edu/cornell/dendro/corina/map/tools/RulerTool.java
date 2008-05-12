@@ -5,7 +5,7 @@ import edu.cornell.dendro.corina.map.View;
 import edu.cornell.dendro.corina.map.Projection;
 import edu.cornell.dendro.corina.map.MapPanel;
 import edu.cornell.dendro.corina.site.Location;
-import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.LegacySite;
 import edu.cornell.dendro.corina.site.SiteNotFoundException;
 import edu.cornell.dendro.corina.util.Angle;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -75,7 +75,7 @@ public class RulerTool extends Tool {
     Location locA = new Location(), locB = new Location();
     Point3D v3 = new Point3D();
     Projection r;
-    Site siteA=null, siteB=null;
+    LegacySite siteA=null, siteB=null;
 
     @Override
 	public void mousePressed(MouseEvent e) {
@@ -94,8 +94,8 @@ public class RulerTool extends Tool {
     // its location into |result|; otherwise, put the location
     // of the point in |result|, and return null.
     // (fwiw, the guts of this method take around 10ms to execute.)
-    private Site tryToGetSite(Point point, Location result) {
-        Site site;
+    private LegacySite tryToGetSite(Point point, Location result) {
+        LegacySite site;
         try {
             site = p.siteForPoint(r, point, 20*((int) v.getZoom()));
             r.project(site.getLocation(), v3);

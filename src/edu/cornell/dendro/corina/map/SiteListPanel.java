@@ -2,8 +2,8 @@ package edu.cornell.dendro.corina.map;
 // MOVEME: this should be in corina.site -- but there's already a SiteList there (eep, what's it do?)
 
 import edu.cornell.dendro.corina.site.Location;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.LegacySite;
+import edu.cornell.dendro.corina.site.LegacySiteDB;
 import edu.cornell.dendro.corina.site.Country;
 import edu.cornell.dendro.corina.site.SiteInfoDialog;
 import edu.cornell.dendro.corina.util.PopupListener;
@@ -132,9 +132,9 @@ public class SiteListPanel extends JPanel {
 
 	// "distance" = distance from this site;
 	// the user can pick any site for this.
-	private Site target = (Site) SiteDB.getSiteDB().sites.get(0); // pick one?
+	private LegacySite target = (LegacySite) LegacySiteDB.getSiteDB().sites.get(0); // pick one?
 
-	private void setTarget(Site s) {
+	private void setTarget(LegacySite s) {
 		target = s;
 		model.fireTableDataChanged();
 	}
@@ -175,7 +175,7 @@ public class SiteListPanel extends JPanel {
 			long t1 = System.currentTimeMillis();
 			try {
 
-				Site s = (Site) allSites.get(row);
+				LegacySite s = (LegacySite) allSites.get(row);
 
 				// PERF: why can't i store the field/column(?) by an int, instead of a string?
 				String field = (String) columns.get(column);
@@ -240,7 +240,7 @@ public class SiteListPanel extends JPanel {
 
 		@Override
 		public void setValueAt(Object object, int row, int column) {
-			Site site = (Site) allSites.get(row);
+			LegacySite site = (LegacySite) allSites.get(row);
 
 			// column must be 0 here (=visible)
 			boolean show = ((Boolean) object).booleanValue();
@@ -295,7 +295,7 @@ public class SiteListPanel extends JPanel {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			String field = (String) columns.get(column);
-			Site site = (Site) allSites.get(row);
+			LegacySite site = (LegacySite) allSites.get(row);
 			return field.equals("show?") && (site.getLocation() != null && site.getLocation().valid());
 		}
 	}
@@ -342,7 +342,7 @@ public class SiteListPanel extends JPanel {
 		// data
 		this.panel = panel;
 		this.labels = labels;
-		this.allSites = SiteDB.getSiteDB().sites;
+		this.allSites = LegacySiteDB.getSiteDB().sites;
 
 		init();
 	}
@@ -376,7 +376,7 @@ public class SiteListPanel extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					int i = table.getSelectedRow();
-					Site site = (Site) allSites.get(i);
+					LegacySite site = (LegacySite) allSites.get(i);
 					new SiteInfoDialog(site, (JFrame) table.getTopLevelAncestor());
 				}
 			}
@@ -398,7 +398,7 @@ public class SiteListPanel extends JPanel {
 						int start = e.getFirstIndex();
 						int last = e.getLastIndex();
 						for (int i = start; i <= last; i++) {
-							labels.setSelected((Site) allSites.get(i), table.getSelectionModel().isSelectedIndex(i));
+							labels.setSelected((LegacySite) allSites.get(i), table.getSelectionModel().isSelectedIndex(i));
 						}
 
 						// redraw map with new selection
@@ -408,7 +408,7 @@ public class SiteListPanel extends JPanel {
 
 		// more table init
 		Sort.sort(allSites, sortField);
-		target = (Site) allSites.get(0);
+		target = (LegacySite) allSites.get(0);
 		table.getColumnModel().getColumn(0).setPreferredWidth(40);
 		table.getColumnModel().getColumn(1).setPreferredWidth(300);
 		
@@ -493,11 +493,11 @@ public class SiteListPanel extends JPanel {
 				public void actionPerformed(ActionEvent e) {
 					// same as double-click: REFACTOR
 					int i = table.getSelectedRow();
-					Site site = (Site) allSites.get(i);
+					LegacySite site = (LegacySite) allSites.get(i);
 					SiteInfoDialog sid = new SiteInfoDialog(site, (JFrame) table
 							.getTopLevelAncestor());
 					if(sid.shouldSave())
-						SiteDB.getSiteDB().save();
+						LegacySiteDB.getSiteDB().save();
 				}
 			});
 			add(info);
@@ -521,7 +521,7 @@ public class SiteListPanel extends JPanel {
 	public void markSelectionAsTarget() {
 		// get selected site -- EXTRACT METHOD
 		int i = table.getSelectedRow();
-		Site site = (Site) allSites.get(i);
+		LegacySite site = (LegacySite) allSites.get(i);
 
 		// set target
 		setTarget(site);
@@ -585,8 +585,8 @@ public class SiteListPanel extends JPanel {
 		
 						// EXTRACT: put all "targeT" stuff in one place -- its own class
 		
-						Site s1 = (Site) o1;
-						Site s2 = (Site) o2;
+						LegacySite s1 = (LegacySite) o1;
+						LegacySite s2 = (LegacySite) o2;
 		
 						// target goes at the beginning
 						if (s1 == target)
@@ -624,8 +624,8 @@ public class SiteListPanel extends JPanel {
 		
 						// EXTRACT: put all "targeT" stuff in one place -- its own class
 		
-						Site s1 = (Site) o1;
-						Site s2 = (Site) o2;
+						LegacySite s1 = (LegacySite) o1;
+						LegacySite s2 = (LegacySite) o2;
 		
 						// nulls go at the end
 						if (s1.getLocation() == null
@@ -654,8 +654,8 @@ public class SiteListPanel extends JPanel {
 				Collections.sort(allSites, new Comparator() {
 					public int compare(Object o1, Object o2) {
 		
-						Site s1 = (Site) o1;
-						Site s2 = (Site) o2;
+						LegacySite s1 = (LegacySite) o1;
+						LegacySite s2 = (LegacySite) o2;
 		
 						// nulls go at the end
 						if (s1.getLocation() == null
@@ -684,8 +684,8 @@ public class SiteListPanel extends JPanel {
 		
 					Collections.sort(allSites, new Comparator() {
 						public int compare(Object o1, Object o2) {
-							Site s1 = (Site) o1;
-							Site s2 = (Site) o2;
+							LegacySite s1 = (LegacySite) o1;
+							LegacySite s2 = (LegacySite) o2;
 		
 							// nulls at end
 							if (s1.getCountry() == null
@@ -722,8 +722,8 @@ public class SiteListPanel extends JPanel {
 
 					Collections.sort(allSites, new Comparator() {
 						public int compare(Object o1, Object o2) {
-							Site s1 = (Site) o1;
-							Site s2 = (Site) o2;
+							LegacySite s1 = (LegacySite) o1;
+							LegacySite s2 = (LegacySite) o2;
 							
 							boolean v1 = labels.isVisible(s1);
 							boolean v2 = labels.isVisible(s2);

@@ -26,8 +26,8 @@ import edu.cornell.dendro.corina.map.layers.MapLayer;
 import edu.cornell.dendro.corina.map.layers.LegendLayer;
 import edu.cornell.dendro.corina.map.layers.SitesLayer;
 import edu.cornell.dendro.corina.site.Location;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.LegacySite;
+import edu.cornell.dendro.corina.site.LegacySiteDB;
 import edu.cornell.dendro.corina.site.SiteNotFoundException;
 
 import java.util.List;
@@ -299,7 +299,7 @@ public class MapPanel extends JPanel {
     	siteHash.clear();
     	
         for (int i=0; i<sites.size(); i++) {
-            Site s = (Site) sites.get(i);
+            LegacySite s = (LegacySite) sites.get(i);
             if (s.getLocation() == null || !s.getLocation().valid())
                 continue; // ignore these
             Location loc = (Location) s.getLocation().clone();
@@ -316,7 +316,7 @@ public class MapPanel extends JPanel {
 
     // DESIGN: the list of sites should live in exactly one place: LabelSet
 
-    public void toFront(Site s) {
+    public void toFront(LegacySite s) {
         Location loc = (Location) s.getLocation().clone();
         List list = (List) siteHash.get(loc);
         list.remove(s);
@@ -352,7 +352,7 @@ public class MapPanel extends JPanel {
 
     // draw a label using this mappanel's offset hash
     // USED BY: ArrowTool, RulerTool
-    public void drawLabel(Graphics2D g2, Point p, Site site, int numSites, View view) {
+    public void drawLabel(Graphics2D g2, Point p, LegacySite site, int numSites, View view) {
         // get offsets
         Offset o = getOffset(site.getLocation());
 
@@ -369,8 +369,8 @@ public class MapPanel extends JPanel {
     // this stuff won't be needed
 
     // ** selecting sites!
-    private Site selection=null;
-    public void setSelection(Site s) { // or null = deselect
+    private LegacySite selection=null;
+    public void setSelection(LegacySite s) { // or null = deselect
 	selection = s;
     }
     /*
@@ -433,7 +433,7 @@ public class MapPanel extends JPanel {
     private Point pt = new Point();
 
     // for actual POINT -- list all sites here, to be put in a popup menu
-    public List sitesForPoint(Site target) {
+    public List sitesForPoint(LegacySite target) {
         Location loc = target.getLocation();
         return (List) siteHash.get(loc);
     }
@@ -441,7 +441,7 @@ public class MapPanel extends JPanel {
 
     // important: for LABEL -- (return topmost site, of course)
     // (who uses this? -- the tools.)
-    public Site siteForPoint(Projection r, Point p, int dist) throws SiteNotFoundException {
+    public LegacySite siteForPoint(Projection r, Point p, int dist) throws SiteNotFoundException {
         if (siteHash == null)
             throw new SiteNotFoundException();
 
@@ -461,7 +461,7 @@ public class MapPanel extends JPanel {
         // normally, i'd check in backwards order, so you get the top-most (last-drawn) one first,
         // which is what the user expects.  IteratorsSuck, and I can't iterate backwards, so I'll
         // look at all and take the last one (it's still O(n)).
-        Site returnValue = null;
+        LegacySite returnValue = null;
         while (iter.hasNext()) {
             // WAS: List list = (List) iter.next();
             // WAS: Site s = (Site) list.get(0);
@@ -473,7 +473,7 @@ public class MapPanel extends JPanel {
                 continue;
 
             // NEW
-            Site s = SiteDB.getSiteDB().getSite(loc);
+            LegacySite s = LegacySiteDB.getSiteDB().getSite(loc);
                 
             String text = s.getCode(); // REFACTOR: violates OAOO -- should ask SiteRenderer what's there
 

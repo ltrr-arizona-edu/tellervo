@@ -62,8 +62,8 @@ import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.map.tools.ToolBox;
 import edu.cornell.dendro.corina.site.Location;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.SiteDB;
+import edu.cornell.dendro.corina.site.LegacySite;
+import edu.cornell.dendro.corina.site.LegacySiteDB;
 import edu.cornell.dendro.corina.site.SiteInfoDialog;
 import edu.cornell.dendro.corina.site.SitePrinter;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -83,7 +83,7 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
         if (tab == 0)
             return new MapPrinter(mapPanel.getView(), labels, pf);
         else // tab == 1
-            return new SitePrinter(SiteDB.getSiteDB().sites); // print them all?
+            return new SitePrinter(LegacySiteDB.getSiteDB().sites); // print them all?
     }
     public String getPrintTitle() {
         return "Map"; // TODO: add location/sites/etc.
@@ -91,10 +91,10 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
 
     public MapFrame() {
     	// this seems downright silly ... we'll have no silliness here!
-   		this(SiteDB.getSiteDB());
+   		this(LegacySiteDB.getSiteDB());
     }
 
-    public MapFrame(Site s1, Site s2) {
+    public MapFrame(LegacySite s1, LegacySite s2) {
         super();
         
         // set mappanel
@@ -113,7 +113,7 @@ public class MapFrame extends XFrame implements PrintableDocument, ComponentList
         
     }
 
-    private MapFrame(SiteDB db) {
+    private MapFrame(LegacySiteDB db) {
         super();
         
         labels = new LabelSet(); // this is the master copy!
@@ -356,7 +356,7 @@ private class MapFileMenu extends FileMenu {
                     Iterator iter = labels.getSelectedSites();
 
                     if (iter.hasNext()) {
-                        Site site = (Site) iter.next();
+                        LegacySite site = (LegacySite) iter.next();
                         new SiteInfoDialog(site, null);
                     } else {
                         // nothing selected => do nothing.

@@ -36,7 +36,7 @@ public class SiteEvent extends EventObject {
 
        @param source the site which was modified
     */
-    public SiteEvent(Site source) {
+    public SiteEvent(LegacySite source) {
         super(source);
     }
 
@@ -46,7 +46,7 @@ public class SiteEvent extends EventObject {
 
        @return the site which was modified
     */
-    public Site getSite() {
-	return (Site) getSource();
+    public LegacySite getSite() {
+	return (LegacySite) getSource();
     }
 }

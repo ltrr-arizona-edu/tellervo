@@ -8,6 +8,7 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.site.SiteList;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 
 /**
@@ -21,6 +22,7 @@ public class App {
   public static Platform platform;
   public static Logging logging;
   public static Dictionary dictionary;
+  public static SiteList sites;
 
   private static final CorinaLog log = new CorinaLog(App.class);
   private static boolean initialized;
@@ -33,7 +35,7 @@ public class App {
     log.debug("initializing App");
 
     if (meter != null) {
-      meter.setMaximum(4);
+      meter.setMaximum(5);
       meter.setNote("Initializing Logging...");
     }
 
@@ -89,6 +91,15 @@ public class App {
     dictionary.query();
     if (meter != null) {
       meter.setProgress(4);
+    }
+
+    if (meter != null) {
+        meter.setNote("Initializing Site List...");
+    }
+    sites = new SiteList();
+    sites.query();
+    if (meter != null) {
+      meter.setProgress(5);
     }
 
     initialized = true;   

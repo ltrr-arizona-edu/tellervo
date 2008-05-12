@@ -1,6 +1,6 @@
 package edu.cornell.dendro.corina.map;
 
-import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.LegacySite;
 import edu.cornell.dendro.corina.util.ColorUtils;
 
 import java.awt.Color;
@@ -18,7 +18,7 @@ public class SiteRenderer {
     // REFACTOR: make this an instance method
     // REFACTOR: passing in |view| is a wart
     // REFACTOR: passing in Offset, if it's not going to be a public class, is a wart
-    public static void drawLabel(Graphics2D g2, Point p /* site point */, Site site, int numSites,
+    public static void drawLabel(Graphics2D g2, Point p /* site point */, LegacySite site, int numSites,
                                  View view /* used only for clipping */, Point t /* bubble center */, boolean selected) {
         // measure the text
 	String text = site.getCode();

@@ -66,7 +66,7 @@ import edu.cornell.dendro.corina.ui.I18n;
 /*
  * TODO: -- move to SiteFile, extends SiteStorage,
  */
-public class SiteDB { // implements PrintableDocument {
+public class LegacySiteDB { // implements PrintableDocument {
 	// make it able to import/export/append stuff?
 
 	// TODO: call the file "Corina Sites", not "Site DB"
@@ -83,12 +83,12 @@ public class SiteDB { // implements PrintableDocument {
 	// list of the sites -- use a different data struct? (private?)
 	public List sites = null;
 
-	private static SiteDB db = null;
+	private static LegacySiteDB db = null;
 
 	// returns null on failure
-	public static SiteDB getSiteDB() {
+	public static LegacySiteDB getSiteDB() {
 		if (db == null) {
-			db = new SiteDB();
+			db = new LegacySiteDB();
 			db.sites = new ArrayList();
 			try {
 				db.loadDB();
@@ -243,7 +243,7 @@ public class SiteDB { // implements PrintableDocument {
 
 			// (loop for s in sites do (write w (site-to-xml s)))
 			for (int i = 0; i < sites.size(); i++) {
-				Site s = (Site) sites.get(i);
+				LegacySite s = (LegacySite) sites.get(i);
 				w.write(s.toXML());
 				w.newLine();
 			}
@@ -307,13 +307,13 @@ public class SiteDB { // implements PrintableDocument {
 
 		private String data = "";
 
-		private Site site = null;
+		private LegacySite site = null;
 
 		@Override
 		public void startElement(String uri, String name, String qName,
 				Attributes atts) {
 			if (name.equals("site"))
-				site = new Site();
+				site = new LegacySite();
 			else
 				state = name;
 		}
@@ -378,10 +378,10 @@ public class SiteDB { // implements PrintableDocument {
 	// query functions -- only simple ones here, complex sql-selects
 	// and stuff can go in their own class.
 
-	public Site getSite(String code) throws SiteNotFoundException {
+	public LegacySite getSite(String code) throws SiteNotFoundException {
 		// return the site with code |code|
 		for (int i = 0; i < sites.size(); i++) {
-			Site s = (Site) sites.get(i);
+			LegacySite s = (LegacySite) sites.get(i);
 			if (s.getCode().equals(code))
 				return s;
 		}
@@ -394,17 +394,17 @@ public class SiteDB { // implements PrintableDocument {
 		return App.prefs.getPref("corina.dir.data") + File.separator + s;
 	}
 
-	public Site getSite(File folder) throws SiteNotFoundException {
+	public LegacySite getSite(File folder) throws SiteNotFoundException {
 		// return the site for folder |folder|
 		for (int i = 0; i < sites.size(); i++) {
-			Site s = (Site) sites.get(i);
+			LegacySite s = (LegacySite) sites.get(i);
 			if (matchesFilename(folder.getPath(), s))
 				return s;
 		}
 		throw new SiteNotFoundException();
 	}
 
-	public Site getSite(Sample sample) throws SiteNotFoundException {
+	public LegacySite getSite(Sample sample) throws SiteNotFoundException {
 		String filename = (String) sample.getMeta("filename");
 
 		// make sure it's been saved
@@ -417,7 +417,7 @@ public class SiteDB { // implements PrintableDocument {
 
 		// look through the database for that filename
 		for (int i = 0; i < sites.size(); i++) {
-			Site s = (Site) sites.get(i);
+			LegacySite s = (LegacySite) sites.get(i);
 			if (s.getFolder() == null)
 				continue;
 
@@ -430,7 +430,7 @@ public class SiteDB { // implements PrintableDocument {
 	}
 
 	// returns true, iff |filename| represents a file in |site|
-	private boolean matchesFilename(String filename, Site site) {
+	private boolean matchesFilename(String filename, LegacySite site) {
 		String folder = site.getFolder();
 		if (folder == null)
 			return false;
@@ -466,18 +466,18 @@ public class SiteDB { // implements PrintableDocument {
 	}
 
 	// is this still used?
-	public Site getSite(Location l) throws SiteNotFoundException {
+	public LegacySite getSite(Location l) throws SiteNotFoundException {
 		// return the site at |l|.  if there's more than one, return
 		// an arbitrary one.
 		for (int i = 0; i < sites.size(); i++) {
-			Site s = (Site) sites.get(i);
+			LegacySite s = (LegacySite) sites.get(i);
 			if (s.getLocation() != null && s.getLocation().equals(l))
 				return s;
 		}
 
 		// none was there, but let's look for something nearby.
 		for (int i = 0; i < sites.size(); i++) {
-			Site s = (Site) sites.get(i);
+			LegacySite s = (LegacySite) sites.get(i);
 			if (s.getLocation() == null)
 				continue; // wha?
 			if (s.getLocation().isNear(l, 10))
@@ -489,16 +489,16 @@ public class SiteDB { // implements PrintableDocument {
 	// ---------------------------------------------------------------------------
 
 	// (loop for s in +sitedb+ when (eq loc (site-location s)) collect s)
-	public Site[] getSitesAt(Location loc) {
+	public LegacySite[] getSitesAt(Location loc) {
 		List output = new ArrayList();
 
 		for (int i = 0; i < sites.size(); i++) {
-			Site s = (Site) sites.get(i);
+			LegacySite s = (LegacySite) sites.get(i);
 			if (loc.equals(s.getLocation()))
 				output.add(s);
 		}
 
-		return (Site[]) output.toArray(new Site[0]);
+		return (LegacySite[]) output.toArray(new LegacySite[0]);
 	}
 
 	// return an array of the 2-letter codes of all countries represented in the sitedb
@@ -506,7 +506,7 @@ public class SiteDB { // implements PrintableDocument {
 		int n = sites.size();
 		Set countries = new HashSet();
 		for (int i = 0; i < n; i++) {
-			Site s = (Site) sites.get(i);
+			LegacySite s = (LegacySite) sites.get(i);
 			countries.add(s.getCountry());
 		}
 		return (String[]) countries.toArray(new String[0]);
@@ -517,7 +517,7 @@ public class SiteDB { // implements PrintableDocument {
 		List names = new ArrayList();
 
 		for (int i = 0; i < sites.size(); i++) {
-			String name = ((Site) sites.get(i)).getName();
+			String name = ((LegacySite) sites.get(i)).getName();
 			if (name != null && !names.contains(name))
 				names.add(name);
 		}
@@ -539,7 +539,7 @@ public class SiteDB { // implements PrintableDocument {
 		// loop through sites, counting frequency
 		for (int i = 0; i < sites.size(); i++) {
 			// country
-			String c = ((Site) sites.get(i)).getCountry();
+			String c = ((LegacySite) sites.get(i)).getCountry();
 
 			// look up in list, and count it
 			for (int j = 0; j < tuple.length; j++)
@@ -738,7 +738,7 @@ public class SiteDB { // implements PrintableDocument {
 						// (fire everything?)
 						// selfUpdating = true;
 						for (int i = 0; i < db.sites.size(); i++) {
-							Site s = (Site) db.sites.get(i);
+							LegacySite s = (LegacySite) db.sites.get(i);
 							// WAS: db.fireSiteNameChanged(s);
 						}
 						// db.fireSiteNameChanged((Site) db.sites.get(0)); // how about just 1?
