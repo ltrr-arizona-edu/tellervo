@@ -63,7 +63,6 @@ class auth
         $result = pg_query($dbconn, $sql);
         while ($row = pg_fetch_array($result))
         {
-            session_start();
             $_SESSION['initiated'] = TRUE;
             $_SESSION["securityuserid"] = $row['securityuserid'];
             $this->securityuserid = $row['securityuserid'];
@@ -100,8 +99,14 @@ class auth
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
         $result = pg_query($dbconn, $sql);
-        while ($row = pg_fetch_array($result))
+        if (pg_num_rows($result)==0)
         {
+            echo "username $theUsername unknown";
+            return false;
+        }
+        else
+        {
+            $row=pg_fetch_array($result);
             $dbpassword = $row['password'];
         }
     }
@@ -113,7 +118,6 @@ class auth
         $result = pg_query($dbconn, $sql);
         while ($row = pg_fetch_array($result))
         {
-            session_start();
             $_SESSION['initiated'] = TRUE;
             $_SESSION["securityuserid"] = $row['securityuserid'];
             $this->securityuserid = $row['securityuserid'];
@@ -345,7 +349,60 @@ class auth
   {
       return $this->getPermission($thePermissionType, 'vmeasurement', $theVMeasurementID); 
   }
-  
+
+/*  function getPerms($permissionType, $objectType, $objectID, $parentID=NULL)
+  {
+    global $dbconn;
+
+    // Admin gets all permissions
+    if($this->isAdmin) return true;
+
+      // 
+        if ($this->isLoggedIn)
+        {
+      if($permissionType=='create')
+      {
+            switch ($objectType)
+            {
+                // For these objects we need to check their parents for permission
+                case "site":
+                    $myID = $parentID;
+                    $objectType="default";
+                    break;
+                case "subSite":
+                    $myID = $parentID;
+                    $objectType="site";
+                    break;
+                case "tree":
+                    $myID = $parentID;
+                    $objectType="subSite";
+                    break;
+                case "specimen":
+                    $myID = $parentID;
+                    $objectType="tree";
+                    break;
+                case "radius":
+                    $myID = $parentID;
+                    $objectType="specimen";
+                    break;
+                case "measurement":
+                    $myID = $parentID;
+                    $objectType="radius";
+                    break;
+
+                // For these objects we don't need to check with parents                
+                case "siteNote":
+                    $myID = $objectID;
+                    break;
+
+                default:
+                    echo "object type not supported";
+                    die();
+            }
+    
+
+  }
+ */
   function getPermission($thePermissionType, $theObjectType, $theObjectID)
   {
         // $theObjectType should be one of site,tree, vmeasurement, default
@@ -357,14 +414,14 @@ class auth
             if(!($this->isAdmin))
             {
                 // Not an admin user so do perms lookup
-                $sql = "select * from cpgdb.getuserpermissionset($this->securityuserid, $theObjectType, $theObjectID)";
+                $sql = "select * from cpgdb.getuserpermissionset($this->securityuserid, '$theObjectType', $theObjectID)";
                 $dbconnstatus = pg_connection_status($dbconn);
                 if ($dbconnstatus ===PGSQL_CONNECTION_OK)
                 {
                     $result = pg_query($dbconn, $sql);
                     $row = pg_fetch_array($result);
                     
-                    if($row['denied']===FALSE)
+                    if($row['denied']===TRUE)
                     {
                         // Check whether 'denied' over rules.
                         return False;
@@ -373,22 +430,17 @@ class auth
                     switch ($thePermissionType)
                     {
                     case "create":
-                        return (bool) $row['cancreate'];
+                        if($row['cancreate']=='t') return true;
                     case "read":
-                        return (bool) $row['canread'];
+                        if($row['canread']=='t') return true;
                     case "update":
-                        return (bool) $row['canupdate'];
+                        if($row['canupdate']=='t') return true;
                     case "delete":
-                        return (bool) $row['candelete'];
+                        if($row['candelete']=='t') return true;
                     default:
                         // Incorrect permission type specified returning false
                         return False;
                     }
-                }
-                else
-                {
-                    // DB connection failed returning false
-                    return False;
                 }
             }
             else
@@ -397,11 +449,11 @@ class auth
                 return True;
             }
         }
-        else
-        {
-            // Not logged in so returning false
-            return false;
-        }
+
+    // Defaulting to false to be safe
+    return false;
+
+
   }
 
   function isAdmin()

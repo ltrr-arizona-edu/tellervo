@@ -9,21 +9,13 @@
 //////*******************************************************************
 require_once('dbhelper.php');
 
-require_once("inc/note.php");
-require_once("inc/specimenType.php");
-require_once("inc/terminalRing.php");
-require_once("inc/specimenQuality.php");
-require_once("inc/specimenContinuity.php");
-require_once("inc/pith.php");
-require_once("inc/taxon.php");
-require_once("inc/region.php");
-
-class dictionaries 
+class authenticate 
 {
-    var $parentXMLTag = "dictionaries"; 
+    var $id = NULL;
     var $xmldata = NULL;
     var $lastErrorCode = NULL;
     var $lastErrorMessage = NULL;
+    var $sqlcommand = NULL;
 
     /***************/
     /* CONSTRUCTOR */
@@ -50,128 +42,83 @@ class dictionaries
         // Check parameters based on crudMode 
         switch($crudMode)
         {
-            case "read":
+            case "plainlogin":
+                if($paramsObj->username==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'username' field is required when doing a plain login");
+                    return false;
+                }
+                if($paramsObj->password==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'password' field is required when doing a plain login");
+                    return false;
+                }
+                return true;
+            
+            case "securelogin":
+                if($paramsObj->username==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'username' field is required when doing a secure login");
+                    return false;
+                }
+                if($paramsObj->hash==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'hash' field is required when doing a secure login");
+                    return false;
+                }
+                if($paramsObj->nonce==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'nonce' field is required when doing a secure login");
+                    return false;
+                }
                 return true;
             
             default:
-                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request for dictionaries");
+                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
                 return false;
         }
-    }
-
-    function setParamsFromDB()
-    {
-        global $dbconn;
-        
-        $xmldata = "";
-
-        $dictItems = array('siteNote', 'pith', 'specimenQuality', 'specimenType', 'terminalRing', 'region', 'specimenContinuity', 'treeNote', 'vmeasurementNote', 'readingNote', 'taxon');
-            
-        // Specimen Type 
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            foreach($dictItems as $item)
-            {
-                if($item=="region")
-                {
-                    $sql="select distinct(tblsiteregion.regionid) as id, tblregion.regionname from tblsiteregion, tblregion where tblsiteregion.regionid=tblregion.regionid";
-                }
-                else
-                {
-                    $sql = "select ".strtolower($item)."id as id from tlkp".strtolower($item)." order by ".strtolower($item)."id"; 
-                }
-                
-                switch ($item)
-                {
-                    case "siteNote":
-                        $myObj = new siteNote();
-                        break;
-                    case "pith":
-                        $myObj = new pith();
-                        break;
-                    case "specimenQuality":
-                        $myObj = new specimenQuality();
-                        break;
-                    case "specimenType":
-                        $myObj = new specimenType();
-                        break;
-                    case "terminalRing":
-                        $myObj = new terminalRing();
-                        break;
-                    case "region":
-                        $myObj = new region();
-                        break;
-                    case "specimenContinuity":
-                        $myObj = new specimenContinuity();
-                        break;
-                    case "treeNote":
-                        $myObj = new treeNote();
-                        break;
-                    case "vmeasurementNote":
-                        $myObj = new vmeasurementNote();
-                        break;
-                    case "readingNote":
-                        $myObj = new readingNote();
-                        break;
-                    case "taxon":
-                        $myObj = new taxon();
-                        break;
-                    default:
-                        echo "not supported yet";
-                        die();
-                }
-                
-                $xmldata.=$myObj->getParentTagBegin();
-                
-                // Run SQL
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $success = $myObj->setParamsFromDB($row['id']);
-
-                    if($success)
-                    {
-                        $xmldata.=$myObj->asXML();
-                    }
-                    else
-                    {
-                    //   trigger_error($mySpecimenType->getLastErrorCode().$mySpecimenType->getLastErrorMessage());
-                    }
-                }
-                $xmldata.=$myObj->getParentTagEnd();
-                unset($myDummyObj, $myObj);
-            }
-        }
-        else
-        {
-            // Connection bad
-            trigger_error("001"."Error connecting to database");
-        }
-
-        // Put xmldata into class variable
-        if($xmldata!=NULL)
-        {
-            $this->xmldata=$xmldata;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-            
-        
-    }
-    
-    function setChildParamsFromDB()
-    {
-        return true;
     }
 
     /***********/
     /*ACCESSORS*/
     /***********/
+    function doPlainAuthentication($paramsClass, $auth)
+    {
+        $myAuth = $auth;
+        $myRequest = $paramsClass;
+
+        $myAuth->login($myRequest->username, $myRequest->password);
+        if($myAuth->isLoggedIn())
+        {
+            return True;
+        }
+        else
+        {
+            // Log in failed
+            $this->setErrorMessage(101, "Authentication failed using plain login");
+        }
+    }
     
+    function doSecureAuthentication($paramsClass, $auth)
+    {
+        $myAuth = $auth;
+        $myRequest = $paramsClass;
+        
+        $myAuth->loginWithNonce($myRequest['username'], $myRequest['hash'], $myRequest['nonce']);
+        
+        if($myAuth->isLoggedIn())
+        {
+            // Log in worked
+            return true;
+        }
+        else
+        {
+            // Log in failed
+            $this->setErrorMessage(101, "Authentication failed using secure login");
+            return false;
+        }
+    }
+
     function asXML($mode="all")
     {
         if(isset($this->xmldata))
@@ -190,16 +137,10 @@ class dictionaries
 
     function getParentTagBegin()
     {
-        // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tbltree")."'>";
-        return $xml;
     }
 
     function getParentTagEnd()
     {
-        // Return a string containing the end XML tag for the current object's parent
-        $xml = "</".$this->parentXMLTag.">";
-        return $xml;
     }
 
     function getLastErrorCode()

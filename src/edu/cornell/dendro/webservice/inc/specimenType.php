@@ -76,13 +76,13 @@ class specimenType
         return TRUE;
     }
 
-    function setParamsFromDB($theLabel)
+    function setParamsFromDB($theID)
     {
         // Set the current objects parameters from the database
 
         global $dbconn;
         
-        $sql = "select * from tlkpspecimentype where label='$theLabel'";
+        $sql = "select * from tlkpspecimentype where specimentypeid='$theID'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -142,17 +142,17 @@ class specimenType
         return $this->label;
     }
 
-    function getParentTagBegin()
+    static function getParentTagBegin()
     {
         // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag.">";
+        $xml = "<specimenTypeDictionary>";
         return $xml;
     }
 
-    function getParentTagEnd()
+    static function getParentTagEnd()
     {
         // Return a string containing the end XML tag for the current object's parent
-        $xml = "</".$this->parentXMLTag.">";
+        $xml = "</specimenTypeDictionary>";
         return $xml;
     }
 

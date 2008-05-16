@@ -18,7 +18,7 @@
 
 <body>
 <h1> Basic login</h1>
-<form name="myform" method="post" action="authenticate.php">
+<form name="myform" method="post" action="webservice.php">
 Username: <input type="text" name="username" value="" id="username"><br/>
 Password: <input type="password" name="password" value="" id="password"><br/>
 <input type="hidden" name="mode" id="mode" value="plainlogin">
@@ -26,7 +26,7 @@ Password: <input type="password" name="password" value="" id="password"><br/>
 </form>
 
 <h1> Secure login</h1>
-<form name="secureform" method="post" action="authenticate.php">
+<form name="secureform" method="post" action="webservice.php">
 Server Nonce: <input type="text" name="snonce" id="snonce"><br/>
 Client Nonce: <input type="text" name="nonce" id="nonce" ><br/>
 Username: <input type="text" name="username" value="" id="username"><br/>

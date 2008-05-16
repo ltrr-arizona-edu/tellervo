@@ -8,22 +8,18 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 require_once('dbhelper.php');
+require_once('inc/note.php');
+require_once('inc/subSite.php');
+require_once('inc/region.php');
 
-require_once("inc/note.php");
-require_once("inc/specimenType.php");
-require_once("inc/terminalRing.php");
-require_once("inc/specimenQuality.php");
-require_once("inc/specimenContinuity.php");
-require_once("inc/pith.php");
-require_once("inc/taxon.php");
-require_once("inc/region.php");
-
-class dictionaries 
+class search 
 {
-    var $parentXMLTag = "dictionaries"; 
+    var $id = NULL;
     var $xmldata = NULL;
     var $lastErrorCode = NULL;
     var $lastErrorMessage = NULL;
+    var $sqlcommand = NULL;
+    var $deniedRecArray = array();
 
     /***************/
     /* CONSTRUCTOR */
@@ -50,128 +46,173 @@ class dictionaries
         // Check parameters based on crudMode 
         switch($crudMode)
         {
-            case "read":
+            case "search":
+                if($paramsObj->returnObject==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'returnObject' field is required when performing a search");
+                    return false;
+                }
                 return true;
             
             default:
-                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request for dictionaries");
+                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
                 return false;
         }
-    }
-
-    function setParamsFromDB()
-    {
-        global $dbconn;
-        
-        $xmldata = "";
-
-        $dictItems = array('siteNote', 'pith', 'specimenQuality', 'specimenType', 'terminalRing', 'region', 'specimenContinuity', 'treeNote', 'vmeasurementNote', 'readingNote', 'taxon');
-            
-        // Specimen Type 
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            foreach($dictItems as $item)
-            {
-                if($item=="region")
-                {
-                    $sql="select distinct(tblsiteregion.regionid) as id, tblregion.regionname from tblsiteregion, tblregion where tblsiteregion.regionid=tblregion.regionid";
-                }
-                else
-                {
-                    $sql = "select ".strtolower($item)."id as id from tlkp".strtolower($item)." order by ".strtolower($item)."id"; 
-                }
-                
-                switch ($item)
-                {
-                    case "siteNote":
-                        $myObj = new siteNote();
-                        break;
-                    case "pith":
-                        $myObj = new pith();
-                        break;
-                    case "specimenQuality":
-                        $myObj = new specimenQuality();
-                        break;
-                    case "specimenType":
-                        $myObj = new specimenType();
-                        break;
-                    case "terminalRing":
-                        $myObj = new terminalRing();
-                        break;
-                    case "region":
-                        $myObj = new region();
-                        break;
-                    case "specimenContinuity":
-                        $myObj = new specimenContinuity();
-                        break;
-                    case "treeNote":
-                        $myObj = new treeNote();
-                        break;
-                    case "vmeasurementNote":
-                        $myObj = new vmeasurementNote();
-                        break;
-                    case "readingNote":
-                        $myObj = new readingNote();
-                        break;
-                    case "taxon":
-                        $myObj = new taxon();
-                        break;
-                    default:
-                        echo "not supported yet";
-                        die();
-                }
-                
-                $xmldata.=$myObj->getParentTagBegin();
-                
-                // Run SQL
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $success = $myObj->setParamsFromDB($row['id']);
-
-                    if($success)
-                    {
-                        $xmldata.=$myObj->asXML();
-                    }
-                    else
-                    {
-                    //   trigger_error($mySpecimenType->getLastErrorCode().$mySpecimenType->getLastErrorMessage());
-                    }
-                }
-                $xmldata.=$myObj->getParentTagEnd();
-                unset($myDummyObj, $myObj);
-            }
-        }
-        else
-        {
-            // Connection bad
-            trigger_error("001"."Error connecting to database");
-        }
-
-        // Put xmldata into class variable
-        if($xmldata!=NULL)
-        {
-            $this->xmldata=$xmldata;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-            
-        
-    }
-    
-    function setChildParamsFromDB()
-    {
-        return true;
     }
 
     /***********/
     /*ACCESSORS*/
     /***********/
-    
+    function doSearch($paramsClass, $auth)
+    {
+        global $dbconn;
+        $myAuth       = $auth;
+        $myRequest    = $paramsClass;
+        $orderBySQL   = NULL;
+        $groupBySQL   = NULL;
+        $fromTableSQL = NULL;
+        $filterSQL    = NULL;
+        $skipSQL      = NULL;
+        $limitSQL     = NULL;
+        $xmldata      = NULL;
+        
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+        
+            // Build return object dependent SQL
+            $returnObjectSQL = $this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id as id ";
+            $orderBySQL      = " order by ".$this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id asc ";
+            $groupBySQL      = " group by ".$this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id" ;
+            if ($myRequest->limit) $limitSQL = " limit ".$myRequest->limit;
+            if ($myRequest->skip)  $skipSQL  = " offset ".$myRequest->skip;
+            
+            // Build "from..." section of SQL
+            if( (($this->getLowestRelationshipLevel($myRequest)<=1) && ($this->getHighestRelationshipLevel($myRequest)>=1))    || ($myRequest->returnObject == 'measurement'))  $fromTableSQL .= $this->tableName("measurement").", tblmeasurement, ";
+            if( (($this->getLowestRelationshipLevel($myRequest)<=2) && ($this->getHighestRelationshipLevel($myRequest)>=2))    || ($myRequest->returnObject == 'radius'))       $fromTableSQL .= $this->tableName("radius").", ";
+            if( (($this->getLowestRelationshipLevel($myRequest)<=3) && ($this->getHighestRelationshipLevel($myRequest)>=3))    || ($myRequest->returnObject == 'specimen'))     $fromTableSQL .= $this->tableName("specimen").", ";
+            if( (($this->getLowestRelationshipLevel($myRequest)<=4) && ($this->getHighestRelationshipLevel($myRequest)>=4))    || ($myRequest->returnObject == 'tree'))         $fromTableSQL .= $this->tableName("tree").", ";
+            if( (($this->getLowestRelationshipLevel($myRequest)<=5) && ($this->getHighestRelationshipLevel($myRequest)>=5))    || ($myRequest->returnObject == 'subsite'))      $fromTableSQL .= $this->tableName("subsite").", ";
+            if( (($this->getLowestRelationshipLevel($myRequest)<=6) && ($this->getHighestRelationshipLevel($myRequest)>=6))    || ($myRequest->returnObject == 'site'))         $fromTableSQL .= $this->tableName("site").", ";
+                   
+            // Trim off last ', ' from the 'form' clause SQL
+            $fromTableSQL = substr($fromTableSQL, 0, -2);
+
+            // Build "where..." section of SQL
+            if ($myRequest->siteParamsArray)        $filterSQL .= $this->paramsToFilterSQL($myRequest->siteParamsArray, "site");
+            if ($myRequest->subSiteParamsArray)     $filterSQL .= $this->paramsToFilterSQL($myRequest->subSiteParamsArray, "subsite");
+            if ($myRequest->treeParamsArray)        $filterSQL .= $this->paramsToFilterSQL($myRequest->treeParamsArray, "tree");
+            if ($myRequest->specimenParamsArray)    $filterSQL .= $this->paramsToFilterSQL($myRequest->specimenParamsArray, "specimen");
+            if ($myRequest->radiusParamsArray)      $filterSQL .= $this->paramsToFilterSQL($myRequest->radiusParamsArray, "radius");
+            if ($myRequest->measurementParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->measurementParamsArray, "measurement");
+            $filterSQL .= $this->getRelationshipSQL($myRequest);
+
+            // Trim off final ' and ' from filter SQL
+            $filterSQL = substr($filterSQL, 0, -5);
+
+            // Compile full SQL statement from parts
+            $fullSQL = "select ".$returnObjectSQL." from ".$fromTableSQL." where ".$filterSQL.$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
+            //echo $fullSQL;
+
+            // Add SQL to XML o.utput
+            $this->sqlcommand .= $fullSQL;
+            
+            // Do SQL Query
+            pg_send_query($dbconn, $fullSQL);
+            $result = pg_get_result($dbconn);
+            if(pg_num_rows($result)==0)
+            {
+                // No records match the id specified
+                $this->setErrorMessage("903","No records matched the criteria specified. SQL statement was: $fullSQL");
+            }
+            else
+            {
+                $result = @pg_query($dbconn, $fullSQL);
+                while ($row = @pg_fetch_array($result))
+                {
+                    // Check user has permission to read then create a new object
+                    if($myRequest->returnObject=="site") 
+                    {
+                        $myReturnObject = new site();
+                        $hasPermission = $myAuth->sitePermission($row['id'], "read");
+                    }
+                    elseif($myRequest->returnObject=="subsite")
+                    {
+                        $myReturnObject = new subSite();
+                        $hasPermission = $myAuth->subSitePermission($row['id'], "read");
+                    }
+                    elseif($myRequest->returnObject=="tree") 
+                    {
+                        $myReturnObject = new tree();
+                        $hasPermission = $myAuth->treePermission($row['id'], "read");
+                    }
+                    elseif($myRequest->returnObject=="specimen")
+                    {
+                        $myReturnObject = new specimen();
+                        $hasPermission = $myAuth->specimenPermission($row['id'], "read");
+                    }
+                    elseif($myRequest->returnObject=="radius") 
+                    {
+                        $myReturnObject = new radius();
+                        $hasPermission = $myAuth->radiusPermission($row['id'], "read");
+                    }
+                    elseif($myRequest->returnObject=="measurement")
+                    {
+                        $myReturnObject = new measurement();
+                        $hasPermission = $myAuth->vmeasurementPermission($row['id'], "read");
+                    }
+                    else
+                    {
+                        $this->setErrorMessage("901","Invalid return object ".$myRequest->returnObject." specified.  Must be one of site, subsite, tree, specimen, radius or measurement");
+                    }
+
+                    if($hasPermission===FALSE)
+                    {
+                        array_push($this->deniedRecArray, $row['id']); 
+                        continue;
+                    }
+
+                    // Set parameters on new object and return XML
+                    $success = $myReturnObject->setParamsFromDB($row['id'], "brief");
+                    if($success)
+                    {
+                        $xmldata.=$myReturnObject->asXML();
+                    }
+                    else
+                    {
+                        $this->setErrorMessage($myReturnObject->getLastErrorCode(), $myReturnObject->getLastErrorMessage());
+                    }
+                }
+            }
+                    
+            if(count($this->deniedRecArray)>0 )
+            {
+                $errMessage = "Permission denied on the following ".$myRequest->returnObject."id(s): ";
+                foreach ($this->deniedRecArray as $id)
+                {
+                    $errMessage .= $id.", ";
+                }
+                $errMessage = substr($errMessage, 0, -2).".";
+                $this->setErrorMessage("103", $errMessage);
+            }
+
+            // Put xmldata into class variable
+            if($xmldata!=NULL)
+            {
+                $this->xmldata=$xmldata;
+            }
+
+            if($this->lastErrorCode==NULL)
+            {
+                return true;
+            } 
+            else
+            {
+                return false;
+            }
+        }
+    }
+
     function asXML($mode="all")
     {
         if(isset($this->xmldata))
@@ -190,16 +231,10 @@ class dictionaries
 
     function getParentTagBegin()
     {
-        // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tbltree")."'>";
-        return $xml;
     }
 
     function getParentTagEnd()
     {
-        // Return a string containing the end XML tag for the current object's parent
-        $xml = "</".$this->parentXMLTag.">";
-        return $xml;
     }
 
     function getLastErrorCode()

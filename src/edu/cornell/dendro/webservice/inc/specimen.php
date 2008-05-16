@@ -203,7 +203,7 @@ class specimen
         global $dbconn;
         
         $this->id=$theID;
-        $sql = "select * from tblspecimen where specimenid=$theID";
+        $sql = "select * from tblspecimen where specimenid='$theID'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -258,7 +258,7 @@ class specimen
 
         global $dbconn;
 
-        $sql  = "select radiusid from tblradius where specimenid=".$this->id;
+        $sql  = "select radiusid from tblradius where specimenid='".$this->id."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -279,6 +279,123 @@ class specimen
 
         return TRUE;
     }
+    
+    function setParamsFromParamsClass($paramsClass)
+    {
+        // Alters the parameter values based upon values supplied by the user and passed as a parameters class
+        if(isset($paramsClass->id))                            $this->id                               = $paramsClass->id;                      
+        if(isset($paramsClass->treeID))                        $this->treeID                           = $paramsClass->treeID;                      
+        if(isset($paramsClass->name))                          $this->name                             = $paramsClass->name;                      
+        if(isset($paramsClass->dateCollected))                 $this->dateCollected                    = $paramsClass->dateCollected;            
+        if(isset($paramsClass->specimenType))                  $this->specimenType                     = $paramsClass->specimenType;              
+        if(isset($paramsClass->terminalRing))                  $this->terminalRing                     = $paramsClass->terminalRing;              
+        if(isset($paramsClass->sapwoodCount))                  $this->sapwoodCount                     = $paramsClass->sapwoodCount;              
+        if(isset($paramsClass->specimenQuality))               $this->specimenQuality                  = $paramsClass->specimenQuality;           
+        if(isset($paramsClass->specimenContinuity))            $this->specimenContinuity               = $paramsClass->specimenContinuity;       
+        if(isset($paramsClass->pith))                          $this->pith                             = $paramsClass->pith;          
+        if(isset($paramsClass->unmeasuredPre))                 $this->unmeasuredPre                    = $paramsClass->unmeasuredPre;             
+        if(isset($paramsClass->unmeasuredPost))                $this->unmeasuredPost                   = $paramsClass->unmeasuredPost;            
+        if(isset($paramsClass->isTerminalRingVerified))        $this->isTerminalRingVerified           = $paramsClass->isTerminalRingVerified;   
+        if(isset($paramsClass->isSapwoodCountVerified))        $this->isSapwoodCountVerified           = $paramsClass->isSapwoodCountVerified;    
+        if(isset($paramsClass->isSpecimenQualityVerified))     $this->isSpecimenQualityVerified        = $paramsClass->isSpecimenQualityVerified; 
+        if(isset($paramsClass->isSpecimenContinuityVerified))  $this->isSpecimenContinuityVerified     = $paramsClass->isSpecimenContinuityVerified;
+        if(isset($paramsClass->isPithVerified))                $this->isPithVerified                   = $paramsClass->isPithVerified;            
+        if(isset($paramsClass->isUnmeasuredPreVerified))       $this->isUnmeasuredPreVerified          = $paramsClass->isUnmeasuredPreVerified;  
+        if(isset($paramsClass->isUnmeasuredPostVerified))      $this->isUnmeasuredPostVerified         = $paramsClass->isUnmeasuredPostVerified;  
+        return true;
+    }
+
+    function validateRequestParams($paramsObj, $crudMode)
+    {
+        // Check parameters based on crudMode 
+        switch($crudMode)
+        {
+            case "read":
+                if($paramsObj->id==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a specimen.");
+                    return false;
+                }
+                if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
+                {
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer.  It is currently a ".gettype($paramsObj->id));
+                    return false;
+                }
+                if(!($paramsObj->id>0) && !($paramsObj->id==NULL))
+                {
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer.");
+                    return false;
+                }
+                return true;
+         
+            case "update":
+                if($paramsObj->id == NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
+                    return false;
+                }
+                if(($paramsObj->name==NULL) 
+                    && ($paramsObj->dateCollected==NULL) 
+                    && ($paramsObj->specimenType==NULL) 
+                    && ($paramsObj->terminalRing==NULL) 
+                    && ($paramsObj->sapwoodCount==NULL) 
+                    && ($paramsObj->specimenQuality==NULL) 
+                    && ($paramsObj->specimenContinuity==NULL) 
+                    && ($paramsObj->pith==NULL) 
+                    && ($paramsObj->unmeasuredPre==NULL) 
+                    && ($paramsObj->unmeasuredPost==NULL) 
+                    && ($paramsObj->isTerminalRingVerified==NULL) 
+                    && ($paramsObj->isSapwoodCountVerified==NULL) 
+                    && ($paramsObj->isSpecimenQualityVerified==NULL) 
+                    && ($paramsObj->isSpecimenContinuityVerified==NULL) 
+                    && ($paramsObj->isPithVerified==NULL) 
+                    && ($paramsObj->isUnmeasuredPreVerified==NULL) 
+                    && ($paramsObj->isUnmeasuredPostVerified==NULL)
+                    && ($paramsObj->hasChild!=True))
+                {
+                    $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
+                    return false;
+                }
+                return true;
+
+            case "delete":
+                if($paramsObj->id == NULL) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
+                    return false;
+                }
+                return true;
+
+            case "create":
+                if($paramsObj->hasChild===TRUE)
+                {
+                    if($paramsObj->id == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'specimenid' field is required when creating a radius.");
+                        return false;
+                    }
+                }
+                else
+                {
+                    if($paramsObj->name == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a specimen.");
+                        return false;
+                    }
+                    if($paramsObj->treeID == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'treeid' field is required when creating a specimen.");
+                        return false;
+                    }
+                }
+                return true;
+
+            default:
+                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
+                return false;
+        }
+    }
+
 
 
     /***********/
@@ -530,7 +647,7 @@ class specimen
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tblspecimen where specimenid=".$this->id;
+                $sql = "delete from tblspecimen where specimenid='".$this->id."'";
 
                 // Run SQL command
                 if ($sql)

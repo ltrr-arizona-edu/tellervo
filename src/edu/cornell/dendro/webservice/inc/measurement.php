@@ -8,7 +8,7 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 require_once('dbhelper.php');
-require_once('inc/vmeasurementNote.php');
+require_once('inc/note.php');
 
 class measurement 
 {
@@ -222,6 +222,168 @@ class measurement
         return TRUE;
     }
 
+
+    function setParamsFromParamsClass($paramsClass, $auth)
+    {
+        // Alters the parameter values based upon values supplied by the user and passed as a parameters class
+        if (isset($paramsClass->radiusID))            $this->setRadiusID($paramsClass->radiusID);
+        if (isset($paramsClass->isReconciled))        $this->setIsReconciled($paramsClass->isReconciled);
+        if (isset($paramsClass->startYear))           $this->setStartYear($paramsClass->startYyear);
+        if (isset($paramsClass->isLegacyCleaned))     $this->setIsLegacyCleaned($paramsClass->isLegacyCleaned);
+        //if (isset($paramsClass->datingTypeID))        $this->setDatingTypeID($paramsClass->datingTypeID);
+        if (isset($paramsClass->datingType))          $this->setDatingType($paramsClass->datingType);
+        if (isset($paramsClass->datingErrorPositive)) $this->setDatingErrorPositive($paramsClass->datingErrorPositive);
+        if (isset($paramsClass->datingErrorNegative)) $this->setDatingErrorNegative($paramsClass->datingErrorBegative);
+        if (isset($paramsClass->name))                $this->setName($paramsClass->name);
+        if (isset($paramsClass->description))         $this->setDescription($paramsClass->description);
+        if (isset($paramsClass->isPublished))         $this->setIsPublished($paramsClass->isPublished);
+        if (isset($paramsClass->vmeasurementOp))      $this->setVMeasurementOp($paramsClass->vmeasurementOp);
+        if (sizeof($paramsClass->readingsArray)>0)    $this->setReadingsArray($paramsClass->readingsArray);
+        if (sizeof($paramsClass->referencesArray)>0)  $this->setReferencesArray($paramsClass->referencesArray);
+        
+        // Set Owner and Measurer IDs if specified otherwise use current user details
+        if (isset($paramsClass->ownerUserID))
+        {
+            $this->setOwnerUserID($paramsClass->ownerUserID);
+        }
+        else
+        {
+            $this->setOwnerUserID($auth->getID());
+        }
+        if (isset($paramsClass->measuredByID))
+        {
+            $this->setMeasuredByID($paramsClass->measuredByID);
+        }
+        else
+        {
+            $this->setMeasuredByID($auth->getID());
+        }
+
+        return true;
+    }
+
+
+    function validateRequestParams($paramsObj, $crudMode)
+    {
+        // Check parameters based on crudMode 
+        switch($crudMode)
+        {
+            case "read":
+                if($paramsObj->id==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a measurement.");
+                    return false;
+                }
+                if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
+                {
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer.  It is currently a ".gettype($paramsObj->id));
+                    return false;
+                }
+                if(!($paramsObj->id>0) && !($paramsObj->id==NULL))
+                {
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer.");
+                    return false;
+                }
+                return true;
+         
+            case "update":
+                if($paramsObj->id==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating measurement.");
+                    return false;
+                }
+                if(($paramsObj->readingsArray) && (count($paramsObj->readingsArray)< 10)) 
+                {
+                    $this->setErrorMessage("902","Invalid parameter - You have only supplied ".count($paramsObj->readingsArray)." readings.  Minimum number required is 10.");
+                    return false;
+                }
+                if($paramsObj->readingsArray)
+                {
+                    foreach ($paramsObj->readingsArray as $reading)
+                    {
+                        if(!is_numeric($reading)) 
+                        {
+                            $this->setErrorMessage("902","Invalid parameter - All your readings must be numbers.");
+                            return false;
+                        }
+                    }
+                }
+                if($paramsObj->referencesArray)
+                {
+                    foreach ($paramsObj->referencesArray as $reference)
+                    {
+                        if(!is_numeric( (int) $reference[0])) 
+                        {
+                            $this->setErrorMessage("902","Invalid parameter - All your reference ID's must be numbers.");
+                            break;
+                        }
+                    }
+                }
+                return true;
+
+            case "delete":
+                if($paramsObj->id == NULL) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a measurement.");
+                    return false;
+                }
+                return true;
+
+            case "create":
+                if(($paramsObj->referencesArray == NULL) && ($paramsObj->readingsArray == NULL)) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - you must specify either references or readings when creating a new measurement.");
+                    return false;
+                }
+                if(($paramsObj->readingsArray) && ($paramsObj->radiusID== NULL))
+                {
+                    $this->setErrorMessage("902","Missing parameter - a new direct measurement must include a radiusID.");
+                    return false;
+                }
+                if( ($paramsObj->name==NULL) ) 
+                {   
+                    $this->setErrorMessage("902","Missing parameter - a new measurement requires the name parameter.");
+                    return false;
+                }
+                if(($paramsObj->readingsArray) && ($paramsObj->startYear== NULL) && ($paramsObj->datingTypeID==1))
+                {
+                    $this->setErrorMessage("902","Missing parameter - a new absolute direct measurement must include a startYear.");
+                    return false;
+                }
+                /*if(($paramsObj->readingsArray) && ($paramsObj->datingTypeID==NULL))
+                {
+                    $this->setErrorMessage("902","Missing parameter - a new direct measurement must include a datingTypeID.");
+                    return false;
+                }*/
+                if(($paramsObj->readingsArray) && (count($paramsObj->readingsArray)< 10)) 
+                {
+                    $this->setErrorMessage("902","Invalid parameter - You have only supplied ".count($paramsObj->readingsArray)." readings.  Minimum number required is 10.", E_USER_ERROR);
+                    return false;
+                }
+                if(($paramsObj->referencesArray) && ($paramsObj->radiusID)) 
+                {
+                    $this->setErrorMessage("902","Invalid parameter - a new measurement based on other measurements cannot include a radiusID.");
+                    return false;
+                }
+                if((sizeof($paramsObj->referencesArray)>0) && ($paramsObj->vmeasurementOp==NULL)) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - a new measurement based on other measurements must include an operation.");
+                    return false;
+                }
+                if( (!(isset($paramsObj->referencesArray))) && (isset($paramsObj->vmeasurementOp)) )
+                {
+                    $this->setErrorMessage("902","Missing parameter - you have included an operation which suggests you are creating a new measurement based on others. However, you have not specified any references to other measurements.");
+                    return false;
+                }
+                   
+                return true;
+
+            default:
+                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
+                return false;
+        }
+    }
+
     function setOwnerUserID($theOwnerUserID)
     {
         if($theOwnerUserID)
@@ -283,7 +445,7 @@ class measurement
         {
             global $dbconn;
 
-            $this->vmeasurementOp = $theVMeasurementOp;
+            $this->vmeasurementOp = ucfirst(strtolower($theVMeasurementOp));
             
             $sql  = "select vmeasurementopid from tlkpvmeasurementop where name ilike'".$theVMeasurementOp."'";
             $dbconnstatus = pg_connection_status($dbconn);
@@ -397,6 +559,35 @@ class measurement
         return FALSE;
     }
     
+    function setDatingType($theDatingType)
+    {
+        if ($theDatingType)
+        {
+            global $dbconn;
+
+            $this->datingType = $theDatingType;
+            
+            $sql  = "select datingtypeid from tlkpdatingtype where label='".ucfirst(strtolower($this->datingType))."'";
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    $this->datingTypeID = $row['datingtypeid'];
+                }
+            }            
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+            return TRUE;
+        }
+       return FALSE;
+    }
+
     function setDatingTypeID($theDatingTypeID)
     {
         if ($theDatingTypeID)
@@ -528,10 +719,11 @@ class measurement
             if(isset($this->name))                  $xml.= "<name>".$this->name."</name>\n";
             if(isset($this->isReconciled))          $xml.= "<isReconciled>".fromPHPtoStringBool($this->isReconciled)."</isReconciled>\n";
             if(isset($this->startYear))             $xml.= "<dateRange year=\"".$this->startYear."\" count=\"".$this->readingCount."\" />\n";
+            if(isset($this->readingCount))          $xml.= "<readingCount>".$this->readingCount."</readingCount>\n";
             if(isset($this->isLegacyCleaned))       $xml.= "<isLegacyCleaned>".fromPHPtoStringBool($this->isLegacyCleaned)."</isLegacyCleaned>\n";
             if(isset($this->measuredByID))          $xml.= "<measuredBy id=\"".$this->measuredByID."\">".$this->measuredBy."</measuredBy>\n";
             if(isset($this->ownerUserID))           $xml.= "<owner id=\"".$this->ownerUserID."\">".$this->owner."</owner>\n";
-            if(isset($this->datingTypeID))          $xml.= "<datingType id=\"".$this->datingTypeID."\">".$this->datingType."</datingType>\n";
+            if(isset($this->datingType))            $xml.= "<datingType>".$this->datingType."</datingType>\n";
             if(isset($this->datingErrorPositive))   $xml.= "<datingErrorPositive>".$this->datingErrorPositive."</datingErrorPositive>\n";
             if(isset($this->datingErrorNegative))   $xml.= "<datingErrorNegative>".$this->datingErrorNegative."</datingErrorNegative>\n";
             if(isset($this->description))           $xml.= "<description>".$this->description."</description>\n";

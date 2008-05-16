@@ -123,6 +123,92 @@ class radius
 
         return TRUE;
     }
+    
+    function setParamsFromParamsClass($paramsClass)
+    {
+        // Alters the parameter values based upon values supplied by the user and passed as a parameters class
+        if (isset($paramsClass->name))       $this->name       = $paramsClass->name;
+        if (isset($paramsClass->specimenID)) $this->specimenID = $paramsClass->specimenID;
+
+        return true;
+    }
+
+    function validateRequestParams($paramsObj, $crudMode)
+    {
+        // Check parameters based on crudMode 
+        switch($crudMode)
+        {
+            case "read":
+                if($paramsObj->id==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a radius.");
+                    return false;
+                }
+                if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
+                {
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer.  It is currently a ".gettype($paramsObj->id));
+                    return false;
+                }
+                if(!($paramsObj->id>0) && !($paramsObj->id==NULL))
+                {
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer.");
+                    return false;
+                }
+                return true;
+         
+            case "update":
+                if($paramsObj->id == NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
+                    return false;
+                }
+                if(($paramsObj->specimenID==NULL) 
+                    && ($paramsObj->name==NULL)
+                    && ($paramsObj->hasChild!=True))
+                {
+                    $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
+                    return false;
+                }
+                return true;
+
+            case "delete":
+                if($paramsObj->id == NULL) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
+                    return false;
+                }
+                return true;
+
+            case "create":
+                if($paramsObj->hasChild===TRUE)
+                {
+                    if($paramsObj->id == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'radiusid' field is required when creating a measurement.");
+                        return false;
+                    }
+                }
+                else
+                {
+                    if($paramsObj->name == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a radius.");
+                        return false;
+                    }
+                    if($paramsObj->specimenID == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'specimenid' field is required when creating a radius.");
+                        return false;
+                    }
+                }
+                return true;
+
+            default:
+                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
+                return false;
+        }
+    }
+
 
 
     /***********/

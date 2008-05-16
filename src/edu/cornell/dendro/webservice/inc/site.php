@@ -8,7 +8,7 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 require_once('dbhelper.php');
-require_once('inc/siteNote.php');
+require_once('inc/note.php');
 require_once('inc/subSite.php');
 require_once('inc/region.php');
 
@@ -37,7 +37,7 @@ class site
     /* CONSTRUCTOR */
     /***************/
 
-    function site()
+    function __construct()
     {
         // Constructor for this class.
     }
@@ -105,6 +105,13 @@ class site
                 
             }
 
+            $sql  = "select sitenoteid from tblsitesitenote where siteid=".$this->id;
+            $result = pg_query($dbconn, $sql);
+            while ($row = pg_fetch_array($result))
+            {
+                // Get all tree note id's for this tree and store 
+                array_push($this->siteNoteArray, $row['sitenoteid']);
+            }
         }
         else
         {
@@ -123,26 +130,18 @@ class site
 
         global $dbconn;
 
-        $sql  = "select sitenoteid from tblsitesitenote where siteid=".$this->id;
-        $sql2 = "select subsiteid from tblsubsite where siteid=".$this->id;
-        $sql3 = "select regionid from tblsiteregion where siteid=".$this->id;
+        $sql1 = "select subsiteid from tblsubsite where siteid=".$this->id;
+        $sql2 = "select regionid from tblsiteregion where siteid=".$this->id;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
-            $result = pg_query($dbconn, $sql);
-            while ($row = pg_fetch_array($result))
-            {
-                // Get all tree note id's for this tree and store 
-                array_push($this->siteNoteArray, $row['sitenoteid']);
-            }
-
-            $result = pg_query($dbconn, $sql2);
+            $result = pg_query($dbconn, $sql1);
             while ($row = pg_fetch_array($result))
             {
                 // Get all tree note id's for this tree and store 
                 array_push($this->subSiteArray, $row['subsiteid']);
             }
-            $result = pg_query($dbconn, $sql3);
+            $result = pg_query($dbconn, $sql2);
             while ($row = pg_fetch_array($result))
             {
                 // Get all tree note id's for this tree and store 
@@ -159,6 +158,135 @@ class site
         return TRUE;
     }
 
+    function setParamsFromParamsClass($paramsClass)
+    {
+        // Alters the parameter values based upon values supplied by the user and passed as a parameters class
+        if (isset($paramsClass->id))   $this->id   = $paramsClass->id;
+        if (isset($paramsClass->name)) $this->name = $paramsClass->name;
+        if (isset($paramsClass->code)) $this->code = $paramsClass->code;
+
+        if (isset($paramsClass->siteNoteArray))
+        {
+            // Remove any existing site notes ready to be replaced with what user has specified
+            unset($this->siteNoteArray);
+            $this->siteNoteArray = array();
+
+            if($paramsClass->siteNoteArray[0]!='empty')
+            {
+                foreach($paramsClass->siteNoteArray as $item)
+                {
+                    array_push($this->siteNoteArray, (int) $item[0]);
+                }
+            }
+        }   
+
+        return true;
+    }
+
+    function validateRequestParams($paramsObj, $crudMode)
+    {
+        
+        // Check parameters based on crudMode 
+        switch($crudMode)
+        {
+            case "read":
+                if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
+                {
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer when reading sites.  It is currently a ".gettype($paramsObj->id));
+                    return false;
+                }
+                if(!($paramsObj->id>0) && !($paramsObj->id==NULL))
+                {
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer when reading sites.");
+                    return false;
+                }
+                if($paramsObj->id==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a site.");
+                    return false;
+                }
+                return true;
+         
+            case "update":
+                if($paramsObj->id == NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating a site.");
+                    return false;
+                }
+                if(($paramsObj->name == NULL) && ($paramsObj->code==NULL) && ($hasChild!=True)) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - either 'name' or 'code' fields (or both) must be specified when updating a site.");
+                    return false;
+                }
+                return true;
+
+            case "delete":
+                if($paramsObj->id == NULL) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a site.");
+                    return false;
+                }
+                return true;
+
+            case "create":
+                if($paramsObj->hasChild===TRUE)
+                {
+                    if($paramsObj->id == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'siteid' field is required when creating a subSite.");
+                        return false;
+                    }
+                }
+                else
+                {
+                    if($paramsObj->name == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a site.");
+                        return false;
+                    }
+                    if($paramsObj->code == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'code' field is required when creating a site.");
+                        return false;
+                    }
+                }
+                return true;
+
+            default:
+                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
+                return false;
+        }
+    }
+    
+    function validateRequest($paramsObj, $crudMode, $auth)
+    {
+        $paramsOK = validateRequestParams($paramObj, $crudMode);
+            
+        if($paramsOK===FALSE)
+        {
+            // Problem with parameters
+            return false;
+        }
+        
+        // Parameters are ok, so now lets check the user has permission to do this
+        if(isset($paramsObj->xmlrequest->subSite)) $parentID = $paramsObj->xmlrequest->subSite;
+        
+        switch($crudMode)
+        {
+            case "read":
+         
+            case "update":
+
+            case "delete":
+
+            case "create":
+
+        }
+
+
+
+
+    }
 
     /***********/
     /*ACCESSORS*/
@@ -220,7 +348,7 @@ class site
                         }
                         else
                         {
-                            $myMetaHeader->setErrorMessage($mySiteNote->getLastErrorCode, $mySiteNote->getLastErrorMessage);
+                            $this->setErrorMessage($mySiteNote->lastErrorCode, $mySiteNote->lastErrorMessage);
                         }
                     }
                 }
@@ -240,7 +368,7 @@ class site
                         }
                         else
                         {
-                            $myMetaHeader->setErrorMessage($mySubSite->getLastErrorCode, $mySubSite->getLastErrorMessage);
+                            $this->setErrorMessage($mySubSite->getLastErrorCode, $mySubSite->getLastErrorMessage);
                         }
                     }
                     $xml.="</references>\n";
@@ -335,20 +463,10 @@ class site
     function writeToDB()
     {
         // Write the current object to the database
-
         global $dbconn;
-        
-        // Check for required parameters
-        if($this->name == NULL) 
-        {
-            $this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
-            return FALSE;
-        }
-        if($this->code == NULL) 
-        {
-            $this->setErrorMessage("902", "Missing parameter - 'code' field is required.");
-            return FALSE;
-        }
+
+        $sql  = NULL;
+        $sql2 = NULL;
 
         //Only attempt to run SQL if there are no errors so far
         if($this->lastErrorCode == NULL)
@@ -359,9 +477,11 @@ class site
                 // If ID has not been set then we assume that we are writing a new record to the DB.  Otherwise updating.
                 if($this->id == NULL)
                 {
-                    // New record
+                    // New recordi
+
                     if (($this->centroidLat)&& ($this->centroidLong))
                     {
+                        // Create WKT string for polygon if lat long known
                         $polygonwkt = "POLYGON((";
                         $polygonwkt.= ($this->centroidLong-0.1)." ".($this->centroidLat-0.1).", ";
                         $polygonwkt.= ($this->centroidLong+0.1)." ".($this->centroidLat-0.1).", ";
@@ -369,19 +489,31 @@ class site
                         $polygonwkt.= ($this->centroidLong-0.1)." ".($this->centroidLat+0.1).", ";
                         $polygonwkt.= ($this->centroidLong-0.1)." ".($this->centroidLat-0.1);
                         $polygonwkt.= "))";
-                        //echo $polygonwkt;
-                        $sql = "insert into tblsite (name, code, siteextent) values ('".$this->name."', '".$this->code."', polygonfromtext('$polygonwkt',4326))";
                     }
-                    else
-                    {
-                        $sql = "insert into tblsite (name, code) values ('".$this->name."', '".$this->code."')";
-                    }
-                    $sql2 = "select * from tblsite  where siteid=currval('tblsite_siteid_seq')";
+                        // Build SQL insert statement
+                        $sql = "insert into tblsite (";
+                            if(isset($this->name))      $sql .= "name, ";
+                            if(isset($this->code))      $sql .= "code, ";
+                            if((isset($this->centroidLat)) && (isset($this->centroidLong)))    $sql .= "siteextent, ";
+                        // Trim off trailing space and comma
+                        $sql = substr($sql, 0, -2);
+                        $sql.=") values (";
+                            if(isset($this->name))      $sql .= "'".$this->name."', ";
+                            if(isset($this->code))      $sql .= "'".$this->code."', ";
+                            if((isset($this->centroidLat)) && (isset($this->centroidLong)))    $sql .= "polygonfromtext('$polygonwkt',4326))";
+                        // Trim off trailing space and comma
+                        $sql = substr($sql, 0, -2);
+                        $sql.=")";
+                        $sql2 = "select * from tblsite  where siteid=currval('tblsite_siteid_seq')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tblsite set name='".$this->name."', code='".$this->code."' where siteid=".$this->id;
+                    $sql .= "update tblsite set ";
+                        if(isset($this->name))      $sql.="name='"          .$this->name."', ";
+                        if(isset($this->code))      $sql.="code='"          .$this->code."', ";
+                    $sql = substr($sql, 0, -2);
+                    $sql.=" where siteid='".$this->id."'";
                 }
 
                 // Run SQL command
@@ -420,7 +552,19 @@ class site
                     }
                 }
 
+                // Set or unset siteNotes for this site
+                if(isset($this->siteNoteArray))
+                {
+                    $sql = "delete from tblsitesitenote where siteid=".$this->id;
+                    $result = pg_query($dbconn, $sql);
 
+                    foreach($this->siteNoteArray as $item)
+                    {
+                        $obj = new siteNote();
+                        $obj->setParamsFromDB($item);
+                        $obj->assignToParent($this->id);
+                    }
+                } 
             }
             else
             {

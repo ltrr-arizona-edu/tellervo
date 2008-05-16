@@ -8,7 +8,7 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 require_once('dbhelper.php');
-require_once('inc/treeNote.php');
+require_once('inc/note.php');
 require_once('inc/specimen.php');
 require_once('inc/taxon.php');
 
@@ -170,6 +170,110 @@ class tree
 
         return TRUE;
     }
+    
+    function setParamsFromParamsClass($paramsClass)
+    {
+        // Alters the parameter values based upon values supplied by the user and passed as a parameters class
+        if (isset($paramsClass->name))      $this->name      = $paramsClass->name;
+        if (isset($paramsClass->taxonID))   $this->taxonID   = $paramsClass->taxonID;
+        if (isset($paramsClass->latitude))  $this->latitude  = $paramsClass->latitude;
+        if (isset($paramsClass->longitude)) $this->longitude = $paramsClass->longitude;
+        if (isset($paramsClass->precision)) $this->precision = $paramsClass->precision;
+        if (isset($paramsClass->subSiteID)) $this->subSiteID = $paramsClass->subSiteID;
+        
+        if (isset($paramsClass->treeNoteArray))
+        {
+            // Remove any existing site notes ready to be replaced with what user has specified
+            unset($this->treeNoteArray);
+            $this->treeNoteArray = array();
+
+            if($paramsClass->treeNoteArray[0]!='empty')
+            {
+                foreach($paramsClass->treeNoteArray as $item)
+                {
+                    array_push($this->treeNoteArray, (int) $item[0]);
+                }
+            }
+        }   
+
+        return true;
+    }
+
+    function validateRequestParams($paramsObj, $crudMode)
+    {
+        // Check parameters based on crudMode 
+        switch($crudMode)
+        {
+            case "read":
+                if($paramsObj->id == NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a tree.");
+                    return false;
+                }
+                return true;
+         
+            case "update":
+                if($paramsObj->id == NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating a tree.");
+                    return false;
+                }
+                if(($paramsObj->taxonID==NULL) 
+                    && ($paramsObj->name==NULL) 
+                    && ($paramsObj->subsiteid==NULL) 
+                    && ($paramsObj->latitude==NULL) 
+                    && ($paramsObj->longitude==NULL) 
+                    && ($paramsObj->precision==NULL)
+                    && ($paramsObj->hasChild!=True))
+                {
+                    $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
+                    return false;
+                }
+                return true;
+
+            case "delete":
+                if($paramsObj->id == NULL) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a tree.");
+                    return false;
+                }
+                return true;
+
+            case "create":
+                if($paramsObj->hasChild===TRUE)
+                {
+                    if($paramsObj->id == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'treeid' field is required when creating a specimen.");
+                        return false;
+                    }
+                }
+                else
+                {
+                    if($paramsObj->name == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a tree.");
+                        return false;
+                    }
+                    if($paramsObj->taxonID == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'validatedtaxonid' field is required when creating a tree.");
+                        return false;
+                    }
+                    if($paramsObj->subSiteID == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'subsiteid' field is required.");
+                        return false;
+                    }
+                }
+                return true;
+
+            default:
+                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
+                return false;
+        }
+    }
+
     
     function setErrorMessage($theCode, $theMessage)
     {

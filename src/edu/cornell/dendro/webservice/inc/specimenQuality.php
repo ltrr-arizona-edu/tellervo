@@ -142,17 +142,17 @@ class specimenQuality
         return $this->label;
     }
 
-    function getParentTagBegin()
+    static function getParentTagBegin()
     {
         // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag.">";
+        $xml = "<specimenQualityDictionary>";
         return $xml;
     }
 
-    function getParentTagEnd()
+    static function getParentTagEnd()
     {
         // Return a string containing the end XML tag for the current object's parent
-        $xml = "</".$this->parentXMLTag.">";
+        $xml = "</specimenQualityDictionary>";
         return $xml;
     }
 

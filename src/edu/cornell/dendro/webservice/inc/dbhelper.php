@@ -119,5 +119,17 @@ function fromPHPtoStringBool($theValue)
     return fromPGtoStringBool($theValue);
 }
 
+function xmlSpecialCharReplace($xmlrequest)
+{
+    // Seriously kludge fix to swap out special chars
+    $findStr = "operator=\">\"";
+    $replaceStr = "operator=\"&gt;\"";
+    $xmlrequest = str_replace($findStr, $replaceStr, $xmlrequest);
+    $findStr = "operator=\"<\"";
+    $replaceStr = "operator=\"&lt;\"";
+    $xmlrequest = str_replace($findStr, $replaceStr, $xmlrequest);
+    return $xmlrequest;
+
+}
 
 ?>

@@ -14,6 +14,7 @@ class subSite
 {
     var $id = NULL;
     var $name = NULL;
+    var $siteID = NULL;
     var $childArray = array();
     var $createdTimeStamp = NULL;
     var $lastModifiedTimeStamp = NULL;
@@ -60,6 +61,12 @@ class subSite
         // Set the current objects parameters from the database
 
         global $dbconn;
+
+        if($theID==NULL)
+        {
+            $this->setErrorMessage("903", "No subsite id specified");
+            return FALSE;
+        }
         
         $this->id=$theID;
         $sql = "select * from tblsubsite where subsiteid=$theID";
@@ -100,6 +107,11 @@ class subSite
         // Add the id's of the current objects direct children from the database
         // Sitetrees
         
+        if($this->id==NULL)
+        {
+            $this->setErrorMessage("903", "No subsite id specified");
+            return FALSE;
+        }
 
         global $dbconn;
         
@@ -122,7 +134,89 @@ class subSite
 
         return TRUE;
     }
+    
+    function setParamsFromParamsClass($paramsClass)
+    {
+        // Alters the parameter values based upon values supplied by the user and passed as a parameters class
+        if (isset($paramsClass->name))   $this->name   = $paramsClass->name;
+        if (isset($paramsClass->siteID)) $this->siteID = $paramsClass->siteID;
 
+        return true;
+    }
+
+    function validateRequestParams($paramsObj, $crudMode)
+    {
+        // Check parameters based on crudMode
+        switch($crudMode)
+        {
+            case "read":
+                if($paramsObj->id==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a subsite.");
+                    return false;
+                }
+                if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
+                {
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer when reading a sub site.  It is currently a ".gettype($paramsObj->id));
+                    return false;
+                }
+                if(!($paramsObj->id>0) && !($paramsObj->id==NULL))
+                {
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer when reading a sub site.");
+                    return false;
+                }
+                return true;
+         
+            case "update":
+                if($paramsObj->id == NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating a sub site.");
+                    return false;
+                }
+                if(($paramsObj->siteID==NULL) && ($paramsObj->name==NULL) && ($hasChild!=True))
+                {
+                    $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update for this sub site.");
+                    return false;
+                }
+                return true;
+
+            case "delete":
+                if($paramsObj->id == NULL) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a sub site.");
+                    return false;
+                }
+                return true;
+
+            case "create":
+                if($paramsObj->hasChild===TRUE)
+                {
+                    if($paramsObj->id == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'subsiteid' field is required when creating a tree.");
+                        return false;
+                    }
+                }
+                else
+                {
+                    if($paramsObj->name == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a sub site.");
+                        return false;
+                    }
+                    if($paramsObj->siteID == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'siteid' field is required when creating a sub site.");
+                        return false;
+                    }
+                }
+                return true;
+
+            default:
+                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
+                return false;
+        }
+    }
 
     /***********/
     /*ACCESSORS*/
@@ -220,8 +314,9 @@ class subSite
     function writeToDB()
     {
         // Write the current object to the database
-
         global $dbconn;
+        $sql  = NULL;
+        $sql2 = NULL;
         
         // Check for required parameters
         if($this->name == NULL) 
@@ -267,7 +362,7 @@ class subSite
                         {
                         case 23505:
                                 // Foreign key violation
-                                $this->setErrorMessage("908", "Unique constraint violation.  A sub site with ihis name already exists.");
+                                $this->setErrorMessage("908", "Unique constraint violation.  A sub site with this name already exists.");
                                 break;
                         default:
                                 // Any other error

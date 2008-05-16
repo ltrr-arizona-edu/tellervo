@@ -19,7 +19,7 @@ $debugFlag = false;
 $wsversion = "0.1.".exec(svnversion); 
 
 // Path to RelaxNG schema
-$rngSchema = "/var/www/webservice/schemas/corina.rng"; 
+$rngSchema = "/var/www/webservicedev/schemas/corina.rng"; 
 
 // Timezone of the server this software is running on
 $serverTimezone = "America/New_York";
