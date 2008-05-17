@@ -162,10 +162,18 @@ $$ LANGUAGE 'plpgsql' VOLATILE;
 
 CREATE OR REPLACE FUNCTION cpgdb.FindVMChildren(tblVMeasurement.VMeasurementID%TYPE, boolean)
 RETURNS SETOF typVMeasurementSearchResult AS '
-SELECT * FROM cpgdb.recurseFindVMChildren($1, (SELECT CASE WHEN $2=TRUE THEN -1 ELSE 0 END))
+  SELECT * FROM cpgdb.recurseFindVMChildren($1, (SELECT CASE WHEN $2=TRUE THEN -1 ELSE 0 END))
 ' LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION cpgdb.FindVMParents(tblVMeasurement.VMeasurementID%TYPE, boolean)
 RETURNS SETOF typVMeasurementSearchResult AS '
-SELECT * FROM cpgdb.recurseFindVMParents($1, (SELECT CASE WHEN $2=TRUE THEN -1 ELSE 0 END))
+  SELECT * FROM cpgdb.recurseFindVMParents($1, (SELECT CASE WHEN $2=TRUE THEN -1 ELSE 0 END))
 ' LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION cpgdb.FindVMParentMeasurements(tblVMeasurement.VMeasurementID%TYPE)
+RETURNS SETOF tblMeasurement.MeasurementID%TYPE AS $$
+  SELECT measurement.MeasurementID FROM cpgdb.FindVMParents($1, true) parents 
+  INNER JOIN tblVMeasurement vm ON parents.VMeasurementID = vm.VMeasurementID 
+  INNER JOIN tblMeasurement measurement ON measurement.MeasurementID = vm.MeasurementID 
+  WHERE parents.op='Direct';
+$$ LANGUAGE SQL;
