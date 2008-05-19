@@ -70,7 +70,6 @@ class search
         $myRequest    = $paramsClass;
         $orderBySQL   = NULL;
         $groupBySQL   = NULL;
-        $fromTableSQL = NULL;
         $filterSQL    = NULL;
         $skipSQL      = NULL;
         $limitSQL     = NULL;
@@ -82,21 +81,11 @@ class search
         
             // Build return object dependent SQL
             $returnObjectSQL = $this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id as id ";
-            $orderBySQL      = " order by ".$this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id asc ";
-            $groupBySQL      = " group by ".$this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id" ;
-            if ($myRequest->limit) $limitSQL = " limit ".$myRequest->limit;
-            if ($myRequest->skip)  $skipSQL  = " offset ".$myRequest->skip;
+            $orderBySQL      = "\n ORDER BY ".$this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id asc ";
+            $groupBySQL      = "\n GROUP BY ".$this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id" ;
+            if ($myRequest->limit) $limitSQL = "\n LIMIT ".$myRequest->limit;
+            if ($myRequest->skip)  $skipSQL  = "\n OFFSET ".$myRequest->skip;
             
-            // Build "from..." section of SQL
-            if( (($this->getLowestRelationshipLevel($myRequest)<=1) && ($this->getHighestRelationshipLevel($myRequest)>=1))    || ($myRequest->returnObject == 'measurement'))  $fromTableSQL .= $this->tableName("measurement").", tblmeasurement, ";
-            if( (($this->getLowestRelationshipLevel($myRequest)<=2) && ($this->getHighestRelationshipLevel($myRequest)>=2))    || ($myRequest->returnObject == 'radius'))       $fromTableSQL .= $this->tableName("radius").", ";
-            if( (($this->getLowestRelationshipLevel($myRequest)<=3) && ($this->getHighestRelationshipLevel($myRequest)>=3))    || ($myRequest->returnObject == 'specimen'))     $fromTableSQL .= $this->tableName("specimen").", ";
-            if( (($this->getLowestRelationshipLevel($myRequest)<=4) && ($this->getHighestRelationshipLevel($myRequest)>=4))    || ($myRequest->returnObject == 'tree'))         $fromTableSQL .= $this->tableName("tree").", ";
-            if( (($this->getLowestRelationshipLevel($myRequest)<=5) && ($this->getHighestRelationshipLevel($myRequest)>=5))    || ($myRequest->returnObject == 'subsite'))      $fromTableSQL .= $this->tableName("subsite").", ";
-            if( (($this->getLowestRelationshipLevel($myRequest)<=6) && ($this->getHighestRelationshipLevel($myRequest)>=6))    || ($myRequest->returnObject == 'site'))         $fromTableSQL .= $this->tableName("site").", ";
-                   
-            // Trim off last ', ' from the 'form' clause SQL
-            $fromTableSQL = substr($fromTableSQL, 0, -2);
 
             // Build "where..." section of SQL
             if ($myRequest->siteParamsArray)        $filterSQL .= $this->paramsToFilterSQL($myRequest->siteParamsArray, "site");
@@ -105,13 +94,12 @@ class search
             if ($myRequest->specimenParamsArray)    $filterSQL .= $this->paramsToFilterSQL($myRequest->specimenParamsArray, "specimen");
             if ($myRequest->radiusParamsArray)      $filterSQL .= $this->paramsToFilterSQL($myRequest->radiusParamsArray, "radius");
             if ($myRequest->measurementParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->measurementParamsArray, "measurement");
-            $filterSQL .= $this->getRelationshipSQL($myRequest);
 
             // Trim off final ' and ' from filter SQL
             $filterSQL = substr($filterSQL, 0, -5);
 
             // Compile full SQL statement from parts
-            $fullSQL = "select ".$returnObjectSQL." from ".$fromTableSQL." where ".$filterSQL.$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
+            $fullSQL = "SELECT ".$returnObjectSQL.$this->fromSQL($myRequest)." WHERE ".$filterSQL.$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
             //echo $fullSQL;
 
             // Add SQL to XML o.utput
@@ -120,13 +108,14 @@ class search
             // Do SQL Query
             pg_send_query($dbconn, $fullSQL);
             $result = pg_get_result($dbconn);
+            /*echo "rows = ".pg_num_rows($result);
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
                 $this->setErrorMessage("903","No records matched the criteria specified. SQL statement was: $fullSQL");
             }
             else
-            {
+            {*/
                 $result = @pg_query($dbconn, $fullSQL);
                 while ($row = @pg_fetch_array($result))
                 {
@@ -183,7 +172,7 @@ class search
                         $this->setErrorMessage($myReturnObject->getLastErrorCode(), $myReturnObject->getLastErrorMessage());
                     }
                 }
-            }
+           // }
                     
             if(count($this->deniedRecArray)>0 )
             {
@@ -343,12 +332,96 @@ class search
             return "vwtblradius";
             break;
         case "measurement":
-            return "vwvmeasurement";
+            return "tblvmeasurement";
             break;
         default:
             return false;
         }
 
+    }
+    
+    function fromSQL($myRequest)
+    {
+        $fromSQL = "\nFROM ";
+        $withinJoin = FALSE;
+
+        if( (($this->getLowestRelationshipLevel($myRequest)<=6) && ($this->getHighestRelationshipLevel($myRequest)>=6)) || ($myRequest->returnObject == 'site'))
+        {
+            $fromSQL .= $this->tableName("site")." \n";
+            $withinJoin = TRUE;
+        }
+        
+        if( (($this->getLowestRelationshipLevel($myRequest)<=5) && ($this->getHighestRelationshipLevel($myRequest)>=5)) || ($myRequest->returnObject == 'subsite'))  
+        {
+            if($withinJoin)
+            {
+                $fromSQL .= "INNER JOIN ".$this->tableName("subsite")." ON ".$this->tableName("site").".siteid = ".$this->tableName("subsite").".siteid \n";
+            }
+            else
+            {
+                $fromSQL .= $this->tableName("subsite")." \n";
+                $withinJoin = TRUE;
+            }
+        }
+        
+        if( (($this->getLowestRelationshipLevel($myRequest)<=4) && ($this->getHighestRelationshipLevel($myRequest)>=4)) || ($myRequest->returnObject == 'tree'))
+        {
+            if($withinJoin)
+            {
+                $fromSQL .= "INNER JOIN ".$this->tableName("tree")." ON ".$this->tableName("subsite").".subsiteid = ".$this->tableName("tree").".subsiteid \n";
+            }
+            else
+            {
+                $fromSQL .= $this->tableName("tree")." \n";
+                $withinJoin = TRUE;
+            }
+        }        
+        
+        if( (($this->getLowestRelationshipLevel($myRequest)<=3) && ($this->getHighestRelationshipLevel($myRequest)>=3)) || ($myRequest->returnObject == 'specimen'))
+        {
+            if($withinJoin)
+            {
+                $fromSQL .= "INNER JOIN ".$this->tableName("specimen")." ON ".$this->tableName("tree").".treeid = ".$this->tableName("specimen").".treeid \n";
+            }
+            else
+            {
+                $fromSQL .= $this->tableName("specimen")." \n";
+                $withinJoin = TRUE;
+            }
+        }
+        
+        if( (($this->getLowestRelationshipLevel($myRequest)<=2) && ($this->getHighestRelationshipLevel($myRequest)>=2)) || ($myRequest->returnObject == 'radius'))
+        {
+            if($withinJoin)
+            {
+                $fromSQL .= "INNER JOIN ".$this->tableName("radius")." ON ".$this->tableName("specimen").".specimenid = ".$this->tableName("radius").".specimenid \n";
+            }
+            else
+            {
+                $fromSQL .= $this->tableName("radius")." \n";
+                $withinJoin = TRUE;
+            }
+        }
+        
+        if( (($this->getLowestRelationshipLevel($myRequest)<=1) && ($this->getHighestRelationshipLevel($myRequest)>=1)) || ($myRequest->returnObject == 'measurement'))  
+        {
+            if($withinJoin)
+            {
+                $fromSQL .= "INNER JOIN tblmeasurement ON ".$this->tableName("radius").".radiusid = tblmeasurement.radiusid \n";
+                $fromSQL .= "INNER JOIN tblvmeasurementderivedcache ON tblmeasurement.measurementid = tblvmeasurementderivedcache.measurementid \n";
+                $fromSQL .= "INNER JOIN tblvmeasurement ON tblvmeasurementderivedcache.vmeasurementid = tblvmeasurement.vmeasurementid \n";
+                $fromSQL .= "INNER JOIN tblvmeasurementmetacache ON tblvmeasurement.vmeasurementid = tblvmeasurementmetacache.vmeasurementid \n";
+            }
+            else
+            {
+                $fromSQL .= "tblmeasurement \n";
+                $fromSQL .= "INNER JOIN tblvmeasurementderivedcache ON tblmeasurement.measurementid = tblvmeasurementderivedcache.measurementid \n";
+                $fromSQL .= "INNER JOIN tblvmeasurement ON tblvmeasurementderivedcache.vmeasurementid = tblvmeasurement.vmeasurementid \n";
+                $fromSQL .= "INNER JOIN tblvmeasurementmetacache ON tblvmeasurement.vmeasurementid = tblvmeasurementmetacache.vmeasurementid \n";
+            }
+        }
+               
+        return $fromSQL;
     }
 
     function getLowestRelationshipLevel($theRequest)
@@ -379,7 +452,7 @@ class search
         {
             return 4;
         }
-        elseif (($myRequest->subsiteParamsArray) || ($myRequest->returnObject == 'subsite'))
+        elseif (($myRequest->subSiteParamsArray) || ($myRequest->returnObject == 'subsite'))
         {
             return 5;
         }
@@ -409,7 +482,7 @@ class search
         {
             return 6;
         }
-        elseif (($myRequest->subsiteParamsArray) || ($myRequest->returnObject == 'subsite'))
+        elseif (($myRequest->subSiteParamsArray) || ($myRequest->returnObject == 'subsite'))
         {
             return 5;
         }
@@ -449,11 +522,11 @@ class search
 
         if (($lowestLevel==1) && ($highestLevel>=1))
         {
-            $sql .= "vwvmeasurement.measurementid=tblmeasurement.measurementid and ";
+            $sql .= "tblmeasurement.measurementid=tblvmeasurementderivedcache.measurementid and tblvmeasurementderivedcache.vmeasurementid=tblvmeasurement.vmeasurementid and tblvmeasurementmetacache.vmeasurementid=tblvmeasurement.vmeasurementid and ";
         }
         if (($lowestLevel<=1) && ($highestLevel>1))
         {
-            $sql .= "vwvmeasurement.radiusid=vwtblradius.radiusid and ";
+            $sql .= "tblmeasurement.radiusid=vwtblradius.radiusid and ";
         }
         if (($lowestLevel<=2) && ($highestLevel>2))
         {
