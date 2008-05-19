@@ -56,7 +56,7 @@ class siteParameters extends parameters
         if(isset($this->xmlrequest->subSite))        $this->hasChild                 = True;
 
         $siteNotes = $this->xmlrequest->xpath('//siteNotes');
-        if ($siteNotes[0]->siteNote[0])
+        if (isset($siteNotes[0]->siteNote[0]))
         {
             foreach($siteNotes[0] as $item)
             {
