@@ -74,7 +74,13 @@ class search
         $skipSQL      = NULL;
         $limitSQL     = NULL;
         $xmldata      = NULL;
-        
+
+        // Overide return object to vmeasurement if measurement requested
+        if($myRequest->returnObject=='measurement')
+        {
+            $myRequest->returnObject='vmeasurement';
+        }
+
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -93,10 +99,9 @@ class search
             if ($myRequest->treeParamsArray)        $filterSQL .= $this->paramsToFilterSQL($myRequest->treeParamsArray, "tree");
             if ($myRequest->specimenParamsArray)    $filterSQL .= $this->paramsToFilterSQL($myRequest->specimenParamsArray, "specimen");
             if ($myRequest->radiusParamsArray)      $filterSQL .= $this->paramsToFilterSQL($myRequest->radiusParamsArray, "radius");
-            if ($myRequest->measurementParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->measurementParamsArray, "measurement");
-
-            // Trim off final ' and ' from filter SQL
-            $filterSQL = substr($filterSQL, 0, -5);
+            if ($myRequest->vmeasurementParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementParamsArray, "vmeasurement");
+            if ($myRequest->vmeasurementResultParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementResultParamsArray, "vmeasurementresult");
+            if ($myRequest->vmeasurementMetaCacheParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementMetaCacheParamsArray, "vmeasurementmetacache");
 
             // Compile full SQL statement from parts
             $fullSQL = "SELECT ".$returnObjectSQL.$this->fromSQL($myRequest)." WHERE ".$filterSQL.$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
@@ -145,7 +150,7 @@ class search
                         $myReturnObject = new radius();
                         $hasPermission = $myAuth->radiusPermission($row['id'], "read");
                     }
-                    elseif($myRequest->returnObject=="measurement")
+                    elseif($myRequest->returnObject=="vmeasurement")
                     {
                         $myReturnObject = new measurement();
                         $hasPermission = $myAuth->vmeasurementPermission($row['id'], "read");
@@ -246,7 +251,7 @@ class search
 
     function paramsToFilterSQL($paramsArray, $paramName)
     {
-        $filterSQL="";
+        $filterSQL = NULL;
         foreach($paramsArray as $param)
         {
             // Set operator
@@ -279,6 +284,9 @@ class search
             $filterSQL .= $this->tableName($paramName).".".$param['name']." ".$operator.$value." and ";
         }
 
+
+        // Trim off final ' and ' from filter SQL
+        $filterSQL = substr($filterSQL, 0, -5);
         return $filterSQL;
     }
 
@@ -302,7 +310,7 @@ class search
         case "radius":
             return "radius";
             break;
-        case "measurement":
+        case "vmeasurement":
             return "vmeasurement";
             break;
         default:
@@ -332,7 +340,19 @@ class search
             return "vwtblradius";
             break;
         case "measurement":
-            return "tblvmeasurement";
+            return "vwtblmeasurement";
+            break;
+        case "vmeasurement":
+            return "vwtblvmeasurement";
+            break;
+        case "vmeasurementmetacache":
+            return "vwtblvmeasurementmetacache";
+            break;
+        case "vmeasurementresult":
+            return "vwtblvmeasurementresult";
+            break;
+        case "vmeasurementderivedcache":
+            return "tblvmeasurementderivedcache";
             break;
         default:
             return false;
@@ -407,17 +427,19 @@ class search
         {
             if($withinJoin)
             {
-                $fromSQL .= "INNER JOIN tblmeasurement ON ".$this->tableName("radius").".radiusid = tblmeasurement.radiusid \n";
-                $fromSQL .= "INNER JOIN tblvmeasurementderivedcache ON tblmeasurement.measurementid = tblvmeasurementderivedcache.measurementid \n";
-                $fromSQL .= "INNER JOIN tblvmeasurement ON tblvmeasurementderivedcache.vmeasurementid = tblvmeasurement.vmeasurementid \n";
-                $fromSQL .= "INNER JOIN tblvmeasurementmetacache ON tblvmeasurement.vmeasurementid = tblvmeasurementmetacache.vmeasurementid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("measurement")." ON ".$this->tableName("radius").".radiusid = ".$this->tableName("measurement").".radiusid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurementderivedcache")." ON ".$this->tableName("measurement").".measurementid = ".$this->tableName("vmeasurementderivedcache").".measurementid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurement")." ON ".$this->tableName("vmeasurementderivedcache").".vmeasurementid = ".$this->tableName("vmeasurement").".vmeasurementid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurementresult")." ON ".$this->tableName("vmeasurement").".vmeasurementid = ".$this->tableName("vmeasurementresult").".vmeasurementid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurementmetacache")." ON ".$this->tableName("vmeasurement").".vmeasurementid = ".$this->tableName("vmeasurementmetacache").".vmeasurementid \n";
             }
             else
             {
-                $fromSQL .= "tblmeasurement \n";
-                $fromSQL .= "INNER JOIN tblvmeasurementderivedcache ON tblmeasurement.measurementid = tblvmeasurementderivedcache.measurementid \n";
-                $fromSQL .= "INNER JOIN tblvmeasurement ON tblvmeasurementderivedcache.vmeasurementid = tblvmeasurement.vmeasurementid \n";
-                $fromSQL .= "INNER JOIN tblvmeasurementmetacache ON tblvmeasurement.vmeasurementid = tblvmeasurementmetacache.vmeasurementid \n";
+                $fromSQL .= $this->tableName('measurement')." \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurementderivedcache")." ON ".$this->tableName("measurement").".measurementid = ".$this->tableName("vmeasurementderivedcache").".measurementid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurement")." ON ".$this->tableName("vmeasurementderivedcache").".vmeasurementid = ".$this->tableName("vmeasurement").".vmeasurementid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurementresult")." ON ".$this->tableName("vmeasurement").".vmeasurementid = ".$this->tableName("vmeasurementresult").".vmeasurementid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurementmetacache")." ON ".$this->tableName("vmeasurement").".vmeasurementid = ".$this->tableName("vmeasurementmetacache").".vmeasurementid \n";
             }
         }
                
@@ -436,7 +458,7 @@ class search
         
         $myRequest = $theRequest;
         
-        if (($myRequest->measurementParamsArray) || ($myRequest->returnObject == 'measurement'))
+        if (($myRequest->measurementParamsArray) || ($myRequest->returnObject == 'vmeasurement'))
         {
             return 1;
         }
@@ -499,6 +521,22 @@ class search
             return 2;
         }
         elseif (($myRequest->measurementParamsArray) || ($myRequest->returnObject == 'measurement'))
+        {
+            return 1;
+        }
+        elseif (($myRequest->vmeasurementParamsArray) || ($myRequest->returnObject == 'measurement'))
+        {
+            return 1;
+        }
+        elseif (($myRequest->vmeasurementResultParamsArray) || ($myRequest->returnObject == 'measurement'))
+        {
+            return 1;
+        }
+        elseif (($myRequest->vmeasurementMetaCacheParamsArray) || ($myRequest->returnObject == 'measurement'))
+        {
+            return 1;
+        }
+        elseif (($myRequest->derivedCacheParamsArray) || ($myRequest->returnObject == 'measurement'))
         {
             return 1;
         }

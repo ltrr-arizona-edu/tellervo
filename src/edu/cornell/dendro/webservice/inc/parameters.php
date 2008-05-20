@@ -428,6 +428,9 @@ class searchParameters extends parameters
     var $specimenParamsArray     = array();
     var $radiusParamsArray       = array();
     var $measurementParamsArray  = array();
+    var $vmeasurementParamsArray  = array();
+    var $vmeasurementResultParamsArray  = array();
+    var $vmeasurementMetaCacheParamsArray  = array();
 
 
     function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
@@ -512,21 +515,45 @@ class searchParameters extends parameters
                     ($param['name'] == 'radiuscreated') || 
                     ($param['name'] == 'radiuslastmodified'))
             {
-                array_push($this->radiusParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
+                array_push($this->radiusParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
             }
 
             // Measurement Parameters
             elseif( ($param['name'] == 'measurementname') || 
+                    ($param['name'] == 'measurementoperator') || 
+                    ($param['name'] == 'measurementdescription') || 
+                    ($param['name'] == 'measurementispublished') || 
+                    ($param['name'] == 'measurementowneruserid') || 
                     ($param['name'] == 'measurementcreated') || 
+                    ($param['name'] == 'operatorparameter') || 
                     ($param['name'] == 'measurementlastmodified'))
             {
-                array_push($this->measurementParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
+                array_push($this->vmeasurementParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
             }
-            
             elseif( ($param['name'] == 'measurementid') ) 
             {
-                array_push($this->measurementParamsArray, array ('name' => addslashes('vmeasurementid'), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
+                array_push($this->vmeasurementParamsArray, array ('name' => addslashes('vmeasurementid'), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
             }
+            elseif( ($param['name'] == 'measurementisreconciled') || 
+                    ($param['name'] == 'datingtype') || 
+                    ($param['name'] == 'datingerrornegative') || 
+                    ($param['name'] == 'datingerrorpositive'))
+            {
+                array_push($this->vmeasurementResultParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
+            }
+            elseif( ($param['name'] == 'startyear') || 
+                    ($param['name'] == 'readingcount') || 
+                    ($param['name'] == 'measurementcount') || 
+                    ($param['name'] == 'measurementymin') || 
+                    ($param['name'] == 'measurementymax') || 
+                    ($param['name'] == 'measurementxmin') || 
+                    ($param['name'] == 'measurementxmax') || 
+                    ($param['name'] == 'measurementxcentroid') || 
+                    ($param['name'] == 'measurementycentroid'))
+            {
+                array_push($this->vmeasurementMetaCacheParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
+            }
+
         }
     }
 }

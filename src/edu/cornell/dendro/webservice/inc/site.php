@@ -120,6 +120,8 @@ class site
             return FALSE;
         }
 
+        $this->setChildParamsFromDB();
+
         return TRUE;
     }
 

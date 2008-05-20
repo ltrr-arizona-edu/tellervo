@@ -1,157 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
     <start>
-      <choice>
-        <ref name="siteParamsObject"/>	
-        <ref name="subSiteParamsObject"/>	
-        <ref name="treeParamsObject"/>	
-        <ref name="specimenParamsObject"/>	
-        <ref name="radiusParamsObject"/>	
-        <ref name="measurementParamsObject"/>	
+      <choice>	
         <ref name="searchParamsObject" />
       </choice>
     </start>
-    
-    <define name="siteParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-        <element name="siteParams">
-            <oneOrMore>
-                <element name="param">
-                    <attribute name="name">
-                        <choice>
-                            <value>siteid</value>
-                            <value>name</value>
-                            <value>createdtimestamp</value>
-                            <value>lastmodifiedtimestamp</value>
-                            <value>sitexcentroid</value>
-                            <value>siteycentroid</value>
-                        </choice>
-                    </attribute>
-                    <attribute name="operator">
-                        <choice>
-                            <value>&gt;</value>
-                            <value>&lt;</value>
-                            <value>=</value>
-                            <value>like</value>
-                            <value>!=</value>
-                        </choice>
-                    </attribute>
-                    <attribute name="value">
-                        <text/>
-                    </attribute>
-                </element>
-            </oneOrMore>
-        </element>
-    </define>   
-
-    <define name="subSiteParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-        <element name="subSiteParams">
-            <oneOrMore>
-                <element name="param">
-                    <attribute name="name">
-                        <choice>
-                            <value>subsiteid</value>
-                            <value>name</value>
-                            <value>createdtimestamp</value>
-                            <value>lastmodifiedtimestamp</value>
-                        </choice>
-                    </attribute>
-                    <attribute name="operator">
-                        <choice>
-                            <value>&gt;</value>
-                            <value>&lt;</value>
-                            <value>=</value>
-                            <value>like</value>
-                            <value>!=</value>
-                        </choice>
-                    </attribute>
-                    <attribute name="value">
-                        <text/>
-                    </attribute>
-                </element>
-            </oneOrMore>
-        </element>
-    </define>    
-
-    <define name="treeParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-        <element name="treeParams">
-            <oneOrMore>
-                <element name="param">
-                    <attribute name="name">
-                        <choice>
-                            <value>treeid</value>
-                            <value>precision</value>
-                            <value>label</value>
-                            <value>createdtimestamp</value>
-                            <value>lastmodifiedtimestamp</value>
-                        </choice>
-                    </attribute>
-                    <attribute name="operator">
-                        <choice>
-                            <value>&gt;</value>
-                            <value>&lt;</value>
-                            <value>=</value>
-                            <value>like</value>
-                            <value>!=</value>
-                        </choice>
-                    </attribute>
-                    <attribute name="value">
-                        <text/>
-                    </attribute>
-                </element>
-            </oneOrMore>
-        </element>
-    </define>    
-
-
-    <define name="specimenParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-        <element name="specimenParams">
-            <oneOrMore>
-                <element name="param">
-                    <attribute name="name">
-                        <choice>
-                            <value>specimenid</value>
-                            <value>label</value>
-                            <value>datecollected</value>
-                            <value>createdtimestamp</value>
-                            <value>lastmodifiedtimestamp</value>
-                            <value>specimentypeid</value>
-                            <value>specimentype</value>
-                            <value>isterminalringverified</value>
-                            <value>sapwoodcount</value>
-                            <value>issapwoodcountverified</value>
-                            <value>isspecimenqualityverified</value>
-                            <value>ispithverified</value>
-                            <value>unmeaspre</value>
-                            <value>unmeaspost</value>
-                            <value>isunmeaspreverified</value>
-                            <value>isunmeaspostverified</value>
-                            <value>terminalringid</value>
-                            <value>terminalring</value>
-                            <value>specimenqualityid</value>
-                            <value>specimenquality</value>
-                            <value>specimencontinuityid</value>
-                            <value>specimencontinuity</value>
-                            <value>pithid</value>
-                            <value>pith</value>
-                            <value>isspecimencontinuityverified</value>
-                        </choice>
-                    </attribute>
-                    <attribute name="operator">
-                        <choice>
-                            <value>&gt;</value>
-                            <value>&lt;</value>
-                            <value>=</value>
-                            <value>like</value>
-                            <value>!=</value>
-                        </choice>
-                    </attribute>
-                    <attribute name="value">
-                        <text/>
-                    </attribute>
-                </element>
-            </oneOrMore>
-        </element>
-    </define>    
 
     <define name="searchParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="searchParams">
@@ -236,7 +89,25 @@
                             <value>measurementname</value>
                             <value>measurementcreated</value>
                             <value>measurementlastmodified</value>
-
+                            <value>measurementoperator</value>
+                            <value>measurementdescription</value>                            
+                            <value>measurementispublished</value>   
+                            <value>measurementowneruserid</value>                            
+                            <value>operatorparameter</value> 
+                            <value>measurementisreconciled</value>
+							<value>datingtype</value>
+ 							<value>datingerrorpositive</value>
+ 							<value>datingerrornegative</value>
+ 							<value>startyear</value>
+ 							<value>readingcount</value>
+ 							<value>measurementcount</value>
+ 							<value>measurementymin</value>
+ 							<value>measurementymax</value>
+ 							<value>measurementxmin</value>
+ 							<value>measurementxmax</value>
+ 							<value>measurementxcentroid</value> 
+ 							<value>measurementycentroid</value>                          
+                            
                         </choice>
                     </attribute>
                     <attribute name="operator">
@@ -255,62 +126,4 @@
             </oneOrMore>
         </element>
     </define>    
-
-    <define name="radiusParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-        <element name="radiusParams">
-            <oneOrMore>
-                <element name="param">
-                    <attribute name="name">
-                        <choice>
-                            <value>radiusid</value>
-                            <value>label</value>
-                            <value>createdtimestamp</value>
-                            <value>lastmodifiedtimestamp</value>
-                        </choice>
-                    </attribute>
-                    <attribute name="operator">
-                        <choice>
-                            <value>&gt;</value>
-                            <value>&lt;</value>
-                            <value>=</value>
-                            <value>like</value>
-                            <value>!=</value>
-                        </choice>
-                    </attribute>
-                    <attribute name="value">
-                        <text/>
-                    </attribute>
-                </element>
-            </oneOrMore>
-        </element>
-    </define>   
-
-    <define name="measurementParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-        <element name="measurementParams">
-            <oneOrMore>
-                <element name="param">
-                    <attribute name="name">
-                        <choice>
-                            <value>measurementid</value>
-                            <value>name</value>
-                            <value>createdtimestamp</value>
-                            <value>lastmodifiedtimestamp</value>
-                        </choice>
-                    </attribute>
-                    <attribute name="operator">
-                        <choice>
-                            <value>&gt;</value>
-                            <value>&lt;</value>
-                            <value>=</value>
-                            <value>like</value>
-                            <value>!=</value>
-                        </choice>
-                    </attribute>
-                    <attribute name="value">
-                        <text/>
-                    </attribute>
-                </element>
-            </oneOrMore>
-        </element>
-    </define>   
 </grammar>
