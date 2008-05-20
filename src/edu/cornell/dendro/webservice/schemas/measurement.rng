@@ -51,7 +51,7 @@
 	                </element>
 	            </optional>
 	            <optional>
-	                <element name="measuredBy">
+	                <element name="measuredByID">
 	                	<attribute name="id">
 	                		<data type="positiveInteger"></data>
 	                	</attribute>

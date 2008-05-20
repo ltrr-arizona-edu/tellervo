@@ -93,14 +93,15 @@ class subSiteParameters extends parameters
 
 class treeParameters extends parameters
 {
-    var $id             = NULL;
-    var $name           = NULL;
-    var $taxonID        = NULL;
-    var $latitude       = NULL;
-    var $longitude      = NULL;
-    var $precision      = NULL;
-    var $subSiteID      = NULL;
-    var $treeNoteArray  = array();
+    var $id                 = NULL;
+    var $name               = NULL;
+    var $taxonID            = NULL;
+    var $originalTaxonName  = NULL;
+    var $latitude           = NULL;
+    var $longitude          = NULL;
+    var $precision          = NULL;
+    var $subSiteID          = NULL;
+    var $treeNoteArray      = array();
 
     function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
     {
@@ -110,13 +111,14 @@ class treeParameters extends parameters
     
     function getXMLParams()
     {
-        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest->name))                  $this->name         = addslashes($this->xmlrequest->name);
-        if(isset($this->xmlrequest->validatedTaxon['id']))  $this->taxonID      = (int)      $this->xmlrequest->validatedTaxon['id'];
-        if(isset($this->xmlrequest->latitude))              $this->latitude     = (double)   $this->xmlrequest->latitude;
-        if(isset($this->xmlrequest->longitude))             $this->longitude    = (double)   $this->xmlrequest->longitude;
-        if(isset($this->xmlrequest->precision))             $this->precision    = (int)      $this->xmlrequest->precision;
-        if(isset($this->xmlrequest->references->specimen))  $this->hasChild     = True;
+        if(isset($this->xmlrequest['id']))                  $this->id                   = (int)      $this->xmlrequest['id'];
+        if(isset($this->xmlrequest->name))                  $this->name                 = addslashes($this->xmlrequest->name);
+        if(isset($this->xmlrequest->originalTaxonName))     $this->originalTaxonName    = addslashes($this->xmlrequest->originalTaxonName);
+        if(isset($this->xmlrequest->validatedTaxon['id']))  $this->taxonID              = (int)      $this->xmlrequest->validatedTaxon['id'];
+        if(isset($this->xmlrequest->latitude))              $this->latitude             = (double)   $this->xmlrequest->latitude;
+        if(isset($this->xmlrequest->longitude))             $this->longitude            = (double)   $this->xmlrequest->longitude;
+        if(isset($this->xmlrequest->precision))             $this->precision            = (int)      $this->xmlrequest->precision;
+        if(isset($this->xmlrequest->references->specimen))  $this->hasChild             = True;
         
         $treeNotes = $this->xmlrequest->xpath('//treeNotes');
         if (isset($treeNotes[0]->treeNote[0]))

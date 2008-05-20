@@ -33,6 +33,10 @@
 	                    <data type="dateTime" />
 	                </element>
 	            </optional>
+	            <optional>
+	            	<externalRef href="measurement.rng"/>  
+	            </optional>
+	            
             </interleave>
         </element>
     </define>

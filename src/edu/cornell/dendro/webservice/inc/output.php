@@ -2,11 +2,11 @@
 
 function getHelpDocbook($page)
 {
-    header('Content-Type: application/xhtml+xml; charset=utf-8');
+//    header('Content-Type: application/xhtml+xml; charset=utf-8');
     global $domain;
     global $wikiManualFolder;
 
-    $filename = "http://".$domain."/".$wikiManualFolder."/Webservice-".$page."?action=format&mimetype=xml/docbook";
+    $filename = "http://".$domain."/".$wikiManualFolder."/WebserviceDocs-".$page."?action=format&mimetype=xml/docbook";
     $file = file_get_contents($filename);
     // Remove XML header line
 
@@ -47,12 +47,12 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
         if($metaHeader->getIsLoginRequired())
         {
             // WS Request failed because the user isn't authenticated. SHow authentication docs
-            $outputStr.= getHelpDocbook('Authenticate');
+            $outputStr.= getHelpDocbook('Authentication');
         }
         else
         {
             // WS Request failed for another reason so show this objects docs
-            $outputStr.= getHelpDocbook($metaHeader->getObjectName());
+            $outputStr.= getHelpDocbook('Introduction');
         }
         $outputStr.= "</help>\n";
     }
@@ -64,7 +64,7 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
 
 function writeHelpOutput($metaHeader)
 {
-    header('Content-Type: application/xhtml+xml; charset=utf-8');
+/*    header('Content-Type: application/xhtml+xml; charset=utf-8');
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     echo "<?xml-stylesheet type=\"text/css\" href=\"css/corina.css\"?>";
     echo "<?xml-stylesheet type=\"text/css\" href=\"css/docbook/driver.css\"?>";
@@ -74,6 +74,8 @@ function writeHelpOutput($metaHeader)
     echo getHelpDocbook($metaHeader->getObjectName());
     echo "</help>\n";
     echo "</corina>";
+ */
+    writeIntroOutput($metaHeader);
 }
 
 function writeIntroOutput($metaHeader)
