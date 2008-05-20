@@ -19,117 +19,117 @@
             
             <interleave>
 	            <optional>
-	                <attribute name="createdTimeStamp">
+	                <element name="createdTimeStamp">
 	                    <data type="dateTime" />
-	                </attribute>
+	                </element>
 	            </optional>
 	
 	            <optional>
-	                <attribute name="lastModifiedTimeStamp">
+	                <element name="lastModifiedTimeStamp">
 	                    <data type="dateTime" />
-	                </attribute>
+	                </element>
 	            </optional>
 	
 	            <optional>
-	                <attribute name="name">
+	                <element name="name">
 	                    <text />
-	                </attribute>
+	                </element>
 	            </optional>
 	            
 	            <optional>
-	                <attribute name="dateCollected">
+	                <element name="dateCollected">
 	                    <data type="date" />
-	                </attribute>
+	                </element>
 	            </optional>
 	            
 	            <optional>
-	                <attribute name="specimenTypeID">
+	                <element name="specimenTypeID">
 	                    <data type="positiveInteger" />
-	                </attribute>
+	                </element>
 	            </optional>
 	            
 	            <optional>
-	                <attribute name="terminalRingID">
+	                <element name="terminalRingID">
 	                    <text />
-	                </attribute>
+	                </element>
 	            </optional>        
 	            
 	            <optional>
-	                <attribute name="isTerminalRingVerified">
+	                <element name="isTerminalRingVerified">
 	                    <data type="boolean" />
-	                </attribute>
+	                </element>
 	            </optional>
 	            
 	            <optional>
-	                <attribute name="sapwoodCount">
+	                <element name="sapwoodCount">
 	                    <data type="positiveInteger" />
-	                </attribute>
+	                </element>
 	            </optional>         
 	            
 	            <optional>
-	                <attribute name="isSapwoodCountVerified">
+	                <element name="isSapwoodCountVerified">
 	                    <data type="boolean" />
-	                </attribute>
+	                </element>
 	            </optional>  
 	            
 	            <optional>
-	                <attribute name="specimenQualityID">
+	                <element name="specimenQualityID">
 	                    <text />
-	                </attribute>
+	                </element>
 	            </optional>         
 	            
 	            <optional>
-	                <attribute name="isSpecimenQualityVerified">
+	                <element name="isSpecimenQualityVerified">
 	                    <data type="boolean" />
-	                </attribute>
+	                </element>
 	            </optional>  
 	            
 	            <optional>
-	                <attribute name="specimenContinuityID">
+	                <element name="specimenContinuityID">
 	                    <text />
-	                </attribute>
+	                </element>
 	            </optional>
 	            
 	            <optional>
-	                <attribute name="isSpecimenContinuityVerified">
+	                <element name="isSpecimenContinuityVerified">
 	                    <data type="boolean" />
-	                </attribute>
+	                </element>
 	            </optional>
 	            
 	            <optional>
-	                <attribute name="pithID">
+	                <element name="pithID">
 	                    <text />
-	                </attribute>
+	                </element>
 	            </optional>         
 	            
 	            <optional>
-	                <attribute name="isPithVerified">
+	                <element name="isPithVerified">
 	                    <data type="boolean" />
-	                </attribute>
+	                </element>
 	            </optional>
 	            
 	            <optional>
-	                <attribute name="unmeasuredPre">
+	                <element name="unmeasuredPre">
 	                    <data type="positiveInteger" />
-	                </attribute>
+	                </element>
 	            </optional>
 	            
 	            <optional>
-	                <attribute name="isUnmeasuredPreVerified">
+	                <element name="isUnmeasuredPreVerified">
 	                    <data type="boolean" />
-	                </attribute>
+	                </element>
 	            </optional>
 	            
 	            <optional>
-	                <attribute name="unmeasuredPost">
+	                <element name="unmeasuredPost">
 	                    <data type="positiveInteger" />
-	                </attribute>
+	                </element>
 	            </optional>
 	            
 	            <optional>
-	                <attribute name="isUnmeasuredPostVerified">
+	                <element name="isUnmeasuredPostVerified">
 	                    <data type="boolean" />
-	                </attribute>	
+	                </element>	
 	            </optional>
 	
 	            <optional>

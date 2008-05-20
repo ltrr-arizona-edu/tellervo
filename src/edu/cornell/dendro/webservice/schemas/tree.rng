@@ -107,9 +107,13 @@
 	                </element>
                 </optional>
                 
-                <zeroOrMore>
-                    <externalRef href="treeNote.rng" />
-                </zeroOrMore>
+                <optional>
+                	<element name="treeNotes">
+		                <zeroOrMore>
+		                    <externalRef href="treeNote.rng"/>
+		                </zeroOrMore>
+	                </element>
+                </optional>
             </interleave>
         </element>
     </define>

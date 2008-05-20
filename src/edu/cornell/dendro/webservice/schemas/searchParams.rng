@@ -22,6 +22,8 @@
                             <value>name</value>
                             <value>createdtimestamp</value>
                             <value>lastmodifiedtimestamp</value>
+                            <value>sitexcentroid</value>
+                            <value>siteycentroid</value>
                         </choice>
                     </attribute>
                     <attribute name="operator">
@@ -183,6 +185,8 @@
                             <value>sitecode</value>
                             <value>sitecreated</value>
                             <value>sitelastmodified</value>
+                            <value>sitexcentroid</value>
+                            <value>siteycentroid</value>
 
                             <value>subsiteid</value>
                             <value>subsitename</value>

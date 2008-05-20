@@ -64,9 +64,13 @@
                 <zeroOrMore>
                     <externalRef href="subSite.rng"/>
                 </zeroOrMore>
-                <zeroOrMore>
-                    <externalRef href="siteNote.rng"/>
-                </zeroOrMore>
+                <optional>
+                	<element name="siteNotes">
+		                <zeroOrMore>
+		                    <externalRef href="siteNote.rng"/>
+		                </zeroOrMore>
+	                </element>
+                </optional>
             </interleave>
         </element>
     </define>

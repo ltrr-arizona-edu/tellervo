@@ -62,48 +62,54 @@
             	<optional>
             		<externalRef href="mapParams.rng" />
             	</optional>
-                <optional>
+                <zeroOrMore>
                     <externalRef href="site.rng"/>
-                </optional>
-                <optional>
+                </zeroOrMore>
+                <zeroOrMore>
                     <externalRef href="subSite.rng"/>
-                </optional>
-                <optional>
+                </zeroOrMore>
+                <zeroOrMore>
                     <externalRef href="tree.rng"/>	
-                </optional>
-                <optional>
+                </zeroOrMore>
+                <zeroOrMore>
                     <externalRef href="specimen.rng"/>	
-                </optional>
-                <optional>
+                </zeroOrMore>
+                <zeroOrMore>
                     <externalRef href="radius.rng" />   	
-                </optional>
-                <optional>
+                </zeroOrMore>
+                <zeroOrMore>
                     <externalRef href="siteNote.rng" />   	
-                </optional>
-                <optional>
+                </zeroOrMore>
+                <zeroOrMore>
                     <externalRef href="treeNote.rng" />   	
-                </optional>
-                <optional>
+                </zeroOrMore>
+                <zeroOrMore>
                     <externalRef href="measurement.rng" />
-                </optional>
-                <optional>
+                </zeroOrMore>
+                <zeroOrMore>
                     <externalRef href="readingNote.rng" />   	
-                </optional>
-                <optional>
+                </zeroOrMore>
+                <zeroOrMore>
                     <externalRef href="measurementNote.rng" />   	
-                </optional>
+                </zeroOrMore>
                 <optional>
                     <externalRef href="authenticate.rng" />
                 </optional>
-                <optional>
+                <zeroOrMore>
                     <externalRef href="taxon.rng" />
-                </optional>               
+                </zeroOrMore>               
                
-                <oneOrMore>
+                <optional>
+                	<element name="dictionaries">
+                		<empty/>
+                	</element>
+                </optional>
+               
+                <zeroOrMore>
 	                <optional>
 	                    <externalRef href="searchParams.rng" />
 	                </optional>
-                </oneOrMore>
+                </zeroOrMore>
 
             </interleave>   
         </element>
