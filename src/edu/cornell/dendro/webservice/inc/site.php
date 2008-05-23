@@ -215,7 +215,7 @@ class site
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating a site.");
                     return false;
                 }
-                if(($paramsObj->name == NULL) && ($paramsObj->code==NULL) && ($hasChild!=True)) 
+                if(($paramsObj->name == NULL) && ($paramsObj->code==NULL) && ($paramsObj->hasChild!=True)) 
                 {
                     $this->setErrorMessage("902","Missing parameter - either 'name' or 'code' fields (or both) must be specified when updating a site.");
                     return false;
@@ -370,7 +370,7 @@ class site
                         }
                         else
                         {
-                            $this->setErrorMessage($mySubSite->getLastErrorCode, $mySubSite->getLastErrorMessage);
+                            $this->setErrorMessage($mySubSite->getLastErrorCode(), $mySubSite->getLastErrorMessage());
                         }
                     }
                     $xml.="</references>\n";

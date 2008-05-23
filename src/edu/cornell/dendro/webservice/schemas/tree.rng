@@ -98,7 +98,8 @@
 	                    <data type="dateTime" />
 	                </element>
 	            </optional>
-	            
+
+	        	            
 	            <optional>
 	            	<element name="references">
 		                <zeroOrMore>
@@ -107,6 +108,9 @@
 	                </element>
                 </optional>
                 
+
+           
+                
                 <optional>
                 	<element name="treeNotes">
 		                <zeroOrMore>
@@ -114,6 +118,13 @@
 		                </zeroOrMore>
 	                </element>
                 </optional>
+                
+                <optional>
+		                <zeroOrMore>
+		                    <externalRef href="specimen.rng"/>
+		                </zeroOrMore>
+                </optional>
+                
             </interleave>
         </element>
     </define>

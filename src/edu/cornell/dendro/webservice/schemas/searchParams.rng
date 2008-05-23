@@ -53,6 +53,7 @@
                             <value>precision</value>
                             <value>latitude</value>
                             <value>longitude</value>
+                            <value>isLiveTree</value>
 
                             <value>specimenid</value>
                             <value>specimenname</value>

@@ -56,7 +56,7 @@ class measurement
     /* CONSTRUCTOR */
     /***************/
 
-    function measurement()
+    function __construct()
     {
         // Constructor for this class.
         $this->vmeasurementOpID = 5;
@@ -228,7 +228,7 @@ class measurement
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
         if (isset($paramsClass->radiusID))            $this->setRadiusID($paramsClass->radiusID);
         if (isset($paramsClass->isReconciled))        $this->setIsReconciled($paramsClass->isReconciled);
-        if (isset($paramsClass->startYear))           $this->setStartYear($paramsClass->startYyear);
+        if (isset($paramsClass->startYear))           $this->setStartYear($paramsClass->startYear);
         if (isset($paramsClass->isLegacyCleaned))     $this->setIsLegacyCleaned($paramsClass->isLegacyCleaned);
         //if (isset($paramsClass->datingTypeID))        $this->setDatingTypeID($paramsClass->datingTypeID);
         if (isset($paramsClass->datingType))          $this->setDatingType($paramsClass->datingType);
@@ -301,7 +301,7 @@ class measurement
                 {
                     foreach ($paramsObj->readingsArray as $reading)
                     {
-                        if(!is_numeric($reading)) 
+                        if(!is_numeric($reading['reading'])) 
                         {
                             $this->setErrorMessage("902","Invalid parameter - All your readings must be numbers.");
                             return false;
@@ -1250,9 +1250,15 @@ class measurement
                         return FALSE;
                     }
                     else
-                    {   
+                    {
+                        while($result==TRUE)
+                        {
+                           $result = pg_get_result($dbconn); 
+                           //echo $result;
+                        }
                         // All gone well so commit transaction to db
                         pg_send_query($dbconn, "commit;");
+                        return TRUE;
                     }
                 }
 
@@ -1266,6 +1272,7 @@ class measurement
         }
         
         // Return true as write to DB went ok.
+        return TRUE;
     }
 
 // End of Class

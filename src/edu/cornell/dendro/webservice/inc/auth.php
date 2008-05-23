@@ -101,7 +101,6 @@ class auth
         $result = pg_query($dbconn, $sql);
         if (pg_num_rows($result)==0)
         {
-            echo "username $theUsername unknown";
             return false;
         }
         else

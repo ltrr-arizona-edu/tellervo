@@ -173,7 +173,7 @@ class subSite
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating a sub site.");
                     return false;
                 }
-                if(($paramsObj->siteID==NULL) && ($paramsObj->name==NULL) && ($hasChild!=True))
+                if(($paramsObj->siteID==NULL) && ($paramsObj->name==NULL) && ($paramsObj->hasChild!=True))
                 {
                     $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update for this sub site.");
                     return false;

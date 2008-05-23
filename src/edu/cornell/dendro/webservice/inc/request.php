@@ -25,7 +25,7 @@ class request
     {
         $this->metaHeader = $metaHeader;
         $this->auth = $auth;
-        $this->logRequest();
+        $this->logRequest($xmlrequest);
         $this->validateXML(stripslashes($xmlrequest));
     }
 
@@ -73,14 +73,14 @@ class request
         }
     }
 
-    function logRequest()
+    function logRequest($xmlrequest)
     {
         global $dbconn;
         global $wsversion;
 
-        if ($this->xmlrequest)
+        if ($xmlrequest)
         {
-            $request = $this->xmlrequest;
+            $request = $xmlrequest;
         }
         else
         {
@@ -181,8 +181,8 @@ class request
             {
                 foreach ($this->xmlrequest->xpath('//specimen') as $item)
                 {
-                    $parentID = "";
-                    $parent = $item->xpath('../../..');
+                    $parentID = NULL;
+                    $parent = $item->xpath('../..');
                     if(isset($parent[0]->tree['id']))
                     {
                         $parentID = $parent[0]->tree['id'];
@@ -207,9 +207,9 @@ class request
                 }
             }
             
-            if($this->xmlrequest->xpath('//request/measurement'))
+            if($this->xmlrequest->xpath('//measurement'))
             {
-                foreach ($this->xmlrequest->xpath('//request/measurement') as $item)
+                foreach ($this->xmlrequest->xpath('//measurement') as $item)
                 {
                     $parentID = "";
                     $parent = $item->xpath('../..');

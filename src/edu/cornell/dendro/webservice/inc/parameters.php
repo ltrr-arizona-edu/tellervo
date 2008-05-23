@@ -101,6 +101,7 @@ class treeParameters extends parameters
     var $longitude          = NULL;
     var $precision          = NULL;
     var $subSiteID          = NULL;
+    var $isLiveTree         = NULL;
     var $treeNoteArray      = array();
 
     function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
@@ -118,7 +119,8 @@ class treeParameters extends parameters
         if(isset($this->xmlrequest->latitude))              $this->latitude             = (double)   $this->xmlrequest->latitude;
         if(isset($this->xmlrequest->longitude))             $this->longitude            = (double)   $this->xmlrequest->longitude;
         if(isset($this->xmlrequest->precision))             $this->precision            = (int)      $this->xmlrequest->precision;
-        if(isset($this->xmlrequest->references->specimen))  $this->hasChild             = True;
+        if(isset($this->xmlrequest->isLiveTree))            $this->isLiveTree           = fromStringtoPHPBool($this->xmlrequest->isLiveTree);
+        if(isset($this->xmlrequest->specimen))              $this->hasChild             = True;
         
         $treeNotes = $this->xmlrequest->xpath('//treeNotes');
         if (isset($treeNotes[0]->treeNote[0]))
@@ -242,7 +244,6 @@ class measurementParameters extends parameters
     function getXMLParams()
     {
         if(isset($this->xmlrequest['id']))                       $this->id                    = (int)                $this->xmlrequest['id'];
-        if(isset($this->xmlrequest->radiusID))                   $this->radiusID              = (int)                $this->xmlrequest->radiusID;
         if(isset($this->xmlrequest->startYear))                  $this->startYear             = (int)                $this->xmlrequest->startYear;
         if(isset($this->xmlrequest->measuredByID))               $this->measuredByID          = (int)                $this->xmlrequest->measuredByID;
         if(isset($this->xmlrequest->ownerUserID))                $this->ownerUserID           = (int)                $this->xmlrequest->ownerUserID;
@@ -256,7 +257,6 @@ class measurementParameters extends parameters
         if(isset($this->xmlrequest->isReconciled))               $this->isReconciled          = fromStringtoPHPBool( $this->xmlrequest->isReconciled);
         if(isset($this->xmlrequest->isPublished))                $this->isPublished           = fromStringtoPHPBool( $this->xmlrequest->isPublished);
         if(isset($this->xmlrequest->references['operation']))    $this->vmeasurementOp        = addslashes(          $this->xmlrequest->references['operation']);
-        //if(isset($this->xmlrequest->references['operationID']))  $this->vmeasurementopid      = (int)                $this->xmlrequest->references['operationID'];
         if(isset($this->xmlrequest->readings['type']))           $this->readingType           = addslashes(          $this->xmlrequest->readings['type']);
         if(isset($this->xmlrequest->readings['units']))          $this->readingUnits          = addslashes(          $this->xmlrequest->readings['units']);
         
@@ -286,7 +286,7 @@ class measurementParameters extends parameters
             {
                 foreach($reading->readingNote as $readingNote)
                 {
-                    array_push($this->readingsArray[$theYear][notesArray], (int) $readingNote['id']); 
+                    array_push($this->readingsArray[$theYear], (int) $readingNote['id']); 
                 }
 
             }
@@ -294,7 +294,7 @@ class measurementParameters extends parameters
         }
         
         $measurementNotes = $this->xmlrequest->xpath('//measurementNotes');
-        if ($measurementNotes[0]->measurementNote[0])
+        if (isset($measurementNotes[0]->measurementNote[0]))
         {
             foreach($measurmentNotes[0] as $item)
             {
@@ -385,7 +385,8 @@ class readingNoteParameters extends parameters
 }
 
 class dictionariesParameters extends parameters
-{
+{   
+    var $id = NULL;
 
     function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
     {
@@ -465,7 +466,7 @@ class searchParameters extends parameters
                     ($param['name'] == 'subsitecreated') || 
                     ($param['name'] == 'subsitelastmodified'))
             {
-                array_push($this->subsiteParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
+                array_push($this->subSiteParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
             }
 
             // Tree Parameters

@@ -28,6 +28,7 @@ class note
     var $joinTableName      = NULL;
     var $parentField        = NULL;
     var $objectField        = NULL;
+    var $xmlTag             = NULL;
 
     /***************/
     /* CONSTRUCTOR */
@@ -35,7 +36,6 @@ class note
 
     function __construct($type)
     {
-        // Constructor for this class.
         $this->objectName = $type."Note";
         $this->parentName = $type;
         $this->joinTableName = "tbl".$type.strtolower($this->objectName);
@@ -43,6 +43,15 @@ class note
         $this->objectField = strtolower($this->objectName)."id";
         $this->tableName = "tlkp".strtolower($this->objectName);
         $this->parentXMLTag = $this->objectName."Dictionary";
+        
+        if($type=='vmeasurement') 
+        {
+            $this->xmlTag = 'measurementNote';
+        }
+        else
+        {
+            $this->xmlTag = $this->objectName; 
+        }
     }
 
     /***********/
@@ -161,7 +170,7 @@ class note
                     $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer when updating a ".$this->objectName.".  It is currently a ".gettype($paramsObj->id));
                     return false;
                 }
-                if((gettype($paramsObj->isstandard)!="boolean") && ($paramsObj->isstandard!=NULL)) 
+                if((gettype($paramsObj->isStandard)!="boolean") && ($paramsObj->isStandard!=NULL)) 
                 {
                     $this->setErrorMessage("901", "Invalid parameter - 'isstandard' must be a boolean when updating a ".$this->objectName.".");
                     return false;
@@ -207,7 +216,7 @@ class note
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml = "<".$this->objectName." id=\"".$this->id."\" isStandard=\"".fromPGtoStringBool($this->isStandard)."\">".$this->note."</".$this->objectName.">\n";
+            $xml = "<".$this->xmlTag." id=\"".$this->id."\" isStandard=\"".fromPGtoStringBool($this->isStandard)."\">".$this->note."</".$this->xmlTag.">\n";
             return $xml;
         }
         else

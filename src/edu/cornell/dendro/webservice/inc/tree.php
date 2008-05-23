@@ -174,13 +174,13 @@ class tree
     function setParamsFromParamsClass($paramsClass)
     {
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
-        if (isset($paramsClass->name))                  $this->name      = $paramsClass->name;
-        if (isset($paramsClass->originalTaxonName))     $this->name      = $paramsClass->originalTaxonName;
-        if (isset($paramsClass->taxonID))               $this->taxonID   = $paramsClass->taxonID;
-        if (isset($paramsClass->latitude))              $this->latitude  = $paramsClass->latitude;
-        if (isset($paramsClass->longitude))             $this->longitude = $paramsClass->longitude;
-        if (isset($paramsClass->precision))             $this->precision = $paramsClass->precision;
-        if (isset($paramsClass->subSiteID))             $this->subSiteID = $paramsClass->subSiteID;
+        if (isset($paramsClass->name))                  $this->name                 = $paramsClass->name;
+        if (isset($paramsClass->originalTaxonName))     $this->originalTaxonName    = $paramsClass->originalTaxonName;
+        if (isset($paramsClass->taxonID))               $this->taxonID              = $paramsClass->taxonID;
+        if (isset($paramsClass->latitude))              $this->latitude             = $paramsClass->latitude;
+        if (isset($paramsClass->longitude))             $this->longitude            = $paramsClass->longitude;
+        if (isset($paramsClass->precision))             $this->precision            = $paramsClass->precision;
+        if (isset($paramsClass->subSiteID))             $this->subSiteID            = $paramsClass->subSiteID;
         
         if (isset($paramsClass->treeNoteArray))
         {
@@ -221,7 +221,7 @@ class tree
                 }
                 if(($paramsObj->taxonID==NULL) 
                     && ($paramsObj->name==NULL) 
-                    && ($paramsObj->subsiteid==NULL) 
+                    && ($paramsObj->subSiteID==NULL) 
                     && ($paramsObj->latitude==NULL) 
                     && ($paramsObj->longitude==NULL) 
                     && ($paramsObj->precision==NULL)

@@ -289,19 +289,9 @@ class radius
         // Write the current object to the database
 
         global $dbconn;
+        $sql = NULL;
+        $sql2 = NULL;
         
-        // Check for required parameters
-        if($this->name == NULL) 
-        {
-            $this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
-            return FALSE;
-        }
-        if($this->specimenID == NULL) 
-        {
-            $this->setErrorMessage("902", "Missing parameter - 'specimenid' field is required.");
-            return FALSE;
-        }
-
         //Only attempt to run SQL if there are no errors so far
         if($this->lastErrorCode == NULL)
         {
@@ -319,6 +309,11 @@ class radius
                 {
                     // Updating DB
                     $sql = "update tblradius set name='".$this->name."', specimenid='".$this->specimenID."' where radiusid=".$this->id;
+                    $sql = "update tblradius set ";
+                    if (isset($this->name)) $sql.="name='".$this->name."', ";
+                    if (isset($this->specimenid)) $sql.="specimenid='".$this->specimenID.", ";
+                    $sql = substr($sql, 0, -2);
+                    $sql.= " where radiusid=".$this->id;
                 }
 
                 // Run SQL command

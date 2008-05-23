@@ -43,13 +43,13 @@
 	            </optional>
 	            
 	            <optional>
-	                <element name="specimenTypeID">
-	                    <data type="positiveInteger" />
+	                <element name="specimenType">
+	                    <text/>
 	                </element>
 	            </optional>
 	            
 	            <optional>
-	                <element name="terminalRingID">
+	                <element name="terminalRing">
 	                    <text />
 	                </element>
 	            </optional>        
@@ -73,7 +73,7 @@
 	            </optional>  
 	            
 	            <optional>
-	                <element name="specimenQualityID">
+	                <element name="specimenQuality">
 	                    <text />
 	                </element>
 	            </optional>         
@@ -85,7 +85,7 @@
 	            </optional>  
 	            
 	            <optional>
-	                <element name="specimenContinuityID">
+	                <element name="specimenContinuity">
 	                    <text />
 	                </element>
 	            </optional>
@@ -97,7 +97,7 @@
 	            </optional>
 	            
 	            <optional>
-	                <element name="pithID">
+	                <element name="pith">
 	                    <text />
 	                </element>
 	            </optional>         
