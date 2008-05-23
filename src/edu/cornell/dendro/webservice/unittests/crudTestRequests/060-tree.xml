@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<corina>
+<request type="create">
+    <subSite id="===SUBSITEID===">
+        <tree>
+            <name>UNITTEST</name>
+            <validatedTaxon id="1" />
+            <originalTaxonName>UNITTESTtaxon</originalTaxonName>
+            <latitude>1</latitude>
+            <longitude>1</longitude>
+            <precision>1</precision>
+
+
+        </tree>
+    </subSite>
+</request>
+</corina>
+
+

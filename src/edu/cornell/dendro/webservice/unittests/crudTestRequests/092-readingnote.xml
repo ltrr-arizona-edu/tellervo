@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<corina>
+<request type="delete">
+<readingNote id="===READINGNOTEID===" isStandard="false">UNITTEST</readingNote>
+</request>
+</corina>
+
+
