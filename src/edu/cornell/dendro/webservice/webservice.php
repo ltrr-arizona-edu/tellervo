@@ -33,7 +33,6 @@ $myAuth         = new auth();
 $myMetaHeader   = new meta();
 
 
-
 // Create request object from supplied XML document
 if($_POST['xmlrequest'])
 {

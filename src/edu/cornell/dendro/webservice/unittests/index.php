@@ -19,7 +19,7 @@ $subSiteID = NULL;
 $treeID = NULL;
 $specimenID = NULL;
 $radiusID = NULL;
-$measurementID = NULL;
+$measurementID = array();
 $siteNoteID = NULL;
 $treeNoteID = NULL;
 $vmeasurementNoteID = NULL;
@@ -31,6 +31,7 @@ $totalProcessingTime = 0;
 global $dbconn;
 
 // Start out by cleaning all unit test records left over by previous runs 
+//$sql = "delete from tblvmeasurement where measurementid=(select measurementid from tblmeasurement where radiusid=(select radiusid from tblradius where name='UNITTEST'));
 $sql = "delete from tblmeasurement where radiusid=(select radiusid from tblradius where name='UNITTEST');
 delete from tblradius where name='UNITTEST';
 delete from tblspecimen where name='UNITTEST';
@@ -132,7 +133,10 @@ foreach($fileArray as $file)
     $xml = str_replace('===TREENOTEID===', $treeNoteID, $xml);
     $xml = str_replace('===VMEASUREMENTNOTEID===', $vmeasurementNoteID, $xml);
     $xml = str_replace('===READINGNOTEID===', $readingNoteID, $xml);
-    $xml = str_replace('===MEASUREMENTID===', $measurementID, $xml);
+    if(isset($measurementID[0])) $xml = str_replace('===MEASUREMENTID===', $measurementID[0], $xml);
+    if(isset($measurementID[1])) $xml = str_replace('===MEASUREMENTID2===', $measurementID[1], $xml);
+    if(isset($measurementID[2])) $xml = str_replace('===MEASUREMENTID3===', $measurementID[2], $xml);
+    if(isset($measurementID[3])) $xml = str_replace('===MEASUREMENTID4===', $measurementID[3], $xml);
 
     $curl->options['CURLOPT_POSTFIELDS'] = array('xmlrequest' => $xml);
     $response = $curl->post($wsURL);
@@ -146,13 +150,17 @@ foreach($fileArray as $file)
     if (isset($responsexml->content->radius['id']))
     {
         $radiusID = $responsexml->content->radius['id'];
-        echo $radiusID;
     }
     if (isset($responsexml->content->siteNote['id'])) $siteNoteID = $responsexml->content->siteNote['id'];
     if (isset($responsexml->content->treeNote['id'])) $treeNoteID = $responsexml->content->treeNote['id'];
     if (isset($responsexml->content->measurementNote['id'])) $vmeasurementNoteID = $responsexml->content->measurementNote['id'];
     if (isset($responsexml->content->readingNote['id'])) $readingNoteID = $responsexml->content->readingNote['id'];
-    if (isset($responsexml->content->measurement['id'])) $measurementID = $responsexml->content->measurement['id'];
+    if (isset($responsexml->content->measurement['id'])) array_push($measurementID, (int) $responsexml->content->measurement['id']);
+    $measurementID = array_unique($measurementID);
+    sort($measurementID);
+    
+
+    
 
     printResultFromXML($responsexml, $object, $xml);
     if($responsexml->header->status=="OK")
@@ -180,17 +188,17 @@ function printResultFromXML($responsexml, $object, $requestxml)
 {
     if ($responsexml->header->status=="OK")
     {
-        printResult(substr($object, 0, 3), $responsexml->header->requesttype, substr($object, 4), True, $responsexml->header->queryTime, $requestxml);
+        printResult(substr($object, 0, 3), $responsexml->header->requesttype, substr($object, 4), True, $responsexml->header->queryTime, $requestxml, $responsexml->asXML());
         return TRUE;
     }
     else
     {
-        printResult(substr($object, 0, 3), $responsexml->header->requesttype, substr($object, 4), FALSE, $responsexml->header->queryTime, $requestxml, $responsexml->header->message);
+        printResult(substr($object, 0, 3), $responsexml->header->requesttype, substr($object, 4), FALSE, $responsexml->header->queryTime, $requestxml, $responsexml->asXML(), $responsexml->header->message);
         return FALSE;
     }
 }
 
-function printResult($testnumber, $requesttype, $name, $result, $time, $requestxml, $error=NULL)
+function printResult($testnumber, $requesttype, $name, $result, $time, $requestxml, $responsexml, $error=NULL)
 {
     echo "<tr><td>$testnumber</td>";
     echo "<td>".ucfirst($name)."</td>";
@@ -205,7 +213,7 @@ function printResult($testnumber, $requesttype, $name, $result, $time, $requestx
     }
     echo "<td>$time</td>";
     echo "<td>$error</td>";
-    echo "</tr><!--$requestxml-->";
+    echo "</tr>\n<!-- REQUEST = $requestxml-->\n<!-- RESPONSE = $responsexml-->\n";
     ob_flush();
     flush();
 }

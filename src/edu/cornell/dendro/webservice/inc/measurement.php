@@ -1207,12 +1207,12 @@ class measurement
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
-                $sql = "select * from cpgdb.findvmchildren('".$this->vmeasurementID."')";
+                $sql = "select * from cpgdb.findvmchildren('".$this->vmeasurementID."', FALSE)";
                 pg_send_query($dbconn, $sql);
                 $result = pg_get_result($dbconn);
 
                 // Check whether there are any vmeasurements that rely upon this one
-                if(pg_num_rows($result)!=0)
+                if(pg_num_rows($result)>0)
                 {
                     $this->setErrorMessage("903", "There are existing measurements that rely upon this measurement.  You must delete all child measurements before deleting the parent.");
                     return FALSE;
@@ -1224,17 +1224,14 @@ class measurement
 
                     if($this->vmeasurementOp=="Direct")
                     {
-                        // Need to delete readings first
-                        $deleteSQL = "delete from tblreading where measurementid=".$this->measurementID.";"; 
+                        // This is a direct measurement so we can delete the tblmeasurement entry and everything else should cascade delete
+                        $deleteSQL = "delete from tblmeasurement where measurementid=".$this->measurementID.";"; 
                     }
                     else
                     {
-                        // Need to delete references first
-                        $deleteSQL = "delete from tblmeasurementgroup where vmeasurementid=".$this->vmeasurementID.";"; 
+                        // This is a derived measurement so we just delete the tblvmeasurement record and let everything else cascade delete
+                        $deleteSQL = "delete from tblvmeasurement where vmeasurementid=".$this->vmeasurementID.";"; 
                     }
-
-                    // Next delete vmeasurement
-                    $deleteSQL .= "delete from tblvmeasurement where vmeasurementid=".$this->vmeasurementID.";";
 
                     // Perform deletes using transactions
                     $transaction = "begin;".$deleteSQL;

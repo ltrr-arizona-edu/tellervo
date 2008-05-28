@@ -211,14 +211,23 @@ class request
             {
                 foreach ($this->xmlrequest->xpath('//measurement') as $item)
                 {
-                    $parentID = "";
                     $parent = $item->xpath('../..');
                     if(isset($parent[0]->radius['id']))
                     {
                         $parentID = $parent[0]->radius['id'];
+                        $myParamObj = new measurementParameters($this->metaHeader, $this->auth, $item, $parentID);
+                        array_push($this->paramObjectsArray, $myParamObj);
                     }
-                    $myParamObj = new measurementParameters($this->metaHeader, $this->auth, $item, $parentID);
-                    array_push($this->paramObjectsArray, $myParamObj);
+                    elseif(isset($parent[0]->references))
+                    {
+                        // this measurement is a reference within a derived measurement so ignore
+                    }
+                    else
+                    {
+                        $parentID = "";
+                        $myParamObj = new measurementParameters($this->metaHeader, $this->auth, $item, $parentID);
+                        array_push($this->paramObjectsArray, $myParamObj);
+                    }
                 }
             }
             
