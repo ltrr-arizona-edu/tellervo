@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<corina>
+    <request type="create">
+            <measurement>
+                <name>UNITTEST</name>  
+                <description>UNITTEST</description>
+                <datingType>Absolute</datingType>
+                <isPublished>false</isPublished>
+                <references operation="sum">
+                    <measurement id="===MEASUREMENTID==="/>
+                    <measurement id="===MEASUREMENTID2==="/>
+                </references>
+            </measurement>
+    </request>
+</corina>
+
