@@ -137,6 +137,8 @@ foreach($fileArray as $file)
     if(isset($measurementID[1])) $xml = str_replace('===MEASUREMENTID2===', $measurementID[1], $xml);
     if(isset($measurementID[2])) $xml = str_replace('===MEASUREMENTID3===', $measurementID[2], $xml);
     if(isset($measurementID[3])) $xml = str_replace('===MEASUREMENTID4===', $measurementID[3], $xml);
+    if(isset($measurementID[4])) $xml = str_replace('===MEASUREMENTID5===', $measurementID[4], $xml);
+    if(isset($measurementID[5])) $xml = str_replace('===MEASUREMENTID6===', $measurementID[5], $xml);
 
     $curl->options['CURLOPT_POSTFIELDS'] = array('xmlrequest' => $xml);
     $response = $curl->post($wsURL);

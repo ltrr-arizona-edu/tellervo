@@ -92,8 +92,8 @@ class search
             if ($myRequest->limit) $limitSQL = "\n LIMIT ".$myRequest->limit;
             if ($myRequest->skip)  $skipSQL  = "\n OFFSET ".$myRequest->skip;
             
-
-            // Build "where..." section of SQL
+            
+            // Build filter SQL
             if ($myRequest->siteParamsArray)        $filterSQL .= $this->paramsToFilterSQL($myRequest->siteParamsArray, "site");
             if ($myRequest->subSiteParamsArray)     $filterSQL .= $this->paramsToFilterSQL($myRequest->subSiteParamsArray, "subsite");
             if ($myRequest->treeParamsArray)        $filterSQL .= $this->paramsToFilterSQL($myRequest->treeParamsArray, "tree");
@@ -102,6 +102,8 @@ class search
             if ($myRequest->vmeasurementParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementParamsArray, "vmeasurement");
             if ($myRequest->vmeasurementResultParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementResultParamsArray, "vmeasurementresult");
             if ($myRequest->vmeasurementMetaCacheParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementMetaCacheParamsArray, "vmeasurementmetacache");
+            // Trim off final ' and ' from filter SQL
+            $filterSQL = substr($filterSQL, 0, -5);
 
             // Compile full SQL statement from parts
             $fullSQL = "SELECT ".$returnObjectSQL.$this->fromSQL($myRequest)." WHERE ".$filterSQL.$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
@@ -285,8 +287,6 @@ class search
         }
 
 
-        // Trim off final ' and ' from filter SQL
-        $filterSQL = substr($filterSQL, 0, -5);
         return $filterSQL;
     }
 

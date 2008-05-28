@@ -83,8 +83,12 @@ class measurement
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
+            // Kludge city - the dbconn occassionally has results left on it from somewhere not sure
+            // where so retrieve results before sending SQL otherwise you'll get a messy notice
+            $result = pg_get_result($dbconn); 
             pg_send_query($dbconn, $sql);
-            $result = pg_get_result($dbconn);
+            $result = pg_get_result($dbconn); 
+
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
@@ -238,6 +242,7 @@ class measurement
         if (isset($paramsClass->description))         $this->setDescription($paramsClass->description);
         if (isset($paramsClass->isPublished))         $this->setIsPublished($paramsClass->isPublished);
         if (isset($paramsClass->vmeasurementOp))      $this->setVMeasurementOp($paramsClass->vmeasurementOp);
+        if (isset($paramsClass->vmeasurementOpParam)) $this->setVMeasurementOpParam($paramsClass->vmeasurementOpParam);
         if (sizeof($paramsClass->readingsArray)>0)    $this->setReadingsArray($paramsClass->readingsArray);
         if (sizeof($paramsClass->referencesArray)>0)  $this->setReferencesArray($paramsClass->referencesArray);
         
@@ -469,6 +474,12 @@ class measurement
         {
             return FALSE;
         }
+    }
+
+    function setVMeasurementOpParam($theParam)
+    {
+    
+        $this->vmeasurementOpParam = $theParam;
     }
     
     function setMeasurementID()

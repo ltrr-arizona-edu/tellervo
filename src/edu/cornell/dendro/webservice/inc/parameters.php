@@ -228,6 +228,7 @@ class measurementParameters extends parameters
     var $isReconciled           = NULL;
     var $isPublished            = NULL;
     var $vmeasurementOp         = NULL;
+    var $vmeasurementOpParam    = NULL;
     var $readingType            = NULL;
     var $readingUnits           = NULL;
     var $readingsArray          = array();
@@ -257,6 +258,7 @@ class measurementParameters extends parameters
         if(isset($this->xmlrequest->isReconciled))               $this->isReconciled          = fromStringtoPHPBool( $this->xmlrequest->isReconciled);
         if(isset($this->xmlrequest->isPublished))                $this->isPublished           = fromStringtoPHPBool( $this->xmlrequest->isPublished);
         if(isset($this->xmlrequest->references['operation']))    $this->vmeasurementOp        = addslashes(          $this->xmlrequest->references['operation']);
+        if(isset($this->xmlrequest->references['param']))        $this->vmeasurementOpParam   = addslashes(          $this->xmlrequest->references['param']);
         if(isset($this->xmlrequest->readings['type']))           $this->readingType           = addslashes(          $this->xmlrequest->readings['type']);
         if(isset($this->xmlrequest->readings['units']))          $this->readingUnits          = addslashes(          $this->xmlrequest->readings['units']);
         
