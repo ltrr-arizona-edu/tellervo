@@ -1,8 +1,0 @@
-<corina>
-    <request type="search">
-        <searchParams returnObject="specimen" limit="5" skip="0">
-            <param name="specimenid" operator=">" value="1" />
-        </searchParams>
-    </request>
-</corina>
-

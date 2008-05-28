@@ -1,8 +1,0 @@
-<corina>
-    <request type="search">
-        <searchParams returnObject="radius" limit="5" skip="0">
-            <param name="radiusid" operator=">" value="1" />
-        </searchParams>
-    </request>
-</corina>
-
