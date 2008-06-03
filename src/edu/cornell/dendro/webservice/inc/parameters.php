@@ -246,8 +246,8 @@ class measurementParameters extends parameters
     {
         if(isset($this->xmlrequest['id']))                       $this->id                    = (int)                $this->xmlrequest['id'];
         if(isset($this->xmlrequest->startYear))                  $this->startYear             = (int)                $this->xmlrequest->startYear;
-        if(isset($this->xmlrequest->measuredByID))               $this->measuredByID          = (int)                $this->xmlrequest->measuredByID;
-        if(isset($this->xmlrequest->ownerUserID))                $this->ownerUserID           = (int)                $this->xmlrequest->ownerUserID;
+        if(isset($this->xmlrequest->measuredBy['id']))           $this->measuredByID          = (int)                $this->xmlrequest->measuredBy['id'];
+        if(isset($this->xmlrequest->owner['id']))                $this->ownerUserID           = (int)                $this->xmlrequest->owner['id'];
         if(isset($this->xmlrequest->datingTypeID))               $this->datingTypeID          = addslashes(          $this->xmlrequest->datingTypeID);
         if(isset($this->xmlrequest->datingType))                 $this->datingType            = addslashes(          $this->xmlrequest->datingType);
         if(isset($this->xmlrequest->datingErrorPositive))        $this->datingErrorPositive   = (int)                $this->xmlrequest->datingErrorPositive;
@@ -257,10 +257,10 @@ class measurementParameters extends parameters
         if(isset($this->xmlrequest->isLegacyCleaned))            $this->isLegacyCleaned       = fromStringtoPHPBool( $this->xmlrequest->isLegacyCleaned);
         if(isset($this->xmlrequest->isReconciled))               $this->isReconciled          = fromStringtoPHPBool( $this->xmlrequest->isReconciled);
         if(isset($this->xmlrequest->isPublished))                $this->isPublished           = fromStringtoPHPBool( $this->xmlrequest->isPublished);
-        if(isset($this->xmlrequest->references['operation']))    $this->vmeasurementOp        = addslashes(          $this->xmlrequest->references['operation']);
-        if(isset($this->xmlrequest->references['param']))        $this->vmeasurementOpParam   = addslashes(          $this->xmlrequest->references['param']);
         if(isset($this->xmlrequest->readings['type']))           $this->readingType           = addslashes(          $this->xmlrequest->readings['type']);
         if(isset($this->xmlrequest->readings['units']))          $this->readingUnits          = addslashes(          $this->xmlrequest->readings['units']);
+        if(isset($this->xmlrequest->references['operation']))    $this->vmeasurementOp        = addslashes(          $this->xmlrequest->references['operation']);
+        if(isset($this->xmlrequest->references['parameter']))    $this->vmeasurementOpParam   = addslashes(          $this->xmlrequest->references['parameter']);
         
         foreach($this->xmlrequest->xpath('//references/measurement') as $refmeasurement)
         {
@@ -427,6 +427,7 @@ class searchParameters extends parameters
     var $returnObject            = NULL;
     var $limit                   = NULL;
     var $skip                    = NULL;
+    var $allData                 = FALSE;
     var $siteParamsArray         = array();
     var $subSiteParamsArray      = array();
     var $treeParamsArray         = array();
@@ -448,6 +449,7 @@ class searchParameters extends parameters
         if($this->xmlrequest['returnObject'])  $this->returnObject  = addslashes ( $this->xmlrequest['returnObject']);
         if($this->xmlrequest['limit'])         $this->limit         = (int) $this->xmlrequest['limit'];
         if($this->xmlrequest['skip'])          $this->skip          = (int) $this->xmlrequest['skip'];
+        if(isset($this->xmlrequest->all))      $this->allData       = TRUE;
                         
         foreach($this->xmlrequest->xpath('//param') as $param)
         {
@@ -457,6 +459,7 @@ class searchParameters extends parameters
                     ($param['name'] == 'sitecode') || 
                     ($param['name'] == 'sitecreated') || 
                     ($param['name'] == 'sitexcentroid') || 
+                    ($param['name'] == 'siteycentroid') || 
                     ($param['name'] == 'sitelastmodified') )
             {
                 array_push($this->siteParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));

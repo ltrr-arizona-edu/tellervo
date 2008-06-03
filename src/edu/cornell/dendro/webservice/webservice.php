@@ -40,7 +40,7 @@ if($_POST['xmlrequest'])
 }
 else
 {
-    trigger_error('902'.'No XML request file given');
+    trigger_error('902'.'No XML request file given', E_USER_ERROR);
     $myMetaHeader->setRequestType("help");
     writeHelpOutput($metaHeader);
     die();
@@ -63,8 +63,14 @@ elseif( ($myRequest->getCrudMode()!="plainlogin") && ($myRequest->getCrudMode()!
     $myMetaHeader->requestLogin($myAuth->nonce());
 }
 
+if($myRequest->getCrudMode()=='logout')
+{
+    $myAuth->logout();
+    writeHelpOutput($myMetaHeader);
+    die;
+}
 
-if($myRequest->getCrudMode()== "Help")
+if($myRequest->getCrudMode()== "help")
 {
     // Output the resulting XML
     writeHelpOutput($myMetaHeader);
@@ -75,6 +81,18 @@ elseif($myMetaHeader->status != "Error")
 {
     // create parameter objects from sections of the request XML document
     $myRequest->createParamObjects();
+
+    // If there is more than one parameter objects set the default err message to 'notice'
+    // so that the remaining objects can be processed
+    if($myRequest->countParamObjects()>1)
+    {
+        $defaultErrType = E_USER_NOTICE;
+    }
+    else
+    {
+        $defaultErrType = E_USER_ERROR;
+    }
+
 
     // Process each Param object in turn during monster foreach loop!
     foreach ($myRequest->getParamObjectsArray() as $paramObj)
@@ -122,7 +140,7 @@ elseif($myMetaHeader->status != "Error")
                 $myObject = new dictionaries();
                 break;
             default:
-                trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported");
+                trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
         }
         
         // Get the name of the object (minus the Parameters bit)
@@ -134,7 +152,9 @@ elseif($myMetaHeader->status != "Error")
             $success = $myObject->validateRequestParams($paramObj, $myRequest->getCrudMode());
             if(!$success)
             {
-                trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage());
+
+                trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), $defaultErrType);
+                continue;
             }
         }
 
@@ -208,7 +228,7 @@ elseif($myMetaHeader->status != "Error")
             if($myAuth->getPermission($myRequest->getCrudMode(), $objectType, $myID)===FALSE)
             {
                 // Permission denied
-                trigger_error("103"."Permission to ".$myRequest->getCrudMode()." ".$objectType."id $myID was denied.");
+                trigger_error("103"."Permission to ".$myRequest->getCrudMode()." ".$objectType."id $myID was denied.", $defaultErrType);
                 break;
             }
         }
@@ -266,7 +286,7 @@ elseif($myMetaHeader->status != "Error")
                 $success2 = $myObject->setChildParamsFromDB();
                 if(!($success && $success2))
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage());
+                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_NOTICE);
                 }
             }
         }
@@ -327,8 +347,8 @@ elseif($myMetaHeader->status != "Error")
                 {
                     if ($myObject->getLastErrorCode()=='103')
                     {
-                        // Permission denied so just raise a warning not an error
-                        trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_WARNING);
+                        // Permission denied so just raise a notice not an error
+                        trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_NOTICE);
                     }
                     else
                     {

@@ -307,7 +307,7 @@ class site
                 $xml = "<site ";
                 $xml.= "id=\"".$this->id."\" ";
                 $xml.= "url=\"http://$domain/site/".$this->id."\" >\n ";
-                $xml.= "<name>".$this->name."</name>\n";
+                $xml.= "<name>".htmlspecialchars($this->name)."</name>\n";
                 $xml.= "<code>".$this->code."</code>\n";
                 $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
                 $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";

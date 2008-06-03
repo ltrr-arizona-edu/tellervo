@@ -104,7 +104,7 @@ class authenticate
         $myAuth = $auth;
         $myRequest = $paramsClass;
         
-        $myAuth->loginWithNonce($myRequest['username'], $myRequest['hash'], $myRequest['nonce']);
+        $myAuth->loginWithNonce($myRequest->username, $myRequest->hash, $myRequest->nonce);
         
         if($myAuth->isLoggedIn())
         {

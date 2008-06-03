@@ -52,6 +52,11 @@ class search
                     $this->setErrorMessage("902","Missing parameter - 'returnObject' field is required when performing a search");
                     return false;
                 }
+                if(($paramsObj->allData===TRUE) && ($paramsObj->returnObject=='measurement'))
+                {
+                    $this->setErrorMessage("901","Invalid user parameters - you cannot request all measurements as it is computationally too expensive");
+                    return false;
+                }
                 return true;
             
             default:
@@ -81,40 +86,49 @@ class search
             $myRequest->returnObject='vmeasurement';
         }
 
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        // Build return object dependent SQL
+        $returnObjectSQL = $this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id as id ";
+        $orderBySQL      = "\n ORDER BY ".$this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id asc ";
+        $groupBySQL      = "\n GROUP BY ".$this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id" ;
+        if ($myRequest->limit) $limitSQL = "\n LIMIT ".$myRequest->limit;
+        if ($myRequest->skip)  $skipSQL  = "\n OFFSET ".$myRequest->skip;
+
+        if($myRequest->allData===FALSE)
         {
-        
-            // Build return object dependent SQL
-            $returnObjectSQL = $this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id as id ";
-            $orderBySQL      = "\n ORDER BY ".$this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id asc ";
-            $groupBySQL      = "\n GROUP BY ".$this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id" ;
-            if ($myRequest->limit) $limitSQL = "\n LIMIT ".$myRequest->limit;
-            if ($myRequest->skip)  $skipSQL  = "\n OFFSET ".$myRequest->skip;
-            
-            
-            // Build filter SQL
-            if ($myRequest->siteParamsArray)        $filterSQL .= $this->paramsToFilterSQL($myRequest->siteParamsArray, "site");
-            if ($myRequest->subSiteParamsArray)     $filterSQL .= $this->paramsToFilterSQL($myRequest->subSiteParamsArray, "subsite");
-            if ($myRequest->treeParamsArray)        $filterSQL .= $this->paramsToFilterSQL($myRequest->treeParamsArray, "tree");
-            if ($myRequest->specimenParamsArray)    $filterSQL .= $this->paramsToFilterSQL($myRequest->specimenParamsArray, "specimen");
-            if ($myRequest->radiusParamsArray)      $filterSQL .= $this->paramsToFilterSQL($myRequest->radiusParamsArray, "radius");
-            if ($myRequest->vmeasurementParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementParamsArray, "vmeasurement");
-            if ($myRequest->vmeasurementResultParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementResultParamsArray, "vmeasurementresult");
-            if ($myRequest->vmeasurementMetaCacheParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementMetaCacheParamsArray, "vmeasurementmetacache");
-            // Trim off final ' and ' from filter SQL
-            $filterSQL = substr($filterSQL, 0, -5);
+            // User doing a normal search (not all records) so build filter
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                // Build filter SQL
+                if ($myRequest->siteParamsArray)        $filterSQL .= $this->paramsToFilterSQL($myRequest->siteParamsArray, "site");
+                if ($myRequest->subSiteParamsArray)     $filterSQL .= $this->paramsToFilterSQL($myRequest->subSiteParamsArray, "subsite");
+                if ($myRequest->treeParamsArray)        $filterSQL .= $this->paramsToFilterSQL($myRequest->treeParamsArray, "tree");
+                if ($myRequest->specimenParamsArray)    $filterSQL .= $this->paramsToFilterSQL($myRequest->specimenParamsArray, "specimen");
+                if ($myRequest->radiusParamsArray)      $filterSQL .= $this->paramsToFilterSQL($myRequest->radiusParamsArray, "radius");
+                if ($myRequest->vmeasurementParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementParamsArray, "vmeasurement");
+                if ($myRequest->vmeasurementResultParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementResultParamsArray, "vmeasurementresult");
+                if ($myRequest->vmeasurementMetaCacheParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementMetaCacheParamsArray, "vmeasurementmetacache");
+                // Trim off final ' and ' from filter SQL
+                $filterSQL = substr($filterSQL, 0, -5);
+            }
+        }
 
-            // Compile full SQL statement from parts
+        // Compile full SQL statement from parts
+        if(isset($filterSQL))
+        {
             $fullSQL = "SELECT ".$returnObjectSQL.$this->fromSQL($myRequest)." WHERE ".$filterSQL.$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
-            //echo $fullSQL;
+        }
+        else
+        {
+            $fullSQL = "SELECT ".$returnObjectSQL.$this->fromSQL($myRequest).$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
+        }
 
-            // Add SQL to XML o.utput
-            $this->sqlcommand .= $fullSQL;
-            
-            // Do SQL Query
-            pg_send_query($dbconn, $fullSQL);
-            $result = pg_get_result($dbconn);
+        // Add SQL to XML output
+        $this->sqlcommand .= $fullSQL;
+
+        // Do SQL Query
+        pg_send_query($dbconn, $fullSQL);
+        $result = pg_get_result($dbconn);
             /*echo "rows = ".pg_num_rows($result);
             if(pg_num_rows($result)==0)
             {
@@ -123,64 +137,65 @@ class search
             }
             else
             {*/
-                $result = @pg_query($dbconn, $fullSQL);
-                while ($row = @pg_fetch_array($result))
+
+            $result = @pg_query($dbconn, $fullSQL);
+            while ($row = @pg_fetch_array($result))
+            {
+                // Check user has permission to read then create a new object
+                if($myRequest->returnObject=="site") 
                 {
-                    // Check user has permission to read then create a new object
-                    if($myRequest->returnObject=="site") 
-                    {
-                        $myReturnObject = new site();
-                        $hasPermission = $myAuth->sitePermission($row['id'], "read");
-                    }
-                    elseif($myRequest->returnObject=="subsite")
-                    {
-                        $myReturnObject = new subSite();
-                        $hasPermission = $myAuth->subSitePermission($row['id'], "read");
-                    }
-                    elseif($myRequest->returnObject=="tree") 
-                    {
-                        $myReturnObject = new tree();
-                        $hasPermission = $myAuth->treePermission($row['id'], "read");
-                    }
-                    elseif($myRequest->returnObject=="specimen")
-                    {
-                        $myReturnObject = new specimen();
-                        $hasPermission = $myAuth->specimenPermission($row['id'], "read");
-                    }
-                    elseif($myRequest->returnObject=="radius") 
-                    {
-                        $myReturnObject = new radius();
-                        $hasPermission = $myAuth->radiusPermission($row['id'], "read");
-                    }
-                    elseif($myRequest->returnObject=="vmeasurement")
-                    {
-                        $myReturnObject = new measurement();
-                        $hasPermission = $myAuth->vmeasurementPermission($row['id'], "read");
-                    }
-                    else
-                    {
-                        $this->setErrorMessage("901","Invalid return object ".$myRequest->returnObject." specified.  Must be one of site, subsite, tree, specimen, radius or measurement");
-                    }
-
-                    if($hasPermission===FALSE)
-                    {
-                        array_push($this->deniedRecArray, $row['id']); 
-                        continue;
-                    }
-
-                    // Set parameters on new object and return XML
-                    $success = $myReturnObject->setParamsFromDB($row['id'], "brief");
-                    if($success)
-                    {
-                        $xmldata.=$myReturnObject->asXML();
-                    }
-                    else
-                    {
-                        $this->setErrorMessage($myReturnObject->getLastErrorCode(), $myReturnObject->getLastErrorMessage());
-                    }
+                    $myReturnObject = new site();
+                    $hasPermission = $myAuth->sitePermission($row['id'], "read");
                 }
-           // }
-                    
+                elseif($myRequest->returnObject=="subsite")
+                {
+                    $myReturnObject = new subSite();
+                    $hasPermission = $myAuth->subSitePermission($row['id'], "read");
+                }
+                elseif($myRequest->returnObject=="tree") 
+                {
+                    $myReturnObject = new tree();
+                    $hasPermission = $myAuth->treePermission($row['id'], "read");
+                }
+                elseif($myRequest->returnObject=="specimen")
+                {
+                    $myReturnObject = new specimen();
+                    $hasPermission = $myAuth->specimenPermission($row['id'], "read");
+                }
+                elseif($myRequest->returnObject=="radius") 
+                {
+                    $myReturnObject = new radius();
+                    $hasPermission = $myAuth->radiusPermission($row['id'], "read");
+                }
+                elseif($myRequest->returnObject=="vmeasurement")
+                {
+                    $myReturnObject = new measurement();
+                    $hasPermission = $myAuth->vmeasurementPermission($row['id'], "read");
+                }
+                else
+                {
+                    $this->setErrorMessage("901","Invalid return object ".$myRequest->returnObject." specified.  Must be one of site, subsite, tree, specimen, radius or measurement");
+                }
+
+                if($hasPermission===FALSE)
+                {
+                    array_push($this->deniedRecArray, $row['id']); 
+                    continue;
+                }
+
+                // Set parameters on new object and return XML
+                $success = $myReturnObject->setParamsFromDB($row['id'], "brief");
+                if($success)
+                {
+                    $xmldata.=$myReturnObject->asXML();
+                }
+                else
+                {
+                    $this->setErrorMessage($myReturnObject->getLastErrorCode(), $myReturnObject->getLastErrorMessage());
+                }
+            }
+        // }
+
             if(count($this->deniedRecArray)>0 )
             {
                 $errMessage = "Permission denied on the following ".$myRequest->returnObject."id(s): ";
@@ -206,7 +221,6 @@ class search
             {
                 return false;
             }
-        }
     }
 
     function asXML($mode="all")

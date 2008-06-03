@@ -305,6 +305,11 @@ class request
     {
         return $this->format;
     }
+
+    function countParamObjects()
+    {
+        return count($this->paramObjectsArray);
+    }
     
     function getCrudMode()
     {

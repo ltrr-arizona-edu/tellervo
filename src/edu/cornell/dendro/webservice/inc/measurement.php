@@ -19,6 +19,7 @@ class measurement
     var $vmeasurementOpParam = NULL;
     var $vmeasurementOp = "Direct";
     var $vmeasurementUnits = NULL;
+    var $indexType = NULL;
     var $radiusID = NULL;
     var $isReconciled = FALSE;
     var $startYear = NULL;
@@ -92,7 +93,7 @@ class measurement
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No records match the specified id");
+                $this->setErrorMessage("903", "No match for measurement id=".$theID);
                 return FALSE;
             }
             else
@@ -478,8 +479,40 @@ class measurement
 
     function setVMeasurementOpParam($theParam)
     {
-    
-        $this->vmeasurementOpParam = $theParam;
+        global $dbconn;
+        if(is_numeric($theParam))
+        {
+            // Param is numeric - probably a year for use in redating
+            $this->vmeasurementOpParam = $theParam;
+            return true;
+        }
+        elseif(is_string($theParam))
+        {
+            // Param is string - probably index type
+            $sql  = "select indexid from tlkpindextype where indexname ilike '$theParam'";
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    $this->vmeasurementOpParam = $row['indexid'];
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database for index type lookup");
+                return FALSE;
+            }
+            
+        } 
+        else
+        {
+            // Shouldn't be here!!
+            $this->setErrorMessage("667", "Program bug - measurement operation parameter not recognised");
+            return FALSE;
+        }
     }
     
     function setMeasurementID()

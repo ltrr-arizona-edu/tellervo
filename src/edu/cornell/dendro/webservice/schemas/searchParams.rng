@@ -29,7 +29,8 @@
                     <data type="integer" />
                 </attribute>
             </optional>
-            <oneOrMore>
+            
+            <zeroOrMore>
                 <element name="param">
                     <attribute name="name">
                         <choice>
@@ -124,7 +125,15 @@
                         <text/>
                     </attribute>
                 </element>
-            </oneOrMore>
+            </zeroOrMore>
+            
+            <optional>
+            	<element name="all">
+            		<empty></empty>
+            	</element>
+            </optional>
+            
+            
         </element>
     </define>    
 </grammar>

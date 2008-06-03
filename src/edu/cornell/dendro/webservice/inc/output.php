@@ -8,10 +8,16 @@ function getHelpDocbook($page)
 
     $filename = "http://".$domain."/".$wikiManualFolder."/WebserviceDocs-".$page."?action=format&mimetype=xml/docbook";
     $file = file_get_contents($filename);
+
     // Remove XML header line
+    $xml = substr($file, 21);
 
+    // Remove para tags from lists cos it stuffs things up
+    $xml = str_replace("<listitem><para>", "<listitem>", $xml);
+    $xml = str_replace("</para></listitem>", "</listitem>", $xml);
 
-    return substr($file, 21);
+    // Return XML 
+    return $xml;
 }
 
 function writeOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd="")

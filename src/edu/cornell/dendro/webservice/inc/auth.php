@@ -51,13 +51,13 @@ class auth
         $result = pg_query($dbconn, $sql);
         while ($row = pg_fetch_array($result))
         {
-            $dbPasswordHash = $row['password'];
+            $this->dbPasswordHash = $row['password'];
             $this->username = $row['username'];
         }
     }
 
     // Authenticate against the database
-    if ($this->checkClientHash($dbPasswordHash, $theClientNonce, $theClientHash))
+    if ($this->checkClientHash($this->dbPasswordHash, $theClientNonce, $theClientHash))
     {
         // Login passed
         $result = pg_query($dbconn, $sql);
@@ -203,7 +203,7 @@ class auth
     }
     elseif ($type=="loginFailure")
     {
-        $request = "Failed login attempt for username: '".$_POST['username']."'";
+        $request = "Failed login attempt for username: '".$this->username."'";
     }
     else
     {
@@ -349,6 +349,12 @@ class auth
       return $this->getPermission($thePermissionType, 'vmeasurement', $theVMeasurementID); 
   }
 
+  function dictionariesPermission($theVMeasurementID, $thePermissionType)
+  {
+      // Always allow access to dictionaries
+      return true;
+  }
+
 /*  function getPerms($permissionType, $objectType, $objectID, $parentID=NULL)
   {
     global $dbconn;
@@ -407,6 +413,19 @@ class auth
         // $theObjectType should be one of site,tree, vmeasurement, default
 
         global $dbconn;
+
+        // Always allow access to dictionaries
+        if ( ($theObjectType=='dictionaries') || ($theObjectType=='authentication') )
+        {
+            return true;
+        }
+
+        // If Object is measurement change it to vmeasurement so that db understands!
+        if ($theObjectType=='measurement')
+        {
+            $theObjectType='vmeasurement';
+        }
+
         // Check user is logged in first
         if ($this->isLoggedIn)
         {

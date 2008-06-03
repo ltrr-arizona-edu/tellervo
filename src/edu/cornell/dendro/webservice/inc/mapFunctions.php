@@ -45,7 +45,7 @@ return marker;
                 $returnString .= "], \"#ff0000\", 1, 1, \"#FF0000\", 0.3);\n";
                 $returnString .= "map.addOverlay(polygon);\n"; 
                 $returnString .= "var point = new GLatLng(".$site->extent['centroidLat'].", ".$site->extent['centroidLong'].");\n";
-                $htmlString = "<b>".$site->name."</b><br>";
+                $htmlString = "<b>".$site->name." (".$site->code.")</b><br>";
                 $returnString.= "map.addOverlay(createMarker(point,'$htmlString'));\n";
            }
         }
