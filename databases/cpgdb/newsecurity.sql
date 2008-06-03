@@ -56,7 +56,7 @@ DECLARE
 BEGIN
    -- Invalid type specified?
    IF NOT (_permtype = ANY(stypes)) THEN
-      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vmeasurement, tree, site, default (case matters!).', _ptype;
+      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vmeasurement, tree, site, default (case matters!).', _permtype;
    END IF;
 
    -- Build our query
