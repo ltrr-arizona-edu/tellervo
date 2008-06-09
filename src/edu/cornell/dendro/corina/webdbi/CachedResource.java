@@ -15,8 +15,11 @@ public abstract class CachedResource extends Resource {
 	private String cachedResourcePath;
 	
 	public CachedResource(String cachedResourceName) {
-		// we only support read-only resources :>
-		super(cachedResourceName, ResourceQueryType.READ);
+		this(cachedResourceName, ResourceQueryType.READ);
+	}
+	
+	public CachedResource(String cachedResourceName, ResourceQueryType queryType) {
+		super(cachedResourceName, queryType);
 
 		cachedResourcePath = App.prefs.getCorinaDir() + getResourceName() + ".xmlcache";
 		

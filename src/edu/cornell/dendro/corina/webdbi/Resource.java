@@ -94,9 +94,9 @@ public abstract class Resource {
 				else
 					dialog.doLogin("(for access to " + resourceName + ")", false);
 				
-				new Authenticate(dialog.getUsername(), dialog.getPassword(), w.getNonce()).queryWait();
-
-				return true;
+				// if our child failed, we fail too.
+				// prevents infinite loops!
+				return new Authenticate(dialog.getUsername(), dialog.getPassword(), w.getNonce()).queryWait();
 			} catch (UserCancelledException uce) {
 				doQueryFailed(uce);
 				return false;

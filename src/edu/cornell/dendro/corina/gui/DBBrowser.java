@@ -1,24 +1,39 @@
 package edu.cornell.dendro.corina.gui;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ListSelectionModel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableColumnModel;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.SiteRegion;
+import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.webdbi.MeasurementSearchResource;
+import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
 
-public class DBBrowser extends javax.swing.JDialog{
+public class DBBrowser extends javax.swing.JDialog {
     /** A return status code - returned if Cancel button has been pressed */
     public static final int RET_CANCEL = 0;
     /** A return status code - returned if OK button has been pressed */
     public static final int RET_OK = 1;
     
+    private ElementList selectedElements;
+    
     /** Creates new form */
     public DBBrowser(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        
+        selectedElements = new ElementList();
+        
         populateComponents();
     }
 
@@ -44,11 +59,136 @@ public class DBBrowser extends javax.swing.JDialog{
 		// populate our site list (done automatically by choosing an index)
 		cboBrowseBy.setSelectedIndex(0);
 		
+		lstSites.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		lstSites.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+			public void valueChanged(javax.swing.event.ListSelectionEvent lse) {
+				// ignore the first adjustment
+				if(lse.getValueIsAdjusting())
+					return;
+				
+				Object[] selected = lstSites.getSelectedValues();
+				
+				if(selected.length  == 0) {
+					// no selections. clear table!
+					return;
+				}
+				
+				// set up our query...
+				MeasurementSearchResource ms = new MeasurementSearchResource();
+				for(int i = 0; i < selected.length; i++) {
+					Site site = (Site) selected[i];
+					ms.getSearchParameters().addSearchConstraint("siteid", "=", site.getID());
+				}
+
+				PrototypeLoadDialog dlg = new PrototypeLoadDialog(ms);
+				
+				// start our query (remotely)
+				ms.query();		
+				
+				dlg.setVisible(true);
+				
+				if(!dlg.isSuccessful()) {
+					new Bug(dlg.getFailException());
+				} else {
+					((DBBrowserTableModel)tblAvailMeas.getModel()).setElements(ms.getObject());
+				}
+			}
+		});
+        
+		tblAvailMeas.setColumnSelectionAllowed(false);
+		tblAvailMeas.setRowSelectionAllowed(true);
+		tblAvailMeas.setModel(new DBBrowserTableModel());
+		
+		tblAvailMeas.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					doClose(RET_OK);
+				}
+			}
+		});
     }
     
+    public class DBBrowserTableModel extends AbstractTableModel {
+    	private ElementList elements;
+        private final String[] columnNames = {
+                "Name", 
+                "Type", 
+                "Site name", 
+                "Taxon", 
+                "Elements", 
+                "Last modified", 
+                "Begin Date", 
+                "End Date", 
+                "ID"
+            };
+
+    	/**
+    	 * The default: no elements
+    	 */
+    	public DBBrowserTableModel() {
+    		this(new ElementList());
+    	}
+  
+    	/**
+    	 * 
+    	 * @param elements
+    	 */
+    	public DBBrowserTableModel(ElementList elements) {
+    		this.elements = elements;
+    	}    	
+    	
+    	public void setElements(ElementList elements) {
+    		this.elements = elements;
+    		fireTableDataChanged();
+    	}
+
+		public int getColumnCount() {
+			return columnNames.length;
+		}
+
+		public int getRowCount() {
+			return elements.size();
+		}
+		
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			Element e = elements.get(rowIndex);
+			BaseSample bs;
+			
+			try {
+				bs = e.loadBasic();
+			} catch (IOException ioe) {
+				return "<ERROR>";
+			}
+			
+			switch(columnIndex) {
+			case 0:
+				return bs.hasMeta("title") ? bs.getMeta("title") : "[id: " + bs.getMeta("id") + "]";
+				
+			case 8:
+				return bs.getMeta("id");
+				
+			default:
+				return null;
+			}
+		}
+		
+        public Class<?> getColumnClass(int c) {
+        	return String.class;
+        }
+        
+		public String getColumnName(int index) {
+			return columnNames[index];
+		}
+		
+		public Element getElementAt(int rowIndex) {
+			return elements.get(rowIndex);
+		}
+    }
+  
     private void populateSiteList() {
     	List<Site> sites = App.sites.getSites();
     	SiteRegion region = (SiteRegion) cboBrowseBy.getSelectedItem();
+    	Site selectedSite = (Site) lstSites.getSelectedValue();
 
     	// have we selected 'all regions?'
     	if(region.getInternalRepresentation().equals("ALL")) {    		
@@ -64,6 +204,24 @@ public class DBBrowser extends javax.swing.JDialog{
     		
     		lstSites.setModel(new javax.swing.DefaultComboBoxModel(filteredSites.toArray()));
     	}
+    	
+    	// if our site list was updated in the background,
+    	// we have to compare sites. blurgh.
+    	if(selectedSite != null) {
+    		for(int i = 0; i < lstSites.getModel().getSize(); i++) {
+    			if(((Site)lstSites.getModel().getElementAt(i)).equals(selectedSite)) {
+    				lstSites.setSelectedIndex(i);
+    				lstSites.ensureIndexIsVisible(i);
+    				break;
+    			}
+    		}
+    	}
+    }
+ 
+    /** @return an ElementList of selected elements!
+     */
+    public ElementList getSelectedElements() {
+    	return selectedElements;
     }
     
     /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
@@ -299,10 +457,19 @@ public class DBBrowser extends javax.swing.JDialog{
     }//GEN-LAST:event_cboBrowseByActionPerformed
 
     private void btnSelectAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelectAllActionPerformed
-        // TODO add your handling code here:
+    	tblAvailMeas.setRowSelectionInterval(0, tblAvailMeas.getRowCount() - 1);
+    	
 }//GEN-LAST:event_btnSelectAllActionPerformed
     
     private void doClose(int retStatus) {
+    	int selectedRows[] = tblAvailMeas.getSelectedRows();
+    	
+    	// create a list of our selected elements
+    	for(int i = 0; i < selectedRows.length; i++)
+    		selectedElements.add(((DBBrowserTableModel)tblAvailMeas.getModel()).
+    				getElementAt(selectedRows[i]));
+    	
+    	
         returnStatus = retStatus;
         setVisible(false);
         dispose();
@@ -311,7 +478,7 @@ public class DBBrowser extends javax.swing.JDialog{
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void zzzmain(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 DBBrowser dialog = new DBBrowser(new javax.swing.JFrame(), true);

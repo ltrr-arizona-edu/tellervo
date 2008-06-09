@@ -29,6 +29,7 @@ public class Dictionary extends CachedResource {
 	// Nothing fancy here, just use the defaults
 	@Override
 	protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) {
+		requestElement.addContent(new Element("dictionaries"));
 		return requestElement;
 	}
 	

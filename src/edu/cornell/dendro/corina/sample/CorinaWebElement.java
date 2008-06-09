@@ -1,6 +1,7 @@
 package edu.cornell.dendro.corina.sample;
 
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,49 +23,10 @@ import edu.cornell.dendro.corina.webdbi.*;
  *
  */
 
-public class CorinaWebElement implements SampleLoader, ResourceEventListener {
+public class CorinaWebElement implements SampleLoader {
 	private URI uri;
 	private String sampleID;
 	private String shortName;
-	
-	private class CWELoadDialog extends JDialog {
-		
-		private JList list;
-		
-		public CWELoadDialog() {
-			super();
-			
-			setModal(true);
-			setTitle("Loading remote sample...");
-			setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-			
-			list = new JList(new DefaultListModel());
-			
-			list.setVisibleRowCount(10);
-		    list.setBorder(BorderFactory.createTitledBorder("Status"));
-		    
-		    getContentPane().add(list, BorderLayout.CENTER);
-		    pack();
-		    setSize(300, 200);
-		    Center.center(this);
-		}
-		
-		public void addStatus(String s) {
-			((DefaultListModel)list.getModel()).addElement(s);
-			list.ensureIndexIsVisible(list.getModel().getSize() - 1);
-		}
-		
-		private boolean success = false;
-
-		public boolean isSuccessful() {
-			return success;
-		}
-		
-		public void setSuccessful(boolean successful) {
-			this.success = successful;
-			dispose();
-		}
-	}
 	
 	public CorinaWebElement(String strUri) throws URISyntaxException {
 		this.uri = new URI(strUri);
@@ -87,30 +49,24 @@ public class CorinaWebElement implements SampleLoader, ResourceEventListener {
 		return shortName;
 	}
 
-	private CWELoadDialog dlg;
-	private Exception failEx = null;
-	
 	public Sample load() throws IOException {
 		
 		// create an initial sample
-		Sample s = new Sample();
-		s.setMeta("id", sampleID);
+		ResourceIdentifier loadId = new ResourceIdentifier(sampleID);
 
 		// set up the resource
 		MeasurementResource xf = new MeasurementResource();
-		xf.setObject(s);
-		xf.addResourceEventListener(this);
+		xf.attachIdentifier(loadId);
+		
+		PrototypeLoadDialog dlg = new PrototypeLoadDialog(xf);
 		
 		// start our query (remotely)
-		xf.query();
+		xf.query();		
 		
-		dlg = new CWELoadDialog();
-		dlg.addStatus("Loading [id: " + sampleID + "]");
-		dlg.addStatus("Connecting to server...");
 		dlg.setVisible(true);
 		
 		if(!dlg.isSuccessful())
-			throw new IOException("Failed to load: " + failEx);
+			throw new IOException("Failed to load: " + dlg.getFailException());
 		
 		shortName = xf.getObject().getMeta("title").toString() + " [" + sampleID + "]";
 		
@@ -121,30 +77,5 @@ public class CorinaWebElement implements SampleLoader, ResourceEventListener {
 		return load();
 	}
 
-	public void resourceChanged(ResourceEvent re) {
-		if(dlg == null)
-			return; // we don't care anymore!
-		
-		int eventType = re.getEventType();
-		switch(eventType) {
-		case ResourceEvent.RESOURCE_QUERY_COMPLETE:
-			dlg.setSuccessful(true);
-			break;
-			
-		case ResourceEvent.RESOURCE_QUERY_FAILED:
-			failEx = re.getAttachedException();
-			dlg.setSuccessful(false);
-			break;
-			
-		case ResourceEvent.RESOURCE_DEBUG_OUT:
-			dlg.addStatus("Sent request, awaiting reply...");
-			break;
-			
-		case ResourceEvent.RESOURCE_DEBUG_IN:
-			dlg.addStatus("Reply received, processing...");
-			
-		default:
-			break;
-		}
-	}
+
 }

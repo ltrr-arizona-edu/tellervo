@@ -48,11 +48,9 @@ public class MeasurementResource extends ResourceObject<Sample> {
 	@Override
 	protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) throws ResourceException {
 		Sample s = this.getObject();
+		ResourceIdentifier ri = this.getIdentifier();
 		String id;
-		
-		if(s == null)
-			throw new ResourceException("No object tied to Resource!");
-		
+				
 		switch(queryType) {
 		/*
 		 * Generates:
@@ -63,12 +61,11 @@ public class MeasurementResource extends ResourceObject<Sample> {
 		 */
 		case READ:
 		case DELETE:
-			id = (String) s.getMeta("id");
-			if(id == null)
-				throw new ResourceException("Reading in a null id?");
+			if(ri == null)
+				throw new ResourceException("No identifier specified for read/delete");
 			
 			Element measurementElement = new Element("measurement");
-			measurementElement.setAttribute("id", id);
+			ri.AttachIdentifier(measurementElement);
 			requestElement.addContent(measurementElement);
 			
 			break;
@@ -81,12 +78,15 @@ public class MeasurementResource extends ResourceObject<Sample> {
 		 * </corina>
 		 */
 		case UPDATE: // Update is CREATE with an ID
+			if(s == null)
+				throw new ResourceException("Can't update without a sample");
+			
 			id = (String) s.getMeta("id");
 			if(id == null)
-				throw new ResourceException("Reading in a null id?");
+				throw new ResourceException("Update sample has a null id?");
 			
 			requestElement.setAttribute("id", id);
-			requestElement.setAttribute("limit", "5");
+			
 			// drop through!
 		case CREATE: {
 			String title = (String) s.getMeta("title");

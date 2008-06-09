@@ -71,14 +71,16 @@ public class WebXMLDocumentAccessor {
 		
 		try {
 			String path = App.prefs.getPref("corina.webservice.url");
+			
+			/*
+			 * Not anymore...
+			 * 
 			if(!path.endsWith("/"))
 				path += "/";
 			path += noun + ".php";
+			*/
 			
-			url = new URL(path);
-			
-			// debug
-			System.out.println("Access URL: " + url);
+			url = new URL(path);			
 		} catch (MalformedURLException e) {
 			new Bug(e);
 		}		

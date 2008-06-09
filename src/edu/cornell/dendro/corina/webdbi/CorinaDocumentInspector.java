@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /*
  * This class verifies Corina XML document structure, 
@@ -19,12 +21,13 @@ public class CorinaDocumentInspector {
 	
 	public void verifyDocument() throws ResourceException {
 		// debug!
-		/*
+		/**/
 		try {
 			XMLOutputter outp = new XMLOutputter();
+			outp.setFormat(Format.getPrettyFormat());
 			outp.output(document, System.out);
 		} catch (Exception e) {}
-		*/
+		/**/
 		// end debug
 		
 		Element root = document.getRootElement();

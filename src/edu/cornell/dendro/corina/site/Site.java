@@ -41,4 +41,17 @@ public class Site {
 		
 		return name + "[" + code + "]";
 	}
+	
+	public String getID() {
+		return id;
+	}
+	
+	@Override
+	public boolean equals(Object site) {
+		// if it's a site, check ids.
+		if(site instanceof Site)
+			return (((Site)site).id.equals(this.id));
+		
+		return super.equals(site);
+	}
 }

@@ -215,7 +215,7 @@ public class CorinaXML implements Filetype {
 		}
 	}
 	
-	public void loadMeasurement(Sample s, Element root) throws IOException {
+	public void loadBasicMeasurement(BaseSample s, Element root) throws IOException {
 		String attr;
 		
 		// load basic information needed for a loader :)
@@ -234,7 +234,12 @@ public class CorinaXML implements Filetype {
 		Element metadata = root.getChild("metadata");		
 		if(metadata == null)
 			throw new WrongFiletypeException("No metadata in measurement!");
-		loadMetadata(s, metadata);
+		loadMetadata(s, metadata);		
+	}
+	
+	public void loadMeasurement(Sample s, Element root) throws IOException {
+		// first, load our base stuff...
+		loadBasicMeasurement(s, root);
 		
 		// load readings...
 		List<Element> readings = root.getChildren("readings");

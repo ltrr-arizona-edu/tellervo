@@ -282,7 +282,6 @@ public class XCorina extends JFrame {
 		 */
 
 		Center.center(this);
-		
 		// show
 		show();
 	}

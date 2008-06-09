@@ -13,6 +13,7 @@ import org.jdom.Element;
 import edu.cornell.dendro.corina.webdbi.CachedResource;
 import edu.cornell.dendro.corina.webdbi.ResourceException;
 import edu.cornell.dendro.corina.webdbi.ResourceQueryType;
+import edu.cornell.dendro.corina.webdbi.SearchParameters;
 
 /**
  * @author lucasm
@@ -24,7 +25,7 @@ public class SiteList extends CachedResource {
 	 * @param cachedResourceName
 	 */
 	public SiteList() {
-		super("sites");		
+		super("sites", ResourceQueryType.SEARCH);		
 	}
 
 	/* (non-Javadoc)
@@ -32,6 +33,15 @@ public class SiteList extends CachedResource {
 	 */
 	@Override
 	protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) throws ResourceException {
+		/*
+		 * <searchParams returnObject="site">
+		 *  <all />
+		 * </searchParams>
+		 */
+		SearchParameters sp = new SearchParameters("site");
+		sp.addSearchForAll();
+		requestElement.addContent(sp.getXMLElement());
+		
 		return requestElement;
 	}
 

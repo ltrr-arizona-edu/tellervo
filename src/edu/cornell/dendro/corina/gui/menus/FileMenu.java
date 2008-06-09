@@ -24,6 +24,7 @@ import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.CanOpener;
+import edu.cornell.dendro.corina.gui.DBBrowser;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.PrintableDocument;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
@@ -164,6 +165,9 @@ public class FileMenu extends JMenu {
 		add(map);
 		add(sites);
 
+		// db stuff
+		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()"));
+		
 		// open, browse
 		add(Builder.makeMenuItem("open...", "edu.cornell.dendro.corina.gui.menus.FileMenu.open()"));
 		add(Builder.makeMenuItem("open_multi...",
@@ -226,6 +230,31 @@ public class FileMenu extends JMenu {
 			}
 		} catch (UserCancelledException uce) {
 			// do nothing
+		}
+	}
+
+	public static void opendb() {
+		DBBrowser browser = new DBBrowser(null, true);
+		
+		browser.setVisible(true);
+		
+		if(browser.getReturnStatus() == DBBrowser.RET_OK) {
+			ElementList toOpen = browser.getSelectedElements();
+			
+			for(Element e : toOpen) {
+				// load it
+				Sample s;
+				try {
+					s = e.load();
+				} catch (IOException ioe) {
+					Alert.error("Error Loading Sample",
+							"Can't open this file: " + ioe.getMessage());
+					continue;
+				}
+
+				// open it
+				new Editor(s);
+			}
 		}
 	}
 
