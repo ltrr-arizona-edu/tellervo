@@ -41,17 +41,26 @@ public class CreateSample extends javax.swing.JPanel {
         btnNewTree = new javax.swing.JButton();
         btnNewSpecimen = new javax.swing.JButton();
         btnNewRadius = new javax.swing.JButton();
+        panelButtons = new javax.swing.JPanel();
+        btnOk = new javax.swing.JButton();
+        seperatorButtons = new javax.swing.JSeparator();
+        lblCodeName = new javax.swing.JLabel();
 
         cboSite.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ADN - Adana, Pos Ormani", "AFY - Afyon - Ulu Camii", "VEZ - Bilicek, Vezirhan" }));
 
+        lblSite.setLabelFor(cboSite);
         lblSite.setText("Site:");
 
+        lblSubsite.setLabelFor(btnNewSubsite);
         lblSubsite.setText("Subsite:");
 
+        lblTree.setLabelFor(cboTree);
         lblTree.setText("Tree:");
 
+        tblSpecimen.setLabelFor(cboSpecimen);
         tblSpecimen.setText("Specimen:");
 
+        lblRadius.setLabelFor(cboRadius);
         lblRadius.setText("Radius:");
 
         cboSubsite.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Main" }));
@@ -92,23 +101,23 @@ public class CreateSample extends javax.swing.JPanel {
                 .add(18, 18, 18)
                 .add(panelNewValuesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(panelNewValuesLayout.createSequentialGroup()
-                        .add(cboSite, 0, 248, Short.MAX_VALUE)
+                        .add(cboSite, 0, 236, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(btnNewSite))
                     .add(panelNewValuesLayout.createSequentialGroup()
-                        .add(cboSubsite, 0, 248, Short.MAX_VALUE)
+                        .add(cboSubsite, 0, 236, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(btnNewSubsite))
                     .add(panelNewValuesLayout.createSequentialGroup()
-                        .add(cboTree, 0, 248, Short.MAX_VALUE)
+                        .add(cboTree, 0, 236, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(btnNewTree))
                     .add(panelNewValuesLayout.createSequentialGroup()
-                        .add(cboSpecimen, 0, 248, Short.MAX_VALUE)
+                        .add(cboSpecimen, 0, 236, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(btnNewSpecimen))
                     .add(panelNewValuesLayout.createSequentialGroup()
-                        .add(cboRadius, 0, 248, Short.MAX_VALUE)
+                        .add(cboRadius, 0, 236, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(btnNewRadius)))
                 .addContainerGap())
@@ -141,19 +150,56 @@ public class CreateSample extends javax.swing.JPanel {
                     .add(lblRadius)
                     .add(cboRadius, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(btnNewRadius))
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        btnOk.setText("OK");
+
+        seperatorButtons.setBackground(new java.awt.Color(153, 153, 153));
+        seperatorButtons.setOpaque(true);
+
+        lblCodeName.setText("C-ADN-1-1-1");
+        lblCodeName.setToolTipText("Laboratory code of your new sample");
+
+        org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
+        panelButtons.setLayout(panelButtonsLayout);
+        panelButtonsLayout.setHorizontalGroup(
+            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, seperatorButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtonsLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(lblCodeName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(btnOk)
+                .addContainerGap())
+        );
+        panelButtonsLayout.setVerticalGroup(
+            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelButtonsLayout.createSequentialGroup()
+                .add(seperatorButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 1, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(btnOk)
+                    .add(lblCodeName))
+                .add(17, 17, 17))
         );
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .add(panelNewValues, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelNewValues, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .add(layout.createSequentialGroup()
+                .add(panelNewValues, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
+
+        getAccessibleContext().setAccessibleName("Create sample");
     }// </editor-fold>//GEN-END:initComponents
 
     private void cboSubsiteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboSubsiteActionPerformed
@@ -167,16 +213,20 @@ public class CreateSample extends javax.swing.JPanel {
     private javax.swing.JButton btnNewSpecimen;
     private javax.swing.JButton btnNewSubsite;
     private javax.swing.JButton btnNewTree;
+    private javax.swing.JButton btnOk;
     private javax.swing.JComboBox cboRadius;
     private javax.swing.JComboBox cboSite;
     private javax.swing.JComboBox cboSpecimen;
     private javax.swing.JComboBox cboSubsite;
     private javax.swing.JComboBox cboTree;
+    private javax.swing.JLabel lblCodeName;
     private javax.swing.JLabel lblRadius;
     private javax.swing.JLabel lblSite;
     private javax.swing.JLabel lblSubsite;
     private javax.swing.JLabel lblTree;
+    private javax.swing.JPanel panelButtons;
     private javax.swing.JPanel panelNewValues;
+    private javax.swing.JSeparator seperatorButtons;
     private javax.swing.JLabel tblSpecimen;
     // End of variables declaration//GEN-END:variables
     
