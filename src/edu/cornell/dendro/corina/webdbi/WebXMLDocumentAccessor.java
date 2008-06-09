@@ -158,7 +158,7 @@ public class WebXMLDocumentAccessor {
 
 			//InputStream in = http.getInputStream();
 			// Wrap a bufferedreader around this, so the saxbuilder can't break our socket and hang
-			BufferedReader in = new BufferedReader(new InputStreamReader(http.getInputStream()));
+			BufferedReader in = new BufferedReader(new InputStreamReader(http.getInputStream(), "UTF-8"));
 			
 			// Skip past any sort of errors PHP might throw at us.
 			String line;

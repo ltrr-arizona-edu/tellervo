@@ -51,9 +51,12 @@ public abstract class CachedResource extends Resource {
 		try {
 			// We can't use a FileWriter here, because it munges UTF-8!
 			//FileWriter writer = new FileWriter(cachedResourcePath);
-			OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(cachedResourcePath, false), "UTF8");
-			XMLOutputter outputter = new XMLOutputter();
-			
+			OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(cachedResourcePath, false), "UTF-8");
+			XMLOutputter outputter;			
+			Format format = Format.getPrettyFormat();
+
+			format.setEncoding("UTF-8");
+			outputter = new XMLOutputter(format);
 			outputter.output(doc, writer);
 			
 			writer.close();
