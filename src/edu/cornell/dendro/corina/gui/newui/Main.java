@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package corinaguidesign;
+package edu.cornell.dendro.corina.gui.newui;
 
 /**
  *

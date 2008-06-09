@@ -4,7 +4,7 @@
  * Created on April 17, 2008, 10:33 AM
  */
 
-package corinaguidesign;
+package edu.cornell.dendro.corina.gui.newui;
 
 /**
  *

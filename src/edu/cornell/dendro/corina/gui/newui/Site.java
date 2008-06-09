@@ -4,7 +4,7 @@
  * Created on June 2, 2008, 3:38 PM
  */
 
-package corinaguidesign;
+package edu.cornell.dendro.corina.gui.newui;
 
 /**
  *
@@ -33,6 +33,7 @@ public class Site extends javax.swing.JDialog {
         panelButtons = new javax.swing.JPanel();
         btnCancel = new javax.swing.JButton();
         btnApply = new javax.swing.JButton();
+        seperatorButtons = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("New Site");
@@ -52,6 +53,9 @@ public class Site extends javax.swing.JDialog {
 
         btnApply.setText("Apply");
 
+        seperatorButtons.setBackground(new java.awt.Color(153, 153, 153));
+        seperatorButtons.setOpaque(true);
+
         org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
         panelButtons.setLayout(panelButtonsLayout);
         panelButtonsLayout.setHorizontalGroup(
@@ -62,15 +66,17 @@ public class Site extends javax.swing.JDialog {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnCancel)
                 .add(5, 5, 5))
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, seperatorButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
         );
         panelButtonsLayout.setVerticalGroup(
             panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelButtonsLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnApply)
-                    .add(btnCancel))
-                .addContainerGap(21, Short.MAX_VALUE))
+                .add(seperatorButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(btnCancel)
+                    .add(btnApply))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
@@ -131,6 +137,7 @@ public class Site extends javax.swing.JDialog {
     private javax.swing.JLabel lblSiteCode;
     private javax.swing.JLabel lblSiteName;
     private javax.swing.JPanel panelButtons;
+    private javax.swing.JSeparator seperatorButtons;
     private javax.swing.JTextField txtSiteName;
     // End of variables declaration//GEN-END:variables
     

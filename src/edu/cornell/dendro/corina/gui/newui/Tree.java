@@ -1,10 +1,10 @@
 /*
- * NewSite.java
+ * Tree.java
  *
  * Created on June 2, 2008, 3:38 PM
  */
 
-package corinaguidesign;
+package edu.cornell.dendro.corina.gui.newui;
 
 /**
  *
@@ -27,11 +27,7 @@ public class Tree extends javax.swing.JDialog {
     private void initComponents() {
 
         txtTreeName = new javax.swing.JTextField();
-        lblSite = new javax.swing.JLabel();
         lblTreeName = new javax.swing.JLabel();
-        panelButtons = new javax.swing.JPanel();
-        btnCancel = new javax.swing.JButton();
-        btnApply = new javax.swing.JButton();
         cboTaxon = new javax.swing.JComboBox();
         lblTaxon = new javax.swing.JLabel();
         lblLocation = new javax.swing.JLabel();
@@ -44,60 +40,43 @@ public class Tree extends javax.swing.JDialog {
         txtLongitude = new javax.swing.JFormattedTextField();
         txtLatitude = new javax.swing.JFormattedTextField();
         btnGPSImport = new javax.swing.JButton();
-        txtSiteSubsiteName = new javax.swing.JTextField();
         txtOriginalTaxon = new javax.swing.JTextField();
         lblOrigTaxon = new javax.swing.JLabel();
-        chkIsLiveTree = new javax.swing.JCheckBox();
+        lblNamePrefix = new javax.swing.JLabel();
+        lblIsALiveTree = new javax.swing.JLabel();
+        cboIsALiveTree = new javax.swing.JComboBox();
+        panelButtons = new javax.swing.JPanel();
+        btnCancel = new javax.swing.JButton();
+        btnApply = new javax.swing.JButton();
+        seperatorButtons = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("New Tree");
 
-        txtTreeName.setText("Name of this tree");
-        txtTreeName.setToolTipText("Name of this tree");
+        txtTreeName.setText("1");
+        txtTreeName.setToolTipText("Laboratory code for tree");
 
-        lblSite.setText("Site / subsite:");
-
+        lblTreeName.setLabelFor(txtTreeName);
         lblTreeName.setText("Tree:");
-
-        btnCancel.setText("Cancel");
-
-        btnApply.setText("Apply");
-
-        org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
-        panelButtons.setLayout(panelButtonsLayout);
-        panelButtonsLayout.setHorizontalGroup(
-            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtonsLayout.createSequentialGroup()
-                .addContainerGap(475, Short.MAX_VALUE)
-                .add(btnApply)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnCancel)
-                .add(5, 5, 5))
-        );
-        panelButtonsLayout.setVerticalGroup(
-            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelButtonsLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnApply)
-                    .add(btnCancel))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
 
         cboTaxon.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Pinus nigra", "Quercus robur" }));
         cboTaxon.setToolTipText("The most detailed taxonomic name for this tree.  This should be a species where possible.");
 
         lblTaxon.setText("Taxon:");
 
+        lblLocation.setLabelFor(panelLocation);
         lblLocation.setText("Location:");
 
         panelLocation.setAlignmentX(0.0F);
         panelLocation.setAlignmentY(0.0F);
 
+        lblLatitude.setLabelFor(txtLatitude);
         lblLatitude.setText("Latitude:");
 
+        lblLongitude.setLabelFor(txtLongitude);
         lblLongitude.setText("Longitude:");
 
+        lblPrecision.setLabelFor(spnPrecision);
         lblPrecision.setText("Precision:");
 
         spnPrecision.setToolTipText("Precision of locality information in meters");
@@ -134,7 +113,7 @@ public class Tree extends javax.swing.JDialog {
                         .add(lblSpinUnits))
                     .add(lblPrecision, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(btnGPSImport, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE))
+                .add(btnGPSImport, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 103, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
         panelLocationLayout.setVerticalGroup(
             panelLocationLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -150,70 +129,93 @@ public class Tree extends javax.swing.JDialog {
                     .add(spnPrecision, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblSpinUnits)
                     .add(btnGPSImport))
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        txtSiteSubsiteName.setEditable(false);
-        txtSiteSubsiteName.setText("ABC - Example site / Main");
-        txtSiteSubsiteName.setToolTipText("Site and subsite name for this tree");
 
         txtOriginalTaxon.setText("Pinus nigra");
         txtOriginalTaxon.setToolTipText("The original identification of this tree");
 
-        lblOrigTaxon.setText("Original identified as:");
+        lblOrigTaxon.setLabelFor(txtOriginalTaxon);
+        lblOrigTaxon.setText("Originally identified as:");
 
-        chkIsLiveTree.setText("is a live tree");
-        chkIsLiveTree.setToolTipText("Is or was this tree live when sampled?");
-        chkIsLiveTree.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chkIsLiveTreeActionPerformed(evt);
-            }
-        });
+        lblNamePrefix.setText("C-ABC-");
+        lblNamePrefix.setToolTipText("Laboratory code prefix for tree");
+
+        lblIsALiveTree.setLabelFor(cboIsALiveTree);
+        lblIsALiveTree.setText("Is a live tree:");
+
+        cboIsALiveTree.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Unspecified", "Yes", "No" }));
+
+        btnCancel.setText("Cancel");
+
+        btnApply.setText("Apply");
+
+        seperatorButtons.setBackground(new java.awt.Color(153, 153, 153));
+        seperatorButtons.setOpaque(true);
+
+        org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
+        panelButtons.setLayout(panelButtonsLayout);
+        panelButtonsLayout.setHorizontalGroup(
+            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtonsLayout.createSequentialGroup()
+                .addContainerGap(450, Short.MAX_VALUE)
+                .add(btnApply)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(btnCancel)
+                .add(5, 5, 5))
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, seperatorButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 611, Short.MAX_VALUE)
+        );
+        panelButtonsLayout.setVerticalGroup(
+            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelButtonsLayout.createSequentialGroup()
+                .add(seperatorButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(btnCancel)
+                    .add(btnApply))
+                .addContainerGap(37, Short.MAX_VALUE))
+        );
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(lblLocation, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(lblSite, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(lblTreeName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(lblTaxon, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(lblOrigTaxon, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(txtTreeName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
-                            .add(txtSiteSubsiteName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)))
+                        .addContainerGap()
+                        .add(lblIsALiveTree))
                     .add(layout.createSequentialGroup()
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                        .add(cboTaxon, 0, 449, Short.MAX_VALUE))
+                        .add(20, 20, 20)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                            .add(lblTreeName)
+                            .add(lblTaxon)
+                            .add(lblOrigTaxon)))
                     .add(layout.createSequentialGroup()
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(chkIsLiveTree)
-                            .add(txtOriginalTaxon, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)))
+                        .addContainerGap()
+                        .add(lblLocation, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 154, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(cboIsALiveTree, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(cboTaxon, 0, 407, Short.MAX_VALUE)
+                    .add(txtOriginalTaxon, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
-                        .add(18, 18, 18)
-                        .add(panelLocation, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .add(lblNamePrefix)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(txtTreeName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE))
+                    .add(panelLocation, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
+            .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblSite)
-                    .add(txtSiteSubsiteName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblTreeName)
+                    .add(lblNamePrefix)
                     .add(txtTreeName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(18, 18, 18)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblTaxon)
                     .add(cboTaxon, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
@@ -222,21 +224,19 @@ public class Tree extends javax.swing.JDialog {
                     .add(lblOrigTaxon)
                     .add(txtOriginalTaxon, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(chkIsLiveTree)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 31, Short.MAX_VALUE)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(lblLocation)
-                    .add(panelLocation, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(lblIsALiveTree)
+                    .add(cboIsALiveTree, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(panelLocation, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblLocation))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void chkIsLiveTreeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkIsLiveTreeActionPerformed
-        // TODO add your handling code here:
-}//GEN-LAST:event_chkIsLiveTreeActionPerformed
     
     /**
      * @param args the command line arguments
@@ -259,24 +259,25 @@ public class Tree extends javax.swing.JDialog {
     private javax.swing.JButton btnApply;
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnGPSImport;
+    private javax.swing.JComboBox cboIsALiveTree;
     private javax.swing.JComboBox cboTaxon;
-    private javax.swing.JCheckBox chkIsLiveTree;
+    private javax.swing.JLabel lblIsALiveTree;
     private javax.swing.JLabel lblLatitude;
     private javax.swing.JLabel lblLocation;
     private javax.swing.JLabel lblLongitude;
+    private javax.swing.JLabel lblNamePrefix;
     private javax.swing.JLabel lblOrigTaxon;
     private javax.swing.JLabel lblPrecision;
-    private javax.swing.JLabel lblSite;
     private javax.swing.JLabel lblSpinUnits;
     private javax.swing.JLabel lblTaxon;
     private javax.swing.JLabel lblTreeName;
     private javax.swing.JPanel panelButtons;
     private javax.swing.JPanel panelLocation;
+    private javax.swing.JSeparator seperatorButtons;
     private javax.swing.JSpinner spnPrecision;
     private javax.swing.JFormattedTextField txtLatitude;
     private javax.swing.JFormattedTextField txtLongitude;
     private javax.swing.JTextField txtOriginalTaxon;
-    private javax.swing.JTextField txtSiteSubsiteName;
     private javax.swing.JTextField txtTreeName;
     // End of variables declaration//GEN-END:variables
     
