@@ -184,7 +184,8 @@ class search
                 }
 
                 // Set parameters on new object and return XML
-                $success = $myReturnObject->setParamsFromDB($row['id'], "brief");
+                $success = $myReturnObject->setParamsFromDB($row['id']);
+                //$success = $myReturnObject->setParamsFromDB($row['id'], "brief");
                 if($success)
                 {
                     $xmldata.=$myReturnObject->asXML();

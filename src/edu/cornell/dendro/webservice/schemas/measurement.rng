@@ -97,6 +97,19 @@
 	                    <data type="boolean" />
 	                </element>
 	            </optional>
+	            
+	            <optional>
+					<element name="operation">
+	            		<text/>
+	            		<optional>
+		            		<attribute name="parameter">
+		            			<text/>
+		            		</attribute>
+	            		</optional>
+	            	</element>
+	            </optional>
+	            
+	            
             
                 <zeroOrMore>
                     <externalRef href="measurementNote.rng"/>
@@ -144,14 +157,6 @@
 
                 <optional>
                     <element name="references">
-	            		<attribute name="operation">
-	            			<text/>
-	            		</attribute>
-	            		<optional>
-		            		<attribute name="parameter">
-		            			<text/>
-		            		</attribute>
-	            		</optional>
                         <oneOrMore>
                             <ref name="measurementObject"/> 
                         </oneOrMore> 

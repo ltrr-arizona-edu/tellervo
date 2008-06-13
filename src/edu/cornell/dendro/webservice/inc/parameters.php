@@ -259,8 +259,8 @@ class measurementParameters extends parameters
         if(isset($this->xmlrequest->isPublished))                $this->isPublished           = fromStringtoPHPBool( $this->xmlrequest->isPublished);
         if(isset($this->xmlrequest->readings['type']))           $this->readingType           = addslashes(          $this->xmlrequest->readings['type']);
         if(isset($this->xmlrequest->readings['units']))          $this->readingUnits          = addslashes(          $this->xmlrequest->readings['units']);
-        if(isset($this->xmlrequest->references['operation']))    $this->vmeasurementOp        = addslashes(          $this->xmlrequest->references['operation']);
-        if(isset($this->xmlrequest->references['parameter']))    $this->vmeasurementOpParam   = addslashes(          $this->xmlrequest->references['parameter']);
+        if(isset($this->xmlrequest->operation))                  $this->vmeasurementOp        = addslashes(          $this->xmlrequest->operation);
+        if(isset($this->xmlrequest->operation['parameter']))     $this->vmeasurementOpParam   = addslashes(          $this->xmlrequest->operation['parameter']);
         
         foreach($this->xmlrequest->xpath('//references/measurement') as $refmeasurement)
         {

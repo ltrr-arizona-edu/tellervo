@@ -127,7 +127,7 @@ helpsectiontitle
     font-weight: bold;
 }
 
-paragraph
+para
 {
     display : block;
     margin: 3px 3px 15px 3px;
@@ -139,13 +139,15 @@ listitem
 {
     clear: both;
     display : block;
+    margin: 3px 3px 3px 3px;
     margin-left:  15px;
 }
 
 listitem:before
 {
     font-weight : bold;
-    content: "• ";
+    content: "- ";
+    text-align : left;
 }
 
 message

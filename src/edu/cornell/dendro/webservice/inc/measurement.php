@@ -126,6 +126,17 @@ class measurement
                 $this->setVMeasurementOp($row2['vmeasurementopid']);
                 $this->setOwnerUserID($row2['owneruserid']);
 
+                if($this->vmeasurementOp=='Index')
+                {
+                    // indexid for a sum
+                    $this->setVMeasurementOpParam($this->getIndexNameFromParamID($row2['vmeasurementopparameter']));
+                }
+                else
+                {
+                    // Year for a redate
+                    $this->setVMeasurementOpParam($row2['vmeasurementopparameter']);
+                }
+
                 if ($format=="full")
                 {
                     $sql = "select readingcount, measurementcount, x(centroid(vmextent)), y(centroid(vmextent)), xmin(vmextent), xmax(vmextent), ymin(vmextent), ymax(vmextent) from tblvmeasurementmetacache where vmeasurementid=".$this->vmeasurementID;
@@ -202,6 +213,7 @@ class measurement
 
     function setReferencesFromDB()
     {
+        //echo "setReferencesFromDB called";
         // Add any vmeasurements that the current measurement has been made from
         global $dbconn;
         
@@ -507,6 +519,10 @@ class measurement
             }
             
         } 
+        elseif($theParam==NULL)
+        {
+            return TRUE;
+        }
         else
         {
             // Shouldn't be here!!
@@ -763,7 +779,6 @@ class measurement
             if(isset($this->name))                  $xml.= "<name>".$this->name."</name>\n";
             if(isset($this->isReconciled))          $xml.= "<isReconciled>".fromPHPtoStringBool($this->isReconciled)."</isReconciled>\n";
             if(isset($this->startYear))             $xml.= "<dateRange year=\"".$this->startYear."\" count=\"".$this->readingCount."\" />\n";
-            if(isset($this->readingCount))          $xml.= "<readingCount>".$this->readingCount."</readingCount>\n";
             if(isset($this->isLegacyCleaned))       $xml.= "<isLegacyCleaned>".fromPHPtoStringBool($this->isLegacyCleaned)."</isLegacyCleaned>\n";
             if(isset($this->measuredByID))          $xml.= "<measuredBy id=\"".$this->measuredByID."\">".$this->measuredBy."</measuredBy>\n";
             if(isset($this->ownerUserID))           $xml.= "<owner id=\"".$this->ownerUserID."\">".$this->owner."</owner>\n";
@@ -772,6 +787,17 @@ class measurement
             if(isset($this->datingErrorNegative))   $xml.= "<datingErrorNegative>".$this->datingErrorNegative."</datingErrorNegative>\n";
             if(isset($this->description))           $xml.= "<description>".$this->description."</description>\n";
             if(isset($this->isPublished))           $xml.= "<isPublished>".fromPHPtoStringBool($this->isPublished)."</isPublished>\n";
+            if(isset($this->vmeasurementOp))
+            {
+                if(isset($this->vmeasurementOpParam))
+                {
+                                                    $xml.= "<operation parameter=\"".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."\">".strtolower($this->vmeasurementOp)."</operation>\n";
+                }
+                else
+                {
+                                                    $xml.= "<operation>".strtolower($this->vmeasurementOp)."</operation>\n";
+                }
+            }
             if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
             if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
             if( (isset($this->minLat)) && (isset($this->minLong)) && (isset($this->maxLat)) && (isset($this->maxLong)))
@@ -832,9 +858,7 @@ class measurement
                     // Decrement recurseLevel if necessary
                     if (is_numeric($recurseLevel))  $recurseLevel=$recurseLevel-1;
 
-                    $xml.="<references";
-                    if(isset($this->vmeasurementOp)) $xml.= " operation=\"".strtolower($this->vmeasurementOp)."\"";
-                    $xml.=">";
+                    $xml.="<references>";
                     foreach($this->referencesArray as $value)
                     {
                         $myReference = new measurement();
@@ -1315,6 +1339,29 @@ class measurement
         // Return true as write to DB went ok.
         return TRUE;
     }
+
+    function getIndexNameFromParamID($paramid)
+    {
+        global $dbconn;
+
+        $sql  = "select indexname from tlkpindextype where indexid='".$paramid."'";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);
+            while ($row = pg_fetch_array($result))
+            {
+                return $row['indexname'];
+            }
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+    }
+
 
 // End of Class
 } 
