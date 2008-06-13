@@ -6,6 +6,7 @@
 
     <define name="measurementObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="measurement">
+    
             <optional>
                 <attribute name="id">
                     <data type="positiveInteger" />
@@ -13,10 +14,31 @@
             </optional>
             
             <optional>
-                <attribute name="url">
-                    <text/>
-                </attribute>
+            	<element name="link">
+
+            		<optional>
+            			<attribute name="parameter">
+            				<text/>
+            			</attribute>
+            		</optional>
+            		
+            		<optional>
+            			<attribute name="object">
+            				<text/>
+            			</attribute>
+            		</optional>            		
+            		
+            		<attribute name="type">
+            			<text/>
+            		</attribute>
+            	
+            		<attribute name="url">
+            			<text/>
+            		</attribute>
+            		<empty/>
+            	</element>
             </optional>
+
                        
             <interleave>
             	<optional>

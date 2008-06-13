@@ -414,8 +414,8 @@ class specimen
             if($style=="full")
             {
                 $xml.= "<specimen ";
-                $xml.= "id=\"".$this->id."\" ";
-                $xml.= "url=\"http://$domain/specimen/".$this->id."\" > ";
+                $xml.= "id=\"".$this->id."\" >";
+                $xml.= getResourceLinkTag("specimen", $this->id)."\n ";
               
                 if(isset($this->name))                         $xml.= "<name>".$this->name."</name>\n";
                 if(isset($this->dateCollected))                 $xml.= "<dateCollected>".$this->dateCollected."</dateCollected>\n";

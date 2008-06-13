@@ -772,8 +772,9 @@ class measurement
         {
             // Only return XML when there are no errors.
             $xml.= "<measurement ";
-            $xml.= "id=\"".$this->vmeasurementID."\" ";
-            $xml.= "url=\"http://$domain/measurement/".$this->vmeasurementID."\">";
+            $xml.= "id=\"".$this->vmeasurementID."\">";
+           
+            $xml.= getResourceLinkTag("measurement", $this->vmeasurementID);
             
             $xml.= "<metadata>\n";
             if(isset($this->name))                  $xml.= "<name>".$this->name."</name>\n";

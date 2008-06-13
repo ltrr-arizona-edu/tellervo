@@ -1,7 +1,6 @@
 <?php
 //*******************************************************************
 ////// PHP Corina Middleware
-////// License: GPL
 ////// Author: Peter Brewer
 ////// E-Mail: p.brewer@cornell.edu
 //////
@@ -226,8 +225,8 @@ class radius
             {
                 // Only return XML when there are no errors.
                 $xml.= "<radius ";
-                $xml.= "id=\"".$this->id."\" ";
-                $xml.= "url=\"http://$domain/radius/".$this->id."\" >\n ";
+                $xml.= "id=\"".$this->id."\" >";
+                $xml.= getResourceLinkTag("radius", $this->id)."\n ";
                 $xml.= "<name>".$this->name."</name>\n";
                 $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
                 $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";

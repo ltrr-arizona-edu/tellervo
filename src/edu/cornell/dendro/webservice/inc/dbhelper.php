@@ -132,4 +132,11 @@ function xmlSpecialCharReplace($xmlrequest)
 
 }
 
+function getResourceLinkTag($object, $id)
+{
+    global $domain;
+    
+    return "<link type=\"corina/xml\" object=\"$object\" parameter=\"$id\" url=\"http://$domain".$_SERVER['REQUEST_URI']."\" />";
+
+}
 ?>

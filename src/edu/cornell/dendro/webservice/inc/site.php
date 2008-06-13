@@ -305,8 +305,8 @@ class site
             {
                 // Only return XML when there are no errors.
                 $xml = "<site ";
-                $xml.= "id=\"".$this->id."\" ";
-                $xml.= "url=\"http://$domain/site/".$this->id."\" >\n ";
+                $xml.= "id=\"".$this->id."\" >";
+                $xml.= getResourceLinkTag("site", $this->id)."\n ";
                 $xml.= "<name>".htmlspecialchars($this->name)."</name>\n";
                 $xml.= "<code>".$this->code."</code>\n";
                 $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";

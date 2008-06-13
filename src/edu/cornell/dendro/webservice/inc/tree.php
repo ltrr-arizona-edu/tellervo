@@ -303,8 +303,8 @@ class tree
 
                 // Only return XML when there are no errors.
                 $xml = "<tree ";
-                $xml.= "id=\"".$this->id."\" ";
-                $xml.= "url=\"http://$domain/tree/".$this->id."\">\n ";
+                $xml.= "id=\"".$this->id."\" >";
+                $xml.= getResourceLinkTag("tree", $this->id)."\n";
                 
                 if(isset($this->name))                  $xml.= "<name>".$this->name."</name>\n";
                 if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".$myTaxon->getLabel()."</validatedTaxon>\n";

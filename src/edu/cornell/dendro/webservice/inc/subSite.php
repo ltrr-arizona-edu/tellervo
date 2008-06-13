@@ -233,8 +233,8 @@ class subSite
             {
                 // Only return XML when there are no errors.
                 $xml = "<subSite ";
-                $xml.= "id=\"".$this->id."\" ";
-                $xml.= "url=\"http://$domain/subSite/".$this->id."\">\n";
+                $xml.= "id=\"".$this->id."\" >";
+                $xml.= getResourceLinkTag("subsite", $this->id)."\n";
                 $xml.= "<name>".$this->name."</name>\n";
                 $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
                 $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>";
