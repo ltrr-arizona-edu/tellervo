@@ -25,38 +25,48 @@ import edu.cornell.dendro.corina.webdbi.*;
 
 public class CorinaWebElement implements SampleLoader {
 	private URI uri;
-	private String sampleID;
-	private String shortName;
+	private ResourceIdentifier resourceIdentifier;
 	
+	/**
+	 * Old way of doing it: parsing a bad URL.
+	 * Perhaps we'll do this again with a GET request
+	 * @deprecated
+	 * @param strUri
+	 * @throws URISyntaxException
+	 */
 	public CorinaWebElement(String strUri) throws URISyntaxException {
 		this.uri = new URI(strUri);
 		
 		String path = uri.getPath();
+		String sampleID = null;
+		
 		if(path.startsWith("/measurement/")) {
 			sampleID = path.substring("/measurement/".length());
-			shortName = "Sample " + sampleID;
+			//shortName = "Sample " + sampleID;
 		}
 		else {
 			new Bug(new Exception("Bad things were passed to CorinaWebElement()!"));
 		}
+		
+		this.resourceIdentifier = new ResourceIdentifier("measurement", sampleID);
+	}
+	
+	public CorinaWebElement(ResourceIdentifier resourceIdentifier) {
+		this.resourceIdentifier = resourceIdentifier;
 	}
 
 	public String getName() {
-		return uri.toString();
+		return resourceIdentifier.toString();
 	}
 
 	public String getShortName() {
-		return shortName;
+		return resourceIdentifier.toString();
 	}
 
 	public Sample load() throws IOException {
-		
-		// create an initial sample
-		ResourceIdentifier loadId = new ResourceIdentifier(sampleID);
-
 		// set up the resource
 		MeasurementResource xf = new MeasurementResource();
-		xf.attachIdentifier(loadId);
+		xf.attachIdentifier(resourceIdentifier);
 		
 		PrototypeLoadDialog dlg = new PrototypeLoadDialog(xf);
 		
@@ -67,8 +77,6 @@ public class CorinaWebElement implements SampleLoader {
 		
 		if(!dlg.isSuccessful())
 			throw new IOException("Failed to load: " + dlg.getFailException());
-		
-		shortName = xf.getObject().getMeta("title").toString() + " [" + sampleID + "]";
 		
 		return xf.getObject();
 	}

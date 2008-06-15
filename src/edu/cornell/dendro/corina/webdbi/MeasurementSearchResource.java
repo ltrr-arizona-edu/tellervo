@@ -10,6 +10,7 @@ import edu.cornell.dendro.corina.formats.CorinaXML;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CachedElement;
+import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
 
@@ -74,19 +75,34 @@ public class MeasurementSearchResource extends ResourceObject<ElementList> {
 			CorinaXML loader = new CorinaXML();
 			
 			for(Element measurement : measurementElements) {
+				// Determine how we link to this element
+				ResourceIdentifier rid = null;
+				List<Element> links = measurement.getChildren("link");
+				for(Element link : links) {
+					String attr = link.getAttributeValue("type");
+					
+					if(attr != null && attr.equalsIgnoreCase("corina/xml")) {
+						rid = ResourceIdentifier.fromCorinaXMLLink(link);
+						break;
+					}
+				}
+				
+				// no resource identifier?
+				if(rid == null) {
+					System.out.println("Resource identifier missing from measurement " +  
+							measurement.getAttributeValue("id"));
+					continue;
+				}
+				
 				try {
 					// load it into a basic sample
 					BaseSample bs = new BaseSample();
 					loader.loadBasicMeasurement(bs, measurement);
 					
-					edu.cornell.dendro.corina.sample.Element tmpElement, cachedElement;
+					edu.cornell.dendro.corina.sample.Element cachedElement;
 
-					// kludge: use the loader by creating a new element.
-					tmpElement = ElementFactory.createElement(
-							(String)bs.getMeta("filename"));
-					
 					// now, assign the loader to our sample
-					bs.setLoader(tmpElement.getLoader());
+					bs.setLoader(new CorinaWebElement(rid));
 					
 					// use that to make a cached element...
 					cachedElement = new CachedElement(bs);

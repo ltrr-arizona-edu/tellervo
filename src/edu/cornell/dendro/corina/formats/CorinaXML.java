@@ -24,6 +24,7 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.sample.*;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,36 +68,33 @@ public class CorinaXML implements Filetype {
 			if(ref.getName().equals("measurement")) {
 				BaseSample bs = new BaseSample();
 				String attr;
-				
-				// load basic information needed for a loader :)
-				/*
-				attr = ref.getAttributeValue("url");
-				if(attr == null) {
-					// should we do anything without an url? I don't think so.
-					continue;
-				}
-
-				System.out.println("Loading measurement element " + attr);
-				*/
-
-				bs.setMeta("filename", attr);
-				bs.setMeta("title", attr); // hopefully we change this later :)
-				
+								
 				// id? is this useful at all?
 				attr = ref.getAttributeValue("id");
 				if(attr != null)
 					bs.setMeta("id", attr);
 
 				// Determine how we link to this element
+				ResourceIdentifier rid = null;
 				List<Element> links = ref.getChildren("link");
 				for(Element link : links) {
 					attr = link.getAttributeValue("type");
 					
 					if(attr != null && attr.equalsIgnoreCase("corina/xml")) {
-						
+						rid = ResourceIdentifier.fromCorinaXMLLink(link);
 						break;
 					}
 				}
+				
+				// no resource identifier?
+				if(rid == null) {
+					System.out.println("Resource identifier missing from measurement " +  
+							ref.getAttributeValue("id"));
+					continue;
+				}
+				
+				bs.setMeta("filename", ":/\\:WEB:/\\:" + rid.toString());
+				bs.setMeta("title", rid.toString());
 				
 				// create an element!
 				Element innerMeta;
@@ -107,14 +105,10 @@ public class CorinaXML implements Filetype {
 					if(s.getElements() == null)
 						s.setElements(new ElementList());
 					
-					edu.cornell.dendro.corina.sample.Element tmpElement, cachedElement;
-
-					// kludge: use the loader by creating a new element.
-					tmpElement = ElementFactory.createElement(
-							(String)bs.getMeta("filename"));
+					edu.cornell.dendro.corina.sample.Element cachedElement;
 					
-					// now, assign the loader to our sample
-					bs.setLoader(tmpElement.getLoader());
+					// set the loader to a link to our element
+					bs.setLoader(new CorinaWebElement(rid));
 					
 					// use that to make a cached element...
 					cachedElement = new CachedElement(bs);
@@ -149,7 +143,7 @@ public class CorinaXML implements Filetype {
 			else if(value != null){
 				// store this anyway?
 				s.setMeta("__:" + key, value);
-				System.out.println("Unknown Metadata for " + s + ": " + key + " -> " + value);
+				System.out.println("Unknown Metadata: " + key + " -> " + value);
 			}
 		}
 	}
@@ -230,18 +224,23 @@ public class CorinaXML implements Filetype {
 	
 	public void loadBasicMeasurement(BaseSample s, Element root) throws IOException {
 		String attr;
-		
+				
+		// id? is this useful at all?
+		attr = root.getAttributeValue("id");
+		if(attr != null)
+			s.setMeta("id", attr);
+
+		/*
 		// load basic information needed for a loader :)
 		attr = root.getAttributeValue("url");
 		if(attr == null)
 			throw new WrongFiletypeException("No URL in measurement!");
 		s.setMeta("filename", attr);
 		s.setMeta("title", attr); // hopefully we change this later :)
+		*/
 		
-		// id? is this useful at all?
-		attr = root.getAttributeValue("id");
-		if(attr != null)
-			s.setMeta("id", attr);
+		s.setMeta("filename", "invalid filename");
+		s.setMeta("title", "measurement " + attr);
 		
 		// load metadata
 		Element metadata = root.getChild("metadata");		

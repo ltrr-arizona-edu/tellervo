@@ -1,5 +1,8 @@
 package edu.cornell.dendro.corina.webdbi;
 
+import java.util.List;
+
+import org.jdom.Attribute;
 import org.jdom.Element;
 
 /**
@@ -9,24 +12,52 @@ import org.jdom.Element;
  * @author lucasm
  */
 
-public class ResourceIdentifier {
-	private String xmlAttribute;
-	private String xmlAttributeValue;
-	
-	public ResourceIdentifier(String xmlAttribute, String xmlAttributeValue) {
-		this.xmlAttribute = xmlAttribute;
-		this.xmlAttributeValue = xmlAttributeValue;
-	}
-	
-	public ResourceIdentifier(String xmlAttributeValue) {
-		this("id", xmlAttributeValue);
+public class ResourceIdentifier extends org.jdom.Element {
+	/**
+	 * Create a resource with no attributes
+	 * @param xmlResourceName
+	 */
+	public ResourceIdentifier(String xmlResourceName) {
+		super(xmlResourceName);
 	}
 
-	public void AttachIdentifier(Element xmlElement) {
-		xmlElement.setAttribute(xmlAttribute, xmlAttributeValue);
+	/**
+	 * Create resource with an id attribute, set to the id parameter's value
+	 * @param xmlResourceName
+	 * @param id
+	 */
+	public ResourceIdentifier(String xmlResourceName, String id) {
+		super(xmlResourceName);
+		
+		setAttribute("id", id);
 	}
 	
-	public String toString() {
-		return xmlAttribute + "=\"" + xmlAttributeValue + "\"";
+	public static ResourceIdentifier fromCorinaXMLLink(Element xmlLink) {
+		/*
+		 * We get something like this:
+		 * <link type="corina/xml" url="https://www.blah.com/blah.php" object="measurement" id="xxx" /> 
+		 */
+		
+		String objtype = xmlLink.getAttributeValue("object");
+		if(objtype == null)
+			throw new IllegalArgumentException("Corina XML element is missing an object type");
+		
+		ResourceIdentifier rid = new ResourceIdentifier(objtype);
+		List<Attribute> attributes = xmlLink.getAttributes();
+		
+		// add any other attributes (skipping type, object, url)
+		for(Attribute attr : attributes) {
+			String attrname = attr.getName();
+			
+			if(attrname.equalsIgnoreCase("type") ||
+			   attrname.equalsIgnoreCase("object") ||
+			   attrname.equalsIgnoreCase("url"))
+				continue;
+			
+			rid.setAttribute(attr.getName(), attr.getValue());
+		}
+		
+		return rid;
 	}
+
 }

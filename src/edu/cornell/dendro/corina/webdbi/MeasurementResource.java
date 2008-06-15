@@ -64,9 +64,7 @@ public class MeasurementResource extends ResourceObject<Sample> {
 			if(ri == null)
 				throw new ResourceException("No identifier specified for read/delete");
 			
-			Element measurementElement = new Element("measurement");
-			ri.AttachIdentifier(measurementElement);
-			requestElement.addContent(measurementElement);
+			requestElement.addContent(ri);
 			
 			break;
 
