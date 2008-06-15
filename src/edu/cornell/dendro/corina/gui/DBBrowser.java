@@ -18,6 +18,8 @@ import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.site.Site;
 import edu.cornell.dendro.corina.webdbi.MeasurementSearchResource;
 import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
+import edu.cornell.dendro.corina.webdbi.ResourceEvent;
+import edu.cornell.dendro.corina.webdbi.ResourceEventListener;
 
 public class DBBrowser extends javax.swing.JDialog {
     /** A return status code - returned if Cancel button has been pressed */
@@ -35,6 +37,14 @@ public class DBBrowser extends javax.swing.JDialog {
         selectedElements = new ElementList();
         
         populateComponents();
+        
+        // Whenever the site list changes, make sure we repopulate our site list
+        App.sites.addResourceEventListener(new ResourceEventListener() {
+        	public void resourceChanged(ResourceEvent re) {	
+        		if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE)
+        			populateSiteList();
+        	}
+        });
     }
 
     private void populateComponents() {

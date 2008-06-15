@@ -66,10 +66,10 @@ public class CorinaXML implements Filetype {
 		for(Element ref : references) {
 			if(ref.getName().equals("measurement")) {
 				BaseSample bs = new BaseSample();
-				Element innerMeta;
 				String attr;
 				
 				// load basic information needed for a loader :)
+				/*
 				attr = ref.getAttributeValue("url");
 				if(attr == null) {
 					// should we do anything without an url? I don't think so.
@@ -77,6 +77,7 @@ public class CorinaXML implements Filetype {
 				}
 
 				System.out.println("Loading measurement element " + attr);
+				*/
 
 				bs.setMeta("filename", attr);
 				bs.setMeta("title", attr); // hopefully we change this later :)
@@ -85,8 +86,20 @@ public class CorinaXML implements Filetype {
 				attr = ref.getAttributeValue("id");
 				if(attr != null)
 					bs.setMeta("id", attr);
+
+				// Determine how we link to this element
+				List<Element> links = ref.getChildren("link");
+				for(Element link : links) {
+					attr = link.getAttributeValue("type");
+					
+					if(attr != null && attr.equalsIgnoreCase("corina/xml")) {
+						
+						break;
+					}
+				}
 				
 				// create an element!
+				Element innerMeta;
 				if((innerMeta = ref.getChild("metadata")) != null) {
 					loadMetadata(bs, innerMeta);
 					

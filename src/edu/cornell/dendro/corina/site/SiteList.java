@@ -101,8 +101,6 @@ public class SiteList extends CachedResource {
 			newsites.add(site);
 		}
 
-		System.out.println("Sites: " + newsites.size());
-		
 		// set our current list to our new list; discard the old list
 		sites = newsites;
 		
@@ -110,7 +108,6 @@ public class SiteList extends CachedResource {
 	}
 	
 	public List<Site> getSites() {
-		System.out.println("Getsites: " + sites.size());
 		return sites;
 	}
 
