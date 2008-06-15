@@ -10,10 +10,10 @@ package edu.cornell.dendro.corina.gui.newui;
  *
  * @author  peterbrewer
  */
-public class Specimen extends javax.swing.JDialog {
+public class SpecimenDialog extends javax.swing.JDialog {
     
     /** Creates new form Specimen */
-    public Specimen(java.awt.Frame parent, boolean modal) {
+    public SpecimenDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
@@ -415,7 +415,7 @@ public class Specimen extends javax.swing.JDialog {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Specimen dialog = new Specimen(new javax.swing.JFrame(), true);
+                SpecimenDialog dialog = new SpecimenDialog(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);

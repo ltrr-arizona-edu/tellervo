@@ -30,6 +30,9 @@ import edu.cornell.dendro.corina.gui.PrintableDocument;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
+import edu.cornell.dendro.corina.gui.newui.CreateSample;
+import edu.cornell.dendro.corina.gui.newui.CreateSampleDialog;
+import edu.cornell.dendro.corina.gui.newui.SiteDialog;
 import edu.cornell.dendro.corina.manip.Sum;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
@@ -166,7 +169,8 @@ public class FileMenu extends JMenu {
 		add(sites);
 
 		// db stuff
-		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()"));
+		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()"));		
+		add(Builder.makeMenuItem("new", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()"));
 		
 		// open, browse
 		add(Builder.makeMenuItem("open...", "edu.cornell.dendro.corina.gui.menus.FileMenu.open()"));
@@ -256,6 +260,12 @@ public class FileMenu extends JMenu {
 				new Editor(s);
 			}
 		}
+	}
+	
+	public static void newdb() {
+		CreateSampleDialog sampleDialog = new CreateSampleDialog((JFrame)null, false, null);
+		
+		sampleDialog.setVisible(true);
 	}
 
 	// ask the user for a list of files to open

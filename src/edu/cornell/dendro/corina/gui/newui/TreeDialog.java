@@ -10,10 +10,10 @@ package edu.cornell.dendro.corina.gui.newui;
  *
  * @author  peterbrewer
  */
-public class Tree extends javax.swing.JDialog {
+public class TreeDialog extends javax.swing.JDialog {
     
     /** Creates new form NewSite */
-    public Tree(java.awt.Frame parent, boolean modal) {
+    public TreeDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
@@ -244,7 +244,7 @@ public class Tree extends javax.swing.JDialog {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Tree dialog = new Tree(new javax.swing.JFrame(), true);
+                TreeDialog dialog = new TreeDialog(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);

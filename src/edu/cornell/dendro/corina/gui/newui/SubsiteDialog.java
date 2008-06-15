@@ -10,10 +10,10 @@ package edu.cornell.dendro.corina.gui.newui;
  *
  * @author  peterbrewer
  */
-public class Subsite extends javax.swing.JDialog {
+public class SubsiteDialog extends javax.swing.JDialog {
     
     /** Creates new form Subsite */
-    public Subsite(java.awt.Frame parent, boolean modal) {
+    public SubsiteDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
@@ -121,7 +121,7 @@ public class Subsite extends javax.swing.JDialog {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Subsite dialog = new Subsite(new javax.swing.JFrame(), true);
+                SubsiteDialog dialog = new SubsiteDialog(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);

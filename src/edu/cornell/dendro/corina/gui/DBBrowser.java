@@ -4,6 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.ListSelectionModel;
@@ -16,6 +17,7 @@ import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.MeasurementSearchResource;
 import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
 import edu.cornell.dendro.corina.webdbi.ResourceEvent;
@@ -37,6 +39,7 @@ public class DBBrowser extends javax.swing.JDialog {
         selectedElements = new ElementList();
         
         populateComponents();
+        Center.center(this);
         
         // Whenever the site list changes, make sure we repopulate our site list
         App.sites.addResourceEventListener(new ResourceEventListener() {
@@ -196,7 +199,7 @@ public class DBBrowser extends javax.swing.JDialog {
     }
   
     private void populateSiteList() {
-    	List<Site> sites = App.sites.getSites();
+    	Collection<Site> sites = App.sites.getSites();
     	SiteRegion region = (SiteRegion) cboBrowseBy.getSelectedItem();
     	Site selectedSite = (Site) lstSites.getSelectedValue();
 

@@ -10,10 +10,10 @@ package edu.cornell.dendro.corina.gui.newui;
  *
  * @author  peterbrewer
  */
-public class Site extends javax.swing.JDialog {
+public class RadiusDialog extends javax.swing.JDialog {
     
     /** Creates new form Site */
-    public Site(java.awt.Frame parent, boolean modal) {
+    public RadiusDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
@@ -26,28 +26,23 @@ public class Site extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        cboSiteCode = new javax.swing.JComboBox();
-        txtSiteName = new javax.swing.JTextField();
-        lblSiteCode = new javax.swing.JLabel();
-        lblSiteName = new javax.swing.JLabel();
+        txtRadiusName = new javax.swing.JTextField();
+        lblRadiusName = new javax.swing.JLabel();
+        lblNamePrefix = new javax.swing.JLabel();
         panelButtons = new javax.swing.JPanel();
         btnCancel = new javax.swing.JButton();
         btnApply = new javax.swing.JButton();
         seperatorButtons = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("New Site");
+        setTitle("Radius details");
 
-        cboSiteCode.setEditable(true);
-        cboSiteCode.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ABC" }));
-        cboSiteCode.setToolTipText("Code name for this site");
+        txtRadiusName.setText("Name of this site");
+        txtRadiusName.setToolTipText("Name of this site");
 
-        txtSiteName.setText("Name of this site");
-        txtSiteName.setToolTipText("Name of this site");
+        lblRadiusName.setText("Radius:");
 
-        lblSiteCode.setText("Site code:");
-
-        lblSiteName.setText("Site name:");
+        lblNamePrefix.setText("C-ABC-1-1-");
 
         btnCancel.setText("Cancel");
 
@@ -61,12 +56,12 @@ public class Site extends javax.swing.JDialog {
         panelButtonsLayout.setHorizontalGroup(
             panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtonsLayout.createSequentialGroup()
-                .addContainerGap(239, Short.MAX_VALUE)
+                .addContainerGap(256, Short.MAX_VALUE)
                 .add(btnApply)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnCancel)
                 .add(5, 5, 5))
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, seperatorButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, seperatorButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)
         );
         panelButtonsLayout.setVerticalGroup(
             panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -76,7 +71,7 @@ public class Site extends javax.swing.JDialog {
                 .add(panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(btnCancel)
                     .add(btnApply))
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
@@ -85,27 +80,22 @@ public class Site extends javax.swing.JDialog {
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(lblSiteName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(lblSiteCode, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE))
+                .add(lblRadiusName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 65, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(48, 48, 48)
+                .add(lblNamePrefix, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(cboSiteCode, 0, 285, Short.MAX_VALUE)
-                    .add(txtSiteName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE))
+                .add(txtRadiusName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 172, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblSiteCode)
-                    .add(cboSiteCode, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblSiteName)
-                    .add(txtSiteName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(lblRadiusName)
+                    .add(lblNamePrefix)
+                    .add(txtRadiusName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -119,7 +109,7 @@ public class Site extends javax.swing.JDialog {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Site dialog = new Site(new javax.swing.JFrame(), true);
+                RadiusDialog dialog = new RadiusDialog(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);
@@ -133,12 +123,11 @@ public class Site extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnApply;
     private javax.swing.JButton btnCancel;
-    private javax.swing.JComboBox cboSiteCode;
-    private javax.swing.JLabel lblSiteCode;
-    private javax.swing.JLabel lblSiteName;
+    private javax.swing.JLabel lblNamePrefix;
+    private javax.swing.JLabel lblRadiusName;
     private javax.swing.JPanel panelButtons;
     private javax.swing.JSeparator seperatorButtons;
-    private javax.swing.JTextField txtSiteName;
+    private javax.swing.JTextField txtRadiusName;
     // End of variables declaration//GEN-END:variables
     
 }

@@ -4,8 +4,10 @@
 package edu.cornell.dendro.corina.site;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TreeMap;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -66,7 +68,7 @@ public class SiteList extends CachedResource {
 				
 		List<?> data = dataElement.getChildren("site");
 		Iterator<?> itr = data.iterator();
-		List<Site> newsites = new ArrayList<Site>();
+		TreeMap<String, Site> newsites = new TreeMap<String, Site>();
 		
 		while(itr.hasNext()) {
 			Element se = (Element) itr.next();
@@ -98,18 +100,42 @@ public class SiteList extends CachedResource {
 				site.setRegion(val, child.getText());
 			}
 			
-			newsites.add(site);
+			// now, get any subsites
+			child = se.getChild("references");
+			if(child != null) {
+				List<Element> subsites = child.getChildren("subSite");
+				
+				for(Element ss : subsites) {
+					id = ss.getAttributeValue("id");
+					name = ss.getChildText("name");
+					
+					if(id == null || name == null) {
+						System.out.println("Subsite missing an id or name??");
+						continue;
+					}
+					
+					// add our subsite
+					site.addSubsite(new Subsite(id, name));
+				}
+			}
+
+			// sort the subsites alphabetically
+			site.sortSubsites();
+
+			// finally, add the site to our map
+			newsites.put(site.getCode(), site);
+			
 		}
 
 		// set our current list to our new list; discard the old list
-		sites = newsites;
+		siteMap = newsites;
 		
 		return true;
 	}
 	
-	public List<Site> getSites() {
-		return sites;
+	public Collection<Site> getSites() {
+		return siteMap.values();
 	}
-
-	private List<Site> sites;
+	
+	private TreeMap<String, Site> siteMap;
 }
