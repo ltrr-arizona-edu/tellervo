@@ -22,10 +22,18 @@ import javax.swing.JComboBox;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.SiteRegion;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.site.GenericIntermediateObject;
+import edu.cornell.dendro.corina.site.Radius;
 import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.Specimen;
 import edu.cornell.dendro.corina.site.Subsite;
+import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.webdbi.IntermediateResource;
+import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
 import edu.cornell.dendro.corina.webdbi.ResourceEvent;
 import edu.cornell.dendro.corina.webdbi.ResourceEventListener;
+import edu.cornell.dendro.corina.webdbi.SearchParameters;
 
 /**
  *
@@ -66,15 +74,15 @@ public class CreateSample extends javax.swing.JPanel {
         		JComboBox src = (JComboBox) ie.getSource();        		
         		Object o = src.getSelectedItem();
         		
+        		disableBoxes(1);
+        		updateLabel();
         		if(!(o instanceof Site)) {
-        			disableBoxes(1);
         			return;
         		}
         		
         		Site s = (Site) o;
+        		cboSubsite.setModel(emptyBoxModel);
         		populateSubsites(s.getSubsites());
-        		
-        		disableBoxes(2);
         	}
         });
 
@@ -86,16 +94,77 @@ public class CreateSample extends javax.swing.JPanel {
         		
         		JComboBox src = (JComboBox) ie.getSource();        		
         		Object o = src.getSelectedItem();
-        		
+
+        		disableBoxes(2);
+        		updateLabel();
         		if(!(o instanceof Subsite)) {
-        			disableBoxes(2);
         			return;
         		}
-        		        		
-        		disableBoxes(3);
+        		
+        		Subsite s = (Subsite) o;
+        		populateTrees(s.getID());
         	}
         });
-}
+
+        // TREE listener
+        cboTree.addItemListener(new ItemListener() {
+        	public void itemStateChanged(ItemEvent ie) {
+        		if(ie.getStateChange() != ItemEvent.SELECTED)
+        			return;
+        		
+        		JComboBox src = (JComboBox) ie.getSource();        		
+        		Object o = src.getSelectedItem();
+
+        		disableBoxes(3);
+        		updateLabel();
+        		if(!(o instanceof Tree)) {
+        			return;
+        		}
+        		
+        		Tree t = (Tree) o;
+        		populateSpecimens(t.getID());
+        	}
+        });
+        
+        // SPECIMEN listener
+        cboSpecimen.addItemListener(new ItemListener() {
+        	public void itemStateChanged(ItemEvent ie) {
+        		if(ie.getStateChange() != ItemEvent.SELECTED)
+        			return;
+        		
+        		JComboBox src = (JComboBox) ie.getSource();        		
+        		Object o = src.getSelectedItem();
+
+        		disableBoxes(4);
+        		updateLabel();
+        		if(!(o instanceof Specimen)) {
+        			return;
+        		}
+        		
+        		Specimen s = (Specimen) o;
+        		populateRadii(s.getID());
+        	}
+        });
+        
+        // RADIUS listener
+        cboRadius.addItemListener(new ItemListener() {
+        	public void itemStateChanged(ItemEvent ie) {
+        		if(ie.getStateChange() != ItemEvent.SELECTED)
+        			return;
+        		
+        		JComboBox src = (JComboBox) ie.getSource();        		
+        		Object o = src.getSelectedItem();
+
+        		disableBoxes(5);
+        		updateLabel();
+        		if(!(o instanceof Radius)) {
+        			return;
+        		}
+        		
+        		btnOk.setEnabled(true);
+        	}
+        });
+    }
     
     // nothing to see here...
     private final static DefaultComboBoxModel emptyBoxModel = new DefaultComboBoxModel(new String[] { "----" });
@@ -120,6 +189,59 @@ public class CreateSample extends javax.swing.JPanel {
     	default:
     		btnOk.setEnabled(false);
     	}
+    }
+    
+    private void updateLabel() {
+    	StringBuffer sb = new StringBuffer();
+    	Object o;
+    	
+    	sb.append("C-");
+    	do {
+    		o = cboSite.getSelectedItem();
+    		if((o != null) && (o instanceof Site)) {
+    			sb.append(((Site)o).getCode());
+    		}
+    		else
+    			break;
+
+    		o = cboSubsite.getSelectedItem();
+    		if((o != null) && (o instanceof Subsite)) {
+    			Subsite ss = (Subsite) o;
+    			if(!ss.toString().equalsIgnoreCase("main")) {
+    				sb.append("/");
+    				sb.append(ss);
+    			}
+    			sb.append("-");
+    		}
+    		else
+    			break;
+    		
+    		o = cboTree.getSelectedItem();
+    		if((o != null) && (o instanceof Tree)) {
+    			sb.append(o);
+    			sb.append("-");
+    		}
+    		else
+    			break;
+
+    		o = cboSpecimen.getSelectedItem();
+    		if((o != null) && (o instanceof Specimen)) {
+    			sb.append(o);
+    			sb.append("-");
+    		}
+    		else
+    			break;
+    		
+    		o = cboRadius.getSelectedItem();
+    		if((o != null) && (o instanceof Radius)) {
+    			sb.append(o);
+    		}
+    		else
+    			break;
+    	}
+    	while(false);
+    	
+    	lblCodeName.setText(sb.toString());
     }
     
     /**
@@ -174,7 +296,7 @@ public class CreateSample extends javax.swing.JPanel {
     	// we have to compare sites. blurgh.
     	if(selectedSubsite != null) {
     		for(int i = 0; i < cboSubsite.getModel().getSize(); i++) {
-    			if(((Site)cboSubsite.getModel().getElementAt(i)).equals(selectedSubsite)) {
+    			if(((Subsite)cboSubsite.getModel().getElementAt(i)).equals(selectedSubsite)) {
     				cboSubsite.setSelectedIndex(i);
     				break;
     			}
@@ -183,6 +305,70 @@ public class CreateSample extends javax.swing.JPanel {
     	
     	cboSubsite.setEnabled(true);
     }
+    
+    private void populateTrees(String parentID) {
+		SearchParameters sp = new SearchParameters("tree");
+		sp.addSearchConstraint("subsiteid", "=", parentID);
+		
+		IntermediateResource resource = new IntermediateResource(sp);
+		PrototypeLoadDialog dlg = new PrototypeLoadDialog(resource);
+		
+		resource.query();
+		dlg.setVisible(true);
+		
+		if(!dlg.isSuccessful()) {
+			Alert.error("Could not load trees", 
+					"An error occured while acquiring a tree list: " + dlg.getFailException());
+			return;
+		}
+
+    	Object[] treeList = formulateArrayFromCollection(resource.getObject(), "Choose a tree");
+    	cboTree.setModel(new DefaultComboBoxModel(treeList));		
+    	cboTree.setEnabled(true);
+    }
+
+    private void populateSpecimens(String parentID) {
+		SearchParameters sp = new SearchParameters("specimen");
+		sp.addSearchConstraint("treeid", "=", parentID);
+		
+		IntermediateResource resource = new IntermediateResource(sp);
+		PrototypeLoadDialog dlg = new PrototypeLoadDialog(resource);
+		
+		resource.query();
+		dlg.setVisible(true);
+		
+		if(!dlg.isSuccessful()) {
+			Alert.error("Could not load specimens", 
+					"An error occured while acquiring a specimen list: " + dlg.getFailException());
+			return;
+		}
+
+    	Object[] specimenList = formulateArrayFromCollection(resource.getObject(), "Choose a specimen");
+    	cboSpecimen.setModel(new DefaultComboBoxModel(specimenList));		
+    	cboSpecimen.setEnabled(true);
+    }
+
+    private void populateRadii(String parentID) {
+		SearchParameters sp = new SearchParameters("radius");
+		sp.addSearchConstraint("specimenid", "=", parentID);
+		
+		IntermediateResource resource = new IntermediateResource(sp);
+		PrototypeLoadDialog dlg = new PrototypeLoadDialog(resource);
+		
+		resource.query();
+		dlg.setVisible(true);
+		
+		if(!dlg.isSuccessful()) {
+			Alert.error("Could not load radii", 
+					"An error occured while acquiring a radius list: " + dlg.getFailException());
+			return;
+		}
+
+    	Object[] radiusList = formulateArrayFromCollection(resource.getObject(), "Choose a radius");
+    	cboRadius.setModel(new DefaultComboBoxModel(radiusList));		
+    	cboRadius.setEnabled(true);
+    }
+
     
     /** This method is called from within the constructor to
      * initialize the form.

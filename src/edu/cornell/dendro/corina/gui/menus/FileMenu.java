@@ -169,8 +169,10 @@ public class FileMenu extends JMenu {
 		add(sites);
 
 		// db stuff
+		addSeparator();
 		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()"));		
-		add(Builder.makeMenuItem("new", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()"));
+		add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()"));
+		addSeparator();
 		
 		// open, browse
 		add(Builder.makeMenuItem("open...", "edu.cornell.dendro.corina.gui.menus.FileMenu.open()"));

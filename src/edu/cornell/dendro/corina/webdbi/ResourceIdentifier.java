@@ -60,4 +60,20 @@ public class ResourceIdentifier extends org.jdom.Element {
 		return rid;
 	}
 
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		int attrs = 0;
+		
+		sb.append(getName());
+		
+		List<Attribute> attributes = getAttributes();
+		for(Attribute attr : attributes) {
+			sb.append(attrs == 0 ? " " : ", ");
+			sb.append(attr.getName());
+			sb.append("=");
+			sb.append(attr.getValue());
+		}
+		
+		return sb.toString();
+	}
 }

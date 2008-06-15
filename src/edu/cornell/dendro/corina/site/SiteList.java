@@ -106,16 +106,11 @@ public class SiteList extends CachedResource {
 				List<Element> subsites = child.getChildren("subSite");
 				
 				for(Element ss : subsites) {
-					id = ss.getAttributeValue("id");
-					name = ss.getChildText("name");
-					
-					if(id == null || name == null) {
-						System.out.println("Subsite missing an id or name??");
-						continue;
-					}
-					
+					Subsite subsite = Subsite.xmlToSubsite(ss);
+
 					// add our subsite
-					site.addSubsite(new Subsite(id, name));
+					if(subsite != null)
+						site.addSubsite(subsite);
 				}
 			}
 
