@@ -6,6 +6,25 @@
 
 package edu.cornell.dendro.corina.gui.newui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
+
+import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.webdbi.IntermediateResource;
+import edu.cornell.dendro.corina.webdbi.MeasurementResource;
+import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
+
 /**
  *
  * @author  peterbrewer
@@ -13,9 +32,137 @@ package edu.cornell.dendro.corina.gui.newui;
 public class SiteDialog extends javax.swing.JDialog {
     
     /** Creates new form Site */
-    public SiteDialog(java.awt.Frame parent, boolean modal) {
+    public SiteDialog(java.awt.Dialog parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        
+        initialize();
+        Center.center(this);
+    }
+    
+    private boolean succeeded = false;
+    
+    private void initialize() {
+    	
+    	// forced formatting on the site code box
+    	txtSiteCode.addKeyListener(new KeyAdapter() {
+    		public void keyTyped(KeyEvent ke) {
+    			char k = ke.getKeyChar();
+    			
+    			// don't allow any whitespace
+    			if(Character.isWhitespace(k)) {
+    				ke.setKeyChar((char) KeyEvent.VK_CLEAR);
+    				return;
+    			}
+    			
+    			// force uppercase
+    			ke.setKeyChar(Character.toUpperCase(k));
+    		}
+    	});
+    	
+    	// When the code is changed, listen and ensure length
+    	// We use this as one condition to allow the Apply button to be enabled
+    	txtSiteCode.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				// hello stupid bug.. this isn't used on JTextFields for some awful reason
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				validateButtons();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				validateButtons();
+			}
+		});
+
+    	// When the name is changed, listen and ensure length and not defaults!
+    	// We use this as the second condition to allow the Apply button to be enabled
+    	txtSiteName.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				validateButtons();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				validateButtons();
+			}
+		});
+    	
+    	// on focus, select all (for nice tabbing)
+    	txtSiteName.addFocusListener(new FocusAdapter() {
+    		public void focusGained(FocusEvent fe) {
+    			txtSiteName.selectAll();
+    		}
+    	});
+    	
+    	// on focus, select all (for nice tabbing) #2
+    	txtSiteCode.addFocusListener(new FocusAdapter() {
+    		public void focusGained(FocusEvent fe) {
+    			txtSiteCode.selectAll();
+    		}
+    	});
+
+    	// apply button
+    	btnApply.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			commit();
+    		}
+    	});
+    	getRootPane().setDefaultButton(btnApply);
+    	btnApply.setEnabled(false);
+    	
+    	// cancel button
+    	btnCancel.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			succeeded = false;
+    			dispose();
+    		}
+    	});
+    }
+
+    private void commit() {
+    	Site site = new Site(Site.ID_NEW, txtSiteName.getText(), txtSiteCode.getText());
+    	IntermediateResource ir = new IntermediateResource((Site) null, site);
+		PrototypeLoadDialog dlg = new PrototypeLoadDialog(ir);
+		
+		// start our query (remotely)
+		ir.query();		
+		
+		dlg.setVisible(true);
+		
+		if(!dlg.isSuccessful()) {
+			JOptionPane.showMessageDialog(this, "Could not create: " + dlg.getFailException(), 
+					"Failed to create", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+    	succeeded = true;
+    	dispose();
+    }
+    
+    private void validateButtons() {
+    	boolean codeOk, nameOk;
+		int len;
+		
+		// first, site code
+		len = txtSiteCode.getText().length();
+		if(len > 1)
+			codeOk = true;
+		else
+			codeOk = false;
+		
+		// then, site name
+		len = txtSiteName.getText().length();
+
+		if(len > 2 && !txtSiteName.getText().equals("Name of this site"))
+			nameOk = true;
+		else
+			nameOk = false;
+		
+		btnApply.setEnabled(codeOk && nameOk);
     }
     
     /** This method is called from within the constructor to
@@ -26,7 +173,7 @@ public class SiteDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        cboSiteCode = new javax.swing.JComboBox();
+        txtSiteCode = new javax.swing.JTextField();
         txtSiteName = new javax.swing.JTextField();
         lblSiteCode = new javax.swing.JLabel();
         lblSiteName = new javax.swing.JLabel();
@@ -38,9 +185,8 @@ public class SiteDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("New Site");
 
-        cboSiteCode.setEditable(true);
-        cboSiteCode.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ABC" }));
-        cboSiteCode.setToolTipText("Code name for this site");
+        txtSiteName.setText("");
+        txtSiteCode.setToolTipText("Code name for this site");
 
         txtSiteName.setText("Name of this site");
         txtSiteName.setToolTipText("Name of this site");
@@ -90,7 +236,7 @@ public class SiteDialog extends javax.swing.JDialog {
                     .add(lblSiteCode, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(cboSiteCode, 0, 285, Short.MAX_VALUE)
+                    .add(txtSiteCode, 0, 285, Short.MAX_VALUE)
                     .add(txtSiteName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE))
                 .addContainerGap())
             .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -101,7 +247,7 @@ public class SiteDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblSiteCode)
-                    .add(cboSiteCode, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(txtSiteCode, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblSiteName)
@@ -116,10 +262,10 @@ public class SiteDialog extends javax.swing.JDialog {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void zzzmain(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                SiteDialog dialog = new SiteDialog(new javax.swing.JFrame(), true);
+                SiteDialog dialog = new SiteDialog(new javax.swing.JDialog(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);
@@ -133,7 +279,7 @@ public class SiteDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnApply;
     private javax.swing.JButton btnCancel;
-    private javax.swing.JComboBox cboSiteCode;
+    private javax.swing.JTextField txtSiteCode;
     private javax.swing.JLabel lblSiteCode;
     private javax.swing.JLabel lblSiteName;
     private javax.swing.JPanel panelButtons;

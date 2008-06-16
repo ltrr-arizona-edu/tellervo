@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.SiteRegion;
@@ -40,9 +41,11 @@ import edu.cornell.dendro.corina.webdbi.SearchParameters;
  * @author  peterbrewer
  */
 public class CreateSample extends javax.swing.JPanel {
+	private JDialog parent;
     
     /** Creates new form CreateSample */
-    public CreateSample() {
+    public CreateSample(JDialog parent) {
+    	this.parent = parent;
         initComponents();
     }
     
@@ -64,7 +67,55 @@ public class CreateSample extends javax.swing.JPanel {
         	// TODO: Implement this
         	// It's complicated, because we have to get a bunch of lists first!
         }
-
+        setupBoxes();
+        setupButtons();
+    }
+    
+    public void setupButtons() {
+    	btnNewSite.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			SiteDialog sd = new SiteDialog(parent, true);
+    			
+    			sd.setVisible(true);
+    			
+    			//TODO: Success?
+    		}
+    	});
+    	
+    	btnNewSubsite.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			Site site = (Site) cboSite.getSelectedItem();
+    			SubsiteDialog sd = new SubsiteDialog(parent, true, site);
+    			
+    			sd.setVisible(true);
+    			
+    			// add and autoselect...
+    			if(sd.didSucceed()) {
+    				populateSubsites(site.getSubsites());
+    				cboSubsite.setSelectedItem(sd.getNewSubsite());
+    			}
+    		}
+    	});
+    	
+    	btnNewTree.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			Subsite subsite = (Subsite) cboSubsite.getSelectedItem();
+    			TreeDialog td = new TreeDialog(parent, true, getLabel(), subsite);
+    			
+    			td.setVisible(true);
+    			
+    			// add and autoselect...
+    			/*
+    			if(sd.didSucceed()) {
+    				populateSubsites(site.getSubsites());
+    				cboSubsite.setSelectedItem(sd.getNewSubsite());
+    			}
+    			*/
+    		}
+    	});
+    }
+    
+    public void setupBoxes() {
         // SITE listener
         cboSite.addItemListener(new ItemListener() {
         	public void itemStateChanged(ItemEvent ie) {
@@ -176,15 +227,19 @@ public class CreateSample extends javax.swing.JPanel {
     	case 1:
     		cboSubsite.setModel(emptyBoxModel);
     		cboSubsite.setEnabled(false);
+    		btnNewSubsite.setEnabled(false);
     	case 2:
     		cboTree.setModel(emptyBoxModel);
     		cboTree.setEnabled(false);
+    		btnNewTree.setEnabled(false);
     	case 3:
     		cboSpecimen.setModel(emptyBoxModel);
     		cboSpecimen.setEnabled(false);
+    		btnNewSpecimen.setEnabled(false);
     	case 4:
     		cboRadius.setModel(emptyBoxModel);
     		cboRadius.setEnabled(false);
+    		btnNewRadius.setEnabled(false);
     		
     	default:
     		btnOk.setEnabled(false);
@@ -192,6 +247,10 @@ public class CreateSample extends javax.swing.JPanel {
     }
     
     private void updateLabel() {
+    	lblCodeName.setText(getLabel());    	
+    }
+    
+    private String getLabel() {
     	StringBuffer sb = new StringBuffer();
     	Object o;
     	
@@ -241,7 +300,7 @@ public class CreateSample extends javax.swing.JPanel {
     	}
     	while(false);
     	
-    	lblCodeName.setText(sb.toString());
+    	return sb.toString();
     }
     
     /**
@@ -304,6 +363,7 @@ public class CreateSample extends javax.swing.JPanel {
     	}
     	
     	cboSubsite.setEnabled(true);
+    	btnNewSubsite.setEnabled(true);
     }
     
     private void populateTrees(String parentID) {
@@ -325,6 +385,7 @@ public class CreateSample extends javax.swing.JPanel {
     	Object[] treeList = formulateArrayFromCollection(resource.getObject(), "Choose a tree");
     	cboTree.setModel(new DefaultComboBoxModel(treeList));		
     	cboTree.setEnabled(true);
+    	btnNewTree.setEnabled(true);
     }
 
     private void populateSpecimens(String parentID) {
@@ -346,6 +407,7 @@ public class CreateSample extends javax.swing.JPanel {
     	Object[] specimenList = formulateArrayFromCollection(resource.getObject(), "Choose a specimen");
     	cboSpecimen.setModel(new DefaultComboBoxModel(specimenList));		
     	cboSpecimen.setEnabled(true);
+    	btnNewSpecimen.setEnabled(true);
     }
 
     private void populateRadii(String parentID) {
@@ -367,6 +429,7 @@ public class CreateSample extends javax.swing.JPanel {
     	Object[] radiusList = formulateArrayFromCollection(resource.getObject(), "Choose a radius");
     	cboRadius.setModel(new DefaultComboBoxModel(radiusList));		
     	cboRadius.setEnabled(true);
+    	btnNewRadius.setEnabled(true);
     }
 
     

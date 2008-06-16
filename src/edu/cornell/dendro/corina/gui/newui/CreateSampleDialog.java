@@ -57,7 +57,7 @@ public class CreateSampleDialog extends JDialog {
 			break;
 		}
 		
-		content = new CreateSample();
+		content = new CreateSample(this);
 		
 		setContentPane(content);
 		pack();

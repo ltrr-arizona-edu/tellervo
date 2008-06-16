@@ -25,5 +25,8 @@ public class Tree extends GenericIntermediateObject {
 		Tree tree = new Tree(id, name);
 		return tree;
 	}
-
+	
+	public Element toXML() {
+		return null;
+	}
 }

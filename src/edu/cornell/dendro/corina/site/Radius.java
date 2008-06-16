@@ -25,4 +25,8 @@ public class Radius extends GenericIntermediateObject {
 		Radius radius = new Radius(id, name);
 		return radius;
 	}
+	
+	public Element toXML() {
+		return null;
+	}
 }

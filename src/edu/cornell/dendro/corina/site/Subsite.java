@@ -5,8 +5,6 @@ import org.jdom.Element;
 public class Subsite extends GenericIntermediateObject implements Comparable {
 	public Subsite(String id, String name) {
 		super(id, name);
-		
-		System.out.println("New subsite: " + id + " " + name);
 	}
 	
 	public static Subsite xmlToSubsite(Element root) {
@@ -24,8 +22,25 @@ public class Subsite extends GenericIntermediateObject implements Comparable {
 			return null;			
 		}
 		
+		// create the subsite
 		Subsite subsite = new Subsite(id, name);
+		
+		// setup our links
+		subsite.setResourceIdentifierFromElement(root);
+		
 		return subsite;
+	}
+
+	public Element toXML() {
+		Element root = new Element("subSite");
+		
+		if(!isNew())
+			root.setAttribute("id", getID());
+
+		// all we have is a name...
+		root.addContent(new Element("name").setText(name));
+		
+		return root;
 	}
 
 }

@@ -191,4 +191,7 @@ public class Dictionary extends CachedResource {
 
 	@SuppressWarnings("unused")
 	private volatile List<SiteRegion> regions;
+
+	@SuppressWarnings("unused")
+	private volatile List<Taxon> taxonDictionary;
 }

@@ -77,14 +77,7 @@ public class CorinaXML implements Filetype {
 				// Determine how we link to this element
 				ResourceIdentifier rid = null;
 				List<Element> links = ref.getChildren("link");
-				for(Element link : links) {
-					attr = link.getAttributeValue("type");
-					
-					if(attr != null && attr.equalsIgnoreCase("corina/xml")) {
-						rid = ResourceIdentifier.fromCorinaXMLLink(link);
-						break;
-					}
-				}
+				rid = ResourceIdentifier.fromLinks(links);
 				
 				// no resource identifier?
 				if(rid == null) {

@@ -84,6 +84,4 @@ public class CorinaWebElement implements SampleLoader {
 	public BaseSample loadBasic() throws IOException {
 		return load();
 	}
-
-
 }

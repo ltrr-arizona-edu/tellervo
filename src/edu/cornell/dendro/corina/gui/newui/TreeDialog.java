@@ -6,6 +6,27 @@
 
 package edu.cornell.dendro.corina.gui.newui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.dictionary.Taxon;
+import edu.cornell.dendro.corina.site.Subsite;
+import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.util.Center;
+
 /**
  *
  * @author  peterbrewer
@@ -13,11 +34,112 @@ package edu.cornell.dendro.corina.gui.newui;
 public class TreeDialog extends javax.swing.JDialog {
     
     /** Creates new form NewSite */
-    public TreeDialog(java.awt.Frame parent, boolean modal) {
+    public TreeDialog(java.awt.Dialog parent, boolean modal, String prefix, Subsite parentSubsite) {
         super(parent, modal);
         initComponents();
+        
+        lblNamePrefix.setText(prefix);
+        this.parentSubsite = parentSubsite;
+        
+        initialize();
+        
+        Center.center(this);
     }
     
+    private Tree newTree;
+    private Subsite parentSubsite;
+    private boolean succeeded = false;
+    
+    //@SuppressWarnings("unchecked")
+	private void initialize() {
+    	// select all on focus
+    	txtTreeName.addFocusListener(new FocusAdapter() {
+    		public void focusGained(FocusEvent fe) {
+    			txtTreeName.selectAll();
+    		}
+    	});
+    	
+    	// force focus
+    	txtTreeName.requestFocusInWindow();
+
+    	txtTreeName.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				// hello stupid bug.. this isn't used on JTextFields for some awful reason
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				validateButtons();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				validateButtons();
+			}
+		});
+
+    	// set up the taxon stuff
+    	List<Taxon> taxonList = new ArrayList<Taxon>(
+    			(List<Taxon>) App.dictionary.getDictionary("taxon"));
+    	
+    	// sort the list alphabetically
+    	Collections.sort(taxonList);
+    	    	
+    	// make an array of stuff
+    	Object[] taxonArray = new Object[taxonList.size() + 1];
+    	taxonArray[0] = "-- Choose a taxon --";
+    	System.arraycopy(taxonList.toArray(), 0, taxonArray, 1, taxonList.size());
+    	
+    	// finally, put it in the combobox
+    	cboTaxon.setModel(new DefaultComboBoxModel(taxonArray));
+    	
+    	// update selection on combo goodness
+    	cboTaxon.addItemListener(new ItemListener() {
+        	public void itemStateChanged(ItemEvent ie) {
+        		if(ie.getStateChange() != ItemEvent.SELECTED)
+        			return;
+        		
+        		validateButtons();
+        	}
+    	});
+    	
+    	// apply button
+    	getRootPane().setDefaultButton(btnApply);
+    	btnApply.setEnabled(false);
+       	btnApply.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			//commit();
+    		}
+    	});
+       	
+    	// cancel button
+       	btnCancel.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			succeeded = false;
+    			dispose();
+    		}
+    	});
+
+    }
+	
+	private void validateButtons() {
+    	boolean nameOk;
+    	boolean taxonOk;
+
+    	// tree name name
+		int len = txtTreeName.getText().length();
+
+		if(len > 0 && !txtTreeName.getText().equals("Tree code"))
+			nameOk = true;
+		else
+			nameOk = false;
+		
+		if(cboTaxon.getSelectedItem() instanceof Taxon)
+			taxonOk = true;
+		else
+			taxonOk = false;
+		
+		btnApply.setEnabled(nameOk && taxonOk);
+    }
+	
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -53,7 +175,7 @@ public class TreeDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("New Tree");
 
-        txtTreeName.setText("1");
+        txtTreeName.setText("Tree code");
         txtTreeName.setToolTipText("Laboratory code for tree");
 
         lblTreeName.setLabelFor(txtTreeName);
@@ -241,10 +363,10 @@ public class TreeDialog extends javax.swing.JDialog {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void zzzmain(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                TreeDialog dialog = new TreeDialog(new javax.swing.JFrame(), true);
+                TreeDialog dialog = new TreeDialog(new javax.swing.JDialog(), true, "cooookies", null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);

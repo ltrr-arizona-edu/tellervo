@@ -25,4 +25,9 @@ public class Specimen extends GenericIntermediateObject {
 		Specimen specimen = new Specimen(id, name);
 		return specimen;
 	}
+	
+	public Element toXML() {
+		return null;
+	}
+
 }

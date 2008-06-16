@@ -31,13 +31,44 @@ public class ResourceIdentifier extends org.jdom.Element {
 		
 		setAttribute("id", id);
 	}
-	
-	public static ResourceIdentifier fromCorinaXMLLink(Element xmlLink) {
-		/*
-		 * We get something like this:
-		 * <link type="corina/xml" url="https://www.blah.com/blah.php" object="measurement" id="xxx" /> 
-		 */
+
+	/**
+	 * Given an element, get its resource identifier
+	 * @param rootElement
+	 * @return
+	 */
+	public static ResourceIdentifier fromRootElement(Element rootElement) {
+		List<Element> links = rootElement.getChildren("link");
 		
+		return fromLinks(links);
+	}
+	
+	/**
+	 * Given a list of Link elements, get the corina/xml resource identifier
+	 * @param links
+	 * @return
+	 */
+	public static ResourceIdentifier fromLinks(List<Element> links) {
+		for(Element link : links) {
+			String linkType = link.getAttributeValue("type");
+			
+			if(linkType != null && linkType.equalsIgnoreCase("corina/xml"))
+				return fromCorinaXMLLink(link);
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * We get something like this:
+	 * <link type="corina/xml" url="https://www.blah.com/blah.php" object="measurement" id="xxx" /> 
+	 * 
+	 * Turn it into a ResourceIdentifier!
+	 * 
+	 * @param xmlLink
+	 * @return
+	 */
+	public static ResourceIdentifier fromCorinaXMLLink(Element xmlLink) {
 		String objtype = xmlLink.getAttributeValue("object");
 		if(objtype == null)
 			throw new IllegalArgumentException("Corina XML element is missing an object type");

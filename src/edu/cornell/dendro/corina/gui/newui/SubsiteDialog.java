@@ -6,6 +6,21 @@
 
 package edu.cornell.dendro.corina.gui.newui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+
+import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.Subsite;
+import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.webdbi.IntermediateResource;
+import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
+
 /**
  *
  * @author  peterbrewer
@@ -13,9 +28,114 @@ package edu.cornell.dendro.corina.gui.newui;
 public class SubsiteDialog extends javax.swing.JDialog {
     
     /** Creates new form Subsite */
-    public SubsiteDialog(java.awt.Frame parent, boolean modal) {
+    public SubsiteDialog(java.awt.Dialog parent, boolean modal, Site parentSite) {
         super(parent, modal);
         initComponents();
+
+        this.parentSite = parentSite;
+        initialize();
+        Center.center(this);
+    }
+    
+    private Site parentSite;
+    private Subsite newSubsite;
+    private boolean succeeded = false;
+    
+    private void initialize() {
+    	// When the code is changed, listen and ensure length
+    	// We use this as one condition to allow the Apply button to be enabled
+    	txtSubsiteName.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				// hello stupid bug.. this isn't used on JTextFields for some awful reason
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				validateButtons();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				validateButtons();
+			}
+		});
+    	
+    	// select all on focus
+    	txtSubsiteName.addFocusListener(new FocusAdapter() {
+    		public void focusGained(FocusEvent fe) {
+    			txtSubsiteName.selectAll();
+    		}
+    	});
+    	
+    	// force focus
+    	txtSubsiteName.requestFocusInWindow();
+    	
+    	// apply button
+    	getRootPane().setDefaultButton(btnApply);
+    	btnApply.setEnabled(false);
+       	btnApply.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			commit();
+    		}
+    	});
+       	
+    	// cancel button
+       	btnCancel.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			succeeded = false;
+    			dispose();
+    		}
+    	});
+       	
+       	// neat site name thingy
+       	txtSite.setText(parentSite.toString());
+    }
+    
+    private void commit() {
+    	Subsite subsite = new Subsite(Subsite.ID_NEW, txtSubsiteName.getText());
+    	IntermediateResource ir = new IntermediateResource(parentSite, subsite);
+		PrototypeLoadDialog dlg = new PrototypeLoadDialog(ir);
+		
+		// start our query (remotely)
+		ir.query();		
+		
+		dlg.setVisible(true);
+		
+		if(!dlg.isSuccessful()) {
+			JOptionPane.showMessageDialog(this, "Could not create: " + dlg.getFailException(), 
+					"Failed to create", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		// add the subsite to the parent site, sort, and 
+		if(ir.getObject().get(0) instanceof Subsite) {
+			newSubsite = (Subsite) ir.getObject().get(0);
+			parentSite.addSubsite(newSubsite);
+			parentSite.sortSubsites();
+		}
+		
+    	succeeded = true;
+    	dispose();
+    }
+    
+    public boolean didSucceed() {
+    	return succeeded;
+    }
+    
+    public Subsite getNewSubsite() {
+    	return newSubsite;
+    }
+    
+    private void validateButtons() {
+    	boolean nameOk;
+
+    	// then, site name
+		int len = txtSubsiteName.getText().length();
+
+		if(len > 2 && !txtSubsiteName.getText().equals("Name of this subsite"))
+			nameOk = true;
+		else
+			nameOk = false;
+		
+		btnApply.setEnabled(nameOk);
     }
     
     /** This method is called from within the constructor to
@@ -38,8 +158,8 @@ public class SubsiteDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Sub Site details");
 
-        txtSubsiteName.setText("Name of this site");
-        txtSubsiteName.setToolTipText("Name of this site");
+        txtSubsiteName.setText("Name of this subsite");
+        txtSubsiteName.setToolTipText("Name of this subsite");
 
         lblSite.setLabelFor(txtSite);
         lblSite.setText("Site:");
@@ -118,10 +238,10 @@ public class SubsiteDialog extends javax.swing.JDialog {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void zzzmain(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                SubsiteDialog dialog = new SubsiteDialog(new javax.swing.JFrame(), true);
+                SubsiteDialog dialog = new SubsiteDialog(new javax.swing.JDialog(), true, null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);

@@ -72,52 +72,13 @@ public class SiteList extends CachedResource {
 		
 		while(itr.hasNext()) {
 			Element se = (Element) itr.next();
-			Site site;
-			String name, code;
-			String id = se.getAttributeValue("id");
-			Element child;
-			String val;
+			Site site = Site.xmlToSite(se);
 			
-			if(id == null) {
-				System.out.println("Site without id?");
+			// problem with the site?
+			if(site == null)
 				continue;
-			}
 			
-			name = se.getChildText("name");
-			code = se.getChildText("code");
-			
-			if(name == null || code == null) {
-				System.out.println("Site " + id + " has no name and/or code");
-				continue;
-			}
-			
-			site = new Site(id, name, code);
-
-			// catch a region tag (can we have more than one??)
-			// FIXME: Can we have more than one region?
-			child = se.getChild("region");
-			if(child != null && ((val = child.getAttributeValue("id")) != null)) {
-				site.setRegion(val, child.getText());
-			}
-			
-			// now, get any subsites
-			child = se.getChild("references");
-			if(child != null) {
-				List<Element> subsites = child.getChildren("subSite");
-				
-				for(Element ss : subsites) {
-					Subsite subsite = Subsite.xmlToSubsite(ss);
-
-					// add our subsite
-					if(subsite != null)
-						site.addSubsite(subsite);
-				}
-			}
-
-			// sort the subsites alphabetically
-			site.sortSubsites();
-
-			// finally, add the site to our map
+			// add the site to our map
 			newsites.put(site.getCode(), site);
 			
 		}
