@@ -755,19 +755,33 @@ class measurement
 
     }
 
-    function asXML($recurseLevel=1, $style="full")
+    function asXML($recurseLevel=2, $style="full")
     {
         //print_r($this->referencesArray);
         // Return a string containing the current object in XML format
 
-        // $mode = all, begin or end to denote which section of XML you require
-        //      Default = all
         // $recurseLevel = the number of levels of references tags you would like 
         //      in your XML output.  
-        //      Default = 1 
+        //      Default = 2 - which means the current measurement and its immediate parents
+        // $style = the type of XML output
+        //      full = all XML including notes and readings
+        //      brief = only metadata
+        
         global $domain;
         $xml = "";
 
+        // Check whether we are at the requested level of recursion or not
+        if($recurseLevel==-1)
+        {
+            return;
+        }
+        else
+        {
+            // Decrement recurse level
+            $recurseLevel=$recurseLevel-1;
+        }
+
+        // Proceed if there are no errors already
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
@@ -809,20 +823,27 @@ class measurement
             // Brief Format so just give minimal XML for all references and nothing else
             if($style=="brief")
             {
-                foreach($this->referencesArray as $value)
+                // Only look up references if recursion level is greater than 0
+                if($recurseLevel>0)
                 {
-                    $myReference = new measurement();
-                    $success = $myReference->setParamsFromDB($value);
+                    $xml.="<references>";
+                    foreach($this->referencesArray as $value)
+                    {
+                        $myReference = new measurement();
+                        $success = $myReference->setParamsFromDB($value);
 
-                    if($success)
-                    {
-                        $xml.=$myReference->asXML($recurseLevel, "brief");
+                        if($success)
+                        {
+                            $xml.=$myReference->asXML($recurseLevel, "brief");
+                        }
+                        else
+                        {
+                            $this->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
+                        }
                     }
-                    else
-                    {
-                        $this->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
-                    }
+                    $xml.="</references>";
                 }
+
                 $xml.="</metadata>\n";
                 $xml.= "</measurement>\n";
                 return $xml;
@@ -856,25 +877,26 @@ class measurement
                 // Include all refences to other vmeasurements recursing if requested 
                 if ($this->referencesArray)
                 {
-                    // Decrement recurseLevel if necessary
-                    if (is_numeric($recurseLevel))  $recurseLevel=$recurseLevel-1;
-
-                    $xml.="<references>";
-                    foreach($this->referencesArray as $value)
+                    // Only look up references if recursion level is greater than 0
+                    if($recurseLevel>0)
                     {
-                        $myReference = new measurement();
-                        $success = $myReference->setParamsFromDB($value);
+                        $xml.="<references>";
+                        foreach($this->referencesArray as $value)
+                        {
+                            $myReference = new measurement();
+                            $success = $myReference->setParamsFromDB($value);
 
-                        if($success)
-                        {
-                            $xml.=$myReference->asXML($recurseLevel, "brief");
+                            if($success)
+                            {
+                                $xml.=$myReference->asXML($recurseLevel, "brief");
+                            }
+                            else
+                            {
+                                $this->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
+                            }
                         }
-                        else
-                        {
-                            $this->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
-                        }
+                        $xml.="</references>\n";
                     }
-                    $xml.="</references>\n";
                 }
                 else
                 {
