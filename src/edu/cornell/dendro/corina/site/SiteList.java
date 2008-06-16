@@ -90,17 +90,42 @@ public class SiteList extends CachedResource {
 		return true;
 	}
 	
+	/**
+	 * Gets the list of sites sorted alphabetically by code (as a Collection)
+	 * @return
+	 */
 	public Collection<Site> getSites() {
 		return siteMap.values();
 	}
 	
+	/**
+	 * Find a site, by code
+	 * 
+	 * @param code
+	 * @return
+	 */
 	public Site findSite(String code) {
 		return siteMap.get(code);
 	}
 	
+	/**
+	 * Get a sorted map of codes equal to or greater than code
+	 * @param code
+	 * @return
+	 */
 	public SortedMap<String, Site> getSimilarSites(String code) {
 		return siteMap.tailMap(code);
 	}
 	
+	/**
+	 * Add a site to the list
+	 * Use sparingly!
+	 * @param site
+	 */
+	public void addSite(Site site) {
+		siteMap.put(site.getCode(), site);
+	}
+	
+	// the site map
 	private TreeMap<String, Site> siteMap;
 }

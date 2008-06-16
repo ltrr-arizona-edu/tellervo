@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -25,6 +26,7 @@ import java.util.SortedMap;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -51,6 +53,7 @@ import edu.cornell.dendro.corina.webdbi.SearchParameters;
  */
 public class CreateSample extends javax.swing.JPanel {
 	private JDialog parent;
+	private Site lastSelectedSite;
     
     /** Creates new form CreateSample */
     public CreateSample(JDialog parent) {
@@ -81,17 +84,28 @@ public class CreateSample extends javax.swing.JPanel {
         setupButtons();
     }
     
+    /**
+     * For each button, set its action
+     */
     public void setupButtons() {
+    	// new SITE
     	btnNewSite.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			SiteDialog sd = new SiteDialog(parent, true);
     			
     			sd.setVisible(true);
     			
-    			//TODO: Success?
+    			if(sd.didSucceed()) {
+    				// Repopulate the subsites box
+    				populateSiteList();
+    				
+    				// and select the subsite that we just created
+    				cboSite.setSelectedItem(sd.getNewObject());
+    			}
     		}
     	});
-    	
+
+    	// new SUBSITE
     	btnNewSubsite.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			Site site = (Site) cboSite.getSelectedItem();
@@ -99,10 +113,12 @@ public class CreateSample extends javax.swing.JPanel {
     			
     			sd.setVisible(true);
     			
-    			// add and autoselect...
     			if(sd.didSucceed()) {
+    				// Repopulate the subsites box
     				populateSubsites(site.getSubsites());
-    				cboSubsite.setSelectedItem(sd.getNewSubsite());
+    				
+    				// and select the subsite that we just created
+    				cboSubsite.setSelectedItem(sd.getNewObject());
     			}
     		}
     	});
@@ -127,6 +143,7 @@ public class CreateSample extends javax.swing.JPanel {
     
     public void setupBoxes() {
         // SITE listener
+    	// For selection state changes
         cboSite.addItemListener(new ItemListener() {
         	public void itemStateChanged(ItemEvent ie) {
         		if(ie.getStateChange() != ItemEvent.SELECTED)
@@ -135,61 +152,80 @@ public class CreateSample extends javax.swing.JPanel {
         		JComboBox src = (JComboBox) ie.getSource();        		
         		Object o = src.getSelectedItem();
         		
+        		// maintain our selection boxes and label
         		disableBoxes(1);
         		updateLabel();
+
+        		// The user chose the 'choose a site' option
         		if(!(o instanceof Site)) {
         			return;
         		}
         		
+        		// yay, now choose a subsite!
         		Site s = (Site) o;
-        		cboSubsite.setModel(emptyBoxModel);
         		populateSubsites(s.getSubsites());
+        		
+        		// If we only have one subsite, select it
+        		if(s.getSubsites().size() == 1) {
+        			cboSubsite.setSelectedIndex(1);
+        			cboTree.requestFocus();
+        		}
         	}
         });
         
-        // SITE combobox special stuff
+        // Our site combobox is editable
         cboSite.setEditable(true);
         
+        // we need this glue for the following modification listeners
         final JTextField cboSiteEditor = (JTextField) cboSite.getEditor().getEditorComponent();
-        cboSiteEditor.getDocument().addDocumentListener(new DocumentListener() {
-        	public void changedUpdate(DocumentEvent e) {
-    		    // ignore -- ??
-    		}
-    		public void insertUpdate(DocumentEvent e) {
-    			String text = cboSiteEditor.getText();
-    		    // if inserted at end,
-    		    if (e.getOffset() + 1 == text.length()) {
 
-    		    SortedMap <String, Site> similarSites = App.sites.getSimilarSites(text);
-
-    		    String completion;
-    		    if(similarSites.firstKey().startsWith(text)) 
-    		    	completion = similarSites.firstKey();
-    		    else
-    		    	return;
-
-    			// add it -- but you can't change a document
-    			// in a documentlistener, or an illegal state
-    			// exception gets thrown.  (the documentation
-    			// doesn't seem to mention this rather
-    			// important fact!)
-
-    			final String glue = completion;
-    			final int curs = e.getOffset();
-    			EventQueue.invokeLater(new Runnable() {
-    				public void run() {
-    				    cboSiteEditor.setText(glue);
-    				    cboSiteEditor.setSelectionStart(curs+1);
-    				    cboSiteEditor.setSelectionEnd(cboSiteEditor.getText().length());
-    				}
-    			    });
-    		    }
-    		}
-    		public void removeUpdate(DocumentEvent e) {
-    		    // ignore
-    		}
-        });
+        // Perform autocomplete when the user types things into the site editor box
         
+        cboSiteEditor.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				// ignore -- ??
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				String text = cboSiteEditor.getText();
+				// we only care if this insert happens at the end of the box
+				if (e.getOffset() + 1 == text.length()) {
+					// get a list of keys greater (alphabetically) than what we have
+					// we really only care about the first entry that's greater than what we have
+					SortedMap<String, Site> similarSites = App.sites.getSimilarSites(text);
+
+					String completion;
+					if (similarSites.firstKey().startsWith(text))
+						completion = similarSites.firstKey();
+					else
+						return;
+
+					// add it -- but you can't change a document
+					// in a documentlistener, or an illegal state
+					// exception gets thrown. (the documentation
+					// doesn't seem to mention this rather
+					// important fact!)
+
+					final String glue = completion;
+					final int curs = e.getOffset();
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							cboSiteEditor.setText(glue);
+							cboSiteEditor.setSelectionStart(curs + 1);
+							cboSiteEditor.setSelectionEnd(cboSiteEditor.getText().length());
+						}
+					});
+				}
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				// ignore
+			}
+		});
+
+        // add a listener for new keys being typed into the site editor box
+        // we need to do this to force caps and no whitespace, as well as
+        // handling enter-key autoselection
         cboSiteEditor.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {
 			}
@@ -197,38 +233,54 @@ public class CreateSample extends javax.swing.JPanel {
 			public void keyReleased(KeyEvent e) {
 			}
 
-			public void keyTyped(KeyEvent e) {
-				if(cboSite.getSelectedItem() instanceof Site) {
-					e.consume();
-					return;
-				}
-				
+			public void keyTyped(KeyEvent e) {			
 				if(e.getKeyChar() == KeyEvent.VK_ENTER) {
 					Site selectedSite; 
+					
+					// if we have the site code the user typed in
 					if((selectedSite = App.sites.findSite(cboSiteEditor.getText())) != null) {
+						// select it, don't allow it to be edited, and etc
+						cboSubsite.requestFocus();
 						cboSite.setSelectedItem(selectedSite);
 						cboSiteEditor.setCaretPosition(0);
 						cboSiteEditor.setEditable(false);
-						cboSubsite.requestFocus();
+					}
+					else {
+						JOptionPane.showMessageDialog(parent, 
+								"Invalid site code '" + cboSiteEditor.getText() + 
+								"'", "Bad site code", JOptionPane.ERROR_MESSAGE);
+						cboSiteEditor.selectAll();
 					}
 					e.consume();
 					return;
 				}
 				
+				// no whitespace!
 				if(Character.isWhitespace(e.getKeyChar())) {
 					e.consume();
 					return;
 				}
 				
+				// force everything else to uppercase
 				e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
 			}
         });
         
-        cboSiteEditor.addFocusListener(new FocusAdapter() {
+        // on focus select all of the text in the site editor box
+        cboSiteEditor.addFocusListener(new FocusListener() {
         	public void focusGained(FocusEvent fe) {
+        		cboSiteEditor.setEditable(true);
+        		cboSiteEditor.setCaretPosition(0);
         		cboSiteEditor.selectAll();
         	}
+
+			public void focusLost(FocusEvent fe) {
+				// TODO: ensure we don't have garbage in the box
+			}
         });
+        
+        // request default site
+        cboSiteEditor.requestFocusInWindow();
 
         // SUBSITE listener
         cboSubsite.addItemListener(new ItemListener() {
@@ -407,7 +459,11 @@ public class CreateSample extends javax.swing.JPanel {
     	Object[] srcArray = list.toArray();
     	Object[] dstArray = new Object[srcArray.length + 1];
     	
-    	dstArray[0] = firstItem;
+    	if(list.size() == 0)
+    		dstArray[0] = "No " + firstItem;
+    	else
+    		dstArray[0] = "Choose a " + firstItem;
+    	
     	System.arraycopy(srcArray, 0, dstArray, 1, srcArray.length);
     	
     	return dstArray;
@@ -418,7 +474,7 @@ public class CreateSample extends javax.swing.JPanel {
     	Object selectedSiteObj = cboSite.getSelectedItem();
     	Site selectedSite = (selectedSiteObj instanceof Site ? (Site) selectedSiteObj : null);
     	
-    	Object[] siteList = formulateArrayFromCollection(sites, "Choose a site");
+    	Object[] siteList = formulateArrayFromCollection(sites, "site");
     	
     	cboSite.setModel(new javax.swing.DefaultComboBoxModel(siteList));
     	
@@ -440,7 +496,7 @@ public class CreateSample extends javax.swing.JPanel {
     	Object selectedSubsiteObj = cboSubsite.getSelectedItem();
     	Subsite selectedSubsite = (selectedSubsiteObj instanceof Subsite ? (Subsite) selectedSubsiteObj : null);
     	
-    	Object[] subsiteList = formulateArrayFromCollection(subsites, "Choose a subsite");
+    	Object[] subsiteList = formulateArrayFromCollection(subsites, "subsite");
     	
     	cboSubsite.setModel(new javax.swing.DefaultComboBoxModel(subsiteList));
     	
@@ -456,6 +512,7 @@ public class CreateSample extends javax.swing.JPanel {
     	}
     	
     	cboSubsite.setEnabled(true);
+    	cboSubsite.requestFocus();
     	btnNewSubsite.setEnabled(true);
     }
     
@@ -475,9 +532,10 @@ public class CreateSample extends javax.swing.JPanel {
 			return;
 		}
 
-    	Object[] treeList = formulateArrayFromCollection(resource.getObject(), "Choose a tree");
+    	Object[] treeList = formulateArrayFromCollection(resource.getObject(), "tree");
     	cboTree.setModel(new DefaultComboBoxModel(treeList));		
     	cboTree.setEnabled(true);
+    	cboTree.requestFocus();
     	btnNewTree.setEnabled(true);
     }
 
@@ -497,9 +555,10 @@ public class CreateSample extends javax.swing.JPanel {
 			return;
 		}
 
-    	Object[] specimenList = formulateArrayFromCollection(resource.getObject(), "Choose a specimen");
+    	Object[] specimenList = formulateArrayFromCollection(resource.getObject(), "specimen");
     	cboSpecimen.setModel(new DefaultComboBoxModel(specimenList));		
     	cboSpecimen.setEnabled(true);
+    	cboSpecimen.requestFocus();
     	btnNewSpecimen.setEnabled(true);
     }
 
@@ -519,9 +578,10 @@ public class CreateSample extends javax.swing.JPanel {
 			return;
 		}
 
-    	Object[] radiusList = formulateArrayFromCollection(resource.getObject(), "Choose a radius");
+    	Object[] radiusList = formulateArrayFromCollection(resource.getObject(), "radius");
     	cboRadius.setModel(new DefaultComboBoxModel(radiusList));		
     	cboRadius.setEnabled(true);
+    	cboRadius.requestFocus();
     	btnNewRadius.setEnabled(true);
     }
 

@@ -18,7 +18,9 @@ import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.Subsite;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
@@ -29,7 +31,7 @@ import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
  *
  * @author  peterbrewer
  */
-public class SiteDialog extends javax.swing.JDialog {
+public class SiteDialog extends BaseNewDialog<Site> {
     
     /** Creates new form Site */
     public SiteDialog(java.awt.Dialog parent, boolean modal) {
@@ -40,9 +42,7 @@ public class SiteDialog extends javax.swing.JDialog {
         Center.center(this);
     }
     
-    private boolean succeeded = false;
-    
-    private void initialize() {
+	private void initialize() {
     	
     	// forced formatting on the site code box
     	txtSiteCode.addKeyListener(new KeyAdapter() {
@@ -117,7 +117,6 @@ public class SiteDialog extends javax.swing.JDialog {
     	// cancel button
     	btnCancel.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			succeeded = false;
     			dispose();
     		}
     	});
@@ -126,21 +125,17 @@ public class SiteDialog extends javax.swing.JDialog {
     private void commit() {
     	Site site = new Site(Site.ID_NEW, txtSiteName.getText(), txtSiteCode.getText());
     	IntermediateResource ir = new IntermediateResource((Site) null, site);
-		PrototypeLoadDialog dlg = new PrototypeLoadDialog(ir);
-		
-		// start our query (remotely)
-		ir.query();		
-		
-		dlg.setVisible(true);
-		
-		if(!dlg.isSuccessful()) {
-			JOptionPane.showMessageDialog(this, "Could not create: " + dlg.getFailException(), 
-					"Failed to create", JOptionPane.ERROR_MESSAGE);
-			return;
+    	
+    	if(!createObject(ir))
+    		return;
+    	
+		// add the subsite to the parent site, sort, and 
+		if(ir.getObject().get(0) instanceof Site) {
+			setNewObject((Site) ir.getObject().get(0));
+			App.sites.addSite(getNewObject());
 		}
-		
-    	succeeded = true;
-    	dispose();
+
+		dispose();
     }
     
     private void validateButtons() {

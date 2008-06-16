@@ -25,7 +25,7 @@ import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
  *
  * @author  peterbrewer
  */
-public class SubsiteDialog extends javax.swing.JDialog {
+public class SubsiteDialog extends BaseNewDialog<Subsite> {
     
     /** Creates new form Subsite */
     public SubsiteDialog(java.awt.Dialog parent, boolean modal, Site parentSite) {
@@ -38,8 +38,6 @@ public class SubsiteDialog extends javax.swing.JDialog {
     }
     
     private Site parentSite;
-    private Subsite newSubsite;
-    private boolean succeeded = false;
     
     private void initialize() {
     	// When the code is changed, listen and ensure length
@@ -80,7 +78,6 @@ public class SubsiteDialog extends javax.swing.JDialog {
     	// cancel button
        	btnCancel.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			succeeded = false;
     			dispose();
     		}
     	});
@@ -92,38 +89,20 @@ public class SubsiteDialog extends javax.swing.JDialog {
     private void commit() {
     	Subsite subsite = new Subsite(Subsite.ID_NEW, txtSubsiteName.getText());
     	IntermediateResource ir = new IntermediateResource(parentSite, subsite);
-		PrototypeLoadDialog dlg = new PrototypeLoadDialog(ir);
-		
-		// start our query (remotely)
-		ir.query();		
-		
-		dlg.setVisible(true);
-		
-		if(!dlg.isSuccessful()) {
-			JOptionPane.showMessageDialog(this, "Could not create: " + dlg.getFailException(), 
-					"Failed to create", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		
+
+    	if(!createObject(ir))
+    		return;
+    	
 		// add the subsite to the parent site, sort, and 
 		if(ir.getObject().get(0) instanceof Subsite) {
-			newSubsite = (Subsite) ir.getObject().get(0);
-			parentSite.addSubsite(newSubsite);
+			setNewObject((Subsite) ir.getObject().get(0));
+			parentSite.addSubsite(getNewObject());
 			parentSite.sortSubsites();
 		}
 		
-    	succeeded = true;
     	dispose();
     }
-    
-    public boolean didSucceed() {
-    	return succeeded;
-    }
-    
-    public Subsite getNewSubsite() {
-    	return newSubsite;
-    }
-    
+        
     private void validateButtons() {
     	boolean nameOk;
 
