@@ -3,11 +3,13 @@
  */
 package edu.cornell.dendro.corina.gui.newui;
 
+import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 
 import javax.swing.JDialog;
+import javax.swing.JPanel;
 
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.Center;
@@ -59,7 +61,11 @@ public class CreateSampleDialog extends JDialog {
 		
 		content = new CreateSample(this);
 		
-		setContentPane(content);
+		JPanel holder = new JPanel();
+		holder.add(content, BorderLayout.NORTH);
+		holder.add(new PanelImportWizard4(), BorderLayout.SOUTH);
+		
+		setContentPane(holder);
 		pack();
 		Center.center(this);
 		

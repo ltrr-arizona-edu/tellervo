@@ -6,19 +6,28 @@
 
 package edu.cornell.dendro.corina.gui.newui;
 
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.SortedMap;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.SiteRegion;
@@ -67,6 +76,7 @@ public class CreateSample extends javax.swing.JPanel {
         	// TODO: Implement this
         	// It's complicated, because we have to get a bunch of lists first!
         }
+        
         setupBoxes();
         setupButtons();
     }
@@ -134,6 +144,89 @@ public class CreateSample extends javax.swing.JPanel {
         		Site s = (Site) o;
         		cboSubsite.setModel(emptyBoxModel);
         		populateSubsites(s.getSubsites());
+        	}
+        });
+        
+        // SITE combobox special stuff
+        cboSite.setEditable(true);
+        
+        final JTextField cboSiteEditor = (JTextField) cboSite.getEditor().getEditorComponent();
+        cboSiteEditor.getDocument().addDocumentListener(new DocumentListener() {
+        	public void changedUpdate(DocumentEvent e) {
+    		    // ignore -- ??
+    		}
+    		public void insertUpdate(DocumentEvent e) {
+    			String text = cboSiteEditor.getText();
+    		    // if inserted at end,
+    		    if (e.getOffset() + 1 == text.length()) {
+
+    		    SortedMap <String, Site> similarSites = App.sites.getSimilarSites(text);
+
+    		    String completion;
+    		    if(similarSites.firstKey().startsWith(text)) 
+    		    	completion = similarSites.firstKey();
+    		    else
+    		    	return;
+
+    			// add it -- but you can't change a document
+    			// in a documentlistener, or an illegal state
+    			// exception gets thrown.  (the documentation
+    			// doesn't seem to mention this rather
+    			// important fact!)
+
+    			final String glue = completion;
+    			final int curs = e.getOffset();
+    			EventQueue.invokeLater(new Runnable() {
+    				public void run() {
+    				    cboSiteEditor.setText(glue);
+    				    cboSiteEditor.setSelectionStart(curs+1);
+    				    cboSiteEditor.setSelectionEnd(cboSiteEditor.getText().length());
+    				}
+    			    });
+    		    }
+    		}
+    		public void removeUpdate(DocumentEvent e) {
+    		    // ignore
+    		}
+        });
+        
+        cboSiteEditor.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent e) {
+			}
+
+			public void keyReleased(KeyEvent e) {
+			}
+
+			public void keyTyped(KeyEvent e) {
+				if(cboSite.getSelectedItem() instanceof Site) {
+					e.consume();
+					return;
+				}
+				
+				if(e.getKeyChar() == KeyEvent.VK_ENTER) {
+					Site selectedSite; 
+					if((selectedSite = App.sites.findSite(cboSiteEditor.getText())) != null) {
+						cboSite.setSelectedItem(selectedSite);
+						cboSiteEditor.setCaretPosition(0);
+						cboSiteEditor.setEditable(false);
+						cboSubsite.requestFocus();
+					}
+					e.consume();
+					return;
+				}
+				
+				if(Character.isWhitespace(e.getKeyChar())) {
+					e.consume();
+					return;
+				}
+				
+				e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
+			}
+        });
+        
+        cboSiteEditor.addFocusListener(new FocusAdapter() {
+        	public void focusGained(FocusEvent fe) {
+        		cboSiteEditor.selectAll();
         	}
         });
 

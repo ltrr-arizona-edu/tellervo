@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.jdom.Document;
@@ -91,6 +92,14 @@ public class SiteList extends CachedResource {
 	
 	public Collection<Site> getSites() {
 		return siteMap.values();
+	}
+	
+	public Site findSite(String code) {
+		return siteMap.get(code);
+	}
+	
+	public SortedMap<String, Site> getSimilarSites(String code) {
+		return siteMap.tailMap(code);
 	}
 	
 	private TreeMap<String, Site> siteMap;
