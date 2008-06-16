@@ -140,15 +140,18 @@ class site
             $result = pg_query($dbconn, $sql1);
             while ($row = pg_fetch_array($result))
             {
-                // Get all tree note id's for this tree and store 
+                // Get all subsites for this site and store 
                 array_push($this->subSiteArray, $row['subsiteid']);
             }
+            $this->subSiteArray = array_unique($this->subSiteArray);
+
             $result = pg_query($dbconn, $sql2);
             while ($row = pg_fetch_array($result))
             {
-                // Get all tree note id's for this tree and store 
+                // Get all regions for this site and store 
                 array_push($this->regionArray, $row['regionid']);
             }
+            $this->regionArray = array_unique($this->regionArray);
         }
         else
         {
@@ -548,9 +551,10 @@ class site
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
                     {
-                        $this->id=$row['siteid'];   
-                        $this->createdTimeStamp=$row['createdtimestamp'];   
-                        $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
+                        $this->setParamsFromDB($row['siteid']);
+                        //$this->id=$row['siteid'];   
+                        //$this->createdTimeStamp=$row['createdtimestamp'];   
+                        //$this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
                     }
                 }
 
