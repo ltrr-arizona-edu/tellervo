@@ -39,103 +39,111 @@
             	</element>
             </optional>
 
+            <optional>
+            	<element name="metadata">
                        
-            <interleave>
-            	<optional>
-		            <element name="name">
-		            	<text/>
-		            </element>
+		            <interleave>
+		            	<optional>
+				            <element name="name">
+				            	<text/>
+				            </element>
+			            </optional>
+			            
+			            <optional>
+			                <element name="radiusID">
+			                    <data type="positiveInteger">
+			                    </data>
+			                </element>
+			            </optional>
+			            
+			            <optional>
+			                <element name="isReconciled">
+			                    <data type="boolean">
+			                    </data>
+			                </element>
+			            </optional>
+			            <optional>
+			                <element name="startYear">
+			                    <data type="integer">
+			                    </data>
+			                </element>
+			            </optional>
+			            <optional>
+			                <element name="isLegacyCleaned">
+			                    <data type="boolean">
+			                    </data>
+			                </element>
+			            </optional>
+			            <optional>
+			                <element name="measuredBy">
+			                	<attribute name="id">
+			                		<data type="positiveInteger"></data>
+			                	</attribute>
+			                    <text/>
+			                </element>
+			            </optional>
+			            <optional>
+			                <element name="owner">
+			                	<attribute name="id">
+			                		<data type="positiveInteger"></data>
+			                	</attribute>
+			                    <text/>
+			                </element>
+			            </optional>	            
+			            <optional>
+			                <element name="datingType">
+			                	<optional>
+			                		<attribute name="id">
+			                			<data type="positiveInteger"></data>
+			                		</attribute>
+			                	</optional>
+			                    <text/>
+			                </element>
+			            </optional>
+			            <optional>
+			                <element name="datingErrorPositive">
+			                    <data type="positiveInteger" />
+			                </element>
+			            </optional>
+			            <optional>
+			                <element name="datingErrorNegative">
+			                    <data type="positiveInteger" />
+			                </element>
+			            </optional>
+			
+			            <optional>
+			                <element name="description">
+			                    <text/>
+			                </element>
+			            </optional>
+			            <optional>
+			                <element name="isPublished">
+			                    <data type="boolean" />
+			                </element>
+			            </optional>
+			            
+			            <optional>
+							<element name="operation">
+			            		<text/>
+			            		<optional>
+				            		<attribute name="parameter">
+				            			<text/>
+				            		</attribute>
+			            		</optional>
+			            	</element>
+			            </optional>
+			            
+			            
+		            
+		                <zeroOrMore>
+		                    <externalRef href="measurementNote.rng"/>
+		                </zeroOrMore>
+	               
+	                 </interleave>
+               
+	               </element>
 	            </optional>
-	            
-	            <optional>
-	                <element name="radiusID">
-	                    <data type="positiveInteger">
-	                    </data>
-	                </element>
-	            </optional>
-	            
-	            <optional>
-	                <element name="isReconciled">
-	                    <data type="boolean">
-	                    </data>
-	                </element>
-	            </optional>
-	            <optional>
-	                <element name="startYear">
-	                    <data type="integer">
-	                    </data>
-	                </element>
-	            </optional>
-	            <optional>
-	                <element name="isLegacyCleaned">
-	                    <data type="boolean">
-	                    </data>
-	                </element>
-	            </optional>
-	            <optional>
-	                <element name="measuredBy">
-	                	<attribute name="id">
-	                		<data type="positiveInteger"></data>
-	                	</attribute>
-	                    <text/>
-	                </element>
-	            </optional>
-	            <optional>
-	                <element name="owner">
-	                	<attribute name="id">
-	                		<data type="positiveInteger"></data>
-	                	</attribute>
-	                    <text/>
-	                </element>
-	            </optional>	            
-	            <optional>
-	                <element name="datingType">
-	                	<optional>
-	                		<attribute name="id">
-	                			<data type="positiveInteger"></data>
-	                		</attribute>
-	                	</optional>
-	                    <text/>
-	                </element>
-	            </optional>
-	            <optional>
-	                <element name="datingErrorPositive">
-	                    <data type="positiveInteger" />
-	                </element>
-	            </optional>
-	            <optional>
-	                <element name="datingErrorNegative">
-	                    <data type="positiveInteger" />
-	                </element>
-	            </optional>
-	
-	            <optional>
-	                <element name="description">
-	                    <text/>
-	                </element>
-	            </optional>
-	            <optional>
-	                <element name="isPublished">
-	                    <data type="boolean" />
-	                </element>
-	            </optional>
-	            
-	            <optional>
-					<element name="operation">
-	            		<text/>
-	            		<optional>
-		            		<attribute name="parameter">
-		            			<text/>
-		            		</attribute>
-	            		</optional>
-	            	</element>
-	            </optional>
-	            
-	            
-            
-                <zeroOrMore>
-                    <externalRef href="measurementNote.rng"/>
-                </zeroOrMore>
+               
                
                 <optional>
                     <element name="readings">
@@ -184,7 +192,7 @@
                         </oneOrMore> 
                     </element>
                 </optional>
-            </interleave>
+ 
         </element>
     </define>
 </grammar>

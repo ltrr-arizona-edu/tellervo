@@ -244,23 +244,23 @@ class measurementParameters extends parameters
 
     function getXMLParams()
     {
-        if(isset($this->xmlrequest['id']))                       $this->id                    = (int)                $this->xmlrequest['id'];
-        if(isset($this->xmlrequest->startYear))                  $this->startYear             = (int)                $this->xmlrequest->startYear;
-        if(isset($this->xmlrequest->measuredBy['id']))           $this->measuredByID          = (int)                $this->xmlrequest->measuredBy['id'];
-        if(isset($this->xmlrequest->owner['id']))                $this->ownerUserID           = (int)                $this->xmlrequest->owner['id'];
-        if(isset($this->xmlrequest->datingTypeID))               $this->datingTypeID          = addslashes(          $this->xmlrequest->datingTypeID);
-        if(isset($this->xmlrequest->datingType))                 $this->datingType            = addslashes(          $this->xmlrequest->datingType);
-        if(isset($this->xmlrequest->datingErrorPositive))        $this->datingErrorPositive   = (int)                $this->xmlrequest->datingErrorPositive;
-        if(isset($this->xmlrequest->datingErrorNegative))        $this->datingErrorNegative   = (int)                $this->xmlrequest->datingErrorNegative;
-        if(isset($this->xmlrequest->name))                       $this->name                  = addslashes(          $this->xmlrequest->name);
-        if(isset($this->xmlrequest->description))                $this->description           = addslashes(          $this->xmlrequest->description);
-        if(isset($this->xmlrequest->isLegacyCleaned))            $this->isLegacyCleaned       = fromStringtoPHPBool( $this->xmlrequest->isLegacyCleaned);
-        if(isset($this->xmlrequest->isReconciled))               $this->isReconciled          = fromStringtoPHPBool( $this->xmlrequest->isReconciled);
-        if(isset($this->xmlrequest->isPublished))                $this->isPublished           = fromStringtoPHPBool( $this->xmlrequest->isPublished);
-        if(isset($this->xmlrequest->readings['type']))           $this->readingType           = addslashes(          $this->xmlrequest->readings['type']);
-        if(isset($this->xmlrequest->readings['units']))          $this->readingUnits          = addslashes(          $this->xmlrequest->readings['units']);
-        if(isset($this->xmlrequest->operation))                  $this->vmeasurementOp        = addslashes(          $this->xmlrequest->operation);
-        if(isset($this->xmlrequest->operation['parameter']))     $this->vmeasurementOpParam   = addslashes(          $this->xmlrequest->operation['parameter']);
+        if(isset($this->xmlrequest['id']))                                 $this->id                    = (int)                $this->xmlrequest['id'];
+        if(isset($this->xmlrequest->metadata->startYear))                  $this->startYear             = (int)                $this->xmlrequest->metadata->startYear;
+        if(isset($this->xmlrequest->metadata->measuredBy['id']))           $this->measuredByID          = (int)                $this->xmlrequest->metadata->measuredBy['id'];
+        if(isset($this->xmlrequest->metadata->owner['id']))                $this->ownerUserID           = (int)                $this->xmlrequest->metadata->owner['id'];
+        if(isset($this->xmlrequest->metadata->datingTypeID))               $this->datingTypeID          = addslashes(          $this->xmlrequest->metadata->datingTypeID);
+        if(isset($this->xmlrequest->metadata->datingType))                 $this->datingType            = addslashes(          $this->xmlrequest->metadata->datingType);
+        if(isset($this->xmlrequest->metadata->datingErrorPositive))        $this->datingErrorPositive   = (int)                $this->xmlrequest->metadata->datingErrorPositive;
+        if(isset($this->xmlrequest->metadata->datingErrorNegative))        $this->datingErrorNegative   = (int)                $this->xmlrequest->metadata->datingErrorNegative;
+        if(isset($this->xmlrequest->metadata->name))                       $this->name                  = addslashes(          $this->xmlrequest->metadata->name);
+        if(isset($this->xmlrequest->metadata->description))                $this->description           = addslashes(          $this->xmlrequest->metadata->description);
+        if(isset($this->xmlrequest->metadata->isLegacyCleaned))            $this->isLegacyCleaned       = fromStringtoPHPBool( $this->xmlrequest->metadata->isLegacyCleaned);
+        if(isset($this->xmlrequest->metadata->isReconciled))               $this->isReconciled          = fromStringtoPHPBool( $this->xmlrequest->metadata->isReconciled);
+        if(isset($this->xmlrequest->metadata->isPublished))                $this->isPublished           = fromStringtoPHPBool( $this->xmlrequest->metadata->isPublished);
+        if(isset($this->xmlrequest->metadata->readings['type']))           $this->readingType           = addslashes(          $this->xmlrequest->metadata->readings['type']);
+        if(isset($this->xmlrequest->metadata->readings['units']))          $this->readingUnits          = addslashes(          $this->xmlrequest->metadata->readings['units']);
+        if(isset($this->xmlrequest->metadata->operation))                  $this->vmeasurementOp        = addslashes(          $this->xmlrequest->metadata->operation);
+        if(isset($this->xmlrequest->metadata->operation['parameter']))     $this->vmeasurementOpParam   = addslashes(          $this->xmlrequest->metadata->operation['parameter']);
         
         foreach($this->xmlrequest->xpath('//references/measurement') as $refmeasurement)
         {

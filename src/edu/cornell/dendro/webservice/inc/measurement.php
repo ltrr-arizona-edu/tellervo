@@ -879,7 +879,7 @@ class measurement
                 else
                 {
                     $xml.="<references>\n";
-                    $xml.= "<radius id=\"".$this->radiusID."\" url=\"http://$domain/radius/".$this->radiusID."\" />\n";
+                    $xml.= getResourceLinkTag("radius", $this->radiusID);
                     $xml.="</references>\n";
                 }
                 

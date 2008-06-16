@@ -136,7 +136,7 @@ function getResourceLinkTag($object, $id)
 {
     global $domain;
     
-    return "<link type=\"corina/xml\" object=\"$object\" parameter=\"$id\" url=\"http://$domain".$_SERVER['REQUEST_URI']."\" />";
+    return "<link type=\"corina/xml\" object=\"$object\" id=\"$id\" url=\"http://$domain".$_SERVER['REQUEST_URI']."\" />\n";
 
 }
 ?>

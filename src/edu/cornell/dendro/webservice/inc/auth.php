@@ -426,6 +426,12 @@ class auth
             $theObjectType='vmeasurement';
         }
 
+        // Convert PG NULL to a string 'NULL' for SQL insert
+        if($theObjectID===NULL)
+        {
+            $theObjectID = "NULL";
+        }
+
         // Check user is logged in first
         if ($this->isLoggedIn)
         {
