@@ -58,6 +58,8 @@ public class Dictionary extends CachedResource {
 			Element child = (Element) itr.next();
 			
 			Field targetField;
+			Field targetFieldMap; // do we also have a map?
+			
 			Class<? extends BasicDictionaryElement> targetClass;
 			Constructor<? extends BasicDictionaryElement> targetConstructor;
 
@@ -68,7 +70,14 @@ public class Dictionary extends CachedResource {
 				System.out.println("No dictionary exists for " + child.getName());
 				continue;
 			}
-			
+
+			// Check to see if we also have a map
+			try {
+				targetFieldMap = this.getClass().getDeclaredField(child.getName() + "Map");
+			} catch(Exception e) {
+				targetFieldMap = null;
+			}
+
 			/* Obtain a name for the associated class.
 			 * For example,
 			 *   specimenTypeDictionary -> SpecimenType
@@ -103,7 +112,7 @@ public class Dictionary extends CachedResource {
 			}
 			
 			// Now, finally, loop through our child elements and make new objects for each
-			ArrayList<BasicDictionaryElement> l = new ArrayList<BasicDictionaryElement>();
+			ArrayList<BasicDictionaryElement> newList = new ArrayList<BasicDictionaryElement>();
 			List<?> elements = child.getChildren();
 			try {
 				for(int i = 0; i < elements.size(); i++) {
@@ -115,7 +124,7 @@ public class Dictionary extends CachedResource {
 						continue;
 					
 					BasicDictionaryElement obj = targetConstructor.newInstance(new Object[] {id.getValue(), e.getText()});
-					l.add(obj);
+					newList.add(obj);
 					
 					// If we have an element that can be standard or not, set it
 					if(obj instanceof StockDictionaryElement) {
@@ -126,7 +135,21 @@ public class Dictionary extends CachedResource {
 					}
 				}
 				
-				targetField.set(this, l);
+				targetField.set(this, newList);
+				
+				// do we have a map?
+				if(targetFieldMap != null) {
+					Map<String, BasicDictionaryElement> map = new HashMap<String, BasicDictionaryElement>();
+					
+					// add everything to the map
+					// this doesn't eat that much memory because we're just reusing references
+					for(BasicDictionaryElement obj : newList) {
+						map.put(obj.getInternalRepresentation(), obj);
+					}
+					
+					System.out.println("neat, a map for " + className);
+				}
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -161,7 +184,35 @@ public class Dictionary extends CachedResource {
 			return null;
 		}
 	}
-	
+
+	/**
+	 * Used to acquire a dictionary.
+	 * 
+	 * @param dictionaryType
+	 * @return A List of dictionaryType classes
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, ? extends BasicDictionaryElement> getDictionaryMap(String dictionaryType) {
+		String localName = Character.toLowerCase(dictionaryType.charAt(0)) + dictionaryType.substring(1) + "DictionaryMap";
+		Field dField;
+		Map<String, BasicDictionaryElement> retMap;
+		
+		/*
+		 * Kludge: 
+		 * regions isn't a regionsDictionary.
+		 */
+		if(dictionaryType.equalsIgnoreCase("Regions"))
+			localName = "regionsMap";
+		
+		try {
+			dField = this.getClass().getDeclaredField(localName);
+			retMap = (Map) dField.get(this);
+			return retMap;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	@SuppressWarnings("unused")
 	private volatile List<SpecimenType> specimenTypeDictionary;
 
@@ -194,4 +245,7 @@ public class Dictionary extends CachedResource {
 
 	@SuppressWarnings("unused")
 	private volatile List<Taxon> taxonDictionary;
+
+	@SuppressWarnings("unused")
+	private volatile Map<String, Taxon> taxonDictionaryMap;
 }

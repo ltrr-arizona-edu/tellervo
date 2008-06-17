@@ -118,6 +118,18 @@ public class TreeDialog extends BaseNewDialog {
 		Tree tree = new Tree(Tree.ID_NEW, txtTreeName.getText());
     	IntermediateResource ir = new IntermediateResource(parentSubsite, tree);
 
+    	// populate the tree... 
+    	if(txtLatitude.getText().length() != 0)
+    		tree.setLatitude(txtLatitude.getText());
+    	if(txtLongitude.getText().length() != 0)
+    		tree.setLongitude(txtLongitude.getText());
+    	if(txtPrecision.getText().length() != 0)
+    		tree.setPrecision(txtPrecision.getText());
+    	if(txtOriginalTaxon.getText().length() != 0)
+    		tree.setOriginalTaxonName(txtOriginalTaxon.getText());
+    	if(cboTaxon.getSelectedItem() instanceof Taxon)
+    		tree.setValidatedTaxon((Taxon) cboTaxon.getSelectedItem());
+    	
     	if(!createObject(ir))
     		return;
     	
