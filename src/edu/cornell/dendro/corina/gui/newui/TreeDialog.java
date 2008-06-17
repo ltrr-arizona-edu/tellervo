@@ -26,12 +26,13 @@ import edu.cornell.dendro.corina.dictionary.Taxon;
 import edu.cornell.dendro.corina.site.Subsite;
 import edu.cornell.dendro.corina.site.Tree;
 import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 
 /**
  *
  * @author  peterbrewer
  */
-public class TreeDialog extends javax.swing.JDialog {
+public class TreeDialog extends BaseNewDialog {
     
     /** Creates new form NewSite */
     public TreeDialog(java.awt.Dialog parent, boolean modal, String prefix, Subsite parentSubsite) {
@@ -46,35 +47,29 @@ public class TreeDialog extends javax.swing.JDialog {
         Center.center(this);
     }
     
-    private Tree newTree;
     private Subsite parentSubsite;
-    private boolean succeeded = false;
     
     //@SuppressWarnings("unchecked")
 	private void initialize() {
-    	// select all on focus
-    	txtTreeName.addFocusListener(new FocusAdapter() {
-    		public void focusGained(FocusEvent fe) {
-    			txtTreeName.selectAll();
-    		}
-    	});
-    	
+
+		// select the whole box
+		setSelectAllOnFocus(txtTreeName);
+		setFieldValidateButtons(txtTreeName);
+		setCapsNoWhitespace(txtTreeName);
+		
     	// force focus
     	txtTreeName.requestFocusInWindow();
-
-    	txtTreeName.getDocument().addDocumentListener(new DocumentListener() {
-			public void changedUpdate(DocumentEvent e) {
-				// hello stupid bug.. this isn't used on JTextFields for some awful reason
-			}
-
-			public void removeUpdate(DocumentEvent e) {
-				validateButtons();
-			}
-
-			public void insertUpdate(DocumentEvent e) {
-				validateButtons();
-			}
-		});
+    	
+    	// set up the original stuff to be blank
+    	txtLatitude.setText("");
+    	txtLongitude.setText("");
+    	txtPrecision.setText("");
+    	txtOriginalTaxon.setText("");
+    	
+    	// force number entry
+    	setNumbersOnly(txtLatitude, true);
+    	setNumbersOnly(txtLongitude, true);
+    	setNumbersOnly(txtPrecision, false);
 
     	// set up the taxon stuff
     	List<Taxon> taxonList = new ArrayList<Taxon>(
@@ -106,21 +101,34 @@ public class TreeDialog extends javax.swing.JDialog {
     	btnApply.setEnabled(false);
        	btnApply.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			//commit();
+    			commit();
     		}
     	});
        	
     	// cancel button
        	btnCancel.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			succeeded = false;
     			dispose();
     		}
     	});
 
     }
 	
-	private void validateButtons() {
+	private void commit() {
+		Tree tree = new Tree(Tree.ID_NEW, txtTreeName.getText());
+    	IntermediateResource ir = new IntermediateResource(parentSubsite, tree);
+
+    	if(!createObject(ir))
+    		return;
+    	
+		if(ir.getObject().get(0) instanceof Tree) {
+			setNewObject((Tree) ir.getObject().get(0));
+		}
+		
+    	dispose();
+    }
+	
+	protected void validateButtons() {
     	boolean nameOk;
     	boolean taxonOk;
 
@@ -157,10 +165,10 @@ public class TreeDialog extends javax.swing.JDialog {
         lblLatitude = new javax.swing.JLabel();
         lblLongitude = new javax.swing.JLabel();
         lblPrecision = new javax.swing.JLabel();
-        spnPrecision = new javax.swing.JSpinner();
+        txtPrecision = new javax.swing.JTextField();
         lblSpinUnits = new javax.swing.JLabel();
-        txtLongitude = new javax.swing.JFormattedTextField();
-        txtLatitude = new javax.swing.JFormattedTextField();
+        txtLongitude = new javax.swing.JTextField();
+        txtLatitude = new javax.swing.JTextField();
         btnGPSImport = new javax.swing.JButton();
         txtOriginalTaxon = new javax.swing.JTextField();
         lblOrigTaxon = new javax.swing.JLabel();
@@ -198,11 +206,10 @@ public class TreeDialog extends javax.swing.JDialog {
         lblLongitude.setLabelFor(txtLongitude);
         lblLongitude.setText("Longitude:");
 
-        lblPrecision.setLabelFor(spnPrecision);
+        lblPrecision.setLabelFor(txtPrecision);
         lblPrecision.setText("Precision:");
 
-        spnPrecision.setToolTipText("Precision of locality information in meters");
-        spnPrecision.setEditor(new javax.swing.JSpinner.NumberEditor(spnPrecision, ""));
+        txtPrecision.setToolTipText("Precision of locality information in meters");
 
         lblSpinUnits.setText("m");
 
@@ -230,7 +237,7 @@ public class TreeDialog extends javax.swing.JDialog {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelLocationLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(panelLocationLayout.createSequentialGroup()
-                        .add(spnPrecision, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 77, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .add(txtPrecision, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 77, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(lblSpinUnits))
                     .add(lblPrecision, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -248,7 +255,7 @@ public class TreeDialog extends javax.swing.JDialog {
                 .add(panelLocationLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(txtLatitude, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(txtLongitude, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(spnPrecision, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(txtPrecision, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblSpinUnits)
                     .add(btnGPSImport))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -396,9 +403,9 @@ public class TreeDialog extends javax.swing.JDialog {
     private javax.swing.JPanel panelButtons;
     private javax.swing.JPanel panelLocation;
     private javax.swing.JSeparator seperatorButtons;
-    private javax.swing.JSpinner spnPrecision;
-    private javax.swing.JFormattedTextField txtLatitude;
-    private javax.swing.JFormattedTextField txtLongitude;
+    private javax.swing.JTextField txtPrecision;
+    private javax.swing.JTextField txtLatitude;
+    private javax.swing.JTextField txtLongitude;
     private javax.swing.JTextField txtOriginalTaxon;
     private javax.swing.JTextField txtTreeName;
     // End of variables declaration//GEN-END:variables

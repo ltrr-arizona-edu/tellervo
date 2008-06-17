@@ -99,6 +99,9 @@ public class CreateSample extends javax.swing.JPanel {
     				// Repopulate the subsites box
     				populateSiteList();
     				
+    				// choose our 'select a site' box to reset things...
+    				cboSite.setSelectedIndex(0);
+    				
     				// and select the subsite that we just created
     				cboSite.setSelectedItem(sd.getNewObject());
     			}
@@ -126,7 +129,7 @@ public class CreateSample extends javax.swing.JPanel {
     	btnNewTree.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			Subsite subsite = (Subsite) cboSubsite.getSelectedItem();
-    			TreeDialog td = new TreeDialog(parent, true, getLabel(), subsite);
+    			TreeDialog td = new TreeDialog(parent, true, getLabel(2), subsite);
     			
     			td.setVisible(true);
     			
@@ -392,15 +395,29 @@ public class CreateSample extends javax.swing.JPanel {
     }
     
     private void updateLabel() {
-    	lblCodeName.setText(getLabel());    	
+    	lblCodeName.setText(getLabel(5));    	
     }
     
-    private String getLabel() {
+    /**
+     * Get a text label from what's been currently selected
+     * depth 1 = C-
+     * depth 2 = C-Site/subsite
+     * depth 3 = C-Site/subsite-Tree
+     * depth 4 = C-Site/subsite-Tree-Specimen
+     * depth 5 = C-Site/subsite-Tree-Specimen-Radius
+     * @param maxdepth
+     * @return
+     */
+    private String getLabel(int maxdepth) {
     	StringBuffer sb = new StringBuffer();
     	Object o;
     	
     	sb.append("C-");
     	do {
+    		if(maxdepth < 2)
+    			break;
+    		
+    		// site
     		o = cboSite.getSelectedItem();
     		if((o != null) && (o instanceof Site)) {
     			sb.append(((Site)o).getCode());
@@ -408,9 +425,12 @@ public class CreateSample extends javax.swing.JPanel {
     		else
     			break;
 
+    		// subsite
     		o = cboSubsite.getSelectedItem();
     		if((o != null) && (o instanceof Subsite)) {
     			Subsite ss = (Subsite) o;
+
+    			// don't add /Main (it's assumed)
     			if(!ss.toString().equalsIgnoreCase("main")) {
     				sb.append("/");
     				sb.append(ss);
@@ -420,6 +440,10 @@ public class CreateSample extends javax.swing.JPanel {
     		else
     			break;
     		
+    		if(maxdepth < 3)
+    			break;
+    		
+    		// tree
     		o = cboTree.getSelectedItem();
     		if((o != null) && (o instanceof Tree)) {
     			sb.append(o);
@@ -428,6 +452,10 @@ public class CreateSample extends javax.swing.JPanel {
     		else
     			break;
 
+    		if(maxdepth < 4)
+    			break;
+    		
+    		// specimen
     		o = cboSpecimen.getSelectedItem();
     		if((o != null) && (o instanceof Specimen)) {
     			sb.append(o);
@@ -436,6 +464,10 @@ public class CreateSample extends javax.swing.JPanel {
     		else
     			break;
     		
+    		if(maxdepth < 5)
+    			break;
+    		
+    		// radius
     		o = cboRadius.getSelectedItem();
     		if((o != null) && (o instanceof Radius)) {
     			sb.append(o);

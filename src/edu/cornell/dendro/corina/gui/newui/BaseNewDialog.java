@@ -4,9 +4,16 @@ import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
 import edu.cornell.dendro.corina.site.Subsite;
@@ -65,8 +72,117 @@ public abstract class BaseNewDialog<OBJT> extends JDialog {
 		return succeeded;
 	}
 	
+	/**
+	 * Did we succeed in creating a new webdb object?
+	 * @return
+	 */
 	public boolean didSucceed() {
 		return succeeded;
+	}
+
+	/**
+	 * Convenience method: Force a JTextField to auto-capitalize 
+	 * and not allow any whitespace chars
+	 * @param field
+	 */
+	protected void setCapsNoWhitespace(JTextField field) {
+		field.addKeyListener(new KeyAdapter() {
+    		public void keyTyped(KeyEvent ke) {
+    			char k = ke.getKeyChar();
+    			
+    			// don't allow any whitespace
+    			if(Character.isWhitespace(k)) {
+    				ke.consume(); // om nom nom nom!
+    				return;
+    			}
+    			
+    			// force uppercase
+    			ke.setKeyChar(Character.toUpperCase(k));
+    		}
+    	});
+	}
+	
+	/**
+	 * Only allow number characters, - in front, and one decimal point
+	 * @param field
+	 * @param canHaveSign
+	 */
+	protected void setNumbersOnly(JTextField field, boolean canHaveSign) {
+		final JTextField gField = field;
+		final boolean gCanHaveSign = canHaveSign;
+		
+		field.addKeyListener(new KeyAdapter() {
+    		public void keyTyped(KeyEvent ke) {
+    			char k = ke.getKeyChar();
+
+    			// always allow minuses
+    			if(Character.isDigit(k))
+    				return;
+    			
+    			// only allow a or at the beginning
+    			if(gCanHaveSign && k == KeyEvent.VK_MINUS) {
+    				if(gField.getCaretPosition() != 0)
+    					ke.consume();
+    				return;
+    			}
+    			
+    			// only allow one period
+    			if(k == KeyEvent.VK_PERIOD) {
+    				String txt = gField.getText();
+    				
+    				if(txt.indexOf(KeyEvent.VK_PERIOD) != -1)
+    					ke.consume();
+    				return;
+    			}
+    			
+    			// not here!
+    			ke.consume();
+    		}
+    	});
+	}
+	
+	/**
+	 * Convenience function: makes a JTextField select all
+	 * when it receives focus
+	 * @param field
+	 */
+	protected void setSelectAllOnFocus(JTextField field) {
+		final JTextField glue = field;
+		
+		field.addFocusListener(new FocusAdapter() {
+    		public void focusGained(FocusEvent fe) {
+    			glue.selectAll();
+    		}
+		});
+	}
+	/**
+	 * Makes this JTextField call our validateButtons() method
+	 * every time its contents change.
+	 * 
+	 * @param field
+	 */
+	protected void setFieldValidateButtons(JTextField field) {
+		field.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				// hello stupid bug.. this isn't used on JTextFields for some awful reason
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				validateButtons();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				validateButtons();
+			}
+		});
+	}
+	
+	/**
+	 * Intended to be overridden by a function that enables/disables buttons.
+	 * Called by anything that has been added with setFieldValidateButtons
+	 */
+	protected void validateButtons() {
+		
 	}
 	
 	public BaseNewDialog() throws HeadlessException {

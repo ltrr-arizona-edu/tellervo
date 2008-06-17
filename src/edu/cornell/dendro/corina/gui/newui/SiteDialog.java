@@ -45,65 +45,21 @@ public class SiteDialog extends BaseNewDialog<Site> {
 	private void initialize() {
     	
     	// forced formatting on the site code box
-    	txtSiteCode.addKeyListener(new KeyAdapter() {
-    		public void keyTyped(KeyEvent ke) {
-    			char k = ke.getKeyChar();
-    			
-    			// don't allow any whitespace
-    			if(Character.isWhitespace(k)) {
-    				ke.setKeyChar((char) KeyEvent.VK_CLEAR);
-    				return;
-    			}
-    			
-    			// force uppercase
-    			ke.setKeyChar(Character.toUpperCase(k));
-    		}
-    	});
+		setCapsNoWhitespace(txtSiteCode);
     	
     	// When the code is changed, listen and ensure length
     	// We use this as one condition to allow the Apply button to be enabled
-    	txtSiteCode.getDocument().addDocumentListener(new DocumentListener() {
-			public void changedUpdate(DocumentEvent e) {
-				// hello stupid bug.. this isn't used on JTextFields for some awful reason
-			}
-
-			public void removeUpdate(DocumentEvent e) {
-				validateButtons();
-			}
-
-			public void insertUpdate(DocumentEvent e) {
-				validateButtons();
-			}
-		});
+    	setFieldValidateButtons(txtSiteCode);
 
     	// When the name is changed, listen and ensure length and not defaults!
     	// We use this as the second condition to allow the Apply button to be enabled
-    	txtSiteName.getDocument().addDocumentListener(new DocumentListener() {
-			public void changedUpdate(DocumentEvent e) {
-			}
-
-			public void removeUpdate(DocumentEvent e) {
-				validateButtons();
-			}
-
-			public void insertUpdate(DocumentEvent e) {
-				validateButtons();
-			}
-		});
+    	setFieldValidateButtons(txtSiteName);
     	
     	// on focus, select all (for nice tabbing)
-    	txtSiteName.addFocusListener(new FocusAdapter() {
-    		public void focusGained(FocusEvent fe) {
-    			txtSiteName.selectAll();
-    		}
-    	});
+    	setSelectAllOnFocus(txtSiteName);
     	
     	// on focus, select all (for nice tabbing) #2
-    	txtSiteCode.addFocusListener(new FocusAdapter() {
-    		public void focusGained(FocusEvent fe) {
-    			txtSiteCode.selectAll();
-    		}
-    	});
+    	setSelectAllOnFocus(txtSiteCode);
 
     	// apply button
     	btnApply.addActionListener(new ActionListener() {
@@ -138,7 +94,7 @@ public class SiteDialog extends BaseNewDialog<Site> {
 		dispose();
     }
     
-    private void validateButtons() {
+    protected void validateButtons() {
     	boolean codeOk, nameOk;
 		int len;
 		

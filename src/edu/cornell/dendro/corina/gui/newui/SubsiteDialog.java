@@ -40,28 +40,12 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
     private Site parentSite;
     
     private void initialize() {
-    	// When the code is changed, listen and ensure length
+    	// When the name is changed, listen and ensure length
     	// We use this as one condition to allow the Apply button to be enabled
-    	txtSubsiteName.getDocument().addDocumentListener(new DocumentListener() {
-			public void changedUpdate(DocumentEvent e) {
-				// hello stupid bug.. this isn't used on JTextFields for some awful reason
-			}
-
-			public void removeUpdate(DocumentEvent e) {
-				validateButtons();
-			}
-
-			public void insertUpdate(DocumentEvent e) {
-				validateButtons();
-			}
-		});
+    	setFieldValidateButtons(txtSubsiteName);
     	
     	// select all on focus
-    	txtSubsiteName.addFocusListener(new FocusAdapter() {
-    		public void focusGained(FocusEvent fe) {
-    			txtSubsiteName.selectAll();
-    		}
-    	});
+    	setSelectAllOnFocus(txtSubsiteName);
     	
     	// force focus
     	txtSubsiteName.requestFocusInWindow();
@@ -103,7 +87,7 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
     	dispose();
     }
         
-    private void validateButtons() {
+    protected void validateButtons() {
     	boolean nameOk;
 
     	// then, site name
