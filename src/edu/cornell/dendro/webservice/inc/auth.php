@@ -432,52 +432,90 @@ class auth
             $theObjectID = "NULL";
         }
 
-        // Check user is logged in first
-        if ($this->isLoggedIn)
+        // If user is not logged in deny!
+        if ($this->isLoggedIn!=TRUE)
         {
-            if(!($this->isAdmin))
+            return false;
+        }
+
+        // If user is admin give them the world
+        if ($this->isAdmin)
+        {
+            return true;
+        }
+
+        // For objects that don't have direct security, we need to move up the object chain to check perms
+        // We do this by running a sql statement to get details of the next parent which can be searched for perms
+        switch($theObjectType)
+        {
+        case "radius":
+            $sql = "select tblradius.radiusid, tblspecimen.treeid as parentid from tblradius, tblspecimen where tblradius.radiusid=$theObjectID and tblradius.specimenid=tblspecimen.specimenid";
+            $theObjectType="tree";
+            break;
+        case "specimen":
+            $sql = "select tblspecimen.specimenid, tlbspecimen.treeid as parentid from tblspecimen where tblspecimen.specimenid=$theObjectID ";
+            $theObjectType="tree";
+            break;
+        case "subSite":
+            $sql = "select tblsubsite.subsiteid, tlbsubsite.siteid as parentid from tblsubsite where tblsubsite.subsiteid=$theObjectID ";
+            $theObjectType="site";
+            break;
+        default:
+            $sql = NULL;
+        }
+
+        if($sql)
+        {
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
-                // Not an admin user so do perms lookup
-                $sql = "select * from cpgdb.getuserpermissionset($this->securityuserid, '$theObjectType', $theObjectID)";
-                $dbconnstatus = pg_connection_status($dbconn);
-                if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn);
+                if(pg_num_rows($result)==0)
+                {
+                    // No records match the id specified
+                    return false;
+                }
+                else
                 {
                     $result = pg_query($dbconn, $sql);
-                    $row = pg_fetch_array($result);
-                    
-                    if($row['denied']===TRUE)
+                    while ($row = pg_fetch_array($result))
                     {
-                        // Check whether 'denied' over rules.
-                        return False;
-                    }
-
-                    switch ($thePermissionType)
-                    {
-                    case "create":
-                        if($row['cancreate']=='t') return true;
-                    case "read":
-                        if($row['canread']=='t') return true;
-                    case "update":
-                        if($row['canupdate']=='t') return true;
-                    case "delete":
-                        if($row['candelete']=='t') return true;
-                    default:
-                        // Incorrect permission type specified returning false
-                        return False;
+                        $theObjectID = $row['parentid'];
                     }
                 }
             }
-            else
-            {
-                // User is admin so return true
-                return True;
-            }
         }
 
-    // Defaulting to false to be safe
-    return false;
+        // Dp the actual perms lookup
+        $sql = "select * from cpgdb.getuserpermissionset($this->securityuserid, '$theObjectType', $theObjectID)";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);
+            $row = pg_fetch_array($result);
+            
+            if($row['denied']===TRUE)
+            {
+                // Check whether 'denied' over rules.
+                return False;
+            }
 
-
+            switch ($thePermissionType)
+            {
+            case "create":
+                if($row['cancreate']=='t') return true;
+            case "read":
+                if($row['canread']=='t') return true;
+            case "update":
+                if($row['canupdate']=='t') return true;
+            case "delete":
+                if($row['candelete']=='t') return true;
+            default:
+                // Incorrect permission type specified returning false
+                return False;
+            }
+        }
   }
 
   function isAdmin()

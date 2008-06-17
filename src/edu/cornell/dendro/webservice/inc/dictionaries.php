@@ -17,6 +17,7 @@ require_once("inc/specimenContinuity.php");
 require_once("inc/pith.php");
 require_once("inc/taxon.php");
 require_once("inc/region.php");
+require_once("inc/securityUser.php");
 
 class dictionaries 
 {
@@ -65,7 +66,7 @@ class dictionaries
         
         $xmldata = "";
 
-        $dictItems = array('siteNote', 'pith', 'specimenQuality', 'specimenType', 'terminalRing', 'region', 'specimenContinuity', 'treeNote', 'vmeasurementNote', 'readingNote', 'taxon');
+        $dictItems = array('siteNote', 'pith', 'specimenQuality', 'specimenType', 'terminalRing', 'region', 'specimenContinuity', 'treeNote', 'vmeasurementNote', 'readingNote', 'taxon', 'securityUser');
             
         // Specimen Type 
         $dbconnstatus = pg_connection_status($dbconn);
@@ -76,6 +77,10 @@ class dictionaries
                 if($item=="region")
                 {
                     $sql="select distinct(tblsiteregion.regionid) as id, tblregion.regionname from tblsiteregion, tblregion where tblsiteregion.regionid=tblregion.regionid";
+                }
+                elseif($item=="securityUser")
+                {
+                    $sql = "select ".strtolower($item)."id as id from tbl".strtolower($item)." order by ".strtolower($item)."id"; 
                 }
                 else
                 {
@@ -116,6 +121,9 @@ class dictionaries
                         break;
                     case "taxon":
                         $myObj = new taxon();
+                        break;
+                    case "securityUser":
+                        $myObj = new securityUser();
                         break;
                     default:
                         echo "not supported yet";

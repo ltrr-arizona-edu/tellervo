@@ -18,7 +18,7 @@ class securityUser
     var $lastname = NULL;
     var $isActive = TRUE;
 
-    var $parentXMLTag = "securityuser"; 
+    var $parentXMLTag = "users"; 
     var $lastErrorMessage = NULL;
     var $lastErrorCode = NULL;
 
@@ -125,13 +125,14 @@ class securityUser
 
     function asXML($mode="all")
     {
+        $xml = NULL;
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
             if(($mode=="all") || ($mode=="begin"))
             {
                 // Only return XML when there are no errors.
-                $xml.= "<securityuser ";
+                $xml.= "<user ";
                 $xml.= "id=\"".$this->id."\" ";
                 $xml.= "username=\"".$this->username."\" ";
                 $xml.= "firstname=\"".$this->firstname."\" ";
@@ -143,7 +144,7 @@ class securityUser
             if(($mode=="all") || ($mode=="end"))
             {
                 // End XML tag
-                $xml.= "</securityuser>\n";
+                $xml.= "</user>\n";
             }
 
             return $xml;
