@@ -299,7 +299,7 @@ class taxon
             // Only return XML when there are no errors.
             //
             // TO DO - Sort out XML special characters in XML.  
-            $xml= "<taxon id=\"".$this->id."\" parentID=\"".$this->parentID."\" colID=\"".$this->colID."\" colParentID=\"".$this->colParentID."\" taxonRank=\"".$this->taxonRank."\">".str_replace("&", "&amp;", $this->label)."</taxon>\n";
+            $xml= "<taxon id=\"".$this->id."\" parentID=\"".$this->parentID."\" colID=\"".$this->colID."\" colParentID=\"".$this->colParentID."\" taxonRank=\"".$this->taxonRank."\">".escapeXMLChars($this->label)."</taxon>\n";
             return $xml;
         }
         else

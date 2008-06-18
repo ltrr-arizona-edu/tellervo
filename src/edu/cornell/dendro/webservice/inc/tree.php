@@ -307,7 +307,7 @@ class tree
                 $xml.= getResourceLinkTag("tree", $this->id)."\n";
                 
                 if(isset($this->name))                  $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
-                if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".$myTaxon->getLabel()."</validatedTaxon>\n";
+                if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".escapeXMLChars($myTaxon->getLabel())."</validatedTaxon>\n";
                 if(isset($this->originalTaxonName))    $xml.= "<originalTaxonName>".escapeXMLChars($this->originalTaxonName)."</originalTaxonName>\n";
 
                 if($hasHigherTaxonomy)
