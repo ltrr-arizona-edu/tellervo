@@ -310,6 +310,7 @@ class site
                 $xml = "<site ";
                 $xml.= "id=\"".$this->id."\" >";
                 $xml.= getResourceLinkTag("site", $this->id)."\n ";
+                $xml.= getResourceLinkTag("site", $this->id, "map")."\n ";
                 $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
                 $xml.= "<code>".escapeXMLChars($this->code)."</code>\n";
                 $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";

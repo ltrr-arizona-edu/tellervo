@@ -84,15 +84,16 @@ elseif($myMetaHeader->status != "Error")
 
     // If there is more than one parameter objects set the default err message to 'notice'
     // so that the remaining objects can be processed
-    if($myRequest->countParamObjects()>1)
+    /*if( ($myRequest->getCrudMode()=='search') && ($myRequest->countParamObjects()>1) )
     {
         $defaultErrType = E_USER_NOTICE;
     }
     else
     {
         $defaultErrType = E_USER_ERROR;
-    }
+    }*/
 
+    $defaultErrType = E_USER_ERROR;
 
     // Process each Param object in turn during monster foreach loop!
     foreach ($myRequest->getParamObjectsArray() as $paramObj)
@@ -172,6 +173,9 @@ elseif($myMetaHeader->status != "Error")
         //  other requests do not need to be verified
         // ********************
 
+        // We may need to alter the object type, so store the original object type first
+        $originalObjectType = $objectType;
+              
         if ($myRequest->getCrudMode()=='create')
         {
             // For create requests we need the type and id of the parent to check permissions
@@ -228,8 +232,19 @@ elseif($myMetaHeader->status != "Error")
             if($myAuth->getPermission($myRequest->getCrudMode(), $objectType, $myID)===FALSE)
             {
                 // Permission denied
-                trigger_error("103"."Permission to ".$myRequest->getCrudMode()." ".$objectType."id $myID was denied.", $defaultErrType);
-                break;
+                if ($originalObjectType!=$objectType)
+                {
+                    // Permission determined from parent object so the error message should be set accordingly
+                    trigger_error("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." associated with ".$objectType." ".$myID." was denied.", $defaultErrType);
+                    break;
+
+                }
+                else
+                {
+                    // Standard error message
+                    trigger_error("103"."Permission to ".$myRequest->getCrudMode()." ".$objectType." id $myID was denied.", $defaultErrType);
+                    break;
+                }
             }
         }
 

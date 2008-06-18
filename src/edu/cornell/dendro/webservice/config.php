@@ -30,6 +30,12 @@ $domain = "dendro.cornell.edu";
 // Folder name where the wiki documentation is stored
 $wikiManualFolder = "corina-manual";
 
+// Page name where main webservice is run from
+$wspage = "webservice.php";
+
+// Page name where mapping service is run from
+$mspage = "mapservice.php";
+
 // Google maps API Key for server
 $gMapAPIKey = "ABQIAAAAs0rCgSUzwBX9znK1mNUjuxQ2hntmN47BkGQDV0OcxMEAjHeRKhS83HleB6295GV1FrzHI7MycgtWZg";
 

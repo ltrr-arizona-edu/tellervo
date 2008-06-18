@@ -789,6 +789,7 @@ class measurement
             $xml.= "id=\"".$this->vmeasurementID."\">";
            
             $xml.= getResourceLinkTag("measurement", $this->vmeasurementID);
+            $xml.= getResourceLinkTag("measurement", $this->vmeasurementID, "map");
             
             $xml.= "<metadata>\n";
             if(isset($this->name))                  $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";

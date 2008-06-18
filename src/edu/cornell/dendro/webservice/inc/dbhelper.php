@@ -132,11 +132,20 @@ function xmlSpecialCharReplace($xmlrequest)
 
 }
 
-function getResourceLinkTag($object, $id)
+function getResourceLinkTag($object, $id, $format="xml")
 {
     global $domain;
-    
-    return "<link type=\"corina/xml\" object=\"$object\" id=\"$id\" url=\"http://$domain".$_SERVER['REQUEST_URI']."\" />\n";
+    global $wspage;
+    global $mspage;
+
+    if ($format=="map")
+    {
+        return "<link type=\"map/html\" url=\"".escapeXMLChars("https://$domain"."/$mspage?object=$object&id=$id")."\" />\n";
+    }
+    else
+    { 
+        return "<link type=\"corina/xml\" object=\"$object\" id=\"$id\" url=\"https://$domain"."/$wspage\" />\n";
+    }
 
 }
 
