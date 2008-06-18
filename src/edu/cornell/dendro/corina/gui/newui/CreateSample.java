@@ -133,16 +133,31 @@ public class CreateSample extends javax.swing.JPanel {
     			
     			td.setVisible(true);
     			
-    			// add and autoselect...
+    			if(td.didSucceed()) {
+    				// add item to the tree box and select it
+    				((DefaultComboBoxModel)cboTree.getModel()).addElement(td.getNewObject());
+    				cboTree.setSelectedItem(td.getNewObject());
+    			}    			
+    		}
+    	});
+
+    	btnNewSpecimen.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			Tree tree = (Tree) cboTree.getSelectedItem();
+    			SpecimenDialog sd = new SpecimenDialog(parent, true, getLabel(3), tree);
+    			
+    			sd.setVisible(true);
+
     			/*
-    			if(sd.didSucceed()) {
-    				populateSubsites(site.getSubsites());
-    				cboSubsite.setSelectedItem(sd.getNewSubsite());
-    			}
+    			if(td.didSucceed()) {
+    				// add item to the tree box and select it
+    				((DefaultComboBoxModel)cboTree.getModel()).addElement(td.getNewObject());
+    				cboTree.setSelectedItem(td.getNewObject());
+    			}    			
     			*/
     		}
     	});
-    }
+}
     
     public void setupBoxes() {
         // SITE listener
@@ -514,7 +529,13 @@ public class CreateSample extends javax.swing.JPanel {
     	// we have to compare sites. blurgh.
     	if(selectedSite != null) {
     		for(int i = 0; i < cboSite.getModel().getSize(); i++) {
-    			if(((Site)cboSite.getModel().getElementAt(i)).equals(selectedSite)) {
+    			Object obj = cboSite.getModel().getElementAt(i);
+    			
+    			// don't compare against non-sites
+    			if(!(obj instanceof Site))
+    				continue;
+    			
+    			if(((Site)obj).equals(selectedSite)) {
     				cboSite.setSelectedIndex(i);
     				break;
     			}
@@ -536,7 +557,13 @@ public class CreateSample extends javax.swing.JPanel {
     	// we have to compare sites. blurgh.
     	if(selectedSubsite != null) {
     		for(int i = 0; i < cboSubsite.getModel().getSize(); i++) {
-    			if(((Subsite)cboSubsite.getModel().getElementAt(i)).equals(selectedSubsite)) {
+    			Object obj = cboSubsite.getModel().getElementAt(i);
+    			
+    			// skip over non-subsites
+    			if(!(obj instanceof Subsite))
+    				continue;
+    			
+    			if(((Subsite)obj).equals(selectedSubsite)) {
     				cboSubsite.setSelectedIndex(i);
     				break;
     			}

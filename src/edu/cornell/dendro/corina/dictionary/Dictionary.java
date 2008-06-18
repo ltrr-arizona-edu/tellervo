@@ -90,15 +90,17 @@ public class Dictionary extends CachedResource {
 			/*
 			 * Kludge:
 			 * Regions isn't a dictionary
+			 * Users have plurality issues
 			 */
 			if(className.equalsIgnoreCase("Regions"))
 				className = "SiteRegion";
+			else if(className.equalsIgnoreCase("Users"))
+				className = "User";
 
 			// Find our class
 			try {
 				Class<?> baseClass = Class.forName("edu.cornell.dendro.corina.dictionary." + className);
 				targetClass = baseClass.asSubclass(BasicDictionaryElement.class);
-				//targetClass = Class.forName("edu.cornell.dendro.corina.dictionary." + className);
 			} catch (Exception e) {
 				System.out.println("Dictionary exists for " + className + ", but no corresponding class");
 				continue;
@@ -118,12 +120,12 @@ public class Dictionary extends CachedResource {
 				for(int i = 0; i < elements.size(); i++) {
 					Element e = (Element) elements.get(i);
 					
-					// no id? drop it.
+					// no id? 
+					// well, I guess a null ID is ok for stuff that doesn't have an ID!
 					Attribute id = e.getAttribute("id");
-					if(id == null)
-						continue;
+					String idvalue = (id != null) ? id.getValue() : null;
 					
-					BasicDictionaryElement obj = targetConstructor.newInstance(new Object[] {id.getValue(), e.getText()});
+					BasicDictionaryElement obj = targetConstructor.newInstance(new Object[] {idvalue, e.getText()});
 					newList.add(obj);
 					
 					// If we have an element that can be standard or not, set it
@@ -133,21 +135,28 @@ public class Dictionary extends CachedResource {
 							((StockDictionaryElement)obj).setStandard(standard.getBooleanValue());
 						}
 					}
+					// user is also a special case. ugh.
+					else if(obj instanceof User) {
+						User user = (User) obj;
+						
+						user.setUsername(e.getAttributeValue("username"));
+						user.setFullname(e.getAttributeValue("firstname"), e.getAttributeValue("lastname"));
+					}
 				}
 				
 				targetField.set(this, newList);
 				
 				// do we have a map?
 				if(targetFieldMap != null) {
-					Map<String, BasicDictionaryElement> map = new HashMap<String, BasicDictionaryElement>();
+					Map<String, BasicDictionaryElement> newMap = new HashMap<String, BasicDictionaryElement>();
 					
 					// add everything to the map
 					// this doesn't eat that much memory because we're just reusing references
 					for(BasicDictionaryElement obj : newList) {
-						map.put(obj.getInternalRepresentation(), obj);
+						newMap.put(obj.getInternalRepresentation(), obj);
 					}
 					
-					System.out.println("neat, a map for " + className);
+					targetFieldMap.set(this, newMap);					
 				}
 				
 			} catch (Exception e) {
@@ -172,9 +181,12 @@ public class Dictionary extends CachedResource {
 		/*
 		 * Kludge: 
 		 * regions isn't a regionsDictionary.
+		 * users isn't a usersDictionary
 		 */
 		if(dictionaryType.equalsIgnoreCase("Regions"))
 			localName = "regions";
+		else if(dictionaryType.equalsIgnoreCase("Users"))
+			localName = "users";
 		
 		try {
 			dField = this.getClass().getDeclaredField(localName);
@@ -203,6 +215,8 @@ public class Dictionary extends CachedResource {
 		 */
 		if(dictionaryType.equalsIgnoreCase("Regions"))
 			localName = "regionsMap";
+		else if(dictionaryType.equalsIgnoreCase("Users"))
+			localName = "usersMap";
 		
 		try {
 			dField = this.getClass().getDeclaredField(localName);
@@ -248,4 +262,8 @@ public class Dictionary extends CachedResource {
 
 	@SuppressWarnings("unused")
 	private volatile Map<String, Taxon> taxonDictionaryMap;
+
+	@SuppressWarnings("unused")
+	private volatile List<User> users;
+
 }

@@ -130,6 +130,13 @@ public class TreeDialog extends BaseNewDialog {
     	if(cboTaxon.getSelectedItem() instanceof Taxon)
     		tree.setValidatedTaxon((Taxon) cboTaxon.getSelectedItem());
     	
+    	// live tree is a little harder
+    	String liveTree = (String) cboIsALiveTree.getSelectedItem();
+    	if(liveTree.equalsIgnoreCase("Yes"))
+    		tree.setIsLiveTree(true);
+    	else if(liveTree.equalsIgnoreCase("No"))
+    		tree.setIsLiveTree(false);
+    	
     	if(!createObject(ir))
     		return;
     	

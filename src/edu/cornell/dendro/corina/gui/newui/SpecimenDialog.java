@@ -6,18 +6,108 @@
 
 package edu.cornell.dendro.corina.gui.newui;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.swing.InputVerifier;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
+import javax.swing.JOptionPane;
+
+import javax.swing.text.DateFormatter;
+import javax.swing.text.MaskFormatter;
+
+import edu.cornell.dendro.corina.dictionary.Taxon;
+import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.util.Center;
+
 /**
  *
  * @author  peterbrewer
  */
-public class SpecimenDialog extends javax.swing.JDialog {
+public class SpecimenDialog extends BaseNewDialog {
     
     /** Creates new form Specimen */
-    public SpecimenDialog(java.awt.Frame parent, boolean modal) {
+    public SpecimenDialog(java.awt.Dialog parent, boolean modal, String prefix, Tree parentTree) {
         super(parent, modal);
         initComponents();
+  
+        initialize();
+        
+        Center.center(this);
     }
     
+    private DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    
+    private void initialize() {
+    	
+    	// quick initial setup: leave things blank
+    	txtCollectionDate.setText("");
+    	txtSpecimenName.setText("Specimen Code");
+    	// muck with labels
+        lblCollectionDate.setText(lblCollectionDate.getText() + " (YYYY/MM/DD)");
+        
+        // select on focus!
+     	setSelectAllOnFocus(txtCollectionDate);  
+     	setSelectAllOnFocus(txtSpecimenName);
+     	
+     	// and of course, the specimen name
+     	setCapsNoWhitespace(txtSpecimenName);
+
+     	// the fields we validate before ok can be pressed
+    	setFieldValidateButtons(txtSpecimenName);
+     	
+     	// force a check of date when we leave the txtCollectionDate field
+    	final JDialog parentGlue = this;
+    	txtCollectionDate.setInputVerifier(new InputVerifier() {
+    		public boolean verify(JComponent input) {
+    			if(input != txtCollectionDate)
+    				return true;
+    			
+    			try {
+    				String value = txtCollectionDate.getText();
+    				
+    				// null date is ok
+    				if(value.equals(""))
+    					return true;
+    				
+    				isoDateFormat.parse(value);    				
+    				
+    				// success!
+    				return true;
+    			} catch(ParseException pe) {
+    				int action = JOptionPane.showConfirmDialog(parentGlue, "The date you entered was invalid.\n" + 
+    						"Would you like to leave it blank?", 
+    						"Invalid Entry", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
+    				
+    				if(action == JOptionPane.YES_OPTION)
+    					txtCollectionDate.setText("");
+
+    				return false;
+    			}
+    		}
+    	});
+    	
+    	btnApply.setEnabled(false);
+    }
+    
+	protected void validateButtons() {
+    	boolean nameOk;
+    	boolean taxonOk;
+
+    	// tree name name
+		int len = txtSpecimenName.getText().length();
+
+		if(len > 0 && !txtSpecimenName.getText().equals("Specimen code"))
+			nameOk = true;
+		else
+			nameOk = false;
+				
+		btnApply.setEnabled(nameOk);
+    }
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -415,7 +505,7 @@ public class SpecimenDialog extends javax.swing.JDialog {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                SpecimenDialog dialog = new SpecimenDialog(new javax.swing.JFrame(), true);
+                SpecimenDialog dialog = new SpecimenDialog(new javax.swing.JDialog(), true, "blah", null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);

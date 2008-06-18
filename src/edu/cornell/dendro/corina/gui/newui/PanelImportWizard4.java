@@ -15,6 +15,8 @@ public class PanelImportWizard4 extends javax.swing.JPanel {
     /** Creates new form panelImportWizard4 */
     public PanelImportWizard4() {
         initComponents();
+        
+        panelRadius.setVisible(false);
     }
     
     /** This method is called from within the constructor to

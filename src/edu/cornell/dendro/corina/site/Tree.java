@@ -17,6 +17,7 @@ public class Tree extends GenericIntermediateObject {
 	private String precision = null;
 	private String originalTaxonName = null;
 	private Taxon validatedTaxon = null;
+	private Boolean isLiveTree = null;
 		
 	public static Tree xmlToTree(Element root) {
 		String id, name, attr;
@@ -78,6 +79,9 @@ public class Tree extends GenericIntermediateObject {
 			root.addContent(new Element("validatedTaxon").
 					setAttribute("id", validatedTaxon.getInternalRepresentation()).
 					setText(validatedTaxon.getValue()));
+		
+		if(isLiveTree != null)
+			root.addContent(new Element("isLiveTree").setText(isLiveTree.toString()));
 		
 		return root;
 	}
@@ -150,5 +154,19 @@ public class Tree extends GenericIntermediateObject {
 	 */
 	public void setValidatedTaxon(Taxon validatedTaxon) {
 		this.validatedTaxon = validatedTaxon;
+	}
+
+	/**
+	 * @return the isLiveTree
+	 */
+	public Boolean getIsLiveTree() {
+		return isLiveTree;
+	}
+
+	/**
+	 * @param isLiveTree the isLiveTree to set
+	 */
+	public void setIsLiveTree(Boolean isLiveTree) {
+		this.isLiveTree = isLiveTree;
 	}
 }
