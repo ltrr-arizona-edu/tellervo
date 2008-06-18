@@ -417,7 +417,7 @@ class specimen
                 $xml.= "id=\"".$this->id."\" >";
                 $xml.= getResourceLinkTag("specimen", $this->id)."\n ";
               
-                if(isset($this->name))                         $xml.= "<name>".$this->name."</name>\n";
+                if(isset($this->name))                          $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
                 if(isset($this->dateCollected))                 $xml.= "<dateCollected>".$this->dateCollected."</dateCollected>\n";
                 if(isset($this->specimenType))                  $xml.= "<specimenType>".$this->specimenType."</specimenType>\n";
                 if(isset($this->terminalRing))                  $xml.= "<terminalRing>".$this->terminalRing."</terminalRing>\n";

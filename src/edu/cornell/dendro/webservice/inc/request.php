@@ -308,6 +308,8 @@ class request
 
     function countParamObjects()
     {
+        // Returns the number of parameter objects of a specified type.  
+        // If objectType is not specified it returns the total number of parameters objects
         return count($this->paramObjectsArray);
     }
     

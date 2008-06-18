@@ -55,6 +55,7 @@
                             <value>latitude</value>
                             <value>longitude</value>
                             <value>isLiveTree</value>
+                            <value>originaltaxonname</value>
 
                             <value>specimenid</value>
                             <value>specimenname</value>

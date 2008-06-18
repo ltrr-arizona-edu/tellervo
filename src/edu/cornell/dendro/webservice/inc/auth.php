@@ -43,7 +43,7 @@ class auth
   {
     global $dbconn;
     
-    $sql = "select * from tblsecurityuser where username='$theUsername'";
+    $sql = "select * from tblsecurityuser where username='$theUsername' and isactive=true";
  
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -93,7 +93,7 @@ class auth
   {
     global $dbconn;
 
-    $sql = "select * from tblsecurityuser where username='$theUsername'";
+    $sql = "select * from tblsecurityuser where username='$theUsername' and isactive=true";
     
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -457,7 +457,7 @@ class auth
             $theObjectType="tree";
             break;
         case "subSite":
-            $sql = "select tblsubsite.subsiteid, tlbsubsite.siteid as parentid from tblsubsite where tblsubsite.subsiteid=$theObjectID ";
+            $sql = "select tblsubsite.subsiteid, tblsubsite.siteid as parentid from tblsubsite where tblsubsite.subsiteid=$theObjectID ";
             $theObjectType="site";
             break;
         default:

@@ -118,7 +118,7 @@ class treeParameters extends parameters
         if(isset($this->xmlrequest->validatedTaxon['id']))  $this->taxonID              = (int)      $this->xmlrequest->validatedTaxon['id'];
         if(isset($this->xmlrequest->latitude))              $this->latitude             = (double)   $this->xmlrequest->latitude;
         if(isset($this->xmlrequest->longitude))             $this->longitude            = (double)   $this->xmlrequest->longitude;
-        if(isset($this->xmlrequest->precision))             $this->precision            = (int)      $this->xmlrequest->precision;
+        if(isset($this->xmlrequest->precision))             $this->precision            = (double)   $this->xmlrequest->precision;
         if(isset($this->xmlrequest->isLiveTree))            $this->isLiveTree           = fromStringtoPHPBool($this->xmlrequest->isLiveTree);
         if(isset($this->xmlrequest->specimen))              $this->hasChild             = True;
         
@@ -477,6 +477,7 @@ class searchParameters extends parameters
             // Tree Parameters
             elseif( ($param['name'] == 'treeid') || 
                     ($param['name'] == 'treename') || 
+                    ($param['name'] == 'originaltaxonname') || 
                     ($param['name'] == 'treecreated') || 
                     ($param['name'] == 'treelastmodified') || 
                     ($param['name'] == 'precision') || 

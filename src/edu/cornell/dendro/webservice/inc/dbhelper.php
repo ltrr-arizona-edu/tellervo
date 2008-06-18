@@ -139,4 +139,15 @@ function getResourceLinkTag($object, $id)
     return "<link type=\"corina/xml\" object=\"$object\" id=\"$id\" url=\"http://$domain".$_SERVER['REQUEST_URI']."\" />\n";
 
 }
+
+function escapeXMLChars($theString)
+{
+    $theString = str_replace('&', '&amp;',  $theString);
+    $theString = str_replace("'", '&apos;', $theString);
+    $theString = str_replace('"', '&quot;', $theString);
+    $theString = str_replace('<', '&lt;',   $theString);
+    $theString = str_replace('>', '&gt;',   $theString);
+
+    return $theString;
+}
 ?>

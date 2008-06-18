@@ -134,9 +134,9 @@ class securityUser
                 // Only return XML when there are no errors.
                 $xml.= "<user ";
                 $xml.= "id=\"".$this->id."\" ";
-                $xml.= "username=\"".$this->username."\" ";
-                $xml.= "firstname=\"".$this->firstname."\" ";
-                $xml.= "lastname=\"".$this->lastname."\" ";
+                $xml.= "username=\"".escapeXMLChars($this->username)."\" ";
+                $xml.= "firstname=\"".escapeXMLChars($this->firstname)."\" ";
+                $xml.= "lastname=\"".escapeXMLChars($this->lastname)."\" ";
                 $xml.= "isActive=\"".fromPGtoStringBool($this->isActive)."\" ";
                 $xml.= ">";
             }

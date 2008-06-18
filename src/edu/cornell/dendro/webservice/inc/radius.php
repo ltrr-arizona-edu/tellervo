@@ -227,7 +227,7 @@ class radius
                 $xml.= "<radius ";
                 $xml.= "id=\"".$this->id."\" >";
                 $xml.= getResourceLinkTag("radius", $this->id)."\n ";
-                $xml.= "<name>".$this->name."</name>\n";
+                $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
                 $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
                 $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
                 $xml.= "</radius>\n";

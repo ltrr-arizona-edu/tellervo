@@ -216,7 +216,7 @@ class note
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml = "<".$this->xmlTag." id=\"".$this->id."\" isStandard=\"".fromPGtoStringBool($this->isStandard)."\">".$this->note."</".$this->xmlTag.">\n";
+            $xml = "<".$this->xmlTag." id=\"".$this->id."\" isStandard=\"".fromPGtoStringBool($this->isStandard)."\">".escapeXMLChars($this->note)."</".$this->xmlTag.">\n";
             return $xml;
         }
         else

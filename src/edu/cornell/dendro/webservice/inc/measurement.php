@@ -791,16 +791,16 @@ class measurement
             $xml.= getResourceLinkTag("measurement", $this->vmeasurementID);
             
             $xml.= "<metadata>\n";
-            if(isset($this->name))                  $xml.= "<name>".$this->name."</name>\n";
+            if(isset($this->name))                  $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
             if(isset($this->isReconciled))          $xml.= "<isReconciled>".fromPHPtoStringBool($this->isReconciled)."</isReconciled>\n";
             if(isset($this->startYear))             $xml.= "<dateRange year=\"".$this->startYear."\" count=\"".$this->readingCount."\" />\n";
             if(isset($this->isLegacyCleaned))       $xml.= "<isLegacyCleaned>".fromPHPtoStringBool($this->isLegacyCleaned)."</isLegacyCleaned>\n";
-            if(isset($this->measuredByID))          $xml.= "<measuredBy id=\"".$this->measuredByID."\">".$this->measuredBy."</measuredBy>\n";
-            if(isset($this->ownerUserID))           $xml.= "<owner id=\"".$this->ownerUserID."\">".$this->owner."</owner>\n";
+            if(isset($this->measuredByID))          $xml.= "<measuredBy id=\"".$this->measuredByID."\">".escapeXMLChars($this->measuredBy)."</measuredBy>\n";
+            if(isset($this->ownerUserID))           $xml.= "<owner id=\"".$this->ownerUserID."\">".escapeXMLChars($this->owner)."</owner>\n";
             if(isset($this->datingType))            $xml.= "<datingType>".$this->datingType."</datingType>\n";
             if(isset($this->datingErrorPositive))   $xml.= "<datingErrorPositive>".$this->datingErrorPositive."</datingErrorPositive>\n";
             if(isset($this->datingErrorNegative))   $xml.= "<datingErrorNegative>".$this->datingErrorNegative."</datingErrorNegative>\n";
-            if(isset($this->description))           $xml.= "<description>".$this->description."</description>\n";
+            if(isset($this->description))           $xml.= "<description>".escapeXMLChars($this->description)."</description>\n";
             if(isset($this->isPublished))           $xml.= "<isPublished>".fromPHPtoStringBool($this->isPublished)."</isPublished>\n";
             if(isset($this->vmeasurementOp))
             {

@@ -58,29 +58,25 @@
 	            
 	            <optional>
 	                <element name="latitude">
-	                    <choice>
-	                        <data type="double">
+                             <data type="decimal">
 	                            <param name="maxInclusive">90</param>
 	                            <param name="minInclusive">-90</param>
-	                        </data>
-	                        <empty />
-	                    </choice>
+                             </data>
 	                </element>
 	            </optional>
 	            <optional>
 	                <element name="longitude">
-	                    <choice>
-	                        <data type="double">
+                            <data type="decimal">
 	                            <param name="maxInclusive">180</param>
 	                            <param name="minInclusive">-180</param>
-	                        </data>
-	                        <empty />
-	                    </choice>
+                            </data>    
 	                </element>
 	            </optional>
 	            <optional> 
 	                <element name="precision">
-	                    <data type="positiveInteger" />
+	                    <data type="decimal">
+	                            <param name="minInclusive">0</param>
+                                </data>
 	                </element>
 	            </optional>
 	            <optional> 
