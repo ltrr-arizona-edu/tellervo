@@ -55,6 +55,8 @@ public class Tree extends GenericIntermediateObject {
 			tree.setValidatedTaxon(taxon);
 		}
 		
+		tree.setResourceIdentifierFromElement(root);
+		
 		return tree;
 	}
 	

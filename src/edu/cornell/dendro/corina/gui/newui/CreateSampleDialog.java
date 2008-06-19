@@ -8,6 +8,7 @@ import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 
+import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
@@ -24,7 +25,7 @@ public class CreateSampleDialog extends JDialog {
 	
 	private int operation = OPERATION_NEW;
 	private Sample templateSample;
-	private CreateSample content;
+	private HierarchyPanel content;
 	
 	/**
 	 * @param owner
@@ -59,7 +60,8 @@ public class CreateSampleDialog extends JDialog {
 			break;
 		}
 		
-		content = new CreateSample(this);
+		content = new HierarchyPanel(this);
+		content.setBorder(BorderFactory.createTitledBorder("Heirarchy information"));
 		
 		JPanel holder = new JPanel();
 		holder.add(content, BorderLayout.NORTH);

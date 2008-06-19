@@ -51,12 +51,12 @@ import edu.cornell.dendro.corina.webdbi.SearchParameters;
  *
  * @author  peterbrewer
  */
-public class CreateSample extends javax.swing.JPanel {
+public class HierarchyPanel extends javax.swing.JPanel {
 	private JDialog parent;
 	private Site lastSelectedSite;
     
     /** Creates new form CreateSample */
-    public CreateSample(JDialog parent) {
+    public HierarchyPanel(JDialog parent) {
     	this.parent = parent;
         initComponents();
     }
@@ -148,13 +148,26 @@ public class CreateSample extends javax.swing.JPanel {
     			
     			sd.setVisible(true);
 
-    			/*
-    			if(td.didSucceed()) {
+    			if(sd.didSucceed()) {
     				// add item to the tree box and select it
-    				((DefaultComboBoxModel)cboTree.getModel()).addElement(td.getNewObject());
-    				cboTree.setSelectedItem(td.getNewObject());
-    			}    			
-    			*/
+    				((DefaultComboBoxModel)cboSpecimen.getModel()).addElement(sd.getNewObject());
+    				cboSpecimen.setSelectedItem(sd.getNewObject());
+    			}    
+    		}
+    	});
+    	
+    	btnNewRadius.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			Specimen specimen = (Specimen) cboSpecimen.getSelectedItem();
+    			RadiusDialog rd = new RadiusDialog(parent, true, getLabel(4), specimen);
+    			
+    			rd.setVisible(true);
+
+    			if(rd.didSucceed()) {
+    				// add item to the tree box and select it
+    				((DefaultComboBoxModel)cboRadius.getModel()).addElement(rd.getNewObject());
+    				cboRadius.setSelectedItem(rd.getNewObject());
+    			}    
     		}
     	});
 }

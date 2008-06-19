@@ -9,8 +9,10 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractSpinnerModel;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -174,6 +176,63 @@ public abstract class BaseNewDialog<OBJT> extends JDialog {
 			public void insertUpdate(DocumentEvent e) {
 				validateButtons();
 			}
+		});
+	}
+	
+	/**
+	 * Set a JSpinner model that takes a null value!
+	 * @param spinner
+	 */
+	protected void setSpinnerIndeterminate(JSpinner spinner) {
+		spinner.setModel(new AbstractSpinnerModel() {
+			private final static String noValue = "-- Not Specified --";
+			private String value = noValue;
+			
+			private Integer parse() {
+				try {
+					return new Integer(value);
+				} catch (NumberFormatException nfe) {
+					return null;
+				}
+			}
+			
+			public Object getNextValue() {
+				Integer i = parse();
+				
+				if(i == null)
+					return new Integer(0);
+						
+				i++;
+				return i;
+			}
+
+			public Object getPreviousValue() {
+				Integer i = parse();
+
+				if(i == null || i == 0)
+					return noValue;
+				
+				i--;
+				return i;
+			}
+
+			public Object getValue() {
+				Integer i = parse();
+				
+				return (i == null) ? value : i;
+			}
+
+			public void setValue(Object value) {
+				try {
+					Integer i = new Integer(value.toString());
+
+					this.value = i.toString();
+				} catch (NumberFormatException nfe) {
+					this.value = noValue;
+				}
+				
+				fireStateChanged();
+			}			
 		});
 	}
 	

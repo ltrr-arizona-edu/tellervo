@@ -6,18 +6,84 @@
 
 package edu.cornell.dendro.corina.gui.newui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import edu.cornell.dendro.corina.dictionary.Taxon;
+import edu.cornell.dendro.corina.site.Radius;
+import edu.cornell.dendro.corina.site.Specimen;
+import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.webdbi.IntermediateResource;
+
 /**
  *
  * @author  peterbrewer
  */
-public class RadiusDialog extends javax.swing.JDialog {
+public class RadiusDialog extends BaseNewDialog<Radius> {
     
     /** Creates new form Site */
-    public RadiusDialog(java.awt.Frame parent, boolean modal) {
+    public RadiusDialog(java.awt.Dialog parent, boolean modal, String prefix, Specimen parentSpecimen) {
         super(parent, modal);
         initComponents();
+        
+        this.parentSpecimen = parentSpecimen;
+        lblNamePrefix.setText(prefix);
+        
+        initialize();
+        
+        Center.center(this);
     }
     
+    private Specimen parentSpecimen;
+    
+    private void initialize() {
+    	txtRadiusName.setText("Radius code");
+    	setCapsNoWhitespace(txtRadiusName);
+    	setFieldValidateButtons(txtRadiusName);
+    	
+    	getRootPane().setDefaultButton(btnApply);
+    	btnApply.setEnabled(false);
+    	btnApply.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				commit();
+			}		
+    	});
+
+    	btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}		
+    	});
+    }
+    
+    private void commit() {
+    	Radius radius = new Radius(Radius.ID_NEW, txtRadiusName.getText());
+    	IntermediateResource ir = new IntermediateResource(parentSpecimen, radius);
+    	
+       	if(!createObject(ir))
+    		return;
+    	
+		if(ir.getObject().get(0) instanceof Radius) {
+			setNewObject((Radius) ir.getObject().get(0));
+		}
+		
+    	dispose();
+    }
+    
+    protected void validateButtons() {
+    	boolean nameOk;
+
+    	// tree name name
+		int len = txtRadiusName.getText().length();
+
+		if(len > 0 && !txtRadiusName.getText().equals("Radius code"))
+			nameOk = true;
+		else
+			nameOk = false;
+				
+		btnApply.setEnabled(nameOk);
+    }
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -109,7 +175,7 @@ public class RadiusDialog extends javax.swing.JDialog {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                RadiusDialog dialog = new RadiusDialog(new javax.swing.JFrame(), true);
+                RadiusDialog dialog = new RadiusDialog(new javax.swing.JDialog(), true, "asdf", null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);

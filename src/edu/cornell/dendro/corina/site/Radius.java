@@ -23,10 +23,20 @@ public class Radius extends GenericIntermediateObject {
 		}
 		
 		Radius radius = new Radius(id, name);
+		
+		radius.setResourceIdentifierFromElement(root);
+		
 		return radius;
 	}
 	
 	public Element toXML() {
-		return null;
+		Element root = new Element("radius");
+		
+		if(!isNew())
+			root.setAttribute("id", getID());
+
+		root.addContent(new Element("name").setText(name));	
+
+		return root;
 	}
 }

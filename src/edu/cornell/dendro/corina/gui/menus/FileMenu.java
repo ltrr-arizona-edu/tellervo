@@ -30,7 +30,7 @@ import edu.cornell.dendro.corina.gui.PrintableDocument;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
-import edu.cornell.dendro.corina.gui.newui.CreateSample;
+import edu.cornell.dendro.corina.gui.newui.HierarchyPanel;
 import edu.cornell.dendro.corina.gui.newui.CreateSampleDialog;
 import edu.cornell.dendro.corina.gui.newui.SiteDialog;
 import edu.cornell.dendro.corina.manip.Sum;

@@ -32,7 +32,7 @@ import edu.cornell.dendro.corina.webdbi.IntermediateResource;
  *
  * @author  peterbrewer
  */
-public class TreeDialog extends BaseNewDialog {
+public class TreeDialog extends BaseNewDialog<Tree> {
     
     /** Creates new form NewSite */
     public TreeDialog(java.awt.Dialog parent, boolean modal, String prefix, Subsite parentSubsite) {

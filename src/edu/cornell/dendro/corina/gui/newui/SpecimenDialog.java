@@ -6,43 +6,64 @@
 
 package edu.cornell.dendro.corina.gui.newui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.InputVerifier;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 import javax.swing.text.DateFormatter;
 import javax.swing.text.MaskFormatter;
 
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.dictionary.BasicDictionaryElement;
+import edu.cornell.dendro.corina.dictionary.Pith;
+import edu.cornell.dendro.corina.dictionary.SpecimenContinuity;
+import edu.cornell.dendro.corina.dictionary.SpecimenType;
 import edu.cornell.dendro.corina.dictionary.Taxon;
+import edu.cornell.dendro.corina.dictionary.TerminalRing;
+import edu.cornell.dendro.corina.site.Specimen;
 import edu.cornell.dendro.corina.site.Tree;
 import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 
 /**
  *
  * @author  peterbrewer
  */
-public class SpecimenDialog extends BaseNewDialog {
+public class SpecimenDialog extends BaseNewDialog<Specimen> {
     
     /** Creates new form Specimen */
     public SpecimenDialog(java.awt.Dialog parent, boolean modal, String prefix, Tree parentTree) {
         super(parent, modal);
         initComponents();
   
+        lblNamePrefix.setText(prefix);
+        this.parentTree = parentTree;
+        
         initialize();
         
         Center.center(this);
     }
     
+    private Tree parentTree;
     private DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     
     private void initialize() {
+    	// set up the mapping from our comboboxes to our dictionaries
+    	mapToDictionaries();
     	
     	// quick initial setup: leave things blank
     	txtCollectionDate.setText("");
@@ -60,6 +81,11 @@ public class SpecimenDialog extends BaseNewDialog {
      	// the fields we validate before ok can be pressed
     	setFieldValidateButtons(txtSpecimenName);
      	
+    	// make our spinners have an indeterminate value
+    	setSpinnerIndeterminate(spnSapwoodCount);
+    	setSpinnerIndeterminate(spnUnmeasPost);
+    	setSpinnerIndeterminate(spnUnmeasPre);
+    	    	
      	// force a check of date when we leave the txtCollectionDate field
     	final JDialog parentGlue = this;
     	txtCollectionDate.setInputVerifier(new InputVerifier() {
@@ -90,13 +116,96 @@ public class SpecimenDialog extends BaseNewDialog {
     			}
     		}
     	});
-    	
+    
+    	initButtons();
+    }
+
+    private void initButtons() {
+    	getRootPane().setDefaultButton(btnApply);
     	btnApply.setEnabled(false);
+    	btnApply.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				commit();
+			}    		
+    	});
+
+    	btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}    		
+    	});
+}
+    
+    private void mapToDictionaries() {
+    	mapToDictionary(cboTerminalRing, "TerminalRing");
+    	mapToDictionary(cboContinuity, "SpecimenContinuity");
+    	mapToDictionary(cboPith, "Pith");
+    	mapToDictionary(cboSpecimenType, "SpecimenType");
+    }
+    
+    private void mapToDictionary(JComboBox cbo, String dict) {
+    	List<? extends BasicDictionaryElement> list = App.dictionary.getDictionary(dict);
+    	Object[] array = new Object[list.size() + 1];
+    	
+    	array[0] = "- Not Specified -";
+    	System.arraycopy(list.toArray(), 0, array, 1, list.size());
+    	
+    	cbo.setModel(new DefaultComboBoxModel(array));
+    }
+    
+	private void commit() {
+		Specimen sp = new Specimen(Specimen.ID_NEW, txtSpecimenName.getText());
+    	IntermediateResource ir = new IntermediateResource(parentTree, sp);
+    	
+    	if(cboSpecimenType.getSelectedItem() instanceof SpecimenType)
+    		sp.setSpecimenType(cboSpecimenType.getSelectedItem().toString());
+    	if(txtCollectionDate.getText().length() > 0)
+    		sp.setDateCollected(txtCollectionDate.getText());
+
+    	// our drop-down dictionary elements
+    	if(cboContinuity.getSelectedItem() instanceof SpecimenContinuity) {
+    		sp.setSpecimenContinuity(cboContinuity.getSelectedItem().toString());
+    		sp.setIsSpecimenContinuityVerified(chkContinuityVerified.isSelected());
+    	}
+
+    	if(cboTerminalRing.getSelectedItem() instanceof TerminalRing) {
+    		sp.setTerminalRing(cboTerminalRing.getSelectedItem().toString());
+    		sp.setIsTerminalRingVerified(chkTerminalRingVerified.isSelected());
+    	}
+
+    	if(cboPith.getSelectedItem() instanceof Pith) {
+    		sp.setPith(cboPith.getSelectedItem().toString());
+    		sp.setIsPithVerified(chkPithVerified.isSelected());
+    	}
+    	
+    	// now, our spinners
+    	if(spnSapwoodCount.getValue() instanceof Integer) {
+    		sp.setSapwoodCount((Integer) spnSapwoodCount.getValue());
+    		sp.setIsSapwoodCountVerified(chkSapwoodCountVerified.isSelected());
+    	}
+
+    	if(spnUnmeasPre.getValue() instanceof Integer) {
+    		sp.setUnmeasuredPre((Integer) spnUnmeasPre.getValue());
+    		sp.setIsUnmeasuredPreVerified(chkUnmeasPreVerified.isSelected());
+    	}
+
+    	if(spnUnmeasPost.getValue() instanceof Integer) {
+    		sp.setUnmeasuredPost((Integer) spnUnmeasPost.getValue());
+    		sp.setIsUnmeasuredPostVerified(chkUnmeasPostVerified.isSelected());
+    	}
+
+    	if(!createObject(ir))
+    		return;
+    	
+		if(ir.getObject().get(0) instanceof Specimen) {
+			setNewObject((Specimen) ir.getObject().get(0));
+		}
+		
+    	dispose();
     }
     
 	protected void validateButtons() {
     	boolean nameOk;
-    	boolean taxonOk;
 
     	// tree name name
 		int len = txtSpecimenName.getText().length();
@@ -502,7 +611,7 @@ public class SpecimenDialog extends BaseNewDialog {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void zzzmain(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 SpecimenDialog dialog = new SpecimenDialog(new javax.swing.JDialog(), true, "blah", null);
