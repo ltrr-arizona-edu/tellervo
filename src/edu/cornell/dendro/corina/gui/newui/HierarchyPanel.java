@@ -26,6 +26,7 @@ import java.util.SortedMap;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -56,8 +57,8 @@ public class HierarchyPanel extends javax.swing.JPanel {
 	private Site lastSelectedSite;
     
     /** Creates new form CreateSample */
-    public HierarchyPanel(JDialog parent) {
-    	this.parent = parent;
+    public HierarchyPanel(JPanel parent) {
+    	//this.parent = parent;
         initComponents();
     }
     
