@@ -50,6 +50,7 @@ class securityGroup
     {
         // Set the current objects precision 
         $this->isActive=$theIsActive;
+        
     }
 
     function setParamsFromDB($theID)
@@ -102,6 +103,82 @@ class securityGroup
         $this->lastErrorCode = $theCode;
         $this->lastErrorMessage = $theMessage;
     }
+    
+    function setParamsFromParamsClass($paramsClass)
+    {
+        // Alters the parameter values based upon values supplied by the user and passed as a parameters class
+        if (isset($paramsClass->id))           $this->id   = $paramsClass->id;
+        if (isset($paramsClass->name))         $this->setName($paramsClass->name);
+        if (isset($paramsClass->description))  $this->setDescription($paramsClass->description);
+        if (isset($paramsClass->isActive))     $this->setIsActive($paramsClass->isActive);
+
+        return true;
+    }
+
+    function validateRequestParams($paramsObj, $crudMode)
+    {
+        
+        // Check parameters based on crudMode 
+        switch($crudMode)
+        {
+            case "read":
+                if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
+                {
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer when reading groups.  It is currently a ".gettype($paramsObj->id));
+                    return false;
+                }
+                if(!($paramsObj->id>0) && !($paramsObj->id==NULL))
+                {
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer when reading groups.");
+                    return false;
+                }
+                if($paramsObj->id==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a groups.");
+                    return false;
+                }
+                return true;
+         
+            case "update":
+                if($paramsObj->id == NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating a group.");
+                    return false;
+                }
+                if(($paramsObj->name == NULL) && ($paramsObj->description==NULL) && ($paramsObj->isActive===NULL)) 
+                {
+                    $this->setErrorMessage("902","Missing parameter(s) - you haven't specified any parameters to update.");
+                    return false;
+                }
+                return true;
+
+            case "delete":
+                if($paramsObj->id == NULL) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a group.");
+                    return false;
+                }
+                return true;
+
+            case "create":
+                if($paramsObj->name == NULL) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a group.");
+                    return false;
+                }
+                if($paramsObj->description == NULL) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'description' field is required when creating a group.");
+                    return false;
+                }
+                return true;
+
+            default:
+                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
+                return false;
+        }
+    }
+    
 
 
     /***********/
@@ -110,6 +187,8 @@ class securityGroup
 
     function asXML($mode="all")
     {
+        $xml = NULL;
+
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
@@ -175,6 +254,8 @@ class securityGroup
         // Write the current object to the database
 
         global $dbconn;
+        $sql = NULL;
+        $sql2 = NULL;
 
         // Check for required parameters
         if($this->name == NULL) 
@@ -213,6 +294,7 @@ class securityGroup
                     $sql.= "name = '".$this->name."', ";
                     $sql.= "description = '".$this->description."', ";
                     $sql.= "isactive = '".fromPHPtoPGBool($this->isActive)."'";
+                    $sql.= " where securitygroupid='".$this->id."'";
                 }
 
                 // Run SQL command

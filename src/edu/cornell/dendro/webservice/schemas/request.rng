@@ -24,40 +24,15 @@
                     <value>unassign</value>
                 </choice>
             </attribute>
-               
             <optional>
-                <attribute name="format">
-                    <choice>
-                        <value>map</value>
-                        <value>xml</value>
-                        <value>kml</value>
-                    </choice>
+                <attribute name="includePermissions">
+                    <data type="boolean" />
                 </attribute>
-            </optional>                    
+            </optional>                 
+
+
+        
             
-            <optional>
-                <attribute name="returnObject">
-                    <choice>
-                        <value>site</value>
-                        <value>subsite</value>
-                        <value>tree</value>
-                        <value>specimen</value>
-                        <value>radius</value>
-                        <value>measurement</value>
-                        <value>taxon</value>
-                    </choice>
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="limit">
-                    <data type="integer" />
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="skip">
-                    <data type="integer" />
-                </attribute>
-            </optional>
             <interleave>
             	<optional>
             		<externalRef href="mapParams.rng" />

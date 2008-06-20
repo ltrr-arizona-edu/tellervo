@@ -422,6 +422,69 @@ class authenticationParameters extends parameters
     }
 }
 
+class securityUserParameters extends parameters
+{
+    var $id            = NULL;
+    var $username      = NULL;
+    var $firstName     = NULL;
+    var $lastName      = NULL;
+    var $hashPassword  = NULL;
+    var $isActive      = NULL;
+    var $groupArray    = array();
+
+    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
+    {
+        parent::__construct($metaHeader, $auth, $xmlrequest);
+    }
+    
+    function getXMLParams()
+    {
+        if(isset($this->xmlrequest['id']))              $this->id            = (int) $this->xmlrequest['id'];
+        if(isset($this->xmlrequest['isActive']))        $this->isActive      = fromStringToPHPBool($this->xmlrequest['isActive']);
+        if(isset($this->xmlrequest['username']))        $this->username      = addslashes(trim($this->xmlrequest['username']));
+        if(isset($this->xmlrequest['firstName']))       $this->firstName     = addslashes(trim($this->xmlrequest['firstName']));
+        if(isset($this->xmlrequest['lastName']))        $this->lastName      = addslashes(trim($this->xmlrequest['lastName']));
+        if(isset($this->xmlrequest['plainPassword']))   $this->hashPassword  = hash('md5', addslashes(trim($this->xmlrequest['plainPassword'])));
+        if(isset($this->xmlrequest['hashPassword']))    $this->hashPassword  = addslashes(trim($this->xmlrequest['hashPassword']));
+        
+        $groupArray = $this->xmlrequest->xpath('//memberOf');
+        if (isset($memberOf[0]->memberOf[0]))
+        {
+            foreach($memberOf[0] as $item)
+            {
+                array_push($this->groupArray, $item['id']);
+            }
+        }
+        else
+        {
+            $this->groupArray = array('empty');
+        }
+    }
+
+}
+
+class securityGroupParameters extends parameters
+{
+    var $id            = NULL;
+    var $name          = NULL;
+    var $description   = NULL;
+    var $isActive      = NULL;
+
+    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
+    {
+        parent::__construct($metaHeader, $auth, $xmlrequest);
+    }
+    
+    function getXMLParams()
+    {
+        if(isset($this->xmlrequest['id']))              $this->id            = (int) $this->xmlrequest['id'];
+        if(isset($this->xmlrequest['isActive']))        $this->isActive      = fromStringToPHPBool($this->xmlrequest['isActive']);
+        if(isset($this->xmlrequest['name']))            $this->name          = addslashes(trim($this->xmlrequest['name']));
+        if(isset($this->xmlrequest['description']))     $this->description   = addslashes(trim($this->xmlrequest['description']));
+    }
+
+}
+
 class searchParameters extends parameters
 {
     var $returnObject            = NULL;

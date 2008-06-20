@@ -28,6 +28,10 @@ class tree
     var $createdTimeStamp = NULL;
     var $lastModifiedTimeStamp = NULL;
 
+    var $includePermissions = FALSE;
+    var $canCreate = NULL;
+    var $canUpdate = NULL;
+    var $canDelete = NULL;
 
     var $parentXMLTag = "trees"; 
     var $lastErrorMessage = NULL;
@@ -283,12 +287,40 @@ class tree
         $this->lastErrorMessage = $theMessage;
     }
 
+    function getPermissions($securityUserID)
+    {
+        global $dbconn;
+
+        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'tree', $this->id)";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);
+            $row = pg_fetch_array($result);
+            
+            $this->canCreate = fromPGtoPHPBool($row['cancreate']);
+            $this->canUpdate = fromPGtoPHPBool($row['canupdate']);
+            $this->canDelete = fromPGtoPHPBool($row['candelete']);
+            $this->includePermissions = TRUE;
+    
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+
+        return TRUE;
+        
+    }
+
 
     /***********/
     /*ACCESSORS*/
     /***********/
 
-    function asXML($mode="all")
+    function asXML($mode="all", $includePermissions=False)
     {
         global $domain;
         $xml ="";
@@ -306,6 +338,14 @@ class tree
                 $xml.= "id=\"".$this->id."\" >";
                 $xml.= getResourceLinkTag("tree", $this->id)."\n";
                 $xml.= getResourceLinkTag("tree", $this->id, "map")."\n";
+                
+                // Include permissions details if requested
+                if($this->includePermissions===TRUE) 
+                {
+                    $xml.= "<permissions canCreate=\"".fromPHPtoStringBool($this->canCreate)."\" ";
+                    $xml.= "canUpdate=\"".fromPHPtoStringBool($this->canUpdate)."\" ";
+                    $xml.= "canDelete=\"".fromPHPtoStringBool($this->canDelete)."\" />\n";
+                } 
                 
                 if(isset($this->name))                  $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
                 if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".escapeXMLChars($myTaxon->getLabel())."</validatedTaxon>\n";

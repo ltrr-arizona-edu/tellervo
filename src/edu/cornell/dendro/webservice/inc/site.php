@@ -29,6 +29,11 @@ class site
     var $minLong = NULL;
     var $maxLong = NULL;
 
+    var $includePermissions = FALSE;
+    var $canCreate = NULL;
+    var $canUpdate = NULL;
+    var $canDelete = NULL;
+
     var $parentXMLTag = "sites"; 
     var $lastErrorMessage = NULL;
     var $lastErrorCode = NULL;
@@ -263,34 +268,32 @@ class site
         }
     }
     
-    function validateRequest($paramsObj, $crudMode, $auth)
+    function getPermissions($securityUserID)
     {
-        $paramsOK = validateRequestParams($paramObj, $crudMode);
+        global $dbconn;
+
+        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'site', $this->id)";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);
+            $row = pg_fetch_array($result);
             
-        if($paramsOK===FALSE)
-        {
-            // Problem with parameters
-            return false;
+            $this->canCreate = fromPGtoPHPBool($row['cancreate']);
+            $this->canUpdate = fromPGtoPHPBool($row['canupdate']);
+            $this->canDelete = fromPGtoPHPBool($row['candelete']);
+            $this->includePermissions = TRUE;
+    
         }
-        
-        // Parameters are ok, so now lets check the user has permission to do this
-        if(isset($paramsObj->xmlrequest->subSite)) $parentID = $paramsObj->xmlrequest->subSite;
-        
-        switch($crudMode)
+        else
         {
-            case "read":
-         
-            case "update":
-
-            case "delete":
-
-            case "create":
-
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
         }
 
-
-
-
+        return TRUE;
+        
     }
 
     /***********/
@@ -311,6 +314,15 @@ class site
                 $xml.= "id=\"".$this->id."\" >";
                 $xml.= getResourceLinkTag("site", $this->id)."\n ";
                 $xml.= getResourceLinkTag("site", $this->id, "map")."\n ";
+
+                // Include permissions details if requested
+                if($this->includePermissions===TRUE) 
+                {
+                    $xml.= "<permissions canCreate=\"".fromPHPtoStringBool($this->canCreate)."\" ";
+                    $xml.= "canUpdate=\"".fromPHPtoStringBool($this->canUpdate)."\" ";
+                    $xml.= "canDelete=\"".fromPHPtoStringBool($this->canDelete)."\" />\n";
+                } 
+
                 $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
                 $xml.= "<code>".escapeXMLChars($this->code)."</code>\n";
                 $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";

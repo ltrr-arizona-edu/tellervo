@@ -9,14 +9,17 @@
 //////*******************************************************************
 require_once('inc/specimen.php');
 require_once('inc/taxon.php');
+require_once('inc/securityGroup.php');
 
 class securityUser 
 {
     var $id = NULL;
     var $username = NULL;
-    var $firstname = NULL;
-    var $lastname = NULL;
+    var $firstName = NULL;
+    var $lastName = NULL;
+    var $password = NULL;
     var $isActive = TRUE;
+    var $groupArray = array();
 
     var $parentXMLTag = "users"; 
     var $lastErrorMessage = NULL;
@@ -37,26 +40,37 @@ class securityUser
     
     function setUsername($theUsername)
     {
-        // Set the current objects precision 
         $this->username=$theUsername;
     }
     
     function setFirstname($theFirstname)
     {
-        // Set the current objects precision 
-        $this->firstname=$theFirstname;
+        $this->firstName=$theFirstname;
     }
     
     function setLastname($theLastname)
     {
-        // Set the current objects precision 
-        $this->lastname=$theLastname;
+        $this->lastName=$theLastname;
     }
     
-    function setPassword($thePassword)
+    function setPassword($thePassword, $format="plain")
     {
-        // Set the current objects precision 
-        $this->password=hash('md5', $thePassword);
+        switch($format)
+        {
+        case "plain":
+            // password supplied is plain tetxt so hash first
+            $this->password=hash('md5', $thePassword);
+            break;
+        case "hash":
+            // password is already hashed so just store
+            $this->password=$thePassword;
+            break;
+        default:
+            return false;
+            break;
+        }
+
+        return true;
     }
     
     function setIsActive($theIsActive)
@@ -89,11 +103,11 @@ class securityUser
                 // Set parameters from db
                 $row = pg_fetch_array($result);
                 $this->id = $row['securityuserid'];
-                $this->username = $row['username'];
-                $this->firstname = $row['firstname'];
-                $this->lastname = $row['lastname'];
-                $this->password = $row['password'];
-                $this->isActive = $row['isactive'];
+                $this->setUsername($row['username']);
+                $this->setFirstName($row['firstname']);
+                $this->setLastName($row['lastname']);
+                //$this->setPassword($row['password'], "hash");
+                $this->setIsActive(fromPGtoPHPBool($row['isactive']));
             }
         }
         else
@@ -108,8 +122,131 @@ class securityUser
 
     function setChildParamsFromDB()
     {
+        global $dbconn;
+        
+        $sql = "SELECT DISTINCT SecurityGroupID FROM cpgdb.GetGroupMembership(".$this->id.") ORDER BY SecurityGroupID ASC";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            // Set parameters from db
+            while ($row = pg_fetch_array($result))
+            {
+                array_push($this->groupArray, $row['securitygroupid']);
+            }
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+
         return TRUE;
     }
+    
+    function setParamsFromParamsClass($paramsClass)
+    {
+        // Alters the parameter values based upon values supplied by the user and passed as a parameters class
+        if (isset($paramsClass->id))           $this->id   = $paramsClass->id;
+        if (isset($paramsClass->username))     $this->setUsername($paramsClass->username);
+        if (isset($paramsClass->firstName))    $this->setFirstName($paramsClass->firstName);
+        if (isset($paramsClass->lastName))     $this->setLastName($paramsClass->lastName);
+        if (isset($paramsClass->hashPassword)) $this->setPassword($paramsClass->hashPassword, "hash");
+        if (isset($paramsClass->isActive))     $this->setIsActive($paramsClass->isActive);
+        
+        if (isset($paramsClass->groupArray))
+        {
+            // Remove any existing groups,  ready to be replaced with what user has specified
+            unset($this->groupArray);
+            $this->groupArray = array();
+
+            if($paramsClass->groupArray[0]!='empty')
+            {
+                foreach($paramsClass->groupArray as $item)
+                {
+                    array_push($this->groupArray, (int) $item[0]);
+                }
+            }
+        }   
+        return true;
+    }
+
+    function validateRequestParams($paramsObj, $crudMode)
+    {
+        
+        // Check parameters based on crudMode 
+        switch($crudMode)
+        {
+            case "read":
+                if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
+                {
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer when reading users.  It is currently a ".gettype($paramsObj->id));
+                    return false;
+                }
+                if(!($paramsObj->id>0) && !($paramsObj->id==NULL))
+                {
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer when reading users.");
+                    return false;
+                }
+                if($paramsObj->id==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a users.");
+                    return false;
+                }
+                return true;
+         
+            case "update":
+                if($paramsObj->id == NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating a user.");
+                    return false;
+                }
+                if(($paramsObj->username == NULL) && ($paramsObj->firstName==NULL) && ($paramsObj->lastName==NULL) && ($paramsObj->isActive==NULL) && ($paramsObj->hashPassword==NULL) ) 
+                {
+                    $this->setErrorMessage("902","Missing parameter(s) - you haven't specified any parameters to update.");
+                    return false;
+                }
+                return true;
+
+            case "delete":
+                if($paramsObj->id == NULL) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a user.");
+                    return false;
+                }
+                return true;
+
+            case "create":
+                if($paramsObj->username == NULL) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'username' field is required when creating a user.");
+                    return false;
+                }
+                if($paramsObj->firstName == NULL) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'firstName' field is required when creating a user.");
+                    return false;
+                }
+                if($paramsObj->lastName == NULL) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'lastName' field is required when creating a user.");
+                    return false;
+                }
+                if($paramsObj->hashPassword == NULL)  
+                {
+                    $this->setErrorMessage("902","Missing parameter - either 'plainPassword' or 'hashPassword' is required when creating a user.");
+                    return false;
+                }
+                return true;
+
+            default:
+                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
+                return false;
+        }
+    }
+    
     
     function setErrorMessage($theCode, $theMessage)
     {
@@ -123,30 +260,44 @@ class securityUser
     /*ACCESSORS*/
     /***********/
 
-    function asXML($mode="all")
+    function asXML()
     {
         $xml = NULL;
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
-            if(($mode=="all") || ($mode=="begin"))
-            {
-                // Only return XML when there are no errors.
-                $xml.= "<user ";
-                $xml.= "id=\"".$this->id."\" ";
-                $xml.= "username=\"".escapeXMLChars($this->username)."\" ";
-                $xml.= "firstname=\"".escapeXMLChars($this->firstname)."\" ";
-                $xml.= "lastname=\"".escapeXMLChars($this->lastname)."\" ";
-                $xml.= "isActive=\"".fromPGtoStringBool($this->isActive)."\" ";
-                $xml.= ">";
-            }
+            // Only return XML when there are no errors.
+            $xml.= "<user ";
+            $xml.= "id=\"".$this->id."\" ";
+            $xml.= "username=\"".escapeXMLChars($this->username)."\" ";
+            $xml.= "firstName=\"".escapeXMLChars($this->firstName)."\" ";
+            $xml.= "lastName=\"".escapeXMLChars($this->lastName)."\" ";
+            $xml.= "isActive=\"".fromPGtoStringBool($this->isActive)."\" ";
+            $xml.= ">";
 
-            if(($mode=="all") || ($mode=="end"))
+            if (isset($this->groupArray))
             {
-                // End XML tag
-                $xml.= "</user>\n";
-            }
+                $xml.= "<memberOf>";
+                foreach($this->groupArray as $groupID)
+                {
+                    $group = new securityGroup();
+                    $success = $group->setParamsFromDB($groupID);
 
+                    if($success)
+                    {
+                        $xml.=$group->asXML();
+                    }
+                    else
+                    {
+                        $myMetaHeader->setErrorMessage($group->getLastErrorCode(), $group->getLastErrorMessage());
+                    }
+
+                }
+                $xml.= "</memberOf>";
+
+            }
+            
+            $xml.= "</user>\n";
             return $xml;
         }
         else
@@ -192,6 +343,8 @@ class securityUser
         // Write the current object to the database
 
         global $dbconn;
+        $sql  = NULL;
+        $sql2 = NULL;
 
         // Check for required parameters
         if($this->username == NULL) 
@@ -200,15 +353,15 @@ class securityUser
             return FALSE;
         }
         
-        if($this->firstname == NULL) 
+        if($this->firstName == NULL) 
         {
-            $this->setErrorMessage("902", "Missing parameter - 'firstname' field is required.");
+            $this->setErrorMessage("902", "Missing parameter - 'firstName' field is required.");
             return FALSE;
         }
         
-        if($this->lastname == NULL) 
+        if($this->lastName == NULL) 
         {
-            $this->setErrorMessage("902", "Missing parameter - 'lastname' field is required.");
+            $this->setErrorMessage("902", "Missing parameter - 'lastName' field is required.");
             return FALSE;
         }
         
@@ -228,11 +381,11 @@ class securityUser
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tblsecurityuser (username, password, firstname, lastname, isactive) values (";
+                    $sql = "insert into tblsecurityuser (username, password, firstName, lastName, isactive) values (";
                     $sql.= "'".$this->username."', ";
                     $sql.= "'".$this->password."', ";
-                    $sql.= "'".$this->firstname."', ";
-                    $sql.= "'".$this->lastname."', ";
+                    $sql.= "'".$this->firstName."', ";
+                    $sql.= "'".$this->lastName."', ";
                     $sql.= "'".fromPHPtoPGBool($this->isActive)."'";
                     $sql.= " )";
                     $sql2 = "select * from tblsecurityuser where securityuserid=currval('tblsecurityuser_securityuserid_seq')";
@@ -243,9 +396,10 @@ class securityUser
                     $sql = "update tblsecurityuser set ";
                     $sql.= "username = '".$this->username."', ";
                     $sql.= "password = '".$this->password."', ";
-                    $sql.= "firstname = '".$this->firstname."', ";
-                    $sql.= "lastname = '".$this->lastname."', ";
+                    $sql.= "firstName = '".$this->firstName."', ";
+                    $sql.= "lastName = '".$this->lastName."', ";
                     $sql.= "isactive = '".fromPHPtoPGBool($this->isActive)."'";
+                    $sql.= "where securityuserid = '".$this->id."'";
                 }
 
                 // Run SQL command

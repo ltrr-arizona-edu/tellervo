@@ -48,6 +48,11 @@ class measurement
     var $maxLat = NULL;
     var $minLong = NULL;
     var $maxLong = NULL;
+    
+    var $includePermissions = FALSE;
+    var $canCreate = NULL;
+    var $canUpdate = NULL;
+    var $canDelete = NULL;
 
     var $parentXMLTag = "measurement"; 
     var $lastErrorMessage = NULL;
@@ -730,6 +735,34 @@ class measurement
         return TRUE;
     }
 
+    function getPermissions($securityUserID)
+    {
+        global $dbconn;
+
+        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'measurement', $this->id)";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);
+            $row = pg_fetch_array($result);
+            
+            $this->canCreate = fromPGtoPHPBool($row['cancreate']);
+            $this->canUpdate = fromPGtoPHPBool($row['canupdate']);
+            $this->canDelete = fromPGtoPHPBool($row['candelete']);
+            $this->includePermissions = TRUE;
+    
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+
+        return TRUE;
+        
+    }
+
 
     /***********/
     /*ACCESSORS*/
@@ -757,7 +790,6 @@ class measurement
 
     function asXML($recurseLevel=2, $style="full")
     {
-        //print_r($this->referencesArray);
         // Return a string containing the current object in XML format
 
         // $recurseLevel = the number of levels of references tags you would like 
@@ -790,6 +822,14 @@ class measurement
            
             $xml.= getResourceLinkTag("measurement", $this->vmeasurementID);
             $xml.= getResourceLinkTag("measurement", $this->vmeasurementID, "map");
+
+            // Include permissions details if requested
+            if($this->includePermissions===TRUE) 
+            {
+                $xml.= "<permissions canCreate=\"".fromPHPtoStringBool($this->canCreate)."\" ";
+                $xml.= "canUpdate=\"".fromPHPtoStringBool($this->canUpdate)."\" ";
+                $xml.= "canDelete=\"".fromPHPtoStringBool($this->canDelete)."\" />\n";
+            } 
             
             $xml.= "<metadata>\n";
             if(isset($this->name))                  $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";

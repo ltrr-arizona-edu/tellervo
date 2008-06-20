@@ -20,6 +20,8 @@ class request
     protected $paramObjectsArray          = array(); 
     protected $crudMode                   = NULL;
     protected $format                     = NULL;
+    
+    var $includePermissions         = FALSE;
 
     function __construct($metaHeader, $auth, $xmlrequest)
     {
@@ -53,6 +55,7 @@ class request
             {
                 $this->crudMode = strtolower($this->xmlrequest->request['type']);
                 $this->format = strtolower($this->xmlrequest->request['format']);
+                if(isset($this->xmlrequest->request['includePermissions'])) $this->includePermissions = fromStringtoPHPBool($this->xmlrequest->request['includePermissions']);
                 error_reporting($origErrorLevel);
                 return true;
             }
@@ -267,6 +270,26 @@ class request
                 {
                     $parentID = "";
                     $myParamObj = new readingNoteParameters($this->metaHeader, $this->auth, $item, $parentID);
+                    array_push($this->paramObjectsArray, $myParamObj);
+                }
+            }
+            
+            if($this->xmlrequest->xpath('//request/user'))
+            {
+                foreach ($this->xmlrequest->xpath('//request/user') as $item)
+                {
+                    $parentID = "";
+                    $myParamObj = new securityUserParameters($this->metaHeader, $this->auth, $item, $parentID);
+                    array_push($this->paramObjectsArray, $myParamObj);
+                }
+            }
+            
+            if($this->xmlrequest->xpath('//request/securityGroup'))
+            {
+                foreach ($this->xmlrequest->xpath('//request/securityGroup') as $item)
+                {
+                    $parentID = "";
+                    $myParamObj = new securityGroupParameters($this->metaHeader, $this->auth, $item, $parentID);
                     array_push($this->paramObjectsArray, $myParamObj);
                 }
             }

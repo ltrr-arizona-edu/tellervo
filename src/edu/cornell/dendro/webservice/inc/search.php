@@ -68,7 +68,7 @@ class search
     /***********/
     /*ACCESSORS*/
     /***********/
-    function doSearch($paramsClass, $auth)
+    function doSearch($paramsClass, $auth, $includePermissions=false)
     {
         global $dbconn;
         $myAuth       = $auth;
@@ -145,32 +145,32 @@ class search
                 if($myRequest->returnObject=="site") 
                 {
                     $myReturnObject = new site();
-                    $hasPermission = $myAuth->sitePermission($row['id'], "read");
+                    $hasPermission = $myAuth->getPermission("read", "site", $row['id']);
                 }
                 elseif($myRequest->returnObject=="subsite")
                 {
                     $myReturnObject = new subSite();
-                    $hasPermission = $myAuth->subSitePermission($row['id'], "read");
+                    $hasPermission = $myAuth->getPermission("read", "subSite", $row['id']);
                 }
                 elseif($myRequest->returnObject=="tree") 
                 {
                     $myReturnObject = new tree();
-                    $hasPermission = $myAuth->treePermission($row['id'], "read");
+                    $hasPermission = $myAuth->getPermission("read", "tree", $row['id']);
                 }
                 elseif($myRequest->returnObject=="specimen")
                 {
                     $myReturnObject = new specimen();
-                    $hasPermission = $myAuth->specimenPermission($row['id'], "read");
+                    $hasPermission = $myAuth->getPermission("read", "specimen", $row['id']);
                 }
                 elseif($myRequest->returnObject=="radius") 
                 {
                     $myReturnObject = new radius();
-                    $hasPermission = $myAuth->radiusPermission($row['id'], "read");
+                    $hasPermission = $myAuth->getPermission("read", "radius", $row['id']);
                 }
                 elseif($myRequest->returnObject=="vmeasurement")
                 {
                     $myReturnObject = new measurement();
-                    $hasPermission = $myAuth->vmeasurementPermission($row['id'], "read");
+                    $hasPermission = $myAuth->getPermission("read", "measurement", $row['id']);
                 }
                 else
                 {
@@ -185,6 +185,10 @@ class search
 
                 // Set parameters on new object and return XML
                 $success = $myReturnObject->setParamsFromDB($row['id']);
+
+                // Get permissions if requested
+                if($includePermissions===TRUE) $myReturnObject->getPermissions($myAuth->getID());
+
                 //$success = $myReturnObject->setParamsFromDB($row['id'], "brief");
                 if($success)
                 {

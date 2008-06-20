@@ -17,6 +17,12 @@ class radius
     var $measurementArray = array();
     var $createdTimeStamp = NULL;
     var $lastModifiedTimeStamp = NULL;
+    
+    var $includePermissions = FALSE;
+    var $canCreate = NULL;
+    var $canUpdate = NULL;
+    var $canDelete = NULL;
+
 
     var $parentXMLTag = "radii"; 
     var $lastErrorMessage = NULL;
@@ -208,13 +214,40 @@ class radius
         }
     }
 
+    function getPermissions($securityUserID)
+    {
+        global $dbconn;
+
+        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'radius', $this->id)";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);
+            $row = pg_fetch_array($result);
+            
+            $this->canCreate = fromPGtoPHPBool($row['cancreate']);
+            $this->canUpdate = fromPGtoPHPBool($row['canupdate']);
+            $this->canDelete = fromPGtoPHPBool($row['candelete']);
+            $this->includePermissions = TRUE;
+    
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+
+        return TRUE;
+        
+    }
 
 
     /***********/
     /*ACCESSORS*/
     /***********/
 
-    function asXML($style="full")
+    function asXML($mode="all", $includePermissions=False)
     {
         global $domain;
         $xml ="";
@@ -227,6 +260,15 @@ class radius
                 $xml.= "<radius ";
                 $xml.= "id=\"".$this->id."\" >";
                 $xml.= getResourceLinkTag("radius", $this->id)."\n ";
+                
+                // Include permissions details if requested
+                if($this->includePermissions===TRUE) 
+                {
+                    $xml.= "<permissions canCreate=\"".fromPHPtoStringBool($this->canCreate)."\" ";
+                    $xml.= "canUpdate=\"".fromPHPtoStringBool($this->canUpdate)."\" ";
+                    $xml.= "canDelete=\"".fromPHPtoStringBool($this->canDelete)."\" />\n";
+                } 
+                
                 $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
                 $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
                 $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
