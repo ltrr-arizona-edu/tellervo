@@ -17,6 +17,7 @@ class auth
   var $dbPasswordHash = NULL;
   var $isLoggedIn = FALSE;
   var $isAdmin = FALSE;
+  var $authFailReason = NULL;
 
   function auth()
   {
@@ -254,160 +255,6 @@ class auth
     return $this->securityuserid;
   }
 
-  
-  function sitePermission($theSiteID, $thePermissionType)
-  {
-      return $this->getPermission($thePermissionType, 'site', $theSiteID); 
-  }
-
-  function subSitePermission($theSubSiteID, $thePermissionType)
-  {
-
-        global $dbconn;
-        $sql = "select siteid from tblsubsite where subsiteid=$theSubSiteID";
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            pg_send_query($dbconn, $sql);
-            $result = pg_get_result($dbconn);
-            if(pg_num_rows($result)==0)
-            {
-                // No records match the id specified
-                return false;
-            }
-            else
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    return $this->getPermission($thePermissionType, 'site', $row['siteid']);
-                }
-            }
-        }
-        return false;
-  }
-  
-  function treePermission($theTreeID, $thePermissionType)
-  {
-      return $this->getPermission($thePermissionType, 'tree', $theTreeID); 
-  }
-
-  function specimenPermission($theSpecimenID, $thePermissionType)
-  {
-        global $dbconn;
-        $sql = "select treeid from tblspecimen where specimenid=$theSpecimenID";
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            pg_send_query($dbconn, $sql);
-            $result = pg_get_result($dbconn);
-            if(pg_num_rows($result)==0)
-            {
-                // No records match the id specified
-                return false;
-            }
-            else
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    return $this->getPermission($thePermissionType, 'tree', $row['treeid']);
-                }
-            }
-        }
-        return false;
-  }
-  
-  function radiusPermission($theRadiusID, $thePermissionType)
-  {
-        global $dbconn;
-        $sql = "select tblradius.radiusid, tblspecimen.treeid from tblradius, tblspecimen where tblradius.radiusid=$theRadiusID and tblradius.specimenid=tblspecimen.specimenid";
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            pg_send_query($dbconn, $sql);
-            $result = pg_get_result($dbconn);
-            if(pg_num_rows($result)==0)
-            {
-                // No records match the id specified
-                return false;
-            }
-            else
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    return $this->getPermission($thePermissionType, 'tree', $row['treeid']);
-                }
-            }
-        }
-        return false;
-  }
-  
-  function vmeasurementPermission($theVMeasurementID, $thePermissionType)
-  {
-      return $this->getPermission($thePermissionType, 'vmeasurement', $theVMeasurementID); 
-  }
-
-  function dictionariesPermission($theVMeasurementID, $thePermissionType)
-  {
-      // Always allow access to dictionaries
-      return true;
-  }
-
-/*  function getPerms($permissionType, $objectType, $objectID, $parentID=NULL)
-  {
-    global $dbconn;
-
-    // Admin gets all permissions
-    if($this->isAdmin) return true;
-
-      // 
-        if ($this->isLoggedIn)
-        {
-      if($permissionType=='create')
-      {
-            switch ($objectType)
-            {
-                // For these objects we need to check their parents for permission
-                case "site":
-                    $myID = $parentID;
-                    $objectType="default";
-                    break;
-                case "subSite":
-                    $myID = $parentID;
-                    $objectType="site";
-                    break;
-                case "tree":
-                    $myID = $parentID;
-                    $objectType="subSite";
-                    break;
-                case "specimen":
-                    $myID = $parentID;
-                    $objectType="tree";
-                    break;
-                case "radius":
-                    $myID = $parentID;
-                    $objectType="specimen";
-                    break;
-                case "measurement":
-                    $myID = $parentID;
-                    $objectType="radius";
-                    break;
-
-                // For these objects we don't need to check with parents                
-                case "siteNote":
-                    $myID = $objectID;
-                    break;
-
-                default:
-                    echo "object type not supported";
-                    die();
-            }
-    
-
-  }
- */
   function getPermission($thePermissionType, $theObjectType, $theObjectID)
   {
         // $theObjectType should be one of site,tree, vmeasurement, default
@@ -435,6 +282,7 @@ class auth
         // If user is not logged in deny!
         if ($this->isLoggedIn!=TRUE)
         {
+            $this->authFailReason = "Not logged in";
             return false;
         }
 
@@ -442,6 +290,13 @@ class auth
         if ($this->isAdmin)
         {
             return true;
+        }
+
+        // For security functions user *must* be admin
+        if (($theObjectType=='securityUser') || ($theObjectType=='securityGroup'))
+        {
+            $this->authFailReason = "Only admin users can use security functions";
+            return false;
         }
 
         // For objects that don't have direct security, we need to move up the object chain to check perms
@@ -453,7 +308,7 @@ class auth
             $theObjectType="tree";
             break;
         case "specimen":
-            $sql = "select tblspecimen.specimenid, tlbspecimen.treeid as parentid from tblspecimen where tblspecimen.specimenid=$theObjectID ";
+            $sql = "select tblspecimen.specimenid, tblspecimen.treeid as parentid from tblspecimen where tblspecimen.specimenid=$theObjectID ";
             $theObjectType="tree";
             break;
         case "subSite":
@@ -473,7 +328,8 @@ class auth
                 $result = pg_get_result($dbconn);
                 if(pg_num_rows($result)==0)
                 {
-                    // No records match the id specified
+                    // No records match the id specifiedn
+                    $this->authFailReason = "Attempt to determine permissions failed because the parent of this object doesn't exist.  SQL used was $sql";
                     return false;
                 }
                 else
@@ -498,6 +354,24 @@ class auth
             if($row['denied']===TRUE)
             {
                 // Check whether 'denied' over rules.
+                if ($theObjectType=='default')
+                {
+                    $this->authFailReason = "Your default database permissions are: 
+                        denied=".$row['denied']." 
+                        create=".$row['cancreate']."  
+                        read=".$row['canread']." 
+                        update=".$row['canupdate']." 
+                        delete=".$row['candelete'];
+                }
+                else
+                {
+                    $this->authFailReason = "Your permissions for ".$theObjectType." id ".$theObjectID." are: 
+                        denied=".$row['denied']." 
+                        create=".$row['cancreate']." 
+                        read=".$row['canread']." 
+                        update=".$row['canupdate']." 
+                        delete=".$row['candelete'];
+                }
                 return False;
             }
 
@@ -513,6 +387,14 @@ class auth
                 if($row['candelete']=='t') return true;
             default:
                 // Incorrect permission type specified returning false
+                if ($theObjectType=='default')
+                {
+                    $this->authFailReason = "Your default database permissions are: denied=".$row['denied']." create=".$row['cancreate']."  read=".$row['canread']." update=".$row['canupdate']." delete=".$row['candelete'];
+                }
+                else
+                {
+                    $this->authFailReason = "Your permissions for ".$theObjectType." id ".$theObjectID." are: denied=".$row['denied']." create=".$row['cancreate']." read=".$row['canread']." update=".$row['canupdate']." delete=".$row['candelete'];
+                }
                 return False;
             }
         }

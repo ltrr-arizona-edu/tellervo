@@ -92,6 +92,12 @@
                 <zeroOrMore>
                     <externalRef href="measurementNote.rng" />   	
                 </zeroOrMore>
+                <zeroOrMore>
+                    <externalRef href="securityUser.rng" />   	
+                </zeroOrMore>               
+                <zeroOrMore>
+                    <externalRef href="securityGroup.rng" />   	
+                </zeroOrMore>                 
                 <optional>
                     <externalRef href="authenticate.rng" />
                 </optional>

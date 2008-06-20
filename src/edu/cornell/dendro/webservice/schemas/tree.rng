@@ -15,8 +15,7 @@
                 <attribute name="url">
                     <text />
                 </attribute>
-            </optional>
-            
+            </optional>        
             <interleave>
 	            <optional>
 	                <element name="name">
@@ -33,7 +32,8 @@
 	                	</optional>
 	                    <text />
 	                </element>
-	            </optional>        
+	            </optional>   
+	                 
 	    	    <optional>
 	                <element name="originalTaxonName">
 	                    <text />
@@ -103,10 +103,7 @@
 		                </zeroOrMore>
 	                </element>
                 </optional>
-                
-
-           
-                
+                        
                 <optional>
                 	<element name="treeNotes">
 		                <zeroOrMore>
@@ -124,5 +121,4 @@
             </interleave>
         </element>
     </define>
-
 </grammar>

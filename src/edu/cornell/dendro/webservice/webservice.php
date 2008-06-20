@@ -140,6 +140,12 @@ elseif($myMetaHeader->status != "Error")
             case "dictionariesParameters":
                 $myObject = new dictionaries();
                 break;
+            case "securityUserParameters":
+                $myObject = new securityUser();
+                break;
+            case "securityGroupParameters":
+                $myObject = new securityGroup();
+                break;
             default:
                 trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
         }
@@ -219,6 +225,12 @@ elseif($myMetaHeader->status != "Error")
                 case "readingNote":
                     $myID = $paramObj->id;
                     break;
+                case "securityUser":
+                    $myID = $paramObj->id;
+                    break;
+                case "securityGroup":
+                    $myID = $paramObj->id;
+                    break;
             }
         }
         elseif( ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete'))
@@ -232,17 +244,23 @@ elseif($myMetaHeader->status != "Error")
             if($myAuth->getPermission($myRequest->getCrudMode(), $objectType, $myID)===FALSE)
             {
                 // Permission denied
+                if (($originalObjectType=='site') && ($objectType=='default'))
+                {
+                    // Permission determined from database default
+                    trigger_error("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." was denied. ".$myAuth->authFailReason, $defaultErrType);
+                    break;
+                }
                 if ($originalObjectType!=$objectType)
                 {
                     // Permission determined from parent object so the error message should be set accordingly
-                    trigger_error("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." associated with ".$objectType." ".$myID." was denied.", $defaultErrType);
+                    trigger_error("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." associated with ".$objectType." ".$myID." was denied. ".$myAuth->authFailReason, $defaultErrType);
                     break;
 
                 }
                 else
                 {
                     // Standard error message
-                    trigger_error("103"."Permission to ".$myRequest->getCrudMode()." ".$objectType." id $myID was denied.", $defaultErrType);
+                    trigger_error("103"."Permission to ".$myRequest->getCrudMode()." ".$objectType." id $myID was denied. ".$myAuth->authFailReason, $defaultErrType);
                     break;
                 }
             }
