@@ -48,10 +48,12 @@ import edu.cornell.dendro.corina.webdbi.ResourceEvent;
 import edu.cornell.dendro.corina.webdbi.ResourceEventListener;
 import edu.cornell.dendro.corina.webdbi.SearchParameters;
 
+
 /**
  *
  * @author  peterbrewer
  */
+
 public class HierarchyPanel extends javax.swing.JPanel {
 	private JDialog parent;
 	private Site lastSelectedSite;

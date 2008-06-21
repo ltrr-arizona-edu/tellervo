@@ -6,6 +6,7 @@
 
 package edu.cornell.dendro.corina.gui.newui;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -34,12 +35,12 @@ import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
 public class SiteDialog extends BaseNewDialog<Site> {
     
     /** Creates new form Site */
-    public SiteDialog(java.awt.Dialog parent, boolean modal) {
-        super(parent, modal);
+    public SiteDialog() {
+        //super(parent, modal);
         initComponents();
         
         initialize();
-        Center.center(this);
+        //Center.center(this);
     }
     
 	private void initialize() {
@@ -67,7 +68,7 @@ public class SiteDialog extends BaseNewDialog<Site> {
     			commit();
     		}
     	});
-    	getRootPane().setDefaultButton(btnApply);
+    	//getRootPane().setDefaultButton(btnApply);
     	btnApply.setEnabled(false);
     	
     	// cancel button
@@ -76,25 +77,28 @@ public class SiteDialog extends BaseNewDialog<Site> {
     			dispose();
     		}
     	});
+    	
+    	// set our default validation state
+    	validateForm();
     }
 
-    private void commit() {
+    public void commit() {
     	Site site = new Site(Site.ID_NEW, txtSiteName.getText(), txtSiteCode.getText());
     	IntermediateResource ir = new IntermediateResource((Site) null, site);
     	
     	if(!createObject(ir))
     		return;
-    	
-		// add the subsite to the parent site, sort, and 
+
 		if(ir.getObject().get(0) instanceof Site) {
 			setNewObject((Site) ir.getObject().get(0));
+	    	// add the site to the site list
 			App.sites.addSite(getNewObject());
 		}
 
 		dispose();
     }
     
-    protected void validateButtons() {
+    protected void validateForm() {
     	boolean codeOk, nameOk;
 		int len;
 		
@@ -113,7 +117,18 @@ public class SiteDialog extends BaseNewDialog<Site> {
 		else
 			nameOk = false;
 		
-		btnApply.setEnabled(codeOk && nameOk);
+		if(!nameOk)
+			txtSiteName.setBackground(Color.CYAN);
+		else 
+			txtSiteName.setBackground(Color.WHITE);
+
+		if(!codeOk)
+			txtSiteCode.setBackground(Color.CYAN);
+		else 
+			txtSiteCode.setBackground(Color.WHITE);
+
+		setFormValidated(codeOk && nameOk);
+		//btnApply.setEnabled(codeOk && nameOk);
     }
     
     /** This method is called from within the constructor to
@@ -153,6 +168,7 @@ public class SiteDialog extends BaseNewDialog<Site> {
         seperatorButtons.setBackground(new java.awt.Color(153, 153, 153));
         seperatorButtons.setOpaque(true);
 
+        /*
         org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
         panelButtons.setLayout(panelButtonsLayout);
         panelButtonsLayout.setHorizontalGroup(
@@ -174,7 +190,7 @@ public class SiteDialog extends BaseNewDialog<Site> {
                     .add(btnCancel)
                     .add(btnApply))
                 .addContainerGap(30, Short.MAX_VALUE))
-        );
+        );*/
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -190,7 +206,7 @@ public class SiteDialog extends BaseNewDialog<Site> {
                     .add(txtSiteCode, 0, 285, Short.MAX_VALUE)
                     .add(txtSiteName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE))
                 .addContainerGap())
-            .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            //.add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -203,8 +219,8 @@ public class SiteDialog extends BaseNewDialog<Site> {
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblSiteName)
                     .add(txtSiteName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                )//.addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                //.add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -213,6 +229,7 @@ public class SiteDialog extends BaseNewDialog<Site> {
     /**
      * @param args the command line arguments
      */
+    /*
     public static void zzzmain(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -226,7 +243,7 @@ public class SiteDialog extends BaseNewDialog<Site> {
             }
         });
     }
-    
+    */
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnApply;
     private javax.swing.JButton btnCancel;

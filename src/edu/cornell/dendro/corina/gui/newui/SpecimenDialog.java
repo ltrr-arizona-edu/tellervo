@@ -47,7 +47,7 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
     
     /** Creates new form Specimen */
     public SpecimenDialog(java.awt.Dialog parent, boolean modal, String prefix, Tree parentTree) {
-        super(parent, modal);
+        //super(parent, modal);
         initComponents();
   
         lblNamePrefix.setText(prefix);
@@ -55,7 +55,7 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
         
         initialize();
         
-        Center.center(this);
+        //Center.center(this);
     }
     
     private Tree parentTree;
@@ -87,7 +87,7 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
     	setSpinnerIndeterminate(spnUnmeasPre);
     	    	
      	// force a check of date when we leave the txtCollectionDate field
-    	final JDialog parentGlue = this;
+    	final BaseNewDialog<Specimen> parentGlue = this;
     	txtCollectionDate.setInputVerifier(new InputVerifier() {
     		public boolean verify(JComponent input) {
     			if(input != txtCollectionDate)
@@ -204,7 +204,7 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
     	dispose();
     }
     
-	protected void validateButtons() {
+	protected void validateForm() {
     	boolean nameOk;
 
     	// tree name name
@@ -607,23 +607,6 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
     private void chkUnmeasPostVerifiedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkUnmeasPostVerifiedActionPerformed
         // TODO add your handling code here:
 }//GEN-LAST:event_chkUnmeasPostVerifiedActionPerformed
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void zzzmain(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                SpecimenDialog dialog = new SpecimenDialog(new javax.swing.JDialog(), true, "blah", null);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnApply;

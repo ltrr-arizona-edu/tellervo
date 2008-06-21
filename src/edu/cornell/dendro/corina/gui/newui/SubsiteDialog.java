@@ -28,13 +28,13 @@ import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
 public class SubsiteDialog extends BaseNewDialog<Subsite> {
     
     /** Creates new form Subsite */
-    public SubsiteDialog(java.awt.Dialog parent, boolean modal, Site parentSite) {
-        super(parent, modal);
+    public SubsiteDialog() {
+        //super(parent, modal);
         initComponents();
 
-        this.parentSite = parentSite;
+        //this.parentSite = parentSite;
         initialize();
-        Center.center(this);
+        //Center.center(this);
     }
     
     private Site parentSite;
@@ -51,7 +51,7 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
     	txtSubsiteName.requestFocusInWindow();
     	
     	// apply button
-    	getRootPane().setDefaultButton(btnApply);
+    	//getRootPane().setDefaultButton(btnApply);
     	btnApply.setEnabled(false);
        	btnApply.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
@@ -67,7 +67,7 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
     	});
        	
        	// neat site name thingy
-       	txtSite.setText(parentSite.toString());
+       	//txtSite.setText(parentSite.toString());
     }
     
     private void commit() {
@@ -87,7 +87,7 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
     	dispose();
     }
         
-    protected void validateButtons() {
+    protected void validateForm() {
     	boolean nameOk;
 
     	// then, site name
@@ -197,23 +197,6 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void zzzmain(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                SubsiteDialog dialog = new SubsiteDialog(new javax.swing.JDialog(), true, null);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnApply;

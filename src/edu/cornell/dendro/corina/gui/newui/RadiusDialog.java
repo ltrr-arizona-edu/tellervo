@@ -24,7 +24,7 @@ public class RadiusDialog extends BaseNewDialog<Radius> {
     
     /** Creates new form Site */
     public RadiusDialog(java.awt.Dialog parent, boolean modal, String prefix, Specimen parentSpecimen) {
-        super(parent, modal);
+        //super(parent, modal);
         initComponents();
         
         this.parentSpecimen = parentSpecimen;
@@ -32,7 +32,7 @@ public class RadiusDialog extends BaseNewDialog<Radius> {
         
         initialize();
         
-        Center.center(this);
+        //Center.center(this);
     }
     
     private Specimen parentSpecimen;
@@ -71,7 +71,7 @@ public class RadiusDialog extends BaseNewDialog<Radius> {
     	dispose();
     }
     
-    protected void validateButtons() {
+    protected void validateForm() {
     	boolean nameOk;
 
     	// tree name name
@@ -168,23 +168,6 @@ public class RadiusDialog extends BaseNewDialog<Radius> {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                RadiusDialog dialog = new RadiusDialog(new javax.swing.JDialog(), true, "asdf", null);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnApply;

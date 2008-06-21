@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.gui.newui;
 
+import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
@@ -10,8 +11,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractSpinnerModel;
+import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -30,7 +33,7 @@ import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
  *
  */
 
-public abstract class BaseNewDialog<OBJT> extends JDialog {
+public abstract class BaseNewDialog<OBJT> extends JPanel {
 
 	// the new object that we've created
 	private OBJT newObject;
@@ -170,11 +173,11 @@ public abstract class BaseNewDialog<OBJT> extends JDialog {
 			}
 
 			public void removeUpdate(DocumentEvent e) {
-				validateButtons();
+				validateForm();
 			}
 
 			public void insertUpdate(DocumentEvent e) {
-				validateButtons();
+				validateForm();
 			}
 		});
 	}
@@ -236,11 +239,49 @@ public abstract class BaseNewDialog<OBJT> extends JDialog {
 		});
 	}
 	
+	/*
+	 * Save our changes to the db
+	 */
+	public void commit() {
+		System.out.println("Commit not yet implemented :(");
+	}
+	
+	private WizardChildMonitor wizardToNotify;
+	/**
+	 * 
+	 * @param wizardToNotify
+	 */
+	public void setWizardToNotify(WizardChildMonitor wizardToNotify) {
+		this.wizardToNotify = wizardToNotify;
+	}
+	
+	/**
+	 * Called to notify the wizard our 'ok' state has changed
+	 */
+	protected void notifyWizard() {
+		if(wizardToNotify != null)
+			wizardToNotify.notifyChildFormStateChanged();
+	}
+
+	// default to not validating
+	private boolean formIsValidated = false;
+	
+	protected void setFormValidated(boolean validated) {
+		if(validated != formIsValidated) {
+			this.formIsValidated = validated;
+			notifyWizard();
+		}
+	}
+	
+	public boolean isFormValidated() {
+		return formIsValidated;
+	}
+	
 	/**
 	 * Intended to be overridden by a function that enables/disables buttons.
 	 * Called by anything that has been added with setFieldValidateButtons
 	 */
-	protected void validateButtons() {
+	protected void validateForm() {
 		
 	}
 	
@@ -248,6 +289,7 @@ public abstract class BaseNewDialog<OBJT> extends JDialog {
 		// TODO Auto-generated constructor stub
 	}
 
+	/*
 	public BaseNewDialog(Frame owner) throws HeadlessException {
 		super(owner);
 		// TODO Auto-generated constructor stub
@@ -297,5 +339,40 @@ public abstract class BaseNewDialog<OBJT> extends JDialog {
 		super(owner, title, modal, gc);
 		// TODO Auto-generated constructor stub
 	}
-
+	*/
+	
+	/**
+	 * AWFUL KLUDGE!!!
+	 * This method to be renamed when refactoring is complete!
+	 * @deprecated
+	 */
+	protected Container getContentPane() {
+		return this;
+	}
+	
+	/**
+	 * @deprecated
+	 * @param stupid
+	 */
+	protected void setDefaultCloseOperation(int stupid) {
+		return;
+	}
+	
+	/**
+	 * @deprecated
+	 */
+	protected void dispose() {
+		
+	}
+	
+	/**
+	 * @deprecated
+	 */
+	protected void pack() {
+		
+	}
+	
+	public void setTitle(String title) {
+		setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 150));
+	}
 }

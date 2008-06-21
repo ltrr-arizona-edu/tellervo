@@ -36,7 +36,7 @@ public class TreeDialog extends BaseNewDialog<Tree> {
     
     /** Creates new form NewSite */
     public TreeDialog(java.awt.Dialog parent, boolean modal, String prefix, Subsite parentSubsite) {
-        super(parent, modal);
+        //super(parent, modal);
         initComponents();
         
         lblNamePrefix.setText(prefix);
@@ -44,7 +44,7 @@ public class TreeDialog extends BaseNewDialog<Tree> {
         
         initialize();
         
-        Center.center(this);
+        //Center.center(this);
     }
     
     private Subsite parentSubsite;
@@ -92,7 +92,7 @@ public class TreeDialog extends BaseNewDialog<Tree> {
         		if(ie.getStateChange() != ItemEvent.SELECTED)
         			return;
         		
-        		validateButtons();
+        		validateForm();
         	}
     	});
     	
@@ -147,7 +147,7 @@ public class TreeDialog extends BaseNewDialog<Tree> {
     	dispose();
     }
 	
-	protected void validateButtons() {
+	protected void validateForm() {
     	boolean nameOk;
     	boolean taxonOk;
 
@@ -385,23 +385,6 @@ public class TreeDialog extends BaseNewDialog<Tree> {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void zzzmain(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                TreeDialog dialog = new TreeDialog(new javax.swing.JDialog(), true, "cooookies", null);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnApply;

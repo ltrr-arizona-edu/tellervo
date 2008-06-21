@@ -6,16 +6,112 @@
 
 package edu.cornell.dendro.corina.gui.newui;
 
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.Subsite;
+import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.util.Center;
+
 /**
  *
  * @author  peterbrewer
  */
 public class ImportWizard extends javax.swing.JDialog {
+	private CardLayout cardLayout;
+	private JPanel insidePanel;
+	private BaseContentPanel<?>[] cards;
+	private int cardIdx;
     
     /** Creates new form ImportWizard */
     public ImportWizard(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        
+        cardLayout = new CardLayout();
+        
+        insidePanel = new JPanel(cardLayout);
+        
+        cards = new BaseContentPanel<?>[2];
+        
+        cards[0] = new BaseContentPanel<Site>(panelContent, new SiteDialog(), Site.class);
+        cards[1] = new BaseContentPanel<Subsite>
+        	(panelContent, new SubsiteDialog(), Subsite.class);
+
+        // populate the site list
+        cards[0].repopulate();
+        
+        cardIdx = 0;
+        insidePanel.add(cards[0], "site");
+        insidePanel.add(cards[1], "subsite");
+
+
+        // add a scroll pane around the inside container, in case it gets too big to display vertically
+        final JScrollPane contentScroller = new JScrollPane(insidePanel, 
+        		JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+        		JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+             
+        panelContent.setLayout(new FlowLayout());
+        panelContent.add(contentScroller);
+        
+        btnNext.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				// did the card say it was ok to continue?
+				if(cards[cardIdx].verifyAndSelectNextPanel()) {
+					cardIdx++;
+					
+					// did we finish?
+					if(cardIdx == cards.length) {
+						System.out.println("WOOOO!!");
+						dispose();
+						return;
+					}
+				
+					// advance us forward
+					cardLayout.next(insidePanel);
+					
+					// make sure we can go back!
+					btnBack.setEnabled(true);
+					
+					// change the button text if we're at the end
+					if(cardIdx == cards.length - 1)
+						btnNext.setText("Finish");
+				}
+				
+			}
+        });
+
+        btnBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(cardIdx > 0) {
+					// change the button text if we're at the end
+					if(cardIdx == cards.length - 1)
+						btnNext.setText("Next");
+
+					cardIdx--;
+					
+					// go back!
+					cardLayout.previous(insidePanel);
+					
+					// disable back the button on the first card
+					if(cardIdx == 0)
+						btnBack.setEnabled(false);
+				}
+			}
+        });
+        
+        pack();
+        Center.center(this);
     }
     
     /** This method is called from within the constructor to
@@ -26,13 +122,6 @@ public class ImportWizard extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
-        buttonGroup2 = new javax.swing.ButtonGroup();
-        buttonGroup3 = new javax.swing.ButtonGroup();
-        buttonGroup4 = new javax.swing.ButtonGroup();
-        buttonGroup5 = new javax.swing.ButtonGroup();
-        buttonGroup6 = new javax.swing.ButtonGroup();
-        buttonGroup7 = new javax.swing.ButtonGroup();
         panelEyeCandy = new javax.swing.JPanel();
         panelButtons = new javax.swing.JPanel();
         btnCancel = new javax.swing.JButton();
@@ -163,7 +252,7 @@ public class ImportWizard extends javax.swing.JDialog {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void mzzzain(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 ImportWizard dialog = new ImportWizard(new javax.swing.JFrame(), true);
@@ -181,13 +270,6 @@ public class ImportWizard extends javax.swing.JDialog {
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnNext;
-    private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.ButtonGroup buttonGroup2;
-    private javax.swing.ButtonGroup buttonGroup3;
-    private javax.swing.ButtonGroup buttonGroup4;
-    private javax.swing.ButtonGroup buttonGroup5;
-    private javax.swing.ButtonGroup buttonGroup6;
-    private javax.swing.ButtonGroup buttonGroup7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblProgress;
     private javax.swing.JPanel panelButtons;
