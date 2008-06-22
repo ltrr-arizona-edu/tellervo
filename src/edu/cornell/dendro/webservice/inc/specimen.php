@@ -435,7 +435,7 @@ class specimen
     /*ACCESSORS*/
     /***********/
 
-    function asXML($mode="all", $includePermissions=False)
+    function asXML($mode="all", $style="full")
     {
         global $domain;
         $xml ="";
