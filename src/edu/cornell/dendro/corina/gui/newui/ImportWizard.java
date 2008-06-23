@@ -86,12 +86,16 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
         
         btnNext.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {		
+
+				
+				
 				// did the card say it was ok to continue?
 				if(cards[cardIdx].verifyAndSelectNextPanel()) {
 					GenericIntermediateObject newParent = cards[cardIdx].getPanelObject(); // the selected object of this box...
 					
 					// NEXT!
 					cardIdx++;
+					lblProgress.setText("Step " + (cardIdx +1) + " of " + (cards.length - 1));
 					
 					// did we finish?
 					if(cardIdx == cards.length) {
@@ -149,11 +153,13 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
 
         btnBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				lblProgress.setText("Step " + cardIdx + " of " + (cards.length - 1));
+				
 				if(cardIdx > 0) {
 					// change the button text if we're at the end
 					if(cardIdx == cards.length - 1)
-						btnNext.setText("Next");
-
+						btnNext.setText("Finish");
 					cardIdx--;
 					
 					// go back!
@@ -162,7 +168,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
 					// can go 'next'? (this should always be true?)
 			    	btnNext.setEnabled(cards[cardIdx].isPanelValid());
 					
-					// disable back the button on the first card
+					// disable the back button on the first card
 					if(cardIdx == 0)
 						btnBack.setEnabled(false);
 				}
