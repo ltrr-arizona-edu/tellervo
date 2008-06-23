@@ -68,7 +68,7 @@ class search
     /***********/
     /*ACCESSORS*/
     /***********/
-    function doSearch($paramsClass, $auth, $includePermissions=false)
+    function doSearch($paramsClass, $auth, $includePermissions)
     {
         global $dbconn;
         $myAuth       = $auth;
