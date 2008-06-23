@@ -448,11 +448,11 @@ class securityUserParameters extends parameters
         if(isset($this->xmlrequest['hashPassword']))    $this->hashPassword  = addslashes(trim($this->xmlrequest['hashPassword']));
         
         $groupArray = $this->xmlrequest->xpath('//memberOf');
-        if (isset($memberOf[0]->memberOf[0]))
+        if (isset($this->xmlrequest->memberOf[0]))
         {
-            foreach($memberOf[0] as $item)
+            foreach($this->xmlrequest->memberOf[0] as $item)
             {
-                array_push($this->groupArray, $item['id']);
+                array_push($this->groupArray, (int) $item['id']);
             }
         }
         else

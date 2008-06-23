@@ -156,18 +156,15 @@ class securityUser
         if (isset($paramsClass->hashPassword)) $this->setPassword($paramsClass->hashPassword, "hash");
         if (isset($paramsClass->isActive))     $this->setIsActive($paramsClass->isActive);
         
-        if (isset($paramsClass->groupArray))
+        if (isset($paramsClass->groupArray) && $paramsClass->groupArray[0]!='empty')
         {
             // Remove any existing groups,  ready to be replaced with what user has specified
             unset($this->groupArray);
             $this->groupArray = array();
 
-            if($paramsClass->groupArray[0]!='empty')
+            foreach($paramsClass->groupArray as $item)
             {
-                foreach($paramsClass->groupArray as $item)
-                {
-                    array_push($this->groupArray, (int) $item[0]);
-                }
+                array_push($this->groupArray, $item);
             }
         }   
         return true;
@@ -289,7 +286,7 @@ class securityUser
                     }
                     else
                     {
-                        $myMetaHeader->setErrorMessage($group->getLastErrorCode(), $group->getLastErrorMessage());
+                        $this->setErrorMessage($group->getLastErrorCode(), $group->getLastErrorMessage());
                     }
 
                 }
@@ -346,31 +343,6 @@ class securityUser
         $sql  = NULL;
         $sql2 = NULL;
 
-        // Check for required parameters
-        if($this->username == NULL) 
-        {
-            $this->setErrorMessage("902", "Missing parameter - 'username' field is required.");
-            return FALSE;
-        }
-        
-        if($this->firstName == NULL) 
-        {
-            $this->setErrorMessage("902", "Missing parameter - 'firstName' field is required.");
-            return FALSE;
-        }
-        
-        if($this->lastName == NULL) 
-        {
-            $this->setErrorMessage("902", "Missing parameter - 'lastName' field is required.");
-            return FALSE;
-        }
-        
-        if($this->password == NULL) 
-        {
-            $this->setErrorMessage("902", "Missing parameter - 'password' field is required.");
-            return FALSE;
-        }
-
         //Only attempt to run SQL if there are no errors so far
         if($this->lastErrorCode == NULL)
         {
@@ -421,9 +393,22 @@ class securityUser
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
                     {
-                        $this->id=$row['securityuserid'];   
+                        $this->setParamasFromDB($row['securityuserid']);   
                     }
                 }
+                
+                // Set or unset member groups for this user
+                if(isset($this->groupArray))
+                {
+                    $sql = "delete from tblsecurityusermembership where securityuserid=".$this->id;
+                    $result = pg_query($dbconn, $sql);
+
+                    foreach($this->groupArray as $item)
+                    {
+                        $sql = "insert into tblsecurityusermembership (securityuserid, securitygroupid) values ('$this->id', '$item')"; 
+                        $result = pg_query($dbconn, $sql);
+                    }
+                } 
             }
             else
             {
