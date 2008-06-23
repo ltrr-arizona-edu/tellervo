@@ -20,10 +20,10 @@ import edu.cornell.dendro.corina.webdbi.IntermediateResource;
  *
  * @author  peterbrewer
  */
-public class RadiusDialog extends BaseNewDialog<Radius> {
+public class RadiusEditorPanel extends BaseEditorPanel<Radius> {
     
     /** Creates new form Site */
-    public RadiusDialog() {
+    public RadiusEditorPanel() {
         initComponents();
                 
         initialize();

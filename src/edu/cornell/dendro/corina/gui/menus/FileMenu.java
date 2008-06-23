@@ -32,7 +32,8 @@ import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.gui.newui.HierarchyPanel;
 import edu.cornell.dendro.corina.gui.newui.CreateSampleDialog;
-import edu.cornell.dendro.corina.gui.newui.SiteDialog;
+import edu.cornell.dendro.corina.gui.newui.ImportWizard;
+import edu.cornell.dendro.corina.gui.newui.SiteEditorPanel;
 import edu.cornell.dendro.corina.manip.Sum;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
@@ -265,9 +266,9 @@ public class FileMenu extends JMenu {
 	}
 	
 	public static void newdb() {
-		CreateSampleDialog sampleDialog = new CreateSampleDialog((JFrame)null, false, null);
+		ImportWizard wizardDialog = new ImportWizard((JFrame)null, false);
 		
-		sampleDialog.setVisible(true);
+		wizardDialog.setVisible(true);
 	}
 
 	// ask the user for a list of files to open

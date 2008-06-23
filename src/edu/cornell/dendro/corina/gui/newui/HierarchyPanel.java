@@ -94,7 +94,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
     	// new SITE
     	btnNewSite.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			SiteDialog sd = null;// = new SiteDialog(parent, true);
+    			SiteEditorPanel sd = null;// = new SiteDialog(parent, true);
     			
     			sd.setVisible(true);
     			
@@ -115,7 +115,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
     	btnNewSubsite.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			Site site = (Site) cboSite.getSelectedItem();
-    			SubsiteDialog sd = null;// = new SubsiteDialog(parent, true, site);
+    			SubsiteEditorPanel sd = null;// = new SubsiteDialog(parent, true, site);
     			
     			sd.setVisible(true);
     			
@@ -132,7 +132,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
     	btnNewTree.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			Subsite subsite = (Subsite) cboSubsite.getSelectedItem();
-    			TreeDialog td = null;// = new TreeDialog(parent, true, getLabel(2), subsite);
+    			TreeEditorPanel td = null;// = new TreeDialog(parent, true, getLabel(2), subsite);
     			
     			td.setVisible(true);
     			
@@ -147,7 +147,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
     	btnNewSpecimen.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			Tree tree = (Tree) cboTree.getSelectedItem();
-    			SpecimenDialog sd = null;// = new SpecimenDialog(parent, true, getLabel(3), tree);
+    			SpecimenEditorPanel sd = null;// = new SpecimenDialog(parent, true, getLabel(3), tree);
     			
     			sd.setVisible(true);
 
@@ -162,7 +162,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
     	btnNewRadius.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			Specimen specimen = (Specimen) cboSpecimen.getSelectedItem();
-    			RadiusDialog rd = null;// = new RadiusDialog(parent, true, getLabel(4), specimen);
+    			RadiusEditorPanel rd = null;// = new RadiusDialog(parent, true, getLabel(4), specimen);
     			
     			rd.setVisible(true);
 

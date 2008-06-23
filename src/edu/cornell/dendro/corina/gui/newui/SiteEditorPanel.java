@@ -1,5 +1,5 @@
 /*
- * Subsite.java
+ * Site.java
  *
  * Created on June 2, 2008, 3:38 PM
  */
@@ -11,96 +11,112 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
 
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.site.Site;
 import edu.cornell.dendro.corina.site.Subsite;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
+import edu.cornell.dendro.corina.webdbi.MeasurementResource;
 import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
 
 /**
  *
  * @author  peterbrewer
  */
-public class SubsiteDialog extends BaseNewDialog<Subsite> {
+public class SiteEditorPanel extends BaseEditorPanel<Site> {
     
-    /** Creates new form Subsite */
-    public SubsiteDialog() {
+    /** Creates new form Site */
+    public SiteEditorPanel() {
         initComponents();
-
+        
         initialize();
         validateForm();
     }
     
-    private void initialize() {
-    	// When the name is changed, listen and ensure length
+	private void initialize() {
+    	
+    	// forced formatting on the site code box
+		setCapsNoWhitespace(txtSiteCode);
+    	
+    	// When the code is changed, listen and ensure length
     	// We use this as one condition to allow the Apply button to be enabled
-    	setFieldValidateButtons(txtSubsiteName);
+    	setFieldValidateButtons(txtSiteCode);
+
+    	// When the name is changed, listen and ensure length and not defaults!
+    	// We use this as the second condition to allow the Apply button to be enabled
+    	setFieldValidateButtons(txtSiteName);
     	
-    	// select all on focus
-    	setSelectAllOnFocus(txtSubsiteName);
+    	// on focus, select all (for nice tabbing)
+    	setSelectAllOnFocus(txtSiteName);
     	
-    	// force focus
-    	txtSubsiteName.requestFocusInWindow();
-    	
+    	// on focus, select all (for nice tabbing) #2
+    	setSelectAllOnFocus(txtSiteCode);
+
     	// apply button
-    	//getRootPane().setDefaultButton(btnApply);
-    	btnApply.setEnabled(false);
-       	btnApply.addActionListener(new ActionListener() {
+    	btnApply.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			commit();
     		}
     	});
-       	
+    	//getRootPane().setDefaultButton(btnApply);
+    	btnApply.setEnabled(false);
+    	
     	// cancel button
-       	btnCancel.addActionListener(new ActionListener() {
+    	btnCancel.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			dispose();
     		}
-    	});
-       	
+    	});    	
     }
-    
-    public void populate() {
-       	// neat site name thingy
-       	txtSite.setText(getParentObject().toString());    	
-    }
-    
+	
     public void commit() {
-    	Subsite subsite = new Subsite(Subsite.ID_NEW, txtSubsiteName.getText());
-    	IntermediateResource ir = new IntermediateResource(getParentObject(), subsite);
-
+    	Site site = new Site(Site.ID_NEW, txtSiteName.getText(), txtSiteCode.getText());
+    	IntermediateResource ir = new IntermediateResource((Site) null, site);
+    	
     	if(!createObject(ir))
     		return;
-    	
-		// add the subsite to the parent site, sort, and 
-		if(ir.getObject().get(0) instanceof Subsite) {
-			setNewObject((Subsite) ir.getObject().get(0));
-			((Site)getParentObject()).addSubsite(getNewObject());
-			((Site)getParentObject()).sortSubsites();
+
+		if(ir.getObject().get(0) instanceof Site) {
+			setNewObject((Site) ir.getObject().get(0));
+	    	// add the site to the site list
+			App.sites.addSite(getNewObject());
 		}
-		
-    	dispose();
+
+		dispose();
     }
-        
+    
     protected void validateForm() {
-    	boolean nameOk;
+    	boolean codeOk, nameOk;
+		int len;
+		
+		// first, site code
+		len = txtSiteCode.getText().length();
+		if(len > 1)
+			codeOk = true;
+		else
+			codeOk = false;
+		
+		// then, site name
+		len = txtSiteName.getText().length();
 
-    	// then, site name
-		int len = txtSubsiteName.getText().length();
-
-		if(len > 2 && !txtSubsiteName.getText().equals("Name of this subsite"))
+		if(len > 2 && !txtSiteName.getText().equals("Name of this site"))
 			nameOk = true;
 		else
 			nameOk = false;
 		
-		colorField(txtSubsiteName, nameOk);
+		colorField(txtSiteName, nameOk);
+		colorField(txtSiteCode, codeOk);
 
-		setFormValidated(nameOk);
+		setFormValidated(codeOk && nameOk);
     }
     
     /** This method is called from within the constructor to
@@ -111,30 +127,27 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        txtSubsiteName = new javax.swing.JTextField();
-        lblSite = new javax.swing.JLabel();
-        lblSubsiteName = new javax.swing.JLabel();
-        txtSite = new javax.swing.JTextField();
+        txtSiteCode = new javax.swing.JTextField();
+        txtSiteName = new javax.swing.JTextField();
+        lblSiteCode = new javax.swing.JLabel();
+        lblSiteName = new javax.swing.JLabel();
         panelButtons = new javax.swing.JPanel();
         btnCancel = new javax.swing.JButton();
         btnApply = new javax.swing.JButton();
         seperatorButtons = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Sub Site details");
+        setTitle("New Site");
 
-        txtSubsiteName.setText("Name of this subsite");
-        txtSubsiteName.setToolTipText("Name of this subsite");
+        txtSiteName.setText("");
+        txtSiteCode.setToolTipText("Code name for this site");
 
-        lblSite.setLabelFor(txtSite);
-        lblSite.setText("Site:");
+        txtSiteName.setText("Name of this site");
+        txtSiteName.setToolTipText("Name of this site");
 
-        lblSubsiteName.setLabelFor(lblSubsiteName);
-        lblSubsiteName.setText("Sub site name:");
+        lblSiteCode.setText("Site code:");
 
-        txtSite.setEditable(false);
-        txtSite.setText("ABC - Site name");
-        txtSite.setToolTipText("Site to which this sub site belongs");
+        lblSiteName.setText("Site name:");
 
         btnCancel.setText("Cancel");
 
@@ -174,12 +187,12 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(lblSubsiteName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(lblSite, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE))
+                    .add(lblSiteName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(lblSiteCode, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(txtSite, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
-                    .add(txtSubsiteName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE))
+                    .add(txtSiteCode, 0, 285, Short.MAX_VALUE)
+                    .add(txtSiteName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE))
                 .addContainerGap())
             //.add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -188,28 +201,46 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblSite)
-                    .add(txtSite, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(lblSiteCode)
+                    .add(txtSiteCode, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblSubsiteName)
-                    .add(txtSubsiteName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(7, 7, 7)
-                )//.add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .add(lblSiteName)
+                    .add(txtSiteName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                )//.addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                //.add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
+    /**
+     * @param args the command line arguments
+     */
+    /*
+    public static void zzzmain(String args[]) {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                SiteDialog dialog = new SiteDialog(new javax.swing.JDialog(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
+    }
+    */
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnApply;
     private javax.swing.JButton btnCancel;
-    private javax.swing.JLabel lblSite;
-    private javax.swing.JLabel lblSubsiteName;
+    private javax.swing.JTextField txtSiteCode;
+    private javax.swing.JLabel lblSiteCode;
+    private javax.swing.JLabel lblSiteName;
     private javax.swing.JPanel panelButtons;
     private javax.swing.JSeparator seperatorButtons;
-    private javax.swing.JTextField txtSite;
-    private javax.swing.JTextField txtSubsiteName;
+    private javax.swing.JTextField txtSiteName;
     // End of variables declaration//GEN-END:variables
     
 }

@@ -43,10 +43,10 @@ import edu.cornell.dendro.corina.webdbi.IntermediateResource;
  *
  * @author  peterbrewer
  */
-public class SpecimenDialog extends BaseNewDialog<Specimen> {
+public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
     
     /** Creates new form Specimen */
-    public SpecimenDialog() {
+    public SpecimenEditorPanel() {
         initComponents();
           
         initialize();
@@ -81,7 +81,7 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
     	setSpinnerIndeterminate(spnUnmeasPre);
     	    	
      	// force a check of date when we leave the txtCollectionDate field
-    	final BaseNewDialog<Specimen> parentGlue = this;
+    	final BaseEditorPanel<Specimen> parentGlue = this;
     	txtCollectionDate.setInputVerifier(new InputVerifier() {
     		public boolean verify(JComponent input) {
     			if(input != txtCollectionDate)

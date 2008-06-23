@@ -329,17 +329,17 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JP
      * @param content
      * @return
      */
-    private BaseNewDialog<OBJT> getDialogForClass(Class<?> content) {
+    private BaseEditorPanel<OBJT> getDialogForClass(Class<?> content) {
     	if(content.equals(Site.class))
-    		return (BaseNewDialog<OBJT>) new SiteDialog();
+    		return (BaseEditorPanel<OBJT>) new SiteEditorPanel();
     	if(content.equals(Subsite.class))
-    		return (BaseNewDialog<OBJT>) new SubsiteDialog();
+    		return (BaseEditorPanel<OBJT>) new SubsiteEditorPanel();
     	if(content.equals(Tree.class))
-    		return (BaseNewDialog<OBJT>) new TreeDialog();
+    		return (BaseEditorPanel<OBJT>) new TreeEditorPanel();
     	if(content.equals(Specimen.class))
-    		return (BaseNewDialog<OBJT>) new SpecimenDialog();
+    		return (BaseEditorPanel<OBJT>) new SpecimenEditorPanel();
     	if(content.equals(Radius.class))
-    		return (BaseNewDialog<OBJT>) new RadiusDialog();
+    		return (BaseEditorPanel<OBJT>) new RadiusEditorPanel();
     	return null;
     }
     
@@ -392,7 +392,7 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JP
 	private boolean ourFormValidated;
 	
 	private WizardPanelParent wizardParent;
-	private BaseNewDialog<OBJT> myPanel;
+	private BaseEditorPanel<OBJT> myPanel;
 	private ComboBoxPopulator comboPopulator;
 	private Class<? extends GenericIntermediateObject> contentClass;
 	private GenericIntermediateObject parentObject;

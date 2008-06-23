@@ -32,10 +32,10 @@ import edu.cornell.dendro.corina.webdbi.IntermediateResource;
  *
  * @author  peterbrewer
  */
-public class TreeDialog extends BaseNewDialog<Tree> {
+public class TreeEditorPanel extends BaseEditorPanel<Tree> {
     
     /** Creates new form NewSite */
-    public TreeDialog() {
+    public TreeEditorPanel() {
         initComponents();
                 
         initialize();

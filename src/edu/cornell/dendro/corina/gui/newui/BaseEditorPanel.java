@@ -41,7 +41,7 @@ import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
  *
  */
 
-public abstract class BaseNewDialog<OBJT> extends JPanel {
+public abstract class BaseEditorPanel<OBJT> extends JPanel {
 
 	// the new object that we've created
 	private OBJT newObject;
@@ -366,7 +366,7 @@ public abstract class BaseNewDialog<OBJT> extends JPanel {
 		
 	}
 	
-	public BaseNewDialog() throws HeadlessException {
+	public BaseEditorPanel() throws HeadlessException {
 	}
 
 	/*
