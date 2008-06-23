@@ -77,7 +77,7 @@ public class SiteDialog extends BaseNewDialog<Site> {
     		}
     	});    	
     }
-
+	
     public void commit() {
     	Site site = new Site(Site.ID_NEW, txtSiteName.getText(), txtSiteCode.getText());
     	IntermediateResource ir = new IntermediateResource((Site) null, site);
@@ -113,15 +113,8 @@ public class SiteDialog extends BaseNewDialog<Site> {
 		else
 			nameOk = false;
 		
-		if(!nameOk)
-			txtSiteName.setBackground(Color.CYAN);
-		else 
-			txtSiteName.setBackground(Color.WHITE);
-
-		if(!codeOk)
-			txtSiteCode.setBackground(Color.CYAN);
-		else 
-			txtSiteCode.setBackground(Color.WHITE);
+		colorField(txtSiteName, nameOk);
+		colorField(txtSiteCode, codeOk);
 
 		setFormValidated(codeOk && nameOk);
     }

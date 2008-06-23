@@ -23,26 +23,19 @@ import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 public class RadiusDialog extends BaseNewDialog<Radius> {
     
     /** Creates new form Site */
-    public RadiusDialog(java.awt.Dialog parent, boolean modal, String prefix, Specimen parentSpecimen) {
-        //super(parent, modal);
+    public RadiusDialog() {
         initComponents();
-        
-        this.parentSpecimen = parentSpecimen;
-        lblNamePrefix.setText(prefix);
-        
+                
         initialize();
-        
-        //Center.center(this);
+        validateForm();
     }
-    
-    private Specimen parentSpecimen;
-    
+        
     private void initialize() {
     	txtRadiusName.setText("Radius code");
     	setCapsNoWhitespace(txtRadiusName);
     	setFieldValidateButtons(txtRadiusName);
     	
-    	getRootPane().setDefaultButton(btnApply);
+    	//getRootPane().setDefaultButton(btnApply);
     	btnApply.setEnabled(false);
     	btnApply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -57,9 +50,13 @@ public class RadiusDialog extends BaseNewDialog<Radius> {
     	});
     }
     
-    private void commit() {
+    public void populate(String parentPrefix) {
+        lblNamePrefix.setText(parentPrefix);
+    }
+    
+    public void commit() {
     	Radius radius = new Radius(Radius.ID_NEW, txtRadiusName.getText());
-    	IntermediateResource ir = new IntermediateResource(parentSpecimen, radius);
+    	IntermediateResource ir = new IntermediateResource(getParentObject(), radius);
     	
        	if(!createObject(ir))
     		return;
@@ -81,9 +78,10 @@ public class RadiusDialog extends BaseNewDialog<Radius> {
 			nameOk = true;
 		else
 			nameOk = false;
-				
-		btnApply.setEnabled(nameOk);
+	
+		setFormValidated(nameOk);
     }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -117,6 +115,7 @@ public class RadiusDialog extends BaseNewDialog<Radius> {
         seperatorButtons.setBackground(new java.awt.Color(153, 153, 153));
         seperatorButtons.setOpaque(true);
 
+        /*
         org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
         panelButtons.setLayout(panelButtonsLayout);
         panelButtonsLayout.setHorizontalGroup(
@@ -138,7 +137,7 @@ public class RadiusDialog extends BaseNewDialog<Radius> {
                     .add(btnCancel)
                     .add(btnApply))
                 .addContainerGap(33, Short.MAX_VALUE))
-        );
+        );*/
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -152,7 +151,7 @@ public class RadiusDialog extends BaseNewDialog<Radius> {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(txtRadiusName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 172, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            //.add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -163,7 +162,7 @@ public class RadiusDialog extends BaseNewDialog<Radius> {
                     .add(lblNamePrefix)
                     .add(txtRadiusName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                )//.add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();

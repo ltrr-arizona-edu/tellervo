@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.gui.newui;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -12,11 +13,14 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractSpinnerModel;
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -99,7 +103,14 @@ public abstract class BaseNewDialog<OBJT> extends JPanel {
 	public void populate() {
 		
 	}
-	
+
+	/**
+	 * Populate our dialog using the supplied prefix
+	 */
+	public void populate(String parentPrefix) {
+		
+	}
+
 	/**
 	 * Query our webservice to create this object
 	 * 
@@ -192,7 +203,7 @@ public abstract class BaseNewDialog<OBJT> extends JPanel {
     		}
     	});
 	}
-	
+		
 	/**
 	 * Convenience function: makes a JTextField select all
 	 * when it receives focus
@@ -207,6 +218,7 @@ public abstract class BaseNewDialog<OBJT> extends JPanel {
     		}
 		});
 	}
+	
 	/**
 	 * Makes this JTextField call our validateButtons() method
 	 * every time its contents change.
@@ -227,6 +239,20 @@ public abstract class BaseNewDialog<OBJT> extends JPanel {
 				validateForm();
 			}
 		});
+	}
+
+	/**
+	 * Sets the background color of the field depending on its
+	 * valid/invalid status
+	 * @param field
+	 * @param isGood
+	 */
+	protected void colorField(JComponent field, boolean isValid) {
+		if(isValid) {
+			field.setBackground(UIManager.getLookAndFeelDefaults().getColor("TextField.background"));
+		} else {
+			field.setBackground(new Color(255, 255, 200));
+		}
 	}
 	
 	/**
@@ -286,7 +312,15 @@ public abstract class BaseNewDialog<OBJT> extends JPanel {
 		});
 	}
 	
-	/*
+	/**
+	 * Return the value of our name field, if any
+	 * @return our name field or null
+	 */
+	public String getLocalName() {
+		return null;
+	}
+	
+	/**
 	 * Save our changes to the db
 	 */
 	public void commit() {

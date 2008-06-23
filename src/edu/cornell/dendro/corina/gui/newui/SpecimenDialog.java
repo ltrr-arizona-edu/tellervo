@@ -114,8 +114,8 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
     	initButtons();
     }
 
-	public void populate() {
-    	lblNamePrefix.setText("prefixprefixprefix");
+	public void populate(String parentPrefix) {
+    	lblNamePrefix.setText(parentPrefix);
 	}
     
     private void initButtons() {
@@ -208,10 +208,12 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
     	// tree name name
 		int len = txtSpecimenName.getText().length();
 
-		if(len > 0 && !txtSpecimenName.getText().equals("Specimen code"))
+		if(len > 0 && !txtSpecimenName.getText().equals("Specimen Code"))
 			nameOk = true;
 		else
 			nameOk = false;
+		
+		colorField(txtSpecimenName, nameOk);
 
 		setFormValidated(nameOk);
     }

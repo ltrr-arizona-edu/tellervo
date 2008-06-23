@@ -98,10 +98,7 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
 		else
 			nameOk = false;
 		
-		if(!nameOk)
-			txtSubsiteName.setBackground(Color.CYAN);
-		else 
-			txtSubsiteName.setBackground(Color.WHITE);
+		colorField(txtSubsiteName, nameOk);
 
 		setFormValidated(nameOk);
     }

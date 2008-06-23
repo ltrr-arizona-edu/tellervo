@@ -63,8 +63,14 @@ public class CorinaDocumentInspector {
 			// yes, and we'll pick it up later.
 			if(s == null)
 				continue;
+
+			try {
+				code = Integer.parseInt(s);
+			} catch (NumberFormatException nfe) {
+				throw new ResourceException("The server experienced an internal error '" + s + 
+						"': " + e.getTextNormalize());
+			}
 			
-			code = Integer.parseInt(s);
 			s = e.getText();
 			
 			switch(code) {

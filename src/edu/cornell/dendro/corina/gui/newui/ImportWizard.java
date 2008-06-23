@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
+import edu.cornell.dendro.corina.site.Radius;
 import edu.cornell.dendro.corina.site.Site;
 import edu.cornell.dendro.corina.site.Specimen;
 import edu.cornell.dendro.corina.site.Subsite;
@@ -45,12 +46,13 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
         insidePanel = new JPanel(cardLayout);
 
         /***************************/
-        cards = new BaseContentPanel<?>[4];
+        cards = new BaseContentPanel<?>[5];
         
         cards[0] = new BaseContentPanel<Site>(this, Site.class);
         cards[1] = new BaseContentPanel<Subsite>(this, Subsite.class);
-        cards[2] = new BaseContentPanel<Subsite>(this, Tree.class);
-        cards[3] = new BaseContentPanel<Subsite>(this, Specimen.class);
+        cards[2] = new BaseContentPanel<Tree>(this, Tree.class);
+        cards[3] = new BaseContentPanel<Specimen>(this, Specimen.class);
+        cards[4] = new BaseContentPanel<Radius>(this, Radius.class);
 //        cards[4] = new BaseContentPanel<Subsite>(this, Radius.class);
 
         // populate the site list
@@ -61,6 +63,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
         addPanel(cards[1]);
         addPanel(cards[2]);
         addPanel(cards[3]);
+        addPanel(cards[4]);
         /********************************/
 
         // add a scroll pane around the inside container, in case it gets too big to display vertically
@@ -99,6 +102,33 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
 					
 					// pass the parent on to the child (which should populate itself)
 					cards[cardIdx].setParentObject(newParent);
+					
+					// determine our prefix up to this point
+					StringBuffer prefix = new StringBuffer();
+					for(int i = 0; i < cardIdx; i++) {
+						String cardPrefix = cards[i].getPrefix();
+						
+						// special handing for subsite...
+						if(cards[i].getContentClass().equals(Subsite.class)) {
+							if(cardPrefix.equalsIgnoreCase("main"))
+								cardPrefix = "";
+							else
+								cardPrefix = "/" + cardPrefix;
+						}
+												
+						// special handling for site...
+						if(cards[i].getContentClass().equals(Site.class)) {
+							prefix.append("C-");
+							prefix.append(cardPrefix);
+						} else {
+							// normal
+							prefix.append(cardPrefix);
+							prefix.append("-");
+						}
+					}
+					
+					// set the parent prefix of the next card
+					cards[cardIdx].setParentPrefix(prefix.toString());
 					
 					// advance us forward
 					cardLayout.next(insidePanel);

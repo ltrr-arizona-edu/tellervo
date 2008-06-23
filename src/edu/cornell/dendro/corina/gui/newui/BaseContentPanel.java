@@ -34,6 +34,7 @@ import javax.swing.UIManager;
 
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
+import edu.cornell.dendro.corina.site.Radius;
 import edu.cornell.dendro.corina.site.Site;
 import edu.cornell.dendro.corina.site.Specimen;
 import edu.cornell.dendro.corina.site.Subsite;
@@ -299,6 +300,23 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JP
     }
     
     /**
+     * Pass our child panel its prefix
+     * @param parentPrefix
+     */
+    public void setParentPrefix(String parentPrefix) {
+    	myPanel.populate(parentPrefix);
+    }
+    
+    public String getPrefix() {
+    	Object obj = cboExistingList.getSelectedItem();
+    	
+    	if(obj instanceof Site)
+    		return ((Site)obj).getCode();
+    	
+    	return obj.toString();
+    }
+    
+    /**
      * Repopulate our combo box!
      */
     public void repopulate() {
@@ -320,14 +338,14 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JP
     		return (BaseNewDialog<OBJT>) new TreeDialog();
     	if(content.equals(Specimen.class))
     		return (BaseNewDialog<OBJT>) new SpecimenDialog();
+    	if(content.equals(Radius.class))
+    		return (BaseNewDialog<OBJT>) new RadiusDialog();
     	return null;
     }
     
     private Map<JTextField, Color> colorMap = new HashMap<JTextField, Color>();
     
     private void setChildrenEnabled(Component comp, boolean enabled) {
-		comp.setEnabled(enabled);
-
 		if (comp instanceof Container) {
 			Container container = (Container) comp;
 			for (int idx = 0; idx < container.getComponentCount(); idx++) {
@@ -350,7 +368,13 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JP
 				f.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 			}
 		}
+
+		comp.setEnabled(enabled);
 	}
+    
+    public Class<?> getContentClass() {
+    	return contentClass;
+    }
 
     /**
      * called when our child panel's validity state changes

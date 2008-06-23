@@ -109,10 +109,10 @@ public class TreeDialog extends BaseNewDialog<Tree> {
 
     }
 	
-	public void populate() {
-    	lblNamePrefix.setText("prefix");
+	public void populate(String parentPrefix) {
+    	lblNamePrefix.setText(parentPrefix);
 	}
-	
+		
 	public void commit() {
 		Tree tree = new Tree(Tree.ID_NEW, txtTreeName.getText());
     	IntermediateResource ir = new IntermediateResource(getParentObject(), tree);
@@ -162,6 +162,9 @@ public class TreeDialog extends BaseNewDialog<Tree> {
 			taxonOk = true;
 		else
 			taxonOk = false;
+
+		colorField(txtTreeName, nameOk);
+		colorField(cboTaxon, taxonOk);
 		
 		setFormValidated(nameOk && taxonOk);
     }
