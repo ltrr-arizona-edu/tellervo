@@ -35,20 +35,13 @@ import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 public class TreeDialog extends BaseNewDialog<Tree> {
     
     /** Creates new form NewSite */
-    public TreeDialog(java.awt.Dialog parent, boolean modal, String prefix, Subsite parentSubsite) {
-        //super(parent, modal);
+    public TreeDialog() {
         initComponents();
-        
-        lblNamePrefix.setText(prefix);
-        this.parentSubsite = parentSubsite;
-        
+                
         initialize();
-        
-        //Center.center(this);
+        validateForm();
     }
-    
-    private Subsite parentSubsite;
-    
+       
     //@SuppressWarnings("unchecked")
 	private void initialize() {
 
@@ -97,7 +90,7 @@ public class TreeDialog extends BaseNewDialog<Tree> {
     	});
     	
     	// apply button
-    	getRootPane().setDefaultButton(btnApply);
+    	//getRootPane().setDefaultButton(btnApply);
     	btnApply.setEnabled(false);
        	btnApply.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
@@ -111,12 +104,18 @@ public class TreeDialog extends BaseNewDialog<Tree> {
     			dispose();
     		}
     	});
+       	
+       	btnGPSImport.setVisible(false);
 
     }
 	
-	private void commit() {
+	public void populate() {
+    	lblNamePrefix.setText("prefix");
+	}
+	
+	public void commit() {
 		Tree tree = new Tree(Tree.ID_NEW, txtTreeName.getText());
-    	IntermediateResource ir = new IntermediateResource(parentSubsite, tree);
+    	IntermediateResource ir = new IntermediateResource(getParentObject(), tree);
 
     	// populate the tree... 
     	if(txtLatitude.getText().length() != 0)
@@ -164,7 +163,7 @@ public class TreeDialog extends BaseNewDialog<Tree> {
 		else
 			taxonOk = false;
 		
-		btnApply.setEnabled(nameOk && taxonOk);
+		setFormValidated(nameOk && taxonOk);
     }
 	
     /** This method is called from within the constructor to
@@ -301,6 +300,7 @@ public class TreeDialog extends BaseNewDialog<Tree> {
         seperatorButtons.setBackground(new java.awt.Color(153, 153, 153));
         seperatorButtons.setOpaque(true);
 
+        /*
         org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
         panelButtons.setLayout(panelButtonsLayout);
         panelButtonsLayout.setHorizontalGroup(
@@ -323,6 +323,7 @@ public class TreeDialog extends BaseNewDialog<Tree> {
                     .add(btnApply))
                 .addContainerGap(37, Short.MAX_VALUE))
         );
+        */
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -353,7 +354,7 @@ public class TreeDialog extends BaseNewDialog<Tree> {
                         .add(txtTreeName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE))
                     .add(panelLocation, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            //.add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -380,7 +381,7 @@ public class TreeDialog extends BaseNewDialog<Tree> {
                     .add(panelLocation, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblLocation))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                )//.add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();

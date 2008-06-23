@@ -46,19 +46,13 @@ import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 public class SpecimenDialog extends BaseNewDialog<Specimen> {
     
     /** Creates new form Specimen */
-    public SpecimenDialog(java.awt.Dialog parent, boolean modal, String prefix, Tree parentTree) {
-        //super(parent, modal);
+    public SpecimenDialog() {
         initComponents();
-  
-        lblNamePrefix.setText(prefix);
-        this.parentTree = parentTree;
-        
+          
         initialize();
-        
-        //Center.center(this);
+        validateForm();
     }
     
-    private Tree parentTree;
     private DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     
     private void initialize() {
@@ -120,8 +114,12 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
     	initButtons();
     }
 
+	public void populate() {
+    	lblNamePrefix.setText("prefixprefixprefix");
+	}
+    
     private void initButtons() {
-    	getRootPane().setDefaultButton(btnApply);
+    	//getRootPane().setDefaultButton(btnApply);
     	btnApply.setEnabled(false);
     	btnApply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -153,9 +151,9 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
     	cbo.setModel(new DefaultComboBoxModel(array));
     }
     
-	private void commit() {
+	public void commit() {
 		Specimen sp = new Specimen(Specimen.ID_NEW, txtSpecimenName.getText());
-    	IntermediateResource ir = new IntermediateResource(parentTree, sp);
+    	IntermediateResource ir = new IntermediateResource(getParentObject(), sp);
     	
     	if(cboSpecimenType.getSelectedItem() instanceof SpecimenType)
     		sp.setSpecimenType(cboSpecimenType.getSelectedItem().toString());
@@ -214,8 +212,8 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
 			nameOk = true;
 		else
 			nameOk = false;
-				
-		btnApply.setEnabled(nameOk);
+
+		setFormValidated(nameOk);
     }
     /** This method is called from within the constructor to
      * initialize the form.
@@ -269,6 +267,7 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
         seperatorButtons.setBackground(new java.awt.Color(153, 153, 153));
         seperatorButtons.setOpaque(true);
 
+        /*
         org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
         panelButtons.setLayout(panelButtonsLayout);
         panelButtonsLayout.setHorizontalGroup(
@@ -291,6 +290,7 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
                     .add(btnApply))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+        */
 
         spnSapwoodCount.setToolTipText("Number of sapwood rings");
 
@@ -506,13 +506,13 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
             .add(panelNameDetailsLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelNameDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(jLabel10, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 204, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jLabel10, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 104, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblCollectionDate)
                     .add(lblSpecimenType))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelNameDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(panelNameDetailsLayout.createSequentialGroup()
-                        .add(lblNamePrefix, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 66, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .add(lblNamePrefix)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(txtSpecimenName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE))
                     .add(cboSpecimenType, 0, 328, Short.MAX_VALUE)
@@ -544,7 +544,7 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelNameDetails, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .add(panelMetadata, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            //.add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -552,8 +552,8 @@ public class SpecimenDialog extends BaseNewDialog<Specimen> {
                 .add(panelNameDetails, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 117, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .add(4, 4, 4)
                 .add(panelMetadata, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                //.addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                //.add(panelButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 

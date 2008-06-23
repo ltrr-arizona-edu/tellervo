@@ -6,6 +6,7 @@
 
 package edu.cornell.dendro.corina.gui.newui;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -29,15 +30,11 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
     
     /** Creates new form Subsite */
     public SubsiteDialog() {
-        //super(parent, modal);
         initComponents();
 
-        //this.parentSite = parentSite;
         initialize();
-        //Center.center(this);
+        validateForm();
     }
-    
-    private Site parentSite;
     
     private void initialize() {
     	// When the name is changed, listen and ensure length
@@ -66,13 +63,16 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
     		}
     	});
        	
-       	// neat site name thingy
-       	//txtSite.setText(parentSite.toString());
     }
     
-    private void commit() {
+    public void populate() {
+       	// neat site name thingy
+       	txtSite.setText(getParentObject().toString());    	
+    }
+    
+    public void commit() {
     	Subsite subsite = new Subsite(Subsite.ID_NEW, txtSubsiteName.getText());
-    	IntermediateResource ir = new IntermediateResource(parentSite, subsite);
+    	IntermediateResource ir = new IntermediateResource(getParentObject(), subsite);
 
     	if(!createObject(ir))
     		return;
@@ -80,8 +80,8 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
 		// add the subsite to the parent site, sort, and 
 		if(ir.getObject().get(0) instanceof Subsite) {
 			setNewObject((Subsite) ir.getObject().get(0));
-			parentSite.addSubsite(getNewObject());
-			parentSite.sortSubsites();
+			((Site)getParentObject()).addSubsite(getNewObject());
+			((Site)getParentObject()).sortSubsites();
 		}
 		
     	dispose();
@@ -98,7 +98,12 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
 		else
 			nameOk = false;
 		
-		btnApply.setEnabled(nameOk);
+		if(!nameOk)
+			txtSubsiteName.setBackground(Color.CYAN);
+		else 
+			txtSubsiteName.setBackground(Color.WHITE);
+
+		setFormValidated(nameOk);
     }
     
     /** This method is called from within the constructor to
@@ -141,6 +146,7 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
         seperatorButtons.setBackground(new java.awt.Color(153, 153, 153));
         seperatorButtons.setOpaque(true);
 
+        /*
         org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
         panelButtons.setLayout(panelButtonsLayout);
         panelButtonsLayout.setHorizontalGroup(
@@ -162,7 +168,7 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
                     .add(btnCancel)
                     .add(btnApply))
                 .addContainerGap(30, Short.MAX_VALUE))
-        );
+        );*/
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -178,7 +184,7 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
                     .add(txtSite, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
                     .add(txtSubsiteName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE))
                 .addContainerGap())
-            .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            //.add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -192,7 +198,7 @@ public class SubsiteDialog extends BaseNewDialog<Subsite> {
                     .add(lblSubsiteName)
                     .add(txtSubsiteName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .add(7, 7, 7)
-                .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                )//.add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();

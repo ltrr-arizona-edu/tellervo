@@ -17,7 +17,9 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import edu.cornell.dendro.corina.site.GenericIntermediateObject;
 import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.Specimen;
 import edu.cornell.dendro.corina.site.Subsite;
 import edu.cornell.dendro.corina.site.Tree;
 import edu.cornell.dendro.corina.util.Center;
@@ -26,9 +28,11 @@ import edu.cornell.dendro.corina.util.Center;
  *
  * @author  peterbrewer
  */
-public class ImportWizard extends javax.swing.JDialog {
+public class ImportWizard extends javax.swing.JDialog implements WizardPanelParent {
 	private CardLayout cardLayout;
 	private JPanel insidePanel;
+	private Dimension origDimension;
+	private JScrollPane insidePanelScroller;
 	private BaseContentPanel<?>[] cards;
 	private int cardIdx;
     
@@ -38,50 +42,72 @@ public class ImportWizard extends javax.swing.JDialog {
         initComponents();
         
         cardLayout = new CardLayout();
-        
         insidePanel = new JPanel(cardLayout);
+
+        /***************************/
+        cards = new BaseContentPanel<?>[4];
         
-        cards = new BaseContentPanel<?>[2];
-        
-        cards[0] = new BaseContentPanel<Site>(panelContent, new SiteDialog(), Site.class);
-        cards[1] = new BaseContentPanel<Subsite>
-        	(panelContent, new SubsiteDialog(), Subsite.class);
+        cards[0] = new BaseContentPanel<Site>(this, Site.class);
+        cards[1] = new BaseContentPanel<Subsite>(this, Subsite.class);
+        cards[2] = new BaseContentPanel<Subsite>(this, Tree.class);
+        cards[3] = new BaseContentPanel<Subsite>(this, Specimen.class);
+//        cards[4] = new BaseContentPanel<Subsite>(this, Radius.class);
 
         // populate the site list
         cards[0].repopulate();
         
         cardIdx = 0;
-        insidePanel.add(cards[0], "site");
-        insidePanel.add(cards[1], "subsite");
-
+        addPanel(cards[0]);
+        addPanel(cards[1]);
+        addPanel(cards[2]);
+        addPanel(cards[3]);
+        /********************************/
 
         // add a scroll pane around the inside container, in case it gets too big to display vertically
-        final JScrollPane contentScroller = new JScrollPane(insidePanel, 
+        /*
+        insidePanelScroller = new JScrollPane(insidePanel, 
         		JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
         		JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-             
+        
+        insidePanelScroller.setPreferredSize(new Dimension(1234, 200));
+        */
+                     
+//        panelContent.setLayout(new BorderLayout());
+ //       panelContent.add(insidePanel, BorderLayout.CENTER);
+
         panelContent.setLayout(new FlowLayout());
-        panelContent.add(contentScroller);
+        panelContent.add(insidePanel);
+        
+		// make sure we can go 'next' on our initial state
+    	btnNext.setEnabled(cards[cardIdx].isPanelValid());
         
         btnNext.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
+			public void actionPerformed(ActionEvent e) {		
 				// did the card say it was ok to continue?
 				if(cards[cardIdx].verifyAndSelectNextPanel()) {
+					GenericIntermediateObject newParent = cards[cardIdx].getPanelObject(); // the selected object of this box...
+					
+					// NEXT!
 					cardIdx++;
 					
 					// did we finish?
 					if(cardIdx == cards.length) {
-						System.out.println("WOOOO!!");
+						System.out.println("WOOT!!!");
 						dispose();
 						return;
 					}
-				
+					
+					// pass the parent on to the child (which should populate itself)
+					cards[cardIdx].setParentObject(newParent);
+					
 					// advance us forward
 					cardLayout.next(insidePanel);
 					
 					// make sure we can go back!
 					btnBack.setEnabled(true);
+
+					// make sure we can go 'next'
+			    	btnNext.setEnabled(cards[cardIdx].isPanelValid());
 					
 					// change the button text if we're at the end
 					if(cardIdx == cards.length - 1)
@@ -102,6 +128,9 @@ public class ImportWizard extends javax.swing.JDialog {
 					
 					// go back!
 					cardLayout.previous(insidePanel);
+
+					// can go 'next'? (this should always be true?)
+			    	btnNext.setEnabled(cards[cardIdx].isPanelValid());
 					
 					// disable back the button on the first card
 					if(cardIdx == 0)
@@ -110,8 +139,37 @@ public class ImportWizard extends javax.swing.JDialog {
 			}
         });
         
+        // noooo! after all we've worked for...
+        btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+        });
+        
         pack();
         Center.center(this);
+    }
+
+    private int cardCount = 0;
+    private void addPanel(JPanel panel) {
+    	JScrollPane scrolly = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    	scrolly.setPreferredSize(panelContent.getPreferredSize());
+        insidePanel.add(scrolly, "card" + cardCount);
+        cardCount++;
+    }
+    
+    // methods below are for our wizardpanelparent interface
+    public Dimension getContainerPreferredSize() {
+    	//return new Dimension(123, 123);
+    	return panelContent.getPreferredSize();
+    }
+    
+    public void notifyPanelStateChanged(BaseContentPanel<?> panel) {
+    	// only care about our current panel (this shouldn't happen, anyway)
+    	if(cards[cardIdx] != panel)
+    		return;
+    	
+    	btnNext.setEnabled(panel.isPanelValid());
     }
     
     /** This method is called from within the constructor to

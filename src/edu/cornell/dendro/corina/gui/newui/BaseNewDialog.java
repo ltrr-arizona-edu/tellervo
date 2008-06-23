@@ -21,7 +21,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
+import edu.cornell.dendro.corina.site.Radius;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.Specimen;
 import edu.cornell.dendro.corina.site.Subsite;
+import edu.cornell.dendro.corina.site.Tree;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
 
@@ -37,6 +41,8 @@ public abstract class BaseNewDialog<OBJT> extends JPanel {
 
 	// the new object that we've created
 	private OBJT newObject;
+	// our parent object, if any
+	private Object parentObject;
 	
 	// did we succeed in our create query?
 	private boolean succeeded = false;
@@ -51,6 +57,47 @@ public abstract class BaseNewDialog<OBJT> extends JPanel {
 	
 	public OBJT getNewObject() {
 		return newObject;
+	}
+	
+	/**
+	 * Sets the parent object for this dialog. 
+	 * childClass should be the class you are setting the parent object of
+	 * (e.g., childClass should be Subsite for a Site parent object)
+	 * @param obj
+	 * @param childClass
+	 */
+	public void setParentObject(Object obj, Class<?> childClass) {
+		boolean valid = false;
+		
+		if(childClass.equals(Subsite.class) && obj.getClass().equals(Site.class)) 
+			valid = true;
+		else if(childClass.equals(Tree.class) && obj.getClass().equals(Subsite.class)) 
+			valid = true;
+		else if(childClass.equals(Specimen.class) && obj.getClass().equals(Tree.class)) 
+			valid = true;
+		else if(childClass.equals(Radius.class) && obj.getClass().equals(Specimen.class)) 
+			valid = true;
+		/*
+		 * maybe for measurements?
+		else if(childClass.equals(Subsite.class) && obj.getClass().equals(Radius.class)) 
+			valid = true;
+			*/
+
+		if(!valid)
+			throw new IllegalArgumentException("Object (" + obj.getClass() + ") is not a parent for child ("+ getClass() +")");
+		
+		this.parentObject = obj;
+	}
+	
+	protected GenericIntermediateObject getParentObject() {
+		return (GenericIntermediateObject) parentObject;
+	}
+	
+	/**
+	 * Populate our dialog using any necessary information from our parent dialog
+	 */
+	public void populate() {
+		
 	}
 	
 	/**
@@ -286,7 +333,6 @@ public abstract class BaseNewDialog<OBJT> extends JPanel {
 	}
 	
 	public BaseNewDialog() throws HeadlessException {
-		// TODO Auto-generated constructor stub
 	}
 
 	/*

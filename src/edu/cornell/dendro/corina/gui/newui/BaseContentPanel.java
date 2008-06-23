@@ -34,6 +34,10 @@ import javax.swing.UIManager;
 
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.Specimen;
+import edu.cornell.dendro.corina.site.Subsite;
+import edu.cornell.dendro.corina.site.Tree;
 
 /**
  * @author lucasm
@@ -41,14 +45,15 @@ import edu.cornell.dendro.corina.site.GenericIntermediateObject;
  * Create a BoxLayout of FlowLayouts...
  *
  */
-public class BaseContentPanel<OBJT> extends JPanel implements WizardChildMonitor {
+public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JPanel implements WizardChildMonitor {
 	/**
 	 * 
 	 */
-	public BaseContentPanel(Container parentContainer, 
-			BaseNewDialog<OBJT> myPanel, 
+	public BaseContentPanel(WizardPanelParent parent, 
 			Class<? extends GenericIntermediateObject> contentClass) {
-		this.myPanel = myPanel;
+		
+		this.wizardParent = parent;
+		this.myPanel = getDialogForClass(contentClass);
 		this.contentClass = contentClass;
 
 		initComponents();
@@ -65,7 +70,7 @@ public class BaseContentPanel<OBJT> extends JPanel implements WizardChildMonitor
 		this.comboPopulator = new ComboBoxPopulator(cboExistingList);
 		
 		// and please, don't grow larger than our parent in width!
-		setPreferredSize(new Dimension(parentContainer.getPreferredSize().width, getPreferredSize().height));
+		setPreferredSize(new Dimension(parent.getContainerPreferredSize().width, getPreferredSize().height));
 	}
 	
 	/**
@@ -152,6 +157,10 @@ public class BaseContentPanel<OBJT> extends JPanel implements WizardChildMonitor
 		setChildrenEnabled(myPanel, false);
     }
 
+    /**
+     * Called when someone presses the 'next' button to choose the next panel
+     * @return
+     */
     public boolean verifyAndSelectNextPanel() {
     	if(!panelValid) {
     		new Bug(new IllegalArgumentException("Panel not valid, but next called!"));
@@ -188,6 +197,24 @@ public class BaseContentPanel<OBJT> extends JPanel implements WizardChildMonitor
     }
     
     /**
+     * Get the selected object in this panel
+     * DON'T CALL BEFORE verifyAndSelectNextPanel()!!!
+     * @return
+     */
+    public OBJT getPanelObject() {
+    	Object selection = cboExistingList.getSelectedItem();
+    	
+    	if(selection == null)
+    		throw new IllegalStateException("GetPanelObject() has no object?");
+    	
+    	if(!selection.getClass().equals(contentClass)) {
+    		throw new IllegalStateException("GetPanelObject() not content class, instead it's " + selection.getClass().toString());
+    	}
+    	
+    	return (OBJT) selection;
+    }
+    
+    /**
      * is our form in a completely valid state?
      */
     private void checkEverythingValid() {
@@ -219,10 +246,21 @@ public class BaseContentPanel<OBJT> extends JPanel implements WizardChildMonitor
 			ourFormValidated = false;
     }
     
+    // if we have a validity change, make note of it and notify our parent!
     private void setPanelValid(boolean isValid) {
     	if(panelValid != isValid) {
     		panelValid = isValid;
+    		
+    		wizardParent.notifyPanelStateChanged(this);
     	}
+    }
+    
+    /**
+     * Is the panel valid (e.g., can we move to the next panel?)
+     * @return
+     */
+    public boolean isPanelValid() {
+    	return panelValid;
     }
 
     /**
@@ -233,6 +271,30 @@ public class BaseContentPanel<OBJT> extends JPanel implements WizardChildMonitor
     public void setParentObject(GenericIntermediateObject obj) {
     	if(obj != parentObject) {
     		parentObject = obj;
+    		
+    		// on a new object, repopulate!
+    		repopulate();
+    		
+    		// also, populate any sort of forms my panel has
+    		myPanel.setParentObject(obj, contentClass);
+    		myPanel.populate();
+    		
+    		// special case (I hate these)
+    		// on subsites, choose Main as the default
+    		if(obj instanceof Site) {
+    			int len = cboExistingList.getModel().getSize();
+    			
+    			for(int i = 0; i < len; i++) {
+    				// wow. that's a mouthful.
+    				if(cboExistingList.getModel().getElementAt(i).toString().equalsIgnoreCase("main")) {
+    					cboExistingList.setSelectedIndex(i);
+    					
+    					// this should enable our dialog to choose next...
+    					checkEverythingValid();
+    					break;
+    				}
+    			}
+    		}
     	}
     }
     
@@ -243,6 +305,24 @@ public class BaseContentPanel<OBJT> extends JPanel implements WizardChildMonitor
     	comboPopulator.populate(parentObject);
     }
 
+    /**
+     * Get an editor dialog for this class
+     * 
+     * @param content
+     * @return
+     */
+    private BaseNewDialog<OBJT> getDialogForClass(Class<?> content) {
+    	if(content.equals(Site.class))
+    		return (BaseNewDialog<OBJT>) new SiteDialog();
+    	if(content.equals(Subsite.class))
+    		return (BaseNewDialog<OBJT>) new SubsiteDialog();
+    	if(content.equals(Tree.class))
+    		return (BaseNewDialog<OBJT>) new TreeDialog();
+    	if(content.equals(Specimen.class))
+    		return (BaseNewDialog<OBJT>) new SpecimenDialog();
+    	return null;
+    }
+    
     private Map<JTextField, Color> colorMap = new HashMap<JTextField, Color>();
     
     private void setChildrenEnabled(Component comp, boolean enabled) {
@@ -287,6 +367,7 @@ public class BaseContentPanel<OBJT> extends JPanel implements WizardChildMonitor
 	private boolean childFormValidated;
 	private boolean ourFormValidated;
 	
+	private WizardPanelParent wizardParent;
 	private BaseNewDialog<OBJT> myPanel;
 	private ComboBoxPopulator comboPopulator;
 	private Class<? extends GenericIntermediateObject> contentClass;

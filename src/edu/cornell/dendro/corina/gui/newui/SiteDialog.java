@@ -36,11 +36,10 @@ public class SiteDialog extends BaseNewDialog<Site> {
     
     /** Creates new form Site */
     public SiteDialog() {
-        //super(parent, modal);
         initComponents();
         
         initialize();
-        //Center.center(this);
+        validateForm();
     }
     
 	private void initialize() {
@@ -76,10 +75,7 @@ public class SiteDialog extends BaseNewDialog<Site> {
     		public void actionPerformed(ActionEvent ae) {
     			dispose();
     		}
-    	});
-    	
-    	// set our default validation state
-    	validateForm();
+    	});    	
     }
 
     public void commit() {
@@ -128,7 +124,6 @@ public class SiteDialog extends BaseNewDialog<Site> {
 			txtSiteCode.setBackground(Color.WHITE);
 
 		setFormValidated(codeOk && nameOk);
-		//btnApply.setEnabled(codeOk && nameOk);
     }
     
     /** This method is called from within the constructor to
