@@ -67,7 +67,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
         addPanel(cards[5]);
         
         // Set instructions and step number on GUI
-        setInstructionsForStep(1, (cards.length-1));
+        setInstructionsForStep(1, (cards.length));
         /********************************/
 
         // add a scroll pane around the inside container, in case it gets too big to display vertically
@@ -90,7 +90,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
         
         btnNext.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {		
-
+				
 				// did the card say it was ok to continue?
 				if(cards[cardIdx].verifyAndSelectNextPanel()) {
 					GenericIntermediateObject newParent = cards[cardIdx].getPanelObject(); // the selected object of this box...
@@ -160,6 +160,9 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
 				
 				setInstructionsForStep(cardIdx, cards.length);
 				
+				// Ensure Next button says Next not Finish
+				btnNext.setText("Next");
+				
 				if(cardIdx > 0) {
 					// change the button text if we're at the end
 					if(cardIdx == cards.length - 1)
@@ -191,35 +194,41 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
     }
 
     private void setInstructionsForStep(int currentStep, int totalSteps){
-    	
-    	// Set 'Step X of X' label in button bar
-    	lblProgress.setText("Step " + currentStep + " of " + totalSteps);
-    	
+    	   	
     	// Set instructions panel 
     	switch(currentStep){
     	case 1: panelInstructions.setText("Welcome to the Corina data import wizard which will " +
     			"help you create or import data into the Corina database.\n\n"+
     			"To begin, please select an existing site from which your sample is from or if " +
-    			"the site is not already in the database, create a new one.\n\n"); 
+    			"the site is not already in the database, create a new one.\n\n");
+    			lblProgress.setText("Step " + currentStep + " of " + totalSteps + ": Site details");
     			break;
     	case 2: panelInstructions.setText("Next, select the sub site of your site where your sample is from. " +
     			"If the site is not divided into sub sites then continue with the default 'Main' " +
     			"sub site.  Alternatively, you can create a new sub site using the form below.");
+    			lblProgress.setText("Step " + currentStep + " of " + totalSteps + ": Sub site details");
     			break;
     	case 3: panelInstructions.setText("Now select the tree from which your sample is taken.  Again, if " +
     			"the tree does not exist in the database you can create it here.");
+    			lblProgress.setText("Step " + currentStep + " of " + totalSteps + ": Tree details");
     			break;    			
     	case 4: panelInstructions.setText("Next, select or create a specimen record for your sample.  " +
     			"A specimen is either a core, section or piece of charcoal.  Multiple cores from the same " +
     			"tree for instance would each have a separate record associated with the same tree.");
+    			lblProgress.setText("Step " + currentStep + " of " + totalSteps + ": Specimen details");
     			break;    			
-    	case 5: panelInstructions.setText("Finally, select or create a radius for your sample.  A radius " +
+    	case 5: panelInstructions.setText("Next, select or create a radius for your sample.  A radius " +
     			"is a particular line across the tree rings of your sample.  Whilst a core would typically " +
     			"only have a single radius, a section may have several radiating out in different directions " +
-    			"from the pith.\n\n " +
+    			"from the pith.  ");
+    			lblProgress.setText("Step " + currentStep + " of " + totalSteps + ": Radius details");
+    			break;    
+    	case 6: panelInstructions.setText("Finally, fill out details of this particular measurement. " +
     			"Once you have done this click finish to complete the wizard.");
+    			lblProgress.setText("Step " + currentStep + " of " + totalSteps + ": Measurement details");
     			break;       			
     	default: panelInstructions.setText("Default instructions");
+    			lblProgress.setText("Step " + currentStep + " of " + totalSteps);	
     			break;
     	
     	}
@@ -379,6 +388,9 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
                 .add(panelButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
 
+        // Hide the eye candy panel until we get around to using it
+        panelEyeCandy.setVisible(false);
+        
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
