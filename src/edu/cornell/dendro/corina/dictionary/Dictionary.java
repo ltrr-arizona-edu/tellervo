@@ -140,7 +140,7 @@ public class Dictionary extends CachedResource {
 						User user = (User) obj;
 						
 						user.setUsername(e.getAttributeValue("username"));
-						user.setFullname(e.getAttributeValue("firstname"), e.getAttributeValue("lastname"));
+						user.setFullname(e.getAttributeValue("firstName"), e.getAttributeValue("lastName"));
 					}
 				}
 				

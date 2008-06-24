@@ -26,7 +26,7 @@ public class CreateSampleDialog extends JDialog {
 	private int operation = OPERATION_NEW;
 	private Sample templateSample;
 	private HierarchyPanel panelHierarchyContent;
-	private PanelImportWizard4 panelMeasurementContent;
+	private MeasurementPanel panelMeasurementContent;
 	
 	/**
 	 * @param owner
@@ -149,7 +149,7 @@ public class CreateSampleDialog extends JDialog {
         );
         
         panelHierarchyContent = new HierarchyPanel(panelHierarchyHolder);
-        panelMeasurementContent = new PanelImportWizard4();
+        //panelMeasurementContent = new MeasurementEditorPanel();
         		
 		//JPanel holder = new JPanel();
 		panelHierarchyHolder.add(panelHierarchyContent, BorderLayout.NORTH);

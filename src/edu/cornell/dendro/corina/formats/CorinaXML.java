@@ -32,10 +32,12 @@ import java.util.List;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 import org.jdom.*;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 
@@ -72,7 +74,7 @@ public class CorinaXML implements Filetype {
 				// id? is this useful at all?
 				attr = ref.getAttributeValue("id");
 				if(attr != null)
-					bs.setMeta("id", attr);
+					bs.setMeta("::dbid", attr);
 
 				// Determine how we link to this element
 				ResourceIdentifier rid = null;
@@ -125,7 +127,60 @@ public class CorinaXML implements Filetype {
 			if(key.equals("name"))
 				s.setMeta("title", value);
 			else if(key.equals("owner"))
+				s.setMeta("owner", value);
+			else if(key.equals("author"))
 				s.setMeta("author", value);
+			else if(key.equals("description"))
+				s.setMeta("comments", value);
+			else if(key.equals("datingType")) {
+				if(value.equalsIgnoreCase("absolute"))
+					s.setMeta("dating", "A");
+				else if(value.equalsIgnoreCase("relative"))
+					s.setMeta("dating", "R");
+				else {
+					System.out.println("Unknown dating type: " + value);
+					continue;
+				}
+			}
+			else if(key.equals("datingErrorPositive")) {
+				try {
+					int intval = Integer.parseInt(value);
+					
+					s.setMeta("datingErrorPositive", intval);
+				} catch (NumberFormatException nfe) {
+					continue;
+				}
+			}
+			else if(key.equals("datingErrorNegative")) {
+				try {
+					int intval = Integer.parseInt(value);
+					
+					s.setMeta("datingErrorNegative", intval);
+				} catch (NumberFormatException nfe) {
+					continue;
+				}
+			}
+			else if(key.equals("dateRange")) {
+				String year = e.getAttributeValue("year");
+				String count = e.getAttributeValue("count");
+				
+				// err... just to be sane
+				if(year == null || count == null) {
+					System.out.println("bad dateRange");
+					continue;
+				}
+				
+				try {
+					int intYear = Integer.parseInt(year);
+					int intCount = Integer.parseInt(count);
+					
+					s.setRange(new Range(new Year(intYear), intCount));
+				} catch (NumberFormatException nfe) {
+					// yeah, uh?
+					System.out.println("nfe in dateRange");
+					continue;
+				}
+			}
 			else if(key.equals("references")) {
 				List<Element> references = e.getChildren();
 				
@@ -221,16 +276,7 @@ public class CorinaXML implements Filetype {
 		// id? is this useful at all?
 		attr = root.getAttributeValue("id");
 		if(attr != null)
-			s.setMeta("id", attr);
-
-		/*
-		// load basic information needed for a loader :)
-		attr = root.getAttributeValue("url");
-		if(attr == null)
-			throw new WrongFiletypeException("No URL in measurement!");
-		s.setMeta("filename", attr);
-		s.setMeta("title", attr); // hopefully we change this later :)
-		*/
+			s.setMeta("::dbid", attr);
 		
 		s.setMeta("filename", "invalid filename");
 		s.setMeta("title", "measurement " + attr);
@@ -305,7 +351,108 @@ public class CorinaXML implements Filetype {
 		return s;
 	}
 
+	private Element saveMetadata(Sample s) {
+		Element meta = new Element("metadata");
+
+		// note title -> name
+		if(s.hasMeta("title")) 
+			meta.addContent(new Element("name").setText((String) s.getMeta("title")));
+
+		// comments -> description
+		if(s.hasMeta("comments")) 
+			meta.addContent(new Element("description").setText((String) s.getMeta("comments")));
+			
+		if(s.hasMeta("dating")) {
+			String dating = (String) s.getMeta("dating");
+			String datingType;
+			
+			if(dating.equals("A"))
+				datingType = "Absolute";
+			else if(dating.equals("R"))
+				datingType = "Relative";
+			else
+				datingType = "Unknown";
+			
+			meta.addContent(new Element("datingType").setText(datingType));
+		}
+		
+		// don't forget range!
+		Range range = s.getRange();
+		if(range != null)
+			meta.addContent(new Element("dateRange")
+			.setAttribute("year", range.getStart().toString())
+			.setAttribute("count", String.valueOf(range.span())));
+			
+		// these are regular
+		if(s.hasMeta("owner")) 
+			meta.addContent(new Element("owner").setText((String) s.getMeta("owner")));
+		if(s.hasMeta("author")) 
+			meta.addContent(new Element("author").setText((String) s.getMeta("author")));
+
+		return meta;
+	}
+	
+	public Element saveReadings(Sample s) {
+		Element readings = new Element("readings");
+		
+		// maybe one day we want to have other values here?
+		// or check some metadata?
+		readings.setAttribute("type", "annual");
+		readings.setAttribute("units", "-6");
+		
+		// get the data
+		List<Object> data = s.getData();
+		Year startYear = s.getRange().getStart();
+		
+		// add the data
+		for(int i = 0; i < data.size(); i++) {
+			Number n = (Number) data.get(i);
+			Element reading = new Element("reading");
+			
+			reading.setAttribute("year", startYear.add(i).toString());
+			reading.setAttribute("value", String.valueOf(n));
+			readings.addContent(reading);
+		}
+		
+		return readings;
+	}
+	
+	private void saveXMLtoWriter(Element root, BufferedWriter w) throws IOException {
+		Document doc = new Document();
+		XMLOutputter outputter;			
+		Format format = Format.getPrettyFormat();
+
+		doc.setRootElement(root);
+
+		format.setEncoding("UTF-8");
+		outputter = new XMLOutputter(format);
+		outputter.output(doc, w);
+		
+		// maybe we want to use this elsewhere?
+		doc.detachRootElement();
+	}
+	
+	public Element saveToElement(Sample s) {
+		Element root = new Element("measurement");
+		
+		// do we have an ID stored?
+		if(s.hasMeta("::dbid")) 
+			root.setAttribute("id", (String) s.getMeta("::dbid"));
+		
+		// get metadata
+		Element meta = saveMetadata(s);
+		root.addContent(meta);
+		
+		Element readings = saveReadings(s);
+		root.addContent(readings);
+
+		return root;
+	}
+	
 	public void save(Sample s, BufferedWriter w) throws IOException {
+		Element root = saveToElement(s);
+		
+		saveXMLtoWriter(root, w);
 	}
 	
 	public void save(List<Sample> samples, BufferedWriter w) throws IOException {

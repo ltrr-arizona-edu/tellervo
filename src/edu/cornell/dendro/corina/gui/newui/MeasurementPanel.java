@@ -6,17 +6,102 @@
 
 package edu.cornell.dendro.corina.gui.newui;
 
+import java.awt.Dimension;
+import java.util.List;
+
+import javax.swing.DefaultComboBoxModel;
+
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.dictionary.User;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.site.GenericIntermediateObject;
+
 /**
  *
  * @author  peterbrewer
  */
-public class PanelImportWizard4 extends javax.swing.JPanel {
-    
+public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject> {
+	private Sample s;
+	
     /** Creates new form panelImportWizard4 */
-    public PanelImportWizard4() {
+    public MeasurementPanel(WizardPanelParent parent) {
+    	super(parent);
+    	
         initComponents();
+        setupUserLists();
         
-        panelRadius.setVisible(false);
+        // hide the reading count for now
+        lblReadingCount.setVisible(false);
+
+        s = new Sample();        
+        parent.notifyPanelStateChanged(this);
+    }
+    
+    public Sample getSample() {
+    	return s;
+    }
+    
+    public boolean verifyAndSelectNextPanel() {
+    	// User selected next: copy dialog info into our sample.
+    	
+    	s.setMeta("author", cboMeasuredBy.getSelectedItem().toString());
+    	s.setMeta("owner", cboOwnedBy.getSelectedItem().toString());
+    	
+    	s.setMeta("title", txtMeasurementName.getText());
+    	
+    	try {
+    		s.setRange(new Range(new Year(Integer.parseInt(txtStartYear.getText())), 0));
+    	} catch (NumberFormatException nfe) {
+    		// just ignore this for now?
+    	}
+    	
+    	String datingType = cboDatingType.getSelectedItem().toString();
+    	if(datingType.equalsIgnoreCase("absolute"))
+    		s.setMeta("dating", "A");
+    	else if(datingType.equalsIgnoreCase("relative"))
+    		s.setMeta("dating", "R");
+    	else if(datingType.equalsIgnoreCase("Absolute with uncertainty"))
+    		s.setMeta("dating", "AU");
+    	
+    	s.setMeta("comments", txtDescription.getText());
+    	
+    	return true;
+    }
+    
+    // TODO: Make this work ;)
+    public boolean isPanelValid() {
+    	return true;
+    }
+    
+    public void setParentPrefix(String parentPrefix) {
+    	
+    }
+    
+    public void setParentObject(GenericIntermediateObject obj) {
+    	s.setMeta("::parent", obj.getResourceIdentifier());
+    }
+    
+    /**
+     * Does nothing for the final panel
+     */
+    public GenericIntermediateObject getPanelObject() {
+    	return null;
+    }
+ 
+
+    private void setupUserLists() {
+    	List<User> users = (List<User>) App.dictionary.getDictionary("Users");
+    	
+    	Object[] srcArray = users.toArray();
+    	Object[] dstArray = new Object[srcArray.length + 1];
+    	
+    	dstArray[0] = "-- Choose a User --";
+    	System.arraycopy(srcArray, 0, dstArray, 1, srcArray.length);
+    	
+    	cboMeasuredBy.setModel(new DefaultComboBoxModel(dstArray));
+    	cboOwnedBy.setModel(new DefaultComboBoxModel(dstArray));
     }
     
     /** This method is called from within the constructor to
@@ -93,7 +178,7 @@ public class PanelImportWizard4 extends javax.swing.JPanel {
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panelMeasurement.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Measurement"));
+        //panelMeasurement.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Measurement"));
 
         lblMeasurementName.setLabelFor(txtMeasurementName);
         lblMeasurementName.setText("Name:");
@@ -231,15 +316,15 @@ public class PanelImportWizard4 extends javax.swing.JPanel {
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, panelMeasurement, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, panelRadius, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    )//.add(org.jdesktop.layout.GroupLayout.TRAILING, panelRadius, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(panelRadius, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                //.add(panelRadius, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                //.addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(panelMeasurement, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );

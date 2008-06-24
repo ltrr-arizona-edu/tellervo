@@ -17,6 +17,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
 import edu.cornell.dendro.corina.site.Radius;
 import edu.cornell.dendro.corina.site.Site;
@@ -32,8 +34,6 @@ import edu.cornell.dendro.corina.util.Center;
 public class ImportWizard extends javax.swing.JDialog implements WizardPanelParent {
 	private CardLayout cardLayout;
 	private JPanel insidePanel;
-	private Dimension origDimension;
-	private JScrollPane insidePanelScroller;
 	private BaseContentPanel<?>[] cards;
 	private int cardIdx;
     
@@ -46,14 +46,14 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
         insidePanel = new JPanel(cardLayout);
 
         /***************************/
-        cards = new BaseContentPanel<?>[5];
+        cards = new BaseContentPanel<?>[6];
         
         cards[0] = new BaseContentPanel<Site>(this, Site.class);
         cards[1] = new BaseContentPanel<Subsite>(this, Subsite.class);
         cards[2] = new BaseContentPanel<Tree>(this, Tree.class);
         cards[3] = new BaseContentPanel<Specimen>(this, Specimen.class);
         cards[4] = new BaseContentPanel<Radius>(this, Radius.class);
-//        cards[4] = new BaseContentPanel<Subsite>(this, Radius.class);
+        cards[5] = new MeasurementPanel(this);
         
         // populate the site list
         cards[0].repopulate();
@@ -64,6 +64,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
         addPanel(cards[2]);
         addPanel(cards[3]);
         addPanel(cards[4]);
+        addPanel(cards[5]);
         
         // Set instructions and step number on GUI
         setInstructionsForStep(1, (cards.length-1));
@@ -78,11 +79,11 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
         insidePanelScroller.setPreferredSize(new Dimension(1234, 200));
         */
                      
-//        panelContent.setLayout(new BorderLayout());
- //       panelContent.add(insidePanel, BorderLayout.CENTER);
+        panelContent.setLayout(new BorderLayout());
+        panelContent.add(insidePanel, BorderLayout.CENTER);
 
-        panelContent.setLayout(new FlowLayout());
-        panelContent.add(insidePanel);
+        //panelContent.setLayout(new FlowLayout());
+        //panelContent.add(insidePanel);
         
 		// make sure we can go 'next' on our initial state
     	btnNext.setEnabled(cards[cardIdx].isPanelValid());
@@ -96,11 +97,13 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
 					
 					// NEXT!
 					cardIdx++;
-					setInstructionsForStep((cardIdx+1), (cards.length-1));
+					setInstructionsForStep((cardIdx+1), (cards.length));
 					
 					// did we finish?
 					if(cardIdx == cards.length) {
-						System.out.println("WOOT!!!");
+						Sample s = ((MeasurementPanel) cards[cardIdx-1]).getSample();
+						new Editor(s);
+						
 						dispose();
 						return;
 					}
@@ -155,7 +158,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
         btnBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				setInstructionsForStep(cardIdx, (cards.length-1));
+				setInstructionsForStep(cardIdx, cards.length);
 				
 				if(cardIdx > 0) {
 					// change the button text if we're at the end

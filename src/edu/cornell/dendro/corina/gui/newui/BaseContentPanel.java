@@ -74,6 +74,11 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JP
 		setPreferredSize(new Dimension(parent.getContainerPreferredSize().width, getPreferredSize().height));
 	}
 	
+	protected BaseContentPanel(WizardPanelParent parent) {
+		// and please, don't grow larger than our parent in width!
+		setPreferredSize(new Dimension(parent.getContainerPreferredSize().width, getPreferredSize().height));		
+	}
+	
 	/**
 	 * Set a component's maximum height to its preferred height
 	 * @param comp

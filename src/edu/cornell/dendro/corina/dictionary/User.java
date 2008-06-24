@@ -47,4 +47,8 @@ public class User extends BasicDictionaryElement {
 		else 
 			fullname = lastname + ", " + firstname;
 	}
+	
+	public String toString() {
+		return fullname;
+	}
 }
