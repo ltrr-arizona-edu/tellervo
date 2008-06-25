@@ -14,6 +14,7 @@ require_once("inc/specimenType.php");
 require_once("inc/terminalRing.php");
 require_once("inc/specimenQuality.php");
 require_once("inc/specimenContinuity.php");
+require_once("inc/datingType.php");
 require_once("inc/pith.php");
 require_once("inc/taxon.php");
 require_once("inc/region.php");
@@ -66,7 +67,7 @@ class dictionaries
         
         $xmldata = "";
 
-        $dictItems = array('siteNote', 'pith', 'specimenQuality', 'specimenType', 'terminalRing', 'region', 'specimenContinuity', 'treeNote', 'vmeasurementNote', 'readingNote', 'taxon', 'securityUser');
+        $dictItems = array('siteNote', 'pith', 'specimenQuality', 'specimenType', 'terminalRing', 'region', 'specimenContinuity', 'treeNote', 'vmeasurementNote', 'readingNote', 'taxon', 'securityUser', 'datingType');
             
         // Specimen Type 
         $dbconnstatus = pg_connection_status($dbconn);
@@ -124,6 +125,9 @@ class dictionaries
                         break;
                     case "securityUser":
                         $myObj = new securityUser();
+                        break;
+                    case "datingType":
+                        $myObj = new datingType();
                         break;
                     default:
                         echo "not supported yet";
