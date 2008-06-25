@@ -248,10 +248,10 @@ class measurementParameters extends parameters
         if(isset($this->xmlrequest->metadata->startYear))                  $this->startYear             = (int)                $this->xmlrequest->metadata->startYear;
         if(isset($this->xmlrequest->metadata->measuredBy['id']))           $this->measuredByID          = (int)                $this->xmlrequest->metadata->measuredBy['id'];
         if(isset($this->xmlrequest->metadata->owner['id']))                $this->ownerUserID           = (int)                $this->xmlrequest->metadata->owner['id'];
-        if(isset($this->xmlrequest->metadata->datingTypeID))               $this->datingTypeID          = addslashes(          $this->xmlrequest->metadata->datingTypeID);
-        if(isset($this->xmlrequest->metadata->datingType))                 $this->datingType            = addslashes(          $this->xmlrequest->metadata->datingType);
-        if(isset($this->xmlrequest->metadata->datingErrorPositive))        $this->datingErrorPositive   = (int)                $this->xmlrequest->metadata->datingErrorPositive;
-        if(isset($this->xmlrequest->metadata->datingErrorNegative))        $this->datingErrorNegative   = (int)                $this->xmlrequest->metadata->datingErrorNegative;
+        //if(isset($this->xmlrequest->metadata->datingTypeID))               $this->datingTypeID          = addslashes(          $this->xmlrequest->metadata->datingTypeID);
+        if(isset($this->xmlrequest->metadata->dating['type']))             $this->datingType            = addslashes(          $this->xmlrequest->metadata->dating['type']);
+        if(isset($this->xmlrequest->metadata->dating['positiveError']))    $this->datingErrorPositive   = (int)                $this->xmlrequest->metadata->dating['positiveError'];
+        if(isset($this->xmlrequest->metadata->dating['negativeError']))    $this->datingErrorNegative   = (int)                $this->xmlrequest->metadata->dating['negativeError'];
         if(isset($this->xmlrequest->metadata->name))                       $this->name                  = addslashes(          $this->xmlrequest->metadata->name);
         if(isset($this->xmlrequest->metadata->description))                $this->description           = addslashes(          $this->xmlrequest->metadata->description);
         if(isset($this->xmlrequest->metadata->isLegacyCleaned))            $this->isLegacyCleaned       = fromStringtoPHPBool( $this->xmlrequest->metadata->isLegacyCleaned);

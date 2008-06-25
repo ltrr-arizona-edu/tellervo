@@ -91,23 +91,32 @@
 			                </element>
 			            </optional>	            
 			            <optional>
-			                <element name="datingType">
+			                <element name="dating">
 			                	<optional>
-			                		<attribute name="id">
-			                			<data type="positiveInteger"></data>
+			                		<attribute name="startYear">
+			                			<data type="integer"></data>
 			                		</attribute>
 			                	</optional>
-			                    <text/>
-			                </element>
-			            </optional>
-			            <optional>
-			                <element name="datingErrorPositive">
-			                    <data type="positiveInteger" />
-			                </element>
-			            </optional>
-			            <optional>
-			                <element name="datingErrorNegative">
-			                    <data type="positiveInteger" />
+			                    <optional>
+			                		<attribute name="count">
+			                			<data type="integer"></data>
+			                		</attribute>
+			                	</optional>
+			                	<optional>
+			                		<attribute name="type">
+			                			<data type="string"></data>
+			                		</attribute>
+			                	</optional>			                	
+			                	<optional>
+			                		<attribute name="positiveError">
+			                			<data type="positiveInteger"></data>
+			                		</attribute>
+			                	</optional>			                	
+			                	<optional>
+			                		<attribute name="negativeError">
+			                			<data type="positiveInteger"></data>
+			                		</attribute>
+			                	</optional>					                	
 			                </element>
 			            </optional>
 			
@@ -132,8 +141,7 @@
 			            		</optional>
 			            	</element>
 			            </optional>
-			            
-			            
+			        
 		            
 		                <zeroOrMore>
 		                    <externalRef href="measurementNote.rng"/>
@@ -151,6 +159,12 @@
                     	<optional>
                     		<attribute name="units">
                     			<data type="negativeInteger"></data>
+                    		</attribute>
+                    	</optional>
+                    	
+                    	<optional>
+                    		<attribute name="type">
+                    			<text/>
                     		</attribute>
                     	</optional>
                         <zeroOrMore>
