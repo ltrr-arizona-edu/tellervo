@@ -88,7 +88,7 @@ public class App {
         meter.setNote("Initializing Dictionary...");
     }
     dictionary = new Dictionary();
-    // dictionary.query();
+    dictionary.query();
     if (meter != null) {
       meter.setProgress(4);
     }
@@ -97,7 +97,7 @@ public class App {
         meter.setNote("Initializing Site List...");
     }
     sites = new SiteList();
-  //  sites.query();
+    sites.query();
     if (meter != null) {
       meter.setProgress(5);
     }
