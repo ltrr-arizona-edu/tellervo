@@ -109,12 +109,12 @@
 			                	</optional>			                	
 			                	<optional>
 			                		<attribute name="positiveError">
-			                			<data type="positiveInteger"></data>
+			                			<data type="integer"></data>
 			                		</attribute>
 			                	</optional>			                	
 			                	<optional>
 			                		<attribute name="negativeError">
-			                			<data type="positiveInteger"></data>
+			                			<data type="integer"></data>
 			                		</attribute>
 			                	</optional>					                	
 			                </element>
