@@ -22,6 +22,7 @@ package edu.cornell.dendro.corina.formats;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.User;
 import edu.cornell.dendro.corina.sample.*;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -118,6 +119,23 @@ public class CorinaXML implements Filetype {
 		}
 	}
 	
+	private void setUserFor(String metaKey, Element e, BaseSample s) {
+		String ids = e.getAttributeValue("id");
+		if(ids == null)
+			return;
+		
+		// traverse the userlist in an order N fashion, finding the user by id
+		List<User> users = (List<User>) App.dictionary.getDictionary("Users");
+		for(User u : users) {
+			if(u.getInternalRepresentation().equals(ids)) {
+				s.setMeta(metaKey, u);
+				return;
+			}
+		}
+		
+		System.out.println("Measurement contains unknown author " + ids + ":" + e.toString());
+	}
+	
 	private void loadMetadata(BaseSample s, Element meta) {
 		List<Element> elements = (List<Element>) meta.getChildren();
 
@@ -128,9 +146,9 @@ public class CorinaXML implements Filetype {
 			if(key.equals("name"))
 				s.setMeta("title", value);
 			else if(key.equals("owner"))
-				s.setMeta("owner", value);
-			else if(key.equals("author"))
-				s.setMeta("author", value);
+				setUserFor("owner", e, s);
+			else if(key.equals("measuredBy"))
+				setUserFor("author", e, s);
 			else if(key.equals("description"))
 				s.setMeta("comments", value);
 			else if(key.equals("dating")) {
@@ -271,11 +289,15 @@ public class CorinaXML implements Filetype {
 	
 	public void loadBasicMeasurement(BaseSample s, Element root) throws IOException {
 		String attr;
-				
-		// id? is this useful at all?
+
+		// store our id!
 		attr = root.getAttributeValue("id");
 		if(attr != null)
 			s.setMeta("::dbid", attr);
+
+		ResourceIdentifier myid = ResourceIdentifier.fromRootElement(root);
+		if(myid != null)
+			s.setMeta("::dbrid", myid);
 		
 		s.setMeta("filename", "invalid filename");
 		s.setMeta("title", "measurement " + attr);
@@ -386,7 +408,7 @@ public class CorinaXML implements Filetype {
 		if(s.hasMeta("datingErrorPositive"))
 			dating.setAttribute("positiveError", s.getMeta("datingErrorPositive").toString());
 		if(s.hasMeta("datingErrorNegative"))
-			dating.setAttribute("positiveError", s.getMeta("datingErrorNegative").toString());
+			dating.setAttribute("negativeError", s.getMeta("datingErrorNegative").toString());
 		
 		meta.addContent(dating);
 		

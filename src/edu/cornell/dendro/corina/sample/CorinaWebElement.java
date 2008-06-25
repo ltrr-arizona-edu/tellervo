@@ -79,6 +79,10 @@ public class CorinaWebElement implements SampleLoader {
 		if(!dlg.isSuccessful())
 			throw new IOException("Failed to load: " + dlg.getFailException());
 		
+		// associate this loader with the object
+		xf.getObject().setLoader(this);
+
+		// and return it!
 		return xf.getObject();
 	}
 	
@@ -116,6 +120,22 @@ public class CorinaWebElement implements SampleLoader {
 		
 		// get the new sample, and copy its data over
 		Sample ns = (Sample) xf.getObject();
+		
+		// get our stored loader for this sample
+		if(ns.hasMeta("::dbrid") && ns.getMeta("::dbrid") instanceof ResourceIdentifier) {
+			ns.setLoader(new CorinaWebElement((ResourceIdentifier) ns.getMeta("::dbrid")));
+		}
+		else if(ns.hasMeta("::dbid")) {
+			ResourceIdentifier rid = new ResourceIdentifier("measurement", 
+					ns.getMeta("::dbid").toString());
+			ns.setLoader(new CorinaWebElement(rid));
+		}
+		else {
+			new Bug(new IllegalStateException("No way to create a resourceidentifier for saved sample!"));
+			return false;
+		}
+			
+		// copy everything over (including the new loader we just made)
 		Sample.copy(ns, s);
 		
 		return true;
