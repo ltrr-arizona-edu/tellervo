@@ -444,7 +444,7 @@ class specimen
         {
             // Only return XML when there are no errors.
     
-            if($style=="full")
+            if( ($mode=="all") || ($mode=="begin"))
             {
                 $xml.= "<specimen ";
                 $xml.= "id=\"".$this->id."\" >";
@@ -478,15 +478,12 @@ class specimen
                 if(isset($this->isUnmeasuredPostVerified))      $xml.= "<isUnmeasuredPostVerified>".fromPHPtoStringBool($this->isUnmeasuredPostVerified)."</isUnmeasuredPostVerified>\n";
                 if(isset($this->createdTimeStamp))              $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
                 if(isset($this->lastModifiedTimeStamp))         $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
-                $xml.= "</specimen>\n";
-            }
-            elseif($style=="brief")
-            {
-                $xml.= "<specimen ";
-                $xml.= "id=\"".$this->id."\" ";
-                $xml.= "url=\"http://$domain/specimen/".$this->id."\" /> ";
             }
 
+            if (($mode=="all") || ($mode=="end"))
+            {
+                $xml.= "</specimen>\n";
+            }
             return $xml;
         }
         else

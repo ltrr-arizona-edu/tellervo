@@ -788,6 +788,83 @@ class measurement
 
     }
 
+    function exportFullXML()
+    {
+        if($this->vmeasurementOp!='Direct')
+        {
+            $this->setErrorMessage(104, "Only direct measurements can currently be exported");
+        }
+
+        require_once('site.php');
+        require_once('subSite.php');
+        require_once('tree.php');
+        require_once('specimen.php');
+        require_once('radius.php');
+        global $dbconn;
+        $xml = NULL;
+
+        $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblspecimen.specimenid, tblradius.radiusid, tblmeasurement.measurementid, tblvmeasurement.vmeasurementid 
+            FROM tblsubsite 
+            INNER JOIN tbltree ON tblsubsite.subsiteid=tbltree.subsiteid
+            INNER JOIN tblspecimen ON tbltree.treeid=tblspecimen.treeid
+            INNER JOIN tblradius ON tblspecimen.specimenid = tblradius.specimenid
+            INNER JOIN tblmeasurement ON tblradius.radiusid = tblmeasurement.radiusid
+            INNER JOIN tblvmeasurement ON tblmeasurement.measurementid=tblvmeasurement.measurementid
+            where tblvmeasurement.vmeasurementid='".$this->vmeasurementID."'";
+
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn); 
+
+            if(pg_num_rows($result)==0)
+            {
+                // No records match the id specified
+                $this->setErrorMessage("903", "No match for measurement id=".$this->vmeasurementID);
+                return FALSE;
+            }
+            else
+            {
+                $row = pg_fetch_array($result);
+
+                $mySite = new site();
+                $mySubSite = new subSite();
+                $myTree = new tree();
+                $mySpecimen = new specimen();
+                $myRadius = new radius();
+
+                $success = $mySite->setParamsFromDB($row['siteid']);
+                if($success===FALSE)
+                {
+                    trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
+                    echo "here";
+                }
+
+                $mySubSite->setParamsFromDB($row['subsiteid']);
+                $myTree->setParamsFromDB($row['treeid']);
+                $mySpecimen->setParamsFromDB($row['specimenid']);
+                $myRadius->setParamsFromDB($row['radiusid']);
+
+                $xml = $mySite->asXML("begin", "brief");
+                $xml.= $mySubSite->asXML("begin", "brief");
+                $xml.= $myTree->asXML("begin", "brief");
+                $xml.= $mySpecimen->asXML("begin", "brief");
+                $xml.= $myRadius->asXML("begin", "brief");
+                $xml.= $this->asXML();
+                //$xml.= "<measurement/>";
+                $xml.= $myRadius->asXML("end", "brief");
+                $xml.= $mySpecimen->asXML("end", "brief");
+                $xml.= $myTree->asXML("end");
+                $xml.= $mySubSite->asXML("end");
+                $xml.= $mySite->asXML("end");
+
+            }
+        }
+        return $xml;
+
+    }
+
     function asXML($recurseLevel=2, $style="full")
     {
         // Return a string containing the current object in XML format

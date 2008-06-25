@@ -254,7 +254,7 @@ class radius
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
-            if($style=="full")
+            if( ($mode=="all") || ($mode=="begin") )
             {
                 // Only return XML when there are no errors.
                 $xml.= "<radius ";
@@ -272,15 +272,13 @@ class radius
                 $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
                 $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
                 $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+            }
+
+            if( ($mode=="all") || ($mode=="end"))
+            {
                 $xml.= "</radius>\n";
             }
-            elseif($style=="brief")
-            {
-                $xml.= "<radius ";
-                $xml.= "id=\"".$this->id."\" ";
-                $xml.= "url=\"http://$domain/radius/".$this->id."\" />\n ";
 
-            }
             return $xml;
         }
         else

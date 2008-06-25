@@ -389,7 +389,7 @@ class tree
                 }
 
                 // Include specimens if present
-                if ($this->specimenArray)
+                if (($this->specimenArray) && ($style=="full"))
                 {
                     $xml.="<references>\n";
                     foreach($this->specimenArray as $value)

@@ -300,7 +300,7 @@ class site
     /*ACCESSORS*/
     /***********/
 
-    function asXML($mode="all")
+    function asXML($mode="all", $style="full")
     {
         global $domain;
         $xml ="";
@@ -372,7 +372,7 @@ class site
                 }
                 
                 // Include subsites if present
-                if ($this->subSiteArray)
+                if (($this->subSiteArray) && ($style=="full"))
                 {
                     $xml.="<references>\n";
                     foreach($this->subSiteArray as $value)
