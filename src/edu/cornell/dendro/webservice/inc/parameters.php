@@ -245,10 +245,10 @@ class measurementParameters extends parameters
     function getXMLParams()
     {
         if(isset($this->xmlrequest['id']))                                 $this->id                    = (int)                $this->xmlrequest['id'];
-        if(isset($this->xmlrequest->metadata->startYear))                  $this->startYear             = (int)                $this->xmlrequest->metadata->startYear;
         if(isset($this->xmlrequest->metadata->measuredBy['id']))           $this->measuredByID          = (int)                $this->xmlrequest->metadata->measuredBy['id'];
         if(isset($this->xmlrequest->metadata->owner['id']))                $this->ownerUserID           = (int)                $this->xmlrequest->metadata->owner['id'];
         //if(isset($this->xmlrequest->metadata->datingTypeID))               $this->datingTypeID          = addslashes(          $this->xmlrequest->metadata->datingTypeID);
+        if(isset($this->xmlrequest->metadata->dating['startYear']))        $this->startYear             = (int)                $this->xmlrequest->metadata->dating['startYear'];
         if(isset($this->xmlrequest->metadata->dating['type']))             $this->datingType            = addslashes(          $this->xmlrequest->metadata->dating['type']);
         if(isset($this->xmlrequest->metadata->dating['positiveError']))    $this->datingErrorPositive   = (int)                $this->xmlrequest->metadata->dating['positiveError'];
         if(isset($this->xmlrequest->metadata->dating['negativeError']))    $this->datingErrorNegative   = (int)                $this->xmlrequest->metadata->dating['negativeError'];

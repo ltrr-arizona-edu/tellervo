@@ -173,7 +173,7 @@ class measurement
         return TRUE;
     }
 
-    function setReadingsFromDB()
+    private function setReadingsFromDB()
     {
         // Add all readings data to the object
         global $dbconn;
@@ -216,7 +216,7 @@ class measurement
         return TRUE;
     }
 
-    function setReferencesFromDB()
+    private function setReferencesFromDB()
     {
         //echo "setReferencesFromDB called";
         // Add any vmeasurements that the current measurement has been made from
@@ -255,7 +255,7 @@ class measurement
         //if (isset($paramsClass->datingTypeID))        $this->setDatingTypeID($paramsClass->datingTypeID);
         if (isset($paramsClass->datingType))          $this->setDatingType($paramsClass->datingType);
         if (isset($paramsClass->datingErrorPositive)) $this->setDatingErrorPositive($paramsClass->datingErrorPositive);
-        if (isset($paramsClass->datingErrorNegative)) $this->setDatingErrorNegative($paramsClass->datingErrorBegative);
+        if (isset($paramsClass->datingErrorNegative)) $this->setDatingErrorNegative($paramsClass->datingErrorNegative);
         if (isset($paramsClass->name))                $this->setName($paramsClass->name);
         if (isset($paramsClass->description))         $this->setDescription($paramsClass->description);
         if (isset($paramsClass->isPublished))         $this->setIsPublished($paramsClass->isPublished);
@@ -1042,12 +1042,12 @@ class measurement
                             if($this->startYear+$key  >= 0)
                             {
                                 // Add 1 to year to cope with BC/AD transition issue (no 0bc/ad)
-                                $yearvalue = $key + $this->startYear;
+                                $yearvalue = $key;
                             }
                             else
                             {
                                 // Date is BC so fudge not required
-                                $yearvalue = $key + $this->startYear - 1;
+                                $yearvalue = $key - 1;
                             }
                         }
                         else
