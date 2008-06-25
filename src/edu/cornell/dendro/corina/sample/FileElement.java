@@ -151,6 +151,12 @@ public class FileElement implements SampleLoader {
 		return new BaseSample(s);
 	}
 	
+	public boolean save(Sample s) throws IOException {
+		Files.save(s, (String) s.getMeta("filename"));
+		
+		return true;
+	}
+	
 	public String getFilename() {
 		return filename;
 	}

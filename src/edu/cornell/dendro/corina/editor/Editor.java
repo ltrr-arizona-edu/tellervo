@@ -82,6 +82,7 @@ import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
+import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.site.LegacySite;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -296,8 +297,16 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		}
 	}
 	
-    // saveabledocument -- yes, we can use save as...
-    public boolean isNameChangeable() { return true; };
+    // can we use save as?
+    public boolean isNameChangeable() { 
+    	SampleLoader loader = sample.getLoader();
+
+    	// we can only save file elements!
+    	if(loader == null || loader instanceof FileElement)
+    		return true;
+    	
+    	return false;
+    };
 
 	public void save() {
 		// make sure we're not measuring
@@ -324,10 +333,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			// REPLACE WITH: call to method ensureNumbersOnly()
 			// -- why not simply disallow non-numbers to begin with?
 		}
-
+		
 		// get filename from sample; fall back to user's choice
-		String filename = (String) sample.getMeta("filename"); // BUG: why not containsKey()?
-		if (filename == null) {
+		if (sample.getLoader() == null) {
 
 			// make sure metadata was entered
 			if (!sample.wasMetadataChanged()) {
@@ -351,6 +359,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				}
 			}
 
+			String filename = (String) sample.getMeta("filename"); // BUG: why not containsKey()?
 			// get target filename
 			try {
 				filename = FileDialog.showSingle("Save");
@@ -362,34 +371,24 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			}
 
 			sample.setMeta("filename", filename);
+			
+			// attach a FileElement to it
+			sample.setLoader(new FileElement(filename));
 		}
 
-		save(filename);
-	}
-
-	public void save(String filename) {
-		// save sample
+		// now, actually try and save the sample
 		try {
-			// BUG?  do i mean to ignore the filename args?
-			// FIXME: isn't this just sample.save()?
-			sample.save((String) sample.getMeta("filename"));
+			sample.getLoader().save(sample);
 		} catch (IOException ioe) {
-			Alert.error("I/O Error",
-					"There was an error while saving the file: \n"
-							+ ioe.getMessage());
+			Alert.error("I/O Error", "There was an error while saving the file: \n" + ioe.getMessage());
 			return;
 		} catch (Exception e) {
-			Bug.bug(e);
+			new Bug(e);
 		}
 
+		// set the necessary bits...
 		sample.clearModified();
-		App.platform.setModified(this, false); // mac os x
-		// BIGGER ISSUE: need to separate/abstract window-title/window-modified setting
-		// -- make window (jframe) a samplelistener for updating platform.modified?
-		// -- (platform.modified sets either mac property, or resets *+title from getTitle()?)
-		// LONG-TERM: this won't be an issue.  why not?  because we won't
-		// have this klutzy "save" system.  open a file, mess around with it, close it.
-		// as far as you're concerned, it's always "saved".
+		App.platform.setModified(this, false);
 		updateTitle();
 	}
 

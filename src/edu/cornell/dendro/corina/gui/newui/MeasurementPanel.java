@@ -7,16 +7,22 @@
 package edu.cornell.dendro.corina.gui.newui;
 
 import java.awt.Dimension;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.User;
+import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
+import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
 
 /**
  *
@@ -24,7 +30,9 @@ import edu.cornell.dendro.corina.site.GenericIntermediateObject;
  */
 public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject> {
 	private Sample s;
-	
+	private WizardPanelParent parent;
+    private boolean validForm;
+
     /** Creates new form panelImportWizard4 */
     public MeasurementPanel(WizardPanelParent parent) {
     	super(parent);
@@ -35,8 +43,61 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
         // hide the reading count for now
         lblReadingCount.setVisible(false);
 
-        s = new Sample();        
+        s = new Sample();
+        this.parent = parent;
+        
+        initialize();
+        
+        // tell our parent about our status...
+        validateForm();
         parent.notifyPanelStateChanged(this);
+    }
+    
+    private void initialize() {
+    	cboMeasuredBy.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED)
+					validateForm();
+			}
+    	});
+
+    	cboOwnedBy.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED)
+					validateForm();
+			}
+    	});
+    	
+    	txtMeasurementName.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				// hello stupid bug.. this isn't used on JTextFields for some awful reason
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				validateForm();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				validateForm();
+			}
+		});
+    }
+        
+    private void validateForm() {
+    	boolean nameOk;
+    	boolean measuredByOk;
+    	boolean ownedByOk;
+    	boolean ok;
+    	
+    	nameOk = txtMeasurementName.getText().length() > 1;
+    	measuredByOk = cboMeasuredBy.getSelectedItem() instanceof User;
+    	ownedByOk = cboOwnedBy.getSelectedItem() instanceof User;
+    	
+    	ok = nameOk && measuredByOk && ownedByOk;
+    	if(validForm != ok) {
+    		validForm = ok;
+    		parent.notifyPanelStateChanged(this);
+    	}
     }
     
     public Sample getSample() {
@@ -46,8 +107,8 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
     public boolean verifyAndSelectNextPanel() {
     	// User selected next: copy dialog info into our sample.
     	
-    	s.setMeta("author", cboMeasuredBy.getSelectedItem().toString());
-    	s.setMeta("owner", cboOwnedBy.getSelectedItem().toString());
+    	s.setMeta("author", cboMeasuredBy.getSelectedItem());
+    	s.setMeta("owner", cboOwnedBy.getSelectedItem());
     	
     	s.setMeta("title", txtMeasurementName.getText());
     	
@@ -70,9 +131,8 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
     	return true;
     }
     
-    // TODO: Make this work ;)
     public boolean isPanelValid() {
-    	return true;
+    	return validForm;
     }
     
     public void setParentPrefix(String parentPrefix) {
@@ -80,7 +140,8 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
     }
     
     public void setParentObject(GenericIntermediateObject obj) {
-    	s.setMeta("::parent", obj.getResourceIdentifier());
+    	s.setLoader(new CorinaWebElement(new ResourceIdentifier("measurement", null)));
+    	s.setMeta("::dbparent", obj.getResourceIdentifier());
     }
     
     /**

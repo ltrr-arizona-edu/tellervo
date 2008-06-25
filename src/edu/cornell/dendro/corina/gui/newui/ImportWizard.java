@@ -164,10 +164,11 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
 				btnNext.setText("Next");
 				
 				if(cardIdx > 0) {
-					// change the button text if we're at the end
-					if(cardIdx == cards.length - 1)
-						btnNext.setText("Finish");
 					cardIdx--;
+
+					// change the button text if we're going back from the end
+					if(cardIdx == cards.length - 2)
+						btnNext.setText("Next");
 					
 					// go back!
 					cardLayout.previous(insidePanel);

@@ -269,7 +269,7 @@ public class ElementsTableModel extends AbstractTableModel {
 				s.setMeta(key, value);
 
 			try {
-				s.save();
+				s.getLoader().save(s);
 			} catch (IOException ioe) {
 				Alert.error("I/O Error", "Error saving file: "
 						+ ioe.getMessage());

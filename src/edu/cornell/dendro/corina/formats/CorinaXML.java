@@ -22,6 +22,7 @@ package edu.cornell.dendro.corina.formats;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.dictionary.User;
 import edu.cornell.dendro.corina.sample.*;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
@@ -47,7 +48,7 @@ public class CorinaXML implements Filetype {
 
 	@Override
 	public String toString() {
-		return I18n.getText("format.corina");
+		return I18n.getText("format.corinaxml");
 	}
 
 	/**
@@ -132,52 +133,50 @@ public class CorinaXML implements Filetype {
 				s.setMeta("author", value);
 			else if(key.equals("description"))
 				s.setMeta("comments", value);
-			else if(key.equals("datingType")) {
-				if(value.equalsIgnoreCase("absolute"))
+			else if(key.equals("dating")) {
+				String startYear = e.getAttributeValue("startYear");
+				String type = e.getAttributeValue("type");
+				String count = e.getAttributeValue("count");
+				String positiveError = e.getAttributeValue("positiveError");
+				String negativeError = e.getAttributeValue("negativeError");
+				
+				if(startYear == null || type == null || count == null) {
+					System.out.println("bad dating tag");
+					continue;
+				}
+				
+				// first, do the strings
+				if(type.equalsIgnoreCase("absolute"))
 					s.setMeta("dating", "A");
-				else if(value.equalsIgnoreCase("relative"))
+				else if(type.equalsIgnoreCase("absolute with uncertainty"))
+					s.setMeta("dating", "AU");
+				else if(type.equalsIgnoreCase("relative"))
 					s.setMeta("dating", "R");
 				else {
 					System.out.println("Unknown dating type: " + value);
 					continue;
 				}
-			}
-			else if(key.equals("datingErrorPositive")) {
-				try {
-					int intval = Integer.parseInt(value);
-					
-					s.setMeta("datingErrorPositive", intval);
-				} catch (NumberFormatException nfe) {
-					continue;
-				}
-			}
-			else if(key.equals("datingErrorNegative")) {
-				try {
-					int intval = Integer.parseInt(value);
-					
-					s.setMeta("datingErrorNegative", intval);
-				} catch (NumberFormatException nfe) {
-					continue;
-				}
-			}
-			else if(key.equals("dateRange")) {
-				String year = e.getAttributeValue("year");
-				String count = e.getAttributeValue("count");
 				
-				// err... just to be sane
-				if(year == null || count == null) {
-					System.out.println("bad dateRange");
-					continue;
-				}
-				
+				// now, do integer values
 				try {
-					int intYear = Integer.parseInt(year);
-					int intCount = Integer.parseInt(count);
-					
+					// start with range/count
+					int intYear = Integer.parseInt(startYear);
+					int intCount = Integer.parseInt(count);					
 					s.setRange(new Range(new Year(intYear), intCount));
+					
+					// then pos/neg error
+					int intval;
+					if(positiveError != null) {
+						intval = Integer.parseInt(positiveError);
+						s.setMeta("datingErrorPositive", intval);
+					}
+					if(negativeError != null) {
+						intval = Integer.parseInt(negativeError);
+						s.setMeta("datingErrorNegative", intval);
+					}
+					
 				} catch (NumberFormatException nfe) {
-					// yeah, uh?
-					System.out.println("nfe in dateRange");
+					System.out.println("bad dating tag integer values");					
 					continue;
 				}
 			}
@@ -361,33 +360,51 @@ public class CorinaXML implements Filetype {
 		// comments -> description
 		if(s.hasMeta("comments")) 
 			meta.addContent(new Element("description").setText((String) s.getMeta("comments")));
-			
+
+		// dating is kind of complex
+		Element dating = new Element("dating");
 		if(s.hasMeta("dating")) {
-			String dating = (String) s.getMeta("dating");
+			String datingVal = (String) s.getMeta("dating");
 			String datingType;
 			
-			if(dating.equals("A"))
+			if(datingVal.equals("A"))
 				datingType = "Absolute";
-			else if(dating.equals("R"))
+			else if(datingVal.equals("R"))
 				datingType = "Relative";
 			else
 				datingType = "Unknown";
 			
-			meta.addContent(new Element("datingType").setText(datingType));
+			dating.setAttribute("type", datingType);
 		}
 		
 		// don't forget range!
 		Range range = s.getRange();
 		if(range != null)
-			meta.addContent(new Element("dateRange")
-			.setAttribute("year", range.getStart().toString())
-			.setAttribute("count", String.valueOf(range.span())));
-			
-		// these are regular
-		if(s.hasMeta("owner")) 
-			meta.addContent(new Element("owner").setText((String) s.getMeta("owner")));
-		if(s.hasMeta("author")) 
-			meta.addContent(new Element("author").setText((String) s.getMeta("author")));
+			dating.setAttribute("startYear", range.getStart().toString())
+			.setAttribute("count", String.valueOf(range.span()));
+		
+		if(s.hasMeta("datingErrorPositive"))
+			dating.setAttribute("positiveError", s.getMeta("datingErrorPositive").toString());
+		if(s.hasMeta("datingErrorNegative"))
+			dating.setAttribute("positiveError", s.getMeta("datingErrorNegative").toString());
+		
+		meta.addContent(dating);
+		
+		// these need IDs...
+		if(s.hasMeta("owner")) {
+			Object o = s.getMeta("owner");
+			if(o instanceof User)
+				meta.addContent(new Element("owner")
+					.setText(o.toString())
+					.setAttribute("id", ((User)o).getInternalRepresentation()));
+		}
+		if(s.hasMeta("author")) {
+			Object o = s.getMeta("author");
+			if(o instanceof User)
+				meta.addContent(new Element("measuredBy")
+					.setText(o.toString())
+					.setAttribute("id", ((User)o).getInternalRepresentation()));
+		}
 
 		return meta;
 	}

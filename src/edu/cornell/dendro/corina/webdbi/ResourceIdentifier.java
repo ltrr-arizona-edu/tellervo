@@ -29,7 +29,8 @@ public class ResourceIdentifier extends org.jdom.Element {
 	public ResourceIdentifier(String xmlResourceName, String id) {
 		super(xmlResourceName);
 		
-		setAttribute("id", id);
+		if(id != null)
+			setAttribute("id", id);
 	}
 
 	/**

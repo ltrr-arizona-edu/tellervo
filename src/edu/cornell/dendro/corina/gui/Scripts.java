@@ -69,6 +69,7 @@ public class Scripts {
     public static void splitIntoEarlyLate(String filename) {
 	// load it
     Alert.error("Broken", "This is broken.");
+    }
     /*	
 	Sample raw;
 	try {
@@ -220,6 +221,7 @@ public class Scripts {
     // --------------------------------------------------
     //
 
+*/
     // change |name|'s extension to |ext|, if it has one, or add |ext| if it doesn't.
     // e.g., changeExtension("myfile.raw", "ind") => "myfile.ind"
     private static String changeExtension(String name, String ext) {
@@ -234,7 +236,7 @@ public class Scripts {
 	else
 	    return name.substring(0, lastDot) + '.' + ext;
     }
-
+/*
     // let the user select several files, and index them all
     // TODO: let user pick algorithm?  (show index-multi-dialog with indexes for each?)
     // TODO: better exception handling?
@@ -249,7 +251,6 @@ public class Scripts {
 	}
     }
     */
-    }
     // BUG: what if it's already indexed?
 
     public static void indexManyFiles(ElementList elements) {
@@ -291,14 +292,15 @@ public class Scripts {
 	    String name = new File((String) s.getMeta("filename")).getPath();
 
 	    // change the extension, or add one if it didn't have one
-	    //name = changeExtension(name, "IND");;
+	    name = changeExtension(name, "IND");;
+	    s.setMeta("filename", name);
 
 	    try {
 		// make sure it's safe to write here
 		Overwrite.overwrite(name);
 
 		// save it
-		s.save(name);
+		s.getLoader().save(s);
 	    } catch (IOException ioe) {
 		String f = removeFolders(e.getName());
 		Alert.error("Error saving sample",

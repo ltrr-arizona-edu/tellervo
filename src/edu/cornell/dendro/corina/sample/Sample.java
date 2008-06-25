@@ -545,34 +545,13 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		undoSupport.postEdit(e);
 	}
 
-	public synchronized void removeSampleListener(SampleListener l) {
-		listeners.remove(l);
-	}
-
-	/**
-	 Save this Sample to disk to the same filename it had
-	 previously.
-
-	 @exception IOException if an I/O error occurs
-	 */
-	public void save() throws IOException {
-		// BUG!  assumes filename exists in meta map -- what if it doesn't?
-		save((String) getMeta("filename"));
-	}
-
-	/**
-	 Save this Sample to disk.
-
-	 @param filename the name of the file to save to
-	 @exception IOException if an I/O error occurs
-	 */
-	public void save(String filename) throws IOException {
-		Files.save(this, filename);
-	}
-
 	//
 	// event model
 	//
+
+	public synchronized void removeSampleListener(SampleListener l) {
+		listeners.remove(l);
+	}
 
 	/**
 	 * @param count the count to set
@@ -623,40 +602,6 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 			name = "* " + name;
 		return name;
 	}
-
-	/** Create a new Sample from a given file on disk.
-	 @param filename the name of the file to load
-	 @exception FileNotFoundException if the file doesn't exist
-	 @exception WrongFiletypeException if the file is not a Sample
-	 @exception IOException if there is an I/O error while loading
-	 the file */
-	/*
-	 public Sample(String filename) throws FileNotFoundException, WrongFiletypeException, IOException {
-	 // make it like any other Sample
-	 this();
-
-	 // load the file; this call throws the exceptions
-	 load(filename);
-
-	 // 99%+ of the time you're loading a sample from disk, you
-	 // won't be adding to it, so trim it.
-	 trimAllToSize();
-	 }
-	 */
-
-	/*
-	 public Sample(URL url) throws IOException {
-	 this();
-	 try {
-	 Class.forName(package edu.cornell.dendro.corinabrowser.ItrdbURLConnection");
-	 } catch (ClassNotFoundException cnfe) {
-	 corina.gui.Bug.bug(cnfe);
-	 }
-	 load(new InputStreamReader(url.openStream()));
-	 meta.put("filename", url.toString());
-	 trimAllToSize();
-	 }
-	 */
 
 	private void trimAllToSize() {
 		((ArrayList<Object>) data).trimToSize();

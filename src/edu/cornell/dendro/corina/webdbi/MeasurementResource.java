@@ -55,7 +55,8 @@ public class MeasurementResource extends ResourceObject<Sample> {
 		/*
 		 * Generates:
 		 * <corina>
-		 *    <request type="[read|delete]" id="xxx">
+		 *    <request type="[read|delete]">
+		 *       <measurement id="123" />
 		 *    </request>
 		 * </corina>
 		 */
@@ -69,32 +70,28 @@ public class MeasurementResource extends ResourceObject<Sample> {
 			break;
 
 		/*
-		 * Generates:
-		 * <corina>
-		 *    <request type="update" id="xxx">
-		 *    </request>
-		 * </corina>
+		 * Update case just dumps the measurement out 
+		 * We presume that 
 		 */
 		case UPDATE: // Update is CREATE with an ID
 			if(s == null)
 				throw new ResourceException("Can't update without a sample");
 			
-			id = (String) s.getMeta("id");
+			id = (String) s.getMeta("::dbid");
 			if(id == null)
 				throw new ResourceException("Update sample has a null id?");
 			
-			requestElement.setAttribute("id", id);
+			requestElement.addContent(new CorinaXML().saveToElement(s));
+			break;
 			
-			// drop through!
 		case CREATE: {
-			String title = (String) s.getMeta("title");
+			// this only works for direct VMs!
+			ri = (ResourceIdentifier) s.getMeta("::dbparent");
+			Element parentElement = (Element) ri.clone();
 			
-			if(title != null) {
-				Element titleElem = new Element("title");
-				
-				titleElem.setText(title);
-				requestElement.addContent(titleElem);
-			}
+			parentElement.addContent(new CorinaXML().saveToElement(s));
+			requestElement.addContent(parentElement);
+			
 			break;
 		}
 			
@@ -126,7 +123,12 @@ public class MeasurementResource extends ResourceObject<Sample> {
 		
 		switch(getQueryType()) {
 		case READ:
+		case UPDATE:
+		case CREATE:
 			return loadSample(root);
+			
+		case DELETE:
+			return true;
 			
 		default:
 			throw new ResourceException("I don't handle type " + getQueryType() + " yet :(");

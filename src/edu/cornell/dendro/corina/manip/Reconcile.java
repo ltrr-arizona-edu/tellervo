@@ -21,6 +21,7 @@
 package edu.cornell.dendro.corina.manip;
 
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Builder;
 
@@ -320,6 +321,7 @@ public class Reconcile {
 	f.renameTo(new File(f.getParent() + File.separator + rec));
 
 	// save!
-	s.save();
+	//s.save();
+	new Bug(new IllegalStateException("Reconcile ist gerbroken!"));
     }
 }
