@@ -320,14 +320,81 @@ class tree
     /*ACCESSORS*/
     /***********/
 
-    function asXML($mode="all", $style="full")
+    function asXML($format='standard', $parts='all')
+    {
+        switch($format)
+        {
+        case "comprehensive":
+            require_once('site.php');
+            require_once('subSite.php');
+            global $dbconn;
+            $xml = NULL;
+
+            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tbltree.treeid
+                FROM tblsubsite 
+                INNER JOIN tbltree ON tblsubsite.subsiteid=tbltree.subsiteid
+                where tbltree.treeid='".$this->id."'";
+
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn); 
+
+                if(pg_num_rows($result)==0)
+                {
+                    // No records match the id specified
+                    $this->setErrorMessage("903", "No match for tree id=".$this->id);
+                    return FALSE;
+                }
+                else
+                {
+                    $row = pg_fetch_array($result);
+
+                    $mySite = new site();
+                    $mySubSite = new subSite();
+
+                    $success = $mySite->setParamsFromDB($row['siteid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
+                    }
+                    
+                    $success = $mySubSite->setParamsFromDB($row['subsiteid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($mySubSite->getLastErrorCode().$mySubSite->getLastErrorMessage());
+                    }
+
+                    $xml = $mySite->asXML("summary", "beginning");
+                    $xml.= $mySubSite->asXML("summary", "beginning");
+                    $xml.= $this->_asXML("standard", "all");
+                    $xml.= $mySubSite->asXML("summary", "end");
+                    $xml.= $mySite->asXML("summary", "end");
+
+                }
+            }
+            return $xml;
+        case "standard":
+            return $this->_asXML($format, $parts);
+        case "summary":
+            return $this->_asXML($format, $parts);
+        case "minimal":
+            return $this->_asXML($format, $parts);
+        default:
+            $this->setErrorMessage("901", "Unknown format. Must be one of 'standard', 'summary', 'minimal' or 'comprehensive'");
+            return false;
+        }
+    }
+
+    private function _asXML($format, $parts)
     {
         global $domain;
         $xml ="";
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
-            if(($mode=="all") || ($mode=="begin"))
+            if(($parts=="all") || ($parts=="beginning"))
             {
                 $myTaxon = new taxon;
                 $myTaxon->setParamsFromDB($this->taxonID);
@@ -348,69 +415,78 @@ class tree
                 } 
                 
                 if(isset($this->name))                  $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
-                if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".escapeXMLChars($myTaxon->getLabel())."</validatedTaxon>\n";
-                if(isset($this->originalTaxonName))    $xml.= "<originalTaxonName>".escapeXMLChars($this->originalTaxonName)."</originalTaxonName>\n";
 
-                if($hasHigherTaxonomy)
+                if($format!="minimal")
                 {
-                    $xml.=$myTaxon->getHigherTaxonXML('kingdom');   
-                    $xml.=$myTaxon->getHigherTaxonXML('phylum');   
-                    $xml.=$myTaxon->getHigherTaxonXML('class');   
-                    $xml.=$myTaxon->getHigherTaxonXML('order');   
-                    $xml.=$myTaxon->getHigherTaxonXML('family');   
-                    $xml.=$myTaxon->getHigherTaxonXML('genus');   
-                    $xml.=$myTaxon->getHigherTaxonXML('species');   
-                }
 
-                if(isset($this->latitude))              $xml.= "<latitude>".$this->latitude."</latitude>\n";
-                if(isset($this->longitude))             $xml.= "<longitude>".$this->longitude."</longitude>\n";
-                if(isset($this->precision))             $xml.= "<precision>".$this->precision."</precision>\n";
-                if(isset($this->isLiveTree))            $xml.= "<isLiveTree>".$this->isLiveTree."</isLiveTree>\n";
-                if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
-                if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
-                
-                // Include tree notes if present
-                if ($this->treeNoteArray)
-                {
-                    foreach($this->treeNoteArray as $value)
+                    if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".escapeXMLChars($myTaxon->getLabel())."</validatedTaxon>\n";
+                    if(isset($this->originalTaxonName))    $xml.= "<originalTaxonName>".escapeXMLChars($this->originalTaxonName)."</originalTaxonName>\n";
+
+                    if($hasHigherTaxonomy)
                     {
-                        $myTreeNote = new treeNote();
-                        $success = $myTreeNote->setParamsFromDB($value);
+                        $xml.=$myTaxon->getHigherTaxonXML('kingdom');   
+                        $xml.=$myTaxon->getHigherTaxonXML('phylum');   
+                        $xml.=$myTaxon->getHigherTaxonXML('class');   
+                        $xml.=$myTaxon->getHigherTaxonXML('order');   
+                        $xml.=$myTaxon->getHigherTaxonXML('family');   
+                        $xml.=$myTaxon->getHigherTaxonXML('genus');   
+                        $xml.=$myTaxon->getHigherTaxonXML('species');   
+                    }
 
-                        if($success)
+                    if(isset($this->latitude))              $xml.= "<latitude>".$this->latitude."</latitude>\n";
+                    if(isset($this->longitude))             $xml.= "<longitude>".$this->longitude."</longitude>\n";
+                    if(isset($this->precision))             $xml.= "<precision>".$this->precision."</precision>\n";
+                    if(isset($this->isLiveTree))            $xml.= "<isLiveTree>".$this->isLiveTree."</isLiveTree>\n";
+                    if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+                    if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+
+                    if($format!="summary")
+                    {
+                    
+                        // Include tree notes if present
+                        if ($this->treeNoteArray)
                         {
-                            $xml.=$myTreeNote->asXML();
+                            foreach($this->treeNoteArray as $value)
+                            {
+                                $myTreeNote = new treeNote();
+                                $success = $myTreeNote->setParamsFromDB($value);
+
+                                if($success)
+                                {
+                                    $xml.=$myTreeNote->asXML();
+                                }
+                                else
+                                {
+                                    $myMetaHeader->setErrorMessage($myTreeNote->getLastErrorCode, $myTreeNote->getLastErrorMessage);
+                                }
+                            }
                         }
-                        else
+
+                        // Include specimens if present
+                        if (($this->specimenArray) && ($format=="standard"))
                         {
-                            $myMetaHeader->setErrorMessage($myTreeNote->getLastErrorCode, $myTreeNote->getLastErrorMessage);
+                            $xml.="<references>\n";
+                            foreach($this->specimenArray as $value)
+                            {
+                                $mySpecimen = new specimen();
+                                $success = $mySpecimen->setParamsFromDB($value);
+
+                                if($success)
+                                {
+                                    $xml.=$mySpecimen->asXML("minimal", "all");
+                                }
+                                else
+                                {
+                                    $myMetaHeader->setErrorMessage($mySpecimen->getLastErrorCode, $mySpecimen->getLastErrorMessage);
+                                }
+                            }
+                            $xml.="</references>\n";
                         }
                     }
-                }
-
-                // Include specimens if present
-                if (($this->specimenArray) && ($style=="full"))
-                {
-                    $xml.="<references>\n";
-                    foreach($this->specimenArray as $value)
-                    {
-                        $mySpecimen = new specimen();
-                        $success = $mySpecimen->setParamsFromDB($value);
-
-                        if($success)
-                        {
-                            $xml.=$mySpecimen->asXML("brief");
-                        }
-                        else
-                        {
-                            $myMetaHeader->setErrorMessage($mySpecimen->getLastErrorCode, $mySpecimen->getLastErrorMessage);
-                        }
-                    }
-                    $xml.="</references>\n";
                 }
             }
 
-            if(($mode=="all") || ($mode=="end"))
+            if(($parts=="all") || ($parts=="end"))
             {
                 // End XML tag
                 $xml.= "</tree>\n";

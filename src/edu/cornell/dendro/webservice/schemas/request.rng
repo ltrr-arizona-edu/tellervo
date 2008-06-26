@@ -28,7 +28,17 @@
                 <attribute name="includePermissions">
                     <data type="boolean" />
                 </attribute>
-            </optional>                 
+            </optional>     
+            <optional>
+                <attribute name="format">
+	                <choice>
+	                    <value>standard</value>
+	                    <value>summary</value>
+	                    <value>comprehensive</value>
+	                    <value>minimal</value>
+	                </choice>
+	            </attribute>
+            </optional>            
 
 
         

@@ -403,7 +403,7 @@ class auth
   function isAdmin()
   {
         global $dbconn;
-        $sql = "select * from isadmin(".$this->securityuserid.") where isadmin=true";
+        $sql = "select * from cpgdb.isadmin(".$this->securityuserid.") where isadmin=true";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {

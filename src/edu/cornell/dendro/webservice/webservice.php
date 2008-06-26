@@ -393,12 +393,29 @@ elseif($myMetaHeader->status != "Error")
             $xmldata.="<sql>".htmlSpecialChars($myObject->sqlcommand)."</sql>";
         }
 
+
+        // ********************
+        // Include permissions in output when requested 
+        // ********************
+        if($myRequest->includePermissions===TRUE)
+        {
+            $myObject->getPermissions($myAuth->getID());
+        }
+
+
         // ********************
         // Get XML representation of data
         // ********************
         if($myMetaHeader->status != "Error")
         {
-            $xmldata.= $myObject->asXML();
+            if($myRequest->getFormat()!=NULL)
+            {
+                $xmldata.= $myObject->asXML($myRequest->getFormat());
+            }
+            else
+            {
+                $xmldata.= $myObject->asXML();
+            }
         }
         
 

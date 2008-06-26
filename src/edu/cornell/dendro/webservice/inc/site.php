@@ -300,14 +300,33 @@ class site
     /*ACCESSORS*/
     /***********/
 
-    function asXML($mode="all", $style="full")
+    function asXML($format='standard', $parts='all')
+    {
+        switch($format)
+        {
+        case "comprehensive":
+            return $this->_asXML($format, $parts);
+        case "standard":
+            return $this->_asXML($format, $parts);
+        case "summary":
+            return $this->_asXML($format, $parts);
+        case "minimal":
+            return $this->_asXML($format, $parts);
+        default:
+            $this->setErrorMessage("901", "Unknown format. Must be one of 'standard', 'summary' or 'comprehensive'");
+            return false;
+        }
+    }
+
+
+    private function _asXML($format, $parts)
     {
         global $domain;
         $xml ="";
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
-            if(($mode=="all") || ($mode=="begin"))
+            if(($parts=="all") || ($parts=="beginning"))
             {
                 // Only return XML when there are no errors.
                 $xml = "<site ";
@@ -325,75 +344,80 @@ class site
 
                 $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
                 $xml.= "<code>".escapeXMLChars($this->code)."</code>\n";
-                $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
-                $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
 
-                if( (isset($this->minLat)) && (isset($this->minLong)) && (isset($this->maxLat)) && (isset($this->maxLong)))
+                if($format!="minimal")
                 {
-                    $xml.= "<extent minLat=\"".$this->minLat."\" maxLat=\"".$this->maxLat."\" minLong=\"".$this->minLong."\" maxLong=\"".$this->maxLong."\" centroidLat=\"".$this->centroidLat."\" centroidLong=\"".$this->centroidLong."\" />";
-                }
-                
-                // Include regions if present
-                if ($this->regionArray)
-                {
-                    foreach($this->regionArray as $value)
+
+                    $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+                    $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+
+                    if( (isset($this->minLat)) && (isset($this->minLong)) && (isset($this->maxLat)) && (isset($this->maxLong)))
                     {
-                        $myRegion = new region();
-                        $success = $myRegion->setParamsFromDB($value);
+                        $xml.= "<extent minLat=\"".$this->minLat."\" maxLat=\"".$this->maxLat."\" minLong=\"".$this->minLong."\" maxLong=\"".$this->maxLong."\" centroidLat=\"".$this->centroidLat."\" centroidLong=\"".$this->centroidLong."\" />";
+                    }
+                    
+                    // Include regions if present
+                    if ($this->regionArray)
+                    {
+                        foreach($this->regionArray as $value)
+                        {
+                            $myRegion = new region();
+                            $success = $myRegion->setParamsFromDB($value);
 
-                        if($success)
-                        {
-                            $xml.=$myRegion->asXML();
-                        }
-                        else
-                        {
-                            $myMetaHeader->setErrorMessage($myRegion->getLastErrorCode, $myRegion->getLastErrorMessage);
+                            if($success)
+                            {
+                                $xml.=$myRegion->asXML();
+                            }
+                            else
+                            {
+                                $myMetaHeader->setErrorMessage($myRegion->getLastErrorCode, $myRegion->getLastErrorMessage);
+                            }
                         }
                     }
-                }
 
-                // Include site notes if present
-                if ($this->siteNoteArray)
-                {
-                    foreach($this->siteNoteArray as $value)
+                    // Include site notes if present
+                    if ($this->siteNoteArray)
                     {
-                        $mySiteNote = new siteNote();
-                        $success = $mySiteNote->setParamsFromDB($value);
+                        foreach($this->siteNoteArray as $value)
+                        {
+                            $mySiteNote = new siteNote();
+                            $success = $mySiteNote->setParamsFromDB($value);
 
-                        if($success)
-                        {
-                            $xml.=$mySiteNote->asXML();
-                        }
-                        else
-                        {
-                            $this->setErrorMessage($mySiteNote->lastErrorCode, $mySiteNote->lastErrorMessage);
+                            if($success)
+                            {
+                                $xml.=$mySiteNote->asXML();
+                            }
+                            else
+                            {
+                                $this->setErrorMessage($mySiteNote->lastErrorCode, $mySiteNote->lastErrorMessage);
+                            }
                         }
                     }
-                }
-                
-                // Include subsites if present
-                if (($this->subSiteArray) && ($style=="full"))
-                {
-                    $xml.="<references>\n";
-                    foreach($this->subSiteArray as $value)
+                    
+                    // Include subsites if present
+                    if (($this->subSiteArray) && ($format!="summary"))
                     {
-                        $mySubSite = new subSite();
-                        $success = $mySubSite->setParamsFromDB($value);
+                        $xml.="<references>\n";
+                        foreach($this->subSiteArray as $value)
+                        {
+                            $mySubSite = new subSite();
+                            $success = $mySubSite->setParamsFromDB($value);
 
-                        if($success)
-                        {
-                            $xml.=$mySubSite->asXML();
+                            if($success)
+                            {
+                                $xml.=$mySubSite->asXML("minimal", "all");
+                            }
+                            else
+                            {
+                                $this->setErrorMessage($mySubSite->getLastErrorCode(), $mySubSite->getLastErrorMessage());
+                            }
                         }
-                        else
-                        {
-                            $this->setErrorMessage($mySubSite->getLastErrorCode(), $mySubSite->getLastErrorMessage());
-                        }
+                        $xml.="</references>\n";
                     }
-                    $xml.="</references>\n";
                 }
             }
 
-            if(($mode=="all") || ($mode=="end"))
+            if(($parts=="all") || ($parts=="end"))
             {
                 // End XML tag
                 $xml.= "</site>\n";
@@ -406,7 +430,7 @@ class site
         }
     }
 
-    function asKML($mode="all")
+    function asKML($parts="all")
     {
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))

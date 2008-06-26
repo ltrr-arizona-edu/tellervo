@@ -247,14 +247,107 @@ class radius
     /*ACCESSORS*/
     /***********/
 
-    function asXML($mode="all", $style="full")
+    function asXML($format='standard', $parts='all')
+    {
+        switch($format)
+        {
+        case "comprehensive":
+            require_once('site.php');
+            require_once('subSite.php');
+            require_once('tree.php');
+            require_once('specimen.php');
+            global $dbconn;
+            $xml = NULL;
+
+            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblspecimen.specimenid, tblradius.radiusid
+                FROM tblsubsite 
+                INNER JOIN tbltree ON tblsubsite.subsiteid=tbltree.subsiteid
+                INNER JOIN tblspecimen ON tbltree.treeid=tblspecimen.treeid
+                INNER JOIN tblradius ON tblspecimen.specimenid=tblradius.specimenid
+                where tblradius.radiusid='".$this->id."'";
+
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn); 
+
+                if(pg_num_rows($result)==0)
+                {
+                    // No records match the id specified
+                    $this->setErrorMessage("903", "No match for radius id=".$this->id);
+                    return FALSE;
+                }
+                else
+                {
+                    $row = pg_fetch_array($result);
+
+                    $mySite = new site();
+                    $mySubSite = new subSite();
+                    $myTree = new tree();
+                    $mySpecimen = new specimen();
+
+                    $success = $mySite->setParamsFromDB($row['siteid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
+                    }
+                    
+                    $success = $mySubSite->setParamsFromDB($row['subsiteid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($mySubSite->getLastErrorCode().$mySubSite->getLastErrorMessage());
+                    }
+                    
+                    $success = $myTree->setParamsFromDB($row['treeid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($myTree->getLastErrorCode().$myTree->getLastErrorMessage());
+                    }
+                    
+                    $success = $mySpecimen->setParamsFromDB($row['specimenid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($mySpecimen->getLastErrorCode().$mySpecimen->getLastErrorMessage());
+                    }
+
+                    $xml = $mySite->asXML("summary", "beginning");
+                    $xml.= $mySubSite->asXML("summary", "beginning");
+                    $xml.= $myTree->asXML("summary", "beginning");
+                    $xml.= $mySpecimen->asXML("summary", "beginning");
+                    $xml.= $this->_asXML("standard", "all");
+                    $xml.= $mySpecimen->asXML("summary", "end");
+                    $xml.= $myTree->asXML("summary", "end");
+                    $xml.= $mySubSite->asXML("summary", "end");
+                    $xml.= $mySite->asXML("summary", "end");
+                }
+            }
+            return $xml;
+
+        case "standard":
+            return $this->_asXML($format, $parts);
+
+        case "summary":
+            return $this->_asXML($format, $parts);
+
+        case "minimal":
+            return $this->_asXML($format, $parts);
+
+        default:
+            $this->setErrorMessage("901", "Unknown format. Must be one of 'standard', 'summary' or 'comprehensive'");
+            return false;
+        }
+    }
+
+
+    private function _asXML($format, $parts)
     {
         global $domain;
         $xml ="";
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
-            if( ($mode=="all") || ($mode=="begin") )
+            if( ($parts=="all") || ($parts=="beginning") )
             {
                 // Only return XML when there are no errors.
                 $xml.= "<radius ";
@@ -270,11 +363,15 @@ class radius
                 } 
                 
                 $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
-                $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
-                $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+
+                if($format!="minimal")
+                {
+                    $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+                    $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+                }
             }
 
-            if( ($mode=="all") || ($mode=="end"))
+            if( ($parts=="all") || ($parts=="end"))
             {
                 $xml.= "</radius>\n";
             }

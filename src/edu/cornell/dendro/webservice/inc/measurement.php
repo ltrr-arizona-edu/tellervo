@@ -79,7 +79,7 @@ class measurement
         $this->lastErrorMessage = $theMessage;
     }
 
-    function setParamsFromDB($theID, $format="full")
+    function setParamsFromDB($theID, $format="standard")
     {
         // Set the current objects parameters from the database
         global $dbconn;
@@ -142,7 +142,7 @@ class measurement
                     $this->setVMeasurementOpParam($row2['vmeasurementopparameter']);
                 }
 
-                if ($format=="full")
+                if ($format=="standard")
                 {
                     $sql = "select readingcount, measurementcount, x(centroid(vmextent)), y(centroid(vmextent)), xmin(vmextent), xmax(vmextent), ymin(vmextent), ymax(vmextent) from tblvmeasurementmetacache where vmeasurementid=".$this->vmeasurementID;
                     pg_send_query($dbconn, $sql);
@@ -739,7 +739,7 @@ class measurement
     {
         global $dbconn;
 
-        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'measurement', $this->id)";
+        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'measurement', $this->vmeasurementID)";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -790,91 +790,132 @@ class measurement
 
     function exportFullXML()
     {
-        if($this->vmeasurementOp!='Direct')
-        {
-            $this->setErrorMessage(104, "Only direct measurements can currently be exported");
-        }
-
-        require_once('site.php');
-        require_once('subSite.php');
-        require_once('tree.php');
-        require_once('specimen.php');
-        require_once('radius.php');
-        global $dbconn;
-        $xml = NULL;
-
-        $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblspecimen.specimenid, tblradius.radiusid, tblmeasurement.measurementid, tblvmeasurement.vmeasurementid 
-            FROM tblsubsite 
-            INNER JOIN tbltree ON tblsubsite.subsiteid=tbltree.subsiteid
-            INNER JOIN tblspecimen ON tbltree.treeid=tblspecimen.treeid
-            INNER JOIN tblradius ON tblspecimen.specimenid = tblradius.specimenid
-            INNER JOIN tblmeasurement ON tblradius.radiusid = tblmeasurement.radiusid
-            INNER JOIN tblvmeasurement ON tblmeasurement.measurementid=tblvmeasurement.measurementid
-            where tblvmeasurement.vmeasurementid='".$this->vmeasurementID."'";
-
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            pg_send_query($dbconn, $sql);
-            $result = pg_get_result($dbconn); 
-
-            if(pg_num_rows($result)==0)
-            {
-                // No records match the id specified
-                $this->setErrorMessage("903", "No match for measurement id=".$this->vmeasurementID);
-                return FALSE;
-            }
-            else
-            {
-                $row = pg_fetch_array($result);
-
-                $mySite = new site();
-                $mySubSite = new subSite();
-                $myTree = new tree();
-                $mySpecimen = new specimen();
-                $myRadius = new radius();
-
-                $success = $mySite->setParamsFromDB($row['siteid']);
-                if($success===FALSE)
-                {
-                    trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
-                    echo "here";
-                }
-
-                $mySubSite->setParamsFromDB($row['subsiteid']);
-                $myTree->setParamsFromDB($row['treeid']);
-                $mySpecimen->setParamsFromDB($row['specimenid']);
-                $myRadius->setParamsFromDB($row['radiusid']);
-
-                $xml = $mySite->asXML("begin", "brief");
-                $xml.= $mySubSite->asXML("begin", "brief");
-                $xml.= $myTree->asXML("begin", "brief");
-                $xml.= $mySpecimen->asXML("begin", "brief");
-                $xml.= $myRadius->asXML("begin", "brief");
-                $xml.= $this->asXML();
-                //$xml.= "<measurement/>";
-                $xml.= $myRadius->asXML("end", "brief");
-                $xml.= $mySpecimen->asXML("end", "brief");
-                $xml.= $myTree->asXML("end");
-                $xml.= $mySubSite->asXML("end");
-                $xml.= $mySite->asXML("end");
-
-            }
-        }
-        return $xml;
-
     }
 
-    function asXML($recurseLevel=2, $style="full")
+    function asXML($format='standard', $parts="full")
+    {
+
+        // Only direct measurements can have comprehensive format so overide if necessary
+        if( ($format=='comprehensive') && ($this->vmeasurementOp!='Direct'))
+        {
+            $format = 'standard';
+        }
+
+        switch($format)
+        {
+        case "comprehensive":
+            require_once('site.php');
+            require_once('subSite.php');
+            require_once('tree.php');
+            require_once('specimen.php');
+            require_once('radius.php');
+            global $dbconn;
+            $xml = NULL;
+
+            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblspecimen.specimenid, tblradius.radiusid, tblmeasurement.measurementid, tblvmeasurement.vmeasurementid 
+                FROM tblsubsite 
+                INNER JOIN tbltree ON tblsubsite.subsiteid=tbltree.subsiteid
+                INNER JOIN tblspecimen ON tbltree.treeid=tblspecimen.treeid
+                INNER JOIN tblradius ON tblspecimen.specimenid = tblradius.specimenid
+                INNER JOIN tblmeasurement ON tblradius.radiusid = tblmeasurement.radiusid
+                INNER JOIN tblvmeasurement ON tblmeasurement.measurementid=tblvmeasurement.measurementid
+                where tblvmeasurement.vmeasurementid='".$this->vmeasurementID."'";
+
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn); 
+
+                if(pg_num_rows($result)==0)
+                {
+                    // No records match the id specified
+                    $this->setErrorMessage("903", "No match for measurement id=".$this->vmeasurementID);
+                    return FALSE;
+                }
+                else
+                {
+                    $row = pg_fetch_array($result);
+
+                    $mySite = new site();
+                    $mySubSite = new subSite();
+                    $myTree = new tree();
+                    $mySpecimen = new specimen();
+                    $myRadius = new radius();
+
+                    $success = $mySite->setParamsFromDB($row['siteid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
+                    }
+                    
+                    $success = $mySubSite->setParamsFromDB($row['subsiteid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($mySubSite->getLastErrorCode().$mySubSite->getLastErrorMessage());
+                    }
+                    
+                    $success = $myTree->setParamsFromDB($row['treeid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($myTree->getLastErrorCode().$myTree->getLastErrorMessage());
+                    }
+                    
+                    $success = $mySpecimen->setParamsFromDB($row['specimenid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($mySpecimen->getLastErrorCode().$mySpecimen->getLastErrorMessage());
+                    }
+                    
+                    $success = $myRadius->setParamsFromDB($row['radiusid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage());
+                    }
+
+                    $xml = $mySite->asXML("summary", "beginning");
+                    $xml.= $mySubSite->asXML("summary", "beginning");
+                    $xml.= $myTree->asXML("summary", "beginning");
+                    $xml.= $mySpecimen->asXML("summary", "beginning");
+                    $xml.= $myRadius->asXML("summary", "beginning");
+                    $xml.= $this->_asXML("standard", "all");
+                    $xml.= $myRadius->asXML("summary", "end");
+                    $xml.= $mySpecimen->asXML("summary", "end");
+                    $xml.= $myTree->asXML("summary", "end");
+                    $xml.= $mySubSite->asXML("summary", "end");
+                    $xml.= $mySite->asXML("summary", "end");
+                }
+            }
+            return $xml;
+        
+        case "standard":
+            return $this->_asXML($format, $parts);
+
+        case "summary":
+            return $this->_asXML($format, $parts);
+
+        case "minimal":
+            return $this->_asXML($format, $parts);
+
+        
+        default:
+            $this->setErrorMessage("901", "Unknown format. Must be one of 'standard', 'summary' or 'comprehensive'");
+            return false;
+        }
+    }
+
+
+
+    private function _asXML($format, $parts, $recurseLevel=2)
     {
         // Return a string containing the current object in XML format
 
         // $recurseLevel = the number of levels of references tags you would like 
         //      in your XML output.  
         //      Default = 2 - which means the current measurement and its immediate parents
-        // $style = the type of XML output
-        //      full = all XML including notes and readings
-        //      brief = only metadata
+        // $format = the type of XML output
+        //      standard = all XML including notes and readings
+        //      summary = only metadata
         
         global $domain;
         $xml = "";
@@ -896,7 +937,6 @@ class measurement
             // Only return XML when there are no errors.
             $xml.= "<measurement ";
             $xml.= "id=\"".$this->vmeasurementID."\">";
-           
             $xml.= getResourceLinkTag("measurement", $this->vmeasurementID);
             $xml.= getResourceLinkTag("measurement", $this->vmeasurementID, "map");
 
@@ -908,194 +948,201 @@ class measurement
                 $xml.= "canDelete=\"".fromPHPtoStringBool($this->canDelete)."\" />\n";
             } 
             
-            $xml.= "<metadata>\n";
+            if($format!="minimal") $xml.= "<metadata>\n";
             if(isset($this->name))                  $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
-            if(isset($this->isReconciled))          $xml.= "<isReconciled>".fromPHPtoStringBool($this->isReconciled)."</isReconciled>\n";
 
-            $xml.="<dating ";
-            if(isset($this->startYear))             $xml.= "startYear=\"".$this->startYear."\" ";
-            if(isset($this->readingCount))          $xml.= "count=\"".$this->readingCount."\" ";
-            if(isset($this->datingType))            $xml.= "type=\"".$this->datingType."\" ";
-            if(isset($this->datingErrorPositive))   $xml.= "positiveError=\"".$this->datingErrorPositive."\" ";
-            if(isset($this->datingErrorNegative))   $xml.= "negativeError=\"".$this->datingErrorNegative."\" ";
-            $xml.="/>";
 
-            if(isset($this->isLegacyCleaned))       $xml.= "<isLegacyCleaned>".fromPHPtoStringBool($this->isLegacyCleaned)."</isLegacyCleaned>\n";
-            if(isset($this->measuredByID))          $xml.= "<measuredBy id=\"".$this->measuredByID."\">".escapeXMLChars($this->measuredBy)."</measuredBy>\n";
-            if(isset($this->ownerUserID))           $xml.= "<owner id=\"".$this->ownerUserID."\">".escapeXMLChars($this->owner)."</owner>\n";
-            if(isset($this->description))           $xml.= "<description>".escapeXMLChars($this->description)."</description>\n";
-            if(isset($this->isPublished))           $xml.= "<isPublished>".fromPHPtoStringBool($this->isPublished)."</isPublished>\n";
-            if(isset($this->vmeasurementOp))
+            // Only output the remainder of the data if we're not using the 'minimal' format
+            if ($format!="minimal")
             {
-                if(isset($this->vmeasurementOpParam))
-                {
-                                                    $xml.= "<operation parameter=\"".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."\">".strtolower($this->vmeasurementOp)."</operation>\n";
-                }
-                else
-                {
-                                                    $xml.= "<operation>".strtolower($this->vmeasurementOp)."</operation>\n";
-                }
-            }
-            if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
-            if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
-            if( (isset($this->minLat)) && (isset($this->minLong)) && (isset($this->maxLat)) && (isset($this->maxLong)))
-            {
-                $xml.= "<extent minLat=\"".$this->minLat."\" maxLat=\"".$this->maxLat."\" minLong=\"".$this->minLong."\" maxLong=\"".$this->maxLong."\" centroidLat=\"".$this->centroidLat."\" centroidLong=\"".$this->centroidLong."\" />";
-            }
+                if(isset($this->isReconciled))          $xml.= "<isReconciled>".fromPHPtoStringBool($this->isReconciled)."</isReconciled>\n";
 
-            // Brief Format so just give minimal XML for all references and nothing else
-            if($style=="brief")
-            {
-                // Only look up references if recursion level is greater than 0
-                if($recurseLevel>0)
+                $xml.="<dating ";
+                if(isset($this->startYear))             $xml.= "startYear=\"".$this->startYear."\" ";
+                if(isset($this->readingCount))          $xml.= "count=\"".$this->readingCount."\" ";
+                if(isset($this->datingType))            $xml.= "type=\"".$this->datingType."\" ";
+                if(isset($this->datingErrorPositive))   $xml.= "positiveError=\"".$this->datingErrorPositive."\" ";
+                if(isset($this->datingErrorNegative))   $xml.= "negativeError=\"".$this->datingErrorNegative."\" ";
+                $xml.="/>";
+
+                if(isset($this->isLegacyCleaned))       $xml.= "<isLegacyCleaned>".fromPHPtoStringBool($this->isLegacyCleaned)."</isLegacyCleaned>\n";
+                if(isset($this->measuredByID))          $xml.= "<measuredBy id=\"".$this->measuredByID."\">".escapeXMLChars($this->measuredBy)."</measuredBy>\n";
+                if(isset($this->ownerUserID))           $xml.= "<owner id=\"".$this->ownerUserID."\">".escapeXMLChars($this->owner)."</owner>\n";
+                if(isset($this->description))           $xml.= "<description>".escapeXMLChars($this->description)."</description>\n";
+                if(isset($this->isPublished))           $xml.= "<isPublished>".fromPHPtoStringBool($this->isPublished)."</isPublished>\n";
+                if(isset($this->vmeasurementOp))
                 {
-                    $xml.="<references>";
-                    foreach($this->referencesArray as $value)
+                    if(isset($this->vmeasurementOpParam))
                     {
-                        $myReference = new measurement();
-                        $success = $myReference->setParamsFromDB($value);
-
-                        if($success)
-                        {
-                            $xml.=$myReference->asXML($recurseLevel, "brief");
-                        }
-                        else
-                        {
-                            $this->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
-                        }
+                                                        $xml.= "<operation parameter=\"".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."\">".strtolower($this->vmeasurementOp)."</operation>\n";
                     }
-                    $xml.="</references>";
-                }
-
-                $xml.="</metadata>\n";
-                $xml.= "</measurement>\n";
-                return $xml;
-            }
-
-            // Full format so give the whole lot
-            elseif($style=="full")
-            {
-            
-                // Include site notes if present
-                if ($this->vmeasurementNoteArray)
-                {
-                    $xml.= "<siteNotes>\n";
-                    foreach($this->vmeasurementNoteArray as $value)
+                    else
                     {
-                        $myVMeasurementNote = new vmeasurementNote();
-                        $success = $myVMeasurementNote->setParamsFromDB($value);
-
-                        if($success)
-                        {
-                            $xml.=$myVMeasurementNote->asXML();
-                        }
-                        else
-                        {
-                            $this->setErrorMessage($myVMeasurementNote->getLastErrorCode, $myVMeasurementNote->getLastErrorMessage);
-                        }
+                                                        $xml.= "<operation>".strtolower($this->vmeasurementOp)."</operation>\n";
                     }
-                    $xml.= "</siteNotes>\n";
                 }
-                
-                // Include all refences to other vmeasurements recursing if requested 
-                if ($this->referencesArray)
+                if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+                if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+                if( (isset($this->minLat)) && (isset($this->minLong)) && (isset($this->maxLat)) && (isset($this->maxLong)))
                 {
+                    $xml.= "<extent minLat=\"".$this->minLat."\" maxLat=\"".$this->maxLat."\" minLong=\"".$this->minLong."\" maxLong=\"".$this->maxLong."\" centroidLat=\"".$this->centroidLat."\" centroidLong=\"".$this->centroidLong."\" />";
+                }
+
+                // Using 'summary' format so just give minimal XML for all references and nothing else
+                if($format=="summary")
+                {
+                    // Return special summary section
+                    $xml.="<summary>";
+                    $xml.="</summary>";
+
                     // Only look up references if recursion level is greater than 0
                     if($recurseLevel>0)
                     {
-                        $xml.="<references>";
-                        foreach($this->referencesArray as $value)
+                        if(sizeof($this->referencesArray)>0)
                         {
-                            $myReference = new measurement();
-                            $success = $myReference->setParamsFromDB($value);
-
-                            if($success)
+                            $xml.="<references>";
+                            foreach($this->referencesArray as $value)
                             {
-                                $xml.=$myReference->asXML($recurseLevel, "brief");
-                            }
-                            else
-                            {
-                                $this->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
-                            }
-                        }
-                        $xml.="</references>\n";
-                    }
-                }
-                else
-                {
-                    $xml.="<references>\n";
-                    $xml.= getResourceLinkTag("radius", $this->radiusID);
-                    $xml.="</references>\n";
-                }
-                
-                $xml.= "</metadata>\n";
-
-                // Include all readings 
-                if ($this->readingsArray)
-                {
-                    $xml.="<readings type=\"annual\" units=\"-6\">\n";
-                    foreach($this->readingsArray as $key => $value)
-                    {
-                        // Calculate absolute year where possible
-                        if ($this->startYear)
-                        {
-                            if($this->startYear+$key  >= 0)
-                            {
-                                // Add 1 to year to cope with BC/AD transition issue (no 0bc/ad)
-                                $yearvalue = $key;
-                            }
-                            else
-                            {
-                                // Date is BC so fudge not required
-                                $yearvalue = $key - 1;
-                            }
-                        }
-                        else
-                        {
-                            // Years are relative
-                            $yearvalue = $key;
-                        }
-
-                        $xml.="<reading year=\"".$yearvalue."\" ";
-                        if ($value['wjinc'] || $value['wjdec'])
-                        {
-                            $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
-                        }
-                        $xml .="count=\"".$value['count']."\" value=\"".$value['reading']."\">";
-
-                        // Add any notes that are in the notesArray subarray
-                        if(count($value['notesArray']) > 0)
-                        {
-                            foreach($value['notesArray'] as $notevalue)
-                            {
-                                $myReadingNote = new readingNote;
-                                $success = $myReadingNote->setParamsFromDB($notevalue);
+                                $myReference = new measurement();
+                                $success = $myReference->setParamsFromDB($value);
 
                                 if($success)
                                 {
-                                    $xml.=$myReadingNote->asXML();
+                                    $xml.=$myReference->asXML("summary", "all");
                                 }
                                 else
                                 {
-                                    $this->setErrorMessage($myReadingNote->getLastErrorCode(), $myReadingNote->getLastErrorMessage());
+                                    $this->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
                                 }
                             }
+                            $xml.="</references>";
                         }
-
-                        $xml.="</reading>\n";
-
                     }
-                    $xml.="</readings>\n";
+
+                    $xml.="</metadata>\n";
+                    $xml.= "</measurement>\n";
+                    return $xml;
+                }
+
+                // Standard or Comprehensive format so give the whole lot
+                else
+                {
+                
+                    // Include site notes if present
+                    if ($this->vmeasurementNoteArray)
+                    {
+                        $xml.= "<siteNotes>\n";
+                        foreach($this->vmeasurementNoteArray as $value)
+                        {
+                            $myVMeasurementNote = new vmeasurementNote();
+                            $success = $myVMeasurementNote->setParamsFromDB($value);
+
+                            if($success)
+                            {
+                                $xml.=$myVMeasurementNote->asXML();
+                            }
+                            else
+                            {
+                                $this->setErrorMessage($myVMeasurementNote->getLastErrorCode, $myVMeasurementNote->getLastErrorMessage);
+                            }
+                        }
+                        $xml.= "</siteNotes>\n";
+                    }
+                    
+                    // Include all refences to other vmeasurements recursing if requested 
+                    if ($this->referencesArray)
+                    {
+                        // Only look up references if recursion level is greater than 0
+                        if($recurseLevel>0)
+                        {
+                            $xml.="<references>";
+                            foreach($this->referencesArray as $value)
+                            {
+                                $myReference = new measurement();
+                                $success = $myReference->setParamsFromDB($value);
+
+                                if($success)
+                                {
+                                    $xml.=$myReference->asXML($recurseLevel, "summary");
+                                }
+                                else
+                                {
+                                    $this->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
+                                }
+                            }
+                            $xml.="</references>\n";
+                        }
+                    }
+                    else
+                    {
+                        $xml.="<references>\n";
+                        $xml.= getResourceLinkTag("radius", $this->radiusID);
+                        $xml.="</references>\n";
+                    }
+                    
+                    $xml.= "</metadata>\n";
+
+                    // Include all readings 
+                    if ($this->readingsArray)
+                    {
+                        $xml.="<readings type=\"annual\" units=\"-6\">\n";
+                        foreach($this->readingsArray as $key => $value)
+                        {
+                            // Calculate absolute year where possible
+                            if ($this->startYear)
+                            {
+                                if($this->startYear+$key  >= 0)
+                                {
+                                    // Add 1 to year to cope with BC/AD transition issue (no 0bc/ad)
+                                    $yearvalue = $key;
+                                }
+                                else
+                                {
+                                    // Date is BC so fudge not required
+                                    $yearvalue = $key - 1;
+                                }
+                            }
+                            else
+                            {
+                                // Years are relative
+                                $yearvalue = $key;
+                            }
+
+                            $xml.="<reading year=\"".$yearvalue."\" ";
+                            if ($value['wjinc'] || $value['wjdec'])
+                            {
+                                $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
+                            }
+                            $xml .="count=\"".$value['count']."\" value=\"".$value['reading']."\">";
+
+                            // Add any notes that are in the notesArray subarray
+                            if(count($value['notesArray']) > 0)
+                            {
+                                foreach($value['notesArray'] as $notevalue)
+                                {
+                                    $myReadingNote = new readingNote;
+                                    $success = $myReadingNote->setParamsFromDB($notevalue);
+
+                                    if($success)
+                                    {
+                                        $xml.=$myReadingNote->asXML();
+                                    }
+                                    else
+                                    {
+                                        $this->setErrorMessage($myReadingNote->getLastErrorCode(), $myReadingNote->getLastErrorMessage());
+                                    }
+                                }
+                            }
+
+                            $xml.="</reading>\n";
+
+                        }
+                        $xml.="</readings>\n";
+                    }
                 }    
-                $xml.= "</measurement>\n";
-                return $xml;
             }
-            else
-            {
-                //Brief XML output
-
-
-            }
+            $xml.= "</measurement>\n";
+            return $xml;
         }
         else
         {

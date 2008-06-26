@@ -274,6 +274,16 @@ class request
                 }
             }
             
+            if($this->xmlrequest->xpath('//request/taxon'))
+            {
+                foreach ($this->xmlrequest->xpath('//request/taxon') as $item)
+                {
+                    $parentID = "";
+                    $myParamObj = new taxonParameters($this->metaHeader, $this->auth, $item, $parentID);
+                    array_push($this->paramObjectsArray, $myParamObj);
+                }
+            }
+            
             if($this->xmlrequest->xpath('//request/user'))
             {
                 foreach ($this->xmlrequest->xpath('//request/user') as $item)

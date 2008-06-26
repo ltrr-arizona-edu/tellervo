@@ -291,7 +291,7 @@ class taxon
     /*ACCESSORS*/
     /***********/
 
-    function asXML()
+    function asXML($format='standard', $parts='all')
     {
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))

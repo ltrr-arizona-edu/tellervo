@@ -310,6 +310,24 @@ class measurementParameters extends parameters
     }
 }
 
+class taxonParameters extends parameters
+{
+    // TO DO!!!
+    var $id         = NULL;
+
+    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
+    {
+        parent::__construct($metaHeader, $auth, $xmlrequest);
+    }
+    
+    function getXMLParams()
+    {
+        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
+        if(isset($this->xmlrequest['isStandard']))          $this->isStandard   = fromStringToPHPBool($this->xmlrequest['isStandard']);
+        if(isset($this->xmlrequest))                        $this->note         = addslashes(trim($this->xmlrequest));
+    }
+}
+
 class siteNoteParameters extends parameters
 {
     var $id         = NULL;

@@ -30,6 +30,11 @@ class note
     var $objectField        = NULL;
     var $xmlTag             = NULL;
 
+    var $includePermissions = FALSE;
+    var $canCreate = NULL;
+    var $canUpdate = NULL;
+    var $canDelete = NULL;
+
     /***************/
     /* CONSTRUCTOR */
     /***************/
@@ -210,19 +215,63 @@ class note
     /*ACCESSORS*/
     /***********/
 
-    function asXML()
+    function asXML($format='standard', $parts='all')
     {
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml = "<".$this->xmlTag." id=\"".$this->id."\" isStandard=\"".fromPGtoStringBool($this->isStandard)."\">".escapeXMLChars($this->note)."</".$this->xmlTag.">\n";
+            $xml = "<".$this->xmlTag." id=\"".$this->id."\" isStandard=\"".fromPGtoStringBool($this->isStandard)."\">".escapeXMLChars($this->note);
+            
+            if($this->includePermissions===TRUE) 
+            {
+                $xml.= "<permissions canCreate=\"".fromPHPtoStringBool($this->canCreate)."\" ";
+                $xml.= "canUpdate=\"".fromPHPtoStringBool($this->canUpdate)."\" ";
+                $xml.= "canDelete=\"".fromPHPtoStringBool($this->canDelete)."\" />\n";
+            } 
+
+            $xml.="</".$this->xmlTag.">\n";
             return $xml;
         }
         else
         {
             return FALSE;
         }
+    }
+
+    function getPermissions($securityUserID)
+    {
+        global $dbconn;
+
+        $sql = "select * from cpgdb.isadmin(".$securityUserID.") where isadmin=true";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);
+        
+            if(pg_num_rows($result)>0)
+            { 
+                $this->canCreate = true;
+                $this->canUpdate = true;
+                $this->canDelete = true;
+                $this->includePermissions = TRUE;
+            }
+            else
+            {
+                $this->canCreate = true;
+                $this->canUpdate = false;
+                $this->canDelete = false;
+                $this->includePermissions = TRUE;
+            }
+    
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+
     }
 
     function getParentTagBegin()

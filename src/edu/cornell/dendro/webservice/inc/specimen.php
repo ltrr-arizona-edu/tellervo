@@ -435,7 +435,89 @@ class specimen
     /*ACCESSORS*/
     /***********/
 
-    function asXML($mode="all", $style="full")
+    function asXML($format='standard', $parts='all')
+    {
+        switch($format)
+        {
+        case "comprehensive":
+            require_once('site.php');
+            require_once('subSite.php');
+            require_once('tree.php');
+            global $dbconn;
+            $xml = NULL;
+
+            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblspecimen.specimenid
+                FROM tblsubsite 
+                INNER JOIN tbltree ON tblsubsite.subsiteid=tbltree.subsiteid
+                INNER JOIN tblspecimen ON tbltree.treeid=tblspecimen.treeid
+                where tblspecimen.specimenid='".$this->id."'";
+
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn); 
+
+                if(pg_num_rows($result)==0)
+                {
+                    // No records match the id specified
+                    $this->setErrorMessage("903", "No match for specimen id=".$this->id);
+                    return FALSE;
+                }
+                else
+                {
+                    $row = pg_fetch_array($result);
+
+                    $mySite = new site();
+                    $mySubSite = new subSite();
+                    $myTree = new tree();
+
+                    $success = $mySite->setParamsFromDB($row['siteid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
+                    }
+                    
+                    $success = $mySubSite->setParamsFromDB($row['subsiteid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($mySubSite->getLastErrorCode().$mySubSite->getLastErrorMessage());
+                    }
+                    
+                    $success = $myTree->setParamsFromDB($row['treeid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($myTree->getLastErrorCode().$myTree->getLastErrorMessage());
+                    }
+
+                    $xml = $mySite->asXML("summary", "beginning");
+                    $xml.= $mySubSite->asXML("summary", "beginning");
+                    $xml.= $myTree->asXML("summary", "beginning");
+                    $xml.= $this->_asXML("standard", "all");
+                    $xml.= $myTree->asXML("summary", "end");
+                    $xml.= $mySubSite->asXML("summary", "end");
+                    $xml.= $mySite->asXML("summary", "end");
+                }
+            }
+            return $xml;
+
+        case "standard":
+            return $this->_asXML($format, $parts);
+
+        case "summary":
+            return $this->_asXML($format, $parts);
+
+        case "minimal":
+            return $this->_asXML($format, $parts);
+
+        default:
+            $this->setErrorMessage("901", "Unknown format. Must be one of 'standard', 'summary' or 'comprehensive'");
+            return false;
+        }
+    }
+
+
+    private function _asXML($format, $parts)
     {
         global $domain;
         $xml ="";
@@ -444,7 +526,7 @@ class specimen
         {
             // Only return XML when there are no errors.
     
-            if( ($mode=="all") || ($mode=="begin"))
+            if( ($parts=="all") || ($parts=="beginning"))
             {
                 $xml.= "<specimen ";
                 $xml.= "id=\"".$this->id."\" >";
@@ -457,30 +539,33 @@ class specimen
                     $xml.= "canUpdate=\"".fromPHPtoStringBool($this->canUpdate)."\" ";
                     $xml.= "canDelete=\"".fromPHPtoStringBool($this->canDelete)."\" />\n";
                 } 
-
               
                 if(isset($this->name))                          $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
-                if(isset($this->dateCollected))                 $xml.= "<dateCollected>".$this->dateCollected."</dateCollected>\n";
-                if(isset($this->specimenType))                  $xml.= "<specimenType>".$this->specimenType."</specimenType>\n";
-                if(isset($this->terminalRing))                  $xml.= "<terminalRing>".$this->terminalRing."</terminalRing>\n";
-                if(isset($this->isTerminalRingVerified))        $xml.= "<isTerminalRingVerified>".fromPGtoStringBool($this->isTerminalRingVerified)."</isTerminalRingVerified>";
-                if(isset($this->sapwoodCount))                  $xml.= "<sapwoodCount>".$this->sapwoodCount."</sapwoodCount>\n";
-                if(isset($this->isSapwoodCountVerified))        $xml.= "<isSapwoodCountVerified>".fromPHPtoStringBool($this->isSapwoodCountVerified)."</isSapwoodCountVerified>";
-                if(isset($this->specimenQuality))               $xml.= "<specimenQuality>".$this->specimenQuality."</specimenQuality>\n";
-                if(isset($this->isSpecimenQualityVerified))     $xml.= "<isSpecimenQualityVerified>".fromPHPtoStringBool($this->isSpecimenQualityVerified)."</isSpecimenQualityVerified>\n";
-                if(isset($this->specimenContinuity))            $xml.= "<specimenContinuity>".$this->specimenContinuity."</specimenContinuity>\n";
-                if(isset($this->isSpecimenContinuityVerified))  $xml.= "<isSpecimenContinuityVerified>".fromPHPtoStringBool($this->isSpecimenContinuityVerified)."</isSpecimenContinuityVerified>\n";
-                if(isset($this->pith))                          $xml.= "<pith>".$this->pith."</pith>\n";
-                if(isset($this->isPithVerified))                $xml.= "<isPithVerified>".fromPHPtoStringBool($this->isPithVerified)."</isPithVerified>\n";
-                if(isset($this->unmeasuredPre))                 $xml.= "<unmeasuredPre>".$this->unmeasuredPre."</unmeasuredPre>\n";
-                if(isset($this->isUnmeasuredPreVerified))       $xml.= "<isUnmeasuredPreVerified>".fromPHPtoStringBool($this->isUnmeasuredPreVerified)."</isUnmeasuredPreVerified>\n";
-                if(isset($this->unmeasuredPost))                $xml.= "<unmeasuredPost>".$this->unmeasuredPost."</unmeasuredPost>\n";
-                if(isset($this->isUnmeasuredPostVerified))      $xml.= "<isUnmeasuredPostVerified>".fromPHPtoStringBool($this->isUnmeasuredPostVerified)."</isUnmeasuredPostVerified>\n";
-                if(isset($this->createdTimeStamp))              $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
-                if(isset($this->lastModifiedTimeStamp))         $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+                
+                if($format!="minimal")
+                {
+                    if(isset($this->dateCollected))                 $xml.= "<dateCollected>".$this->dateCollected."</dateCollected>\n";
+                    if(isset($this->specimenType))                  $xml.= "<specimenType>".$this->specimenType."</specimenType>\n";
+                    if(isset($this->terminalRing))                  $xml.= "<terminalRing>".$this->terminalRing."</terminalRing>\n";
+                    if(isset($this->isTerminalRingVerified))        $xml.= "<isTerminalRingVerified>".fromPGtoStringBool($this->isTerminalRingVerified)."</isTerminalRingVerified>";
+                    if(isset($this->sapwoodCount))                  $xml.= "<sapwoodCount>".$this->sapwoodCount."</sapwoodCount>\n";
+                    if(isset($this->isSapwoodCountVerified))        $xml.= "<isSapwoodCountVerified>".fromPHPtoStringBool($this->isSapwoodCountVerified)."</isSapwoodCountVerified>";
+                    if(isset($this->specimenQuality))               $xml.= "<specimenQuality>".$this->specimenQuality."</specimenQuality>\n";
+                    if(isset($this->isSpecimenQualityVerified))     $xml.= "<isSpecimenQualityVerified>".fromPHPtoStringBool($this->isSpecimenQualityVerified)."</isSpecimenQualityVerified>\n";
+                    if(isset($this->specimenContinuity))            $xml.= "<specimenContinuity>".$this->specimenContinuity."</specimenContinuity>\n";
+                    if(isset($this->isSpecimenContinuityVerified))  $xml.= "<isSpecimenContinuityVerified>".fromPHPtoStringBool($this->isSpecimenContinuityVerified)."</isSpecimenContinuityVerified>\n";
+                    if(isset($this->pith))                          $xml.= "<pith>".$this->pith."</pith>\n";
+                    if(isset($this->isPithVerified))                $xml.= "<isPithVerified>".fromPHPtoStringBool($this->isPithVerified)."</isPithVerified>\n";
+                    if(isset($this->unmeasuredPre))                 $xml.= "<unmeasuredPre>".$this->unmeasuredPre."</unmeasuredPre>\n";
+                    if(isset($this->isUnmeasuredPreVerified))       $xml.= "<isUnmeasuredPreVerified>".fromPHPtoStringBool($this->isUnmeasuredPreVerified)."</isUnmeasuredPreVerified>\n";
+                    if(isset($this->unmeasuredPost))                $xml.= "<unmeasuredPost>".$this->unmeasuredPost."</unmeasuredPost>\n";
+                    if(isset($this->isUnmeasuredPostVerified))      $xml.= "<isUnmeasuredPostVerified>".fromPHPtoStringBool($this->isUnmeasuredPostVerified)."</isUnmeasuredPostVerified>\n";
+                    if(isset($this->createdTimeStamp))              $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+                    if(isset($this->lastModifiedTimeStamp))         $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+                }
             }
 
-            if (($mode=="all") || ($mode=="end"))
+            if (($parts=="all") || ($parts=="end"))
             {
                 $xml.= "</specimen>\n";
             }

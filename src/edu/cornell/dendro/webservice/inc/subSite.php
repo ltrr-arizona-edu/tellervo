@@ -255,21 +255,78 @@ class subSite
     /***********/
     /*ACCESSORS*/
     /***********/
+    
+    function asXML($format='standard', $parts='all')
+    {
+        switch($format)
+        {
+        case "comprehensive":
+            require_once('site.php');
+            global $dbconn;
+            $xml = NULL;
 
-    function asXML($mode="all", $style="full")
+            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid FROM tblsubsite where tblsubsite.subsiteid='".$this->id."'";
+
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn); 
+
+                if(pg_num_rows($result)==0)
+                {
+                    // No records match the id specified
+                    $this->setErrorMessage("903", "No match for subsite id=".$this->id);
+                    echo "$sql";
+                    return FALSE;
+                }
+                else
+                {
+                    $row = pg_fetch_array($result);
+
+                    $mySite = new site();
+
+                    $success = $mySite->setParamsFromDB($row['siteid']);
+                    if($success===FALSE)
+                    {
+                        trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
+                        echo "here";
+                    }
+
+                    $xml = $mySite->asXML("summary", "beginning");
+                    $xml.= $this->_asXML("standard", "all");
+                    $xml.= $mySite->asXML("summary", "end");
+
+                }
+            }
+            return $xml;
+        
+        case "standard":
+            return $this->_asXML($format, $parts);
+        case "summary":
+            return $this->_asXML($format, $parts);
+        case "minimal":
+            return $this->_asXML($format, $parts);
+        default:
+            $this->setErrorMessage("901", "Unknown format. Must be one of 'standard', 'summary' or 'comprehensive'");
+            return false;
+        }
+    }
+
+    private function _asXML($format, $parts)
     {
         global $domain;
         $xml="";
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
-            if(($mode=="all") || ($mode=="begin"))
+            if(($parts=="all") || ($parts=="beginning"))
             {
                 // Only return XML when there are no errors.
                 $xml = "<subSite ";
                 $xml.= "id=\"".$this->id."\" >";
                 $xml.= getResourceLinkTag("subSite", $this->id)."\n";
-
+                
                 // Include permissions details if requested
                 if($this->includePermissions===TRUE) 
                 {
@@ -279,32 +336,40 @@ class subSite
                 } 
 
                 $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
-                $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
-                $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>";
-                
-                // Include subSite notes if present
-                if ($this->childArray)
-                {
-                    $xml.="<references>\n";
-                    foreach($this->childArray as $value)
-                    {
-                        $myTree = new tree();
-                        $success = $myTree->setParamsFromDB($value);
 
-                        if($success)
+                if($format!="minimal")
+                {
+
+                    $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
+                    $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>";
+
+                    if($format!="summary")
+                    { 
+                        // Include subSite notes if present
+                        if ($this->childArray)
                         {
-                            $xml.=$myTree->asXML();
-                        }
-                        else
-                        {
-                            $myMetaHeader->setErrorMessage($myTree->getLastErrorCode, $myTree->getLastErrorMessage);
+                            $xml.="<references>\n";
+                            foreach($this->childArray as $value)
+                            {
+                                $myTree = new tree();
+                                $success = $myTree->setParamsFromDB($value);
+
+                                if($success)
+                                {
+                                    $xml.=$myTree->asXML("minimal", "all");
+                                }
+                                else
+                                {
+                                    $myMetaHeader->setErrorMessage($myTree->getLastErrorCode, $myTree->getLastErrorMessage);
+                                }
+                            }
+                            $xml.="</references>\n";
                         }
                     }
-                    $xml.="</references>\n";
                 }
             }
 
-            if(($mode=="all") || ($mode=="end"))
+            if(($parts=="all") || ($parts=="end"))
             {
                 // End XML tag
                 $xml.= "</subSite>\n";
