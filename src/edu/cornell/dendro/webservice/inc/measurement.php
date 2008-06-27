@@ -48,6 +48,12 @@ class measurement
     var $maxLat = NULL;
     var $minLong = NULL;
     var $maxLong = NULL;
+
+    var $summarySiteCode = NULL;
+    var $summarySiteCount = NULL;
+    var $summaryTaxonName = NULL;
+    var $summaryTaxonCount = NULL;
+    var $fullLabCode = NULL;
     
     var $includePermissions = FALSE;
     var $canCreate = NULL;
@@ -142,9 +148,9 @@ class measurement
                     $this->setVMeasurementOpParam($row2['vmeasurementopparameter']);
                 }
 
-                if ($format=="standard")
+                if (($format=="standard") || ($format=="comprehensive") || ($format=="summary") )
                 {
-                    $sql = "select readingcount, measurementcount, x(centroid(vmextent)), y(centroid(vmextent)), xmin(vmextent), xmax(vmextent), ymin(vmextent), ymax(vmextent) from tblvmeasurementmetacache where vmeasurementid=".$this->vmeasurementID;
+                    $sql = "select tblvmeasurementmetacache.*, x(centroid(vmextent)), y(centroid(vmextent)), xmin(vmextent), xmax(vmextent), ymin(vmextent), ymax(vmextent) from tblvmeasurementmetacache where vmeasurementid=".$this->vmeasurementID;
                     pg_send_query($dbconn, $sql);
                     $result = pg_get_result($dbconn);
                     $row = pg_fetch_array($result);
@@ -156,6 +162,11 @@ class measurement
                     $this->centroidLong = $row['x'];
                     $this->readingCount = $row['readingcount'];
                     $this->measurementCount = $row['measurementcount'];
+                    $this->summarySiteCode = $row['sitecode'];
+                    $this->summarySiteCount = $row['sitecount'];
+                    $this->summaryTaxonName = $row['commontaxonname'];
+                    $this->summaryTaxonCount = $row['taxoncount'];
+                    $this->fullLabCode = $row['label'];
 
                     $this->setReadingsFromDB();
                     $this->setReferencesFromDB();
@@ -247,8 +258,9 @@ class measurement
 
     function setParamsFromParamsClass($paramsClass, $auth)
     {
+
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
-        if (isset($paramsClass->radiusID))            $this->setRadiusID($paramsClass->radiusID);
+        if ($paramsClass->radiusID!=NULL)             $this->setRadiusID($paramsClass->radiusID);
         if (isset($paramsClass->isReconciled))        $this->setIsReconciled($paramsClass->isReconciled);
         if (isset($paramsClass->startYear))           $this->setStartYear($paramsClass->startYear);
         if (isset($paramsClass->isLegacyCleaned))     $this->setIsLegacyCleaned($paramsClass->isLegacyCleaned);
@@ -788,10 +800,6 @@ class measurement
 
     }
 
-    function exportFullXML()
-    {
-    }
-
     function asXML($format='standard', $parts="full")
     {
 
@@ -992,8 +1000,13 @@ class measurement
                 if($format=="summary")
                 {
                     // Return special summary section
-                    $xml.="<summary>";
-                    $xml.="</summary>";
+                    $xml.="<parentSummary>";
+                    $xml.="<fullLabCode>".$this->fullLabCode."</fullLabCode>\n";
+                    $xml.="<taxon count=\"".$this->summaryTaxonCount."\" commonAncestor=\"".$this->summaryTaxonName."\"/>\n";
+                    $xml.="<site count=\"".$this->summarySiteCount."\" ";
+                    if($this->summarySiteCount=1) $xml.="siteCode=\"".$this->summarySiteCode."\"/>\n";
+                    if($this->measurementCount!=NULL) $xml.="<measurement count=\"".$this->measurementCount."\"/>";
+                    $xml.="</parentSummary>";
 
                     // Only look up references if recursion level is greater than 0
                     if($recurseLevel>0)
@@ -1008,7 +1021,7 @@ class measurement
 
                                 if($success)
                                 {
-                                    $xml.=$myReference->asXML("summary", "all");
+                                    $xml.=$myReference->asXML("minimal", "all");
                                 }
                                 else
                                 {
@@ -1367,12 +1380,13 @@ class measurement
                     // Editing an exisiting record
 
                     // First update the tblvmeasurement table
+                    $updateSQL2 = NULL;
                     $updateSQL = "update tblvmeasurement set ";
                     $insertSQL="";
                     if($this->name)               $updateSQL.= "name = '".$this->name."', ";
-                    if($this->description)        $updateSQL.= "description = '".$this->description."' ";
+                    if($this->description)        $updateSQL.= "description = '".$this->description."', ";
                     if(isset($this->isPublished)) $updateSQL.= "ispublished='".fromPHPtoPGBool($this->isPublished)."' ,";
-                    if($this->ownerUserID)        $updateSQL.= "owneruserid = '".$this->ownerUserID."', ";
+                    if($this->ownerUserID)        $updateSQL.= "owneruserid = ".$this->ownerUserID.", ";
                     $updateSQL = substr($updateSQL, 0 , -2);
                     $updateSQL.= " where vmeasurementid=".$this->vmeasurementID."; ";
 
@@ -1391,50 +1405,50 @@ class measurement
                     elseif($this->vmeasurementOp=="Direct")
                     {
                         // Update the tblmeasurement table
-                        $updateSQL.= "update tblmeasurement set ";
-                        if(isset($this->radiusID))            $updateSQL.= "radiusid = '".$this->radiusID."', ";
-                        if(isset($this->isReconciled))        $updateSQL.= "isreconciled='".fromPHPtoPGBool($this->isReconciled)."', ";
-                        if(isset($this->startYear))           $updateSQL.= "startyear = '".$this->startYear."', ";
-                        if(isset($this->isLegacyCleaned))     $updateSQL.= "islegacycleaned='".fromPHPtoPGBool($this->isLegacyCleaned)."', ";
-                        if(isset($this->measuredByID))        $updateSQL.= "measuredbyid = '".$this->measuredByID."', ";
-                        if(isset($this->datingTypeID))        $updateSQL.= "datingtypeid = '".$this->datingTypeID."', ";
-                        if(isset($this->datingerrorpositive)) $updateSQL.= "datingerrorpositive = '".$this->datingerrorpositive."', ";
-                        if(isset($this->datingerrornegative)) $updateSQL.= "datingerrornegative = '".$this->datingerrornegative."', ";
-                        $updateSQL = substr($updateSQL, 0 , -2);
-                        $updateSQL.= " where measurementid=".$this->measurementID."; ";
+                        $updateSQL2.= "update tblmeasurement set ";
+                        if(isset($this->radiusID))            $updateSQL2.= "radiusid = ".$this->radiusID.", ";
+                        if(isset($this->isReconciled))        $updateSQL2.= "isreconciled='".fromPHPtoPGBool($this->isReconciled)."', ";
+                        if(isset($this->startYear))           $updateSQL2.= "startyear = ".$this->startYear.", ";
+                        if(isset($this->isLegacyCleaned))     $updateSQL2.= "islegacycleaned='".fromPHPtoPGBool($this->isLegacyCleaned)."', ";
+                        if(isset($this->measuredByID))        $updateSQL2.= "measuredbyid = ".$this->measuredByID.", ";
+                        if(isset($this->datingTypeID))        $updateSQL2.= "datingtypeid = ".$this->datingTypeID.", ";
+                        if(isset($this->datingerrorpositive)) $updateSQL2.= "datingerrorpositive = ".$this->datingerrorpositive.", ";
+                        if(isset($this->datingerrornegative)) $updateSQL2.= "datingerrornegative = ".$this->datingerrornegative.", ";
+                        $updateSQL2 = substr($updateSQL2, 0 , -2);
+                        $updateSQL2.= " where measurementid=".$this->measurementID."; ";
 
                         // Update readings
                         $deleteSQL = "delete from tblreading where measurementid=".$this->measurementID."; ";
                         $relyear = 0;
                         foreach($this->readingsArray as $key => $value)
                         {
-                            $insertSQL .= "insert into tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$relyear.", ".$value."); ";
+                            $insertSQL .= "insert into tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$relyear.", ".$value['reading']."); ";
                             $relyear++;
                         }
                     }
                     
                     // Perform query using transactions so that if anything goes wrong we can roll back
-                    $transaction = "begin; $updateSQL $deleteSQL $insertSQL";
-                    //echo $transaction;
-                    pg_send_query($dbconn, $transaction);
-                    $result = pg_get_result($dbconn);
-                    $status = pg_transaction_status($dbconn);
-                    if($status === PGSQL_TRANSACTION_INERROR)
+                    $transaction = array("begin;", $updateSQL, $updateSQL2, $deleteSQL, $insertSQL);
+
+                    foreach($transaction as $stmt)
                     {
-                        // All gone badly so throw error and rollback
-                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $transaction");
-                        pg_send_query($dbconn, "rollback;");
-                        return FALSE;
-                    }
-                    else
-                    {   
-                        do {    
-                            $result = pg_get_result($dbconn);
-                        } while ($result!=FALSE); 
-                        // All gone well so commit transaction to db
-                        pg_send_query($dbconn, "commit;");
+                        pg_send_query($dbconn, $stmt);
                         $result = pg_get_result($dbconn);
+                        if(pg_result_status($result, PGSQL_STATUS_LONG)!=PGSQL_COMMAND_OK)
+                        {
+                            // All gone badly so throw error and rollback
+                            $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $stmt");
+                            pg_send_query($dbconn, "rollback;");
+                            return FALSE;
+                        }
                     }
+
+                    // All gone well so commit transaction to db
+                    do {    
+                        $result = pg_get_result($dbconn);
+                    } while ($result!=FALSE); 
+                    pg_send_query($dbconn, "commit;");
+                    $result = pg_get_result($dbconn);
                 }
             }
             else

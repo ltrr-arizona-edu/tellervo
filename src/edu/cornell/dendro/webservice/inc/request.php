@@ -19,7 +19,7 @@ class request
     protected $metaHeader                 = NULL;
     protected $paramObjectsArray          = array(); 
     protected $crudMode                   = NULL;
-    protected $format                     = NULL;
+    protected $format                     = 'standard';
     
     var $includePermissions         = FALSE;
 
@@ -54,7 +54,7 @@ class request
             if($this->xmlrequest)
             {
                 $this->crudMode = strtolower($this->xmlrequest->request['type']);
-                $this->format = strtolower($this->xmlrequest->request['format']);
+                if(isset($this->xmlrequest->request['format'])) $this->format=strtolower($this->xmlrequest->request['format']);
                 if(isset($this->xmlrequest->request['includePermissions'])) $this->includePermissions = fromStringtoPHPBool($this->xmlrequest->request['includePermissions']);
                 error_reporting($origErrorLevel);
                 return true;
@@ -92,11 +92,11 @@ class request
 
         if($this->auth->getID()==NULL)
         {
-            $sql = "insert into tblrequestlog (request, ipaddr, wsversion, page) values ('".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion', '".$_SERVER['SCRIPT_NAME']."')";
+            $sql = "insert into tblrequestlog (request, ipaddr, wsversion, page, client) values ('".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion', '".$_SERVER['SCRIPT_NAME']."', '".addslashes($_SERVER['HTTP_USER_AGENT'])."')";
         }
         else
         {
-            $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion, page) values ('".$this->auth->getID()."', '".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion', '".$_SERVER['SCRIPT_NAME']."')";
+            $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion, page, client) values ('".$this->auth->getID()."', '".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion', '".$_SERVER['SCRIPT_NAME']."', '".addslashes($_SERVER['HTTP_USER_AGENT'])."')";
         }
 
         pg_send_query($dbconn, $sql);

@@ -68,8 +68,9 @@ class search
     /***********/
     /*ACCESSORS*/
     /***********/
-    function doSearch($paramsClass, $auth, $includePermissions)
+    function doSearch($paramsClass, $auth, $includePermissions, $format)
     {
+
         global $dbconn;
         $myAuth       = $auth;
         $myRequest    = $paramsClass;
@@ -192,7 +193,8 @@ class search
                 //$success = $myReturnObject->setParamsFromDB($row['id'], "brief");
                 if($success)
                 {
-                    $xmldata.=$myReturnObject->asXML();
+                    $xmldata.=$myReturnObject->asXML($format, "all");
+
                 }
                 else
                 {
@@ -228,7 +230,7 @@ class search
             }
     }
 
-    function asXML($mode="all")
+    function asXML($format='standard', $mode="all")
     {
         if(isset($this->xmldata))
         {
