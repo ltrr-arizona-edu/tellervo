@@ -18,6 +18,11 @@ CREATE TABLE tblVMeasurementMetaCache (
     ReadingCount integer NOT NULL,
     MeasurementCount integer DEFAULT 1 NOT NULL
     vmextent geometry,
+    siteCode text,
+    siteCount integer,   
+    commonTaxonName text,
+    taxonCount integer
+    label text;
     CONSTRAINT enforce_dims_vmextent CHECK ((ndims(vmextent) = 2)),
     CONSTRAINT enforce_geotype_vmextent CHECK (((geometrytype(vmextent) = 'POLYGON'::text) OR (vmextent IS NULL))),
     CONSTRAINT enforce_srid_vmextent CHECK ((srid(vmextent) = 4326))
@@ -50,5 +55,14 @@ CREATE TYPE typPermissionSet AS (
    canUpdate boolean,
    canDelete boolean,
    decidedBy text
+);
+
+DROP TYPE typVMeasurementSummaryInfo CASCADE;
+CREATE TYPE typVMeasurementSummaryInfo AS (
+   VMeasurementID integer,
+   siteCode text,
+   siteCount integer,   
+   commonTaxonName text,
+   taxonCount integer
 );
 
