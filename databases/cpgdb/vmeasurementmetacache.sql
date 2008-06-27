@@ -52,7 +52,7 @@ BEGIN
    DELETE FROM tblVMeasurementDerivedCache WHERE VMeasurementID = vmid;
    -- Then, populate it.
    INSERT INTO tblVMeasurementDerivedCache(VMeasurementID,MeasurementID) 
-      SELECT vmid,* FROM cpgdb.FindVMParentMeasurements(vmid);
+      SELECT vmid,measurement.measurementID FROM cpgdb.FindVMParentMeasurements(vmid) measurement;
 
    -- Calculate extent of vmeasurement by looking up locations of all associated direct measurements
    SELECT setsrid(extent(tbltree.location)::geometry,4326)

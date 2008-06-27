@@ -171,8 +171,8 @@ RETURNS SETOF typVMeasurementSearchResult AS '
 ' LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION cpgdb.FindVMParentMeasurements(tblVMeasurement.VMeasurementID%TYPE)
-RETURNS SETOF tblMeasurement.MeasurementID%TYPE AS $$
-  SELECT measurement.MeasurementID FROM cpgdb.FindVMParents($1, true) parents 
+RETURNS SETOF tblMeasurement AS $$
+  SELECT measurement.* FROM cpgdb.FindVMParents($1, true) parents 
   INNER JOIN tblVMeasurement vm ON parents.VMeasurementID = vm.VMeasurementID 
   INNER JOIN tblMeasurement measurement ON measurement.MeasurementID = vm.MeasurementID 
   WHERE parents.op='Direct';
