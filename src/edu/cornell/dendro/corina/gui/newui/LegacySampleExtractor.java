@@ -4,6 +4,7 @@
 package edu.cornell.dendro.corina.gui.newui;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -165,6 +166,9 @@ public class LegacySampleExtractor {
 	 * @return
 	 */
 	public Sample asMeasurement() {
+		if(measurementName != null)
+			sample.setMeta("guessedmeasurementname", measurementName);
+
 		return sample;
 	}
 	
@@ -231,6 +235,35 @@ public class LegacySampleExtractor {
         }
 	}
 	
+	/**
+	 * Return a sanitized filename
+	 * @return
+	 */
+	public String getFilename() {
+		String fn = (String) sample.getMeta("filename");
+		ArrayList<String> segments = new ArrayList<String>();
+		File f = new File(fn);
+		int depth = 0;
+		
+		fn = f.getName();
+		do {
+			segments.add(fn);
+			
+			f = f.getParentFile();
+			fn = f.getName();
+			depth++;
+		} while((fn.length() == 3 || fn.equalsIgnoreCase("forest") || depth == 1) && fn.toLowerCase().indexOf("data") == -1);
+		
+		StringBuffer sb = new StringBuffer();
+		for(int i = segments.size() - 1; i >= 0; i--) {
+			if(sb.length() != 0)
+				sb.append(File.separator);
+			sb.append(segments.get(i));
+		}
+		
+		return sb.toString();
+	}
+	
 	public String asHTML() {
 		StringBuffer sb = new StringBuffer();
 		
@@ -240,14 +273,14 @@ public class LegacySampleExtractor {
 		if(siteName != null || specimenOrTreeName != null || radiusName != null || measurementName != null) {
 			sb.append("<b><u>Guessed Data</u></b><br>");
 			if (siteName != null)
-				sb.append("<b>Site name</b>: " + siteName + "<br>");
+				sb.append("<b>Site</b>: " + siteName + "<br>");
 			if (specimenOrTreeName != null)
-				sb.append("<b>Specimen/tree name</b>: " + specimenOrTreeName
+				sb.append("<b>Specimen/tree</b>: " + specimenOrTreeName
 						+ "<br>");
 			if (radiusName != null)
-				sb.append("<b>Radius name</b>: " + radiusName + "<br>");
+				sb.append("<b>Radius</b>: " + radiusName + "<br>");
 			if (measurementName != null)
-				sb.append("<b>Measurement name</b>: " + measurementName
+				sb.append("<b>Measurement</b>: " + measurementName
 						+ "<br>");
 			
 			sb.append("<br>");
@@ -259,21 +292,13 @@ public class LegacySampleExtractor {
 		for(Map.Entry<String, Object> e : meta.entrySet()) {
 			Object v = e.getValue();
 			
+			// ignore our kludge! :)
+			if(e.getKey().equals("guessedmeasurementname"))
+				continue;
+			
 			// kludge together something acceptable for files
 			if(e.getKey().equalsIgnoreCase("filename")) {
-				File f = new File(v.toString());
-				File p = f.getParentFile();
-				if(p.getName().equalsIgnoreCase("FOREST"))
-					v = p.getParentFile().getName() + 
-					 File.separator + 
-					 p.getName() + 
-					 File.separator + 
-					 f.getName();
-				else
-					v = p.getName() + 
-					 File.separator + 
-					 f.getName();
-					
+				v = getFilename();
 			}
 			
 			sb.append("<b>");
@@ -309,7 +334,8 @@ public class LegacySampleExtractor {
 		legacyMetadataMap.put("type_H", "Charcoal");
 		legacyMetadataMap.put("type_C", "Core");
 		// pith
-		legacyMetadataMap.put("pith_+", "Present");
+		legacyMetadataMap.put("pith_+", "Present"); // older corina
+		legacyMetadataMap.put("pith_P", "Present"); // newer corina
 		legacyMetadataMap.put("pith_*", "Present but undateable");
 		legacyMetadataMap.put("pith_N", "Absent");
 		// terminal ring

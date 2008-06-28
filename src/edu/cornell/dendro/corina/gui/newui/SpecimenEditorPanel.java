@@ -127,7 +127,7 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
 		
 		// populate name
 		v = spec.toString();
-		if(!v.equals(Tree.NAME_INVALID))
+		if(!v.equals(Specimen.NAME_INVALID))
 			txtSpecimenName.setText(v);
 		
 		selectEqualValueIn(cboPith, spec.getPith());
@@ -153,7 +153,7 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
 				Object o = cbo.getModel().getElementAt(i);
 				
 				// match it?
-				if(o instanceof String && ((String)o).equalsIgnoreCase(value)) {
+				if(o.toString().equalsIgnoreCase(value)) {
 					cbo.setSelectedIndex(i);
 					break;
 				}

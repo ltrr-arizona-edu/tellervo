@@ -34,6 +34,7 @@ public class RadiusEditorPanel extends BaseEditorPanel<Radius> {
     	txtRadiusName.setText("Radius code");
     	setCapsNoWhitespace(txtRadiusName);
     	setFieldValidateButtons(txtRadiusName);
+    	setSelectAllOnFocus(txtRadiusName);
     	
     	//getRootPane().setDefaultButton(btnApply);
     	btnApply.setEnabled(false);
@@ -53,6 +54,15 @@ public class RadiusEditorPanel extends BaseEditorPanel<Radius> {
     public void populate(String parentPrefix) {
         lblNamePrefix.setText(parentPrefix);
     }
+    
+	public void setDefaultsFrom(Radius r) {
+		String v;
+		
+		// populate name
+		v = r.toString();
+		if(!v.equals(Radius.NAME_INVALID))
+			txtRadiusName.setText(v);
+	}
     
     public void commit() {
     	Radius radius = new Radius(Radius.ID_NEW, txtRadiusName.getText());
@@ -78,6 +88,8 @@ public class RadiusEditorPanel extends BaseEditorPanel<Radius> {
 			nameOk = true;
 		else
 			nameOk = false;
+		
+		colorField(txtRadiusName, nameOk);
 	
 		setFormValidated(nameOk);
     }
@@ -147,9 +159,10 @@ public class RadiusEditorPanel extends BaseEditorPanel<Radius> {
                 .addContainerGap()
                 .add(lblRadiusName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 65, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .add(48, 48, 48)
-                .add(lblNamePrefix, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(txtRadiusName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 172, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(layout.createSequentialGroup()
+                    .add(lblNamePrefix)
+                    .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                    .add(txtRadiusName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 172, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
             //.add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );

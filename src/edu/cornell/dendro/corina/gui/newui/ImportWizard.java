@@ -24,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
 import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
 import edu.cornell.dendro.corina.site.Radius;
@@ -31,6 +32,7 @@ import edu.cornell.dendro.corina.site.Site;
 import edu.cornell.dendro.corina.site.Specimen;
 import edu.cornell.dendro.corina.site.Subsite;
 import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
 
 /**
@@ -42,11 +44,18 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
 	private JPanel insidePanel;
 	private BaseContentPanel<?>[] cards;
 	private int cardIdx;
+	private int wizardMode;
+	
+	private static final int IMPORTWIZARD = 1;
+	private static final int NEWWIZARD = 2;
 	
     /** Creates new form ImportWizard */
     public ImportWizard(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        
+        wizardMode = NEWWIZARD;
+        updateTitle();
         
         cardLayout = new CardLayout();
         insidePanel = new JPanel(cardLayout);
@@ -106,17 +115,24 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
 					
 					// NEXT!
 					cardIdx++;
-					setInstructionsForStep((cardIdx+1), (cards.length));
 					
 					// did we finish?
 					if(cardIdx == cards.length) {
 						Sample s = ((MeasurementPanel) cards[cardIdx-1]).getSample();
-						new Editor(s);
+						
+						if(!doCompletionOperation(s)) {
+							// not so fast!
+							cardIdx--;
+							return;
+						}
 						
 						dispose();
 						return;
 					}
-					
+
+					// set instructions
+					setInstructionsForStep((cardIdx+1), (cards.length));
+
 					// pass the parent on to the child (which should populate itself)
 					cards[cardIdx].setParentObject(newParent);
 					
@@ -283,6 +299,8 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
     public void setLegacySample(LegacySampleExtractor lse) {
     	Object o;
     	
+    	this.wizardMode = IMPORTWIZARD;
+    	
     	// these can be null!
     	if((o = lse.asSite()) != null)
     		defaultsMap.put(Site.class, o);
@@ -293,31 +311,32 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
     	defaultsMap.put(Tree.class, lse.asTree());
     	defaultsMap.put(Specimen.class, lse.asSpecimen());
     	defaultsMap.put(Radius.class, lse.asRadius());
-    	
-    	// this is sort of a kludge; oh well!
-    	// it's only used when importing.
-    	defaultsMap.put(MeasurementPanel.class, lse.asMeasurement());
+       	defaultsMap.put(Sample.class, lse.asMeasurement());
     	
     	// whichever card is 'visible', let it know
     	cards[cardIdx].preVisibleNotify();
     	
+    	// kick stuff out of the eyecandy panel
     	panelEyeCandy.removeAll();
     	panelEyeCandy.setLayout(new BorderLayout());
     	
+    	// make a new textpane!
     	JTextPane importInfoPane = new JTextPane();
     	importInfoPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     	importInfoPane.setContentType("text/html");
     	importInfoPane.setBackground(new Color(0, 100, 0));
-    	//importInfoPane.setFont(new Font(Font.DIALOG, Font.PLAIN, 8));
     	importInfoPane.setText(lse.asHTML());
+    	importInfoPane.setCaretPosition(0);
 
     	JScrollPane wrapper = new JScrollPane(importInfoPane,
-    			JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-    			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+    			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     	
     	wrapper.setPreferredSize(new Dimension(160, 400));
     	
     	panelEyeCandy.add(wrapper, BorderLayout.CENTER);
+
+    	updateTitle(lse.getFilename());
     }
     
     /**
@@ -325,6 +344,44 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
      */
     public Object getDefaultsForClass(Class<?> clazz) {
     	return defaultsMap.get(clazz);
+    }
+    
+    private void updateTitle() {
+    	updateTitle("");
+    }
+    
+    private void updateTitle(String append) {
+    	if(wizardMode == NEWWIZARD) {
+    		setTitle("Create a new sample...");
+    	}
+    	else if(wizardMode == IMPORTWIZARD) {
+    		setTitle("Importing " + append + "...");
+    	}
+    }
+    
+    private boolean doCompletionOperation(Sample s) {
+    	switch(wizardMode) {
+    	case NEWWIZARD:
+    		new Editor(s);
+    		return true;
+    		
+    	case IMPORTWIZARD:
+    		try {
+    			if(!s.getLoader().save(s)) {
+        			Alert.error("Couldn't import!", "Saving failed.");
+        			return false;
+    			}
+    				
+    		} catch (Exception e) {
+    			Alert.error("Couldn't import!", "There was an error while importing: " + e.toString());
+    		}
+    		new Editor(s);
+    		return true;
+    		
+    	default:
+    		new Bug(new Exception("bad mojo!"));
+    		return false;
+    	}
     }
     
     /** This method is called from within the constructor to

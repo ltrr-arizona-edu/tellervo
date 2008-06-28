@@ -12,6 +12,7 @@ import java.awt.event.ItemListener;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -22,6 +23,8 @@ import edu.cornell.dendro.corina.dictionary.User;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
+import edu.cornell.dendro.corina.site.Specimen;
+import edu.cornell.dendro.corina.site.Tree;
 import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
 
 /**
@@ -45,6 +48,7 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
 
         s = new Sample();
         this.parent = parent;
+        this.contentClass = Sample.class;
         
         initialize();
         
@@ -82,6 +86,94 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
 			}
 		});
     }
+    
+    /**
+     * Called right before we're about to be made visible
+     */
+    public void preVisibleNotify() {
+		// if we have any defaults, apply them
+		Object o;
+		if((o = parent.getDefaultsForClass(contentClass)) != null) 
+			setDefaultsFrom((Sample) o);
+    }
+
+	public void setDefaultsFrom(Sample s) {
+		Object o;
+		String v;
+		StringBuffer sb = new StringBuffer();
+		
+		// first, create the description
+		if((o = s.getMeta("title")) != null) {
+			sb.append(o);
+		}
+
+		if((o = s.getMeta("comments")) != null) {
+			if(sb.length() != 0)
+				sb.append("; ");
+			sb.append(o);
+		}
+
+		if((o = s.getMeta("id")) != null) {
+			if(sb.length() != 0)
+				sb.append("; ");
+			sb.append("id=");
+			sb.append(o);
+		}
+		txtDescription.setText(sb.toString());
+
+		// now,  measurement name
+		if((o = s.getMeta("guessedmeasurementname")) != null) {
+			// clean up after our kludge!
+			s.removeMeta("guessedmeasurementname");
+			
+			txtMeasurementName.setText(o.toString());
+		}
+		
+		if((o = s.getMeta("dating")) != null) {
+			if((v = LegacySampleExtractor.getLegacyMapping("dating", o.toString())) != null) {
+				selectEqualValueIn(cboDatingType, v);
+			}
+		}
+		
+		/* not used?
+		if((o = s.getMeta("reconciled")) != null) {
+			if((v = LegacySampleExtractor.getLegacyMapping("reconciled", o.toString())) != null) {
+			}
+		}
+		*/
+		
+		// update reading count (hey, it's useful here!)
+		lblReadingCount.setText(s.getData().size() + " readings");
+		lblReadingCount.setVisible(true);
+		
+		txtStartYear.setText(s.getRange().getStart().toString());
+		txtStartYear.setEnabled(false);
+
+		// copy stuff over!
+		this.s.setRange(s.getRange());
+		this.s.setData(s.getData());
+		this.s.setCount(s.getCount());
+		this.s.setElements(s.getElements());
+		this.s.setWJDecr(s.getWJDecr());
+		this.s.setWJIncr(s.getWJIncr());
+	}
+	
+	// convenience method for setDefaultsFrom
+	private void selectEqualValueIn(JComboBox cbo, String value) {
+		if(value != null) {
+			int len = cbo.getModel().getSize();
+
+			for(int i = 0; i < len; i++) {
+				Object o = cbo.getModel().getElementAt(i);
+				
+				// match it?
+				if(o.toString().equalsIgnoreCase(value)) {
+					cbo.setSelectedIndex(i);
+					break;
+				}
+			}
+		}
+	}
         
     private void validateForm() {
     	boolean nameOk;
@@ -113,7 +205,9 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
     	s.setMeta("title", txtMeasurementName.getText());
     	
     	try {
-    		s.setRange(new Range(new Year(Integer.parseInt(txtStartYear.getText())), 0));
+    		// only do it if we're not importing!
+    		if(txtStartYear.isEnabled())
+    			s.setRange(new Range(new Year(Integer.parseInt(txtStartYear.getText())), 0));
     	} catch (NumberFormatException nfe) {
     		// just ignore this for now?
     	}
@@ -322,7 +416,7 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
                                                 .add(txtDatingErrorNegative, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 33, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                                             .add(lblReadingCount)))))
                             .add(panelMeasurementLayout.createSequentialGroup()
-                                .add(11, 11, 11)
+                                .add(4, 4, 4)
                                 .add(txtMeasurementName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(chkIsPublished, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 72, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))

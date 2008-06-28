@@ -457,8 +457,9 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JP
 	private WizardPanelParent wizardParent;
 	private BaseEditorPanel<OBJT> myPanel;
 	private ComboBoxPopulator comboPopulator;
-	private Class<? extends GenericIntermediateObject> contentClass;
 	private GenericIntermediateObject parentObject;
 
 	private boolean panelValid = false;
+
+	protected Class<?> contentClass; // so we can override!
 }
