@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.InputVerifier;
 import javax.swing.JComboBox;
@@ -52,6 +53,7 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
           
         initialize();
         validateForm();
+		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 50));
     }
     
     private DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -447,18 +449,12 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
                             .add(lblContinuity)
                             .add(lblUnmeasPre, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .add(panelMetadataLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(panelMetadataLayout.createSequentialGroup()
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(panelMetadataLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(org.jdesktop.layout.GroupLayout.TRAILING, cboTerminalRing, 0, 257, Short.MAX_VALUE)
-                                    .add(org.jdesktop.layout.GroupLayout.TRAILING, cboPith, 0, 257, Short.MAX_VALUE)
-                                    .add(org.jdesktop.layout.GroupLayout.TRAILING, spnUnmeasPre, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)))
-                            .add(panelMetadataLayout.createSequentialGroup()
-                                .add(10, 10, 10)
-                                .add(panelMetadataLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(org.jdesktop.layout.GroupLayout.TRAILING, cboContinuity, 0, 257, Short.MAX_VALUE)
-                                    .add(org.jdesktop.layout.GroupLayout.TRAILING, spnSapwoodCount, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
-                                    .add(org.jdesktop.layout.GroupLayout.TRAILING, spnUnmeasPost, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE))))
+                                    .add(org.jdesktop.layout.GroupLayout.LEADING, cboTerminalRing, 0, 257, Short.MAX_VALUE)
+                                    .add(org.jdesktop.layout.GroupLayout.LEADING, cboPith, 0, 257, Short.MAX_VALUE)
+                                    .add(org.jdesktop.layout.GroupLayout.LEADING, spnUnmeasPre, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+                                    .add(org.jdesktop.layout.GroupLayout.LEADING, cboContinuity, 0, 257, Short.MAX_VALUE)
+                                    .add(org.jdesktop.layout.GroupLayout.LEADING, spnSapwoodCount, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+                                    .add(org.jdesktop.layout.GroupLayout.LEADING, spnUnmeasPost, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE))
                         .add(31, 31, 31)
                         .add(panelMetadataLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                             .add(chkTerminalRingVerified)
@@ -560,7 +556,7 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(txtSpecimenName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE))
                     .add(cboSpecimenType, 0, 328, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, txtCollectionDate, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE))
+                    .add(txtCollectionDate, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panelNameDetailsLayout.setVerticalGroup(
