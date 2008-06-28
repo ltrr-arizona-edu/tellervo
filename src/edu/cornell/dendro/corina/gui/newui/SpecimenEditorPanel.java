@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.InputVerifier;
@@ -63,7 +64,7 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
     	txtCollectionDate.setText("");
     	txtSpecimenName.setText("Specimen Code");
     	// muck with labels
-        lblCollectionDate.setText(lblCollectionDate.getText() + " (YYYY/MM/DD)");
+        lblCollectionDate.setText(lblCollectionDate.getText() + " (YYYY-MM-DD)");
         
         // select on focus!
      	setSelectAllOnFocus(txtCollectionDate);  
@@ -118,6 +119,47 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
     	lblNamePrefix.setText(parentPrefix);
 	}
     
+	public void setDefaultsFrom(Specimen spec) {
+		String v;
+		Integer iv;
+		
+		// populate name
+		v = spec.toString();
+		if(!v.equals(Tree.NAME_INVALID))
+			txtSpecimenName.setText(v);
+		
+		selectEqualValueIn(cboPith, spec.getPith());
+		selectEqualValueIn(cboContinuity, spec.getSpecimenContinuity());
+		selectEqualValueIn(cboSpecimenType, spec.getSpecimenType());
+		selectEqualValueIn(cboTerminalRing, spec.getTerminalRing());
+		
+		// integer spinner stuff
+		if((iv = spec.getSapwoodCount()) != null)
+			spnSapwoodCount.setValue(iv);
+		if((iv = spec.getUnmeasuredPost()) != null)
+			spnUnmeasPost.setValue(iv);
+		if((iv = spec.getUnmeasuredPre()) != null)
+			spnUnmeasPre.setValue(iv);
+	}
+	
+	// convenience method for setDefaultsFrom
+	private void selectEqualValueIn(JComboBox cbo, String value) {
+		if(value != null) {
+			int len = cbo.getModel().getSize();
+
+			for(int i = 0; i < len; i++) {
+				Object o = cbo.getModel().getElementAt(i);
+				
+				// match it?
+				if(o instanceof String && ((String)o).equalsIgnoreCase(value)) {
+					cbo.setSelectedIndex(i);
+					break;
+				}
+			}
+		}
+	}
+
+	
     private void initButtons() {
     	//getRootPane().setDefaultButton(btnApply);
     	btnApply.setEnabled(false);
