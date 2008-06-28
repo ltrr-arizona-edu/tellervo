@@ -8,6 +8,7 @@ package edu.cornell.dendro.corina.gui.newui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
 
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -202,13 +204,13 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
         Center.center(this);
     }
 
-    private void setInstructionsForStep(int currentStep, int totalSteps){    	   	
+    private void setInstructionsForStep(int currentStep, int totalSteps){
     	// Set instructions panel 
     	switch(currentStep){
     	case 1: panelInstructions.setText("Welcome to the Corina data import wizard which will " +
     			"help you create or import data into the Corina database.\n\n"+
     			"To begin, please select an existing site from which your sample is from or if " +
-    			"the site is not already in the database, create a new one.\n\n");
+    			"the site is not already in the database, create a new one.\n\n" + htmlInfo);
     			lblProgress.setText("Step " + currentStep + " of " + totalSteps + ": Site details");
     			break;
     	case 2: panelInstructions.setText("Next, select the sub site of your site where your sample is from. " +
@@ -240,7 +242,6 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
     			break;
     	
     	}
-    	
     
     };
     
@@ -271,7 +272,8 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
      * can acquire defaults for the class it wants.
      */
 	private HashMap<Class<?>, Object> defaultsMap = new HashMap<Class<?>, Object>();
-
+	private String htmlInfo = "";
+	
     /**
      * Sets this dialog up to use defaults from the
      * legacysampleextractor
@@ -297,6 +299,23 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
     	
     	// whichever card is 'visible', let it know
     	cards[cardIdx].preVisibleNotify();
+    	
+    	panelEyeCandy.removeAll();
+    	panelEyeCandy.setLayout(new BorderLayout());
+    	
+    	JTextPane importInfoPane = new JTextPane();
+    	importInfoPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    	importInfoPane.setContentType("text/html");
+    	importInfoPane.setBackground(Color.LIGHT_GRAY);
+    	importInfoPane.setText(lse.asHTML());
+
+    	JScrollPane wrapper = new JScrollPane(importInfoPane,
+    			JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+    			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    	
+    	wrapper.setPreferredSize(new Dimension(160, 400));
+    	
+    	panelEyeCandy.add(wrapper, BorderLayout.CENTER);
     }
     
     /**
@@ -436,7 +455,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
         );
 
         // Hide the eye candy panel until we get around to using it
-        panelEyeCandy.setVisible(false);
+        //panelEyeCandy.setVisible(false);
         
         pack();
     }// </editor-fold>//GEN-END:initComponents

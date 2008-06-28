@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.sample;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import edu.cornell.dendro.corina.Range;
 
@@ -84,6 +85,14 @@ public class BaseSample {
 		meta.put(key, value);
 	}
 
+	/**
+	 * Returns a sorted (by key) COPY of the metadata
+	 * @return
+	 */
+	public Map<String, Object> getMetadata() {
+		return new TreeMap<String, Object>(meta);
+	}
+	
 	/** Data range. */
 	private Range range;
 

@@ -6,6 +6,7 @@ package edu.cornell.dendro.corina.gui.newui;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -231,7 +232,43 @@ public class LegacySampleExtractor {
         			}
         		}
         	}
+        	
+        	// we found a match, break out
+        	break;
         }
+	}
+	
+	public String asHTML() {
+		StringBuffer sb = new StringBuffer();
+		
+		/*
+		sb.append("<p><font size='+1'><b><u>Raw Import Data</u></b></font></p>");
+*/
+		sb.append("<br><b><u>Guessed Data</u></b><br>");
+
+		if(siteName != null)
+			sb.append("<b>Site name</b>: " + siteName + "<br>");
+		if(specimenOrTreeName != null)
+			sb.append("<b>Specimen/tree name</b>: " + specimenOrTreeName + "<br>");
+		if(radiusName != null)
+			sb.append("<b>Radius name</b>: " + radiusName + "<br>");
+		if(measurementName != null)
+			sb.append("<b>Measurement name</b>: " + measurementName + "<br>");
+
+		sb.append("<br><b><u>Metadata</u></b><br>");
+
+		Map<String, Object> meta = sample.getMetadata();
+		for(Map.Entry<String, Object> e : meta.entrySet()) {
+			Object v = e.getValue();
+			
+			sb.append("<b>");
+			sb.append(e.getKey());
+			sb.append("</b>: ");
+			sb.append(v == null ? "[empty]" : v.toString());
+			sb.append("<br>");
+		}
+
+		return sb.toString();
 	}
 	
 	/**
