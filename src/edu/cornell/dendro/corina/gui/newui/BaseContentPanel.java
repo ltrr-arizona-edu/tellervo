@@ -47,7 +47,7 @@ import edu.cornell.dendro.corina.site.Tree;
  * Create a BoxLayout of FlowLayouts...
  *
  */
-public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JPanel implements WizardChildMonitor {
+public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends BasePanel implements WizardChildMonitor {
 	/**
 	 * 
 	 */

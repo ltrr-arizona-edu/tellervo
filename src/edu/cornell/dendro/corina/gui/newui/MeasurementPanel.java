@@ -85,6 +85,13 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
 				validateForm();
 			}
 		});
+    	
+    	setSelectAllOnFocus(txtMeasurementName);
+    	setSelectAllOnFocus(txtStartYear);
+    	setSelectAllOnFocus(txtDatingErrorNegative);
+    	setSelectAllOnFocus(txtDatingErrorPositive);
+    	
+    	this.setCapsNoWhitespace(txtMeasurementName);
     }
     
     /**
@@ -181,9 +188,13 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
     	boolean ownedByOk;
     	boolean ok;
     	
-    	nameOk = txtMeasurementName.getText().length() > 1;
+    	nameOk = txtMeasurementName.getText().length() > 0;
     	measuredByOk = cboMeasuredBy.getSelectedItem() instanceof User;
     	ownedByOk = cboOwnedBy.getSelectedItem() instanceof User;
+    	
+    	colorField(txtMeasurementName, nameOk);
+    	colorField(cboMeasuredBy, measuredByOk);
+    	colorField(cboOwnedBy, ownedByOk);
     	
     	ok = nameOk && measuredByOk && ownedByOk;
     	if(validForm != ok) {

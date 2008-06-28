@@ -84,7 +84,7 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
     	setSpinnerIndeterminate(spnUnmeasPre);
     	    	
      	// force a check of date when we leave the txtCollectionDate field
-    	final BaseEditorPanel<Specimen> parentGlue = this;
+    	final BasePanel parentGlue = this;
     	txtCollectionDate.setInputVerifier(new InputVerifier() {
     		public boolean verify(JComponent input) {
     			if(input != txtCollectionDate)
