@@ -45,13 +45,6 @@ public class LegacySampleExtractor {
 			associatedSite = App.sites.findSite(siteName);
 	}
 	
-	private void debugDump() {
-		System.out.println("1-" + siteName);
-		System.out.println("2-" + specimenOrTreeName);
-		System.out.println("3-" + radiusName);
-		System.out.println("4-" + measurementName);
-	}
-	
 	private String siteName;
 	private String specimenOrTreeName;
 	private String radiusName;
@@ -124,7 +117,7 @@ public class LegacySampleExtractor {
 			}
 		}
 
-		if((oval = sample.getMeta("unmeas_post").toString()) != null) {
+		if((oval = sample.getMeta("unmeas_post")) != null) {
 			try {
 				spec.setUnmeasuredPost(Integer.parseInt(oval.toString()));
 			} catch (NumberFormatException nfe) {
@@ -241,25 +234,47 @@ public class LegacySampleExtractor {
 	public String asHTML() {
 		StringBuffer sb = new StringBuffer();
 		
-		/*
-		sb.append("<p><font size='+1'><b><u>Raw Import Data</u></b></font></p>");
-*/
-		sb.append("<br><b><u>Guessed Data</u></b><br>");
+		sb.append("<span style=\"color: white; font-family: sans-serif; font-size: 12pt;\">");
 
-		if(siteName != null)
-			sb.append("<b>Site name</b>: " + siteName + "<br>");
-		if(specimenOrTreeName != null)
-			sb.append("<b>Specimen/tree name</b>: " + specimenOrTreeName + "<br>");
-		if(radiusName != null)
-			sb.append("<b>Radius name</b>: " + radiusName + "<br>");
-		if(measurementName != null)
-			sb.append("<b>Measurement name</b>: " + measurementName + "<br>");
+		// data that we've guessed at
+		if(siteName != null || specimenOrTreeName != null || radiusName != null || measurementName != null) {
+			sb.append("<b><u>Guessed Data</u></b><br>");
+			if (siteName != null)
+				sb.append("<b>Site name</b>: " + siteName + "<br>");
+			if (specimenOrTreeName != null)
+				sb.append("<b>Specimen/tree name</b>: " + specimenOrTreeName
+						+ "<br>");
+			if (radiusName != null)
+				sb.append("<b>Radius name</b>: " + radiusName + "<br>");
+			if (measurementName != null)
+				sb.append("<b>Measurement name</b>: " + measurementName
+						+ "<br>");
+			
+			sb.append("<br>");
+		}
 
-		sb.append("<br><b><u>Metadata</u></b><br>");
+		sb.append("<b><u>Metadata</u></b><br>");
 
 		Map<String, Object> meta = sample.getMetadata();
 		for(Map.Entry<String, Object> e : meta.entrySet()) {
 			Object v = e.getValue();
+			
+			// kludge together something acceptable for files
+			if(e.getKey().equalsIgnoreCase("filename")) {
+				File f = new File(v.toString());
+				File p = f.getParentFile();
+				if(p.getName().equalsIgnoreCase("FOREST"))
+					v = p.getParentFile().getName() + 
+					 File.separator + 
+					 p.getName() + 
+					 File.separator + 
+					 f.getName();
+				else
+					v = p.getName() + 
+					 File.separator + 
+					 f.getName();
+					
+			}
 			
 			sb.append("<b>");
 			sb.append(e.getKey());
@@ -268,6 +283,7 @@ public class LegacySampleExtractor {
 			sb.append("<br>");
 		}
 
+		sb.append("</span>");
 		return sb.toString();
 	}
 	

@@ -347,6 +347,9 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JP
     			return;
     		}
     	}
+    	
+    	// otherwise, it's probably better if we choose the editor
+    	btnNew.doClick();
     }
     
     /**

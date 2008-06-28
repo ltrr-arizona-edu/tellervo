@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -306,7 +307,8 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
     	JTextPane importInfoPane = new JTextPane();
     	importInfoPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     	importInfoPane.setContentType("text/html");
-    	importInfoPane.setBackground(Color.LIGHT_GRAY);
+    	importInfoPane.setBackground(new Color(0, 100, 0));
+    	//importInfoPane.setFont(new Font(Font.DIALOG, Font.PLAIN, 8));
     	importInfoPane.setText(lse.asHTML());
 
     	JScrollPane wrapper = new JScrollPane(importInfoPane,

@@ -53,7 +53,7 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
           
         initialize();
         validateForm();
-		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 50));
+		//setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 50));
     }
     
     private DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd");

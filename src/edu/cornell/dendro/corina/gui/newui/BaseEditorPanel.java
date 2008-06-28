@@ -372,6 +372,7 @@ public abstract class BaseEditorPanel<OBJT> extends JPanel {
 	}
 	
 	public BaseEditorPanel() throws HeadlessException {
+		setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 30));
 	}
 
 	/*
@@ -458,6 +459,5 @@ public abstract class BaseEditorPanel<OBJT> extends JPanel {
 	}
 	
 	public void setTitle(String title) {
-		setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 150));
 	}
 }

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.event.DocumentEvent;
@@ -111,6 +112,29 @@ public class TreeEditorPanel extends BaseEditorPanel<Tree> {
 	
 	public void populate(String parentPrefix) {
     	lblNamePrefix.setText(parentPrefix);
+	}
+	
+	public void setDefaultsFrom(Tree tree) {
+		String v;
+		
+		// populate name
+		v = tree.toString();
+		if(!v.equals(Tree.NAME_INVALID))
+			txtTreeName.setText(v);
+		
+		// populate original taxon
+		// and guess for real taxon, why not
+		if((v = tree.getOriginalTaxonName()) != null) {
+			txtOriginalTaxon.setText(v);
+		
+			Taxon dummy = new Taxon(null, v);
+			TreeSet<Taxon> ts = new TreeSet<Taxon>((List<Taxon>) App.dictionary.getDictionary("taxon"));
+			Taxon closest = ts.tailSet(dummy).first();
+			
+			// well, if the closest match begins with the same first two letters, why not?
+			if(closest.toString().substring(0, 2).equalsIgnoreCase(dummy.toString().substring(0, 2)))
+				cboTaxon.setSelectedItem(closest);
+		}
 	}
 		
 	public void commit() {
