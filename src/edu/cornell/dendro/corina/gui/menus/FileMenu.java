@@ -33,9 +33,11 @@ import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.gui.newui.HierarchyPanel;
 import edu.cornell.dendro.corina.gui.newui.CreateSampleDialog;
 import edu.cornell.dendro.corina.gui.newui.ImportWizard;
+import edu.cornell.dendro.corina.gui.newui.LegacySampleExtractor;
 import edu.cornell.dendro.corina.gui.newui.SiteEditorPanel;
 import edu.cornell.dendro.corina.manip.Sum;
 import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -173,6 +175,7 @@ public class FileMenu extends JMenu {
 		addSeparator();
 		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()"));		
 		add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()"));
+		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdb()"));
 		addSeparator();
 		
 		// open, browse
@@ -262,6 +265,36 @@ public class FileMenu extends JMenu {
 				// open it
 				new Editor(s);
 			}
+		}
+	}
+
+	public static void importdb() {
+		String filename = "";
+		
+		try {
+			filename = FileDialog.showSingle("Choose a sample to import");
+			// get filename, and load
+			Element e = ElementFactory.createElement(filename);
+		    Sample s = e.load();
+		    
+		    ImportWizard wiz = new ImportWizard(null, false);
+
+		    // extract info from the sample
+		    wiz.setLegacySample(new LegacySampleExtractor(s));
+
+		    wiz.setVisible(true);
+		} catch (UserCancelledException uce) {
+			// do nothing
+		} catch (WrongFiletypeException wfte) {
+			Alert.error("Can't open file", "Can't open the file " + 
+					new File(filename).getName() + ".\n" +
+					"Corina does not recognize that file type.");
+		} catch (IOException ioe) {
+			// BUG: this should never happen.  loading is so fast, it'll get displayed
+			// in the preview component, and if it can't be loaded, "ok" should be dimmed.
+			// (is that possible with jfilechooser?)
+			Alert.error("I/O Error", "Can't open file " + filename + ":\n" + ioe.getMessage());
+			// (so why not use Bug.bug()?)
 		}
 	}
 	

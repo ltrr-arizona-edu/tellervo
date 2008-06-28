@@ -11,9 +11,12 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -36,7 +39,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
 	private JPanel insidePanel;
 	private BaseContentPanel<?>[] cards;
 	private int cardIdx;
-    
+	
     /** Creates new form ImportWizard */
     public ImportWizard(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -66,6 +69,9 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
         addPanel(cards[4]);
         addPanel(cards[5]);
         
+        // Give the instructions some margins so they don't look ugly, and make them html
+    	panelInstructions.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    	panelInstructions.setContentType("text/html");
         // Set instructions and step number on GUI
         setInstructionsForStep(1, (cards.length));
         /********************************/
@@ -139,6 +145,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
 					cards[cardIdx].setParentPrefix(prefix.toString());
 					
 					// advance us forward
+					cards[cardIdx].preVisibleNotify();
 					cardLayout.next(insidePanel);
 					
 					// make sure we can go back!
@@ -171,6 +178,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
 						btnNext.setText("Next");
 					
 					// go back!
+					cards[cardIdx].preVisibleNotify();
 					cardLayout.previous(insidePanel);
 
 					// can go 'next'? (this should always be true?)
@@ -194,8 +202,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
         Center.center(this);
     }
 
-    private void setInstructionsForStep(int currentStep, int totalSteps){
-    	   	
+    private void setInstructionsForStep(int currentStep, int totalSteps){    	   	
     	// Set instructions panel 
     	switch(currentStep){
     	case 1: panelInstructions.setText("Welcome to the Corina data import wizard which will " +
@@ -237,7 +244,6 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
     
     };
     
-    
     private int cardCount = 0;
     private void addPanel(JPanel panel) {
     	JScrollPane scrolly = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -258,6 +264,46 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
     		return;
     	
     	btnNext.setEnabled(panel.isPanelValid());
+    }
+
+    /**
+     * The defaultsMap is where each child panel
+     * can acquire defaults for the class it wants.
+     */
+	private HashMap<Class<?>, Object> defaultsMap = new HashMap<Class<?>, Object>();
+
+    /**
+     * Sets this dialog up to use defaults from the
+     * legacysampleextractor
+     * @param lse
+     */
+    public void setLegacySample(LegacySampleExtractor lse) {
+    	Object o;
+    	
+    	// these can be null!
+    	if((o = lse.asSite()) != null)
+    		defaultsMap.put(Site.class, o);
+    	if((o = lse.asSubsite()) != null)
+    		defaultsMap.put(Subsite.class, o);
+    	
+    	// these are guaranteed
+    	defaultsMap.put(Tree.class, lse.asTree());
+    	defaultsMap.put(Specimen.class, lse.asSpecimen());
+    	defaultsMap.put(Radius.class, lse.asRadius());
+    	
+    	// this is sort of a kludge; oh well!
+    	// it's only used when importing.
+    	defaultsMap.put(MeasurementPanel.class, lse.asMeasurement());
+    	
+    	// whichever card is 'visible', let it know
+    	cards[cardIdx].preVisibleNotify();
+    }
+    
+    /**
+     * Return a default object for this class, if one exists
+     */
+    public Object getDefaultsForClass(Class<?> clazz) {
+    	return defaultsMap.get(clazz);
     }
     
     /** This method is called from within the constructor to

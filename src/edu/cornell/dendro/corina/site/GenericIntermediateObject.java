@@ -30,6 +30,8 @@ public abstract class GenericIntermediateObject {
 	protected ResourceIdentifier resourceIdentifier;
 	
 	public final static String ID_NEW = "::NEW::";
+	public final static String ID_INVALID = "::INVALID::";
+	public final static String NAME_INVALID = "::INVALID::";
 
 	public String toString() {
 		return name;

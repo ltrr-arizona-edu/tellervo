@@ -30,6 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.UIManager;
 
 import edu.cornell.dendro.corina.gui.Bug;
@@ -71,7 +72,7 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JP
 		this.comboPopulator = new ComboBoxPopulator(cboExistingList);
 		
 		// and please, don't grow larger than our parent in width!
-		setPreferredSize(new Dimension(parent.getContainerPreferredSize().width, getPreferredSize().height));
+		setPreferredSize(new Dimension(parent.getContainerPreferredSize().width, getPreferredSize().height));		
 	}
 	
 	protected BaseContentPanel(WizardPanelParent parent) {
@@ -161,6 +162,19 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JP
 		
 		// default to existing box
 		setChildrenEnabled(myPanel, false);
+    }
+    
+    /**
+     * Called right before we're about to be made visible, 
+     * so we can perhaps do some last minute updates?
+     */
+    public void preVisibleNotify() {
+		// finally, if we have any defaults, apply them to our editor panel
+		Object o;
+		if((o = wizardParent.getDefaultsForClass(contentClass)) != null) {
+			setDefaultSelectionFrom((OBJT) o); // apply them to our combobox, perhaps?
+			myPanel.setDefaultsFrom((OBJT) o); // and fill in our editor pane
+		}
     }
 
     /**
@@ -301,6 +315,37 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JP
     				}
     			}
     		}
+    		// otherwise, if we've only got one thing in the list
+    		// select it (2 things, because default 'choose one' selector is there)
+    		else if(cboExistingList.getModel().getSize() == 2) {
+    			cboExistingList.setSelectedIndex(1);
+				checkEverythingValid();
+    		}
+    	}
+    }
+    
+    /**
+     * Tries to set our combo box's default selection
+     * @param o
+     */
+    private void setDefaultSelectionFrom(Object o) {
+    	// don't even bother for any other weird type
+    	if(!(o instanceof GenericIntermediateObject))
+    		return;
+    	
+    	// don't bother if it's invalid!
+    	if(o.toString().equals(GenericIntermediateObject.NAME_INVALID))
+    		return;
+    	
+    	// go through our list and do case insensitive string compares
+    	// if we match, match!
+    	ListModel l = cboExistingList.getModel();
+    	for(int i = 0; i < l.getSize(); i++) {
+    		if(o.toString().equalsIgnoreCase(l.getElementAt(i).toString())) {
+    			cboExistingList.setSelectedIndex(i);
+    			checkEverythingValid();
+    			return;
+    		}
     	}
     }
     
@@ -327,7 +372,7 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JP
     public void repopulate() {
     	comboPopulator.populate(parentObject);
     }
-
+    
     /**
      * Get an editor dialog for this class
      * 
@@ -350,6 +395,12 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JP
     
     private Map<JTextField, Color> colorMap = new HashMap<JTextField, Color>();
     
+    /**
+     * Go through and enable/disable all children in component comp
+     * Save their background colors if disabled; restore if enabled
+     * @param comp
+     * @param enabled
+     */
     private void setChildrenEnabled(Component comp, boolean enabled) {
 		if (comp instanceof Container) {
 			Container container = (Container) comp;
@@ -377,6 +428,10 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends JP
 		comp.setEnabled(enabled);
 	}
     
+    /**
+     * Get the class that this contentpanel encapsulates
+     * @return
+     */
     public Class<?> getContentClass() {
     	return contentClass;
     }

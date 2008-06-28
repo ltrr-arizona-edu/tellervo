@@ -358,6 +358,11 @@ public abstract class BaseEditorPanel<OBJT> extends JPanel {
 		return formIsValidated;
 	}
 	
+	// apply any defaults from this object
+	public void setDefaultsFrom(OBJT obj) {
+		
+	}
+	
 	/**
 	 * Intended to be overridden by a function that enables/disables buttons.
 	 * Called by anything that has been added with setFieldValidateButtons

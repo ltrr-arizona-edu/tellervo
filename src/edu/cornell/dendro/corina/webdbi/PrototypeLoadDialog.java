@@ -23,7 +23,7 @@ public class PrototypeLoadDialog extends JDialog implements ResourceEventListene
 		myResource.addResourceEventListener(this);
 		
 		setModal(true);
-		setTitle("Loading remote sample...");
+		setTitle("Accessing remote server...");
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		
 		list = new JList(new DefaultListModel());

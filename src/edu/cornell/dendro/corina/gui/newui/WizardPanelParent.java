@@ -14,4 +14,9 @@ public interface WizardPanelParent {
 	 * so it can enable/disable the 'next' button
 	 */
 	public void notifyPanelStateChanged(BaseContentPanel<?> panel);
+	
+	/**
+	 * Get a defaults object for the specified class
+	 */
+	public Object getDefaultsForClass(Class<?> clazz);
 }
