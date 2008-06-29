@@ -45,6 +45,7 @@ public class BaseSample {
 		target.range = source.range;
 		target.meta = source.meta;
 		target.loader = source.loader;
+		target.sampleType = source.sampleType;
 	}
 
 	public BaseSample() {
@@ -108,6 +109,19 @@ public class BaseSample {
 	 */
 	public Range getRange() {
 		return range;
+	}
+
+	/** The type of this sample (e.g., Direct, Sum, etc) */
+	private SampleType sampleType;
+
+	/** Get the type of sample */
+	public SampleType getSampleType() {
+		return sampleType;
+	}
+	
+	/** Set the type of sample */
+	public void setSampleType(SampleType sampleType) {
+		this.sampleType = sampleType;
 	}
 	
 	// loader

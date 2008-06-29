@@ -28,7 +28,11 @@ import edu.cornell.dendro.corina.sample.*;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import java.io.BufferedWriter;
@@ -90,7 +94,7 @@ public class CorinaXML implements Filetype {
 					continue;
 				}
 				
-				bs.setMeta("filename", ":/\\:WEB:/\\:" + rid.toString());
+				bs.setMeta("filename", "::WEB::" + rid.toString());
 				bs.setMeta("title", rid.toString());
 				
 				// create an element!
@@ -151,6 +155,32 @@ public class CorinaXML implements Filetype {
 				setUserFor("author", e, s);
 			else if(key.equals("description"))
 				s.setMeta("comments", value);
+			else if(key.equals("lastModifiedTimeStamp")) {
+				try {
+					// chop off the milliseconds and add '00' to the end of the timezone
+					value = value.replaceFirst("\\.[0-9]+([+-][0-9]+)", " $100");
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+					Date date = sdf.parse(value);
+					
+					s.setMeta("::moddate", date);
+				} catch (ParseException pe) {
+					System.out.println("Couldn't parse date: " + value);
+					continue;
+				}
+			}
+			else if(key.equals("operation")) {
+				SampleType st = SampleType.fromString(value);
+				
+				if(st == null) {
+					System.out.println("Invalid measurement operation: " + value);
+					continue;
+				}
+				
+				s.setSampleType(st);
+			}
+			else if(key.equals("parentSummary")) {
+				s.setMeta("::summary", SampleSummary.fromXML(e));
+			}
 			else if(key.equals("dating")) {
 				String startYear = e.getAttributeValue("startYear");
 				String type = e.getAttributeValue("type");

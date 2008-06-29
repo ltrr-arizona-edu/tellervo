@@ -40,6 +40,7 @@ public class MeasurementSearchResource extends ResourceObject<ElementList> {
 		protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) throws ResourceException {
 			// simple: prepare a search with our specified parameters...
 			requestElement.addContent(getSearchParameters().getXMLElement());
+			requestElement.setAttribute("format", "summary");
 			return requestElement;
 		}
 		

@@ -1,12 +1,23 @@
 package edu.cornell.dendro.corina.gui;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.FontMetrics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableColumnModel;
@@ -16,6 +27,7 @@ import edu.cornell.dendro.corina.dictionary.SiteRegion;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.SampleSummary;
 import edu.cornell.dendro.corina.site.Site;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.MeasurementSearchResource;
@@ -31,14 +43,24 @@ public class DBBrowser extends javax.swing.JDialog {
     
     private ElementList selectedElements;
     
-    /** Creates new form */
+    private boolean isMultiDialog;
+    
     public DBBrowser(java.awt.Frame parent, boolean modal) {
+    	this(parent, modal, true);
+    }
+    
+    /** Creates new form */
+    public DBBrowser(java.awt.Frame parent, boolean modal, boolean openMulti) {
         super(parent, modal);
         initComponents();
         
         selectedElements = new ElementList();
         
+        isMultiDialog = openMulti;
+        
+        setupTableArea();
         populateComponents();
+        
         Center.center(this);
         
         // Whenever the site list changes, make sure we repopulate our site list
@@ -48,6 +70,53 @@ public class DBBrowser extends javax.swing.JDialog {
         			populateSiteList();
         	}
         });
+    }
+    
+    private void setupTableArea() {
+		tblAvailMeas.setColumnSelectionAllowed(false);
+		tblAvailMeas.setRowSelectionAllowed(true);
+		tblAvailMeas.setModel(new DBBrowserTableModel());
+		sizeTableColumns(tblAvailMeas);
+
+		tblChosenMeas.setColumnSelectionAllowed(false);
+		tblChosenMeas.setRowSelectionAllowed(true);
+		tblChosenMeas.setModel(new DBBrowserTableModel(selectedElements));
+		sizeTableColumns(tblAvailMeas);
+
+		if(!isMultiDialog) {    		
+			// easy; create a single scroll pane and jam it into the panel!
+    		workArea.add(new JScrollPane(tblAvailMeas));
+    	} else {
+    		workArea.setLayout(new BoxLayout(workArea, BoxLayout.Y_AXIS));
+    		
+    		JPanel buttonBar = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    		
+    		JButton add = new JButton("Add");
+    		JButton remove = new JButton("Remove");
+    		buttonBar.add(add);
+    		buttonBar.add(remove);
+    		
+    		tblChosenMeas.setPreferredScrollableViewportSize(
+    				new Dimension(tblChosenMeas.getPreferredSize().width, tblAvailMeas.getRowHeight() * 11));
+    		
+    		workArea.add(new JScrollPane(tblAvailMeas));
+    		workArea.add(buttonBar);
+    		workArea.add(new JScrollPane(tblChosenMeas));
+    	}	
+    }
+    
+    private void sizeTableColumns(JTable table) {
+		FontMetrics fm = table.getFontMetrics(table.getFont());
+		
+		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth("C-XXX-XX-XX-X-X"));
+		table.getColumnModel().getColumn(1).setPreferredWidth(fm.stringWidth("DirectX"));
+		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("ABCD"));
+		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("Pinus Nigra X"));
+		table.getColumnModel().getColumn(4).setPreferredWidth(fm.stringWidth("99"));
+		table.getColumnModel().getColumn(5).setPreferredWidth(fm.stringWidth("2008-08-08"));
+		table.getColumnModel().getColumn(6).setPreferredWidth(fm.stringWidth("12345"));
+		table.getColumnModel().getColumn(7).setPreferredWidth(fm.stringWidth("12345"));
+		table.getColumnModel().getColumn(8).setPreferredWidth(fm.stringWidth("123"));
     }
 
     private void populateComponents() {
@@ -72,7 +141,6 @@ public class DBBrowser extends javax.swing.JDialog {
 		// populate our site list (done automatically by choosing an index)
 		cboBrowseBy.setSelectedIndex(0);
 		
-		lstSites.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		lstSites.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
 			public void valueChanged(javax.swing.event.ListSelectionEvent lse) {
 				// ignore the first adjustment
@@ -108,10 +176,6 @@ public class DBBrowser extends javax.swing.JDialog {
 			}
 		});
         
-		tblAvailMeas.setColumnSelectionAllowed(false);
-		tblAvailMeas.setRowSelectionAllowed(true);
-		tblAvailMeas.setModel(new DBBrowserTableModel());
-		
 		tblAvailMeas.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
@@ -128,12 +192,15 @@ public class DBBrowser extends javax.swing.JDialog {
                 "Type", 
                 "Site name", 
                 "Taxon", 
-                "Elements", 
-                "Last modified", 
+                "#", 
+                "Modified", 
                 "Begin Date", 
                 "End Date", 
-                "ID"
+                "n"
+                //"ID" //useful for debugging
             };
+        
+        private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     	/**
     	 * The default: no elements
@@ -174,11 +241,46 @@ public class DBBrowser extends javax.swing.JDialog {
 			}
 			
 			switch(columnIndex) {
-			case 0:
-				return bs.hasMeta("title") ? bs.getMeta("title") : "[id: " + bs.getMeta("id") + "]";
+			case 0: {
+				SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
+
+				if(ss != null)
+					return ss.getLabCode();
 				
+				return bs.hasMeta("title") ? bs.getMeta("title") : "[id: " + bs.getMeta("id") + "]";
+			}
+
+			case 1:
+				return bs.getSampleType();
+				
+			case 2: {
+				SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
+				return ss == null ? ss : ss.siteDescription();
+			}
+
+			case 3: {
+				SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
+				return ss == null ? ss : ss.taxonDescription();
+			}
+
+			case 4: {
+				SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
+				return ss == null ? ss : ss.getMeasurementCount();
+			}
+			
+			case 5: {
+				Date date = (Date) bs.getMeta("::moddate");
+				return date != null ? dateFormat.format(date) : date;
+			}
+
+			case 6:
+				return bs.getRange().getStart();
+				
+			case 7:
+				return bs.getRange().getEnd();
+			
 			case 8:
-				return bs.getMeta("id");
+				return bs.getRange().span();
 				
 			default:
 				return null;
@@ -262,8 +364,10 @@ public class DBBrowser extends javax.swing.JDialog {
         jTextField1 = new javax.swing.JTextField();
         searchPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        resultsScrollPane = new javax.swing.JScrollPane();
+        workArea = new javax.swing.JPanel();
+        //resultsScrollPane = new javax.swing.JScrollPane();
         tblAvailMeas = new javax.swing.JTable();
+        tblChosenMeas = new javax.swing.JTable();
         btnSelectAll = new javax.swing.JButton();
         btnSelectNone = new javax.swing.JButton();
         btnInvertSelect = new javax.swing.JButton();
@@ -381,17 +485,17 @@ public class DBBrowser extends javax.swing.JDialog {
         });
         tblAvailMeas.setDragEnabled(true);
         tblAvailMeas.setRowSelectionAllowed(false);
-        resultsScrollPane.setViewportView(tblAvailMeas);
+        //resultsScrollPane.setViewportView(tblAvailMeas);
 
         org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(resultsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 457, Short.MAX_VALUE)
+            .add(workArea, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 457, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(resultsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
+            .add(workArea, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
         );
 
         jSplitPane1.setRightComponent(jPanel1);
@@ -520,9 +624,11 @@ public class DBBrowser extends javax.swing.JDialog {
     private javax.swing.JTextField jTextField1;
     private javax.swing.JList lstSites;
     private javax.swing.JPanel panelBrowseBy;
-    private javax.swing.JScrollPane resultsScrollPane;
+    //private javax.swing.JScrollPane resultsScrollPane;
+    private javax.swing.JPanel workArea;
     private javax.swing.JPanel searchPanel;
     private javax.swing.JTable tblAvailMeas;
+    private javax.swing.JTable tblChosenMeas;
     // End of variables declaration//GEN-END:variables
     
     private int returnStatus = RET_CANCEL;
