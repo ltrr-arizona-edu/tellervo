@@ -1,8 +1,12 @@
 package edu.cornell.dendro.corina.gui;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -14,12 +18,15 @@ import java.util.Date;
 import java.util.List;
 
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableColumnModel;
 
 import edu.cornell.dendro.corina.core.App;
@@ -29,6 +36,7 @@ import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.SampleSummary;
 import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.MeasurementSearchResource;
 import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
@@ -42,11 +50,10 @@ public class DBBrowser extends javax.swing.JDialog {
     public static final int RET_OK = 1;
     
     private ElementList selectedElements;
-    
     private boolean isMultiDialog;
     
     public DBBrowser(java.awt.Frame parent, boolean modal) {
-    	this(parent, modal, true);
+    	this(parent, modal, false);
     }
     
     /** Creates new form */
@@ -70,32 +77,140 @@ public class DBBrowser extends javax.swing.JDialog {
         			populateSiteList();
         	}
         });
+        
+        btnOk.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				finish();
+				dispose();
+			}
+        });
+
+        btnCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				dispose();
+			}
+        });
+    }
+    
+    private void finish() {
+    	if(!isMultiDialog) {
+    		int selectedRows[] = tblAvailMeas.getSelectedRows();
+    	
+    		// create a list of our selected elements (should only be one)
+    		for(int i = 0; i < selectedRows.length; i++)
+    			selectedElements.add(((DBBrowserTableModel)tblAvailMeas.getModel()).
+    					getElementAt(selectedRows[i]));
+    	}
+    	
+    	returnStatus = RET_OK;
     }
     
     private void setupTableArea() {
 		tblAvailMeas.setColumnSelectionAllowed(false);
 		tblAvailMeas.setRowSelectionAllowed(true);
 		tblAvailMeas.setModel(new DBBrowserTableModel());
-		sizeTableColumns(tblAvailMeas);
+		setupTableColumns(tblAvailMeas);
 
 		tblChosenMeas.setColumnSelectionAllowed(false);
 		tblChosenMeas.setRowSelectionAllowed(true);
 		tblChosenMeas.setModel(new DBBrowserTableModel(selectedElements));
-		sizeTableColumns(tblAvailMeas);
+		setupTableColumns(tblChosenMeas);
 
-		if(!isMultiDialog) {    		
+		if(!isMultiDialog) {
+			// only single selection!
+			tblAvailMeas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			// easy; create a single scroll pane and jam it into the panel!
     		workArea.add(new JScrollPane(tblAvailMeas));
+
+    		// start out with initial disabled state, only allow when something is selected
+			btnOk.setEnabled(false);
+    		tblAvailMeas.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+    			public void valueChanged(javax.swing.event.ListSelectionEvent lse) {
+    				// ignore the first adjustment
+    				if(lse.getValueIsAdjusting())
+    					return;
+    				
+    				if(tblAvailMeas.getSelectedRowCount() == 0)
+    					btnOk.setEnabled(false);
+    				else
+    					btnOk.setEnabled(true);
+    			}
+    		});
+    		
     	} else {
+			tblAvailMeas.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+			tblChosenMeas.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
     		workArea.setLayout(new BoxLayout(workArea, BoxLayout.Y_AXIS));
     		
     		JPanel buttonBar = new JPanel(new FlowLayout(FlowLayout.CENTER));
     		
-    		JButton add = new JButton("Add");
-    		JButton remove = new JButton("Remove");
-    		buttonBar.add(add);
-    		buttonBar.add(remove);
-    		
+    		Icon dn = Builder.getIcon("downarrow.png");
+    		Icon up = Builder.getIcon("uparrow.png");
+
+    		btnAdd.setIcon(dn);
+    		btnRemove.setIcon(up);
+    		buttonBar.add(btnAdd);
+    		buttonBar.add(btnRemove);
+
+    		// start out with initial disabled state, only allow when our element list has an element in it!
+			btnOk.setEnabled(false);
+
+    		// when adding, just add things to our selectedElements list
+    		btnAdd.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent ev) {
+					int rows[] = tblAvailMeas.getSelectedRows();
+					
+					for(int i = 0; i < rows.length; i++) {
+						Element e = ((DBBrowserTableModel)tblAvailMeas.getModel()).getElementAt(rows[i]);
+						
+						if(!selectedElements.contains(e))
+							selectedElements.add(e);
+					}
+					
+					// tell the table it's changed!
+					((DBBrowserTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
+
+					// verify a selected element
+					if(selectedElements.size() > 0)
+						btnOk.setEnabled(true);
+					else
+						btnOk.setEnabled(false);
+				}
+    		});
+
+    		// removing is similar...
+    		btnRemove.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent ev) {
+					int rows[] = tblChosenMeas.getSelectedRows();
+					List<Element> removeList = new ArrayList<Element>();
+					
+					for(int i = 0; i < rows.length; i++) {
+						Element e = ((DBBrowserTableModel)tblChosenMeas.getModel()).getElementAt(rows[i]);
+						
+						removeList.add(e);
+					}
+
+					// we have to do this atomically
+					for(Element e : removeList)
+						selectedElements.remove(e);
+					
+					// tell the table it's changed!
+					((DBBrowserTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
+
+					// verify a selected element
+					if(selectedElements.size() > 0)
+						btnOk.setEnabled(true);
+					else
+						btnOk.setEnabled(false);
+				}
+    		});
+
+    		// make it only 10 rows tall (+header)
     		tblChosenMeas.setPreferredScrollableViewportSize(
     				new Dimension(tblChosenMeas.getPreferredSize().width, tblAvailMeas.getRowHeight() * 11));
     		
@@ -105,8 +220,12 @@ public class DBBrowser extends javax.swing.JDialog {
     	}	
     }
     
-    private void sizeTableColumns(JTable table) {
+    private void setupTableColumns(JTable table) {
 		FontMetrics fm = table.getFontMetrics(table.getFont());
+		
+		table.setShowGrid(false);
+		table.setShowVerticalLines(true);
+		table.setGridColor(Color.lightGray);
 		
 		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth("C-XXX-XX-XX-X-X"));
 		table.getColumnModel().getColumn(1).setPreferredWidth(fm.stringWidth("DirectX"));
@@ -117,7 +236,32 @@ public class DBBrowser extends javax.swing.JDialog {
 		table.getColumnModel().getColumn(6).setPreferredWidth(fm.stringWidth("12345"));
 		table.getColumnModel().getColumn(7).setPreferredWidth(fm.stringWidth("12345"));
 		table.getColumnModel().getColumn(8).setPreferredWidth(fm.stringWidth("123"));
+		
+		table.setDefaultRenderer(Object.class,
+				new DefaultTableCellRenderer() {
+					@Override
+					public Component getTableCellRendererComponent(
+							JTable table, Object value, boolean isSelected,
+							boolean hasFocus, int row, int column) {
+						// get existing label
+						JLabel c = (JLabel) super
+								.getTableCellRendererComponent(table,
+										value, isSelected, hasFocus, row,
+										column);
+
+						//c.setOpaque(true);
+
+						// every-other-line colors
+						if (!isSelected)
+							c.setBackground(row % 2 == 0 ? ODD_ROW_COLOR
+									: Color.white);
+
+						return c;
+					}
+				});
     }
+	public final static Color ODD_ROW_COLOR = new Color(236, 243, 254);
+
 
     private void populateComponents() {
     	List<SiteRegion> regions = (List<SiteRegion>) App.dictionary.getDictionary("Regions");
@@ -135,6 +279,13 @@ public class DBBrowser extends javax.swing.JDialog {
     	
     	// and make the regions combo box reflect it
 		cboBrowseBy.setModel(new javax.swing.DefaultComboBoxModel(regionList.toArray()));
+		
+		// repopulate the site list when something is chosen...
+        cboBrowseBy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            	populateSiteList();
+            }
+        });
 		
 		// select the first thing in the list
 		// TODO: Should we store the last region we used?
@@ -176,14 +327,45 @@ public class DBBrowser extends javax.swing.JDialog {
 			}
 		});
         
+		// double click: different action depending on what kind of dialog
 		tblAvailMeas.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
-					doClose(RET_OK);
+					if(isMultiDialog)
+						btnAdd.doClick();
+					else
+						btnOk.doClick();
 				}
 			}
 		});
-    }
+		
+		// now, set up our buttons
+		btnSelectAll.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				tblAvailMeas.selectAll();
+			}
+		});
+
+		btnSelectNone.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				tblAvailMeas.removeRowSelectionInterval(0, tblAvailMeas.getRowCount() - 1);
+			}
+		});
+
+		btnInvertSelect.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				for(int i = 0; i < tblAvailMeas.getRowCount(); i++) {
+					if(tblAvailMeas.isRowSelected(i))
+						tblAvailMeas.removeRowSelectionInterval(i, i);
+					else
+						tblAvailMeas.addRowSelectionInterval(i, i);
+				}
+			}
+		});
+}
     
     public class DBBrowserTableModel extends AbstractTableModel {
     	private ElementList elements;
@@ -354,6 +536,8 @@ public class DBBrowser extends javax.swing.JDialog {
 
         btnOk = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
+        btnAdd = new javax.swing.JButton();
+        btnRemove = new javax.swing.JButton();
         jSplitPane1 = new javax.swing.JSplitPane();
         panelBrowseBy = new javax.swing.JPanel();
         browseSearchPane = new javax.swing.JTabbedPane();
@@ -365,7 +549,6 @@ public class DBBrowser extends javax.swing.JDialog {
         searchPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         workArea = new javax.swing.JPanel();
-        //resultsScrollPane = new javax.swing.JScrollPane();
         tblAvailMeas = new javax.swing.JTable();
         tblChosenMeas = new javax.swing.JTable();
         btnSelectAll = new javax.swing.JButton();
@@ -373,25 +556,11 @@ public class DBBrowser extends javax.swing.JDialog {
         btnInvertSelect = new javax.swing.JButton();
 
         setTitle("Measurement Browser");
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                closeDialog(evt);
-            }
-        });
 
         btnOk.setText("OK");
-        btnOk.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOkActionPerformed(evt);
-            }
-        });
-
         btnCancel.setText("Cancel");
-        btnCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelActionPerformed(evt);
-            }
-        });
+        btnAdd.setText("Add");
+        btnRemove.setText("Remove");
 
         jSplitPane1.setBorder(null);
         jSplitPane1.setDividerLocation(150);
@@ -402,11 +571,6 @@ public class DBBrowser extends javax.swing.JDialog {
 
         cboBrowseBy.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All Regions", "Mediterranean", "Greece", "Italy", "Turkey", "United States" }));
         cboBrowseBy.setToolTipText("Select a region to filter the sites list below");
-        cboBrowseBy.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cboBrowseByActionPerformed(evt);
-            }
-        });
 
         lstSites.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Aezanoi", "Afyon", "Yenikapi", "Yumuktepe" };
@@ -502,11 +666,6 @@ public class DBBrowser extends javax.swing.JDialog {
 
         btnSelectAll.setText("All");
         btnSelectAll.setToolTipText("Select all measurements in the table");
-        btnSelectAll.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSelectAllActionPerformed(evt);
-            }
-        });
 
         btnSelectNone.setText("None");
         btnSelectNone.setToolTipText("Unselected all the measurements in the table ");
@@ -554,44 +713,7 @@ public class DBBrowser extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
-    private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
-        doClose(RET_OK);
-}//GEN-LAST:event_btnOkActionPerformed
-    
-    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        doClose(RET_CANCEL);
-}//GEN-LAST:event_btnCancelActionPerformed
-    
-    /** Closes the dialog */
-    private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
-        doClose(RET_CANCEL);
-    }//GEN-LAST:event_closeDialog
-
-    private void cboBrowseByActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboBrowseByActionPerformed
-    	// repopulate our site list
-    	populateSiteList();
-    }//GEN-LAST:event_cboBrowseByActionPerformed
-
-    private void btnSelectAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelectAllActionPerformed
-    	tblAvailMeas.setRowSelectionInterval(0, tblAvailMeas.getRowCount() - 1);
-    	
-}//GEN-LAST:event_btnSelectAllActionPerformed
-    
-    private void doClose(int retStatus) {
-    	int selectedRows[] = tblAvailMeas.getSelectedRows();
-    	
-    	// create a list of our selected elements
-    	for(int i = 0; i < selectedRows.length; i++)
-    		selectedElements.add(((DBBrowserTableModel)tblAvailMeas.getModel()).
-    				getElementAt(selectedRows[i]));
-    	
-    	
-        returnStatus = retStatus;
-        setVisible(false);
-        dispose();
-    }
-    
+        
     /**
      * @param args the command line arguments
      */
@@ -615,6 +737,8 @@ public class DBBrowser extends javax.swing.JDialog {
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnInvertSelect;
     private javax.swing.JButton btnOk;
+    private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnRemove;
     private javax.swing.JButton btnSelectAll;
     private javax.swing.JButton btnSelectNone;
     private javax.swing.JComboBox cboBrowseBy;
@@ -624,7 +748,6 @@ public class DBBrowser extends javax.swing.JDialog {
     private javax.swing.JTextField jTextField1;
     private javax.swing.JList lstSites;
     private javax.swing.JPanel panelBrowseBy;
-    //private javax.swing.JScrollPane resultsScrollPane;
     private javax.swing.JPanel workArea;
     private javax.swing.JPanel searchPanel;
     private javax.swing.JTable tblAvailMeas;

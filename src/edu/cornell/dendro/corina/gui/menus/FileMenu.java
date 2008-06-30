@@ -174,6 +174,7 @@ public class FileMenu extends JMenu {
 		// db stuff
 		addSeparator();
 		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()"));		
+		add(Builder.makeMenuItem("dbmultiopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()"));		
 		add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()"));
 		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdb()"));
 		addSeparator();
@@ -243,8 +244,16 @@ public class FileMenu extends JMenu {
 		}
 	}
 
+	public static void opendbmulti() {
+		opendb(true);
+	}
+	
 	public static void opendb() {
-		DBBrowser browser = new DBBrowser(null, true);
+		opendb(false);
+	}
+	
+	public static void opendb(boolean multi) {
+		DBBrowser browser = new DBBrowser(null, true, multi);
 		
 		browser.setVisible(true);
 		
