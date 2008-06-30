@@ -111,10 +111,16 @@ RETURNS text AS $$
 $$
 LANGUAGE 'SQL' IMMUTABLE;
 
-CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementLabel(integer)
+CREATE OR REPLACE FUNCTION cpgdb.GetLabel(text, integer)
 RETURNS text AS $_$
 DECLARE
-   VMID ALIAS FOR $1;
+   OBJID ALIAS FOR $2;
+   labelfor text;
+   
+   queryLevel integer;
+   query text;
+   selection text;
+   whereClause text;
 
    rec record;
 
@@ -127,9 +133,14 @@ DECLARE
    ret text;
 
    count integer;
+
 BEGIN
-   count := 0;
-   FOR rec IN SELECT s.code as a,su.name as b,t.name as c,sp.name as d,r.name as e,vm.name as f 
+   labelfor := lower($1);
+   
+   -- VMeasurement is a special case
+   IF labelfor = 'vmeasurement' THEN 
+      count := 0;
+      FOR rec IN SELECT s.code as a,su.name as b,t.name as c,sp.name as d,r.name as e,vm.name as f 
 	FROM tblVMeasurementDerivedCache d
 	INNER JOIN tblMeasurement m ON m.measurementID = d.measurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
@@ -138,36 +149,100 @@ BEGIN
 	INNER JOIN tblSubsite su on su.subsiteID = t.subsiteID
 	INNER JOIN tblSite s on s.siteID = su.siteID
 	INNER JOIN tblVMeasurement vm on vm.vmeasurementid = d.vmeasurementid
-	WHERE d.VMeasurementID = VMID
-   LOOP
-      count := count + 1;
+	WHERE d.VMeasurementID = OBJID
+      LOOP
+         count := count + 1;
 
-      siten := rec.a;
-      subsiten := rec.b;
-      treen := rec.c;
-      specimenn := rec.d;
-      radiusn := rec.e;
-      measurementn := rec.f;
-   END LOOP;
+         siten := rec.a;
+         subsiten := rec.b;
+         treen := rec.c;
+         specimenn := rec.d;
+         radiusn := rec.e;
+         measurementn := rec.f;
+      END LOOP;
 
-   IF count = 0 THEN
-      RAISE EXCEPTION 'No data found for vmeasurement %', VMID;
-   ELSIF COUNT > 1 THEN
-      -- More than one constituent? It's a sum or something derived from one.
-      RETURN measurementn;
+      IF count = 0 THEN
+         RAISE EXCEPTION 'No data found for vmeasurement %', OBJID;
+      ELSIF COUNT > 1 THEN
+         -- More than one constituent? It's a sum or something derived from one.
+         RETURN measurementn;
+      END IF;
+
+      -- Start with silly cornell prefix and site
+      ret := 'C-' || siten;
+
+      -- Tack on the subsitename, if it's not Main
+      IF subsiten <> 'Main' THEN
+         ret := ret || '/' || subsiten;
+      END IF;
+
+      ret := ret || '-' || treen || '-' || specimenn || '-' || radiusn || '-' || measurementn;
+
+      RETURN ret;
+   END IF; -- VMeasurement special case
+
+   IF labelfor = 'tree' THEN
+      queryLevel := 1;
+      whereClause := ' WHERE t.treeid=' || OBJID;
+   ELSIF labelfor = 'specimen' THEN
+      queryLevel := 2;      
+      whereClause := ' WHERE sp.specimenid=' || OBJID;
+   ELSIF labelfor = 'radius' THEN
+      queryLevel := 3;      
+      whereClause := ' WHERE r.radiusid=' || OBJID;
+   ELSE
+      RAISE EXCEPTION 'Invalid usage: label must be for vmeasurement, tree, specimen, or radius';
    END IF;
 
-   -- Start with silly cornell prefix and site
-   ret := 'C-' || siten;
+   -- Start out with the basics
+   selection := 's.code as a,su.name as b,t.name as c';
+   query := ' FROM tblsite s INNER JOIN tblsubsite su ON su.siteid = s.siteid INNER JOIN tbltree t ON t.subsiteid = su.subsiteid';
 
-   -- Tack on the subsitename, if it's not Main
-   IF subsiten <> 'Main' THEN
-      ret := ret || '/' || subsiten;
+   -- add specimen
+   IF queryLevel > 1 THEN
+      query := query || ' INNER JOIN tblspecimen sp ON sp.treeid = t.treeid';
+      selection := selection || ',sp.name as d';
    END IF;
 
-   ret := ret || '-' || treen || '-' || specimenn || '-' || radiusn || '-' || measurementn;
+   -- add radius
+   IF queryLevel > 2 THEN
+      query := query || ' INNER JOIN tblradius r ON r.specimenid = sp.specimenid';
+      selection := selection || ',r.name as e';
+   END IF;
 
-   RETURN ret;
+   -- execute our messy query
+   FOR rec IN EXECUTE 'SELECT ' || selection || query || whereClause LOOP
+      -- Start with silly cornell prefix and site
+      ret := 'C-' || rec.a;
+
+      -- Tack on the subsitename, if it's not Main
+      IF rec.b <> 'Main' THEN
+         ret := ret || '/' || rec.b;
+      END IF;
+
+      -- tree
+      ret := ret || '-' || rec.c;
+   
+      -- specimen
+      IF queryLevel > 1 THEN
+         ret := ret || '-' || rec.d;
+      END IF;
+
+      -- radius
+      IF queryLevel > 2 THEN
+         ret := ret || '-' || rec.e;
+      END IF;
+   
+      RETURN ret;   
+   END LOOP; -- we only get here if nothing was found!
+
+   RAISE EXCEPTION 'No results for % %', $1, $2;
 END;
 $_$
 LANGUAGE 'PLPGSQL' STABLE;
+
+CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementLabel(integer)
+RETURNS text AS $_$
+   SELECT cpgdb.GetLabel('vmeasurement', $1);
+$_$ LANGUAGE SQL STABLE;
+
