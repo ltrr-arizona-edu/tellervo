@@ -375,7 +375,7 @@ elseif($myMetaHeader->status != "Error")
         {
             if($myMetaHeader->status != "Error")
             {
-                $success = $myObject->doSearch($paramObj, $myAuth, $myRequest->includePermissions);
+                $success = $myObject->doSearch($paramObj, $myAuth, $myRequest->includePermissions, $myRequest->getFormat());
                 if(!$success)
                 {
                     if ($myObject->getLastErrorCode()=='103')

@@ -1,20 +1,75 @@
 <?php
 
+//*******************************************
+//
+// VARIOUS GOOGLE MAPS JAVASCRIPT FUNCTIONS 
+//
+// Include where necessary!
+//
+//*******************************************
+
+function incGMapScript($script)
+{
+
+    $jsf_drawCircle = "function drawCircle(center, radius, nodes, liColor, liWidth, liOpa, fillColor, fillOpa)
+    {
+        // Calculate km/degree
+        var latConv = center.distanceFrom(new GLatLng(center.lat()+0.1, center.lng()))/100;
+        var lngConv = center.distanceFrom(new GLatLng(center.lat(), center.lng()+0.1))/100;
+        
+        //Loop 
+        var points = [];
+        var step = parseInt(360/nodes)||10;
+        for(var i=0; i<=360; i+=step)
+        {
+            var pint = new GLatLng(center.lat() + (radius/latConv * Math.cos(i * Math.PI/180)), center.lng() + 
+                (radius/lngConv * Math.sin(i * Math.PI/180)));
+            points.push(pint);
+            bounds.extend(pint); //this is for fit function
+        }
+        fillColor = fillColor||liColor||\"#0055ff\";
+        liWidth = liWidth||2;
+        var poly = new GPolygon(points,liColor,liWidth,liOpa,fillColor,fillOpa);
+        map.addOverlay(poly);
+    }\n\n";
+
+    $jsf_createMarker = "function createMarker(point, popup) 
+    {
+        var marker = new GMarker(point, iconred);
+        GEvent.addListener(marker, \"click\", function() {
+        marker.openInfoWindowHtml(popup);
+    });
+    return marker;
+    }\n\n";
+
+    switch($script)
+    {
+    case "drawCircle":
+        return $jsf_drawCircle;
+    case "createMarker":
+        return $jsf_createMarker;
+    default:
+        return false;
+    }
+
+}
+
+//*******************************************
+
+
 function gMapDataFromXML($xmlstring)
 {
-    $returnString = "
-// Creates a marker at the given point 
-function createMarker(point, popup) 
-{
-    var marker = new GMarker(point, iconred);
-    GEvent.addListener(marker, \"click\", function() {
-    marker.openInfoWindowHtml(popup);
-});
-return marker;
-}\n";
-
+    
+    // Load the XML data into a simple xml string
     $xmldata = simplexml_load_string($xmlstring);
+    
+    // Creates a marker at the given point 
+    $returnString .= incGMapScript("createMarker");
 
+    // Include drawCircle function for showing precision
+    $returnString .= incGMapScript("drawCircle");
+
+    // Include the actual data for GMap
     $returnString.="\n// Add the actual data\n";
     if ($xmldata->xpath('//tree'))
     {
@@ -23,8 +78,13 @@ return marker;
            if ((isset($tree->latitude)) && (isset($tree->longitude)))
            {
                $returnString.= "var point = new GLatLng(".$tree->latitude.", ".$tree->longitude.");\n";
-               $htmlString = "<b>".$tree->validatedTaxon."</b><br>";
+               $htmlString = "<b>".$tree['id']." - ".$tree->validatedTaxon."</b><br>";
                $returnString.= "map.addOverlay(createMarker(point,'$htmlString'));\n";
+               if($tree->precision>0)
+               {
+                   $precision = $tree->precision/1000;
+                   $returnString.= "drawCircle(point, $precision, 40, 'black', 1, 0.2, 'black', 0.15);\n";
+               }
            }
         }
     }
@@ -45,7 +105,7 @@ return marker;
                 $returnString .= "], \"#ff0000\", 1, 1, \"#FF0000\", 0.3);\n";
                 $returnString .= "map.addOverlay(polygon);\n"; 
                 $returnString .= "var point = new GLatLng(".$site->extent['centroidLat'].", ".$site->extent['centroidLong'].");\n";
-                $htmlString = "<b>".$site->name." (".$site->code.")</b><br>";
+                $htmlString = "<b>".escapeXMLChars($site->name)." (".$site->code.")</b><br>";
                 $returnString.= "map.addOverlay(createMarker(point,'$htmlString'));\n";
            }
         }
@@ -145,5 +205,7 @@ function gMapExtentFromXML($xmlstring, $type)
 
 
 }
+
+    
 
 ?>

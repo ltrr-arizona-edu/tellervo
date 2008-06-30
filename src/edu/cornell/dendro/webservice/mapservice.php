@@ -13,6 +13,9 @@ require_once("inc/dbhelper.php");
 require_once("config.php");
 require_once("inc/meta.php");
 require_once("inc/auth.php");
+require_once("inc/request.php");
+require_once("inc/parameters.php");
+require_once("inc/search.php");
 require_once("inc/errors.php");
 require_once("inc/output.php");
 
@@ -45,49 +48,74 @@ if($myAuth->isLoggedIn())
 else
 {
     $myMetaHeader->requestLogin($myAuth->nonce());
+    echo "Not logged in";
+    die();
 }
 
-switch($reqObject)
+// Validate request and compile XML
+if( ($reqObject=='site') || ($reqObject=='tree') )
 {
-case "site":
-    $myObject = new site();
-    break;
-case "tree":
-    $myObject = new tree();
-    break;
-case "measurement":
-    $myObject = new measurement();
-    break;
-default :
+    if($reqID)
+    {
+        $xmlrequest = "<corina><request type=\"search\"><searchParams returnObject=\"$reqObject\"><param name=\"".$reqObject."id"."\" operator=\"=\" value=\"".$reqID."\" /></searchParams></request></corina>";
+    }
+    else
+    {
+        $xmlrequest = "<corina><request type=\"search\"><searchParams returnObject=\"$reqObject\"><all/></searchParams></request></corina>";
+    }
+}
+elseif($reqObject=='measurement')
+{
+    $xmlrequest = "<corina><request type=\"search\"><searchParams returnObject=\"$reqObject\"><param name=\"".$reqObject."id"."\" operator=\"=\" value=\"".$reqID."\" /></searchParams></request></corina>";
+}
+else
+{
     echo "unknown object type";
     die();
 }
 
-        
-// Before doing anything else check the request parameters are valid
-if($myMetaHeader->status != "Error")
+
+$myRequest = new request($myMetaHeader, $myAuth, $xmlrequest);
+$myRequest->createParamObjects();
+
+foreach ($myRequest->getParamObjectsArray() as $paramObj)
 {
-    /*if($success)
+    $myObject = new search();
+    
+    // Before doing anything else check the request parameters are valid
+    if($myMetaHeader->status != "Error")
     {
-        trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), $defaultErrType);
-        continue;
-    }*/
+        $success = $myObject->validateRequestParams($paramObj, $myRequest->getCrudMode());
+        if(!$success)
+        {
+
+            trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), $defaultErrType);
+            continue;
+        }
+    }
+   
+   
+    if($myMetaHeader->status != "Error")
+    {
+        $success = $myObject->doSearch($paramObj, $myAuth, 'false', 'standard');
+        if(!$success)
+        {
+            if ($myObject->getLastErrorCode()=='103')
+            {
+                // Permission denied so just raise a notice not an error
+                trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_NOTICE);
+            }
+            else
+            {
+                // Full blown error
+                trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage());
+            }
+        }
+    }
+    $xmldata.="<sql>".htmlSpecialChars($myObject->sqlcommand)."</sql>";
 }
 
-// Do permissions check
-if($myAuth->getPermission("read", $reqObject, $reqID)===FALSE)
-{
-    // Standard error message
-    trigger_error("103"."Permission to read ".$reqObject." id $reqID was denied.");
-}
 
-// Populated object with data
-$success = $myObject->setParamsFromDB($reqID);
-$success2 = $myObject->setChildParamsFromDB();
-if(!($success && $success2))
-{
-    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_NOTICE);
-}
 
 // Get XML representation of data
 if($myMetaHeader->status != "Error")

@@ -332,7 +332,12 @@ class site
                 $xml = "<site ";
                 $xml.= "id=\"".$this->id."\" >";
                 $xml.= getResourceLinkTag("site", $this->id)."\n ";
-                $xml.= getResourceLinkTag("site", $this->id, "map")."\n ";
+                
+                // Include map reference tag if appropriate
+                if( (isset($this->centroidLat)) && (isset($this->centroidLong)) )
+                {
+                    $xml.= getResourceLinkTag("site", $this->id, "map");
+                }
 
                 // Include permissions details if requested
                 if($this->includePermissions===TRUE) 

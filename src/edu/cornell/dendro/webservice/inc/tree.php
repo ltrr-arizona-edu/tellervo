@@ -95,7 +95,7 @@ class tree
         $this->precision = $thePrecision;
     }
 
-    function setParamsFromDB($theID)
+    function setParamsFromDB($theID, $format="standard")
     {
         // Set the current objects parameters from the database
 
@@ -404,7 +404,12 @@ class tree
                 $xml = "<tree ";
                 $xml.= "id=\"".$this->id."\" >";
                 $xml.= getResourceLinkTag("tree", $this->id)."\n";
-                $xml.= getResourceLinkTag("tree", $this->id, "map")."\n";
+                
+                // Include map reference tag if appropriate
+                if( (isset($this->latitude)) && (isset($this->longitude)) )
+                {
+                    $xml.= getResourceLinkTag("tree", $this->id, "map");
+                }
                 
                 // Include permissions details if requested
                 if($this->includePermissions===TRUE) 

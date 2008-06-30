@@ -946,7 +946,12 @@ class measurement
             $xml.= "<measurement ";
             $xml.= "id=\"".$this->vmeasurementID."\">";
             $xml.= getResourceLinkTag("measurement", $this->vmeasurementID);
-            $xml.= getResourceLinkTag("measurement", $this->vmeasurementID, "map");
+
+            // Include map reference tag if appropriate
+            if( (isset($this->centroidLat)) && (isset($this->centroidLong)) )
+            {
+                $xml.= getResourceLinkTag("measurement", $this->vmeasurementID, "map");
+            }
 
             // Include permissions details if requested
             if($this->includePermissions===TRUE) 
