@@ -79,7 +79,6 @@ public class DBBrowser extends javax.swing.JDialog {
         });
         
         btnOk.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent ev) {
 				finish();
 				dispose();
@@ -87,7 +86,6 @@ public class DBBrowser extends javax.swing.JDialog {
         });
 
         btnCancel.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent ev) {
 				dispose();
 			}
@@ -160,7 +158,6 @@ public class DBBrowser extends javax.swing.JDialog {
 
     		// when adding, just add things to our selectedElements list
     		btnAdd.addActionListener(new ActionListener() {
-				@Override
 				public void actionPerformed(ActionEvent ev) {
 					int rows[] = tblAvailMeas.getSelectedRows();
 					
@@ -184,7 +181,6 @@ public class DBBrowser extends javax.swing.JDialog {
 
     		// removing is similar...
     		btnRemove.addActionListener(new ActionListener() {
-				@Override
 				public void actionPerformed(ActionEvent ev) {
 					int rows[] = tblChosenMeas.getSelectedRows();
 					List<Element> removeList = new ArrayList<Element>();
@@ -341,21 +337,18 @@ public class DBBrowser extends javax.swing.JDialog {
 		
 		// now, set up our buttons
 		btnSelectAll.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				tblAvailMeas.selectAll();
 			}
 		});
 
 		btnSelectNone.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				tblAvailMeas.removeRowSelectionInterval(0, tblAvailMeas.getRowCount() - 1);
 			}
 		});
 
 		btnInvertSelect.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				for(int i = 0; i < tblAvailMeas.getRowCount(); i++) {
 					if(tblAvailMeas.isRowSelected(i))
