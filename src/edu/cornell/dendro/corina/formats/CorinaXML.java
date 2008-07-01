@@ -26,6 +26,7 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.User;
 import edu.cornell.dendro.corina.sample.*;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.webdbi.MapLink;
 import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
 
 import java.text.DateFormat;
@@ -328,6 +329,10 @@ public class CorinaXML implements Filetype {
 		ResourceIdentifier myid = ResourceIdentifier.fromRootElement(root);
 		if(myid != null)
 			s.setMeta("::dbrid", myid);
+		
+		MapLink maplink = MapLink.fromRootElement(root);
+		if(maplink != null)
+			s.setMeta("::maplink", maplink);
 		
 		s.setMeta("filename", "invalid filename");
 		s.setMeta("title", "measurement " + attr);

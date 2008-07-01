@@ -91,6 +91,7 @@ import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.DocumentListener2;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.Overwrite;
+import edu.cornell.dendro.corina.webdbi.MapLink;
 import edu.cornell.dendro.corina.io.SerialSampleIO;
 import edu.cornell.dendro.corina.Year;
 
@@ -176,6 +177,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	// gui -- new
 	private SampleDataView dataView; // (a jpanel)
 
+	// mozilla panel for maps
+	private EditorMozillaMapPanel mozillaMapPanel;
+	
 	private JTabbedPane rolodex;
 	
 	// for menus we have to notify...
@@ -458,6 +462,16 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			elemPanel = null;
 		}
 	}
+	
+	private void initMozillaMapPanel() {
+		MapLink link = (MapLink) sample.getMeta("::maplink");
+		
+		// no link? no panel!
+		if(link == null)
+			return;
+		
+		mozillaMapPanel = new EditorMozillaMapPanel(link);
+	}
 
 	private void addCards() {
 		// start fresh
@@ -473,6 +487,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			rolodex.add(wjPanel, I18n.getText("tab_weiserjahre"));
 		if (sample.getElements() != null)
 			rolodex.add(elemPanel, I18n.getText("tab_elements"));
+		
+		if(mozillaMapPanel != null)
+			rolodex.add(mozillaMapPanel, "Google Map");
 	}
 
 	private void initRolodex() {
@@ -712,6 +729,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		initWJPanel();
 		initMetaView();
 		initElemPanel();
+		initMozillaMapPanel();
 
 		// i'll watch the data
 		sample.addSampleListener(this);

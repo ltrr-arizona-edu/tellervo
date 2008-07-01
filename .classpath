@@ -36,5 +36,9 @@
 	<classpathentry kind="lib" path="Libraries/swing-layout-1.0.3.jar"/>
 	<classpathentry kind="lib" path="Libraries/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="Libraries/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="Libraries/jna.jar"/>
+	<classpathentry kind="lib" path="Libraries/mozdom4java.jar"/>
+	<classpathentry kind="lib" path="Libraries/MozillaInterfaces-1.8.1.4.jar"/>
+	<classpathentry kind="lib" path="Libraries/mozswing.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
