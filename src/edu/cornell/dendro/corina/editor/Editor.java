@@ -763,6 +763,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		menubar.add(new HelpMenu());
 		setJMenuBar(menubar);
 
+		if(mozillaMapPanel != null)
+			makeMenusHeavyweight();
+		
 		// init undo/redo
 		initUndoRedo();
 
@@ -801,6 +804,16 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// datatable gets initial focus, and select year 1001
 		dataView.requestFocus();
+	}
+	
+	/**
+	 * When using heavyweight components, we have to make sure menus extend over them!
+	 */
+	private void makeMenusHeavyweight() {
+		JMenuBar menus = getJMenuBar();
+		
+		for(int i = 0; i < menus.getMenuCount(); i++)
+			menus.getMenu(i).getPopupMenu().setLightWeightPopupEnabled(false);
 	}
 
 	// DESIGN: move all editor menus into corina.editor.menus.ManipulateMenu, etc.
