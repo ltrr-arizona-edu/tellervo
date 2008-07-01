@@ -55,6 +55,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
         initComponents();
         
         wizardMode = NEWWIZARD;
+        panelEyeCandy.setVisible(false);
         updateTitle();
         
         cardLayout = new CardLayout();
@@ -300,6 +301,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
     	Object o;
     	
     	this.wizardMode = IMPORTWIZARD;
+    	panelEyeCandy.setVisible(true);
     	
     	// these can be null!
     	if((o = lse.asSite()) != null)

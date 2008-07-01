@@ -556,8 +556,8 @@ public class DBBrowser extends javax.swing.JDialog {
         btnRemove.setText("Remove");
 
         jSplitPane1.setBorder(null);
-        jSplitPane1.setDividerLocation(150);
-        jSplitPane1.setResizeWeight(0.05);
+        jSplitPane1.setDividerLocation(250);
+        jSplitPane1.setResizeWeight(0.2);
         jSplitPane1.setFocusable(false);
 
         browseSearchPane.setEnabled(false);

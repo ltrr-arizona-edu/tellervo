@@ -194,7 +194,7 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends Ba
     		myPanel.commit();
     		if(!myPanel.didSucceed())
     			return false;
-    		
+    		    		
     		// ok, our panel succeeded. Neat.
     		// add the item to the combo box and select it
     		OBJT newObject = myPanel.getNewObject();

@@ -127,6 +127,8 @@ public class FileMenu extends JMenu {
 	// sample, sum, plot, grid, map
 	// (future: sample, sum, plot, crossdate, map?)
 	public void addNewOpenMenus() {
+		
+		/*
 		// new sample
 		JMenuItem sample = Builder.makeMenuItem("sample...",
 				"new edu.cornell.dendro.corina.editor.Editor()");
@@ -170,23 +172,25 @@ public class FileMenu extends JMenu {
 		add(crossdate);
 		add(map);
 		add(sites);
-
+*/
 		// db stuff
-		addSeparator();
-		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()"));		
-		add(Builder.makeMenuItem("dbmultiopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()"));		
+	//	addSeparator();
 		add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()"));
-		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdb()"));
+		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()"));		
+		add(Builder.makeMenuItem("dbmultiopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()"));	
 		addSeparator();
+		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdb()"));
+		
 		
 		// open, browse
-		add(Builder.makeMenuItem("open...", "edu.cornell.dendro.corina.gui.menus.FileMenu.open()"));
-		add(Builder.makeMenuItem("open_multi...",
-				"edu.cornell.dendro.corina.gui.menus.FileMenu.openMulti()"));
+		//add(Builder.makeMenuItem("open...", "edu.cornell.dendro.corina.gui.menus.FileMenu.open()"));
+		//add(Builder.makeMenuItem("open_multi...",
+		//		"edu.cornell.dendro.corina.gui.menus.FileMenu.openMulti()"));
 		add(Builder.makeMenuItem("bulkexport...",
 				"edu.cornell.dendro.corina.gui.menus.FileMenu.bulkexport()"));
-		add(Builder.makeMenuItem("browse...", "new edu.cornell.dendro.corina.browser.Browser();"));
-		add(OpenRecent.makeOpenRecentMenu());
+		
+		//add(Builder.makeMenuItem("browse...", "new edu.cornell.dendro.corina.browser.Browser();"));
+		//add(OpenRecent.makeOpenRecentMenu());
 	}
 
 	// ask the user for a file to open, and open it
@@ -522,7 +526,7 @@ public class FileMenu extends JMenu {
 	public void addCloseSaveMenus() {
 		addCloseMenu();
 		addSaveMenu();
-		addSaveAsMenu();
+		//addSaveAsMenu();
 	}
 
 	public void addSaveMenu() {

@@ -72,7 +72,7 @@ public class SampleSummary {
 	
 	public String taxonDescription() {
 		if(taxonCount > 1)
-			return "[" + taxonCount + " taxa, common " + commonTaxon + "]";
+			return "[" + taxonCount + " taxa of " + commonTaxon + "]";
 		return commonTaxon;
 	}
 	

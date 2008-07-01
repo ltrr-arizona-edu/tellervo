@@ -75,8 +75,8 @@ public class Browser extends javax.swing.JDialog {
         });
 
         jSplitPane1.setBorder(null);
-        jSplitPane1.setDividerLocation(150);
-        jSplitPane1.setResizeWeight(0.05);
+        jSplitPane1.setDividerLocation(450);
+        jSplitPane1.setResizeWeight(0.2);
         jSplitPane1.setFocusable(false);
 
         browseSearchPane.setEnabled(false);
