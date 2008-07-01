@@ -7,7 +7,6 @@
 	<classpathentry kind="lib" path="Libraries/bcel.jar"/>
 	<classpathentry kind="lib" path="Libraries/bsh.jar"/>
 	<classpathentry kind="lib" path="Libraries/comm.jar"/>
-	<classpathentry kind="lib" path="Libraries/commons-logging.jar"/>
 	<classpathentry kind="lib" path="Libraries/crimson.jar"/>
 	<classpathentry kind="lib" path="Libraries/findbugs.jar"/>
 	<classpathentry kind="lib" path="Libraries/fop.jar"/>
@@ -23,7 +22,6 @@
 	<classpathentry kind="lib" path="Libraries/junit.jar"/>
 	<classpathentry kind="lib" path="Libraries/jython.jar"/>
 	<classpathentry kind="lib" path="Libraries/kawa.jar"/>
-	<classpathentry kind="lib" path="Libraries/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="Libraries/saxon.jar"/>
 	<classpathentry kind="lib" path="Libraries/xalan.jar"/>
 	<classpathentry kind="lib" path="Libraries"/>
@@ -36,5 +34,7 @@
 	<classpathentry kind="lib" path="Libraries/pljava.jar"/>
 	<classpathentry kind="lib" path="Libraries/forms-1.1.0.jar"/>
 	<classpathentry kind="lib" path="Libraries/swing-layout-1.0.3.jar"/>
+	<classpathentry kind="lib" path="Libraries/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="Libraries/log4j-1.2.15.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
