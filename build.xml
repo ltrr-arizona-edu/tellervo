@@ -142,6 +142,8 @@
   <property name="pljava.jar" value="(set this in build.properties!)"/>
   <property name="swing-layout.jar" value="(set this in build.properties!)"/>
   <property name="jgoodies-forms.jar" value="(set this in build.properties!)"/>
+  <property name="mozswing.jar" value="(set this in build.properties!)"/>
+  <property name="MozillaInterfaces.jar" value="(set this in build.properties!)"/>
 	
 <!-- ==================== Compilation Classpath =========================== -->
 
@@ -170,6 +172,8 @@
     <pathelement location="${pljava.jar}"/> 
     <pathelement location="${swing-layout.jar}"/> 
     <pathelement location="${jgoodies-forms.jar}"/> 
+    <pathelement location="${mozswing.jar}"/> 
+    <pathelement location="${MozillaInterfaces.jar}"/> 
   </path>
 
 <!-- ==================== All Target ====================================== -->
@@ -303,13 +307,15 @@
 
     <!-- Create resource JAR file -->
     <jar jarfile="${deploy.home}/${app.name}-resources.jar"
-         index="true" compress="true" includes="Images">
+         index="true" compress="true">
+
 	<fileset dir="src" casesensitive="no">
-		<include name="**/*.gif"/>
-		<include name="**/*.jpg"/>
-		<include name="**/*.png"/>
-		<include name="**/*.wav"/>
+		<include name="edu/cornell/dendro/corina_resources/**/*.gif"/>
+		<include name="edu/cornell/dendro/corina_resources/**/*.jpg"/>
+		<include name="edu/cornell/dendro/corina_resources/**/*.png"/>
+		<include name="edu/cornell/dendro/corina_resources/**/*.wav"/>
         </fileset>
+
     </jar>
 
     <signjar jar="${deploy.home}/${app.name}-resources.jar" alias="dendro" storepass="d3ndr0" keystore="${app.keystore}"/>
@@ -324,11 +330,12 @@
          basedir="${build.home}" index="true" compress="true">
 
 	<fileset dir="src" casesensitive="no">
-		<include name="Translations/**"/>
-		<include name="Statistics/**"/>
-		<include name="*.properties"/>
 		<include name="log4j.xml"/>
 		<include name="Timestamp"/>
+		<include name="edu/cornell/dendro/corina_resources/*.properties"/>
+		<include name="edu/cornell/dendro/corina_resources/Translations/**"/>
+		<include name="edu/cornell/dendro/corina_resources/Statistics/**"/>
+		<exclude name="edu/cornell/dendro/corina_indexing/**"/>
 	</fileset>
 
     	<manifest>
