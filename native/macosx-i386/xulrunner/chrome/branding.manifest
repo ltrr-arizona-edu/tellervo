@@ -1,0 +1,2 @@
+locale branding en-US jar:branding.jar!/locale/branding/
+content branding jar:branding.jar!/content/branding/ xpcnativewrappers=yes
