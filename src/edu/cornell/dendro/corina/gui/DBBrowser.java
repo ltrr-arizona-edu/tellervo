@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -68,6 +69,9 @@ public class DBBrowser extends javax.swing.JDialog {
         setupTableArea();
         populateComponents();
         
+        // repack :)
+        pack();
+        
         Center.center(this);
         
         // Whenever the site list changes, make sure we repopulate our site list
@@ -120,7 +124,8 @@ public class DBBrowser extends javax.swing.JDialog {
 			// only single selection!
 			tblAvailMeas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			// easy; create a single scroll pane and jam it into the panel!
-    		workArea.add(new JScrollPane(tblAvailMeas));
+			workArea.setLayout(new BorderLayout());
+    		workArea.add(new JScrollPane(tblAvailMeas), BorderLayout.CENTER);
 
     		// start out with initial disabled state, only allow when something is selected
 			btnOk.setEnabled(false);
@@ -672,7 +677,7 @@ public class DBBrowser extends javax.swing.JDialog {
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE)
+                .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 716, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(btnInvertSelect)

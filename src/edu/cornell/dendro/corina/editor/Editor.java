@@ -470,7 +470,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		if(link == null)
 			return;
 		
-		mozillaMapPanel = new EditorMozillaMapPanel(link);
+		try {
+			mozillaMapPanel = new EditorMozillaMapPanel(link);
+		} catch (Exception e) {
+			// no mapping? no problem. don't fail violently!
+		}
 	}
 
 	private void addCards() {
