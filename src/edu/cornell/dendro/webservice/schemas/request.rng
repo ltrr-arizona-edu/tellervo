@@ -54,10 +54,10 @@
                     <externalRef href="subSite.rng"/>
                 </zeroOrMore>
                 <zeroOrMore>
-                    <externalRef href="tree.rng"/>	
+                    <externalRef href="element.rng"/>	
                 </zeroOrMore>
                 <zeroOrMore>
-                    <externalRef href="specimen.rng"/>	
+                    <externalRef href="sample.rng"/>	
                 </zeroOrMore>
                 <zeroOrMore>
                     <externalRef href="radius.rng" />   	
@@ -66,16 +66,16 @@
                     <externalRef href="siteNote.rng" />   	
                 </zeroOrMore>
                 <zeroOrMore>
-                    <externalRef href="treeNote.rng" />   	
+                    <externalRef href="elementNote.rng" />   	
                 </zeroOrMore>
                 <zeroOrMore>
-                    <externalRef href="measurement.rng" />
+                    <externalRef href="series.rng" />
                 </zeroOrMore>
                 <zeroOrMore>
-                    <externalRef href="readingNote.rng" />   	
+                    <externalRef href="valueNote.rng" />   	
                 </zeroOrMore>
                 <zeroOrMore>
-                    <externalRef href="measurementNote.rng" />   	
+                    <externalRef href="seriesNote.rng" />   	
                 </zeroOrMore>
                 <zeroOrMore>
                     <externalRef href="securityUser.rng" />   	

@@ -3,9 +3,9 @@
     <start>
       <choice>
       	<externalRef href="siteNote.rng"/>	
-      	<externalRef href="treeNote.rng"/>
-      	<externalRef href="measurementNote.rng"/>
-      	<externalRef href="readingNote.rng"/>
+      	<externalRef href="elementNote.rng"/>
+      	<externalRef href="seriesNote.rng"/>
+      	<externalRef href="valueNote.rng"/>
       </choice>
     </start>
 
