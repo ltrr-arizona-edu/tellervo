@@ -185,7 +185,7 @@ class search
                 }
 
                 // Set parameters on new object and return XML
-                $success = $myReturnObject->setParamsFromDB($row['id']);
+                $success = $myReturnObject->setParamsFromDB($row['id'], $format);
 
                 // Get permissions if requested
                 if($includePermissions===TRUE) $myReturnObject->getPermissions($myAuth->getID());

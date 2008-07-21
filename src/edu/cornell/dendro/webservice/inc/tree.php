@@ -27,6 +27,8 @@ class tree
     var $treeNoteArray = array();
     var $createdTimeStamp = NULL;
     var $lastModifiedTimeStamp = NULL;
+                    
+    var $summaryFullLabCode = NULL;
 
     var $includePermissions = FALSE;
     var $canCreate = NULL;
@@ -127,7 +129,17 @@ class tree
                 $this->precision = $row['precision'];
                 $this->createdTimeStamp = dateFudge($row['createdtimestamp']);
                 $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
+                
+                if($format=='summary')
+                {
+                    $sql = "select cpgdb.getlabel('tree', '".$this->id."')";
+                    pg_send_query($dbconn, $sql);
+                    $result = pg_get_result($dbconn);
+                    $row = pg_fetch_array($result);
+                    $this->summaryFullLabCode = $row['getlabel'];
+                }   
             }
+
         }
         else
         {
@@ -444,6 +456,13 @@ class tree
                     if(isset($this->isLiveTree))            $xml.= "<isLiveTree>".$this->isLiveTree."</isLiveTree>\n";
                     if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
                     if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+
+                    if($format=='summary')
+                    {
+                        $xml.="<parentSummary>";
+                        $xml.="<fullLabCode>".$this->summaryFullLabCode."</fullLabCode>\n";
+                        $xml.="</parentSummary>";
+                    }
 
                     if($format!="summary")
                     {

@@ -78,7 +78,7 @@ function gMapDataFromXML($xmlstring)
            if ((isset($tree->latitude)) && (isset($tree->longitude)))
            {
                $returnString.= "var point = new GLatLng(".$tree->latitude.", ".$tree->longitude.");\n";
-               $htmlString = "<b>".$tree['id']." - ".$tree->validatedTaxon."</b><br>";
+               $htmlString = "<b>".$tree->parentSummary->fullLabCode."</b><br><br><font size=-1>".$tree->validatedTaxon."</font>";
                $returnString.= "map.addOverlay(createMarker(point,'$htmlString'));\n";
                if($tree->precision>0)
                {
