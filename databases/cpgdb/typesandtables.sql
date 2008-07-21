@@ -17,15 +17,15 @@ CREATE TABLE tblVSeriesMetaCache (
     StartYear integer NOT NULL,
     ReadingCount integer NOT NULL,
     SeriesCount integer DEFAULT 1 NOT NULL
-    vmextent geometry,
+    vsextent geometry,
     siteCode text,
     siteCount integer,   
     commonTaxonName text,
     taxonCount integer
     label text;
-    CONSTRAINT enforce_dims_vmextent CHECK ((ndims(vmextent) = 2)),
-    CONSTRAINT enforce_geotype_vmextent CHECK (((geometrytype(vmextent) = 'POLYGON'::text) OR (vmextent IS NULL))),
-    CONSTRAINT enforce_srid_vmextent CHECK ((srid(vmextent) = 4326))
+    CONSTRAINT enforce_dims_vsextent CHECK ((ndims(vsextent) = 2)),
+    CONSTRAINT enforce_geotype_vsextent CHECK (((geometrytype(vsextent) = 'POLYGON'::text) OR (vsextent IS NULL))),
+    CONSTRAINT enforce_srid_vsextent CHECK ((srid(vsextent) = 4326))
 );
 
 DROP TABLE tblVSeriesDerivedCache CASCADE;

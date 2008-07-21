@@ -3,7 +3,7 @@
 
 -- our functions that the java library uses
 \i sum.sql
-\i update-vmresultinfo.sql
+\i update-vsresultinfo.sql
 
 -- Make sure our types and tables are ready
 \i typesandtables.sql
@@ -17,7 +17,7 @@
 \i trigger-tblvseriesmetacache.sql
 
 -- Now, our functions for creating and changing vseriess
-\i vm-functions.sql
+\i vs-functions.sql
 
 -- Populate the cache and other setup.
 \i setup-db.sql

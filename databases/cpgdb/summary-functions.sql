@@ -1,9 +1,9 @@
 --
--- param 1: VMeasurementID
--- Requires that tblvmeasurementderivedcache is populated for this id!
+-- param 1: VSeriesID
+-- Requires that tblvseriesderivedcache is populated for this id!
 --
-CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementSummaryInfo(integer)
-RETURNS typVMeasurementSummaryInfo AS $$
+CREATE OR REPLACE FUNCTION cpgdb.GetVSeriesSummaryInfo(integer)
+RETURNS typVSeriesSummaryInfo AS $$
 DECLARE
    VMID ALIAS FOR $1;
    numrows integer;
@@ -16,21 +16,21 @@ DECLARE
    curtaxa typfulltaxonomy;
    prevtaxa typfulltaxonomy;
 
-   ret typVMeasurementSummaryInfo;   
+   ret typVSeriesSummaryInfo;   
 BEGIN
-   ret.VMeasurementID := VMID;
+   ret.VSeriesID := VMID;
    numrows := 0;
 
    -- Get unique sites
    FOR rec IN SELECT s.code 
-	FROM tblVMeasurementDerivedCache d
-	INNER JOIN tblMeasurement m ON m.measurementID = d.measurementID
+	FROM tblVSeriesDerivedCache d
+	INNER JOIN tblSeries m ON m.seriesID = d.seriesID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
-	INNER JOIN tblSpecimen sp on sp.specimenID = r.specimenID
-	INNER JOIN tblTree t on t.treeID = sp.treeID
+	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
+	INNER JOIN tblElement t on t.elementID = sp.elementID
 	INNER JOIN tblSubsite su on su.subsiteID = t.subsiteID
 	INNER JOIN tblSite s on s.siteID = su.siteID
-	WHERE d.VMeasurementID = VMID
+	WHERE d.VSeriesID = VMID
 	GROUP BY(s.code)   
    LOOP
       IF numrows = 0 THEN
@@ -45,13 +45,13 @@ BEGIN
    -- Now, get the list of associated taxa
    numrows := 0;
    FOR rec IN SELECT txbasic.*,cpgdb.qryTaxonomy(txbasic.taxonID) as tx FROM
- 	(SELECT t.taxonID::integer FROM tblVMeasurementDerivedCache d
-	INNER JOIN tblMeasurement m ON m.measurementID = d.measurementID
+ 	(SELECT t.taxonID::integer FROM tblVSeriesDerivedCache d
+	INNER JOIN tblSeries m ON m.seriesID = d.seriesID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
-	INNER JOIN tblSpecimen sp on sp.specimenID = r.specimenID
-	INNER JOIN tblTree t on t.treeID = sp.treeID
+	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
+	INNER JOIN tblElement t on t.elementID = sp.elementID
 	INNER JOIN tlkpTaxon tx on tx.taxonID = t.taxonID
-	WHERE d.VMeasurementID = VMID
+	WHERE d.VSeriesID = VMID
 	GROUP BY(t.taxonID)) as txbasic
    LOOP
       curtaxa := rec.tx;
@@ -126,10 +126,10 @@ DECLARE
 
    siten text;
    subsiten text;
-   treen text;
-   specimenn text;
+   elementn text;
+   samplen text;
    radiusn text;
-   measurementn text;
+   seriesn text;
    ret text;
 
    count integer;
@@ -137,35 +137,35 @@ DECLARE
 BEGIN
    labelfor := lower($1);
    
-   -- VMeasurement is a special case
-   IF labelfor = 'vmeasurement' THEN 
+   -- VSeries is a special case
+   IF labelfor = 'vseries' THEN 
       count := 0;
-      FOR rec IN SELECT s.code as a,su.name as b,t.name as c,sp.name as d,r.name as e,vm.name as f 
-	FROM tblVMeasurementDerivedCache d
-	INNER JOIN tblMeasurement m ON m.measurementID = d.measurementID
+      FOR rec IN SELECT s.code as a,su.name as b,t.name as c,sp.name as d,r.name as e,vs.name as f 
+	FROM tblVSeriesDerivedCache d
+	INNER JOIN tblSeries m ON m.seriesID = d.seriesID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
-	INNER JOIN tblSpecimen sp on sp.specimenID = r.specimenID
-	INNER JOIN tblTree t on t.treeID = sp.treeID
+	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
+	INNER JOIN tblElement t on t.elementID = sp.elementID
 	INNER JOIN tblSubsite su on su.subsiteID = t.subsiteID
 	INNER JOIN tblSite s on s.siteID = su.siteID
-	INNER JOIN tblVMeasurement vm on vm.vmeasurementid = d.vmeasurementid
-	WHERE d.VMeasurementID = OBJID
+	INNER JOIN tblVSeries vs on vs.vseriesid = d.vseriesid
+	WHERE d.VSeriesID = OBJID
       LOOP
          count := count + 1;
 
          siten := rec.a;
          subsiten := rec.b;
-         treen := rec.c;
-         specimenn := rec.d;
+         elementn := rec.c;
+         samplen := rec.d;
          radiusn := rec.e;
-         measurementn := rec.f;
+         seriesn := rec.f;
       END LOOP;
 
       IF count = 0 THEN
-         RAISE EXCEPTION 'No data found for vmeasurement %', OBJID;
+         RAISE EXCEPTION 'No data found for vseries %', OBJID;
       ELSIF COUNT > 1 THEN
          -- More than one constituent? It's a sum or something derived from one.
-         RETURN measurementn;
+         RETURN seriesn;
       END IF;
 
       -- Start with silly cornell prefix and site
@@ -176,37 +176,37 @@ BEGIN
          ret := ret || '/' || subsiten;
       END IF;
 
-      ret := ret || '-' || treen || '-' || specimenn || '-' || radiusn || '-' || measurementn;
+      ret := ret || '-' || elementn || '-' || samplen || '-' || radiusn || '-' || seriesn;
 
       RETURN ret;
-   END IF; -- VMeasurement special case
+   END IF; -- VSeries special case
 
-   IF labelfor = 'tree' THEN
+   IF labelfor = 'element' THEN
       queryLevel := 1;
-      whereClause := ' WHERE t.treeid=' || OBJID;
-   ELSIF labelfor = 'specimen' THEN
+      whereClause := ' WHERE t.elementid=' || OBJID;
+   ELSIF labelfor = 'sample' THEN
       queryLevel := 2;      
-      whereClause := ' WHERE sp.specimenid=' || OBJID;
+      whereClause := ' WHERE sp.sampleid=' || OBJID;
    ELSIF labelfor = 'radius' THEN
       queryLevel := 3;      
       whereClause := ' WHERE r.radiusid=' || OBJID;
    ELSE
-      RAISE EXCEPTION 'Invalid usage: label must be for vmeasurement, tree, specimen, or radius';
+      RAISE EXCEPTION 'Invalid usage: label must be for vseries, element, sample, or radius';
    END IF;
 
    -- Start out with the basics
    selection := 's.code as a,su.name as b,t.name as c';
-   query := ' FROM tblsite s INNER JOIN tblsubsite su ON su.siteid = s.siteid INNER JOIN tbltree t ON t.subsiteid = su.subsiteid';
+   query := ' FROM tblsite s INNER JOIN tblsubsite su ON su.siteid = s.siteid INNER JOIN tblelement t ON t.subsiteid = su.subsiteid';
 
-   -- add specimen
+   -- add sample
    IF queryLevel > 1 THEN
-      query := query || ' INNER JOIN tblspecimen sp ON sp.treeid = t.treeid';
+      query := query || ' INNER JOIN tblsample sp ON sp.elementid = t.elementid';
       selection := selection || ',sp.name as d';
    END IF;
 
    -- add radius
    IF queryLevel > 2 THEN
-      query := query || ' INNER JOIN tblradius r ON r.specimenid = sp.specimenid';
+      query := query || ' INNER JOIN tblradius r ON r.sampleid = sp.sampleid';
       selection := selection || ',r.name as e';
    END IF;
 
@@ -220,10 +220,10 @@ BEGIN
          ret := ret || '/' || rec.b;
       END IF;
 
-      -- tree
+      -- element
       ret := ret || '-' || rec.c;
    
-      -- specimen
+      -- sample
       IF queryLevel > 1 THEN
          ret := ret || '-' || rec.d;
       END IF;
@@ -241,8 +241,8 @@ END;
 $_$
 LANGUAGE 'PLPGSQL' STABLE;
 
-CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementLabel(integer)
+CREATE OR REPLACE FUNCTION cpgdb.GetVSeriesLabel(integer)
 RETURNS text AS $_$
-   SELECT cpgdb.GetLabel('vmeasurement', $1);
+   SELECT cpgdb.GetLabel('vseries', $1);
 $_$ LANGUAGE SQL STABLE;
 

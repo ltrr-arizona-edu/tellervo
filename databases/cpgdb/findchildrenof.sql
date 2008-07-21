@@ -10,7 +10,7 @@ DECLARE
    whereClause VARCHAR;
    joinClause VARCHAR;
    query VARCHAR;
-   vmid INTEGER;
+   vsid INTEGER;
    res typVSeriesSearchResult;
 BEGIN
    -- Loop through our ordered array above, dynamically creating
@@ -35,8 +35,8 @@ BEGIN
 
    -- RAISE NOTICE 'Query: %', query;
 
-   FOR vmid IN EXECUTE query LOOP
-      FOR res IN SELECT * FROM cpgdb.FindVMChildren(vmid, true) LOOP
+   FOR vsid IN EXECUTE query LOOP
+      FOR res IN SELECT * FROM cpgdb.FindVMChildren(vsid, true) LOOP
          RETURN NEXT res;
       END LOOP;
    END LOOP;

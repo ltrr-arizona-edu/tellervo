@@ -47,7 +47,7 @@ DECLARE
    objid integer;
    res refcursor;
    perm varchar;
-   vmtype varchar;
+   vstype varchar;
    perms typPermissionSet;
    childPerms typPermissionSet;
    setSize integer;
@@ -81,20 +81,20 @@ BEGIN
       CLOSE res;
       
       IF _permtype = 'vseries' THEN
-         -- This obnoxious query joins direct vms to elements, so we don't have to do another query
-         SELECT op.Name,tr.ElementID INTO vmtype,objid FROM tblVSeries vm 
-            INNER JOIN tlkpVSeriesOp op ON vm.VSeriesOpID = op.VSeriesOpID
-            LEFT JOIN tblSeries t1 ON vm.SeriesID = t1.SeriesID 
+         -- This obnoxious query joins direct vss to elements, so we don't have to do another query
+         SELECT op.Name,tr.ElementID INTO vstype,objid FROM tblVSeries vs 
+            INNER JOIN tlkpVSeriesOp op ON vs.VSeriesOpID = op.VSeriesOpID
+            LEFT JOIN tblSeries t1 ON vs.SeriesID = t1.SeriesID 
             LEFT JOIN tblRadius t2 ON t2.RadiusID = t1.RadiusID 
             LEFT JOIN tblSample t3 on t3.SampleID = t2.SampleID 
             LEFT JOIN tblElement tr ON tr.ElementID = t3.ElementID
-            WHERE vm.VSeriesID = _pid;
+            WHERE vs.VSeriesID = _pid;
 
          IF NOT FOUND THEN
             RAISE EXCEPTION 'Could not determine security: vseries % -> element does not exist', _pid;
          END IF;
 
-         IF vmtype = 'Direct' THEN
+         IF vstype = 'Direct' THEN
             -- We hit a direct VSeries. Move down to element...
             perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'element', objid);
 	    RETURN perms;

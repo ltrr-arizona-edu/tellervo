@@ -2,7 +2,7 @@ drop schema cpgdb cascade;
 create schema cpgdb;
 
 --
--- functions for getting tblvmeasurementresults
+-- functions for getting tblvseasurementresults
 --
 
 CREATE OR REPLACE FUNCTION cpgdb.GetVSeriesResultID(integer)
@@ -16,7 +16,7 @@ CREATE OR REPLACE FUNCTION cpgdb.GetVSeriesResult(integer)
   LANGUAGE 'javaU' VOLATILE;
 
 --
--- functions for dealing with tblvmeasurementreadingresults
+-- functions for dealing with tblvseasurementreadingresults
 --
 
 CREATE OR REPLACE FUNCTION cpgdb.GetVSeriesReadingResult(varchar)

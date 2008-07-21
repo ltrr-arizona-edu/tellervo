@@ -1,7 +1,7 @@
 -- Set everything up nicely!
 CREATE OR REPLACE FUNCTION cpgdb.populate_cache() RETURNS text AS $$
 DECLARE
-   vmid tblVSeries.VSeriesID%TYPE;
+   vsid tblVSeries.VSeriesID%TYPE;
    ret text;
    cnt integer;
    badcnt integer;
@@ -11,12 +11,12 @@ BEGIN
    badcnt := 0;
 
    -- For every VSeries...
-   FOR vmid in SELECT VSeriesID FROM tblVSeries ORDER BY CreatedTimestamp LOOP
+   FOR vsid in SELECT VSeriesID FROM tblVSeries ORDER BY CreatedTimestamp LOOP
       -- Populate the cache
-      RAISE NOTICE 'Populating VSeries % cache...', vmid;
+      RAISE NOTICE 'Populating VSeries % cache...', vsid;
       cnt := cnt + 1;
 
-      SELECT vseriesid INTO dummy FROM cpgdb.CreateMetaCache(vmid);
+      SELECT vseriesid INTO dummy FROM cpgdb.CreateMetaCache(vsid);
 
       IF dummy IS NULL THEN
          IF badcnt = 0 THEN
@@ -26,9 +26,9 @@ BEGIN
          END IF;
 
          badcnt := badcnt + 1;
-         ret := ret || vmid; 
+         ret := ret || vsid; 
 
-         RAISE NOTICE 'Well, that didn\'t work for %', vmid;
+         RAISE NOTICE 'Well, that didn\'t work for %', vsid;
       END IF;
    END LOOP;
 
