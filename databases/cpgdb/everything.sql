@@ -13,10 +13,10 @@
 \i findchildrenof.sql
 
 -- Now, our cache functions
-\i vmeasurementmetacache.sql
-\i trigger-tblvmeasurementmetacache.sql
+\i vseriesmetacache.sql
+\i trigger-tblvseriesmetacache.sql
 
--- Now, our functions for creating and changing vmeasurements
+-- Now, our functions for creating and changing vseriess
 \i vm-functions.sql
 
 -- Populate the cache and other setup.

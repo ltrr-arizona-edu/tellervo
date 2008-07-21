@@ -1,7 +1,7 @@
 -- Set everything up nicely!
 CREATE OR REPLACE FUNCTION cpgdb.populate_cache() RETURNS text AS $$
 DECLARE
-   vmid tblVMeasurement.VMeasurementID%TYPE;
+   vmid tblVSeries.VSeriesID%TYPE;
    ret text;
    cnt integer;
    badcnt integer;
@@ -10,13 +10,13 @@ BEGIN
    cnt := 0;
    badcnt := 0;
 
-   -- For every VMeasurement...
-   FOR vmid in SELECT VMeasurementID FROM tblVMeasurement ORDER BY CreatedTimestamp LOOP
+   -- For every VSeries...
+   FOR vmid in SELECT VSeriesID FROM tblVSeries ORDER BY CreatedTimestamp LOOP
       -- Populate the cache
-      RAISE NOTICE 'Populating VMeasurement % cache...', vmid;
+      RAISE NOTICE 'Populating VSeries % cache...', vmid;
       cnt := cnt + 1;
 
-      SELECT vmeasurementid INTO dummy FROM cpgdb.CreateMetaCache(vmid);
+      SELECT vseriesid INTO dummy FROM cpgdb.CreateMetaCache(vmid);
 
       IF dummy IS NULL THEN
          IF badcnt = 0 THEN
@@ -32,7 +32,7 @@ BEGIN
       END IF;
    END LOOP;
 
-   return 'Attempted to populate ' || cnt || ' vmeasurement caches. ' || badcnt || ' failed. ' || ret;
+   return 'Attempted to populate ' || cnt || ' vseries caches. ' || badcnt || ' failed. ' || ret;
 END;
 $$ LANGUAGE 'plpgsql' VOLATILE;
 

@@ -34,10 +34,10 @@ GRANT EXECUTE ON FUNCTION cpgdb.rasteratpoint(rasterfile character varying, lati
 
 
 
-CREATE OR REPLACE FUNCTION cpgdb.lookupenvdata(thetreeid integer, therasterlayerid integer)
+CREATE OR REPLACE FUNCTION cpgdb.lookupenvdata(theelementid integer, therasterlayerid integer)
 RETURNS double precision AS
 $BODY$DECLARE
-reftree CURSOR FOR SELECT X(location) AS longitude, Y(location) AS latitude FROM tbltree where treeid=thetreeid;
+refelement CURSOR FOR SELECT X(location) AS longitude, Y(location) AS latitude FROM tblelement where elementid=theelementid;
 reflayers CURSOR FOR SELECT filename FROM tblrasterlayer WHERE rasterlayerid=therasterlayerid;
 refvalue CURSOR (myfilename varchar, mylat double precision, mylong double precision) FOR SELECT rasteratpoint from cpgdb.rasteratpoint(myfilename, mylat, mylong);
 myfilename varchar;
@@ -46,10 +46,10 @@ mylong double precision;
 myvalue double precision;
 BEGIN
 
-    -- Lookup latitude and longitude for specified treeid
-    OPEN reftree;
-    FETCH reftree INTO mylong, mylat;
-    CLOSE reftree;
+    -- Lookup latitude and longitude for specified elementid
+    OPEN refelement;
+    FETCH refelement INTO mylong, mylat;
+    CLOSE refelement;
 
     -- Lookup filename for specified rasterlayer
     OPEN reflayers;
@@ -62,19 +62,19 @@ BEGIN
     CLOSE refvalue;
 
     -- Delete existing value
-    DELETE FROM tblenvironmentaldata where rasterlayerid=therasterlayerid and treeid=thetreeid;
+    DELETE FROM tblenvironmentaldata where rasterlayerid=therasterlayerid and elementid=theelementid;
 
     -- Insert value in tblenvironmentaldata
-    INSERT INTO tblenvironmentaldata(rasterlayerid, treeid, value) VALUES (therasterlayerid, thetreeid, myvalue);
+    INSERT INTO tblenvironmentaldata(rasterlayerid, elementid, value) VALUES (therasterlayerid, theelementid, myvalue);
 
     RETURN myvalue;
 
 END;$BODY$
 LANGUAGE 'plpgsql' VOLATILE;
-ALTER FUNCTION cpgdb.lookupenvdata(thetreeid integer, therasterlayerid integer) OWNER TO aps03pwb;
-GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdata(thetreeid integer, therasterlayerid integer) TO public;
-GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdata(thetreeid integer, therasterlayerid integer) TO aps03pwb;
-GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdata(thetreeid integer, therasterlayerid integer) TO "Webgroup";
+ALTER FUNCTION cpgdb.lookupenvdata(theelementid integer, therasterlayerid integer) OWNER TO aps03pwb;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdata(theelementid integer, therasterlayerid integer) TO public;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdata(theelementid integer, therasterlayerid integer) TO aps03pwb;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdata(theelementid integer, therasterlayerid integer) TO "Webgroup";
 
 
 
@@ -82,24 +82,24 @@ GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdata(thetreeid integer, therasterlayeri
 CREATE OR REPLACE FUNCTION cpgdb.lookupenvdatabylayer(therasterlayerid integer)
 RETURNS void AS
 $BODY$DECLARE
-reftrees CURSOR FOR SELECT treeid FROM tbltree WHERE location IS NOT NULL;
+refelements CURSOR FOR SELECT elementid FROM tblelement WHERE location IS NOT NULL;
 myrasterlayerid integer;
-mytreeid integer;
+myelementid integer;
 mybin double precision;
 BEGIN
 
-    -- Loop through all trees with a location
-    OPEN reftrees;
-    FETCH reftrees INTO mytreeid;
+    -- Loop through all elements with a location
+    OPEN refelements;
+    FETCH refelements INTO myelementid;
     WHILE FOUND LOOP
 
         -- Do lookup
-        SELECT * FROM cpgdb.lookupenvdata(mytreeid, therasterlayerid) INTO mybin;
+        SELECT * FROM cpgdb.lookupenvdata(myelementid, therasterlayerid) INTO mybin;
 
         -- Continue to next rasterlayer    
-        FETCH reftrees INTO mytreeid;
+        FETCH refelements INTO myelementid;
     END LOOP;
-    CLOSE reftrees;
+    CLOSE refelements;
 
     RETURN;
 
@@ -114,7 +114,7 @@ GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabylayer(therasterlayerid integer) T
 
 
 
-CREATE OR REPLACE FUNCTION cpgdb.lookupenvdatabytree(thetreeid integer)
+CREATE OR REPLACE FUNCTION cpgdb.lookupenvdatabyelement(theelementid integer)
 RETURNS void AS
 $BODY$DECLARE
 reflayers2 CURSOR FOR SELECT rasterlayerid FROM tblrasterlayer WHERE issystemlayer=true;
@@ -128,7 +128,7 @@ BEGIN
     WHILE FOUND LOOP
 
         -- Do lookup
-        SELECT * FROM cpgdb.lookupenvdata(thetreeid, myrasterlayerid) INTO mybin;
+        SELECT * FROM cpgdb.lookupenvdata(theelementid, myrasterlayerid) INTO mybin;
 
         -- Continue to next rasterlayer    
         FETCH reflayers2 INTO myrasterlayerid;
@@ -139,8 +139,8 @@ BEGIN
 
 END;$BODY$
 LANGUAGE 'plpgsql' VOLATILE;
-ALTER FUNCTION cpgdb.lookupenvdatabytree(thetreeid integer) OWNER TO aps03pwb;
-GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabytree(thetreeid integer) TO public;
-GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabytree(thetreeid integer) TO aps03pwb;
-GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabytree(thetreeid integer) TO "Webgroup";
+ALTER FUNCTION cpgdb.lookupenvdatabyelement(theelementid integer) OWNER TO aps03pwb;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabyelement(theelementid integer) TO public;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabyelement(theelementid integer) TO aps03pwb;
+GRANT EXECUTE ON FUNCTION cpgdb.lookupenvdatabyelement(theelementid integer) TO "Webgroup";
 

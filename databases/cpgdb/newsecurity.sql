@@ -36,8 +36,8 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 -- 1 = array of groups
--- 2 = type (vmeasurement, tree, site, default)
--- 3 = id (VMeasurementID, TreeID, SiteID, or 0 for default)
+-- 2 = type (vseries, element, site, default)
+-- 3 = id (VSeriesID, ElementID, SiteID, or 0 for default)
 CREATE OR REPLACE FUNCTION cpgdb.GetGroupPermissionSet(_groupIDs integer[], _permtype varchar, _pid integer) 
 RETURNS typPermissionSet AS $$
 DECLARE
@@ -52,11 +52,11 @@ DECLARE
    childPerms typPermissionSet;
    setSize integer;
 
-   stypes varchar[] := array['vmeasurement','tree','site','default'];
+   stypes varchar[] := array['vseries','element','site','default'];
 BEGIN
    -- Invalid type specified?
    IF NOT (_permtype = ANY(stypes)) THEN
-      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vmeasurement, tree, site, default (case matters!).', _permtype;
+      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vseries, element, site, default (case matters!).', _permtype;
    END IF;
 
    -- Build our query
@@ -80,31 +80,31 @@ BEGIN
    IF NOT FOUND THEN
       CLOSE res;
       
-      IF _permtype = 'vmeasurement' THEN
-         -- This obnoxious query joins direct vms to trees, so we don't have to do another query
-         SELECT op.Name,tr.TreeID INTO vmtype,objid FROM tblVMeasurement vm 
-            INNER JOIN tlkpVMeasurementOp op ON vm.VMeasurementOpID = op.VMeasurementOpID
-            LEFT JOIN tblMeasurement t1 ON vm.MeasurementID = t1.MeasurementID 
+      IF _permtype = 'vseries' THEN
+         -- This obnoxious query joins direct vms to elements, so we don't have to do another query
+         SELECT op.Name,tr.ElementID INTO vmtype,objid FROM tblVSeries vm 
+            INNER JOIN tlkpVSeriesOp op ON vm.VSeriesOpID = op.VSeriesOpID
+            LEFT JOIN tblSeries t1 ON vm.SeriesID = t1.SeriesID 
             LEFT JOIN tblRadius t2 ON t2.RadiusID = t1.RadiusID 
-            LEFT JOIN tblSpecimen t3 on t3.SpecimenID = t2.SpecimenID 
-            LEFT JOIN tblTree tr ON tr.TreeID = t3.TreeID
-            WHERE vm.VMeasurementID = _pid;
+            LEFT JOIN tblSample t3 on t3.SampleID = t2.SampleID 
+            LEFT JOIN tblElement tr ON tr.ElementID = t3.ElementID
+            WHERE vm.VSeriesID = _pid;
 
          IF NOT FOUND THEN
-            RAISE EXCEPTION 'Could not determine security: vmeasurement % -> tree does not exist', _pid;
+            RAISE EXCEPTION 'Could not determine security: vseries % -> element does not exist', _pid;
          END IF;
 
          IF vmtype = 'Direct' THEN
-            -- We hit a direct VMeasurement. Move down to tree...
-            perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'tree', objid);
+            -- We hit a direct VSeries. Move down to element...
+            perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'element', objid);
 	    RETURN perms;
          ELSE
             -- Start with a completely empty permission set
             setSize := 0;
 
-            -- For each child VMeasurement, AND our sets together...
-            FOR objid IN SELECT MemberVMeasurementID FROM tblVMeasurementGroup WHERE VMeasurementID = _pid LOOP
-               childPerms := cpgdb.GetGroupPermissionSet(_groupIDs, 'vmeasurement', objid);
+            -- For each child VSeries, AND our sets together...
+            FOR objid IN SELECT MemberVSeriesID FROM tblVSeriesGroup WHERE VSeriesID = _pid LOOP
+               childPerms := cpgdb.GetGroupPermissionSet(_groupIDs, 'vseries', objid);
 
                -- Start out with our first childperms; continue with anding them.               
                IF setSize = 0 THEN
@@ -119,14 +119,14 @@ BEGIN
             RETURN perms;
          END IF;
          
-      ELSIF _permType = 'tree' THEN
-         -- Get the siteID of this tree
-         SELECT tblSubsite.siteID INTO objid FROM tblTree, tblSubsite
-                WHERE tblTree.subsiteID=tblSubsite.SubsiteID
-                AND tblTree.treeid = _pid;
+      ELSIF _permType = 'element' THEN
+         -- Get the siteID of this element
+         SELECT tblSubsite.siteID INTO objid FROM tblElement, tblSubsite
+                WHERE tblElement.subsiteID=tblSubsite.SubsiteID
+                AND tblElement.elementid = _pid;
 
          IF NOT FOUND THEN
-            RAISE EXCEPTION 'Could not determine security: tree % -> site does not exist', _pid;
+            RAISE EXCEPTION 'Could not determine security: element % -> site does not exist', _pid;
          END IF;
          
          perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'site', objid);
@@ -248,8 +248,8 @@ RETURNS integer[] AS $$
 $$ LANGUAGE SQL IMMUTABLE;
 
 -- 1 = securityUserID
--- 2 = type (VMeasurement, Tree, Site, Default)
--- 3 = id (VMeasurementID, TreeID, SiteID, or 0 for default)
+-- 2 = type (VSeries, Element, Site, Default)
+-- 3 = id (VSeriesID, ElementID, SiteID, or 0 for default)
 CREATE OR REPLACE FUNCTION cpgdb.GetUserPermissionSet(integer, varchar, integer) 
 RETURNS typPermissionSet AS $$
 DECLARE

@@ -1,18 +1,18 @@
-CREATE OR REPLACE FUNCTION cpgdb.CreateMetaCache(tblVMeasurement.VMeasurementID%TYPE) 
-RETURNS tblVMeasurementMetaCache AS $$
+CREATE OR REPLACE FUNCTION cpgdb.CreateMetaCache(tblVSeries.VSeriesID%TYPE) 
+RETURNS tblVSeriesMetaCache AS $$
 DECLARE
    vmid ALIAS FOR $1;
    op varchar;
-   vmresult tblVMeasurementResult%ROWTYPE;
-   ret tblVMeasurementMetaCache%ROWTYPE;
+   vmresult tblVSeriesResult%ROWTYPE;
+   ret tblVSeriesMetaCache%ROWTYPE;
 BEGIN
    -- RAISE NOTICE 'Creating metacache for %', vmid;
 
-   -- acquire the vmeasurementresult
+   -- acquire the vseriesresult
    BEGIN
-      SELECT * INTO vmresult FROM cpgdb.GetVMeasurementResult(vmid);
+      SELECT * INTO vmresult FROM cpgdb.GetVSeriesResult(vmid);
    EXCEPTION WHEN OTHERS THEN
-      RAISE NOTICE 'CreateMetaCache(%) failed: VMeasurement is malformed or does not exist', vmid;
+      RAISE NOTICE 'CreateMetaCache(%) failed: VSeries is malformed or does not exist', vmid;
       RETURN NULL;
    END;
 
@@ -20,80 +20,80 @@ BEGIN
       RETURN NULL;
    END IF;
 
-   ret.VMeasurementID := vmid;
+   ret.VSeriesID := vmid;
    ret.StartYear := vmresult.StartYear;
 
-   -- Calculate number of readings
-   SELECT COUNT(*) INTO ret.ReadingCount
-      FROM tblVMeasurementReadingResult WHERE VMeasurementResultID = vmresult.VMeasurementResultID;
+   -- Calculate number of values
+   SELECT COUNT(*) INTO ret.ValueCount
+      FROM tblVSeriesValueResult WHERE VSeriesResultID = vmresult.VSeriesResultID;
 
-   -- Calculate number of measurements
-   SELECT FIRST(tlkpVMeasurementOp.Name), COUNT(tblVMeasurementGroup.VMeasurementID) 
-      INTO op, ret.MeasurementCount
-      FROM tblVMeasurement 
-      INNER JOIN tlkpVMeasurementOp ON tblVMeasurement.VMeasurementOpID = tlkpVMeasurementOp.VMeasurementOpID 
-      LEFT JOIN tblVMeasurementGroup ON tblVMeasurement.VMeasurementID = tblVMeasurementGroup.VMeasurementID 
-      WHERE tblVMeasurement.VMeasurementID = vmid;
+   -- Calculate number of seriess
+   SELECT FIRST(tlkpVSeriesOp.Name), COUNT(tblVSeriesGroup.VSeriesID) 
+      INTO op, ret.SeriesCount
+      FROM tblVSeries 
+      INNER JOIN tlkpVSeriesOp ON tblVSeries.VSeriesOpID = tlkpVSeriesOp.VSeriesOpID 
+      LEFT JOIN tblVSeriesGroup ON tblVSeries.VSeriesID = tblVSeriesGroup.VSeriesID 
+      WHERE tblVSeries.VSeriesID = vmid;
 
-   -- For a Direct VMeasurement, force 1.
+   -- For a Direct VSeries, force 1.
    IF op = 'Direct' THEN
-      ret.MeasurementCount := 1;
+      ret.SeriesCount := 1;
    END IF;
 
    -- Delete and populate the cache
-   DELETE FROM tblVMeasurementMetaCache WHERE VMeasurementID = vmid;
-   INSERT INTO tblVMeasurementMetaCache(VMeasurementID, StartYear, ReadingCount, MeasurementCount)
-      VALUES (ret.VMeasurementID, ret.StartYear, ret.ReadingCount, ret.MeasurementCount);
+   DELETE FROM tblVSeriesMetaCache WHERE VSeriesID = vmid;
+   INSERT INTO tblVSeriesMetaCache(VSeriesID, StartYear, ValueCount, SeriesCount)
+      VALUES (ret.VSeriesID, ret.StartYear, ret.ValueCount, ret.SeriesCount);
 
    -- Clean up
-   DELETE FROM tblVMeasurementResult WHERE VMeasurementResultID = vmresult.VMeasurementResultID;
+   DELETE FROM tblVSeriesResult WHERE VSeriesResultID = vmresult.VSeriesResultID;
 
-   -- Clear out our tblVMeasurementDerivedCache for this VMeasurement
-   DELETE FROM tblVMeasurementDerivedCache WHERE VMeasurementID = vmid;
+   -- Clear out our tblVSeriesDerivedCache for this VSeries
+   DELETE FROM tblVSeriesDerivedCache WHERE VSeriesID = vmid;
    -- Then, populate it.
-   INSERT INTO tblVMeasurementDerivedCache(VMeasurementID,MeasurementID) 
-      SELECT vmid,measurement.measurementID FROM cpgdb.FindVMParentMeasurements(vmid) measurement;
+   INSERT INTO tblVSeriesDerivedCache(VSeriesID,SeriesID) 
+      SELECT vmid,series.seriesID FROM cpgdb.FindVMParentSeriess(vmid) series;
 
-   -- Calculate extent of vmeasurement by looking up locations of all associated direct measurements
-   SELECT setsrid(extent(tbltree.location)::geometry,4326)
+   -- Calculate extent of vseries by looking up locations of all associated direct seriess
+   SELECT setsrid(extent(tblelement.location)::geometry,4326)
       INTO  ret.vmextent
-      FROM  tbltree, tblspecimen, tblradius, tblmeasurement, tblvmeasurement
-      WHERE tblvmeasurement.measurementid=tblmeasurement.measurementid
-      AND   tblmeasurement.radiusid=tblradius.radiusid
-      AND   tblradius.specimenid=tblspecimen.specimenid
-      AND   tblspecimen.treeid=tbltree.treeid
-      AND   tblvmeasurement.vmeasurementid
-            IN (SELECT vmeasurementid
+      FROM  tblelement, tblsample, tblradius, tblseries, tblvseries
+      WHERE tblvseries.seriesid=tblseries.seriesid
+      AND   tblseries.radiusid=tblradius.radiusid
+      AND   tblradius.sampleid=tblsample.sampleid
+      AND   tblsample.elementid=tblelement.elementid
+      AND   tblvseries.vseriesid
+            IN (SELECT vseriesid
                    FROM  cpgdb.FindVMParents(vmid, true)
                    WHERE op='Direct');
 
    --RAISE NOTICE 'Extent is %', ret.vmextent;
 
    -- Store extent info
-   UPDATE tblVMeasurementMetaCache SET vmextent = ret.vmextent WHERE VMeasurementID = ret.VMeasurementID;
+   UPDATE tblVSeriesMetaCache SET vmextent = ret.vmextent WHERE VSeriesID = ret.VSeriesID;
 
 
    -- Now, get taxon and label data and update that
    SELECT INTO ret.siteCode, ret.siteCount, ret.CommonTaxonName, ret.taxonCount, ret.label 
-       s.siteCode,s.siteCount,s.commonTaxonName,s.taxonCount,cpgdb.GetVMeasurementLabel(vmid) AS label 
-       FROM cpgdb.getVMeasurementSummaryInfo(vmid) AS s;
-   UPDATE tblVMeasurementMetaCache SET (siteCode, siteCount, commonTaxonName, taxonCount, label) =
+       s.siteCode,s.siteCount,s.commonTaxonName,s.taxonCount,cpgdb.GetVSeriesLabel(vmid) AS label 
+       FROM cpgdb.getVSeriesSummaryInfo(vmid) AS s;
+   UPDATE tblVSeriesMetaCache SET (siteCode, siteCount, commonTaxonName, taxonCount, label) =
        (ret.siteCode, ret.siteCount, ret.CommonTaxonName, ret.taxonCount, ret.label)
-       WHERE VMeasurementID = vmid;
+       WHERE VSeriesID = vmid;
 
    -- Return result
    RETURN ret;
 END;
 $$ LANGUAGE 'plpgsql' VOLATILE;
 
-CREATE OR REPLACE FUNCTION cpgdb.GetMetaCache(tblVMeasurement.VMeasurementID%TYPE) 
-RETURNS tblVMeasurementMetaCache AS $$
+CREATE OR REPLACE FUNCTION cpgdb.GetMetaCache(tblVSeries.VSeriesID%TYPE) 
+RETURNS tblVSeriesMetaCache AS $$
 DECLARE
    vmid ALIAS FOR $1;
-   ret tblVMeasurementMetaCache%ROWTYPE;
+   ret tblVSeriesMetaCache%ROWTYPE;
 BEGIN
    -- Do we already have it cached?
-   SELECT * INTO ret FROM tblVMeasurementMetaCache WHERE VMeasurementID = vmid;
+   SELECT * INTO ret FROM tblVSeriesMetaCache WHERE VSeriesID = vmid;
    IF FOUND THEN
       -- RAISE NOTICE 'Cache hit on %', vmid;
       RETURN ret;
@@ -106,8 +106,8 @@ BEGIN
 END;
 $$ LANGUAGE 'plpgsql' VOLATILE;
 
-CREATE OR REPLACE FUNCTION cpgdb.GetDerivedCache(tblVMeasurement.VMeasurementID%TYPE) 
-RETURNS SETOF tblVMeasurementDerivedCache AS $$
+CREATE OR REPLACE FUNCTION cpgdb.GetDerivedCache(tblVSeries.VSeriesID%TYPE) 
+RETURNS SETOF tblVSeriesDerivedCache AS $$
    SELECT * FROM cpgdb.GetMetaCache($1);
-   SELECT * FROM tblVMeasurementDerivedCache WHERE VMeasurementID = $1;
+   SELECT * FROM tblVSeriesDerivedCache WHERE VSeriesID = $1;
 $$ LANGUAGE SQL;

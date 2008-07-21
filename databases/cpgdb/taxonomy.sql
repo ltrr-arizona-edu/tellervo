@@ -88,5 +88,5 @@ GRANT EXECUTE ON FUNCTION cpgdb.qrytaxonomy(taxonid integer) TO public;
 GRANT EXECUTE ON FUNCTION cpgdb.qrytaxonomy(taxonid integer) TO aps03pwb;
 GRANT EXECUTE ON FUNCTION cpgdb.qrytaxonomy(taxonid integer) TO "Webgroup";
 GRANT EXECUTE ON FUNCTION cpgdb.qrytaxonomy(taxonid integer) TO lucasm;
-COMMENT ON FUNCTION cpgdb.qrytaxonomy(taxonid integer) IS 'This is a cross tab query that builds on qrytaxonflat1 and 2 to flatten out the entire taxonomic tree for a given taxonid. ';
+COMMENT ON FUNCTION cpgdb.qrytaxonomy(taxonid integer) IS 'This is a cross tab query that builds on qrytaxonflat1 and 2 to flatten out the entire taxonomic element for a given taxonid. ';
 

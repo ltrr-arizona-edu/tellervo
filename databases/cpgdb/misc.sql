@@ -5,23 +5,23 @@ create schema cpgdb;
 -- functions for getting tblvmeasurementresults
 --
 
-CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementResultID(integer)
+CREATE OR REPLACE FUNCTION cpgdb.GetVSeriesResultID(integer)
   RETURNS "varchar" AS
-    'edu.cornell.dendro.cpgdb.Dispatch.GetVMeasurementResult'
+    'edu.cornell.dendro.cpgdb.Dispatch.GetVSeriesResult'
   LANGUAGE 'javaU' VOLATILE;  
 
-CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementResult(integer)
-  RETURNS SETOF tblVMeasurementResult AS
-    'edu.cornell.dendro.cpgdb.VMeasurementResultSet.getVMeasurementResultSet'
+CREATE OR REPLACE FUNCTION cpgdb.GetVSeriesResult(integer)
+  RETURNS SETOF tblVSeriesResult AS
+    'edu.cornell.dendro.cpgdb.VSeriesResultSet.getVSeriesResultSet'
   LANGUAGE 'javaU' VOLATILE;
 
 --
 -- functions for dealing with tblvmeasurementreadingresults
 --
 
-CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementReadingResult(varchar)
-   RETURNS SETOF tblVMeasurementReadingResult AS 
-      'SELECT * from tblVMeasurementReadingResult WHERE VMeasurementResultID = $1 ORDER BY relyear'
+CREATE OR REPLACE FUNCTION cpgdb.GetVSeriesReadingResult(varchar)
+   RETURNS SETOF tblVSeriesReadingResult AS 
+      'SELECT * from tblVSeriesReadingResult WHERE VSeriesResultID = $1 ORDER BY relyear'
    LANGUAGE SQL STABLE;
 
 --
