@@ -257,7 +257,7 @@ class auth
 
   function getPermission($thePermissionType, $theObjectType, $theObjectID)
   {
-        // $theObjectType should be one of site,tree, vmeasurement, default
+        // $theObjectType should be one of site,element, vseries, default
 
         global $dbconn;
 
@@ -267,10 +267,10 @@ class auth
             return true;
         }
 
-        // If Object is measurement change it to vmeasurement so that db understands!
-        if ($theObjectType=='measurement')
+        // If Object is series change it to vseries so that db understands!
+        if ($theObjectType=='series')
         {
-            $theObjectType='vmeasurement';
+            $theObjectType='vseries';
         }
 
         // Convert PG NULL to a string 'NULL' for SQL insert
@@ -304,12 +304,12 @@ class auth
         switch($theObjectType)
         {
         case "radius":
-            $sql = "select tblradius.radiusid, tblspecimen.treeid as parentid from tblradius, tblspecimen where tblradius.radiusid=$theObjectID and tblradius.specimenid=tblspecimen.specimenid";
-            $theObjectType="tree";
+            $sql = "select tblradius.radiusid, tblsample.elementid as parentid from tblradius, tblsample where tblradius.radiusid=$theObjectID and tblradius.sampleid=tblsample.sampleid";
+            $theObjectType="element";
             break;
-        case "specimen":
-            $sql = "select tblspecimen.specimenid, tblspecimen.treeid as parentid from tblspecimen where tblspecimen.specimenid=$theObjectID ";
-            $theObjectType="tree";
+        case "sample":
+            $sql = "select tblsample.sampleid, tblsample.elementid as parentid from tblsample where tblsample.sampleid=$theObjectID ";
+            $theObjectType="element";
             break;
         case "subSite":
             $sql = "select tblsubsite.subsiteid, tblsubsite.siteid as parentid from tblsubsite where tblsubsite.subsiteid=$theObjectID ";

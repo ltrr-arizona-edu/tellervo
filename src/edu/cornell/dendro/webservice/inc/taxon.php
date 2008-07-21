@@ -241,7 +241,7 @@ class taxon
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
             {
-                // Get all tree note id's for this tree and store 
+                // Get all element note id's for this element and store 
                 $taxonRankID = $row['taxonrankid'];
             }
         }
@@ -260,7 +260,7 @@ class taxon
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    // Get all tree note id's for this tree and store 
+                    // Get all element note id's for this element and store 
                     $parentTaxonID = $row['taxonid'];
                 }
             }

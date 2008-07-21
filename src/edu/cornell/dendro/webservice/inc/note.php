@@ -49,9 +49,9 @@ class note
         $this->tableName = "tlkp".strtolower($this->objectName);
         $this->parentXMLTag = $this->objectName."Dictionary";
         
-        if($type=='vmeasurement') 
+        if($type=='vseries') 
         {
-            $this->xmlTag = 'measurementNote';
+            $this->xmlTag = 'seriesNote';
         }
         else
         {
@@ -522,29 +522,29 @@ class siteNote extends note
 
 }
 
-class treeNote extends note
+class elementNote extends note
 {
     function __construct()
     {
-        parent::__construct('tree'); 
+        parent::__construct('element'); 
     }
 
 }
 
-class vmeasurementNote extends note
+class vseriesNote extends note
 {
     function __construct()
     {
-        parent::__construct('vmeasurement'); 
+        parent::__construct('vseries'); 
     }
 
 }
 
-class readingNote extends note
+class valueNote extends note
 {
     function __construct()
     {
-        parent::__construct('reading'); 
+        parent::__construct('value'); 
     }
 
 }

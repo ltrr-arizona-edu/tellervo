@@ -19,10 +19,10 @@ require_once("inc/output.php");
 
 require_once("inc/site.php");
 require_once("inc/subSite.php");
-require_once("inc/tree.php");
-require_once("inc/specimen.php");
+require_once("inc/element.php");
+require_once("inc/sample.php");
 require_once("inc/radius.php");
-require_once("inc/measurement.php");
+require_once("inc/series.php");
 require_once("inc/authenticate.php");
 require_once("inc/dictionaries.php");
 require_once("inc/search.php");
@@ -107,29 +107,29 @@ elseif($myMetaHeader->status != "Error")
             case "subSiteParameters":
                 $myObject = new subSite();
                 break;
-            case "treeParameters":
-                $myObject = new tree();
+            case "elementParameters":
+                $myObject = new element();
                 break;
-            case "specimenParameters":
-                $myObject = new specimen();
+            case "sampleParameters":
+                $myObject = new sample();
                 break;
             case "radiusParameters":
                 $myObject = new radius();
                 break;
-            case "measurementParameters":
-                $myObject = new measurement();
+            case "seriesParameters":
+                $myObject = new series();
                 break;
             case "siteNoteParameters":
                 $myObject = new siteNote();
                 break;
-            case "treeNoteParameters":
-                $myObject = new treeNote();
+            case "elementNoteParameters":
+                $myObject = new elementNote();
                 break;
-            case "vmeasurementNoteParameters":
-                $myObject = new vmeasurementNote();
+            case "vseriesNoteParameters":
+                $myObject = new vseriesNote();
                 break;
-            case "readingNoteParameters":
-                $myObject = new readingNote();
+            case "valueNoteParameters":
+                $myObject = new valueNote();
                 break;
             case "authenticationParameters":
                 $myObject = new authenticate();
@@ -195,19 +195,19 @@ elseif($myMetaHeader->status != "Error")
                     $myID = $paramObj->siteID;
                     $objectType="site";
                     break;
-                case "tree":
+                case "element":
                     $myID = $paramObj->subSiteID;
                     $objectType="subSite";
                     break;
-                case "specimen":
-                    $myID = $paramObj->treeID;
-                    $objectType="tree";
+                case "sample":
+                    $myID = $paramObj->elementID;
+                    $objectType="element";
                     break;
                 case "radius":
-                    $myID = $paramObj->specimenID;
-                    $objectType="specimen";
+                    $myID = $paramObj->sampleID;
+                    $objectType="sample";
                     break;
-                case "measurement":
+                case "series":
                     $myID = $paramObj->radiusID;
                     $objectType="radius";
                     break;
@@ -216,13 +216,13 @@ elseif($myMetaHeader->status != "Error")
                 case "siteNote":
                     $myID = $paramObj->id;
                     break;
-                case "treeNote":
+                case "elementNote":
                     $myID = $paramObj->id;
                     break;
-                case "vmeasurementNote":
+                case "vseriesNote":
                     $myID = $paramObj->id;
                     break;
-                case "readingNote":
+                case "valueNote":
                     $myID = $paramObj->id;
                     break;
                 case "securityUser":
@@ -315,7 +315,7 @@ elseif($myMetaHeader->status != "Error")
         {
             if($myMetaHeader->status != "Error")
             {
-                $success = $myObject->setParamsFromDB($paramObj->id);
+                $success = $myObject->setParamsFromDB($paramObj->id, $myRequest->getFormat());
                 $success2 = $myObject->setChildParamsFromDB();
                 if(!($success && $success2))
                 {

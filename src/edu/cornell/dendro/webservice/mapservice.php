@@ -57,23 +57,22 @@ if( ($reqObject=='site') || ($reqObject=='tree') )
 {
     if($reqID)
     {
-        $xmlrequest = "<corina><request type=\"search\"><searchParams returnObject=\"$reqObject\"><param name=\"".$reqObject."id"."\" operator=\"=\" value=\"".$reqID."\" /></searchParams></request></corina>";
+        $xmlrequest = "<corina><request type=\"search\" format=\"summary\"><searchParams returnObject=\"$reqObject\"><param name=\"".$reqObject."id"."\" operator=\"=\" value=\"".$reqID."\" /></searchParams></request></corina>";
     }
     else
     {
-        $xmlrequest = "<corina><request type=\"search\"><searchParams returnObject=\"$reqObject\"><all/></searchParams></request></corina>";
+        $xmlrequest = "<corina><request type=\"search\" format=\"summary\"><searchParams returnObject=\"$reqObject\"><all/></searchParams></request></corina>";
     }
 }
 elseif($reqObject=='measurement')
 {
-    $xmlrequest = "<corina><request type=\"search\"><searchParams returnObject=\"$reqObject\"><param name=\"".$reqObject."id"."\" operator=\"=\" value=\"".$reqID."\" /></searchParams></request></corina>";
+    $xmlrequest = "<corina><request type=\"search\" format=\"summary\"><searchParams returnObject=\"$reqObject\"><param name=\"".$reqObject."id"."\" operator=\"=\" value=\"".$reqID."\" /></searchParams></request></corina>";
 }
 else
 {
     echo "unknown object type";
     die();
 }
-
 
 $myRequest = new request($myMetaHeader, $myAuth, $xmlrequest);
 $myRequest->createParamObjects();
@@ -97,7 +96,7 @@ foreach ($myRequest->getParamObjectsArray() as $paramObj)
    
     if($myMetaHeader->status != "Error")
     {
-        $success = $myObject->doSearch($paramObj, $myAuth, 'false', 'standard');
+        $success = $myObject->doSearch($paramObj, $myAuth, 'false', $myRequest->getFormat());
         if(!$success)
         {
             if ($myObject->getLastErrorCode()=='103')

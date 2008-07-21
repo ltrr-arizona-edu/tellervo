@@ -99,7 +99,7 @@
 	            <optional>
 	            	<element name="references">
 		                <zeroOrMore>
-		                    <externalRef href="specimen.rng"/>
+		                    <externalRef href="sample.rng"/>
 		                </zeroOrMore>
 	                </element>
                 </optional>
@@ -114,7 +114,7 @@
                 
                 <optional>
 		                <zeroOrMore>
-		                    <externalRef href="specimen.rng"/>
+		                    <externalRef href="sample.rng"/>
 		                </zeroOrMore>
                 </optional>
                 

@@ -12,7 +12,7 @@ class radius
 {
     var $id = NULL;
     var $name = NULL;
-    var $specimenID = NULL;
+    var $sampleID = NULL;
     
     var $measurementArray = array();
     var $createdTimeStamp = NULL;
@@ -50,7 +50,7 @@ class radius
     function setSpecimenID($theSpecimenID)
     {
         // Set the current objects note.
-        $this->specimenID=$theSpecimenID;
+        $this->sampleID=$theSpecimenID;
     }
 
     function setErrorMessage($theCode, $theMessage)
@@ -85,7 +85,7 @@ class radius
                 $row = pg_fetch_array($result);
                 $this->name = $row['name'];
                 $this->id = $row['radiusid'];
-                $this->specimenID = $row['specimenid'];
+                $this->sampleID = $row['sampleid'];
                 $this->createdTimeStamp = $row['createdtimestamp'];
                 $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
             }
@@ -133,7 +133,7 @@ class radius
     {
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
         if (isset($paramsClass->name))       $this->name       = $paramsClass->name;
-        if (isset($paramsClass->specimenID)) $this->specimenID = $paramsClass->specimenID;
+        if (isset($paramsClass->sampleID)) $this->sampleID = $paramsClass->sampleID;
 
         return true;
     }
@@ -167,7 +167,7 @@ class radius
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
                     return false;
                 }
-                if(($paramsObj->specimenID==NULL) 
+                if(($paramsObj->sampleID==NULL) 
                     && ($paramsObj->name==NULL)
                     && ($paramsObj->hasChild!=True))
                 {
@@ -200,9 +200,9 @@ class radius
                         $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a radius.");
                         return false;
                     }
-                    if($paramsObj->specimenID == NULL) 
+                    if($paramsObj->sampleID == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'specimenid' field is required when creating a radius.");
+                        $this->setErrorMessage("902","Missing parameter - 'sampleid' field is required when creating a radius.");
                         return false;
                     }
                 }
@@ -255,15 +255,15 @@ class radius
             require_once('site.php');
             require_once('subSite.php');
             require_once('tree.php');
-            require_once('specimen.php');
+            require_once('sample.php');
             global $dbconn;
             $xml = NULL;
 
-            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblspecimen.specimenid, tblradius.radiusid
+            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblsample.sampleid, tblradius.radiusid
                 FROM tblsubsite 
                 INNER JOIN tbltree ON tblsubsite.subsiteid=tbltree.subsiteid
-                INNER JOIN tblspecimen ON tbltree.treeid=tblspecimen.treeid
-                INNER JOIN tblradius ON tblspecimen.specimenid=tblradius.specimenid
+                INNER JOIN tblsample ON tbltree.treeid=tblsample.treeid
+                INNER JOIN tblradius ON tblsample.sampleid=tblradius.sampleid
                 where tblradius.radiusid='".$this->id."'";
 
             $dbconnstatus = pg_connection_status($dbconn);
@@ -285,7 +285,7 @@ class radius
                     $mySite = new site();
                     $mySubSite = new subSite();
                     $myTree = new tree();
-                    $mySpecimen = new specimen();
+                    $mySpecimen = new sample();
 
                     $success = $mySite->setParamsFromDB($row['siteid']);
                     if($success===FALSE)
@@ -305,7 +305,7 @@ class radius
                         trigger_error($myTree->getLastErrorCode().$myTree->getLastErrorMessage());
                     }
                     
-                    $success = $mySpecimen->setParamsFromDB($row['specimenid']);
+                    $success = $mySpecimen->setParamsFromDB($row['sampleid']);
                     if($success===FALSE)
                     {
                         trigger_error($mySpecimen->getLastErrorCode().$mySpecimen->getLastErrorMessage());
@@ -438,16 +438,16 @@ class radius
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tblradius (name, specimenid) values ('".$this->name."', '".$this->specimenID."')";
+                    $sql = "insert into tblradius (name, sampleid) values ('".$this->name."', '".$this->sampleID."')";
                     $sql2 = "select * from tblradius where radiusid=currval('tblradius_radiusid_seq')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tblradius set name='".$this->name."', specimenid='".$this->specimenID."' where radiusid=".$this->id;
+                    $sql = "update tblradius set name='".$this->name."', sampleid='".$this->sampleID."' where radiusid=".$this->id;
                     $sql = "update tblradius set ";
                     if (isset($this->name)) $sql.="name='".$this->name."', ";
-                    if (isset($this->specimenid)) $sql.="specimenid='".$this->specimenID.", ";
+                    if (isset($this->sampleid)) $sql.="sampleid='".$this->sampleID.", ";
                     $sql = substr($sql, 0, -2);
                     $sql.= " where radiusid=".$this->id;
                 }

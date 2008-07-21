@@ -210,17 +210,17 @@ class authenticate
         case "subsite":
             return "subsite";
             break;
-        case "tree":
-            return "tree";
+        case "element":
+            return "element";
             break;
-        case "specimen":
-            return "specimen";
+        case "sample":
+            return "sample";
             break;
         case "radius":
             return "radius";
             break;
-        case "measurement":
-            return "vmeasurement";
+        case "series":
+            return "vseries";
             break;
         default:
             return false;
@@ -239,17 +239,17 @@ class authenticate
         case "subsite":
             return "vwtblsubsite";
             break;
-        case "tree":
-            return "vwtbltree";
+        case "element":
+            return "vwtblelement";
             break;
-        case "specimen":
-            return "vwtblspecimen";
+        case "sample":
+            return "vwtblsample";
             break;
         case "radius":
             return "vwtblradius";
             break;
-        case "measurement":
-            return "vwvmeasurement";
+        case "series":
+            return "vwvseries";
             break;
         default:
             return false;
@@ -262,14 +262,14 @@ class authenticate
         // This function returns an interger representing the most junior level of relationship required in this query
         // tblsite         -- 6 -- most senior
         // tblsubsite      -- 5 --
-        // tbltree         -- 4 --
-        // tblspecimen     -- 3 --
+        // tblelement         -- 4 --
+        // tblsample     -- 3 --
         // tblradius       -- 2 --
-        // tblmeasurement  -- 1 -- most junior
+        // tblseries  -- 1 -- most junior
         
         $myRequest = $theRequest;
         
-        if (($myRequest->measurementParamsArray) || ($myRequest->returnObject == 'measurement'))
+        if (($myRequest->seriesParamsArray) || ($myRequest->returnObject == 'series'))
         {
             return 1;
         }
@@ -277,11 +277,11 @@ class authenticate
         {
             return 2;
         }
-        elseif (($myRequest->specimenParamsArray) || ($myRequest->returnObject == 'specimen'))
+        elseif (($myRequest->sampleParamsArray) || ($myRequest->returnObject == 'sample'))
         {
             return 3;
         }
-        elseif (($myRequest->treeParamsArray) || ($myRequest->returnObject == 'tree'))
+        elseif (($myRequest->elementParamsArray) || ($myRequest->returnObject == 'element'))
         {
             return 4;
         }
@@ -304,10 +304,10 @@ class authenticate
         // This function returns an interger representing the most senior level of relationship required in this query
         // tblsite         -- 6 -- most senior
         // tblsubsite      -- 5 --
-        // tbltree         -- 4 --
-        // tblspecimen     -- 3 --
+        // tblelement         -- 4 --
+        // tblsample     -- 3 --
         // tblradius       -- 2 --
-        // tblmeasurement  -- 1 -- most junior
+        // tblseries  -- 1 -- most junior
 
         $myRequest = $theRequest;
 
@@ -319,11 +319,11 @@ class authenticate
         {
             return 5;
         }
-        elseif (($myRequest->treeParamsArray) || ($myRequest->returnObject == 'tree'))
+        elseif (($myRequest->elementParamsArray) || ($myRequest->returnObject == 'element'))
         {
             return 4;
         }
-        elseif (($myRequest->specimenParamsArray) || ($myRequest->returnObject == 'specimen'))
+        elseif (($myRequest->sampleParamsArray) || ($myRequest->returnObject == 'sample'))
         {
             return 3;
         }
@@ -331,7 +331,7 @@ class authenticate
         {
             return 2;
         }
-        elseif (($myRequest->measurementParamsArray) || ($myRequest->returnObject == 'measurement'))
+        elseif (($myRequest->seriesParamsArray) || ($myRequest->returnObject == 'series'))
         {
             return 1;
         }
@@ -355,23 +355,23 @@ class authenticate
 
         if (($lowestLevel==1) && ($highestLevel>=1))
         {
-            $sql .= "vwvmeasurement.measurementid=tblmeasurement.measurementid and ";
+            $sql .= "vwvseries.seriesid=tblseries.seriesid and ";
         }
         if (($lowestLevel<=1) && ($highestLevel>1))
         {
-            $sql .= "vwvmeasurement.radiusid=vwtblradius.radiusid and ";
+            $sql .= "vwvseries.radiusid=vwtblradius.radiusid and ";
         }
         if (($lowestLevel<=2) && ($highestLevel>2))
         {
-            $sql .= "vwtblradius.specimenid=vwtblspecimen.specimenid and ";
+            $sql .= "vwtblradius.sampleid=vwtblsample.sampleid and ";
         }
         if (($lowestLevel<=3) && ($highestLevel>3))
         {
-            $sql .= "vwtblspecimen.treeid=vwtbltree.treeid and ";
+            $sql .= "vwtblsample.elementid=vwtblelement.elementid and ";
         }
         if (($lowestLevel<=4) && ($highestLevel>4))
         {
-            $sql .= "vwtbltree.subsiteid=vwtblsubsite.subsiteid and ";
+            $sql .= "vwtblelement.subsiteid=vwtblsubsite.subsiteid and ";
         }
         if (($lowestLevel<=5) && ($highestLevel>5))
         {

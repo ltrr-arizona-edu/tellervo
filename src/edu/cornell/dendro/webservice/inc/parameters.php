@@ -86,12 +86,12 @@ class subSiteParameters extends parameters
     {
         if(isset($this->xmlrequest['id']))      $this->id           = (int) $this->xmlrequest['id'];
         if(isset($this->xmlrequest->name))      $this->name         = addslashes($this->xmlrequest->name);
-        if(isset($this->xmlrequest->tree))      $this->hasChild     = True;
+        if(isset($this->xmlrequest->element))      $this->hasChild     = True;
     }
 
 }
 
-class treeParameters extends parameters
+class elementParameters extends parameters
 {
     var $id                 = NULL;
     var $name               = NULL;
@@ -102,7 +102,7 @@ class treeParameters extends parameters
     var $precision          = NULL;
     var $subSiteID          = NULL;
     var $isLiveTree         = NULL;
-    var $treeNoteArray      = array();
+    var $elementNoteArray      = array();
 
     function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
     {
@@ -120,34 +120,34 @@ class treeParameters extends parameters
         if(isset($this->xmlrequest->longitude))             $this->longitude            = (double)   $this->xmlrequest->longitude;
         if(isset($this->xmlrequest->precision))             $this->precision            = (double)   $this->xmlrequest->precision;
         if(isset($this->xmlrequest->isLiveTree))            $this->isLiveTree           = fromStringtoPHPBool($this->xmlrequest->isLiveTree);
-        if(isset($this->xmlrequest->specimen))              $this->hasChild             = True;
+        if(isset($this->xmlrequest->sample))              $this->hasChild             = True;
         
-        $treeNotes = $this->xmlrequest->xpath('//treeNotes');
-        if (isset($treeNotes[0]->treeNote[0]))
+        $elementNotes = $this->xmlrequest->xpath('//elementNotes');
+        if (isset($elementNotes[0]->elementNote[0]))
         {
-            foreach($treeNotes[0] as $item)
+            foreach($elementNotes[0] as $item)
             {
-                array_push($this->treeNoteArray, $item['id']);
+                array_push($this->elementNoteArray, $item['id']);
             }
         }
         else
         {
-            $this->treeNoteArray = array('empty');
+            $this->elementNoteArray = array('empty');
         }
     }
 }
 
-class specimenParameters extends parameters
+class sampleParameters extends parameters
 {
     var $id                            = NULL;
-    var $treeID                        = NULL;
+    var $elementID                        = NULL;
     var $name                          = NULL;
     var $dateCollected                 = NULL;
-    var $specimenType                  = NULL;
+    var $sampleType                  = NULL;
     var $terminalRing                  = NULL;
     var $sapwoodCount                  = NULL;
-    var $specimenQuality               = NULL;
-    var $specimenContinuity            = NULL;
+    var $sampleQuality               = NULL;
+    var $sampleContinuity            = NULL;
     var $pith                          = NULL;
     var $unmeasuredPre                 = NULL;
     var $unmeasuredPost                = NULL;
@@ -161,7 +161,7 @@ class specimenParameters extends parameters
 
     function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
     {
-        $this->treeID = $parentID;
+        $this->elementID = $parentID;
         parent::__construct($metaHeader, $auth, $xmlrequest);
     }
     
@@ -170,11 +170,11 @@ class specimenParameters extends parameters
         if(isset($this->xmlrequest['id']))                          $this->id                               = (int)      $this->xmlrequest['id'];
         if(isset($this->xmlrequest->name))                          $this->name                             = addslashes($this->xmlrequest->name);
         if(isset($this->xmlrequest->dateCollected))                 $this->dateCollected                    = addslashes($this->xmlrequest->dateCollected);
-        if(isset($this->xmlrequest->specimenType))                  $this->specimenType                     = addslashes($this->xmlrequest->specimenType);
+        if(isset($this->xmlrequest->sampleType))                  $this->sampleType                     = addslashes($this->xmlrequest->sampleType);
         if(isset($this->xmlrequest->terminalRing))                  $this->terminalRing                     = addslashes($this->xmlrequest->terminalRing);
         if(isset($this->xmlrequest->sapwoodCount))                  $this->sapwoodCount                     = (int)      $this->xmlrequest->sapwoodCount;
-        if(isset($this->xmlrequest->specimenQuality))               $this->specimenQuality                  = addslashes($this->xmlrequest->specimenQuality);
-        if(isset($this->xmlrequest->specimenContinuity))            $this->specimenContinuity               = addslashes($this->xmlrequest->specimenContinuity);
+        if(isset($this->xmlrequest->sampleQuality))               $this->sampleQuality                  = addslashes($this->xmlrequest->sampleQuality);
+        if(isset($this->xmlrequest->sampleContinuity))            $this->sampleContinuity               = addslashes($this->xmlrequest->sampleContinuity);
         if(isset($this->xmlrequest->pith))                          $this->pith                             = addslashes($this->xmlrequest->pith);
         if(isset($this->xmlrequest->unmeasuredPre))                 $this->unmeasuredPre                    = (int)      $this->xmlrequest->unmeasuredPre;
         if(isset($this->xmlrequest->unmeasuredPost))                $this->unmeasuredPost                   = (int)      $this->xmlrequest->unmeasuredPost;
@@ -193,11 +193,11 @@ class radiusParameters extends parameters
 {
     var $id         = NULL;
     var $name       = NULL;
-    var $specimenID = NULL;
+    var $sampleID = NULL;
 
     function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
     {
-        $this->specimenID = $parentID;
+        $this->sampleID = $parentID;
         parent::__construct($metaHeader, $auth, $xmlrequest);
     }
     
@@ -205,13 +205,13 @@ class radiusParameters extends parameters
     {
         if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
         if(isset($this->xmlrequest->name))                  $this->name         = addslashes($this->xmlrequest->name);
-        if(isset($this->xmlrequest->measurement))           $this->hasChild     = True;
+        if(isset($this->xmlrequest->series))           $this->hasChild     = True;
     }
 }
 
 
 
-class measurementParameters extends parameters
+class seriesParameters extends parameters
 {
     var $id                     = NULL;
     var $radiusID               = NULL;
@@ -227,13 +227,13 @@ class measurementParameters extends parameters
     var $isLegacyCleaned        = NULL;
     var $isReconciled           = NULL;
     var $isPublished            = NULL;
-    var $vmeasurementOp         = NULL;
-    var $vmeasurementOpParam    = NULL;
-    var $readingType            = NULL;
-    var $readingUnits           = NULL;
-    var $readingsArray          = array();
+    var $vseriesOp         = NULL;
+    var $vseriesOpParam    = NULL;
+    var $valueType            = NULL;
+    var $valueUnits           = NULL;
+    var $valuesArray          = array();
     var $referencesArray        = array();
-    var $measurementNoteArray   = array();
+    var $seriesNoteArray   = array();
 
 
     function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
@@ -257,23 +257,23 @@ class measurementParameters extends parameters
         if(isset($this->xmlrequest->metadata->isLegacyCleaned))            $this->isLegacyCleaned       = fromStringtoPHPBool( $this->xmlrequest->metadata->isLegacyCleaned);
         if(isset($this->xmlrequest->metadata->isReconciled))               $this->isReconciled          = fromStringtoPHPBool( $this->xmlrequest->metadata->isReconciled);
         if(isset($this->xmlrequest->metadata->isPublished))                $this->isPublished           = fromStringtoPHPBool( $this->xmlrequest->metadata->isPublished);
-        if(isset($this->xmlrequest->metadata->readings['type']))           $this->readingType           = addslashes(          $this->xmlrequest->metadata->readings['type']);
-        if(isset($this->xmlrequest->metadata->readings['units']))          $this->readingUnits          = addslashes(          $this->xmlrequest->metadata->readings['units']);
-        if(isset($this->xmlrequest->metadata->operation))                  $this->vmeasurementOp        = addslashes(          $this->xmlrequest->metadata->operation);
-        if(isset($this->xmlrequest->metadata->operation['parameter']))     $this->vmeasurementOpParam   = addslashes(          $this->xmlrequest->metadata->operation['parameter']);
+        if(isset($this->xmlrequest->metadata->values['type']))           $this->valueType           = addslashes(          $this->xmlrequest->metadata->values['type']);
+        if(isset($this->xmlrequest->metadata->values['units']))          $this->valueUnits          = addslashes(          $this->xmlrequest->metadata->values['units']);
+        if(isset($this->xmlrequest->metadata->operation))                  $this->vseriesOp        = addslashes(          $this->xmlrequest->metadata->operation);
+        if(isset($this->xmlrequest->metadata->operation['parameter']))     $this->vseriesOpParam   = addslashes(          $this->xmlrequest->metadata->operation['parameter']);
         
-        foreach($this->xmlrequest->xpath('//references/measurement') as $refmeasurement)
+        foreach($this->xmlrequest->xpath('//references/series') as $refseries)
         {
-            if($refmeasurement['id']) array_push($this->referencesArray, $refmeasurement['id']);
+            if($refseries['id']) array_push($this->referencesArray, $refseries['id']);
         }
         
         $theYear =-1;
-        foreach($this->xmlrequest->xpath('//readings/reading') as $reading)
+        foreach($this->xmlrequest->xpath('//values/value') as $value)
         {
-            if ($reading['year']!=NULL) 
+            if ($value['year']!=NULL) 
             {
                 // If the XML includes a year attribute use it
-                $theYear = (int) $reading['year'];
+                $theYear = (int) $value['year'];
             }
             else
             {
@@ -281,31 +281,31 @@ class measurementParameters extends parameters
                 $theYear++; 
             }
 
-            $theValue = (int) $reading['value'];
-            $this->readingsArray[$theYear] = array('reading' => $theValue, 'wjinc' => NULL, 'wjdec' => NULL, 'count' => 1, 'notesArray' => array());
+            $theValue = (int) $value['value'];
+            $this->valuesArray[$theYear] = array('value' => $theValue, 'wjinc' => NULL, 'wjdec' => NULL, 'count' => 1, 'notesArray' => array());
                 
-            if(isset($reading->readingNote))
+            if(isset($value->valueNote))
             {
-                foreach($reading->readingNote as $readingNote)
+                foreach($value->valueNote as $valueNote)
                 {
-                    array_push($this->readingsArray[$theYear], (int) $readingNote['id']); 
+                    array_push($this->valuesArray[$theYear], (int) $valueNote['id']); 
                 }
 
             }
 
         }
         
-        $measurementNotes = $this->xmlrequest->xpath('//measurementNotes');
-        if (isset($measurementNotes[0]->measurementNote[0]))
+        $seriesNotes = $this->xmlrequest->xpath('//seriesNotes');
+        if (isset($seriesNotes[0]->seriesNote[0]))
         {
             foreach($measurmentNotes[0] as $item)
             {
-                array_push($this->measurementNoteArray, $item['id']);
+                array_push($this->seriesNoteArray, $item['id']);
             }
         }
         else
         {
-            $this->measurementNoteArray = array('empty');
+            $this->seriesNoteArray = array('empty');
         }
     }
 }
@@ -347,7 +347,7 @@ class siteNoteParameters extends parameters
     }
 }
 
-class treeNoteParameters extends parameters
+class elementNoteParameters extends parameters
 {
     var $id         = null;
     var $note       = null;
@@ -366,7 +366,7 @@ class treeNoteParameters extends parameters
     }
 }
 
-class vmeasurementNoteParameters extends parameters
+class vseriesNoteParameters extends parameters
 {
     var $id         = NULL;
     var $note       = NULL;
@@ -385,7 +385,7 @@ class vmeasurementNoteParameters extends parameters
     }
 }
 
-class readingNoteParameters extends parameters
+class valueNoteParameters extends parameters
 {
     var $id         = NULL;
     var $note       = NULL;
@@ -511,13 +511,13 @@ class searchParameters extends parameters
     var $allData                 = FALSE;
     var $siteParamsArray         = array();
     var $subSiteParamsArray      = array();
-    var $treeParamsArray         = array();
-    var $specimenParamsArray     = array();
+    var $elementParamsArray         = array();
+    var $sampleParamsArray     = array();
     var $radiusParamsArray       = array();
-    var $measurementParamsArray  = array();
-    var $vmeasurementParamsArray  = array();
-    var $vmeasurementResultParamsArray  = array();
-    var $vmeasurementMetaCacheParamsArray  = array();
+    var $seriesParamsArray  = array();
+    var $vseriesParamsArray  = array();
+    var $vseriesResultParamsArray  = array();
+    var $vseriesMetaCacheParamsArray  = array();
 
 
     function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
@@ -556,31 +556,31 @@ class searchParameters extends parameters
             }
 
             // Tree Parameters
-            elseif( ($param['name'] == 'treeid') || 
-                    ($param['name'] == 'treename') || 
+            elseif( ($param['name'] == 'elementid') || 
+                    ($param['name'] == 'elementname') || 
                     ($param['name'] == 'originaltaxonname') || 
-                    ($param['name'] == 'treecreated') || 
-                    ($param['name'] == 'treelastmodified') || 
+                    ($param['name'] == 'elementcreated') || 
+                    ($param['name'] == 'elementlastmodified') || 
                     ($param['name'] == 'precision') || 
-                    ($param['name'] == 'islivetree') || 
+                    ($param['name'] == 'isliveelement') || 
                     ($param['name'] == 'latitude') || 
                     ($param['name'] == 'longitude'))
             {
-                array_push($this->treeParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
+                array_push($this->elementParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
             }  
 
             // Specimen parameters
-            elseif( ($param['name'] == 'specimenid') || 
-                    ($param['name'] == 'specimenname') || 
+            elseif( ($param['name'] == 'sampleid') || 
+                    ($param['name'] == 'samplename') || 
                     ($param['name'] == 'datecollected') || 
-                    ($param['name'] == 'specimencreated') || 
-                    ($param['name'] == 'specimenlastmodified') || 
-                    ($param['name'] == 'specimentypeid') || 
-                    ($param['name'] == 'specimentype') || 
+                    ($param['name'] == 'samplecreated') || 
+                    ($param['name'] == 'samplelastmodified') || 
+                    ($param['name'] == 'sampletypeid') || 
+                    ($param['name'] == 'sampletype') || 
                     ($param['name'] == 'isterminalringverified') || 
                     ($param['name'] == 'sapwoodcount') || 
                     ($param['name'] == 'issapwoodcountverified') || 
-                    ($param['name'] == 'isspecimenqualityverified') || 
+                    ($param['name'] == 'issamplequalityverified') || 
                     ($param['name'] == 'ispithverified') || 
                     ($param['name'] == 'unmeaspre') || 
                     ($param['name'] == 'unmeaspost') || 
@@ -588,15 +588,15 @@ class searchParameters extends parameters
                     ($param['name'] == 'isunmeaspostverified') || 
                     ($param['name'] == 'terminalringid') || 
                     ($param['name'] == 'terminalring') || 
-                    ($param['name'] == 'specimenqualityid') || 
-                    ($param['name'] == 'specimenquality') || 
-                    ($param['name'] == 'specimencontinuityid') || 
-                    ($param['name'] == 'specimencontinuity') || 
+                    ($param['name'] == 'samplequalityid') || 
+                    ($param['name'] == 'samplequality') || 
+                    ($param['name'] == 'samplecontinuityid') || 
+                    ($param['name'] == 'samplecontinuity') || 
                     ($param['name'] == 'pithid') || 
                     ($param['name'] == 'pith') || 
-                    ($param['name'] == 'isspecimencontinuityverified'))
+                    ($param['name'] == 'issamplecontinuityverified'))
             {
-                array_push($this->specimenParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
+                array_push($this->sampleParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
             }
 
             // Radius parameters
@@ -609,39 +609,39 @@ class searchParameters extends parameters
             }
 
             // Measurement Parameters
-            elseif( ($param['name'] == 'measurementname') || 
-                    ($param['name'] == 'measurementoperator') || 
-                    ($param['name'] == 'measurementdescription') || 
-                    ($param['name'] == 'measurementispublished') || 
-                    ($param['name'] == 'measurementowneruserid') || 
-                    ($param['name'] == 'measurementcreated') || 
+            elseif( ($param['name'] == 'seriesname') || 
+                    ($param['name'] == 'seriesoperator') || 
+                    ($param['name'] == 'seriesdescription') || 
+                    ($param['name'] == 'seriesispublished') || 
+                    ($param['name'] == 'seriesowneruserid') || 
+                    ($param['name'] == 'seriescreated') || 
                     ($param['name'] == 'operatorparameter') || 
-                    ($param['name'] == 'measurementlastmodified'))
+                    ($param['name'] == 'serieslastmodified'))
             {
-                array_push($this->vmeasurementParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
+                array_push($this->vseriesParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
             }
-            elseif( ($param['name'] == 'measurementid') ) 
+            elseif( ($param['name'] == 'seriesid') ) 
             {
-                array_push($this->vmeasurementParamsArray, array ('name' => addslashes('vmeasurementid'), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
+                array_push($this->vseriesParamsArray, array ('name' => addslashes('vseriesid'), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
             }
-            elseif( ($param['name'] == 'measurementisreconciled') || 
+            elseif( ($param['name'] == 'seriesisreconciled') || 
                     ($param['name'] == 'datingtype') || 
                     ($param['name'] == 'datingerrornegative') || 
                     ($param['name'] == 'datingerrorpositive'))
             {
-                array_push($this->vmeasurementResultParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
+                array_push($this->vseriesResultParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
             }
             elseif( ($param['name'] == 'startyear') || 
-                    ($param['name'] == 'readingcount') || 
-                    ($param['name'] == 'measurementcount') || 
-                    ($param['name'] == 'measurementymin') || 
-                    ($param['name'] == 'measurementymax') || 
-                    ($param['name'] == 'measurementxmin') || 
-                    ($param['name'] == 'measurementxmax') || 
-                    ($param['name'] == 'measurementxcentroid') || 
-                    ($param['name'] == 'measurementycentroid'))
+                    ($param['name'] == 'valuecount') || 
+                    ($param['name'] == 'seriescount') || 
+                    ($param['name'] == 'seriesymin') || 
+                    ($param['name'] == 'seriesymax') || 
+                    ($param['name'] == 'seriesxmin') || 
+                    ($param['name'] == 'seriesxmax') || 
+                    ($param['name'] == 'seriesxcentroid') || 
+                    ($param['name'] == 'seriesycentroid'))
             {
-                array_push($this->vmeasurementMetaCacheParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
+                array_push($this->vseriesMetaCacheParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
             }
 
         }
