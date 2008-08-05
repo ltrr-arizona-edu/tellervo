@@ -38,13 +38,13 @@ import edu.cornell.dendro.corina.ui.I18n;
 
 // REFACTOR: this class needs refactoring.  there's IOEs and FNFEs in here!
 
-public class EditorManipMenu extends JMenu implements SampleListener {
+public class EditorToolsMenu extends JMenu implements SampleListener {
 
     private Sample sample;
     private Editor editor;
 
-    public EditorManipMenu(Sample s, Editor e) {
-	super(I18n.getText("manip")); // TODO: mnemonic
+    public EditorToolsMenu(Sample s, Editor e) {
+	super(I18n.getText("tools")); // TODO: mnemonic
 
 	this.sample = s;
 	this.editor = e;

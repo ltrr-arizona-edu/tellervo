@@ -493,7 +493,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			rolodex.add(elemPanel, I18n.getText("tab_elements"));
 		
 		if(mozillaMapPanel != null)
-			rolodex.add(mozillaMapPanel, "Google Map");
+			rolodex.add(mozillaMapPanel, "Map");
 	}
 
 	private void initRolodex() {
@@ -757,11 +757,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		menubar.add(editorEditMenu);
 		editorViewMenu = new EditorViewMenu(sample, elemPanel);
 		menubar.add(editorViewMenu);
-		menubar.add(new EditorManipMenu(sample, this));
+		menubar.add(new EditorToolsMenu(sample, this));
 		editorSumMenu = new EditorSumMenu(sample, elemPanel);
 		menubar.add(editorSumMenu);
 		menubar.add(new EditorGraphMenu(sample));
-		menubar.add(new EditorSiteMenu(sample));
+		//menubar.add(new EditorSiteMenu(sample));
 		if (App.platform.isMac())
 			menubar.add(new WindowMenu(this));
 		menubar.add(new HelpMenu());
