@@ -52,7 +52,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	sample.addSampleListener(this);
 
 	// redate
-	JMenuItem redate = Builder.makeMenuItem("redate...");
+	JMenuItem redate = Builder.makeMenuItem("redate...", true, "redate.png");
   redate.addActionListener(new AbstractAction() {
     public void actionPerformed(ActionEvent ae) {
         new RedateDialog(sample, editor);
@@ -70,7 +70,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	add(redate);
 
 	// index
-	indexMenu = Builder.makeMenuItem("index...");
+	indexMenu = Builder.makeMenuItem("index...", true, "index.png");
 	indexMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    // PERF: for big samples, it can take a couple
@@ -93,7 +93,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	add(truncate);
 
 	// reverse
-	JMenuItem reverseMenu = Builder.makeMenuItem("reverse");
+	JMenuItem reverseMenu = Builder.makeMenuItem("reverse", true, "reverse.png");
 	reverseMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    // reverse, and add to the undo-stack
@@ -107,7 +107,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 
 	// cross against
 	// HACK: just disable this if the sample isn't saved?
-	JMenuItem crossAgainst = Builder.makeMenuItem("cross_against...");
+	JMenuItem crossAgainst = Builder.makeMenuItem("cross_against...", true, "crossdate.png");
 	crossAgainst.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    try {

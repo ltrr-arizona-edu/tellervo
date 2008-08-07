@@ -102,11 +102,11 @@ public class EditMenu extends JMenu {
     }
 
     protected void addUndo() {
-        add(Builder.makeMenuItem("undo", false));
+        add(Builder.makeMenuItem("undo", false, "undo.png"));
     }
 
     protected void addRedo() {
-        add(Builder.makeMenuItem("redo", false));
+        add(Builder.makeMenuItem("redo", false, "redo.png"));
     }
 
     protected void addClipboard() {
@@ -116,15 +116,15 @@ public class EditMenu extends JMenu {
     }
 
     protected void addCut() {
-        add(Builder.makeMenuItem("cut", false));
+        add(Builder.makeMenuItem("cut", false, "editcut.png"));
     }
 
     protected void addCopy() {
-        add(Builder.makeMenuItem("copy", false));
+        add(Builder.makeMenuItem("copy", false, "editcopy.png"));
     }
 
     protected void addPaste() {
-        add(Builder.makeMenuItem("paste", false));
+        add(Builder.makeMenuItem("paste", false, "editpaste.png"));
     }
 
     protected void addSelectAll() {
@@ -135,7 +135,7 @@ public class EditMenu extends JMenu {
         if (!App.platform.isMac()) {
             addSeparator();
             JMenuItem prefs = Builder.makeMenuItem("preferences",
-                                                   "edu.cornell.dendro.corina.prefs.PrefsDialog.showPreferences()");
+                                                   "edu.cornell.dendro.corina.prefs.PrefsDialog.showPreferences()", "advancedsettings.png");
             add(prefs);
         }
     }

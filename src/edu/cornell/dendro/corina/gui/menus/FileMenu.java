@@ -175,11 +175,13 @@ public class FileMenu extends JMenu {
 */
 		// db stuff
 	//	addSeparator();
-		add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()"));
-		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()"));		
+		
+		
+		add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()", "filenew.png"));
+		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()", "fileopen.png"));		
 		add(Builder.makeMenuItem("dbmultiopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()"));	
 		addSeparator();
-		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdb()"));
+		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdb()", "fileimport.png"));
 		
 		
 		// open, browse
@@ -187,7 +189,7 @@ public class FileMenu extends JMenu {
 		//add(Builder.makeMenuItem("open_multi...",
 		//		"edu.cornell.dendro.corina.gui.menus.FileMenu.openMulti()"));
 		add(Builder.makeMenuItem("bulkexport...",
-				"edu.cornell.dendro.corina.gui.menus.FileMenu.bulkexport()"));
+				"edu.cornell.dendro.corina.gui.menus.FileMenu.bulkexport()", "fileexport.png"));
 		
 		//add(Builder.makeMenuItem("browse...", "new edu.cornell.dendro.corina.browser.Browser();"));
 		//add(OpenRecent.makeOpenRecentMenu());
@@ -732,7 +734,7 @@ public class FileMenu extends JMenu {
 	public void addExitMenu() {
 		if (!App.platform.isMac()) {
 			addSeparator();
-			add(Builder.makeMenuItem("quit", "edu.cornell.dendro.corina.gui.XCorina.quit()"));
+			add(Builder.makeMenuItem("quit", "edu.cornell.dendro.corina.gui.XCorina.quit()", "exit.png"));
 		}
 	}
 }

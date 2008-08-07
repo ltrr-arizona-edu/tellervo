@@ -77,11 +77,39 @@ public class Builder {
 		m.setEnabled(enabled);
 		return m;
 	}
+	
+	public static JMenuItem makeMenuItem(String key, boolean enabled, String iconfilename) {
+		JMenuItem m = makeMenuItem(key, null, iconfilename);
+		m.setEnabled(enabled);
+		return m;
+	}
+
 
 	public static JMenuItem makeMenuItem(String key, String action) {
 		JMenuItem m = makeMenuItem(key);
 		addAction(m, action);
 		return m;
+	}
+	
+	public static JMenuItem makeMenuItem(String key, String action, String iconfilename){
+					
+		JMenuItem m = new JMenuItem(key, getIcon(iconfilename, "Icons"));
+		m.setText(I18n.getText(key));
+
+		if (!App.platform.isMac()) {
+			Character mnemonic = I18n.getMnemonic(key);
+			if (mnemonic != null)
+				m.setMnemonic(mnemonic.charValue());
+		}
+
+		String keystroke = I18n.getKeyStroke(key);
+		if (keystroke != null)
+			m.setAccelerator(KeyStroke.getKeyStroke(keystroke));
+		
+		if(action != null)
+			addAction(m, action);
+		
+		return m;	
 	}
 
 	public static JCheckBoxMenuItem makeCheckBoxMenuItem(String key) {
@@ -167,7 +195,12 @@ public class Builder {
 	// i make icons from files in Images/ so often, i'll just make it a builder method.
 	// use: Builder.getIcon("x.png") returns an Icon made from the file "Images/x.png".
 	public static Icon getIcon(String name) {
-		java.net.URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/" + name);
+		return getIcon(name, "Images");
+	}
+		
+	public static Icon getIcon(String name, String packagename){
+		
+		java.net.URL url = cl.getResource("edu/cornell/dendro/corina_resources/" + packagename + "/" + name);
 		if (url != null)
 			return new ImageIcon(url);
 		else
