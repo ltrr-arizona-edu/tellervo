@@ -1026,7 +1026,7 @@ class measurement
 
                                 if($success)
                                 {
-                                    $xml.=$myReference->asXML("minimal", "all");
+                                    $xml.=$myReference->_asXML("minimal", "all", $recurseLevel);
                                 }
                                 else
                                 {
@@ -1081,7 +1081,7 @@ class measurement
 
                                 if($success)
                                 {
-                                    $xml.=$myReference->asXML($recurseLevel, "summary");
+                                    $xml.=$myReference->_asXML("summary", "all", $recurseLevel);
                                 }
                                 else
                                 {
