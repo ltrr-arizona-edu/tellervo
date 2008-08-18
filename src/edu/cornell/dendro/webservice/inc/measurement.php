@@ -1001,18 +1001,21 @@ class measurement
                     $xml.= "<extent minLat=\"".$this->minLat."\" maxLat=\"".$this->maxLat."\" minLong=\"".$this->minLong."\" maxLong=\"".$this->maxLong."\" centroidLat=\"".$this->centroidLat."\" centroidLong=\"".$this->centroidLong."\" />";
                 }
 
-                // Using 'summary' format so just give minimal XML for all references and nothing else
-                if($format=="summary")
-                {
+		// show summary information in standard and summary modes
+		if($format=="summary" || $format=="standard") {
                     // Return special summary section
-                    $xml.="<parentSummary>";
+                    $xml.="<summary>";
                     $xml.="<fullLabCode>".$this->fullLabCode."</fullLabCode>\n";
                     $xml.="<taxon count=\"".$this->summaryTaxonCount."\" commonAncestor=\"".$this->summaryTaxonName."\"/>\n";
                     $xml.="<site count=\"".$this->summarySiteCount."\" ";
                     if($this->summarySiteCount=1) $xml.="siteCode=\"".$this->summarySiteCode."\"/>\n";
                     if($this->measurementCount!=NULL) $xml.="<measurement count=\"".$this->measurementCount."\"/>";
-                    $xml.="</parentSummary>";
+                    $xml.="</summary>";
+		}
 
+                // Using 'summary' format so just give minimal XML for all references and nothing else
+                if($format=="summary")
+                {
                     // Only look up references if recursion level is greater than 0
                     if($recurseLevel>0)
                     {
