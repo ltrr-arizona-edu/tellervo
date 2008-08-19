@@ -143,8 +143,13 @@ public class OpenRecent {
 		if (recent.size() == NUMBER_TO_REMEMBER)
 			recent.remove(NUMBER_TO_REMEMBER - 1);
 
+		// cache some useful stuff...
+		LoaderHolder lh = new LoaderHolder();
+		lh.loader = sl;
+		lh.displayName = sl.getName();
+
 		// prepend element
-		recent.add(0, sl);
+		recent.add(0, lh);
 
 		// update menu(s)
 		updateAllMenus();
@@ -193,14 +198,22 @@ public class OpenRecent {
 	}
 	
 	private static String getSavableName(Object o) {
-		if(o instanceof CorinaWebElement) {
-			ResourceIdentifier rid = ((CorinaWebElement)o).getResourceIdentifier();
+		if(o instanceof LoaderHolder) {
+			LoaderHolder holder = (LoaderHolder)o;
+			if(holder.loader instanceof CorinaWebElement) {
+				ResourceIdentifier rid = ((CorinaWebElement)holder.loader).getResourceIdentifier();
+				org.jdom.Element e = rid.asXMLElement();
 
-			XMLOutputter outputter;			
-			Format format = Format.getCompactFormat();
+				// save the display name...
+				e.setText(holder.displayName);
 
-			format.setEncoding("UTF-8");
-			return new XMLOutputter(format).outputString(rid.asXMLElement());
+				Format format = Format.getCompactFormat();
+				format.setEncoding("UTF-8");
+				return new XMLOutputter(format).outputString(e);
+			}
+			
+			// default...?
+			return holder.displayName;
 		}		
 		
 		// default
@@ -213,11 +226,16 @@ public class OpenRecent {
 	 * @return
 	 */
 	private static String getDescription(Object o) {
-		if(o instanceof CorinaWebElement) {
-			CorinaWebElement cwe = (CorinaWebElement)o;
-			ResourceIdentifier rid = cwe.getResourceIdentifier();
+		if(o instanceof LoaderHolder) {
+			LoaderHolder holder = (LoaderHolder)o;
+			if(holder.loader instanceof CorinaWebElement) {
+				CorinaWebElement cwe = (CorinaWebElement)holder.loader;
+				ResourceIdentifier rid = cwe.getResourceIdentifier();
 			
-			return cwe.getName() + " from " + rid.asXMLElement().getAttribute("url");
+				return holder.displayName + " from " + rid.asXMLElement().getAttributeValue("url");
+			}
+			
+			return holder.displayName;
 		}
 		
 		// default
@@ -229,8 +247,8 @@ public class OpenRecent {
 	 * @param o
 	 */
 	private static void doOpen(Object o) throws IOException {
-		if(o instanceof SampleLoader) {
-			new Editor(((SampleLoader) o).load());
+		if(o instanceof LoaderHolder) {
+			new Editor(((LoaderHolder) o).loader.load());
 			return;
 		}
 
@@ -309,10 +327,9 @@ public class OpenRecent {
 		// create recent list
 		recent = new ArrayList<Object>();
 
-		// parse |corina.recent.files| pref, splitting by |path.separator|
-		// chars.
-		// (ASSUMES (path.separator).length()==1?
-		StringTokenizer tok = new StringTokenizer(App.prefs.getPref("corina.recent.documents", ""), System.getProperty("path.separator"));
+		// use "?" as a separator, as it's illegal in both filenames and XML
+		// TODO: Make this less kludgier!
+		StringTokenizer tok = new StringTokenizer(App.prefs.getPref("corina.recent.documents", ""), "?");
 
 		// add all files to recent
 		while (tok.hasMoreTokens()) {
@@ -325,7 +342,11 @@ public class OpenRecent {
 					org.jdom.Element e = doc.getRootElement();
 					ResourceIdentifier rid = ResourceIdentifier.fromElement(e);
 					
-					recent.add(new CorinaWebElement(rid));			
+					LoaderHolder holder = new LoaderHolder();
+					holder.displayName = e.getText();
+					holder.loader = new CorinaWebElement(rid);
+					
+					recent.add(holder);			
 				} catch (JDOMException jdome) {
 					System.out.println("bad xml element: " + next + ":" + jdome.toString());
 				} catch (IOException ioe) {
@@ -341,7 +362,7 @@ public class OpenRecent {
 	private static synchronized void saveList() {
 		StringBuffer buf = new StringBuffer();
 
-		char sep = File.pathSeparatorChar;
+		char sep = '?';
 
 		for (int i = 0; i < recent.size(); i++) {
 			buf.append(getSavableName(recent.get(i)));
@@ -351,5 +372,35 @@ public class OpenRecent {
 
 		// store in pref
 		App.prefs.setPref("corina.recent.documents", buf.toString());
+	}
+
+	// kludge!
+	private static class LoaderHolder {
+		public String displayName;
+		public SampleLoader loader;
+		
+		@Override
+		public boolean equals(Object o) {
+			// are their names equal?
+			if(!displayName.equalsIgnoreCase(o.toString())) 
+				return false;
+			
+			// are their loader classes equal?
+			if(!loader.getClass().getName().equals(o.getClass().getName()))
+				return false;
+			
+			// if web elements, are they from the same server URL?
+			if(loader instanceof CorinaWebElement) {
+				CorinaWebElement c1 = (CorinaWebElement) loader;
+				CorinaWebElement c2 = (CorinaWebElement) o;
+				org.jdom.Element rid1 = c1.getResourceIdentifier().asXMLElement();
+				org.jdom.Element rid2 = c2.getResourceIdentifier().asXMLElement();
+				
+				if(!(rid1.getAttribute("url") != null && rid1.getAttributeValue("url").equalsIgnoreCase(rid2.getAttributeValue("url"))))
+					return false;
+			}
+			
+			return true;
+		}
 	}
 }

@@ -182,6 +182,8 @@ public class FileMenu extends JMenu {
 		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()", "fileopen.png"));		
 		add(Builder.makeMenuItem("dbmultiopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()"));	
 		addSeparator();
+		add(OpenRecent.makeOpenRecentMenu());
+		addSeparator();
 		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdb()", "fileimport.png"));
 		
 		
@@ -193,7 +195,6 @@ public class FileMenu extends JMenu {
 				"edu.cornell.dendro.corina.gui.menus.FileMenu.bulkexport()", "fileexport.png"));
 		
 		//add(Builder.makeMenuItem("browse...", "new edu.cornell.dendro.corina.browser.Browser();"));
-		add(OpenRecent.makeOpenRecentMenu());
 	}
 
 	// ask the user for a file to open, and open it
