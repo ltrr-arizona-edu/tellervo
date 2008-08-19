@@ -74,7 +74,7 @@ public class IntermediateResource extends ResourceObject<List<? extends GenericI
 				parentElement = requestElement;
 			else 
 				// make a copy, otherwise we'll break it
-				parentElement = (Element) parent.getResourceIdentifier().clone();
+				parentElement = (Element) parent.getResourceIdentifier().asRequestXMLElement();
 			
 			// get our XML...
 			parentElement.addContent(child.toXML());

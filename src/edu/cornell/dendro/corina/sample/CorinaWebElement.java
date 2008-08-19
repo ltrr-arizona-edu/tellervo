@@ -27,6 +27,8 @@ import edu.cornell.dendro.corina.webdbi.*;
 public class CorinaWebElement implements SampleLoader {
 	private URI uri;
 	private ResourceIdentifier resourceIdentifier;
+	private String shortName;
+	private String name;
 	
 	/**
 	 * Old way of doing it: parsing a bad URL.
@@ -50,18 +52,24 @@ public class CorinaWebElement implements SampleLoader {
 		}
 		
 		this.resourceIdentifier = new ResourceIdentifier("measurement", sampleID);
+		name = shortName = resourceIdentifier.toString();
 	}
 	
 	public CorinaWebElement(ResourceIdentifier resourceIdentifier) {
 		this.resourceIdentifier = resourceIdentifier;
+		name = shortName = resourceIdentifier.toString();
 	}
 
 	public String getName() {
-		return resourceIdentifier.toString();
+		return name;
 	}
 
 	public String getShortName() {
-		return resourceIdentifier.toString();
+		return shortName;
+	}
+	
+	public ResourceIdentifier getResourceIdentifier() {
+		return this.resourceIdentifier;
 	}
 
 	public Sample load() throws IOException {
@@ -80,10 +88,19 @@ public class CorinaWebElement implements SampleLoader {
 			throw new IOException("Failed to load: " + dlg.getFailException());
 		
 		// associate this loader with the object
-		xf.getObject().setLoader(this);
+		Sample ns = xf.getObject();
+		ns.setLoader(this);
 
+		// cache any data that we (this class) cares about
+		preload(ns);
+
+		// update our resourceidentifier
+		if(ns.hasMeta("::dbrid") && ns.getMeta("::dbrid") instanceof ResourceIdentifier) {
+			resourceIdentifier = (ResourceIdentifier) ns.getMeta("::dbrid");
+		}
+		
 		// and return it!
-		return xf.getObject();
+		return ns;
 	}
 	
 	// Save actually means two things: 
@@ -138,10 +155,25 @@ public class CorinaWebElement implements SampleLoader {
 		// copy everything over (including the new loader we just made)
 		Sample.copy(ns, s);
 		
+		// cache any data that we care about...
+		preload(s);
+		
 		return true;
 	}
 
 	public BaseSample loadBasic() throws IOException {
 		return load();
+	}
+	
+	public void preload(BaseSample bs) {
+		SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
+		
+		if(ss != null)
+			shortName = name = ss.getLabCode();
+		else if(bs.hasMeta("title"))
+			shortName = name = bs.getMeta("title").toString();
+		else {
+			shortName = name = resourceIdentifier.toString();
+		}
 	}
 }

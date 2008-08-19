@@ -65,7 +65,7 @@ public class MeasurementResource extends ResourceObject<Sample> {
 			if(ri == null)
 				throw new ResourceException("No identifier specified for read/delete");
 			
-			requestElement.addContent(ri);
+			requestElement.addContent(ri.asRequestXMLElement());
 			
 			break;
 
@@ -87,7 +87,7 @@ public class MeasurementResource extends ResourceObject<Sample> {
 		case CREATE: {
 			// this only works for direct VMs!
 			ri = (ResourceIdentifier) s.getMeta("::dbparent");
-			Element parentElement = (Element) ri.clone();
+			Element parentElement = (Element) ri.asRequestXMLElement();
 			
 			parentElement.addContent(new CorinaXML().saveToElement(s));
 			requestElement.addContent(parentElement);

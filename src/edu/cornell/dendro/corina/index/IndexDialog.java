@@ -369,6 +369,7 @@ public class IndexDialog extends JDialog {
 				}
 			});
 		}
+		/*
 		p.add(Box.createVerticalStrut(8));
 		{
 			JPanel p2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -456,6 +457,7 @@ public class IndexDialog extends JDialog {
 			p2.add(proxyPopup);
 			p.add(p2);
 		}
+		*/
 
 		p.add(Box.createVerticalStrut(14));
 

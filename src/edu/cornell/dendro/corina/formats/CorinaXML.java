@@ -148,8 +148,10 @@ public class CorinaXML implements Filetype {
 			String key = e.getName();
 			String value = e.getValue();
 			
-			if(key.equals("name"))
+			if(key.equals("name")) {
 				s.setMeta("title", value);
+				s.setMeta("name", value);
+			}
 			else if(key.equals("owner"))
 				setUserFor("owner", e, s);
 			else if(key.equals("measuredBy"))
@@ -179,8 +181,11 @@ public class CorinaXML implements Filetype {
 				
 				s.setSampleType(st);
 			}
-			else if(key.equals("parentSummary")) {
-				s.setMeta("::summary", SampleSummary.fromXML(e));
+			else if(key.equals("summary")) {
+				SampleSummary ss = SampleSummary.fromXML(e);
+				s.setMeta("::summary", ss);
+				// whoo hoo! a nice title!
+				s.setMeta("title", ss.getLabCode());
 			}
 			else if(key.equals("dating")) {
 				String startYear = e.getAttributeValue("startYear");
@@ -410,8 +415,8 @@ public class CorinaXML implements Filetype {
 	private Element saveMetadata(Sample s) {
 		Element meta = new Element("metadata");
 
-		// note title -> name
-		if(s.hasMeta("title")) 
+		// simple name...
+		if(s.hasMeta("name")) 
 			meta.addContent(new Element("name").setText((String) s.getMeta("title")));
 
 		// comments -> description

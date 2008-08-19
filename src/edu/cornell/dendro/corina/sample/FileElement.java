@@ -199,4 +199,9 @@ public class FileElement implements SampleLoader {
 	public String getShortName() {
 		return basename;
 	}
+	
+	public void preload(BaseSample bs) {
+		// this isn't necessary because we know all the info for short/long names based on the
+		// resource descriptor (which is the file name in this case)
+	}
 }

@@ -10,11 +10,15 @@ public interface SampleLoader {
 	 * @return
 	 */
 	//public String getLocationRepresentation();
-	
+
+	// self explanatory
 	public Sample load() throws IOException;
 	public BaseSample loadBasic() throws IOException;
 	public boolean save(Sample s) throws IOException;
 
+	// populate any internal loader data from this sample
+	public void preload(BaseSample bs);
+	
 	public String getName();
 	public String getShortName();
 }

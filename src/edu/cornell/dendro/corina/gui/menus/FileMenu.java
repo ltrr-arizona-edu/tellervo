@@ -36,6 +36,7 @@ import edu.cornell.dendro.corina.gui.newui.ImportWizard;
 import edu.cornell.dendro.corina.gui.newui.LegacySampleExtractor;
 import edu.cornell.dendro.corina.gui.newui.SiteEditorPanel;
 import edu.cornell.dendro.corina.manip.Sum;
+import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
@@ -192,7 +193,7 @@ public class FileMenu extends JMenu {
 				"edu.cornell.dendro.corina.gui.menus.FileMenu.bulkexport()", "fileexport.png"));
 		
 		//add(Builder.makeMenuItem("browse...", "new edu.cornell.dendro.corina.browser.Browser();"));
-		//add(OpenRecent.makeOpenRecentMenu());
+		add(OpenRecent.makeOpenRecentMenu());
 	}
 
 	// ask the user for a file to open, and open it
@@ -277,6 +278,8 @@ public class FileMenu extends JMenu {
 					continue;
 				}
 
+				OpenRecent.sampleOpened(s.getLoader());
+				
 				// open it
 				new Editor(s);
 			}
@@ -546,8 +549,12 @@ public class FileMenu extends JMenu {
 
 					// add to the recently opened files list if the user actually saved
 					// also, the user can try to save a document they didn't do anything to. argh.
-					if (doc.isSaved() && doc.getFilename() != null)
-						OpenRecent.fileOpened(doc.getFilename());
+					if (doc.isSaved() && doc.getFilename() != null) {
+						if(doc instanceof BaseSample)
+							OpenRecent.sampleOpened(((BaseSample)doc).getLoader());
+						else
+							OpenRecent.fileOpened(doc.getFilename());
+					}
 				}
 			});
 		} else {

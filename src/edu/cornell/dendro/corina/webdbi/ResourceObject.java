@@ -32,7 +32,7 @@ public abstract class ResourceObject<OBJTYPE> extends Resource {
 	
 	public void attachIdentifier(ResourceIdentifier identifier) {
 		// make a copy so we don't steal it
-		this.identifier = (ResourceIdentifier) identifier.clone();
+		this.identifier = (ResourceIdentifier) identifier;
 	}
 	
 	public ResourceIdentifier getIdentifier() {

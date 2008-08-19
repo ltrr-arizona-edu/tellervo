@@ -42,7 +42,7 @@ public class CanOpener {
 		Element e = ElementFactory.createElement(filename);
 	    Sample s = e.load();
 	    new Editor(s);
-	    OpenRecent.fileOpened(filename);
+	    OpenRecent.sampleOpened(s.getLoader());
 	    return;
 	} catch (WrongFiletypeException wfte) {
 	    // just need to hop out of that block
