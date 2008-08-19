@@ -91,7 +91,22 @@ class measurement
         global $dbconn;
         
         $this->vmeasurementID=$theID;
-        $sql = "select * from cpgdb.getvmeasurementresult('$theID')";
+
+        // the uberquery - one query to rule them all?
+        $sql = "SELECT vm.*, mc.*, su.username, op.name as opname, dt.label as datingtype, ".
+		"m.radiusid, m.isreconciled, m.islegacycleaned, m.datingtypeid, m.datingerrorpositive, m.datingerrornegative, ".
+		"x(centroid(vmextent)), y(centroid(vmextent)), xmin(vmextent), xmax(vmextent), ymin(vmextent), ymax(vmextent) ".
+		"FROM tblvmeasurement vm ".
+		"INNER JOIN tlkpvmeasurementop op ON vm.vmeasurementopid=op.vmeasurementopid ".
+		"LEFT JOIN tblmeasurement m ON vm.measurementid=m.measurementid ".
+		"LEFT JOIN tblvmeasurementmetacache mc ON vm.vmeasurementid=mc.vmeasurementid ".
+		"LEFT JOIN tlkpdatingtype dt ON m.datingtypeid=dt.datingtypeid ".
+		"LEFT JOIN tblsecurityuser su ON vm.owneruserid=su.securityuserid ".
+		"WHERE vm.vmeasurementid=".$this->vmeasurementID;
+	// the query that makes the server make the measurement
+        $sql2 = "select * from cpgdb.getvmeasurementresult('$theID')";
+	// the old query - here for posterity
+        //$sql2 = "select tblvmeasurement.* from tblvmeasurement where vmeasurementid=".$this->vmeasurementID;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -114,7 +129,7 @@ class measurement
                 $this->name = $row['name'];
                 $this->description = $row['description'];
                 $this->vmeasurementID = $row['vmeasurementid'];
-                $this->vmeasurementResultID = $row['vmeasurementresultid'];
+                //$this->vmeasurementResultID = $row['vmeasurementresultid'];
                 //$this->vmeasurementOpID = $row['vmeasurementopid'];
                 //$this->vmeasurementOpParam = $row['vmeasurementparamid'];
                 $this->radiusID = $row['radiusid'];
@@ -125,52 +140,63 @@ class measurement
                 $this->datingErrorNegative = $row['datingerrornegative'];
                 $this->createdTimeStamp = $row['createdtimestamp'];
                 $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
-                $this->setDatingTypeID($row['datingtypeid']);
                 //$this->setMeasuredByID($row['measuredbyid']);
 
-                // Get more parameters directly from tblvmeasurement
-                $sql2 = "select tblvmeasurement.* from tblvmeasurement where vmeasurementid=".$this->vmeasurementID;
-                pg_send_query($dbconn, $sql2);
-                $result2 = pg_get_result($dbconn);
-                $row2 = pg_fetch_array($result2);
-                $this->setMeasurementID();
-                $this->setVMeasurementOp($row2['vmeasurementopid']);
-                $this->setOwnerUserID($row2['owneruserid']);
+                // not this way... 
+		/*
+ 	               $this->setDatingTypeID($row['datingtypeid']);
+			$this->setMeasurementID();
+	                $this->setVMeasurementOp($row2['vmeasurementopid']);
+	                $this->setOwnerUserID($row2['owneruserid']);
+		*/
+		$this->datingTypeID = $row['datingtypeid'];
+		$this->datingType = $row['datingtype'];
+		$this->measurementID = $row['measurementid'];
+		$this->vmeasurementOpID = $row['vmeasurementopid'];
+		$this->vmeasurementOp = $row['opname'];
+		$this->ownerUserID = $row['owneruserid'];
+		$this->owner = $row['username'];
+
+		// all the metacache stuff...
+                $this->minLat = $row['ymin'];
+                $this->maxLat = $row['ymax'];
+                $this->minLong = $row['xmin'];
+                $this->maxLong = $row['xmax'];
+                $this->centroidLat = $row['y'];
+                $this->centroidLong = $row['x'];
+                $this->readingCount = $row['readingcount'];
+                $this->measurementCount = $row['measurementcount'];
+                $this->summarySiteCode = $row['sitecode'];
+                $this->summarySiteCount = $row['sitecount'];
+                $this->summaryTaxonName = $row['commontaxonname'];
+                $this->summaryTaxonCount = $row['taxoncount'];
+                $this->fullLabCode = $row['label'];
 
                 if($this->vmeasurementOp=='Index')
                 {
                     // indexid for a sum
-                    $this->setVMeasurementOpParam($this->getIndexNameFromParamID($row2['vmeasurementopparameter']));
+                    $this->setVMeasurementOpParam($this->getIndexNameFromParamID($row['vmeasurementopparameter']));
                 }
                 else
                 {
                     // Year for a redate
-                    $this->setVMeasurementOpParam($row2['vmeasurementopparameter']);
+                    $this->setVMeasurementOpParam($row['vmeasurementopparameter']);
                 }
 
                 if (($format=="standard") || ($format=="comprehensive") || ($format=="summary") )
                 {
-                    $sql = "select tblvmeasurementmetacache.*, x(centroid(vmextent)), y(centroid(vmextent)), xmin(vmextent), xmax(vmextent), ymin(vmextent), ymax(vmextent) from tblvmeasurementmetacache where vmeasurementid=".$this->vmeasurementID;
-                    pg_send_query($dbconn, $sql);
-                    $result = pg_get_result($dbconn);
-                    $row = pg_fetch_array($result);
-                    $this->minLat = $row['ymin'];
-                    $this->maxLat = $row['ymax'];
-                    $this->minLong = $row['xmin'];
-                    $this->maxLong = $row['xmax'];
-                    $this->centroidLat = $row['y'];
-                    $this->centroidLong = $row['x'];
-                    $this->readingCount = $row['readingcount'];
-                    $this->measurementCount = $row['measurementcount'];
-                    $this->summarySiteCode = $row['sitecode'];
-                    $this->summarySiteCount = $row['sitecount'];
-                    $this->summaryTaxonName = $row['commontaxonname'];
-                    $this->summaryTaxonCount = $row['taxoncount'];
-                    $this->fullLabCode = $row['label'];
-
-                    $this->setReadingsFromDB();
                     $this->setReferencesFromDB();
                 }
+
+		// Deal with readings if we actually need them...
+		if($format=="standard" || $format=="comprehensive") {
+                    pg_send_query($dbconn, $sql2);
+                    $result2 = pg_get_result($dbconn);
+                    $row2 = pg_fetch_array($result2);
+
+                    $this->vmeasurementResultID = $row2['vmeasurementresultid'];
+                    $this->setReadingsFromDB();
+		}
             }
 
         }
@@ -1025,7 +1051,7 @@ class measurement
                             foreach($this->referencesArray as $value)
                             {
                                 $myReference = new measurement();
-                                $success = $myReference->setParamsFromDB($value);
+                                $success = $myReference->setParamsFromDB($value, "summary");
 
                                 if($success)
                                 {
@@ -1080,7 +1106,7 @@ class measurement
                             foreach($this->referencesArray as $value)
                             {
                                 $myReference = new measurement();
-                                $success = $myReference->setParamsFromDB($value);
+                                $success = $myReference->setParamsFromDB($value, "summary");
 
                                 if($success)
                                 {
