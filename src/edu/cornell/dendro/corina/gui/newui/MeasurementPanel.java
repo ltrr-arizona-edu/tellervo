@@ -22,6 +22,7 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.User;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
 import edu.cornell.dendro.corina.site.Specimen;
 import edu.cornell.dendro.corina.site.Tree;
@@ -245,8 +246,13 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
     }
     
     public void setParentObject(GenericIntermediateObject obj) {
+    	// no id, so it's a new measurement...
     	s.setLoader(new CorinaWebElement(new ResourceIdentifier("measurement", null)));
     	s.setMeta("::dbparent", obj.getResourceIdentifier());
+    	
+    	// if no sample type is already selected, fall back to a direct sample
+    	if(s.getSampleType() == null)
+    		s.setSampleType(SampleType.DIRECT);
     }
     
     /**
