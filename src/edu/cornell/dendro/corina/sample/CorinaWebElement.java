@@ -13,6 +13,7 @@ import javax.swing.JList;
 
 import edu.cornell.dendro.corina.formats.CorinaXML;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.*;
 
@@ -98,6 +99,9 @@ public class CorinaWebElement implements SampleLoader {
 		if(ns.hasMeta("::dbrid") && ns.getMeta("::dbrid") instanceof ResourceIdentifier) {
 			resourceIdentifier = (ResourceIdentifier) ns.getMeta("::dbrid");
 		}
+		
+		// update our recently opened documents
+		OpenRecent.sampleOpened(this);
 		
 		// and return it!
 		return ns;

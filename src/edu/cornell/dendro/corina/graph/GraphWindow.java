@@ -913,4 +913,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 		super.finalize();
 		App.prefs.removePrefsListener(this);
 	}
+
+	public Object getSaverClass() {
+		return this;
+	}
 }

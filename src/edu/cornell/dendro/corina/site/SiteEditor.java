@@ -111,4 +111,8 @@ public class SiteEditor extends XFrame implements SaveableDocument {
 		if(LegacySiteDB.getSiteDB().save())
 			sitePanel.setDataModified(false);		
 	}
+	
+	public Object getSaverClass() {
+		return this;
+	}
 }

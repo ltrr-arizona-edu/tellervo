@@ -396,6 +396,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		updateTitle();
 	}
 
+	public Object getSaverClass() {
+		return sample.getLoader();
+	}
+
 	// init methods
 	private void initWJPanel() {
 		// Mac OS X has animated progress bars, which is *not* wanted

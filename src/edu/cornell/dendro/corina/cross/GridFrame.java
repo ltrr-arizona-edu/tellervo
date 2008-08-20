@@ -391,4 +391,8 @@ public class GridFrame extends XFrame implements SaveableDocument, PrintableDocu
 		super.finalize();
 		App.prefs.removePrefsListener(this);
 	}
+	
+	public Object getSaverClass() {
+		return this;
+	}
 }

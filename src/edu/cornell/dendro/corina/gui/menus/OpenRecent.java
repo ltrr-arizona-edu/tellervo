@@ -132,21 +132,21 @@ public class OpenRecent {
 	 *            the (full) name of the file that was opened
 	 */
 	public static void sampleOpened(SampleLoader sl) {
-		// if already in spot #0, don't need to do anything
-		if (!recent.isEmpty() && recent.get(0).equals(sl))
-			return;
-
-		// if this item is in the list, remove me, too
-		recent.remove(sl);
-
-		// remove last item, if full
-		if (recent.size() == NUMBER_TO_REMEMBER)
-			recent.remove(NUMBER_TO_REMEMBER - 1);
-
 		// cache some useful stuff...
 		LoaderHolder lh = new LoaderHolder();
 		lh.loader = sl;
 		lh.displayName = sl.getName();
+
+		// if already in spot #0, don't need to do anything
+		if (!recent.isEmpty() && recent.get(0).equals(lh))
+			return;
+
+		// if this item is in the list, remove me, too
+		recent.remove(lh);
+
+		// remove last item, if full
+		if (recent.size() == NUMBER_TO_REMEMBER)
+			recent.remove(NUMBER_TO_REMEMBER - 1);
 
 		// prepend element
 		recent.add(0, lh);
@@ -380,9 +380,14 @@ public class OpenRecent {
 		public SampleLoader loader;
 		
 		@Override
-		public boolean equals(Object o) {
+		public boolean equals(Object oo) {
+			if(!(oo instanceof LoaderHolder))
+				return false;
+			
+			SampleLoader o = ((LoaderHolder)oo).loader;
+			
 			// are their names equal?
-			if(!displayName.equalsIgnoreCase(o.toString())) 
+			if(!displayName.equalsIgnoreCase(o.getName())) 
 				return false;
 			
 			// are their loader classes equal?

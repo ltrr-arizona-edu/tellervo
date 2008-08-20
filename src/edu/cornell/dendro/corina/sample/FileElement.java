@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.io.Files;
 
 /**
@@ -143,6 +144,11 @@ public class FileElement implements SampleLoader {
 		Sample s = Files.load(filename);
 
 		s.setLoader(this);
+		
+		// we loaded it, so tell our open menu...
+		// Don't do this here, it affects imports!
+		//OpenRecent.sampleOpened(this);
+		
 		return s;
 	}
 	

@@ -41,6 +41,7 @@ import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -551,8 +552,8 @@ public class FileMenu extends JMenu {
 					// add to the recently opened files list if the user actually saved
 					// also, the user can try to save a document they didn't do anything to. argh.
 					if (doc.isSaved() && doc.getFilename() != null) {
-						if(doc instanceof BaseSample)
-							OpenRecent.sampleOpened(((BaseSample)doc).getLoader());
+						if(doc.getSaverClass() != null && doc.getSaverClass() instanceof SampleLoader)
+							OpenRecent.sampleOpened((SampleLoader)doc.getSaverClass());
 						else
 							OpenRecent.fileOpened(doc.getFilename());
 					}

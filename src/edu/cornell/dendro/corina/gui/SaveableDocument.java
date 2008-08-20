@@ -30,5 +30,10 @@ public interface SaveableDocument {
     public void setFilename(String fn);
     public String getFilename();
 
+    /**
+     * @return the class instance responsible for actually saving this document
+     */
+    public Object getSaverClass();
+
     public String getDocumentTitle(); // hack! -- [[ remind me why ]]
 }
