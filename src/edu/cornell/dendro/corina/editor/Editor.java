@@ -83,6 +83,7 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.sample.SampleLoader;
+import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.site.LegacySite;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -514,8 +515,13 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 	public void updateTitle() {
-		setTitle(sample.toString() + " - " + Build.VERSION + " "
-				+ Build.TIMESTAMP);
+		SampleType st = sample.getSampleType();
+		
+		setTitle(sample.toString() + 
+				((st != null) ? (" [" + st + "]") : "") +
+				" - " +
+				Build.VERSION + " " +
+				Build.TIMESTAMP);
 	}
 
 	// ask the user for a title for this (new) sample.  it's guaranteed to have a number, now!
