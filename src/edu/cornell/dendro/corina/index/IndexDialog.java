@@ -65,12 +65,16 @@ import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.graph.Graphable;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.graph.PlotAgents;
+import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleLoader;
+import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -372,21 +376,9 @@ public class IndexDialog extends JDialog {
 
 				// apply it
 				Index index = iset.indexes.get(row);
-				index.apply();
-
-				// undo (index implements undoable)
-				sample.postEdit(index);
-
-				// also: clear filename, set modified
-				sample.setModified();
-				sample.removeMeta("filename"); // BUG: this should be in
-												// Index.apply()
-				// (otherwise undo doesn't put the filename back)
-
-				// tell editor, and close
-				sample.fireSampleDataChanged();
-				sample.fireSampleMetadataChanged();
-				dispose();
+				
+				if(applyIndex(index))
+					dispose();
 			}
 		});
 
@@ -455,6 +447,71 @@ public class IndexDialog extends JDialog {
 		pack();
 		Center.center(this, owner);
 		setVisible(true);
+	}
+	
+	/**
+	 * Apply an index directly to a sample, not using a server...
+	 * @param index
+	 */
+	private void legacyApplyIndex(Index index) {
+		index.apply();
+
+		// undo (index implements undoable)
+		sample.postEdit(index);
+
+		// also: clear filename, set modified
+		sample.setModified();
+		sample.removeMeta("filename"); // BUG: this should be in
+										// Index.apply()
+		// (otherwise undo doesn't put the filename back)
+
+		// tell editor, and close
+		sample.fireSampleDataChanged();
+		sample.fireSampleMetadataChanged();		
+	}
+	
+	/**
+	 * 
+	 * @return true on success, false on failure
+	 */
+	private boolean applyIndex(Index index) {
+		SampleLoader loader = sample.getLoader();
+		if(loader == null) {
+			new Bug(new Exception("Attempting to apply an index to a sample without a loader. Shouldn't be possible!"));
+			return false;
+		}
+		
+		if(loader instanceof CorinaWebElement) {
+			// create a new, empty sample
+			Sample tmp = new Sample();
+
+			// set it up
+			tmp.setMeta("::saveoperation", SampleType.INDEX);
+			tmp.setMeta("::indexclass", index);
+			
+			// the new sample's parent is our current sample
+			tmp.setMeta("::dbparent", sample.getMeta("::dbrid"));
+			
+			try {
+				// here's where we do the "meat"
+				if(loader.save(tmp)) {
+					// copy it over...
+					Sample.copy(tmp, sample);
+					sample.fireSampleDataChanged();
+					sample.fireSampleMetadataChanged();
+					sample.clearModified();
+					return true;
+				}
+			} catch (IOException ioe) {
+				Alert.error("Could not create index", "Error: " + ioe.toString());
+			}
+
+			return false;
+		}
+		
+		// well, fine then. Just apply the index to the existing sample.
+		legacyApplyIndex(index);
+		return true;
 	}
 	
 	private JButton okButton;

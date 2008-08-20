@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.util.*;
 
 import edu.cornell.dendro.corina.formats.CorinaXML;
+import edu.cornell.dendro.corina.index.Index;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleType;
 
 /**
  * @author lucasm
@@ -85,13 +87,7 @@ public class MeasurementResource extends ResourceObject<Sample> {
 			break;
 			
 		case CREATE: {
-			// this only works for direct VMs!
-			ri = (ResourceIdentifier) s.getMeta("::dbparent");
-			Element parentElement = (Element) ri.asRequestXMLElement();
-			
-			parentElement.addContent(new CorinaXML().saveToElement(s));
-			requestElement.addContent(parentElement);
-			
+			prepareCreateQuery(s, requestElement);
 			break;
 		}
 			
@@ -99,6 +95,64 @@ public class MeasurementResource extends ResourceObject<Sample> {
 		
 		// important :)
 		return requestElement;
+	}
+	
+	/**
+	 * A separate routine to create new samples, since this logic is complex and convoluted...
+	 * @param s
+	 * @param requestElement
+	 */
+	private void prepareCreateQuery(Sample s, Element requestElement) throws ResourceException {
+		SampleType sType = (SampleType) s.getMeta("::saveoperation");
+		
+		// no sample type specified, so assume direct
+		if(sType == null)
+			sType = SampleType.DIRECT;
+		
+		switch(sType) {
+		case DIRECT: {
+			ResourceIdentifier ri = (ResourceIdentifier) s.getMeta("::dbparent");
+			Element parentElement = (Element) ri.asRequestXMLElement();
+		
+			parentElement.addContent(new CorinaXML().saveToElement(s));
+			requestElement.addContent(parentElement);
+			
+			return;
+		}
+		
+		case INDEX: {
+			ResourceIdentifier ri = (ResourceIdentifier) s.getMeta("::dbparent");
+			Index index = (Index) s.getMeta("::indexclass");
+			
+			if(ri == null)
+				throw new ResourceException("Cannot index a Sample that hasn't been saved!");
+			
+			/*
+			 * Create this:
+			 * <measurement>
+			 *   <references operation="index" parameter="xxx">
+			 *      <measurement id="xxx" />
+			 *   </references>
+			 * </measurement>
+			 */
+			
+			Element measurementElement = new Element("measurement");
+			Element referencesElement = new Element("references");
+
+			referencesElement.setAttribute("operation", "index");
+			referencesElement.setAttribute("parameter", index.getIndexFunction().getDatabaseRepresentation());
+			
+			requestElement.addContent(measurementElement);
+			measurementElement.addContent(referencesElement);
+			referencesElement.addContent(ri.asRequestXMLElement());
+			
+			return;
+		}
+		
+		default:
+			throw new ResourceException("Create for SampleType of " + s.getSampleType() + " not supported");
+		
+		}
 	}
 	
 	/**

@@ -505,6 +505,24 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		return (type != null && Character.toUpperCase(type.charAt(0)) == 'I');
 	}
 
+	@Override
+	public SampleType getSampleType() {
+		SampleType known = super.getSampleType();
+		
+		// easy, it was determined for us!
+		if(known != null)
+			return known;
+		
+		if(isIndexed())
+			setSampleType(SampleType.INDEX);
+		else if(isSummed())
+			setSampleType(SampleType.SUM);
+		else // fall back if we can't determine and it hasn't been loaded...
+			return SampleType.DIRECT;
+		
+		return super.getSampleType();
+	}
+	
 	//
 	// load/save
 	//
