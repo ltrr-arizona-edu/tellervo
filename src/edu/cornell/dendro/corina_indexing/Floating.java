@@ -96,4 +96,8 @@ public class Floating extends IndexFunction {
 	public int getLegacyID() {
 		return 8;
 	}
+
+	public String getDatabaseRepresentation() {
+		return "FloatingAverage";
+	}
 }

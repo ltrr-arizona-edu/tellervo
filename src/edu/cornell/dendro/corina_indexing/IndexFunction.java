@@ -78,4 +78,13 @@ public abstract class IndexFunction {
 	public abstract int getLegacyID(); /*{
 		return 0;
 	}*/
+	
+	/**
+	 * Returns one of these:
+	 * Horizontal Linear Polynomial-2 Polynomial-3 Polynomial-4 Polynomial-5
+	 * Polynomial-6 NegativeExponential FloatingAverage Highpass CubicSpline
+	 * 
+	 * @return the string in our database to represent this index
+	 */
+	public abstract String getDatabaseRepresentation();
 }

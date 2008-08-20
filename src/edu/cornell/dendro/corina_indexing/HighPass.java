@@ -125,4 +125,8 @@ public class HighPass extends IndexFunction {
 	public int getLegacyID() {
 		return 9;
 	}
+	
+	public String getDatabaseRepresentation() {
+		return "Highpass";
+	}
 }

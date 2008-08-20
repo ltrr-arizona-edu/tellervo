@@ -215,5 +215,8 @@ public class CubicSpline extends IndexFunction {
 	@Override
 	public int getLegacyID() {
 		return 10;
+	}	
+	public String getDatabaseRepresentation() {
+		return "CubicSpline";
 	}
 }

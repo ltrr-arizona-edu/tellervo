@@ -76,4 +76,8 @@ public class Horizontal extends IndexFunction {
 	public int getLegacyID() {
 		return 0;
 	}
+	
+	public String getDatabaseRepresentation() {
+		return "Horizontal";
+	}
 }

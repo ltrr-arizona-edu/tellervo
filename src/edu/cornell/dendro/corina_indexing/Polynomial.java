@@ -109,4 +109,12 @@ public class Polynomial extends IndexFunction implements SolverFunction {
 	public String getI18nTagTrailer() {
 		return new Integer(degree).toString();
 	}
+	
+	public String getDatabaseRepresentation() {
+		// special case...
+		if(degree == 1)
+			return "Linear";
+		
+		return "Polynomial-" + degree;
+	}
 }

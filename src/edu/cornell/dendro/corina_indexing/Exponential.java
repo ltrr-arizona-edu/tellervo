@@ -173,4 +173,8 @@ public class Exponential extends IndexFunction implements SolverFunction {
 	public int getLegacyID() {
 		return 7;
 	}
+	
+	public String getDatabaseRepresentation() {
+		return "NegativeExponential";
+	}
 }
