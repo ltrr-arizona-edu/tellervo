@@ -75,6 +75,13 @@ public class Center {
 	Dimension d = source.getSize();
 	int x = p.x + d.width/2 - window.getWidth()/2;
 	int y = p.y + d.height/2 - window.getHeight()/2;
+
+	// ensure that it doesn't get put off the screen!
+	if(x < 0)
+		x = 0;
+	if(y < 0)
+		y = 0;
+	
 	window.setLocation(new Point(x, y));
 
 	// REFACTOR: combine these 2 center() functions?

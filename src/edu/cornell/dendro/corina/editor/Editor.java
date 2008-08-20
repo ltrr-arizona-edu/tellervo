@@ -781,6 +781,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// Q: store the resolution, as well, so the relative position
 		// is the same, or just make sure the absolute is within range?
 		// i can store the position either in a ;WINDOW field, or beyond the ~author line.
+		Center.center(this);
 		show();
 
 		/*

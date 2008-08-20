@@ -87,7 +87,6 @@ class GraphViewMenu extends JMenu {
 				boolean vis = Boolean.valueOf(App.prefs.getPref("corina.graph.baselines")).booleanValue();
 
 				window.plot.setBaselinesVisible(!vis);
-				window.plot.recreateAgent();
 				
 				_baselinesMenu.setText(I18n.getText(vis ? "base_show"
 						: "base_hide"));
@@ -106,7 +105,6 @@ class GraphViewMenu extends JMenu {
 				boolean vis = Boolean.valueOf(App.prefs.getPref("corina.graph.hundredpercentlines")).booleanValue();
 
 				window.plot.setHundredpercentlinesVisible(!vis);
-				window.plot.recreateAgent();
 				
 				_hundredpercentlinesMenu.setText(I18n.getText(vis ? "hperc_show"
 						: "hperc_hide"));

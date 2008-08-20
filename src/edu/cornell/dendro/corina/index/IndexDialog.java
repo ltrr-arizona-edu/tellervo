@@ -21,14 +21,20 @@
 package edu.cornell.dendro.corina.index;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -44,12 +50,21 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
+import edu.cornell.dendro.corina.graph.Graph;
+import edu.cornell.dendro.corina.graph.GraphInfo;
 import edu.cornell.dendro.corina.graph.GraphWindow;
+import edu.cornell.dendro.corina.graph.Graphable;
+import edu.cornell.dendro.corina.graph.GrapherPanel;
+import edu.cornell.dendro.corina.graph.PlotAgents;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
@@ -59,6 +74,7 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.NoEmptySelection;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.TextClipboard;
@@ -86,10 +102,6 @@ public class IndexDialog extends JDialog {
 	// table
 	private JTable table;
 	private IndexTableModel model;
-
-	// proxying
-	private JComboBox proxyPopup;
-	private int oldSelection = 0;
 
 	// formatting for decimals
 	private static final String CHI2_FORMAT = "#,##0.0";
@@ -165,25 +177,22 @@ public class IndexDialog extends JDialog {
 		}
 	}
 
-	// label, centered
+	// label, aligned
 	private JComponent makeLabel() {
-		JPanel b = new JPanel(new BorderLayout());
-		b.add(new JLabel(I18n.getText("choose_index"), SwingConstants.LEFT));
-		return b;
+		JLabel l = new JLabel(I18n.getText("choose_index"));
+		l.setAlignmentX(RIGHT_ALIGNMENT);
+		return l;
 	}
 
 	private JComponent makeTable() {
 		iset = new IndexSet(sample);
-		iset.run();
 
 		model = new IndexTableModel(iset);
 		table = new JTable(model);
 		table.setShowGrid(false);
-		table.setPreferredScrollableViewportSize(new Dimension(420, 200)); //320,
-																			// 150
-																			// )
-																			// )
-																			// ;
+		
+		int theight = table.getRowHeight() * iset.indexes.size();
+		table.setPreferredScrollableViewportSize(new Dimension(220, theight));
 		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JScrollPane scroller = new JScrollPane(table);
 		// scroller.setBorder(BorderFactory.createEmptyBorder(0, 14, 0, 14));
@@ -191,6 +200,16 @@ public class IndexDialog extends JDialog {
 		// use decimal renderers for chi^2 and rho
 		table.getColumnModel().getColumn(1).setCellRenderer(new DecimalRenderer(CHI2_FORMAT.replace('#', '0')));
 		table.getColumnModel().getColumn(2).setCellRenderer(new DecimalRenderer(RHO_FORMAT.replace('#', '0')));
+		
+		// calculate the maximum string width for the first column
+		int maxWidth = -1;
+		FontMetrics fm = table.getFontMetrics(table.getFont());
+		for(Index i : iset.indexes) {
+			int iwidth = fm.stringWidth(i.getName());
+			if(iwidth > maxWidth)
+				maxWidth = iwidth;
+		}
+		table.getColumnModel().getColumn(0).setPreferredWidth(maxWidth);
 
 		// don't allow reordering or resizing of the columns
 		table.getTableHeader().setReorderingAllowed(false);
@@ -204,6 +223,34 @@ public class IndexDialog extends JDialog {
 		// entry. but i ... CORRECTED them, sir.)
 		NoEmptySelection.noEmptySelection(table);
 
+		// set up graphSamples, and ensure that it's set to something sane
+		// otherwise, graph won't initialize
+		graphSamples = new ArrayList<Graph>(2);
+		graphSamples.add(new Graph(iset.indexes.get(0).getTarget()));
+		graphSamples.add(new Graph(iset.indexes.get(0)));
+		
+    	table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				// ignore if we haven't yet made a selection
+				if(e.getValueIsAdjusting())
+					return;
+				
+				int row = table.getSelectedRow();
+				if(row == -1) // ignore if this happens??
+					return;
+
+				Index i = iset.indexes.get(row);
+				
+				// change the graph samples...
+				graphSamples.set(0, new Graph(i.getTarget()));
+				graphSamples.set(1, new Graph(i));
+				
+				if(graphPanel != null)
+					graphPanel.update();
+			}
+    	});
+
+		
 		// select exponential, because that's probably the one that's going to
 		// get used
 		// (and we should encourage that)
@@ -213,23 +260,13 @@ public class IndexDialog extends JDialog {
 				break;
 			}
 		}
-
+		
 		return scroller;
 	}
 
-	private JButton makePreviewButton() {
-		JButton preview = Builder.makeButton("preview");
-		preview.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent ae) {
-				int row = table.getSelectedRow();
-
-				// graph the index (and target -- see GraphWindow(Index))
-				new GraphWindow(iset.indexes.get(row));
-			}
-		});
-		return preview;
-	}
-
+	/* 
+	 * This isn't used at all, but I'm keeping it in case it proves useful in the future.
+	 * 
 	private JButton makeCopyButton() {
 		JButton b = Builder.makeButton("copy");
 		b.addActionListener(new AbstractAction() {
@@ -262,6 +299,7 @@ public class IndexDialog extends JDialog {
 		// copy it
 		TextClipboard.copy(buf.toString());
 	}
+	*/
 
 	private JButton makeCancelButton() {
 		JButton cancel = Builder.makeButton("cancel");
@@ -272,6 +310,90 @@ public class IndexDialog extends JDialog {
 		});
 		return cancel;
 	}
+	
+	private JComponent createGraph(final Dimension otherPanelDim, final int extraWidth) {
+		// initialize our plotting agents
+		PlotAgents agents = new PlotAgents();
+		
+		// create a new graphinfo structure, so we can tailor it to our needs.
+		GraphInfo gInfo = new GraphInfo();
+		
+		// force no drawing of graph names
+		gInfo.overrideDrawGraphNames(false);
+		
+		// create a graph panel; put it in a scroll pane
+		graphPanel = new GrapherPanel(graphSamples, agents, null, gInfo) {
+			@Override
+			public Dimension getPreferredScrollableViewportSize() {
+				// -10s are for insets set below in the emptyBorder
+				int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width - (otherPanelDim.width + extraWidth);
+				int graphWidth = getGraphPixelWidth();
+				return new Dimension((graphWidth < screenWidth) ? graphWidth : screenWidth, otherPanelDim.height);
+			}
+		};
+
+		JScrollPane scroller = new JScrollPane(graphPanel,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		
+		return scroller;
+	}
+	
+	private JPanel createTableAndButtons() {
+		// border
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+		p.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
+
+		// top panel: text
+		p.add(makeLabel());
+
+		p.add(Box.createVerticalStrut(12));
+
+		// table
+		p.add(makeTable());
+
+		p.add(Box.createVerticalStrut(14));
+
+		// bottom panel (buttons) ------------
+
+		// help button
+		JButton help = Builder.makeButton("help");
+		Help.addToButton(help, "indexing");
+
+		// cancel button
+		JButton cancel = makeCancelButton();
+
+		// ok button -- REFACTOR: EXTRACT METHOD
+		okButton = Builder.makeButton("ok");
+		okButton.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				int row = table.getSelectedRow();
+
+				// apply it
+				Index index = iset.indexes.get(row);
+				index.apply();
+
+				// undo (index implements undoable)
+				sample.postEdit(index);
+
+				// also: clear filename, set modified
+				sample.setModified();
+				sample.removeMeta("filename"); // BUG: this should be in
+												// Index.apply()
+				// (otherwise undo doesn't put the filename back)
+
+				// tell editor, and close
+				sample.fireSampleDataChanged();
+				sample.fireSampleMetadataChanged();
+				dispose();
+			}
+		});
+
+		p.add(Layout.buttonLayout(help, null, okButton, cancel));
+		p.add(Box.createVerticalGlue());
+		return p;
+	}
 
 	/**
 	 * Create a new indexing dialog for the given sample.
@@ -280,7 +402,7 @@ public class IndexDialog extends JDialog {
 	 *            the Sample to be indexed
 	 */
 	public IndexDialog(Sample s, JFrame owner) {
-		super(owner);
+		super(owner, true);
 		// setModal(true); -- no, graph becomes unusable, then.
 
 		// data
@@ -309,265 +431,33 @@ public class IndexDialog extends JDialog {
 			title = I18n.getText("Untitled");
 		setTitle(MessageFormat.format(I18n.getText("index_of"), new Object[] { title }));
 
-		// border
-		JPanel p = new JPanel();
-		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-		p.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
-		setContentPane(p);
-
-		// top panel: text
-		p.add(makeLabel());
-
-		p.add(Box.createVerticalStrut(12));
-
-		// table
-		p.add(makeTable());
-
-		// proxy indexing -- REFACTOR: extract method
-		p.add(Box.createVerticalStrut(12));
-		final JCheckBox useProxy = new JCheckBox("Use Proxy Data:");
-		{
-			JPanel p2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-			p2.add(useProxy);
-			p.add(p2);
-			useProxy.addActionListener(new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					int lastSelectedRow = table.getSelectedRow();
-					if (useProxy.isSelected()) {
-						// checked
-						try {
-							proxyPopup.setEnabled(true);
-							if (proxyPopup.getSelectedIndex() == 0) { // special
-																		// case:
-																		// selected
-																		// the
-																		// sample
-																		// itself
-								iset = new IndexSet(sample);
-							} else {
-								File f = (File) proxyPopup.getSelectedItem();
-								Sample proxy = new FileElement(f.getPath()).load();
-								iset = new IndexSet(sample, proxy);
-							}
-							iset.run(); // can't be bad here, afaik -- are you
-										// sure?
-							model.setIndexSet(iset);
-						} catch (IOException ioe) {
-							// can't happen ... can it? better be really sure
-							// before you ignore this.
-							System.out.println("oops: " + ioe);
-						}
-					} else {
-						// unchecked
-						proxyPopup.setEnabled(false);
-						iset = new IndexSet(sample);
-						iset.run();
-						model.setIndexSet(iset);
-					}
-					// clean up and make sure we reselect!
-					table.setRowSelectionInterval(lastSelectedRow, lastSelectedRow);
-				}
-			});
-		}
-		/*
-		p.add(Box.createVerticalStrut(8));
-		{
-			JPanel p2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-			p2.add(Box.createHorizontalStrut(24));
-			Vector sums = getSums();
-			int numSums = sums.size();
-			UserFriendlyFile me = new UserFriendlyFile((String) s.getMeta("filename")); // BUG
-																						// :
-			// fails if this file hasn't been saved (but shouldn't i probably
-			// warn, then, anyway?)
-			sums.add(0, me);
-			sums.add("Other...");
-			proxyPopup = new JComboBox(sums); // this is the last time |sums| is
-												// used
-			proxyPopup.setEnabled(false);
-			proxyPopup.addActionListener(new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					// now deal with this selection...
-
-					if (proxyPopup.getSelectedIndex() == proxyPopup.getItemCount() - 1) {
-						// "other..." selected
-						Sample proxy = null;
-						try {
-							String fn = FileDialog.showSingle("Proxy");
-							// load it, etc.
-							proxy = new FileElement(fn).load();
-							iset = new IndexSet(sample, proxy);
-							iset.run();
-							model.setIndexSet(iset);
-
-							// add to popup AFTER running -- if it couldn't run,
-							// we don't want to add it
-							int x = proxyPopup.getItemCount() - 1;
-							proxyPopup.insertItemAt(new UserFriendlyFile(fn), x);
-							proxyPopup.setSelectedIndex(x);
-						} catch (UserCancelledException uce) {
-							proxyPopup.setSelectedIndex(oldSelection); // reselect
-																		// previous
-																		// value
-																		// .
-						} catch (IOException ioe) {
-							// IMPROVE THIS!
-							System.out.println("oops, can't load or something...");
-						} catch (RuntimeException re) { // ICK!
-							Alert.error("Proxy Dataset Too Short", "That proxy dataset (" + proxy.getRange() + ") doesn't cover\n"
-									+ "the entire range of the sample (" + sample.getRange() + ") you're indexing.");
-							proxyPopup.setSelectedIndex(oldSelection);
-							return;
-						}
-					} else {
-						// a file already in the list was selected
-						Sample proxy = null;
-						try {
-							if (proxyPopup.getSelectedIndex() == 0) { // special
-																		// case:
-																		// selected
-																		// the
-																		// sample
-																		// itself
-								iset = new IndexSet(sample);
-							} else {
-								File f = (File) proxyPopup.getSelectedItem();
-								proxy = new FileElement(f.getPath()).load();
-								iset = new IndexSet(sample, proxy);
-							}
-							iset.run();
-							model.setIndexSet(iset);
-						} catch (IOException ioe) {
-							System.out.println("oops2, can't load or something...");
-						} catch (RuntimeException re) {
-							// FIXME: runtimeexception? what was i smoking?
-							// REFACTOR: this looks awfully familiar
-							Alert.error("Proxy Dataset Too Short", "That proxy dataset (" + proxy.getRange() + ") doesn't cover\n"
-									+ "the entire range of the sample (" + sample.getRange() + ") you're indexing.");
-							// that wasn't very localizeable
-							proxyPopup.setSelectedIndex(oldSelection);
-							return;
-						}
-					}
-
-					// no matter what, save old selection
-					oldSelection = proxyPopup.getSelectedIndex();
-				}
-			});
-			p2.add(proxyPopup);
-			p.add(p2);
-		}
-		*/
-
-		p.add(Box.createVerticalStrut(14));
-
-		// bottom panel (buttons) ------------
-
-		// help button
-		JButton help = Builder.makeButton("help");
-		Help.addToButton(help, "indexing");
-
-		// graph button
-		JButton preview = makePreviewButton();
-
-		// copy button
-		// buttonPanel.add(makeCopyButton()); // -- CAROL WANTS THIS, BUT IT'S
-		// NOW TEMPORARILY DISABLED
-		// also: copy on cmd-C -- BROKEN
-		/*
-		 * addKeyListener(new KeyAdapter() { public void keyTyped(KeyEvent e) {
-		 * // nothing selected, do nothing if (table.getSelectedRow() == -1)
-		 * return;
-		 * 
-		 * System.out.println("e=" + e);
-		 * 
-		 * // on command-C (control-C on the pc), copy the index. boolean
-		 * command = ((!Platform.isMac && e.isControlDown()) || (Platform.isMac
-		 * && e.isMetaDown())); if (e.getKeyChar()=='c' && command) copyIndex();
-		 * } });
-		 */
-
-		// cancel button
-		JButton cancel = makeCancelButton();
-
-		// ok button -- REFACTOR: EXTRACT METHOD
-		JButton okButton = Builder.makeButton("ok");
-		okButton.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent ae) {
-				int row = table.getSelectedRow();
-
-				// apply it
-				Index index = iset.indexes.get(row);
-				index.apply();
-
-				// undo (index implements undoable)
-				sample.postEdit(index);
-
-				// also: clear filename, set modified
-				sample.setModified();
-				sample.removeMeta("filename"); // BUG: this should be in
-												// Index.apply()
-				// (otherwise undo doesn't put the filename back)
-
-				// tell editor, and close
-				sample.fireSampleDataChanged();
-				sample.fireSampleMetadataChanged();
-				dispose();
-			}
-		});
-
-		p.add(Layout.buttonLayout(help, null, preview, cancel, okButton));
-
+		// create content pane...
+		JPanel content = new JPanel();
+		content.setLayout(new BoxLayout(content, BoxLayout.X_AXIS));
+		setContentPane(content);
+		
+		// calculate any extra width in this dialog
+		// 20 = separator + padding
+		int extraWidth = 20 + getInsets().left + getInsets().right;
+		
+		// add the content
+		JPanel tableAndButtons = createTableAndButtons();
+		content.add(tableAndButtons);
+		content.add(Box.createHorizontalStrut(5));
+		content.add(new JSeparator(JSeparator.VERTICAL));
+		content.add(Box.createHorizontalStrut(5));
+		content.add(createGraph(tableAndButtons.getPreferredSize(), extraWidth));
+		
 		// ok/cancel
 		OKCancel.addKeyboardDefaults(okButton);
 
 		// all done
 		pack();
-		setResizable(false);
-		show();
+		Center.center(this, owner);
+		setVisible(true);
 	}
-
-	// make a vector of sums (*.sum *.SUM) in the same folder as this sample,
-	// since that's what they'll be using 99% of the time
-	// (why a Vector? because jcombobox takes a vector, but not a list. yeah,
-	// suck.)
-	private Vector getSums() {
-		// get files in this directory
-		String filename = (String) sample.getMeta("filename");
-
-		// whoops! what if no filename? abort!
-		if (filename == null)
-			return new Vector(); // not pretty
-
-		// list my siblings
-		File files[] = new File(filename).getParentFile().listFiles();
-
-		// whoops! how can this happen?
-		if (files == null)
-			return new Vector();
-
-		// return those that match "*.sum"
-		// -- this is something like:
-		// (remove-if-not (lambda (x) (ends-with x ".SUM")) (list-files
-		// filename))
-		Vector result = new Vector();
-		for (int i = 0; i < files.length; i++) {
-			// if doesn't end with .sum, skip;
-			// BETTER: load cache(summary), and get real sums?
-			if (!files[i].getName().toUpperCase().endsWith(".SUM"))
-				continue;
-
-			// if it's me, skip -- BUG? should this check
-			// equals(File(filename))?
-			if (files[i].getPath().equals(filename))
-				continue;
-
-			// ok, add it
-			result.add(new UserFriendlyFile(files[i].getPath()));
-		}
-
-		// sort the list, and return it
-		Collections.sort(result); // TODO: case-insensitive sort!
-		return result;
-	}
+	
+	private JButton okButton;
+	private GrapherPanel graphPanel;
+	private List<Graph> graphSamples;
 }

@@ -58,9 +58,9 @@ import edu.cornell.dendro.corina_indexing.*;
    @version $Id$
 */
 
-public class IndexSet implements Runnable {
+public class IndexSet {
     /** The indexes. */
-    public List<Index> indexes = new ArrayList();
+    public List<Index> indexes = new ArrayList<Index>();
 
     /**
         Make a new IndexSet.
@@ -88,6 +88,8 @@ public class IndexSet implements Runnable {
         indexes.add(new Index(sample, 
         		new CubicSpline(sample, 
         				Double.parseDouble(App.prefs.getPref("corina.index.cubicfactor", "1e-16")))));
+        
+        compute();
     }
 
     /**
@@ -95,6 +97,7 @@ public class IndexSet implements Runnable {
 
         @param sample the Sample to index
         @param proxy the proxy dataset to use for the indexing curve
+        @deprecated not used, no idea if it works!
     */
     public IndexSet(Sample sample, Sample proxy) {
         this(sample);
@@ -103,7 +106,7 @@ public class IndexSet implements Runnable {
     }
 
     /** Run all the indexes. */
-    public void run() {
+    private void compute() {
         // i put this in run(), so it could be threaded, but is it worth it?
         // -- for 100yr sample x 10 indexes, 900mhz athlon: 30-40ms.
         // so no, it's probably not worth it.

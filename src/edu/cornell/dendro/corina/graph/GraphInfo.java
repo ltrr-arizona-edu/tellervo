@@ -234,4 +234,9 @@ public class GraphInfo {
 			new colorPair("White", Color.WHITE),
 			new colorPair("Pink", Color.PINK)
 			};	
+	
+	// OVERRIDES
+	// These are to be used ONLY by utilites that draw graphs
+	// They allow changes to the graphInfo without saving preferences!
+	public void overrideDrawGraphNames(boolean value) { showGraphNames = value; }
 }

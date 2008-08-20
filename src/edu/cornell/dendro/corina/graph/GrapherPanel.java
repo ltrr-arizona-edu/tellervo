@@ -169,6 +169,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 	// update the window title with the current graph's title
 	public void updateTitle() {
+		// perhaps it can be null?
+		if(myFrame == null)
+			return;
+		
 		// current graph, and its title
 		Graph g = (Graph) graphs.get(current);
 		String title = g.graph.toString();
@@ -218,7 +222,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		gInfo.reloadPrefs();
 		
 		// redraw
-		repaint();		
+		repaint();
 	}
 
 	public void setBaselinesVisible(boolean visible) {
@@ -263,7 +267,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// messy redrawing...
 		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * gInfo.getYearWidth(), 200));
-		recreateAgent();
 		revalidate();					
 		repaint();
 	}
@@ -470,7 +473,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				if(--curheight < 2)
 					curheight = 2;
 				gInfo.set10UnitHeight(curheight);
-				recreateAgent();
 				revalidate();
 				if(vertaxis != null)
 					vertaxis.repaint();
@@ -481,7 +483,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				int curheight = gInfo.get10UnitHeight();
 				curheight++;
 				gInfo.set10UnitHeight(curheight);
-				recreateAgent();
 				revalidate();
 				if(vertaxis != null)
 					vertaxis.repaint();				
@@ -497,7 +498,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				
 				computeRange();				
 				setPreferredSize(new Dimension(bounds.span() * curwidth, 200));
-				recreateAgent();
 				revalidate();					
 				horiz.setValue(Math.abs(y.diff(getRange().getStart())) * gInfo.getYearWidth());				
 				repaint = true;
@@ -511,7 +511,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				
 				computeRange();
 				setPreferredSize(new Dimension(bounds.span() * curwidth, 200));
-				recreateAgent();
 				revalidate();					
 				horiz.setValue(Math.abs(y.diff(getRange().getStart())) * gInfo.getYearWidth());								
 				repaint = true;
@@ -531,7 +530,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				if(!bounds.getStart().equals(y1) || endBoundChanged)
 				{
 					setPreferredSize(new Dimension(bounds.span() * yearWidth, 200));
-					recreateAgent();
 					revalidate();					
 				}
 				
@@ -557,7 +555,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				if(!bounds.getEnd().equals(y2) || startBoundChanged)
 				{
 					setPreferredSize(new Dimension(bounds.span() * yearWidth, 200));
-					recreateAgent();
 					revalidate();					
 				}
 				
@@ -720,10 +717,15 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	public void tryPrint(int printStyle) {
 		new GraphPrintDialog(myFrame, graphs, this, printStyle);
 	}
+
+	public GrapherPanel(List<Graph> graphs, PlotAgents agents, final JFrame myFrame) {
+		// set up the graph info, which loads a lot of default preferences.	
+		this(graphs, agents, myFrame, new GraphInfo());
+	}
 	
 	// graphs = List of Graph.
 	// frame = window; (used for: title set to current graph, closed when ESC pressed.)
-	public GrapherPanel(List graphs, PlotAgents agents, final JFrame myFrame) {		
+	public GrapherPanel(List<Graph> graphs, PlotAgents agents, final JFrame myFrame, GraphInfo graphInfo) {		
 		// my frame
 		this.myFrame = myFrame;
 		this.agents = agents;
@@ -732,8 +734,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// note: (mac crosshair doesn't invert on 10.[01], so it's invisible on black)
 		setCursor(crosshair);
 
-		// set up the graph info, which loads a lot of default preferences.
-		gInfo = new GraphInfo();
+		// use the passed graphinfo
+		gInfo = graphInfo;
 
 		// key listener -- apparently the focus gets screwed up and
 		// keys stop responding if I don't add a key listener to both
@@ -793,9 +795,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// background -- default is black
 		setBackground(gInfo.getBackgroundColor());
 
-		// create drawing agent
-		recreateAgent();
-		
 		// ensure that we're double buffered
 		setDoubleBuffered(true);
 
@@ -819,11 +818,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		setBaselinesVisible(Boolean.valueOf(App.prefs.getPref("corina.graph.baselines")).booleanValue());
 		setHundredpercentlinesVisible(Boolean.valueOf(App.prefs.getPref("corina.graph.hundredpercentlines")).booleanValue());
 		setAxisVisible(Boolean.valueOf(App.prefs.getPref("corina.graph.vertical-axis")).booleanValue());
-	}
-
-	public void recreateAgent() {
-		// did we deprecate this horrible beast?
-		// myAgent = new StandardPlot(gInfo.getDrawRange(), gInfo);
 	}
 
 	/** Colors to use for graphs: blue, green, red, cyan, yellow, magenta. */
@@ -1364,7 +1358,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 	public Dimension getPreferredScrollableViewportSize() {
 		int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
-		int frames = myFrame.getInsets().left + myFrame.getInsets().right;
+		int frames = (myFrame != null) ? myFrame.getInsets().left + myFrame.getInsets().right : 0;
 
 		// actually, this should be the amount of border, but
 		// i don't know to get that reliably
@@ -1391,6 +1385,20 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		return gInfo.getDrawRange();
 	}
 	
+	/**
+	 * @return the width of this graph in its current state, in pixels
+	 */
+	public int getGraphPixelWidth() {
+		return gInfo.getDrawRange().span() * gInfo.getYearWidth();
+	}
+	
+	/**
+	 * @return our graphInfo structure - use sparingly!
+	 */
+	public GraphInfo getGraphInfo() {
+		return gInfo;
+	}
+	
 	public Range getGraphingRange() {
 		if(!gInfo.drawGraphNames())
 			return gInfo.getDrawRange();
@@ -1405,7 +1413,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		gInfo.setYearWidth(width);
 		computeRange();				
 		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * width, 200));
-		recreateAgent();
 		revalidate();							
 	}
 	
