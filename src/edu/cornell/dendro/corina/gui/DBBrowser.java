@@ -10,6 +10,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import javax.swing.event.*;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -44,7 +47,7 @@ import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
 import edu.cornell.dendro.corina.webdbi.ResourceEvent;
 import edu.cornell.dendro.corina.webdbi.ResourceEventListener;
 
-public class DBBrowser extends javax.swing.JDialog {
+public class DBBrowser extends javax.swing.JDialog{
     /** A return status code - returned if Cancel button has been pressed */
     public static final int RET_CANCEL = 0;
     /** A return status code - returned if OK button has been pressed */
@@ -94,6 +97,22 @@ public class DBBrowser extends javax.swing.JDialog {
 				dispose();
 			}
         });
+        
+        txtFilterInput.addKeyListener(new KeyListener() {
+        	public void keyPressed(KeyEvent txt){
+        		// User typing so filter sites
+     
+        	}
+        	public void keyTyped(KeyEvent txt){
+
+        		
+        	}        	
+        	public void keyReleased(KeyEvent txt){
+        		// do nothing
+           		populateSiteList();
+        	}
+        	
+        });
     }
     
     private void finish() {
@@ -108,7 +127,7 @@ public class DBBrowser extends javax.swing.JDialog {
     	
     	returnStatus = RET_OK;
     }
-    
+        
     private void setupTableArea() {
 		tblAvailMeas.setColumnSelectionAllowed(false);
 		tblAvailMeas.setRowSelectionAllowed(true);
@@ -484,17 +503,47 @@ public class DBBrowser extends javax.swing.JDialog {
     	Collection<Site> sites = App.sites.getSites();
     	SiteRegion region = (SiteRegion) cboBrowseBy.getSelectedItem();
     	Site selectedSite = (Site) lstSites.getSelectedValue();
-
+    	
     	// have we selected 'all regions?'
-    	if(region.getInternalRepresentation().equals("ALL")) {    		
-    		lstSites.setModel(new javax.swing.DefaultComboBoxModel(sites.toArray()));
+    	if(region.getInternalRepresentation().equals("ALL")) { 
+    		
+    		// User has NOT entered filter text
+        	if(txtFilterInput.getText().equals("")){	
+        		lstSites.setModel(new javax.swing.DefaultComboBoxModel(sites.toArray()));
+
+        	// User HAS entered filter text
+        	} else {
+        		List<Site> filteredSites = new ArrayList<Site>();
+        		
+        		// Loop through master site list and check if filter matches
+        		for(Site s : sites){
+        			if(s.toString().indexOf(txtFilterInput.getText())!=-1){      					
+        				filteredSites.add(s);        				
+        			}	
+        		}
+        		lstSites.setModel(new javax.swing.DefaultComboBoxModel(filteredSites.toArray()));
+        	}		
+    		
+    	
+        // A particular region has been selected so limit list before applying filter
     	} else {
     		List<Site> filteredSites = new ArrayList<Site>();
     		
     		// filter the sites...
     		for(Site s : sites) {
-    			if(s.inRegion(region.getInternalRepresentation()))
-    				filteredSites.add(s);
+    			if(s.inRegion(region.getInternalRepresentation())){
+ 
+    	    		// User has NOT entered filter text
+    	        	if(txtFilterInput.getText().equals("")){	
+    	        		filteredSites.add(s);   
+
+    	        	// User HAS entered filter text
+    	        	} else {    	        		
+    	        			if(s.toString().indexOf(txtFilterInput.getText())!=-1){      					
+    	        				filteredSites.add(s);        				
+    	        			}	
+    	        	}	
+    			}
     		}
     		
     		lstSites.setModel(new javax.swing.DefaultComboBoxModel(filteredSites.toArray()));
@@ -543,7 +592,7 @@ public class DBBrowser extends javax.swing.JDialog {
         cboBrowseBy = new javax.swing.JComboBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         lstSites = new javax.swing.JList();
-        jTextField1 = new javax.swing.JTextField();
+        txtFilterInput = new javax.swing.JTextField();
         searchPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         workArea = new javax.swing.JPanel();
@@ -578,7 +627,7 @@ public class DBBrowser extends javax.swing.JDialog {
         lstSites.setToolTipText("List of sites.  Select one or more to see the available datasets in the right hand table");
         jScrollPane1.setViewportView(lstSites);
 
-        jTextField1.setToolTipText("Begin typing to filter the sites list above");
+        txtFilterInput.setToolTipText("Begin typing to filter the sites list above");
 
         org.jdesktop.layout.GroupLayout browsePanelLayout = new org.jdesktop.layout.GroupLayout(browsePanel);
         browsePanel.setLayout(browsePanelLayout);
@@ -586,7 +635,7 @@ public class DBBrowser extends javax.swing.JDialog {
             browsePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(cboBrowseBy, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE)
-            .add(jTextField1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE)
+            .add(txtFilterInput, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE)
         );
         browsePanelLayout.setVerticalGroup(
             browsePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -595,7 +644,7 @@ public class DBBrowser extends javax.swing.JDialog {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jTextField1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(txtFilterInput, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
 
         browseSearchPane.addTab("Browse", browsePanel);
@@ -743,7 +792,7 @@ public class DBBrowser extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField txtFilterInput;
     private javax.swing.JList lstSites;
     private javax.swing.JPanel panelBrowseBy;
     private javax.swing.JPanel workArea;
