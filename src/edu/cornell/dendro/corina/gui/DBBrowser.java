@@ -688,7 +688,7 @@ public class DBBrowser extends javax.swing.JDialog {
                 .addContainerGap())
         );
 
-        layout.linkSize(new java.awt.Component[] {btnCancel, btnOk}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
+        layout.linkSize(new java.awt.Component[] {btnCancel, btnOk, btnSelectAll, btnSelectNone, btnInvertSelect}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
