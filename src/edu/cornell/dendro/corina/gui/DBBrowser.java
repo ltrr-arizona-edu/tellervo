@@ -113,6 +113,7 @@ public class DBBrowser extends javax.swing.JDialog{
         	}
         	
         });
+               
     }
     
     private void finish() {
@@ -146,6 +147,11 @@ public class DBBrowser extends javax.swing.JDialog{
 			workArea.setLayout(new BorderLayout());
     		workArea.add(new JScrollPane(tblAvailMeas), BorderLayout.CENTER);
 
+    		// Selecting buttons not required for single selection mode
+			btnSelectAll.setVisible(false);
+			btnSelectNone.setVisible(false);
+			btnInvertSelect.setVisible(false);
+    		
     		// start out with initial disabled state, only allow when something is selected
 			btnOk.setEnabled(false);
     		tblAvailMeas.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -171,11 +177,18 @@ public class DBBrowser extends javax.swing.JDialog{
     		
     		Icon dn = Builder.getIcon("downarrow.png");
     		Icon up = Builder.getIcon("uparrow.png");
+    		Icon downall = Builder.getIcon("uparrow.png");
+    		//Icon upall = Builder.getIcon("uparrow.png");
 
     		btnAdd.setIcon(dn);
     		btnRemove.setIcon(up);
+    		//btnAddAll.setIcon(downall);
+    		//btnRemoveAll.setIcon(upall);
+    		
+    		//buttonBar.add(btnAddAll);
     		buttonBar.add(btnAdd);
     		buttonBar.add(btnRemove);
+    		//buttonBar.add(btnRemoveAll);
 
     		// start out with initial disabled state, only allow when our element list has an element in it!
 			btnOk.setEnabled(false);
@@ -606,8 +619,6 @@ public class DBBrowser extends javax.swing.JDialog{
 
         btnOk.setText("OK");
         btnCancel.setText("Cancel");
-        btnAdd.setText("Add");
-        btnRemove.setText("Remove");
 
         jSplitPane1.setBorder(null);
         jSplitPane1.setDividerLocation(250);
@@ -718,8 +729,8 @@ public class DBBrowser extends javax.swing.JDialog{
         btnSelectNone.setToolTipText("Unselected all the measurements in the table ");
 
         btnInvertSelect.setText("Invert");
-        btnInvertSelect.setToolTipText("Invert the selected items in the table");
-
+        btnInvertSelect.setToolTipText("Invert the selected items in the table");        
+        
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -786,6 +797,8 @@ public class DBBrowser extends javax.swing.JDialog{
     private javax.swing.JButton btnOk;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnRemove;
+    private javax.swing.JButton btnAddAll;
+    private javax.swing.JButton btnRemoveAll;    
     private javax.swing.JButton btnSelectAll;
     private javax.swing.JButton btnSelectNone;
     private javax.swing.JComboBox cboBrowseBy;

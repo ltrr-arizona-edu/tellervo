@@ -81,7 +81,7 @@ public class Splash implements ProgressMeter.ProgressListener {
   public void displayProgress(ProgressEvent event) {
     Center.center(window);
     stateChanged(event);
-    window.show();
+    window.setVisible(true);
   }
   public void stateChanged(ProgressEvent event) {
     String newnote = event.getNote();
