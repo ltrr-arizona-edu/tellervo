@@ -113,7 +113,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		target.decr = source.decr;
 		target.elements = source.elements;
 	}
-
+		
 	/** Data, as a List of Integers. 
 	 * It's not that easy, though;
 	 * We put floats in here occasionally, as well as strings.

@@ -160,7 +160,8 @@ public class CorinaWebElement implements SampleLoader {
 		Sample.copy(ns, s);
 		
 		// cache any data that we care about...
-		preload(s);
+		// make sure we use the *new* loader, because it might not be us!
+		s.getLoader().preload(s);
 		
 		return true;
 	}

@@ -126,26 +126,32 @@ public class MeasurementResource extends ResourceObject<Sample> {
 			
 			if(ri == null)
 				throw new ResourceException("Cannot index a Sample that hasn't been saved!");
-			
+
 			/*
-			 * Create this:
-			 * <measurement>
-			 *   <references operation="index" parameter="xxx">
-			 *      <measurement id="xxx" />
-			 *   </references>
+			 * Create this: <measurement> <metadata> <name>Index of
+			 * something</name> <operation parameter="linear">index</operation
+			 * </metadata> <references> <measurement id="1" /> </references>
 			 * </measurement>
+			 * 
 			 */
 			
 			Element measurementElement = new Element("measurement");
+			Element metadataElement = new Element("metadata");
+			Element operationElement = new Element("operation");
 			Element referencesElement = new Element("references");
 
-			referencesElement.setAttribute("operation", "index");
-			referencesElement.setAttribute("parameter", index.getIndexFunction().getDatabaseRepresentation());
+			// <operation parameter="xxxx">index</operation>
+			operationElement.setAttribute("parameter", index.getIndexFunction().getDatabaseRepresentation());
+			operationElement.setText("index");
 			
-			requestElement.addContent(measurementElement);
-			measurementElement.addContent(referencesElement);
+			metadataElement.addContent(operationElement);
+			// add <name>xxx</name>
+			metadataElement.addContent(new Element("name").setText((String) s.getMeta("name")));
 			referencesElement.addContent(ri.asRequestXMLElement());
 			
+			measurementElement.addContent(metadataElement);
+			measurementElement.addContent(referencesElement);
+			requestElement.addContent(measurementElement);
 			return;
 		}
 		

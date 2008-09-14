@@ -52,6 +52,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -59,6 +60,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
+import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.graph.Graph;
 import edu.cornell.dendro.corina.graph.GraphInfo;
 import edu.cornell.dendro.corina.graph.GraphWindow;
@@ -70,6 +72,7 @@ import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -186,6 +189,26 @@ public class IndexDialog extends JDialog {
 		JLabel l = new JLabel(I18n.getText("choose_index"));
 		l.setAlignmentX(RIGHT_ALIGNMENT);
 		return l;
+	}
+
+	// flow containing name: and box
+	private JComponent makeNameBox() {
+		JPanel p = new JPanel();
+		
+		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+		
+		JLabel l = new JLabel(I18n.getText("new_sample_prompt"));
+		
+		indexName = new JTextField();
+		indexName.setText("Index of " + (String) sample.getMeta("title"));
+		
+		l.setLabelFor(indexName);
+		
+		p.add(l);
+		p.add(Box.createHorizontalStrut(5));
+		p.add(indexName);
+		
+		return p;
 	}
 
 	private JComponent makeTable() {
@@ -356,6 +379,10 @@ public class IndexDialog extends JDialog {
 
 		// table
 		p.add(makeTable());
+		
+		// name
+		p.add(Box.createVerticalStrut(8));
+		p.add(makeNameBox());
 
 		p.add(Box.createVerticalStrut(14));
 
@@ -486,6 +513,8 @@ public class IndexDialog extends JDialog {
 			Sample tmp = new Sample();
 
 			// set it up
+			tmp.setMeta("name", indexName.getText());
+			tmp.setMeta("title", indexName.getText()); // not necessary, but consistent?
 			tmp.setMeta("::saveoperation", SampleType.INDEX);
 			tmp.setMeta("::indexclass", index);
 			
@@ -495,11 +524,18 @@ public class IndexDialog extends JDialog {
 			try {
 				// here's where we do the "meat"
 				if(loader.save(tmp)) {
+					// put it in our menu
+					OpenRecent.sampleOpened(tmp.getLoader());
+					
+					/*
 					// copy it over...
 					Sample.copy(tmp, sample);
-					sample.fireSampleDataChanged();
 					sample.fireSampleMetadataChanged();
 					sample.clearModified();
+					*/
+					
+					// instead, open a new editor 
+					new Editor(tmp);
 					return true;
 				}
 			} catch (IOException ioe) {
@@ -515,6 +551,7 @@ public class IndexDialog extends JDialog {
 	}
 	
 	private JButton okButton;
+	private JTextField indexName;
 	private GrapherPanel graphPanel;
 	private List<Graph> graphSamples;
 }

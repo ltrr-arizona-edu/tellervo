@@ -47,7 +47,7 @@ public class BaseSample {
 		target.loader = source.loader;
 		target.sampleType = source.sampleType;
 	}
-
+	
 	public BaseSample() {
 		meta = new HashMap<String, Object>();
 		range = new Range();

@@ -149,7 +149,7 @@ public class CorinaXML implements Filetype {
 			String value = e.getValue();
 			
 			if(key.equals("name")) {
-				s.setMeta("title", value);
+				s.setMeta("title", value); // temporary; we change this later if we have a summary
 				s.setMeta("name", value);
 			}
 			else if(key.equals("owner"))
@@ -194,21 +194,22 @@ public class CorinaXML implements Filetype {
 				String positiveError = e.getAttributeValue("positiveError");
 				String negativeError = e.getAttributeValue("negativeError");
 				
-				if(startYear == null || type == null || count == null) {
+				if(startYear == null || count == null) {
 					System.out.println("bad dating tag");
 					continue;
 				}
-				
+								
 				// first, do the strings
-				if(type.equalsIgnoreCase("absolute"))
-					s.setMeta("dating", "A");
-				else if(type.equalsIgnoreCase("absolute with uncertainty"))
-					s.setMeta("dating", "AU");
-				else if(type.equalsIgnoreCase("relative"))
-					s.setMeta("dating", "R");
-				else {
-					System.out.println("Unknown dating type: " + value);
-					continue;
+				if(type != null) {
+					if(type.equalsIgnoreCase("absolute"))
+						s.setMeta("dating", "A");
+					else if(type.equalsIgnoreCase("absolute with uncertainty"))
+						s.setMeta("dating", "AU");
+					else if(type.equalsIgnoreCase("relative"))
+						s.setMeta("dating", "R");
+					else {
+						System.out.println("Unknown dating type: " + value);
+					}
 				}
 				
 				// now, do integer values
@@ -219,16 +220,19 @@ public class CorinaXML implements Filetype {
 					s.setRange(new Range(new Year(intYear), intCount));
 					
 					// then pos/neg error
-					int intval;
-					if(positiveError != null) {
-						intval = Integer.parseInt(positiveError);
-						s.setMeta("datingErrorPositive", intval);
+					// but only if we have type, because otherwise it makes no sense
+					if(type != null) {
+						int intval;
+						if(positiveError != null) {
+							intval = Integer.parseInt(positiveError);
+							s.setMeta("datingErrorPositive", intval);
+						}
+						if(negativeError != null) {
+							intval = Integer.parseInt(negativeError);
+							s.setMeta("datingErrorNegative", intval);
+						}
 					}
-					if(negativeError != null) {
-						intval = Integer.parseInt(negativeError);
-						s.setMeta("datingErrorNegative", intval);
-					}
-					
+
 				} catch (NumberFormatException nfe) {
 					System.out.println("bad dating tag integer values");					
 					continue;
@@ -243,7 +247,7 @@ public class CorinaXML implements Filetype {
 			}
 			else if(value != null){
 				// store this anyway?
-				s.setMeta("__:" + key, value);
+				s.setMeta("::--::" + key, value);
 				System.out.println("Unknown Metadata: " + key + " -> " + value);
 			}
 		}
@@ -376,7 +380,8 @@ public class CorinaXML implements Filetype {
 				
 				// if no elements and no weiserjahre, 
 				// get rid of count; it's 1 for everything.
-				if(!s.hasWeiserjahre() && s.getElements() == null)
+				//if(!s.hasWeiserjahre() && s.getElements() == null)
+				if(s.getSampleType() != SampleType.SUM)
 					s.setCount(null);
 			}
 			else
