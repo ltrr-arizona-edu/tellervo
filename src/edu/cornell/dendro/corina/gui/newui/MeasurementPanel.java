@@ -214,6 +214,8 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
     	s.setMeta("author", cboMeasuredBy.getSelectedItem());
     	s.setMeta("owner", cboOwnedBy.getSelectedItem());
     	
+    	// name is important, title is not
+    	s.setMeta("name", txtMeasurementName.getText());
     	s.setMeta("title", txtMeasurementName.getText());
     	
     	try {
