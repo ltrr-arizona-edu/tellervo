@@ -376,6 +376,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
     				
     		} catch (Exception e) {
     			Alert.error("Couldn't import!", "There was an error while importing: " + e.toString());
+    			return false;
     		}
     		new Editor(s);
     		return true;
