@@ -25,6 +25,7 @@ import edu.cornell.dendro.corina.manip.Reconcile;
 import edu.cornell.dendro.corina.manip.ReconcileDialog;
 import edu.cornell.dendro.corina.manip.RedateDialog;
 import edu.cornell.dendro.corina.manip.Reverse;
+import edu.cornell.dendro.corina.manip.SumCreationDialog;
 import edu.cornell.dendro.corina.manip.TruncateDialog;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
@@ -82,6 +83,16 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	    });
 	indexMenu.setEnabled(!sample.isIndexed());
 	add(indexMenu);
+
+	// sum
+	sumMenu = Builder.makeMenuItem("sum...", true, "sum.png");
+	sumMenu.addActionListener(new AbstractAction() {
+		public void actionPerformed(ActionEvent ae) {
+		    SumCreationDialog.createSum(editor, true, ElementList.singletonList(new CachedElement(sample)));
+		}
+	    });
+	sumMenu.setEnabled(!sample.isSummed());
+	add(sumMenu);
 
 	// truncate
 	JMenuItem truncate = Builder.makeMenuItem("truncate...");
@@ -215,7 +226,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	sampleElementsChanged(null);
     }
 
-    private JMenuItem indexMenu, crossElements;
+    private JMenuItem indexMenu, sumMenu, crossElements;
 
     //
     // listener
@@ -224,7 +235,8 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
     public void sampleDataChanged(SampleEvent e) { }
     public void sampleMetadataChanged(SampleEvent e) {
 	// index menu: only if not indexed
-	indexMenu.setEnabled(!sample.isIndexed());
+    	indexMenu.setEnabled(!sample.isIndexed());
+    	sumMenu.setEnabled(!sample.isSummed());
     }
     public void sampleElementsChanged(SampleEvent e) {
 	// cross elements: only if elements present, and at least 2 elements

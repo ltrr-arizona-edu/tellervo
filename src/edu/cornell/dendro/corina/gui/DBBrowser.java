@@ -55,6 +55,7 @@ public class DBBrowser extends javax.swing.JDialog{
     
     private ElementList selectedElements;
     private boolean isMultiDialog;
+    private int minimumSelectedElements = 1;
     
     public DBBrowser(java.awt.Frame parent, boolean modal) {
     	this(parent, modal, false);
@@ -209,7 +210,7 @@ public class DBBrowser extends javax.swing.JDialog{
 					((DBBrowserTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
 
 					// verify a selected element
-					if(selectedElements.size() > 0)
+					if(selectedElements.size() >= minimumSelectedElements)
 						btnOk.setEnabled(true);
 					else
 						btnOk.setEnabled(false);
@@ -236,7 +237,7 @@ public class DBBrowser extends javax.swing.JDialog{
 					((DBBrowserTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
 
 					// verify a selected element
-					if(selectedElements.size() > 0)
+					if(selectedElements.size() >= minimumSelectedElements)
 						btnOk.setEnabled(true);
 					else
 						btnOk.setEnabled(false);
@@ -574,7 +575,47 @@ public class DBBrowser extends javax.swing.JDialog{
     		}
     	}
     }
+    
+    /**
+     * adds an element to the list
+     * @param e
+     */
+    public void addElement(Element e) {
+		if(!selectedElements.contains(e))
+			selectedElements.add(e);
+		else
+			return;
+	
+		// tell the table it's changed!
+		((DBBrowserTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
+
+		// verify a selected element
+		if(selectedElements.size() > minimumSelectedElements)
+			btnOk.setEnabled(true);
+		else
+			btnOk.setEnabled(false);    	
+    }
+    
+    /**
+     * How many elements need to be selected before we allow continuing?
+     * (defaults to 1, increase for sums?)
+     * @param value
+     */
+    public void setMinimumSelectedElements(int value) {
+    	minimumSelectedElements = value;
+    }
  
+    /**
+     * Selects the site indicated by "code"
+     * No effect if code is invalid
+     * @param code
+     */
+    public void selectSiteByCode(String code) {
+    	Site site = App.sites.findSite(code);
+    	
+    	lstSites.setSelectedValue(site, true);
+    }
+    
     /** @return an ElementList of selected elements!
      */
     public ElementList getSelectedElements() {
