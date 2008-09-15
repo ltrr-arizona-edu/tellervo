@@ -88,7 +88,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	sumMenu = Builder.makeMenuItem("sum...", true, "sum.png");
 	sumMenu.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
-		    SumCreationDialog.createSum(editor, true, ElementList.singletonList(new CachedElement(sample)));
+		    new SumCreationDialog(editor, ElementList.singletonList(new CachedElement(sample)));
 		}
 	    });
 	sumMenu.setEnabled(!sample.isSummed());

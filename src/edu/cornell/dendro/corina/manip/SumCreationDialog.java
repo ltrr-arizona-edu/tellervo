@@ -8,17 +8,14 @@ import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.SampleSummary;
 
-public class SumCreationDialog extends DBBrowser {
-	public SumCreationDialog(Frame parent, boolean modal) {
-		super(parent, modal, true);
-	}
-	
-	public static void createSum(Frame parent, boolean modal, ElementList el) {
-		SumCreationDialog sum = new SumCreationDialog(parent, modal);
+public class SumCreationDialog {
+	public SumCreationDialog(Frame parent, ElementList el) {
+		DBBrowser sum = new DBBrowser(parent, true, true);
 		
 		// must have two for a sum!
 		sum.setMinimumSelectedElements(2);
 		
+		// add the elements so they show in the dialog
 		for(Element e : el)
 			sum.addElement(e);
 		
