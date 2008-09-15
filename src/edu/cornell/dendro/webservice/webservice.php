@@ -56,6 +56,10 @@ if($myAuth->isLoggedIn())
 {
     $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
 }
+elseif( ($myRequest->getCrudMode()=="nonce"))
+{
+
+}
 elseif( ($myRequest->getCrudMode()!="plainlogin") && ($myRequest->getCrudMode()!="securelogin"))
 {
     // User is not logged in and is either requesting a nonce or isn't trying to log in at all
@@ -305,6 +309,16 @@ elseif($myMetaHeader->status != "Error")
                     trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage());
                 }
             }
+        }
+
+        // ********************
+        // GET NONCE
+        // ********************
+        
+        if($myRequest->getCrudMode()=='nonce') 
+        {
+            $myObject->setNonce($paramObj, $myAuth);
+
         }
 
         // ********************
