@@ -556,7 +556,8 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 </ul>
 	 @return true if the sample is summed */
 	public boolean isSummed() {
-		return (elements != null || count != null);
+		return getSampleType() == SampleType.SUM;
+		//return (elements != null || count != null);
 	}
 
 	public void postEdit(UndoableEdit e) {
