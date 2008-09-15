@@ -144,9 +144,7 @@ public class App {
     // we're done here!
 	if (meter != null)
 		meter.setProgress(6);
-    
-    System.exit(-1);
-    
+
     initialized = true;   
   }
 
