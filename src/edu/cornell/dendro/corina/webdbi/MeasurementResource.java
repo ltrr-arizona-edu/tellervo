@@ -10,6 +10,7 @@ import java.util.*;
 
 import edu.cornell.dendro.corina.formats.CorinaXML;
 import edu.cornell.dendro.corina.index.Index;
+import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
 
@@ -117,6 +118,46 @@ public class MeasurementResource extends ResourceObject<Sample> {
 			parentElement.addContent(new CorinaXML().saveToElement(s));
 			requestElement.addContent(parentElement);
 			
+			return;
+		}
+		
+		case SUM: {
+			/*
+			 * Create this: 
+			 * <measurement> 
+			 * 	<metadata> 
+			 * 		<name>Sum of something</name> 
+			 * 		<operation>sum</operation
+			 * 	</metadata> 
+			 * 	<references> 
+			 * 		<measurement id="1" /> 
+			 * 		<measurement id="..." /> 
+			 * 	</references>
+			 * </measurement>
+			 * 
+			 */
+			Element measurementElement = new Element("measurement");
+			Element metadataElement = new Element("metadata");
+			Element referencesElement = new Element("references");
+
+		
+			metadataElement.addContent(new Element("name").setText((String) s.getMeta("name")));
+			metadataElement.addContent(new Element("operation").setText("sum"));
+			
+			// now, add each child element in the list...
+			for(edu.cornell.dendro.corina.sample.Element child : s.getElements()) {
+				if(child.getLoader() instanceof CorinaWebElement) {
+					CorinaWebElement cwe = (CorinaWebElement) child.getLoader();
+					
+					referencesElement.addContent(cwe.getResourceIdentifier().asRequestXMLElement());
+				}
+				else
+					throw new ResourceException("Non-corina element in sum -- cannot deal");
+			}
+
+			measurementElement.addContent(metadataElement);
+			measurementElement.addContent(referencesElement);
+			requestElement.addContent(measurementElement);
 			return;
 		}
 		

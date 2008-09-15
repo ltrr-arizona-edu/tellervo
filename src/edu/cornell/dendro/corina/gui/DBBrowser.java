@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -75,6 +76,10 @@ public class DBBrowser extends javax.swing.JDialog{
         
         // repack :)
         pack();
+
+        // don't let it grow to distort our dialog!
+        extraButtonPanel.setPreferredSize(new Dimension(btnOk.getWidth(), 1));
+        extraButtonPanel.setMaximumSize(new Dimension(btnOk.getWidth(), Integer.MAX_VALUE));
         
         Center.center(this);
         
@@ -88,8 +93,9 @@ public class DBBrowser extends javax.swing.JDialog{
         
         btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				finish();
-				dispose();
+				// only dispose if finish succeeded (for overriding)
+				if(finish())
+					dispose();
 			}
         });
 
@@ -117,7 +123,7 @@ public class DBBrowser extends javax.swing.JDialog{
                
     }
     
-    private void finish() {
+    protected boolean finish() {
     	if(!isMultiDialog) {
     		int selectedRows[] = tblAvailMeas.getSelectedRows();
     	
@@ -128,6 +134,7 @@ public class DBBrowser extends javax.swing.JDialog{
     	}
     	
     	returnStatus = RET_OK;
+    	return true;
     }
         
     private void setupTableArea() {
@@ -140,7 +147,7 @@ public class DBBrowser extends javax.swing.JDialog{
 		tblChosenMeas.setRowSelectionAllowed(true);
 		tblChosenMeas.setModel(new DBBrowserTableModel(selectedElements));
 		setupTableColumns(tblChosenMeas);
-
+		
 		if(!isMultiDialog) {
 			// only single selection!
 			tblAvailMeas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -627,6 +634,15 @@ public class DBBrowser extends javax.swing.JDialog{
         return returnStatus;
     }
     
+    /**
+     * Get the JPanel that comprises space between invert...OK
+     * Not initialized; must be laid out manually
+     * @return
+     */
+    public JPanel getExtraButtonPanel() {
+    	return extraButtonPanel;
+    }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -643,6 +659,7 @@ public class DBBrowser extends javax.swing.JDialog{
         panelBrowseBy = new javax.swing.JPanel();
         browseSearchPane = new javax.swing.JTabbedPane();
         browsePanel = new javax.swing.JPanel();
+        extraButtonPanel = new javax.swing.JPanel();
         cboBrowseBy = new javax.swing.JComboBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         lstSites = new javax.swing.JList();
@@ -784,6 +801,7 @@ public class DBBrowser extends javax.swing.JDialog{
                     .add(btnInvertSelect)
                     .add(btnSelectNone)
                     .add(btnSelectAll)
+                    .add(extraButtonPanel)
                     .add(btnOk, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 67, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(btnCancel))
                 .addContainerGap())
@@ -803,6 +821,8 @@ public class DBBrowser extends javax.swing.JDialog{
                         .add(btnSelectNone)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(btnInvertSelect)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(extraButtonPanel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 332, Short.MAX_VALUE)
                         .add(btnOk)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -833,6 +853,7 @@ public class DBBrowser extends javax.swing.JDialog{
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel browsePanel;
     private javax.swing.JTabbedPane browseSearchPane;
+    private javax.swing.JPanel extraButtonPanel;
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnInvertSelect;
     private javax.swing.JButton btnOk;
