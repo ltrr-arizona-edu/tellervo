@@ -19,10 +19,10 @@ require_once("inc/output.php");
 
 require_once("inc/site.php");
 require_once("inc/subSite.php");
-require_once("inc/element.php");
-require_once("inc/sample.php");
+require_once("inc/tree.php");
+require_once("inc/specimen.php");
 require_once("inc/radius.php");
-require_once("inc/series.php");
+require_once("inc/measurement.php");
 require_once("inc/authenticate.php");
 require_once("inc/dictionaries.php");
 require_once("inc/search.php");
@@ -55,10 +55,6 @@ $myMetaHeader->setRequestType($myRequest->getCrudMode());
 if($myAuth->isLoggedIn())
 {
     $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
-}
-elseif( ($myRequest->getCrudMode()=="nonce"))
-{
-    
 }
 elseif( ($myRequest->getCrudMode()!="plainlogin") && ($myRequest->getCrudMode()!="securelogin"))
 {
@@ -111,29 +107,29 @@ elseif($myMetaHeader->status != "Error")
             case "subSiteParameters":
                 $myObject = new subSite();
                 break;
-            case "elementParameters":
-                $myObject = new element();
+            case "treeParameters":
+                $myObject = new tree();
                 break;
-            case "sampleParameters":
-                $myObject = new sample();
+            case "specimenParameters":
+                $myObject = new specimen();
                 break;
             case "radiusParameters":
                 $myObject = new radius();
                 break;
-            case "seriesParameters":
-                $myObject = new series();
+            case "measurementParameters":
+                $myObject = new measurement();
                 break;
             case "siteNoteParameters":
                 $myObject = new siteNote();
                 break;
-            case "elementNoteParameters":
-                $myObject = new elementNote();
+            case "treeNoteParameters":
+                $myObject = new treeNote();
                 break;
-            case "vseriesNoteParameters":
-                $myObject = new vseriesNote();
+            case "vmeasurementNoteParameters":
+                $myObject = new vmeasurementNote();
                 break;
-            case "valueNoteParameters":
-                $myObject = new valueNote();
+            case "readingNoteParameters":
+                $myObject = new readingNote();
                 break;
             case "authenticationParameters":
                 $myObject = new authenticate();
@@ -199,19 +195,19 @@ elseif($myMetaHeader->status != "Error")
                     $myID = $paramObj->siteID;
                     $objectType="site";
                     break;
-                case "element":
+                case "tree":
                     $myID = $paramObj->subSiteID;
                     $objectType="subSite";
                     break;
-                case "sample":
-                    $myID = $paramObj->elementID;
-                    $objectType="element";
+                case "specimen":
+                    $myID = $paramObj->treeID;
+                    $objectType="tree";
                     break;
                 case "radius":
-                    $myID = $paramObj->sampleID;
-                    $objectType="sample";
+                    $myID = $paramObj->specimenID;
+                    $objectType="specimen";
                     break;
-                case "series":
+                case "measurement":
                     $myID = $paramObj->radiusID;
                     $objectType="radius";
                     break;
@@ -220,13 +216,13 @@ elseif($myMetaHeader->status != "Error")
                 case "siteNote":
                     $myID = $paramObj->id;
                     break;
-                case "elementNote":
+                case "treeNote":
                     $myID = $paramObj->id;
                     break;
-                case "vseriesNote":
+                case "vmeasurementNote":
                     $myID = $paramObj->id;
                     break;
-                case "valueNote":
+                case "readingNote":
                     $myID = $paramObj->id;
                     break;
                 case "securityUser":
@@ -286,7 +282,7 @@ elseif($myMetaHeader->status != "Error")
                 }
                 else
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage());
                 }
             }
         }
@@ -306,20 +302,10 @@ elseif($myMetaHeader->status != "Error")
                 }
                 else
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage());
                 }
             }
         }
-        
-        // ********************
-        // NONCE REQUESTED
-        // ********************
-        
-        if($myRequest->getCrudMode()=='nonce') 
-        {
-            $myObject->setNonce($paramObj, $myAuth);
-        }
-
 
         // ********************
         // Populate class with data stored in db 
@@ -329,7 +315,7 @@ elseif($myMetaHeader->status != "Error")
         {
             if($myMetaHeader->status != "Error")
             {
-                $success = $myObject->setParamsFromDB($paramObj->id, $myRequest->getFormat());
+                $success = $myObject->setParamsFromDB($paramObj->id);
                 $success2 = $myObject->setChildParamsFromDB();
                 if(!($success && $success2))
                 {
