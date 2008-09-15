@@ -6,7 +6,7 @@ package edu.cornell.dendro.corina.webdbi;
  */
 
 public enum ResourceQueryType {
-	CREATE, READ, UPDATE, DELETE, SEARCH, PLAINLOGIN, SECURELOGIN;
+	CREATE, READ, UPDATE, DELETE, SEARCH, PLAINLOGIN, SECURELOGIN, NONCE;
 	
 	// Return the verb in lower case
 	public String getVerb() {

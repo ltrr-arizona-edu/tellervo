@@ -1,6 +1,5 @@
 package edu.cornell.dendro.corina.gui;
 
-//import java.awt.Dialog.ModalityType;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -9,7 +8,6 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -23,11 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.JWindow;
 
-import edu.cornell.dendro.corina.platform.Platform;
-import edu.cornell.dendro.corina.prefs.Prefs;
-import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
@@ -40,25 +34,6 @@ import edu.cornell.dendro.corina.core.App;
 
 
 public class LoginDialog extends JDialog {
-
-	/**
-	 * Launch the application
-	 * @param args
-	 */
-	public static void zzmain(String args[]) {
-		App.platform = new Platform();
-		App.platform.init();
-		App.prefs = new Prefs();
-		App.prefs.init();
-
-		try {
-			LoginDialog dialog = new LoginDialog();
-			
-			dialog.doLogin("Server returned error: Your mother likes pie!\r\nYour mother likes pie!Your mother likes pie!Your mother likes pie!", true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	private JTextField username;
 	private JPasswordField password;
@@ -120,7 +95,7 @@ public class LoginDialog extends JDialog {
 		igbc.gridy = 0;
 		
 		// title for login
-		tmp = new JLabel("You need to log in to access this resource.");
+		tmp = new JLabel("You must log in for access.");
 		igbc.anchor = GridBagConstraints.CENTER;
 		igbc.insets = new Insets(15, 0, 0, 0);
 		igbc.gridwidth = 2;
@@ -402,40 +377,14 @@ public class LoginDialog extends JDialog {
 				public void resourceChanged(ResourceEvent re) {
 					if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE) {
 						// ok, so we have a nonce
-						// note it doesn't work this way yet!
+						setNonce(authenticator.getServerNonce());
+						
+						// start this whole thing over again...
+						performAuthentication();
 					}
 					else if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_FAILED) {
 						Exception e = re.getAttachedException();
-						
-						// this should happen if we're not logged in
-						if(e instanceof WebPermissionsException) {
-							WebPermissionsException wpe = (WebPermissionsException) e;
-							
-							// good! now we have a nonce
-							if(wpe.getMessageCode() == WebPermissionsException.ERROR_LOGIN_REQUIRED) {
-								setNonce(wpe.getNonce());
-								
-								// and... go!
-								performAuthentication();
-								return;
-							}
-						}
-						else if(e instanceof WebInterfaceException) {
-							WebInterfaceException wie = (WebInterfaceException) e;
-							
-							// hack!!! (we're already logged in)
-							if(wie.getMessageCode() == 905) {
-								
-								if(authenticationNotifier != null) {
-									authenticationNotifier.setSuccess(true);
-									authenticationNotifier.stop();
-								}
-								
-								dispose();
-							}
-							return;
-						}
-						
+												
 						// failure. what type?
 						JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
 								"Error: " + e.toString(),

@@ -20,6 +20,7 @@ public class Authenticate extends Resource {
 	private String username;
 	private String cliNonce;
 	private String hash;
+	private String srvNonce;
 	
 	public Authenticate(String username, String password, String nonce) {
 		super("authenticate", ResourceQueryType.SECURELOGIN);
@@ -43,10 +44,14 @@ public class Authenticate extends Resource {
 	}
 
 	public Authenticate() {
-		super("authenticate", ResourceQueryType.READ);
+		super("authenticate", ResourceQueryType.NONCE);
 		
 		// fail differently :)
 		setResourceQueryExceptionBehavior(JUST_FAIL);		
+	}
+	
+	public String getServerNonce() {
+		return srvNonce;
 	}
 
 	@Override
@@ -66,6 +71,22 @@ public class Authenticate extends Resource {
 	
 	@Override
 	protected boolean processQueryResult(Document doc) {
+		
+		// get our nonce nicely
+		if(getQueryType() == ResourceQueryType.NONCE) {
+			Element content = doc.getRootElement().getChild("content");
+			if(content == null)
+				return false;
+			
+			Element nonce = content.getChild("nonce");
+			if(nonce == null)
+				return false;
+			
+			srvNonce = nonce.getText();
+			if(srvNonce == null)
+				return false;
+		}
+		
 		// We don't do anything with this data (we know it just says succeeded)
 		return true;
 	}
