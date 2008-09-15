@@ -1,6 +1,7 @@
 package edu.cornell.dendro.corina.sample;
 
 public enum SampleType {
+	UNKNOWN, // being imported, perhaps?
 	DIRECT,
 	SUM,
 	INDEX,
@@ -10,6 +11,8 @@ public enum SampleType {
 	
 	public String toString() {
 		switch(this) {
+		case UNKNOWN:
+			return "Unknown";
 		case DIRECT:
 			return "Raw";
 		case SUM:

@@ -501,8 +501,22 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	/** Return true if the sample is indexed, else false.
 	 @return true if the sample is indexed */
 	public boolean isIndexed() {
-		String type = (String) getMeta("format");
-		return (type != null && Character.toUpperCase(type.charAt(0)) == 'I');
+		switch(super.getSampleType()) {
+		case INDEX:
+			return true; // nice and easy
+
+		// we don't know? guess. and save our guess.
+		case UNKNOWN:
+			String type = (String) getMeta("format");
+			if (type != null && Character.toUpperCase(type.charAt(0)) == 'I') {
+				setSampleType(SampleType.INDEX);
+				return true;
+			}
+			return false;
+			
+		default:
+			return false;
+		}
 	}
 
 	@Override
@@ -510,17 +524,15 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		SampleType known = super.getSampleType();
 		
 		// easy, it was determined for us!
-		if(known != null)
+		if(known != SampleType.UNKNOWN)
 			return known;
 		
 		if(isIndexed())
-			setSampleType(SampleType.INDEX);
+			return SampleType.INDEX; // we saved this in IsIndexed()...
 		else if(isSummed())
-			setSampleType(SampleType.SUM);
+			return SampleType.SUM;
 		else // fall back if we can't determine and it hasn't been loaded...
-			return SampleType.DIRECT;
-		
-		return super.getSampleType();
+			return known;
 	}
 	
 	//
@@ -556,8 +568,22 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 </ul>
 	 @return true if the sample is summed */
 	public boolean isSummed() {
-		return getSampleType() == SampleType.SUM;
-		//return (elements != null || count != null);
+		switch(super.getSampleType()) {
+		case SUM:
+			return true; // nice and easy
+
+		// we don't know? guess.
+		// why is this "or?"
+		case UNKNOWN:
+			if (elements != null || count != null) {
+				setSampleType(SampleType.SUM);
+				return true;
+			}
+			return false;
+			
+		default:
+			return false;
+		}
 	}
 
 	public void postEdit(UndoableEdit e) {

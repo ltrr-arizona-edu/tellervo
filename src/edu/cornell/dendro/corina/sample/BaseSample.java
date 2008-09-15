@@ -52,6 +52,7 @@ public class BaseSample {
 		meta = new HashMap<String, Object>();
 		range = new Range();
 		loader = null; // no default loader!
+		sampleType = SampleType.UNKNOWN;
 	}
 	
 	public BaseSample(BaseSample source) {
