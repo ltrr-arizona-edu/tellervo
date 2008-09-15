@@ -1156,7 +1156,7 @@ class measurement
                             }
 
                             $xml.="<reading year=\"".$yearvalue."\" ";
-                            if ($value['wjinc'] || $value['wjdec'])
+                            if (!($value['wjinc'] === NULL && $value['wjdec'] === NULL))
                             {
                                 $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
                             }
