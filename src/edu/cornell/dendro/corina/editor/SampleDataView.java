@@ -157,7 +157,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		 super.paint(g);
 		 }
 		 }; */
-		myTable.setGridColor(new Color(0, 0, 0, 0)); // completeley transparent
+		myTable.setGridColor(new Color(240, 240, 240)); 
 
 		// mouse listener for table
 		myTable.addMouseListener(new PopupListener() {
@@ -492,7 +492,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 		// disable gridlines, if requested
 		boolean gridlines = Boolean.valueOf(
-				App.prefs.getPref(Prefs.EDIT_GRIDLINES)).booleanValue();
+				App.prefs.getPref(Prefs.EDIT_GRIDLINES, "true")).booleanValue();
 		myTable.setShowGrid(gridlines);
 
 		// set colors
