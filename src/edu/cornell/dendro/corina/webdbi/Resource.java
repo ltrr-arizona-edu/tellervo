@@ -10,6 +10,8 @@ import edu.cornell.dendro.corina.gui.UserCancelledException;
 import java.awt.EventQueue;
 import java.io.IOException;
 
+import javax.swing.event.EventListenerList;
+
 /*
  * A resource is essentially a wrapper for an XML document acquired
  * from or to be sent to our web server. It is intended to be a base class from which
@@ -63,6 +65,21 @@ public abstract class Resource {
 		this.queryType = queryType;
 	}
 
+	public static final int PROMPT_FOR_LOGIN = 1;
+	public static final int JUST_FAIL = 2;
+	
+	private int resourceQueryExceptionBehavior = PROMPT_FOR_LOGIN;
+
+	/**
+	 * Sets the behavior to perform on a permissions exception:
+	 * PROMPT_FOR_LOGIN (default) or JUST_FAIL
+	 * 
+	 * @param behavior
+	 */
+	public void setResourceQueryExceptionBehavior(int behavior) {
+		resourceQueryExceptionBehavior = behavior;
+	}
+	
 	/**
 	 * Handle the query exception.
 	 * 
@@ -72,12 +89,14 @@ public abstract class Resource {
 	 * @param w the exception
 	 * @return true if we should try accessing the resource again, false if not.
 	 */
-	private boolean handleQueryException(WebPermissionsException w) {
+	protected boolean handleQueryException(WebPermissionsException w) {
 		System.out.println(w);
 		int code = w.getMessageCode();
 		
-		if (code == WebInterfaceException.ERROR_LOGIN_REQUIRED ||
-			code == WebInterfaceException.ERROR_AUTHENTICATION_FAILED) {
+		// if we're set to prompt for login on failure, do so!
+		if (resourceQueryExceptionBehavior == PROMPT_FOR_LOGIN &&
+				(code == WebInterfaceException.ERROR_LOGIN_REQUIRED ||
+				 code == WebInterfaceException.ERROR_AUTHENTICATION_FAILED)) {
 			
 			if(w.getNonce() == null) {
 				// the server requires a login, but no nonce? er.. ?
@@ -86,6 +105,9 @@ public abstract class Resource {
 			}
 			
 			LoginDialog dialog = new LoginDialog();
+			
+			// dialog needs to know the nonce!
+			dialog.setNonce(w.getNonce());
 
 			try {
 				
@@ -94,9 +116,8 @@ public abstract class Resource {
 				else
 					dialog.doLogin("(for access to " + resourceName + ")", false);
 				
-				// if our child failed, we fail too.
-				// prevents infinite loops!
-				return new Authenticate(dialog.getUsername(), dialog.getPassword(), w.getNonce()).queryWait();
+				// dialog succeeded?
+				return true;
 			} catch (UserCancelledException uce) {
 				doQueryFailed(uce);
 				return false;
@@ -134,15 +155,22 @@ public abstract class Resource {
 				try {
 					// if we get no exceptions, break out of the loop.
 					doc = wx.query(); 
+					
+					// notify debug listeners!
+					fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_DEBUG_IN, doc));
+
 					break;
 				} catch (WebPermissionsException wpe) {
-					if(!handleQueryException(wpe))
+					if(resourceQueryExceptionBehavior == PROMPT_FOR_LOGIN && !handleQueryException(wpe))
 						return false;
+					else if(resourceQueryExceptionBehavior == JUST_FAIL) {
+						doQueryFailed(wpe);
+						return false;
+					}
+					else 
+						throw new IllegalStateException("Illegal queryExceptionBehavior!");
 				}
 			}
-
-			// notify debug listeners!
-			fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_DEBUG_IN, doc));
 			
 			if(processQueryResult(doc)) {
 				querySucceeded(doc);
@@ -150,7 +178,8 @@ public abstract class Resource {
 			}
 			else 
 				// we had a parsing error
-				fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_QUERY_FAILED));
+				fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_QUERY_FAILED, 
+						new ResourceException("Parsing failed")));
 		} catch (IOException ioe) {
 			doQueryFailed(ioe);
 		}
@@ -253,7 +282,7 @@ public abstract class Resource {
 	 * our event notification handlers are below. This is pretty standard java,
 	 * so it's not so commented.
 	 */
-	protected WeakEventListenerList listenerList = new WeakEventListenerList();
+	protected EventListenerList listenerList = new EventListenerList();
 	
 	public void addResourceEventListener(ResourceEventListener rel) {
 		listenerList.add(ResourceEventListener.class, rel);

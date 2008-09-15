@@ -5,9 +5,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -17,14 +19,23 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.JWindow;
+
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.webdbi.Authenticate;
+import edu.cornell.dendro.corina.webdbi.ResourceEvent;
+import edu.cornell.dendro.corina.webdbi.ResourceEventListener;
+import edu.cornell.dendro.corina.webdbi.WebInterfaceException;
+import edu.cornell.dendro.corina.webdbi.WebPermissionsException;
 import edu.cornell.dendro.corina.core.App;
 
 
@@ -34,7 +45,7 @@ public class LoginDialog extends JDialog {
 	 * Launch the application
 	 * @param args
 	 */
-	public static void main(String args[]) {
+	public static void zzmain(String args[]) {
 		App.platform = new Platform();
 		App.platform.init();
 		App.prefs = new Prefs();
@@ -56,22 +67,31 @@ public class LoginDialog extends JDialog {
 	private JCheckBox autoLogin;
 	private JLabel subtitle;	
 	private JButton loginButton;
-	private boolean cancelled = true;
+	private JButton cancelButton;
+	private boolean cancelled = false;
+	
+	public LoginDialog(Frame frame) {
+		super(frame, true);
+		
+		initialize();
+	}
+	
+	public LoginDialog() {
+		super((Frame)null, true);
+		
+		initialize();
+	}
 	
 	/**
 	 * Create the dialog
 	 */
-	public LoginDialog() {
-		super();
+	private void initialize() {
 		
 		//setIconImage(Builder.getImage("Tree.png"));
 		setResizable(false);
 
 		getContentPane().setLayout(new GridBagLayout());
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		//setModalityType(APPLICATION_MODAL);
-		this.setModal(true);
-		setModal(true);
 		setTitle("Corina Login");
 		
 		GridBagConstraints ogbc = new GridBagConstraints();
@@ -164,27 +184,26 @@ public class LoginDialog extends JDialog {
 		
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		
-		JButton button;
 		final JDialog glue = this;
 		loginButton = new JButton("Log in");
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				cancelled = false;
-				glue.dispose();
+				performAuthentication();
 			}
 		});
 		buttonPanel.add(loginButton);
 		
-		button = new JButton("Cancel");
-		button.addActionListener(new ActionListener() {
+		cancelButton = new JButton("Cancel");
+		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				glue.dispose();
 			}
 		});
-		buttonPanel.add(button);
+		buttonPanel.add(cancelButton);
 		
 		// TODO: Implement offline mode
-		button = new JButton("Continue offline");
+		JButton button;
+		button = new JButton("Work offline");
 		button.setEnabled(false);
 		buttonPanel.add(button);
 
@@ -363,6 +382,131 @@ public class LoginDialog extends JDialog {
 		return new String(password.getPassword());
 	}
 	
+	/**
+	 * Do the actual server authentication
+	 * Danger! this runs in the event thread!
+	 */
+	private Authenticate authenticator;
+	private SyncTaskDialog authenticationNotifier;
+	private void performAuthentication() {
+		final JDialog glue = this;
+		
+		// first off, we're busy now.
+		enableDialogButtons(false);
+		
+		if(serverNonce == null) {
+			// ok, so we're trying to log in pre-emptively. First, we need a nonce from the server.
+			authenticator = new Authenticate();
+			
+			authenticator.addResourceEventListener(new ResourceEventListener() {
+				public void resourceChanged(ResourceEvent re) {
+					if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE) {
+						// ok, so we have a nonce
+						// note it doesn't work this way yet!
+					}
+					else if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_FAILED) {
+						Exception e = re.getAttachedException();
+						
+						// this should happen if we're not logged in
+						if(e instanceof WebPermissionsException) {
+							WebPermissionsException wpe = (WebPermissionsException) e;
+							
+							// good! now we have a nonce
+							if(wpe.getMessageCode() == WebPermissionsException.ERROR_LOGIN_REQUIRED) {
+								setNonce(wpe.getNonce());
+								
+								// and... go!
+								performAuthentication();
+								return;
+							}
+						}
+						else if(e instanceof WebInterfaceException) {
+							WebInterfaceException wie = (WebInterfaceException) e;
+							
+							// hack!!! (we're already logged in)
+							if(wie.getMessageCode() == 905) {
+								
+								if(authenticationNotifier != null) {
+									authenticationNotifier.setSuccess(true);
+									authenticationNotifier.stop();
+								}
+								
+								dispose();
+							}
+							return;
+						}
+						
+						// failure. what type?
+						JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
+								"Error: " + e.toString(),
+							    "Could not authenticate",
+							    JOptionPane.ERROR_MESSAGE);
+						enableDialogButtons(true);
+						
+						if(authenticationNotifier != null) {
+							authenticationNotifier.setSuccess(false);
+							authenticationNotifier.stop();
+						}
+					}
+				}			
+			});
+			
+			// start the query!
+			authenticator.query();
+		}
+		else {
+			// ok, so we have a nonce and we're trying to actually log in
+			authenticator = new Authenticate(getUsername(), getPassword(), serverNonce);
+			
+			authenticator.addResourceEventListener(new ResourceEventListener() {
+				public void resourceChanged(ResourceEvent re) {
+					if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE) {
+						// yay! we've authenticated!
+						if(authenticationNotifier != null) {
+							authenticationNotifier.setSuccess(true);
+							authenticationNotifier.stop();
+						}
+						
+						dispose();
+					}
+					else if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_FAILED) {
+						Exception e = re.getAttachedException();
+						
+						// failure. what type?
+						JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
+								"Error: " + e.toString(),
+							    "Could not authenticate",
+							    JOptionPane.ERROR_MESSAGE);
+						enableDialogButtons(true);
+						
+						if(authenticationNotifier != null) {
+							authenticationNotifier.setSuccess(false);
+							authenticationNotifier.stop();
+						}
+					}
+				}			
+			});
+			
+			// start the query!
+			authenticator.query();
+		}
+	}
+	
+	private void enableDialogButtons(boolean enable) {
+		loginButton.setEnabled(enable);
+		cancelButton.setEnabled(enable);
+	}
+
+	/**
+	 * Used if we're actually doing a login!
+	 * @param nonce
+	 */
+	public void setNonce(String nonce) {
+		serverNonce = nonce;
+	}
+	
+	private String serverNonce;
+	
 	public void doLogin(String subtitle, boolean forced) throws UserCancelledException {
 		if(subtitle != null) {
 			this.subtitle.setText(subtitle);
@@ -383,13 +527,55 @@ public class LoginDialog extends JDialog {
 				!autoLogin.isSelected()) {
 			setVisible(true);
 		} else {
-			cancelled = false;
-			dispose();
+			
+			// this is more complicated than it seems
+			// we essentially want to wait until we succeed or fail
+			authenticationNotifier = new SyncTaskDialog(null);
+
+			performAuthentication();
+			
+			authenticationNotifier.start();
+			
+			if(!authenticationNotifier.isSuccess()) {
+				authenticationNotifier = null;
+				setVisible(true);
+			}
 		}
 		
 		if(cancelled)
 			throw new UserCancelledException();
 		
 		saveSettings();		
+	}
+	
+	// ugly hack: while we're waiting for stuff to finish, pump events to make UI responsive.
+	private class SyncTaskDialog {
+		protected JDialog dialog;
+		private boolean success = false;
+		
+		public boolean isSuccess() {
+			return success;
+		}
+
+		public void setSuccess(boolean success) {
+			this.success = success;
+		}
+
+		public SyncTaskDialog(JDialog parent) {
+			if(parent == null)
+				dialog = new JDialog((Frame) null, true);
+			else
+				dialog = new JDialog(parent, true);
+			dialog.setUndecorated(true);
+			dialog.setBounds(0, 0, 0, 0);
+		}
+		
+		public void start() {
+			dialog.setVisible(true);
+		}
+		
+		public void stop() {
+			dialog.setVisible(false);
+		}
 	}
 }

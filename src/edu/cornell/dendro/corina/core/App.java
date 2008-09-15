@@ -3,12 +3,16 @@
 
 package edu.cornell.dendro.corina.core;
 
+import edu.cornell.dendro.corina.gui.LoginDialog;
+import edu.cornell.dendro.corina.gui.LoginSplash;
 import edu.cornell.dendro.corina.gui.ProgressMeter;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.site.SiteList;
+import edu.cornell.dendro.corina.webdbi.Authenticate;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 
 /**
@@ -27,7 +31,7 @@ public class App {
   private static final CorinaLog log = new CorinaLog(App.class);
   private static boolean initialized;
 
-  public static synchronized void init(ProgressMeter meter) {
+  public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     // throwing an error instead of simply ignoring it
     // will point out bad design and/or bugs
     if (initialized) throw new IllegalStateException("AppContext already initialized.");
@@ -35,7 +39,7 @@ public class App {
     log.debug("initializing App");
 
     if (meter != null) {
-      meter.setMaximum(5);
+      meter.setMaximum(6);
       meter.setNote("Initializing Logging...");
     }
 
@@ -83,25 +87,66 @@ public class App {
           "While trying to load preferences:\n" + ioe.getMessage(),
           "Corina: Error Loading Preferences", JOptionPane.ERROR_MESSAGE);
     }*/
+    
+    boolean isLoggedIn = false;
+    
+    // only do this if we can log in now...
+    if (splash != null) {
+        if (meter != null) {
+        	meter.setNote("Logging in...");
+        }
+        
+    	//splash.addLoginPanel(); ... in the future...
+    	LoginDialog dlg = new LoginDialog();
+    	
+    	try {
+    		dlg.doLogin(null, false);
+    		isLoggedIn = true;
+    		
+    		//new Authenticate(dlg.getUsername(), dlg.getPassword(), "").queryWait();
+    	} catch (UserCancelledException uce) {
+    		// we default to not being logged in...
+    	}
 
+    	if (meter != null) {
+        	meter.setProgress(5);
+        }
+    }
+    
     if (meter != null) {
-        meter.setNote("Initializing Dictionary...");
+    	meter.setNote("Initializing Dictionary...");
     }
     dictionary = new Dictionary();
-    dictionary.query();
+    if(splash != null && isLoggedIn) { // we have to be logged in for this...
+        if (meter != null) {
+        	meter.setNote("Updating Dictionary...");
+        }
+    	dictionary.query();
+    }
     if (meter != null) {
-      meter.setProgress(4);
+    	meter.setProgress(4);
     }
 
     if (meter != null) {
-        meter.setNote("Initializing Site List...");
+    	meter.setNote("Initializing Site List...");
     }
     sites = new SiteList();
-    sites.query();
+    if(splash != null && isLoggedIn) { // must be logged in...
+    	sites.query();
+        if (meter != null) {
+        	meter.setNote("Updating Site List...");
+        }
+    }
     if (meter != null) {
-      meter.setProgress(5);
+    	meter.setProgress(5);
     }
 
+    // we're done here!
+	if (meter != null)
+		meter.setProgress(6);
+    
+    System.exit(-1);
+    
     initialized = true;   
   }
 

@@ -24,6 +24,9 @@ public class Authenticate extends Resource {
 	public Authenticate(String username, String password, String nonce) {
 		super("authenticate", ResourceQueryType.SECURELOGIN);
 		
+		// fail differently :)
+		setResourceQueryExceptionBehavior(JUST_FAIL);
+		
 		// generate a random client nonce
 		byte[] randomBytes = new byte[10];
 		Random random = new Random();
@@ -39,13 +42,23 @@ public class Authenticate extends Resource {
 		this.username = username;
 	}
 
+	public Authenticate() {
+		super("authenticate", ResourceQueryType.READ);
+		
+		// fail differently :)
+		setResourceQueryExceptionBehavior(JUST_FAIL);		
+	}
+
 	@Override
 	protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) {
 		Element auth = new Element("authenticate");
 		
-		auth.setAttribute("username", username);
-		auth.setAttribute("hash", hash);
-		auth.setAttribute("nonce", cliNonce);
+		// only for secure login
+		if(queryType == ResourceQueryType.SECURELOGIN) {
+			auth.setAttribute("username", username);
+			auth.setAttribute("hash", hash);
+			auth.setAttribute("nonce", cliNonce);
+		}
 		
 		requestElement.addContent(auth);
 		return requestElement;
