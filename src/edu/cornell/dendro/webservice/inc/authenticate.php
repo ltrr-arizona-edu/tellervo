@@ -72,6 +72,9 @@ class authenticate
                     return false;
                 }
                 return true;
+
+            case "nonce":
+                return true;
             
             default:
                 $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
@@ -117,6 +120,15 @@ class authenticate
             $this->setErrorMessage(101, "Authentication failed using secure login");
             return false;
         }
+    }
+
+    function setNonce($paramsClass, $auth)
+    {
+        $myAuth = $auth;
+        $myRequest = $paramsClass;
+
+        $this->xmldata = "<nonce>".$myAuth->nonce()."</nonce>";
+        
     }
 
     function asXML($mode="all")

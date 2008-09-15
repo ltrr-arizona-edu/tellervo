@@ -304,7 +304,7 @@ class request
                 }
             }
         }
-        elseif ( ($this->crudMode=='plainlogin') || ($this->crudMode=='securelogin') ) 
+        elseif ( ($this->crudMode=='plainlogin') || ($this->crudMode=='securelogin') || ($this->crudMode=='nonce') ) 
         {
             $parentID = NULL;
             $item = $this->xmlrequest->xpath('//authenticate');
