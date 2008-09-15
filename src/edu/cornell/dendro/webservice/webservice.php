@@ -286,7 +286,7 @@ elseif($myMetaHeader->status != "Error")
                 }
                 else
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage());
+                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                 }
             }
         }
@@ -306,7 +306,7 @@ elseif($myMetaHeader->status != "Error")
                 }
                 else
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage());
+                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                 }
             }
         }
