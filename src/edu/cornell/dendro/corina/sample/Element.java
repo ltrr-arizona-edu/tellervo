@@ -50,6 +50,9 @@ public class Element implements Comparable<Element> {
 		
 		if(loader == null)
 			throw new UnsupportedOperationException("Element created from sample without a loader!");
+		
+		// don't forget to preload for us!
+		loader.preload(sample);
 	}
 	
 	private SampleLoader loader;
