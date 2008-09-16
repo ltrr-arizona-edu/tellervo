@@ -128,7 +128,6 @@ public class SumCreationDialog {
 		panel.add(Box.createVerticalStrut(12));
 		
 		preview.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				new GraphWindow(sum.getSelectedElements());
 			}			
