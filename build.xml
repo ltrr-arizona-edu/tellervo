@@ -58,8 +58,15 @@
                        Defaults to "dist".
 -->
 
+  <exec executable="svn" output="svninfo.xml">
+    <arg line="info --xml"/>
+  </exec>
+  <xmlproperty file="svninfo.xml" collapseattributes="true"/>
+
+  <property name="svn.revision"  value="${info.entry.revision}"/>
   <property name="app.name"      value="corina"/>
-  <property name="app.version"   value="bleedingedge"/>
+  <!--<property name="app.version"   value="bleedingedge"/>-->
+  <property name="app.version"   value="${info.entry.revision}"/>
   <property name="app.keystore"  value="corina.keystore.set.in.build.properties"/>
   <property name="build.home"    value="build"/>
   <property name="deploy.home"   value="deploy"/>
@@ -286,6 +293,7 @@
 -->
 
   <target name="prepare">
+
     <!-- Create build directory and copy static content -->
     <mkdir  dir="${build.home}"/>
   </target>
