@@ -258,7 +258,6 @@ public class CorinaXML implements Filetype {
 		List<Integer> countset = new ArrayList<Integer>();
 		List<Integer> wjinc = null, wjdec = null;
 		Integer lastYear = null;
-		Year firstYear = null;
 		boolean haveWeiserjahre = false;
 		
 		List<Element> readings = readingSet.getChildren();
@@ -281,7 +280,6 @@ public class CorinaXML implements Filetype {
 			}
 			
 			if(lastYear == null) {
-				firstYear = new Year(year);
 				lastYear = year;
 			} else if(year - lastYear > 1) {
 				throw new IOException("Readings are not contiguous!");
@@ -319,7 +317,6 @@ public class CorinaXML implements Filetype {
 		// copy our data into our sample
 		s.setData(dataset);
 		s.setCount(countset);
-		s.setRange(new Range(firstYear, dataset.size()));
 		
 		if(haveWeiserjahre) {
 			s.setWJIncr(wjinc);
