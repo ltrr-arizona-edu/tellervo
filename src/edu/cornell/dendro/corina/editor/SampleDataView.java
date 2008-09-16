@@ -73,7 +73,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 	public JTable myTable;
 
-	private TableModel myModel;
+	protected TableModel myModel;
 
 	// pass this along to the table
 	@Override
