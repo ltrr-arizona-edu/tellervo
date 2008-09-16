@@ -65,10 +65,10 @@ public class Build {
     }
 
     /** Version string. */
-    public final static String VERSION = "1.7 [db] \u03B2"; // beta
+    public final static String VERSION = "1.99 \u03B2"; // beta
 
     /** Year (for copyright). */
-    public final static String YEAR = "2001-2007";
+    public final static String YEAR = "2001-2008";
 
     /** Author's name (for copyright). */
     public final static String AUTHOR = "Ken Harris, Aaron Hamid, Lucas Madar, Peter Brewer";
