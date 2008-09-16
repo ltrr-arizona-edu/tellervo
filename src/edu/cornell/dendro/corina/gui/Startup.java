@@ -76,7 +76,7 @@ public class Startup implements PrivilegedAction {
       if (url != null) {
         ii = new ImageIcon(url);
       }
-      LoginSplash splash = new LoginSplash("Starting Corina", ii);
+      LoginSplash splash = new LoginSplash("", ii);
       ProgressMeter pm = new ProgressMeter();
       pm.addProgressListener(splash);
       pm.setMillisToDecideToPopup(0);

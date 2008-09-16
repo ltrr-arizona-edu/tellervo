@@ -45,7 +45,7 @@ class GraphViewMenu extends JMenu {
 		// Show/hide axis
 		_axisMenu = Builder.makeMenuItem(Boolean.valueOf(
 				App.prefs.getPref("corina.graph.vertical-axis"))
-				.booleanValue() ? "vert_hide" : "vert_show");
+				.booleanValue() ? "vert_hide" : "vert_show", true, "axisshow.png");
 		_axisMenu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				boolean vis = Boolean.valueOf(
@@ -62,7 +62,7 @@ class GraphViewMenu extends JMenu {
 		// Show/hide gridlines
 		_gridlinesMenu = Builder.makeMenuItem(Boolean.valueOf(
 				App.prefs.getPref("corina.graph.graphpaper"))
-				.booleanValue() ? "grid_hide" : "grid_show");
+				.booleanValue() ? "grid_hide" : "grid_show", true, "showgrid.png");
 		_gridlinesMenu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				boolean vis = Boolean.valueOf(
@@ -117,7 +117,7 @@ class GraphViewMenu extends JMenu {
 		_compnamesMenu = Builder
 				.makeMenuItem(Boolean.valueOf(
 						App.prefs.getPref("corina.graph.componentnames"))
-						.booleanValue() ? "compn_hide" : "compn_show");
+						.booleanValue() ? "compn_hide" : "compn_show", true, "label.png");
 		_compnamesMenu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {					
 				boolean vis = Boolean.valueOf(App.prefs.getPref("corina.graph.componentnames")).booleanValue();
@@ -138,7 +138,7 @@ class GraphViewMenu extends JMenu {
 		// reword them)
 
 		// Squeeze together
-		JMenuItem squeeze = Builder.makeMenuItem("baselines_align");
+		JMenuItem squeeze = Builder.makeMenuItem("baselines_align", true, "squeezevertically.png");
 		squeeze.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				window.squeezeTogether();
@@ -202,7 +202,7 @@ class GraphViewMenu extends JMenu {
 		this.add(squish);
 
 		// Squish
-		JMenuItem fitwidth = Builder.makeMenuItem("fit_horiz");
+		JMenuItem fitwidth = Builder.makeMenuItem("fit_horiz", true, "fitcharthoriz.png");
 		fitwidth.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -241,7 +241,7 @@ class GraphViewMenu extends JMenu {
 		this.addSeparator();
 		
 		// scaling... half scale
-		JMenuItem halvescale = Builder.makeMenuItem("escale_halve");
+		JMenuItem halvescale = Builder.makeMenuItem("escale_halve", true, "axiszoomout.png");
 		halvescale.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				window.halveScale();
@@ -250,7 +250,7 @@ class GraphViewMenu extends JMenu {
 		this.add(halvescale);			
 		
 		// scaling... half scale
-		JMenuItem doublescale = Builder.makeMenuItem("escale_double");
+		JMenuItem doublescale = Builder.makeMenuItem("escale_double", true, "axiszoomin.png");
 		doublescale.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				window.doubleScale();

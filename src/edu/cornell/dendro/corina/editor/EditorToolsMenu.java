@@ -146,7 +146,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	add(crossAgainst);
 
 	// cross all
-	crossElements = Builder.makeMenuItem("cross_elements");
+	crossElements = Builder.makeMenuItem("cross_elements", true, "crossdate.png");
 	crossElements.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent ae) {
 		    // n-by-n cross
@@ -162,7 +162,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	// this is an awful hack; we're sorry.
 	if (!Boolean.valueOf(
 				App.prefs.getPref("corina.editor.disablereconcile")).booleanValue()) {
-			JMenuItem reconcile = Builder.makeMenuItem("reconcile");
+			JMenuItem reconcile = Builder.makeMenuItem("reconcile", true, "reconcile.png");
 			reconcile.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
 					// REFACTOR: this method isn't very pretty. there's probably
