@@ -59,51 +59,54 @@ public abstract class XFrame extends JFrame {
     //
     // constructor
     //
-    public XFrame() {
-	setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-	addWindowListener(new WindowAdapter() {
-		@Override
-		public void windowClosing(WindowEvent e) {
-		    //
-		    // if closing an unsaved document, make sure that's what the user wants.
-		    //
+	public XFrame() {
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				//
+				// if closing an unsaved document, make sure that's what the
+				// user wants.
+				//
 
-			close();
-		}
-	});
+				close();
+			}
+		});
 
-	// tree icon
-	setTreeIcon();
-    }
-
-    //
-    // icon
-    //
-    private void setTreeIcon() {
-	setIconImage(Builder.getImage("Tree.png"));
-    }
-
-    // call me to close an XFrame.  confirms close with user, if
-    // document has been modified since last save.
-    private boolean _dialogVisible=false;
-    public void close() {
-	// if saveable...
-	if (this instanceof SaveableDocument) {
-	    // saved?  ok, close.
-	    if (((SaveableDocument) this).isSaved()) {
-		dispose();
-		return;
-	    }
-
-	    // no?  ask if user wants to save first.
-	    if (_dialogVisible) return; // -- could synch handle this better?
-	    _dialogVisible=true;
-	    ConfirmSave.showDialog((SaveableDocument) this);
-	    _dialogVisible=false;
-
-	} else {
-	    // just close it
-	    dispose();
+		// tree icon
+		setTreeIcon();
 	}
-    }
+
+	//
+	// icon
+	//
+	private void setTreeIcon() {
+		setIconImage(Builder.getImage("Tree.png"));
+	}
+
+	// call me to close an XFrame. confirms close with user, if
+	// document has been modified since last save.
+	private boolean _dialogVisible = false;
+
+	public void close() {
+		// if saveable...
+		if (this instanceof SaveableDocument) {
+			// saved? ok, close.
+			if (((SaveableDocument) this).isSaved()) {
+				dispose();
+				return;
+			}
+
+			// no? ask if user wants to save first.
+			if (_dialogVisible)
+				return; // -- could synch handle this better?
+			_dialogVisible = true;
+			ConfirmSave.showDialog((SaveableDocument) this);
+			_dialogVisible = false;
+
+		} else {
+			// just close it
+			dispose();
+		}
+	}
 }
