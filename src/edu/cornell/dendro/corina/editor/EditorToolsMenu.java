@@ -41,126 +41,126 @@ import edu.cornell.dendro.corina.ui.I18n;
 
 public class EditorToolsMenu extends JMenu implements SampleListener {
 
-    private Sample sample;
-    private Editor editor;
+	private Sample sample;
+	private Editor editor;
 
-    public EditorToolsMenu(Sample s, Editor e) {
-	super(I18n.getText("tools")); // TODO: mnemonic
+	public EditorToolsMenu(Sample s, Editor e) {
+		super(I18n.getText("tools")); // TODO: mnemonic
 
-	this.sample = s;
-	this.editor = e;
+		this.sample = s;
+		this.editor = e;
 
-	sample.addSampleListener(this);
+		sample.addSampleListener(this);
 
-	// redate
-	JMenuItem redate = Builder.makeMenuItem("redate...", true, "redate.png");
-  redate.addActionListener(new AbstractAction() {
-    public void actionPerformed(ActionEvent ae) {
-        new RedateDialog(sample, editor);
-    }
-  });
-  if (System.getSecurityManager() != null) {
-    try {
-      AccessController.checkPermission(new CorinaPermission("redate"));
-    } catch (AccessControlException ace) {
-      ace.printStackTrace();
-      redate.setEnabled(false);
-      redate.setBackground(Color.red.darker().darker());
-    }
-  }
-	add(redate);
-
-	// index
-	indexMenu = Builder.makeMenuItem("index...", true, "index.png");
-	indexMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // PERF: for big samples, it can take a couple
-		    // seconds for the dialog to appear.  not enough
-		    // for a progressbar, but enough that i should use
-		    // the "wait" cursor on the editor window.
-		    new IndexDialog(sample, editor);
+		// redate
+		JMenuItem redate = Builder.makeMenuItem("redate...", true, "redate.png");
+		redate.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				new RedateDialog(sample, editor);
+			}
+		});
+		if (System.getSecurityManager() != null) {
+			try {
+				AccessController.checkPermission(new CorinaPermission("redate"));
+			} catch (AccessControlException ace) {
+				ace.printStackTrace();
+				redate.setEnabled(false);
+				redate.setBackground(Color.red.darker().darker());
+			}
 		}
-	    });
-	indexMenu.setEnabled(!sample.isIndexed());
-	add(indexMenu);
+		add(redate);
 
-	// sum
-	sumMenu = Builder.makeMenuItem("sum...", true, "sum.png");
-	sumMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    new SumCreationDialog(editor, ElementList.singletonList(new CachedElement(sample)));
-		}
-	    });
-	sumMenu.setEnabled(!sample.isSummed());
-	add(sumMenu);
+		// index
+		indexMenu = Builder.makeMenuItem("index...", true, "index.png");
+		indexMenu.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				// PERF: for big samples, it can take a couple
+				// seconds for the dialog to appear.  not enough
+				// for a progressbar, but enough that i should use
+				// the "wait" cursor on the editor window.
+				new IndexDialog(sample, editor);
+			}
+		});
+		indexMenu.setEnabled(!sample.isIndexed());
+		add(indexMenu);
 
-	// truncate
-	JMenuItem truncate = Builder.makeMenuItem("truncate...");
-	truncate.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    new TruncateDialog(sample, editor);
-		}
-	    });
-	add(truncate);
+		// sum
+		sumMenu = Builder.makeMenuItem("sum...", true, "sum.png");
+		sumMenu.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				new SumCreationDialog(editor, ElementList.singletonList(new CachedElement(sample)));
+			}
+		});
+		sumMenu.setEnabled(!sample.isSummed());
+		add(sumMenu);
 
-	// reverse
-	JMenuItem reverseMenu = Builder.makeMenuItem("reverse", true, "reverse.png");
-	reverseMenu.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // reverse, and add to the undo-stack
-		    editor.postEdit(Reverse.reverse(sample));
-		}
-	    });
-	add(reverseMenu);
+		// truncate
+		JMenuItem truncate = Builder.makeMenuItem("truncate...");
+		truncate.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				new TruncateDialog(sample, editor);
+			}
+		});
+		add(truncate);
 
-	// ---
-	addSeparator();
+		// reverse
+		JMenuItem reverseMenu = Builder.makeMenuItem("reverse", true, "reverse.png");
+		reverseMenu.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				// reverse, and add to the undo-stack
+				editor.postEdit(Reverse.reverse(sample));
+			}
+		});
+		add(reverseMenu);
 
-	// cross against
-	// HACK: just disable this if the sample isn't saved?
-	JMenuItem crossAgainst = Builder.makeMenuItem("cross_against...", true, "crossdate.png");
-	crossAgainst.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    try {
-			// select moving files
-			ElementList ss = FileDialog.showMulti("Crossdate " +
-						       "\"" + sample + "\"" +
-						       " against:");
+		// ---
+		addSeparator();
 
-			// (note also the Peter-catcher: see XMenubar.java)
+		// cross against
+		// HACK: just disable this if the sample isn't saved?
+		JMenuItem crossAgainst = Builder.makeMenuItem("cross_against...", true, "crossdate.png");
+		crossAgainst.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				try {
+					// select moving files
+					ElementList ss = FileDialog.showMulti("Crossdate " +
+							"\"" + sample + "\"" +
+					" against:");
 
-			// hack for bug 228: filename may be null, and sequence
-			// uses it to hash, so let's make up a fake
-			// filename that can't be a real filename.
-			//String filename = (String) sample.getMeta("filename");
-			//if (filename == null)
-			//    filename = "\u011e"; // this can't begin a word!
+					// (note also the Peter-catcher: see XMenubar.java)
 
-			Sequence seq = new Sequence(ElementList.singletonList(new CachedElement(sample)), ss);
-			new CrossdateWindow(seq);
-		    } catch (UserCancelledException uce) {
-			// do nothing
-		    }
-		}
-	    });
-	add(crossAgainst);
+					// hack for bug 228: filename may be null, and sequence
+					// uses it to hash, so let's make up a fake
+					// filename that can't be a real filename.
+					//String filename = (String) sample.getMeta("filename");
+					//if (filename == null)
+					//    filename = "\u011e"; // this can't begin a word!
 
-	// cross all
-	crossElements = Builder.makeMenuItem("cross_elements", true, "crossdate.png");
-	crossElements.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // n-by-n cross
-		    Sequence seq = new Sequence(sample.getElements(),
+					Sequence seq = new Sequence(ElementList.singletonList(new CachedElement(sample)), ss);
+					new CrossdateWindow(seq);
+				} catch (UserCancelledException uce) {
+					// do nothing
+				}
+			}
+		});
+		add(crossAgainst);
+
+		// cross all
+		crossElements = Builder.makeMenuItem("cross_elements", true, "crossdate.png");
+		crossElements.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				// n-by-n cross
+				Sequence seq = new Sequence(sample.getElements(),
 						sample.getElements());
-		    new CrossdateWindow(seq);
-		}
-	    });
-	add(crossElements);
+				new CrossdateWindow(seq);
+			}
+		});
+		add(crossElements);
 
-	// reconcile
-	// but don't put this here if disablereconcile is on
-	// this is an awful hack; we're sorry.
-	if (!Boolean.valueOf(
+		// reconcile
+		// but don't put this here if disablereconcile is on
+		// this is an awful hack; we're sorry.
+		if (!Boolean.valueOf(
 				App.prefs.getPref("corina.editor.disablereconcile")).booleanValue()) {
 			JMenuItem reconcile = Builder.makeMenuItem("reconcile", true, "reconcile.png");
 			reconcile.addActionListener(new AbstractAction() {
@@ -221,26 +221,26 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 			add(reconcile);
 		}
 
-	// hit them so they enable/disable themselves properly
-	sampleMetadataChanged(null);
-	sampleElementsChanged(null);
-    }
+		// hit them so they enable/disable themselves properly
+		sampleMetadataChanged(null);
+		sampleElementsChanged(null);
+	}
 
-    private JMenuItem indexMenu, sumMenu, crossElements;
+	private JMenuItem indexMenu, sumMenu, crossElements;
 
-    //
-    // listener
-    //
-    public void sampleRedated(SampleEvent e) { }
-    public void sampleDataChanged(SampleEvent e) { }
-    public void sampleMetadataChanged(SampleEvent e) {
-	// index menu: only if not indexed
-    	indexMenu.setEnabled(!sample.isIndexed());
-    	sumMenu.setEnabled(!sample.isSummed());
-    }
-    public void sampleElementsChanged(SampleEvent e) {
-	// cross elements: only if elements present, and at least 2 elements
-	crossElements.setEnabled(sample.getElements() != null &&
-				 sample.getElements().size() >= 2);
-    }
+	//
+	// listener
+	//
+	public void sampleRedated(SampleEvent e) { }
+	public void sampleDataChanged(SampleEvent e) { }
+	public void sampleMetadataChanged(SampleEvent e) {
+		// index menu: only if not indexed
+		indexMenu.setEnabled(!sample.isIndexed());
+		sumMenu.setEnabled(!sample.isSummed());
+	}
+	public void sampleElementsChanged(SampleEvent e) {
+		// cross elements: only if elements present, and at least 2 elements
+		crossElements.setEnabled(sample.getElements() != null &&
+				sample.getElements().size() >= 2);
+	}
 }
