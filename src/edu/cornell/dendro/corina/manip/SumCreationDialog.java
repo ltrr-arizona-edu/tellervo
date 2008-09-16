@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import org.jdesktop.layout.GroupLayout;
 
 import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.graph.GraphDialog;
 import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.DBBrowser;
@@ -27,6 +28,7 @@ import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleSummary;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
 
 public class SumCreationDialog {
@@ -129,7 +131,16 @@ public class SumCreationDialog {
 		
 		preview.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new GraphWindow(sum.getSelectedElements());
+				try {
+					Sample s = Sum.sum(sum.getSelectedElements());
+					GraphDialog graph = new GraphDialog(sum, s, sum.getSelectedElements());
+					
+					Center.center(graph, sum);
+					graph.setVisible(true);
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(sum, "Couldn't sum: " + ex.toString(), 
+							"Sum failure", JOptionPane.ERROR_MESSAGE);
+				}
 			}			
 		});
 	}

@@ -131,12 +131,19 @@ public class Sum {
 
 	// an exception that means "there's a gap in the sum"
 	public static class GapInSumException extends IllegalArgumentException {
+		@Override
+		public String toString() {
+			return "A year gap exists in the data you wish to sum; sum is not contiguous.";
+		}
 		// sum_error_gap
 	}
 
 	// an exception that means "you're trying to mix raw and indexed files, dork"
 	public static class InconsistentUnitsException extends IllegalArgumentException {
-		// sum_error_mixed
+		@Override
+		public String toString() {
+			return "Inconsistent units; you may not mix raw and indexed data.";
+		}
 	}
 
 	// load elements, sum them, and store into result (returns result, too)
