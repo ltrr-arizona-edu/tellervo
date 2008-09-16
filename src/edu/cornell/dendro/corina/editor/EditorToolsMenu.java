@@ -18,11 +18,14 @@ import edu.cornell.dendro.corina.CorinaPermission;
 import edu.cornell.dendro.corina.cross.CrossdateWindow;
 import edu.cornell.dendro.corina.cross.Sequence;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.DBBrowser;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.index.IndexDialog;
 import edu.cornell.dendro.corina.manip.Reconcile;
 import edu.cornell.dendro.corina.manip.ReconcileDialog;
+import edu.cornell.dendro.corina.manip.ReconcileWindow;
 import edu.cornell.dendro.corina.manip.RedateDialog;
 import edu.cornell.dendro.corina.manip.Reverse;
 import edu.cornell.dendro.corina.manip.SumCreationDialog;
@@ -34,8 +37,12 @@ import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
+import edu.cornell.dendro.corina.sample.SampleSummary;
+import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.Center;
 
 // REFACTOR: this class needs refactoring.  there's IOEs and FNFEs in here!
 
@@ -69,6 +76,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 			}
 		}
 		add(redate);
+		redate.setEnabled(false);
 
 		// index
 		indexMenu = Builder.makeMenuItem("index...", true, "index.png");
@@ -102,6 +110,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 			}
 		});
 		add(truncate);
+		truncate.setEnabled(sample.getSampleType() == SampleType.DIRECT);
 
 		// reverse
 		JMenuItem reverseMenu = Builder.makeMenuItem("reverse", true, "reverse.png");
@@ -112,6 +121,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 			}
 		});
 		add(reverseMenu);
+		truncate.setEnabled(sample.getSampleType() == SampleType.DIRECT);
 
 		// ---
 		addSeparator();
@@ -144,6 +154,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 			}
 		});
 		add(crossAgainst);
+		crossAgainst.setEnabled(false);
 
 		// cross all
 		crossElements = Builder.makeMenuItem("cross_elements", true, "crossdate.png");
@@ -156,57 +167,44 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 			}
 		});
 		add(crossElements);
+		crossElements.setEnabled(false);
 
 		// reconcile
-		// but don't put this here if disablereconcile is on
-		// this is an awful hack; we're sorry.
-		if (!Boolean.valueOf(
-				App.prefs.getPref("corina.editor.disablereconcile")).booleanValue()) {
-			JMenuItem reconcile = Builder.makeMenuItem("reconcile", true, "reconcile.png");
-			reconcile.addActionListener(new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					// REFACTOR: this method isn't very pretty. there's probably
-					// an elegant refactoring to be done, but i'm not seeing
-					// it right now...
+		JMenuItem reconcile = Builder.makeMenuItem("reconcile", true, "reconcile.png");
+		reconcile.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				DBBrowser browser = new DBBrowser(editor, true, false);
 
-					// EXTRACT: why isn't this part of reconciledialog?
+				// select the site we're in
+				SampleSummary ss = (SampleSummary) sample.getMeta("::summary");
+				if(ss != null) 
+					browser.selectSiteByCode(ss.getSiteCode());
+				
+				browser.setTitle("Choose a reference sample");
+				browser.setVisible(true);
+				
+				if(browser.getReturnStatus() == DBBrowser.RET_OK) {
+					ElementList toOpen = browser.getSelectedElements();
 
-					// check for filename
-					String filename = (String) sample.getMeta("filename");
+					if(toOpen.size() < 1)
+						return;
 
-					// (do we need to ask the user?)
-					boolean askUser = false;
-
-					// if null, need to ask user.
-					if (filename == null) {
-						askUser = true;
-					}
-
-					// try to guess
-					String target = null;
+					// load it
+					Sample reference;
 					try {
-						if (!askUser)
-							target = Reconcile.guessOtherReading(filename);
-					} catch (FileNotFoundException fnfe) {
-						askUser = true;
-					}
-
-					// ask user here -- REDUNDANT!
-					try {
-						if (askUser)
-							target = FileDialog.showSingle(I18n
-									.getText("other_reading"));
-
-						// reconcile this and target
-						new ReconcileDialog(sample, ElementFactory.createElement(target).load());
+						reference = toOpen.get(0).load();
 					} catch (IOException ioe) {
-						// BUG: why does reconciledialog throw ioe's?
-						new Bug(ioe);
-					} catch (UserCancelledException uce) {
-						// do nothing
-					} catch (Exception ex) {
-						new Bug(ex);
+						Alert.error("Error Loading Sample",
+								"Can't open this file: " + ioe.getMessage());
+						return;
 					}
+
+					OpenRecent.sampleOpened(reference.getLoader());
+					
+					// open it for fun times
+					Center.center(new ReconcileWindow(sample, reference), editor);
+				}
+
 					/*
 					 * here's how the reconcile UI should work: -- auto-tile
 					 * +------A Reading------+ +------C Reading------+ | | | | | | | | | | | | | | | | | | | | | | | | | | | |
@@ -216,10 +214,9 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 					 * selecting an error row in the reconcile dialog selects
 					 * that year in A and C
 					 */
-				}
-			});
-			add(reconcile);
-		}
+			}
+		});
+		add(reconcile);
 
 		// hit them so they enable/disable themselves properly
 		sampleMetadataChanged(null);

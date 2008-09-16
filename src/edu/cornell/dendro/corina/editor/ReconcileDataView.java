@@ -35,15 +35,7 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 	private Reconciler reconciler;
 	
 	public ReconcileDataView(Sample newSample, Sample reference) {
-		super(newSample);
-		
-		try 
-		{
-			ResourceIdentifier rid = new ResourceIdentifier("measurement", "680");
-			CorinaWebElement cwe = new CorinaWebElement(rid);
-			reference = cwe.load();
-		}
-		catch (Exception e) {}
+		super(newSample);		
 		
 		this.newSample = newSample;
 		this.reference = reference;

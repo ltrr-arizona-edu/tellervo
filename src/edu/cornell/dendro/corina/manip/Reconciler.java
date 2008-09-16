@@ -129,7 +129,8 @@ public class Reconciler {
 				// report bad trend
 				Year y = s1.getRange().getStart().add(i-1);
 				
-				addFailureForYear(y, FailureType.TRENDNEXT);
+				// does this make sense?
+				//addFailureForYear(y, FailureType.TRENDNEXT);
 				addFailureForYear(y.add(1), FailureType.TRENDPREV);
 			}
 		}
