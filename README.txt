@@ -15,39 +15,14 @@ You are encouraged to use it and report bugs and feature requests.
 
 ----------------------------------------------------------------------
 
-INSTALLATION
-
-There is no install program.  Simply copy the Corina.jar file to your
-disk.  To make it easier to run, you can make a shortcut in a
-convenient place.  To do this on Windows, right-click, copy,
-right-click, paste shortcut.
-
-----------------------------------------------------------------------
-
-RUNNING
-
-To run Corina:
-
-  - in Windows 98/2000, double-click Corina.jar
-
-  - on Mac OS X, version 10.2 or later, double-click Corina.jar
-
-   - on Unix, type "java -jar Corina.jar"; you (or your administrator)
-     can make a shell script that calls this, and save it as
-     /usr/local/bin/corina
-
-Corina has been tested -- to varying degrees -- on Windows 2000, Linux
-2.4, and Mac OS X 10.2, with Java 1.3.1.
-
-----------------------------------------------------------------------
-
 LICENSE(S)
 
 Corina is licensed under the GNU GPL version 2, available as file
 COPYING.  Corina also uses code and data from other projects with
 different licenses.
 
-Corina itself is Copyright 2001 Ken Harris <kbh7@cornell.edu>.
+Corina itself is Copyright 2001-2008 Ken Harris, Aaron Hamid, Lucas 
+Madar and Peter Brewer
 
 ----------------------------------------------------------------------
 
@@ -71,4 +46,3 @@ They are:
 
 ----------------------------------------------------------------------
 
-- kbh
