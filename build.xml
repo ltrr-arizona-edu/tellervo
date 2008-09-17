@@ -65,8 +65,7 @@
 
   <property name="svn.revision"  value="${info.entry.revision}"/>
   <property name="app.name"      value="corina"/>
-  <!--<property name="app.version"   value="bleedingedge"/>-->
-  <property name="app.version"   value="${info.entry.revision}"/>
+  <property name="app.version"   value="bleedingedge"/>
   <property name="app.keystore"  value="corina.keystore.set.in.build.properties"/>
   <property name="build.home"    value="build"/>
   <property name="deploy.home"   value="deploy"/>
@@ -329,7 +328,7 @@
     <signjar jar="${deploy.home}/${app.name}-resources.jar" alias="dendro" storepass="d3ndr0" keystore="${app.keystore}"/>
 
     <tstamp>
-	<format property="deploy.releaseid" pattern="yyyyMMdd-hhmm"/>
+	<format property="deploy.releaseid" pattern="hh:mm dd-MM-yyy"/>
     </tstamp>
 
     <echo file="src/Timestamp" message="${deploy.releaseid}"/>
