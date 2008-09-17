@@ -13,6 +13,11 @@ import edu.cornell.dendro.corina.index.Index;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.site.Radius;
+import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.Specimen;
+import edu.cornell.dendro.corina.site.Subsite;
+import edu.cornell.dendro.corina.site.Tree;
 
 /**
  * @author lucasm
@@ -64,6 +69,9 @@ public class MeasurementResource extends ResourceObject<Sample> {
 		 * </corina>
 		 */
 		case READ:
+			// if we're reading, ask for a comprehensive format
+			requestElement.setAttribute("format", "comprehensive");
+			
 		case DELETE:
 			if(ri == null)
 				throw new ResourceException("No identifier specified for read/delete");
@@ -245,9 +253,35 @@ public class MeasurementResource extends ResourceObject<Sample> {
 		if(content == null)
 			throw new MalformedDocumentException("No content element in measurement");
 		
+		// try the easy way first
 		Element measurementElement = content.getChild("measurement");
-		if(measurementElement == null)
-			throw new MalformedDocumentException("No measurement element in measurement");
+		if(measurementElement == null) {
+			// ok, maybe we have a 'comprehensive' format for a raw sample?
+			Element siteElement = content.getChild("site");
+
+			if(siteElement == null)
+				throw new MalformedDocumentException("Measurement format invalid or unknown (not comprehensive or standard)");
+			
+			// kludgy way of doing this, maybe, but I think it's cleaner than a million if(x==null) statements
+			try {
+				Element subSiteElement = siteElement.getChild("subSite");
+				Element treeElement = subSiteElement.getChild("tree");
+				Element specimenElement = treeElement.getChild("specimen");
+				Element radiusElement = specimenElement.getChild("radius");
+				measurementElement = radiusElement.getChild("measurement");
+				
+				// kludge to catch a null measurementElement :)
+				measurementElement.getChild("metadata");
+				
+				s.setMeta("::radius", Radius.xmlToRadius(radiusElement));
+				s.setMeta("::specimen", Specimen.xmlToSpecimen(specimenElement));
+				s.setMeta("::tree", Tree.xmlToTree(treeElement));
+				s.setMeta("::subsite", Subsite.xmlToSubsite(subSiteElement));
+				s.setMeta("::site", Site.xmlToSite(siteElement));
+			} catch (NullPointerException npe) {
+				throw new MalformedDocumentException("Invalid comprehensive measurement format");				
+			}
+		}
 		
 		CorinaXML loader = new CorinaXML();
 		

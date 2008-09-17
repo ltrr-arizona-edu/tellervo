@@ -452,9 +452,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 	private void initMetaView() {
 		metaView = new MetadataPanel(sample);
-
-		// FIXME: move this to add/remove notify of MetadataPanel?
-		sample.addSampleListener((SampleListener) metaView);
 	}
 
 	private void initElemPanel() {

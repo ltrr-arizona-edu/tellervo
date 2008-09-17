@@ -15,30 +15,22 @@
 // along with Corina; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// Copyright 2001 Ken Harris <kbh7@cornell.edu>
-//
+
 
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.gui.Layout;
-import edu.cornell.dendro.corina.metadata.MetadataTemplate;
-import edu.cornell.dendro.corina.metadata.MetadataField;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.sample.SampleSummary;
-import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.webdbi.ResourceEvent;
-import edu.cornell.dendro.corina.webdbi.ResourceEventListener;
+import edu.cornell.dendro.corina.site.GenericIntermediateObject;
+import edu.cornell.dendro.corina.site.Radius;
+import edu.cornell.dendro.corina.site.Specimen;
+import edu.cornell.dendro.corina.site.Tree;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Set;
 
 import java.awt.BorderLayout;
@@ -48,11 +40,6 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.CannotRedoException;
 
 /**
    A view of the metadata of a Sample, which lets the user edit it.
@@ -120,90 +107,17 @@ fields are:
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id: MetadataPanel.java 1073 2008-04-27 08:34:27Z lucasm $
 */
-public class MetadataPanel extends JScrollPane implements SampleListener, ResourceEventListener {
+public class MetadataPanel extends JScrollPane implements SampleListener {
 
 	// the sample to view
 	private Sample s;
 
-	// hmm, would it be possible to use only one INSTANCE of this, even?
-	// that sure would save on the enabled/disabled crap.
-	private static class UpdateListener implements DocumentListener {
-		private Sample s;
+	// maps of our components
+	private HashMap<String, JComponent> gioComponentMap;
+	private HashMap<String, JComponent> metaComponentMap;
+	private HashMap<String, JComponent> summaryComponentMap;
 
-		private MetadataField f;
-
-		private boolean enabled = true;
-
-		public UpdateListener(Sample s, MetadataField f) {
-			// get updates in field, send to sample
-			this.s = s;
-			this.f = f;
-		}
-
-		public void setEnabled(boolean newState) {
-			enabled = newState;
-		}
-
-		private String getDocumentText(DocumentEvent e) {
-			try { // need to synch on e to guarantee no exception?
-				return e.getDocument().getText(0, e.getDocument().getLength());
-			} catch (BadLocationException ble) {
-				return ""; // can't happen
-			}
-		}
-
-		public void changedUpdate(DocumentEvent e) {
-			if (enabled)
-				update(getDocumentText(e));
-		}
-
-		public void insertUpdate(DocumentEvent e) {
-			if (enabled)
-				update(getDocumentText(e));
-		}
-
-		public void removeUpdate(DocumentEvent e) {
-			if (enabled)
-				update(getDocumentText(e));
-		}
-
-		private void update(Object value) {
-			// everything falls through to here
-
-			// if it's the same, do nothing
-			try {
-				if (value.equals(s.getMeta(f.getVariable())))
-					return;
-				if (!s.hasMeta(f.getVariable())
-						&& ((String) value).length() == 0)
-					return;
-			} catch (NullPointerException npe) {
-				// ignore?
-			}
-
-			// (if it's a String, try to make it an Integer)
-			// But be careful: no hex or octal, please.
-			try {
-				value = new Integer(Integer.parseInt((String) value, 10));
-			} catch (NumberFormatException nfe) {
-				// ok, it's just a String -- that's fine
-			}
-
-			// store it, and dirty the sample
-			if (value instanceof String && ((String) value).length() == 0)
-				s.removeMeta(f.getVariable());
-			else
-				s.setMeta(f.getVariable(), value);
-			s.setModified();
-			s.fireSampleMetadataChanged();
-		}
-	}
-
-	private Map components = new Hashtable(); // field => component hash
-	private List listeners = new ArrayList(); // all the listeners
-	private Map popups = new Hashtable(); // field varname => jcombobox mapping
-
-
+	// our panel
 	private JPanel panel;
 	/**
 	 Construct a new view of the metadata for a sample.
@@ -213,6 +127,9 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 	public MetadataPanel(Sample sample) {
 		// copy data
 		this.s = sample;
+		
+		// listen for changes
+		sample.addSampleListener(this);
 
 		// no border!
 		setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
@@ -231,15 +148,175 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 
 		addMetadata(c);
 		finishPart(c);
+	
+		// now, for the "fun" parts!
+		gioComponentMap = new HashMap<String, JComponent>();
+		addRadius(c);
+		addSpecimen(c);
+		addTree(c);
+		updateGioComponents();
 		
-		// more info for direct measurements... go down the data tree!
-		if(s.getSampleType() == SampleType.DIRECT) {
-			
-		}
+		setScrollyGoodness();
 	}
 	
+	private void addRadius(GridBagConstraints c) {
+		Radius r = (Radius) s.getMeta("::radius");
+		
+		if(r == null)
+			return;
+
+		JButton edit = new JButton("edit");
+		addTitle("Radius", c, edit);
+		
+		JLabel a, b;
+		
+		a = new JLabel("Name:");
+		b = new JLabel();
+		gioComponentMap.put("radius.toString", b);
+		addPair(a, b, c);
+		
+		a = new JLabel("db id:");
+		b = new JLabel();
+		gioComponentMap.put("radius.getID", b);
+		addPair(a, b, c);
+	}
+	
+	private void addSpecimen(GridBagConstraints c) {
+		Specimen sp = (Specimen) s.getMeta("::specimen");
+		
+		if(sp == null)
+			return;
+
+		JButton edit = new JButton("edit");
+		addTitle("Specimen", c, edit);
+		
+		JLabel a, b;
+		
+		a = new JLabel("Name:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.toString", b);
+		addPair(a, b, c);
+		
+		a = new JLabel("db id:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getID", b);
+		addPair(a, b, c);
+		
+		a = new JLabel("Type:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getSpecimenType", b);
+		addPair(a, b, c);
+
+		a = new JLabel("Date Collected:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getDateCollected", b);
+		addPair(a, b, c);
+		
+		a = new JLabel("Continuity:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getSpecimenContinuity", b);
+		addPair(a, b, c);
+
+		a = new JLabel("Cont. verified:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getIsSpecimenContinuityVerified", b);
+		addPair(a, b, c);
+
+		a = new JLabel("Terminal Ring:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getTerminalRing", b);
+		addPair(a, b, c);
+		
+		a = new JLabel("T.R. verified:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getIsTerminalRingVerified", b);
+		addPair(a, b, c);
+		
+		a = new JLabel("Pith:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getPith", b);
+		addPair(a, b, c);
+		
+		a = new JLabel("Pith verified:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getIsPithVerified", b);
+		addPair(a, b, c);
+		
+		a = new JLabel("Sapwood Count:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getSapwoodCount", b);
+		addPair(a, b, c);
+		
+		a = new JLabel("Sapwood verified:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getIsSapwoodCountVerified", b);
+		addPair(a, b, c);
+		
+		a = new JLabel("Unmeasured pre:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getUnmeasuredPre", b);
+		addPair(a, b, c);
+		a = new JLabel("upre verified:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getIsUnmeasuredPreVerified", b);
+		addPair(a, b, c);
+
+		a = new JLabel("Unmeasured post:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getUnmeasuredPost", b);
+		addPair(a, b, c);
+		a = new JLabel("upost verified:");
+		b = new JLabel();
+		gioComponentMap.put("specimen.getIsUnmeasuredPostVerified", b);
+		addPair(a, b, c);
+	}
+
+	private void addTree(GridBagConstraints c) {
+		Tree t = (Tree) s.getMeta("::tree");
+		
+		if(t == null)
+			return;		
+
+		JButton edit = new JButton("edit");
+		addTitle("Tree", c, edit);
+
+		JLabel a, b;
+		
+		a = new JLabel("Latitude:");
+		b = new JLabel();
+		gioComponentMap.put("tree.getLatitude", b);
+		addPair(a, b, c);
+
+		a = new JLabel("Longitude:");
+		b = new JLabel();
+		gioComponentMap.put("tree.getLongitude", b);
+		addPair(a, b, c);
+
+		a = new JLabel("Precision:");
+		b = new JLabel();
+		gioComponentMap.put("tree.getPrecision", b);
+		addPair(a, b, c);
+
+		a = new JLabel("Is alive:");
+		b = new JLabel();
+		gioComponentMap.put("tree.getIsLiveTree", b);
+		addPair(a, b, c);
+
+		a = new JLabel("Validated taxon:");
+		b = new JLabel();
+		gioComponentMap.put("tree.getValidatedTaxon", b);
+		addPair(a, b, c);
+
+		a = new JLabel("Orig. taxon:");
+		b = new JLabel();
+		gioComponentMap.put("tree.getOriginalTaxonName", b);
+		addPair(a, b, c);
+	}
+
 	private void addSummary(GridBagConstraints c) {
 		SampleSummary ss = (SampleSummary) s.getMeta("::summary");
+
+		summaryComponentMap = new HashMap<String, JComponent>();
 		
 		if(ss == null)
 			return;
@@ -249,34 +326,43 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 		JLabel a, b;
 		
 		a = new JLabel("Lab code:");
-		b = new JLabel(ss.getLabCode());
+		b = new JLabel();
+		summaryComponentMap.put("labcode", b);
 		addPair(a, b, c);
 
 		a = new JLabel("Site code:");
-		b = new JLabel(ss.getSiteCode());
+		b = new JLabel();
+		summaryComponentMap.put("sitecode", b);
 		addPair(a, b, c);
 
 		a = new JLabel("Common taxon:");
-		b = new JLabel(ss.getCommonTaxon());
+		b = new JLabel();
+		summaryComponentMap.put("commontaxon", b);
 		addPair(a, b, c);
-
 		
 		a = new JLabel("Site description:");
-		b = new JLabel(ss.siteDescription());
+		b = new JLabel();
+		summaryComponentMap.put("sitedescription", b);
 		addPair(a, b, c);
 
 		a = new JLabel("Taxon description:");
-		b = new JLabel(ss.taxonDescription());
+		b = new JLabel();
+		summaryComponentMap.put("taxondescription", b);
 		addPair(a, b, c);
 
 		a = new JLabel("Type:");
-		b = new JLabel(s.getSampleType().toString());
+		b = new JLabel();
+		summaryComponentMap.put("sampletype", b);
 		addPair(a, b, c);
+		
+		updateSummaryComponents();
 	}
 	
 	private void addMetadata(GridBagConstraints c) {
 		JButton edit = new JButton("edit");
 		addTitle("Measurement Metadata", c, edit);
+
+		metaComponentMap = new HashMap<String, JComponent>();
 		
 		Map<String, Object> meta = s.getMetadata();
 		Set<String> keys = meta.keySet();
@@ -290,9 +376,14 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 			if(key.equalsIgnoreCase("comments"))
 				continue;
 			
+			// create
 			JLabel a = new JLabel(getMetaName(key) + ":");
 			JComponent b = createComponentForObject(meta.get(key));
 			
+			// add a key to the metamap
+			metaComponentMap.put(key, b);
+		
+			// add the thing to the table
 			addPair(a, b, c);
 		}
 
@@ -303,9 +394,15 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 			
 			JLabel a = new JLabel(key.substring(5) + "(?):");
 			JComponent b = createComponentForObject(meta.get(key));
-			
+
+			// add a key to the metamap
+			metaComponentMap.put(key, b);
+
 			addPair(a, b, c);
 		}
+
+		// keep this for good measure
+		addPair(new JLabel("db id:"), new JLabel(meta.get("::dbid").toString()), c);
 		
 		String comments = (String) meta.get("comments");
 		if(comments != null) {
@@ -314,8 +411,12 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 			
 			JLabel a = new JLabel("Comments:");
 			
-			addComments(a, comments, c);
+			// create it and add it to the map!
+			metaComponentMap.put("comments", addComments(a, comments, c));
 		}
+		
+		// redundant, but helpful
+		updateMetadataComponents();
 	}
 	
 	private JComponent createComponentForObject(Object o) {
@@ -359,19 +460,16 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 		}
 	}
 
-	private void addComments(JLabel label, String comments, GridBagConstraints c) {
+	private JComponent addComments(JLabel label, String comments, GridBagConstraints c) {
 		JEditorPane comp = new JEditorPane();
 		
 		comp.setFocusable(false);
 		comp.setEditable(false);
 		comp.setOpaque(false);
-		comp.setBorder(BorderFactory.createMatteBorder(1, 1, 2, 2, Color.gray));
+		comp.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 2, Color.gray));
 		comp.setText(comments + comments + comments + comments);
 		
-		JPanel compPanel = new JPanel(new BorderLayout());
-		//compPanel.add(comp, BorderLayout.CENTER);
-		
-		label.setLabelFor(compPanel);
+		label.setLabelFor(comp);
 		label.setHorizontalAlignment(SwingConstants.RIGHT);
 		label.setVerticalAlignment(SwingConstants.TOP);
 		label.setAlignmentY(JLabel.TOP_ALIGNMENT);
@@ -394,6 +492,8 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 		
 		c.gridx = 0;
 		c.gridy++;
+		
+		return comp;
 	}
 
 	
@@ -408,7 +508,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 	private int nsections = 0;
 	private void addTitle(String title, GridBagConstraints c, JButton editButton) {
 		JPanel titlePanel = new JPanel(new BorderLayout());
-		titlePanel.setBorder(BorderFactory.createMatteBorder(0, 2, 2, 0, Color.gray));
+		titlePanel.setBorder(BorderFactory.createMatteBorder(2, 3, 1, 0, Color.gray));
 
 		JLabel l = new JLabel(title);
 		l.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -418,9 +518,14 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 		titlePanel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
 		titlePanel.setAlignmentY(JPanel.TOP_ALIGNMENT);
 		
+		// position the button
 		if(editButton != null) {
 			editButton.setHorizontalAlignment(SwingConstants.RIGHT);
-			titlePanel.add(editButton, BorderLayout.EAST);
+			editButton.setMargin(new Insets(0, 2, 0, 2)); // small button
+			editButton.setDefaultCapable(false);
+			JPanel dummy = new JPanel();
+			dummy.add(editButton);
+			titlePanel.add(dummy, BorderLayout.EAST);
 		}
 		
 		c.gridwidth = 4;
@@ -439,109 +544,119 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 		c.gridy++;
 		nsections++;
 	}
+
+	private void updateSummaryComponents() {
+		SampleSummary ss = (SampleSummary) s.getMeta("::summary");
 		
-	private void bollocks() {
-		// make sure we're notified when the dictionary changes!
-		App.dictionary.addResourceEventListener(this);
-
-		// temp panel to add stuff to; we'll scroll this
-		final JPanel p = new JPanel(new GridBagLayout());
-
-		// constraints for all components
-		GridBagConstraints c = new GridBagConstraints();
-		c.weighty = 0.0;
-
-		// we'll need to count the number of fields
-		int n = 0;
-
-		// add the fields, one at a time
-		Iterator it = MetadataTemplate.getFields();
-		while (it.hasNext()) {
-			MetadataField f = (MetadataField) it.next();
-
-			// (row)
-			c.gridy = n++;
-
-			// create and add the constrained label
-			c.gridx = 0;
-			c.anchor = GridBagConstraints.EAST;
-			c.weightx = 0.0; // no effect?
-			c.fill = GridBagConstraints.NONE;
-			JLabel l = new JLabel(f.getFieldDescription() + ":");
-			// WAS: JPanel fff = new JPanel(new FlowLayout(FlowLayout.RIGHT)); // putting it in a jpanel lines up the lines -- REFACTOR
-			// WAS: fff.add(l);
-			// WAS: p.add(fff, c);
-			p.add(l, c);
-
-			// for computing height of first row
-			if (firstLabel == null)
-				firstLabel = l;
-
-			// ... and the edit box
-			c.gridx = 1;
-			c.weightx = 1.0; // no effect?
-			c.fill = GridBagConstraints.HORIZONTAL;
-			c.anchor = GridBagConstraints.WEST;
-
-			// idea: each component is responsible for its own updating.  no, then i can't disable them all... (?)
-
-			// SPECIES HACK
-			/*
-			 if (f.getVariable().equals("species")) {
-			 p.add(Layout.flowLayoutL(new SpeciesPopup(s, editor)), c);
-			 continue;
-			 }
-			 */
-
-			// is this field a list of values?
-			if (f.isList()) {
-	//			p.add(makePopup(f), c);
-				continue;
-			} // integrate this clause into the rest...  easier once old-style-popups are all gone
-
-			// if it has no choices, a plain jtextfield is perfect.
-			// if it needs several lines, though, use a jtextarea.
-			JTextComponent x = makeTextBlock(f);
-
-			// add to the panel
-			// use a sub-panel, so the left-alignment is ok.  without this, on OS X it
-			// looks passable, but on windows it looks horrible.
-			c.insets = new java.awt.Insets(5, 5, 5, 5);
-			if (x instanceof JTextArea) {
-				// p.add(Layout.flowLayoutL(new JScrollPane(x)), c);
-				p.add(new JScrollPane(x), c);
-			} else {
-				p.add(x, c); // WAS: Layout.flowLayoutL(x), c);
+		// error?
+		if(ss == null) {
+			for(JComponent comp : summaryComponentMap.values()) {
+				comp.setBackground(Color.red);
+				comp.setOpaque(true);
 			}
-			c.insets = new java.awt.Insets(0, 0, 0, 0);
-
-			// add to hashmap -- only used for textcomponents
-			//if (x instanceof JTextComponent)
-			components.put(f.getVariable(), x);
-
-			// first one?  focus!
-			if (n == 1)
-				x.requestFocus();
+			return;
 		}
+		
+		JLabel l;
+		
+		if((l = (JLabel) summaryComponentMap.get("labcode")) != null)
+			l.setText(ss.getLabCode());
+		if((l = (JLabel) summaryComponentMap.get("sitecode")) != null)
+			l.setText(ss.getSiteCode());
+		if((l = (JLabel) summaryComponentMap.get("commontaxon")) != null)
+			l.setText(ss.getCommonTaxon());
+		if((l = (JLabel) summaryComponentMap.get("sitedescription")) != null)
+			l.setText(ss.siteDescription());
+		if((l = (JLabel) summaryComponentMap.get("taxondescription")) != null)
+			l.setText(ss.taxonDescription());
+		if((l = (JLabel) summaryComponentMap.get("sampletype")) != null)
+			l.setText(s.getSampleType().toString());
+	}
+	
+	// things that actually set values...
+	private void updateMetadataComponents() {
+		for(String key : metaComponentMap.keySet()) {
+			JComponent comp = metaComponentMap.get(key);
+			
+			if(!s.hasMeta(key)) {
+				// this shouldn't happen, but mark it if it does
+				comp.setBackground(Color.red);
+				comp.setOpaque(true);
+				continue;
+			}
+			
+			if(comp instanceof JLabel) {
+				((JLabel) comp).setText(s.getMeta(key).toString());
+			}
+			else if(comp instanceof JEditorPane) {
+				((JEditorPane) comp).setText(s.getMeta(key).toString());
+			}
+			else {
+				// mark errors
+				comp.setBackground(Color.orange);
+				comp.setOpaque(true);
+			}
+		}
+	}
+	
+	private void updateGioComponents() {
+		for(String key : gioComponentMap.keySet()) {
+			// split the key up
+			// e.g., radius.getID -> radius, getID
+			String[] x = key.split("\\.");
+			JComponent comp = gioComponentMap.get(key);
+			
+			// sanity
+			if(x.length != 2) {
+				comp.setBackground(Color.orange);
+				comp.setOpaque(true);
+				continue;
+			}
+			
+			// find the object in the sample
+			GenericIntermediateObject src = (GenericIntermediateObject) s.getMeta("::" + x[0]);
+			if(src == null) {
+				comp.setBackground(Color.pink);				
+				comp.setOpaque(true);
+				continue;
+			}
+			
+			// now, invoke the method specified in the key
+			try {
+				Class<?> types[] = new Class[] {};
+				Method m = src.getClass().getMethod(x[1], types);
+				Object args[] = new Object[] { };
 
-		// put a filler-panel below everything (not needed for dialog layout!)
-		c.gridx = 0;
-		c.gridy = n;
-		c.weighty = 1.0;
-		p.add(new JPanel(), c);
+				Object value = m.invoke(src, args);
+				if(value != null) {
+					if(comp instanceof JLabel) {
+						((JLabel) comp).setText(value.toString());
+						comp.setForeground(UIManager.getDefaults().getColor("Label.foreground"));
+					}
+				}
+				else {
+					if(comp instanceof JLabel) {
+						((JLabel) comp).setText("not specified");
+						comp.setForeground(UIManager.getDefaults().getColor("Label.disabledForeground"));
+					}
+				}
+				
+			} catch (Exception ex) {
+				comp.setBackground(Color.cyan);
+				ex.printStackTrace();
+			}
+		}
+	}
 
-		// stuff everything in a scrollpane (=me)
-		setViewportView(p);
-		setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-
+	private void setScrollyGoodness()
+	{
 		// set some sane unit increments (one line per click), but this can only be done after it's packed
 		// FIXME: shouldn't this be an addNotify(), then?
 		final JScrollPane glue = this;
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-				GridBagLayout gbl = (GridBagLayout) p.getLayout();
+				GridBagLayout gbl = (GridBagLayout) panel.getLayout();
 				int h = gbl.getLayoutDimensions()[1][0]; // (1=height, 0=first row)  "Most applications do not call this method directly."  (I'm special.)
 				glue.getVerticalScrollBar().setUnitIncrement(h);
 				glue.getHorizontalScrollBar().setUnitIncrement(h);
@@ -550,121 +665,17 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 		});
 	}
 
-	private JTextComponent makeTextBlock(MetadataField f) {
-		// number of lines?
-		int lines = f.getLines();
-
-		// value -- REFACTOR?
-		Object hash = s.getMeta(f.getVariable());
-		String value = (hash == null ? "" : hash.toString());
-
-		// HACK2: index_type gets looked up now; add index_type.options=-1,1,2,... to metadata properties file, perhaps
-		if (f.getVariable().equals("index_type") && hash != null)
-			value = I18n.getText("meta." + "index_type." + hash);
-
-		// build component.
-		// (the strange -- and seemingly pointless, even for a cast --
-		// cast is required to make one arg assignable to the other.
-		// see jls chapter 15, section 25, clause 4.)
-		JTextComponent t = (lines > 1 ? new JTextArea(value, lines, 0) : // WAS: 50
-				(JTextComponent) new JTextField(value, 32));
-		// TODO: use COLUMNS when that's added.
-
-		if (f.isReadOnly()) {
-			// if read-only, it's not editable
-			t.setEditable(false);
-		} else {
-			// listener for textfield
-			UpdateListener u = new UpdateListener(s, f);
-			t.getDocument().addDocumentListener(u);
-			listeners.add(u);
-		}
-
-		return t;
-	}
-
-	// first label
-	private JLabel firstLabel = null;
-
-	// FIXME: javadoc these, or make them a private inner class
 	public void sampleRedated(SampleEvent e) {
-		// abs/rel are changed by redater, but that fires a metadataChanged event
-
-		// BUG: abs/rel shouldn't be changed by redater: they're
-		// metadata changes only, not dating changes!
 	}
 
 	public void sampleDataChanged(SampleEvent e) {
 	}
 
 	public void sampleMetadataChanged(SampleEvent e) {
-		// no way to find out which fields changed!  darn...
-		// this means we have to disable all listeners right at
-		// the start, not just as we go.
-		for (int i = 0; i < listeners.size(); i++)
-			((UpdateListener) listeners.get(i)).setEnabled(false);
-
-		// if something gets thrown in here, make sure to re-enable all the listeners
-		try {
-
-			Iterator i = MetadataTemplate.getFields();
-			while (i.hasNext()) {
-				MetadataField f = (MetadataField) i.next();
-
-				// is this my format popup?  if so, choose the correct one...
-				if (popups.containsKey(f.getVariable())) {
-//					resetPopup(f);
-					continue;
-				}
-
-				// get value -- DUPLICATE CODE, REFACTOR
-				Object hash = s.getMeta(f.getVariable());
-				String value = (hash == null ? "" : hash.toString());
-
-				// get component
-				String field = f.getVariable();
-				JTextComponent comp = (JTextComponent) components.get(field);
-
-				// HACK: index_type gets looked up now -- DUPLICATE CODE, REFACTOR
-				if (f.getVariable().equals("index_type") && hash != null)
-					value = I18n.getText("meta." + "index_type." + hash);
-
-				try {
-					// text component?
-					comp.setText(value);
-				} catch (IllegalStateException ise) {
-					// there's got to be a better way to do this:
-					// System.out.println("illegal state!  (skipping " + field + ")");
-					continue;
-					// this is caused by trying to update myself.  if something got thrown
-					// here, the listeners wouldn't get re-enabled, and users would only
-					// see the first letter they typed.  (they hate that.)
-				}
-			}
-
-		} catch (Exception ex) {
-			// shouldn't happen, but it does (BUG: why?)
-			ex.printStackTrace();
-		} finally {
-			// re-enable all listeners
-			for (int i = 0; i < listeners.size(); i++)
-				((UpdateListener) listeners.get(i)).setEnabled(true);
-		}
-	}
-
-	public void resourceChanged(ResourceEvent re) {
-		// if our dictionary is reloaded, here's where we get notified!
-		if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					Iterator it = popups.keySet().iterator();
-					while(it.hasNext()) {
-						MetadataField f = MetadataTemplate.getField((String) it.next());
-						
-					}					
-				}
-			});
-		}
+		// update all the fun stuff in our metadata
+		updateMetadataComponents();
+		updateSummaryComponents();
+		updateGioComponents();
 	}
 	
 	public void sampleElementsChanged(SampleEvent e) {
@@ -686,26 +697,8 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 	static {
 		niceMetaName = new HashMap<String, String>();
 		
+		// stick any key -> etc niceness here
 		niceMetaName.put("isreconciled", "Is reconciled");
 	}
 	
-	/*
-	 dialog layout:
-	 -- when expanded, labels don't take up extra space (good!)
-	 -- but, the stuff on the right side doesn't expand to fill the width
-	 -- (if i make dialog layout do that, will it cause other breakage?)
-	 -- it still has stdout debugging info -- use logging?
-	 todo:
-	 -- make a DialogLayout2
-	 -- it'll be kind of like a 2-column grid layout
-	 -- the left column will be exactly wide enough for max(min(widths))
-	 -- the right column will take up the rest of the space
-	 -- the height will be the minimum required -- extra on the bottom
-	 refactoring:
-	 -- make DialogLayout2
-	 -- switch MetadataPanel to use DialogLayout2 (much simpler!)
-	 -- switch other uses of DialogLayout to DialogLayout2
-	 -- remove DialogLayout
-	 -- rename DialogLayout2 to DialogLayout
-	 */
 }
