@@ -27,18 +27,25 @@ import edu.cornell.dendro.corina.metadata.MetadataField;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
+import edu.cornell.dendro.corina.sample.SampleSummary;
+import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.webdbi.ResourceEvent;
 import edu.cornell.dendro.corina.webdbi.ResourceEventListener;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Set;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -111,7 +118,7 @@ fields are:
     </ul>
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
-   @version $Id$
+   @version $Id: MetadataPanel.java 1073 2008-04-27 08:34:27Z lucasm $
 */
 public class MetadataPanel extends JScrollPane implements SampleListener, ResourceEventListener {
 
@@ -193,282 +200,11 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 	}
 
 	private Map components = new Hashtable(); // field => component hash
-
 	private List listeners = new ArrayList(); // all the listeners
-
 	private Map popups = new Hashtable(); // field varname => jcombobox mapping
 
-	private JComponent makePopup(final MetadataField f) {		
-		JComboBox popup = new JComboBox();
-		popups.put(f.getVariable(), popup);
-		
-		resetPopup(f);
 
-		if(f.isReadOnly())
-			popup.setEnabled(false);
-		
-		popup.addItemListener(new ItemListener() { // user changes popup => we change metadata
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED && !resetting) {
-					System.out.println("POPUP CHANGED!!!");
-					popupChanged((JComboBox) e.getSource(), f);
-				}
-			}
-		});
-		
-		// put in a flow, so it doesn't consume the entire width
-		return Layout.flowLayoutL(popup);
-	}
-	
-	private void popupChanged(JComboBox popup, final MetadataField f) {
-		final int selectedIndex = popup.getSelectedIndex();
-		final Object oldValue = s.getMeta(f.getVariable());
-		final boolean wasAlreadyModified = s.isModified();
-		final String field = f.getVariable();
-		
-		// do the actual change...
-		if (selectedIndex == 0)
-			s.removeMeta(field);
-		else
-			s.setMeta(field, f.getListItemValue(selectedIndex - 1));
-		
-		s.setModified();
-		s.fireSampleMetadataChanged();
-
-		s.postEdit(new AbstractUndoableEdit() {
-			@Override
-			public void undo() throws CannotUndoException {
-				if (oldValue == null)
-					s.removeMeta(field);
-				else
-					s.setMeta(field, oldValue);
-				
-				if(!wasAlreadyModified)
-					s.clearModified();
-				
-				s.fireSampleMetadataChanged();
-			}			
-			
-			@Override
-			public void redo() throws CannotRedoException {
-				if(selectedIndex == 0)
-					s.removeMeta(field);
-				else
-					s.setMeta(field, f.getListItemValue(selectedIndex - 1));
-
-				s.setModified();
-				s.fireSampleMetadataChanged();
-			}
-
-			@Override
-			public boolean canRedo() {
-				return true;
-			}
-
-			@Override
-			public String getPresentationName() {
-				return f.getFieldDescription() + " Change";
-			}
-
-		});
-	}
-
-	/*
-	 * This is old and so full of bugs.
-	 * I'm keeping it here for reference; hopefully soon it will go away.
-	 * 
-	private JComponent makePopupOld(MetadataField f) {
-		final String field = f.getVariable();
-
-		// construct popup, with english labels to display
-		String values[] = new String[1 + f.getValues().length];
-		values[0] = I18n.getText("meta.unspecified");
-		for (int j = 0; j < f.getValues().length; j++)
-			values[j + 1] = I18n.getText("meta." + field + "." + f.getValues()[j]);
-		JComboBox popup = new JComboBox(values);
-
-		if(f.isReadOnly())
-			popup.setEnabled(false);
-		
-		popups.put(field, popup); // store for listener later
-
-		final MetadataField glue = f; // ack...
-
-		resetPopup(f);
-		popup.addItemListener(new ItemListener() { // user changes popup => we change metadata
-					public void itemStateChanged(ItemEvent e) {
-						if (e.getStateChange() == ItemEvent.SELECTED) {
-							final int which = ((JComboBox) e.getSource())
-									.getSelectedIndex();
-
-							int tmp = 0; // also in resetPopup() -- refactor?
-							for (int i = 0; i < glue.getValues().length; i++)
-								if (glue.getValues()[i].equals(s.getMeta(glue
-										.getVariable())))
-									break;
-							// fall-through?
-							final int oldWhich = tmp + 1; // index into values[] of the current value -- isn't there a method to compute this somewhere?  refactor.
-
-							if (which == 0)
-								s.removeMeta(field);
-							else
-								s.setMeta(field, glue.getValues()[which - 1]);
-
-							// undoable
-							s.postEdit(new AbstractUndoableEdit() {
-								private boolean wasMod = s.isModified();
-
-								public void undo() throws CannotUndoException {
-									if (oldWhich == 0)
-										s.removeMeta(field);
-									else
-										s.setMeta(field,
-												glue.getValues()[oldWhich - 1]);
-									if (!wasMod)
-										s.clearModified();
-									System.out.println("undo called, now at "
-											+ oldWhich);
-									s.setModified();
-									s.fireSampleMetadataChanged();
-								}
-
-								public void redo() throws CannotRedoException {
-									if (which == 0)
-										s.removeMeta(field);
-									else
-										s.setMeta(field,
-												glue.getValues()[which - 1]);
-									System.out.println("redo called, now at "
-											+ which);
-									s.setModified();
-									s.fireSampleMetadataChanged();
-								}
-
-								public boolean canRedo() {
-									return true;
-								}
-
-								public String getPresentationName() {
-									return glue.getFieldDescription() + " Change";
-								}
-							});
-
-							s.setModified();
-							s.fireSampleMetadataChanged();
-							// BUG: undo doesn't fire this correctly.
-							// what purpose does this serve, anyway, over
-							// metadata-changed events?
-						}
-					}
-				});
-
-		// put in a flow, so it doesn't consume the entire width
-		return Layout.flowLayoutL(popup);
-	}
-	*/
-
-	private void doResetPopupContents(MetadataField f) {
-		JComboBox popup = (JComboBox) popups.get(f.getVariable());
-		
-		popup.removeAllItems();
-		popup.addItem(I18n.getText("meta.unspecified"));
-		for (int j = 0; j < f.getListSize(); j++) 
-			popup.addItem(f.getListItemDescription(j));
-	}
-	
-	private boolean resetting = false;
-
-	private void resetPopup(MetadataField f) {
-		resetting = true;
-		doResetPopupContents(f);
-		doResetPopup(f);
-		resetting = false;
-	}
-	
-	private void doResetPopup(MetadataField f) {
-		String field = f.getVariable();
-		JComboBox popup = (JComboBox) popups.get(f.getVariable());
-		// newValue can be a String, Integer, or null...
-		Object nvTmp = s.getMeta(field);
-		String newValue;
-		
-		// maybe it's null
-		if (nvTmp == null) {
-			popup.setSelectedIndex(0);
-			return;
-		} else {
-			newValue = nvTmp.toString();
-		}
-
-		/*
-		 * Don't bother this this anymore. No kludges!
-		 * 
-		// for "PITH", what mecki's corina called "+" i call "*"
-		// (because the cheat sheet on the wall said this)
-		// so i'll do that one for you.
-		if (field.equals("PITH") && newValue.equals("+")) {
-			s.setMeta("PITH", "*");
-			s.setModified();
-			s.fireSampleMetadataChanged();
-			newValue = "*";
-		}
-		// BUG: isn't it "pith", not "PITH"?
-		 * 
-		 */
-
-		// maybe it's one of the legal values
-		for (int j = 0; j < f.getListSize(); j++) {
-			if (f.getListItemValue(j).toUpperCase().equals(newValue.toUpperCase())) { // case-insensitive!
-				popup.setSelectedIndex(j + 1);
-				return;
-			}
-		}
-
-		// finally, "?" sounds pretty unspecified to me.
-		if (newValue.equals("?")) {
-			s.removeMeta(field);
-			popup.setSelectedIndex(0);
-			return;
-		}
-
-		// crap.  we'll try asking the user what she was smoking.
-		// (does this belong here?  NO!)
-		String descriptions[] = new String[f.getListSize() + 1];
-		descriptions[0] = "unspecified";
-		for (int i = 0; i < f.getListSize(); i++)
-			descriptions[i + 1] = f.getListItemDescription(i); 
-		int x = JOptionPane.showOptionDialog(this, "The field \""
-				+ f.getFieldDescription() + "\" has value \"" + newValue
-				+ "\", which I don't understand.  What did you mean?",
-				"Re-enter Value", JOptionPane.YES_NO_OPTION, // i think this is meaningless, in this context
-				JOptionPane.QUESTION_MESSAGE, null, // no icon
-				descriptions, null); // NO DEFAULT -- important!
-		/*
-		 what i really want: don't bug the user, until/unless she
-		 wants to change this value.  so, for example:
-
-		 [unspecified]  invalid value: XXX
-
-		 -- if you don't change it, it gets saved as it was
-		 -- if you do change it, you're forced to pick a valid value
-
-		 that's much nicer than a dialog.
-
-		 WRITEME.
-		 */
-
-		// result (x) is index into f.values -- store this.
-		if (x == 0)
-			s.removeMeta(field);
-		else
-			s.setMeta(field, f.getListItemValue(x - 1));
-		s.setModified();
-		s.fireSampleMetadataChanged();
-
-		// oh, wait, i'm supposed to select something in a popup.  gotcha.
-		popup.setSelectedIndex(x);
-	}
-
+	private JPanel panel;
 	/**
 	 Construct a new view of the metadata for a sample.
 
@@ -479,8 +215,232 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 		this.s = sample;
 
 		// no border!
-		setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 		
+		panel = new JPanel(new GridBagLayout());
+		
+		setViewportView(panel);
+		setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = c.gridy = 0;
+		
+		addSummary(c);
+		finishPart(c);
+
+		addMetadata(c);
+		finishPart(c);
+		
+		// more info for direct measurements... go down the data tree!
+		if(s.getSampleType() == SampleType.DIRECT) {
+			
+		}
+	}
+	
+	private void addSummary(GridBagConstraints c) {
+		SampleSummary ss = (SampleSummary) s.getMeta("::summary");
+		
+		if(ss == null)
+			return;
+		
+		addTitle("Measurement Summary", c, null);
+		
+		JLabel a, b;
+		
+		a = new JLabel("Lab code:");
+		b = new JLabel(ss.getLabCode());
+		addPair(a, b, c);
+
+		a = new JLabel("Site code:");
+		b = new JLabel(ss.getSiteCode());
+		addPair(a, b, c);
+
+		a = new JLabel("Common taxon:");
+		b = new JLabel(ss.getCommonTaxon());
+		addPair(a, b, c);
+
+		
+		a = new JLabel("Site description:");
+		b = new JLabel(ss.siteDescription());
+		addPair(a, b, c);
+
+		a = new JLabel("Taxon description:");
+		b = new JLabel(ss.taxonDescription());
+		addPair(a, b, c);
+
+		a = new JLabel("Type:");
+		b = new JLabel(s.getSampleType().toString());
+		addPair(a, b, c);
+	}
+	
+	private void addMetadata(GridBagConstraints c) {
+		JButton edit = new JButton("edit");
+		addTitle("Measurement Metadata", c, edit);
+		
+		Map<String, Object> meta = s.getMetadata();
+		Set<String> keys = meta.keySet();
+		
+		// pass 1: things that are nice
+		for(String key : keys) {
+			if(key.startsWith("::"))
+				continue;
+		
+			// special case
+			if(key.equalsIgnoreCase("comments"))
+				continue;
+			
+			JLabel a = new JLabel(getMetaName(key) + ":");
+			JComponent b = createComponentForObject(meta.get(key));
+			
+			addPair(a, b, c);
+		}
+
+		// pass 2: things that are unknown!
+		for(String key : keys) {
+			if(!key.startsWith("::-::"))
+				continue;
+			
+			JLabel a = new JLabel(key.substring(5) + "(?):");
+			JComponent b = createComponentForObject(meta.get(key));
+			
+			addPair(a, b, c);
+		}
+		
+		String comments = (String) meta.get("comments");
+		if(comments != null) {
+			// on its own line
+			finishPart(c);
+			
+			JLabel a = new JLabel("Comments:");
+			
+			addComments(a, comments, c);
+		}
+	}
+	
+	private JComponent createComponentForObject(Object o) {
+		// special handling for booleans!
+		/* no!
+		if(o instanceof Boolean) {
+			JCheckBox box = new JCheckBox();
+			
+			box.setSelected(((Boolean)o).booleanValue());
+			box.setEnabled(false);
+			
+			return box;
+		}*/
+		
+		JLabel label = new JLabel(o.toString());
+		
+		return label;
+	}
+
+	private void addPair(JLabel label, JComponent comp, GridBagConstraints c) {
+		label.setLabelFor(comp);
+		label.setHorizontalAlignment(SwingConstants.RIGHT);
+		
+		c.gridwidth = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1.0;
+		c.weighty = 0;
+		c.anchor = GridBagConstraints.EAST;
+		c.insets = new Insets(0, 8, 4, 8);
+
+		panel.add(label, c);
+		c.gridx++;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(comp, c);
+		c.gridx++;
+		
+		// end of the line!
+		if(c.gridx >= 3) {
+			c.gridx = 0;
+			c.gridy++;
+		}
+	}
+
+	private void addComments(JLabel label, String comments, GridBagConstraints c) {
+		JEditorPane comp = new JEditorPane();
+		
+		comp.setFocusable(false);
+		comp.setEditable(false);
+		comp.setOpaque(false);
+		comp.setBorder(BorderFactory.createMatteBorder(1, 1, 2, 2, Color.gray));
+		comp.setText(comments + comments + comments + comments);
+		
+		JPanel compPanel = new JPanel(new BorderLayout());
+		//compPanel.add(comp, BorderLayout.CENTER);
+		
+		label.setLabelFor(compPanel);
+		label.setHorizontalAlignment(SwingConstants.RIGHT);
+		label.setVerticalAlignment(SwingConstants.TOP);
+		label.setAlignmentY(JLabel.TOP_ALIGNMENT);
+		
+		c.gridwidth = 1;
+		c.weightx = 1.0;
+		c.weighty = 0;
+		c.anchor = GridBagConstraints.NORTHEAST;
+		c.insets = new Insets(0, 8, 0, 8);
+		
+		panel.add(label, c);
+		c.gridx++;
+		
+		c.gridwidth = 3;
+		c.weightx = c.weighty = 0;
+		c.anchor = GridBagConstraints.WEST;
+		c.fill = GridBagConstraints.BOTH;
+		panel.add(comp, c);
+		c.gridx++;
+		
+		c.gridx = 0;
+		c.gridy++;
+	}
+
+	
+	private void finishPart(GridBagConstraints c) {
+		if(c.gridx != 0) {
+			c.gridx = 0;
+			c.gridy++;
+		}
+	}
+	
+	// number of sections added so far
+	private int nsections = 0;
+	private void addTitle(String title, GridBagConstraints c, JButton editButton) {
+		JPanel titlePanel = new JPanel(new BorderLayout());
+		titlePanel.setBorder(BorderFactory.createMatteBorder(0, 2, 2, 0, Color.gray));
+
+		JLabel l = new JLabel(title);
+		l.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		l.setHorizontalAlignment(SwingConstants.LEFT);
+		
+		titlePanel.add(l, BorderLayout.WEST);
+		titlePanel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+		titlePanel.setAlignmentY(JPanel.TOP_ALIGNMENT);
+		
+		if(editButton != null) {
+			editButton.setHorizontalAlignment(SwingConstants.RIGHT);
+			titlePanel.add(editButton, BorderLayout.EAST);
+		}
+		
+		c.gridwidth = 4;
+		c.gridx = 0;
+		c.anchor = GridBagConstraints.NORTHWEST;
+		c.insets = new Insets((nsections == 0) ? 0 : 10, 0, 10, 0);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 2.0;
+		c.weighty = 0.0;
+		
+		panel.add(titlePanel, c);
+		
+		c.gridwidth = 1;
+		c.gridx = 0;
+		c.weightx = 0;
+		c.gridy++;
+		nsections++;
+	}
+		
+	private void bollocks() {
 		// make sure we're notified when the dictionary changes!
 		App.dictionary.addResourceEventListener(this);
 
@@ -535,7 +495,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 
 			// is this field a list of values?
 			if (f.isList()) {
-				p.add(makePopup(f), c);
+	//			p.add(makePopup(f), c);
 				continue;
 			} // integrate this clause into the rest...  easier once old-style-popups are all gone
 
@@ -653,7 +613,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 
 				// is this my format popup?  if so, choose the correct one...
 				if (popups.containsKey(f.getVariable())) {
-					resetPopup(f);
+//					resetPopup(f);
 					continue;
 				}
 
@@ -701,7 +661,6 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 					while(it.hasNext()) {
 						MetadataField f = MetadataTemplate.getField((String) it.next());
 						
-						resetPopup(f);
 					}					
 				}
 			});
@@ -711,6 +670,25 @@ public class MetadataPanel extends JScrollPane implements SampleListener, Resour
 	public void sampleElementsChanged(SampleEvent e) {
 	}
 
+	/**
+	 * Get a nice name for a metadata key
+	 * 
+	 * @param key
+	 * @return
+	 */
+	private static String getMetaName(String key) {
+		String ret = niceMetaName.get(key);
+		
+		return (ret == null) ? key : ret;
+	}
+	
+	private static HashMap<String, String> niceMetaName;
+	static {
+		niceMetaName = new HashMap<String, String>();
+		
+		niceMetaName.put("isreconciled", "Is reconciled");
+	}
+	
 	/*
 	 dialog layout:
 	 -- when expanded, labels don't take up extra space (good!)
