@@ -11,8 +11,10 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
 
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.editor.DecadalModel;
 import edu.cornell.dendro.corina.editor.ReconcileDataView;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -97,6 +99,20 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier {
 				
 				Center.center(dlg, glue);
 				dlg.setVisible(true);
+
+				// did we get a value?
+				Integer value = dlg.getFinalValue();
+				if(value != null) {
+					int idx = y.diff(s1.getStart());
+
+					// apply the change!
+					s1.getData().set(idx, value);
+					s2.getData().set(idx, value);
+					s1.setModified();
+					s2.setModified();
+					((DecadalModel) dv1.myTable.getModel()).fireTableDataChanged();
+					((DecadalModel) dv2.myTable.getModel()).fireTableDataChanged();
+				}
 			}
 		});
 

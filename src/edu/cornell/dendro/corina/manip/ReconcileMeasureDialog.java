@@ -13,6 +13,8 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -33,6 +35,8 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
    private Sample src, ref;
    private Year year;
    private int yearIndex;
+   
+   private Integer finalValue;
    
    private CorinaMeasuringDevice dev;
    private ArrayList<AMeasurement> measurements;
@@ -55,6 +59,10 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
        setTitle("Remeasuring for " + year + " (index " + yearIndex + ")");
        
        initialize();
+   }
+   
+   public Integer getFinalValue() {
+	   return finalValue;
    }
  
    public void receiverUpdateStatus(String status) {
@@ -120,14 +128,23 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 	   });
 	   
 	   // set up any buttons
+	   final JDialog glue = this;
 	   okBtn.addActionListener(new ActionListener() {
 			  public void actionPerformed(ActionEvent ae) {
-				  dispose();
+				  try {
+					  finalValue = Integer.valueOf(newValue.getText());
+					  dispose();
+				  } catch (NumberFormatException nfe) {
+					  JOptionPane.showMessageDialog(glue, 
+							  "Invalid integer value: " + newValue.getText(), "Error", 
+							  JOptionPane.ERROR_MESSAGE);
+				  }
 			  }
 	   });
 	   
 	   cancelBtn.addActionListener(new ActionListener() {
 			  public void actionPerformed(ActionEvent ae) {
+				  finalValue = null;
 				  dispose();
 			  }
 	   });
@@ -234,6 +251,7 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 					if(newval > 0) {
 						AMeasurement m = new AMeasurement(true, newval, "manual");
 						measurements.add(m);
+						fireTableRowsUpdated(row, row);
 					}
 				}
 				return;
@@ -244,6 +262,7 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 			switch(col) {
 			case 0:
 				m.enabled = ((Boolean) value).booleanValue();
+				fireTableCellUpdated(row, col);
 				break;
 				
 			case 1:
@@ -251,6 +270,7 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 				if(newValue != m.value) {
 					m.value = newValue; 
 					m.source = "manual";
+					fireTableRowsUpdated(row, row);
 				}
 				break;
 			}
