@@ -55,7 +55,7 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends Ba
 			Class<? extends GenericIntermediateObject> contentClass) {
 		
 		this.wizardParent = parent;
-		this.myPanel = getDialogForClass(contentClass);
+		this.myPanel = (BaseEditorPanel<OBJT>) EditorPanelFactory.createPanelForClass(contentClass);
 		this.contentClass = contentClass;
 
 		initComponents();
@@ -375,27 +375,7 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends Ba
     public void repopulate() {
     	comboPopulator.populate(parentObject);
     }
-    
-    /**
-     * Get an editor dialog for this class
-     * 
-     * @param content
-     * @return
-     */
-    private BaseEditorPanel<OBJT> getDialogForClass(Class<?> content) {
-    	if(content.equals(Site.class))
-    		return (BaseEditorPanel<OBJT>) new SiteEditorPanel();
-    	if(content.equals(Subsite.class))
-    		return (BaseEditorPanel<OBJT>) new SubsiteEditorPanel();
-    	if(content.equals(Tree.class))
-    		return (BaseEditorPanel<OBJT>) new TreeEditorPanel();
-    	if(content.equals(Specimen.class))
-    		return (BaseEditorPanel<OBJT>) new SpecimenEditorPanel();
-    	if(content.equals(Radius.class))
-    		return (BaseEditorPanel<OBJT>) new RadiusEditorPanel();
-    	return null;
-    }
-    
+        
     private Map<JTextField, Color> colorMap = new HashMap<JTextField, Color>();
     
     /**
