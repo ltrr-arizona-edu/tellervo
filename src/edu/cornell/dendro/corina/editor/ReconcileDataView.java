@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -11,6 +13,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JViewport;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -102,24 +105,35 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 		
 		if (row >= 0 && col >= 0) {
 			Year y = ((DecadalModel) myModel).getYear(row, col);
-			Set<Reconciler.FailureType> failures = reconciler.getFailuresForYear(y);
-			
-			selectionInfo.append("<b><u>" + y.toString() + ":</u></b><br>");
-			
-			// just some info
 			int idx = y.diff(newSample.getStart());
-			selectionInfo.append("ref: " + 
-					((reference.getData().size() > idx) ? reference.getData().get(idx) : "<n/a>") + 
-					"<br>");
 			
-			// now, each of the failures
-			if(failures != null) {
-				if(failures.contains(Reconciler.FailureType.THREEPERCENT)) 
-					selectionInfo.append("- <font color=red>Not within three percent of reference</font><br>");
-				if(failures.contains(Reconciler.FailureType.TRENDNEXT)) 
-					selectionInfo.append("- <font color=red>Trend to next is inverse</font><br>");
-				if(failures.contains(Reconciler.FailureType.TRENDPREV)) 
-					selectionInfo.append("- <font color=red>Trend to previous is inverse</font><br>");
+			if(idx >= 0) {
+				Set<Reconciler.FailureType> failures = reconciler.getFailuresForYear(y);
+			
+				selectionInfo.append("<b><u>" + y.toString() + ":</u></b><br>");
+			
+				// just some info
+				selectionInfo.append("ref: " + 
+						((reference.getData().size() > idx) ? reference.getData().get(idx) : "<n/a>") + 
+						"<br>");
+			
+				// now, each of the failures
+				if(failures != null) {
+					if(failures.contains(Reconciler.FailureType.THREEPERCENT)) {
+						// calculate min and max
+						float val = ((Number) reference.getData().get(idx)).floatValue();
+						float threepercent = val * 0.03f;
+						String minmax = "(" + (int) Math.floor(val - threepercent) + " - " +
+							(int) Math.ceil(val + threepercent) + ")";
+						
+						selectionInfo.append("- <font color=red>Not within three percent of reference "
+								+ minmax + "</font><br>");
+					}
+					if(failures.contains(Reconciler.FailureType.TRENDNEXT)) 
+						selectionInfo.append("- <font color=red>Trend to next is inverse</font><br>");
+					if(failures.contains(Reconciler.FailureType.TRENDPREV)) 
+						selectionInfo.append("- <font color=red>Trend to previous is inverse</font><br>");
+				}
 			}
 		}
 
@@ -132,12 +146,44 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 		doReconciliation();
 	}
 	
+	public int reconciliationErrorCount() {
+		return reconciler.getFailureCount();
+	}
+	
 	public void duplicateSelectionFrom(ReconcileDataView dataview) {
 		// update our selection
 		int row = dataview.myTable.getSelectedRow();
 		int col = dataview.myTable.getSelectedColumn();
 		
 		tableSelectionMonitor.setSelection(row, col);
+	}
+	
+	/**
+	 * From http://exampledepot.com/egs/javax.swing.table/Vis.html
+	 * @param table
+	 * @param rowIndex
+	 * @param vColIndex
+	 */
+	public void scrollToVisible(JTable table, int rowIndex, int vColIndex) {
+        if (!(table.getParent() instanceof JViewport)) {
+            return;
+        }
+        JViewport viewport = (JViewport)table.getParent();
+    
+        // This rectangle is relative to the table where the
+        // northwest corner of cell (0,0) is always (0,0).
+        Rectangle rect = table.getCellRect(rowIndex, vColIndex, true);
+    
+        // The location of the viewport relative to the table
+        Point pt = viewport.getViewPosition();
+    
+        // Translate the cell location so that it is relative
+        // to the view, assuming the northwest corner of the
+        // view is (0,0)
+        rect.setLocation(rect.x-pt.x, rect.y-pt.y);
+    
+        // Scroll the area into view
+        viewport.scrollRectToVisible(rect);
 	}
 	
     private class TableSelectionChangeListener implements ListSelectionListener {
@@ -169,6 +215,7 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
         	table.setColumnSelectionInterval(col, col);
         	
         	doReconciliation();
+        	scrollToVisible(table, row, col);
         }
         
         public void valueChanged(ListSelectionEvent e) {

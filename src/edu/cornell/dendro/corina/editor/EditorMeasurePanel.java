@@ -49,12 +49,12 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 
 		AudioClip measInit;
 		try {
-			measure_one = Applet.newAudioClip(getClass().getClassLoader().getResource("Images/meas1.wav"));
-			measure_dec = Applet.newAudioClip(getClass().getClassLoader().getResource("Images/measdec.wav"));
-			measure_error = Applet.newAudioClip(getClass().getClassLoader().getResource("Images/measerr.wav"));
+			measure_one = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Images/meas1.wav"));
+			measure_dec = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Images/measdec.wav"));
+			measure_error = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Images/measerr.wav"));
 			
 			// play this to indicate measuring is on...
-			measInit = Applet.newAudioClip(getClass().getClassLoader().getResource("Images/measinit.wav"));
+			measInit = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Images/measinit.wav"));
 			if(measInit != null)
 				measInit.play();
 		} catch (Exception ae) { /* ignore this... */ }

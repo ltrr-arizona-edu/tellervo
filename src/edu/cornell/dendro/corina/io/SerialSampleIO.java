@@ -71,6 +71,11 @@ implements SerialPortEventListener {
 
 	// clean up!
 	public void close() {
+		if(dataPort == null) {
+			System.out.println("dataport already closed; ignoring close call?");
+			return;
+		}
+		
 		System.out.println("Closing port (manual): " + dataPort.getName());
 		
 		serialState = SERIALSTATE_DIE;
