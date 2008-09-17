@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.editor;
+package edu.cornell.dendro.corina.manip;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -21,8 +21,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.manip.ReconcileNotifier;
-import edu.cornell.dendro.corina.manip.Reconciler;
+import edu.cornell.dendro.corina.editor.DecadalModel;
+import edu.cornell.dendro.corina.editor.SampleDataView;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;

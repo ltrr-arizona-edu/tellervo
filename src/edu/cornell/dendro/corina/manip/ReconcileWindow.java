@@ -5,27 +5,32 @@ import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.DecadalModel;
-import edu.cornell.dendro.corina.editor.ReconcileDataView;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
 
-public class ReconcileWindow extends XFrame implements ReconcileNotifier {
+public class ReconcileWindow extends XFrame implements ReconcileNotifier, SaveableDocument {
 	
 	private ReconcileDataView dv1, dv2;
 	private Sample s1, s2;
 	
 	private JButton showHide; // shows/hides our ref panel
+	private JButton returnToEditor;
 	private JButton saveChanges;
 	private JButton markAsReconciled;
 	private JButton remeasure;
@@ -72,24 +77,102 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier {
 		JPanel buttonPanel = new JPanel(new FlowLayout());
 		
 		showHide = new JButton(extraIsShown ? HIDE : EXPAND);
-		saveChanges = new JButton("Save changes");
+		saveChanges = new JButton("Save ref changes");
 		markAsReconciled = new JButton("Finish reconcile");
 		remeasure = new JButton("Remeasure selected");
+		returnToEditor = new JButton("Return to editor");
 		
 		// we can't do these by default
 		saveChanges.setEnabled(false);
 		markAsReconciled.setEnabled(false);
 		
-		buttonPanel.add(saveChanges);
 		buttonPanel.add(markAsReconciled);
+		buttonPanel.add(returnToEditor);
 		buttonPanel.add(Box.createHorizontalStrut(18));	
 		buttonPanel.add(remeasure);
 		buttonPanel.add(Box.createHorizontalStrut(18));		
 		buttonPanel.add(showHide);
+		buttonPanel.add(saveChanges);
 
 		// glue for our buttons...
 		final ReconcileWindow glue = this;
+
+		// call the 'close' method to potentially save any changes
+		returnToEditor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				glue.close();
+			}
+		});
 		
+		markAsReconciled.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				// reconciling doesn't make sense if we can't do this...
+				if(s2.isModified()) {
+					int ret = JOptionPane.showConfirmDialog(glue, 
+						"The reference sample has been modified.\nYou must save changes to continue.\n\n" +
+						"Would you like to save changes to it?", 
+						"Save reference?", JOptionPane.YES_NO_OPTION);
+					
+					if(ret == JOptionPane.YES_OPTION) {
+						save();
+						
+						// save failed?
+						if(s2.isModified())
+							return;
+					}
+				}
+
+				// ok, now actually mark as reconciled
+				Boolean s1rec = (Boolean) s1.getMeta("isreconciled");
+				Boolean s2rec = (Boolean) s2.getMeta("isreconciled");
+				
+				if(s1rec == null || s1rec.booleanValue() == false) {
+					s1.setMeta("isreconciled", true);
+					s1.setModified();
+				}
+				
+				// well, should we mark both as reconciled?
+				if(s2rec == null || s2rec.booleanValue() == false) {
+					int ret = JOptionPane.showConfirmDialog(glue, 
+							"The reference sample is not marked as reconciled.\n" +
+							"Would you like to mark it as such?", 
+							"Mark reference as reconciled?", JOptionPane.YES_NO_OPTION);
+					
+					if(ret == JOptionPane.YES_OPTION) {
+						s2.setMeta("isreconciled", true);
+						s2.setModified();
+						
+						// call our method that saves the reference (part of SaveableDocument)
+						save();
+
+						if(s2.isModified())
+							return;
+					}
+				}
+
+				int ret = JOptionPane.showConfirmDialog(glue, 
+						"Would you like to save your changes?\n" +
+						"(select no to save later)", 
+						"Save changes?", JOptionPane.YES_NO_OPTION);
+				
+				if(ret == JOptionPane.YES_OPTION) {
+					try {
+						s1.getLoader().save(s1);
+					} catch (IOException ioe) {
+						Alert.error("I/O Error", "There was an error while saving the sample: \n" + ioe.getMessage());
+						return;
+					} catch (Exception e) {
+						new Bug(e);
+					}
+
+					// set the necessary bits...
+					s1.clearModified();
+				}
+				
+				// and close!
+				close();
+			}
+		});
 		
 		remeasure.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -185,7 +268,46 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier {
 		dv.forceReconciliation();
 		
 		// enable our buttons?
-		saveChanges.setEnabled(s1.isModified() || s2.isModified());
+		saveChanges.setEnabled(s2.isModified());
 		markAsReconciled.setEnabled(dv1.reconciliationErrorCount() == 0 && dv2.reconciliationErrorCount() == 0);
+	}
+
+	// SaveableDocument
+	public String getDocumentTitle() {
+		return "reference sample " + (String) s2.getMeta("title");
+	}
+
+	public String getFilename() {
+		return null;
+	}
+
+	public Object getSaverClass() {
+		return null;
+	}
+
+	public boolean isNameChangeable() {
+		return false;
+	}
+
+	public boolean isSaved() {
+		return !s2.isModified();
+	}
+
+	public void save() {
+		// now, actually try and save the sample
+		try {
+			s2.getLoader().save(s2);
+		} catch (IOException ioe) {
+			Alert.error("I/O Error", "There was an error while saving the sample: \n" + ioe.getMessage());
+			return;
+		} catch (Exception e) {
+			new Bug(e);
+		}
+
+		// set the necessary bits...
+		s2.clearModified();
+	}
+	
+	public void setFilename(String fn) {
 	}
 }

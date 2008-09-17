@@ -150,6 +150,8 @@ public class CorinaXML implements Filetype {
 			
 			if(key.equals("name")) {
 				s.setMeta("title", value); // temporary; we change this later if we have a summary
+				s.setMeta("filename", 
+						((String) s.getMeta("filename")) + ": " + value); // also temporary
 				s.setMeta("name", value);
 			}
 			else if(key.equals("owner"))
@@ -158,6 +160,8 @@ public class CorinaXML implements Filetype {
 				setUserFor("author", e, s);
 			else if(key.equals("description"))
 				s.setMeta("comments", value);
+			else if(key.equals("isReconciled"))
+				s.setMeta("isreconciled", Boolean.valueOf(value));
 			else if(key.equals("lastModifiedTimeStamp")) {
 				try {
 					// chop off the milliseconds and add '00' to the end of the timezone
@@ -186,6 +190,7 @@ public class CorinaXML implements Filetype {
 				s.setMeta("::summary", ss);
 				// whoo hoo! a nice title!
 				s.setMeta("title", ss.getLabCode());
+				s.setMeta("filename", ss.getLabCode());
 			}
 			else if(key.equals("dating")) {
 				String startYear = e.getAttributeValue("startYear");
@@ -340,8 +345,8 @@ public class CorinaXML implements Filetype {
 		if(maplink != null)
 			s.setMeta("::maplink", maplink);
 		
-		s.setMeta("filename", "invalid filename");
-		s.setMeta("title", "measurement " + attr);
+		s.setMeta("title", "corina measurement " + attr);
+		s.setMeta("filename", "corina measurement " + attr);
 		
 		// load metadata
 		Element metadata = root.getChild("metadata");		
@@ -419,7 +424,7 @@ public class CorinaXML implements Filetype {
 
 		// simple name...
 		if(s.hasMeta("name")) 
-			meta.addContent(new Element("name").setText((String) s.getMeta("title")));
+			meta.addContent(new Element("name").setText((String) s.getMeta("name")));
 
 		// comments -> description
 		if(s.hasMeta("comments")) 
@@ -453,6 +458,12 @@ public class CorinaXML implements Filetype {
 			dating.setAttribute("negativeError", s.getMeta("datingErrorNegative").toString());
 		
 		meta.addContent(dating);
+		
+		// reconciled
+		if(s.hasMeta("isreconciled")) {
+			meta.addContent(new Element("isReconciled").
+					setText(s.getMeta("isreconciled").toString()));
+		}
 		
 		// these need IDs...
 		if(s.hasMeta("owner")) {

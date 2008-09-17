@@ -101,7 +101,8 @@ public class CorinaWebElement implements SampleLoader {
 		}
 		
 		// update our recently opened documents
-		OpenRecent.sampleOpened(this);
+		// no, do this where we open them!
+		//OpenRecent.sampleOpened(this);
 		
 		// and return it!
 		return ns;
