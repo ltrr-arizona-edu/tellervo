@@ -189,12 +189,15 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
     private class TableSelectionChangeListener implements ListSelectionListener {
         private JTable table;
         private ReconcileDataView dataview;
-        private int lastRow = -1;
-        private int lastCol = -1;
+        private int lastRow;
+        private int lastCol;
         
         public TableSelectionChangeListener(JTable table, ReconcileDataView dataview) {
             this.table = table;
             this.dataview = dataview;
+            
+            lastRow = table.getSelectedRow();
+            lastCol = table.getSelectedColumn();
         }
         
         /**
@@ -208,6 +211,12 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
             if(col == -1)
             	col = lastCol;
 
+            if(row < 0 || row >= table.getRowCount())
+            	return;
+            
+            if(col < 0 || col > table.getColumnCount())
+            	return;
+            
             lastRow = row;
         	table.setRowSelectionInterval(row, row);
         	

@@ -93,7 +93,10 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier {
 		
 		remeasure.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				Year y = dv1.getSelectedYear();
+				int col = dv1.myTable.getSelectedColumn();
+				int row = dv1.myTable.getSelectedRow();
+
+				Year y = ((DecadalModel) dv1.myTable.getModel()).getYear(row, col);
 				
 				ReconcileMeasureDialog dlg = new ReconcileMeasureDialog(glue, true, s1, s2, y);
 				
@@ -103,15 +106,14 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier {
 				// did we get a value?
 				Integer value = dlg.getFinalValue();
 				if(value != null) {
-					int idx = y.diff(s1.getStart());
-
-					// apply the change!
-					s1.getData().set(idx, value);
-					s2.getData().set(idx, value);
-					s1.setModified();
-					s2.setModified();
-					((DecadalModel) dv1.myTable.getModel()).fireTableDataChanged();
-					((DecadalModel) dv2.myTable.getModel()).fireTableDataChanged();
+					// kludge in some updates!
+					((DecadalModel) dv1.myTable.getModel()).setValueAt(value, row, col);
+					((DecadalModel) dv2.myTable.getModel()).setValueAt(value, row, col);
+					
+					dv1.myTable.setColumnSelectionInterval(col, col);
+					dv1.myTable.setRowSelectionInterval(row, row);
+					dv2.myTable.setColumnSelectionInterval(col, col);
+					dv2.myTable.setRowSelectionInterval(row, row);
 				}
 			}
 		});
@@ -166,8 +168,9 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier {
 		
 		// enable if it's a valid index into both datasets!
 		Year y = dv1.getSelectedYear();
+		int col = dv1.myTable.getSelectedColumn();
 		int idx = y.diff(s1.getStart());
-		remeasure.setEnabled(idx >= 0 && idx < s1.getData().size() && idx < s2.getData().size());
+		remeasure.setEnabled(col > 1 && col < 11 && idx >= 0 && idx < s1.getData().size() && idx < s2.getData().size());
 	}
 
 	public void reconcileDataChanged(ReconcileDataView dataview) {
