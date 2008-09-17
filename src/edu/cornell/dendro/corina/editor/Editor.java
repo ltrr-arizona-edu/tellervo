@@ -93,6 +93,7 @@ import edu.cornell.dendro.corina.util.DocumentListener2;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.Overwrite;
 import edu.cornell.dendro.corina.webdbi.MapLink;
+import edu.cornell.dendro.corina.io.CorinaMeasuringDevice;
 import edu.cornell.dendro.corina.io.SerialSampleIO;
 import edu.cornell.dendro.corina.Year;
 
@@ -1002,8 +1003,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// ok, start measuring, if we can!
 		SerialSampleIO dataPort;
 		try {
-			dataPort = new SerialSampleIO(App.prefs.getPref("corina.serialsampleio.port"));
-			dataPort.initialize();
+			dataPort = CorinaMeasuringDevice.initialize();
 		}
 		catch (IOException ioe) {
 			Alert.error("Couldn't start measuring", 

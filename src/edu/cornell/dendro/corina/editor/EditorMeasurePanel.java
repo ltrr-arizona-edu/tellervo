@@ -18,10 +18,10 @@ import edu.cornell.dendro.corina.ui.Builder;
  * @author Lucas Madar
  *
  */
-public class EditorMeasurePanel extends JPanel implements SerialSampleIOListener {
+public class EditorMeasurePanel extends JPanel implements CorinaMeasuringReceiver {
 	private JLabel lastMeasurement;
 	private Editor editor;
-	private SerialSampleIO port;
+	private CorinaMeasuringDevice dev;
 	
 	/* audioclips to play... */
 	private AudioClip measure_one;
@@ -32,14 +32,10 @@ public class EditorMeasurePanel extends JPanel implements SerialSampleIOListener
 		super(new FlowLayout(FlowLayout.RIGHT));
 		
 		editor = myeditor;
-		port = ioport;
 		
-		port.addSerialSampleIOListener(this);
-
 		lastMeasurement = new JLabel("[No last measurement]");
 		add(lastMeasurement);
 				
-
 		JButton leave = Builder.makeButton("stop_measuring");
 		add(leave);
 		leave.addActionListener(new AbstractAction() {
@@ -62,49 +58,40 @@ public class EditorMeasurePanel extends JPanel implements SerialSampleIOListener
 			if(measInit != null)
 				measInit.play();
 		} catch (Exception ae) { /* ignore this... */ }
+		
+		// now, watch for info!
+		dev = new CorinaMeasuringDevice(ioport, this);
+	}
+	
+	public void receiverUpdateStatus(String status) {
+		lastMeasurement.setText(status);
+	}
+	
+	public void receiverNewMeasurement(Integer value) {
+		// this is an error; don't allow the measurement and play a bad noise.
+		if(value.intValue() == 0 || value.intValue() > 9900) {
+			if(measure_error != null)
+				measure_error.play();
+			
+			lastMeasurement.setText("[Last measurement (error): " + value + "]");
+
+			return;
+		}
+		
+		Year y = editor.measured(value.intValue());
+		
+		if(y.column() == 0) {
+			if(measure_dec != null)
+				measure_dec.play();
+		} else {
+			if(measure_one != null)
+				measure_one.play();				
+		}
+		
+		lastMeasurement.setText("[Last measurement: " + value + " in " + y.toString() + "]");		
 	}
 	
 	public void cleanup() {
-		port.close();
-	}
-	
-	public void SerialSampleIONotify(SerialSampleIOEvent sse) {
-		if(sse.getType() == SerialSampleIOEvent.BAD_SAMPLE_EVENT) {
-			lastMeasurement.setText("There was an error reading the previous sample!");
-		}
-		if(sse.getType() == SerialSampleIOEvent.ERROR) {
-			lastMeasurement.setText((String) sse.getValue());
-		}
-		else if(sse.getType() == SerialSampleIOEvent.INITIALIZING_EVENT) {
-			lastMeasurement.setText("Initializing reader (try "+ sse.getValue() +")");
-		}
-		else if(sse.getType() == SerialSampleIOEvent.INITIALIZED_EVENT) {
-			lastMeasurement.setText("Initialized reader. Ready to read samples.");
-		}
-		else if(sse.getType() == SerialSampleIOEvent.NEW_SAMPLE_EVENT) {
-			Integer value = (Integer) sse.getValue();
-			
-			// this is an error; don't allow the measurement and play a bad noise.
-			if(value.intValue() == 0 || value.intValue() > 9900) {
-				if(measure_error != null)
-					measure_error.play();
-				
-				lastMeasurement.setText("[Last measurement (error): " + value + "]");
-
-				return;
-			}
-			
-			Year y = editor.measured(value.intValue());
-			
-			if(y.column() == 0) {
-				if(measure_dec != null)
-					measure_dec.play();
-			} else {
-				if(measure_one != null)
-					measure_one.play();				
-			}
-			
-			lastMeasurement.setText("[Last measurement: " + value + " in " + y.toString() + "]");
-		}
+		dev.close();
 	}
 }
