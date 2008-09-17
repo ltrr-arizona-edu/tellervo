@@ -18,7 +18,7 @@ import edu.cornell.dendro.corina.ui.Builder;
  * @author Lucas Madar
  *
  */
-public class EditorMeasurePanel extends JPanel implements CorinaMeasuringReceiver {
+public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 	private JLabel lastMeasurement;
 	private Editor editor;
 	private CorinaMeasuringDevice dev;

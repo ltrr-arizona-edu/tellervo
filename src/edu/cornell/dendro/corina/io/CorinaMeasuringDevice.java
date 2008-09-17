@@ -7,7 +7,7 @@ import edu.cornell.dendro.corina.core.App;
 
 public class CorinaMeasuringDevice implements SerialSampleIOListener {
 	private SerialSampleIO port;
-	private CorinaMeasuringReceiver receiver;
+	private MeasurementReceiver receiver;
 	
 	/**
 	 * Opens a dataport for passing to a measuring device object!
@@ -23,7 +23,7 @@ public class CorinaMeasuringDevice implements SerialSampleIOListener {
 		return dataPort;
 	}
 	
-	public CorinaMeasuringDevice(SerialSampleIO port, CorinaMeasuringReceiver receiver) {
+	public CorinaMeasuringDevice(SerialSampleIO port, MeasurementReceiver receiver) {
 		this.port = port;
 		this.receiver = receiver;
 		
