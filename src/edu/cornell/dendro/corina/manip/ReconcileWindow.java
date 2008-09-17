@@ -56,7 +56,6 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier {
 		return p;
 	}
 
-	@Override
 	public void reconcileSelectionChanged(ReconcileDataView dataview) {
 		ReconcileDataView dv;
 		
@@ -69,7 +68,6 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier {
 		dv.duplicateSelectionFrom(dataview);
 	}
 
-	@Override
 	public void reconcileDataChanged(ReconcileDataView dataview) {
 		ReconcileDataView dv;
 		
