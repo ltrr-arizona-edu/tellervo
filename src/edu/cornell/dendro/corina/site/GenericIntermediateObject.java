@@ -66,6 +66,16 @@ public abstract class GenericIntermediateObject {
 		return 0;
 	}
 	
+	/**
+	 * Takes obj's identity
+	 * 
+	 * @param obj
+	 */
+	public void assimilateIntermediateObject(GenericIntermediateObject obj) {
+		this.id = obj.id;
+		this.resourceIdentifier = obj.resourceIdentifier;
+	}
+	
 	public ResourceIdentifier getResourceIdentifier() {
 		return resourceIdentifier;
 	}
