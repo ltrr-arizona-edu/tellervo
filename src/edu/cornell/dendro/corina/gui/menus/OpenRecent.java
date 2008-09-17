@@ -28,7 +28,9 @@ import java.io.StringReader;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.swing.AbstractAction;
@@ -47,6 +49,7 @@ import edu.cornell.dendro.corina.gui.CanOpener;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.FileElement;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -84,7 +87,7 @@ public class OpenRecent {
 	private final static int NUMBER_TO_REMEMBER = 10;
 
 	// list of loaders, most-recent-first
-	private static List<Object> recent;
+	private static Map<String, List<Object> > recentMap = new HashMap<String, List<Object> >();
 
 	// list of created menus -- soft references
 	private static List<WeakReference<JMenu>> menus = new ArrayList<WeakReference<JMenu>>();
@@ -92,17 +95,26 @@ public class OpenRecent {
 	// on class load: load previous recent-list from system property into static
 	// structure
 	static {
-		loadList();
+		loadList("documents");
+		loadList("reconcile");
 	}
 
+	public static void fileOpened(String filename) {
+		fileOpened(filename, "documents");
+	}
+	
 	/**
 	 * Indicate to the recent-file list that a file was just opened. This also
 	 * updates every recent-file menu automatically.
 	 * 
 	 * @param filename
 	 *            the (full) name of the file that was opened
+	 * @param tag
+	 * 			  the tag associated with this (e.g., documents, reconcile, etc)
 	 */
-	public static void fileOpened(String filename) {
+	public static void fileOpened(String filename, String tag) {
+		List<Object> recent = getListForTag(tag);
+		
 		// if already in spot #0, don't need to do anything
 		if (!recent.isEmpty() && recent.get(0).equals(filename))
 			return;
@@ -121,9 +133,13 @@ public class OpenRecent {
 		updateAllMenus();
 
 		// update disk
-		saveList();
+		saveList(tag);
 	}
 
+	public static void sampleOpened(SampleLoader sl) {
+		sampleOpened(sl, "documents");
+	}
+	
 	/**
 	 * Indicate to the recent-file list that a file was just opened. This also
 	 * updates every recent-file menu automatically.
@@ -131,7 +147,9 @@ public class OpenRecent {
 	 * @param sl the sample loader associated with this object
 	 *            the (full) name of the file that was opened
 	 */
-	public static void sampleOpened(SampleLoader sl) {
+	public static void sampleOpened(SampleLoader sl, String tag) {
+		List<Object> recent = getListForTag(tag);
+
 		// cache some useful stuff...
 		LoaderHolder lh = new LoaderHolder();
 		lh.loader = sl;
@@ -155,18 +173,26 @@ public class OpenRecent {
 		updateAllMenus();
 
 		// update disk
-		saveList();
+		saveList(tag);
 	}
 
+
+	public static JMenu makeOpenRecentMenu() {
+		return makeOpenRecentMenu("documents", null, null);
+	}
 	
 	/**
 	 * Generate a new recent-file menu. This menu will contain the names of (up
 	 * to) the last 4 files opened. As long as the menu returned by this method
 	 * is referenced, it will automatically be kept updated.
 	 */
-	public static JMenu makeOpenRecentMenu() {
-		// create a new menu
-		JMenu menu = Builder.makeMenu("open_recent");
+	public static JMenu makeOpenRecentMenu(String tag, JMenu menu, Integer itemsToKeep) {
+		// create a new menu if we have to
+		if(menu == null)
+			menu = Builder.makeMenu("open_recent");
+		
+		menu.putClientProperty("corina.open_recent_tag", tag);
+		menu.putClientProperty("corina.open_recent_itemsToKeep", itemsToKeep);
 
 		// generate its elements
 		updateMenu(menu);
@@ -178,6 +204,20 @@ public class OpenRecent {
 		return menu;
 	}
 
+	/**
+	 * Create or retrieve a list for a tag
+	 */
+	private static List<Object> getListForTag(String tag) {
+		List<Object> l = recentMap.get(tag);
+		
+		if(l == null) {
+			l = new ArrayList<Object>();
+			recentMap.put(tag, l);
+		}
+		
+		return l;
+	}
+	
 	// update all existing open-recent menus. if any has since
 	// disappeared, remove it from my list.
 	private static void updateAllMenus() {
@@ -246,19 +286,42 @@ public class OpenRecent {
 	 * Actually open the file
 	 * @param o
 	 */
-	private static void doOpen(Object o) throws IOException {
+	private static void doOpen(Object o, Object opener) throws IOException {
 		if(o instanceof LoaderHolder) {
-			new Editor(((LoaderHolder) o).loader.load());
+			if(opener == null)
+				opener = defaultSampleOpener;
+			
+			((SampleOpener)opener).performOpen(((LoaderHolder) o).loader.load());
 			return;
 		}
 
 		CanOpener.open(o.toString());		
 	}
 
+	public static class SampleOpener {
+		public void performOpen(Sample s) {
+			new Editor(s);
+		}
+	}
+	
+	private static SampleOpener defaultSampleOpener = new SampleOpener();
+	
 	// BUG: error handling in here is miserable-to-nonexistant
-	private static void updateMenu(JMenu menu) {
+	private static void updateMenu(final JMenu menu) {
+		String possibleTag = (String) menu.getClientProperty("corina.open_recent_tag");
+		final String tag = (possibleTag == null) ? "documents" : possibleTag;
+		final List<Object> recent = getListForTag(tag);
 		
-		menu.removeAll();
+		Integer itemsToKeep = (Integer) menu.getClientProperty("corina.open_recent_itemsToKeep");
+
+		// clear the bottom n items from the menu
+		if(itemsToKeep != null) {
+			while(menu.getMenuComponentCount() > itemsToKeep)
+				menu.remove(itemsToKeep);
+		}
+		else
+			menu.removeAll();
+		
 		for (int i = 0; i < recent.size(); i++) {
 			Object o = recent.get(i);
 			String menuDesc = getDescription(o);
@@ -269,7 +332,7 @@ public class OpenRecent {
 				// todo: if already open, just toFront() it!
 				public void actionPerformed(ActionEvent e) {
 					try {
-						doOpen(recent.get(glue));
+						doOpen(recent.get(glue), menu.getClientProperty("corina.open_recent_action"));
 					} catch (FileNotFoundException fnfe) {
 						// file moved?
 						Alert.error("File Isn't There", "The file called '" + recent.get(glue) + "'\n"
@@ -313,7 +376,7 @@ public class OpenRecent {
 				public void actionPerformed(ActionEvent e) {
 					recent.clear();
 					updateAllMenus();
-					saveList();
+					saveList(tag);
 				}
 			});
 			menu.addSeparator();
@@ -323,13 +386,13 @@ public class OpenRecent {
 
 	// load recent-list from |corina.recent.files|.
 	// only called on class-load, so doesn't need to be synch.
-	private static void loadList() {
+	private static void loadList(String tag) {
 		// create recent list
-		recent = new ArrayList<Object>();
+		List<Object> recent = getListForTag(tag);
 
 		// use "?" as a separator, as it's illegal in both filenames and XML
 		// TODO: Make this less kludgier!
-		StringTokenizer tok = new StringTokenizer(App.prefs.getPref("corina.recent.documents", ""), "?");
+		StringTokenizer tok = new StringTokenizer(App.prefs.getPref("corina.recent." + tag, ""), "?");
 
 		// add all files to recent
 		while (tok.hasMoreTokens()) {
@@ -358,8 +421,9 @@ public class OpenRecent {
 		}
 	}
 
-	// store the recent-list in a string, in |corina.recent.files|
-	private static synchronized void saveList() {
+	// store the recent-list in a string, in |corina.recent.<tag>|
+	private static synchronized void saveList(String tag) {
+		List<Object> recent = getListForTag(tag);
 		StringBuffer buf = new StringBuffer();
 
 		char sep = '?';
@@ -371,7 +435,7 @@ public class OpenRecent {
 		}
 
 		// store in pref
-		App.prefs.setPref("corina.recent.documents", buf.toString());
+		App.prefs.setPref("corina.recent." + tag, buf.toString());
 	}
 
 	// kludge!

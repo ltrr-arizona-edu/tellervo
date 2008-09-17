@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -14,7 +15,7 @@ import edu.cornell.dendro.corina.editor.ReconcileDataView;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.sample.Sample;
 
-public class ReconcileWindow extends XFrame {
+public class ReconcileWindow extends XFrame implements ReconcileNotifier {
 	
 	private ReconcileDataView dv1, dv2;
 	
@@ -24,7 +25,12 @@ public class ReconcileWindow extends XFrame {
 		dv1 = new ReconcileDataView(s1, s2);
 		dv2 = new ReconcileDataView(s2, s1);
 		
+		dv1.setReconcileNotifier(this);
+		dv2.setReconcileNotifier(this);
+		
 		JPanel reconcilePanel = new JPanel(new FlowLayout());
+		
+		JSeparator sep = new JSeparator(JSeparator.VERTICAL);
 		
 		reconcilePanel.add(createReconcilePane(s1, dv1));
 		reconcilePanel.add(new JSeparator(JSeparator.VERTICAL));
@@ -43,13 +49,36 @@ public class ReconcileWindow extends XFrame {
 		
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		
-		JLabel title = new JLabel(s.toString());
-		title.setAlignmentX(LEFT_ALIGNMENT);
+		p.setBorder(BorderFactory.createTitledBorder(s.toString()));
 		
-		p.add(title);
 		p.add(dv);
-		p.add(Box.createVerticalGlue());
 		
 		return p;
+	}
+
+	@Override
+	public void reconcileSelectionChanged(ReconcileDataView dataview) {
+		ReconcileDataView dv;
+		
+		// we want to notify the other reconciler
+		if(dataview == dv1)
+			dv = dv2;
+		else
+			dv = dv1;
+		
+		dv.duplicateSelectionFrom(dataview);
+	}
+
+	@Override
+	public void reconcileDataChanged(ReconcileDataView dataview) {
+		ReconcileDataView dv;
+		
+		// we want to notify the other reconciler
+		if(dataview == dv1)
+			dv = dv2;
+		else
+			dv = dv1;
+		
+		dv.forceReconciliation();
 	}
 }

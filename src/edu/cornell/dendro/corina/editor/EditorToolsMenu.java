@@ -170,7 +170,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		crossElements.setEnabled(false);
 
 		// reconcile
-		JMenuItem reconcile = Builder.makeMenuItem("reconcile", true, "reconcile.png");
+		JMenuItem reconcile = Builder.makeMenuItem("new_reconcile", true, "reconcile.png");
 		reconcile.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				DBBrowser browser = new DBBrowser(editor, true, false);
@@ -199,7 +199,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 						return;
 					}
 
-					OpenRecent.sampleOpened(reference.getLoader());
+					OpenRecent.sampleOpened(reference.getLoader(), "reconcile");
 					
 					// open it for fun times
 					Center.center(new ReconcileWindow(sample, reference), editor);
@@ -216,7 +216,19 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 					 */
 			}
 		});
-		add(reconcile);
+		
+		// now, make this remember the last things we reconciled against!
+		JMenu reconcileMenu = Builder.makeMenu("reconcile");
+		reconcileMenu.putClientProperty("corina.open_recent_action", new OpenRecent.SampleOpener() {
+			@Override
+			public void performOpen(Sample s) {
+				Center.center(new ReconcileWindow(sample, s), editor);				
+			}
+		});
+		reconcileMenu.add(reconcile);
+		reconcileMenu.addSeparator();
+		OpenRecent.makeOpenRecentMenu("reconcile", reconcileMenu, 2);
+		add(reconcileMenu);
 
 		// hit them so they enable/disable themselves properly
 		sampleMetadataChanged(null);

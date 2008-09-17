@@ -18,6 +18,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.manip.ReconcileNotifier;
 import edu.cornell.dendro.corina.manip.Reconciler;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -33,6 +34,8 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 
 	private Sample newSample, reference;
 	private Reconciler reconciler;
+	private ReconcileNotifier notifier;
+	private TableSelectionChangeListener tableSelectionMonitor;
 	
 	public ReconcileDataView(Sample newSample, Sample reference) {
 		super(newSample);		
@@ -59,10 +62,13 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 			myTable.getColumnModel().getColumn(i).setCellRenderer(rr);		
 		
 		// make sure we're aware of selection changes
-		TableSelectionChangeListener listener = new TableSelectionChangeListener(myTable);
-	    myTable.getSelectionModel().addListSelectionListener(listener);
+		tableSelectionMonitor = new TableSelectionChangeListener(myTable, this);
+	    myTable.getSelectionModel().addListSelectionListener(tableSelectionMonitor);
 	    myTable.getColumnModel().getSelectionModel()
-	        .addListSelectionListener(listener);
+	        .addListSelectionListener(tableSelectionMonitor);
+	    
+	    // this column is useless in this case and just takes up space!
+	    myTable.getColumnModel().removeColumn(myTable.getColumnModel().getColumn(11));
 		
 		add(reconcileInfo, BorderLayout.EAST);
 	}
@@ -118,29 +124,64 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 		}
 
 		reconcileInfo.setText(reconcileIntro + warnings.toString()
-				+ selectionInfo.toString());
+				+ selectionInfo.toString());		
+	}
+	
+	public void forceReconciliation() {
+		reconciler.rereconcile();
+		doReconciliation();
+	}
+	
+	public void duplicateSelectionFrom(ReconcileDataView dataview) {
+		// update our selection
+		int row = dataview.myTable.getSelectedRow();
+		int col = dataview.myTable.getSelectedColumn();
+		
+		tableSelectionMonitor.setSelection(row, col);
 	}
 	
     private class TableSelectionChangeListener implements ListSelectionListener {
         private JTable table;
+        private ReconcileDataView dataview;
         private int lastRow = -1;
         private int lastCol = -1;
         
-        public TableSelectionChangeListener(JTable table) {
+        public TableSelectionChangeListener(JTable table, ReconcileDataView dataview) {
             this.table = table;
+            this.dataview = dataview;
+        }
+        
+        /**
+         * Set the row and column without firing the listener
+         * @param row
+         * @param col
+         */
+        public void setSelection(int row, int col) {
+            if(row == -1)
+            	row = lastRow;
+            if(col == -1)
+            	col = lastCol;
+
+            lastRow = row;
+        	table.setRowSelectionInterval(row, row);
+        	
+        	lastCol = col;
+        	table.setColumnSelectionInterval(col, col);
+        	
+        	doReconciliation();
         }
         
         public void valueChanged(ListSelectionEvent e) {
-            if (e.getValueIsAdjusting())
-            	return;
-            
             int row = table.getSelectedRow();
             int col = table.getSelectedColumn();
-            
+                       
             // changed?
             if(row != lastRow || col != lastCol) {
             	lastRow = row;
             	lastCol = col;
+            	
+            	if(notifier != null)
+            		notifier.reconcileSelectionChanged(dataview);
             	
             	doReconciliation();
             }
@@ -191,12 +232,16 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 	public void sampleRedated(SampleEvent e) {
 		reconciler.rereconcile();
 		doReconciliation();
+		if(notifier != null)
+			notifier.reconcileDataChanged(this);
 		super.sampleRedated(e);
 	}
 
 	public void sampleDataChanged(SampleEvent e) {
 		reconciler.rereconcile();
 		doReconciliation();
+		if(notifier != null)
+			notifier.reconcileDataChanged(this);
 		super.sampleDataChanged(e);
 	}
 
@@ -206,5 +251,10 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 
 	public void sampleElementsChanged(SampleEvent e) {
 		super.sampleElementsChanged(e);
+	}
+	
+	// ReconcileNotifier stuff
+	public void setReconcileNotifier(ReconcileNotifier notifier) {
+		this.notifier = notifier;
 	}
 }
