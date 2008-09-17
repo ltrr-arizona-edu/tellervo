@@ -137,7 +137,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	// WRITEME: add lazy-loaders here.
 	// WRITEME: and don't load on construction!
 
-	private Vector listeners = new Vector();
+	private Vector<SampleListener> listeners = new Vector<SampleListener>();
 
 	/* FUTURE: */
 	private UndoableEditSupport undoSupport = new UndoableEditSupport();
@@ -272,9 +272,9 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	// painless.  (this was taken from a web page -- url?)
 	private void fireSampleEvent(String method) {
 		// alert all listeners
-		Vector l;
+		Vector<SampleListener> l;
 		synchronized (this) {
-			l = (Vector) listeners.clone();
+			l = (Vector<SampleListener>) listeners.clone();
 		}
 
 		int size = l.size();
@@ -287,7 +287,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		try {
 
 			// **
-			Class types[] = new Class[] { SampleEvent.class };
+			Class<?> types[] = new Class[] { SampleEvent.class };
 			Method m = SampleListener.class.getMethod(method, types);
 			Object args[] = new Object[] { e };
 
@@ -299,6 +299,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 				m.invoke(listener, args);
 			}
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			// BUG: these exceptions are caught too coursely!
 
 			// just ignore them all... (?)
