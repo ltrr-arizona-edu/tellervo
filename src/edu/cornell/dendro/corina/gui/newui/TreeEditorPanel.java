@@ -139,6 +139,7 @@ public class TreeEditorPanel extends BaseEditorPanel<Tree> {
 		
 	public void commit() {
 		Tree tree = new Tree(Tree.ID_NEW, txtTreeName.getText());
+		assimilateUpdateObject(tree);
     	IntermediateResource ir = new IntermediateResource(getParentObject(), tree);
 
     	// populate the tree... 
@@ -160,7 +161,7 @@ public class TreeEditorPanel extends BaseEditorPanel<Tree> {
     	else if(liveTree.equalsIgnoreCase("No"))
     		tree.setIsLiveTree(false);
     	
-    	if(!createObject(ir))
+    	if(!createOrUpdateObject(ir))
     		return;
     	
 		if(ir.getObject().get(0) instanceof Tree) {

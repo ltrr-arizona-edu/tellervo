@@ -37,6 +37,8 @@ public abstract class BaseEditorPanel<OBJT> extends BasePanel {
 	private OBJT newObject;
 	// our parent object, if any
 	private Object parentObject;
+	// the object we're updating (instead of creating), if any
+	private Object updatingObject;
 	
 	// did we succeed in our create query?
 	private boolean succeeded = false;
@@ -107,7 +109,7 @@ public abstract class BaseEditorPanel<OBJT> extends BasePanel {
 	 * @param resource
 	 * @returns true if success
 	 */
-	protected boolean createObject(IntermediateResource resource) {
+	protected boolean createOrUpdateObject(IntermediateResource resource) {
 		PrototypeLoadDialog dlg = new PrototypeLoadDialog(resource);
 		
 		// start our query (remotely)
@@ -204,6 +206,32 @@ public abstract class BaseEditorPanel<OBJT> extends BasePanel {
 	// apply any defaults from this object
 	public void setDefaultsFrom(OBJT obj) {
 		
+	}
+	
+	/**
+	 * Causes the dialog to update the resource given instead of
+	 * creating a new resource.
+	 * 
+	 * @param obj
+	 */
+	public void setUpdateObject(OBJT obj) {
+		if(obj instanceof GenericIntermediateObject) {
+			if(((GenericIntermediateObject) obj).isNew())
+				throw new IllegalArgumentException("Trying to create an update dialog for a new resource!");
+		}
+		
+		updatingObject = obj;
+	}
+	
+	/**
+	 * Steal the identify of our updating object, if it's set
+	 * @param obj
+	 */
+	protected void assimilateUpdateObject(OBJT obj) {
+		if(updatingObject == null)
+			return;
+		
+		((GenericIntermediateObject) obj).assimilateIntermediateObject((GenericIntermediateObject) updatingObject);
 	}
 	
 	/**

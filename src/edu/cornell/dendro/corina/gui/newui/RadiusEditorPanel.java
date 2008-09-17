@@ -66,9 +66,10 @@ public class RadiusEditorPanel extends BaseEditorPanel<Radius> {
     
     public void commit() {
     	Radius radius = new Radius(Radius.ID_NEW, txtRadiusName.getText());
+    	assimilateUpdateObject(radius);
     	IntermediateResource ir = new IntermediateResource(getParentObject(), radius);
     	
-       	if(!createObject(ir))
+       	if(!createOrUpdateObject(ir))
     		return;
     	
 		if(ir.getObject().get(0) instanceof Radius) {

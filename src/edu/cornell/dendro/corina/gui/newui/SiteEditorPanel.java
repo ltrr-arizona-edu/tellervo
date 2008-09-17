@@ -80,9 +80,10 @@ public class SiteEditorPanel extends BaseEditorPanel<Site> {
 	
     public void commit() {
     	Site site = new Site(Site.ID_NEW, txtSiteName.getText(), txtSiteCode.getText());
+    	assimilateUpdateObject(site);
     	IntermediateResource ir = new IntermediateResource((Site) null, site);
     	
-    	if(!createObject(ir))
+    	if(!createOrUpdateObject(ir))
     		return;
 
 		if(ir.getObject().get(0) instanceof Site) {

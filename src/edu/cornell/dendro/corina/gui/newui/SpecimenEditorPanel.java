@@ -197,6 +197,7 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
     
 	public void commit() {
 		Specimen sp = new Specimen(Specimen.ID_NEW, txtSpecimenName.getText());
+    	assimilateUpdateObject(sp);
     	IntermediateResource ir = new IntermediateResource(getParentObject(), sp);
     	
     	if(cboSpecimenType.getSelectedItem() instanceof SpecimenType)
@@ -236,7 +237,7 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
     		sp.setIsUnmeasuredPostVerified(chkUnmeasPostVerified.isSelected());
     	}
 
-    	if(!createObject(ir))
+    	if(!createOrUpdateObject(ir))
     		return;
     	
 		if(ir.getObject().get(0) instanceof Specimen) {

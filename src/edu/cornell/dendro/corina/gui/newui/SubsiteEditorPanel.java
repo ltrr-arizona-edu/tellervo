@@ -72,16 +72,19 @@ public class SubsiteEditorPanel extends BaseEditorPanel<Subsite> {
     
     public void commit() {
     	Subsite subsite = new Subsite(Subsite.ID_NEW, txtSubsiteName.getText());
+    	assimilateUpdateObject(subsite);
     	IntermediateResource ir = new IntermediateResource(getParentObject(), subsite);
 
-    	if(!createObject(ir))
+    	if(!createOrUpdateObject(ir))
     		return;
     	
 		// add the subsite to the parent site, sort, and 
 		if(ir.getObject().get(0) instanceof Subsite) {
 			setNewObject((Subsite) ir.getObject().get(0));
-			((Site)getParentObject()).addSubsite(getNewObject());
-			((Site)getParentObject()).sortSubsites();
+			if(getParentObject() != null) {
+				((Site)getParentObject()).addSubsite(getNewObject());
+				((Site)getParentObject()).sortSubsites();
+			}
 		}
 		
     	dispose();
