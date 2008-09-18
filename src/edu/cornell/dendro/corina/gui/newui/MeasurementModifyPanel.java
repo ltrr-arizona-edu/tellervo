@@ -146,7 +146,6 @@ public class MeasurementModifyPanel extends BaseEditorPanel<GenericIntermediateO
     	
     	// name is important, title is not
     	setMetaMod("name", txtMeasurementName.getText());
-    	setMetaMod("title", txtMeasurementName.getText());
     	  	
     	String datingType = cboDatingType.getSelectedItem().toString();
     	if(datingType.equalsIgnoreCase("absolute"))
