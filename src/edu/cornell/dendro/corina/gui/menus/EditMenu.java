@@ -94,6 +94,7 @@ public class EditMenu extends JMenu {
         addSelectAll();
 
         addPreferences();
+        addAdmin();
     }
 
     protected void addUndoRedo() {
@@ -138,5 +139,11 @@ public class EditMenu extends JMenu {
                                                    "edu.cornell.dendro.corina.prefs.PrefsDialog.showPreferences()", "advancedsettings.png");
             add(prefs);
         }
+    }
+    
+    protected void addAdmin(){
+        JMenuItem prefs = Builder.makeMenuItem("admin",
+                                               "edu.cornell.dendro.corina.gui.AdminPanel.main()", "agent.png");
+        add(prefs);
     }
 }
