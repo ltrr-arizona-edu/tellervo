@@ -203,7 +203,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 		gioComponentMap.put("specimen.toString", b);
 		addPair(a, b, c);
 		
-		a = new JLabel("db id:");
+		a = new JLabel("DB ID:");
 		b = new JLabel();
 		gioComponentMap.put("specimen.getID", b);
 		addPair(a, b, c);
@@ -262,7 +262,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 		b = new JLabel();
 		gioComponentMap.put("specimen.getUnmeasuredPre", b);
 		addPair(a, b, c);
-		a = new JLabel("upre verified:");
+		a = new JLabel("U. Pre verified:");
 		b = new JLabel();
 		gioComponentMap.put("specimen.getIsUnmeasuredPreVerified", b);
 		addPair(a, b, c);
@@ -271,7 +271,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 		b = new JLabel();
 		gioComponentMap.put("specimen.getUnmeasuredPost", b);
 		addPair(a, b, c);
-		a = new JLabel("upost verified:");
+		a = new JLabel("U. Post verified:");
 		b = new JLabel();
 		gioComponentMap.put("specimen.getIsUnmeasuredPostVerified", b);
 		addPair(a, b, c);
