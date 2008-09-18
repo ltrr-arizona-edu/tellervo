@@ -367,6 +367,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 	
 	private void addMetadata(GridBagConstraints c) {
 		JButton edit = new JButton("edit");
+		bindEditButton(edit, null);
 		addTitle("Measurement Metadata", c, edit);
 
 		metaComponentMap = new HashMap<String, JComponent>();

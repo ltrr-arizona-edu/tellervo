@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 
 import edu.cornell.dendro.corina.gui.newui.BaseEditorPanel;
 import edu.cornell.dendro.corina.gui.newui.EditorPanelFactory;
+import edu.cornell.dendro.corina.gui.newui.MeasurementModifyPanel;
 import edu.cornell.dendro.corina.gui.newui.WizardChildMonitor;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
@@ -34,11 +35,16 @@ public class IntermediateEditorDialog extends JDialog implements WizardChildMoni
 
 	private void initialize() {
 		// set up our editor panel
-		GenericIntermediateObject obj = (GenericIntermediateObject) sample.getMeta(metaKey);
-		editor = (BaseEditorPanel<GenericIntermediateObject>) EditorPanelFactory.createPanelForClass(obj.getClass());
-		editor.setDefaultsFrom(obj); // copy defaults
-		editor.setUpdateObject(obj); // update this object
-		editor.populate("Lab Prefix-");
+		if(metaKey == null) {
+			editor = new MeasurementModifyPanel(sample);
+		}
+		else {
+			GenericIntermediateObject obj = (GenericIntermediateObject) sample.getMeta(metaKey);
+			editor = (BaseEditorPanel<GenericIntermediateObject>) EditorPanelFactory.createPanelForClass(obj.getClass());
+			editor.setDefaultsFrom(obj); // copy defaults
+			editor.setUpdateObject(obj); // update this object
+			editor.populate("Lab Prefix-");
+		}
 		
 		// now, design the dialog
 		JPanel content = new JPanel(new BorderLayout());
@@ -63,7 +69,8 @@ public class IntermediateEditorDialog extends JDialog implements WizardChildMoni
 				editor.commit();
 				
 				if(editor.didSucceed()) {
-					sample.setMeta(metaKey, editor.getNewObject());
+					if(metaKey != null)
+						sample.setMeta(metaKey, editor.getNewObject());
 					sample.fireSampleMetadataChanged();
 					dispose();
 				}
@@ -83,5 +90,7 @@ public class IntermediateEditorDialog extends JDialog implements WizardChildMoni
 
 	public void notifyChildFormStateChanged() {
 		boolean readyToGo = editor.isFormValidated();
+		
+		okButton.setEnabled(readyToGo);
 	}
 }

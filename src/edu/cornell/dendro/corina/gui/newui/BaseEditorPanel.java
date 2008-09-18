@@ -41,7 +41,8 @@ public abstract class BaseEditorPanel<OBJT> extends BasePanel {
 	private Object updatingObject;
 	
 	// did we succeed in our create query?
-	private boolean succeeded = false;
+	// normally, we shouldn't touch this!
+	protected boolean succeeded = false;
 	
 	/**
 	 * Set the new object to create
