@@ -60,6 +60,7 @@ public class DBBrowser extends javax.swing.JDialog{
     
     public DBBrowser(java.awt.Frame parent, boolean modal) {
     	this(parent, modal, false);
+    	
     }
     
     /** Creates new form */
@@ -120,9 +121,9 @@ public class DBBrowser extends javax.swing.JDialog{
            		lstSites.clearSelection();
         		populateSiteList();
         	}
-        	
         });
-               
+     
+        txtFilterInput.requestFocusInWindow();
     }
     
     protected boolean finish() {
