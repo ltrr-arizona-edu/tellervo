@@ -316,8 +316,12 @@ public class OpenRecent {
 			this.tag = tag;
 		}
 		
+		public String getTag() {
+			return tag;
+		}
+		
 		public void performOpen(Sample s) {
-			OpenRecent.sampleOpened(s.getLoader(), tag);
+			OpenRecent.sampleOpened(s.getLoader(), getTag());
 			new Editor(s);
 		}
 	}
