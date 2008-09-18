@@ -26,6 +26,7 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -37,8 +38,10 @@ import javax.swing.table.DefaultTableColumnModel;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.SiteRegion;
 import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleSummary;
 import edu.cornell.dendro.corina.site.Site;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -63,11 +66,27 @@ public class DBBrowser extends javax.swing.JDialog{
     	
     }
     
-    /** Creates new form */
+    /** Creates new form as child of Frame */    
     public DBBrowser(java.awt.Frame parent, boolean modal, boolean openMulti) {
         super(parent, modal);
         initComponents();
         
+        initialize(openMulti);
+    }
+
+    public DBBrowser(java.awt.Dialog parent, boolean modal) {
+    	this(parent, modal, false);
+    }
+    
+    /** Creates new form  as child of dialog */
+    public DBBrowser(java.awt.Dialog parent, boolean modal, boolean openMulti) {
+        super(parent, modal);
+        initComponents();
+        
+        initialize(openMulti);
+    }
+
+    private void initialize(boolean openMulti) {
         selectedElements = new ElementList();
         
         isMultiDialog = openMulti;
@@ -124,6 +143,44 @@ public class DBBrowser extends javax.swing.JDialog{
         });
      
         txtFilterInput.requestFocusInWindow();
+    }
+
+    /**
+     * Fully loads all elements back into the list
+     * Only works for multi dialogs
+     * @return
+     */
+    public boolean loadAllElements() {
+    	if(!isMultiDialog)
+    		return false;
+  
+    	int nloaded = 0;
+    	
+    	for(int i = 0; i < selectedElements.size(); i++) {
+    		Element e = selectedElements.get(i);
+    		Sample s;
+    		
+    		try {
+    			s = e.load();
+    			nloaded++;
+    		} catch (IOException ioe) {
+    			int ret = JOptionPane.showConfirmDialog(this, "Error loading:\n" + ioe + 
+    					"\n\nWould you like to continue?", "Error", JOptionPane.YES_NO_OPTION);
+    			continue;
+    		}
+    		
+    		// why would this be?
+    		if(!(e instanceof CachedElement)) {
+    			selectedElements.remove(i);
+    			selectedElements.add(i, new CachedElement(s));
+    		}
+    	}
+    	
+    	// no, still can't work
+    	if(nloaded < minimumSelectedElements)
+    		return false;
+    	
+    	return true;
     }
     
     protected boolean finish() {

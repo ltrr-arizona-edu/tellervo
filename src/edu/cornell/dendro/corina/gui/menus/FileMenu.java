@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.gui.menus;
 
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
@@ -262,7 +263,7 @@ public class FileMenu extends JMenu {
 	}
 	
 	public static void opendb(boolean multi) {
-		DBBrowser browser = new DBBrowser(null, true, multi);
+		DBBrowser browser = new DBBrowser((Frame) null, true, multi);
 		
 		browser.setVisible(true);
 		
