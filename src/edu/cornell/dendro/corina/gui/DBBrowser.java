@@ -107,7 +107,7 @@ public class DBBrowser extends javax.swing.JDialog{
         
         txtFilterInput.addKeyListener(new KeyListener() {
         	public void keyPressed(KeyEvent txt){
-        		// User typing so filter sites
+        		
      
         	}
         	public void keyTyped(KeyEvent txt){
@@ -115,8 +115,10 @@ public class DBBrowser extends javax.swing.JDialog{
         		
         	}        	
         	public void keyReleased(KeyEvent txt){
-        		// do nothing
-           		populateSiteList();
+        		// Unselect any site selection then filter
+        		// site list 
+           		lstSites.clearSelection();
+        		populateSiteList();
         	}
         	
         });
@@ -581,6 +583,9 @@ public class DBBrowser extends javax.swing.JDialog{
     			}
     		}
     	}
+    	
+    	// If there is only one item in list then select it!
+    	if (lstSites.getModel().getSize()==1) lstSites.setSelectedIndex(0);
     }
     
     /**
