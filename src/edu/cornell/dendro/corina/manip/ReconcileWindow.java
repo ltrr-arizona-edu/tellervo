@@ -104,6 +104,17 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 			}
 		});
 		
+		saveChanges.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				// save our ref sample
+				save();
+				
+				// if it saved, disable ourselves
+				if(!s2.isModified())
+					saveChanges.setEnabled(false);
+			}
+		});
+		
 		markAsReconciled.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// reconciling doesn't make sense if we can't do this...

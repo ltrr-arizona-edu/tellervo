@@ -133,6 +133,10 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 			  public void actionPerformed(ActionEvent ae) {
 				  try {
 					  finalValue = Integer.valueOf(newValue.getText());
+					   if(dev != null) {
+						   dev.close();
+						   dev = null;
+					   }
 					  dispose();
 				  } catch (NumberFormatException nfe) {
 					  JOptionPane.showMessageDialog(glue, 
@@ -145,6 +149,10 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 	   cancelBtn.addActionListener(new ActionListener() {
 			  public void actionPerformed(ActionEvent ae) {
 				  finalValue = null;
+				   if(dev != null) {
+					   dev.close();
+					   dev = null;
+				   }
 				  dispose();
 			  }
 	   });

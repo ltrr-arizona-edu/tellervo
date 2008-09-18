@@ -219,7 +219,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		
 		// now, make this remember the last things we reconciled against!
 		JMenu reconcileMenu = Builder.makeMenu("reconcile");
-		reconcileMenu.putClientProperty("corina.open_recent_action", new OpenRecent.SampleOpener() {
+		reconcileMenu.putClientProperty("corina.open_recent_action", new OpenRecent.SampleOpener("reconcile") {
 			@Override
 			public void performOpen(Sample s) {
 				Center.center(new ReconcileWindow(sample, s), editor);				

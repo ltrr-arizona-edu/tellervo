@@ -154,10 +154,17 @@ public class OpenRecent {
 		LoaderHolder lh = new LoaderHolder();
 		lh.loader = sl;
 		lh.displayName = sl.getName();
+		
+		// cache resource ID if possible
+		if(sl instanceof CorinaWebElement)
+			lh.resText = ((CorinaWebElement) sl).getResourceIdentifier().toString();
 
 		// if already in spot #0, don't need to do anything
-		if (!recent.isEmpty() && recent.get(0).equals(lh))
+		// also make sure their displaynames are the same!
+		if (!recent.isEmpty() && recent.get(0).equals(lh) && 
+				((LoaderHolder) recent.get(0)).displayName.equals(lh.displayName)) {
 			return;
+		}
 
 		// if this item is in the list, remove me, too
 		recent.remove(lh);
@@ -299,7 +306,18 @@ public class OpenRecent {
 	}
 
 	public static class SampleOpener {
+		private String tag;
+		
+		public SampleOpener() {
+			this("documents");
+		}
+		
+		public SampleOpener(String tag) {
+			this.tag = tag;
+		}
+		
 		public void performOpen(Sample s) {
+			OpenRecent.sampleOpened(s.getLoader(), tag);
 			new Editor(s);
 		}
 	}
@@ -349,17 +367,7 @@ public class OpenRecent {
 					} catch (IOException ioe) {
 						Alert.error("Error loading", "Can't open: " + ioe.toString());
 						return;
-					}
-
-					/*
-					 * -- don't do this; CanOpener.open() calls fileOpened(),
-					 * which takes care of this // move this entry to top of
-					 * list, now if (glue != 0) { String me = (String)
-					 * recent.remove(glue); recent.add(0, me); updateAllMenus();
-					 * // ok?
-					 * 
-					 * // update disk saveList(); }
-					 */
+					}					
 				}
 			});
 			menu.add(r);
@@ -407,6 +415,7 @@ public class OpenRecent {
 					
 					LoaderHolder holder = new LoaderHolder();
 					holder.displayName = e.getText();
+					holder.resText = rid.toString();
 					holder.loader = new CorinaWebElement(rid);
 					
 					recent.add(holder);			
@@ -441,6 +450,7 @@ public class OpenRecent {
 	// kludge!
 	private static class LoaderHolder {
 		public String displayName;
+		public String resText;
 		public SampleLoader loader;
 		
 		@Override
@@ -449,9 +459,18 @@ public class OpenRecent {
 				return false;
 			
 			SampleLoader o = ((LoaderHolder)oo).loader;
+
+			// go by resource identifier instead of displayname, if possible
+			boolean usedId = false;
+			if(o instanceof CorinaWebElement && resText != null) {
+				ResourceIdentifier rid = ((CorinaWebElement) o).getResourceIdentifier();
+				
+				if(rid.toString().equalsIgnoreCase(resText))
+					usedId = true;
+			}
 			
 			// are their names equal?
-			if(!displayName.equalsIgnoreCase(o.getName())) 
+			if(!usedId && !displayName.equalsIgnoreCase(o.getName())) 
 				return false;
 			
 			// are their loader classes equal?
@@ -459,7 +478,8 @@ public class OpenRecent {
 				return false;
 			
 			// if web elements, are they from the same server URL?
-			if(loader instanceof CorinaWebElement) {
+			// only use if we didn't have a full rid earlier
+			if(!usedId && loader instanceof CorinaWebElement) {
 				CorinaWebElement c1 = (CorinaWebElement) loader;
 				CorinaWebElement c2 = (CorinaWebElement) o;
 				org.jdom.Element rid1 = c1.getResourceIdentifier().asXMLElement();
