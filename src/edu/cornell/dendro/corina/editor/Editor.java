@@ -394,6 +394,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// set the necessary bits...
 		sample.clearModified();
+		sample.fireSampleMetadataChanged(); // things may have changed...
 		App.platform.setModified(this, false);
 		updateTitle();
 	}
