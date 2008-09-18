@@ -94,7 +94,7 @@ class measurement
 
         // the uberquery - one query to rule them all?
         $sql = "SELECT vm.*, mc.*, su.username, op.name as opname, dt.label as datingtype, ".
-		"m.radiusid, m.isreconciled, m.islegacycleaned, m.datingtypeid, m.datingerrorpositive, m.datingerrornegative, ".
+		"m.radiusid, m.isreconciled, m.islegacycleaned, m.datingtypeid, m.datingerrorpositive, m.datingerrornegative, m.measuredbyid, ".
 		"x(centroid(vmextent)), y(centroid(vmextent)), xmin(vmextent), xmax(vmextent), ymin(vmextent), ymax(vmextent) ".
 		"FROM tblvmeasurement vm ".
 		"INNER JOIN tlkpvmeasurementop op ON vm.vmeasurementopid=op.vmeasurementopid ".
@@ -155,6 +155,7 @@ class measurement
 		$this->vmeasurementOpID = $row['vmeasurementopid'];
 		$this->vmeasurementOp = $row['opname'];
 		$this->ownerUserID = $row['owneruserid'];
+                $this->setMeasuredByID($row['measuredbyid']);
 		$this->owner = $row['username'];
 
 		// all the metacache stuff...
