@@ -124,11 +124,15 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
 	public void setDefaultsFrom(Specimen spec) {
 		String v;
 		Integer iv;
+		Boolean b;
 		
 		// populate name
 		v = spec.toString();
 		if(!v.equals(Specimen.NAME_INVALID))
 			txtSpecimenName.setText(v);
+		
+		v = spec.getDateCollected();
+		txtCollectionDate.setText((v == null) ? "" : v);
 		
 		selectEqualValueIn(cboPith, spec.getPith());
 		selectEqualValueIn(cboContinuity, spec.getSpecimenContinuity());
@@ -142,6 +146,20 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
 			spnUnmeasPost.setValue(iv);
 		if((iv = spec.getUnmeasuredPre()) != null)
 			spnUnmeasPre.setValue(iv);
+		
+		// checkboxes
+		if((b = spec.getIsSapwoodCountVerified()) != null)
+			chkSapwoodCountVerified.setSelected(b.booleanValue());
+		if((b = spec.getIsPithVerified()) != null)
+			chkPithVerified.setSelected(b.booleanValue());
+		if((b = spec.getIsSpecimenContinuityVerified()) != null)
+			chkContinuityVerified.setSelected(b.booleanValue());
+		if((b = spec.getIsTerminalRingVerified()) != null)
+			chkTerminalRingVerified.setSelected(b.booleanValue());
+		if((b = spec.getIsUnmeasuredPreVerified()) != null)
+			chkUnmeasPreVerified.setSelected(b.booleanValue());
+		if((b = spec.getIsUnmeasuredPostVerified()) != null)
+			chkUnmeasPostVerified.setSelected(b.booleanValue());
 	}
 	
 	// convenience method for setDefaultsFrom

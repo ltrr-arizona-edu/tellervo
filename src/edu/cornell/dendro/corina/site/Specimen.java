@@ -43,12 +43,61 @@ public class Specimen extends GenericIntermediateObject {
 		}
 		
 		Specimen specimen = new Specimen(id, name);
+
+		specimen.setSpecimenType(root.getChildText("specimenType"));
+		specimen.setDateCollected(root.getChildText("dateCollected"));
 		
-		// TODO: care about everything else!
+		specimen.setSpecimenContinuity(root.getChildText("specimenContinuity"));
+		specimen.setIsSpecimenContinuityVerified(Boolean.valueOf(root.getChildText("isSpecimenContinuityVerified")));
+
+		specimen.setTerminalRing(root.getChildText("terminalRing"));
+		specimen.setIsTerminalRingVerified(Boolean.valueOf(root.getChildText("isTerminalRingVerified")));
+
+		specimen.setPith(root.getChildText("pith"));
+		specimen.setIsPithVerified(Boolean.valueOf(root.getChildText("isPithVerified")));
+
+		String ival;
+		
+		ival = root.getChildText("sapwoodCount");
+		if (ival != null) {
+			try {
+				specimen.setSapwoodCount(Integer.valueOf(ival));
+				specimen.setIsSapwoodCountVerified(chkBool(root
+						.getChildText("isSapwoodCountVerified")));
+			} catch (NumberFormatException nfe) {
+				nfe.printStackTrace();
+			}
+		}
+
+		ival = root.getChildText("unmeasuredPre");
+		if (ival != null) {
+			try {
+				specimen.setUnmeasuredPre(Integer.valueOf(ival));
+				specimen.setIsUnmeasuredPreVerified(chkBool(root
+						.getChildText("isUnmeasuredPreVerified")));
+			} catch (NumberFormatException nfe) {
+				nfe.printStackTrace();
+			}
+		}
+
+		ival = root.getChildText("unmeasuredPost");
+		if (ival != null) {
+			try {
+				specimen.setUnmeasuredPost(Integer.valueOf(ival));
+				specimen.setIsUnmeasuredPostVerified(chkBool(root
+						.getChildText("isUnmeasuredPostVerified")));
+			} catch (NumberFormatException nfe) {
+				nfe.printStackTrace();
+			}
+		}
 		
 		specimen.setResourceIdentifierFromElement(root);
 		
 		return specimen;
+	}
+	
+	private static Boolean chkBool(String val) {
+		return (val == null) ? null : Boolean.valueOf(val);
 	}
 	
 	public Element toXML() {

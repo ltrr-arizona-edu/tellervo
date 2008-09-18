@@ -39,7 +39,7 @@ public class IntermediateResource extends ResourceObject<List<? extends GenericI
 	public IntermediateResource(GenericIntermediateObject parent, 
 			GenericIntermediateObject child)
 	{
-		super("intermediate", ResourceQueryType.CREATE);
+		super("intermediate", child.isNew() ? ResourceQueryType.CREATE : ResourceQueryType.UPDATE);
 
 		// well that's a mouthful
 		ArrayList<GenericIntermediateObject> kludgelist = 
@@ -56,8 +56,7 @@ public class IntermediateResource extends ResourceObject<List<? extends GenericI
 		if(queryType == ResourceQueryType.SEARCH) {
 			return requestElement.addContent(getSearchParameters().getXMLElement());
 		}
-		
-		if(queryType == ResourceQueryType.CREATE) {
+		else if(queryType == ResourceQueryType.CREATE) {
 			GenericIntermediateObject parent = getObject().get(0);
 			GenericIntermediateObject child = getObject().get(1);
 			
@@ -85,6 +84,22 @@ public class IntermediateResource extends ResourceObject<List<? extends GenericI
 			
 			return requestElement;
 		}
+		else if(queryType == ResourceQueryType.UPDATE) {
+			GenericIntermediateObject parent = getObject().get(0);
+			GenericIntermediateObject child = getObject().get(1);
+			
+			// child must be old, otherwise use a create
+			if(child.isNew())
+				throw new ResourceException("UPDATE called for resource that doesn't have an ID");
+			
+			// child must have a non-new parent (except for sites)
+			if(parent != null)
+				throw new ResourceException("UPDATE called with a parent");
+			
+			requestElement.addContent(child.toXML());
+			
+			return requestElement;
+		}
 				
 		throw new ResourceException("Unsupported query type given to IntermediateResource");
 	}
@@ -101,6 +116,7 @@ public class IntermediateResource extends ResourceObject<List<? extends GenericI
 		switch(getQueryType()) {
 		case READ:
 		case CREATE:
+		case UPDATE:
 		case SEARCH: {
 			List<GenericIntermediateObject> objList = new ArrayList<GenericIntermediateObject>();
 			List<Element> base;

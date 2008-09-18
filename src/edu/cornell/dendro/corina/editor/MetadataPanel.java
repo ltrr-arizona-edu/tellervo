@@ -27,6 +27,7 @@ import edu.cornell.dendro.corina.site.GenericIntermediateObject;
 import edu.cornell.dendro.corina.site.Radius;
 import edu.cornell.dendro.corina.site.Specimen;
 import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.util.Center;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -35,10 +36,13 @@ import java.util.Set;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.Frame;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.*;
+
 import javax.swing.*;
 
 /**
@@ -166,6 +170,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 			return;
 
 		JButton edit = new JButton("edit");
+		bindEditButton(edit, "::radius");
 		addTitle("Radius", c, edit);
 		
 		JLabel a, b;
@@ -188,6 +193,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 			return;
 
 		JButton edit = new JButton("edit");
+		bindEditButton(edit, "::specimen");
 		addTitle("Specimen", c, edit);
 		
 		JLabel a, b;
@@ -278,6 +284,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 			return;		
 
 		JButton edit = new JButton("edit");
+		bindEditButton(edit, "::tree");
 		addTitle("Tree", c, edit);
 
 		JLabel a, b;
@@ -545,6 +552,25 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 		nsections++;
 	}
 
+	private void bindEditButton(JButton button, final String metaKey) {
+		final Container parent = this;
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				// find our JFrame
+				Container c = parent;
+				while(!(c instanceof Frame) && !(c == null))
+					c = c.getParent();				
+
+				IntermediateEditorDialog ied = new IntermediateEditorDialog((Frame) c, s, metaKey);
+				ied.setTitle("Modify Existing Metadata");
+				
+				Center.center(ied, (Frame) c);
+				
+				ied.setVisible(true);
+			}
+		});
+	}
+	
 	private void updateSummaryComponents() {
 		SampleSummary ss = (SampleSummary) s.getMeta("::summary");
 		
