@@ -1,5 +1,9 @@
 package edu.cornell.dendro.corina.webdbi;
 
+/**
+ * NOTE: Always returns CachedElements!
+ */
+
 import java.io.IOException;
 import java.util.List;
 

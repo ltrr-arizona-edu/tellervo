@@ -108,6 +108,7 @@ public class Splash extends JFrame implements ProgressMeter.ProgressListener {
 		Center.center(this);
 		stateChanged(event);
 		setVisible(true);
+		toFront();
 	}
 
 	public void stateChanged(ProgressEvent event) {

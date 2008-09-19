@@ -15,6 +15,7 @@ import javax.swing.JMenuItem;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.CorinaPermission;
+import edu.cornell.dendro.corina.cross.CrossdateDialog;
 import edu.cornell.dendro.corina.cross.CrossdateWindow;
 import edu.cornell.dendro.corina.cross.Sequence;
 import edu.cornell.dendro.corina.gui.Bug;
@@ -131,30 +132,10 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		JMenuItem crossAgainst = Builder.makeMenuItem("cross_against...", true, "crossdate.png");
 		crossAgainst.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
-				try {
-					// select moving files
-					ElementList ss = FileDialog.showMulti("Crossdate " +
-							"\"" + sample + "\"" +
-					" against:");
-
-					// (note also the Peter-catcher: see XMenubar.java)
-
-					// hack for bug 228: filename may be null, and sequence
-					// uses it to hash, so let's make up a fake
-					// filename that can't be a real filename.
-					//String filename = (String) sample.getMeta("filename");
-					//if (filename == null)
-					//    filename = "\u011e"; // this can't begin a word!
-
-					Sequence seq = new Sequence(ElementList.singletonList(new CachedElement(sample)), ss);
-					new CrossdateWindow(seq);
-				} catch (UserCancelledException uce) {
-					// do nothing
-				}
+				new CrossdateDialog(editor, false, ElementList.singletonList(new CachedElement(sample)));
 			}
 		});
 		add(crossAgainst);
-		crossAgainst.setEnabled(false);
 
 		// cross all
 		crossElements = Builder.makeMenuItem("cross_elements", true, "crossdate.png");
