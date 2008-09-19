@@ -41,76 +41,80 @@ import edu.cornell.dendro.corina.sample.Sample;
  * </ul>
  */
 public class TopScores {
-  private static final Log log = new CorinaLog(TopScores.class);
-  private Cross c;
-  private List highScores;
+	private static final Log log = new CorinaLog(TopScores.class);
+	private Cross c;
+	private List highScores;
 
-  public TopScores(Cross c) {
-    this.c = c;
-    compute();
-  }
+	public TopScores(Cross c) {
+		this.c = c;
+		compute();
+	}
 
-  public List getScores() {
-    return highScores;
-  }
+	public List getScores() {
+		return highScores;
+	}
 
-  private void compute() {
-    highScores = new ArrayList();
+	private void compute() {
+		highScores = new ArrayList();
 
-    Sample fixed = c.getFixed();
-    Sample moving = c.getMoving();
-    Range fixedRange = fixed.getRange();
-    Range movingRange = moving.getRange().redateEndTo(fixedRange.getStart()); // .add(getMinimumOverlap()-1));
-    //System.out.println("fixed: "+ fixed);
-    //System.out.println("moving: "+ moving);
-    //System.out.println("fixedRange: "+ fixedRange);
-    //System.out.println("movingRange: "+ movingRange);
+		Sample fixed = c.getFixed();
+		Sample moving = c.getMoving();
+		Range fixedRange = fixed.getRange();
+		Range movingRange = moving.getRange()
+				.redateEndTo(fixedRange.getStart()); //.add(getMinimumOverlap()-
+														// 1));
+		// System.out.println("fixed: "+ fixed);
+		// System.out.println("moving: "+ moving);
+		// System.out.println("fixedRange: "+ fixedRange);
+		// System.out.println("movingRange: "+ movingRange);
 
-    // FIXME: default=15 shouldn't be here; it's used elsewhere, as well.
-    final int minimumOverlap = c.getOverlap(); //App.prefs.getIntPref("corina.cross.overlap", 15);
-    int nr = 0;
-    int length = c.getRange().span();
-    for (int i = 0; i < length; i++) {
-      // overlap not long enough? skip it.
-      // (PERF: inefficient!)
-      if (fixedRange.overlap(movingRange) >= minimumOverlap) {
+		// FIXME: default=15 shouldn't be here; it's used elsewhere, as well.
+		final int minimumOverlap = c.getOverlap(); // App.prefs.getIntPref(
+													// "corina.cross.overlap",
+													// 15);
+		int nr = 0;
+		int length = c.getRange().span();
+		for (int i = 0; i < length; i++) {
+			// overlap not long enough? skip it.
+			// (PERF: inefficient!)
+			if (fixedRange.overlap(movingRange) >= minimumOverlap) {
 
-        float score = c.getScore(movingRange.getEnd());
-        log.debug(movingRange.getEnd() + ":" + score);
-  
-        if (c.isSignificant(score, fixedRange.overlap(movingRange))) {
-          try {
-            nr++;
-            highScores.add(new HighScore(c, i, nr));
-          } catch (Exception e) {
-            log.error("trouble with bayes! -- " + e);
-            // FIXME: bayes? huh?
-            e.printStackTrace();
-          }
-        }
-      }
-        
-      movingRange = movingRange.redateBy(+1); // slide it by 1
-    }
-    // convert to array now? all i do with it is .size(), .get(),
-    // and sort(comparable)
+				float score = c.getScore(movingRange.getEnd());
+				log.debug(movingRange.getEnd() + ":" + score);
 
-    // how do i sort these? (that'll have an impact)
+				if (c.isSignificant(score, fixedRange.overlap(movingRange))) {
+					try {
+						nr++;
+						highScores.add(new HighScore(c, i, nr));
+					} catch (Exception e) {
+						log.error("trouble with bayes! -- " + e);
+						// FIXME: bayes? huh?
+						e.printStackTrace();
+					}
+				}
+			}
 
-    // right now, i'm thinking:
-    // - void cross.computeHighScores() -- computes all
-    // - Iterator cross.getHighScores() -- returns only span>minimumOverlap
+			movingRange = movingRange.redateBy(+1); // slide it by 1
+		}
+		// convert to array now? all i do with it is .size(), .get(),
+		// and sort(comparable)
 
-    //testing
-    //oldComputeHighScores();
-  }
+		// how do i sort these? (that'll have an impact)
 
-  /**
-   * "Old" Cross computeHighScores implementation that accesses
-   * data array directly
-   * @deprecated for testing only
-   */
-  /*private List oldComputeHighScores() {
+		// right now, i'm thinking:
+		// - void cross.computeHighScores() -- computes all
+		// - Iterator cross.getHighScores() -- returns only span>minimumOverlap
+
+		// testing
+		// oldComputeHighScores();
+	}
+
+	/**
+	 * "Old" Cross computeHighScores implementation that accesses
+	 * data array directly
+	 * @deprecated for testing only
+	 */
+	/*private List oldComputeHighScores() {
     ArrayList highScores = new ArrayList();
 
     Sample fixed = c.getFixed();
@@ -141,9 +145,9 @@ public class TopScores {
      }
      // convert to array now? all i do with it is .size(), .get(),
      // and sort(comparable)
-  
+
     // how do i sort these? (that'll have an impact)
-  
+
     // right now, i'm thinking:
     // - void cross.computeHighScores() -- computes all
     // - Iterator cross.getHighScores() -- returns only span>minimumOverlap
