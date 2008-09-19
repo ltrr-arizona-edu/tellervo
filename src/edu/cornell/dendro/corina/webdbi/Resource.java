@@ -161,8 +161,14 @@ public abstract class Resource {
 
 					break;
 				} catch (WebPermissionsException wpe) {
-					if(resourceQueryExceptionBehavior == PROMPT_FOR_LOGIN && !handleQueryException(wpe))
+					if(resourceQueryExceptionBehavior == PROMPT_FOR_LOGIN) {
+						// try to log in
+						if(handleQueryException(wpe))
+							continue; //login successful, try to query resource again
+						
+						// failed logging in
 						return false;
+					}
 					else if(resourceQueryExceptionBehavior == JUST_FAIL) {
 						doQueryFailed(wpe);
 						return false;
