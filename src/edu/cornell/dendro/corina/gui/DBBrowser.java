@@ -193,6 +193,9 @@ public class DBBrowser extends javax.swing.JDialog{
     					getElementAt(selectedRows[i]));
     	}
     	
+    	// Save the Region used in preferences so that it can be default next time
+		App.prefs.setPref("corina.region.lastused", Integer.toString(cboBrowseBy.getSelectedIndex()));
+    	
     	returnStatus = RET_OK;
     	return true;
     }
@@ -388,10 +391,13 @@ public class DBBrowser extends javax.swing.JDialog{
             }
         });
 		
-		// select the first thing in the list
-		// TODO: Should we store the last region we used?
+		// Select the last used region otherwise select the first thing in the list
 		// populate our site list (done automatically by choosing an index)
-		cboBrowseBy.setSelectedIndex(0);
+		if(App.prefs.getPref("corina.region.lastused") != null){
+			cboBrowseBy.setSelectedIndex(Integer.parseInt(App.prefs.getPref("corina.region.lastused")));
+		} else {
+			cboBrowseBy.setSelectedIndex(0);
+		}
 		
 		lstSites.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
 			public void valueChanged(javax.swing.event.ListSelectionEvent lse) {
