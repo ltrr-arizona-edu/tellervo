@@ -43,19 +43,19 @@ import edu.cornell.dendro.corina.sample.Sample;
 public class TopScores {
 	private static final Log log = new CorinaLog(TopScores.class);
 	private Cross c;
-	private List highScores;
+	private List<HighScore> highScores;
 
 	public TopScores(Cross c) {
 		this.c = c;
 		compute();
 	}
 
-	public List getScores() {
+	public List<HighScore> getScores() {
 		return highScores;
 	}
 
 	private void compute() {
-		highScores = new ArrayList();
+		highScores = new ArrayList<HighScore>();
 
 		Sample fixed = c.getFixed();
 		Sample moving = c.getMoving();
