@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
@@ -44,6 +45,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
 	private SigScoresTableModel sigScoresModel;
 	private GrapherPanel graph;
 	private List<Graph> graphSamples;
+	private JScrollPane graphScroller;
     
     /** Creates new form CrossDatingWizard */
     public CrossdateDialog(java.awt.Frame parent, boolean modal) {
@@ -207,14 +209,14 @@ public class CrossdateDialog extends javax.swing.JDialog {
 			}
 		};*/
 		
-		graph.setEnabled(false);
-
-		JScrollPane scroller = new JScrollPane(graph,
+		graphScroller = new JScrollPane(graph,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
+		graphScroller.setViewportView(new JLabel("Choose a valid crossdate"));
+		
 		panelChart.setLayout(new BorderLayout());
-		panelChart.add(scroller, BorderLayout.CENTER);
+		panelChart.add(graphScroller, BorderLayout.CENTER);
     }
     
     private void setupLists() {
@@ -229,7 +231,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	List<Graph> newGraphs = sigScoresModel.getGraphForRow(tableSignificantScores.getSelectedRow());
     	
     	if(newGraphs == null || newGraphs.size() != 2) {
-    		graph.setEnabled(false);
+    		graphScroller.setViewportView(new JLabel("Choose a valid crossdate"));
     		return;
     	}
 
@@ -244,7 +246,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	}
     	
     	graph.update();
-    	graph.setEnabled(true);
+    	graphScroller.setViewportView(graph);
     }
     
     /** This method is called from within the constructor to

@@ -1335,8 +1335,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		}
 		
 		if(vertaxis != null)
-			vertaxis.setAxisType(agents.acquireDefaultAxisType());		
+			vertaxis.setAxisType(agents.acquireDefaultAxisType());
 		
+		computeRange();
 		revalidate();
 		repaint();
 	}
