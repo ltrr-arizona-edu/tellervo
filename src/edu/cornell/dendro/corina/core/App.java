@@ -37,23 +37,9 @@ public class App {
     if (initialized) throw new IllegalStateException("AppContext already initialized.");
 
     log.debug("initializing App");
-
-    if (meter != null) {
-      meter.setMaximum(6);
-      meter.setNote("Initializing Logging...");
-    }
-
-    logging = new Logging();
-    logging.init();
-    if (meter != null) {
-      meter.setProgress(1);
-      meter.setNote("Initializing Platform...");
-    }
-    
-    platform = new Platform();
-    platform.init();
     
     if (meter != null) {
+      meter.setMaximum(7);
       meter.setProgress(2);
     }
 
@@ -102,14 +88,12 @@ public class App {
     	try {
     		dlg.doLogin(null, false);
     		isLoggedIn = true;
-    		
-    		//new Authenticate(dlg.getUsername(), dlg.getPassword(), "").queryWait();
-    	} catch (UserCancelledException uce) {
+       	} catch (UserCancelledException uce) {
     		// we default to not being logged in...
     	}
 
     	if (meter != null) {
-        	meter.setProgress(5);
+        	meter.setProgress(4);
         }
     }
     
@@ -124,7 +108,7 @@ public class App {
     	dictionary.query();
     }
     if (meter != null) {
-    	meter.setProgress(4);
+    	meter.setProgress(5);
     }
 
     if (meter != null) {
@@ -138,12 +122,12 @@ public class App {
         }
     }
     if (meter != null) {
-    	meter.setProgress(5);
+    	meter.setProgress(6);
     }
 
     // we're done here!
 	if (meter != null)
-		meter.setProgress(6);
+		meter.setProgress(7);
 
     initialized = true;   
   }

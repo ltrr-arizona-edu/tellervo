@@ -36,6 +36,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
 
 /**
@@ -71,10 +72,17 @@ public class Startup implements PrivilegedAction {
 		 * UIManager.put("Menu.font", f); UIManager.put("MenuItem.font", f);
 		 */
 		try {
-			// TODO: implement progress listeners and splash screen for real
+			// Initialize logging first before we do anything
+			// Moved from App.java because we have to load the Platform before we make any dialogs.
+		    App.logging = new Logging();
+		    App.logging.init();
+		    
+		    // now, init the platform. This sets look/feel and Mac toolbars and such.
+		    App.platform = new Platform();
+		    App.platform.init();
+			
 			ClassLoader cl = this.getClass().getClassLoader();
-			URL url = cl
-					.getResource("edu/cornell/dendro/corina_resources/Images/background.png");
+			URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/background.png");
 			ImageIcon ii = null;
 			if (url != null) {
 				ii = new ImageIcon(url);

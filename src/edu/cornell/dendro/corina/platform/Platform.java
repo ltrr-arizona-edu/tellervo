@@ -35,28 +35,9 @@ public class Platform extends AbstractSubsystem {
 		isWindows = osname != null && osname.indexOf("Windows") != -1;
 		isUnix = !isMac && !isWindows; // assume it's one of mac, win32, unix
 
-		// try to get the native L&F
-		String slafclassname = UIManager.getSystemLookAndFeelClassName();
-
-		/**
-		// smooth look and feel, anyone?
-		if(isWindows) {
-			slafclassname = "smooth.windows.SmoothLookAndFeel";
-		}
-		 **/
-
-		if (slafclassname != null)
-			try {
-				UIManager.setLookAndFeel(slafclassname);
-			} catch (Exception e) {
-				log.error("Error setting system look and feel class", e);
-			}
-
-		// this stuff moved from Startup
-
 		// on a mac, always use the mac menubar -- see TN2031
 		// (http://developer.apple.com/technotes/tn/tn2031.html)
-		// REFACTOR: move this to Platform?
+		// this MUST be done before setting the look and feel
 		if (isMac) {
 			// Use the right kind of menu bars
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -71,6 +52,16 @@ public class Platform extends AbstractSubsystem {
 			UIManager.put("JFileChooser.packageIsTraversable", "never"); // for swing
 		}
 
+		// try to get the native L&F
+		String slafclassname = UIManager.getSystemLookAndFeelClassName();
+
+		if (slafclassname != null)
+			try {
+				UIManager.setLookAndFeel(slafclassname);
+			} catch (Exception e) {
+				log.error("Error setting system look and feel class", e);
+			}
+		
 		// using windows with netware, netware doesn't tell windows the real
 		// username
 		// and home directory. here's an ugly workaround to set user.* properties,
