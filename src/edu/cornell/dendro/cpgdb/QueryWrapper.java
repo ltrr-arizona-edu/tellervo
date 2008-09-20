@@ -107,7 +107,7 @@ public class QueryWrapper {
 		 */
 		addQuery("qupdVMeasurementResultOpRedate",
 				"UPDATE tblVMeasurementResult SET VMeasurementID = ?, " +
-				"StartYear = StartYear + ? " +
+				"StartYear = ? " +
 				"WHERE VMeasurementResultID=?");
 	
 		/*
