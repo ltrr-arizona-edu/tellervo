@@ -63,9 +63,13 @@ public class Reconciler {
 	public void rereconcile() {
 		failureMap.clear();
 		failureCount = 0;
+		
+		// first, they must be equal in length!
+		if(s1.getData().size() != s2.getData().size())
+			failureCount++;
 
-		// compute total length of first sample
-		n = s1.getData().size();
+		// compute minimum length, in case they're not equal in length...
+		minLen = Math.min(s1.getData().size(), s2.getData().size());
 
 		check3Percent();
 		checkTrends();		
@@ -93,7 +97,7 @@ public class Reconciler {
 
 
 	// length
-	private int n;
+	private int minLen;
 
 	// given 2 values, compute the trend between them:
 	// decreasing==-1, increasing==+1, stayssame==0
@@ -111,7 +115,7 @@ public class Reconciler {
 
 		int w1 = ((Number) s1.getData().get(0)).intValue();
 		int w2 = ((Number) s2.getData().get(0)).intValue();
-		for (int i = 1; i < n; i++) {
+		for (int i = 1; i < minLen; i++) {
 			// store widths/"previous"
 			int w1p = w1;
 			int w2p = w2;
@@ -139,7 +143,7 @@ public class Reconciler {
 	// check 3%
 	private void check3Percent() {
 
-		for (int i = 0; i < n; i++) {
+		for (int i = 0; i < minLen; i++) {
 			// get widths, as floats
 			float w1 = ((Number) s1.getData().get(i)).floatValue();
 			float w2 = ((Number) s2.getData().get(i)).floatValue();

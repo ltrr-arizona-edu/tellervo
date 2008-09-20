@@ -82,20 +82,22 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 		
 		// any global warnings
 		if(newSample.getStart().compareTo(reference.getStart()) != 0) {
-			warnings.append("- <font color=red>Samples do not have the same start years:</font>");
+			warnings.append("- <font color=#aa7700>[Warn] Samples do not have the same start year:</font> ");
 			warnings.append("(" + newSample.getStart() + "; ref: " + reference.getStart() + ")");
 			warnings.append("<br>");
 		}
 		if(newSample.getData().size() != reference.getData().size()) {
-			warnings.append("- <font color=red>Samples do not have the same length</font>");
+			warnings.append("- <font color=red>Samples do not have the same length</font> ");
 			warnings.append("(" + newSample.getData().size() + "; ref: " + reference.getData().size() + ")");
 			warnings.append("<br>");
 		}
 		if(reconciler.getFailureCount() != 0) {
-			warnings.append("- <font color=red>" + reconciler.getFailureCount() + " reconciliation errors</font><br>");
+			warnings.append("- <font color=red>" + reconciler.getFailureCount() + " reconciliation error" +
+					(reconciler.getFailureCount() > 1 ? "s" : "") +
+					"</font><br>");
 		}
 		if(warnings.length() != 0) {
-			warnings.insert(0, "<b><u>Warnings:</u></b><br>");
+			warnings.insert(0, "<b><u>Errors:</u></b><br>");
 			warnings.append("<p>");
 		}
 		
@@ -123,7 +125,7 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 						// calculate min and max
 						float val = ((Number) reference.getData().get(idx)).floatValue();
 						float threepercent = val * 0.03f;
-						String minmax = "(" + (int) Math.floor(val - threepercent) + " - " +
+						String minmax = "(" + (int) Math.floor(val - threepercent) + " to " +
 							(int) Math.ceil(val + threepercent) + ")";
 						
 						selectionInfo.append("- <font color=red>Not within three percent of reference "
