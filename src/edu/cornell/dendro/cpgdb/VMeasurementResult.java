@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class VMeasurementResult {
 	// Internal values
-	private enum VMeasurementOperation { DIRECT, INDEX, CLEAN, REDATE, SUM }
+	private enum VMeasurementOperation { DIRECT, INDEX, CLEAN, REDATE, SUM, CROSSDATE }
 		
 	// This string holds our result, which is a UUID returned by the DB
 	private String result;
@@ -127,6 +127,7 @@ public class VMeasurementResult {
 					(op == VMeasurementOperation.INDEX && VMeasurementsInGroup == 1) ||
 					(op == VMeasurementOperation.CLEAN && VMeasurementsInGroup == 1) ||
 					(op == VMeasurementOperation.REDATE && VMeasurementsInGroup == 1) ||
+					(op == VMeasurementOperation.CROSSDATE && VMeasurementsInGroup == 1) ||
 					(op == VMeasurementOperation.SUM && VMeasurementsInGroup > 1)
 				   )) 
 				   throw new SQLException("Malformed VMeasurement (id:" + VMeasurementID + ")");
@@ -169,6 +170,7 @@ public class VMeasurementResult {
 
 		case CLEAN:
 		case REDATE:
+		case CROSSDATE:
 		case INDEX:
 			/*
 			 * For everything else, we make a new Group ID. If we're a redated
@@ -267,11 +269,20 @@ public class VMeasurementResult {
 			newVMeasurementResultID = lastWorkingVMeasurementResultID;
 			dbq.execute("qupdVMeasurementResultOpRedate", VMeasurementID, VMeasurementOpParameter, lastWorkingVMeasurementResultID);
 			break;
+
+		case CROSSDATE:
+			/* 
+			 * "As we are updating a record, not appending a new one, use the current ID as the new one."
+			 */
+			
+			newVMeasurementResultID = lastWorkingVMeasurementResultID;
+			dbq.execute("qupdVMeasurementResultOpCrossdate", VMeasurementID, VMeasurementID, lastWorkingVMeasurementResultID);
+			break;
 		}
 		
 		/*
 		 * Now, we clean the data for explicit cases (CLEAN)
-		 * and implicit cases (REDATE and INDEX).
+		 * and implicit cases (CROSSDATE, REDATE and INDEX).
 		 * 
 		 * TODO: Someone document what this means, it makes my head hurt.
 		 */
@@ -279,6 +290,7 @@ public class VMeasurementResult {
 		switch(op) {
 		case INDEX:
 		case REDATE:
+		case CROSSDATE:
 		case CLEAN:
 			// Clear away the group ID and change it to our parent?
 			dbq.execute("qupdVMeasurementResultClearGroupID", newVMeasurementResultGroupID);
@@ -294,6 +306,7 @@ public class VMeasurementResult {
 			case SUM:
 			case REDATE:
 			case CLEAN:
+			case CROSSDATE:
 				res = dbq.query("qupdVMeasurementResultInfo", newVMeasurementResultID);	
 				// that trick to get the SQL server to actually execute...
 				res.next();
@@ -322,6 +335,8 @@ public class VMeasurementResult {
 			return VMeasurementOperation.REDATE;
 		if(strOp.equals("Clean"))
 			return VMeasurementOperation.CLEAN;
+		if(strOp.equals("Crossdate"))
+			return VMeasurementOperation.CROSSDATE;
 		
 		throw new SQLException("Invalid VMeasurement Operation: " + strOp);
 	}

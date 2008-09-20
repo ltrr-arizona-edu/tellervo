@@ -111,6 +111,16 @@ public class QueryWrapper {
 				"WHERE VMeasurementResultID=?");
 	
 		/*
+		 * 1 = paramVMeasurementID
+		 * 2 = paramVMeasurementID
+		 * 3 = paramCurrentVMeasurementResultID
+		 */
+		addQuery("qupdVMeasurementResultOpCrossdate",
+				"UPDATE tblVMeasurementResult SET VMeasurementID = ?, " +
+				"StartYear = (SELECT StartYear FROM tblCrossdate WHERE VMeasurementID = ?) " +
+				"WHERE VMeasurementResultID=?");
+	
+		/*
 		 * 1 = paramVMeasurementResultGroupID
 		 */
 		addQuery("qupdVMeasurementResultClearGroupID", 
