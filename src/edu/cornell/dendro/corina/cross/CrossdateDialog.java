@@ -225,8 +225,20 @@ public class CrossdateDialog extends javax.swing.JDialog {
     }
     
     private void setupLists() {
-    	cboPrimary.setModel(new DefaultComboBoxModel(crossdatingElements.toActiveList().toArray()));
-    	cboSecondary.setModel(new DefaultComboBoxModel(crossdatingElements.toActiveList().toArray()));
+    	ArrayList<Object> samples = new ArrayList<Object>();
+
+    	// make a list of samples... (so we can get range, etc)
+    	for(Element e : crossdatingElements.toActiveList()) {
+    		try {
+    			Sample s = e.load();
+    			samples.add(s);
+    		} catch (Exception ex) {
+    			samples.add(e);
+    		}
+    	}
+    	
+    	cboPrimary.setModel(new DefaultComboBoxModel(samples.toArray()));
+    	cboSecondary.setModel(new DefaultComboBoxModel(samples.toArray()));
     	
     	cboPrimary.setSelectedIndex(0);
     	cboSecondary.setSelectedIndex(1);
