@@ -271,18 +271,28 @@ public abstract class Resource {
 		}
 	}
 	
+	private Thread queryThread;
 	/**
 	 * This procedure simply starts a new thread and calls queryWait
 	 */
 	public void query() {
-		new Thread() {
+		queryThread = new Thread() {
 			@Override
 			public void run() {
 				queryWait();
+				
+				queryThread = null;
 			}
-		}.start();
+		};
+		
+		queryThread.start();
 	}
 	
+	
+	public void abortQuery() {
+		if(queryThread != null)
+			queryThread.interrupt();
+	}	
 	
 	/*
 	 * our event notification handlers are below. This is pretty standard java,

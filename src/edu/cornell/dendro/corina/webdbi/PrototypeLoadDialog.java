@@ -1,13 +1,19 @@
 package edu.cornell.dendro.corina.webdbi;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 
+import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.util.Center;
 
 public class PrototypeLoadDialog extends JDialog implements ResourceEventListener {
@@ -17,11 +23,11 @@ public class PrototypeLoadDialog extends JDialog implements ResourceEventListene
 	private Exception failException = null;
 	private JProgressBar progressBar;
 	
-	public PrototypeLoadDialog(ResourceObject<?> myResource) {
+	public PrototypeLoadDialog(ResourceObject<?> resource) {
 		super();
 		
 		// attach to our resource
-		this.myResource = myResource;
+		this.myResource = resource;
 		myResource.addResourceEventListener(this);
 		
 		// Set dialog defaults
@@ -37,7 +43,30 @@ public class PrototypeLoadDialog extends JDialog implements ResourceEventListene
 	    list.setBorder(BorderFactory.createTitledBorder("Status"));
 	    progressBar = new JProgressBar();
 	    progressBar.setIndeterminate(true);
-	    progressBar.setBorder(BorderFactory.createEtchedBorder());
+	    progressBar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
+	    
+	    final PrototypeLoadDialog glue = this;
+	    progressBar.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent mousee) {
+				Object[] options = new String[] { "Abort", "Continue" };
+				int ret = JOptionPane.showOptionDialog(progressBar, 
+						"Would you like to abort the operation\n" +
+						"'" + myResource.getQueryType() + "' on '" + 
+						myResource.getResourceName() + "'", 
+						"Abort?", 
+						JOptionPane.YES_NO_OPTION, 
+						JOptionPane.QUESTION_MESSAGE, null, 
+						options, options[1]);
+				
+				if(ret == 0) {
+					myResource.removeResourceEventListener(glue);
+					myResource.abortQuery();
+					
+					glue.failException = new UserCancelledException();
+					glue.setSuccessful(false);
+				}
+			}
+	    });
 	 
 	    // Add items to dialog
 	    getContentPane().add(list, BorderLayout.CENTER);
