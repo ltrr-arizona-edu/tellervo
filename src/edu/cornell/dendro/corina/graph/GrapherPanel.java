@@ -50,11 +50,14 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.Scrollable;
+import javax.swing.SwingConstants;
+
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.ReverseScrollBar;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -266,7 +269,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		computeRange();
 
 		// messy redrawing...
-		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * gInfo.getYearWidth(), 200));
+		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * gInfo.getYearWidth(), getGraphHeight()));
 		revalidate();					
 		repaint();
 	}
@@ -497,7 +500,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				gInfo.setYearWidth(curwidth);
 				
 				computeRange();				
-				setPreferredSize(new Dimension(bounds.span() * curwidth, 200));
+				setPreferredSize(new Dimension(bounds.span() * curwidth, getGraphHeight()));
 				revalidate();					
 				horiz.setValue(Math.abs(y.diff(getRange().getStart())) * gInfo.getYearWidth());				
 				repaint = true;
@@ -510,7 +513,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				gInfo.setYearWidth(curwidth);
 				
 				computeRange();
-				setPreferredSize(new Dimension(bounds.span() * curwidth, 200));
+				setPreferredSize(new Dimension(bounds.span() * curwidth, getGraphHeight()));
 				revalidate();					
 				horiz.setValue(Math.abs(y.diff(getRange().getStart())) * gInfo.getYearWidth());								
 				repaint = true;
@@ -529,7 +532,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					endBoundChanged = true;
 				if(!bounds.getStart().equals(y1) || endBoundChanged)
 				{
-					setPreferredSize(new Dimension(bounds.span() * yearWidth, 200));
+					setPreferredSize(new Dimension(bounds.span() * yearWidth, getGraphHeight()));
 					revalidate();					
 				}
 				
@@ -554,7 +557,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					startBoundChanged = true;
 				if(!bounds.getEnd().equals(y2) || startBoundChanged)
 				{
-					setPreferredSize(new Dimension(bounds.span() * yearWidth, 200));
+					setPreferredSize(new Dimension(bounds.span() * yearWidth, getGraphHeight()));
 					revalidate();					
 				}
 				
@@ -757,9 +760,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// update bounds
 		computeRange();
 		
-		// set default scrolly window size
-		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * gInfo.getYearWidth(), 200));
-
+		// assign plot agents to all the graphs
 		for (int i = 0; i < graphs.size(); i++) {
 			Graph cg = (Graph) graphs.get(i);
 			// make sure sapwood and unmeas_pre are integers			
@@ -792,6 +793,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				cg.setAgent(agents.acquireDefault());
 		}
 
+		// set default scrolly window size
+		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * gInfo.getYearWidth(), getGraphHeight()));
+		
 		// background -- default is black
 		setBackground(gInfo.getBackgroundColor());
 
@@ -1336,10 +1340,20 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		
 		if(vertaxis != null)
 			vertaxis.setAxisType(agents.acquireDefaultAxisType());
-		
+
+		// recompute range
 		computeRange();
+		// change size
+		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * gInfo.getYearWidth(), getGraphHeight()));
+		// and redo ourselves!
 		revalidate();
+		// redraw
 		repaint();
+	}
+	
+	// scroll to the bottom of the graph
+	public void scrollToBottomLeft() {
+		scrollRectToVisible(new Rectangle(new Point(0, getPreferredSize().height)));
 	}
 
 	//
@@ -1347,14 +1361,18 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	//
 	public int getScrollableBlockIncrement(Rectangle visibleRect,
 			int orientation, int direction) {
-		// orient=vert never happens
-		return visibleRect.width;
+		if(orientation == SwingConstants.VERTICAL)
+			return visibleRect.height;
+		else
+			return visibleRect.width;
 	}
 
 	public int getScrollableUnitIncrement(Rectangle visibleRect,
 			int orientation, int direction) {
-		// orient=vert never happens
-		return gInfo.getYearWidth() * 10; // one decade (?)
+		if(orientation == SwingConstants.VERTICAL)
+			return gInfo.get10UnitHeight() * 10; // 100 (?)
+		else
+			return gInfo.getYearWidth() * 10; // one decade (?)
 	}
 
 	public Dimension getPreferredScrollableViewportSize() {
@@ -1370,8 +1388,20 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		return new Dimension(width, 480);
 	}
 
+	/**
+	 * Whether the graph should scroll vertically
+	 * Defaults to false
+	 * 
+	 * @param useVerticalScrollbar
+	 */
+	public void setUseVerticalScrollbar(boolean useVerticalScrollbar) {
+		this.useVerticalScrollbar = useVerticalScrollbar;
+	}
+	
+	private boolean useVerticalScrollbar = false;
+	
 	public boolean getScrollableTracksViewportHeight() {
-		return true; // never scroll vertically
+		return !useVerticalScrollbar; // don't scroll vertically by default
 	}
 
 	public boolean getScrollableTracksViewportWidth() {
@@ -1413,7 +1443,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		
 		gInfo.setYearWidth(width);
 		computeRange();				
-		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * width, 200));
+		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * width, getGraphHeight()));
 		revalidate();							
 	}
 	
@@ -1424,10 +1454,14 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		gInfo.set10UnitHeight(height);
 	}
 	
+	public int getGraphHeight() {
+		return getMaxPixelHeight() + GrapherPanel.AXIS_HEIGHT + gInfo.get10UnitHeight();
+	}
+	
 	public int getMaxPixelHeight() {
 		int bottom = getHeight() - GrapherPanel.AXIS_HEIGHT;		
 		int maxh = 0;
-		// notification that a preference or the sample list has changed.
+		
 		for (int i = 0; i < graphs.size(); i++) {
 			Graph cg = (Graph) graphs.get(i);
 			int val = cg.getAgent().getYRange(gInfo, cg, bottom);

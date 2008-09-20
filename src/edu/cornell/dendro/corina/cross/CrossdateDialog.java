@@ -25,6 +25,7 @@ import edu.cornell.dendro.corina.graph.GraphInfo;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.graph.PlotAgents;
 import edu.cornell.dendro.corina.gui.DBBrowser;
+import edu.cornell.dendro.corina.gui.ReverseScrollBar;
 import edu.cornell.dendro.corina.index.DecimalRenderer;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
@@ -34,6 +35,7 @@ import edu.cornell.dendro.corina.sample.Sample;
  *
  * Created on June 11, 2008, 10:35 AM
  */
+import edu.cornell.dendro.corina.util.Center;
 
 /**
  *
@@ -125,6 +127,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	setupListeners();
     	setupLists();
 
+    	Center.center(this);
     	setVisible(true);
     }
     
@@ -199,6 +202,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
 		
 		// create a graph panel; put it in a scroll pane
 		graph = new GrapherPanel(graphSamples, agents, null, gInfo);
+		graph.setUseVerticalScrollbar(true);
 		/*{
 			@Override
 			public Dimension getPreferredScrollableViewportSize() {
@@ -212,7 +216,8 @@ public class CrossdateDialog extends javax.swing.JDialog {
 		graphScroller = new JScrollPane(graph,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		
+		graphScroller.setVerticalScrollBar(new ReverseScrollBar());
+				
 		graphScroller.setViewportView(new JLabel("Choose a valid crossdate"));
 		
 		panelChart.setLayout(new BorderLayout());
