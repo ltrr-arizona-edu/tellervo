@@ -36,6 +36,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.platform.Platform;
 
 /**
  * Bootstrap for Corina. It all starts here...
@@ -51,136 +52,142 @@ import edu.cornell.dendro.corina.core.App;
  * @version $Id$
  */
 public class Startup implements PrivilegedAction {
-  private String[] args;
+	private String[] args;
 
-  private Startup(String[] args) {
-    this.args = args;
-  }
+	private Startup(String[] args) {
+		this.args = args;
+	}
 
-  public Object run() {
-    Subject subject = Subject.getSubject(AccessController.getContext());
-    if (subject != null) {
-      // replace the event queue with one that has the Subject stored
-      Toolkit.getDefaultToolkit().getSystemEventQueue().push(new AccessControlContextEventQueue());
-    }
+	public Object run() {
+		Subject subject = Subject.getSubject(AccessController.getContext());
+		if (subject != null) {
+			// replace the event queue with one that has the Subject stored
+			Toolkit.getDefaultToolkit().getSystemEventQueue().push(
+					new AccessControlContextEventQueue());
+		}
 
-    /*
-     * Font f = new Font("courier", java.awt.Font.PLAIN, 24);
-     * UIManager.put("Menu.font", f); UIManager.put("MenuItem.font", f);
-     */
-    try {
-      // TODO: implement progress listeners and splash screen for real
-      ClassLoader cl = this.getClass().getClassLoader();
-      URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/background.png");
-      ImageIcon ii = null;
-      if (url != null) {
-        ii = new ImageIcon(url);
-      }
-      LoginSplash splash = new LoginSplash("", ii);
-      ProgressMeter pm = new ProgressMeter();
-      pm.addProgressListener(splash);
-      pm.setMillisToDecideToPopup(0);
-      pm.setMillisToPopup(0);
-      App.init(pm, splash);
-      //monitor.close();
-      // let's go...
-      
-      XCorina.showCorinaWindow();
-    } catch (Throwable t) {
-      new Bug(t);
-    }
-    return null;
-  }
+		/*
+		 * Font f = new Font("courier", java.awt.Font.PLAIN, 24);
+		 * UIManager.put("Menu.font", f); UIManager.put("MenuItem.font", f);
+		 */
+		try {
+			// TODO: implement progress listeners and splash screen for real
+			ClassLoader cl = this.getClass().getClassLoader();
+			URL url = cl
+					.getResource("edu/cornell/dendro/corina_resources/Images/background.png");
+			ImageIcon ii = null;
+			if (url != null) {
+				ii = new ImageIcon(url);
+			}
+			LoginSplash splash = new LoginSplash("", ii);
+			ProgressMeter pm = new ProgressMeter();
+			pm.addProgressListener(splash);
+			pm.setMillisToDecideToPopup(0);
+			pm.setMillisToPopup(0);
+			App.init(pm, splash);
+			// monitor.close();
+			// let's go...
 
-  private static final class PasswordDialogCallbackHandler implements
-      CallbackHandler {
-    private boolean prompted = false;
-    private String user;
-    private String pass;
+			XCorina.showCorinaWindow();
+		} catch (Throwable t) {
+			new Bug(t);
+		}
+		return null;
+	}
 
-    public void handle(Callback[] callbacks) {
-      if (prompted) return;
+	private static final class PasswordDialogCallbackHandler implements
+			CallbackHandler {
+		private boolean prompted = false;
+		private String user;
+		private String pass;
 
-      JTextField nameField = new JTextField();
-      JTextField passField = new JTextField();
-      int option = JOptionPane.showOptionDialog(null,
-                                                new Object[] { "user name", nameField, "password", passField },
-                                                "Login",
-                                                JOptionPane.OK_CANCEL_OPTION,
-                                                JOptionPane.QUESTION_MESSAGE,
-                                                null, null, null);
-      prompted = true;
-      if (option == JOptionPane.CLOSED_OPTION || option == JOptionPane.CANCEL_OPTION) {
-        return;
-      }
+		public void handle(Callback[] callbacks) {
+			if (prompted)
+				return;
 
-      for (int i = 0; i < callbacks.length; i++) {
-        System.out.println("Callback " + i + ": " + callbacks[i]);
-        if (callbacks[i] instanceof NameCallback) {
-          ((NameCallback) callbacks[i]).setName(user);
-        } else if (callbacks[i] instanceof PasswordCallback) {
-          ((PasswordCallback) callbacks[i]).setPassword(pass.toCharArray());
-        }
-      }
-    }
-  }
+			JTextField nameField = new JTextField();
+			JTextField passField = new JTextField();
+			int option = JOptionPane.showOptionDialog(null, new Object[] {
+					"user name", nameField, "password", passField }, "Login",
+					JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+					null, null, null);
+			prompted = true;
+			if (option == JOptionPane.CLOSED_OPTION
+					|| option == JOptionPane.CANCEL_OPTION) {
+				return;
+			}
 
-  /**
-   * The <code>main()</code> method that sets all of Corina in motion. Loads
-   * system and user preferences, and instantiates an XCorina object.
-   * @param args
-   *          command-line arguments; ignored
-   */
-  public static void main(String args[]) {
+			for (int i = 0; i < callbacks.length; i++) {
+				System.out.println("Callback " + i + ": " + callbacks[i]);
+				if (callbacks[i] instanceof NameCallback) {
+					((NameCallback) callbacks[i]).setName(user);
+				} else if (callbacks[i] instanceof PasswordCallback) {
+					((PasswordCallback) callbacks[i]).setPassword(pass
+							.toCharArray());
+				}
+			}
+		}
+	}
 
-	// the Java Web Start security manager is by default horribly restrictive.
-	System.setSecurityManager(null);
-	  
-    if (args.length == 0 || !"-a".equals(args[0])) {
-      new Startup(args).run();
-      return;
-    }
+	/**
+	 * The <code>main()</code> method that sets all of Corina in motion. Loads
+	 * system and user preferences, and instantiates an XCorina object.
+	 * 
+	 * @param args
+	 *            command-line arguments; ignored
+	 */
+	public static void main(String args[]) {
+		// the Java Web Start security manager is by default horribly
+		// restrictive.
+		System.setSecurityManager(null);
 
-    // Obtain a LoginContext, needed for authentication. Tell it
-    // to use the LoginModule implementation specified by the
-    // entry named "Corina" in the JAAS login configuration
-    // file and to also use the specified CallbackHandler.
-    LoginContext lc = null;
-    try {
-      lc = new LoginContext("Corina", new PasswordDialogCallbackHandler());
-    } catch (LoginException le) {
-      System.err.println("Cannot create LoginContext. " + le.getMessage());
-      System.exit(-1);
-    } catch (SecurityException se) {
-      System.err.println("Cannot create LoginContext. " + se.getMessage());
-      System.exit(-1);
-    }
+		if (args.length == 0 || !"-a".equals(args[0])) {
+			new Startup(args).run();
+			return;
+		}
 
-    int i;
-    for (i = 0; i < 3; i++) {
-      try {
-        // attempt authentication
-        lc.login();
+		// Obtain a LoginContext, needed for authentication. Tell it
+		// to use the LoginModule implementation specified by the
+		// entry named "Corina" in the JAAS login configuration
+		// file and to also use the specified CallbackHandler.
+		LoginContext lc = null;
+		try {
+			lc = new LoginContext("Corina", new PasswordDialogCallbackHandler());
+		} catch (LoginException le) {
+			System.err
+					.println("Cannot create LoginContext. " + le.getMessage());
+			System.exit(-1);
+		} catch (SecurityException se) {
+			System.err
+					.println("Cannot create LoginContext. " + se.getMessage());
+			System.exit(-1);
+		}
 
-        break;
-      } catch (LoginException le) {
+		int i;
+		for (i = 0; i < 3; i++) {
+			try {
+				// attempt authentication
+				lc.login();
 
-        System.err.println("Authentication failed:");
-        System.err.println("  " + le.getMessage());
-        System.exit(-1);
+				break;
+			} catch (LoginException le) {
 
-      }
-    }
-    // did they fail three times?
-    if (i == 3) {
-      System.out.println("Sorry");
-      System.exit(-1);
-    }
+				System.err.println("Authentication failed:");
+				System.err.println("  " + le.getMessage());
+				System.exit(-1);
 
-    System.out.println("Authentication succeeded!");
+			}
+		}
+		// did they fail three times?
+		if (i == 3) {
+			System.out.println("Sorry");
+			System.exit(-1);
+		}
 
-    Subject mySubject = lc.getSubject();
-    Subject.doAsPrivileged(mySubject, new Startup(args), null);
-    //Subject.doAs(mySubject, new Startup(args));
-  }
+		System.out.println("Authentication succeeded!");
+
+		Subject mySubject = lc.getSubject();
+		Subject.doAsPrivileged(mySubject, new Startup(args), null);
+		// Subject.doAs(mySubject, new Startup(args));
+	}
 }
