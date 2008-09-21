@@ -132,8 +132,9 @@ public class CrossdateDialog extends javax.swing.JDialog {
     }
     
     private void setupTables() {
-       	sigScoresModel = new SigScoresTableModel();
+       	sigScoresModel = new SigScoresTableModel(tableSignificantScores);
     	tableSignificantScores.setModel(sigScoresModel);
+    	tableSignificantScores.getTableHeader().setReorderingAllowed(false);
     	
     	TableColumnModel c = tableSignificantScores.getColumnModel();
     	

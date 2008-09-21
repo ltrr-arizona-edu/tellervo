@@ -1,7 +1,12 @@
 package edu.cornell.dendro.corina.cross;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,16 +14,22 @@ import java.util.TreeMap;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.graph.Graph;
+import edu.cornell.dendro.corina.gui.SortedHeaderArrowRenderer;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.util.Sort;
 
 public class SigScoresTableModel extends AbstractTableModel {
 	private CrossdateCollection.Pairing pairing;
 	private List<ScoreInfo> scores;
+	private JTable table;
+	private SigScoresSorter sorter;
+	private SortedHeaderArrowRenderer headerRenderer;
 	
 	/*
 	 * Header information. Note that score classes MUST match
@@ -27,7 +38,15 @@ public class SigScoresTableModel extends AbstractTableModel {
 	private final String[] headings = { "Range", "Overlap", "Trend", "T-Score", "R-Value", "D-Score", "WJ" };
 	private final Class<?> scoreClasses[] = { Trend.class, TScore.class, RValue.class, DScore.class, Weiserjahre.class };
 	
-	public SigScoresTableModel() { 
+	public SigScoresTableModel(JTable table) { 
+		this.table = table;
+		// a sorter based on us...
+		sorter = new SigScoresSorter(this, table);
+		// a header renderer with no default 
+		headerRenderer = new SortedHeaderArrowRenderer(table, null);
+		
+		table.getTableHeader().addMouseListener(sorter);
+		table.getTableHeader().setDefaultRenderer(headerRenderer);
 	}
 	
 	public void clearCrossdates() {
@@ -40,19 +59,12 @@ public class SigScoresTableModel extends AbstractTableModel {
 	public void setCrossdates(CrossdateCollection.Pairing pairing) {
 		this.pairing = pairing;
 		calculateScores();
-		fireTableDataChanged();
-	}
 
-	// score info
-	private class ScoreInfo {
-		public ScoreInfo() {
-			scores = new String[scoreClasses.length];
-		}
+		sorter.setUnsorted();
+		headerRenderer.setReversed(true); // we default to reversed
+		headerRenderer.setSortColumn(-1);
 		
-		public Range range;
-		public Integer overlap;
-		
-		public String[] scores;
+		fireTableDataChanged();
 	}
 	
 	private void calculateScores() {
@@ -89,6 +101,7 @@ public class SigScoresTableModel extends AbstractTableModel {
 				
 				// and store the score!
 				thisScore.scores[classIdx] = df.format(cscore.score);
+				thisScore.scoreValue[classIdx] = cscore.score;
 			}
 		}
 
@@ -188,4 +201,108 @@ public class SigScoresTableModel extends AbstractTableModel {
 		
 		return null;
 	}	
+
+	/**
+	 * This class encapsulates score info, which is represented by a table row
+	 * @author Lucas Madar
+	 */
+	private class ScoreInfo {
+		public ScoreInfo() {
+			scores = new String[scoreClasses.length];
+			scoreValue = new Comparable[scoreClasses.length];
+		}
+		
+		public Range range;
+		public Integer overlap;
+		
+		public String[] scores;
+		public Comparable[] scoreValue;
+	}
+
+	/**
+	 * This class handles clicks on table row headers, for sorting
+	 */
+	private class SigScoresSorter extends MouseAdapter {
+		private SigScoresTableModel model;
+		private JTable table;
+				
+		private int lastSortedCol = -1;
+		
+		public SigScoresSorter(SigScoresTableModel model, JTable table) {
+			this.model = model;
+			this.table = table;
+		}
+		
+		public void setUnsorted() {
+			lastSortedCol = -1;
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent me) {
+			int col = table.getColumnModel().getColumnIndexAtX(me.getX());
+			
+			// sanity check
+			if(col < 0)
+				return;
+			
+			
+			if(col == lastSortedCol) {
+				Collections.reverse(model.scores);
+				
+				model.headerRenderer.setReversed(!model.headerRenderer.isReversed());
+			}
+			else {
+				Collections.sort(model.scores, new ScoreInfoComparator(col));
+				model.headerRenderer.setSortColumn(col);
+				model.headerRenderer.setReversed(true); // we default to reversed!
+
+				lastSortedCol = col;
+			}
+			
+			// notify the table
+			model.fireTableDataChanged();
+			
+			// make the table header repaint (for new arrows)
+			table.getTableHeader().repaint();
+		}
+	}
+
+	/**
+	 * This class actually compares scoreinfo fields
+	 * @author Lucas Madar
+	 *
+	 */
+	private class ScoreInfoComparator implements Comparator<ScoreInfo> {
+		private int column;
+		
+		public ScoreInfoComparator(int column) {
+			this.column = column;
+		}
+
+		private Comparable getVal(ScoreInfo sc) {
+			switch(column) {
+			case 0:
+				return sc.range;
+			case 1:
+				return sc.overlap;
+			default:
+				return sc.scoreValue[column - 2];	
+			}
+		}
+		
+		public int compare(ScoreInfo s1, ScoreInfo s2) {
+			Comparable v1 = getVal(s1);
+			Object v2 = getVal(s2);
+			
+			if(v1 == null && v2 == null)
+				return 0;
+			
+			if(v1 == null)
+				return +1;
+			if(v2 == null)
+				return -1;
+			
+			return -(v1.compareTo(v2));
+		}	
+	}
 }
