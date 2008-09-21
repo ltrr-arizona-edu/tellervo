@@ -20,8 +20,8 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import edu.cornell.dendro.corina.cross.Grid;
-import edu.cornell.dendro.corina.cross.GridFrame;
+import edu.cornell.dendro.corina.cross.legacy.Grid;
+import edu.cornell.dendro.corina.cross.legacy.GridFrame;
 import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.editor.Editor;

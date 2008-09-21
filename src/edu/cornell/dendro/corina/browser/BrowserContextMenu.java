@@ -21,9 +21,9 @@
 package edu.cornell.dendro.corina.browser;
 
 import edu.cornell.dendro.corina.editor.Editor;
-import edu.cornell.dendro.corina.cross.CrossdateKit;
-import edu.cornell.dendro.corina.cross.CrossdateWindow;
-import edu.cornell.dendro.corina.cross.Sequence;
+import edu.cornell.dendro.corina.cross.legacy.CrossdateKit;
+import edu.cornell.dendro.corina.cross.legacy.CrossdateWindow;
+import edu.cornell.dendro.corina.cross.legacy.Sequence;
 import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.graph.BargraphFrame;
 import edu.cornell.dendro.corina.gui.TextWindow;
