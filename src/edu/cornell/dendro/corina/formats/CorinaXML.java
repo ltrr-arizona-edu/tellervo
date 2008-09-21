@@ -279,7 +279,10 @@ public class CorinaXML implements Filetype {
 			try {
 				year = Integer.parseInt(yearStr, 10);
 				count = Integer.parseInt(countStr, 10);
-				val = Integer.parseInt(valStr, 10);
+				
+				// read in value as a float and round!
+				Float tmpVal = Float.parseFloat(valStr);
+				val = Math.round(tmpVal);
 			} catch (NumberFormatException nfe) {
 				throw new IOException("Invalid values in readings!");
 			}
@@ -374,7 +377,7 @@ public class CorinaXML implements Filetype {
 			try {
 				units = Integer.parseInt(unitsStr);
 			} catch (NumberFormatException nfe) {
-				units = -6; // magic number? why not.
+				units = -5; // magic number? why not.
 			}
 			
 			if(rtype.equals("annual")) {
@@ -490,7 +493,7 @@ public class CorinaXML implements Filetype {
 		// maybe one day we want to have other values here?
 		// or check some metadata?
 		readings.setAttribute("type", "annual");
-		readings.setAttribute("units", "-6");
+		readings.setAttribute("units", "-5");
 		
 		// get the data
 		List<Object> data = s.getData();
