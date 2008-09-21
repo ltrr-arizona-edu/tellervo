@@ -109,15 +109,13 @@ public class TScore extends RValue {
 
 	/** Return a prettier name for this cross: "T-Score".
 	 @return the name of this cross, "T-Score" */
-	@Override
-	public String getName() {
+	public static String getName() {
 		return I18n.getText("tscore");
 	}
 
 	/** A format string for T-scores.
 	 @return a format string for T-scores */
-	@Override
-	public String getFormat() {
+	public static String getFormat() {
 		return App.prefs.getPref("corina.cross.tscore.format", "0.00");
 	}
 

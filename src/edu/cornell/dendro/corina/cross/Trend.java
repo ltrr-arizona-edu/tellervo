@@ -66,13 +66,11 @@ public class Trend extends Cross {
         return 0.65f;
     }
 
-    @Override
-	public String getName() {
+	public static String getName() {
 	return I18n.getText("trend");
     }
 
-    @Override
-	public String getFormat() {
+	public static String getFormat() {
 	     return App.prefs.getPref("corina.cross.trend.format", "0.0%");
     }
 

@@ -71,15 +71,13 @@ public class RValue extends Cross {
 
 	/** Return a prettier name for this cross: "R-Value".
 	 @return the name of this cross, "R-Value" */
-	@Override
-	public String getName() {
+	public static String getName() {
 		return I18n.getText("rvalue");
 	}
 
 	/** A format string for R-values.
 	 @return a format string for R-values */
-	@Override
-	public String getFormat() {
+	public static String getFormat() {
 		return App.prefs.getPref("corina.cross.rvalue.format", "0.00");
 	}
 

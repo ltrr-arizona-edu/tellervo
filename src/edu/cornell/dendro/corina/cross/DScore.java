@@ -99,13 +99,11 @@ public class DScore extends Cross {
 	this.trend = tr;
     }
 
-    @Override
-	public String getName() {
+	public static String getName() {
 	return I18n.getText("dscore");
     }
 
-    @Override
-	public String getFormat() {
+	public static String getFormat() {
 	    return App.prefs.getPref("corina.cross.dscore.format", "0.00");
     }
 

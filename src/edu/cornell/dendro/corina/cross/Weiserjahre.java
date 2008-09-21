@@ -34,8 +34,7 @@ public class Weiserjahre extends Cross {
     	super(fixed, moving);
     }
 
-    @Override
-	public String getFormat() {
+	public static String getFormat() {
         // FIXME: this should be a pref, as well
         return App.prefs.getPref("corina.cross.weiserjahre.format", "0.0%") +
         	"of 0000";
@@ -52,8 +51,7 @@ public class Weiserjahre extends Cross {
         return 0.65f;
     }
 
-    @Override
-	public String getName() {
+	public static String getName() {
 	return I18n.getText("weiserjahre");
     }
 
