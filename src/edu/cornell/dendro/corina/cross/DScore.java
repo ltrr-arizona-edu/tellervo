@@ -99,13 +99,21 @@ public class DScore extends Cross {
 	this.trend = tr;
     }
 
-	public static String getName() {
+	public String getName() {
 	return I18n.getText("dscore");
     }
 
-	public static String getFormat() {
+	public String getFormat() {
 	    return App.prefs.getPref("corina.cross.dscore.format", "0.00");
     }
+	
+	public static String getNameStatic() {
+		return new DScore().getName();
+	}
+	
+	public static String getFormatStatic() {
+		return new DScore().getFormat();
+	}
 
     @Override
 	public boolean isSignificant(float score, int overlap) {

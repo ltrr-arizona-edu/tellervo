@@ -34,7 +34,7 @@ public class Weiserjahre extends Cross {
     	super(fixed, moving);
     }
 
-	public static String getFormat() {
+	public String getFormat() {
         // FIXME: this should be a pref, as well
         return App.prefs.getPref("corina.cross.weiserjahre.format", "0.0%") +
         	"of 0000";
@@ -51,10 +51,19 @@ public class Weiserjahre extends Cross {
         return 0.65f;
     }
 
-	public static String getName() {
+	public String getName() {
 	return I18n.getText("weiserjahre");
     }
 
+	public static String getNameStatic() {
+		return new Weiserjahre().getName();
+	}
+	
+	public static String getFormatStatic() {
+		return new Weiserjahre().getFormat();
+	}
+
+	
     private int signifigantcount = 0;
 
     // returns the number of signifigant intervals of the last compute()

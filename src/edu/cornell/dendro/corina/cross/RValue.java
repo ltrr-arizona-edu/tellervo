@@ -71,15 +71,24 @@ public class RValue extends Cross {
 
 	/** Return a prettier name for this cross: "R-Value".
 	 @return the name of this cross, "R-Value" */
-	public static String getName() {
+	public String getName() {
 		return I18n.getText("rvalue");
 	}
 
 	/** A format string for R-values.
 	 @return a format string for R-values */
-	public static String getFormat() {
+	public String getFormat() {
 		return App.prefs.getPref("corina.cross.rvalue.format", "0.00");
 	}
+	
+	public static String getNameStatic() {
+		return new RValue().getName();
+	}
+	
+	public static String getFormatStatic() {
+		return new RValue().getFormat();
+	}
+
 
 	@Override
 	public boolean isSignificant(float score, int overlap) {

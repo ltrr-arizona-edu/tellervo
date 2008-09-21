@@ -109,15 +109,24 @@ public class TScore extends RValue {
 
 	/** Return a prettier name for this cross: "T-Score".
 	 @return the name of this cross, "T-Score" */
-	public static String getName() {
+	public String getName() {
 		return I18n.getText("tscore");
 	}
 
 	/** A format string for T-scores.
 	 @return a format string for T-scores */
-	public static String getFormat() {
+	public String getFormat() {
 		return App.prefs.getPref("corina.cross.tscore.format", "0.00");
 	}
+	
+	public static String getNameStatic() {
+		return new TScore().getName();
+	}
+	
+	public static String getFormatStatic() {
+		return new TScore().getFormat();
+	}
+
 
 	// for 99.5% confidence, from PIK's table (source?)
 	// "statistics for archaeologists" (DRENNAN) is off-by-a-column; is he wrong?

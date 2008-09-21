@@ -66,13 +66,22 @@ public class Trend extends Cross {
         return 0.65f;
     }
 
-	public static String getName() {
+	public String getName() {
 	return I18n.getText("trend");
     }
 
-	public static String getFormat() {
+	public String getFormat() {
 	     return App.prefs.getPref("corina.cross.trend.format", "0.0%");
     }
+	
+	public static String getNameStatic() {
+		return new Trend().getName();
+	}
+	
+	public static String getFormatStatic() {
+		return new Trend().getFormat();
+	}
+
 
     // same data, but in arrays
     private float fixedData[], movingData[];
