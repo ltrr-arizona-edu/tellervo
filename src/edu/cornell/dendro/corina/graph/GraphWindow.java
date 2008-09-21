@@ -154,140 +154,12 @@ public class GraphWindow extends XFrame implements SampleListener,
 	public GrapherPanel plot; // the plot area itself
 	public PlotAgents agents;
 	public GraphElementsPanel elemPanel;
+	public GraphController controller;
 
 	private JScrollPane scroller; // scroller enclosing the plot
 
 	// data
 	private List<Graph> samples; // of Graph
-
-	// adjust vertical spacing
-	public void squeezeTogether() {
-		for (int i = 0; i < samples.size(); i++)
-			((Graph) samples.get(i)).yoffset = 0;
-		repaint();
-	}
-
-	public void spreadOut(int units) {
-		for (int i = 0; i < samples.size(); i++)
-			((Graph) samples.get(i)).yoffset = i * units;
-		repaint();
-	}
-
-	public void halveScale() {
-		for (int i = 0; i < samples.size(); i++) {
-			Graph g = (Graph) samples.get(i);
-			g.scale /= 2;
-		}
-		repaint();		
-	}
-	
-	public void doubleScale() {
-		for (int i = 0; i < samples.size(); i++) {
-			Graph g = (Graph) samples.get(i);
-			g.scale *= 2;
-		}
-		repaint();		
-	}
-	
-	public void resetScaling() {
-		for (int i = 0; i < samples.size(); i++) {
-			Graph g = (Graph) samples.get(i);
-			g.scale = g.graph.getScale();
-		}
-		repaint();
-	}
-	
-	public void scaleToFitWidth() {
-		int viewportSize = scroller.getWidth();
-		int nYears = plot.getGraphingRange().span() + 2;
-		
-		// viewportSize is the number of pixels.
-		// nyears = 
-		int ppy = viewportSize / nYears;
-		plot.forceYearWidth(ppy);
-		repaint();
-		scrollTo(plot.getGraphingRange().getStart());
-	}
-	
-	public void scaleToFitHeight() {
-		int bottom = plot.getHeight() - GrapherPanel.AXIS_HEIGHT;
-		int maxheight = plot.getMaxPixelHeight();
-		int uph = (int) (10.0 * bottom / maxheight);
-		plot.forceUnitHeight(uph);
-		repaint();
-	}
-	
-	public void squishTogether() {
-		// squish together samples in visible window
-
-		// BUG: assumes sample[current] is visible.
-
-		// first, set samples[current] = 0
-		((Graph) samples.get(plot.current)).yoffset = 0;
-
-		// compute viewport range
-		// REFACTOR: write a getYearForPoint() method, and call that on both
-		// ends of the visible JViewPane
-		Year viewportLeft = plot.getRange().getStart().add(
-				scroller.getHorizontalScrollBar().getValue() / plot.getYearWidth());
-		int viewportSize = scroller.getWidth() / plot.getYearWidth();
-		Range viewport = new Range(viewportLeft, viewportSize);
-
-		// idea: emphasize middle 50% of viewport
-
-		// for each other graph, minimize chi^2 (chi) in viewport
-		for (int i = 0; i < samples.size(); i++) {
-			// (skip current)
-			if (i == plot.current)
-				continue;
-
-			// make sure it's there at all, otherwise, don't bother.
-			// intersect(viewport, graph[i], graph[current])
-			Range range = ((Graph) samples.get(i)).getRange();
-			Range overlap = range.intersection(viewport);
-			overlap = overlap.intersection(((Graph) samples.get(plot.current))
-					.getRange());
-			if (overlap.span() == 0)
-				continue;
-
-			// now, compute mean of sample[current][y] - sample[i][y]
-
-			List data = ((Graph) samples.get(i)).graph.getData();
-			int j = overlap.getStart().diff(range.getStart()); // index into
-																// data[i]
-			double dataScale = ((Graph) samples.get(i)).scale;
-
-			List base = ((Graph) samples.get(plot.current)).graph.getData();
-			int k = overlap.getStart().diff(
-					((Graph) samples.get(plot.current)).getRange().getStart()); // graph.getStart());
-																				// //
-																				// index
-																				// into
-																				// base=data[plot.current]
-			double baseScale = ((Graph) samples.get(plot.current)).scale;
-
-			double mean = 0.0;
-			for (Year y = overlap.getStart(); y.compareTo(overlap.getEnd()) <= 0; y = y
-					.add(1)) {
-				mean += ((Number) data.get(j++)).doubleValue() * dataScale
-						- ((Number) base.get(k++)).doubleValue() * baseScale;
-			}
-			mean /= overlap.span();
-
-			// make -mean its new offset
-			((Graph) samples.get(i)).yoffset = (int) -mean;
-		}
-
-		// make the lowest one have yoffset=0 now
-		int min = ((Graph) samples.get(0)).yoffset;
-		for (int i = 1; i < samples.size(); i++)
-			min = Math.min(min, ((Graph) samples.get(i)).yoffset);
-		for (int i = 0; i < samples.size(); i++)
-			((Graph) samples.get(i)).yoffset -= min;
-
-		// repaint
-		repaint();
-	}
 
 	// add a new sample
 	public void add(Sample s) {
@@ -523,6 +395,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		
+		controller = new GraphController(plot, scroller);
+		
 		JPanel content = new JPanel(new BorderLayout());
 		setContentPane(content);
 		
@@ -535,7 +409,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		elemPanel.setVisible(false);
 				
 		// set initial y-offsets: spread 'em out
-		spreadOut(50);						
+		controller.spreadOut(50);						
 		
 		// corner!
 		JLabel black = new JLabel();
@@ -552,7 +426,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		if (samples.size() == 2
 				&& ((((Graph) samples.get(0)).graph instanceof Index) || (((Graph) samples
 						.get(1)).graph instanceof Index)))
-			squeezeTogether();
+			controller.squeezeTogether();
 
 		// ooh, menubar
 		{

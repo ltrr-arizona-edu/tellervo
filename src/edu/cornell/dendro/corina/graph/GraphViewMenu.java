@@ -141,7 +141,7 @@ class GraphViewMenu extends JMenu {
 		JMenuItem squeeze = Builder.makeMenuItem("baselines_align", true, "squeezevertically.png");
 		squeeze.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				window.squeezeTogether();
+				window.controller.squeezeTogether();
 			}
 		});
 		this.add(squeeze);
@@ -151,7 +151,7 @@ class GraphViewMenu extends JMenu {
 		JMenuItem spread_25 = new JMenuItem("25 units");
 		spread_25.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				window.spreadOut(25);
+				window.controller.spreadOut(25);
 			}
 		});
 		spread.add(spread_25);
@@ -159,7 +159,7 @@ class GraphViewMenu extends JMenu {
 		JMenuItem spread_50 = new JMenuItem("50 units");
 		spread_50.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				window.spreadOut(50);
+				window.controller.spreadOut(50);
 			}
 		});
 		spread.add(spread_50);
@@ -167,7 +167,7 @@ class GraphViewMenu extends JMenu {
 		JMenuItem spread_100 = new JMenuItem("100 units (half scale index plot)");
 		spread_100.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				window.spreadOut(100);
+				window.controller.spreadOut(100);
 			}
 		});
 		spread.add(spread_100);
@@ -175,7 +175,7 @@ class GraphViewMenu extends JMenu {
 		JMenuItem spread_200 = new JMenuItem("200 units (full scale index plot)");
 		spread_200.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				window.spreadOut(200);
+				window.controller.spreadOut(200);
 			}
 		});
 		spread.add(spread_200);
@@ -191,7 +191,7 @@ class GraphViewMenu extends JMenu {
 		squish.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					window.squishTogether();
+					window.controller.squishTogether();
 				} catch (Exception ex) {
 					// see squishTogether() method for at least 1 remaining
 					// bug
@@ -207,9 +207,9 @@ class GraphViewMenu extends JMenu {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					// first, squish them together.
-					window.squishTogether();
+					window.controller.squishTogether();
 					// then, squish it horizontally.
-					window.scaleToFitWidth();
+					window.controller.scaleToFitWidth();
 				} catch (Exception ex) {
 					// see squishTogether() method for at least 1 remaining
 					// bug
@@ -225,10 +225,10 @@ class GraphViewMenu extends JMenu {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					// first, squish them together.
-					window.squishTogether();
+					window.controller.squishTogether();
 					// then, squish it horizontally.
-					window.scaleToFitWidth();
-					window.scaleToFitHeight();
+					window.controller.scaleToFitWidth();
+					window.controller.scaleToFitHeight();
 				} catch (Exception ex) {
 					// see squishTogether() method for at least 1 remaining
 					// bug
@@ -244,7 +244,7 @@ class GraphViewMenu extends JMenu {
 		JMenuItem halvescale = Builder.makeMenuItem("escale_halve", true, "axiszoomout.png");
 		halvescale.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				window.halveScale();
+				window.controller.halveScale();
 			}
 		});
 		this.add(halvescale);			
@@ -253,7 +253,7 @@ class GraphViewMenu extends JMenu {
 		JMenuItem doublescale = Builder.makeMenuItem("escale_double", true, "axiszoomin.png");
 		doublescale.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				window.doubleScale();
+				window.controller.doubleScale();
 			}
 		});
 		this.add(doublescale);			
@@ -262,7 +262,7 @@ class GraphViewMenu extends JMenu {
 		JMenuItem resetscale = Builder.makeMenuItem("escale_reset");
 		resetscale.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				window.resetScaling();
+				window.controller.resetScaling();
 			}
 		});
 		this.add(resetscale);			

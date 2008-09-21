@@ -67,7 +67,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 	
 	// public data
-	public List graphs; // of Graph
+	public List<Graph> graphs; // of Graph
 	public int current = 0; // currenly selected sample
 
 	// gui
@@ -1556,4 +1556,11 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
         scorePostpend = " [t: " + scoreCalculator.tscore + ", r: " + scoreCalculator.rvalue + "] ";
 	}
+	
+	// stuff to make graphcontroller realizable
+	public List<Graph> getSamples() {
+		return graphs;
+	}
+	
+	
 }
