@@ -17,10 +17,12 @@ import java.util.Map.Entry;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.graph.Graph;
 import edu.cornell.dendro.corina.gui.SortedHeaderArrowRenderer;
+import edu.cornell.dendro.corina.index.DecimalRenderer;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.Sort;
 
@@ -47,6 +49,16 @@ public class SigScoresTableModel extends AbstractTableModel {
 		
 		table.getTableHeader().addMouseListener(sorter);
 		table.getTableHeader().setDefaultRenderer(headerRenderer);
+	}
+	
+	public void applyFormatting() {
+    	TableColumnModel c = table.getColumnModel();
+    	
+    	c.getColumn(0).setCellRenderer(new RangeRenderer());
+    	c.getColumn(1).setCellRenderer(new DecimalRenderer("0000"));
+    	c.getColumn(2).setCellRenderer(new DecimalRenderer("0.0%"));
+    	for(int i = 3; i < 7; i++)
+    		c.getColumn(i).setCellRenderer(new DecimalRenderer("00.00"));
 	}
 	
 	public void clearCrossdates() {

@@ -22,6 +22,8 @@ package edu.cornell.dendro.corina.cross;
 
 import java.text.DecimalFormat;
 
+import edu.cornell.dendro.corina.Year;
+
 /**
    A histogram for crossdates.
 
@@ -76,10 +78,11 @@ public class Histogram {
 
 	// copy all of the scores from this crossdate into a float array.
 	private static float[] allScores(Cross c) {
-		int n = c.getRange().span();
-		float x[] = new float[n];
-		for (int i = 0; i < n; i++)
-			x[i] = c.getScoreOLD(i);
+		float x[] = new float[c.getRange().span()];
+		
+		for (Year y = c.getRange().getStart(); c.getRange().contains(y); y = y.add(1))
+			x[y.diff(c.getRange().getStart())] = c.getScore(y);
+		
 		return x;
 	}
 
@@ -100,9 +103,6 @@ public class Histogram {
 
 		// number of inputs
 		int n = data.length;
-
-		// number of buckets -- REMOVE ME!
-		int numberOfBuckets = NUMBER_OF_BUCKETS;
 
 		// compute high/low/step
 		{
@@ -136,13 +136,13 @@ public class Histogram {
 				}
 			}
 			if (hasInfty)
-				step = (high - low) / (numberOfBuckets + 1);
+				step = (high - low) / (NUMBER_OF_BUCKETS + 1);
 			else
-				step = (high - low) / numberOfBuckets;
+				step = (high - low) / NUMBER_OF_BUCKETS;
 		}
 
 		// make the buckets
-		buckets = new int[numberOfBuckets]; // all zero
+		buckets = new int[NUMBER_OF_BUCKETS]; // all zero
 
 		// fill the buckets with data
 		for (int i = 0; i < n; i++) {
@@ -154,8 +154,8 @@ public class Histogram {
 
 			// if rounding puts it out of the last bucket,
 			// or it's an infinity, put it in the last bucket.
-			if (target >= numberOfBuckets)
-				target = numberOfBuckets - 1;
+			if (target >= NUMBER_OF_BUCKETS)
+				target = NUMBER_OF_BUCKETS - 1;
 
 			buckets[target]++;
 		}

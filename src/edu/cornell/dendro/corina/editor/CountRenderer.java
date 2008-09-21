@@ -40,6 +40,10 @@ public class CountRenderer extends DefaultTableCellRenderer {
         // we are opaque (is this needed still?)
         setOpaque(true);
     }
+    
+    public void setMax(int max) {
+    	this.max = max;
+    }
 
     // me!
     @Override
@@ -48,7 +52,7 @@ public class CountRenderer extends DefaultTableCellRenderer {
                                                    boolean isSelected, boolean hasFocus,
                                                    int row, int column) {
         // update my value
-        val = ((Number) value).intValue();
+        val = (value == null) ? 0 : ((Number) value).intValue();
 
         // set background color
         super.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());

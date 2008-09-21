@@ -8,6 +8,8 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumnModel;
@@ -27,9 +30,11 @@ import edu.cornell.dendro.corina.graph.PlotAgents;
 import edu.cornell.dendro.corina.gui.DBBrowser;
 import edu.cornell.dendro.corina.gui.ReverseScrollBar;
 import edu.cornell.dendro.corina.index.DecimalRenderer;
+import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleSummary;
 /*
  * CrossDatingWizard.java
  *
@@ -44,7 +49,11 @@ import edu.cornell.dendro.corina.util.Center;
 public class CrossdateDialog extends javax.swing.JDialog {
 	private ElementList crossdatingElements;
 	private CrossdateCollection crossdates;
+	
 	private SigScoresTableModel sigScoresModel;
+	private AllScoresTableModel allScoresModel;
+	private HistogramTableModel histogramModel;
+
 	private GrapherPanel graph;
 	private List<Graph> graphSamples;
 	private JScrollPane graphScroller;
@@ -101,6 +110,22 @@ public class CrossdateDialog extends javax.swing.JDialog {
 			for(Element e : preexistingElements)
 				dbb.addElement(e);
 		
+		// select the site in the first element
+		Element e = preexistingElements.get(0);
+		if(e != null) {
+			try	{
+				BaseSample bs = e.loadBasic();
+				
+				SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
+
+				if(ss != null) {
+					dbb.selectSiteByCode(ss.getSiteCode());
+				}
+			} catch (Exception ex) {
+				// ignore...
+			}
+		}
+		
     	dbb.setMinimumSelectedElements(2);
     	dbb.setTitle("Crossdate...");
     	
@@ -121,7 +146,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	// start our new crossdates
     	crossdates = new CrossdateCollection();
     	crossdatingElements = crossdates.setElements(crossdatingElements);   	
- 
+     	
     	setupTables();
     	setupGraph();
     	setupListeners();
@@ -132,21 +157,39 @@ public class CrossdateDialog extends javax.swing.JDialog {
     }
     
     private void setupTables() {
+    	// all windows need a vertical scroll bar!
+    	jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+    	jScrollPane2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+    	jScrollPane3.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+    	// sig scores table
        	sigScoresModel = new SigScoresTableModel(tableSignificantScores);
     	tableSignificantScores.setModel(sigScoresModel);
-    	tableSignificantScores.getTableHeader().setReorderingAllowed(false);
+    	sigScoresModel.applyFormatting();
     	
-    	TableColumnModel c = tableSignificantScores.getColumnModel();
-    	
-    	c.getColumn(0).setCellRenderer(new RangeRenderer());
-    	c.getColumn(1).setCellRenderer(new DecimalRenderer("0000"));
-    	c.getColumn(2).setCellRenderer(new DecimalRenderer("0.0%"));
-    	for(int i = 3; i < 7; i++)
-    		c.getColumn(i).setCellRenderer(new DecimalRenderer("00.00"));
-    	
+    	tableSignificantScores.getTableHeader().setReorderingAllowed(false);    	
     	tableSignificantScores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     	tableSignificantScores.setRowSelectionAllowed(true);
     	tableSignificantScores.setColumnSelectionAllowed(false);
+    	
+    	// all scores table
+    	allScoresModel = new AllScoresTableModel(tableAllScores);
+    	tableAllScores.setModel(allScoresModel);
+    	allScoresModel.applyFormatting();
+    	
+    	tableAllScores.getTableHeader().setReorderingAllowed(false);
+    	tableAllScores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    	tableAllScores.setCellSelectionEnabled(true);
+    	
+    	// histogram table
+    	histogramModel = new HistogramTableModel(tableHistogram);
+    	tableHistogram.setModel(histogramModel);
+    	histogramModel.applyFormatting();
+    	
+    	tableHistogram.getTableHeader().setReorderingAllowed(false);    	
+    	tableHistogram.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    	tableHistogram.setRowSelectionAllowed(true);
+    	tableHistogram.setColumnSelectionAllowed(false);
     }
     
     private void setupListeners() {    	
@@ -157,9 +200,14 @@ public class CrossdateDialog extends javax.swing.JDialog {
     			int col = cboSecondary.getSelectedIndex();
     			
     			try {
-    				sigScoresModel.setCrossdates(crossdates.getPairing(row, col));
+    				CrossdateCollection.Pairing pairing = crossdates.getPairing(row, col);
+    				sigScoresModel.setCrossdates(pairing);
+    				allScoresModel.setCrossdates(pairing);
+    				histogramModel.setCrossdates(pairing);
     			} catch (CrossdateCollection.NoSuchPairingException nspe) {
     				sigScoresModel.clearCrossdates();
+    				allScoresModel.clearCrossdates();
+    				histogramModel.clearCrossdates();
     			}
     		}
     	};
@@ -173,11 +221,48 @@ public class CrossdateDialog extends javax.swing.JDialog {
 				if(lse.getValueIsAdjusting())
 					return;
 				
-				updateGraph();
+				// make the graph reflect the row we selected!
+				updateGraph(sigScoresModel.getGraphForRow(tableSignificantScores.getSelectedRow()));
 			}
     	});
+    	
+    	// ok, now our all scores table. More complicated, because it can change both col & row selection.
+    	ListSelectionListener allScoresSelectionListener = new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent lse) {
+				if(lse.getValueIsAdjusting())
+					return;
+				
+				// just like before...
+				updateGraph(allScoresModel.getGraphForCell(tableAllScores.getSelectedRow(), 
+						tableAllScores.getSelectedColumn()));
+			}
+    	};
+    	tableAllScores.getSelectionModel().addListSelectionListener(allScoresSelectionListener);
+    	tableAllScores.getColumnModel().getSelectionModel().addListSelectionListener(allScoresSelectionListener);
+    	
+    	// when the score type selected on our all scores table changes
+    	cboDisplayStats.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			ScoreType score = (ScoreType) cboDisplayStats.getSelectedItem();
+    			
+    			// show scores for this class...
+    			if(score != null)
+    				allScoresModel.setScoreClass(score.scoreClass);
+    		}
+    	});
+
+    	// when the score type selected on our histogram table changes
+    	cboDisplayHistogram.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			ScoreType score = (ScoreType) cboDisplayHistogram.getSelectedItem();
+    			
+    			// show scores for this class...
+    			if(score != null)
+    				histogramModel.setScoreClass(score.scoreClass);
+    		}
+    	});
+
     }
-    
     
     private void setupGraph() {
 		// initialize our plotting agents
@@ -204,15 +289,6 @@ public class CrossdateDialog extends javax.swing.JDialog {
 		// create a graph panel; put it in a scroll pane
 		graph = new GrapherPanel(graphSamples, agents, null, gInfo);
 		graph.setUseVerticalScrollbar(true);
-		/*{
-			@Override
-			public Dimension getPreferredScrollableViewportSize() {
-				// -10s are for insets set below in the emptyBorder
-				int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width - (otherPanelDim.width + extraWidth);
-				int graphWidth = getGraphPixelWidth();
-				return new Dimension((graphWidth < screenWidth) ? graphWidth : screenWidth, otherPanelDim.height);
-			}
-		};*/
 		
 		graphScroller = new JScrollPane(graph,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -243,13 +319,55 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	
     	cboPrimary.setSelectedIndex(0);
     	cboSecondary.setSelectedIndex(1);
+    	
+    	// Now, the score types
+    	ArrayList<ScoreType> scoreTypes = new ArrayList<ScoreType>();
+    	// make a nice list of all score types
+    	for(String t : Cross.ALL_CROSSDATES) {
+    		try {
+    			scoreTypes.add(new ScoreType(t));
+    		} catch (Exception ex) {
+    			continue;
+    		}
+    	}
+    	
+    	// and set the model
+    	cboDisplayStats.setModel(new DefaultComboBoxModel(scoreTypes.toArray()));
+    	cboDisplayHistogram.setModel(new DefaultComboBoxModel(scoreTypes.toArray()));
+    	
+    	cboDisplayStats.setSelectedIndex(0);
+    	cboDisplayHistogram.setSelectedIndex(0);
+    }
+
+    /**
+     * A score type class 
+     * so we can stick classes in a combo box and have it look pretty
+     */
+    private static class ScoreType {
+    	public Class<?> scoreClass;
+    	public String name;
+    	
+    	public ScoreType(String className) throws Exception {
+    		try {
+				scoreClass = Class.forName(className);
+				Method m = scoreClass.getDeclaredMethod("getNameStatic", (Class[]) null);
+				name = (String) m.invoke((Object[]) null, (Object[]) null);
+			} catch (Exception e) {
+				throw e; // lame, but ok. we don't really care.
+			}
+    	}
+    	
+    	public String toString() {
+    		return name;
+    	}
     }
     
-    private void updateGraph() {
-    	List<Graph> newGraphs = sigScoresModel.getGraphForRow(tableSignificantScores.getSelectedRow());
-    	
+    private void updateGraph(List<Graph> newGraphs) {    	
     	if(newGraphs == null || newGraphs.size() != 2) {
-    		graphScroller.setViewportView(new JLabel("Choose a valid crossdate"));
+    		JLabel invalid = new JLabel("Choose a valid crossdate");
+    		invalid.setHorizontalAlignment(SwingConstants.CENTER);
+
+    		graphScroller.setViewportView(invalid);
     		return;
     	}
 
