@@ -24,6 +24,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumnModel;
 
 import edu.cornell.dendro.corina.graph.Graph;
+import edu.cornell.dendro.corina.graph.GraphController;
 import edu.cornell.dendro.corina.graph.GraphInfo;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.graph.PlotAgents;
@@ -55,6 +56,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
 	private HistogramTableModel histogramModel;
 
 	private GrapherPanel graph;
+	private GraphController graphController;
 	private List<Graph> graphSamples;
 	private JScrollPane graphScroller;
     
@@ -271,8 +273,9 @@ public class CrossdateDialog extends javax.swing.JDialog {
 		// create a new graphinfo structure, so we can tailor it to our needs.
 		GraphInfo gInfo = new GraphInfo();
 		
-		// force no drawing of graph names
+		// force no drawing of graph names and drawing of vertical axis
 		gInfo.overrideDrawGraphNames(false);
+		gInfo.overrideShowVertAxis(true);
 		
 		// set up our samples
 		graphSamples = new ArrayList<Graph>(2);
@@ -294,8 +297,11 @@ public class CrossdateDialog extends javax.swing.JDialog {
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		graphScroller.setVerticalScrollBar(new ReverseScrollBar());
-				
-		graphScroller.setViewportView(new JLabel("Choose a valid crossdate"));
+
+		graphController = new GraphController(graph, graphScroller);
+
+		// get our JLabel set up
+		updateGraph(null);
 		
 		panelChart.setLayout(new BorderLayout());
 		panelChart.add(graphScroller, BorderLayout.CENTER);
@@ -365,8 +371,10 @@ public class CrossdateDialog extends javax.swing.JDialog {
     private void updateGraph(List<Graph> newGraphs) {    	
     	if(newGraphs == null || newGraphs.size() != 2) {
     		JLabel invalid = new JLabel("Choose a valid crossdate");
+    		invalid.setAlignmentX(CENTER_ALIGNMENT);
     		invalid.setHorizontalAlignment(SwingConstants.CENTER);
 
+    		graphScroller.setRowHeader(null);
     		graphScroller.setViewportView(invalid);
     		return;
     	}
@@ -381,8 +389,11 @@ public class CrossdateDialog extends javax.swing.JDialog {
     		graphSamples.set(1, newGraphs.get(1));
     	}
     	
-    	graph.update();
+    	graph.update(false);
+    	graphController.scaleToFitHeight(); // calls graph.update(true) for us
     	graphScroller.setViewportView(graph);
+		graph.setAxisVisible(true, true);
+		panelChart.revalidate();
     }
     
     /** This method is called from within the constructor to

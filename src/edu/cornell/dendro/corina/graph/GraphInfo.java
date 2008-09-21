@@ -239,4 +239,5 @@ public class GraphInfo {
 	// These are to be used ONLY by utilites that draw graphs
 	// They allow changes to the graphInfo without saving preferences!
 	public void overrideDrawGraphNames(boolean value) { showGraphNames = value; }
+	public void overrideShowVertAxis(boolean value) { showVertAxis = value; }
 }

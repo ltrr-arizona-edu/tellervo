@@ -64,7 +64,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 	protected Rectangle tempRect = new Rectangle();
 
 	// returns the maximum size, in pixels, that the graph will take up.
-	public int getYRange(GraphInfo gInfo, Graph g, int bottom) {
+	public int getYRange(GraphInfo gInfo, Graph g) {
 		float unitScale = gInfo.get10UnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
 		int miny = 0; // minimum always starts at zero...
 		int maxy = -100000;
@@ -79,7 +79,9 @@ public class StandardPlot implements CorinaGraphPlotter {
 				// BAD!  instead: (1) draw what i've got so far, and (2) NEXT point is a move-to.
 				// -- try to parse String as an integer?
 			}
-			int y = value - g.yoffset;//bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale);			
+			int y = (int) (yTransform(value * g.scale) * unitScale) - 
+				(int) (g.yoffset * unitScale); // DUPLICATE: this line appears above 3 times
+			//int y = value - g.yoffset;//bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale);			
 			if(y < miny)
 				miny = y;
 			if(y > maxy)

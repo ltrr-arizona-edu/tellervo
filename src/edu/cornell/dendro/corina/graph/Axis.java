@@ -29,21 +29,25 @@ public class Axis extends JPanel {
 	
 	private GraphInfo gInfo;
 	private int axisType;
+	private JPanel parent;
 	
 	public static final int AXIS_STANDARD = 1; // counts up from zero
 	public static final int AXIS_LOG = 3; // has percentages...
 	
 	public static final int AXIS_WIDTH = 50;
 
-	public Axis(GraphInfo gInfo, int type) {
+	public Axis(GraphInfo gInfo, int type, JPanel parent) {
 		// background -- default is black
 		this.gInfo = gInfo;
+		this.parent = parent;
 		setBackground(gInfo.getBackgroundColor());
 
-		// size of axis-margin (only width matters)
-		setPreferredSize(new Dimension(AXIS_WIDTH, 50));
-		
 		axisType = type;
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension(AXIS_WIDTH, parent.getSize().height);
 	}
 	
 	public void setAxisType(int axisType) {
@@ -57,6 +61,7 @@ public class Axis extends JPanel {
 		int tenunitSize = gInfo.get10UnitHeight();
 
 		int w = getWidth();
+		int lastLabelTop = Integer.MAX_VALUE;
 
 		// draw vertical axis
 		int bottom = getHeight() - GrapherPanel.AXIS_HEIGHT;
@@ -74,10 +79,17 @@ public class Axis extends JPanel {
 
 					// draw number -- every 50
 					if (i % 5 == 0) {
-						String value = String.valueOf(i * 10);				
-						g2.drawString(value, 
-								w - (g2.getFontMetrics().stringWidth(value) + 15), 
-								y + 5);	
+						int lsz = g2.getFontMetrics().getMaxAscent();
+						
+						if(lastLabelTop - (y+5) >= (lsz * 1.10)) {
+						
+							String value = String.valueOf(i * 10);				
+							g2.drawString(value, 
+									w - (g2.getFontMetrics().stringWidth(value) + 15), 
+									y + 5);	
+							
+							lastLabelTop = (y+5) - lsz;
+						}
 					}
 				
 					// update coordinates

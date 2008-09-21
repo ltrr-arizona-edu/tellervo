@@ -21,6 +21,7 @@
 package edu.cornell.dendro.corina.graph;
 
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -276,18 +277,24 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	
 	// stuff for dealing with the vertical axis
 	private Axis vertaxis = null;
-	
-	public void setAxisVisible(boolean visible) {
-		// set the preference...
-		App.prefs.setPref("corina.graph.vertical-axis", Boolean.toString(visible));
 
-		// reload the prefs into the graphInfo
-		gInfo.reloadPrefs();
+	public void setAxisVisible(boolean visible) {
+		setAxisVisible(visible, false);
+	}
+	
+	public void setAxisVisible(boolean visible, boolean override) {
+		// set the preference...
+		if(!override) {
+			App.prefs.setPref("corina.graph.vertical-axis", Boolean.toString(visible));
+
+			// reload the prefs into the graphInfo
+			gInfo.reloadPrefs();
+		}
 		
 		ensureScrollerExists();
 
 		if (gInfo.drawVertAxis()) {
-			vertaxis = new Axis(gInfo, agents.acquireDefaultAxisType());
+			vertaxis = new Axis(gInfo, agents.acquireDefaultAxisType(), this);
 			scroller.setRowHeaderView(vertaxis);
 			repaint();
 		} else {
@@ -1318,6 +1325,15 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	//    }
 
 	public void update() {
+		update(true);
+	}
+	
+	/**
+	 * Update the graph
+	 * 
+	 * @param redraw should we redraw the graph, or just update internal structures?
+	 */
+	public void update(boolean redraw) {
 		// notification that a preference or the sample list has changed.
 		for (int i = 0; i < graphs.size(); i++) {
 			Graph cg = (Graph) graphs.get(i);
@@ -1343,6 +1359,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// recompute range
 		computeRange();
+		
+		if(!redraw)
+			return;
+		
 		// change size
 		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * gInfo.getYearWidth(), getGraphHeight()));
 		// and redo ourselves!
@@ -1385,7 +1405,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		int width = screenWidth - frames;
 		if(vertaxis != null)
 			width -= Axis.AXIS_WIDTH;
-		return new Dimension(width, 480);
+		return new Dimension(width, getGraphHeight());
 	}
 
 	/**
@@ -1458,13 +1478,25 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		return getMaxPixelHeight() + GrapherPanel.AXIS_HEIGHT + gInfo.get10UnitHeight();
 	}
 	
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension d = super.getPreferredSize();
+		
+		ensureScrollerExists();
+		
+		if(scroller != null) {
+			d.height = scroller.getHeight();
+		}
+		
+		return d;
+	}
+	
 	public int getMaxPixelHeight() {
-		int bottom = getHeight() - GrapherPanel.AXIS_HEIGHT;		
 		int maxh = 0;
 		
 		for (int i = 0; i < graphs.size(); i++) {
 			Graph cg = (Graph) graphs.get(i);
-			int val = cg.getAgent().getYRange(gInfo, cg, bottom);
+			int val = cg.getAgent().getYRange(gInfo, cg);
 			if(val > maxh)
 				maxh = val;
 		}

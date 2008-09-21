@@ -56,7 +56,7 @@ public class GraphController {
 	}
 	
 	public void scaleToFitWidth() {
-		int viewportSize = scroller.getWidth();
+		int viewportSize = scroller.getViewport().getWidth();
 		int nYears = graph.getGraphingRange().span() + 2;
 		
 		// viewportSize is the number of pixels.
@@ -68,10 +68,17 @@ public class GraphController {
 	}
 	
 	public void scaleToFitHeight() {
-		int viewportSize = scroller.getHeight();
-		int bottom = viewportSize - GrapherPanel.AXIS_HEIGHT;
+		int viewportSize = scroller.getViewport().getExtentSize().height;
+		int viewHeight = viewportSize - GrapherPanel.AXIS_HEIGHT;
+
+		// force default height
+		graph.forceUnitHeight(10);
+		
+		// now, calculate height based on that
 		int maxheight = graph.getMaxPixelHeight();
-		int uph = (int) (10.0 * bottom / maxheight);
+		int uph = (int) (10.0f * (float) viewHeight / (float) maxheight);
+
+		// reset the scaled height...
 		graph.forceUnitHeight(uph);
 		graph.update();
 	}
