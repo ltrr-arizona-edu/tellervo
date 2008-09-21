@@ -113,12 +113,10 @@ public class HistogramTableModel extends AbstractTableModel {
         }
     }
 	
-	@Override
 	public int getColumnCount() {
 		return 3;
 	}
 
-	@Override
 	public int getRowCount() {
 		if(cross == null || histogram == null)
 			return 0;
@@ -126,7 +124,6 @@ public class HistogramTableModel extends AbstractTableModel {
 		return histogram.getNumberOfBuckets();
 	}
 
-	@Override
 	public Object getValueAt(int row, int col) {
 		int n = histogram.getBucketItems(row);
 		

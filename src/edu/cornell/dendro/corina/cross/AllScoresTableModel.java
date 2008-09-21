@@ -84,12 +84,10 @@ public class AllScoresTableModel extends AbstractTableModel {
 		row_max = cross.getRange().getEnd().row();
 	}
 	
-	@Override
 	public int getColumnCount() {
 		return 11;
 	}
 
-	@Override
 	public int getRowCount() {
 		if(cross == null)
 			return 0;
@@ -104,7 +102,6 @@ public class AllScoresTableModel extends AbstractTableModel {
 	    	return Integer.toString(col-1);
 	}
 	
-	@Override
 	public Object getValueAt(int row, int col) {
 		// for the year column
 		if (col == 0) {
