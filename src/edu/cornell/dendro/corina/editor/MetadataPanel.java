@@ -410,7 +410,8 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 		}
 
 		// keep this for good measure
-		addPair(new JLabel("db id:"), new JLabel(meta.get("::dbid").toString()), c);
+		if(meta.containsKey("::dbid"))
+			addPair(new JLabel("db id:"), new JLabel(meta.get("::dbid").toString()), c);
 		
 		String comments = (String) meta.get("comments");
 		if(comments != null) {
