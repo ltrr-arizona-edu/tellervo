@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina.cross;
+package edu.cornell.dendro.corina.cross.legacy;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

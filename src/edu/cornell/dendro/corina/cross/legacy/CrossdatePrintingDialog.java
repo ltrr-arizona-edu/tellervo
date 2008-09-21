@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.cross;
+package edu.cornell.dendro.corina.cross.legacy;
 
 import javax.swing.JDialog;
 

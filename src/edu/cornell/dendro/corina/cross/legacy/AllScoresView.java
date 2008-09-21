@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina.cross;
+package edu.cornell.dendro.corina.cross.legacy;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -42,6 +42,7 @@ import org.apache.commons.logging.Log;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.cross.Cross;
 import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.prefs.Prefs;

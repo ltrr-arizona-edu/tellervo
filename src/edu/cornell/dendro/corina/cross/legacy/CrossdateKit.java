@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.cross;
+package edu.cornell.dendro.corina.cross.legacy;
 
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
@@ -63,8 +63,8 @@ import java.awt.Component;
  samples (e.g., T-score or trend).  A "Run" button will run the
  requested crossdates, i.e., in a CrossdateWindow.
 
- @see edu.cornell.dendro.corina.cross.Sequence
- @see edu.cornell.dendro.corina.cross.CrossdateWindow
+ @see edu.cornell.dendro.corina.cross.legacy.Sequence
+ @see edu.cornell.dendro.corina.cross.legacy.CrossdateWindow
 
  @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
  @version $Id$

@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina.cross;
+package edu.cornell.dendro.corina.cross.legacy;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -35,6 +35,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.cross.Cross;
+import edu.cornell.dendro.corina.cross.Histogram;
 import edu.cornell.dendro.corina.editor.CountRenderer;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;

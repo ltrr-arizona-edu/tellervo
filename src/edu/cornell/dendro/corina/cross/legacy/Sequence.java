@@ -18,8 +18,9 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina.cross;
+package edu.cornell.dendro.corina.cross.legacy;
 
+import edu.cornell.dendro.corina.cross.Cross;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;

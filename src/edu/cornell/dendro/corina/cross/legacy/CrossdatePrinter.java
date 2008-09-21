@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina.cross;
+package edu.cornell.dendro.corina.cross.legacy;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -30,6 +30,9 @@ import java.text.DecimalFormat;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.cross.Cross;
+import edu.cornell.dendro.corina.cross.HighScore;
+import edu.cornell.dendro.corina.cross.Histogram;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.print.ByLine;
 import edu.cornell.dendro.corina.print.EmptyLine;

@@ -1,9 +1,12 @@
-package edu.cornell.dendro.corina.cross;
+package edu.cornell.dendro.corina.cross.legacy;
 
 // IDEA: what if i got rid of Element?  it's either a sample, or a
 // filename.  no, that's bad, i wouldn't be able to load massive
 // amounts of metadata, as browser requires...
 import edu.cornell.dendro.corina.graph.GraphWindow;
+import edu.cornell.dendro.corina.cross.DScore;
+import edu.cornell.dendro.corina.cross.TScore;
+import edu.cornell.dendro.corina.cross.Trend;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
@@ -204,9 +207,9 @@ public class TableView extends JPanel {
 		TableColumnModel columns = jtable.getColumnModel();
 
 		// HACK: replace me with: Cross.getFormat(alg)
-		String t = new TScore().getFormat();
-		String tr = new Trend().getFormat();
-		String d = new DScore().getFormat();
+		String t = TScore.getFormatStatic();
+		String tr = Trend.getFormatStatic();
+		String d = DScore.getFormatStatic();
 
 		// t, tr, d
 		columns.getColumn(1).setCellRenderer(new DecimalRenderer(t));

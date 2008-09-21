@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina.cross;
+package edu.cornell.dendro.corina.cross.legacy;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -51,7 +51,8 @@ import javax.swing.event.ChangeListener;
 
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.cross.sigscores.SignificantScoresView;
+import edu.cornell.dendro.corina.cross.Cross;
+import edu.cornell.dendro.corina.cross.legacy.sigscores.SignificantScoresView;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
@@ -139,11 +140,11 @@ import edu.cornell.dendro.corina.util.Overwrite;
  * so I won't even need to talk about them here.
  * </p>
  * 
- * @see edu.cornell.dendro.corina.cross.TableView
- * @see edu.cornell.dendro.corina.cross.GridView
- * @see edu.cornell.dendro.corina.cross.sigscores.SignificantScoresView
- * @see edu.cornell.dendro.corina.cross.AllScoresView
- * @see edu.cornell.dendro.corina.cross.HistogramView
+ * @see edu.cornell.dendro.corina.cross.legacy.TableView
+ * @see edu.cornell.dendro.corina.cross.legacy.GridView
+ * @see edu.cornell.dendro.corina.cross.legacy.sigscores.SignificantScoresView
+ * @see edu.cornell.dendro.corina.cross.legacy.AllScoresView
+ * @see edu.cornell.dendro.corina.cross.legacy.HistogramView
  * 
  * @author Ken Harris &lt;kbh7 <i style="color: gray">at </i> cornell <i style="color: gray">dot </i> edu&gt;
  * @version $Id$

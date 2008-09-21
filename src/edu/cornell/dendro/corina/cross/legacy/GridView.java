@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.cross; // FIXME: rename to corina.crossdate
+package edu.cornell.dendro.corina.cross.legacy; // FIXME: rename to corina.crossdate
 
 import java.awt.BorderLayout;
 import java.awt.Color;
