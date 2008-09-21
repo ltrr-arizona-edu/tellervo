@@ -51,179 +51,184 @@ import java.text.DecimalFormat;
 */
 public class Histogram {
     // format string for values/scores
-    private DecimalFormat format;
+	private DecimalFormat format;
 
-    // intermediates
-    private float low, step;
-    private boolean hasInfty;
+	// intermediates
+	private float low, step;
+	private boolean hasInfty;
 
-    // output
-    private int buckets[];
+	// output
+	private int buckets[];
 
-    /** The number of buckets to split data into. */
-    public static final int NUMBER_OF_BUCKETS = 30;
+	/** The number of buckets to split data into. */
+	public static final int NUMBER_OF_BUCKETS = 30;
 
-    /**
-       Make a histogram out of the scores of a crossdate.
-       Assumes the crossdate was already run.
+	/**
+	 * Make a histogram out of the scores of a crossdate. Assumes the crossdate
+	 * was already run.
+	 * 
+	 * @param crossdate
+	 *            the crossdate of scores to count
+	 */
+	public Histogram(Cross crossdate) {
+		this(allScores(crossdate), crossdate.getFormat());
+	}
 
-       @param crossdate the crossdate of scores to count
-    */
-    public Histogram(Cross crossdate) {
-        this(allScores(crossdate), crossdate.getFormat());
-    }
+	// copy all of the scores from this crossdate into a float array.
+	private static float[] allScores(Cross c) {
+		int n = c.getRange().span();
+		float x[] = new float[n];
+		for (int i = 0; i < n; i++)
+			x[i] = c.getScoreOLD(i);
+		return x;
+	}
 
-    // copy all of the scores from this crossdate into a float array.
-    private static float[] allScores(Cross c) {
-	int n = c.getRange().span();
-	float x[] = new float[n];
-	for (int i=0; i<n; i++)
-	    x[i] = c.getScoreOLD(i);
-	return x;
-    }
+	/**
+	 * Make a histogram out of any data. Also provide a format string, like
+	 * DecimalFormat uses, which will be used for printing the ranges of the
+	 * buckets.
+	 * 
+	 * @see java.text.DecimalFormat
+	 * @param data
+	 *            the data to analyze, as an array of floats
+	 * @param format
+	 *            the way to format data values, for DecimalFormat
+	 */
+	public Histogram(float data[], String format) {
+		// copy format string
+		this.format = new DecimalFormat(format);
 
-    /**
-       Make a histogram out of any data.  Also provide a format
-       string, like DecimalFormat uses, which will be used for
-       printing the ranges of the buckets.
+		// number of inputs
+		int n = data.length;
 
-       @see java.text.DecimalFormat
-       @param data the data to analyze, as an array of floats
-       @param format the way to format data values, for DecimalFormat
-    */
-    public Histogram(float data[], String format) {
-        // copy format string
-        this.format = new DecimalFormat(format);
+		// number of buckets -- REMOVE ME!
+		int numberOfBuckets = NUMBER_OF_BUCKETS;
 
-        // number of inputs
-        int n = data.length;
+		// compute high/low/step
+		{
+			float high;
+			if (data.length == 0) {
+				buckets = new int[0];
+				return;
+			}
+			low = Float.POSITIVE_INFINITY;
+			high = Float.NEGATIVE_INFINITY;
+			for (int i = 0; i < n; i++) {
+				float x = data[i];
 
-        // number of buckets -- REMOVE ME!
-        int numberOfBuckets = NUMBER_OF_BUCKETS;
+				// there are some special cases to watch out for:
 
-	// compute high/low/step
-        {
-            float high;
-            if (data.length == 0) {
-                buckets = new int[0];
-                return;
-            }
-            low = Float.POSITIVE_INFINITY;
-	    high = Float.NEGATIVE_INFINITY;
-            for (int i=0; i<n; i++) {
-                float x = data[i];
+				if (Float.isInfinite(x) && x > 0) {
+					// infinity. what to do? first, ignore it when
+					// computing low and high. make an extra bucket
+					// on top, called "high - infinity".
+					hasInfty = true;
 
-		// there are some special cases to watch out for:
+				} else if (Float.isNaN(x)) {
+					// NaN. they're just weird, and they don't really
+					// fit in any buckets, so i'll just ignore them.
+					// (no crossdate should return any NaNs, anyway.)
 
-                if (Float.isInfinite(x) && x>0) {
-		    // infinity.  what to do?  first, ignore it when
-		    // computing low and high.  make an extra bucket
-		    // on top, called "high - infinity".
-                    hasInfty = true;
+				} else {
+					// a normal value
+					low = Math.min(low, x);
+					high = Math.max(high, x);
+				}
+			}
+			if (hasInfty)
+				step = (high - low) / (numberOfBuckets + 1);
+			else
+				step = (high - low) / numberOfBuckets;
+		}
 
-                } else if (Float.isNaN(x)) {
-		    // NaN.  they're just weird, and they don't really
-		    // fit in any buckets, so i'll just ignore them.
-		    // (no crossdate should return any NaNs, anyway.)
+		// make the buckets
+		buckets = new int[numberOfBuckets]; // all zero
 
-                } else {
-		    // a normal value
-                    low = Math.min(low, x);
-                    high = Math.max(high, x);
-                }
-            }
-            if (hasInfty)
-                step = (high - low) / (numberOfBuckets + 1);
-            else
-                step = (high - low) / numberOfBuckets;
-        }
+		// fill the buckets with data
+		for (int i = 0; i < n; i++) {
+			// get the next val
+			float x = data[i];
 
-        // make the buckets
-        buckets = new int[numberOfBuckets]; // all zero
+			// place it in the proper bucket
+			int target = (int) ((x - low) / step);
 
-        // fill the buckets with data
-        for (int i=0; i<n; i++) {
-            // get the next val
-            float x = data[i];
+			// if rounding puts it out of the last bucket,
+			// or it's an infinity, put it in the last bucket.
+			if (target >= numberOfBuckets)
+				target = numberOfBuckets - 1;
 
-            // place it in the proper bucket
-            int target = (int) ((x - low) / step);
+			buckets[target]++;
+		}
+	}
 
-	    // if rounding puts it out of the last bucket,
-	    // or it's an infinity, put it in the last bucket.
-            if (target >= numberOfBuckets)
-                target = numberOfBuckets-1;
+	// the number of entries in the fullest bucket, or -1(=not computed)
+	private int fullest = -1;
 
-            buckets[target]++;
-        }
-    }
+	/**
+	 * Get the number of items in the fullest bucket.
+	 * 
+	 * @return the number of items in the fullest bucket
+	 */
+	public int getFullestBucket() {
+		// computed lazily; -1 means "not computed"
+		// (because no bucket can contain -1 things, of course)
+		if (fullest == -1) {
+			for (int i = 0; i < buckets.length; i++)
+				fullest = Math.max(fullest, buckets[i]);
+		}
+		return fullest;
+	}
 
-    // the number of entries in the fullest bucket, or -1(=not computed)
-    private int fullest = -1;
+	/**
+	 * Get the number of buckets. This is a compile-time constant.
+	 * 
+	 * @see Histogram#NUMBER_OF_BUCKETS
+	 * @return the number of buckets
+	 */
+	public int getNumberOfBuckets() {
+		return buckets.length;
+	}
 
-    /**
-       Get the number of items in the fullest bucket.
+	private String memo[] = null;
 
-       @return the number of items in the fullest bucket
-    */
-    public int getFullestBucket() {
-        // computed lazily; -1 means "not computed"
-	// (because no bucket can contain -1 things, of course)
-        if (fullest == -1) {
-            for (int i=0; i<buckets.length; i++)
-                fullest = Math.max(fullest, buckets[i]);
-        }
-        return fullest;
-    }
+	/**
+	 * Get the range spanned by a bucket. This is returned as a string, in the
+	 * format "a - b". The ends of the span are formatted in the provided
+	 * format.
+	 * 
+	 * @param bucket
+	 *            which bucket to look at
+	 * @return the range spanned by that bucket, as a string "a - b"
+	 */
+	public String getBucketRange(int bucket) {
+		// build memo, if necessary
+		if (memo == null)
+			memo = new String[buckets.length];
 
-    /**
-       Get the number of buckets.  This is a compile-time constant.
+		// compute result for cache, if necessary
+		if (memo[bucket] == null) {
+			boolean isInfty = (hasInfty && bucket == buckets.length - 1);
+			float a = low + step * bucket;
+			float b = (isInfty ? Float.POSITIVE_INFINITY : low + step
+					* (bucket + 1));
+			memo[bucket] = format.format(a) + " - " + format.format(b);
+			// "-" should really be "\u2014",
+			// but my printer can't handle that yet,
+			// so yours likely can't, either. :-(
+		}
 
-       @see Histogram#NUMBER_OF_BUCKETS
-       @return the number of buckets
-    */
-    public int getNumberOfBuckets() {
-        return buckets.length;
-    }
+		// return it
+		return memo[bucket];
+	}
 
-    private String memo[]=null;
-
-    /**
-       Get the range spanned by a bucket.  This is returned as a
-       string, in the format "a - b".  The ends of the span are
-       formatted in the provided format.
-
-       @param bucket which bucket to look at
-       @return the range spanned by that bucket, as a string "a - b"
-    */
-    public String getBucketRange(int bucket) {
-        // build memo, if necessary
-        if (memo == null)
-            memo = new String[buckets.length];
-
-        // compute result for cache, if necessary
-        if (memo[bucket] == null) {
-            boolean isInfty = (hasInfty && bucket==buckets.length-1);
-            float a = low + step*bucket;
-            float b = (isInfty ? Float.POSITIVE_INFINITY
-		       : low+step*(bucket+1));
-            memo[bucket] = format.format(a) + " - " + format.format(b);
-	    // "-" should really be "\u2014",
-	    // but my printer can't handle that yet,
-	    // so yours likely can't, either.  :-(
-        }
-
-        // return it
-        return memo[bucket];
-    }
-
-    /**
-       Get the number of items in a bucket.
-
-       @param bucket which bucket to look at
-       @return the number of items in that bucket
-    */
-    public int getBucketItems(int bucket) {
-        return buckets[bucket];
-    }
+	/**
+	 * Get the number of items in a bucket.
+	 * 
+	 * @param bucket
+	 *            which bucket to look at
+	 * @return the number of items in that bucket
+	 */
+	public int getBucketItems(int bucket) {
+		return buckets[bucket];
+	}
 }
