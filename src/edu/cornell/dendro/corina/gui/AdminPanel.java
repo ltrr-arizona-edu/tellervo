@@ -9,7 +9,22 @@ import java.awt.Container;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.swing.table.AbstractTableModel;
+
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.dictionary.User;
 import edu.cornell.dendro.corina.gui.UserDetail;
+import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.SampleSummary;
 
 
 public class AdminPanel extends javax.swing.JDialog {
@@ -18,6 +33,7 @@ public class AdminPanel extends javax.swing.JDialog {
     public AdminPanel(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        populateComponents();
     }
     
     private void initComponents() {
@@ -44,7 +60,7 @@ public class AdminPanel extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Account Management");
 
-        tblUsers.setModel(new javax.swing.table.DefaultTableModel(
+        /*tblUsers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {"1", "peter", "Peter", "Brewer", "Admin, Staff", new Boolean(true)},
                 {"2", "lucas", "Lucas", "Madar", "Admin, Staff", new Boolean(true)}
@@ -61,7 +77,10 @@ public class AdminPanel extends javax.swing.JDialog {
                 return types [columnIndex];
             }
         });
+        */
+        tblUsers.setModel(new UserTableModel());
         
+                
         tblUsers.setShowVerticalLines(false);
         
         jScrollPane1.setViewportView(tblUsers);
@@ -231,13 +250,75 @@ public class AdminPanel extends javax.swing.JDialog {
      
         
     }
+    
+    
+    private void populateComponents() {
+    	List<User> users = (List<User>) App.dictionary.getDictionary("Users");
+    	List<User> userList = new ArrayList<User>();
+    	
+    	
+    }
+    
+    
 
     private void chkShowDisabledUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkShowDisabledUsersActionPerformed
         // TODO add your handling code here:
 }
     private void chkShowDisabledGroupsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkShowDisabledGroupsActionPerformed
         // TODO add your handling code here:
-}
+    }
+    
+    public class UserTableModel extends AbstractTableModel {
+    
+    	private List<User> userList = new ArrayList<User>();
+    	    	
+        private final String[] columnNames = {
+                "#",
+                "User",
+                "First name",
+                "Last name",
+                "Groups",
+                "Enabled",
+            };
+    	
+        public void showDisabledUsers(boolean show){
+        	
+        }
+        
+        public void setUsers(List<User> userList){
+        	this.userList = userList;        	
+        }
+        
+		public int getColumnCount() {
+			return columnNames.length;
+		};
+		
+		public int getRowCount() {
+			return 1;
+		};		
+		
+        public Class<?> getColumnClass(int c) {
+        	return String.class;
+        }
+        
+		public String getColumnName(int index) {
+			return columnNames[index];
+		}
+		
+		public User getUserAt(int rowIndex) {
+			//TODO: Implement this!
+			return this.userList.get(rowIndex);
+		}		
+		
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			//TODO: Implement this!
+			return true;
+		}
+    
+    
+    }
+    
+    
     
     /**
      * @param args the command line arguments

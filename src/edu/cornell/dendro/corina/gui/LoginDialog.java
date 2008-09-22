@@ -77,7 +77,7 @@ public class LoginDialog extends JDialog {
 		password = new JPasswordField();
 		password.setColumns(16);
 		
-		JLabel treeIcon = new JLabel(Builder.getIcon("TreeLocked.png"));
+		JLabel treeIcon = new JLabel(Builder.getIcon("encrypted.png"));
 		
 		ogbc.gridx = 0;
 		ogbc.gridy = 0;
