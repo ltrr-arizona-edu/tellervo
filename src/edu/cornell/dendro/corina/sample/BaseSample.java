@@ -70,6 +70,17 @@ public class BaseSample {
 	public Object getMeta(String key) {
 		return meta.get(key);
 	}
+	
+	/**
+	 * Returns null if meta[key] doesn't exist, otherwise calls the object's tostring method
+	 * @param key
+	 * @return
+	 */
+	public String getMetaString(String key) {
+		Object o = meta.get(key);
+		
+		return (o == null) ? null : o.toString();
+	}
 
 	public boolean hasMeta(String key) {
 		return meta.containsKey(key);

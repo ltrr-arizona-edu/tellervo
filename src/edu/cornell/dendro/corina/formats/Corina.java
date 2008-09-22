@@ -254,7 +254,7 @@ public class Corina implements Filetype {
 		if (tag.equals("NAME")) // ...Mecki likes "TITLE"...
 			tag = "TITLE";
 		if (tag.startsWith("COMMENTS")) { // append comments
-			String soFar = (String) s.getMeta("comments");
+			String soFar = s.getMetaString("comments");
 			s.setMeta("comments", soFar == null ? value : soFar + '\n'
 							+ value);
 		} else { // store value
@@ -545,7 +545,7 @@ public class Corina implements Filetype {
 
 	private void saveMeta(Sample s, BufferedWriter w) throws IOException {
 		if (s.hasMeta("title"))
-			w.write(s.getMeta("title").toString());
+			w.write(s.getMetaString("title"));
 		w.newLine();
 
 		w.newLine();
@@ -589,7 +589,7 @@ public class Corina implements Filetype {
 		if (s.hasMeta("comments")) {
 			// split comments by lines
 			// BUG: won't this fail if the comments line is a Number?
-			String comments[] = StringUtils.splitByLines((String) s.getMeta("comments"));
+			String comments[] = StringUtils.splitByLines(s.getMetaString("comments"));
 			int n = 1; // the comment number, starting at 1
 			for (int i = 0; i < comments.length; i++) {
 				String line = comments[i];
@@ -755,7 +755,7 @@ public class Corina implements Filetype {
 
 	private void saveAuthor(Sample s, BufferedWriter w) throws IOException {
 		w.write("~");
-		String author = (String) s.getMeta("author");
+		String author = s.getMetaString("author");
 		if (author != null)
 			w.write(" " + author);
 		w.newLine();
