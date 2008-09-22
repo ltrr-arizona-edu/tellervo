@@ -180,7 +180,7 @@ public class Corina implements Filetype {
 
 	@Override
 	public String toString() {
-		return I18n.getText("format.corina");
+		return I18n.getText("format.corina") + " (legacy)";
 	}
 
 	// read chars until a space char, or eof.

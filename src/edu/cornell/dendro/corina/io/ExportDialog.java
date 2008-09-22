@@ -105,11 +105,11 @@ public class ExportDialog extends JDialog {
 	// exporters for raw, summed files -- this seems slightly awkward,
 	// but it's the SimplestThing right now
 	private static final String EXPORTERS_RAW[] = new String[] {
+			"edu.cornell.dendro.corina.formats.Corina",
 			"edu.cornell.dendro.corina.formats.CorinaXML",
 			"edu.cornell.dendro.corina.formats.Tucson", 
 			"edu.cornell.dendro.corina.formats.TucsonSimple",
 			"edu.cornell.dendro.corina.formats.TwoColumn", 
-			"edu.cornell.dendro.corina.formats.Corina",
 			"edu.cornell.dendro.corina.formats.TRML", 
 			"edu.cornell.dendro.corina.formats.HTML",
 			"edu.cornell.dendro.corina.formats.Heidelberg", 
@@ -118,12 +118,12 @@ public class ExportDialog extends JDialog {
 			"edu.cornell.dendro.corina.formats.MultiColumn", };
 
 	private static final String EXPORTERS_SUM[] = new String[] {
+			"edu.cornell.dendro.corina.formats.Corina", 
 			"edu.cornell.dendro.corina.formats.CorinaXML",
 			"edu.cornell.dendro.corina.formats.Tucson", 
 			"edu.cornell.dendro.corina.formats.TucsonSimple",
 			"edu.cornell.dendro.corina.formats.PackedTucson", 
 			"edu.cornell.dendro.corina.formats.TwoColumn",
-			"edu.cornell.dendro.corina.formats.Corina", 
 			"edu.cornell.dendro.corina.formats.TRML",
 			"edu.cornell.dendro.corina.formats.HTML", 
 			"edu.cornell.dendro.corina.formats.Heidelberg",
