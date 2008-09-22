@@ -190,16 +190,21 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	
     	tableHistogram.getTableHeader().setReorderingAllowed(false);    	
     	tableHistogram.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    	tableHistogram.setRowSelectionAllowed(true);
+    	tableHistogram.setRowSelectionAllowed(false);
     	tableHistogram.setColumnSelectionAllowed(false);
     }
     
     private void setupListeners() {    	
+    	final CrossdateDialog glue = this;
+
     	// whenever one of our combo boxes change...
     	ActionListener listChanged = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			int row = cboPrimary.getSelectedIndex();
     			int col = cboSecondary.getSelectedIndex();
+    			
+    			// make a nice title?
+    			glue.setTitle("Crossdating: " + cboPrimary.getSelectedItem().toString());
     			
     			try {
     				CrossdateCollection.Pairing pairing = crossdates.getPairing(row, col);
@@ -220,8 +225,11 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	// now, when our table row changes
     	tableSignificantScores.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent lse) {
-				if(lse.getValueIsAdjusting())
+				if(lse.getValueIsAdjusting() || tableSignificantScores.getSelectedRow() == -1) 
 					return;
+				
+				// deselect anything in tblAllScores
+				tableAllScores.clearSelection();
 				
 				// make the graph reflect the row we selected!
 				updateGraph(sigScoresModel.getGraphForRow(tableSignificantScores.getSelectedRow()));
@@ -231,8 +239,14 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	// ok, now our all scores table. More complicated, because it can change both col & row selection.
     	ListSelectionListener allScoresSelectionListener = new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent lse) {
-				if(lse.getValueIsAdjusting())
+				// don't fire if we're deselecting
+				if(lse.getValueIsAdjusting() || 
+						tableAllScores.getSelectedColumn() == -1 || 
+						tableAllScores.getSelectedRow() == -1)
 					return;
+				
+				// unset any selections in sig scores
+				tableSignificantScores.clearSelection();
 				
 				// just like before...
 				updateGraph(allScoresModel.getGraphForCell(tableAllScores.getSelectedRow(), 
@@ -263,8 +277,50 @@ public class CrossdateDialog extends javax.swing.JDialog {
     				histogramModel.setScoreClass(score.scoreClass);
     		}
     	});
+    	
+    	// swap button...
+    	btnSwap.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			int i1 = cboPrimary.getSelectedIndex();
+    			int i2 = cboSecondary.getSelectedIndex();
+    			
+    			cboPrimary.setSelectedIndex(i2);
+    			cboSecondary.setSelectedIndex(i1);
+    		}
+    	});
 
-    }
+    	// modify and reset button
+    	btnResetMeasurements.setVisible(false);
+    	btnAddMeasurement.setText("Modify");
+    	btnAddMeasurement.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    	    	// let user choose crossdates, exit if they close quietly
+    			ElementList tmpElements;
+    	    	if((tmpElements = showOpenDialog(glue, crossdatingElements)) == null)
+    	    		return; // user cancelled
+    	    	
+    	    	crossdatingElements = tmpElements;
+    	    	
+    	    	// start our new crossdates
+    	    	crossdates = new CrossdateCollection();
+    	    	crossdatingElements = crossdates.setElements(crossdatingElements);   	
+    	    	
+    	    	setupLists();
+    		}
+    	});
+    	
+    	btnOK.setText("Crossdate...");
+       	btnOK.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {    			
+    		}
+       	});
+
+       	btnCancel.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {   
+    			dispose();
+    		}
+       	});
+}
     
     private void setupGraph() {
 		// initialize our plotting agents
@@ -432,6 +488,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
         panelChart = new javax.swing.JPanel();
         panelButtons = new javax.swing.JPanel();
         btnOK = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
         seperatorButtons = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -701,6 +758,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
         );
 
         btnOK.setText("OK");
+        btnCancel.setText("Cancel");
 
         seperatorButtons.setBackground(new java.awt.Color(153, 153, 153));
         seperatorButtons.setOpaque(true);
@@ -711,7 +769,10 @@ public class CrossdateDialog extends javax.swing.JDialog {
             panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtonsLayout.createSequentialGroup()
                 .addContainerGap(671, Short.MAX_VALUE)
-                .add(btnOK)
+                .add(panelButtonsLayout.createSequentialGroup()
+                		.add(btnOK)
+                		.addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                		.add(btnCancel))
                 .add(16, 16, 16))
             .add(org.jdesktop.layout.GroupLayout.TRAILING, seperatorButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 762, Short.MAX_VALUE)
         );
@@ -720,7 +781,9 @@ public class CrossdateDialog extends javax.swing.JDialog {
             .add(panelButtonsLayout.createSequentialGroup()
                 .add(seperatorButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnOK)
+                .add(panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                		.add(btnOK)
+                		.add(btnCancel))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
 
@@ -761,6 +824,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddMeasurement;
     private javax.swing.JButton btnOK;
+    private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnResetMeasurements;
     private javax.swing.JButton btnSwap;
     private javax.swing.JComboBox cboDisplayHistogram;
