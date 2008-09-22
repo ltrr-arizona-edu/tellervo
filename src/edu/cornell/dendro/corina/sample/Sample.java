@@ -496,7 +496,17 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 
 	// is this sample editable?  no, if it's been indexed or summed.
 	public boolean isEditable() {
-		return (!isIndexed()) && (!isSummed());
+		switch(super.getSampleType()) {
+		case DIRECT:
+			return true;
+
+		case UNKNOWN:
+			// argh. guess?
+			return (!isIndexed()) && (!isSummed());
+			
+		default:
+			return false;
+		}
 	}
 
 	/** Return true if the sample is indexed, else false.

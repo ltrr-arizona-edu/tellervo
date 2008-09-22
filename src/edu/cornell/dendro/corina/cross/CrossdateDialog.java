@@ -337,6 +337,9 @@ public class CrossdateDialog extends javax.swing.JDialog {
     				
     				commit.setup(pairing.getPrimary(), pairing.getSecondary(), newCrossdateRange);
     				commit.setVisible(true);
+    				
+    				if(commit.didSave())
+    					dispose();
     			} catch (CrossdateCollection.NoSuchPairingException nspe) {
     				JOptionPane.showMessageDialog(glue, "Choose a valid crossdate", 
     						"Can't crossdate", JOptionPane.ERROR_MESSAGE);
