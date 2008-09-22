@@ -100,6 +100,8 @@ public class FileMenu extends JMenu {
 
 		addNewOpenMenus();
 		addSeparator();
+		addIOMenus();
+		addSeparator();
 		addCloseSaveMenus();
 		addSeparator();
 		addPrintingMenus();
@@ -129,6 +131,12 @@ public class FileMenu extends JMenu {
 
 	// sample, sum, plot, grid, map
 	// (future: sample, sum, plot, crossdate, map?)
+	
+	public void addIOMenus(){
+		
+		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdb()", "fileimport.png"));		
+	}
+	
 	public void addNewOpenMenus() {
 		
 		/*
@@ -183,18 +191,17 @@ public class FileMenu extends JMenu {
 		add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()", "filenew.png"));
 		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()", "fileopen.png"));		
 		add(Builder.makeMenuItem("dbmultiopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()"));	
-		addSeparator();
 		add(OpenRecent.makeOpenRecentMenu());
-		addSeparator();
-		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdb()", "fileimport.png"));
+		//addSeparator();
+
 		
 		
 		// open, browse
 		//add(Builder.makeMenuItem("open...", "edu.cornell.dendro.corina.gui.menus.FileMenu.open()"));
 		//add(Builder.makeMenuItem("open_multi...",
 		//		"edu.cornell.dendro.corina.gui.menus.FileMenu.openMulti()"));
-		add(Builder.makeMenuItem("bulkexport...",
-				"edu.cornell.dendro.corina.gui.menus.FileMenu.bulkexport()", "fileexport.png"));
+		//add(Builder.makeMenuItem("bulkexport...",
+			//	"edu.cornell.dendro.corina.gui.menus.FileMenu.bulkexport()", "fileexport.png"));
 		
 		//add(Builder.makeMenuItem("browse...", "new edu.cornell.dendro.corina.browser.Browser();"));
 	}
@@ -325,6 +332,8 @@ public class FileMenu extends JMenu {
 		wizardDialog.setVisible(true);
 	}
 
+	
+	
 	// ask the user for a list of files to open
 	public static void bulkexport() {
 		try {

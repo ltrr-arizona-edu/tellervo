@@ -111,8 +111,13 @@ public class Builder {
 		
 		return m;	
 	}
+	
+	public static JCheckBoxMenuItem makeCheckBoxMenuItem(String key){
+		return makeCheckBoxMenuItem(key, null);
+		
+	}
 
-	public static JCheckBoxMenuItem makeCheckBoxMenuItem(String key) {
+	public static JCheckBoxMenuItem makeCheckBoxMenuItem(String key, String iconfilename) {
 		JCheckBoxMenuItem m = new JCheckBoxMenuItem("");
 
 		// TODO: set font only on java<1.4?
@@ -130,6 +135,8 @@ public class Builder {
 		String keystroke = I18n.getKeyStroke(key);
 		if (keystroke != null)
 			m.setAccelerator(KeyStroke.getKeyStroke(keystroke));
+		
+		if (iconfilename!=null)	m.setIcon(getIcon(iconfilename, "Icons"));
 
 		return m;
 	}

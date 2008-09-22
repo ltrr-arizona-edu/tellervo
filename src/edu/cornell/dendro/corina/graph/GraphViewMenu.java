@@ -31,7 +31,7 @@ class GraphViewMenu extends JMenu {
 
 		// start adding the menu items!
 		
-		final JCheckBoxMenuItem showElemPanel = Builder.makeCheckBoxMenuItem("view_elements");
+		final JCheckBoxMenuItem showElemPanel = Builder.makeCheckBoxMenuItem("view_elements", "legend.png");
 		showElemPanel.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				window.elemPanel.setVisible(!window.elemPanel.isVisible());

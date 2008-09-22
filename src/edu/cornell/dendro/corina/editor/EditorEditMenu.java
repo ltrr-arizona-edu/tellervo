@@ -113,7 +113,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 
 	@Override
 	protected void addUndo() {
-		undoMenu = Builder.makeMenuItem("undo");
+		undoMenu = Builder.makeMenuItem("undo", true, "undo.png");
 		undoMenu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				// DISABLED: undoManager.undo();
@@ -126,7 +126,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 
 	@Override
 	protected void addRedo() {
-		redoMenu = Builder.makeMenuItem("redo");
+		redoMenu = Builder.makeMenuItem("redo", true, "redo.png");
 		redoMenu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				// DISABLED: undoManager.redo();
@@ -144,7 +144,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	@Override
 	protected void addCopy() {
 		// copy: put all data unto clipboard in 2-column format
-		JMenuItem copy = Builder.makeMenuItem("copy");
+		JMenuItem copy = Builder.makeMenuItem("copy", true, "editcopy.png");
 		copy.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				CopyDialog d = new CopyDialog(editor, sample.getRange());
@@ -164,7 +164,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	@Override
 	protected void addPaste() {
 		// paste: replace (insert?) data from clipboard (any format) into this sample
-		JMenuItem paste = Builder.makeMenuItem("paste");
+		JMenuItem paste = Builder.makeMenuItem("paste", true, "editpaste.png");
 		paste.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				paste();
@@ -215,7 +215,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	}
 
 	private void addMeasure() {
-		measureMenu = Builder.makeMenuItem("start_measuring");
+		measureMenu = Builder.makeMenuItem("start_measuring", true, "measurement.png");
 		measureMenu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				editor.toggleMeasuring();
@@ -225,7 +225,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	}
 
 	private void addInsert() {
-		insert = Builder.makeMenuItem("insert_year");
+		insert = Builder.makeMenuItem("insert_year", true, "insertyear.png");
 		insert.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				dataView.insertYear();
@@ -273,7 +273,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	}
 
 	private void addInsertMR() {
-		insertMR = Builder.makeMenuItem("insert_mr");
+		insertMR = Builder.makeMenuItem("insert_mr", true, "insertmissingyear.png");
 		insertMR.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				dataView.insertMR();
@@ -283,7 +283,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	}
 
 	private void addDelete() {
-		delete = Builder.makeMenuItem("delete_year");
+		delete = Builder.makeMenuItem("delete_year", true, "deleteyear.png");
 		delete.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				dataView.deleteYear();

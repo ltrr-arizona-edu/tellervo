@@ -47,10 +47,17 @@ public class EditorFileMenu extends FileMenu {
 	}
 
 	@Override
+	public void addIOMenus(){
+	
+		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdb()", "fileimport.png"));
+		addExportMenu();
+	}
+	
+	@Override
 	public void addCloseSaveMenus() {
 		super.addCloseSaveMenus();
 
-		addExportMenu();
+		//addExportMenu();
 		
 		if(Boolean.parseBoolean(App.prefs.getPref("corina.corem.enable"))) {
 			addCoremMenu();
@@ -101,6 +108,7 @@ public class EditorFileMenu extends FileMenu {
 			}
 		});
 		add(rename_to);
+		rename_to.setVisible(false);
 	}
 
 	private void addCoremMenu() {
@@ -229,7 +237,7 @@ public class EditorFileMenu extends FileMenu {
 
 	private void addExportMenu() {
 		// add "Export..." menuitem
-		JMenuItem export = Builder.makeMenuItem("export...");
+		JMenuItem export = Builder.makeMenuItem("export...", true, "fileexport.png");
 		export.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ev) {
 				Sample s = ((Editor) f).getSample();

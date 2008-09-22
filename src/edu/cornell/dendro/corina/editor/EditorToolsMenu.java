@@ -78,6 +78,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		}
 		add(redate);
 		redate.setEnabled(false);
+		redate.setVisible(false);
 
 		// index
 		indexMenu = Builder.makeMenuItem("index...", true, "index.png");
@@ -149,6 +150,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		});
 		add(crossElements);
 		crossElements.setEnabled(false);
+		crossElements.setVisible(false);
 
 		// reconcile
 		JMenuItem reconcile = Builder.makeMenuItem("new_reconcile", true, "reconcile.png");
