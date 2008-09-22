@@ -203,9 +203,65 @@ public class MeasurementResource extends ResourceObject<Sample> {
 			requestElement.addContent(measurementElement);
 			return;
 		}
+
+		case CROSSDATE: {
+			ResourceIdentifier rip = (ResourceIdentifier) s.getMeta("::dbparent");
+			ResourceIdentifier rim = (ResourceIdentifier) s.getMeta("::crossdatemaster");
+			
+			if(rip == null || rim == null)
+				throw new ResourceException("Cannot crossdate -- internal error!");
+
+			/*
+			 * Create this: 
+			 * <measurement> 
+			 *  <metadata> 
+			 *   <name>My redated measurement</name> 
+			 *   <operation>crossdate</operation>
+			 *   <crossdate>
+			 *     <basedOn><measurement id="1"/></basedOn>
+			 *     <startYear>1950</startYear> <certaintyLevel>5</certaintyLevel>
+			 *     <justification>T-score 6.2</justification> 
+			 *   </crossdate>
+			 *  </metadata>
+			 *  <references>
+			 *   <measurement id="1" /> 
+			 *  </references>
+			 * </measurement>
+			 */
+			
+			Element measurementElement = new Element("measurement");
+			Element metadataElement = new Element("metadata");
+			Element operationElement = new Element("operation");
+			Element referencesElement = new Element("references");
+			Element crossdateElement = new Element("crossdate");
+
+			operationElement.setText("crossdate");
+			
+			// crossdating tag...
+			crossdateElement.addContent(new Element("basedOn").
+					addContent(rim.asRequestXMLElement()));
+			crossdateElement.addContent(new Element("startYear").
+					setText(s.getRange().getStart().toString()));
+			crossdateElement.addContent(new Element("justification").
+					setText(s.getMeta("::crossdatejustification").toString()));
+			crossdateElement.addContent(new Element("certaintyLevel").
+					setText(s.getMeta("::crossdatecertainty").toString()));
+			
+			metadataElement.addContent(new Element("name").setText((String) s.getMeta("name")));
+			metadataElement.addContent(operationElement);
+			metadataElement.addContent(crossdateElement);
+			
+			referencesElement.addContent(rip.asRequestXMLElement());
+			
+			measurementElement.addContent(metadataElement);
+			measurementElement.addContent(referencesElement);
+			requestElement.addContent(measurementElement);
+			return;
+		}
+
 		
 		default:
-			throw new ResourceException("Create for SampleType of " + s.getSampleType() + " not supported");
+			throw new ResourceException("Create for SampleType of " + sType + " not supported");
 		
 		}
 	}

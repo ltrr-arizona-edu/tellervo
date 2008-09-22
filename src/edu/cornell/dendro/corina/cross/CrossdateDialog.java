@@ -15,6 +15,7 @@ import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
@@ -23,6 +24,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumnModel;
 
+import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.graph.Graph;
 import edu.cornell.dendro.corina.graph.GraphController;
 import edu.cornell.dendro.corina.graph.GraphInfo;
@@ -59,6 +61,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
 	private GraphController graphController;
 	private List<Graph> graphSamples;
 	private JScrollPane graphScroller;
+	private Range newCrossdateRange;
     
     /** Creates new form CrossDatingWizard */
     public CrossdateDialog(java.awt.Frame parent, boolean modal) {
@@ -215,6 +218,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
     				sigScoresModel.clearCrossdates();
     				allScoresModel.clearCrossdates();
     				histogramModel.clearCrossdates();
+    				newCrossdateRange = null;
     			}
     		}
     	};
@@ -230,9 +234,14 @@ public class CrossdateDialog extends javax.swing.JDialog {
 				
 				// deselect anything in tblAllScores
 				tableAllScores.clearSelection();
+
+				int row = tableSignificantScores.getSelectedRow();
+				
+				// make our new range
+				newCrossdateRange = sigScoresModel.getSecondaryRangeForRow(row);
 				
 				// make the graph reflect the row we selected!
-				updateGraph(sigScoresModel.getGraphForRow(tableSignificantScores.getSelectedRow()));
+				updateGraph(sigScoresModel.getGraphForRow(row));
 			}
     	});
     	
@@ -247,10 +256,15 @@ public class CrossdateDialog extends javax.swing.JDialog {
 				
 				// unset any selections in sig scores
 				tableSignificantScores.clearSelection();
+			
+				int row = tableAllScores.getSelectedRow();
+				int col = tableAllScores.getSelectedColumn();
+				
+				// make our new range
+				newCrossdateRange = allScoresModel.getSecondaryRangeForCell(row, col); 
 				
 				// just like before...
-				updateGraph(allScoresModel.getGraphForCell(tableAllScores.getSelectedRow(), 
-						tableAllScores.getSelectedColumn()));
+				updateGraph(allScoresModel.getGraphForCell(row, col));
 			}
     	};
     	tableAllScores.getSelectionModel().addListSelectionListener(allScoresSelectionListener);
@@ -311,7 +325,22 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	
     	btnOK.setText("Crossdate...");
        	btnOK.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent ae) {    			
+    		public void actionPerformed(ActionEvent ae) {
+    			int row = cboPrimary.getSelectedIndex();
+    			int col = cboSecondary.getSelectedIndex();
+    			    			
+    			try {
+    				CrossdateCollection.Pairing pairing = crossdates.getPairing(row, col);
+    				
+    				CrossdateCommitDialog commit = new CrossdateCommitDialog(glue);
+    				Center.center(commit, glue);
+    				
+    				commit.setup(pairing.getPrimary(), pairing.getSecondary(), newCrossdateRange);
+    				commit.setVisible(true);
+    			} catch (CrossdateCollection.NoSuchPairingException nspe) {
+    				JOptionPane.showMessageDialog(glue, "Choose a valid crossdate", 
+    						"Can't crossdate", JOptionPane.ERROR_MESSAGE);
+    			}
     		}
        	});
 
@@ -432,6 +461,8 @@ public class CrossdateDialog extends javax.swing.JDialog {
 
     		graphScroller.setRowHeader(null);
     		graphScroller.setViewportView(invalid);
+    		
+    		btnOK.setEnabled(false);
     		return;
     	}
 
@@ -450,6 +481,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	graphScroller.setViewportView(graph);
 		graph.setAxisVisible(true, true);
 		panelChart.revalidate();
+		btnOK.setEnabled(true);
     }
     
     /** This method is called from within the constructor to

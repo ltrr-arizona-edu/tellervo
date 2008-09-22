@@ -128,6 +128,19 @@ public class SigScoresTableModel extends AbstractTableModel {
 	
 
 	/**
+	 * Returns the redated (secondary) sample range for the specific row
+	 * 
+	 * @param row
+	 * @return
+	 */
+	public Range getSecondaryRangeForRow(int row) {
+		if(row < 0 || row > getRowCount())
+			return null;
+
+		return new Range(scores.get(row).range.getStart(), scores.get(row).range.getEnd());
+	}
+
+	/**
 	 * Returns the redated (secondary) sample for the specific row
 	 * 
 	 * @param row
@@ -145,6 +158,7 @@ public class SigScoresTableModel extends AbstractTableModel {
 		return redate;
 	}
 
+	
 	/**
 	 * Returns a list of graphs based on data at the given row
 	 * 

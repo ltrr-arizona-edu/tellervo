@@ -7,7 +7,8 @@ public enum SampleType {
 	INDEX,
 	CLEAN,
 	REDATE,
-	LEGACYCLEAN;
+	LEGACYCLEAN,
+	CROSSDATE;
 	
 	public String toString() {
 		switch(this) {
@@ -25,6 +26,8 @@ public enum SampleType {
 			return "Redate";
 		case LEGACYCLEAN:
 			return "Legacy";
+		case CROSSDATE:
+			return "Cross";
 		default:
 			return "";
 		}

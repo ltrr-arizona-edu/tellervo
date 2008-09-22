@@ -250,6 +250,11 @@ public class CorinaXML implements Filetype {
 				if(s instanceof Sample)
 					loadReferences((Sample) s, references);
 			}
+			else if(key.equals("crossdate")) {
+				for(Element ce : (List<Element>) e.getChildren()) {
+					s.setMeta("::-::crossdate:: " + ce.getName(), ce.getText());
+				}
+			}
 			else if(value != null){
 				// store this anyway?
 				s.setMeta("::--::" + key, value);
