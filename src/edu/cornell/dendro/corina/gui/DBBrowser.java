@@ -394,7 +394,8 @@ public class DBBrowser extends javax.swing.JDialog{
 		// Select the last used region otherwise select the first thing in the list
 		// populate our site list (done automatically by choosing an index)
 		if(App.prefs.getPref("corina.region.lastused") != null){
-			cboBrowseBy.setSelectedIndex(Integer.parseInt(App.prefs.getPref("corina.region.lastused")));
+			Integer lastUsedIndex = Integer.parseInt(App.prefs.getPref("corina.region.lastused"));
+			if(lastUsedIndex<cboBrowseBy.getItemCount()) cboBrowseBy.setSelectedIndex(lastUsedIndex);
 		} else {
 			cboBrowseBy.setSelectedIndex(0);
 		}

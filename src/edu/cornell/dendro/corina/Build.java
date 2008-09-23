@@ -65,7 +65,7 @@ public class Build {
     }
 
     /** Version string. */
-    public final static String VERSION = "1.99 \u03B2"; // beta
+    public final static String VERSION = "2.00 \u03B2"; // beta
 
     /** Year (for copyright). */
     public final static String YEAR = "2001-2008";
