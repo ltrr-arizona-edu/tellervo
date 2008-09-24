@@ -376,7 +376,8 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
         lblDatingType.setText("Dating type:");
 
         cboDatingType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Absolute", "Relative", "Absolute with uncertainty" }));
-
+        cboDatingType.setSelectedIndex(1);
+        
         lblDatingErrorPositive.setLabelFor(txtDatingErrorPositive);
         lblDatingErrorPositive.setText("+");
         lblDatingErrorPositive.setEnabled(false);
@@ -394,7 +395,7 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
         lblStartYear.setLabelFor(txtStartYear);
         lblStartYear.setText("Start year:");
 
-        txtStartYear.setText("2006");
+        txtStartYear.setText("1001");
 
         lblReadingCount.setText("154 readings");
 
