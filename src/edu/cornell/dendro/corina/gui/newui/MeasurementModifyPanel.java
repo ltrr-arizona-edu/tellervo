@@ -157,11 +157,12 @@ public class MeasurementModifyPanel extends BaseEditorPanel<GenericIntermediateO
     	
     	setMetaMod("comments", txtDescription.getText());
 
+    	
     	// let our sample know we changed it
-    	if(numModifications > 0) {
+    	//if(numModifications > 0) {
     		s.setModified();
     		s.fireSampleMetadataChanged();
-    	}
+    	//}
     	
     	succeeded = true;
     }    
