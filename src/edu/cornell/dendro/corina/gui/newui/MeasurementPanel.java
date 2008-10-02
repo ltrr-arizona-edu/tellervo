@@ -244,7 +244,7 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
     }
     
     public void setParentPrefix(String parentPrefix) {
-    	
+    	lblMeasurementPrefix.setText(parentPrefix);
     }
     
     public void setParentObject(GenericIntermediateObject obj) {
@@ -293,6 +293,7 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
         RadExistingRadius = new javax.swing.JRadioButton();
         panelMeasurement = new javax.swing.JPanel();
         lblMeasurementName = new javax.swing.JLabel();
+        lblMeasurementPrefix = new javax.swing.JLabel();
         txtMeasurementName = new javax.swing.JTextField();
         chkIsPublished = new javax.swing.JCheckBox();
         lblMeasuredBy = new javax.swing.JLabel();
@@ -356,6 +357,9 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
 
         lblMeasurementName.setLabelFor(txtMeasurementName);
         lblMeasurementName.setText("Name:");
+        
+        lblMeasurementPrefix.setLabelFor(txtMeasurementName);
+        lblMeasurementPrefix.setText("C-ABC-1-1-A-");
 
         chkIsPublished.setText("Publish");
 
@@ -436,7 +440,9 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
                                                 .add(txtDatingErrorNegative, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 33, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                                             .add(lblReadingCount)))))
                             .add(panelMeasurementLayout.createSequentialGroup()
-                                .add(4, 4, 4)
+                            	.addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(lblMeasurementPrefix)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(txtMeasurementName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(chkIsPublished, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 72, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
@@ -454,6 +460,7 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
                 .add(panelMeasurementLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(chkIsPublished)
                     .add(txtMeasurementName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblMeasurementPrefix)
                     .add(lblMeasurementName))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelMeasurementLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
@@ -520,6 +527,7 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
     private javax.swing.JLabel lblDescription;
     private javax.swing.JLabel lblMeasuredBy;
     private javax.swing.JLabel lblMeasurementName;
+    private javax.swing.JLabel lblMeasurementPrefix;
     private javax.swing.JLabel lblOwnedBy;
     private javax.swing.JLabel lblRadiusPrefix;
     private javax.swing.JLabel lblReadingCount;
