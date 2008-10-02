@@ -6,7 +6,7 @@ public class WebInterfaceException extends ResourceException {
 	protected String messageText;
 	
 	public WebInterfaceException(int messageCode, String messageText) {
-		super(messageText + " (" + messageCode + ")");
+		super("\n\n"+ messageText + "\nError code: " + messageCode);
 		
 		this.messageCode = messageCode;
 		this.messageText = messageText;
