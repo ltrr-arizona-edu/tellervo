@@ -396,6 +396,7 @@ public class DBBrowser extends javax.swing.JDialog{
 		if(App.prefs.getPref("corina.region.lastused") != null){
 			Integer lastUsedIndex = Integer.parseInt(App.prefs.getPref("corina.region.lastused"));
 			if(lastUsedIndex<cboBrowseBy.getItemCount()) cboBrowseBy.setSelectedIndex(lastUsedIndex);
+        	populateSiteList();
 		} else {
 			cboBrowseBy.setSelectedIndex(0);
 		}
@@ -605,7 +606,7 @@ public class DBBrowser extends javax.swing.JDialog{
         		
         		// Loop through master site list and check if filter matches
         		for(Site s : sites){
-        			if(s.toString().indexOf(txtFilterInput.getText())!=-1){      					
+        			if(s.toString().toLowerCase().indexOf(txtFilterInput.getText().toLowerCase())!=-1){      					
         				filteredSites.add(s);        				
         			}	
         		}
@@ -627,7 +628,7 @@ public class DBBrowser extends javax.swing.JDialog{
 
     	        	// User HAS entered filter text
     	        	} else {    	        		
-    	        			if(s.toString().indexOf(txtFilterInput.getText())!=-1){      					
+    	        			if(s.toString().toLowerCase().indexOf(txtFilterInput.getText().toLowerCase())!=-1){      					
     	        				filteredSites.add(s);        				
     	        			}	
     	        	}	
