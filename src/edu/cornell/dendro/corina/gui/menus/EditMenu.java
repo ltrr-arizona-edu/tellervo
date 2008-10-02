@@ -20,10 +20,13 @@
 
 package edu.cornell.dendro.corina.gui.menus;
 
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.PreferencesDialog;
+import edu.cornell.dendro.corina.prefs.Ui_PreferencesDialog;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -77,10 +80,14 @@ import edu.cornell.dendro.corina.ui.I18n;
 */
 public class EditMenu extends JMenu {
 
-    /** Make a new Edit menu. */
-    public EditMenu() {
-        super(I18n.getText("edit"));
+	private static JFrame frame;
 
+	/** Make a new Edit menu. */
+    public EditMenu(JFrame frame) {
+        super(I18n.getText("edit"));
+        
+        this.frame = frame;
+        
         init();
     }
 
@@ -138,7 +145,8 @@ public class EditMenu extends JMenu {
             JMenuItem prefs = Builder.makeMenuItem("preferences",
                                                    "edu.cornell.dendro.corina.prefs.PrefsDialog.showPreferences()", "advancedsettings.png");
             add(prefs);
-        }
+                       
+        }          
     }
     
     protected void addAdmin(){
@@ -146,4 +154,6 @@ public class EditMenu extends JMenu {
                                                "edu.cornell.dendro.corina.gui.AdminPanel.main()", "agent.png");
         add(prefs);
     }
+    
+
 }

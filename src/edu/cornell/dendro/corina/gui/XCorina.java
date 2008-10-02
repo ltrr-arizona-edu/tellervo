@@ -171,7 +171,7 @@ public class XCorina extends JFrame {
 		{
 			JMenuBar menubar = new JMenuBar();
 			menubar.add(new FileMenu(this));
-			menubar.add(new EditMenu());
+			menubar.add(new EditMenu(this));
 			//menubar.add(new OldCrossdateMenu());
 			if (App.platform.isMac())
 				menubar.add(new WindowMenu(this));

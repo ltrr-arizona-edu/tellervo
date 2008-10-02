@@ -37,7 +37,7 @@ public class SiteEditor extends XFrame implements SaveableDocument {
         // add menubar
         JMenuBar menubar = new JMenuBar();
         menubar.add(new FileMenu(this));
-        menubar.add(new EditMenu());
+        menubar.add(new EditMenu(this));
         //menubar.add(new MapViewMenu());
         if (App.platform.isMac())
             menubar.add(new WindowMenu(this));

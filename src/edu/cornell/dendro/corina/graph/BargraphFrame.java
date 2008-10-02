@@ -772,7 +772,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 			JMenuBar menubar = new JMenuBar();
 
 			menubar.add(new FileMenu(this));
-			menubar.add(new EditMenu());
+			menubar.add(new EditMenu(this));
 			menubar.add(new BargraphViewMenu(this));
 			if (App.platform.isMac())
 				menubar.add(new WindowMenu(this));

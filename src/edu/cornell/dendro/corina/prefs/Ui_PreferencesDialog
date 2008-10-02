@@ -1,4 +1,3 @@
-package edu.cornell.dendro.corina.gui.newui;
 /*
  * PreferencesDialog.java
  *
@@ -11,14 +10,14 @@ package edu.cornell.dendro.corina.gui.newui;
  *
  * @author  peterbrewer
  */
-public class Ui_PreferencesDialog extends javax.swing.JDialog {
+public class PreferencesDialog extends javax.swing.JDialog {
     /** A return status code - returned if Cancel button has been pressed */
     public static final int RET_CANCEL = 0;
     /** A return status code - returned if OK button has been pressed */
     public static final int RET_OK = 1;
     
     /** Creates new form PreferencesDialog */
-    public Ui_PreferencesDialog(java.awt.Frame parent, boolean modal) {
+    public PreferencesDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
@@ -69,6 +68,11 @@ public class Ui_PreferencesDialog extends javax.swing.JDialog {
         lblWSURL = new javax.swing.JLabel();
         txtWSURL = new javax.swing.JTextField();
         btnReloadDictionary = new javax.swing.JButton();
+        chkUseProxy = new javax.swing.JCheckBox();
+        lblProxyServer = new javax.swing.JLabel();
+        txtProxyURL = new javax.swing.JTextField();
+        lblProxyPort = new javax.swing.JLabel();
+        spnProxyPort = new javax.swing.JSpinner();
         panelEmail = new javax.swing.JPanel();
         lblSMTPServer = new javax.swing.JLabel();
         txtSMTPServer = new javax.swing.JTextField();
@@ -339,17 +343,38 @@ public class Ui_PreferencesDialog extends javax.swing.JDialog {
 
         btnReloadDictionary.setText("Force Dictionary Reload");
 
+        chkUseProxy.setText("Connect through proxy server");
+
+        lblProxyServer.setText("Proxy server:");
+        lblProxyServer.setEnabled(false);
+
+        txtProxyURL.setEnabled(false);
+
+        lblProxyPort.setText("Port:");
+        lblProxyPort.setEnabled(false);
+
+        spnProxyPort.setEnabled(false);
+
         org.jdesktop.layout.GroupLayout panelWebserviceLayout = new org.jdesktop.layout.GroupLayout(panelWebservice);
         panelWebservice.setLayout(panelWebserviceLayout);
         panelWebserviceLayout.setHorizontalGroup(
             panelWebserviceLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelWebserviceLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(lblWSURL, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 93, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(panelWebserviceLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(lblWSURL, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 93, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblProxyServer))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelWebserviceLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, btnReloadDictionary)
-                    .add(txtWSURL, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE))
+                .add(panelWebserviceLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(chkUseProxy)
+                    .add(btnReloadDictionary)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, txtWSURL, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, panelWebserviceLayout.createSequentialGroup()
+                        .add(txtProxyURL, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(lblProxyPort)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(spnProxyPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         panelWebserviceLayout.setVerticalGroup(
@@ -360,7 +385,15 @@ public class Ui_PreferencesDialog extends javax.swing.JDialog {
                     .add(txtWSURL, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnReloadDictionary)
-                .addContainerGap(28, Short.MAX_VALUE))
+                .add(18, 18, 18)
+                .add(chkUseProxy)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelWebserviceLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(lblProxyServer)
+                    .add(spnProxyPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblProxyPort)
+                    .add(txtProxyURL, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         panelEmail.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Email"));
@@ -393,11 +426,11 @@ public class Ui_PreferencesDialog extends javax.swing.JDialog {
         panelNetworkConnections.setLayout(panelNetworkConnectionsLayout);
         panelNetworkConnectionsLayout.setHorizontalGroup(
             panelNetworkConnectionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelNetworkConnectionsLayout.createSequentialGroup()
+            .add(panelNetworkConnectionsLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(panelNetworkConnectionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelEmail, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelWebservice, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .add(panelNetworkConnectionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, panelWebservice, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(panelEmail, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panelNetworkConnectionsLayout.setVerticalGroup(
@@ -405,9 +438,9 @@ public class Ui_PreferencesDialog extends javax.swing.JDialog {
             .add(panelNetworkConnectionsLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelWebservice, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(18, 18, 18)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(panelEmail, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(271, Short.MAX_VALUE))
+                .addContainerGap(214, Short.MAX_VALUE))
         );
 
         propertiesTabs.addTab("Network Connections", panelNetworkConnections);
@@ -757,7 +790,7 @@ public class Ui_PreferencesDialog extends javax.swing.JDialog {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Ui_PreferencesDialog dialog = new Ui_PreferencesDialog(new javax.swing.JFrame(), true);
+                PreferencesDialog dialog = new PreferencesDialog(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);
@@ -793,6 +826,7 @@ public class Ui_PreferencesDialog extends javax.swing.JDialog {
     protected javax.swing.JCheckBox chkEnableCOFECHA;
     protected javax.swing.JCheckBox chkHighlightSig;
     protected javax.swing.JCheckBox chkShowChartGrid;
+    protected javax.swing.JCheckBox chkUseProxy;
     protected javax.swing.JButton jButton3;
     protected javax.swing.JCheckBox jCheckBox2;
     protected javax.swing.JCheckBox jCheckBox3;
@@ -823,6 +857,8 @@ public class Ui_PreferencesDialog extends javax.swing.JDialog {
     protected javax.swing.JLabel lblPlatformType;
     protected javax.swing.JLabel lblPlatformUnits;
     protected javax.swing.JLabel lblPort;
+    protected javax.swing.JLabel lblProxyPort;
+    protected javax.swing.JLabel lblProxyServer;
     protected javax.swing.JLabel lblRValue;
     protected javax.swing.JLabel lblSMTPServer;
     protected javax.swing.JLabel lblShowChartGrid;
@@ -848,8 +884,10 @@ public class Ui_PreferencesDialog extends javax.swing.JDialog {
     protected javax.swing.JTabbedPane propertiesTabs;
     protected javax.swing.JSpinner spnMinOverlap;
     protected javax.swing.JSpinner spnMinOverlapDScore;
+    protected javax.swing.JSpinner spnProxyPort;
     protected javax.swing.JTable tblUIProperties;
     protected javax.swing.JTextField txtCOFECHAPath;
+    protected javax.swing.JTextField txtProxyURL;
     protected javax.swing.JTextField txtSMTPServer;
     protected javax.swing.JTextField txtWSURL;
     // End of variables declaration//GEN-END:variables

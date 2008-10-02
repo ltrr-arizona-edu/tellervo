@@ -102,7 +102,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	 @param dataView the SampleDataView to use for inserting and deleting years
 	 */
 	public EditorEditMenu(Sample sample, SampleDataView dataView, Editor editor) {
-		super();
+		super(editor);
 
 		this.sample = sample;
 		this.dataView = dataView;

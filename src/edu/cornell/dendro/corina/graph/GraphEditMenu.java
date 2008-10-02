@@ -3,11 +3,15 @@
  */
 package edu.cornell.dendro.corina.graph;
 
+import javax.swing.JFrame;
+
 import edu.cornell.dendro.corina.gui.menus.EditMenu;
 
 class GraphEditMenu extends EditMenu {
-	GraphEditMenu(GraphWindow window) {
-		this.window = window;
+	
+	public GraphEditMenu(JFrame frame) {
+		super(frame);
+		// TODO Auto-generated constructor stub
 	}
 
 	private GraphWindow window;

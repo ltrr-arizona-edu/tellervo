@@ -39,6 +39,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -271,7 +272,7 @@ setContentPane(tabs);
         // add menubar
         JMenuBar menubar = new JMenuBar(); // FUTURE: CorinaMenuBar!
         menubar.add(new MapFileMenu(this));
-        menubar.add(new MapEditMenu());
+        menubar.add(new MapEditMenu(this));
         menubar.add(new MapViewMenu());
         if (App.platform.isMac())
             menubar.add(new WindowMenu(this));
@@ -333,7 +334,12 @@ private class MapFileMenu extends FileMenu {
         // TODO: implement select-all
         // TODO: dim get-info if nothing is selected -- (extend LabelSet to do selection first)
 
-        @Override
+        public MapEditMenu(JFrame frame) {
+			super(frame);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
 		protected void init() {
             addUndoRedo();
             addSeparator();

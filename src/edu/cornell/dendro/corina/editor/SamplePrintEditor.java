@@ -825,7 +825,7 @@ public class SamplePrintEditor extends JPanel {
 	
 	private String getMetadata() {
 		StringBuffer sb = new StringBuffer();
-		
+	
 		if (s.hasMeta("id"))
 			sb.append("ID Number " + s.getMeta("id") + "\n");
 		if (s.hasMeta("title"))

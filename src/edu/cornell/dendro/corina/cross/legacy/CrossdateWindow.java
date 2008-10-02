@@ -39,6 +39,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -306,7 +307,7 @@ public class CrossdateWindow extends XFrame implements PrintableDocument,
 			JMenuBar menubar = new JMenuBar();
 
 			menubar.add(new CrossdateFileMenu(this));
-			menubar.add(new CrossdateEditMenu());
+			menubar.add(new CrossdateEditMenu(this));
 			menubar.add(new CrossdateViewMenu());
 			if (App.platform.isMac())
 				menubar.add(new WindowMenu(this));
@@ -589,6 +590,11 @@ public class CrossdateWindow extends XFrame implements PrintableDocument,
 	// our Edit menu has the additional menu item "Edit this Crossdate" (or
 	// something like that) which brings up a CrossdateKit.
 	private class CrossdateEditMenu extends EditMenu {
+		public CrossdateEditMenu(JFrame frame) {
+			super(frame);
+			// TODO Auto-generated constructor stub
+		}
+
 		@Override
 		protected void init() {
 			// BETTER: addTop(), addBottom()?

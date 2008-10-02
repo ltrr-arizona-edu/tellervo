@@ -10,7 +10,7 @@ import com.jgoodies.forms.factories.*;
 import com.jgoodies.forms.layout.*;
 
 /**
- * @author Charlotte Pearson
+ * @author Peter Brewer
  */
 public class SampleDetails extends JPanel {
 	public SampleDetails() {
@@ -20,7 +20,6 @@ public class SampleDetails extends JPanel {
 
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-		// Generated using JFormDesigner Evaluation license - Charlotte Pearson
 		siteDetailsPanel = new JPanel();
 		label5 = new JLabel();
 		cboSiteCode = new JComboBox();
@@ -89,7 +88,6 @@ public class SampleDetails extends JPanel {
 
 		//======== this ========
 
-		// JFormDesigner evaluation mark
 		setBorder(new javax.swing.border.CompoundBorder(
 			new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
 				"JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
@@ -427,7 +425,6 @@ public class SampleDetails extends JPanel {
 
 	
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-	// Generated using JFormDesigner Evaluation license - Charlotte Pearson
 	private JPanel siteDetailsPanel;
 	private JLabel label5;
 	private JComboBox cboSiteCode;
