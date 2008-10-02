@@ -529,7 +529,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 		
 		// position the button
 		if(editButton != null) {
-			editButton.setHorizontalAlignment(SwingConstants.RIGHT);
+			editButton.setAlignmentX(RIGHT_ALIGNMENT);
 			editButton.setMargin(new Insets(0, 2, 0, 2)); // small button
 			editButton.setDefaultCapable(false);
 			JPanel dummy = new JPanel();
