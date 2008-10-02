@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.site;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -13,6 +14,7 @@ public class Site extends GenericIntermediateObject implements Comparable {
 		this.code = code;
 		
 		subsites = new ArrayList<Subsite>();
+		regions = new HashMap<String, String>();
 	}
 		
 	/** The site's code (e.g., CYL) */
@@ -24,20 +26,26 @@ public class Site extends GenericIntermediateObject implements Comparable {
 	/*
 	 * Region stuff
 	 */
-	private String regionID;
-	private String regionName;
+	private HashMap<String, String> regions;
 	
-	public void setRegion(String regionID, String regionName) {
-		this.regionID = regionID;
-		this.regionName = regionName;
+	/**
+	 * Add this site to a particular region
+	 * 
+	 * @param regionID
+	 * @param regionName
+	 */
+	public void addRegion(String regionID, String regionName) {
+		regions.put(regionID, regionName);
 	}
 	
+	/**
+	 * Check to see if this site is in a region, by id
+	 * 
+	 * @param regionID
+	 * @return
+	 */
 	public boolean inRegion(String regionID) {
-		// no region? not in a region :)
-		if(this.regionID == null)
-			return false;
-		
-		return this.regionID.equalsIgnoreCase(regionID);
+		return regions.containsKey(regionID);
 	}
 	
 	public String toString() {
@@ -83,15 +91,15 @@ public class Site extends GenericIntermediateObject implements Comparable {
 		
 		Site site = new Site(id, name, code);
 		
-		// catch a region tag (can we have more than one??)
-		// FIXME: Can we have more than one region?
-		Element child = root.getChild("region");
-		if(child != null && ((id = child.getAttributeValue("id")) != null)) {
-			site.setRegion(id, child.getText());
+		// catch a region tag (or multiple)
+		for(Element region : (List<Element>) root.getChildren("region")) {
+			if(((id = region.getAttributeValue("id")) != null)) {
+				site.addRegion(id, region.getText());
+			}			
 		}
 		
 		// now, get any subsites
-		child = root.getChild("references");
+		Element child = root.getChild("references");
 		if(child != null) {
 			List<Element> subsites = child.getChildren("subSite");
 			
