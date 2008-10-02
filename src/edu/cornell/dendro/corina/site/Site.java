@@ -48,7 +48,7 @@ public class Site extends GenericIntermediateObject implements Comparable {
 		return regions.containsKey(regionID);
 	}
 	
-	public String toString() {
+	public String toFullString() {
 		if(code.equals(name))
 			return name;
 		

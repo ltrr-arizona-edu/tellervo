@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +13,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import javax.swing.event.*;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,19 +21,18 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableColumnModel;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.SiteRegion;
@@ -90,9 +89,11 @@ public class DBBrowser extends javax.swing.JDialog{
         selectedElements = new ElementList();
         
         isMultiDialog = openMulti;
-        
+
+        lstSites.setCellRenderer(new SiteRenderer());
+
         setupTableArea();
-        populateComponents();
+        populateComponents();        
         
         // repack :)
         pack();
@@ -166,6 +167,10 @@ public class DBBrowser extends javax.swing.JDialog{
     		} catch (IOException ioe) {
     			int ret = JOptionPane.showConfirmDialog(this, "Error loading:\n" + ioe + 
     					"\n\nWould you like to continue?", "Error", JOptionPane.YES_NO_OPTION);
+    			
+    			if(ret == JOptionPane.NO_OPTION)
+    				return false;
+    			
     			continue;
     		}
     		
@@ -605,10 +610,11 @@ public class DBBrowser extends javax.swing.JDialog{
         		List<Site> filteredSites = new ArrayList<Site>();
         		
         		// Loop through master site list and check if filter matches
+        		String filter = txtFilterInput.getText().toLowerCase();
         		for(Site s : sites){
-        			if(s.toString().toLowerCase().indexOf(txtFilterInput.getText().toLowerCase())!=-1){      					
-        				filteredSites.add(s);        				
-        			}	
+	        		String search = s.toFullString().toLowerCase();
+	        		if(search.indexOf(filter) != -1)
+	        			filteredSites.add(s);        				
         		}
         		lstSites.setModel(new javax.swing.DefaultComboBoxModel(filteredSites.toArray()));
         	}		
@@ -627,10 +633,10 @@ public class DBBrowser extends javax.swing.JDialog{
     	        		filteredSites.add(s);   
 
     	        	// User HAS entered filter text
-    	        	} else {    	        		
-    	        			if(s.toString().toLowerCase().indexOf(txtFilterInput.getText().toLowerCase())!=-1){      					
-    	        				filteredSites.add(s);        				
-    	        			}	
+    	        	} else {
+    	        		String search = s.toFullString().toLowerCase();
+    	        		if(search.indexOf(txtFilterInput.getText().toLowerCase()) != -1)
+    	        			filteredSites.add(s);        				
     	        	}	
     			}
     		}
@@ -713,6 +719,46 @@ public class DBBrowser extends javax.swing.JDialog{
     public JPanel getExtraButtonPanel() {
     	return extraButtonPanel;
     }
+    
+    
+	/**
+	 * A quick and dirty class to render stars in a combo box
+	 */
+	private class SiteRenderer implements ListCellRenderer {
+		public SiteRenderer() {
+		}
+
+		public Component getListCellRendererComponent(JList list, Object value,
+				int index, boolean isSelected, boolean cellHasFocus) {
+
+			JPanel c = new JPanel();
+			
+			if(isSelected)
+				c.setBackground(list.getSelectionBackground());
+			else
+				c.setBackground(index % 2 == 0 ? ODD_ROW_COLOR
+						: Color.white);	
+
+			if(value instanceof Site) {
+				Site site = (Site) value;
+				
+				JLabel lblCode = new JLabel(site.getCode());
+				JLabel lblName = new JLabel(site.toString());
+				
+				Font font = lblCode.getFont();
+				lblCode.setFont(font.deriveFont(Font.BOLD));
+				lblName.setFont(font.deriveFont(font.getSize() - 3.0f));
+				
+				BoxLayout layout = new BoxLayout(c, BoxLayout.Y_AXIS);
+				c.setLayout(layout);
+				
+				c.add(lblCode);
+				c.add(lblName);
+			}
+			
+			return c;
+		}
+	}
     
     /** This method is called from within the constructor to
      * initialize the form.
