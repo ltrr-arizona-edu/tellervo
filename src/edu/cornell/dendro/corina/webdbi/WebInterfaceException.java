@@ -24,4 +24,5 @@ public class WebInterfaceException extends ResourceException {
 	public static final int ERROR_AUTHENTICATION_FAILED = 101;
 	public static final int ERROR_LOGIN_REQUIRED = 102;
 	public static final int ERROR_PERMISSION_DENIED = 103;
+	public static final int ERROR_BAD_SERVER_NONCE = 105;
 }

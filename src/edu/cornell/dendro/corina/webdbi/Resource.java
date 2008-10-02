@@ -107,7 +107,7 @@ public abstract class Resource {
 			LoginDialog dialog = new LoginDialog();
 			
 			// dialog needs to know the nonce!
-			dialog.setNonce(w.getNonce());
+			dialog.setNonce(w.getNonce(), w.getNonceSeq());
 
 			try {
 				

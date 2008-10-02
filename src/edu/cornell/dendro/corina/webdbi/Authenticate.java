@@ -21,8 +21,9 @@ public class Authenticate extends Resource {
 	private String cliNonce;
 	private String hash;
 	private String srvNonce;
+	private String seq;
 	
-	public Authenticate(String username, String password, String nonce) {
+	public Authenticate(String username, String password, String nonce, String seq) {
 		super("authenticate", ResourceQueryType.SECURELOGIN);
 		
 		// fail differently :)
@@ -33,6 +34,8 @@ public class Authenticate extends Resource {
 		Random random = new Random();
 		random.nextBytes(randomBytes);
 		
+		this.srvNonce = nonce;
+		this.seq = seq;
 		this.cliNonce = StringUtils.bytesToHex(randomBytes);
 		
 		// generate our fun hash thing.
@@ -53,6 +56,10 @@ public class Authenticate extends Resource {
 	public String getServerNonce() {
 		return srvNonce;
 	}
+	
+	public String getServerNonceSeq() {
+		return seq;
+	}
 
 	@Override
 	protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) {
@@ -62,7 +69,9 @@ public class Authenticate extends Resource {
 		if(queryType == ResourceQueryType.SECURELOGIN) {
 			auth.setAttribute("username", username);
 			auth.setAttribute("hash", hash);
-			auth.setAttribute("nonce", cliNonce);
+			auth.setAttribute("cnonce", cliNonce);
+			auth.setAttribute("snonce", srvNonce);
+			auth.setAttribute("seq", seq);
 		}
 		
 		requestElement.addContent(auth);
@@ -82,6 +91,7 @@ public class Authenticate extends Resource {
 			if(nonce == null)
 				return false;
 			
+			seq = nonce.getAttributeValue("seq");
 			srvNonce = nonce.getText();
 			if(srvNonce == null)
 				return false;

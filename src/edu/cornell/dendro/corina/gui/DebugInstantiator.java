@@ -47,7 +47,7 @@ public class DebugInstantiator extends JDialog implements ResourceEventListener 
 		
 		// another example
 		if(false) {
-			Resource r = new Authenticate("kit", "yourmom", "123412903481239nonce");
+			Resource r = new Authenticate("kit", "yourmom", "123412903481239nonce", "1234");
 		
 			// make sure we're listening to status information
 			r.addResourceEventListener(this);

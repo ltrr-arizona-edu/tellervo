@@ -163,7 +163,7 @@ public class LoginDialog extends JDialog {
 		loginButton = new JButton("Log in");
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				performAuthentication();
+				performAuthentication(0);
 			}
 		});
 		buttonPanel.add(loginButton);
@@ -363,8 +363,26 @@ public class LoginDialog extends JDialog {
 	 */
 	private Authenticate authenticator;
 	private SyncTaskDialog authenticationNotifier;
-	private void performAuthentication() {
+	private void performAuthentication(final int recursionLevel) {
 		final JDialog glue = this;
+		
+		// make sure that we're not recursing way too much
+		if(recursionLevel > 5) {
+			JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
+					"Error: Too much recursion. Is there a problem with the server?",
+				    "Could not authenticate",
+				    JOptionPane.ERROR_MESSAGE);
+			
+			enableDialogButtons(true);
+			
+			if(authenticationNotifier != null) {
+				authenticationNotifier.setSuccess(false);
+				authenticationNotifier.stop();
+			}
+			
+			// abort!
+			return;
+		}
 		
 		// first off, we're busy now.
 		enableDialogButtons(false);
@@ -377,10 +395,10 @@ public class LoginDialog extends JDialog {
 				public void resourceChanged(ResourceEvent re) {
 					if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE) {
 						// ok, so we have a nonce
-						setNonce(authenticator.getServerNonce());
+						setNonce(authenticator.getServerNonce(), authenticator.getServerNonceSeq());
 						
 						// start this whole thing over again...
-						performAuthentication();
+						performAuthentication(recursionLevel + 1);
 					}
 					else if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_FAILED) {
 						Exception e = re.getAttachedException();
@@ -405,7 +423,7 @@ public class LoginDialog extends JDialog {
 		}
 		else {
 			// ok, so we have a nonce and we're trying to actually log in
-			authenticator = new Authenticate(getUsername(), getPassword(), serverNonce);
+			authenticator = new Authenticate(getUsername(), getPassword(), serverNonce, serverNonceSeq);
 			
 			authenticator.addResourceEventListener(new ResourceEventListener() {
 				public void resourceChanged(ResourceEvent re) {
@@ -420,6 +438,16 @@ public class LoginDialog extends JDialog {
 					}
 					else if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_FAILED) {
 						Exception e = re.getAttachedException();
+						
+						// bad server nonce?
+						if(e instanceof WebInterfaceException && 
+								((WebInterfaceException)e).getMessageCode() == 
+									WebInterfaceException.ERROR_BAD_SERVER_NONCE) {
+							
+							setNonce(null, null);
+							performAuthentication(recursionLevel + 1);
+							return;
+						}
 						
 						// failure. what type?
 						JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
@@ -450,11 +478,13 @@ public class LoginDialog extends JDialog {
 	 * Used if we're actually doing a login!
 	 * @param nonce
 	 */
-	public void setNonce(String nonce) {
+	public void setNonce(String nonce, String seq) {
 		serverNonce = nonce;
+		serverNonceSeq = seq;
 	}
 	
 	private String serverNonce;
+	private String serverNonceSeq;
 	
 	public void doLogin(String subtitle, boolean forced) throws UserCancelledException {
 		if(subtitle != null) {
@@ -481,7 +511,7 @@ public class LoginDialog extends JDialog {
 			// we essentially want to wait until we succeed or fail
 			authenticationNotifier = new SyncTaskDialog(null);
 
-			performAuthentication();
+			performAuthentication(0);
 			
 			authenticationNotifier.start();
 			

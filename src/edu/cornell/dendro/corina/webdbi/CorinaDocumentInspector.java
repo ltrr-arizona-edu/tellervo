@@ -76,9 +76,16 @@ public class CorinaDocumentInspector {
 			switch(code) {
 			case WebInterfaceException.ERROR_AUTHENTICATION_FAILED:
 			case WebInterfaceException.ERROR_PERMISSION_DENIED:
-			case WebInterfaceException.ERROR_LOGIN_REQUIRED:
-				String nonce = header.getChildText("nonce");				
-				throw new WebPermissionsException(code, s, nonce);
+			case WebInterfaceException.ERROR_LOGIN_REQUIRED: {
+				Element nonceElement = header.getChild("nonce");
+				
+				// no nonce? wtf?
+				if(nonceElement == null)
+					throw new WebPermissionsException(code, s);
+					
+				throw new WebPermissionsException(code, s, nonceElement.getText(), 
+						nonceElement.getAttributeValue("seq"));
+			}
 			
 			default:
 				throw new WebInterfaceException(code, s);
