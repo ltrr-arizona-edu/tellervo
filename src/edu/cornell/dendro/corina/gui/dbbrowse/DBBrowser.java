@@ -192,14 +192,21 @@ public class DBBrowser extends DBBrowser_UI{
     }
         
     private void setupTableArea() {
+    	
+		DBBrowserTableModel mdlAvailMeas = new DBBrowserTableModel();
+		tblAvailMeas.setModel(mdlAvailMeas); // set model
+		tblAvailMeas.getTableHeader().addMouseListener(
+				new DBBrowserSorter(mdlAvailMeas, tblAvailMeas)); // add sorter & header renderer
 		tblAvailMeas.setColumnSelectionAllowed(false);
 		tblAvailMeas.setRowSelectionAllowed(true);
-		tblAvailMeas.setModel(new DBBrowserTableModel());
 		setupTableColumns(tblAvailMeas);
 
+		DBBrowserTableModel mdlChosenMeas = new DBBrowserTableModel(selectedElements);
+		tblChosenMeas.setModel(mdlChosenMeas);
+		tblChosenMeas.getTableHeader().addMouseListener(
+				new DBBrowserSorter(mdlChosenMeas, tblChosenMeas)); // add sorter & header renderer
 		tblChosenMeas.setColumnSelectionAllowed(false);
 		tblChosenMeas.setRowSelectionAllowed(true);
-		tblChosenMeas.setModel(new DBBrowserTableModel(selectedElements));
 		setupTableColumns(tblChosenMeas);
 		
 		if(!isMultiDialog) {

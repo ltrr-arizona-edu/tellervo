@@ -51,6 +51,10 @@ public class DBBrowserTableModel extends AbstractTableModel {
 		this.elements = elements;
 		fireTableDataChanged();
 	}
+	
+	public ElementList getElements() {
+		return elements;
+	}
 
 	public int getColumnCount() {
 		return columnNames.length;
@@ -60,8 +64,7 @@ public class DBBrowserTableModel extends AbstractTableModel {
 		return elements.size();
 	}
 	
-	public Object getValueAt(int rowIndex, int columnIndex) {
-		Element e = elements.get(rowIndex);
+	public Object getColumnValueForElement(Element e, int columnIndex) {
 		BaseSample bs;
 		
 		try {
@@ -115,6 +118,12 @@ public class DBBrowserTableModel extends AbstractTableModel {
 		default:
 			return null;
 		}
+	}
+	
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		Element e = elements.get(rowIndex);
+		
+		return getColumnValueForElement(e, columnIndex);
 	}
 	
     public Class<?> getColumnClass(int c) {
