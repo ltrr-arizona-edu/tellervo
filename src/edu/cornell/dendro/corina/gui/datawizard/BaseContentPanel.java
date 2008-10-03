@@ -1,7 +1,7 @@
 	/**
  * 
  */
-package edu.cornell.dendro.corina.gui.newui;
+package edu.cornell.dendro.corina.gui.datawizard;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

@@ -4,7 +4,7 @@
  * Created on June 10, 2008, 2:53 PM
  */
 
-package edu.cornell.dendro.corina.gui.newui;
+package edu.cornell.dendro.corina.gui.datawizard;
 
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
@@ -26,6 +26,7 @@ import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
 import edu.cornell.dendro.corina.site.Specimen;
 import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.util.LegacySampleExtractor;
 import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
 
 /**

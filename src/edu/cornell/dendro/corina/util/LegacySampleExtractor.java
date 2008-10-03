@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.cornell.dendro.corina.gui.newui;
+package edu.cornell.dendro.corina.util;
 
 import java.io.File;
 import java.util.ArrayList;

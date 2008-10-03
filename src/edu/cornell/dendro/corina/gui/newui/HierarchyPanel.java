@@ -34,6 +34,11 @@ import javax.swing.event.DocumentListener;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.SiteRegion;
+import edu.cornell.dendro.corina.gui.datawizard.RadiusEditorPanel;
+import edu.cornell.dendro.corina.gui.datawizard.SiteEditorPanel;
+import edu.cornell.dendro.corina.gui.datawizard.SpecimenEditorPanel;
+import edu.cornell.dendro.corina.gui.datawizard.SubsiteEditorPanel;
+import edu.cornell.dendro.corina.gui.datawizard.TreeEditorPanel;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
 import edu.cornell.dendro.corina.site.Radius;

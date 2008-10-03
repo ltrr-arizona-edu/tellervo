@@ -12,6 +12,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import edu.cornell.dendro.corina.gui.datawizard.MeasurementPanel;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.Center;
 

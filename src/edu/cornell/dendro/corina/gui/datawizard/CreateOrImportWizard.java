@@ -1,10 +1,10 @@
 /*
- * ImportWizard.java
+ * CreateOrImportWizard.java
  *
  * Created on June 10, 2008, 11:37 AM
  */
 
-package edu.cornell.dendro.corina.gui.newui;
+package edu.cornell.dendro.corina.gui.datawizard;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -34,12 +34,13 @@ import edu.cornell.dendro.corina.site.Subsite;
 import edu.cornell.dendro.corina.site.Tree;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.util.LegacySampleExtractor;
 
 /**
  *
  * @author  peterbrewer
  */
-public class ImportWizard extends javax.swing.JDialog implements WizardPanelParent {
+public class CreateOrImportWizard extends javax.swing.JDialog implements WizardPanelParent {
 	private CardLayout cardLayout;
 	private JPanel insidePanel;
 	private BaseContentPanel<?>[] cards;
@@ -49,8 +50,8 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
 	private static final int IMPORTWIZARD = 1;
 	private static final int NEWWIZARD = 2;
 	
-    /** Creates new form ImportWizard */
-    public ImportWizard(java.awt.Frame parent, boolean modal) {
+    /** Creates new form CreateOrImportWizard */
+    public CreateOrImportWizard(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         
@@ -532,7 +533,7 @@ public class ImportWizard extends javax.swing.JDialog implements WizardPanelPare
     public static void mzzzain(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                ImportWizard dialog = new ImportWizard(new javax.swing.JFrame(), true);
+                CreateOrImportWizard dialog = new CreateOrImportWizard(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);

@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.gui.newui;
+package edu.cornell.dendro.corina.gui.datawizard;
 
 import edu.cornell.dendro.corina.site.Radius;
 import edu.cornell.dendro.corina.site.Site;

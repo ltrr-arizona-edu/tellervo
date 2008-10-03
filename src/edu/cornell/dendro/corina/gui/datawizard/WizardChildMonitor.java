@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.gui.newui;
+package edu.cornell.dendro.corina.gui.datawizard;
 
 public interface WizardChildMonitor {
 	

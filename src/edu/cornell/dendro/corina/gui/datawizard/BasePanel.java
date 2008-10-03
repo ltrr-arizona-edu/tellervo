@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.gui.newui;
+package edu.cornell.dendro.corina.gui.datawizard;
 
 import java.awt.Color;
 import java.awt.LayoutManager;

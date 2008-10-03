@@ -10,10 +10,10 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
-import edu.cornell.dendro.corina.gui.newui.BaseEditorPanel;
-import edu.cornell.dendro.corina.gui.newui.EditorPanelFactory;
-import edu.cornell.dendro.corina.gui.newui.MeasurementModifyPanel;
-import edu.cornell.dendro.corina.gui.newui.WizardChildMonitor;
+import edu.cornell.dendro.corina.gui.datawizard.BaseEditorPanel;
+import edu.cornell.dendro.corina.gui.datawizard.EditorPanelFactory;
+import edu.cornell.dendro.corina.gui.datawizard.MeasurementModifyPanel;
+import edu.cornell.dendro.corina.gui.datawizard.WizardChildMonitor;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
 

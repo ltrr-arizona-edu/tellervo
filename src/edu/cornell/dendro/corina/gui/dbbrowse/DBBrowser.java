@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.gui;
+package edu.cornell.dendro.corina.gui.dbbrowse;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -36,6 +36,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.SiteRegion;
+import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;

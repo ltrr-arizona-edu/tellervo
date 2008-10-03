@@ -4,7 +4,7 @@
  * Created on June 9, 2008, 11:44 AM
  */
 
-package edu.cornell.dendro.corina.gui.newui;
+package edu.cornell.dendro.corina.gui.datawizard;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -25,17 +25,16 @@ import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.CanOpener;
-import edu.cornell.dendro.corina.gui.DBBrowser;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.PrintableDocument;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
+import edu.cornell.dendro.corina.gui.datawizard.CreateOrImportWizard;
+import edu.cornell.dendro.corina.gui.datawizard.SiteEditorPanel;
+import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.gui.newui.HierarchyPanel;
 import edu.cornell.dendro.corina.gui.newui.CreateSampleDialog;
-import edu.cornell.dendro.corina.gui.newui.ImportWizard;
-import edu.cornell.dendro.corina.gui.newui.LegacySampleExtractor;
-import edu.cornell.dendro.corina.gui.newui.SiteEditorPanel;
 import edu.cornell.dendro.corina.manip.Sum;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
@@ -46,6 +45,7 @@ import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.LegacySampleExtractor;
 import edu.cornell.dendro.corina.util.Overwrite;
 import edu.cornell.dendro.corina.io.ExportDialog;
 
@@ -305,7 +305,7 @@ public class FileMenu extends JMenu {
 			Element e = ElementFactory.createElement(filename);
 		    Sample s = e.load();
 		    
-		    ImportWizard wiz = new ImportWizard(null, false);
+		    CreateOrImportWizard wiz = new CreateOrImportWizard(null, false);
 
 		    // extract info from the sample
 		    wiz.setLegacySample(new LegacySampleExtractor(s));
@@ -327,7 +327,7 @@ public class FileMenu extends JMenu {
 	}
 	
 	public static void newdb() {
-		ImportWizard wizardDialog = new ImportWizard((JFrame)null, false);
+		CreateOrImportWizard wizardDialog = new CreateOrImportWizard((JFrame)null, false);
 		
 		wizardDialog.setVisible(true);
 	}

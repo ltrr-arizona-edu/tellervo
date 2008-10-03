@@ -17,7 +17,7 @@ import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.graph.GraphDialog;
 import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.DBBrowser;
+import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;

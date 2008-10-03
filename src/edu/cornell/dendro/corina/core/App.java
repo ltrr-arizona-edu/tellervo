@@ -105,7 +105,7 @@ public class App {
         if (meter != null) {
         	meter.setNote("Updating Dictionary...");
         }
-    	dictionary.query();
+    	//dictionary.query();
     }
     if (meter != null) {
     	meter.setProgress(5);
@@ -116,7 +116,7 @@ public class App {
     }
     sites = new SiteList();
     if(splash != null && isLoggedIn) { // must be logged in...
-    	sites.query();
+    	//sites.query();
         if (meter != null) {
         	meter.setNote("Updating Site List...");
         }

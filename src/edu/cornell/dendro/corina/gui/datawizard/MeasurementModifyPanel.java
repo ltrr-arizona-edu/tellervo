@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.gui.newui;
+package edu.cornell.dendro.corina.gui.datawizard;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -13,6 +13,7 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.User;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
+import edu.cornell.dendro.corina.util.LegacySampleExtractor;
 
 /**
  *
