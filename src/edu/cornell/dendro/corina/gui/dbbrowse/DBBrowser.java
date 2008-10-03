@@ -77,6 +77,7 @@ public class DBBrowser extends DBBrowser_UI{
         isMultiDialog = openMulti;
 
         lstSites.setCellRenderer(new SiteRenderer());
+        listTableSplit.setOneTouchExpandable(true);
 
         setupTableArea();
         populateComponents();        
