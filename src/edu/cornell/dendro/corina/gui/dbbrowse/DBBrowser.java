@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,35 +13,27 @@ import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.SiteRegion;
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.sample.SampleSummary;
 import edu.cornell.dendro.corina.site.Site;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.Center;
@@ -51,19 +42,13 @@ import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
 import edu.cornell.dendro.corina.webdbi.ResourceEvent;
 import edu.cornell.dendro.corina.webdbi.ResourceEventListener;
 
-public class DBBrowser extends javax.swing.JDialog{
-    /** A return status code - returned if Cancel button has been pressed */
-    public static final int RET_CANCEL = 0;
-    /** A return status code - returned if OK button has been pressed */
-    public static final int RET_OK = 1;
-    
+public class DBBrowser extends DBBrowser_UI{
     private ElementList selectedElements;
     private boolean isMultiDialog;
     private int minimumSelectedElements = 1;
     
     public DBBrowser(java.awt.Frame parent, boolean modal) {
-    	this(parent, modal, false);
-    	
+    	this(parent, modal, false);	
     }
     
     /** Creates new form as child of Frame */    
@@ -370,10 +355,8 @@ public class DBBrowser extends javax.swing.JDialog{
 					}
 				});
     }
-	public final static Color ODD_ROW_COLOR = new Color(236, 243, 254);
-
-
-    private void populateComponents() {
+    
+	private void populateComponents() {
     	List<SiteRegion> regions = (List<SiteRegion>) App.dictionary.getDictionary("Regions");
     	List<SiteRegion> regionList = new ArrayList<SiteRegion>();
 
@@ -479,121 +462,6 @@ public class DBBrowser extends javax.swing.JDialog{
 		});
 }
     
-    public class DBBrowserTableModel extends AbstractTableModel {
-    	private ElementList elements;
-        private final String[] columnNames = {
-                "Name", 
-                "Type", 
-                "Site name", 
-                "Taxon", 
-                "#", 
-                "Modified", 
-                "Begin Date", 
-                "End Date", 
-                "n"
-                //"ID" //useful for debugging
-            };
-        
-        private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-    	/**
-    	 * The default: no elements
-    	 */
-    	public DBBrowserTableModel() {
-    		this(new ElementList());
-    	}
-  
-    	/**
-    	 * 
-    	 * @param elements
-    	 */
-    	public DBBrowserTableModel(ElementList elements) {
-    		this.elements = elements;
-    	}    	
-    	
-    	public void setElements(ElementList elements) {
-    		this.elements = elements;
-    		fireTableDataChanged();
-    	}
-
-		public int getColumnCount() {
-			return columnNames.length;
-		}
-
-		public int getRowCount() {
-			return elements.size();
-		}
-		
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			Element e = elements.get(rowIndex);
-			BaseSample bs;
-			
-			try {
-				bs = e.loadBasic();
-			} catch (IOException ioe) {
-				return "<ERROR>";
-			}
-			
-			switch(columnIndex) {
-			case 0: {
-				SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
-
-				if(ss != null)
-					return ss.getLabCode();
-				
-				return bs.hasMeta("title") ? bs.getMeta("title") : "[id: " + bs.getMeta("id") + "]";
-			}
-
-			case 1:
-				return bs.getSampleType();
-				
-			case 2: {
-				SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
-				return ss == null ? ss : ss.siteDescription();
-			}
-
-			case 3: {
-				SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
-				return ss == null ? ss : ss.taxonDescription();
-			}
-
-			case 4: {
-				SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
-				return ss == null ? ss : ss.getMeasurementCount();
-			}
-			
-			case 5: {
-				Date date = (Date) bs.getMeta("::moddate");
-				return date != null ? dateFormat.format(date) : date;
-			}
-
-			case 6:
-				return bs.getRange().getStart();
-				
-			case 7:
-				return bs.getRange().getEnd();
-			
-			case 8:
-				return bs.getRange().span();
-				
-			default:
-				return null;
-			}
-		}
-		
-        public Class<?> getColumnClass(int c) {
-        	return String.class;
-        }
-        
-		public String getColumnName(int index) {
-			return columnNames[index];
-		}
-		
-		public Element getElementAt(int rowIndex) {
-			return elements.get(rowIndex);
-		}
-    }
-  
     private void populateSiteList() {
     	Collection<Site> sites = App.sites.getSites();
     	SiteRegion region = (SiteRegion) cboBrowseBy.getSelectedItem();
@@ -707,11 +575,6 @@ public class DBBrowser extends javax.swing.JDialog{
     	return selectedElements;
     }
     
-    /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
-    public int getReturnStatus() {
-        return returnStatus;
-    }
-    
     /**
      * Get the JPanel that comprises space between invert...OK
      * Not initialized; must be laid out manually
@@ -720,279 +583,4 @@ public class DBBrowser extends javax.swing.JDialog{
     public JPanel getExtraButtonPanel() {
     	return extraButtonPanel;
     }
-    
-    
-	/**
-	 * A quick and dirty class to render stars in a combo box
-	 */
-	private class SiteRenderer implements ListCellRenderer {
-		public SiteRenderer() {
-		}
-
-		public Component getListCellRendererComponent(JList list, Object value,
-				int index, boolean isSelected, boolean cellHasFocus) {
-
-			JPanel c = new JPanel();
-			
-			if(isSelected)
-				c.setBackground(list.getSelectionBackground());
-			else
-				c.setBackground(index % 2 == 0 ? ODD_ROW_COLOR
-						: Color.white);	
-
-			if(value instanceof Site) {
-				Site site = (Site) value;
-				
-				JLabel lblCode = new JLabel(site.getCode());
-				JLabel lblName = new JLabel(site.toString());
-				
-				Font font = lblCode.getFont();
-				lblCode.setFont(font.deriveFont(Font.BOLD));
-				lblName.setFont(font.deriveFont(font.getSize() - 3.0f));
-				
-				BoxLayout layout = new BoxLayout(c, BoxLayout.Y_AXIS);
-				c.setLayout(layout);
-				
-				c.add(lblCode);
-				c.add(lblName);
-			}
-			
-			return c;
-		}
-	}
-    
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        btnOk = new javax.swing.JButton();
-        btnCancel = new javax.swing.JButton();
-        btnAdd = new javax.swing.JButton();
-        btnRemove = new javax.swing.JButton();
-        jSplitPane1 = new javax.swing.JSplitPane();
-        panelBrowseBy = new javax.swing.JPanel();
-        browseSearchPane = new javax.swing.JTabbedPane();
-        browsePanel = new javax.swing.JPanel();
-        extraButtonPanel = new javax.swing.JPanel();
-        cboBrowseBy = new javax.swing.JComboBox();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        lstSites = new javax.swing.JList();
-        txtFilterInput = new javax.swing.JTextField();
-        searchPanel = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
-        workArea = new javax.swing.JPanel();
-        tblAvailMeas = new javax.swing.JTable();
-        tblChosenMeas = new javax.swing.JTable();
-        btnSelectAll = new javax.swing.JButton();
-        btnSelectNone = new javax.swing.JButton();
-        btnInvertSelect = new javax.swing.JButton();
-
-        setTitle("Measurement Browser");
-
-        btnOk.setText("OK");
-        btnCancel.setText("Cancel");
-
-        jSplitPane1.setBorder(null);
-        jSplitPane1.setDividerLocation(250);
-        jSplitPane1.setResizeWeight(0.2);
-        jSplitPane1.setFocusable(false);
-
-        browseSearchPane.setEnabled(false);
-
-        cboBrowseBy.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All Regions", "Mediterranean", "Greece", "Italy", "Turkey", "United States" }));
-        cboBrowseBy.setToolTipText("Select a region to filter the sites list below");
-
-        lstSites.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Aezanoi", "Afyon", "Yenikapi", "Yumuktepe" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        lstSites.setToolTipText("List of sites.  Select one or more to see the available datasets in the right hand table");
-        jScrollPane1.setViewportView(lstSites);
-
-        txtFilterInput.setToolTipText("Begin typing to filter the sites list above");
-
-        org.jdesktop.layout.GroupLayout browsePanelLayout = new org.jdesktop.layout.GroupLayout(browsePanel);
-        browsePanel.setLayout(browsePanelLayout);
-        browsePanelLayout.setHorizontalGroup(
-            browsePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(cboBrowseBy, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE)
-            .add(txtFilterInput, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE)
-        );
-        browsePanelLayout.setVerticalGroup(
-            browsePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(browsePanelLayout.createSequentialGroup()
-                .add(cboBrowseBy, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(txtFilterInput, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-        );
-
-        browseSearchPane.addTab("Browse", browsePanel);
-
-        org.jdesktop.layout.GroupLayout searchPanelLayout = new org.jdesktop.layout.GroupLayout(searchPanel);
-        searchPanel.setLayout(searchPanelLayout);
-        searchPanelLayout.setHorizontalGroup(
-            searchPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 129, Short.MAX_VALUE)
-        );
-        searchPanelLayout.setVerticalGroup(
-            searchPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 443, Short.MAX_VALUE)
-        );
-
-        browseSearchPane.addTab("Search", searchPanel);
-
-        org.jdesktop.layout.GroupLayout panelBrowseByLayout = new org.jdesktop.layout.GroupLayout(panelBrowseBy);
-        panelBrowseBy.setLayout(panelBrowseByLayout);
-        panelBrowseByLayout.setHorizontalGroup(
-            panelBrowseByLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, browseSearchPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-        );
-        panelBrowseByLayout.setVerticalGroup(
-            panelBrowseByLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(browseSearchPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
-        );
-
-        jSplitPane1.setLeftComponent(panelBrowseBy);
-
-        tblAvailMeas.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"Direct", "ABC", "Pinus nigra", "1", "26/3/2008", "1950", "1999"},
-                {"Sum", "ABC", "Pinus nigra", "4", "26/3/2008", "1304", "2001"},
-                {"Chronology", "[3 sites]", "Pinus nigra", "13", "26/3/2008", "1304", "2005"},
-                {"Chronology", "[3 sites]", "[2 species]", "5", "20/3/2008", "1850", "1953"}
-            },
-            new String [] {
-                "Type", "Site name", "Taxon", "No. of Measurements", "Last modified", "Begin Date", "End Date"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
-        tblAvailMeas.setDragEnabled(true);
-        tblAvailMeas.setRowSelectionAllowed(false);
-        //resultsScrollPane.setViewportView(tblAvailMeas);
-
-        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(workArea, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 457, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(workArea, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
-        );
-
-        jSplitPane1.setRightComponent(jPanel1);
-
-        btnSelectAll.setText("All");
-        btnSelectAll.setToolTipText("Select all measurements in the table");
-
-        btnSelectNone.setText("None");
-        btnSelectNone.setToolTipText("Unselected all the measurements in the table ");
-
-        btnInvertSelect.setText("Invert");
-        btnInvertSelect.setToolTipText("Invert the selected items in the table");        
-        
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 716, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(btnInvertSelect)
-                    .add(btnSelectNone)
-                    .add(btnSelectAll)
-                    .add(extraButtonPanel)
-                    .add(btnOk, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 67, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(btnCancel))
-                .addContainerGap())
-        );
-
-        layout.linkSize(new java.awt.Component[] {btnCancel, btnOk, btnSelectAll, btnSelectNone, btnInvertSelect}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
-
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
-                    .add(layout.createSequentialGroup()
-                        .add(btnSelectAll)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnSelectNone)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnInvertSelect)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(extraButtonPanel)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 332, Short.MAX_VALUE)
-                        .add(btnOk)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnCancel)))
-                .addContainerGap())
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-        
-    /**
-     * @param args the command line arguments
-     */
-    public static void zzzmain(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                DBBrowser dialog = new DBBrowser(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
-    
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel browsePanel;
-    private javax.swing.JTabbedPane browseSearchPane;
-    private javax.swing.JPanel extraButtonPanel;
-    private javax.swing.JButton btnCancel;
-    private javax.swing.JButton btnInvertSelect;
-    private javax.swing.JButton btnOk;
-    private javax.swing.JButton btnAdd;
-    private javax.swing.JButton btnRemove;
-    private javax.swing.JButton btnAddAll;
-    private javax.swing.JButton btnRemoveAll;    
-    private javax.swing.JButton btnSelectAll;
-    private javax.swing.JButton btnSelectNone;
-    private javax.swing.JComboBox cboBrowseBy;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JTextField txtFilterInput;
-    private javax.swing.JList lstSites;
-    private javax.swing.JPanel panelBrowseBy;
-    private javax.swing.JPanel workArea;
-    private javax.swing.JPanel searchPanel;
-    private javax.swing.JTable tblAvailMeas;
-    private javax.swing.JTable tblChosenMeas;
-    // End of variables declaration//GEN-END:variables
-    
-    private int returnStatus = RET_CANCEL;
 }
