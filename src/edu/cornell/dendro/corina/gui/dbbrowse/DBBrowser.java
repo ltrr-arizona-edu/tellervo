@@ -330,7 +330,7 @@ public class DBBrowser extends DBBrowser_UI{
 		table.setShowVerticalLines(true);
 		table.setGridColor(Color.lightGray);
 		
-		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth("C-XXX-XX-XX-X-X"));
+		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth("C-XXX-XX-XX-Xx-Xx"));
 		table.getColumnModel().getColumn(1).setPreferredWidth(fm.stringWidth("DirectX"));
 		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("ABCD"));
 		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("Pinus Nigra X"));
@@ -339,6 +339,7 @@ public class DBBrowser extends DBBrowser_UI{
 		table.getColumnModel().getColumn(6).setPreferredWidth(fm.stringWidth("12345"));
 		table.getColumnModel().getColumn(7).setPreferredWidth(fm.stringWidth("12345"));
 		table.getColumnModel().getColumn(8).setPreferredWidth(fm.stringWidth("123"));
+		table.getColumnModel().getColumn(9).setPreferredWidth(fm.stringWidth("123")); // checkbox?
 		
 		table.setDefaultRenderer(Object.class,
 				new DefaultTableCellRenderer() {

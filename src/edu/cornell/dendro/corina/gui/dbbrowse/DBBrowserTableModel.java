@@ -26,7 +26,8 @@ public class DBBrowserTableModel extends AbstractTableModel {
             "Modified", 
             "Begin Date", 
             "End Date", 
-            "n"
+            "n",
+            "Rec"
             //"ID" //useful for debugging
         };
     
@@ -115,6 +116,9 @@ public class DBBrowserTableModel extends AbstractTableModel {
 		case 8:
 			return bs.getRange().span();
 			
+		case 9:
+			return bs.getMeta("isreconciled");
+			
 		default:
 			return null;
 		}
@@ -127,6 +131,11 @@ public class DBBrowserTableModel extends AbstractTableModel {
 	}
 	
     public Class<?> getColumnClass(int c) {
+    	// reconciled is true/false
+    	if(c == 9)
+    		return Boolean.class;
+    	
+    	// everything else is just a string
     	return String.class;
     }
     
