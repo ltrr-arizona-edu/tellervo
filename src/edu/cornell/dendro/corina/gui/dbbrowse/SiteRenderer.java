@@ -38,7 +38,7 @@ public class SiteRenderer implements ListCellRenderer {
 			
 			Font font = lblCode.getFont();
 			lblCode.setFont(font.deriveFont(Font.BOLD));
-			lblName.setFont(font.deriveFont(font.getSize() - 3.0f));
+			lblName.setFont(font.deriveFont(font.getSize() - 2.0f));
 			
 			BoxLayout layout = new BoxLayout(c, BoxLayout.Y_AXIS);
 			c.setLayout(layout);
