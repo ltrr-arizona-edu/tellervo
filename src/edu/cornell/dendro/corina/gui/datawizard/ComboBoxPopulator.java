@@ -7,6 +7,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
 import edu.cornell.dendro.corina.site.*;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
@@ -82,8 +83,9 @@ public class ComboBoxPopulator {
     	
     	Object[] siteList = formulateArrayFromCollection(sites, "site");
     	
+    	cbo.setRenderer(new SiteRenderer());
     	cbo.setModel(new javax.swing.DefaultComboBoxModel(siteList));
-    	
+
     	// if our site list was updated in the background,
     	// we have to compare sites. blurgh.
     	if(selectedSite != null) {
@@ -131,6 +133,7 @@ public class ComboBoxPopulator {
     private void populateTrees(String parentID) {
 		SearchParameters sp = new SearchParameters("tree");
 		sp.addSearchConstraint("subsiteid", "=", parentID);
+    	cbo.setRenderer(new SiteRenderer());
 		
 		IntermediateResource resource = new IntermediateResource(sp);
 		PrototypeLoadDialog dlg = new PrototypeLoadDialog(resource);
@@ -146,6 +149,7 @@ public class ComboBoxPopulator {
 
     	Object[] treeList = formulateArrayFromCollection(resource.getObject(), "tree");
     	cbo.setModel(new DefaultComboBoxModel(treeList));		
+
     }
 
     private void populateSpecimens(String parentID) {
