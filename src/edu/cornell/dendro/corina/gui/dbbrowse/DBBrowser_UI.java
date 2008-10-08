@@ -85,6 +85,7 @@ public class DBBrowser_UI extends JDialog {
 	
 	    listTableSplit.setBorder(null);
 	    listTableSplit.setDividerLocation(250);
+	    listTableSplit.setDividerSize(8);
 	    listTableSplit.setResizeWeight(0.2);
 	    listTableSplit.setFocusable(false);
 	

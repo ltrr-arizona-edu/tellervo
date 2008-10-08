@@ -619,7 +619,8 @@ public class CrossdateDialog extends javax.swing.JDialog {
 
         splitCrossDates.setBorder(null);
         splitCrossDates.setDividerLocation(230);
-        splitCrossDates.setDividerSize(12);
+        splitCrossDates.setDividerSize(8);
+        splitCrossDates.setOneTouchExpandable(true);
         splitCrossDates.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         tableSignificantScores.setModel(new javax.swing.table.DefaultTableModel(
