@@ -45,6 +45,23 @@ public class SiteRenderer implements ListCellRenderer {
 			
 			c.add(lblCode);
 			c.add(lblName);
+		} else if(value instanceof String) {
+			JLabel lblCode = new JLabel((String) value);
+			JLabel lblName = new JLabel((String) value);
+			
+			// yellow background
+			if(!isSelected)
+				c.setBackground(new Color(255, 255, 200));
+			
+			Font font = lblCode.getFont();
+			lblCode.setFont(font.deriveFont(Font.BOLD));
+			lblName.setFont(font.deriveFont(font.getSize() - 2.0f));
+			
+			BoxLayout layout = new BoxLayout(c, BoxLayout.Y_AXIS);
+			c.setLayout(layout);
+			
+			c.add(lblCode);
+			c.add(lblName);
 		}
 		
 		return c;
