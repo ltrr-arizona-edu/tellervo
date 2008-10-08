@@ -131,7 +131,7 @@ public class MeasurementModifyPanel extends BaseEditorPanel<GenericIntermediateO
     private void setMetaMod(String key, Object value) {
     	Object oldValue = s.getMeta(key);
     	
-    	if(!oldValue.equals(value)) {
+    	if(oldValue == null || !oldValue.equals(value)) {
     		s.setMeta(key, value);
     		numModifications++;
     	}
@@ -160,10 +160,10 @@ public class MeasurementModifyPanel extends BaseEditorPanel<GenericIntermediateO
 
     	
     	// let our sample know we changed it
-    	//if(numModifications > 0) {
+    	if(numModifications > 0) {
     		s.setModified();
     		s.fireSampleMetadataChanged();
-    	//}
+    	}
     	
     	succeeded = true;
     }    
