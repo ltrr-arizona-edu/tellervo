@@ -20,6 +20,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
+import com.lowagie.text.Font;
+
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.DecadalModel;
 import edu.cornell.dendro.corina.editor.SampleDataView;
@@ -32,8 +34,7 @@ import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
 
 public class ReconcileDataView extends SampleDataView implements SampleListener {
 	private JEditorPane reconcileInfo;
-	private final static String reconcileIntro = "<html><font face=Dialog size=3>" +
-		"<font color=green><u>Reconciling</u></font><br><font size=2>Click on a year for more information</font><p>";
+	private final static String reconcileIntro = "<html><br>";
 
 	private Sample newSample, reference;
 	private Reconciler reconciler;
@@ -81,25 +82,32 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 		StringBuffer selectionInfo = new StringBuffer();
 		
 		// any global warnings
+		warnings.append("<b><u>General details</u></b><br><br>");
+		if(reconciler.getFailureCount() != 0) {
+			warnings.append("<font color=red><b>" + reconciler.getFailureCount() +
+					" errors remaining</b></font><br><p>");
+		}
+		else
+		{
+			warnings.append("<b>No reconcilitation errors</b><br><p>");
+		}
+		
 		if(newSample.getStart().compareTo(reference.getStart()) != 0) {
-			warnings.append("- <font color=#aa7700>[Warn] Samples do not have the same start year:</font> ");
-			warnings.append("(" + newSample.getStart() + "; ref: " + reference.getStart() + ")");
-			warnings.append("<br>");
+			warnings.append("<font color=red><b>Warning!<b><br>Samples do begin in the same year - ");
+			warnings.append(newSample.getStart() + " compared to " + reference.getStart());
+			warnings.append(".</font><br><p>");
 		}
 		if(newSample.getData().size() != reference.getData().size()) {
-			warnings.append("- <font color=red>Samples do not have the same length</font> ");
-			warnings.append("(" + newSample.getData().size() + "; ref: " + reference.getData().size() + ")");
-			warnings.append("<br>");
+			warnings.append("<font color=red><b>Warning!</b><br>Samples are different lengths - ");
+			warnings.append(newSample.getData().size() + " years compared with " + reference.getData().size());
+			warnings.append(".</font><br><p>");
 		}
-		if(reconciler.getFailureCount() != 0) {
-			warnings.append("- <font color=red>" + reconciler.getFailureCount() + " reconciliation error" +
-					(reconciler.getFailureCount() > 1 ? "s" : "") +
-					"</font><br>");
-		}
-		if(warnings.length() != 0) {
-			warnings.insert(0, "<b><u>Errors:</u></b><br>");
-			warnings.append("<p>");
-		}
+
+		
+		//if(warnings.length() != 0) {
+		//	warnings.insert(0, "<b><u>Errors:</u></b><br>");
+		//	warnings.append("<p>");
+		//}
 		
 		// now, information for the currently selected point
 		int row = myTable.getSelectedRow();
@@ -107,17 +115,20 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 		
 		if (row >= 0 && col >= 0) {
 			Year y = ((DecadalModel) myModel).getYear(row, col);
+
+			
 			int idx = y.diff(newSample.getStart());
 			
 			if(idx >= 0) {
 				Set<Reconciler.FailureType> failures = reconciler.getFailuresForYear(y);
 			
-				selectionInfo.append("<b><u>" + y.toString() + ":</u></b><br>");
+				selectionInfo.append("<br><b><u>Details for year " + y.toString() + "</u></b><br><br>");
 			
 				// just some info
-				selectionInfo.append("ref: " + 
+				selectionInfo.append("Current value : " + newSample.getData().get(idx) + "<br>");
+				selectionInfo.append("Reference value : " + 
 						((reference.getData().size() > idx) ? reference.getData().get(idx) : "<n/a>") + 
-						"<br>");
+						"<br><br>");
 			
 				// now, each of the failures
 				if(failures != null) {
@@ -125,16 +136,19 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 						// calculate min and max
 						float val = ((Number) reference.getData().get(idx)).floatValue();
 						float threepercent = val * 0.03f;
-						String minmax = "(" + (int) Math.floor(val - threepercent) + " to " +
-							(int) Math.ceil(val + threepercent) + ")";
+						String minmax = (int) Math.floor(val - threepercent) + " and " +
+							(int) Math.ceil(val + threepercent);
 						
-						selectionInfo.append("- <font color=red>Not within three percent of reference "
-								+ minmax + "</font><br>");
+						selectionInfo.append("<font color=red><b>Outside Error Margin</b><br>This value is outside "
+								+ "the acceptable 3% error margin. The current value should be between "
+								+ minmax + ".</font><br><br>");
 					}
 					if(failures.contains(Reconciler.FailureType.TRENDNEXT)) 
-						selectionInfo.append("- <font color=red>Trend to next is inverse</font><br>");
+						selectionInfo.append("<font color=red><b>Trend Error</b><br>The trend to the next year "
+								+ "is different than the reference measurement series.</font><br><br>");
 					if(failures.contains(Reconciler.FailureType.TRENDPREV)) 
-						selectionInfo.append("- <font color=red>Trend to previous is inverse</font><br>");
+						selectionInfo.append("<font color=red><b>Trend Error</b><br>The trend to the previous year "
+								+ "is different than the reference measurement series.</font><br><br>");
 				}
 			}
 		}
@@ -259,27 +273,69 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column) {
-
+			
 			Component cell = super.getTableCellRendererComponent(table, value,
 					isSelected, hasFocus, row, column);
-
-			// right alignment
-			super.setHorizontalAlignment(JLabel.RIGHT);
-
-			Set<Reconciler.FailureType> failures = reconciler.getFailuresForYear(((DecadalModel) myModel).getYear(row, column));
-			
-			if(failures != null && !failures.isEmpty()) {
-				cell.setForeground(Color.WHITE);
-				cell.setBackground(Color.RED);
-			} else {
-				cell.setForeground(Color.BLACK);
-				cell.setBackground(Color.GREEN);				
+	
+			// Set default selection border
+			if(isSelected) {
+				setBorder(selBorder);				
 			}
 			
-			if(isSelected)
-				setBorder(selBorder);
-			else
-				setBorder(noBorder);
+			// Right alignment
+			super.setHorizontalAlignment(JLabel.RIGHT);
+
+			
+			// Determine how we paint the cells depending on type of errors	
+			// - 3% error only = Red background
+			// - Trend error only = Red border
+			// - Both errors = Red background and border
+			// - No errors = Green
+			
+			Set<Reconciler.FailureType> failures = reconciler.getFailuresForYear(((DecadalModel) myModel).getYear(row, column));		
+			if(failures != null && !failures.isEmpty()) {
+				// There are failures
+				
+				Integer  borderWidth = 1;
+				Color myBorderColor = Color.RED;
+				// Enhance border width if cell is also selected
+				if (isSelected)	borderWidth = 2;
+				
+				if(failures.contains(Reconciler.FailureType.THREEPERCENT)) {
+					// 3% error so paint cell red 
+					cell.setForeground(Color.WHITE);
+					cell.setBackground(Color.RED);
+					
+					// Overide border color if selected otherwise it is invisible
+					if (isSelected) myBorderColor = Color.BLACK;
+					
+				} else {
+					// Just trend errors so paint cell white 
+					cell.setForeground(Color.BLACK);
+					cell.setBackground(Color.WHITE);					
+				}
+				
+				
+				if(failures.contains(Reconciler.FailureType.TRENDPREV)) {
+					// Just trend to previous so no border on left of cell
+					setBorder(BorderFactory.createMatteBorder(borderWidth, 0, borderWidth, borderWidth, myBorderColor));
+				}
+				if(failures.contains(Reconciler.FailureType.TRENDNEXT)) {
+					// Just trend to next so no border on right of cell
+					setBorder(BorderFactory.createMatteBorder(borderWidth, borderWidth, borderWidth, 0, myBorderColor));
+				}
+				if(( failures.contains(Reconciler.FailureType.TRENDPREV)) && (failures.contains(Reconciler.FailureType.TRENDNEXT)) ) {
+					// Trends to next and previous so no border on left OR right
+					setBorder(BorderFactory.createMatteBorder(borderWidth, 0, borderWidth, 0, myBorderColor));
+				}	
+				
+			} else {
+				// No errors so paint green
+				cell.setForeground(Color.BLACK);
+				cell.setBackground(Color.GREEN);
+			}
+			
+
 			
 			return cell;
 		}

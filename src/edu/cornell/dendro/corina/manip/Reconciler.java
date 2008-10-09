@@ -134,7 +134,7 @@ public class Reconciler {
 				Year y = s1.getRange().getStart().add(i-1);
 				
 				// does this make sense?
-				//addFailureForYear(y, FailureType.TRENDNEXT);
+				addFailureForYear(y, FailureType.TRENDNEXT);
 				addFailureForYear(y.add(1), FailureType.TRENDPREV);
 			}
 		}

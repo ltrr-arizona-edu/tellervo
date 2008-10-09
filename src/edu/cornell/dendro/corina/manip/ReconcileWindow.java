@@ -78,7 +78,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		
 		showHide = new JButton(extraIsShown ? HIDE : EXPAND);
 		saveChanges = new JButton("Save ref changes");
-		markAsReconciled = new JButton("Finish reconcile");
+		markAsReconciled = new JButton("Mark as reconciled");
 		remeasure = new JButton("Remeasure selected");
 		returnToEditor = new JButton("Return to editor");
 		
