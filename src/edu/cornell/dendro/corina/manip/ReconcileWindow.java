@@ -13,6 +13,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.table.DefaultTableModel;
 
 import edu.cornell.dendro.corina.Year;
@@ -29,16 +30,17 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	private ReconcileDataView dv1, dv2;
 	private Sample s1, s2;
 	
-	private JButton showHide; // shows/hides our ref panel
-	private JButton returnToEditor;
-	private JButton saveChanges;
-	private JButton markAsReconciled;
-	private JButton remeasure;
+	private JButton btnShowHideRef; // shows/hides our ref panel
+	private JButton btnCancel;
+	private JButton btnFinish;
+	private JButton btnMarkAsReconciled;
+	private JButton btnRemeasure;
 	private JPanel refPanel; // the panel with the reference measurement
+	private JSeparator sepLine;
 	
 	private boolean extraIsShown = false;
-	private final static String EXPAND = "Show ref";
-	private final static String HIDE = "Hide ref";
+	private final static String EXPAND = "Show reference";
+	private final static String HIDE = "Hide reference";
 	
 	public ReconcileWindow(Sample s1, Sample s2) {
 		JPanel content = new JPanel(new BorderLayout());
@@ -76,116 +78,154 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	private JPanel createButtonPanel() {
 		JPanel buttonPanel = new JPanel(new FlowLayout());
 		
-		showHide = new JButton(extraIsShown ? HIDE : EXPAND);
-		saveChanges = new JButton("Save ref changes");
-		markAsReconciled = new JButton("Mark as reconciled");
-		remeasure = new JButton("Remeasure selected");
-		returnToEditor = new JButton("Return to editor");
+		btnShowHideRef = new JButton(extraIsShown ? HIDE : EXPAND);
+		btnFinish = new JButton("Finish");
+		btnRemeasure = new JButton("Remeasure selected ring");
+		btnCancel = new JButton("Cancel");
+		sepLine = new javax.swing.JSeparator();
 		
-		// we can't do these by default
-		saveChanges.setEnabled(false);
-		markAsReconciled.setEnabled(false);
+		sepLine.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 		
-		buttonPanel.add(markAsReconciled);
-		buttonPanel.add(returnToEditor);
-		buttonPanel.add(Box.createHorizontalStrut(18));	
-		buttonPanel.add(remeasure);
-		buttonPanel.add(Box.createHorizontalStrut(18));		
-		buttonPanel.add(showHide);
-		buttonPanel.add(saveChanges);
-
+		// Only enable apply button immediately if there are no errors at all, otherwise disable
+		if (dv1.reconciliationErrorCount()==0){
+			btnFinish.setEnabled(true);
+		} else {
+			btnFinish.setEnabled(false);
+		}
+			
 		// glue for our buttons...
 		final ReconcileWindow glue = this;
 
-		// call the 'close' method to potentially save any changes
-		returnToEditor.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				glue.close();
-			}
-		});
+		// Layout the buttons
+        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(buttonPanel);
+        buttonPanel.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createSequentialGroup()
+                .add(btnShowHideRef)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .add(btnRemeasure)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 361, Short.MAX_VALUE)
+                .add(btnFinish)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .add(btnCancel))
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, sepLine, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 685, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createSequentialGroup()
+                .add(sepLine, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(btnShowHideRef)
+                    .add(btnCancel)
+                    .add(btnFinish)
+                    .add(btnRemeasure))
+                .addContainerGap(26, Short.MAX_VALUE))
+        );			
+	
 		
-		saveChanges.addActionListener(new ActionListener() {
+		// Cancel should loose any unsaved changes so reload sample from db
+		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				// save our ref sample
-				save();
-				
-				// if it saved, disable ourselves
-				if(!s2.isModified())
-					saveChanges.setEnabled(false);
-			}
-		});
-		
-		markAsReconciled.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				// reconciling doesn't make sense if we can't do this...
-				if(s2.isModified()) {
-					int ret = JOptionPane.showConfirmDialog(glue, 
-						"The reference sample has been modified.\nYou must save changes to continue.\n\n" +
-						"Would you like to save changes to it?", 
-						"Save reference?", JOptionPane.YES_NO_OPTION);
-					
-					if(ret == JOptionPane.YES_OPTION) {
-						save();
-						
-						// save failed?
-						if(s2.isModified())
-							return;
-					}
-				}
 
-				// ok, now actually mark as reconciled
+				if(s1.isModified()|| s2.isModified()){
+					int ret = JOptionPane.showConfirmDialog(glue, 
+							"Are you sure you want to abandon all \nthe changes you have made?\n\n" +
+							"Click 'no' to return to the reconciler\nor 'yes' to confirm.\n\n",
+							"Abandon changes?", JOptionPane.YES_NO_OPTION);
+						
+						if(ret == JOptionPane.YES_OPTION) {
+							//TODO: close reconciler and reload samples from db
+						}else{
+							// Return to reconciler
+							return;
+						}
+				}
+			}
+		});
+		
+		btnFinish.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				
+				// This button should save changes to both current and
+				// reference measurement and if there are completely
+				// reconciled, then the isreconciled flags should be set
+								
+				// Mark as reconciled if neither measurement has errors otherwise make sure flag is set to false
 				Boolean s1rec = (Boolean) s1.getMeta("isreconciled");
 				Boolean s2rec = (Boolean) s2.getMeta("isreconciled");
-				
-				if(s1rec == null || s1rec.booleanValue() == false) {
-					s1.setMeta("isreconciled", true);
-					s1.setModified();
-				}
-				
-				// well, should we mark both as reconciled?
-				if(s2rec == null || s2rec.booleanValue() == false) {
-					int ret = JOptionPane.showConfirmDialog(glue, 
-							"The reference sample is not marked as reconciled.\n" +
-							"Would you like to mark it as such?", 
-							"Mark reference as reconciled?", JOptionPane.YES_NO_OPTION);
+				if (dv1.reconciliationErrorCount() == 0 && dv2.reconciliationErrorCount() == 0){
+					if(s1rec == null || s1rec.booleanValue() == false) {
+						s1.setMeta("isreconciled", true);
+						s1.setModified();
+					}
 					
-					if(ret == JOptionPane.YES_OPTION) {
+					if(s2rec == null || s2rec.booleanValue() == false) {
 						s2.setMeta("isreconciled", true);
-						s2.setModified();
-						
-						// call our method that saves the reference (part of SaveableDocument)
-						save();
-
-						if(s2.isModified())
-							return;
+						s2.setModified();					
+					}
+				} else {
+					if(s1rec == null || s1rec.booleanValue() == true) {
+						s1.setMeta("isreconciled", false);
+						s1.setModified();
+					}
+					
+					if(s2rec == null || s2rec.booleanValue() == true) {
+						s2.setMeta("isreconciled", false);
+						s2.setModified();					
 					}
 				}
 
-				int ret = JOptionPane.showConfirmDialog(glue, 
-						"Would you like to save your changes?\n" +
-						"(select no to save later)", 
-						"Save changes?", JOptionPane.YES_NO_OPTION);
-				
-				if(ret == JOptionPane.YES_OPTION) {
+				// Save the current series
+				if(s1.isModified())
+				{
 					try {
-						s1.getLoader().save(s1);
+						s2.getLoader().save(s2);
 					} catch (IOException ioe) {
-						Alert.error("I/O Error", "There was an error while saving the sample: \n" + ioe.getMessage());
+						Alert.error("I/O Error", "There was an error while saving the reference measurement series: \n" + ioe.getMessage());
 						return;
 					} catch (Exception e) {
 						new Bug(e);
 					}
+				}
 
-					// set the necessary bits...
-					s1.clearModified();
+				// Now save the reference series
+				if(s2.isModified())
+				{
+					try {
+						s1.getLoader().save(s1);
+					} catch (IOException ioe) {
+						Alert.error("I/O Error", "There was an error while saving the current measurement series: \n" + ioe.getMessage());
+						return;
+					} catch (Exception e) {
+						new Bug(e);
+					}
+				}
+
+				// Warn user if there are errors remaining.
+				if(dv1.reconciliationErrorCount()>1)
+				{
+					Alert.message("Reconcilitation Error", "There are still " + dv1.reconciliationErrorCount() 
+							+ " errors remaining.\nPlease remember to fix these later!");
+				}
+				else if (dv1.reconciliationErrorCount()==1)
+				{
+					Alert.message("Reconcilitation Error", "There is still " + dv1.reconciliationErrorCount() 
+							+ " error remaining.\nPlease remember to fix this later!");	
 				}
 				
+				// set the necessary bits...
+				s1.clearModified();
+				s2.clearModified();
+				
 				// and close!
-				close();
+				close();								
+			
 			}
 		});
 		
-		remeasure.addActionListener(new ActionListener() {
+		btnRemeasure.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				int col = dv1.myTable.getSelectedColumn();
 				int row = dv1.myTable.getSelectedRow();
@@ -212,7 +252,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 			}
 		});
 
-		showHide.addActionListener(new ActionListener() {
+		btnShowHideRef.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// toggle visibility
 				extraIsShown = !extraIsShown;
@@ -220,7 +260,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 				// hide it and resize it
 				glue.setVisible(false);
 				
-				showHide.setText(extraIsShown ? HIDE : EXPAND);
+				btnShowHideRef.setText(extraIsShown ? HIDE : EXPAND);
 				refPanel.setVisible(extraIsShown);
 				glue.pack();
 				
@@ -231,6 +271,9 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 				
 				// re-visible
 				glue.setVisible(true);
+				
+				// re-center 
+				Center.center(glue);
 			}
 		});
 		
@@ -264,7 +307,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		Year y = dv1.getSelectedYear();
 		int col = dv1.myTable.getSelectedColumn();
 		int idx = y.diff(s1.getStart());
-		remeasure.setEnabled(col > 1 && col < 11 && idx >= 0 && idx < s1.getData().size() && idx < s2.getData().size());
+		btnRemeasure.setEnabled(col > 1 && col < 11 && idx >= 0 && idx < s1.getData().size() && idx < s2.getData().size());
 	}
 
 	public void reconcileDataChanged(ReconcileDataView dataview) {
@@ -278,9 +321,8 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		
 		dv.forceReconciliation();
 		
-		// enable our buttons?
-		saveChanges.setEnabled(s2.isModified());
-		markAsReconciled.setEnabled(dv1.reconciliationErrorCount() == 0 && dv2.reconciliationErrorCount() == 0);
+		// enable our apply button?
+		if(s1.isModified() || s2.isModified()) btnFinish.setEnabled(true);
 	}
 
 	// SaveableDocument
