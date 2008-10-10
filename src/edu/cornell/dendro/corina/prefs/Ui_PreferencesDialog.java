@@ -5,7 +5,7 @@
  */
 
 
-
+package edu.cornell.dendro.corina.prefs;
 /**
  *
  * @author  peterbrewer
