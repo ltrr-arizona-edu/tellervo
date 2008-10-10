@@ -23,7 +23,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="propertiesTabs" pref="829" max="32767" attributes="0"/>
+              <Component id="propertiesTabs" pref="797" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
           <Component id="jPanel2" alignment="0" max="32767" attributes="0"/>
@@ -116,10 +116,10 @@
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jCheckBox3" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="btnFont" alignment="0" pref="574" max="32767" attributes="1"/>
-                              <Component id="cboTextColor" alignment="1" pref="574" max="32767" attributes="1"/>
-                              <Component id="cboEditorBGColor" alignment="1" pref="574" max="32767" attributes="0"/>
-                              <Component id="cboDisplayUnits" alignment="1" pref="574" max="32767" attributes="1"/>
+                              <Component id="btnFont" alignment="0" pref="542" max="32767" attributes="1"/>
+                              <Component id="cboTextColor" alignment="1" pref="542" max="32767" attributes="1"/>
+                              <Component id="cboEditorBGColor" alignment="1" pref="542" max="32767" attributes="0"/>
+                              <Component id="cboDisplayUnits" alignment="1" pref="542" max="32767" attributes="1"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -257,12 +257,12 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="chkShowChartGrid" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="cboChartBGColor" alignment="1" pref="575" max="32767" attributes="0"/>
+                              <Component id="cboChartBGColor" alignment="1" pref="543" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="cboGridColor" pref="575" max="32767" attributes="1"/>
+                                  <Component id="cboGridColor" pref="543" max="32767" attributes="1"/>
                               </Group>
-                              <Component id="cboAxisCursorColor" alignment="0" pref="575" max="32767" attributes="1"/>
+                              <Component id="cboAxisCursorColor" alignment="0" pref="543" max="32767" attributes="1"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -373,7 +373,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane5" pref="716" max="32767" attributes="0"/>
+                          <Component id="jScrollPane5" pref="684" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -452,7 +452,7 @@
                       <Component id="panelWebservice" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="panelEmail" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="204" max="32767" attributes="0"/>
+                      <EmptySpace pref="172" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -474,13 +474,13 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="lblWSURL" min="-2" pref="93" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="lblWSURL" min="-2" pref="125" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="btnReloadDictionary" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="txtWSURL" alignment="1" pref="613" max="32767" attributes="0"/>
+                              <Component id="txtWSURL" alignment="0" pref="545" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -539,9 +539,9 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="lblSMTPServer" min="-2" pref="87" max="-2" attributes="0"/>
+                          <Component id="lblSMTPServer" min="-2" pref="120" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="txtSMTPServer" pref="611" max="32767" attributes="0"/>
+                          <Component id="txtSMTPServer" pref="546" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -590,16 +590,28 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="chkUseProxy" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Group type="102" alignment="1" attributes="0">
-                                  <Component id="lblProxyServer" pref="263" max="32767" attributes="0"/>
+                              <Component id="chkUseProxy" alignment="0" min="-2" max="-2" attributes="1"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                      <Component id="lblProxyServer" alignment="0" max="32767" attributes="1"/>
+                                      <Component id="lblProxyServer1" alignment="0" pref="119" max="32767" attributes="1"/>
+                                  </Group>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="txtProxyURL" pref="426" max="32767" attributes="0"/>
+                                      <Component id="txtProxyURL1" alignment="0" pref="426" max="32767" attributes="0"/>
+                                  </Group>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="txtProxyURL" min="-2" pref="363" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="lblProxyPort" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="spnProxyPort" min="-2" max="-2" attributes="0"/>
                               </Group>
+                          </Group>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="lblProxyPort" alignment="1" min="-2" max="-2" attributes="0"/>
+                              <Component id="lblProxyPort1" alignment="1" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="1" attributes="0">
+                              <Component id="spnProxyPort" min="-2" pref="72" max="-2" attributes="0"/>
+                              <Component id="spnProxyPort1" alignment="1" min="-2" pref="72" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -616,6 +628,13 @@
                               <Component id="lblProxyServer" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="txtProxyURL" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="spnProxyPort1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="lblProxyPort1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="lblProxyServer1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="txtProxyURL1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -626,10 +645,13 @@
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Connect through proxy server"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="chkUseProxyActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="lblProxyServer">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Proxy server:"/>
+                    <Property name="text" type="java.lang.String" value="HTTP Proxy:"/>
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                 </Component>
@@ -645,6 +667,28 @@
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JSpinner" name="spnProxyPort">
+                  <Properties>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="lblProxyServer1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="HTTPS Proxy:"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="txtProxyURL1">
+                  <Properties>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="lblProxyPort1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Port:"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="spnProxyPort1">
                   <Properties>
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
@@ -717,7 +761,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="lblCOFECHAPath" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="txtCOFECHAPath" pref="497" max="32767" attributes="0"/>
+                                  <Component id="txtCOFECHAPath" pref="465" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="btnBrowseCOFECHA" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -985,15 +1029,15 @@
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="spnMinOverlapDScore" pref="260" max="32767" attributes="0"/>
-                                      <Component id="spnMinOverlap" alignment="0" pref="260" max="32767" attributes="0"/>
+                                      <Component id="spnMinOverlapDScore" pref="228" max="32767" attributes="0"/>
+                                      <Component id="spnMinOverlap" alignment="0" pref="228" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <Component id="chkHighlightSig" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="lblHighlightColor" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="cboHighlightColor" pref="344" max="32767" attributes="0"/>
+                                  <Component id="cboHighlightColor" pref="312" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -1124,9 +1168,9 @@
                                   <Component id="cboPort" alignment="0" max="32767" attributes="1"/>
                                   <Component id="cboPlatformUnits" alignment="0" max="32767" attributes="1"/>
                               </Group>
-                              <Component id="cboPlatformType" pref="651" max="32767" attributes="1"/>
+                              <Component id="cboPlatformType" min="-2" pref="313" max="-2" attributes="1"/>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <EmptySpace pref="323" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1216,13 +1260,13 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="btnResetAll" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="519" max="32767" attributes="0"/>
+                  <EmptySpace pref="487" max="32767" attributes="0"/>
                   <Component id="btnOk" linkSize="1" min="-2" pref="67" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="btnCancel" linkSize="1" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
-              <Component id="seperatorButtons" alignment="0" pref="855" max="32767" attributes="0"/>
+              <Component id="seperatorButtons" alignment="0" pref="823" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
