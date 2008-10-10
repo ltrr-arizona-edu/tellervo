@@ -323,7 +323,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
     		}
     	});
     	
-    	btnOK.setText("Crossdate...");
+    	btnOK.setText("Apply");
        	btnOK.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			int row = cboPrimary.getSelectedIndex();

@@ -34,6 +34,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	private JButton btnCancel;
 	private JButton btnFinish;
 	private JButton btnMarkAsReconciled;
+	private JButton btnViewType;
 	private JButton btnRemeasure;
 	private JPanel refPanel; // the panel with the reference measurement
 	private JSeparator sepLine;
@@ -82,7 +83,11 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		btnFinish = new JButton("Finish");
 		btnRemeasure = new JButton("Remeasure selected ring");
 		btnCancel = new JButton("Cancel");
+		btnViewType = new JButton("Graph");
 		sepLine = new javax.swing.JSeparator();
+		
+		// TODO - hide until implemented
+		btnViewType.setVisible(false);
 		
 		sepLine.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 		
@@ -102,9 +107,11 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
+                .add(btnViewType)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(btnShowHideRef)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(btnRemeasure)
+                .add(btnRemeasure)                
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 361, Short.MAX_VALUE)
                 .add(btnFinish)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
@@ -120,11 +127,19 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
                     .add(btnShowHideRef)
                     .add(btnCancel)
                     .add(btnFinish)
-                    .add(btnRemeasure))
+                    .add(btnRemeasure)
+                    .add(btnViewType))
                 .addContainerGap(26, Short.MAX_VALUE))
         );			
 	
 		
+        btnViewType.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent ae){
+        		// TODO 	
+        		// Toggle between Graph and Table views
+        	}
+        });
+        
 		// Cancel should loose any unsaved changes so reload sample from db
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
