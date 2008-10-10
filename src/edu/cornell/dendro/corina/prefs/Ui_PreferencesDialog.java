@@ -4,7 +4,7 @@
  * Created on October 1, 2008, 9:29 AM
  */
 
-
+package edu.cornell.dendro.corina.prefs;
 
 /**
  *
