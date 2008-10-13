@@ -29,11 +29,12 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	
 	private ReconcileDataView dv1, dv2;
 	private Sample s1, s2;
+    private Sample originals1; // for aborting.
+    private Sample originals2; // for aborting.
 	
 	private JButton btnShowHideRef; // shows/hides our ref panel
 	private JButton btnCancel;
 	private JButton btnFinish;
-	private JButton btnMarkAsReconciled;
 	private JButton btnViewType;
 	private JButton btnRemeasure;
 	private JPanel refPanel; // the panel with the reference measurement
@@ -47,6 +48,14 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		JPanel content = new JPanel(new BorderLayout());
 		
 		setTitle("Reconciliation: " + s1.toString());
+
+		// create a copy of our samples before we even touch them
+		// we keep s2 now for future compatibility, when we might have multiple
+		// windows referring to s2 open
+		originals1 = new Sample();
+		originals2 = new Sample();
+		Sample.copy(s1, originals1);
+		Sample.copy(s2, originals2);		
 
 		this.s1 = s1;
 		this.s2 = s2;
@@ -144,18 +153,27 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 
-				if(s1.isModified()|| s2.isModified()){
+				if(s1.isModified() || s2.isModified()){
 					int ret = JOptionPane.showConfirmDialog(glue, 
 							"Are you sure you want to abandon all \nthe changes you have made?\n\n" +
 							"Click 'no' to return to the reconciler\nor 'yes' to confirm.\n\n",
 							"Abandon changes?", JOptionPane.YES_NO_OPTION);
 						
-						if(ret == JOptionPane.YES_OPTION) {
-							//TODO: close reconciler and reload samples from db
-						}else{
-							// Return to reconciler
-							return;
-						}
+					if (ret == JOptionPane.YES_OPTION) {
+						// restore our originals
+						Sample.copy(originals1, s1);
+						Sample.copy(originals2, s2);
+
+						// let anything watching them know they changed
+						s1.fireSampleMetadataChanged();
+						s2.fireSampleMetadataChanged();
+						
+						// and go away
+						dispose();
+					} else {
+						// Return to reconciler
+						return;
+					}
 				}
 			}
 		});
@@ -196,7 +214,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 				if(s1.isModified())
 				{
 					try {
-						s2.getLoader().save(s2);
+						s1.getLoader().save(s1);
 					} catch (IOException ioe) {
 						Alert.error("I/O Error", "There was an error while saving the reference measurement series: \n" + ioe.getMessage());
 						return;
@@ -209,7 +227,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 				if(s2.isModified())
 				{
 					try {
-						s1.getLoader().save(s1);
+						s2.getLoader().save(s2);
 					} catch (IOException ioe) {
 						Alert.error("I/O Error", "There was an error while saving the current measurement series: \n" + ioe.getMessage());
 						return;
@@ -219,15 +237,12 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 				}
 
 				// Warn user if there are errors remaining.
-				if(dv1.reconciliationErrorCount()>1)
-				{
-					Alert.message("Reconcilitation Error", "There are still " + dv1.reconciliationErrorCount() 
-							+ " errors remaining.\nPlease remember to fix these later!");
-				}
-				else if (dv1.reconciliationErrorCount()==1)
-				{
-					Alert.message("Reconcilitation Error", "There is still " + dv1.reconciliationErrorCount() 
-							+ " error remaining.\nPlease remember to fix this later!");	
+				int nErrors;
+				if ((nErrors = dv1.reconciliationErrorCount()) > 0) {
+					Alert.message("Reconcilitation Error", "There "
+							+ (nErrors > 1 ? "are" : "is") + " still "
+							+ nErrors + " error" + (nErrors > 1 ? "s" : "") 
+							+ " remaining.\nPlease remember to fix this later!");
 				}
 				
 				// set the necessary bits...

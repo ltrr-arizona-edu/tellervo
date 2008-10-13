@@ -93,7 +93,7 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 		}
 		
 		if(newSample.getStart().compareTo(reference.getStart()) != 0) {
-			warnings.append("<font color=red><b>Warning!<b><br>Samples do begin in the same year - ");
+			warnings.append("<font color=red><b>Warning!<b><br>Samples do not begin in the same year - ");
 			warnings.append(newSample.getStart() + " compared to " + reference.getStart());
 			warnings.append(".</font><br><p>");
 		}
