@@ -197,10 +197,10 @@ public class IndexDialog extends JDialog {
 		
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 		
-		JLabel l = new JLabel(I18n.getText("new_sample_prompt"));
+		JLabel l = new JLabel("Series code:  " + sample.getMetaString("title"));
 		
 		indexName = new JTextField();
-		indexName.setText("Index of " + (String) sample.getMeta("title"));
+		indexName.setText("Index");
 		
 		l.setLabelFor(indexName);
 		
@@ -448,7 +448,7 @@ public class IndexDialog extends JDialog {
 		String title = sample.getMeta("title").toString();
 		if (title == null) // (DESIGN: can i do better than "untitled"?)
 			title = I18n.getText("Untitled");
-		setTitle(MessageFormat.format(I18n.getText("index_of"), new Object[] { title }));
+		setTitle(MessageFormat.format(I18n.getText("indexing"), new Object[] { title }));
 
 		// create content pane...
 		JPanel content = new JPanel();
