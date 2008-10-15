@@ -489,7 +489,7 @@ public class Prefs extends AbstractSubsystem {
 	}
 	
 	public void setBooleanPref(String pref, boolean value) {
-		prefs.setProperty(pref, Boolean.toString(value));
+		setPref(pref, Boolean.toString(value));
 	}
 	
 	public boolean getBooleanPref(String pref, boolean deflt) {
