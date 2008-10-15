@@ -39,6 +39,7 @@ import edu.cornell.dendro.corina.core.AbstractSubsystem;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.prefs.components.UIDefaultsComponent;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.JDisclosureTriangle;
 import edu.cornell.dendro.corina.util.WeakEventListenerList;
@@ -249,8 +250,7 @@ public class Prefs extends AbstractSubsystem {
 		// load system properties as a resource from this jar
 		ClassLoader cl = Prefs.class.getClassLoader();
 		try {
-			java.io.InputStream is = cl
-					.getResourceAsStream("edu/cornell/dendro/corina_resources/prefs.properties");
+			java.io.InputStream is = cl.getResourceAsStream("edu/cornell/dendro/corina_resources/prefs.properties");
 			if (is != null) {
 				try {
 					defaults.load(is);
@@ -260,8 +260,7 @@ public class Prefs extends AbstractSubsystem {
 			}
 			// RENAME this? ("Default Corina Preferences")
 		} catch (IOException ioe) {
-			errors
-					.append("Error loading Corina's default preferences (bug!).\n");
+			errors.append("Error loading Corina's default preferences (bug!).\n");
 		}
 
 		// load machine properties
@@ -285,9 +284,8 @@ public class Prefs extends AbstractSubsystem {
 				prefs.store(new FileOutputStream(FILENAME),
 						"Corina user preferences");
 			} catch (IOException ioe) {
-				errors
-						.append("Error copying preferences file to your home directory: "
-								+ ioe.getMessage() + "\n");
+				errors.append("Error copying preferences file to your home directory: "
+							+ ioe.getMessage() + "\n");
 			}
 		} catch (IOException ioe) {
 			errors.append("Error loading user preferences file: "
@@ -469,6 +467,9 @@ public class Prefs extends AbstractSubsystem {
 	}
 
 	// TODO: require default?
+	/**
+	 * @deprecated use getPref(name, default) please!
+	 */
 	public String getPref(String pref) {
 		return prefs.getProperty(pref);
 	}
@@ -478,6 +479,10 @@ public class Prefs extends AbstractSubsystem {
 		if (value == null)
 			value = deflt;
 		return value;
+	}
+	
+	public void setDimensionPref(String pref, Dimension value) {
+		setPref(pref, value.width + "," + value.height);
 	}
 
 	public Dimension getDimensionPref(String pref, Dimension deflt) {
@@ -508,6 +513,10 @@ public class Prefs extends AbstractSubsystem {
 		}
 		return d;
 	}
+	
+	public void setIntPref(String pref, int value) {
+		setPref(pref, Integer.toString(value));
+	}
 
 	public int getIntPref(String pref, int deflt) {
 		String value = prefs.getProperty(pref);
@@ -520,6 +529,11 @@ public class Prefs extends AbstractSubsystem {
 			return deflt;
 		}
 	}
+	
+	public void setColorPref(String pref, Color value) {
+		String encoded = "#" + Integer.toHexString(value.getRGB() & 0x00ffffff);
+		setPref(pref, encoded);
+	}
 
 	public Color getColorPref(String pref, Color deflt) {
 		String value = prefs.getProperty(pref);
@@ -531,6 +545,10 @@ public class Prefs extends AbstractSubsystem {
 			log.warn("Invalid color for preference '" + pref + "': " + value);
 			return deflt;
 		}
+	}
+	
+	public void setFontPref(String pref, Font value) {
+		setPref(pref, stringifyFont(value));
 	}
 
 	public Font getFontPref(String pref, Font deflt) {
@@ -567,6 +585,28 @@ public class Prefs extends AbstractSubsystem {
 			if (l[i] == PrefsListener.class)
 				((PrefsListener) l[i + 1]).prefChanged(e);
 		}
+	}
+	
+	public static final String stringifyFont(Font f) {
+		StringBuffer sb = new StringBuffer();
+
+		sb.append(f.getFontName());
+		sb.append('-');
+		
+		int s = sb.length();
+		if ((f.getStyle() & Font.BOLD) != 0) {
+			sb.append("BOLD");
+		}
+		if ((f.getStyle() & Font.ITALIC) != 0) {
+			sb.append("ITALIC");
+		}
+		if (sb.length() > s) {
+			sb.append('-');
+		}
+		
+		sb.append(f.getSize());
+		
+		return sb.toString();
 	}
 	/*
 	 * PrefsListener[] l; synchronized (Prefs.class) { l = (PrefsListener[])
