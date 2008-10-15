@@ -143,10 +143,17 @@ public class EditMenu extends JMenu {
         if (!App.platform.isMac()) {
             addSeparator();
             JMenuItem prefs = Builder.makeMenuItem("preferences",
-                                                   "edu.cornell.dendro.corina.prefs.PrefsDialog.showPreferences()", "advancedsettings.png");
+                                                   "edu.cornell.dendro.corina.prefs.PreferencesDialog.showPreferences()", "advancedsettings.png");
             add(prefs);
                        
-        }          
+        }
+        
+        // kludge, remove me when the new prefs dialog works well
+        JMenuItem legacyPrefs = Builder.makeMenuItem("preferences", 
+                "edu.cornell.dendro.corina.prefs.PrefsDialog.showPreferences()", "advancedsettings.png");
+        
+        legacyPrefs.setText("Legacy Preferences Dialog");
+        add(legacyPrefs);
     }
     
     protected void addAdmin(){

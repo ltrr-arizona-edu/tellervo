@@ -28,6 +28,7 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.XCorina;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
+import edu.cornell.dendro.corina.prefs.PreferencesDialog;
 import edu.cornell.dendro.corina.prefs.PrefsDialog;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 
@@ -68,7 +69,7 @@ public class Macintosh {
 			// and "preferences"
 			Macintosh.registerPrefsHandler(new Runnable() {
 				public void run() {
-					PrefsDialog.showPreferences();
+					PreferencesDialog.showPreferences();
 				}
 			});
 
