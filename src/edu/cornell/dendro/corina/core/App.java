@@ -27,6 +27,8 @@ public class App {
   public static Logging logging;
   public static Dictionary dictionary;
   public static SiteList sites;
+  
+  private final static boolean DEBUGGING = false;
 
   private static final CorinaLog log = new CorinaLog(App.class);
   private static boolean initialized;
@@ -86,6 +88,9 @@ public class App {
     	LoginDialog dlg = new LoginDialog();
     	
     	try {
+    		// don't log in when in debug mode
+    		if(DEBUGGING)
+    			throw new UserCancelledException();
     		dlg.doLogin(null, false);
     		isLoggedIn = true;
        	} catch (UserCancelledException uce) {
@@ -105,7 +110,9 @@ public class App {
         if (meter != null) {
         	meter.setNote("Updating Dictionary...");
         }
-    	dictionary.query();
+        // don't update the dictionary in debug mode
+        if(!DEBUGGING)
+        	dictionary.query();
     }
     if (meter != null) {
     	meter.setProgress(5);
@@ -116,7 +123,9 @@ public class App {
     }
     sites = new SiteList();
     if(splash != null && isLoggedIn) { // must be logged in...
-    	sites.query();
+    	// don't update the site list in debug mode...
+    	if(!DEBUGGING)
+    		sites.query();
         if (meter != null) {
         	meter.setNote("Updating Site List...");
         }
