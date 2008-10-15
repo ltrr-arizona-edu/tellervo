@@ -13,6 +13,7 @@ import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.site.SiteList;
 import edu.cornell.dendro.corina.webdbi.Authenticate;
+import edu.cornell.dendro.corina.webdbi.ProxyManager;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 
 /**
@@ -32,6 +33,8 @@ public class App {
 
   private static final CorinaLog log = new CorinaLog(App.class);
   private static boolean initialized;
+  
+  private static ProxyManager proxies; // for handling our proxies
 
   public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     // throwing an error instead of simply ignoring it
@@ -75,6 +78,9 @@ public class App {
           "While trying to load preferences:\n" + ioe.getMessage(),
           "Corina: Error Loading Preferences", JOptionPane.ERROR_MESSAGE);
     }*/
+    
+    // set up our proxies before we try to do anything online
+    proxies = new ProxyManager();
     
     boolean isLoggedIn = false;
     

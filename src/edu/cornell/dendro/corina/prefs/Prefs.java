@@ -60,10 +60,17 @@ import edu.cornell.dendro.corina.util.WeakEventListenerList;
  * @version $Id$
  */
 public class Prefs extends AbstractSubsystem {
+	// sample editor
 	public static final String EDIT_FOREGROUND = "corina.edit.foreground";
 	public static final String EDIT_BACKGROUND = "corina.edit.background";
 	public static final String EDIT_FONT = "corina.edit.font";
 	public static final String EDIT_GRIDLINES = "corina.edit.gridlines";
+	// graph
+	public static final String GRAPH_BACKGROUND = "corina.graph.background";
+	public static final String GRAPH_GRIDLINES = "corina.graph.graphpaper";
+	public static final String GRAPH_GRIDLINES_COLOR = "corina.graph.graphpaper.color";
+	public static final String GRAPH_AXISCURSORCOLOR = "corina.graph.foreground";
+	// ???
 	public static final String GRID_HIGHLIGHT = "corina.grid.highlight";
 	public static final String GRID_HIGHLIGHTCOLOR = "corina.grid.hightlightcolor";
 
