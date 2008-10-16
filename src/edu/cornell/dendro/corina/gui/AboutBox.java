@@ -36,6 +36,8 @@ import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneLayout;
 import javax.swing.SwingConstants;
 
 import edu.cornell.dendro.corina.Build;
@@ -83,7 +85,7 @@ public class AboutBox extends JDialog {
   private static void addName(JPanel box) {
     JLabel name = new JLabel("Corina");
     { // (add icon to name)
-      Icon icon = Builder.getIcon("Tree.png");
+      Icon icon = Builder.getIcon("treeicon.png");
       if (icon != null) {
         name.setIcon(icon);
       }
@@ -185,7 +187,29 @@ public class AboutBox extends JDialog {
   private static void addSpace(JPanel box, int pixels) {
     box.add(Box.createVerticalStrut(pixels));
   }
+  
+  // add license text
+  private static void addLicense(JPanel box){
+   
+	final String license = I18n.getText("copyright");
+  
+	JScrollPane scrollPane = new JScrollPane();
+	scrollPane.setLayout(new ScrollPaneLayout());
+	
+	JPanel licenseBlock = new JPanel();
+	licenseBlock.setLayout(new BoxLayout(licenseBlock, BoxLayout.Y_AXIS));
+	
+	scrollPane.add(licenseBlock);
+	box.add(scrollPane);
+	licenseBlock.setAlignmentX(Component.CENTER_ALIGNMENT);
+				
+	JLabel licenseLabel = new JLabel(license);
+	licenseLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+	licenseLabel.setFont(copyrightFont);
+	licenseBlock.add(licenseLabel);  
+  }
 
+  
   private AboutBox() {
     // no icon?
     setTitle("About Corina");
@@ -209,6 +233,8 @@ public class AboutBox extends JDialog {
     addDescription(box);
     addSpace(box, 8);
     addCopyright(box);
+    addSpace(box, 8);
+    addLicense(box);
     addSpace(box, 20);
 
     // can't resize -- does this get rid of minimize/maximize buttons?

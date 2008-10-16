@@ -13,7 +13,6 @@
 	<classpathentry kind="lib" path="Libraries/ftp.jar"/>
 	<classpathentry kind="lib" path="Libraries/gnujaxp.jar"/>
 	<classpathentry kind="lib" path="Libraries/hsqldb.jar"/>
-	<classpathentry kind="lib" path="Libraries/JFontChooser.jar"/>
 	<classpathentry kind="lib" path="Libraries/jfor.jar"/>
 	<classpathentry kind="lib" path="Libraries/jh.jar"/>
 	<classpathentry kind="lib" path="Libraries/jhall.jar"/>
@@ -41,5 +40,7 @@
 	<classpathentry kind="lib" path="Libraries/MozillaInterfaces-1.9.jar"/>
 	<classpathentry kind="lib" path="Libraries/mozswing.jar"/>
 	<classpathentry kind="lib" path="Libraries/MozillaGlue-1.9.jar"/>
+	<classpathentry kind="lib" path="Libraries/jfontchooser-1.0.5.jar"/>
+	<classpathentry kind="lib" path="Libraries/JFontChooser.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
