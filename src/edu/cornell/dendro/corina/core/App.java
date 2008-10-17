@@ -13,7 +13,6 @@ import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.site.SiteList;
 import edu.cornell.dendro.corina.webdbi.Authenticate;
-import edu.cornell.dendro.corina.webdbi.ProxyManager;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 
 /**

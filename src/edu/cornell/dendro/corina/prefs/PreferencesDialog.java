@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -16,6 +18,7 @@ import say.swing.JFontChooser;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.ColorComboBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.FontButtonWrapper;
+import edu.cornell.dendro.corina.prefs.wrappers.RadioButtonWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.SpinnerWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -23,7 +26,7 @@ import edu.cornell.dendro.corina.util.Center;
 
 
 
-public class PreferencesDialog extends Ui_PreferencesDialog {
+public class PreferencesDialog extends Ui_PreferencesPanel {
 	// it's really important to only show one prefs dialog! :)
 	private static JFrame dialog;
 
@@ -43,9 +46,7 @@ public class PreferencesDialog extends Ui_PreferencesDialog {
 		dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		// steal the content pane from an instance of PreferencesDialog
-		// TODO: Gross. Make this extend a JFrame, not a JDialog! :)
-		PreferencesDialog tmp = new PreferencesDialog(null, false);
-		dialog.setContentPane(tmp.getContentPane());
+		dialog.setContentPane(new PreferencesDialog());
 		dialog.pack();
 		
 		Center.center(dialog);
@@ -87,7 +88,7 @@ public class PreferencesDialog extends Ui_PreferencesDialog {
 		new ColorComboBoxWrapper(cboTextColor, Prefs.EDIT_FOREGROUND, Color.black);
 		new ColorComboBoxWrapper(cboEditorBGColor, Prefs.EDIT_BACKGROUND, Color.white);
 		new FontButtonWrapper(btnFont, Prefs.EDIT_FONT, getFont());
-		new CheckBoxWrapper(jCheckBox3, Prefs.EDIT_GRIDLINES, true);
+		new CheckBoxWrapper(chkShowEditorGrid, Prefs.EDIT_GRIDLINES, true);
 		
 		// graph
 		new ColorComboBoxWrapper(cboAxisCursorColor, Prefs.GRAPH_AXISCURSORCOLOR, Color.white);
@@ -95,24 +96,28 @@ public class PreferencesDialog extends Ui_PreferencesDialog {
 		new ColorComboBoxWrapper(cboGridColor, Prefs.GRAPH_GRIDLINES_COLOR, Color.darkGray);
 		new CheckBoxWrapper(chkShowChartGrid, Prefs.GRAPH_GRIDLINES, true);
 		
-		// networking
-		new CheckBoxWrapper(chkUseProxy, "corina.proxy.enabled", false);
+		// networking - proxy
+		btnDefaultProxy.setActionCommand("default");
+		btnManualProxy.setActionCommand("manual");
+		btnNoProxy.setActionCommand("direct");
 		new TextComponentWrapper(txtProxyURL, "corina.proxy.http", null);
 		new SpinnerWrapper(spnProxyPort, "corina.proxy.http_port", 80);
 		new TextComponentWrapper(txtProxyURL1, "corina.proxy.https", null);
 		new SpinnerWrapper(spnProxyPort1, "corina.proxy.https_port", 443);
-		
-		// proxy checkbox behavior
-		setEnableProxy(chkUseProxy.isSelected());
-		chkUseProxy.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setEnableProxy(chkUseProxy.isSelected());
+		new RadioButtonWrapper(new JRadioButton[] { btnDefaultProxy, btnManualProxy, btnNoProxy }, 
+				"corina.proxy.type", "default");
+				
+		// manual proxy button behavior
+		setEnableProxy(btnManualProxy.isSelected());
+		btnManualProxy.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				setEnableProxy(btnManualProxy.isSelected());
 			}
 		});
 	}
 	
-	private PreferencesDialog(Frame parent, boolean modal) {
-		super(parent, modal);
+	private PreferencesDialog() {
+		super();
 		
 		initPrefsDialog();
 	}

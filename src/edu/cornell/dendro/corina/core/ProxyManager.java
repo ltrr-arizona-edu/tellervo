@@ -1,6 +1,5 @@
-package edu.cornell.dendro.corina.webdbi;
+package edu.cornell.dendro.corina.core;
 
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
 
@@ -13,10 +12,9 @@ import edu.cornell.dendro.corina.prefs.PrefsListener;
  */
 
 public class ProxyManager implements PrefsListener {
-	private boolean usingProxy;
+	private String lastProxyType;
 	
 	public ProxyManager() {
-		usingProxy = false;
 		setupProxy();
 		
 		App.prefs.addPrefsListener(this);
@@ -28,45 +26,46 @@ public class ProxyManager implements PrefsListener {
 	}
 	
 	private void setupProxy() {
-		boolean nowUsingProxy = App.prefs.getBooleanPref("corina.proxy.enabled", false);
-		boolean useSystemProxies = App.prefs.getBooleanPref("corina.proxies.useSystemDefault", true);
+		String proxyType = App.prefs.getPref("corina.proxy.type", "default");
+
+		// no changes here? ignore it and move on
+		// but not for manual - we might have changed some settings
+		if(proxyType.equals(lastProxyType) && !"manual".equals(proxyType))
+			return;
+
+		// be safe and copy the string
+		lastProxyType = new String(proxyType);
 		
-		// we were using a proxy, but we're not anymore
-		if(usingProxy && !nowUsingProxy) {
-			usingProxy = false;
-			
-			System.out.println("No longer using a proxy server, unsetting system properties");
-			
+		System.out.println("PROXY: Proxy type: " + proxyType);
+		
+		// make sure we remove any properties we don't want
+		if("default".equals(proxyType) || "direct".equals(proxyType)) {
 			// remove properties...
 			System.clearProperty("http.proxyHost");
 			System.clearProperty("http.proxyPort");
 			System.clearProperty("https.proxyHost");
 			System.clearProperty("https.proxyHost");
-			
-			if(useSystemProxies) 
-				System.setProperty("java.net.useSystemProxies", "true");
-			else
-				System.setProperty("java.net.useSystemProxies", "false");
 		}
-		else if(!usingProxy && !nowUsingProxy) {
-			if(useSystemProxies)
-				System.setProperty("java.net.useSystemProxies", "true");
-			else
-				System.setProperty("java.net.useSystemProxies", "false");
+		
+		if("default".equals(proxyType)) {
+			System.setProperty("java.net.useSystemProxies", "true");
 			return;
 		}
 		
-		usingProxy = nowUsingProxy;
-		
-		System.out.println("Applying proxy settings");
-		
-		// no system proxies, we're specifying them!
+		// ok then, no defaults
 		System.setProperty("java.net.useSystemProxies", "false");
 		
+		// drop out here with nothing set if we're on "direct" mode
+		if("direct".equals(proxyType))
+			return;
+				
 		String host;
 		if((host = App.prefs.getPref("corina.proxy.http", null)) != null) {
 			System.setProperty("http.proxyHost", host);
 			System.setProperty("http.proxyPort", App.prefs.getPref("corina.proxy.http_port", "80"));
+
+			System.out.println("PROXY: http: " + System.getProperty("http.proxyHost") + 
+					":" + System.getProperty("http.proxyPort"));
 		} 
 		else {
 			System.clearProperty("http.proxyHost");
@@ -76,6 +75,9 @@ public class ProxyManager implements PrefsListener {
 		if((host = App.prefs.getPref("corina.proxy.https", null)) != null) {
 			System.setProperty("https.proxyHost", host);
 			System.setProperty("https.proxyPort", App.prefs.getPref("corina.proxy.https_port", "443"));
+
+			System.out.println("PROXY: https: " + System.getProperty("https.proxyHost") + 
+					":" + System.getProperty("https.proxyPort"));
 		} 
 		else {
 			System.clearProperty("https.proxyHost");
