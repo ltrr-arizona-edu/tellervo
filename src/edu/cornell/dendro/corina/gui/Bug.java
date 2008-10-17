@@ -66,6 +66,11 @@ import edu.cornell.dendro.corina.util.PureStringWriter;
 */
 public class Bug extends JDialog {
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2316971119366897657L;
+
+/**
    * Get the stack trace from a Throwable, as a String.
    * 
    * <p>I think Java 1.4 has a method for this, but I'm not
@@ -181,8 +186,10 @@ public class Bug extends JDialog {
    */
   public Bug(Throwable t) {
 	  super();
-	  setTitle("Bug!");
+	  setTitle("Bug Report");
 	  setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+      setResizable(false);
+      this.setModal(true);
 	  
 	  final String bugText = "Exception:\n" +
 		   getStackTrace(t) + "\n\n" +
@@ -192,25 +199,44 @@ public class Bug extends JDialog {
   	textArea.setEditable(false);
   	stackTrace = new JScrollPane(textArea);
   
-  	JPanel message = Layout.flowLayoutL("You found a bug in Corina!");
+  	JPanel message = Layout.flowLayoutL("<html>We apologise but an internal error has occurred within Corina and there "+
+  			                            "<i>may</i> have been a <br>loss of data.<br><br>"+
+  			                                  "Please contact the Corina developers with details of what you were doing"+
+  			                                  " prior to getting<br> this message.");
   
-  	JButton bummer = new JButton("Bummer");
+  	JButton bummer = new JButton("Continue");
   	bummer.addActionListener(new AbstractAction() {
-  		public void actionPerformed(ActionEvent e) {
+  		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -4206533770425096704L;
+
+		public void actionPerformed(ActionEvent e) {
   		  dispose();
   		}
   	});
   
   	JButton submitreport = new JButton("Submit e-mail bug report");
   	submitreport.addActionListener(new AbstractAction() {
-  		public void actionPerformed(ActionEvent e) {
+  		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 4617777199430388184L;
+
+		public void actionPerformed(ActionEvent e) {
   			edu.cornell.dendro.corina.util.EmailBugReport.submitBugReportText(bugText);
   		}
   	});
+  	 	
   	
   	more = new JButton("Show Details");
   	more.addActionListener(new AbstractAction() {
-  		public void actionPerformed(ActionEvent e) {
+  		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -7572001036505366181L;
+
+		public void actionPerformed(ActionEvent e) {
   	    // toggle visibility of stackTrace component
         if (visible) {
     			// hide it
@@ -246,7 +272,7 @@ public class Bug extends JDialog {
   	OKCancel.addKeyboardDefaults(bummer);
   	// setResizable(false);
   	Center.center(this);
-  	show();
+  	this.setVisible(true);
   }
 
   private JComponent stackTrace;
@@ -256,7 +282,7 @@ public class Bug extends JDialog {
   private boolean visible = false;
 
   /**
-   * Old interface! -- fix all occurances of this, then remove.
+   * Old interface! -- fix all occurrences of this, then remove.
    *
    * @deprecated use new Bug(t)
    */
