@@ -3,6 +3,8 @@ package edu.cornell.dendro.corina.gui;
 
 import java.awt.Component;
 import java.awt.Point;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,8 +51,8 @@ public class AboutBox2 extends javax.swing.JDialog {
 
 	
     /** Creates new form AboutBox */
-    public AboutBox2() {
-
+    public AboutBox2() {  	
+    	
         initComponents();
         addDetails();
         pack();
@@ -125,6 +127,8 @@ public class AboutBox2 extends javax.swing.JDialog {
         return contents.toString();
     	
     }
+    
+    
     
     
     /** This method is called from within the constructor to
