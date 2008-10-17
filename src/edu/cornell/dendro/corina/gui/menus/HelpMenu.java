@@ -26,7 +26,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.gui.AboutBox2;
+import edu.cornell.dendro.corina.gui.AboutBox;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -58,7 +58,7 @@ import edu.cornell.dendro.corina.ui.I18n;
 public class HelpMenu extends JMenu {
   public static final CorinaAction ABOUT_ACTION = new CorinaAction("about") {
     public void actionPerformed(ActionEvent ae) {
-      AboutBox2.getInstance().show();
+      AboutBox.getInstance().show();
     }
   };
     // FIXME: do i need(want) to set font here for 1.3?  do i inherit that from my parents?

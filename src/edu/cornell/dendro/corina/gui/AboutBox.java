@@ -42,16 +42,16 @@ import edu.cornell.dendro.corina.util.Center;
  *
  * @author  peterbrewer
  */
-public class AboutBox2 extends javax.swing.JDialog {
+public class AboutBox extends javax.swing.JDialog {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static AboutBox2 instance = null;
+	private static AboutBox instance = null;
 
 	
     /** Creates new form AboutBox */
-    public AboutBox2() {  	
+    public AboutBox() {  	
     	
         initComponents();
         addDetails();
@@ -65,9 +65,9 @@ public class AboutBox2 extends javax.swing.JDialog {
         
     }
     
-    public static synchronized AboutBox2 getInstance() {
+    public static synchronized AboutBox getInstance() {
         if (instance == null) {
-          instance = new AboutBox2();
+          instance = new AboutBox();
         } 
         return instance;
       }
@@ -284,7 +284,7 @@ public class AboutBox2 extends javax.swing.JDialog {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                AboutBox2 dialog = new AboutBox2();
+                AboutBox dialog = new AboutBox();
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);
