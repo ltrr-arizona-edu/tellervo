@@ -119,6 +119,7 @@ public abstract class Resource {
 				// dialog succeeded?
 				return true;
 			} catch (UserCancelledException uce) {
+				System.out.println("User cancelled query on " + this.resourceName);
 				doQueryFailed(uce);
 				return false;
 			}

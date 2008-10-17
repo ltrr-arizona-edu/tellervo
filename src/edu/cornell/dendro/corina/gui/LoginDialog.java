@@ -43,7 +43,7 @@ public class LoginDialog extends JDialog {
 	private JLabel subtitle;	
 	private JButton loginButton;
 	private JButton cancelButton;
-	private boolean cancelled = false;
+	private boolean cancelled = true;
 	
 	public LoginDialog(Frame frame) {
 		super(frame, true);
@@ -434,6 +434,7 @@ public class LoginDialog extends JDialog {
 							authenticationNotifier.stop();
 						}
 						
+						cancelled = false;
 						dispose();
 					}
 					else if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_FAILED) {
