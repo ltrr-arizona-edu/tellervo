@@ -1,9 +1,9 @@
 --
--- param 1: VSeriesID
--- Requires that tblvseriesderivedcache is populated for this id!
+-- param 1: VMeasurementID
+-- Requires that tblvmeasurementderivedcache is populated for this id!
 --
-CREATE OR REPLACE FUNCTION cpgdb.GetVSeriesSummaryInfo(integer)
-RETURNS typVSeriesSummaryInfo AS $$
+CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementSummaryInfo(integer)
+RETURNS typVMeasurementSummaryInfo AS $$
 DECLARE
    VMID ALIAS FOR $1;
    numrows integer;
@@ -16,21 +16,21 @@ DECLARE
    curtaxa typfulltaxonomy;
    prevtaxa typfulltaxonomy;
 
-   ret typVSeriesSummaryInfo;   
+   ret typVMeasurementSummaryInfo;   
 BEGIN
-   ret.VSeriesID := VMID;
+   ret.VMeasurementID := VMID;
    numrows := 0;
 
    -- Get unique sites
    FOR rec IN SELECT s.code 
-	FROM tblVSeriesDerivedCache d
-	INNER JOIN tblSeries m ON m.seriesID = d.seriesID
+	FROM tblVMeasurementDerivedCache d
+	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
 	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
 	INNER JOIN tblElement t on t.elementID = sp.elementID
 	INNER JOIN tblSubsite su on su.subsiteID = t.subsiteID
 	INNER JOIN tblSite s on s.siteID = su.siteID
-	WHERE d.VSeriesID = VMID
+	WHERE d.VMeasurementID = VMID
 	GROUP BY(s.code)   
    LOOP
       IF numrows = 0 THEN
@@ -45,13 +45,13 @@ BEGIN
    -- Now, get the list of associated taxa
    numrows := 0;
    FOR rec IN SELECT txbasic.*,cpgdb.qryTaxonomy(txbasic.taxonID) as tx FROM
- 	(SELECT t.taxonID::integer FROM tblVSeriesDerivedCache d
-	INNER JOIN tblSeries m ON m.seriesID = d.seriesID
+ 	(SELECT t.taxonID::integer FROM tblVMeasurementDerivedCache d
+	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
 	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
 	INNER JOIN tblElement t on t.elementID = sp.elementID
 	INNER JOIN tlkpTaxon tx on tx.taxonID = t.taxonID
-	WHERE d.VSeriesID = VMID
+	WHERE d.VMeasurementID = VMID
 	GROUP BY(t.taxonID)) as txbasic
    LOOP
       curtaxa := rec.tx;
@@ -129,7 +129,7 @@ DECLARE
    elementn text;
    samplen text;
    radiusn text;
-   seriesn text;
+   measurementn text;
    ret text;
 
    count integer;
@@ -137,19 +137,19 @@ DECLARE
 BEGIN
    labelfor := lower($1);
    
-   -- VSeries is a special case
-   IF labelfor = 'vseries' THEN 
+   -- VMeasurement is a special case
+   IF labelfor = 'vmeasurement' THEN 
       count := 0;
       FOR rec IN SELECT s.code as a,su.name as b,t.name as c,sp.name as d,r.name as e,vs.name as f 
-	FROM tblVSeriesDerivedCache d
-	INNER JOIN tblSeries m ON m.seriesID = d.seriesID
+	FROM tblVMeasurementDerivedCache d
+	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
 	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
 	INNER JOIN tblElement t on t.elementID = sp.elementID
 	INNER JOIN tblSubsite su on su.subsiteID = t.subsiteID
 	INNER JOIN tblSite s on s.siteID = su.siteID
-	INNER JOIN tblVSeries vs on vs.vseriesid = d.vseriesid
-	WHERE d.VSeriesID = OBJID
+	INNER JOIN tblVMeasurement vs on vs.vmeasurementid = d.vmeasurementid
+	WHERE d.VMeasurementID = OBJID
       LOOP
          count := count + 1;
 
@@ -158,14 +158,14 @@ BEGIN
          elementn := rec.c;
          samplen := rec.d;
          radiusn := rec.e;
-         seriesn := rec.f;
+         measurementn := rec.f;
       END LOOP;
 
       IF count = 0 THEN
-         RAISE EXCEPTION 'No data found for vseries %', OBJID;
+         RAISE EXCEPTION 'No data found for vmeasurement %', OBJID;
       ELSIF COUNT > 1 THEN
          -- More than one constituent? It's a sum or something derived from one.
-         RETURN seriesn;
+         RETURN measurementn;
       END IF;
 
       -- Start with silly cornell prefix and site
@@ -176,10 +176,10 @@ BEGIN
          ret := ret || '/' || subsiten;
       END IF;
 
-      ret := ret || '-' || elementn || '-' || samplen || '-' || radiusn || '-' || seriesn;
+      ret := ret || '-' || elementn || '-' || samplen || '-' || radiusn || '-' || measurementn;
 
       RETURN ret;
-   END IF; -- VSeries special case
+   END IF; -- VMeasurement special case
 
    IF labelfor = 'element' THEN
       queryLevel := 1;
@@ -191,7 +191,7 @@ BEGIN
       queryLevel := 3;      
       whereClause := ' WHERE r.radiusid=' || OBJID;
    ELSE
-      RAISE EXCEPTION 'Invalid usage: label must be for vseries, element, sample, or radius';
+      RAISE EXCEPTION 'Invalid usage: label must be for vmeasurement, element, sample, or radius';
    END IF;
 
    -- Start out with the basics
@@ -241,8 +241,8 @@ END;
 $_$
 LANGUAGE 'PLPGSQL' STABLE;
 
-CREATE OR REPLACE FUNCTION cpgdb.GetVSeriesLabel(integer)
+CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementLabel(integer)
 RETURNS text AS $_$
-   SELECT cpgdb.GetLabel('vseries', $1);
+   SELECT cpgdb.GetLabel('vmeasurement', $1);
 $_$ LANGUAGE SQL STABLE;
 

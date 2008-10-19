@@ -36,8 +36,8 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 -- 1 = array of groups
--- 2 = type (vseries, element, site, default)
--- 3 = id (VSeriesID, ElementID, SiteID, or 0 for default)
+-- 2 = type (vMeasurement, element, site, default)
+-- 3 = id (VMeasurementID, ElementID, SiteID, or 0 for default)
 CREATE OR REPLACE FUNCTION cpgdb.GetGroupPermissionSet(_groupIDs integer[], _permtype varchar, _pid integer) 
 RETURNS typPermissionSet AS $$
 DECLARE
@@ -52,11 +52,11 @@ DECLARE
    childPerms typPermissionSet;
    setSize integer;
 
-   stypes varchar[] := array['vseries','element','site','default'];
+   stypes varchar[] := array['vmeasurement','element','site','default'];
 BEGIN
    -- Invalid type specified?
    IF NOT (_permtype = ANY(stypes)) THEN
-      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vseries, element, site, default (case matters!).', _permtype;
+      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vMeasurement, element, site, default (case matters!).', _permtype;
    END IF;
 
    -- Build our query
@@ -80,31 +80,31 @@ BEGIN
    IF NOT FOUND THEN
       CLOSE res;
       
-      IF _permtype = 'vseries' THEN
+      IF _permtype = 'vMeasurement' THEN
          -- This obnoxious query joins direct vss to elements, so we don't have to do another query
-         SELECT op.Name,tr.ElementID INTO vstype,objid FROM tblVSeries vs 
-            INNER JOIN tlkpVSeriesOp op ON vs.VSeriesOpID = op.VSeriesOpID
-            LEFT JOIN tblSeries t1 ON vs.SeriesID = t1.SeriesID 
+         SELECT op.Name,tr.ElementID INTO vstype,objid FROM tblVMeasurement vs 
+            INNER JOIN tlkpVMeasurementOp op ON vs.VMeasurementOpID = op.VMeasurementOpID
+            LEFT JOIN tblMeasurement t1 ON vs.MeasurementID = t1.MeasurementID 
             LEFT JOIN tblRadius t2 ON t2.RadiusID = t1.RadiusID 
             LEFT JOIN tblSample t3 on t3.SampleID = t2.SampleID 
             LEFT JOIN tblElement tr ON tr.ElementID = t3.ElementID
-            WHERE vs.VSeriesID = _pid;
+            WHERE vs.VMeasurementID = _pid;
 
          IF NOT FOUND THEN
-            RAISE EXCEPTION 'Could not determine security: vseries % -> element does not exist', _pid;
+            RAISE EXCEPTION 'Could not determine security: vmeasurement % -> element does not exist', _pid;
          END IF;
 
          IF vstype = 'Direct' THEN
-            -- We hit a direct VSeries. Move down to element...
+            -- We hit a direct VMeasurement. Move down to element...
             perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'element', objid);
 	    RETURN perms;
          ELSE
             -- Start with a completely empty permission set
             setSize := 0;
 
-            -- For each child VSeries, AND our sets together...
-            FOR objid IN SELECT MemberVSeriesID FROM tblVSeriesGroup WHERE VSeriesID = _pid LOOP
-               childPerms := cpgdb.GetGroupPermissionSet(_groupIDs, 'vseries', objid);
+            -- For each child VMeasurement, AND our sets together...
+            FOR objid IN SELECT MemberVMeasurementID FROM tblVMeasurementGroup WHERE VMeasurementID = _pid LOOP
+               childPerms := cpgdb.GetGroupPermissionSet(_groupIDs, 'vmeasurement', objid);
 
                -- Start out with our first childperms; continue with anding them.               
                IF setSize = 0 THEN
@@ -248,8 +248,8 @@ RETURNS integer[] AS $$
 $$ LANGUAGE SQL IMMUTABLE;
 
 -- 1 = securityUserID
--- 2 = type (VSeries, Element, Site, Default)
--- 3 = id (VSeriesID, ElementID, SiteID, or 0 for default)
+-- 2 = type (VMeasurement, Element, Site, Default)
+-- 3 = id (VMeasurementID, ElementID, SiteID, or 0 for default)
 CREATE OR REPLACE FUNCTION cpgdb.GetUserPermissionSet(integer, varchar, integer) 
 RETURNS typPermissionSet AS $$
 DECLARE

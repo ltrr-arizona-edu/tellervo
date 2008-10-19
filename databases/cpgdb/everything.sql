@@ -2,8 +2,8 @@
 \i misc.sql
 
 -- our functions that the java library uses
-\i sum.sql
-\i update-vsresultinfo.sql
+\i java-support/sum.sql
+\i java-support/update-vsresultinfo.sql
 
 -- Make sure our types and tables are ready
 \i typesandtables.sql
@@ -13,11 +13,11 @@
 \i findchildrenof.sql
 
 -- Now, our cache functions
-\i vseriesmetacache.sql
-\i trigger-tblvseriesmetacache.sql
+\i vmeasurementmetacache.sql
+\i trigger-tblvmeasurementmetacache.sql
 
--- Now, our functions for creating and changing vseriess
-\i vs-functions.sql
+-- Now, our functions for creating and changing vmeasurements
+\i vm-functions.sql
 
 -- Populate the cache and other setup.
 \i setup-db.sql

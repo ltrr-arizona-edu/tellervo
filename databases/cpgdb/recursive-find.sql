@@ -1,41 +1,41 @@
-CREATE OR REPLACE FUNCTION cpgdb.getSearchResultForID(tblVSeries.VSeriesID%TYPE)
-RETURNS typVSeriesSearchResult AS $$
+CREATE OR REPLACE FUNCTION cpgdb.getSearchResultForID(tblVMeasurement.VMeasurementID%TYPE)
+RETURNS typVMeasurementSearchResult AS $$
 DECLARE
     _vsid ALIAS FOR $1;
     
-    res typVSeriesSearchResult;
-    meta tblVSeriesMetaCache%ROWTYPE;
+    res typVMeasurementSearchResult;
+    meta tblVMeasurementMetaCache%ROWTYPE;
 BEGIN
     SELECT o.Name, vs.Name, vs.Description, vs.LastModifiedTimestamp
     INTO res.Op, res.Name, res.Description, res.Modified
-    FROM tblVSeries AS vs
-      INNER JOIN tlkpVSeriesOp AS o ON o.VSeriesOpID = vs.VSeriesOpID
-    WHERE vs.VSeriesID = _vsid;
+    FROM tblVMeasurement AS vs
+      INNER JOIN tlkpVMeasurementOp AS o ON o.VMeasurementOpID = vs.VMeasurementOpID
+    WHERE vs.VMeasurementID = _vsid;
 
     SELECT * INTO meta FROM cpgdb.GetMetaCache(_vsid);
     IF FOUND THEN
        res.StartYear := meta.StartYear;
-       res.ValueCount := meta.ValueCount;
-       res.SeriesCount := meta.SeriesCount;
+       res.ReadingCount := meta.ReadingCount;
+       res.MeasurementCount := meta.MeasurementCount;
     END IF;
 
     res.RecursionLevel = 0;
-    res.VSeriesID = _vsid;
+    res.VMeasurementID = _vsid;
     RETURN res;
 END;
 $$ LANGUAGE 'plpgsql' VOLATILE;
 
-CREATE OR REPLACE FUNCTION cpgdb.recurseFindVMChildren(tblVSeries.VSeriesID%TYPE, integer) 
-RETURNS SETOF typVSeriesSearchResult AS $$
+CREATE OR REPLACE FUNCTION cpgdb.recurseFindVMChildren(tblVMeasurement.VMeasurementID%TYPE, integer) 
+RETURNS SETOF typVMeasurementSearchResult AS $$
 DECLARE
    _vsid ALIAS FOR $1;
    _recursionlevel INTEGER := $2;
 
-   res typVSeriesSearchResult;
-   meta tblVSeriesMetaCache%ROWTYPE;
+   res typVMeasurementSearchResult;
+   meta tblVMeasurementMetaCache%ROWTYPE;
    ref refcursor;
 
-   VSeriesID tblVSeries.VSeriesID%TYPE;
+   VMeasurementID tblVMeasurement.VMeasurementID%TYPE;
 BEGIN
    IF _recursionlevel > 50 THEN
       RAISE EXCEPTION 'Maximum recursion exceeded';
@@ -51,16 +51,16 @@ BEGIN
    -- Loop through each of my direct descendents
 
    OPEN ref FOR SELECT
-      vs.VSeriesID, o.Name, vs.Name,
+      vs.VMeasurementID, o.Name, vs.Name,
       vs.Description, vs.LastModifiedTimestamp
-      FROM tblVSeries AS vs
-         INNER JOIN tblVSeriesGroup AS g ON g.VSeriesID = vs.VSeriesID
-         INNER JOIN tlkpVSeriesOp AS o ON o.VSeriesOpID = vs.VSeriesOpID
-      WHERE g.MemberVSeriesID = _vsid
+      FROM tblVMeasurement AS vs
+         INNER JOIN tblVMeasurementGroup AS g ON g.VMeasurementID = vs.VMeasurementID
+         INNER JOIN tlkpVMeasurementOp AS o ON o.VMeasurementOpID = vs.VMeasurementOpID
+      WHERE g.MemberVMeasurementID = _vsid
       ORDER BY vs.LastModifiedTimestamp DESC;
 
    LOOP
-      FETCH ref INTO VSeriesID, res.Op, res.Name, res.Description, res.Modified;
+      FETCH ref INTO VMeasurementID, res.Op, res.Name, res.Description, res.Modified;
 
       -- No children? Ok; just drop out.
       IF NOT FOUND THEN
@@ -70,19 +70,19 @@ BEGIN
       -- Get the metacache row. We could inner join in our query above,
       -- but calling this function ensures that the cache is created 
       -- if it doesn't exist.      
-      SELECT * INTO meta FROM cpgdb.GetMetaCache(VSeriesID);
+      SELECT * INTO meta FROM cpgdb.GetMetaCache(VMeasurementID);
       IF FOUND THEN
          res.StartYear := meta.StartYear;
-         res.ValueCount := meta.ValueCount;
-         res.SeriesCount := meta.SeriesCount;
+         res.ReadingCount := meta.ReadingCount;
+         res.MeasurementCount := meta.MeasurementCount;
       END IF;
 
       res.RecursionLevel = _recursionlevel;
-      res.VSeriesID = VSeriesID;
+      res.VMeasurementID = VMeasurementID;
       RETURN NEXT res;
  
       -- Loop through any descendents of descendents
-      FOR res IN SELECT * from cpgdb.recurseFindVMChildren(VSeriesID, _recursionlevel + 1)
+      FOR res IN SELECT * from cpgdb.recurseFindVMChildren(VMeasurementID, _recursionlevel + 1)
       LOOP
          RETURN NEXT res;
       END LOOP;
@@ -90,17 +90,17 @@ BEGIN
 END;
 $$ LANGUAGE 'plpgsql' VOLATILE;
 
-CREATE OR REPLACE FUNCTION cpgdb.recurseFindVMParents(tblVSeries.VSeriesID%TYPE, integer) 
-RETURNS SETOF typVSeriesSearchResult AS $$
+CREATE OR REPLACE FUNCTION cpgdb.recurseFindVMParents(tblVMeasurement.VMeasurementID%TYPE, integer) 
+RETURNS SETOF typVMeasurementSearchResult AS $$
 DECLARE
    _vsid ALIAS FOR $1;
    _recursionlevel INTEGER := $2;
 
-   res typVSeriesSearchResult;
-   meta tblVSeriesMetaCache%ROWTYPE;
+   res typVMeasurementSearchResult;
+   meta tblVMeasurementMetaCache%ROWTYPE;
    ref refcursor;
 
-   VSeriesID tblVSeries.VSeriesID%TYPE;
+   VMeasurementID tblVMeasurement.VMeasurementID%TYPE;
 BEGIN
    IF _recursionlevel > 50 THEN
       RAISE EXCEPTION 'Maximum recursion exceeded';
@@ -116,16 +116,16 @@ BEGIN
    -- Loop through each of my direct parents
 
    OPEN ref FOR SELECT
-      vs.VSeriesID, o.Name, vs.Name,
+      vs.VMeasurementID, o.Name, vs.Name,
       vs.Description, vs.LastModifiedTimestamp
-      FROM tblVSeries as vs
-         INNER JOIN tblVSeriesGroup AS g ON g.MemberVSeriesID = vs.VSeriesID
-         INNER JOIN tlkpVSeriesOp AS o ON o.VSeriesOpID = vs.VSeriesOpID
-      WHERE g.VSeriesID = _vsid
+      FROM tblVMeasurement as vs
+         INNER JOIN tblVMeasurementGroup AS g ON g.MemberVMeasurementID = vs.VMeasurementID
+         INNER JOIN tlkpVMeasurementOp AS o ON o.VMeasurementOpID = vs.VMeasurementOpID
+      WHERE g.VMeasurementID = _vsid
       ORDER BY vs.LastModifiedTimestamp DESC;
 
    LOOP
-      FETCH ref INTO VSeriesID, res.Op, res.Name, res.Description, res.Modified;
+      FETCH ref INTO VMeasurementID, res.Op, res.Name, res.Description, res.Modified;
 
       -- No parents? Ok; just drop out.
       IF NOT FOUND THEN
@@ -135,15 +135,15 @@ BEGIN
       -- Get the metacache row. We could inner join in our query above,
       -- but calling this function ensures that the cache is created 
       -- if it doesn't exist.      
-      SELECT * INTO meta FROM cpgdb.GetMetaCache(VSeriesID);
+      SELECT * INTO meta FROM cpgdb.GetMetaCache(VMeasurementID);
       IF FOUND THEN
          res.StartYear := meta.StartYear;
-         res.ValueCount := meta.ValueCount;
-         res.SeriesCount := meta.SeriesCount;
+         res.ReadingCount := meta.ReadingCount;
+         res.MeasurementCount := meta.MeasurementCount;
       END IF;
 
       res.RecursionLevel = _recursionlevel;
-      res.VSeriesID = VSeriesID;
+      res.VMeasurementID = VMeasurementID;
       RETURN NEXT res;
 
       -- No sense in looking for parents of a direct VM
@@ -152,7 +152,7 @@ BEGIN
       END IF;
 
       -- Loop through any grandparents
-      FOR res IN SELECT * from cpgdb.recurseFindVMParents(VSeriesID, _recursionlevel + 1)
+      FOR res IN SELECT * from cpgdb.recurseFindVMParents(VMeasurementID, _recursionlevel + 1)
       LOOP
          RETURN NEXT res;
       END LOOP;
@@ -160,20 +160,20 @@ BEGIN
 END;
 $$ LANGUAGE 'plpgsql' VOLATILE;
 
-CREATE OR REPLACE FUNCTION cpgdb.FindVMChildren(tblVSeries.VSeriesID%TYPE, boolean)
-RETURNS SETOF typVSeriesSearchResult AS '
+CREATE OR REPLACE FUNCTION cpgdb.FindVMChildren(tblVMeasurement.VMeasurementID%TYPE, boolean)
+RETURNS SETOF typVMeasurementSearchResult AS '
   SELECT * FROM cpgdb.recurseFindVMChildren($1, (SELECT CASE WHEN $2=TRUE THEN -1 ELSE 0 END))
 ' LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION cpgdb.FindVMParents(tblVSeries.VSeriesID%TYPE, boolean)
-RETURNS SETOF typVSeriesSearchResult AS '
+CREATE OR REPLACE FUNCTION cpgdb.FindVMParents(tblVMeasurement.VMeasurementID%TYPE, boolean)
+RETURNS SETOF typVMeasurementSearchResult AS '
   SELECT * FROM cpgdb.recurseFindVMParents($1, (SELECT CASE WHEN $2=TRUE THEN -1 ELSE 0 END))
 ' LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION cpgdb.FindVMParentSeriess(tblVSeries.VSeriesID%TYPE)
-RETURNS SETOF tblSeries AS $$
-  SELECT series.* FROM cpgdb.FindVMParents($1, true) parents 
-  INNER JOIN tblVSeries vs ON parents.VSeriesID = vs.VSeriesID 
-  INNER JOIN tblSeries series ON series.SeriesID = vs.SeriesID 
+CREATE OR REPLACE FUNCTION cpgdb.FindVMParentMeasurements(tblVMeasurement.VMeasurementID%TYPE)
+RETURNS SETOF tblMeasurement AS $$
+  SELECT Measurement.* FROM cpgdb.FindVMParents($1, true) parents 
+  INNER JOIN tblVMeasurement vs ON parents.VMeasurementID = vs.VMeasurementID 
+  INNER JOIN tblMeasurement Measurement ON Measurement.MeasurementID = vs.MeasurementID 
   WHERE parents.op='Direct';
 $$ LANGUAGE SQL;

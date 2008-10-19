@@ -1,17 +1,17 @@
 CREATE OR REPLACE FUNCTION cpgdb.FindChildrenOf(varchar, integer) 
-RETURNS SETOF typVSeriesSearchResult AS $$
+RETURNS SETOF typVMeasurementSearchResult AS $$
 DECLARE
    stype ALIAS FOR $1;
    id ALIAS FOR $2;
 
    i INTEGER;
-   searches VARCHAR[] := array['VSeries','Series','Radius','Sample','Element','Subsite','Site'];
+   searches VARCHAR[] := array['VMeasurement','Measurement','Radius','Sample','Element','Subsite','Site'];
 
    whereClause VARCHAR;
    joinClause VARCHAR;
    query VARCHAR;
    vsid INTEGER;
-   res typVSeriesSearchResult;
+   res typVMeasurementSearchResult;
 BEGIN
    -- Loop through our ordered array above, dynamically creating
    -- an SQL statement full of inner joins.
@@ -30,7 +30,7 @@ BEGIN
       RAISE EXCEPTION 'Invalid search type %', stype;
    END IF;
 
-   query := 'SELECT DISTINCT tblVSeries.VSeriesID FROM tblVSeries' 
+   query := 'SELECT DISTINCT tblVMeasurement.VMeasurementID FROM tblVMeasurement' 
             || joinClause || ' WHERE ' || whereClause || '=' || id;
 
    -- RAISE NOTICE 'Query: %', query;
