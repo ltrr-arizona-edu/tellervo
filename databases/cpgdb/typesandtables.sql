@@ -1,22 +1,22 @@
-DROP TYPE typVSeriesSearchResult CASCADE;
-CREATE TYPE typVSeriesSearchResult AS (
+DROP TYPE typVMeasurementSearchResult CASCADE;
+CREATE TYPE typVMeasurementSearchResult AS (
    RecursionLevel integer,
-   VSeriesID integer,
+   VMeasurementID integer,
    Op varchar,
    Name varchar,
    StartYear integer,
    ReadingCount integer,
-   SeriesCount integer,
+   MeasurementCount integer,
    Description varchar,
    Modified timestamp
 );
 
-DROP TABLE tblVSeriesMetaCache CASCADE;
-CREATE TABLE tblVSeriesMetaCache (
-    VSeriesID integer NOT NULL REFERENCES tblVSeries ON DELETE CASCADE ON UPDATE CASCADE,
+DROP TABLE tblVMeasurementMetaCache CASCADE;
+CREATE TABLE tblVMeasurementMetaCache (
+    VMeasurementID integer NOT NULL REFERENCES tblVMeasurement ON DELETE CASCADE ON UPDATE CASCADE,
     StartYear integer NOT NULL,
     ReadingCount integer NOT NULL,
-    SeriesCount integer DEFAULT 1 NOT NULL
+    MeasurementCount integer DEFAULT 1 NOT NULL
     vsextent geometry,
     siteCode text,
     siteCount integer,   
@@ -28,22 +28,22 @@ CREATE TABLE tblVSeriesMetaCache (
     CONSTRAINT enforce_srid_vsextent CHECK ((srid(vsextent) = 4326))
 );
 
-DROP TABLE tblVSeriesDerivedCache CASCADE;
-CREATE TABLE tblVSeriesDerivedCache
+DROP TABLE tblVMeasurementDerivedCache CASCADE;
+CREATE TABLE tblVMeasurementDerivedCache
 (
   derivedCacheID serial NOT NULL,
-  VSeriesID integer NOT NULL,
-  seriesID integer NOT NULL,
-  CONSTRAINT tblvseriesderivedcache_pkey PRIMARY KEY (derivedcacheid),
-  CONSTRAINT tblvseriesderivedcache_seriesid_fkey FOREIGN KEY (seriesid)
-      REFERENCES tblseries (seriesid) MATCH SIMPLE
+  VMeasurementID integer NOT NULL,
+  MeasurementID integer NOT NULL,
+  CONSTRAINT tblvMeasurementderivedcache_pkey PRIMARY KEY (derivedcacheid),
+  CONSTRAINT tblvMeasurementderivedcache_Measurementid_fkey FOREIGN KEY (Measurementid)
+      REFERENCES tblMeasurement (Measurementid) MATCH SIMPLE
       ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT tblvseriesderivedcache_vseriesid_fkey FOREIGN KEY (vseriesid)
-      REFERENCES tblvseries (vseriesid) MATCH SIMPLE
+  CONSTRAINT tblvMeasurementderivedcache_vMeasurementid_fkey FOREIGN KEY (vMeasurementid)
+      REFERENCES tblvMeasurement (vMeasurementid) MATCH SIMPLE
       ON UPDATE CASCADE ON DELETE CASCADE
 );
-COMMENT ON TABLE tblvseriesderivedcache IS 'A non-recursive cache for breaking down vseries 
-derivations. Provides a map from vseriesid (one) to seriesid (many) and vice versa. Updated by 
+COMMENT ON TABLE tblvMeasurementderivedcache IS 'A non-recursive cache for breaking down vMeasurement 
+derivations. Provides a map from vMeasurementid (one) to Measurementid (many) and vice versa. Updated by 
 metacache functions.';
 
 
@@ -57,9 +57,9 @@ CREATE TYPE typPermissionSet AS (
    decidedBy text
 );
 
-DROP TYPE typVSeriesSummaryInfo CASCADE;
-CREATE TYPE typVSeriesSummaryInfo AS (
-   VSeriesID integer,
+DROP TYPE typVMeasurementSummaryInfo CASCADE;
+CREATE TYPE typVMeasurementSummaryInfo AS (
+   VMeasurementID integer,
    siteCode text,
    siteCount integer,   
    commonTaxonName text,

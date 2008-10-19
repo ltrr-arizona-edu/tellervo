@@ -1,11 +1,16 @@
-CREATE OR REPLACE FUNCTION cpgdb.VMeasurementModifiedCacheTrigger() RETURNS trigger AS $$
+CREATE OR REPLACE FUNCTION cpgdb.VMeasurementModifiedTrigger() RETURNS trigger AS $$
 BEGIN
    -- If this VMeasurement is being generated, ignore it
    IF NEW.isGenerating = TRUE THEN
       RETURN NEW;
    END IF;
 
+   -- update timestamp
+   NEW.lastModifiedTimestamp = current_timestamp;
+
+   -- update metacache
    PERFORM cpgdb.CreateMetaCache(NEW.VMeasurementID);
+
    RETURN NEW;
 EXCEPTION
    WHEN internal_error THEN
@@ -14,6 +19,6 @@ EXCEPTION
 END;
 $$ LANGUAGE 'plpgsql';
 
-DROP TRIGGER update_vmeasurementmetacache ON tblVMeasurement;
-CREATE TRIGGER update_vmeasurementmetacache AFTER INSERT OR UPDATE ON tblVMeasurement
-   FOR EACH ROW EXECUTE PROCEDURE cpgdb.VMeasurementModifiedCacheTrigger();
+DROP TRIGGER update_vmeasurement ON tblVMeasurement;
+CREATE TRIGGER update_vmeasurement AFTER INSERT OR UPDATE ON tblVMeasurement
+   FOR EACH ROW EXECUTE PROCEDURE cpgdb.VMeasurementModifiedTrigger();

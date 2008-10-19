@@ -1,15 +1,15 @@
--- First parameter: VSeriesResultID
-CREATE OR REPLACE FUNCTION cpgdb.qupdVSeriesResultInfo(varchar) RETURNS boolean AS $$
+-- First parameter: VMeasurementResultID
+CREATE OR REPLACE FUNCTION cpgdb.qupdVMeasurementResultInfo(varchar) RETURNS boolean AS $$
 DECLARE
    ResultID ALIAS FOR $1;
-   vmid tblVSeries.VSeriesID%TYPE;
-   n tblVSeries.Name%TYPE;
-   desc tblVSeries.Description%TYPE;
-   ispub tblVSeries.isPublished%TYPE;
-   createTS tblVSeries.CreatedTimestamp%TYPE;
-   modTS tblVSeries.LastModifiedTimestamp%TYPE;
+   vmid tblVMeasurement.VMeasurementID%TYPE;
+   n tblVMeasurement.Name%TYPE;
+   desc tblVMeasurement.Description%TYPE;
+   ispub tblVMeasurement.isPublished%TYPE;
+   createTS tblVMeasurement.CreatedTimestamp%TYPE;
+   modTS tblVMeasurement.LastModifiedTimestamp%TYPE;
 BEGIN
-   SELECT VSeriesID INTO vmid FROM tblVSeriesResult WHERE VSeriesResultID = ResultID;
+   SELECT VMeasurementID INTO vmid FROM tblVMeasurementResult WHERE VMeasurementResultID = ResultID;
 
    IF NOT FOUND THEN
       RETURN FALSE;
@@ -17,15 +17,15 @@ BEGIN
 
    SELECT Name, Description, isPublished, CreatedTimestamp, LastModifiedTimestamp
      INTO n, desc, ispub, createTS, modTS
-     FROM tblVSeries WHERE VSeriesID = vmid;
+     FROM tblVMeasurement WHERE VMeasurementID = vmid;
 
    IF NOT FOUND THEN
       RETURN FALSE;
    END IF;
 
-   UPDATE tblVSeriesResult SET (Name, Description, isPublished, CreatedTimestamp, LastModifiedTimestamp) =
+   UPDATE tblVMeasurementResult SET (Name, Description, isPublished, CreatedTimestamp, LastModifiedTimestamp) =
       (n, desc, ispub, createTS, modTS) 
-      WHERE VSeriesResultID = ResultID;
+      WHERE VMeasurementResultID = ResultID;
 
    RETURN TRUE;
 END;

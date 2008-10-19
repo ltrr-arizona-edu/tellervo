@@ -1,11 +1,11 @@
--- First parameter : VSeriesResultGroupID
--- Second parameter: newVSeriesResultID
-CREATE OR REPLACE FUNCTION cpgdb.qappVSeriesResultValueOpSum(varchar, varchar) RETURNS integer AS $$
+-- First parameter : VMeasurementResultGroupID
+-- Second parameter: newVMeasurementResultID
+CREATE OR REPLACE FUNCTION cpgdb.qappVMeasurementResultReadingOpSum(varchar, varchar) RETURNS integer AS $$
 DECLARE
    ref refcursor;
    v_year integer;    -- the record's year
    v_reading integer; -- the record's reading
-   v_id varchar;      -- the record's vseriesresultid
+   v_id varchar;      -- the record's vMeasurementresultid
 
    startyear integer; -- the minimum year in the data
    endyear integer;   --     maximum
@@ -23,26 +23,26 @@ DECLARE
    lastval integer;
 BEGIN
    OPEN ref FOR SELECT
-      MIN(tblVSeriesResult.StartYear + tblVSeriesValueResult.RelYear) as MinYear,
-      MAX(tblVSeriesResult.StartYear + tblVSeriesValueResult.RelYear) as MaxYear
-      FROM tblVSeriesResult
-      INNER JOIN tblVSeriesValueResult ON
-      tblVSeriesResult.VSeriesResultID =
-      tblVSeriesValueResult.VSeriesResultID
-      WHERE tblVSeriesResult.VSeriesResultGroupID = $1;
+      MIN(tblVMeasurementResult.StartYear + tblVMeasurementReadingResult.RelYear) as MinYear,
+      MAX(tblVMeasurementResult.StartYear + tblVMeasurementReadingResult.RelYear) as MaxYear
+      FROM tblVMeasurementResult
+      INNER JOIN tblVMeasurementReadingResult ON
+      tblVMeasurementResult.VMeasurementResultID =
+      tblVMeasurementReadingResult.VMeasurementResultID
+      WHERE tblVMeasurementResult.VMeasurementResultGroupID = $1;
 
    FETCH ref INTO startyear, endyear;
    CLOSE ref;
 
    OPEN ref FOR SELECT
-      tblVSeriesResult.VSeriesResultID as ID, 
-      tblVSeriesResult.StartYear + tblVSeriesValueResult.RelYear as Year,
-      tblVSeriesValueResult.Value as Value
-      FROM tblVSeriesResult
-      INNER JOIN tblVSeriesValueResult ON
-      tblVSeriesResult.VSeriesResultID =
-      tblVSeriesValueResult.VSeriesResultID
-      WHERE tblVSeriesResult.VSeriesResultGroupID = $1
+      tblVMeasurementResult.VMeasurementResultID as ID, 
+      tblVMeasurementResult.StartYear + tblVMeasurementReadingResult.RelYear as Year,
+      tblVMeasurementReadingResult.Reading as Reading
+      FROM tblVMeasurementResult
+      INNER JOIN tblVMeasurementReadingResult ON
+      tblVMeasurementResult.VMeasurementResultID =
+      tblVMeasurementReadingResult.VMeasurementResultID
+      WHERE tblVMeasurementResult.VMeasurementResultGroupID = $1
       ORDER BY ID, Year;
 
    FETCH ref INTO v_id, v_year, v_reading;
@@ -86,7 +86,7 @@ BEGIN
       -- Make sure our math rounds properly. arg.
       avg := round(cast(sum[idx] as numeric) / samplecount[idx]);
 
-      INSERT INTO tblVSeriesValueResult(VSeriesResultID, RelYear, Value, WJInc, WJDec, Count) VALUES
+      INSERT INTO tblVMeasurementReadingResult(VMeasurementResultID, RelYear, Reading, WJInc, WJDec, Count) VALUES
          ($2, idx, avg, wj_inc[idx], wj_dec[idx], samplecount[idx]);
 
       -- RAISE NOTICE '%: % [%] (%/%)', idx, avg, samplecount[idx], wj_inc[idx], wj_dec[idx];
