@@ -77,6 +77,11 @@ BEGIN
          RAISE EXCEPTION 'Sums must have at least one constituent';
       END IF;
 
+      -- throws an exception if it fails, so don't do anything
+      IF cpgdb.VerifySumsAreContiguous(Constituents) = FALSE THEN
+         NULL;      
+      END IF;
+
    ELSIF OPName = 'Index' THEN
       IF OPParam IS NULL THEN
          RAISE EXCEPTION 'Indexes must have an index type parameter';
@@ -132,39 +137,101 @@ $$ LANGUAGE PLPGSQL VOLATILE;
 -- Finishes a crossdate made with CreateVMeasurement
 -- 1: VMeasurementID
 -- 2: Start Year
--- 3: Justification
--- 4: Confidence
+-- 3: MasterVMeasurementID
+-- 4: Justification
+-- 5: Confidence
 --
 CREATE OR REPLACE FUNCTION cpgdb.FinishCrossdate(tblVMeasurement.VMeasurementID%TYPE, 
-   tblCrossdate.startyear%TYPE, tblCrossdate.justification%TYPE, tblCrossdate.confidence%TYPE)
+   tblCrossdate.startyear%TYPE, tblVMeasurement.VMeasurementID%TYPE, 
+   tblCrossdate.justification%TYPE, tblCrossdate.confidence%TYPE)
 RETURNS tblCrossdate.CrossdateID%TYPE AS $$
 DECLARE
    XVMID ALIAS FOR $1;
    XStartYear ALIAS FOR $2;
-   XJustification ALIAS FOR $3;
-   XConfidence ALIAS FOR $4;
+   XMasterVMID ALIAS FOR $3;
+   XJustification ALIAS FOR $4;
+   XConfidence ALIAS FOR $5;
 
-   derivedfrom tblVMeasurement.VMeasurementID%TYPE;
+   dummy tblVMeasurement.VMeasurementID%TYPE;
 BEGIN
-   SELECT memberVMeasurementID INTO derivedfrom FROM tblVMeasurementGroup
+   -- Check to see if our vmeasurement exists
+   SELECT VMeasurementID INTO dummy FROM tblVMeasurement
       WHERE VMeasurementID=XVMID;
 
    IF NOT FOUND THEN
-      RAISE EXCEPTION 'No VMeasurementGroup for crossdate (%)', XVMID;
+      RAISE EXCEPTION 'VMeasurement for Crossdate does not exist (%)', XVMID;
    END IF;
 
+   -- Check to see if our MASTER vmeasurement exists
+   SELECT VMeasurementID INTO dummy FROM tblVMeasurement
+      WHERE VMeasurementID=XMasterVMID;
+
+   IF NOT FOUND THEN
+      RAISE EXCEPTION 'VMeasurement Master for Crossdate does not exist (%)', XMasterVMID;
+   END IF;
+
+   -- Check for sanity
    IF XStartYear IS NULL OR XConfidence IS NULL THEN
       RAISE EXCEPTION 'Invalid arguments to cpgdb.FinishCrossdate';
    END IF;
 
    -- Create the actual crossdate
    INSERT INTO tblCrossdate(VMeasurementID, MasterVMeasurementID, StartYear, Justification, Confidence)
-      VALUES(XVMID, derivedfrom, XStartYear, XJustification, XConfidence);
+      VALUES(XVMID, XMasterVMID, XStartYear, XJustification, XConfidence);
 
    -- Now we're done, so mark it as no longer being generated
    UPDATE tblVMeasurement SET isGenerating = FALSE WHERE VMeasurementID = XVMID;
 
    -- Get our crossdate id
    RETURN (SELECT CrossdateID from tblCrossdate WHERE VMeasurementID=XVMID);
+END;
+$$ LANGUAGE PLPGSQL VOLATILE;
+
+CREATE OR REPLACE FUNCTION cpgdb.VerifySumsAreContiguous(INTEGER[]) 
+RETURNS BOOLEAN AS $$
+DECLARE
+   Constituents ALIAS FOR $1;
+   CVMId INTEGER;
+
+   SumStart INTEGER;
+   SumEnd INTEGER;
+
+   CStart INTEGER;
+   CEnd INTEGER;
+   VMID tblVMeasurement.VMeasurementID%TYPE;
+BEGIN
+   FOR CVMId IN array_lower(Constituents, 1)..array_upper(Constituents,1) LOOP
+      -- first, verify it exists
+      SELECT VMeasurementID INTO VMID FROM tblVMeasurement WHERE VMeasurementID=Constituents[CVMId];
+
+      IF NOT FOUND THEN
+         RAISE EXCEPTION 'Sum constituent does not exist (id:%)', Constituents[CVMId];
+      END IF;
+      
+      -- now, check for continuity
+      SELECT StartYear,StartYear+ReadingCount INTO CStart, CEnd from cpgdb.getMetaCache(Constituents[CVMId]);
+
+      IF SumStart IS NULL THEN
+         -- First part
+         SumStart := CStart;
+         SumEnd := CEnd;
+      ELSE
+         -- ok, check to see if it fits
+         IF CStart > SumEnd OR CEnd < SumStart THEN
+            RAISE EXCEPTION 'Sum constituents are not contiguous [(%,%) is not in (%, %)]', CStart, CEnd, SumStart, SumEnd;
+         END IF;
+
+         -- Update begin/end
+         IF CStart < SumStart THEN
+            SumStart := CStart;
+         END IF;
+
+         IF CEnd > SumEnd THEN
+            SumEnd := CEnd;
+         END IF;
+      END IF;
+   END LOOP;
+
+   RETURN TRUE;
 END;
 $$ LANGUAGE PLPGSQL VOLATILE;
