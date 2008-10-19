@@ -26,8 +26,8 @@ BEGIN
 	FROM tblVMeasurementDerivedCache d
 	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
-	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
-	INNER JOIN tblElement t on t.elementID = sp.elementID
+	INNER JOIN tblSpecimen sp on sp.specimenID = r.specimenID
+	INNER JOIN tblTree t on t.treeID = sp.treeID
 	INNER JOIN tblSubsite su on su.subsiteID = t.subsiteID
 	INNER JOIN tblSite s on s.siteID = su.siteID
 	WHERE d.VMeasurementID = VMID
@@ -48,8 +48,8 @@ BEGIN
  	(SELECT t.taxonID::integer FROM tblVMeasurementDerivedCache d
 	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
-	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
-	INNER JOIN tblElement t on t.elementID = sp.elementID
+	INNER JOIN tblSpecimen sp on sp.specimenID = r.specimenID
+	INNER JOIN tblTree t on t.treeID = sp.treeID
 	INNER JOIN tlkpTaxon tx on tx.taxonID = t.taxonID
 	WHERE d.VMeasurementID = VMID
 	GROUP BY(t.taxonID)) as txbasic
@@ -111,6 +111,12 @@ RETURNS text AS $$
 $$
 LANGUAGE 'SQL' IMMUTABLE;
 
+--
+-- GetLabel: returns a lab code label for a specified object
+-- 
+-- 1: label type ('vmeasurement', 'tree', etc)
+-- 2: label id
+--
 CREATE OR REPLACE FUNCTION cpgdb.GetLabel(text, integer)
 RETURNS text AS $_$
 DECLARE
@@ -126,8 +132,8 @@ DECLARE
 
    siten text;
    subsiten text;
-   elementn text;
-   samplen text;
+   treen text;
+   specimenn text;
    radiusn text;
    measurementn text;
    ret text;
@@ -144,8 +150,8 @@ BEGIN
 	FROM tblVMeasurementDerivedCache d
 	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
-	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
-	INNER JOIN tblElement t on t.elementID = sp.elementID
+	INNER JOIN tblSpecimen sp on sp.specimenID = r.specimenID
+	INNER JOIN tblTree t on t.treeID = sp.treeID
 	INNER JOIN tblSubsite su on su.subsiteID = t.subsiteID
 	INNER JOIN tblSite s on s.siteID = su.siteID
 	INNER JOIN tblVMeasurement vs on vs.vmeasurementid = d.vmeasurementid
@@ -155,8 +161,8 @@ BEGIN
 
          siten := rec.a;
          subsiten := rec.b;
-         elementn := rec.c;
-         samplen := rec.d;
+         treen := rec.c;
+         specimenn := rec.d;
          radiusn := rec.e;
          measurementn := rec.f;
       END LOOP;
@@ -176,37 +182,37 @@ BEGIN
          ret := ret || '/' || subsiten;
       END IF;
 
-      ret := ret || '-' || elementn || '-' || samplen || '-' || radiusn || '-' || measurementn;
+      ret := ret || '-' || treen || '-' || specimenn || '-' || radiusn || '-' || measurementn;
 
       RETURN ret;
    END IF; -- VMeasurement special case
 
-   IF labelfor = 'element' THEN
+   IF labelfor = 'tree' THEN
       queryLevel := 1;
-      whereClause := ' WHERE t.elementid=' || OBJID;
-   ELSIF labelfor = 'sample' THEN
+      whereClause := ' WHERE t.treeid=' || OBJID;
+   ELSIF labelfor = 'specimen' THEN
       queryLevel := 2;      
-      whereClause := ' WHERE sp.sampleid=' || OBJID;
+      whereClause := ' WHERE sp.specimenid=' || OBJID;
    ELSIF labelfor = 'radius' THEN
       queryLevel := 3;      
       whereClause := ' WHERE r.radiusid=' || OBJID;
    ELSE
-      RAISE EXCEPTION 'Invalid usage: label must be for vmeasurement, element, sample, or radius';
+      RAISE EXCEPTION 'Invalid usage: label must be for vmeasurement, tree, specimen, or radius';
    END IF;
 
    -- Start out with the basics
    selection := 's.code as a,su.name as b,t.name as c';
-   query := ' FROM tblsite s INNER JOIN tblsubsite su ON su.siteid = s.siteid INNER JOIN tblelement t ON t.subsiteid = su.subsiteid';
+   query := ' FROM tblsite s INNER JOIN tblsubsite su ON su.siteid = s.siteid INNER JOIN tbltree t ON t.subsiteid = su.subsiteid';
 
-   -- add sample
+   -- add specimen
    IF queryLevel > 1 THEN
-      query := query || ' INNER JOIN tblsample sp ON sp.elementid = t.elementid';
+      query := query || ' INNER JOIN tblspecimen sp ON sp.treeid = t.treeid';
       selection := selection || ',sp.name as d';
    END IF;
 
    -- add radius
    IF queryLevel > 2 THEN
-      query := query || ' INNER JOIN tblradius r ON r.sampleid = sp.sampleid';
+      query := query || ' INNER JOIN tblradius r ON r.specimenid = sp.specimenid';
       selection := selection || ',r.name as e';
    END IF;
 
@@ -220,10 +226,10 @@ BEGIN
          ret := ret || '/' || rec.b;
       END IF;
 
-      -- element
+      -- tree
       ret := ret || '-' || rec.c;
    
-      -- sample
+      -- specimen
       IF queryLevel > 1 THEN
          ret := ret || '-' || rec.d;
       END IF;

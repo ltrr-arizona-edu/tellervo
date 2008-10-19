@@ -54,15 +54,15 @@ BEGIN
    INSERT INTO tblVMeasurementDerivedCache(VMeasurementID,MeasurementID) 
       SELECT vmid,Measurement.MeasurementID FROM cpgdb.FindVMParentMeasurements(vmid) Measurement;
 
-   -- Calculate extent of vMeasurement by looking up locations of all associated direct Measurements
-   SELECT setsrid(extent(tblelement.location)::geometry,4326)
+   -- Calculate extent of vmeasurement by looking up locations of all associated direct Measurements
+   SELECT setsrid(extent(tbltree.location)::geometry,4326)
       INTO  ret.vmextent
-      FROM  tblelement, tblsample, tblradius, tblMeasurement, tblvMeasurement
-      WHERE tblvMeasurement.Measurementid=tblMeasurement.Measurementid
-      AND   tblMeasurement.radiusid=tblradius.radiusid
-      AND   tblradius.sampleid=tblsample.sampleid
-      AND   tblsample.elementid=tblelement.elementid
-      AND   tblvMeasurement.vMeasurementid
+      FROM  tbltree, tblspecimen, tblradius, tblMeasurement, tblvmeasurement
+      WHERE tblvmeasurement.measurementid=tblmeasurement.measurementid
+      AND   tblmeasurement.radiusid=tblradius.radiusid
+      AND   tblradius.specimenid=tblspecimen.specimenid
+      AND   tblspecimen.treeid=tbltree.treeid
+      AND   tblvmeasurement.vmeasurementid
             IN (SELECT vMeasurementid
                    FROM  cpgdb.FindVMParents(vmid, true)
                    WHERE op='Direct');
