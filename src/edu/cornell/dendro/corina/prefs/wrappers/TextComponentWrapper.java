@@ -22,7 +22,7 @@ public class TextComponentWrapper extends PrefWrapper<String> implements FocusLi
 		
 		this.field = field;
 		field.addFocusListener(this);
-		field.setText(getValue());
+		field.setText(getValue() == null ? "" : getValue());
 	}
 
 	public void focusGained(FocusEvent e) {

@@ -68,6 +68,7 @@ public class ColorComboBoxWrapper extends ItemWrapper<Color> {
 			new NamedColor("Pink", Color.pink),
 			new NamedColor("Magenta", Color.magenta),
 			new NamedColor("Red", Color.red),
+			new NamedColor("Evergreen", new Color(0, 102, 102)), // graphs use this by default?
 			new NamedColor("Black", Color.black),
 			new NamedColor("Dark Gray", Color.darkGray),
 			new NamedColor("Gray", Color.gray),

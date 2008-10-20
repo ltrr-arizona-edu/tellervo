@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -18,12 +17,12 @@ import edu.cornell.dendro.corina.util.Center;
 
 public class PrototypeLoadDialog extends JDialog implements ResourceEventListener {
 	private JList list;
-	private ResourceObject<?> myResource;
+	private Resource myResource;
 	private boolean success = false;
 	private Exception failException = null;
 	private JProgressBar progressBar;
 	
-	public PrototypeLoadDialog(ResourceObject<?> resource) {
+	public PrototypeLoadDialog(Resource resource) {
 		super();
 		
 		// attach to our resource
@@ -75,10 +74,18 @@ public class PrototypeLoadDialog extends JDialog implements ResourceEventListene
 	    // Add basic nerdy info to list 
 		addStatus(myResource.getQueryType() + " on: " + 
 				  myResource.getResourceName());
-		if(myResource.getIdentifier() != null)
-			addStatus("Identifier: " + myResource.getIdentifier());	
-		if(myResource.getSearchParameters() != null)
-			addStatus("Search params: " + myResource.getSearchParameters());
+		
+		// more nerdy info if this is a ResourceObject
+		if(myResource instanceof ResourceObject<?>) {
+			ResourceObject<? >myResourceObject = (ResourceObject<?>) myResource;
+			
+			if(myResourceObject.getIdentifier() != null)
+				addStatus("Identifier: " + myResourceObject.getIdentifier());	
+
+			if(myResourceObject.getSearchParameters() != null)
+				addStatus("Search params: " + myResourceObject.getSearchParameters());
+		}
+		
 		addStatus("Connecting to server...");	
 		
 		// Hide nerdy info
