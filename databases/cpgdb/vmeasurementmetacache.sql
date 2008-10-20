@@ -73,11 +73,11 @@ BEGIN
    UPDATE tblVMeasurementMetaCache SET vmextent = ret.vmextent WHERE VMeasurementID = ret.VMeasurementID;
 
    -- Now, get taxon and label data and update that
-   SELECT INTO ret.siteCode, ret.siteCount, ret.CommonTaxonName, ret.taxonCount, ret.label 
-       s.siteCode,s.siteCount,s.commonTaxonName,s.taxonCount,cpgdb.GetVMeasurementLabel(vmid) AS label 
+   SELECT INTO ret.siteCode, ret.siteCount, ret.CommonTaxonName, ret.taxonCount, ret.prefix 
+       s.siteCode,s.siteCount,s.commonTaxonName,s.taxonCount,cpgdb.GetVMeasurementPrefix(vmid) AS prefix
        FROM cpgdb.getVMeasurementSummaryInfo(vmid) AS s;
-   UPDATE tblVMeasurementMetaCache SET (siteCode, siteCount, commonTaxonName, taxonCount, label) =
-       (ret.siteCode, ret.siteCount, ret.CommonTaxonName, ret.taxonCount, ret.label)
+   UPDATE tblVMeasurementMetaCache SET (siteCode, siteCount, commonTaxonName, taxonCount, prefix) =
+       (ret.siteCode, ret.siteCount, ret.CommonTaxonName, ret.taxonCount, ret.prefix)
        WHERE VMeasurementID = vmid;
 
    -- Return result

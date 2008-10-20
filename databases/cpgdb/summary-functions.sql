@@ -114,13 +114,15 @@ LANGUAGE 'SQL' IMMUTABLE;
 --
 -- GetLabel: returns a lab code label for a specified object
 -- 
--- 1: label type ('vmeasurement', 'tree', etc)
+-- 1: label type ('vmeasurement', 'specimen', 'tree', )
 -- 2: label id
+-- 3: boolean, true = prefix only (e.g. C-XXX-A-B-1-D), false = full lab code (C-XXX-A-B-1-)
 --
-CREATE OR REPLACE FUNCTION cpgdb.GetLabel(text, integer)
+CREATE OR REPLACE FUNCTION cpgdb.GetLabel(text, integer, boolean)
 RETURNS text AS $_$
 DECLARE
    OBJID ALIAS FOR $2;
+   PrefixOnly ALIAS FOR $3;
    labelfor text;
    
    queryLevel integer;
@@ -137,6 +139,7 @@ DECLARE
    radiusn text;
    measurementn text;
    ret text;
+   suffix text;
 
    count integer;
 
@@ -146,7 +149,7 @@ BEGIN
    -- VMeasurement is a special case
    IF labelfor = 'vmeasurement' THEN 
       count := 0;
-      FOR rec IN SELECT s.code as a,su.name as b,t.name as c,sp.name as d,r.name as e,vs.name as f 
+      FOR rec IN SELECT s.code as a,su.name as b,t.name as c,sp.name as d,r.name as e,vm.name as f 
 	FROM tblVMeasurementDerivedCache d
 	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
@@ -154,7 +157,7 @@ BEGIN
 	INNER JOIN tblTree t on t.treeID = sp.treeID
 	INNER JOIN tblSubsite su on su.subsiteID = t.subsiteID
 	INNER JOIN tblSite s on s.siteID = su.siteID
-	INNER JOIN tblVMeasurement vs on vs.vmeasurementid = d.vmeasurementid
+	INNER JOIN tblVMeasurement vm on vm.vmeasurementid = d.vmeasurementid
 	WHERE d.VMeasurementID = OBJID
       LOOP
          count := count + 1;
@@ -171,6 +174,12 @@ BEGIN
          RAISE EXCEPTION 'No data found for vmeasurement %', OBJID;
       ELSIF COUNT > 1 THEN
          -- More than one constituent? It's a sum or something derived from one.
+
+         -- No prefix, then.
+         IF PrefixOnly THEN
+            RETURN '';
+         END IF;
+
          RETURN measurementn;
       END IF;
 
@@ -182,7 +191,12 @@ BEGIN
          ret := ret || '/' || subsiten;
       END IF;
 
-      ret := ret || '-' || treen || '-' || specimenn || '-' || radiusn || '-' || measurementn;
+      ret := ret || '-' || treen || '-' || specimenn || '-' || radiusn || '-';
+
+      -- add the name if we're not a prefix
+      IF NOT PrefixOnly THEN
+         ret := ret || measurementn;
+      END IF;
 
       RETURN ret;
    END IF; -- VMeasurement special case
@@ -226,20 +240,25 @@ BEGIN
          ret := ret || '/' || rec.b;
       END IF;
 
-      -- tree
-      ret := ret || '-' || rec.c;
-   
-      -- specimen
-      IF queryLevel > 1 THEN
-         ret := ret || '-' || rec.d;
+      IF PrefixOnly THEN
+         IF queryLevel = 1 THEN
+           suffix := '-';
+         ELSIF queryLevel = 2 THEN
+           suffix := '-' || rec.c || '-';
+         ELSIF queryLevel = 3 THEN
+           suffix := '-' || rec.c || '-' || rec.d || '-';
+         END IF;
+      ELSE
+         IF queryLevel = 1 THEN
+           suffix := '-' || rec.c;
+         ELSIF queryLevel = 2 THEN
+           suffix := '-' || rec.c || '-' || rec.d;
+         ELSIF queryLevel = 3 THEN
+           suffix := '-' || rec.c || '-' || rec.d || '-' || rec.e;
+         END IF;
       END IF;
 
-      -- radius
-      IF queryLevel > 2 THEN
-         ret := ret || '-' || rec.e;
-      END IF;
-   
-      RETURN ret;   
+      RETURN ret || suffix;
    END LOOP; -- we only get here if nothing was found!
 
    RAISE EXCEPTION 'No results for % %', $1, $2;
@@ -249,6 +268,11 @@ LANGUAGE 'PLPGSQL' STABLE;
 
 CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementLabel(integer)
 RETURNS text AS $_$
-   SELECT cpgdb.GetLabel('vmeasurement', $1);
+   SELECT cpgdb.GetLabel('vmeasurement', $1, false);
+$_$ LANGUAGE SQL STABLE;
+
+CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementPrefix(integer)
+RETURNS text AS $_$
+   SELECT cpgdb.GetLabel('vmeasurement', $1, true);
 $_$ LANGUAGE SQL STABLE;
 

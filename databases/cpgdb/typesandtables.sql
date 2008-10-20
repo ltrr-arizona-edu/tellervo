@@ -22,7 +22,7 @@ CREATE TABLE tblVMeasurementMetaCache (
     siteCount integer,   
     commonTaxonName text,
     taxonCount integer
-    label text;
+    prefix text;
     CONSTRAINT enforce_dims_vsextent CHECK ((ndims(vsextent) = 2)),
     CONSTRAINT enforce_geotype_vsextent CHECK (((geometrytype(vsextent) = 'POLYGON'::text) OR (vsextent IS NULL))),
     CONSTRAINT enforce_srid_vsextent CHECK ((srid(vsextent) = 4326))
