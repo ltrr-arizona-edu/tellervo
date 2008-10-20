@@ -20,7 +20,7 @@ public class EmailBugReport {
 	public static void submitBugReportText(String errorText) {
 		try {
 			SimpleEmail email = new SimpleEmail();
-			String mailHost = App.prefs.getPref("corina.mail.mailhost");
+			String mailHost = App.prefs.getPref("corina.mail.mailhost", null);
 			
 			if(mailHost == null) {
 				Alert.error("No mail server set",
