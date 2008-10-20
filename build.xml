@@ -150,6 +150,7 @@
   <property name="jgoodies-forms.jar" value="(set this in build.properties!)"/>
   <property name="mozswing.jar" value="(set this in build.properties!)"/>
   <property name="MozillaInterfaces.jar" value="(set this in build.properties!)"/>
+  <property name="new-jfontchooser.jar" value="(set this in build.properties!)"/>
 	
 <!-- ==================== Compilation Classpath =========================== -->
 
@@ -180,6 +181,7 @@
     <pathelement location="${jgoodies-forms.jar}"/> 
     <pathelement location="${mozswing.jar}"/> 
     <pathelement location="${MozillaInterfaces.jar}"/> 
+    <pathelement location="${new-jfontchooser.jar}"/> 
   </path>
 
 <!-- ==================== All Target ====================================== -->
