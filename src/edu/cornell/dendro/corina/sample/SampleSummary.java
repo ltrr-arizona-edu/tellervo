@@ -1,16 +1,17 @@
 package edu.cornell.dendro.corina.sample;
 
+import edu.cornell.dendro.corina.site.GenericSummary;
+
 /**
  * A simple class to hold summary information about a sample
  * Comes from the summary format of searching for measurements in webdb
  * @author Lucas Madar
  *
  */
-public class SampleSummary {
+public class SampleSummary extends GenericSummary {
 	public SampleSummary() {	
 	}
 	
-	private String labCode;
 	private int taxonCount;
 	private String commonTaxon;
 	private int siteCount;
@@ -18,9 +19,6 @@ public class SampleSummary {
 	private int measurementCount;
 	
 	// all getters
-	public String getLabCode() {
-		return labCode;
-	}
 	public int getTaxonCount() {
 		return taxonCount;
 	}
@@ -38,26 +36,26 @@ public class SampleSummary {
 	}
 	
 	
-	public SampleSummary setLabCode(String labCode) {
-		this.labCode = labCode;
-		return this;
-	}
 	public SampleSummary setTaxonCount(int taxonCount) {
 		this.taxonCount = taxonCount;
 		return this;
 	}
+	
 	public SampleSummary setCommonTaxon(String commonTaxon) {
 		this.commonTaxon = commonTaxon;
 		return this;
 	}
+	
 	public SampleSummary setSiteCount(int siteCount) {
 		this.siteCount = siteCount;
 		return this;
 	}
+	
 	public SampleSummary setSiteCode(String siteCode) {
 		this.siteCode = siteCode;
 		return this;
-	}	
+	}
+	
 	public SampleSummary setMeasurementCount(int measurementCount) {
 		this.measurementCount = measurementCount;
 		return this;
@@ -84,9 +82,15 @@ public class SampleSummary {
 	 */
 	public static SampleSummary fromXML(org.jdom.Element summary) {
 		SampleSummary ss = new SampleSummary();
-		org.jdom.Element e;
 
-		ss.setLabCode(summary.getChildTextNormalize("fullLabCode"));
+		fromXMLBase(summary, ss);
+		
+		return ss;	
+	}
+	
+	protected static void fromXMLBase(org.jdom.Element summary, SampleSummary ss) {
+		GenericSummary.fromXMLBase(summary, ss);
+		org.jdom.Element e;
 
 		if((e = summary.getChild("taxon")) != null) {
 			ss.setTaxonCount(Integer.valueOf(e.getAttributeValue("count")))
@@ -101,7 +105,5 @@ public class SampleSummary {
 		if((e = summary.getChild("measurement")) != null) {
 			ss.setMeasurementCount(Integer.valueOf(e.getAttributeValue("count")));
 		}
-
-		return ss;
 	}
 }
