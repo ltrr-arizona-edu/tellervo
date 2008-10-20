@@ -12,6 +12,7 @@ import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.User;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleSummary;
 import edu.cornell.dendro.corina.site.GenericIntermediateObject;
 import edu.cornell.dendro.corina.util.LegacySampleExtractor;
 
@@ -92,6 +93,14 @@ public class MeasurementModifyPanel extends BaseEditorPanel<GenericIntermediateO
 		
 		txtStartYear.setText(s.getRange().getStart().toString());
 		txtStartYear.setEnabled(false);
+		
+		// PREFIX!
+		if((o = s.getMeta("::summary")) != null) {
+			SampleSummary ss = (SampleSummary) o;
+			lblMeasurementPrefix.setText(ss.getLabPrefix());
+		}
+		else
+			lblMeasurementPrefix.setText("[LAB PREFIX]-");
 	}
 	
 	// convenience method for setDefaultsFrom
@@ -147,6 +156,12 @@ public class MeasurementModifyPanel extends BaseEditorPanel<GenericIntermediateO
     	
     	// name is important, title is not
     	setMetaMod("name", txtMeasurementName.getText());
+
+    	// but update the title anyway, so we get some visual feedback
+    	SampleSummary ss;
+    	if((ss = (SampleSummary) s.getMeta("::summary")) != null) {
+    		setMetaMod("title", ss.getLabPrefix() + txtMeasurementName.getText());
+    	}
     	  	
     	String datingType = cboDatingType.getSelectedItem().toString();
     	if(datingType.equalsIgnoreCase("absolute"))
@@ -196,6 +211,7 @@ public class MeasurementModifyPanel extends BaseEditorPanel<GenericIntermediateO
         RadExistingRadius = new javax.swing.JRadioButton();
         panelMeasurement = new javax.swing.JPanel();
         lblMeasurementName = new javax.swing.JLabel();
+        lblMeasurementPrefix = new javax.swing.JLabel();
         txtMeasurementName = new javax.swing.JTextField();
         chkIsPublished = new javax.swing.JCheckBox();
         lblMeasuredBy = new javax.swing.JLabel();
@@ -259,6 +275,9 @@ public class MeasurementModifyPanel extends BaseEditorPanel<GenericIntermediateO
 
         lblMeasurementName.setLabelFor(txtMeasurementName);
         lblMeasurementName.setText("Name:");
+
+        lblMeasurementPrefix.setLabelFor(txtMeasurementName);
+        lblMeasurementPrefix.setText("C-ABC-1-1-A-");
 
         chkIsPublished.setText("Publish");
 
@@ -338,7 +357,9 @@ public class MeasurementModifyPanel extends BaseEditorPanel<GenericIntermediateO
                                                 .add(txtDatingErrorNegative, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 33, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                                             .add(lblReadingCount)))))
                             .add(panelMeasurementLayout.createSequentialGroup()
-                                .add(4, 4, 4)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(lblMeasurementPrefix)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(txtMeasurementName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(chkIsPublished, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 72, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
@@ -356,6 +377,7 @@ public class MeasurementModifyPanel extends BaseEditorPanel<GenericIntermediateO
                 .add(panelMeasurementLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(chkIsPublished)
                     .add(txtMeasurementName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblMeasurementPrefix)
                     .add(lblMeasurementName))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelMeasurementLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
@@ -422,6 +444,7 @@ public class MeasurementModifyPanel extends BaseEditorPanel<GenericIntermediateO
     private javax.swing.JLabel lblDescription;
     private javax.swing.JLabel lblMeasuredBy;
     private javax.swing.JLabel lblMeasurementName;
+    private javax.swing.JLabel lblMeasurementPrefix;
     private javax.swing.JLabel lblOwnedBy;
     private javax.swing.JLabel lblRadiusPrefix;
     private javax.swing.JLabel lblReadingCount;

@@ -5,10 +5,11 @@ public class GenericSummary {
 	private String labCode;
 	
 	public String getLabCode() {
-		return labCode;
+		return (labCode == null) ? "" : labCode;
 	}
+	
 	public String getLabPrefix() {
-		return labPrefix;
+		return (labPrefix == null) ? "" : labPrefix;
 	}
 	
 	public GenericSummary setLabCode(String labCode) {
