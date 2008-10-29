@@ -153,7 +153,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 
-				if(s1.isModified() || s2.isModified()){
+				if(s1.isModified() || s2.isModified()) {
 					int ret = JOptionPane.showConfirmDialog(glue, 
 							"Are you sure you want to abandon all \nthe changes you have made?\n\n" +
 							"Click 'no' to return to the reconciler\nor 'yes' to confirm.\n\n",
@@ -174,6 +174,10 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 						// Return to reconciler
 						return;
 					}
+				}
+				else {
+					// not modified, just go away
+					dispose();
 				}
 			}
 		});
