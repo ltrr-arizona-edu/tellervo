@@ -133,7 +133,6 @@ public class ComboBoxPopulator {
     private void populateTrees(String parentID) {
 		SearchParameters sp = new SearchParameters("tree");
 		sp.addSearchConstraint("subsiteid", "=", parentID);
-    	cbo.setRenderer(new SiteRenderer());
 		
 		IntermediateResource resource = new IntermediateResource(sp);
 		PrototypeLoadDialog dlg = new PrototypeLoadDialog(resource);
