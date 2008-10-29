@@ -146,6 +146,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	// let user choose crossdates, exit if they close quietly
     	if((crossdatingElements = showOpenDialog(parent, true, preElements)) == null) {
     		dispose();
+    		return;
     	}
     	
     	// start our new crossdates
