@@ -91,6 +91,9 @@ public class MeasurementResource extends ResourceObject<Sample> {
 			id = (String) s.getMeta("::dbid");
 			if(id == null)
 				throw new ResourceException("Update sample has a null id?");
+
+			// we always want to get a comprehensive format back.
+			requestElement.setAttribute("format", "comprehensive");
 			
 			requestElement.addContent(new CorinaXML().saveToElement(s));
 			break;
@@ -117,6 +120,9 @@ public class MeasurementResource extends ResourceObject<Sample> {
 		// no sample type specified, so assume direct
 		if(sType == null)
 			sType = SampleType.DIRECT;
+		
+		// we always want to get a comprehensive format back.
+		requestElement.setAttribute("format", "comprehensive");
 		
 		switch(sType) {
 		case DIRECT: {
