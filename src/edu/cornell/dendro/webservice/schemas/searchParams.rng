@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
+    <start>
+      <choice>	
+        <ref name="searchParamsObject" />
+      </choice>
+    </start>
+
+    <define name="searchParamsObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="searchParams">
+            <attribute name="returnObject">
+                <choice>
+                    <value>sample</value>
+                    <value>site</value>
+                    <value>subsite</value>
+                    <value>element</value>
+                    <value>radius</value>
+                    <value>series</value>
+                    <value>taxon</value>
+                </choice>
+            </attribute>
+            <optional>
+                <attribute name="limit">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="skip">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+    
+            
+            <zeroOrMore>
+                <element name="param">
+                    <attribute name="name">
+                        <choice>
+                            <value>siteid</value>
+                            <value>sitename</value>
+                            <value>sitecode</value>
+                            <value>sitecreated</value>
+                            <value>sitelastmodified</value>
+                            <value>sitexcentroid</value>
+                            <value>siteycentroid</value>
+
+                            <value>subsiteid</value>
+                            <value>subsitename</value>
+                            <value>subsitecreated</value>
+                            <value>subsitelastmodified</value>
+
+                            <value>elementid</value>
+                            <value>elementname</value>
+                            <value>elementcreated</value>
+                            <value>elementlastmodified</value>
+                            <value>precision</value>
+                            <value>latitude</value>
+                            <value>longitude</value>
+                            <value>isLiveTree</value>
+                            <value>originaltaxonname</value>
+
+                            <value>sampleid</value>
+                            <value>samplename</value>
+                            <value>datecollected</value>
+                            <value>samplecreated</value>
+                            <value>samplelastmodified</value>
+                            <value>sampletypeid</value>
+                            <value>sampletype</value>
+                            <value>isterminalringverified</value>
+                            <value>sapwoodcount</value>
+                            <value>issapwoodcountverified</value>
+                            <value>isspecinenqualityverified</value>
+                            <value>ispithverified</value>
+                            <value>unmeaspre</value>
+                            <value>unmeaspost</value>
+                            <value>isunmeaspreverified</value>
+                            <value>isunmeaspostverified</value>
+                            <value>terminalringid</value>
+                            <value>terminalring</value>
+                            <value>samplequalityid</value>
+                            <value>samplequality</value>
+                            <value>samplecontinuityid</value>
+                            <value>samplecontinuity</value>
+                            <value>pithid</value>
+                            <value>pith</value>
+                            <value>issamplecontinuityverified</value>
+
+                            <value>radiusid</value>
+                            <value>radiusname</value>
+                            <value>radiuscreated</value>
+                            <value>radiuslastmodified</value>
+
+                            <value>seriesid</value>
+                            <value>seriesname</value>
+                            <value>seriescreated</value>
+                            <value>serieslastmodified</value>
+                            <value>seriesoperator</value>
+                            <value>seriesdescription</value>                            
+                            <value>seriesispublished</value>   
+                            <value>seriesowneruserid</value>                            
+                            <value>operatorparameter</value> 
+                            <value>seriesisreconciled</value>
+							<value>datingtype</value>
+ 							<value>datingerrorpositive</value>
+ 							<value>datingerrornegative</value>
+ 							<value>startyear</value>
+ 							<value>readingcount</value>
+ 							<value>seriescount</value>
+ 							<value>seriesymin</value>
+ 							<value>seriesymax</value>
+ 							<value>seriesxmin</value>
+ 							<value>seriesxmax</value>
+ 							<value>seriesxcentroid</value> 
+ 							<value>seriesycentroid</value>                          
+                            
+                        </choice>
+                    </attribute>
+                    <attribute name="operator">
+                        <choice>
+                            <value>like</value>
+                            <value>!=</value>
+                            <value>&gt;</value>
+                            <value>&lt;</value>
+                            <value>=</value>
+                        </choice>
+                    </attribute>
+                    <attribute name="value">
+                        <text/>
+                    </attribute>
+                </element>
+            </zeroOrMore>
+            
+            <optional>
+            	<element name="all">
+            		<empty></empty>
+            	</element>
+            </optional>
+            
+            
+        </element>
+    </define>    
+</grammar>

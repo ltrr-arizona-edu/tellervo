@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
+    <start>
+      <ref name="specimenObject"/>	
+    </start>
+
+    <define name="specimenObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="specimen">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger" />
+                </attribute>
+            </optional>
+            <optional>
+                 <attribute name="url">
+                    <text />
+                </attribute>
+ 			</optional>
+            
+            <interleave>
+	            <optional>
+	                <element name="createdTimeStamp">
+	                    <data type="dateTime" />
+	                </element>
+	            </optional>
+	
+	            <optional>
+	                <element name="lastModifiedTimeStamp">
+	                    <data type="dateTime" />
+	                </element>
+	            </optional>
+	
+	            <optional>
+	                <element name="name">
+	                    <text />
+	                </element>
+	            </optional>
+	            
+	            <optional>
+	                <element name="dateCollected">
+	                    <data type="date" />
+	                </element>
+	            </optional>
+	            
+	            <optional>
+	                <element name="specimenType">
+	                    <text/>
+	                </element>
+	            </optional>
+	            
+	            <optional>
+	                <element name="terminalRing">
+	                    <text />
+	                </element>
+	            </optional>        
+	            
+	            <optional>
+	                <element name="isTerminalRingVerified">
+	                    <data type="boolean" />
+	                </element>
+	            </optional>
+	            
+	            <optional>
+	                <element name="sapwoodCount">
+	                    <data type="positiveInteger" />
+	                </element>
+	            </optional>         
+	            
+	            <optional>
+	                <element name="isSapwoodCountVerified">
+	                    <data type="boolean" />
+	                </element>
+	            </optional>  
+	            
+	            <optional>
+	                <element name="specimenQuality">
+	                    <text />
+	                </element>
+	            </optional>         
+	            
+	            <optional>
+	                <element name="isSpecimenQualityVerified">
+	                    <data type="boolean" />
+	                </element>
+	            </optional>  
+	            
+	            <optional>
+	                <element name="specimenContinuity">
+	                    <text />
+	                </element>
+	            </optional>
+	            
+	            <optional>
+	                <element name="isSpecimenContinuityVerified">
+	                    <data type="boolean" />
+	                </element>
+	            </optional>
+	            
+	            <optional>
+	                <element name="pith">
+	                    <text />
+	                </element>
+	            </optional>         
+	            
+	            <optional>
+	                <element name="isPithVerified">
+	                    <data type="boolean" />
+	                </element>
+	            </optional>
+	            
+	            <optional>
+	                <element name="unmeasuredPre">
+	                    <data type="positiveInteger" />
+	                </element>
+	            </optional>
+	            
+	            <optional>
+	                <element name="isUnmeasuredPreVerified">
+	                    <data type="boolean" />
+	                </element>
+	            </optional>
+	            
+	            <optional>
+	                <element name="unmeasuredPost">
+	                    <data type="positiveInteger" />
+	                </element>
+	            </optional>
+	            
+	            <optional>
+	                <element name="isUnmeasuredPostVerified">
+	                    <data type="boolean" />
+	                </element>	
+	            </optional>
+	
+	            <optional>
+	                <externalRef href="radius.rng" />
+	            </optional> 
+            </interleave>      
+        </element>
+    </define>
+ </grammar>

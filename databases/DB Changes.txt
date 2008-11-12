@@ -1,0 +1,40 @@
+- Create aggregate function for "FIRST" which is missing in pgsql but present in access
+
+CREATE FUNCTION agg_first (state anyelement, value anyelement) RETURNS
+anyelement
+    AS '
+BEGIN
+
+    IF (state IS NULL) THEN
+        RETURN value;
+    ELSE
+        RETURN state;
+    END IF;
+
+END;
+'
+    LANGUAGE plpgsql IMMUTABLE;
+
+CREATE AGGREGATE "first" (
+    BASETYPE = anyelement,
+    SFUNC = agg_first,
+    STYPE = anyelement
+);
+
+
+- tblvmeasurementresult is a little fishy. 
+- vmeasurementresultmasterid is missing
+- owneruserid is missing
+- vmeasurementgroupid is a char(1). groupid can be null.
+
+alter table tblvmeasurementresult drop column vmeasurementresultgroupid;
+alter table tblvmeasurementresult add column vmeasurementresultgroupid char(36);
+alter table tblvmeasurementresult add column vmeasurementresultmasterid char(36) not null;
+alter table tblvmeasurementresult add column owneruserid int not null;
+
+alter table tblvmeasurementresult alter column radiusid drop not null;
+alter table tblvmeasurementresult add column name varchar(255) not null;
+alter table tblvmeasurementresult add column description varchar(1000);
+alter table tblvmeasurementresult add column ispublished boolean not null default false;
+
+alter table tblvmeasurement add column isGenerating boolean not null default true;

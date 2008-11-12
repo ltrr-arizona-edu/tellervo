@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="vectormap/" kind="src" path="Source"/>
+	<classpathentry excluding="edu/cornell/dendro/corina/db/|edu/cornell/dendro/corina/search/" including="edu/cornell/dendro/corina/**|edu/cornell/dendro/corina_indexing/**|edu/cornell/dendro/corina_resources/**|edu/cornell/dendro/cpgdb/**|log4j.xml" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="Libraries/avalon.jar"/>
 	<classpathentry kind="lib" path="Libraries/batik.jar"/>
 	<classpathentry kind="lib" path="Libraries/bcel.jar"/>
 	<classpathentry kind="lib" path="Libraries/bsh.jar"/>
 	<classpathentry kind="lib" path="Libraries/comm.jar"/>
-	<classpathentry kind="lib" path="Libraries/commons-logging.jar"/>
 	<classpathentry kind="lib" path="Libraries/crimson.jar"/>
 	<classpathentry kind="lib" path="Libraries/findbugs.jar"/>
 	<classpathentry kind="lib" path="Libraries/fop.jar"/>
 	<classpathentry kind="lib" path="Libraries/ftp.jar"/>
 	<classpathentry kind="lib" path="Libraries/gnujaxp.jar"/>
 	<classpathentry kind="lib" path="Libraries/hsqldb.jar"/>
-	<classpathentry kind="lib" path="Libraries/JFontChooser.jar"/>
 	<classpathentry kind="lib" path="Libraries/jfor.jar"/>
 	<classpathentry kind="lib" path="Libraries/jh.jar"/>
 	<classpathentry kind="lib" path="Libraries/jhall.jar"/>
@@ -23,14 +21,26 @@
 	<classpathentry kind="lib" path="Libraries/junit.jar"/>
 	<classpathentry kind="lib" path="Libraries/jython.jar"/>
 	<classpathentry kind="lib" path="Libraries/kawa.jar"/>
-	<classpathentry kind="lib" path="Libraries/log4j-1.2.8.jar"/>
-	<classpathentry kind="lib" path="Libraries/postgresql.jar"/>
 	<classpathentry kind="lib" path="Libraries/saxon.jar"/>
 	<classpathentry kind="lib" path="Libraries/xalan.jar"/>
 	<classpathentry kind="lib" path="Libraries"/>
 	<classpathentry kind="lib" path="Libraries/itext-1.3.jar" sourcepath="itext-src-1.3"/>
 	<classpathentry kind="lib" path="Libraries/RXTXcomm.jar"/>
-	<classpathentry kind="lib" path="Libraries/mail.jar"/>
 	<classpathentry kind="lib" path="Libraries/commons-email-1.0.jar"/>
+	<classpathentry kind="lib" path="Libraries/mail.jar"/>
+	<classpathentry kind="lib" path="Libraries/postgresql-8.2-506.jdbc3.jar"/>
+	<classpathentry kind="lib" path="Libraries/jdom.jar"/>
+	<classpathentry kind="lib" path="Libraries/pljava.jar"/>
+	<classpathentry kind="lib" path="Libraries/forms-1.1.0.jar"/>
+	<classpathentry kind="lib" path="Libraries/swing-layout-1.0.3.jar"/>
+	<classpathentry kind="lib" path="Libraries/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="Libraries/jna.jar"/>
+	<classpathentry kind="lib" path="Libraries/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="Libraries/mozdom4java.jar"/>
+	<classpathentry kind="lib" path="Libraries/MozillaInterfaces-1.9.jar"/>
+	<classpathentry kind="lib" path="Libraries/mozswing.jar"/>
+	<classpathentry kind="lib" path="Libraries/MozillaGlue-1.9.jar"/>
+	<classpathentry kind="lib" path="Libraries/jfontchooser-1.0.5.jar"/>
+	<classpathentry kind="lib" path="Libraries/JFontChooser.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

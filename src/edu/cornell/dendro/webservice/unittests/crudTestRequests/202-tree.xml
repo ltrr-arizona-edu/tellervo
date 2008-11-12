@@ -1,0 +1,8 @@
+<corina>
+    <request type="search">
+        <searchParams returnObject="tree" limit="5" skip="0">
+            <param name="treeid" operator=">" value="1" />
+        </searchParams>
+    </request>
+</corina>
+

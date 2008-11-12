@@ -1,0 +1,34 @@
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
+    <start>
+      <ref name="mapParams"/>	
+    </start>
+
+    <define name="mapParams" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="mapParams">
+            	<interleave>
+            		<optional>
+	            		<element name="width">
+	            			<data type="integer">
+	                        </data>
+	            		</element>
+            		</optional>
+            		<optional>
+	            		<element name="height">
+	            			<data type="integer">
+	                        </data>	            			
+	            		</element>  
+            		</optional>
+            		<optional>	            		
+	            		<element name="type">
+	            			<choice>
+	            				<value>Terrain</value>
+								<value>Map</value>
+								<value>Satellite</value>
+								<value>Hybrid</value>
+	                    	</choice>
+	            		</element>       
+            		</optional>     		          		
+            	</interleave>
+        </element>
+    </define>
+</grammar>

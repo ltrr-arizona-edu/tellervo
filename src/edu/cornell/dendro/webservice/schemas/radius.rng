@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
+    <start>
+      <ref name="radiusObject"/>	
+    </start>
+    
+    <define name="radiusObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="radius">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="url">
+                    <text />
+                </attribute>
+            </optional>
+            
+            <interleave>
+	            <optional>
+	                <element name="name">
+	                    <text />
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="createdTimeStamp">
+	                    <data type="dateTime" />
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="lastModifiedTimeStamp">
+	                    <data type="dateTime" />
+	                </element>
+	            </optional>
+	            <optional>
+	            	<externalRef href="series.rng"/>  
+	            </optional>
+	            
+            </interleave>
+        </element>
+    </define>
+
+</grammar>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
+
+<start>
+  <ref name="requestSection"/>
+</start>
+
+    <define name="requestSection" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="request">
+            <attribute name="type">
+                <choice>
+                    <value>create</value>
+                    <value>read</value>
+                    <value>update</value>
+                    <value>delete</value>
+                    <value>plainlogin</value>
+                    <value>securelogin</value>
+                    <value>nonce</value>
+                    <value>logout</value>
+                    <value>help</value>
+                    <value>search</value>
+                    <value>getcapabilities</value>
+                    <value>assign</value>
+                    <value>unassign</value>
+                </choice>
+            </attribute>
+            <optional>
+                <attribute name="includePermissions">
+                    <data type="boolean" />
+                </attribute>
+            </optional>     
+            <optional>
+                <attribute name="format">
+	                <choice>
+	                    <value>standard</value>
+	                    <value>summary</value>
+	                    <value>comprehensive</value>
+	                    <value>minimal</value>
+	                </choice>
+	            </attribute>
+            </optional>            
+
+
+        
+            
+            <interleave>
+            	<optional>
+            		<externalRef href="mapParams.rng" />
+            	</optional>
+                <zeroOrMore>
+                    <externalRef href="site.rng"/>
+                </zeroOrMore>
+                <zeroOrMore>
+                    <externalRef href="subSite.rng"/>
+                </zeroOrMore>
+                <zeroOrMore>
+                    <externalRef href="element.rng"/>	
+                </zeroOrMore>
+                <zeroOrMore>
+                    <externalRef href="sample.rng"/>	
+                </zeroOrMore>
+                <zeroOrMore>
+                    <externalRef href="radius.rng" />   	
+                </zeroOrMore>
+                <zeroOrMore>
+                    <externalRef href="siteNote.rng" />   	
+                </zeroOrMore>
+                <zeroOrMore>
+                    <externalRef href="elementNote.rng" />   	
+                </zeroOrMore>
+                <zeroOrMore>
+                    <externalRef href="series.rng" />
+                </zeroOrMore>
+                <zeroOrMore>
+                    <externalRef href="valueNote.rng" />   	
+                </zeroOrMore>
+                <zeroOrMore>
+                    <externalRef href="seriesNote.rng" />   	
+                </zeroOrMore>
+                <zeroOrMore>
+                    <externalRef href="securityUser.rng" />   	
+                </zeroOrMore>               
+                <zeroOrMore>
+                    <externalRef href="securityGroup.rng" />   	
+                </zeroOrMore>                 
+                <optional>
+                    <externalRef href="authenticate.rng" />
+                </optional>
+                <zeroOrMore>
+                    <externalRef href="taxon.rng" />
+                </zeroOrMore>               
+               
+                <optional>
+                	<element name="dictionaries">
+                		<empty/>
+                	</element>
+                </optional>
+               
+                <zeroOrMore>
+	                <optional>
+	                    <externalRef href="searchParams.rng" />
+	                </optional>
+                </zeroOrMore>
+
+            </interleave>   
+        </element>
+    </define>
+    
+</grammar>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
+    <start>
+      <ref name="authenticateObject"/>	
+    </start>
+    
+    <define name="authenticateObject"  datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="authenticate">
+            <optional>
+                <attribute name="username">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="password">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="hash">
+                    <text/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="nonce">
+                    <text/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+</grammar>

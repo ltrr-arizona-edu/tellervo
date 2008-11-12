@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
+    <start>
+      <ref name="dictionariesSection"/>	
+    </start>
+
+    <define name="dictionariesSection" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <interleave>
+            <element name="sampleTypeDictionary">
+                <zeroOrMore>
+                    <ref name="sampleTypeObject"/>
+                </zeroOrMore>
+            </element>
+            <element name="terminalRingDictionary">
+                <zeroOrMore>
+                    <ref name="terminalRingObject"/>
+                </zeroOrMore>
+            </element>
+            <element name="sampleQualityDictionary">
+                <zeroOrMore>
+                    <ref name="sampleQualityObject"/>
+                </zeroOrMore>
+            </element>
+            <element name="pithDictionary">
+                <zeroOrMore>
+                    <ref name="pithObject"/>
+                </zeroOrMore>
+            </element>
+            <element name="sampleContinuityDictionary">
+                <zeroOrMore>
+                    <ref name="sampleContinuityObject"/>
+                </zeroOrMore>
+            </element>
+            <element name="siteNoteDictionary">
+                <zeroOrMore>
+                    <externalRef href="notes.rng"/>
+                </zeroOrMore>
+            </element>
+            <element name="elementNoteDictionary">
+                <zeroOrMore>
+                    <externalRef href="notes.rng"/>
+                </zeroOrMore>
+            </element>
+            <element name="seriesNoteDictionary">
+                <zeroOrMore>
+                    <externalRef href="notes.rng"/>
+                </zeroOrMore>
+            </element>
+            <element name="valueNoteDictionary">
+                <zeroOrMore>
+                    <externalRef href="notes.rng"/>
+                </zeroOrMore>
+            </element>
+        </interleave>
+    </define>   
+
+    <define name="sampleTypeObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="sampleType">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger"/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="terminalRingObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="terminalRing">
+            <optional>
+                <attribute name="id">
+                    <text/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="sampleQualityObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="sampleQuality">
+            <optional>
+                <attribute name="id">
+                    <text/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="sampleContinuityObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="sampleContinuity">
+            <optional>
+                <attribute name="id">
+                    <text/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="pithObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="pith">
+            <optional>
+                <attribute name="id">
+                    <text/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+
+    <define name="vseriesOpObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="operation">
+            <optional>
+                <attribute name="id">
+                    <data type="positiveInteger"/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="legacyCode">
+                    <text/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+    
+    
+</grammar>

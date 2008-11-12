@@ -58,8 +58,14 @@
                        Defaults to "dist".
 -->
 
+  <exec executable="svn" output="svninfo.xml">
+    <arg line="info --xml"/>
+  </exec>
+  <xmlproperty file="svninfo.xml" collapseattributes="true"/>
+
+  <property name="svn.revision"  value="${info.entry.revision}"/>
   <property name="app.name"      value="corina"/>
-  <property name="app.version"   value="dev"/>
+  <property name="app.version"   value="bleedingedge"/>
   <property name="app.keystore"  value="corina.keystore.set.in.build.properties"/>
   <property name="build.home"    value="build"/>
   <property name="deploy.home"   value="deploy"/>
@@ -138,6 +144,13 @@
   <property name="batik.jar" value="(set this in build.properties!)"/>
   <property name="comm.jar" value="(set this in build.properties!)"/>
   <property name="itext.jar" value="(set this in build.properties!)"/>
+  <property name="jdom.jar" value="(set this in build.properties!)"/>
+  <property name="pljava.jar" value="(set this in build.properties!)"/>
+  <property name="swing-layout.jar" value="(set this in build.properties!)"/>
+  <property name="jgoodies-forms.jar" value="(set this in build.properties!)"/>
+  <property name="mozswing.jar" value="(set this in build.properties!)"/>
+  <property name="MozillaInterfaces.jar" value="(set this in build.properties!)"/>
+  <property name="new-jfontchooser.jar" value="(set this in build.properties!)"/>
 	
 <!-- ==================== Compilation Classpath =========================== -->
 
@@ -162,6 +175,13 @@
     <pathelement location="${mail.jar}"/> 
     <pathelement location="${commons-email.jar}"/> 
     <pathelement location="${RXTXcomm.jar}"/> 
+    <pathelement location="${jdom.jar}"/> 
+    <pathelement location="${pljava.jar}"/> 
+    <pathelement location="${swing-layout.jar}"/> 
+    <pathelement location="${jgoodies-forms.jar}"/> 
+    <pathelement location="${mozswing.jar}"/> 
+    <pathelement location="${MozillaInterfaces.jar}"/> 
+    <pathelement location="${new-jfontchooser.jar}"/> 
   </path>
 
 <!-- ==================== All Target ====================================== -->
@@ -200,7 +220,7 @@
 
   <target name="compile" depends="prepare" description="Compile Java sources">
     <!-- Compile Java classes as necessary -->
-    <javac srcdir="Source"
+    <javac srcdir="src"
           destdir="${build.home}"
             debug="${compile.debug}"
       deprecation="${compile.deprecation}"
@@ -247,10 +267,10 @@
 
   <target name="javadoc" depends="compile" description="Create Javadoc API documentation">
     <mkdir dir="${dist.home}/docs/api"/>
-    <javadoc sourcepath="Source"
+    <javadoc sourcepath="src"
            classpathref="compile.classpath"
                 destdir="${dist.home}/docs/api"
-           packagenames="corina.*"
+           packagenames="edu.cornell.dendro.corina.*,edu.cornell.dendro.corina_indexing.*"
                  access="public"
                  author="true"
                 version="true"
@@ -274,6 +294,7 @@
 -->
 
   <target name="prepare">
+
     <!-- Create build directory and copy static content -->
     <mkdir  dir="${build.home}"/>
   </target>
@@ -284,7 +305,7 @@
    Creates .jar files for deployment as a java web start project
 -->
 
-  <target name="deploy" depends="compile" description="Create deployable binary distribution">
+  <target name="deploy" depends="compile, corina-indexing" description="Create deployable binary distribution">
     <!-- Copy documentation subdirectory -->
     <!--  <copy todir="${dist.home}/docs">
       <fileset dir="doc"/>
@@ -295,32 +316,35 @@
 
     <!-- Create resource JAR file -->
     <jar jarfile="${deploy.home}/${app.name}-resources.jar"
-         index="true" compress="true" includes="Images">
-	<fileset dir="Source" casesensitive="no">
-		<include name="**/*.gif"/>
-		<include name="**/*.jpg"/>
-		<include name="**/*.png"/>
-		<include name="**/*.wav"/>
+         index="true" compress="true">
+
+	<fileset dir="src" casesensitive="no">
+		<include name="edu/cornell/dendro/corina_resources/**/*.gif"/>
+		<include name="edu/cornell/dendro/corina_resources/**/*.jpg"/>
+		<include name="edu/cornell/dendro/corina_resources/**/*.png"/>
+		<include name="edu/cornell/dendro/corina_resources/**/*.wav"/>
         </fileset>
+
     </jar>
 
     <signjar jar="${deploy.home}/${app.name}-resources.jar" alias="dendro" storepass="d3ndr0" keystore="${app.keystore}"/>
 
     <tstamp>
-	<format property="deploy.releaseid" pattern="yyyyMMdd-hhmm"/>
+	<format property="deploy.releaseid" pattern="hh:mm dd-MM-yyy"/>
     </tstamp>
 
-    <echo file="Source/Timestamp" message="${deploy.releaseid}"/>
+    <echo file="src/Timestamp" message="${deploy.releaseid}"/>
 
     <jar jarfile="${deploy.home}/${app.name}-${app.version}.jar"
          basedir="${build.home}" index="true" compress="true">
 
-	<fileset dir="Source" casesensitive="no">
-		<include name="Translations/**"/>
-		<include name="Statistics/**"/>
-		<include name="*.properties"/>
+	<fileset dir="src" casesensitive="no">
 		<include name="log4j.xml"/>
 		<include name="Timestamp"/>
+		<include name="edu/cornell/dendro/corina_resources/*.properties"/>
+		<include name="edu/cornell/dendro/corina_resources/Translations/**"/>
+		<include name="edu/cornell/dendro/corina_resources/Statistics/**"/>
+		<exclude name="edu/cornell/dendro/corina_indexing/**"/>
 	</fileset>
 
     	<manifest>
@@ -330,6 +354,38 @@
 
     <signjar jar="${deploy.home}/${app.name}-${app.version}.jar" alias="dendro" storepass="d3ndr0" keystore="${app.keystore}"/>
 
+    <!-- Sign the indexing jar, while we're at it.. -->
+    <signjar jar="${deploy.home}/${app.name}-indexing.jar" alias="dendro" storepass="d3ndr0" keystore="${app.keystore}"/>
+
+  </target>
+
+<!--
+   Creates .jar files for postgresql db functions
+-->
+
+  <target name="cpgdb" depends="compile" description="Create deployable binary distribution of databasing functions">
+
+    <!-- Create deploy directory and copy static content -->
+    <mkdir dir="${deploy.home}"/>
+
+    <jar jarfile="${deploy.home}/cpgdb.jar"
+         basedir="${build.home}" index="true" compress="true" includes="edu/cornell/dendro/cpgdb/**">
+    </jar>
+
+  </target>
+
+<!--
+   Creates .jar files for indexing math functions
+-->
+
+  <target name="corina-indexing" depends="compile" description="Create deployable binary distribution of databasing functions">
+    <!-- Create deploy directory and copy static content -->
+    <mkdir dir="${deploy.home}"/>
+
+    <!-- Create corina_indexing JAR file -->
+    <jar jarfile="${deploy.home}/${app.name}-indexing.jar"
+         basedir="${build.home}" index="true" compress="true" includes="edu/cornell/dendro/corina_indexing/**">
+    </jar>
   </target>
 
 </project>

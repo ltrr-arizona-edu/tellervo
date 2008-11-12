@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
+    <start>
+      <ref name="siteObject"/>	
+    </start>
+
+   <define name="siteObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="site">
+            <optional>
+                <attribute name="id">
+                    <data type="integer" />
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="url">
+                    <text/>
+                </attribute>
+            </optional>            
+            
+            <interleave>
+	            <optional>
+	                <element name="code">
+	                    <text/>
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="name">
+	                    <text/>
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="latitude">
+	                    <choice>
+	                        <data type="double">
+	                            <param name="maxInclusive">90</param>
+	                            <param name="minInclusive">-90</param>
+	                        </data>
+	                        <empty />
+	                    </choice>
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="longitude">
+	                    <choice>
+	                        <data type="double">
+	                            <param name="maxInclusive">180</param>
+	                            <param name="minInclusive">-180</param>
+	                        </data>
+	                        <empty />
+	                    </choice>
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="createdTimeStamp">
+	                    <text />
+	                </element>
+	            </optional>
+	            <optional>
+	                <element name="lastModifiedTimeStamp">
+	                    <text />
+	                </element>
+	            </optional>        
+
+                <zeroOrMore>
+                    <externalRef href="subSite.rng"/>
+                </zeroOrMore>
+                <optional>
+                	<element name="siteNotes">
+		                <zeroOrMore>
+		                    <externalRef href="siteNote.rng"/>
+		                </zeroOrMore>
+	                </element>
+                </optional>
+            </interleave>
+        </element>
+    </define>
+     
+</grammar>
