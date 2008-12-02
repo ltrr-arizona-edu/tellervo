@@ -34,7 +34,7 @@
 	                </element>
 	            </optional>
 	            <optional>
-	            	<externalRef href="series.rng"/>  
+	            	<externalRef href="measurement.rng"/>  
 	            </optional>
 	            
             </interleave>

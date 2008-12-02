@@ -8,9 +8,9 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 
+require_once("config.php");
 require_once("inc/dbsetup.php");
 require_once("inc/dbhelper.php");
-require_once("config.php");
 require_once("inc/meta.php");
 require_once("inc/auth.php");
 require_once("inc/request.php");
@@ -43,11 +43,12 @@ $myMetaHeader->setRequestType('read');
 // Check authentication and request login if necessary
 if($myAuth->isLoggedIn())
 {
-    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
+    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
 }
 else
 {
-    $myMetaHeader->requestLogin($myAuth->nonce());
+    $seq = $myAuth->sequence();
+    $myMetaHeader->requestLogin($myAuth->nonce($seq), $seq);
     echo "Not logged in";
     die();
 }
@@ -67,6 +68,7 @@ if( ($reqObject=='site') || ($reqObject=='tree') )
 elseif($reqObject=='measurement')
 {
     $xmlrequest = "<corina><request type=\"search\" format=\"summary\"><searchParams returnObject=\"$reqObject\"><param name=\"".$reqObject."id"."\" operator=\"=\" value=\"".$reqID."\" /></searchParams></request></corina>";
+    //echo $xmlrequest;
 }
 else
 {

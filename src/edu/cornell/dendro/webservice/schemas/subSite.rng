@@ -39,7 +39,7 @@
 	                </element>
 	            </optional>
 	            <zeroOrMore>
-	                <externalRef href="element.rng"/>
+	                <externalRef href="tree.rng"/>
 	            </zeroOrMore>
             </interleave>
         </element>

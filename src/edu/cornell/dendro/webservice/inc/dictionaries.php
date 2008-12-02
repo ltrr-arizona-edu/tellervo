@@ -10,10 +10,10 @@
 require_once('dbhelper.php');
 
 require_once("inc/note.php");
-require_once("inc/sampleType.php");
+require_once("inc/specimenType.php");
 require_once("inc/terminalRing.php");
-require_once("inc/sampleQuality.php");
-require_once("inc/sampleContinuity.php");
+require_once("inc/specimenQuality.php");
+require_once("inc/specimenContinuity.php");
 require_once("inc/datingType.php");
 require_once("inc/pith.php");
 require_once("inc/taxon.php");
@@ -67,7 +67,7 @@ class dictionaries
         
         $xmldata = "";
 
-        $dictItems = array('siteNote', 'pith', 'sampleQuality', 'sampleType', 'terminalRing', 'region', 'sampleContinuity', 'elementNote', 'vseriesNote', 'valueNote', 'taxon', 'securityUser', 'datingType');
+        $dictItems = array('siteNote', 'pith', 'specimenQuality', 'specimenType', 'terminalRing', 'region', 'specimenContinuity', 'treeNote', 'vmeasurementNote', 'readingNote', 'taxon', 'securityUser', 'datingType');
             
         // Specimen Type 
         $dbconnstatus = pg_connection_status($dbconn);
@@ -96,11 +96,11 @@ class dictionaries
                     case "pith":
                         $myObj = new pith();
                         break;
-                    case "sampleQuality":
-                        $myObj = new sampleQuality();
+                    case "specimenQuality":
+                        $myObj = new specimenQuality();
                         break;
-                    case "sampleType":
-                        $myObj = new sampleType();
+                    case "specimenType":
+                        $myObj = new specimenType();
                         break;
                     case "terminalRing":
                         $myObj = new terminalRing();
@@ -108,17 +108,17 @@ class dictionaries
                     case "region":
                         $myObj = new region();
                         break;
-                    case "sampleContinuity":
-                        $myObj = new sampleContinuity();
+                    case "specimenContinuity":
+                        $myObj = new specimenContinuity();
                         break;
-                    case "elementNote":
-                        $myObj = new elementNote();
+                    case "treeNote":
+                        $myObj = new treeNote();
                         break;
-                    case "vseriesNote":
-                        $myObj = new vseriesNote();
+                    case "vmeasurementNote":
+                        $myObj = new vmeasurementNote();
                         break;
-                    case "valueNote":
-                        $myObj = new valueNote();
+                    case "readingNote":
+                        $myObj = new readingNote();
                         break;
                     case "taxon":
                         $myObj = new taxon();
@@ -203,7 +203,7 @@ class dictionaries
     function getParentTagBegin()
     {
         // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tblelement")."'>";
+        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tbltree")."'>";
         return $xml;
     }
 
@@ -281,17 +281,17 @@ class dictionaries
         case "subsite":
             return "subsite";
             break;
-        case "element":
-            return "element";
+        case "tree":
+            return "tree";
             break;
-        case "sample":
-            return "sample";
+        case "specimen":
+            return "specimen";
             break;
         case "radius":
             return "radius";
             break;
-        case "series":
-            return "vseries";
+        case "measurement":
+            return "vmeasurement";
             break;
         default:
             return false;
@@ -310,17 +310,17 @@ class dictionaries
         case "subsite":
             return "vwtblsubsite";
             break;
-        case "element":
-            return "vwtblelement";
+        case "tree":
+            return "vwtbltree";
             break;
-        case "sample":
-            return "vwtblsample";
+        case "specimen":
+            return "vwtblspecimen";
             break;
         case "radius":
             return "vwtblradius";
             break;
-        case "series":
-            return "vwvseries";
+        case "measurement":
+            return "vwvmeasurement";
             break;
         default:
             return false;
@@ -333,14 +333,14 @@ class dictionaries
         // This function returns an interger representing the most junior level of relationship required in this query
         // tblsite         -- 6 -- most senior
         // tblsubsite      -- 5 --
-        // tblelement         -- 4 --
-        // tblsample     -- 3 --
+        // tbltree         -- 4 --
+        // tblspecimen     -- 3 --
         // tblradius       -- 2 --
-        // tblseries  -- 1 -- most junior
+        // tblmeasurement  -- 1 -- most junior
         
         $myRequest = $theRequest;
         
-        if (($myRequest->seriesParamsArray) || ($myRequest->returnObject == 'series'))
+        if (($myRequest->measurementParamsArray) || ($myRequest->returnObject == 'measurement'))
         {
             return 1;
         }
@@ -348,11 +348,11 @@ class dictionaries
         {
             return 2;
         }
-        elseif (($myRequest->sampleParamsArray) || ($myRequest->returnObject == 'sample'))
+        elseif (($myRequest->specimenParamsArray) || ($myRequest->returnObject == 'specimen'))
         {
             return 3;
         }
-        elseif (($myRequest->elementParamsArray) || ($myRequest->returnObject == 'element'))
+        elseif (($myRequest->treeParamsArray) || ($myRequest->returnObject == 'tree'))
         {
             return 4;
         }
@@ -375,10 +375,10 @@ class dictionaries
         // This function returns an interger representing the most senior level of relationship required in this query
         // tblsite         -- 6 -- most senior
         // tblsubsite      -- 5 --
-        // tblelement         -- 4 --
-        // tblsample     -- 3 --
+        // tbltree         -- 4 --
+        // tblspecimen     -- 3 --
         // tblradius       -- 2 --
-        // tblseries  -- 1 -- most junior
+        // tblmeasurement  -- 1 -- most junior
 
         $myRequest = $theRequest;
 
@@ -390,11 +390,11 @@ class dictionaries
         {
             return 5;
         }
-        elseif (($myRequest->elementParamsArray) || ($myRequest->returnObject == 'element'))
+        elseif (($myRequest->treeParamsArray) || ($myRequest->returnObject == 'tree'))
         {
             return 4;
         }
-        elseif (($myRequest->sampleParamsArray) || ($myRequest->returnObject == 'sample'))
+        elseif (($myRequest->specimenParamsArray) || ($myRequest->returnObject == 'specimen'))
         {
             return 3;
         }
@@ -402,7 +402,7 @@ class dictionaries
         {
             return 2;
         }
-        elseif (($myRequest->seriesParamsArray) || ($myRequest->returnObject == 'series'))
+        elseif (($myRequest->measurementParamsArray) || ($myRequest->returnObject == 'measurement'))
         {
             return 1;
         }
@@ -426,23 +426,23 @@ class dictionaries
 
         if (($lowestLevel==1) && ($highestLevel>=1))
         {
-            $sql .= "vwvseries.seriesid=tblseries.seriesid and ";
+            $sql .= "vwvmeasurement.measurementid=tblmeasurement.measurementid and ";
         }
         if (($lowestLevel<=1) && ($highestLevel>1))
         {
-            $sql .= "vwvseries.radiusid=vwtblradius.radiusid and ";
+            $sql .= "vwvmeasurement.radiusid=vwtblradius.radiusid and ";
         }
         if (($lowestLevel<=2) && ($highestLevel>2))
         {
-            $sql .= "vwtblradius.sampleid=vwtblsample.sampleid and ";
+            $sql .= "vwtblradius.specimenid=vwtblspecimen.specimenid and ";
         }
         if (($lowestLevel<=3) && ($highestLevel>3))
         {
-            $sql .= "vwtblsample.elementid=vwtblelement.elementid and ";
+            $sql .= "vwtblspecimen.treeid=vwtbltree.treeid and ";
         }
         if (($lowestLevel<=4) && ($highestLevel>4))
         {
-            $sql .= "vwtblelement.subsiteid=vwtblsubsite.subsiteid and ";
+            $sql .= "vwtbltree.subsiteid=vwtblsubsite.subsiteid and ";
         }
         if (($lowestLevel<=5) && ($highestLevel>5))
         {

@@ -18,6 +18,8 @@ class auth
   var $isLoggedIn = FALSE;
   var $isAdmin = FALSE;
   var $authFailReason = NULL;
+  var $lastErrorCode = NULL;
+  var $lastErrorMessage = NULL;
 
   function auth()
   {
@@ -40,9 +42,18 @@ class auth
     }
   }
 
-  function loginWithNonce($theUsername, $theClientHash, $theClientNonce)
+  function loginWithNonce($theUsername, $theClientHash, $theClientNonce, $theServerNonce, $theSequence)
   {
     global $dbconn;
+
+    // Before we do anything - check that the server nonce the client is sending has not expired
+    if($this->isValidServerNonce($theServerNonce,$theSequence)===FALSE) 
+    {
+        $this->isLoggedIn = FALSE;
+        $this->setLastErrorMessage("105","Invalid server nonce supplied.");
+        return false;
+    }
+
     
     $sql = "select * from tblsecurityuser where username='$theUsername' and isactive=true";
  
@@ -58,7 +69,7 @@ class auth
     }
 
     // Authenticate against the database
-    if ($this->checkClientHash($this->dbPasswordHash, $theClientNonce, $theClientHash))
+    if ($this->checkClientHash($this->dbPasswordHash, $theClientNonce, $theSequence, $theClientHash))
     {
         // Login passed
         $result = pg_query($dbconn, $sql);
@@ -85,6 +96,7 @@ class auth
         // Login failed
         $this->isLoggedIn = FALSE;
         $this->logRequest("loginFailure");
+        $this->setLastErrorMessage("101", "Authentication failed using secure login. Please check and try again.");
     }
 
     return $this->isLoggedIn;
@@ -102,6 +114,7 @@ class auth
         $result = pg_query($dbconn, $sql);
         if (pg_num_rows($result)==0)
         {
+            $this->setLastErrorMessage("106", "Login failed - user unknown");
             return false;
         }
         else
@@ -139,6 +152,7 @@ class auth
         // Login failed
         $this->isLoggedIn = FALSE;
         $this->logRequest("loginFailure");
+        $this->setLastErrorMessage("101", "Authentication failed using plain login");
     }
 
     return $this->isLoggedIn;
@@ -206,6 +220,10 @@ class auth
     {
         $request = "Failed login attempt for username: '".$this->username."'";
     }
+    elseif ($type=="invalidSNonce")
+    {
+        $request = "Server nonce supplied was invalid";
+    }
     else
     {
         $request = "Unknown authentication request";
@@ -257,7 +275,7 @@ class auth
 
   function getPermission($thePermissionType, $theObjectType, $theObjectID)
   {
-        // $theObjectType should be one of site,element, vseries, default
+        // $theObjectType should be one of site,tree, vmeasurement, default
 
         global $dbconn;
 
@@ -267,10 +285,10 @@ class auth
             return true;
         }
 
-        // If Object is series change it to vseries so that db understands!
-        if ($theObjectType=='series')
+        // If Object is measurement change it to vmeasurement so that db understands!
+        if ($theObjectType=='measurement')
         {
-            $theObjectType='vseries';
+            $theObjectType='vmeasurement';
         }
 
         // Convert PG NULL to a string 'NULL' for SQL insert
@@ -304,12 +322,12 @@ class auth
         switch($theObjectType)
         {
         case "radius":
-            $sql = "select tblradius.radiusid, tblsample.elementid as parentid from tblradius, tblsample where tblradius.radiusid=$theObjectID and tblradius.sampleid=tblsample.sampleid";
-            $theObjectType="element";
+            $sql = "select tblradius.radiusid, tblspecimen.treeid as parentid from tblradius, tblspecimen where tblradius.radiusid=$theObjectID and tblradius.specimenid=tblspecimen.specimenid";
+            $theObjectType="tree";
             break;
-        case "sample":
-            $sql = "select tblsample.sampleid, tblsample.elementid as parentid from tblsample where tblsample.sampleid=$theObjectID ";
-            $theObjectType="element";
+        case "specimen":
+            $sql = "select tblspecimen.specimenid, tblspecimen.treeid as parentid from tblspecimen where tblspecimen.specimenid=$theObjectID ";
+            $theObjectType="tree";
             break;
         case "subSite":
             $sql = "select tblsubsite.subsiteid, tblsubsite.siteid as parentid from tblsubsite where tblsubsite.subsiteid=$theObjectID ";
@@ -435,30 +453,35 @@ class auth
     }
   }
 
-  function nonce($timeseed="current")
+  function sequence() 
+  {
+     return mt_rand(1, 1048576);
+  }
+
+  function nonce($seq, $timeseed="current")
   {
     if ($timeseed=="current")
     {
         // hash of current date
-       return hash('md5', date("l F j H:i T Y"));
+       return hash('md5', date("l F j H:i T Y") . ":" . $seq);
     }
     else
     {
         // hash of  date 1 minute ago
-       return hash('md5', date("l F j H:i T Y", time()-60));
+       return hash('md5', date("l F j H:i T Y", time()-60) . ":" . $seq);
     }
   }
 
-  function checkClientHash($dbPasswordHash, $cnonce, $clientHash)
+  function checkClientHash($dbPasswordHash, $cnonce, $seq, $clientHash)
   {
-    $serverHashCurrent = hash('md5', $this->username.":".$dbPasswordHash.":".$this->nonce("current").":".$cnonce);
-    $serverHashLast = hash('md5', $this->username.":".$dbPasswordHash.":".$this->nonce("last").":".$cnonce);
+    $serverHashCurrent = hash('md5', $this->username.":".$dbPasswordHash.":".$this->nonce($seq, "current").":".$cnonce);
+    $serverHashLast = hash('md5', $this->username.":".$dbPasswordHash.":".$this->nonce($seq, "last").":".$cnonce);
 
-    //echo $this->username.":".$dbPasswordHash.":".$this->nonce("current").":".$cnonce."<br/>";
+    //echo $this->username.":".$dbPasswordHash.":".$this->nonce($seq, "current").":".$cnonce."<br/>";
     //echo $serverHashCurrent."<br/>";
     //echo $clientHash."<br/>";
 
-    //echo $this->username.":".$dbPasswordHash.":".$this->nonce("last").":".$cnonce."<br/>";
+    //echo $this->username.":".$dbPasswordHash.":".$this->nonce($seq, "last").":".$cnonce."<br/>";
     //echo $serverHashLast."<br/>";
 
     if (($serverHashCurrent==$clientHash) || ($serverHashLast==$clientHash))
@@ -471,6 +494,36 @@ class auth
     }
 
   }
+
+  function isValidServerNonce($snonce, $seq)
+  {
+      if( ($snonce==$this->nonce($seq, 'current')) || ($snonce==$this->nonce($seq, 'previous'))  )
+      {
+          return true;
+      }
+      else
+      {
+          return false;
+      }
+        
+  }
+
+  function setLastErrorMessage($theCode, $theMessage)
+  {
+        $this->lastErrorMessage = $theMessage;
+        $this->lastErrorCode = $theCode;
+  }
+
+  function getLastErrorCode()
+  {
+        return $this->lastErrorCode;
+  }
+  
+  function getLastErrorMessage()
+  {
+        return $this->lastErrorMessage;
+  }
+
 
 // End of class
 } 

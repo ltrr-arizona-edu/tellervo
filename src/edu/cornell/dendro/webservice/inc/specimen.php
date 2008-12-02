@@ -662,8 +662,9 @@ class specimen
                         if(isset($this->sapwoodCount))                  $sql.="'".$this->sapwoodCount                                   ."', ";
                         if(isset($this->isSapwoodCountVerified))        $sql.="'".fromPHPtoPGBool($this->isSapwoodCountVerified)        ."', ";
                         if(isset($this->specimenQuality))               $sql.="'".$this->specimenQuality                                ."', ";
-                        if(isset($this->isSpecimenContinuityVerified))  $sql.="'".fromPHPtoPGBool($this->isSpecimenContinuityVerified)  ."', ";
+                        if(isset($this->isSpecimenQualityVerified))     $sql.="'".fromPHPtoPGBool($this->isSpecimenQualityVerified)     ."', ";
                         if(isset($this->specimenContinuity))            $sql.="'".$this->specimenContinuity                             ."', ";
+                        if(isset($this->isSpecimenContinuityVerified))  $sql.="'".fromPHPtoPGBool($this->isSpecimenContinuityVerified)  ."', ";
                         if(isset($this->pith))                          $sql.="'".$this->pith                                           ."', ";
                         if(isset($this->isPithVerified))                $sql.="'".fromPHPtoPGBool($this->isPithVerified)                ."', ";
                         if(isset($this->unmeasuredPre))                 $sql.="'".$this->unmeasuredPre                                  ."', ";

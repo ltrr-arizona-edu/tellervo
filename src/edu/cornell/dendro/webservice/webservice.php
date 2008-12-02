@@ -8,8 +8,8 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 
-require_once("inc/dbsetup.php");
 require_once("config.php");
+require_once("inc/dbsetup.php");
 require_once("inc/meta.php");
 require_once("inc/auth.php");
 require_once("inc/errors.php");
@@ -54,7 +54,7 @@ $myMetaHeader->setRequestType($myRequest->getCrudMode());
 // Check authentication and request login if necessary
 if($myAuth->isLoggedIn())
 {
-    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
+    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
 }
 elseif( ($myRequest->getCrudMode()=="nonce"))
 {
@@ -64,7 +64,8 @@ elseif( ($myRequest->getCrudMode()!="plainlogin") && ($myRequest->getCrudMode()!
 {
     // User is not logged in and is either requesting a nonce or isn't trying to log in at all
     // so request them to log in first
-    $myMetaHeader->requestLogin($myAuth->nonce());
+    $seq = $myAuth->sequence();
+    $myMetaHeader->requestLogin($myAuth->nonce($seq), $seq);
 }
 
 if($myRequest->getCrudMode()=='logout')
@@ -282,7 +283,7 @@ elseif($myMetaHeader->status != "Error")
                 $success = $myObject->doSecureAuthentication($paramObj, $myAuth);
                 if($success)
                 {
-                    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
+                    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
                 }
                 else
                 {
@@ -302,7 +303,7 @@ elseif($myMetaHeader->status != "Error")
                 $success = $myObject->doPlainAuthentication($paramObj, $myAuth);
                 if($success)
                 {
-                    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
+                    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
                 }
                 else
                 {
@@ -333,7 +334,14 @@ elseif($myMetaHeader->status != "Error")
                 $success2 = $myObject->setChildParamsFromDB();
                 if(!($success && $success2))
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_NOTICE);
+                    if ($myObject->getLastErrorCode()==701)
+                    {
+                        trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+                    }
+                    else
+                    {
+                        trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_NOTICE);
+                    }
                 }
             }
         }
@@ -350,7 +358,7 @@ elseif($myMetaHeader->status != "Error")
                 $success = $myObject->setParamsFromParamsClass($paramObj, $myAuth);
                 if(!$success)
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage());
+                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                 }
             }
             
@@ -360,7 +368,7 @@ elseif($myMetaHeader->status != "Error")
                 $success = $myObject->writeToDB();
                 if(!$success)
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage());
+                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                 }
             }
         }
@@ -376,7 +384,7 @@ elseif($myMetaHeader->status != "Error")
                 $success = $myObject->deleteFromDB();
                 if(!$success)
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage());
+                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                 }
             }
         }
@@ -400,7 +408,7 @@ elseif($myMetaHeader->status != "Error")
                     else
                     {
                         // Full blown error
-                        trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage());
+                        trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                     }
                 }
             }

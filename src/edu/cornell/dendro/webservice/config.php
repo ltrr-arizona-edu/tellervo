@@ -19,7 +19,7 @@ $debugFlag = false;
 $wsversion = "0.1.".exec(svnversion); 
 
 // Path to RelaxNG schema
-$rngSchema = "/var/www/webservice_dev/schemas/corina.rng"; 
+$rngSchema = "/var/www/webservice/schemas/corina.rng"; 
 
 // Timezone of the server this software is running on
 $serverTimezone = "America/New_York";
@@ -38,6 +38,12 @@ $mspage = "mapservice.php";
 
 // Google maps API Key for server
 $gMapAPIKey = "ABQIAAAAs0rCgSUzwBX9znK1mNUjuxQ2hntmN47BkGQDV0OcxMEAjHeRKhS83HleB6295GV1FrzHI7MycgtWZg";
+
+// Postgres credentials file location
+$cdbCredentialsFile = "/home/aps03pwb/.corina_server_credentials";
+
+// Database name
+$dbName = corina_live;
 
 //************************
 

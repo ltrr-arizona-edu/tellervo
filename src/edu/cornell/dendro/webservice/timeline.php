@@ -26,7 +26,7 @@ $myRequest      = new measurementRequest($myMetaHeader, $myAuth);
 // Set user details
 if($myAuth->isLoggedIn())
 {
-    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
+    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
 }
 
 // *************

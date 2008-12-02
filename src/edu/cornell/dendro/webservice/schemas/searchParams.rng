@@ -10,12 +10,12 @@
         <element name="searchParams">
             <attribute name="returnObject">
                 <choice>
-                    <value>sample</value>
+                    <value>specimen</value>
                     <value>site</value>
                     <value>subsite</value>
-                    <value>element</value>
+                    <value>tree</value>
                     <value>radius</value>
-                    <value>series</value>
+                    <value>measurement</value>
                     <value>taxon</value>
                 </choice>
             </attribute>
@@ -48,23 +48,23 @@
                             <value>subsitecreated</value>
                             <value>subsitelastmodified</value>
 
-                            <value>elementid</value>
-                            <value>elementname</value>
-                            <value>elementcreated</value>
-                            <value>elementlastmodified</value>
+                            <value>treeid</value>
+                            <value>treename</value>
+                            <value>treecreated</value>
+                            <value>treelastmodified</value>
                             <value>precision</value>
                             <value>latitude</value>
                             <value>longitude</value>
                             <value>isLiveTree</value>
                             <value>originaltaxonname</value>
 
-                            <value>sampleid</value>
-                            <value>samplename</value>
+                            <value>specimenid</value>
+                            <value>specimenname</value>
                             <value>datecollected</value>
-                            <value>samplecreated</value>
-                            <value>samplelastmodified</value>
-                            <value>sampletypeid</value>
-                            <value>sampletype</value>
+                            <value>specimencreated</value>
+                            <value>specimenlastmodified</value>
+                            <value>specimentypeid</value>
+                            <value>specimentype</value>
                             <value>isterminalringverified</value>
                             <value>sapwoodcount</value>
                             <value>issapwoodcountverified</value>
@@ -76,41 +76,41 @@
                             <value>isunmeaspostverified</value>
                             <value>terminalringid</value>
                             <value>terminalring</value>
-                            <value>samplequalityid</value>
-                            <value>samplequality</value>
-                            <value>samplecontinuityid</value>
-                            <value>samplecontinuity</value>
+                            <value>specimenqualityid</value>
+                            <value>specimenquality</value>
+                            <value>specimencontinuityid</value>
+                            <value>specimencontinuity</value>
                             <value>pithid</value>
                             <value>pith</value>
-                            <value>issamplecontinuityverified</value>
+                            <value>isspecimencontinuityverified</value>
 
                             <value>radiusid</value>
                             <value>radiusname</value>
                             <value>radiuscreated</value>
                             <value>radiuslastmodified</value>
 
-                            <value>seriesid</value>
-                            <value>seriesname</value>
-                            <value>seriescreated</value>
-                            <value>serieslastmodified</value>
-                            <value>seriesoperator</value>
-                            <value>seriesdescription</value>                            
-                            <value>seriesispublished</value>   
-                            <value>seriesowneruserid</value>                            
+                            <value>measurementid</value>
+                            <value>measurementname</value>
+                            <value>measurementcreated</value>
+                            <value>measurementlastmodified</value>
+                            <value>measurementoperator</value>
+                            <value>measurementdescription</value>                            
+                            <value>measurementispublished</value>   
+                            <value>measurementowneruserid</value>                            
                             <value>operatorparameter</value> 
-                            <value>seriesisreconciled</value>
+                            <value>measurementisreconciled</value>
 							<value>datingtype</value>
  							<value>datingerrorpositive</value>
  							<value>datingerrornegative</value>
  							<value>startyear</value>
  							<value>readingcount</value>
- 							<value>seriescount</value>
- 							<value>seriesymin</value>
- 							<value>seriesymax</value>
- 							<value>seriesxmin</value>
- 							<value>seriesxmax</value>
- 							<value>seriesxcentroid</value> 
- 							<value>seriesycentroid</value>                          
+ 							<value>measurementcount</value>
+ 							<value>measurementymin</value>
+ 							<value>measurementymax</value>
+ 							<value>measurementxmin</value>
+ 							<value>measurementxmax</value>
+ 							<value>measurementxcentroid</value> 
+ 							<value>measurementycentroid</value>                          
                             
                         </choice>
                     </attribute>

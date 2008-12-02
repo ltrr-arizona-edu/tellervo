@@ -14,6 +14,7 @@ $myMetaHeader = new meta();
 
 class meta
 {
+  var $securityUserID = NULL;
   var $username = NULL;
   var $firstname = NULL;
   var $lastname = NULL;
@@ -26,6 +27,7 @@ class meta
   var $status = "OK";
   var $messages = array();
   var $nonce = NULL;
+  var $seq = NULL;
   var $timing = array();
 
   function meta($theRequestType="")
@@ -43,12 +45,13 @@ class meta
     $this->requesttype= $theRequestType;
   }
 
-  function setUser($theUsername, $theFirstname, $theLastname)
+  function setUser($theUsername, $theFirstname, $theLastname, $theSecurityUserID)
   {
     // Setter for user details
     $this->username = $theUsername;
     $this->firstname = $theFirstname;
     $this->lastname = $theLastname;
+    $this->securityUserID = $theSecurityUserID;
   }
   
   function setMessage($theCode, $theMessage, $theStatus="Error")
@@ -81,8 +84,9 @@ class meta
     array_push($this->timing, $message);
   }
 
-  function requestLogin($nonce, $messageType="Error")
+  function requestLogin($nonce, $seq, $messageType="Error")
   {
+      $this->seq=$seq;
       $this->nonce= $nonce;
       if(!($messageType=="OK"))
       {
@@ -121,7 +125,7 @@ class meta
     $xml="<header>\n";
     if (!($this->username==NULL))
     {
-        $xml.="<user username=\"".$this->username."\" firstname=\"".$this->firstname."\" lastname=\"".$this->lastname."\" />\n";
+        $xml.="<user id=\"".$this->securityUserID."\" username=\"".$this->username."\" firstname=\"".$this->firstname."\" lastname=\"".$this->lastname."\" />\n";
     }
     $xml.="<wsversion>".$this->wsversion."</wsversion>\n";
     $xml.="<clientversion>".$this->clientversion."</clientversion>\n";
@@ -152,7 +156,7 @@ class meta
 
     if ($this->nonce)
     {
-        $xml.="<nonce>".$this->nonce."</nonce>\n";
+        $xml.="<nonce seq=\"".$this->seq."\">".$this->nonce."</nonce>\n";
     }
 
     $xml.="</header>\n";

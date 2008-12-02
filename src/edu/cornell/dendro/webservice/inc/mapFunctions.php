@@ -71,18 +71,18 @@ function gMapDataFromXML($xmlstring)
 
     // Include the actual data for GMap
     $returnString.="\n// Add the actual data\n";
-    if ($xmldata->xpath('//element'))
+    if ($xmldata->xpath('//tree'))
     {
-        foreach($xmldata->xpath('//element') as $element)
+        foreach($xmldata->xpath('//tree') as $tree)
         {
-           if ((isset($element->latitude)) && (isset($element->longitude)))
+           if ((isset($tree->latitude)) && (isset($tree->longitude)))
            {
-               $returnString.= "var point = new GLatLng(".$element->latitude.", ".$element->longitude.");\n";
-               $htmlString = "<b>".$element->parentSummary->fullLabCode."</b><br><br><font size=-1>".$element->validatedTaxon."</font>";
+               $returnString.= "var point = new GLatLng(".$tree->latitude.", ".$tree->longitude.");\n";
+               $htmlString = "<b>".$tree->parentSummary->fullLabCode."</b><br><br><font size=-1>".$tree->validatedTaxon."</font>";
                $returnString.= "map.addOverlay(createMarker(point,'$htmlString'));\n";
-               if($element->precision>0)
+               if($tree->precision>0)
                {
-                   $precision = $element->precision/1000;
+                   $precision = $tree->precision/1000;
                    $returnString.= "drawCircle(point, $precision, 40, 'black', 1, 0.2, 'black', 0.15);\n";
                }
            }
@@ -111,22 +111,22 @@ function gMapDataFromXML($xmlstring)
         }
     }
     
-    if ($xmldata->xpath('content/series'))
+    if ($xmldata->xpath('content/measurement'))
     {
-        foreach($xmldata->xpath('content/series') as $series)
+        foreach($xmldata->xpath('content/measurement') as $measurement)
         {
-           if ((isset($series->metadata->extent[minLat])) && (isset($series->metadata->extent[maxLat])) && (isset($series->metadata->extent[minLong])) && (isset($series->metadata->extent[maxLong])))
+           if ((isset($measurement->metadata->extent[minLat])) && (isset($measurement->metadata->extent[maxLat])) && (isset($measurement->metadata->extent[minLong])) && (isset($measurement->metadata->extent[maxLong])))
            {
                 $returnString .= "var polygon = new GPolygon([";
-                $returnString .= "new GLatLng(".$series->metadata->extent[minLat].",".$series->metadata->extent['minLong']."), ";
-                $returnString .= "new GLatLng(".$series->metadata->extent[maxLat].",".$series->metadata->extent['minLong']."), ";
-                $returnString .= "new GLatLng(".$series->metadata->extent[maxLat].",".$series->metadata->extent['maxLong']."), ";
-                $returnString .= "new GLatLng(".$series->metadata->extent[minLat].",".$series->metadata->extent['maxLong']."), ";
-                $returnString .= "new GLatLng(".$series->metadata->extent[minLat].",".$series->metadata->extent['minLong'].")";
+                $returnString .= "new GLatLng(".$measurement->metadata->extent[minLat].",".$measurement->metadata->extent['minLong']."), ";
+                $returnString .= "new GLatLng(".$measurement->metadata->extent[maxLat].",".$measurement->metadata->extent['minLong']."), ";
+                $returnString .= "new GLatLng(".$measurement->metadata->extent[maxLat].",".$measurement->metadata->extent['maxLong']."), ";
+                $returnString .= "new GLatLng(".$measurement->metadata->extent[minLat].",".$measurement->metadata->extent['maxLong']."), ";
+                $returnString .= "new GLatLng(".$measurement->metadata->extent[minLat].",".$measurement->metadata->extent['minLong'].")";
                 $returnString .= "], \"#ff0000\", 1, 1, \"#FF0000\", 0.3);\n";
                 $returnString .= "map.addOverlay(polygon);\n"; 
-                $returnString .= "var point = new GLatLng(".$series->metadata->extent['centroidLat'].", ".$series->metadata->extent['centroidLong'].");\n";
-                $htmlString = "<b>".$series->metadata->name."</b><br>";
+                $returnString .= "var point = new GLatLng(".$measurement->metadata->extent['centroidLat'].", ".$measurement->metadata->extent['centroidLong'].");\n";
+                $htmlString = "<b>".$measurement->metadata->name."</b><br>";
                 $returnString.= "map.addOverlay(createMarker(point,'$htmlString'));\n";
            }
         }
@@ -145,16 +145,16 @@ function gMapExtentFromXML($xmlstring, $type)
     
     $xmldata = simplexml_load_string($xmlstring);
     
-    if ($xmldata->xpath('//element'))
+    if ($xmldata->xpath('//tree'))
     {
-        foreach($xmldata->xpath('//element') as $element)
+        foreach($xmldata->xpath('//tree') as $tree)
         {
-           if ((isset($element->latitude)) && (isset($element->longitude)))
+           if ((isset($tree->latitude)) && (isset($tree->longitude)))
            {
-               if ( $element->latitude  > $maxLat ) $maxLat  = (float) $element->latitude;
-               if ( $element->longitude > $maxLong) $maxLong = (float) $element->longitude;
-               if ( $element->latitude  < $minLat ) $minLat  = (float) $element->latitude;
-               if ( $element->longitude < $minLong) $minLong = (float) $element->longitude;
+               if ( $tree->latitude  > $maxLat ) $maxLat  = (float) $tree->latitude;
+               if ( $tree->longitude > $maxLong) $maxLong = (float) $tree->longitude;
+               if ( $tree->latitude  < $minLat ) $minLat  = (float) $tree->latitude;
+               if ( $tree->longitude < $minLong) $minLong = (float) $tree->longitude;
            }
         }
     }
@@ -174,16 +174,16 @@ function gMapExtentFromXML($xmlstring, $type)
         }
     }
     
-    if ($xmldata->xpath('//series'))
+    if ($xmldata->xpath('//measurement'))
     {
-        foreach($xmldata->xpath('//series') as $series)
+        foreach($xmldata->xpath('//measurement') as $measurement)
         {
-           if ((isset($series->metadata->extent[minLat])) && (isset($series->metadata->extent[maxLat])) && (isset($series->metadata->extent[minLong])) && (isset($series->metadata->extent[maxLong])))
+           if ((isset($measurement->metadata->extent[minLat])) && (isset($measurement->metadata->extent[maxLat])) && (isset($measurement->metadata->extent[minLong])) && (isset($measurement->metadata->extent[maxLong])))
            {
-               if ( $series->metadata->extent[maxLat]  > $maxLat ) $maxLat  = (float) $series->metadata->extent[maxLat];
-               if ( $series->metadata->extent[maxLong] > $maxLong) $maxLong = (float) $series->metadata->extent[maxLong];
-               if ( $series->metadata->extent[minLat]  < $minLat ) $minLat  = (float) $series->metadata->extent[minLat];
-               if ( $series->metadata->extent[minLong] < $minLong) $minLong = (float) $series->metadata->extent[minLong];
+               if ( $measurement->metadata->extent[maxLat]  > $maxLat ) $maxLat  = (float) $measurement->metadata->extent[maxLat];
+               if ( $measurement->metadata->extent[maxLong] > $maxLong) $maxLong = (float) $measurement->metadata->extent[maxLong];
+               if ( $measurement->metadata->extent[minLat]  < $minLat ) $minLat  = (float) $measurement->metadata->extent[minLat];
+               if ( $measurement->metadata->extent[minLong] < $minLong) $minLong = (float) $measurement->metadata->extent[minLong];
            }
 
         }

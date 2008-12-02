@@ -85,7 +85,7 @@ switch($theMode)
 
     default:
         $myMetaHeader = new meta("help");
-        $myMetaHeader->setUser("Guest", "", "");
+        $myMetaHeader->setUser("Guest", "", "", "");
         // Output the resulting XML
         echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         echo "<corina>\n";
@@ -98,7 +98,7 @@ switch($theMode)
 // Set user details
 if($myAuth->isLoggedIn())
 {
-    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
+    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
 }
 
 //Only attempt to run SQL if there are no errors so far

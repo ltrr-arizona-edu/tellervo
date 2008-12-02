@@ -8,7 +8,7 @@
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
 require_once('dbhelper.php');
-require_once('inc/element.php');
+require_once('inc/tree.php');
 
 class subSite 
 {
@@ -110,7 +110,7 @@ class subSite
     function setChildParamsFromDB()
     {
         // Add the id's of the current objects direct children from the database
-        // Siteelements
+        // Sitetrees
         
         if($this->id==NULL)
         {
@@ -120,14 +120,14 @@ class subSite
 
         global $dbconn;
         
-        $sql = "select elementid from tblelement where subsiteid=".$this->id;
+        $sql = "select treeid from tbltree where subsiteid=".$this->id;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
             {
-                array_push($this->childArray, $row['elementid']);
+                array_push($this->childArray, $row['treeid']);
             }
         }
         else
@@ -198,7 +198,7 @@ class subSite
                 {
                     if($paramsObj->id == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'subsiteid' field is required when creating a element.");
+                        $this->setErrorMessage("902","Missing parameter - 'subsiteid' field is required when creating a tree.");
                         return false;
                     }
                 }
@@ -351,7 +351,7 @@ class subSite
                             $xml.="<references>\n";
                             foreach($this->childArray as $value)
                             {
-                                $myTree = new element();
+                                $myTree = new tree();
                                 $success = $myTree->setParamsFromDB($value);
 
                                 if($success)
@@ -539,7 +539,7 @@ class subSite
                         {
                         case 23503:
                                 // Foreign key violation
-                                $this->setErrorMessage("907", "Foreign key violation.  You must delete all elements from a sub site before deleting the sub site itself.");
+                                $this->setErrorMessage("907", "Foreign key violation.  You must delete all trees from a sub site before deleting the sub site itself.");
                                 break;
                         default:
                                 // Any other error
