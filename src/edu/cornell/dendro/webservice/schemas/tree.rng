@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0">
     <start>
-      <ref name="elementObject"/>	
+      <ref name="treeObject"/>	
     </start>
 
-    <define name="elementObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-        <element name="element">
+    <define name="treeObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="tree">
             <optional>
                 <attribute name="id">
                     <data type="positiveInteger" />
@@ -99,22 +99,22 @@
 	            <optional>
 	            	<element name="references">
 		                <zeroOrMore>
-		                    <externalRef href="sample.rng"/>
+		                    <externalRef href="specimen.rng"/>
 		                </zeroOrMore>
 	                </element>
                 </optional>
                         
                 <optional>
-                	<element name="elementNotes">
+                	<element name="treeNotes">
 		                <zeroOrMore>
-		                    <externalRef href="elementNote.rng"/>
+		                    <externalRef href="treeNote.rng"/>
 		                </zeroOrMore>
 	                </element>
                 </optional>
                 
                 <optional>
 		                <zeroOrMore>
-		                    <externalRef href="sample.rng"/>
+		                    <externalRef href="specimen.rng"/>
 		                </zeroOrMore>
                 </optional>
                 
