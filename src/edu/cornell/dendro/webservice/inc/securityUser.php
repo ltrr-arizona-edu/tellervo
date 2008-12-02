@@ -7,7 +7,7 @@
 //////
 ////// Requirements : PHP >= 5.0
 //////*******************************************************************
-require_once('inc/sample.php');
+require_once('inc/specimen.php');
 require_once('inc/taxon.php');
 require_once('inc/securityGroup.php');
 

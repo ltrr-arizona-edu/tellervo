@@ -225,6 +225,10 @@ class request
                     {
                         // this measurement is a reference within a derived measurement so ignore
                     }
+                    elseif(isset($parent[0]->basedOn))
+                    {
+                        // this measurement is a reference within a derived measurement so ignore
+                    }
                     else
                     {
                         $parentID = "";

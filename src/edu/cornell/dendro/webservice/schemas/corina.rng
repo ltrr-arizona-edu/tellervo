@@ -3,7 +3,13 @@
     <start>
         <element name="corina">
             <choice>
+                <group>
+                    <externalRef href="header.rng"/>  
+                    <externalRef href="content.rng"/>
+                </group>          
+                <group>
                     <externalRef href="request.rng"/>
+                </group>
             </choice>
         </element>
     </start>

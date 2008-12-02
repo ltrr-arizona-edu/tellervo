@@ -24,7 +24,7 @@ $myRequest      = new authenticateRequest($myMetaHeader, $myAuth);
 // Set user details
 if($myAuth->isLoggedIn())
 {
-    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
+    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
 }
 
 //$serverHashCurrent = hash('md5', "webuser:c0af77cf8294ff93a5cdb2963ca9f038:0123456789ABCDE:AA");
@@ -99,7 +99,7 @@ if(!($myMetaHeader->status == "Error"))
         if($myAuth->isLoggedIn())
         {
             // Log in worked
-            $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
+            $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
         }
         else
         {
@@ -116,7 +116,7 @@ if(!($myMetaHeader->status == "Error"))
         if($myAuth->isLoggedIn())
         {
             // Log in worked
-            $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname());
+            $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
         }
         else
         {

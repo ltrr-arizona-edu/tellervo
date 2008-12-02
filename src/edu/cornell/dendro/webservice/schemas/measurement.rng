@@ -62,12 +62,7 @@
 			                    </data>
 			                </element>
 			            </optional>
-			            <optional>
-			                <element name="startYear">
-			                    <data type="integer">
-			                    </data>
-			                </element>
-			            </optional>
+
 			            <optional>
 			                <element name="isLegacyCleaned">
 			                    <data type="boolean">
@@ -132,15 +127,39 @@
 			            </optional>
 			            
 			            <optional>
-							<element name="operation">
-			            		<text/>
+					<element name="operation">
+                                                <text/>
 			            		<optional>
 				            		<attribute name="parameter">
 				            			<text/>
 				            		</attribute>
 			            		</optional>
-			            	</element>
-			            </optional>
+                                        </element>
+                                    </optional>
+
+
+                                    <optional>
+                                        <element name="crossdate">
+                                            <interleave>
+                                                <element name="basedOn">
+                                                    <element name="measurement">
+                                                        <attribute name="id">
+                                                            <data type="positiveInteger"/>
+                                                        </attribute>
+                                                    </element>
+                                                </element>
+                                                <element name="startYear">
+                                                    <data type="integer"/>
+                                                </element>
+                                                <element name="certaintyLevel">
+                                                    <data type="integer"/>
+                                                </element>
+                                                <element name="justification">
+                                                    <text/>
+                                                </element>
+                                            </interleave>
+                                        </element>
+                                    </optional>
 			        
 		            
 		                <zeroOrMore>

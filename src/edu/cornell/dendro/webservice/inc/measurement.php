@@ -34,6 +34,7 @@ class measurement
     var $ownerUserID = NULL;
     var $owner = NULL;
     var $readingsArray = array();
+    var $readingsUnits = NULL;
     var $referencesArray = array();
     var $vmeasurementNoteArray = array();
     var $createdTimeStamp = NULL;
@@ -48,11 +49,17 @@ class measurement
     var $maxLat = NULL;
     var $minLong = NULL;
     var $maxLong = NULL;
+    
+    var $masterVMeasurementID = NULL;
+    var $justification = NULL;
+    var $certaintyLevel = NULL;
+    var $newStartYear = NULL;
 
     var $summarySiteCode = NULL;
     var $summarySiteCount = NULL;
     var $summaryTaxonName = NULL;
     var $summaryTaxonCount = NULL;
+    var $labPrefix = NULL;
     var $fullLabCode = NULL;
     
     var $includePermissions = FALSE;
@@ -105,6 +112,7 @@ class measurement
 		"WHERE vm.vmeasurementid=".$this->vmeasurementID;
 	// the query that makes the server make the measurement
         $sql2 = "select * from cpgdb.getvmeasurementresult('$theID')";
+        
 	// the old query - here for posterity
         //$sql2 = "select tblvmeasurement.* from tblvmeasurement where vmeasurementid=".$this->vmeasurementID;
         $dbconnstatus = pg_connection_status($dbconn);
@@ -128,7 +136,12 @@ class measurement
                 $row = pg_fetch_array($result);
                 $this->name = $row['name'];
                 $this->description = $row['description'];
-                $this->vmeasurementID = $row['vmeasurementid'];
+                
+                // Commented out the vmid here - we should have it passed to this function
+                // as a variable shouldn't we?
+                //$this->vmeasurementID = $row['vmeasurementid'];
+                
+                
                 //$this->vmeasurementResultID = $row['vmeasurementresultid'];
                 //$this->vmeasurementOpID = $row['vmeasurementopid'];
                 //$this->vmeasurementOpParam = $row['vmeasurementparamid'];
@@ -171,17 +184,20 @@ class measurement
                 $this->summarySiteCount = $row['sitecount'];
                 $this->summaryTaxonName = $row['commontaxonname'];
                 $this->summaryTaxonCount = $row['taxoncount'];
-                $this->fullLabCode = $row['label'];
+                $this->labPrefix = $row['prefix'];
+
+                // assemble our full lab code
+                $this->fullLabCode = $this->labPrefix . $this->name;
 
                 if($this->vmeasurementOp=='Index')
                 {
                     // indexid for a sum
                     $this->setVMeasurementOpParam($this->getIndexNameFromParamID($row['vmeasurementopparameter']));
                 }
-                else
+
+                if($this->vmeasurementOp=='Crossdate')
                 {
-                    // Year for a redate
-                    $this->setVMeasurementOpParam($row['vmeasurementopparameter']);
+                    $this->setCrossdateParamsFromDB();
                 }
 
                 if (($format=="standard") || ($format=="comprehensive") || ($format=="summary") )
@@ -196,7 +212,8 @@ class measurement
                     $row2 = pg_fetch_array($result2);
 
                     $this->vmeasurementResultID = $row2['vmeasurementresultid'];
-                    $this->setReadingsFromDB();
+                    $success = $this->setReadingsFromDB();
+                    return $success;
 		}
             }
 
@@ -211,25 +228,61 @@ class measurement
         return TRUE;
     }
 
-    private function setReadingsFromDB()
+    private function setCrossdateParamsFromDB()
     {
-        // Add all readings data to the object
         global $dbconn;
-
-        $sql  = "select * from cpgdb.getvmeasurementreadingresult('".$this->vmeasurementResultID."') order by relyear asc";
+        $sql = "select * from tblcrossdate where vmeasurementid=".$this->vmeasurementID;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
             {
-                // Get all reading values to array 
-                $this->readingsArray[$row['relyear']] = array('reading' => $row['reading'], 
-                                                              'wjinc' => $row['wjinc'], 
-                                                              'wjdec' => $row['wjdec'], 
-                                                              'count' => $row['count'],
-                                                              'notesArray' => array()
-                                                             );
+                $this->masterVMeasurementID = $row['mastervmeasurementid'];
+                $this->startYear = $row['startyear'];
+                $this->justification = $row['justification'];
+                $this->certaintyLevel = $row['confidence'];
+            }
+        }
+
+    }
+
+    private function setReadingsFromDB()
+    {
+        // Add all readings data to the object
+        global $dbconn;
+
+        // Empty the reading array in case we have data already in there
+        unset($this->readingsArray);
+        $this->readingsArray = array();
+
+        $sql  = "select * from cpgdb.getvmeasurementreadingresult('".$this->vmeasurementResultID."') order by relyear asc";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);
+            $relYearCheck = 0;
+            while ($row = pg_fetch_array($result))
+            {
+                if ($relYearCheck==$row['relyear'])
+                {
+                    // Get all reading values to array 
+                    $this->readingsArray[$row['relyear']] = array('reading' => $row['reading'], 
+                                                                  'wjinc' => $row['wjinc'], 
+                                                                  'wjdec' => $row['wjdec'], 
+                                                                  'count' => $row['count'],
+                                                                  'notesArray' => array()
+                                                                 );
+                    $relYearCheck++;
+                }
+                else
+                {
+                    // Something screwy going on with relyears in the vmeasurementResult
+                    $this->setErrorMessage("701", "The relative years dating in the database has gone screwy. Please tell someone!");
+                    return FALSE;
+
+                }
+
             }
 
             // If this is a direct measurement then add any notes as a subarray
@@ -260,6 +313,7 @@ class measurement
         // Add any vmeasurements that the current measurement has been made from
         global $dbconn;
         
+        
         $sql  = "select * from cpgdb.findvmparents('".$this->vmeasurementID."', 'false') where recursionlevel=0";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -285,23 +339,42 @@ class measurement
 
     function setParamsFromParamsClass($paramsClass, $auth)
     {
-
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
-        if ($paramsClass->radiusID!=NULL)             $this->setRadiusID($paramsClass->radiusID);
-        if (isset($paramsClass->isReconciled))        $this->setIsReconciled($paramsClass->isReconciled);
-        if (isset($paramsClass->startYear))           $this->setStartYear($paramsClass->startYear);
-        if (isset($paramsClass->isLegacyCleaned))     $this->setIsLegacyCleaned($paramsClass->isLegacyCleaned);
+        if ($paramsClass->radiusID!=NULL)              $this->setRadiusID($paramsClass->radiusID);
+        if (isset($paramsClass->isReconciled))         $this->setIsReconciled($paramsClass->isReconciled);
+        if (isset($paramsClass->startYear))            $this->setStartYear($paramsClass->startYear);
+        if (isset($paramsClass->isLegacyCleaned))      $this->setIsLegacyCleaned($paramsClass->isLegacyCleaned);
         //if (isset($paramsClass->datingTypeID))        $this->setDatingTypeID($paramsClass->datingTypeID);
-        if (isset($paramsClass->datingType))          $this->setDatingType($paramsClass->datingType);
-        if (isset($paramsClass->datingErrorPositive)) $this->setDatingErrorPositive($paramsClass->datingErrorPositive);
-        if (isset($paramsClass->datingErrorNegative)) $this->setDatingErrorNegative($paramsClass->datingErrorNegative);
-        if (isset($paramsClass->name))                $this->setName($paramsClass->name);
-        if (isset($paramsClass->description))         $this->setDescription($paramsClass->description);
-        if (isset($paramsClass->isPublished))         $this->setIsPublished($paramsClass->isPublished);
-        if (isset($paramsClass->vmeasurementOp))      $this->setVMeasurementOp($paramsClass->vmeasurementOp);
-        if (isset($paramsClass->vmeasurementOpParam)) $this->setVMeasurementOpParam($paramsClass->vmeasurementOpParam);
-        if (sizeof($paramsClass->readingsArray)>0)    $this->setReadingsArray($paramsClass->readingsArray);
-        if (sizeof($paramsClass->referencesArray)>0)  $this->setReferencesArray($paramsClass->referencesArray);
+        if (isset($paramsClass->datingType))           $this->setDatingType($paramsClass->datingType);
+        if (isset($paramsClass->datingErrorPositive))  $this->setDatingErrorPositive($paramsClass->datingErrorPositive);
+        if (isset($paramsClass->datingErrorNegative))  $this->setDatingErrorNegative($paramsClass->datingErrorNegative);
+        if (isset($paramsClass->name))                 $this->setName($paramsClass->name);
+        if (isset($paramsClass->description))          $this->setDescription($paramsClass->description);
+        if (isset($paramsClass->isPublished))          $this->setIsPublished($paramsClass->isPublished);
+        if (isset($paramsClass->vmeasurementOp))       $this->setVMeasurementOp($paramsClass->vmeasurementOp);
+        if (isset($paramsClass->vmeasurementOpParam))  $this->setVMeasurementOpParam($paramsClass->vmeasurementOpParam);
+        if (sizeof($paramsClass->referencesArray)>0)   $this->setReferencesArray($paramsClass->referencesArray);
+        if (isset($paramsClass->masterVMeasurementID)) $this->setMasterVMeasurementID($paramsClass->masterVMeasurementID);
+        if (isset($paramsClass->justification))        $this->setJustification($paramsClass->justification);
+        if (isset($paramsClass->certaintyLevel))       $this->setCertaintyLevel($paramsClass->certaintyLevel);
+        if (isset($paramsClass->newStartYear))         $this->setNewStartYear($paramsClass->newStartYear);
+        if (isset($paramsClass->readingsUnits))        $this->setUnits($paramsClass->readingsUnits);
+        if (sizeof($paramsClass->readingsArray)>0)     $this->setReadingsArray($paramsClass->readingsArray);
+
+        //echo "BEFORE\n";
+        //print_r($this->readingsArray);
+        
+        // Convert readings provided by user to microns
+        if (sizeof($paramsClass->readingsArray)>0) 
+        {
+            foreach($this->readingsArray as $key => $value)
+            {
+                $convValue = $this->unitsHandler($value['reading'], $this->readingsUnits, 'db-default');
+                $this->readingsArray[$key]['reading'] = $convValue;
+            } 
+        }
+        //echo "AFTER\n";
+        //print_r($this->readingsArray);
         
         // Set Owner and Measurer IDs if specified otherwise use current user details
         if (isset($paramsClass->ownerUserID))
@@ -381,7 +454,33 @@ class measurement
                         }
                     }
                 }
+                
+                // Only allow update on a measurement which is not used by other vm's downstream
+                global $dbconn;
+                $sql = "select cpgdb.findvmchildren(".$paramsObj->id.", false)";
+                $dbconnstatus = pg_connection_status($dbconn);
+                if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+                {
+                    pg_send_query($dbconn, $sql);
+                    $result = pg_get_result($dbconn);
+                    if(pg_num_rows($result)>0)
+                    {
+                        // No records match the label specified
+                        $this->setErrorMessage("902", "The measurement that you have specified cannot be updated as it is referred to by other measurements (sums, indexes etc).");
+                        return FALSE;
+                    }
+                }
+                else
+                {
+                    // Connection bad
+                    $this->setErrorMessage("001", "Error connecting to database");
+                    return FALSE;
+                }
+
+                
                 return true;
+
+
 
             case "delete":
                 if($paramsObj->id == NULL) 
@@ -437,6 +536,31 @@ class measurement
                     $this->setErrorMessage("902","Missing parameter - you have included an operation which suggests you are creating a new measurement based on others. However, you have not specified any references to other measurements.");
                     return false;
                 }
+                if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->startYear))) )
+                {
+                    $this->setErrorMessage("902","Missing parameter - a startYear is required when doing a crossdate.");
+                    return false;
+                } 
+                if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->masterVMeasurementID))) )
+                {
+                    $this->setErrorMessage("902","Missing parameter - a basedOnMeasurementID is required when doing a crossdate.");
+                    return false;
+                } 
+                if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->certaintyLevel))) )
+                {
+                    $this->setErrorMessage("902","Missing parameter - a certaintyLevel is required when doing a crossdate.");
+                    return false;
+                } 
+                if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->newStartYear))) )
+                {
+                    $this->setErrorMessage("902","Missing parameter - a new startYear  is required when doing a crossdate.");
+                    return false;
+                } 
+                if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->justification))) )
+                {
+                    $this->setErrorMessage("902","Missing parameter - a justification is required when doing a crossdate.");
+                    return false;
+                } 
                    
                 return true;
 
@@ -603,6 +727,31 @@ class measurement
         return FALSE;
     }
     
+    function setUnits($units)
+    {
+        $this->readingsUnits = $units;
+    }
+    
+    function setNewStartYear($year)
+    {
+        $this->newStartYear = $year;
+    }
+    
+    function setCertaintyLevel($level)
+    {
+        $this->certaintyLevel = $level;
+    }
+    
+    function setJustification($justification)
+    {
+        $this->justification = $justification;
+    }
+    
+    function setMasterVMeasurementID($id)
+    {
+        $this->masterVMeasurementID = $id;
+    }
+    
     function setReadingsArray($theReadingsArray)
     {
         $this->readingsArray = $theReadingsArray;
@@ -735,6 +884,10 @@ class measurement
     function setName($theName)
     {
         $this->name = $theName;
+
+        // assemble our full lab code, if we can
+        if($this->labPrefix != NULL)
+           $this->fullLabCode = $this->labPrefix . $this->name;
     }
     
     function setDescription($theDescription)
@@ -943,6 +1096,7 @@ class measurement
 
     private function _asXML($format, $parts, $recurseLevel=2)
     {
+
         // Return a string containing the current object in XML format
 
         // $recurseLevel = the number of levels of references tags you would like 
@@ -1012,15 +1166,28 @@ class measurement
                 if(isset($this->isPublished))           $xml.= "<isPublished>".fromPHPtoStringBool($this->isPublished)."</isPublished>\n";
                 if(isset($this->vmeasurementOp))
                 {
+                    // Include operation details if applicable
                     if(isset($this->vmeasurementOpParam))
                     {
-                                                        $xml.= "<operation parameter=\"".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."\">".strtolower($this->vmeasurementOp)."</operation>\n";
+                        $xml.= "<operation parameter=\"".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."\">".strtolower($this->vmeasurementOp)."</operation>\n";
                     }
                     else
                     {
-                                                        $xml.= "<operation>".strtolower($this->vmeasurementOp)."</operation>\n";
+                        $xml.= "<operation>".strtolower($this->vmeasurementOp)."</operation>\n";
                     }
                 }
+                
+                if($this->vmeasurementOp=="Crossdate")
+                {
+                    // Include crossdate info if applicable
+                    $xml.= "<crossdate>\n";
+                    $xml.= "<basedOn><measurement id=\"".$this->masterVMeasurementID."\"/></basedOn>\n";
+                    $xml.= "<startYear>".$this->startYear."</startYear>\n";
+                    $xml.= "<certaintyLevel>".$this->certaintyLevel."</certaintyLevel>\n";
+                    $xml.= "<justification>".escapeXMLChars($this->justification)."</justification>\n";
+                    $xml.= "</crossdate>\n";
+                }
+                
                 if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
                 if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
                 if( (isset($this->minLat)) && (isset($this->minLong)) && (isset($this->maxLat)) && (isset($this->maxLong)))
@@ -1032,7 +1199,8 @@ class measurement
 		if($format=="summary" || $format=="standard") {
                     // Return special summary section
                     $xml.="<summary>";
-                    $xml.="<fullLabCode>".$this->fullLabCode."</fullLabCode>\n";
+                    $xml.="<labPrefix>".escapeXMLChars($this->labPrefix)."</labPrefix>\n";
+                    $xml.="<fullLabCode>".escapeXMLChars($this->fullLabCode)."</fullLabCode>\n";
                     $xml.="<taxon count=\"".$this->summaryTaxonCount."\" commonAncestor=\"".$this->summaryTaxonName."\"/>\n";
                     $xml.="<site count=\"".$this->summarySiteCount."\" ";
                     if($this->summarySiteCount=1) $xml.="siteCode=\"".$this->summarySiteCode."\"/>\n";
@@ -1133,27 +1301,36 @@ class measurement
                     // Include all readings 
                     if ($this->readingsArray)
                     {
-                        $xml.="<readings type=\"annual\" units=\"-6\">\n";
-                        foreach($this->readingsArray as $key => $value)
+                        // Initially set yearvalue to 1001 default
+                        if ($this->datingType=='Relative')
                         {
-                            // Calculate absolute year where possible
-                            if ($this->startYear)
+                            $yearvalue = 1001;
+                        }
+                        else
+                        {
+                            if($this->startYear==NULL)
                             {
-                                if($this->startYear+$key  >= 0)
-                                {
-                                    // Add 1 to year to cope with BC/AD transition issue (no 0bc/ad)
-                                    $yearvalue = $key;
-                                }
-                                else
-                                {
-                                    // Date is BC so fudge not required
-                                    $yearvalue = $key - 1;
-                                }
+                                $this->setErrorMessage(667, "Start year missing from absolute or absolute with error measurement.  You shouldn't have been able to get this far!");
+                                return false;    
                             }
                             else
                             {
-                                // Years are relative
-                                $yearvalue = $key;
+                                $yearvalue = $this->startYear;
+                            }
+                        }
+
+
+                        $xml.="<readings type=\"annual\" units=\"-5\">\n";
+                        foreach($this->readingsArray as $key => $value)
+                        {
+                            // Calculate absolute year where possible
+                            if ($this->datingType!='Relative')
+                            {
+                                if($yearvalue==0)
+                                {
+                                    // If year value is 0 increment to 1 as there is no such year as 0bc/ad
+                                    $yearvalue = 1;
+                                }
                             }
 
                             $xml.="<reading year=\"".$yearvalue."\" ";
@@ -1161,7 +1338,8 @@ class measurement
                             {
                                 $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
                             }
-                            $xml .="count=\"".$value['count']."\" value=\"".$value['reading']."\">";
+                            $xml .="count=\"".$value['count']."\" value=\"".$this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
+                         
 
                             // Add any notes that are in the notesArray subarray
                             if(count($value['notesArray']) > 0)
@@ -1183,6 +1361,9 @@ class measurement
                             }
 
                             $xml.="</reading>\n";
+
+                            // Increment yearvalue for next loop
+                            $yearvalue++;
 
                         }
                         $xml.="</readings>\n";
@@ -1308,10 +1489,12 @@ class measurement
                         }    
                         
                         // Insert new readings
+                        $relyear = 0;
                         foreach($this->readingsArray as $key => $value)
                         {
                             // First loop through the readingsArray and create insert statement for tblreading table
-                            $insertSQL = "insert into tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$key.", ".$value['reading'].")";
+                            $insertSQL = "insert into tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$relyear.", ".$value['reading'].")";
+                            $relyear++;
                             
                             // Do tblreading inserts
                             pg_send_query($dbconn, $insertSQL);
@@ -1403,12 +1586,31 @@ class measurement
                     }
                     else
                     {
-                        // Successful to retrieve the automated fields for this new vmeasurement
+                        // Successful so retrieve the automated fields for this new vmeasurement
                         while ($row = pg_fetch_array($result))
                         {
+                            $localVMID = $row['createnewvmeasurement'];
                             $this->setParamsFromDB($row['createnewvmeasurement']);
                         }
                     }
+
+                    // This extra SQL query is needed to finish off a crossdate
+                    if($this->vmeasurementOp=='Crossdate')
+                    {
+                        $sql = "select cpgdb.finishCrossdate(".$localVMID.", ".$this->newStartYear.", ".$this->masterVMeasurementID.", '".$this->justification."', ".$this->certaintyLevel.")";
+                        pg_send_query($dbconn, $sql);
+                        $result = pg_get_result($dbconn);
+                        if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                        {
+                            $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                            return FALSE;
+                        }
+                    }
+                    
+                    // Successful so retrieve the automated fields for this new vmeasurement
+                    $this->setParamsFromDB($localVMID);
+
+
                 }
                 else
                 {
@@ -1463,27 +1665,23 @@ class measurement
                     }
                     
                     // Perform query using transactions so that if anything goes wrong we can roll back
-                    $transaction = array("begin;", $updateSQL, $updateSQL2, $deleteSQL, $insertSQL);
+                    $transaction = array("begin;", $deleteSQL, $insertSQL, $updateSQL, $updateSQL2);
 
                     foreach($transaction as $stmt)
                     {
-                        pg_send_query($dbconn, $stmt);
-                        $result = pg_get_result($dbconn);
-                        if(pg_result_status($result, PGSQL_STATUS_LONG)!=PGSQL_COMMAND_OK)
+                        $result = pg_query($dbconn, $stmt);
+                        //$result = pg_get_result($dbconn);
+                        if($result===FALSE)
                         {
                             // All gone badly so throw error and rollback
-                            $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $stmt");
-                            pg_send_query($dbconn, "rollback;");
+                            $this->setErrorMessage("002", pg_last_error()."--- SQL was $stmt");
+                            pg_query($dbconn, "rollback;");
                             return FALSE;
                         }
                     }
 
                     // All gone well so commit transaction to db
-                    do {    
-                        $result = pg_get_result($dbconn);
-                    } while ($result!=FALSE); 
-                    pg_send_query($dbconn, "commit;");
-                    $result = pg_get_result($dbconn);
+                    $result = pg_query($dbconn, "commit;");
                 }
             }
             else
@@ -1604,6 +1802,53 @@ class measurement
         }
     }
 
+    function unitsHandler($value, $inputUnits, $outputUnits)
+    {   
+        // This is a helper function to deal with the units of readings 
+        // Internally Corina uses microns as this is (hopefully) the smallest 
+        // unit required in dendro
+        //
+        // To use default units set $inputUnits or $outputUnits to "default"
+
+        // Set units to default (microns) if requested
+        if($inputUnits == 'db-default') $inputUnits = -6;
+        if($outputUnits == 'db-default') $outputUnits = -6;
+        if($inputUnits == 'ws-default') $inputUnits = -5;
+        if($outputUnits == 'ws-default') $outputUnits = -5;
+
+        // Calculate difference between input and output units
+        $convFactor = $inputUnits - $outputUnits;
+
+        switch($convFactor)
+        {
+            case 0:
+                return $value;
+            case -1:
+                return round($value/10);
+            case -2:
+                return round($value/100);
+            case -3:
+                return round($value/1000);
+            case -4:
+                return round($value/10000);
+            case -5:
+                return round($value/100000);
+            case 1:
+                return $value*10;
+            case 2:
+                return $value*100;
+            case 3:
+                return $value*1000;
+            case 4:
+                return $value*10000;
+            case 5:
+                return $value*100000;
+            default:
+                // Not supported
+                $this->setErrorMessage("905", "This level of units is not supported");
+                return false;
+        }
+    }
 
 // End of Class
 } 

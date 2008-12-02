@@ -9,8 +9,8 @@
             <choice>
                 <externalRef href="site.rng" />
                 <externalRef href="subSite.rng" />
-                <externalRef href="element.rng" />
-                <externalRef href="sample.rng" />
+                <externalRef href="tree.rng" />
+                <externalRef href="specimen.rng" />
                 <externalRef href="radius.rng" />
                 <externalRef href="dictionaries.rng" />
                 <externalRef href="taxon.rng"/>

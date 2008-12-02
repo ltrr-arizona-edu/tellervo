@@ -66,9 +66,19 @@ class authenticate
                     $this->setErrorMessage("902","Missing parameter - 'hash' field is required when doing a secure login");
                     return false;
                 }
-                if($paramsObj->nonce==NULL)
+                if($paramsObj->cnonce==NULL)
                 {
-                    $this->setErrorMessage("902","Missing parameter - 'nonce' field is required when doing a secure login");
+                    $this->setErrorMessage("902","Missing parameter - 'cnonce' field is required when doing a secure login");
+                    return false;
+                }
+                if($paramsObj->snonce==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'snonce' field is required when doing a secure login");
+                    return false;
+                }
+                if($paramsObj->seq==NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'seq' field is required when doing a secure login");
                     return false;
                 }
                 return true;
@@ -98,7 +108,7 @@ class authenticate
         else
         {
             // Log in failed
-            $this->setErrorMessage(101, "Authentication failed using plain login");
+            $this->setErrorMessage($myAuth->getLastErrorCode(), $myAuth->getLastErrorMessage());
         }
     }
     
@@ -107,7 +117,7 @@ class authenticate
         $myAuth = $auth;
         $myRequest = $paramsClass;
         
-        $myAuth->loginWithNonce($myRequest->username, $myRequest->hash, $myRequest->nonce);
+        $myAuth->loginWithNonce($myRequest->username, $myRequest->hash, $myRequest->cnonce, $myRequest->snonce, $myRequest->seq);
         
         if($myAuth->isLoggedIn())
         {
@@ -117,7 +127,7 @@ class authenticate
         else
         {
             // Log in failed
-            $this->setErrorMessage(101, "Authentication failed using secure login");
+            $this->setErrorMessage($myAuth->getLastErrorCode(), $myAuth->getLastErrorMessage());
             return false;
         }
     }
@@ -127,7 +137,8 @@ class authenticate
         $myAuth = $auth;
         $myRequest = $paramsClass;
 
-        $this->xmldata = "<nonce>".$myAuth->nonce()."</nonce>";
+        $seq = $myAuth->sequence();
+        $this->xmldata = "<nonce seq=\"".$seq."\">".$myAuth->nonce($seq)."</nonce>";
         
     }
 

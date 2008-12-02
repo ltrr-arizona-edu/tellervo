@@ -20,13 +20,19 @@
                 <attribute name="hash">
                     <text/>
                 </attribute>
-            </optional>
-            <optional>
-                <attribute name="nonce">
+  
+                <attribute name="cnonce">
+                    <text/>
+                </attribute>
+
+                <attribute name="snonce">
+                    <text/>
+                </attribute>
+ 
+                <attribute name="seq">
                     <text/>
                 </attribute>
             </optional>
-            <text/>
         </element>
     </define>
 </grammar>

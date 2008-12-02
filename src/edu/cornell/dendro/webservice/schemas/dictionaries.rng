@@ -6,9 +6,9 @@
 
     <define name="dictionariesSection" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <interleave>
-            <element name="sampleTypeDictionary">
+            <element name="specimenTypeDictionary">
                 <zeroOrMore>
-                    <ref name="sampleTypeObject"/>
+                    <ref name="specimenTypeObject"/>
                 </zeroOrMore>
             </element>
             <element name="terminalRingDictionary">
@@ -16,9 +16,9 @@
                     <ref name="terminalRingObject"/>
                 </zeroOrMore>
             </element>
-            <element name="sampleQualityDictionary">
+            <element name="specimenQualityDictionary">
                 <zeroOrMore>
-                    <ref name="sampleQualityObject"/>
+                    <ref name="specimenQualityObject"/>
                 </zeroOrMore>
             </element>
             <element name="pithDictionary">
@@ -26,9 +26,9 @@
                     <ref name="pithObject"/>
                 </zeroOrMore>
             </element>
-            <element name="sampleContinuityDictionary">
+            <element name="specimenContinuityDictionary">
                 <zeroOrMore>
-                    <ref name="sampleContinuityObject"/>
+                    <ref name="specimenContinuityObject"/>
                 </zeroOrMore>
             </element>
             <element name="siteNoteDictionary">
@@ -36,17 +36,17 @@
                     <externalRef href="notes.rng"/>
                 </zeroOrMore>
             </element>
-            <element name="elementNoteDictionary">
+            <element name="treeNoteDictionary">
                 <zeroOrMore>
                     <externalRef href="notes.rng"/>
                 </zeroOrMore>
             </element>
-            <element name="seriesNoteDictionary">
+            <element name="measurementNoteDictionary">
                 <zeroOrMore>
                     <externalRef href="notes.rng"/>
                 </zeroOrMore>
             </element>
-            <element name="valueNoteDictionary">
+            <element name="readingNoteDictionary">
                 <zeroOrMore>
                     <externalRef href="notes.rng"/>
                 </zeroOrMore>
@@ -54,8 +54,8 @@
         </interleave>
     </define>   
 
-    <define name="sampleTypeObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-        <element name="sampleType">
+    <define name="specimenTypeObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="specimenType">
             <optional>
                 <attribute name="id">
                     <data type="positiveInteger"/>
@@ -76,8 +76,8 @@
         </element>
     </define>
 
-    <define name="sampleQualityObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-        <element name="sampleQuality">
+    <define name="specimenQualityObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="specimenQuality">
             <optional>
                 <attribute name="id">
                     <text/>
@@ -87,8 +87,8 @@
         </element>
     </define>
 
-    <define name="sampleContinuityObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-        <element name="sampleContinuity">
+    <define name="specimenContinuityObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+        <element name="specimenContinuity">
             <optional>
                 <attribute name="id">
                     <text/>
@@ -109,7 +109,7 @@
         </element>
     </define>
 
-    <define name="vseriesOpObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <define name="vmeasurementOpObject" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="operation">
             <optional>
                 <attribute name="id">
