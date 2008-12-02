@@ -12,6 +12,12 @@
 // USER EDITABLE VARIABLES
 //************************
 
+// Database name
+$dbName = corina_dev;
+
+// Domain name of the server this software is running on
+$domain = "dendro.cornell.edu/dev/";
+
 // Whether to display debug messages
 $debugFlag = false; 
 
@@ -19,13 +25,10 @@ $debugFlag = false;
 $wsversion = "0.1.".exec(svnversion); 
 
 // Path to RelaxNG schema
-$rngSchema = "/var/www/webservice/schemas/corina.rng"; 
+$rngSchema = "/var/www/corina-webservice/dev/schemas/corina.rng"; 
 
 // Timezone of the server this software is running on
 $serverTimezone = "America/New_York";
-
-// Domain name of the server this software is running on
-$domain = "dendro.cornell.edu";
 
 // Folder name where the wiki documentation is stored
 $wikiManualFolder = "corina-manual";
@@ -42,8 +45,6 @@ $gMapAPIKey = "ABQIAAAAs0rCgSUzwBX9znK1mNUjuxQ2hntmN47BkGQDV0OcxMEAjHeRKhS83HleB
 // Postgres credentials file location
 $cdbCredentialsFile = "/home/aps03pwb/.corina_server_credentials";
 
-// Database name
-$dbName = corina_live;
 
 //************************
 

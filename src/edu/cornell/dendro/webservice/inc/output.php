@@ -29,12 +29,13 @@ function writeOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd
 
 function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd="")
 {
+    global $domain;
     $outputStr ="";
     $outputStr.="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     if ($metaHeader->status =="Error")
     {
-        $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"css/corina.css\"?>";
-        $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"css/docbook/driver.css\"?>";
+        $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"https://".$domain."css/corina.css\"?>";
+        $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"https://".$domain."css/docbook/driver.css\"?>";
     }
     $outputStr.= "<corina>\n";
     $outputStr.= $metaHeader->asXML();
