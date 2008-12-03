@@ -20,38 +20,38 @@ XML:  <textarea name="xmlrequest" rows="20" cols="80">
 <h4>Login:</h4>
 
 <pre>
-&lt;?xml version="1.0" encoding="UTF-8"?>
-&lt;corina>
-  &lt;request type="plainlogin">
-     &lt;authenticate username="yourusername" password="yourpassword" />
-  &lt;/request>
-&lt;/corina>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;corina&gt;
+  &lt;request type="plainlogin"&gt;
+     &lt;authenticate username="yourusername" password="yourpassword" /&gt;
+  &lt;/request&gt;
+&lt;/corina&gt;
 </pre>
 
 
 <h4>Get details of a site:</h4>
 
 <pre>
-&lt;?xml version="1.0" encoding="UTF-8"?>
-&lt;corina>
-  &lt;request type="read">
-     &lt;site id="1" />
-  &lt;/request>
-&lt;/corina>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;corina&gt;
+  &lt;request type="read"&gt;
+     &lt;site id="1" /&gt;
+  &lt;/request&gt;
+&lt;/corina&gt;
 </pre>
 
 
 <h4>Search for measurements of a site:</h4>
 
 <pre>
-&lt;?xml version="1.0" encoding="UTF-8"?>
-&lt;corina>
-  &lt;request type="search">
-     &lt;searchParams returnObject="measurement" limit="5">
-        &lt;param name="siteid" operator="=" value="571" />
-     &lt;/searchParams>
-  &lt;/request>
-&lt;/corina>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;corina&gt;
+  &lt;request type="search"&gt;
+     &lt;searchParams returnObject="measurement" limit="5"&gt;
+        &lt;param name="siteid" operator="=" value="571" /&gt;
+     &lt;/searchParams&gt;
+  &lt;/request&gt;
+&lt;/corina&gt;
 </pre>
 
 

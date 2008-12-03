@@ -183,7 +183,11 @@ echo "<li>Tests passed = $passedCount </li>";
 echo "<li>Tests failed = $failedCount </li>";
 echo "<li>Processing time  = $totalProcessingTime seconds</li>";
 echo "</ul><hr>";
-echo "</div></div></div></div></body></html>";
+//echo "</div></div></div></div></body></html>";
+?>
+</body></html>
+
+<?php
 
 
 function printResultFromXML($responsexml, $object, $requestxml)
@@ -221,3 +225,4 @@ function printResult($testnumber, $requesttype, $name, $result, $time, $requestx
 }
 
 ?>
+
