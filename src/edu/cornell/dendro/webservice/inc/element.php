@@ -42,65 +42,107 @@ class element
     /***************/
     /* CONSTRUCTOR */
     /***************/
+    
 
+	/**
+     * Constructor for this class.
+     *
+     * @return element
+     */
     function element()
-    {
-        // Constructor for this class.
+    { 
     }
 
     /***********/
     /* SETTERS */
     /***********/
 
+    
+    /**
+     * // Set the current elements name
+     *
+     * @param String $theName
+     */
     function setName($theName)
-    {
-        // Set the current objects name
+    {  
         $this->name=$theName;
     }
     
+    /**
+     * Set the current elements taxonid
+     *
+     * @param Integer $theTaxonID
+     */
     function setTaxonID($theTaxonID)
     {
-        // Set the current objects taxonid
         $this->taxonID=$theTaxonID;
     }
 
+    /**
+     * Set the current elements subsite ID
+     *
+     * @param Integer $theSubSiteID
+     */
     function setSubSiteID($theSubSiteID)
     {
-        // Set the current objects subsite ID
         $this->subSiteID=$theSubSiteID;
     }
     
-
+    /**
+     * Set the current elements latitude.  
+     * Deprecated - use setPrecision instead
+     *
+     * @param Float $theLatitude
+     */
     function setLatitude($theLatitude)
-    {
-        // Set the current objects latitude 
+    { 
         $this->latitude= (float) $theLatitude;
     }
-    
+
+     /**
+     * Set the current objects longitude
+     * Deprecated - use setPrecision instead
+     *
+     * @param Float $theLongitude 
+     */
     function setLongitude($theLongitude)
     {
-        // Set the current objects longitude 
         $this->longitude= (float) $theLongitude;
     }
     
+    /**
+     * Set the current objects precision in meters
+     *
+     * @param Float $thePrecision
+     */
     function setPrecision($thePrecision)
     {
-        // Set the current objects precision 
         $this->precision=$thePrecision;
     }
 
+     /**
+      * Set the location of the current elements location
+      *
+      * @param Float $theLat
+      * @param Float $theLong
+      * @param Float $thePrecision
+      */
     function setLocality($theLat, $theLong, $thePrecision)
     {
-        // Set the location of the current object
-        $this->latitude = $theLat;
+        $this->latitude =  $theLat;
         $this->longitude = $theLong;
         $this->precision = $thePrecision;
     }
 
+    /**
+     * Set the current elements parameters from the database
+     *
+     * @param Integer $theID
+     * @param String $format (standard or summary. defaults to standard)
+     * @return unknown
+     */
     function setParamsFromDB($theID, $format="standard")
     {
-        // Set the current objects parameters from the database
-
         global $dbconn;
         
         $this->id=$theID;
@@ -151,11 +193,15 @@ class element
         return TRUE;
     }
 
+    
+    /**
+     * Add the id's of the current elements direct children from the database
+     * i.e. elementNotes and samples
+     *
+     * @return unknown
+     */
     function setChildParamsFromDB()
     {
-        // Add the id's of the current objects direct children from the database
-        // sample
-
         global $dbconn;
 
         $sql  = "select elementnoteid from tblelementelementnote where elementid=".$this->id;
@@ -173,7 +219,7 @@ class element
             $result = pg_query($dbconn, $sql2);
             while ($row = pg_fetch_array($result))
             {
-                // Get all element note id's for this element and store 
+                // Get all sample id's for this element and store 
                 array_push($this->sampleArray, $row['sampleid']);
             }
         }
@@ -187,6 +233,12 @@ class element
         return TRUE;
     }
     
+    /**
+     * Set the current elements parameters from a paramsClass object
+     *
+     * @param Parameter Class $paramsClass
+     * @return unknown
+     */
     function setParamsFromParamsClass($paramsClass)
     {
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
@@ -216,9 +268,16 @@ class element
         return true;
     }
 
+    /**
+     * Check that the parameters within a defined parameters class are valid for
+     * a specific crudMode
+     *
+     * @param Parameters Class $paramsObj
+     * @param String $crudMode (one of create, read, update or delete)
+     * @return unknown
+     */
     function validateRequestParams($paramsObj, $crudMode)
     {
-        // Check parameters based on crudMode 
         switch($crudMode)
         {
             case "read":
@@ -291,7 +350,12 @@ class element
         }
     }
 
-    
+    /**
+     * Set an error message for this element
+     *
+     * @param Integer $theCode
+     * @param String $theMessage
+     */
     function setErrorMessage($theCode, $theMessage)
     {
         // Set the error latest error message and code for this object.
@@ -332,6 +396,13 @@ class element
     /*ACCESSORS*/
     /***********/
 
+    /**
+     * Get the XML representation of this element
+     *
+     * @param String $format (one of standard, comprehensive, summary or minimal. Defaults to standard)
+     * @param String $parts (one of all, beginning, or end. Defaults to all)
+     * @return unknown
+     */
     function asXML($format='standard', $parts='all')
     {
         switch($format)
@@ -399,6 +470,13 @@ class element
         }
     }
 
+   /**
+    * Internal function for getting the XML representation of this element.  Use asXML instead.
+    *
+    * @param unknown_type $format
+    * @param unknown_type $parts
+    * @return unknown
+    */
     private function _asXML($format, $parts)
     {
         global $domain;
@@ -524,6 +602,11 @@ class element
         }
     }
 
+    /**
+     * Get the opening parent XML tag
+     *
+     * @return unknown
+     */
     function getParentTagBegin()
     {
         // Return a string containing the start XML tag for the current object's parent
@@ -531,6 +614,11 @@ class element
         return $xml;
     }
 
+    /**
+     * Get the end parent XML tag
+     *
+     * @return unknown
+     */
     function getParentTagEnd()
     {
         // Return a string containing the end XML tag for the current object's parent
@@ -538,10 +626,21 @@ class element
         return $xml;
     }
 
+    /**
+    * Get the ID of this element
+    *
+    * @return unknown
+    */
     function getID()
     {
         return $this->id;
     }
+    
+    /**
+    * Get the last error code for this class
+    *
+    * @return unknown
+    */   
     function getLastErrorCode()
     {
         // Return an integer containing the last error code recorded for this object
@@ -549,6 +648,11 @@ class element
         return $error;  
     }
 
+    /**
+     * Get the last error message for this class
+     *
+     * @return unknown
+     */
     function getLastErrorMessage()
     {
         // Return a string containing the last error message recorded for this object
@@ -560,6 +664,11 @@ class element
     /*FUNCTIONS*/
     /***********/
 
+    /**
+     * Write the current element to the database
+     *
+     * @return unknown
+     */
     function writeToDB()
     {
         // Write the current object to the database
@@ -669,6 +778,11 @@ class element
         return TRUE;
     }
 
+    /**
+     * Delete the current element from the database
+     *
+     * @return unknown
+     */
     function deleteFromDB()
     {
         // Delete the record in the database matching the current object's ID

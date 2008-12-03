@@ -12,17 +12,21 @@ require_once("inc/dbhelper.php");
 
 
 class request
-{
-    
+{ 
     protected $xmlrequest                 = NULL;
     protected $auth                       = NULL;
     protected $metaHeader                 = NULL;
     protected $paramObjectsArray          = array(); 
     protected $crudMode                   = NULL;
     protected $format                     = 'standard';
-    
-    var $includePermissions         = FALSE;
+  
+    var $includePermissions               = FALSE;
 
+    
+    /*************/
+    /*CONSTRUCTOR*/
+    /*************/
+    
     function __construct($metaHeader, $auth, $xmlrequest)
     {
         $this->metaHeader = $metaHeader;
@@ -31,11 +35,24 @@ class request
         $this->validateXML(stripslashes($xmlrequest));
     }
 
+    /************/
+    /*DESTRUCTOR*/
+    /************/    
+    
     function __destruct()
-    {
-        
+    { 
     }
 
+    /***********/
+    /*FUNCTIONS*/
+    /***********/   
+   
+    /**
+     * Validate the request XML against the schema
+     *
+     * @param String $xmlrequest
+     * @return unknown
+     */
     function validateXML($xmlrequest)
     {
         global $rngSchema;
@@ -76,6 +93,11 @@ class request
         }
     }
 
+    /**
+     * Log this request in the database request log
+     *
+     * @param unknown_type $xmlrequest
+     */
     function logRequest($xmlrequest)
     {
         global $dbconn;
@@ -108,7 +130,11 @@ class request
 
     }
     
-
+    /**
+     * Parse the XML and create a parameters class from this request
+     *
+     * @return unknown
+     */
     function createParamObjects()
     {
         if($this->crudMode=='search')
@@ -126,9 +152,7 @@ class request
             {
                 $this->metaHeader->setMessage("905", "Invalid XML request - search parameters have not been set for your search request");
 
-            }
-            
-            
+            }   
         }
         elseif ( ($this->crudMode=='create') || ($this->crudMode=='read') || ($this->crudMode=='update') || ($this->crudMode=='delete') || ($this->crudMode=='assign') || ($this->crudMode=='unassign') )
         {
@@ -165,9 +189,9 @@ class request
                 }
             }
             
-            if($this->xmlrequest->xpath('//tree'))
+            if($this->xmlrequest->xpath('//element'))
             {
-                foreach ($this->xmlrequest->xpath('//tree') as $item)
+                foreach ($this->xmlrequest->xpath('//element') as $item)
                 {
                     $parentID = NULL;
                     $parent = $item->xpath('../..');
@@ -175,22 +199,22 @@ class request
                     {
                         $parentID = $parent[0]->subSite['id'];
                     }
-                    $myParamObj = new treeParameters($this->metaHeader, $this->auth, $item, $parentID);
+                    $myParamObj = new elementParameters($this->metaHeader, $this->auth, $item, $parentID);
                     array_push($this->paramObjectsArray, $myParamObj);
                 }
             }
             
-            if($this->xmlrequest->xpath('//specimen'))
+            if($this->xmlrequest->xpath('//sample'))
             {
-                foreach ($this->xmlrequest->xpath('//specimen') as $item)
+                foreach ($this->xmlrequest->xpath('//sample') as $item)
                 {
                     $parentID = NULL;
                     $parent = $item->xpath('../..');
-                    if(isset($parent[0]->tree['id']))
+                    if(isset($parent[0]->element['id']))
                     {
-                        $parentID = $parent[0]->tree['id'];
+                        $parentID = $parent[0]->element['id'];
                     }
-                    $myParamObj = new specimenParameters($this->metaHeader, $this->auth, $item, $parentID);
+                    $myParamObj = new sampleParameters($this->metaHeader, $this->auth, $item, $parentID);
                     array_push($this->paramObjectsArray, $myParamObj);
                 }
             }
@@ -201,9 +225,9 @@ class request
                 {
                     $parentID = "";
                     $parent = $item->xpath('../..');
-                    if(isset($parent[0]->specimen['id']))
+                    if(isset($parent[0]->sample['id']))
                     {
-                        $parentID = $parent[0]->specimen['id'];
+                        $parentID = $parent[0]->sample['id'];
                     }
                     $myParamObj = new radiusParameters($this->metaHeader, $this->auth, $item, $parentID);
                     array_push($this->paramObjectsArray, $myParamObj);
@@ -248,12 +272,12 @@ class request
                 }
             }
             
-            if($this->xmlrequest->xpath('//request/treeNote'))
+            if($this->xmlrequest->xpath('//request/elementNote'))
             {
-                foreach ($this->xmlrequest->xpath('//request/treeNote') as $item)
+                foreach ($this->xmlrequest->xpath('//request/elementNote') as $item)
                 {
                     $parentID = "";
-                    $myParamObj = new treeNoteParameters($this->metaHeader, $this->auth, $item, $parentID);
+                    $myParamObj = new elementNoteParameters($this->metaHeader, $this->auth, $item, $parentID);
                     array_push($this->paramObjectsArray, $myParamObj);
                 }
             }
@@ -335,26 +359,45 @@ class request
     }
 
 
-    // GETTERS
-    //
+    /*********/
+    /*GETTERS*/
+    /*********/
 
+    /**
+     * Get this format for this request.  Normally 'standard'
+     *
+     * @return unknown
+     */
     function getFormat()
     {
         return $this->format;
     }
 
+    /**
+     * Returns the number of parameter objects of a specified type.
+     *
+     * @return unknown
+     */
     function countParamObjects()
     {
-        // Returns the number of parameter objects of a specified type.  
-        // If objectType is not specified it returns the total number of parameters objects
         return count($this->paramObjectsArray);
     }
     
+    /**
+     * Get the 'crud' mode for this request (create, read, update or delete)
+     *
+     * @return unknown
+     */
     function getCrudMode()
     {
         return $this->crudMode;
     }
     
+    /**
+     * Get this request in the form of a parameters class
+     *
+     * @return unknown
+     */
     function getParamObjectsArray()
     {
         return $this->paramObjectsArray;

@@ -388,10 +388,14 @@ class taxon
     /*FUNCTIONS*/
     /***********/
 
+    /**
+     * Write this taxon to the database
+     *
+     * @return unknown
+     */
     function writeToDB()
     {
-        // Write the current object to the database
-
+        
         global $dbconn;
 
         //Only attempt to run SQL if there are no errors so far
