@@ -4,9 +4,9 @@ function getHelpDocbook($page)
 {
 //    header('Content-Type: application/xhtml+xml; charset=utf-8');
     global $domain;
-    global $wikiManualFolder;
+    global $wikiManualBaseUrl;
 
-    $filename = "http://".$domain."/".$wikiManualFolder."/WebserviceDocs-".$page."?action=format&mimetype=xml/docbook";
+    $filename = $wikiManualBaseUrl."/WebserviceDocs-".$page."?action=format&mimetype=xml/docbook";
     $file = file_get_contents($filename);
 
     // Remove XML header line

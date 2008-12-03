@@ -31,7 +31,7 @@ $rngSchema = "/var/www/corina-webservice/dev/schemas/corina.rng";
 $serverTimezone = "America/New_York";
 
 // Folder name where the wiki documentation is stored
-$wikiManualFolder = "corina-manual";
+$wikiManualBaseUrl = "http://dendro.cornell.edu/corina-manual";
 
 // Page name where main webservice is run from
 $wspage = "webservice.php";
