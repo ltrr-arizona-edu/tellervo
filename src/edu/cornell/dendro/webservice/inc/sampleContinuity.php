@@ -1,4 +1,4 @@
-<?php
+<?php 
 //*******************************************************************
 ////// PHP Corina Middleware
 ////// License: GPL
@@ -9,11 +9,11 @@
 //////*******************************************************************
 require_once('dbhelper.php');
 
-class specimenContinuity 
+class sampleContinuity 
 {
     var $id = NULL;
     var $label = NULL;
-    var $parentXMLTag = "specimenContinuityDictionary"; 
+    var $parentXMLTag = "sampleContinuityDictionary"; 
     var $lastErrorMessage = NULL;
     var $lastErrorCode = NULL;
 
@@ -21,7 +21,7 @@ class specimenContinuity
     /* CONSTRUCTOR */
     /***************/
 
-    function specimenContinuity()
+    function sampleContinuity()
     {
         // Constructor for this class.
         $this->isStandard = FALSE;
@@ -50,7 +50,7 @@ class specimenContinuity
 
         global $dbconn;
         $this->id=$theID;
-        $sql = "select * from tlkpspecimencontinuity where specimencontinuityid='$theID'";
+        $sql = "select * from tlkpsamplecontinuity where samplecontinuityid='$theID'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -59,7 +59,7 @@ class specimenContinuity
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No records match the specified specimenContinuity id");
+                $this->setErrorMessage("903", "No records match the specified sampleContinuity id");
                 return FALSE;
             }
             else
@@ -91,7 +91,7 @@ class specimenContinuity
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml.= "<specimenContinuity>".$this->label."</specimenContinuity>\n";
+            $xml.= "<sampleContinuity>".$this->label."</sampleContinuity>\n";
             return $xml;
         }
         else
@@ -169,12 +169,12 @@ class specimenContinuity
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tlkpspecimencontinuity (label) values ('".$this->label."')";
+                    $sql = "insert into tlkpsamplecontinuity (label) values ('".$this->label."')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tlkpspecimencontinuity set label='".$this->label."' where specimencontinuityid=".$this->id;
+                    $sql = "update tlkpsamplecontinuity set label='".$this->label."' where samplecontinuityid=".$this->id;
                 }
 
                 // Run SQL command
@@ -222,7 +222,7 @@ class specimenContinuity
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tlkpspecimencontinuity where specimencontinuityid=".$this->id;
+                $sql = "delete from tlkpsamplecontinuity where samplecontinuityid=".$this->id;
 
                 // Run SQL command
                 if ($sql)

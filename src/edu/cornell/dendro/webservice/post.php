@@ -18,7 +18,7 @@ XML:  <textarea name="xmlrequest" rows="20" cols="80">
 
 </form>
 <h4>Login:</h4>
-<p>
+
 <pre>
 &lt;?xml version="1.0" encoding="UTF-8"?>
 &lt;corina>
@@ -27,10 +27,10 @@ XML:  <textarea name="xmlrequest" rows="20" cols="80">
   &lt;/request>
 &lt;/corina>
 </pre>
-</p>
+
 
 <h4>Get details of a site:</h4>
-<p>
+
 <pre>
 &lt;?xml version="1.0" encoding="UTF-8"?>
 &lt;corina>
@@ -39,10 +39,10 @@ XML:  <textarea name="xmlrequest" rows="20" cols="80">
   &lt;/request>
 &lt;/corina>
 </pre>
-</p>
+
 
 <h4>Search for measurements of a site:</h4>
-<p>
+
 <pre>
 &lt;?xml version="1.0" encoding="UTF-8"?>
 &lt;corina>
@@ -53,7 +53,7 @@ XML:  <textarea name="xmlrequest" rows="20" cols="80">
   &lt;/request>
 &lt;/corina>
 </pre>
-</p>
+
 
 
 

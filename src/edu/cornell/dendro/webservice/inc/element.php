@@ -9,10 +9,10 @@
 //////*******************************************************************
 require_once('dbhelper.php');
 require_once('inc/note.php');
-require_once('inc/specimen.php');
+require_once('inc/sample.php');
 require_once('inc/taxon.php');
 
-class tree 
+class element 
 {
     var $id = NULL;
     var $taxonID = NULL;
@@ -22,9 +22,9 @@ class tree
     var $latitude = NULL;
     var $longitude = NULL;
     var $precision = NULL;
-    var $isLiveTree = NULL;
-    var $specimenArray = array();
-    var $treeNoteArray = array();
+    var $isLiveelement = NULL;
+    var $sampleArray = array();
+    var $elementNoteArray = array();
     var $createdTimeStamp = NULL;
     var $lastModifiedTimeStamp = NULL;
                     
@@ -35,7 +35,7 @@ class tree
     var $canUpdate = NULL;
     var $canDelete = NULL;
 
-    var $parentXMLTag = "trees"; 
+    var $parentXMLTag = "elements"; 
     var $lastErrorMessage = NULL;
     var $lastErrorCode = NULL;
 
@@ -43,7 +43,7 @@ class tree
     /* CONSTRUCTOR */
     /***************/
 
-    function tree()
+    function element()
     {
         // Constructor for this class.
     }
@@ -104,7 +104,7 @@ class tree
         global $dbconn;
         
         $this->id=$theID;
-        $sql = "select originaltaxonname, treeid, taxonid, subsiteid, name, X(location) as long, Y(location) as lat, precision, createdtimestamp, lastmodifiedtimestamp from tbltree where treeid=$theID";
+        $sql = "select originaltaxonname, elementid, taxonid, subsiteid, name, X(location) as long, Y(location) as lat, precision, createdtimestamp, lastmodifiedtimestamp from tblelement where elementid=$theID";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -132,7 +132,7 @@ class tree
                 
                 if($format=='summary')
                 {
-                    $sql = "select cpgdb.getlabel('tree', '".$this->id."')";
+                    $sql = "select cpgdb.getlabel('element', '".$this->id."')";
                     pg_send_query($dbconn, $sql);
                     $result = pg_get_result($dbconn);
                     $row = pg_fetch_array($result);
@@ -154,27 +154,27 @@ class tree
     function setChildParamsFromDB()
     {
         // Add the id's of the current objects direct children from the database
-        // Specimen
+        // sample
 
         global $dbconn;
 
-        $sql  = "select treenoteid from tbltreetreenote where treeid=".$this->id;
-        $sql2 = "select specimenid from tblspecimen where treeid=".$this->id;
+        $sql  = "select elementnoteid from tblelementelementnote where elementid=".$this->id;
+        $sql2 = "select sampleid from tblsample where elementid=".$this->id;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
             {
-                // Get all tree note id's for this tree and store 
-                array_push($this->treeNoteArray, $row['treenoteid']);
+                // Get all element note id's for this element and store 
+                array_push($this->elementNoteArray, $row['elementnoteid']);
             }
 
             $result = pg_query($dbconn, $sql2);
             while ($row = pg_fetch_array($result))
             {
-                // Get all tree note id's for this tree and store 
-                array_push($this->specimenArray, $row['specimenid']);
+                // Get all element note id's for this element and store 
+                array_push($this->sampleArray, $row['sampleid']);
             }
         }
         else
@@ -198,17 +198,17 @@ class tree
         if (isset($paramsClass->precision))             $this->precision            = $paramsClass->precision;
         if (isset($paramsClass->subSiteID))             $this->subSiteID            = $paramsClass->subSiteID;
         
-        if (isset($paramsClass->treeNoteArray))
+        if (isset($paramsClass->elementNoteArray))
         {
             // Remove any existing site notes ready to be replaced with what user has specified
-            unset($this->treeNoteArray);
-            $this->treeNoteArray = array();
+            unset($this->elementNoteArray);
+            $this->elementNoteArray = array();
 
-            if($paramsClass->treeNoteArray[0]!='empty')
+            if($paramsClass->elementNoteArray[0]!='empty')
             {
-                foreach($paramsClass->treeNoteArray as $item)
+                foreach($paramsClass->elementNoteArray as $item)
                 {
-                    array_push($this->treeNoteArray, (int) $item[0]);
+                    array_push($this->elementNoteArray, (int) $item[0]);
                 }
             }
         }   
@@ -224,7 +224,7 @@ class tree
             case "read":
                 if($paramsObj->id == NULL)
                 {
-                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a tree.");
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a element.");
                     return false;
                 }
                 return true;
@@ -232,7 +232,7 @@ class tree
             case "update":
                 if($paramsObj->id == NULL)
                 {
-                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating a tree.");
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating a element.");
                     return false;
                 }
                 if(($paramsObj->taxonID==NULL) 
@@ -251,7 +251,7 @@ class tree
             case "delete":
                 if($paramsObj->id == NULL) 
                 {
-                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a tree.");
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a element.");
                     return false;
                 }
                 return true;
@@ -261,7 +261,7 @@ class tree
                 {
                     if($paramsObj->id == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'treeid' field is required when creating a specimen.");
+                        $this->setErrorMessage("902","Missing parameter - 'elementid' field is required when creating a sample.");
                         return false;
                     }
                 }
@@ -269,12 +269,12 @@ class tree
                 {
                     if($paramsObj->name == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a tree.");
+                        $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a element.");
                         return false;
                     }
                     if($paramsObj->taxonID == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'validatedtaxonid' field is required when creating a tree.");
+                        $this->setErrorMessage("902","Missing parameter - 'validatedtaxonid' field is required when creating a element.");
                         return false;
                     }
                     if($paramsObj->subSiteID == NULL) 
@@ -303,7 +303,7 @@ class tree
     {
         global $dbconn;
 
-        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'tree', $this->id)";
+        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'element', $this->id)";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -342,10 +342,10 @@ class tree
             global $dbconn;
             $xml = NULL;
 
-            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tbltree.treeid
+            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tblelement.elementid
                 FROM tblsubsite 
-                INNER JOIN tbltree ON tblsubsite.subsiteid=tbltree.subsiteid
-                where tbltree.treeid='".$this->id."'";
+                INNER JOIN tblelement ON tblsubsite.subsiteid=tblelement.subsiteid
+                where tblelement.elementid='".$this->id."'";
 
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -356,7 +356,7 @@ class tree
                 if(pg_num_rows($result)==0)
                 {
                     // No records match the id specified
-                    $this->setErrorMessage("903", "No match for tree id=".$this->id);
+                    $this->setErrorMessage("903", "No match for element id=".$this->id);
                     return FALSE;
                 }
                 else
@@ -413,14 +413,14 @@ class tree
                 $hasHigherTaxonomy = $myTaxon->setHigherTaxonomy();
 
                 // Only return XML when there are no errors.
-                $xml = "<tree ";
+                $xml = "<element ";
                 $xml.= "id=\"".$this->id."\" >";
-                $xml.= getResourceLinkTag("tree", $this->id)."\n";
+                $xml.= getResourceLinkTag("element", $this->id)."\n";
                 
                 // Include map reference tag if appropriate
                 if( (isset($this->latitude)) && (isset($this->longitude)) )
                 {
-                    $xml.= getResourceLinkTag("tree", $this->id, "map");
+                    $xml.= getResourceLinkTag("element", $this->id, "map");
                 }
                 
                 // Include permissions details if requested
@@ -453,7 +453,7 @@ class tree
                     if(isset($this->latitude))              $xml.= "<latitude>".$this->latitude."</latitude>\n";
                     if(isset($this->longitude))             $xml.= "<longitude>".$this->longitude."</longitude>\n";
                     if(isset($this->precision))             $xml.= "<precision>".$this->precision."</precision>\n";
-                    if(isset($this->isLiveTree))            $xml.= "<isLiveTree>".$this->isLiveTree."</isLiveTree>\n";
+                    if(isset($this->isLiveelement))            $xml.= "<isLiveelement>".$this->isLiveelement."</isLiveelement>\n";
                     if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
                     if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
 
@@ -467,41 +467,41 @@ class tree
                     if($format!="summary")
                     {
                     
-                        // Include tree notes if present
-                        if ($this->treeNoteArray)
+                        // Include element notes if present
+                        if ($this->elementNoteArray)
                         {
-                            foreach($this->treeNoteArray as $value)
+                            foreach($this->elementNoteArray as $value)
                             {
-                                $myTreeNote = new treeNote();
-                                $success = $myTreeNote->setParamsFromDB($value);
+                                $myelementNote = new elementNote();
+                                $success = $myelementNote->setParamsFromDB($value);
 
                                 if($success)
                                 {
-                                    $xml.=$myTreeNote->asXML();
+                                    $xml.=$myelementNote->asXML();
                                 }
                                 else
                                 {
-                                    $myMetaHeader->setErrorMessage($myTreeNote->getLastErrorCode, $myTreeNote->getLastErrorMessage);
+                                    $myMetaHeader->setErrorMessage($myelementNote->getLastErrorCode, $myelementNote->getLastErrorMessage);
                                 }
                             }
                         }
 
-                        // Include specimens if present
-                        if (($this->specimenArray) && ($format=="standard"))
+                        // Include samples if present
+                        if (($this->sampleArray) && ($format=="standard"))
                         {
                             $xml.="<references>\n";
-                            foreach($this->specimenArray as $value)
+                            foreach($this->sampleArray as $value)
                             {
-                                $mySpecimen = new specimen();
-                                $success = $mySpecimen->setParamsFromDB($value);
+                                $mysample = new sample();
+                                $success = $mysample->setParamsFromDB($value);
 
                                 if($success)
                                 {
-                                    $xml.=$mySpecimen->asXML("minimal", "all");
+                                    $xml.=$mysample->asXML("minimal", "all");
                                 }
                                 else
                                 {
-                                    $myMetaHeader->setErrorMessage($mySpecimen->getLastErrorCode, $mySpecimen->getLastErrorMessage);
+                                    $myMetaHeader->setErrorMessage($mysample->getLastErrorCode, $mysample->getLastErrorMessage);
                                 }
                             }
                             $xml.="</references>\n";
@@ -513,7 +513,7 @@ class tree
             if(($parts=="all") || ($parts=="end"))
             {
                 // End XML tag
-                $xml.= "</tree>\n";
+                $xml.= "</element>\n";
             }
 
             return $xml;
@@ -527,7 +527,7 @@ class tree
     function getParentTagBegin()
     {
         // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tbltree")."'>";
+        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tblelement")."'>";
         return $xml;
     }
 
@@ -586,12 +586,12 @@ class tree
                 if($this->id == NULL)
                 {
                     // New Record
-                    $sql = "insert into tbltree ( ";
+                    $sql = "insert into tblelement ( ";
                         if (isset($this->taxonID))                                  $sql.= "taxonid, ";
                         if (isset($this->subSiteID))                                $sql.= "subsiteid, ";
                         if (isset($this->name))                                     $sql.= "name, ";
                         if (isset($this->precision))                                $sql.= "precision, ";
-                        if (isset($this->isLiveTree))                               $sql.= "islivetree, ";
+                        if (isset($this->isLiveelement))                               $sql.= "isliveelement, ";
                         if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "location, ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
@@ -600,17 +600,17 @@ class tree
                         if (isset($this->subSiteID))                                $sql.= "'".$this->subSiteID. "', ";
                         if (isset($this->name))                                     $sql.= "'".$this->name.     "', ";
                         if (isset($this->precision))                                $sql.= "'".$this->precision. "', ";
-                        if (isset($this->isLiveTree))                               $sql.="'".fromPHPtoPGBool($this->isLiveTree)."', ";
+                        if (isset($this->isLiveelement))                               $sql.="'".fromPHPtoPGBool($this->isLiveelement)."', ";
                         if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "setsrid(makepoint(".sprintf("%1.8f",$this->longitude).", ".sprintf("%1.8f",$this->latitude)."), 4326), ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
-                    $sql2 = "select * from tbltree where treeid=currval('tbltree_treeid_seq')";
+                    $sql2 = "select * from tblelement where elementid=currval('tblelement_elementid_seq')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tbltree set ";
+                    $sql = "update tblelement set ";
                         if (isset($this->taxonID))                                  $sql.= "taxonid='".    $this->taxonID    ."', ";
                         if (isset($this->subSiteID))                                $sql.= "subsiteid='".  $this->subSiteID  ."', ";
                         if (isset($this->name))                                     $sql.= "name='".      $this->name      ."', ";
@@ -618,7 +618,7 @@ class tree
                         if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "location=setsrid(makepoint(".sprintf("%1.8f",$this->longitude).", ".sprintf("%1.8f",$this->latitude)."), 4326), ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
-                    $sql .= " where treeid=".$this->id;
+                    $sql .= " where elementid=".$this->id;
                 }
                 //echo $sql;
 
@@ -651,7 +651,7 @@ class tree
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
                     {
-                        $this->id=$row['treeid'];   
+                        $this->id=$row['elementid'];   
                         $this->createdTimeStamp=$row['createdtimestamp'];   
                         $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
                     }
@@ -689,7 +689,7 @@ class tree
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tbltree where treeid=".$this->id;
+                $sql = "delete from tblelement where elementid=".$this->id;
 
                 // Run SQL command
                 if ($sql)
@@ -704,7 +704,7 @@ class tree
                         {
                         case 23503:
                                 // Foreign key violation
-                                $this->setErrorMessage("907", "Foreign key violation.  You must delete all specimens associated with a tree before deleting the tree itself.");
+                                $this->setErrorMessage("907", "Foreign key violation.  You must delete all samples associated with a element before deleting the element itself.");
                                 break;
                         default:
                                 // Any other error

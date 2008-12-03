@@ -9,11 +9,11 @@
 //////*******************************************************************
 require_once('dbhelper.php');
 
-class specimenType 
+class sampleQuality 
 {
     var $id = NULL;
     var $label = NULL;
-    var $parentXMLTag = "specimenTypeDictionary"; 
+    var $parentXMLTag = "sampleQualityDictionary"; 
     var $lastErrorMessage = NULL;
     var $lastErrorCode = NULL;
 
@@ -21,7 +21,7 @@ class specimenType
     /* CONSTRUCTOR */
     /***************/
 
-    function specimenType()
+    function sampleQuality()
     {
         // Constructor for this class.
         $this->isStandard = FALSE;
@@ -47,7 +47,7 @@ class specimenType
     function setParamsFromLabel($theLabel)
     {
         global $dbconn;
-        $sql = "select * from tlkpspecimentype where label='$theLabel'";
+        $sql = "select * from tlkpsamplequality where label='$theLabel'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -63,7 +63,7 @@ class specimenType
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->setParamsFromDB($row['specimentypeid']);
+                $this->setParamsFromDB($row['samplequalityid']);
             }
         }
         else
@@ -81,8 +81,8 @@ class specimenType
         // Set the current objects parameters from the database
 
         global $dbconn;
-        
-        $sql = "select * from tlkpspecimentype where specimentypeid='$theID'";
+        $this->id=$theID;
+        $sql = "select * from tlkpsamplequality where samplequalityid='$theID'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -91,7 +91,7 @@ class specimenType
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No records match") ;
+                $this->setErrorMessage("903", "No records match the specified sampleQuality id");
                 return FALSE;
             }
             else
@@ -99,6 +99,7 @@ class specimenType
                 // Set parameters from db
                 $row = pg_fetch_array($result);
                 $this->label = $row['label'];
+                return TRUE;
             }
         }
         else
@@ -108,7 +109,6 @@ class specimenType
             return FALSE;
         }
 
-        return TRUE;
     }
 
 
@@ -123,7 +123,7 @@ class specimenType
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml.= "<specimenType>".$this->label."</specimenType>\n";
+            $xml.= "<sampleQuality>".$this->label."</sampleQuality>\n";
             return $xml;
         }
         else
@@ -145,14 +145,14 @@ class specimenType
     static function getParentTagBegin()
     {
         // Return a string containing the start XML tag for the current object's parent
-        $xml = "<specimenTypeDictionary>";
+        $xml = "<sampleQualityDictionary>";
         return $xml;
     }
 
     static function getParentTagEnd()
     {
         // Return a string containing the end XML tag for the current object's parent
-        $xml = "</specimenTypeDictionary>";
+        $xml = "</sampleQualityDictionary>";
         return $xml;
     }
 
@@ -169,8 +169,6 @@ class specimenType
         $error = $this->lastErrorMessage;
         return $error;
     }
-
-
 
     /***********/
     /*FUNCTIONS*/
@@ -208,12 +206,12 @@ class specimenType
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tlkpspecimentype (label) values ('".$this->label."')";
+                    $sql = "insert into tlkpsamplequality (label) values ('".$this->label."')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tlkpspecimentype set label='".$this->label."' where specimentypeid=".$this->id;
+                    $sql = "update tlkpsamplequality set label='".$this->label."' where samplequalityid=".$this->id;
                 }
 
                 // Run SQL command
@@ -261,7 +259,7 @@ class specimenType
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tlkpspecimentype where specimentypeid=".$this->id;
+                $sql = "delete from tlkpsamplequality where samplequalityid=".$this->id;
 
                 // Run SQL command
                 if ($sql)

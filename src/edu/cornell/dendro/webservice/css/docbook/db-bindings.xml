@@ -14,7 +14,7 @@
 
   <binding id="image">
     <content>
-      <html:img xbl:inherits="src=fileref"/>
+      <html:img inherits="src=fileref"/>
     </content>
 
     <implementation>

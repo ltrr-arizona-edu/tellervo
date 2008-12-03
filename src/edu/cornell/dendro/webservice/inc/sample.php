@@ -15,6 +15,7 @@ require_once('inc/specimenQuality.php');
 require_once('inc/specimenContinuity.php');
 require_once('inc/pith.php');
 
+
 class specimen 
 {
     var $id = NULL;
@@ -225,17 +226,17 @@ class specimen
                 // Set parameters from db
                 $row = pg_fetch_array($result);
                 $this->name = $row['name'];
-                $this->id = $row['specimenid'];
+                $this->id = $row['sampleid'];
                 $this->dateCollected = $row['datecollected'];
-                $this->specimenType = $row['specimentype'];
+                $this->sampleType = $row['sampletype'];
                 $this->terminalRing = $row['terminalring'];
                 $this->isTerminalRingVerified = fromPGtoPHPBool($row['isterminalringverified']);
                 $this->sapwoodCount = $row['sapwoodcount'];
                 $this->isSapwoodCountVerified = fromPGtoPHPBool($row['issapwoodcountverified']);
-                $this->specimenQuality= $row['specimenquality'];
-                $this->isSpecimenQualityVerified= fromPGtoPHPBool($row['isspecimenqualityverified']);
-                $this->specimenContinuity = $row['specimencontinuity'];
-                $this->isSpecimenContinuityVerified = fromPGtoPHPBool($row['isspecimencontinuityverified']);
+                $this->sampleQuality= $row['samplequality'];
+                $this->issampleQualityVerified= fromPGtoPHPBool($row['issamplequalityverified']);
+                $this->sampleContinuity = $row['samplecontinuity'];
+                $this->issampleContinuityVerified = fromPGtoPHPBool($row['issamplecontinuityverified']);
                 $this->pith = $row['pith'];
                 $this->isPithVerified = fromPGtoPHPBool($row['ispithverified']);
                 $this->unmeasuredPre = $row['unmeaspre'];
@@ -259,11 +260,11 @@ class specimen
     function setChildParamsFromDB()
     {
         // Add the id's of the current objects direct children from the database
-        // SpecimenSpecimenNotes
+        // samplesampleNotes
 
         global $dbconn;
 
-        $sql  = "select radiusid from tblradius where specimenid='".$this->id."'";
+        $sql  = "select radiusid from tblradius where sampleid='".$this->id."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -292,18 +293,18 @@ class specimen
         if(isset($paramsClass->treeID))                        $this->treeID                           = $paramsClass->treeID;                      
         if(isset($paramsClass->name))                          $this->name                             = $paramsClass->name;                      
         if(isset($paramsClass->dateCollected))                 $this->dateCollected                    = $paramsClass->dateCollected;            
-        if(isset($paramsClass->specimenType))                  $this->specimenType                     = $paramsClass->specimenType;              
+        if(isset($paramsClass->sampleType))                  $this->sampleType                     = $paramsClass->sampleType;              
         if(isset($paramsClass->terminalRing))                  $this->terminalRing                     = $paramsClass->terminalRing;              
         if(isset($paramsClass->sapwoodCount))                  $this->sapwoodCount                     = $paramsClass->sapwoodCount;              
-        if(isset($paramsClass->specimenQuality))               $this->specimenQuality                  = $paramsClass->specimenQuality;           
-        if(isset($paramsClass->specimenContinuity))            $this->specimenContinuity               = $paramsClass->specimenContinuity;       
+        if(isset($paramsClass->sampleQuality))               $this->sampleQuality                  = $paramsClass->sampleQuality;           
+        if(isset($paramsClass->sampleContinuity))            $this->sampleContinuity               = $paramsClass->sampleContinuity;       
         if(isset($paramsClass->pith))                          $this->pith                             = $paramsClass->pith;          
         if(isset($paramsClass->unmeasuredPre))                 $this->unmeasuredPre                    = $paramsClass->unmeasuredPre;             
         if(isset($paramsClass->unmeasuredPost))                $this->unmeasuredPost                   = $paramsClass->unmeasuredPost;            
         if(isset($paramsClass->isTerminalRingVerified))        $this->isTerminalRingVerified           = $paramsClass->isTerminalRingVerified;   
         if(isset($paramsClass->isSapwoodCountVerified))        $this->isSapwoodCountVerified           = $paramsClass->isSapwoodCountVerified;    
-        if(isset($paramsClass->isSpecimenQualityVerified))     $this->isSpecimenQualityVerified        = $paramsClass->isSpecimenQualityVerified; 
-        if(isset($paramsClass->isSpecimenContinuityVerified))  $this->isSpecimenContinuityVerified     = $paramsClass->isSpecimenContinuityVerified;
+        if(isset($paramsClass->issampleQualityVerified))     $this->issampleQualityVerified        = $paramsClass->issampleQualityVerified; 
+        if(isset($paramsClass->issampleContinuityVerified))  $this->issampleContinuityVerified     = $paramsClass->issampleContinuityVerified;
         if(isset($paramsClass->isPithVerified))                $this->isPithVerified                   = $paramsClass->isPithVerified;            
         if(isset($paramsClass->isUnmeasuredPreVerified))       $this->isUnmeasuredPreVerified          = $paramsClass->isUnmeasuredPreVerified;  
         if(isset($paramsClass->isUnmeasuredPostVerified))      $this->isUnmeasuredPostVerified         = $paramsClass->isUnmeasuredPostVerified;  
@@ -318,7 +319,7 @@ class specimen
             case "read":
                 if($paramsObj->id==NULL)
                 {
-                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a specimen.");
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a sample.");
                     return false;
                 }
                 if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
@@ -341,18 +342,18 @@ class specimen
                 }
                 if(($paramsObj->name==NULL) 
                     && ($paramsObj->dateCollected==NULL) 
-                    && ($paramsObj->specimenType==NULL) 
+                    && ($paramsObj->sampleType==NULL) 
                     && ($paramsObj->terminalRing==NULL) 
                     && ($paramsObj->sapwoodCount==NULL) 
-                    && ($paramsObj->specimenQuality==NULL) 
-                    && ($paramsObj->specimenContinuity==NULL) 
+                    && ($paramsObj->sampleQuality==NULL) 
+                    && ($paramsObj->sampleContinuity==NULL) 
                     && ($paramsObj->pith==NULL) 
                     && ($paramsObj->unmeasuredPre==NULL) 
                     && ($paramsObj->unmeasuredPost==NULL) 
                     && ($paramsObj->isTerminalRingVerified==NULL) 
                     && ($paramsObj->isSapwoodCountVerified==NULL) 
-                    && ($paramsObj->isSpecimenQualityVerified==NULL) 
-                    && ($paramsObj->isSpecimenContinuityVerified==NULL) 
+                    && ($paramsObj->issampleQualityVerified==NULL) 
+                    && ($paramsObj->issampleContinuityVerified==NULL) 
                     && ($paramsObj->isPithVerified==NULL) 
                     && ($paramsObj->isUnmeasuredPreVerified==NULL) 
                     && ($paramsObj->isUnmeasuredPostVerified==NULL)
@@ -376,7 +377,7 @@ class specimen
                 {
                     if($paramsObj->id == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'specimenid' field is required when creating a radius.");
+                        $this->setErrorMessage("902","Missing parameter - 'sampleid' field is required when creating a radius.");
                         return false;
                     }
                 }
@@ -384,12 +385,12 @@ class specimen
                 {
                     if($paramsObj->name == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a specimen.");
+                        $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a sample.");
                         return false;
                     }
                     if($paramsObj->treeID == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'treeid' field is required when creating a specimen.");
+                        $this->setErrorMessage("902","Missing parameter - 'treeid' field is required when creating a sample.");
                         return false;
                     }
                 }
@@ -405,7 +406,7 @@ class specimen
     {
         global $dbconn;
 
-        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'specimen', $this->id)";
+        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'sample', $this->id)";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -446,11 +447,11 @@ class specimen
             global $dbconn;
             $xml = NULL;
 
-            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblspecimen.specimenid
+            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblsample.sampleid
                 FROM tblsubsite 
                 INNER JOIN tbltree ON tblsubsite.subsiteid=tbltree.subsiteid
-                INNER JOIN tblspecimen ON tbltree.treeid=tblspecimen.treeid
-                where tblspecimen.specimenid='".$this->id."'";
+                INNER JOIN tblsample ON tbltree.treeid=tblsample.treeid
+                where tblsample.sampleid='".$this->id."'";
 
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -461,7 +462,7 @@ class specimen
                 if(pg_num_rows($result)==0)
                 {
                     // No records match the id specified
-                    $this->setErrorMessage("903", "No match for specimen id=".$this->id);
+                    $this->setErrorMessage("903", "No match for sample id=".$this->id);
                     return FALSE;
                 }
                 else
@@ -528,9 +529,9 @@ class specimen
     
             if( ($parts=="all") || ($parts=="beginning"))
             {
-                $xml.= "<specimen ";
+                $xml.= "<sample ";
                 $xml.= "id=\"".$this->id."\" >";
-                $xml.= getResourceLinkTag("specimen", $this->id)."\n ";
+                $xml.= getResourceLinkTag("sample", $this->id)."\n ";
                 
                 // Include permissions details if requested
                 if($this->includePermissions===TRUE) 
@@ -545,15 +546,15 @@ class specimen
                 if($format!="minimal")
                 {
                     if(isset($this->dateCollected))                 $xml.= "<dateCollected>".$this->dateCollected."</dateCollected>\n";
-                    if(isset($this->specimenType))                  $xml.= "<specimenType>".$this->specimenType."</specimenType>\n";
+                    if(isset($this->sampleType))                  $xml.= "<sampleType>".$this->sampleType."</sampleType>\n";
                     if(isset($this->terminalRing))                  $xml.= "<terminalRing>".$this->terminalRing."</terminalRing>\n";
                     if(isset($this->isTerminalRingVerified))        $xml.= "<isTerminalRingVerified>".fromPGtoStringBool($this->isTerminalRingVerified)."</isTerminalRingVerified>";
                     if(isset($this->sapwoodCount))                  $xml.= "<sapwoodCount>".$this->sapwoodCount."</sapwoodCount>\n";
                     if(isset($this->isSapwoodCountVerified))        $xml.= "<isSapwoodCountVerified>".fromPHPtoStringBool($this->isSapwoodCountVerified)."</isSapwoodCountVerified>";
-                    if(isset($this->specimenQuality))               $xml.= "<specimenQuality>".$this->specimenQuality."</specimenQuality>\n";
-                    if(isset($this->isSpecimenQualityVerified))     $xml.= "<isSpecimenQualityVerified>".fromPHPtoStringBool($this->isSpecimenQualityVerified)."</isSpecimenQualityVerified>\n";
-                    if(isset($this->specimenContinuity))            $xml.= "<specimenContinuity>".$this->specimenContinuity."</specimenContinuity>\n";
-                    if(isset($this->isSpecimenContinuityVerified))  $xml.= "<isSpecimenContinuityVerified>".fromPHPtoStringBool($this->isSpecimenContinuityVerified)."</isSpecimenContinuityVerified>\n";
+                    if(isset($this->sampleQuality))               $xml.= "<sampleQuality>".$this->sampleQuality."</sampleQuality>\n";
+                    if(isset($this->issampleQualityVerified))     $xml.= "<issampleQualityVerified>".fromPHPtoStringBool($this->issampleQualityVerified)."</issampleQualityVerified>\n";
+                    if(isset($this->sampleContinuity))            $xml.= "<sampleContinuity>".$this->sampleContinuity."</sampleContinuity>\n";
+                    if(isset($this->issampleContinuityVerified))  $xml.= "<issampleContinuityVerified>".fromPHPtoStringBool($this->issampleContinuityVerified)."</issampleContinuityVerified>\n";
                     if(isset($this->pith))                          $xml.= "<pith>".$this->pith."</pith>\n";
                     if(isset($this->isPithVerified))                $xml.= "<isPithVerified>".fromPHPtoStringBool($this->isPithVerified)."</isPithVerified>\n";
                     if(isset($this->unmeasuredPre))                 $xml.= "<unmeasuredPre>".$this->unmeasuredPre."</unmeasuredPre>\n";
@@ -567,7 +568,7 @@ class specimen
 
             if (($parts=="all") || ($parts=="end"))
             {
-                $xml.= "</specimen>\n";
+                $xml.= "</sample>\n";
             }
             return $xml;
         }
@@ -580,7 +581,7 @@ class specimen
     function getParentTagBegin()
     {
         // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tblspecimen")."'>";
+        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tblsample")."'>";
         return $xml;
     }
 
@@ -631,19 +632,19 @@ class specimen
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into tblspecimen ( ";
+                    $sql = "insert into tblsample ( ";
                         if(isset($this->name))                          $sql.="name, ";
                         if(isset($this->treeID))                        $sql.="treeid, ";
                         if(isset($this->dateCollected))                 $sql.="datecollected, ";
-                        if(isset($this->specimenType))                  $sql.="specimentype, ";
+                        if(isset($this->sampleType))                  $sql.="sampletype, ";
                         if(isset($this->terminalRing))                  $sql.="terminalring, ";
                         if(isset($this->isTerminalRingVerified))        $sql.="isterminalringverified, ";
                         if(isset($this->sapwoodCount))                  $sql.="sapwoodcount, ";
                         if(isset($this->isSapwoodCountVerified))        $sql.="issapwoodcountverified, ";
-                        if(isset($this->specimenQuality))               $sql.="specimenquality, ";
-                        if(isset($this->isSpecimenQualityVerified))     $sql.="isspecimenqualityverified, ";
-                        if(isset($this->specimenContinuity))            $sql.="specimencontinuity, ";
-                        if(isset($this->isSpecimenContinuityVerified))  $sql.="isspecimencontinuityverified, ";
+                        if(isset($this->sampleQuality))               $sql.="samplequality, ";
+                        if(isset($this->issampleQualityVerified))     $sql.="issamplequalityverified, ";
+                        if(isset($this->sampleContinuity))            $sql.="samplecontinuity, ";
+                        if(isset($this->issampleContinuityVerified))  $sql.="issamplecontinuityverified, ";
                         if(isset($this->pith))                          $sql.="pith, ";
                         if(isset($this->isPithVerified))                $sql.="ispithverified, ";
                         if(isset($this->unmeasuredPre))                 $sql.="unmeaspre, ";
@@ -656,15 +657,15 @@ class specimen
                         if(isset($this->name))                          $sql.="'".$this->name                                           ."', ";
                         if(isset($this->treeID))                        $sql.="'".$this->treeID                                         ."', ";
                         if(isset($this->dateCollected))                 $sql.="'".$this->dateCollected                                  ."', ";
-                        if(isset($this->specimenType))                  $sql.="'".$this->specimenType                                   ."', ";
+                        if(isset($this->sampleType))                  $sql.="'".$this->sampleType                                   ."', ";
                         if(isset($this->terminalRing))                  $sql.="'".$this->terminalRing                                   ."', ";
                         if(isset($this->isTerminalRingVerified))        $sql.="'".fromPHPtoPGBool($this->isTerminalRingVerified)        ."', ";
                         if(isset($this->sapwoodCount))                  $sql.="'".$this->sapwoodCount                                   ."', ";
                         if(isset($this->isSapwoodCountVerified))        $sql.="'".fromPHPtoPGBool($this->isSapwoodCountVerified)        ."', ";
-                        if(isset($this->specimenQuality))               $sql.="'".$this->specimenQuality                                ."', ";
-                        if(isset($this->isSpecimenQualityVerified))     $sql.="'".fromPHPtoPGBool($this->isSpecimenQualityVerified)     ."', ";
-                        if(isset($this->specimenContinuity))            $sql.="'".$this->specimenContinuity                             ."', ";
-                        if(isset($this->isSpecimenContinuityVerified))  $sql.="'".fromPHPtoPGBool($this->isSpecimenContinuityVerified)  ."', ";
+                        if(isset($this->sampleQuality))               $sql.="'".$this->sampleQuality                                ."', ";
+                        if(isset($this->issampleQualityVerified))     $sql.="'".fromPHPtoPGBool($this->issampleQualityVerified)     ."', ";
+                        if(isset($this->sampleContinuity))            $sql.="'".$this->sampleContinuity                             ."', ";
+                        if(isset($this->issampleContinuityVerified))  $sql.="'".fromPHPtoPGBool($this->issampleContinuityVerified)  ."', ";
                         if(isset($this->pith))                          $sql.="'".$this->pith                                           ."', ";
                         if(isset($this->isPithVerified))                $sql.="'".fromPHPtoPGBool($this->isPithVerified)                ."', ";
                         if(isset($this->unmeasuredPre))                 $sql.="'".$this->unmeasuredPre                                  ."', ";
@@ -674,24 +675,24 @@ class specimen
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
-                    $sql2 = "select * from tblspecimen where specimenid=currval('tblspecimen_specimenid_seq')";
+                    $sql2 = "select * from tblsample where sampleid=currval('tblsample_sampleid_seq')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql.="update tblspecimen set ";
+                    $sql.="update tblsample set ";
                         if(isset($this->name))                          $sql.="name='"                          .$this->name                                            ."', ";
                         if(isset($this->treeID))                        $sql.="treeID='"                        .$this->treeID                                          ."', ";
                         if(isset($this->dateCollected))                 $sql.="datecollected='"                 .$this->dateCollected                                   ."', ";
-                        if(isset($this->specimenType))                  $sql.="specimentype='"                  .$this->specimenType                                    ."', ";
+                        if(isset($this->sampleType))                  $sql.="sampletype='"                  .$this->sampleType                                    ."', ";
                         if(isset($this->terminalRing))                  $sql.="terminalring='"                  .$this->terminalRing                                    ."', ";
                         if(isset($this->isTerminalRingVerified))        $sql.="isterminalringverified='"        .fromPHPtoPGBool($this->isTerminalRingVerified)         ."', ";
                         if(isset($this->sapwoodCount))                  $sql.="sapwoodcount='"                  .$this->sapwoodCount                                    ."', ";
                         if(isset($this->isSapwoodCountVerified))        $sql.="issapwoodcountverified='"        .fromPHPtoPGBool($this->isSapwoodCountVerified)         ."', ";
-                        if(isset($this->specimenQuality))               $sql.="specimenquality='"               .$this->specimenQuality                                 ."', ";
-                        if(isset($this->isSpecimenQualityVerified))     $sql.="isspecimenqualityverified='"     .fromPHPtoPGBool($this->isSpecimenQualityVerified)      ."', ";
-                        if(isset($this->specimenContinuity))            $sql.="specimencontinuity='"            .$this->specimenContinuity                              ."', ";
-                        if(isset($this->isSpecimenContinuityVerified))  $sql.="isspecimencontinuityverified='"  .fromPHPtoPGBool($this->isSpecimenContinuityVerified)   ."', ";
+                        if(isset($this->sampleQuality))               $sql.="samplequality='"               .$this->sampleQuality                                 ."', ";
+                        if(isset($this->issampleQualityVerified))     $sql.="issamplequalityverified='"     .fromPHPtoPGBool($this->issampleQualityVerified)      ."', ";
+                        if(isset($this->sampleContinuity))            $sql.="samplecontinuity='"            .$this->sampleContinuity                              ."', ";
+                        if(isset($this->issampleContinuityVerified))  $sql.="issamplecontinuityverified='"  .fromPHPtoPGBool($this->issampleContinuityVerified)   ."', ";
                         if(isset($this->pith))                          $sql.="pith='"                          .$this->pith                                            ."', ";
                         if(isset($this->isPithVerified))                $sql.="ispithverified='"                .fromPHPtoPGBool($this->isPithVerified)                 ."', ";
                         if(isset($this->unmeasuredPre))                 $sql.="unmeaspre='"                     .$this->unmeasuredPre                                   ."', ";
@@ -699,7 +700,7 @@ class specimen
                         if(isset($this->unmeasuredPost))                $sql.="unmeaspost='"                    .$this->unmeasuredPost                                  ."', ";
                         if(isset($this->isUnmeasuredPostVerified))      $sql.="isunmeaspostverified='"          .fromPHPtoPGBool($this->isUnmeasuredPostVerified)       ."', ";
                     $sql = substr($sql, 0, -2);
-                    $sql.= " where specimenid='".$this->id."'";
+                    $sql.= " where sampleid='".$this->id."'";
                 }
 
                 // Run SQL command
@@ -731,7 +732,7 @@ class specimen
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
                     {
-                        $this->id=$row['specimenid'];   
+                        $this->id=$row['sampleid'];   
                         $this->createdTimeStamp=$row['createdtimestamp'];   
                         $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
                     }
@@ -769,7 +770,7 @@ class specimen
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tblspecimen where specimenid='".$this->id."'";
+                $sql = "delete from tblsample where sampleid='".$this->id."'";
 
                 // Run SQL command
                 if ($sql)
@@ -784,7 +785,7 @@ class specimen
                         {
                         case 23503:
                                 // Foreign key violation
-                                $this->setErrorMessage("907", "Foreign key violation.  You must delete all associated radii before deleting this specimen.");
+                                $this->setErrorMessage("907", "Foreign key violation.  You must delete all associated radii before deleting this sample.");
                                 break;
                         default:
                                 // Any other error
