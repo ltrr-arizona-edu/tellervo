@@ -9,28 +9,27 @@
 //////*******************************************************************
 require_once('dbhelper.php');
 require_once('inc/radius.php');
-require_once('inc/specimenType.php');
+require_once('inc/sampleType.php');
 require_once('inc/terminalRing.php');
-require_once('inc/specimenQuality.php');
-require_once('inc/specimenContinuity.php');
+require_once('inc/sampleQuality.php');
+require_once('inc/sampleContinuity.php');
 require_once('inc/pith.php');
+require_once('inc/dbEntity.php');
 
-
-class specimen 
+class sample extends dbEntity
 {
-    var $id = NULL;
     var $name = NULL;
     var $treeID = NULL;
     var $dateCollected = NULL;
-    var $specimenType = NULL;
+    var $sampleType = NULL;
     var $terminalRing = NULL;
     var $isTerminalRingVerified = NULL;
     var $sapwoodCount = NULL;
     var $sapwoodCountVerified = NULL;
-    var $specimenQuality = NULL;
-    var $specimenQualityVerified = NULL;
-    var $specimenContinuity = NULL;
-    var $specimenContinuityVerified = NULL;
+    var $sampleQuality = NULL;
+    var $sampleQualityVerified = NULL;
+    var $sampleContinuity = NULL;
+    var $sampleContinuityVerified = NULL;
     var $pith = NULL;
     var $pithVerified = NULL;
     var $isPithVerified = NULL;
@@ -48,17 +47,15 @@ class specimen
     var $createdTimeStamp = NULL;
     var $lastModifiedTimeStamp = NULL;
 
-    var $parentXMLTag = "specimens"; 
-    var $lastErrorMessage = NULL;
-    var $lastErrorCode = NULL;
+
 
     /***************/
     /* CONSTRUCTOR */
     /***************/
 
-    function __construct()
+    public function __construct($parentXMLTag)
     {
-        // Constructor for this class.
+    	parent::__construct($parentXMLTag);
     }
 
     /***********/
@@ -77,18 +74,18 @@ class specimen
         $this->treeID=$theTreeID;
     }
 
-    function setSpecimenType($specimenType)
+    function setsampleType($sampleType)
     {
         // Set speciemn type id from name
-        $mySpecimenType = new specimenType;
-        $mySpecimenType->setParamsFromName($specimenType);
-        $this->specimenType=$mySpecimenType->getName();
+        $mysampleType = new sampleType;
+        $mysampleType->setParamsFromName($sampleType);
+        $this->sampleType=$mysampleType->getName();
     }
 
-    function setSpecimenTypeID($specimenTypeID)
+    function setsampleTypeID($sampleTypeID)
     {
-        // Set specimen type id from id
-        $this->specimenTypeID=$specimenTypeID;
+        // Set sample type id from id
+        $this->sampleTypeID=$sampleTypeID;
     }
 
     function setTerminalRing($terminalRing)
@@ -108,38 +105,38 @@ class specimen
         $this->isTerminalRingVerified=$theBool;
     }
 
-    function setSpecimenQuality($specimenQuality)
+    function setsampleQuality($sampleQuality)
     {
-        // Set specimen quality from name
-        $this->specimenQuality=$specimenQuality;
+        // Set sample quality from name
+        $this->sampleQuality=$sampleQuality;
     }
 
-    function setSpecimenQualityID($specimenQualityID)
+    function setsampleQualityID($sampleQualityID)
     {
-        // Set specimen quality id from id
-        $this->specimenQualityID=$specimenQualityID;
+        // Set sample quality id from id
+        $this->sampleQualityID=$sampleQualityID;
     }
     
-    function setIsSpecimenQualityVerified($theBool)
+    function setIssampleQualityVerified($theBool)
     {
-        $this->isSpecimenQualityVerified=$theBool;
+        $this->issampleQualityVerified=$theBool;
     }
 
-    function setSpecimenContinuity($specimenContinuity)
+    function setsampleContinuity($sampleContinuity)
     {
-        // Set specimen continuity from name
-        $this->specimenContinuity=$specimenContinuity;
+        // Set sample continuity from name
+        $this->sampleContinuity=$sampleContinuity;
     }
 
-    function setSpecimenContinuityID($specimenContinuityID)
+    function setsampleContinuityID($sampleContinuityID)
     {
-        // Set specimen continuity id from id
-        $this->specimenContinuityID=$specimenContinuityID;
+        // Set sample continuity id from id
+        $this->sampleContinuityID=$sampleContinuityID;
     }
     
-    function setIsSpecimenContinuityVerified($theBool)
+    function setIssampleContinuityVerified($theBool)
     {
-        $this->isSpecimenContinuityVerified=$theBool;
+        $this->issampleContinuityVerified=$theBool;
     }
 
     function setPith($pith)
@@ -194,14 +191,7 @@ class specimen
     {
         $this->isUnmeasuredPostVerified = $theBool;
     }
-
-    function setErrorMessage($theCode, $theMessage)
-    {
-        // Set the error latest error message and code for this object.
-        $this->lastErrorCode = $theCode;
-        $this->lastErrorMessage = $theMessage;
-    }
-
+    
     function setParamsFromDB($theID)
     {
         // Set the current objects parameters from the database
@@ -209,7 +199,7 @@ class specimen
         global $dbconn;
         
         $this->id=$theID;
-        $sql = "select * from tblspecimen where specimenid='$theID'";
+        $sql = "select * from tblsample where sampleid='$theID'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -311,6 +301,11 @@ class specimen
         return true;
     }
 
+    
+    /*************/
+    /* FUNCTIONS */
+    /*************/    
+    
     function validateRequestParams($paramsObj, $crudMode)
     {
         // Check parameters based on crudMode 
@@ -417,7 +412,6 @@ class specimen
             $this->canUpdate = fromPGtoPHPBool($row['canupdate']);
             $this->canDelete = fromPGtoPHPBool($row['candelete']);
             $this->includePermissions = TRUE;
-    
         }
         else
         {
@@ -425,18 +419,16 @@ class specimen
             $this->setErrorMessage("001", "Error connecting to database");
             return FALSE;
         }
-
-        return TRUE;
-        
+        return TRUE; 
     }
-
 
 
     /***********/
     /*ACCESSORS*/
     /***********/
 
-    function asXML($format='standard', $parts='all')
+    
+    protected function asXML($format='standard', $parts='all')
     {
         switch($format)
         {
@@ -576,38 +568,6 @@ class specimen
         {
             return FALSE;
         }
-    }
-
-    function getParentTagBegin()
-    {
-        // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tblsample")."'>";
-        return $xml;
-    }
-
-    function getParentTagEnd()
-    {
-        // Return a string containing the end XML tag for the current object's parent
-        $xml = "</".$this->parentXMLTag.">";
-        return $xml;
-    }
-
-    function getID()
-    {
-        return $this->id;
-    }
-    function getLastErrorCode()
-    {
-        // Return an integer containing the last error code recorded for this object
-        $error = $this->lastErrorCode; 
-        return $error;  
-    }
-
-    function getLastErrorMessage()
-    {
-        // Return a string containing the last error message recorded for this object
-        $error = $this->lastErrorMessage;
-        return $error;
     }
 
     /***********/
