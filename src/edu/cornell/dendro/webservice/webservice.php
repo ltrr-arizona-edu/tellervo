@@ -19,8 +19,8 @@ require_once("inc/output.php");
 
 require_once("inc/site.php");
 require_once("inc/subSite.php");
-require_once("inc/tree.php");
-require_once("inc/specimen.php");
+require_once("inc/element.php");
+require_once("inc/sample.php");
 require_once("inc/radius.php");
 require_once("inc/measurement.php");
 require_once("inc/authenticate.php");
@@ -112,11 +112,11 @@ elseif($myMetaHeader->status != "Error")
             case "subSiteParameters":
                 $myObject = new subSite();
                 break;
-            case "treeParameters":
-                $myObject = new tree();
+            case "elementParameters":
+                $myObject = new element();
                 break;
-            case "specimenParameters":
-                $myObject = new specimen();
+            case "sampleParameters":
+                $myObject = new sample();
                 break;
             case "radiusParameters":
                 $myObject = new radius();
@@ -127,8 +127,8 @@ elseif($myMetaHeader->status != "Error")
             case "siteNoteParameters":
                 $myObject = new siteNote();
                 break;
-            case "treeNoteParameters":
-                $myObject = new treeNote();
+            case "elementNoteParameters":
+                $myObject = new elementNote();
                 break;
             case "vmeasurementNoteParameters":
                 $myObject = new vmeasurementNote();
@@ -200,17 +200,17 @@ elseif($myMetaHeader->status != "Error")
                     $myID = $paramObj->siteID;
                     $objectType="site";
                     break;
-                case "tree":
+                case "element":
                     $myID = $paramObj->subSiteID;
                     $objectType="subSite";
                     break;
-                case "specimen":
-                    $myID = $paramObj->treeID;
-                    $objectType="tree";
+                case "sample":
+                    $myID = $paramObj->elementID;
+                    $objectType="element";
                     break;
                 case "radius":
-                    $myID = $paramObj->specimenID;
-                    $objectType="specimen";
+                    $myID = $paramObj->sampleID;
+                    $objectType="sample";
                     break;
                 case "measurement":
                     $myID = $paramObj->radiusID;
@@ -221,7 +221,7 @@ elseif($myMetaHeader->status != "Error")
                 case "siteNote":
                     $myID = $paramObj->id;
                     break;
-                case "treeNote":
+                case "elementNote":
                     $myID = $paramObj->id;
                     break;
                 case "vmeasurementNote":
