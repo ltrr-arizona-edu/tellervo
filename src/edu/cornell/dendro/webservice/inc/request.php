@@ -55,7 +55,7 @@ class request
      */
     function validateXML($xmlrequest)
     {
-        global $rngSchema;
+        global $corinaXSD;
         $origErrorLevel = error_reporting(E_ERROR);
 
         $xmlrequest = xmlSpecialCharReplace($xmlrequest);
@@ -65,7 +65,7 @@ class request
         $doc->loadXML($xmlrequest);
 
 
-        if($doc->relaxNGValidate($rngSchema))
+        if($doc->schemaValidate($corinaXSD))
         {
             $this->xmlrequest = simplexml_load_string($xmlrequest);
             if($this->xmlrequest)
