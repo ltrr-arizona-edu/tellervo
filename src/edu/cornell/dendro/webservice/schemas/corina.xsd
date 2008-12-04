@@ -13,8 +13,41 @@
 	<xs:element name="corina">
 		<xs:complexType>
 			<xs:sequence>
+			    <xs:element ref="request" maxOccurs="1"/>
 				<xs:element ref="header" maxOccurs="1"/>
 				<xs:element ref="content" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+<!--
+%%%%%%%%%%%%%%
+%		REQUEST
+%%%%%%%%%%%%%% -->
+	<xs:element name="request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="searchParams">
+					<xs:complexType>
+						<xs:sequence>
+								<xs:element ref="param" maxOccurs="unbounded"/>
+						</xs:sequence>
+						<xs:attribute name="returnObject">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+									<xs:enumeration value="sample"/>
+									<xs:enumeration value="object"/>
+									<xs:enumeration value="element"/>
+									<xs:enumeration value="radius"/>
+									<xs:enumeration value="taxon"/>
+									<xs:enumeration value="measurement"/>
+							</xs:restriction>
+						</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="limit" type="xs:positiveInteger"/>
+						<xs:attribute name="skip" type="xs:positiveInteger"/>
+					</xs:complexType>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -89,6 +122,103 @@
 
 <!--
 %%%%%%%%%%%%%%
+%		PARAM
+%%%%%%%%%%%%%% -->
+	<xs:element name="param">
+		<xs:complexType>
+			<xs:attribute name="name">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="siteid"/>
+						<xs:enumeration value="sitename"/>
+						<xs:enumeration value="sitecode"/>
+						<xs:enumeration value="sitecreated"/>
+						<xs:enumeration value="sitelastmodified"/>
+						<xs:enumeration value="sitexcentroid"/>
+						<xs:enumeration value="siteycentroid"/>
+						<xs:enumeration value="subsiteid"/>
+						<xs:enumeration value="subsitename"/>
+						<xs:enumeration value="subsitecreated"/>
+						<xs:enumeration value="subsitelastmodified"/>
+						<xs:enumeration value="treeid"/>
+						<xs:enumeration value="treename"/>
+						<xs:enumeration value="treecreated"/>
+						<xs:enumeration value="treelastmodified"/>
+						<xs:enumeration value="precision"/>
+						<xs:enumeration value="latitude"/>
+						<xs:enumeration value="longitude"/>
+						<xs:enumeration value="isLiveTree"/>
+						<xs:enumeration value="originaltaxonname"/>
+						<xs:enumeration value="specimenid"/>
+						<xs:enumeration value="specimenname"/>
+						<xs:enumeration value="datecollected"/>
+						<xs:enumeration value="specimencreated"/>
+						<xs:enumeration value="specimenlastmodified"/>
+						<xs:enumeration value="specimentypeid"/>
+						<xs:enumeration value="specimentype"/>
+						<xs:enumeration value="isterminalringverified"/>
+						<xs:enumeration value="sapwoodcount"/>
+						<xs:enumeration value="issapwoodcountverified"/>
+						<xs:enumeration value="isspecinenqualityverified"/>
+						<xs:enumeration value="ispithverified"/>
+						<xs:enumeration value="unmeaspre"/>
+						<xs:enumeration value="unmeaspost"/>
+						<xs:enumeration value="isunmeaspreverified"/>
+						<xs:enumeration value="isunmeaspostverified"/>
+						<xs:enumeration value="terminalringid"/>
+						<xs:enumeration value="terminalring"/>
+						<xs:enumeration value="specimenqualityid"/>
+						<xs:enumeration value="specimenquality"/>
+						<xs:enumeration value="specimencontinuityid"/>
+						<xs:enumeration value="specimencontinuity"/>
+						<xs:enumeration value="pithid"/>
+						<xs:enumeration value="pith"/>
+						<xs:enumeration value="isspecimencontinuityverified"/>
+						<xs:enumeration value="radiusid"/>
+						<xs:enumeration value="radiusname"/>
+						<xs:enumeration value="radiuscreated"/>
+						<xs:enumeration value="measurementid"/>
+						<xs:enumeration value="measurementname"/>
+						<xs:enumeration value="measurementcreated"/>
+						<xs:enumeration value="measurementlastmodified"/>
+						<xs:enumeration value="measurementoperator"/>
+						<xs:enumeration value="measurementdescription"/>
+						<xs:enumeration value="measurementispublished"/>
+						<xs:enumeration value="measurementowneruserid"/>
+						<xs:enumeration value="operatorparameter"/>
+						<xs:enumeration value="measurementisreconciled"/>
+						<xs:enumeration value="datingtype"/>
+						<xs:enumeration value="datingerrorpositive"/>
+						<xs:enumeration value="datingerrornegative"/>
+						<xs:enumeration value="startyear"/>
+						<xs:enumeration value="readingcount"/>
+						<xs:enumeration value="measurementcount"/>
+						<xs:enumeration value="measurementymin"/>
+						<xs:enumeration value="measurementymax"/>
+						<xs:enumeration value="measurementxmin"/>
+						<xs:enumeration value="measurementxmax"/>
+						<xs:enumeration value="measurementxcentroid"/>
+						<xs:enumeration value="measurementycentroid"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="operator">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="&gt;"/>
+						<xs:enumeration value="&lt;"/>
+						<xs:enumeration value="="/>
+						<xs:enumeration value="!="/>
+						<xs:enumeration value="like"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="value" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+
+<!--
+%%%%%%%%%%%%%%
 %		LINK
 %%%%%%%%%%%%%% -->
 	<xs:element name="link">
@@ -99,7 +229,6 @@
 			<xs:attribute ref="xlink:href"/>
 		</xs:complexType>
 	</xs:element>
-
 
 <!--
 %%%%%%%%%%%%%%
@@ -115,4 +244,6 @@
 			<xs:attribute name="id" type="xs:positiveInteger"/>
 		</xs:complexType>
 	</xs:element>
+	
+	
 </xs:schema>
