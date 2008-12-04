@@ -28,7 +28,7 @@ $wsversion = "0.1.".exec(svnversion);
 $rngSchema = "/var/www/corina-webservice/dev/schemas/corina.rng"; 
 
 // URL to Corina XSD
-$corinaXSD = "https://dendro.cornell.edu/dev/schemas/corina.xsd";
+$corinaXSD = "/var/www/corina-webservice/dev/schemas/corina.xsd";
 
 // Timezone of the server this software is running on
 $serverTimezone = "America/New_York";
