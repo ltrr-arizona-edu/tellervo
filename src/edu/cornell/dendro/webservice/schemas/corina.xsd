@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:tridas="http://www.tridas.org/1.0" targetNamespace="http://dendro.cornell.edu/schema/corina/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<!--
+%%%%%%%%%%%%%%
+%		EXTERNAL SCHEMAS	
+%%%%%%%%%%%%%% -->
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd"/>
+	<xs:import namespace="http://www.tridas.org/1.0" schemaLocation="http://www.tridas.org/1.0/tridas.xsd"/>	
+<!--
+%%%%%%%%%%%%%%
+%		ROOT
+%%%%%%%%%%%%%% -->
+	<xs:element name="corina">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="header" maxOccurs="1"/>
+				<xs:element ref="content" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+<!--
+%%%%%%%%%%%%%%
+%		HEADER
+%%%%%%%%%%%%%% -->
+	<xs:element name="header">
+		<xs:complexType>
+			<xs:sequence>
+					<xs:element name="user">
+						<xs:complexType>
+							<xs:attribute name="id" type="xs:positiveInteger" />
+							<xs:attribute name="username" type="xs:string"/>
+							<xs:attribute name="firstname" type="xs:string"/>
+							<xs:attribute name="lastname" type="xs:string"/>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="wsversion" type="xs:string"/>
+					<xs:element name="requestdate" type="xs:dateTime"/>
+					<xs:element name="queryTime">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:double">
+									<xs:attribute name="unit">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="seconds"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="requesturl" type="xs:string"/>
+					<xs:element name="requesttype">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="search"/>
+								<xs:enumeration value="create"/>
+								<xs:enumeration value="read"/>
+								<xs:enumeration value="update"/>
+								<xs:enumeration value="delete"/>
+								<xs:enumeration value="plainlogin"/>
+								<xs:enumeration value="securelogin"/>
+								<xs:enumeration value="nonce"/>
+								<xs:enumeration value="logout"/>
+								<xs:enumeration value="help"/>
+								<xs:enumeration value="assign"/>
+								<xs:enumeration value="unassign"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+<!--
+%%%%%%%%%%%%%%
+%		CONTENT
+%%%%%%%%%%%%%% -->
+	<xs:element name="content">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="sql" />
+				<xs:element ref="tridas:sample"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+<!--
+%%%%%%%%%%%%%%
+%		LINK
+%%%%%%%%%%%%%% -->
+	<xs:element name="link">
+		<xs:complexType>
+			<xs:attribute name="type" type="xs:string"/>
+			<xs:attribute name="object" type="xs:string"/>
+			<xs:attribute name="id" type="xs:positiveInteger"/>
+			<xs:attribute ref="xlink:href"/>
+		</xs:complexType>
+	</xs:element>
+
+
+<!--
+%%%%%%%%%%%%%%
+%		SAMPLE
+%%%%%%%%%%%%%% -->
+	<xs:element name="sample">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="link" maxOccurs="unbounded"/>
+				<xs:element name="name" type="xs:string"/>
+				<xs:element name="isTerminalRingVerified" type="xs:boolean"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:positiveInteger"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
