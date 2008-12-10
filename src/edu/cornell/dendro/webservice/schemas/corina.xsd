@@ -57,13 +57,7 @@
 					<xs:element name="authenticate">
 						<xs:complexType>
 							<xs:attribute name="username" type="xs:string"/>
-							<xs:attribute name="password" type="xs:string"/>
-						</xs:complexType>
-					</xs:element>
-				</xs:sequence>
-				<xs:sequence>
-					<xs:element name="authenticate">
-						<xs:complexType>							
+							<xs:attribute name="password" type="xs:string"/>						
 							<xs:attribute name="cnonce" type="xs:string"/>
 							<xs:attribute name="snonce" type="xs:string"/>
 							<xs:attribute name="hash" type="xs:string"/>
