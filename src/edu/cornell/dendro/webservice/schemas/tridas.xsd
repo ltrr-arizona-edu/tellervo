@@ -18,8 +18,8 @@ more information on http://www.gnu.org/licenses/lgpl.html
 %%%%%%%%%%%%%%
 %		EXTERNAL SCHEMAS	
 %%%%%%%%%%%%%% -->
-	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd"/>
-	<xs:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsf.xsd"/>
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlinks.xsd"/>
+	<xs:import namespace="http://www.opengis.net/gml" schemaLocation="gmlsf.xsd"/>
 	<!-- 
 %%%%%%%%%%%%%%
 %		GLOBAL TYPES
