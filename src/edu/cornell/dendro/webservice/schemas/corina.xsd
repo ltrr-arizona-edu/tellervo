@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:tridas="http://www.tridas.org/1.0" targetNamespace="http://dendro.cornell.edu/schema/corina/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:tridas="http://www.tridas.org/1.1" targetNamespace="http://dendro.cornell.edu/schema/corina/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<!--
 %%%%%%%%%%%%%%
 %		EXTERNAL SCHEMAS	
 %%%%%%%%%%%%%% -->
 	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd"/>
-	<xs:import namespace="http://www.tridas.org/1.0" schemaLocation="http://www.tridas.org/1.0/tridas.xsd"/>
+	<xs:import namespace="http://www.tridas.org/1.1" schemaLocation="http://www.tridas.org/1.1/tridas.xsd"/>
 	<!--
 %%%%%%%%%%%%%%
 %		ROOT
@@ -29,39 +29,54 @@
 %%%%%%%%%%%%%% -->
 	<xs:element name="request">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="searchParams">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element ref="param" maxOccurs="unbounded"/>
-						</xs:sequence>
-						<xs:attribute name="returnObject">
-							<xs:simpleType>
-								<xs:restriction base="xs:string">
-									<xs:enumeration value="sample"/>
-									<xs:enumeration value="object"/>
-									<xs:enumeration value="element"/>
-									<xs:enumeration value="radius"/>
-									<xs:enumeration value="taxon"/>
-									<xs:enumeration value="measurement"/>
-								</xs:restriction>
-							</xs:simpleType>
-						</xs:attribute>
-						<xs:attribute name="limit" type="xs:positiveInteger"/>
-						<xs:attribute name="skip" type="xs:positiveInteger"/>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="authenticate">
-					<xs:complexType>
-						<xs:attribute name="username" type="xs:string"/>
-						<xs:attribute name="password" type="xs:string"/>
-						<xs:attribute name="cnonce" type="xs:string"/>
-						<xs:attribute name="snonce" type="xs:string"/>
-						<xs:attribute name="hash" type="xs:string"/>
-						<xs:attribute name="seq" type="xs:string"/>
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="searchParams">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element ref="param" maxOccurs="unbounded"/>
+							</xs:sequence>
+							<xs:attribute name="returnObject">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="sample"/>
+										<xs:enumeration value="object"/>
+										<xs:enumeration value="element"/>
+										<xs:enumeration value="radius"/>
+										<xs:enumeration value="taxon"/>
+										<xs:enumeration value="measurement"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="limit" type="xs:positiveInteger"/>
+							<xs:attribute name="skip" type="xs:positiveInteger"/>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:sequence>
+					<xs:element name="authenticate">
+						<xs:complexType>
+							<xs:attribute name="username" type="xs:string"/>
+							<xs:attribute name="password" type="xs:string"/>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:sequence>
+					<xs:element name="authenticate">
+						<xs:complexType>							
+							<xs:attribute name="cnonce" type="xs:string"/>
+							<xs:attribute name="snonce" type="xs:string"/>
+							<xs:attribute name="hash" type="xs:string"/>
+							<xs:attribute name="seq" type="xs:string"/>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>				
+				<xs:sequence>
+					<xs:annotation>
+						<xs:documentation>This should only be empty when requesting a nonce or when logging out</xs:documentation>
+					</xs:annotation>
+				</xs:sequence>
+			</xs:choice>
 			<xs:attribute name="type">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
