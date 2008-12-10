@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+TRiDaS 1.0: Tree-Ring Data Standard for dendrochronology
+See http://www.tridas.org/ for:
+- more information
+- contact information 
+- latest version
+
+Version date: 2008-11-26
+To be published in Dendrochronologia in 2009
+
+This XML Schema is available under LGPLv3 
+more information on http://www.gnu.org/licenses/lgpl.html
+
+***********************************************-->
+<xs:schema xmlns="http://www.tridas.org/1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" targetNamespace="http://www.tridas.org/1.1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<!--
+%%%%%%%%%%%%%%
+%		EXTERNAL SCHEMAS	
+%%%%%%%%%%%%%% -->
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd"/>
+	<xs:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsf.xsd"/>
+	<!-- 
+%%%%%%%%%%%%%%
+%		GLOBAL TYPES
+%%%%%%%%%%%%%% -->
+	<!-- controlledVoc -->
+	<xs:complexType name="controlledVoc">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="normalStd"/>
+				<xs:attribute name="normalId"/>
+				<xs:attribute name="normal"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- date -->
+	<xs:complexType name="date">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="certainty" use="required">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="unknown"/>
+							<xs:enumeration value="exact"/>
+							<xs:enumeration value="approximately"/>
+							<xs:enumeration value="after"/>
+							<xs:enumeration value="before"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- linkSeries -->
+	<xs:element name="linkSeries">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element name="idRref">
+					<xs:complexType>
+						<xs:attribute name="ref" type="xs:IDREF"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="xLink">
+					<xs:complexType>
+						<xs:attribute ref="xlink:href"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="identifier"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<!-- type -->
+	<xs:element name="type" type="controlledVoc"/>
+	<!-- description -->
+	<xs:element name="description" type="xs:string"/>
+	<!-- title -->
+	<xs:element name="title" type="xs:string"/>
+	<!-- identifier -->
+	<xs:element name="identifier">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="domain" use="required"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<!-- location -->
+	<xs:element name="location">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="locationGeometry"/>
+				<xs:element ref="locationType"/>
+				<xs:element ref="locationPrecision"/>
+				<xs:element ref="locationComment"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="locationGeometry">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="gml:Point"/>
+				<xs:element ref="gml:Polygon"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="locationType" type="xs:string"/>
+	<xs:element name="locationPrecision" type="xs:string"/>
+	<xs:element name="locationComment" type="xs:string"/>
+	<!-- file -->
+	<xs:element name="file">
+		<xs:complexType>
+			<xs:attribute ref="xlink:href" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<!-- generic field -->
+	<xs:element name="genericField">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="name" use="required"/>
+					<xs:attribute name="type" use="optional"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<!-- 
+%%%%%%%%%%%%%%
+%		ROOT
+%%%%%%%%%%%%%% -->
+	<xs:element name="tridas">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="project" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- 
+%%%%%%%%%%%%%%
+%		PROJECT
+%%%%%%%%%%%%%% -->
+	<xs:element name="project">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="title"/>
+				<xs:element ref="identifier"/>
+				<xs:element ref="laboratory" maxOccurs="unbounded"/>
+				<xs:element ref="type" maxOccurs="unbounded"/>
+				<xs:element ref="category"/>
+				<xs:element ref="investigator"/>
+				<xs:element ref="period"/>
+				<xs:element ref="description" minOccurs="0"/>
+				<xs:element ref="requestDate" minOccurs="0"/>
+				<xs:element ref="commissioner" minOccurs="0"/>
+				<xs:element ref="reference" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="research" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="object" maxOccurs="unbounded"/>
+				<xs:element ref="derivedSeries" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- PROJECT.title (global type)-->
+	<!-- PROJECT.identifier (global type) -->
+	<!-- PROJECT.laboratory -->
+	<xs:element name="laboratory">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="identifier" minOccurs="0"/>
+				<xs:element ref="name"/>
+				<xs:element ref="place"/>
+				<xs:element ref="country"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="name">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="acronym" use="optional"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="place" type="xs:string"/>
+	<xs:element name="country" type="xs:string"/>
+	<!-- PROJECT.type (global type) -->
+	<!-- PROJECT.category -->
+	<xs:element name="category" type="controlledVoc"/>
+	<!-- PROJECT.investigator -->
+	<xs:element name="investigator" type="xs:string"/>
+	<!-- PROJECT.period -->
+	<xs:element name="period" type="xs:string"/>
+	<!-- PROJECT.description (global type) -->
+	<!-- PROJECT.requestDate -->
+	<xs:element name="requestDate" type="xs:string"/>
+	<!-- PROJECT.commissioner -->
+	<xs:element name="commissioner" type="xs:string"/>
+	<!-- PROJECT.reference -->
+	<xs:element name="reference" type="xs:string"/>
+	<!-- PROJECT.file (global type) -->
+	<!-- PROJECT.research -->
+	<xs:element name="research">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="identifier"/>
+				<xs:element ref="description"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- PROJECT.genericField (global type) -->
+	<!--
+%%%%%%%%%%%%%%
+%		OBJECT
+%%%%%%%%%%%%%%-->
+	<xs:element name="object">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="linkSeries" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="identifier" minOccurs="0"/>
+				<xs:element ref="type"/>
+				<xs:element ref="description" minOccurs="0"/>
+				<xs:element ref="creator" minOccurs="0"/>
+				<xs:element ref="title" minOccurs="0"/>
+				<xs:element ref="owner" minOccurs="0"/>
+				<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="coverage" minOccurs="0"/>
+				<xs:element ref="location" minOccurs="0"/>
+				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="object" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="element" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- OBJECT.linkSeries (global type) -->
+	<!-- OBJECT.identifier (global type) -->
+	<!-- OBJECT.type (global type) -->
+	<!-- OBJECT.description (global type) -->
+	<!-- OBJECT.creator -->
+	<xs:element name="creator" type="xs:string"/>
+	<!-- OBJECT.title (global type) -->
+	<!-- OBJECT.owner -->
+	<xs:element name="owner" type="xs:string"/>
+	<!-- OBJECT.file (global type) -->
+	<!-- OBJECT.coverage -->
+	<xs:element name="coverage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="coverageTemporal"/>
+				<xs:element ref="coverageTemporalFoundation"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="coverageTemporal" type="xs:string"/>
+	<xs:element name="coverageTemporalFoundation" type="xs:string"/>
+	<!-- OBJECT.location (global type) -->
+	<!-- OBJECT.genericField (global type) -->
+	<!--
+%%%%%%%%%%%%%%
+%		ELEMENT
+%%%%%%%%%%%%%%-->
+	<xs:element name="element">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="linkSeries" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="identifier" minOccurs="0"/>
+				<xs:element ref="taxon"/>
+				<xs:element ref="shape" minOccurs="0"/>
+				<xs:element ref="dimensions" minOccurs="0"/>
+				<xs:element ref="authenticity" minOccurs="0"/>
+				<xs:element ref="location" minOccurs="0"/>
+				<xs:element ref="description" minOccurs="0"/>
+				<xs:element ref="function" minOccurs="0"/>
+				<xs:element ref="processing" minOccurs="0"/>
+				<xs:element ref="marks" minOccurs="0"/>
+				<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="sample" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ELEMENT.linkSeries (global type) -->
+	<!-- ELEMENT.identifier (global type) -->
+	<!-- ELEMENT.taxon -->
+	<xs:element name="taxon" type="controlledVoc"/>
+	<!-- ELEMENT.shape -->
+	<xs:element name="shape" type="controlledVoc"/>
+	<!-- ELEMENT.dimensions -->
+	<xs:element name="dimensions">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="unit"/>
+				<xs:choice>
+					<xs:sequence>
+						<xs:element name="diameter" type="xs:decimal"/>
+						<xs:element name="height" type="xs:decimal"/>
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="height" type="xs:decimal"/>
+						<xs:element name="width" type="xs:decimal"/>
+						<xs:element name="depth" type="xs:decimal"/>
+					</xs:sequence>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ELEMENT.authenticity -->
+	<xs:element name="authenticity" type="xs:string"/>
+	<!-- ELEMENT.location (global type) -->
+	<!-- ELEMENT.description (global type) -->
+	<!-- ELEMENT.function -->
+	<xs:element name="function" type="controlledVoc"/>
+	<!-- ELEMENT.processing -->
+	<xs:element name="processing" type="xs:string"/>
+	<!-- ELEMENT.marks -->
+	<xs:element name="marks" type="xs:string"/>
+	<!-- ELEMENT.file (global type) -->
+	<!-- ELEMENT.genericField (global type) -->
+	<!--
+%%%%%%%%%%%%%%
+%		SAMPLE
+%%%%%%%%%%%%%%-->
+	<xs:element name="sample">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="identifier" minOccurs="0"/>
+				<xs:element ref="type"/>
+				<xs:element ref="samplingDate"/>
+				<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="position" minOccurs="0"/>
+				<xs:element ref="state" minOccurs="0"/>
+				<xs:element ref="knots" minOccurs="0"/>
+				<xs:element ref="description" minOccurs="0"/>
+				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:choice>
+					<xs:element ref="radius" minOccurs="0"/>
+					<xs:element ref="radiusPlaceholder" minOccurs="0"/>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- SAMPLE.identifier (global type) -->
+	<!-- SAMPLE.type (global type) -->
+	<!-- SAMPLE.samplingDate -->
+	<xs:element name="samplingDate" type="date"/>
+	<!-- SAMPLE.file (global type) -->
+	<!-- SAMPLE.position -->
+	<xs:element name="position" type="xs:string"/>
+	<!-- SAMPLE.state -->
+	<xs:element name="state" type="xs:string"/>
+	<!-- SAMPLE.knots -->
+	<xs:element name="knots" type="xs:boolean"/>
+	<!-- SAMPLE.description (global type) -->
+	<!-- SAMPLE.genericField (global type) -->
+	<!-- 
+%%%%%%%%%%%%%%
+%		RADIUS 
+%%%%%%%%%%%%%%-->
+	<xs:element name="radius">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="identifier" minOccurs="0"/>
+				<xs:element ref="pith"/>
+				<xs:element ref="heartwood" minOccurs="0"/>
+				<xs:element ref="sapwood" minOccurs="0"/>
+				<xs:element ref="bark"/>
+				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="measurementSeries" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- RADIUS.identifier (global type) -->
+	<!-- RADIUS.pith -->
+	<xs:element name="pith">
+		<xs:complexType>
+			<xs:attribute name="presence" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="present"/>
+						<xs:enumeration value="absent"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<!-- RADIUS.heartwood -->
+	<xs:element name="heartwood">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="missingHeartwoodRingsToPith" minOccurs="0"/>
+				<xs:element ref="missingHeartwoodRingsToPithFoundation" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="presence" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="present"/>
+						<xs:enumeration value="absent"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="missingHeartwoodRingsToPithFoundation" type="xs:string"/>
+	<xs:element name="missingHeartwoodRingsToPith" type="xs:string"/>
+	<!-- RADIUS.sapwood -->
+	<xs:element name="sapwood">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="nrOfSapwoodRings" minOccurs="0"/>
+				<xs:element ref="lastRingUnderBark" minOccurs="0"/>
+				<xs:element ref="missingSapwoodRingsToBark" minOccurs="0"/>
+				<xs:element ref="missingSapwoodRingsToBarkFoundation" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="presence" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="not applicable"/>
+						<xs:enumeration value="absent"/>
+						<xs:enumeration value="complete"/>
+						<xs:enumeration value="incomplete"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="nrOfSapwoodRings" type="xs:string"/>
+	<xs:element name="lastRingUnderBark" type="xs:string"/>
+	<xs:element name="missingSapwoodRingsToBarkFoundation" type="xs:string"/>
+	<xs:element name="missingSapwoodRingsToBark" type="xs:string"/>
+	<!-- RADIUS.bark -->
+	<xs:element name="bark">
+		<xs:complexType>
+			<xs:attribute name="presence" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="present"/>
+						<xs:enumeration value="absent"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<!-- RADIUS.genericField (global type) -->
+	<!-- RADIUS-PLACEHOLDER -->
+	<xs:element name="radiusPlaceholder">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="measurementSeriesPlaceholder"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--	
+%%%%%%%%%%%%%%
+%		MEASUREMENTSERIES
+%%%%%%%%%%%%%%-->
+	<xs:element name="measurementSeries">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="identifier" minOccurs="0"/>
+				<xs:element ref="analyst" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="dendrochronologist" minOccurs="0"/>
+				<xs:element ref="measuringMethod"/>
+				<xs:element ref="measuringDate"/>
+				<xs:element ref="variable"/>
+				<xs:element ref="units"/>
+				<xs:element ref="comments" minOccurs="0"/>
+				<xs:element ref="usage" minOccurs="0"/>
+				<xs:element ref="usageComments" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:choice minOccurs="0">
+					<xs:element ref="interpretation"/>
+					<xs:element ref="interpretationUnsolved"/>
+				</xs:choice>
+				<xs:element ref="values"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:ID"/>
+		</xs:complexType>
+	</xs:element>
+	<!-- MEASUREMENTSERIES.identifier (global type) -->
+	<!-- MEASUREMENTSERIES.analyst -->
+	<xs:element name="analyst" type="xs:string"/>
+	<!-- MEASUREMENTSERIES.dendrochronologist -->
+	<xs:element name="dendrochronologist" type="xs:string"/>
+	<!-- MEASUREMENTSERIES.measuringMethod -->
+	<xs:element name="measuringMethod" type="controlledVoc"/>
+	<!-- MEASUREMENTSERIES.measuringDate -->
+	<xs:element name="measuringDate" type="date"/>
+	<!-- MEASUREMENTSERIES.variable -->
+	<xs:element name="variable" type="xs:string"/>
+	<!-- MEASUREMENTSERIES.units -->
+	<xs:element name="units">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="unit" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="name"/>
+			<xs:attribute name="description"/>
+			<xs:attribute name="factor"/>
+			<xs:attribute name="system" fixed="SI"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="unit">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="power" type="xs:integer"/>
+					<xs:attribute name="description"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<!-- MEASUREMENTSERIES.comments -->
+	<xs:element name="comments" type="xs:string"/>
+	<!-- MEASUREMENTSERIES.usage -->
+	<xs:element name="usage" type="xs:string"/>
+	<!-- MEASUREMENTSERIES.usageComments -->
+	<xs:element name="usageComments" type="xs:string"/>
+	<!-- MEASUREMENTSERIES.genericField (global type) -->
+	<!-- MEASUREMENTSERIES.interpretation -->
+	<xs:element name="interpretation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="calendar"/>
+				<xs:element ref="firstYear"/>
+				<xs:element ref="statFoundation" maxOccurs="unbounded"/>
+				<xs:element ref="sproutYear" minOccurs="0"/>
+				<xs:element ref="deathYear" minOccurs="0"/>
+				<xs:element ref="provenance" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="calendar">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="linkSeries"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="firstYear" type="date"/>
+	<xs:element name="statFoundation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="statValue"/>
+				<xs:element ref="type"/>
+				<xs:element ref="significanceLevel" minOccurs="0"/>
+				<xs:element ref="usedSoftware"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="statValue" type="xs:decimal"/>
+	<xs:element name="significanceLevel" type="xs:decimal"/>
+	<xs:element name="usedSoftware" type="xs:string"/>
+	<xs:element name="sproutYear" type="date"/>
+	<xs:element name="deathYear" type="date"/>
+	<xs:element name="provenance" type="xs:string"/>
+	<!-- MEASUREMENTSERIES.interpretationUnsolved -->
+	<xs:element name="interpretationUnsolved" type="xs:string"/>
+	<!-- MEASUREMENTSERIES.values -->
+	<xs:element name="values">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="value" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="value">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="note" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="value" use="required"/>
+			<xs:attribute name="index" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="note" type="xs:string"/>
+	<!-- MEASUREMENTSSERIES-PLACEHOLDER -->
+	<xs:element name="measurementSeriesPlaceholder">
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:ID" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<!--
+%%%%%%%%%%%%%%
+%		DERIVEDSERIES
+%%%%%%%%%%%%%% -->
+	<xs:element name="derivedSeries">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="linkSeries" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="identifier" minOccurs="0"/>
+				<xs:element ref="type" maxOccurs="unbounded"/>
+				<xs:element ref="objective" minOccurs="0"/>
+				<xs:element ref="standardizingMethod"/>
+				<xs:element ref="author" minOccurs="0"/>
+				<xs:element ref="version" minOccurs="0"/>
+				<xs:element ref="derivationDate" minOccurs="0"/>
+				<xs:element ref="usedSoftware" minOccurs="0"/>
+				<xs:element ref="usedSeries" maxOccurs="unbounded"/>
+				<xs:element ref="comments" minOccurs="0"/>
+				<xs:element ref="usage" minOccurs="0"/>
+				<xs:element ref="usageComments" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="variable"/>
+				<xs:element ref="units"/>
+				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:choice minOccurs="0">
+					<xs:element ref="interpretation"/>
+					<xs:element ref="interpretationUnsolved"/>
+				</xs:choice>
+				<xs:element ref="values"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:ID"/>
+		</xs:complexType>
+	</xs:element>
+	<!-- DERIVEDSERIES.linkSeries (global type) -->
+	<!-- DERIVEDSERIES.identifier (global type) -->
+	<!-- DERIVEDSERIES.type (global type) -->
+	<!-- DERIVEDSERIES.objective -->
+	<xs:element name="objective" type="xs:string"/>
+	<!-- DERIVEDSERIES.standardizingMethod -->
+	<xs:element name="standardizingMethod" type="xs:string"/>
+	<!-- DERIVEDSERIES.author -->
+	<xs:element name="author" type="xs:string"/>
+	<!-- DERIVEDSERIES.version -->
+	<xs:element name="version" type="xs:string"/>
+	<!-- DERIVEDSERIES.derivationDate -->
+	<xs:element name="derivationDate" type="date"/>
+	<!-- DERIVEDSERIES.usedSoftware (defined at MEASUREMENTSERIES.interpretation) -->
+	<!-- DERIVEDSERIES.usedSeries -->
+	<xs:element name="usedSeries" type="xs:string"/>
+	<!-- DERIVEDSERIES.variable (defined at MEASUREMENTSERIES) -->
+	<!-- DERIVEDSERIES.units (defined at MEASUREMENTSERIES) -->
+	<!-- DERIVEDSERIES.genericField (global type) -->
+	<!-- DERIVEDSERIES.interpretation (defined at MEASUREMENTSERIES) -->
+	<!-- DERIVEDSERIES.interpretationUnsolved (defined at MEASUREMENTSERIES) -->
+</xs:schema>
