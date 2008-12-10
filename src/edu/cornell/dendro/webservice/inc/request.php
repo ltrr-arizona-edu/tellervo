@@ -64,7 +64,10 @@ class request
         $doc = new DomDocument;
         $doc->loadXML($xmlrequest);
 
+        // Handle validation errors ourselves
+        libxml_use_internal_errors(true);
 
+        // Do the validation
         if($doc->schemaValidate($corinaXSD))
         {
             $this->xmlrequest = simplexml_load_string($xmlrequest);
@@ -85,12 +88,11 @@ class request
         }
         else
         {
-            $myErrorObj = error_get_last();
-            $myError = explode(":", $myErrorObj['message']);
-            $this->metaHeader->setMessage("905", "XML does not validate against schema. ".end($myError).".");
+            $this->metaHeader->setMessage("905", "The XML request does not validate against the schema ".$this->xml_validation_errors($xmlrequest));
             error_reporting($origErrorLevel);
             return false;
         }
+ 
     }
 
     /**
@@ -404,6 +406,50 @@ class request
     }
 
 
+    private function libxml_display_error($error, $xmlRequest=NULL)
+    {
+
+        $message ="";
+
+        // If $xmlRequest has been specified then try and grab the dodgy line
+        if (isset($xmlRequest))
+        { 
+            $codeArray = explode('<br />', nl2br($xmlRequest));
+            $problemCode = $codeArray[$error->line-1];
+
+            $message .= " because there is an error on line $error->line";
+
+            // Include the column number if available 
+            if($error->column > 0)
+            {
+                $message .= ", column $error->column";
+            }
+            $message .= ": <sourceCode>".escapeXMLChars($problemCode)."</sourceCode> ";
+        }
+        else
+        {
+            $message .= " because there is an error on line $error->line. ";
+        }
+
+        // Include the actual error message
+        $message .= trim($error->message);
+
+        // Return the string
+        return $message;
+    }
+    
+    private function xml_validation_errors($xmlRequest=NULL) {
+        $message ="";
+        $errors = libxml_get_errors();
+        foreach ($errors as $error) {
+            $message .= $this->libxml_display_error($error, $xmlRequest);
+        }
+        libxml_clear_errors();
+        return $message;
+    }
+
+
 }
+
 
 ?>
