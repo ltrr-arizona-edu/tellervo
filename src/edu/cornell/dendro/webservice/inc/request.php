@@ -60,9 +60,18 @@ class request
 
         $xmlrequest = xmlSpecialCharReplace($xmlrequest);
 
-        // Extract parameters from XML
+        // *** WARNING ***
+        // Shameful kludge for making sure a lack of namespace in the XML request doesn't screw things up
+        // This really needs fixing because it's soooo embarassing!
+        $doc2 = new DomDocument;
+        $doc2->loadXML($xmlrequest);
+        if(!($doc2->documentElement->hasAttribute('xmlns')))
+        {
+            $doc2->documentElement->setAttributeNode(new DOMAttr('xmlns', 'http://dendro.cornell.edu/schema/corina/1.0'));
+        }
         $doc = new DomDocument;
-        $doc->loadXML($xmlrequest);
+        $doc->loadXML($doc2->saveXML());
+        // ****************
 
         // Handle validation errors ourselves
         libxml_use_internal_errors(true);
