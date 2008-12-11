@@ -14,11 +14,61 @@
  */
 class dbEntity 
 {
+	/**
+	 * Unique identifier for this entity
+	 *
+	 * @var String
+	 */
     protected $id = NULL;	
+    
+    /**
+     * Domain from which this entities identifier was issued
+     *
+     * @var String
+     */
+    protected $identifierDomain = NULL;
+    
+    /**
+     * XML tag for this entities parent entity
+     *
+     * @var String
+     */
 	protected $parentXMLTag = NULL; 
+	
+	/**
+	 * The last error associated with this entity
+	 *
+	 * @var String
+	 */
     protected $lastErrorMessage = NULL;
+    
+    /**
+     * The last error code associated with this entity
+     *
+     * @var Integer
+     */
     protected $lastErrorCode = NULL;
-
+    
+    /**
+     * When this entity was created
+     *
+     * @var Timestamp
+     */
+    protected $createdTimeStamp = NULL;
+    
+    /**
+     * When this entity was last modified
+     *
+     * @var Timestamp
+     */
+    protected $lastModifiedTimeStamp = NULL;
+    
+    
+    /**
+     * Constructor for this entity
+     *
+     * @param String $parentXMLTag
+     */
     protected function __construct($parentXMLTag)
     {
     	$this->setParentXMLTag($parentXMLTag);
@@ -54,6 +104,38 @@ class dbEntity
     private function setParentXMLTag($theTag)
     {
 		$this->parentXMLTag = $theTag;
+    }
+    
+    /**
+     * Set the identifier and from what domain it came
+     *
+     * @param String $identifier
+     * @param String $domain
+     */
+    private function setID($identifier, $domain)
+    {
+    	$this->id = $identifier;
+    	$this->identifierDomain = $domain;	
+    }
+    
+	/**
+	 * Set the timestamp for when this entity was created
+	 *
+	 * @param Timestamp $timestamp
+	 */
+    private function setCreatedTimestamp($timestamp)
+    {
+    	$this->createdTimeStamp=$timestamp;
+    }
+    
+    /**
+     * Set the timestamp for when this entity was last modified
+     *
+     * @param Timestamp $timestamp
+     */
+    private function setLastModifiedTimestamp($timestamp)
+    {
+    	$this->lastModifiedTimeStamp=$timestamp;
     }
     
     

@@ -1,12 +1,15 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.0
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * *******************************************************************
+ */
+
 require_once('dbhelper.php');
 require_once('inc/radius.php');
 require_once('inc/sampleType.php');
@@ -18,10 +21,58 @@ require_once('inc/dbEntity.php');
 
 class sample extends dbEntity
 {
+	/**
+	 * Method that was used to take a sample from the element
+	 *
+	 * @var unknown_type
+	 */
+    var $sampleType = NULL; 
+    
+    /**
+     * Year of dendrochronological sampling
+     *
+     * @var Date
+     */
+    var $sampingDate = NULL;
+    	
+    /**
+     * Array of filenames associated with this sample
+     *
+     * @var Array
+     */
+    var $fileArray = array();
+	
+    /**
+     * Position of sample in element
+     *
+     * @var String
+     */
+    var $position = NULL;
+	
+    
+    /**
+     * State this material is in (dry, wet, burned etc)
+     *
+     * @var String
+     */
+    var $state = NULL;
+    
+    /**
+     * Presence of knots
+     *
+     * @var Boolean
+     */
+    var $knots = NULL;
+    
+    /**
+     * More information about the sample
+     *
+     * @var String
+     */
+    var $description = NULL;
+    
     var $name = NULL;
     var $treeID = NULL;
-    var $dateCollected = NULL;
-    var $sampleType = NULL;
     var $terminalRing = NULL;
     var $isTerminalRingVerified = NULL;
     var $sapwoodCount = NULL;
@@ -38,14 +89,14 @@ class sample extends dbEntity
     var $unmeasuredPost = NULL;
     var $isUnmeasuredPostVerified = NULL;
     
+    
     var $includePermissions = FALSE;
     var $canCreate = NULL;
     var $canUpdate = NULL;
     var $canDelete = NULL;
     
     var $radiusArray = array();
-    var $createdTimeStamp = NULL;
-    var $lastModifiedTimeStamp = NULL;
+
 
 
 
@@ -157,9 +208,9 @@ class sample extends dbEntity
         $this->isPithVerified=$theBool;
     }
     
-    function setDateCollected($dateCollected)
+    function setSamplingDate($samplingDate)
     {
-        $this->dateCollected = $dateCollected;
+        $this->samplingDate = $samplingDate;
     }
     
     function setSapwoodCount($sapwoodCount)
@@ -217,7 +268,7 @@ class sample extends dbEntity
                 $row = pg_fetch_array($result);
                 $this->name = $row['name'];
                 $this->id = $row['sampleid'];
-                $this->dateCollected = $row['datecollected'];
+                $this->samplingDate = $row['datecollected'];
                 $this->sampleType = $row['sampletype'];
                 $this->terminalRing = $row['terminalring'];
                 $this->isTerminalRingVerified = fromPGtoPHPBool($row['isterminalringverified']);
@@ -276,13 +327,19 @@ class sample extends dbEntity
         return TRUE;
     }
     
-    function setParamsFromParamsClass($paramsClass)
+    /**
+     * Set the parameters of this class based upon the Parameters Class that has been passed
+     *
+     * @param Parameters Class $paramsClass
+     * @return Boolean
+     */
+    private function setParamsFromParamsClass($paramsClass)
     {
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
         if(isset($paramsClass->id))                            $this->id                               = $paramsClass->id;                      
         if(isset($paramsClass->treeID))                        $this->treeID                           = $paramsClass->treeID;                      
         if(isset($paramsClass->name))                          $this->name                             = $paramsClass->name;                      
-        if(isset($paramsClass->dateCollected))                 $this->dateCollected                    = $paramsClass->dateCollected;            
+        if(isset($paramsClass->samplingDate))                 $this->samplingDate                    = $paramsClass->samplingDate;            
         if(isset($paramsClass->sampleType))                  $this->sampleType                     = $paramsClass->sampleType;              
         if(isset($paramsClass->terminalRing))                  $this->terminalRing                     = $paramsClass->terminalRing;              
         if(isset($paramsClass->sapwoodCount))                  $this->sapwoodCount                     = $paramsClass->sapwoodCount;              
@@ -306,7 +363,14 @@ class sample extends dbEntity
     /* FUNCTIONS */
     /*************/    
     
-    function validateRequestParams($paramsObj, $crudMode)
+    /**
+     * Validate the parameters passed based on the CRUD mode
+     *
+     * @param Params Class $paramsObj
+     * @param String $crudMode one of create, read, update or delete.
+     * @return unknown
+     */
+    protected function validateRequestParams($paramsObj, $crudMode)
     {
         // Check parameters based on crudMode 
         switch($crudMode)
@@ -336,7 +400,7 @@ class sample extends dbEntity
                     return false;
                 }
                 if(($paramsObj->name==NULL) 
-                    && ($paramsObj->dateCollected==NULL) 
+                    && ($paramsObj->samplingDate==NULL) 
                     && ($paramsObj->sampleType==NULL) 
                     && ($paramsObj->terminalRing==NULL) 
                     && ($paramsObj->sapwoodCount==NULL) 
@@ -397,6 +461,12 @@ class sample extends dbEntity
         }
     }
 
+    /**
+     * Retrieve the relevant permissions for this class from the database 
+     *
+     * @param Integer $securityUserID
+     * @return Boolean
+     */
     function getPermissions($securityUserID)
     {
         global $dbconn;
@@ -427,7 +497,13 @@ class sample extends dbEntity
     /*ACCESSORS*/
     /***********/
 
-    
+	/**
+	 * Get the XML representation of this class
+	 * 
+	 * @param String $format one of standard, comprehensive, summary, or minimal. Defaults to 'standard'
+	 * @param String $parts one of all, beginning or end. Defaults to 'all'
+	 * @return String
+	 */
     protected function asXML($format='standard', $parts='all')
     {
         switch($format)
@@ -509,7 +585,14 @@ class sample extends dbEntity
         }
     }
 
-
+	/**
+	 * Internal function for getting the XML representation of this class.
+	 * You should almost certainly be used asXML() instead.
+	 *
+	 * @param String $format one of standard, comprehensive, summary, or minimal. Defaults to 'standard'
+	 * @param String $parts one of all, beginning or end. Defaults to 'all'
+	 * @return String
+	 */
     private function _asXML($format, $parts)
     {
         global $domain;
@@ -537,7 +620,7 @@ class sample extends dbEntity
                 
                 if($format!="minimal")
                 {
-                    if(isset($this->dateCollected))                 $xml.= "<dateCollected>".$this->dateCollected."</dateCollected>\n";
+                    if(isset($this->samplingDate))                 $xml.= "<samplingDate>".$this->samplingDate."</samplingDate>\n";
                     if(isset($this->sampleType))                  $xml.= "<sampleType>".$this->sampleType."</sampleType>\n";
                     if(isset($this->terminalRing))                  $xml.= "<terminalRing>".$this->terminalRing."</terminalRing>\n";
                     if(isset($this->isTerminalRingVerified))        $xml.= "<isTerminalRingVerified>".fromPGtoStringBool($this->isTerminalRingVerified)."</isTerminalRingVerified>";
@@ -574,7 +657,13 @@ class sample extends dbEntity
     /*FUNCTIONS*/
     /***********/
 
-    function writeToDB()
+    
+    /**
+     * Write this class representation to the database  
+     *
+     * @return Boolean
+     */
+    protected function writeToDB()
     {
         // Write the current object to the database
 
@@ -595,7 +684,7 @@ class sample extends dbEntity
                     $sql = "insert into tblsample ( ";
                         if(isset($this->name))                          $sql.="name, ";
                         if(isset($this->treeID))                        $sql.="treeid, ";
-                        if(isset($this->dateCollected))                 $sql.="datecollected, ";
+                        if(isset($this->samplingDate))                 $sql.="samplingDate, ";
                         if(isset($this->sampleType))                  $sql.="sampletype, ";
                         if(isset($this->terminalRing))                  $sql.="terminalring, ";
                         if(isset($this->isTerminalRingVerified))        $sql.="isterminalringverified, ";
@@ -616,7 +705,7 @@ class sample extends dbEntity
                     $sql.=") values (";
                         if(isset($this->name))                          $sql.="'".$this->name                                           ."', ";
                         if(isset($this->treeID))                        $sql.="'".$this->treeID                                         ."', ";
-                        if(isset($this->dateCollected))                 $sql.="'".$this->dateCollected                                  ."', ";
+                        if(isset($this->samplingDate))                 $sql.="'".$this->samplingDate                                  ."', ";
                         if(isset($this->sampleType))                  $sql.="'".$this->sampleType                                   ."', ";
                         if(isset($this->terminalRing))                  $sql.="'".$this->terminalRing                                   ."', ";
                         if(isset($this->isTerminalRingVerified))        $sql.="'".fromPHPtoPGBool($this->isTerminalRingVerified)        ."', ";
@@ -643,7 +732,7 @@ class sample extends dbEntity
                     $sql.="update tblsample set ";
                         if(isset($this->name))                          $sql.="name='"                          .$this->name                                            ."', ";
                         if(isset($this->treeID))                        $sql.="treeID='"                        .$this->treeID                                          ."', ";
-                        if(isset($this->dateCollected))                 $sql.="datecollected='"                 .$this->dateCollected                                   ."', ";
+                        if(isset($this->samplingDate))                 $sql.="samplingDate='"                 .$this->samplingDate                                   ."', ";
                         if(isset($this->sampleType))                  $sql.="sampletype='"                  .$this->sampleType                                    ."', ";
                         if(isset($this->terminalRing))                  $sql.="terminalring='"                  .$this->terminalRing                                    ."', ";
                         if(isset($this->isTerminalRingVerified))        $sql.="isterminalringverified='"        .fromPHPtoPGBool($this->isTerminalRingVerified)         ."', ";
@@ -710,6 +799,12 @@ class sample extends dbEntity
         return TRUE;
     }
 
+    
+    /**
+     * Delete this class representation from the database
+     *
+     * @return Boolean
+     */
     function deleteFromDB()
     {
         // Delete the record in the database matching the current object's ID

@@ -1,12 +1,16 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.0
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * *******************************************************************
+ */
+
+
 require_once('dbhelper.php');
 
 class authenticate 
@@ -21,15 +25,24 @@ class authenticate
     /* CONSTRUCTOR */
     /***************/
 
+	/**
+	 * Constructor for this class
+	 *
+	 */
     function __construct()
     {
-        // Constructor for this class.
     }
 
     /***********/
     /* SETTERS */
     /***********/
 
+    /**
+     * Raise an error
+     *
+     * @param Integer $theCode
+     * @param String $theMessage
+     */
     function setErrorMessage($theCode, $theMessage)
     {
         // Set the error latest error message and code for this object.
@@ -37,7 +50,16 @@ class authenticate
         $this->lastErrorMessage = $theMessage;
     }
 
-    function validateRequestParams($paramsObj, $crudMode)
+    /**
+     * Validate the parameters passed depending on the 'CRUD' mode.
+     * In this case $crudMode should be one of 'plainlogin', 'nonce'
+     * or 'securelogin'.
+     *
+     * @param Parameters class $paramsObj
+     * @param String $crudMode
+     * @return Boolean
+     */
+    public function validateRequestParams($paramsObj, $crudMode)
     {
         // Check parameters based on crudMode 
         switch($crudMode)
@@ -95,7 +117,15 @@ class authenticate
     /***********/
     /*ACCESSORS*/
     /***********/
-    function doPlainAuthentication($paramsClass, $auth)
+    
+    /**
+     * Do a 'plain' authentication
+     *
+     * @param Parameters Class $paramsClass
+     * @param Auth Class $auth
+     * @return Boolean
+     */
+    protected function doPlainAuthentication($paramsClass, $auth)
     {
         $myAuth = $auth;
         $myRequest = $paramsClass;
@@ -109,10 +139,18 @@ class authenticate
         {
             // Log in failed
             $this->setErrorMessage($myAuth->getLastErrorCode(), $myAuth->getLastErrorMessage());
+            return False;
         }
     }
     
-    function doSecureAuthentication($paramsClass, $auth)
+    /**
+     * Do a secure authentication 
+     *
+     * @param Params Class $paramsClass
+     * @param Auth Class $auth
+     * @return Boolean
+     */
+    protected function doSecureAuthentication($paramsClass, $auth)
     {
         $myAuth = $auth;
         $myRequest = $paramsClass;
@@ -132,7 +170,13 @@ class authenticate
         }
     }
 
-    function setNonce($paramsClass, $auth)
+    /**
+     * Set the nonce 
+     *
+     * @param Params Class $paramsClass
+     * @param Auth Class $auth
+     */
+    protected function setNonce($paramsClass, $auth)
     {
         $myAuth = $auth;
         $myRequest = $paramsClass;
@@ -142,7 +186,12 @@ class authenticate
         
     }
 
-    function asXML($mode="all")
+    /**
+     * Get the XML representation of this class
+     *
+     * @return String
+     */
+    protected function asXML($mode="all")
     {
         if(isset($this->xmldata))
         {
@@ -154,26 +203,24 @@ class authenticate
         }
     }
 
-    function asKML($mode="all")
-    {
-    }
-
-    function getParentTagBegin()
-    {
-    }
-
-    function getParentTagEnd()
-    {
-    }
-
-    function getLastErrorCode()
+    /**
+     * Get code for the most recent error
+     *
+     * @return Integer
+     */
+    protected function getLastErrorCode()
     {
         // Return an integer containing the last error code recorded for this object
         $error = $this->lastErrorCode; 
         return $error;  
     }
-
-    function getLastErrorMessage()
+    
+    /**
+     * Get the message for the most recent error
+     *
+     * @return String
+     */
+    protected function getLastErrorMessage()
     {
         // Return a string containing the last error message recorded for this object
         $error = $this->lastErrorMessage;
@@ -184,6 +231,13 @@ class authenticate
     /*FUNCTIONS*/
     /***********/
 
+    /**
+     * Get an SQL representation of the array of parameters
+     *
+     * @param Array  $paramsArray
+     * @param String $paramName
+     * @return String
+     */
     function paramsToFilterSQL($paramsArray, $paramName)
     {
         $filterSQL="";
@@ -222,9 +276,14 @@ class authenticate
         return $filterSQL;
     }
 
+    /**
+     * Convert a variable name to it's database alias.
+     *
+     * @param String $objectName
+     * @return String
+     */
     function variableName($objectName)
     {
-
         switch($objectName)
         {
         case "site":
@@ -251,9 +310,14 @@ class authenticate
 
     }
 
+    /**
+     * Covert a variable name to it's database table alias
+     *
+     * @param String $objectName
+     * @return String
+     */
     function tableName($objectName)
     {
-
         switch($objectName)
         {
         case "site":
@@ -280,16 +344,20 @@ class authenticate
 
     }
 
+    /**
+     * This function returns an interger representing the most junior level of relationship required in this query
+     * tblsite     -- 6 -- most senior
+     * tblsubsite  -- 5 --
+     * tblelement  -- 4 --
+     * tblsample   -- 3 --
+     * tblradius   -- 2 --
+     * tblseries   -- 1 -- most junior
+     *
+     * @param String $theRequest
+     * @return Integer
+     */
     function getLowestRelationshipLevel($theRequest)
     {
-        // This function returns an interger representing the most junior level of relationship required in this query
-        // tblsite         -- 6 -- most senior
-        // tblsubsite      -- 5 --
-        // tblelement         -- 4 --
-        // tblsample     -- 3 --
-        // tblradius       -- 2 --
-        // tblseries  -- 1 -- most junior
-        
         $myRequest = $theRequest;
         
         if (($myRequest->seriesParamsArray) || ($myRequest->returnObject == 'series'))
@@ -322,16 +390,20 @@ class authenticate
         }
     }
 
+    /**
+     * This function returns an interger representing the most senior level of relationship required in this query
+     * tblsite     -- 6 -- most senior
+     * tblsubsite  -- 5 --
+     * tblelement  -- 4 --
+     * tblsample   -- 3 --
+     * tblradius   -- 2 --
+     * tblseries   -- 1 -- most junior   
+     *
+     * @param String $theRequest
+     * @return String
+     */
     function getHighestRelationshipLevel($theRequest)
     {
-        // This function returns an interger representing the most senior level of relationship required in this query
-        // tblsite         -- 6 -- most senior
-        // tblsubsite      -- 5 --
-        // tblelement         -- 4 --
-        // tblsample     -- 3 --
-        // tblradius       -- 2 --
-        // tblseries  -- 1 -- most junior
-
         $myRequest = $theRequest;
 
         if (($myRequest->siteParamsArray) || ($myRequest->returnObject == 'site'))
@@ -364,10 +436,14 @@ class authenticate
         }
     }
 
+    /**
+     * Returns the 'where' clause part of the query SQL for the table relationships 
+     *
+     * @param String $theRequest
+     * @return String
+     */
     function getRelationshipSQL($theRequest)
     {
-        // Returns the 'where' clause part of the query SQL for the table relationships 
-
         $myRequest = $theRequest;
         $lowestLevel  = $this->getLowestRelationshipLevel($myRequest);
         $highestLevel = $this->getHighestRelationshipLevel($myRequest);
