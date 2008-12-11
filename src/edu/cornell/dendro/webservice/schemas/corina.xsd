@@ -64,7 +64,16 @@
 							<xs:attribute name="seq" type="xs:string"/>
 						</xs:complexType>
 					</xs:element>
-				</xs:sequence>				
+				</xs:sequence>	
+				<xs:sequence>
+					<xs:element ref="tridas:project" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="tridas:element" minOccurs="0" maxOccurs="unbounded"/>					
+					<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="tridas:radius" minOccurs="0" maxOccurs="unbounded"/>			
+					<xs:element ref="tridas:measurementSeries" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="tridas:derivedSeries" minOccurs="0" maxOccurs="unbounded"/>					
+				</xs:sequence>
 				<xs:sequence>
 					<xs:annotation>
 						<xs:documentation>This should only be empty when requesting a nonce or when logging out</xs:documentation>
@@ -163,7 +172,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="sql"/>
-				<xs:element ref="tridas:sample"/>
+				<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
