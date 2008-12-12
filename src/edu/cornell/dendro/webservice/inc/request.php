@@ -162,21 +162,24 @@ class request
     	//***************        
         elseif ( ($this->crudMode=='read') || ($this->crudMode=='delete'))
         {
-            foreach ($this->xmlrequest->xpath('//request/entity') as $item)
-                {
-                    $parentID = NULL;
-                    switch($item['type'])
-                    {
-                    	case 'sample':
-                    		$newxml = "<tds:sample><identifier domain=\"local\">".$item['id']."</identifier></tds:sample>";
-                    		$myParamObj = new sampleParameters($this->metaHeader, $this->auth, $newxml, $parentID);
-                    	default:
-                    		echo "error";
-                    		die;
-                    }
-                    
-                    array_push($this->paramObjectsArray, $myParamObj);
-                }
+        	if($this->xmlrequest->xpath('//request/entity'))
+        	{
+	            foreach ($this->xmlrequest->xpath('//request/entity') as $item)
+	            {
+	                $parentID = NULL;
+	                switch($item['type'])
+	                {
+	                	case 'sample':
+	                		$newxml = "<tds:sample><identifier domain=\"local\">".$item['id']."</identifier></tds:sample>";
+	                		$myParamObj = new sampleParameters($this->metaHeader, $this->auth, $newxml, $parentID);
+	                	default:
+	                		echo "error";
+	                		die;
+	                }
+	                
+	                array_push($this->paramObjectsArray, $myParamObj);
+	            }
+        	}
         
         }
         elseif ( ($this->crudMode=='create') || ($this->crudMode=='update') || ($this->crudMode=='assign') || ($this->crudMode=='unassign') )
