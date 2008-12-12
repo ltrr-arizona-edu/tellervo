@@ -57,21 +57,9 @@ class request
     {
         global $corinaXSD;
         $origErrorLevel = error_reporting(E_ERROR);
-
         $xmlrequest = xmlSpecialCharReplace($xmlrequest);
-
-        // *** WARNING ***
-        // Shameful kludge for making sure a lack of namespace in the XML request doesn't screw things up
-        // This really needs fixing because it's soooo embarassing!
-        $doc2 = new DomDocument;
-        $doc2->loadXML($xmlrequest);
-        if(!($doc2->documentElement->hasAttribute('xmlns')))
-        {
-            $doc2->documentElement->setAttributeNode(new DOMAttr('xmlns', 'http://dendro.cornell.edu/schema/corina/1.0'));
-        }
         $doc = new DomDocument;
-        $doc->loadXML($doc2->saveXML());
-        // ****************
+        $doc->loadXML($xmlrequest);
   
         // Handle validation errors ourselves
         libxml_use_internal_errors(true);
@@ -148,6 +136,9 @@ class request
      */
     function createParamObjects()
     {
+    	//******
+    	//SEARCH
+    	//******
         if($this->crudMode=='search')
         {
             if($this->xmlrequest->xpath('//request/searchParams'))
@@ -165,7 +156,30 @@ class request
 
             }   
         }
-        elseif ( ($this->crudMode=='create') || ($this->crudMode=='read') || ($this->crudMode=='update') || ($this->crudMode=='delete') || ($this->crudMode=='assign') || ($this->crudMode=='unassign') )
+        
+    	//***************
+    	//READ and DELETE
+    	//***************        
+        elseif ( ($this->crudMode=='read') || ($this->crudMode=='delete'))
+        {
+            foreach ($this->xmlrequest->xpath('//request/entity') as $item)
+                {
+                    $parentID = NULL;
+                    switch($item['type'])
+                    {
+                    	case 'sample':
+                    		$newxml = "<tds:sample><identifier domain=\"local\">".$item['id']."</identifier></tds:sample>";
+                    		$myParamObj = new sampleParameters($this->metaHeader, $this->auth, $newxml, $parentID);
+                    	default:
+                    		echo "error";
+                    		die;
+                    }
+                    
+                    array_push($this->paramObjectsArray, $myParamObj);
+                }
+        
+        }
+        elseif ( ($this->crudMode=='create') || ($this->crudMode=='update') || ($this->crudMode=='assign') || ($this->crudMode=='unassign') )
         {
             if($this->xmlrequest->xpath('//dictionaries'))
             {
