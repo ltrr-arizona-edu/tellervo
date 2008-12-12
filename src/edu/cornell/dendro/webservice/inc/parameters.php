@@ -30,6 +30,12 @@ class parameters
     {
         echo "This function should be overloaded";
     }
+    
+    function getNamespace()
+    {
+    	$namespaces = $this->xmlrequest->getNamespaces(true);
+    	var_dump($namespaces);
+    }
 
 
 }
@@ -120,7 +126,7 @@ class treeParameters extends parameters
         if(isset($this->xmlrequest->longitude))             $this->longitude            = (double)   $this->xmlrequest->longitude;
         if(isset($this->xmlrequest->precision))             $this->precision            = (double)   $this->xmlrequest->precision;
         if(isset($this->xmlrequest->isLiveTree))            $this->isLiveTree           = fromStringtoPHPBool($this->xmlrequest->isLiveTree);
-        if(isset($this->xmlrequest->specimen))              $this->hasChild             = True;
+        if(isset($this->xmlrequest->sample))              $this->hasChild             = True;
         
         $treeNotes = $this->xmlrequest->xpath('//treeNotes');
         if (isset($treeNotes[0]->treeNote[0]))
@@ -137,24 +143,24 @@ class treeParameters extends parameters
     }
 }
 
-class specimenParameters extends parameters
+class sampleParameters extends parameters
 {
     var $id                            = NULL;
     var $treeID                        = NULL;
     var $name                          = NULL;
     var $dateCollected                 = NULL;
-    var $specimenType                  = NULL;
+    var $sampleType                  = NULL;
     var $terminalRing                  = NULL;
     var $sapwoodCount                  = NULL;
-    var $specimenQuality               = NULL;
-    var $specimenContinuity            = NULL;
+    var $sampleQuality               = NULL;
+    var $sampleContinuity            = NULL;
     var $pith                          = NULL;
     var $unmeasuredPre                 = NULL;
     var $unmeasuredPost                = NULL;
     var $isTerminalRingVerified        = NULL;
     var $isSapwoodCountVerified        = NULL;
-    var $isSpecimenQualityVerified     = NULL;
-    var $isSpecimenContinuityVerified  = NULL;
+    var $issampleQualityVerified     = NULL;
+    var $issampleContinuityVerified  = NULL;
     var $isPithVerified                = NULL;
     var $isUnmeasuredPreVerified       = NULL;
     var $isUnmeasuredPostVerified      = NULL;
@@ -167,21 +173,22 @@ class specimenParameters extends parameters
     
     function getXMLParams()
     {
-        if(isset($this->xmlrequest['id']))                          $this->id                               = (int)      $this->xmlrequest['id'];
+    	$this->getNamespace();
+        if(isset($this->xmlrequest->identifier))                    $this->id                               = (int)      $this->xmlrequest->identifier;
         if(isset($this->xmlrequest->name))                          $this->name                             = addslashes($this->xmlrequest->name);
         if(isset($this->xmlrequest->dateCollected))                 $this->dateCollected                    = addslashes($this->xmlrequest->dateCollected);
-        if(isset($this->xmlrequest->specimenType))                  $this->specimenType                     = addslashes($this->xmlrequest->specimenType);
+        if(isset($this->xmlrequest->sampleType))                  $this->sampleType                     = addslashes($this->xmlrequest->sampleType);
         if(isset($this->xmlrequest->terminalRing))                  $this->terminalRing                     = addslashes($this->xmlrequest->terminalRing);
         if(isset($this->xmlrequest->sapwoodCount))                  $this->sapwoodCount                     = (int)      $this->xmlrequest->sapwoodCount;
-        if(isset($this->xmlrequest->specimenQuality))               $this->specimenQuality                  = addslashes($this->xmlrequest->specimenQuality);
-        if(isset($this->xmlrequest->specimenContinuity))            $this->specimenContinuity               = addslashes($this->xmlrequest->specimenContinuity);
+        if(isset($this->xmlrequest->sampleQuality))               $this->sampleQuality                  = addslashes($this->xmlrequest->sampleQuality);
+        if(isset($this->xmlrequest->sampleContinuity))            $this->sampleContinuity               = addslashes($this->xmlrequest->sampleContinuity);
         if(isset($this->xmlrequest->pith))                          $this->pith                             = addslashes($this->xmlrequest->pith);
         if(isset($this->xmlrequest->unmeasuredPre))                 $this->unmeasuredPre                    = (int)      $this->xmlrequest->unmeasuredPre;
         if(isset($this->xmlrequest->unmeasuredPost))                $this->unmeasuredPost                   = (int)      $this->xmlrequest->unmeasuredPost;
         if(isset($this->xmlrequest->isTerminalRingVerified))        $this->isTerminalRingVerified           = fromStringtoPHPBool(   $this->xmlrequest->isTerminalRingVerified);
         if(isset($this->xmlrequest->isSapwoodCountVerified))        $this->isSapwoodCountVerified           = fromStringtoPHPBool(   $this->xmlrequest->isSapwoodCountVerified);
-        if(isset($this->xmlrequest->isSpecimenQualityVerified))     $this->isSpecimenQualityVerified        = fromStringtoPHPBool(   $this->xmlrequest->isSpecimenQualityVerified);
-        if(isset($this->xmlrequest->isSpecimenContinuityVerified))  $this->isSpecimenContinuityVerified     = fromStringtoPHPBool(   $this->xmlrequest->isSpecimenContinuityVerified);
+        if(isset($this->xmlrequest->issampleQualityVerified))     $this->issampleQualityVerified        = fromStringtoPHPBool(   $this->xmlrequest->issampleQualityVerified);
+        if(isset($this->xmlrequest->issampleContinuityVerified))  $this->issampleContinuityVerified     = fromStringtoPHPBool(   $this->xmlrequest->issampleContinuityVerified);
         if(isset($this->xmlrequest->isPithVerified))                $this->isPithVerified                   = fromStringtoPHPBool(   $this->xmlrequest->isPithVerified);
         if(isset($this->xmlrequest->isUnmeasuredPreVerified))       $this->isUnmeasuredPreVerified          = fromStringtoPHPBool(   $this->xmlrequest->isUnmeasuredPreVerified);
         if(isset($this->xmlrequest->isUnmeasuredPostVerified))      $this->isUnmeasuredPostVerified         = fromStringtoPHPBool(   $this->xmlrequest->isUnmeasuredPostVerified);
@@ -193,11 +200,11 @@ class radiusParameters extends parameters
 {
     var $id         = NULL;
     var $name       = NULL;
-    var $specimenID = NULL;
+    var $sampleID = NULL;
 
     function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
     {
-        $this->specimenID = $parentID;
+        $this->sampleID = $parentID;
         parent::__construct($metaHeader, $auth, $xmlrequest);
     }
     
@@ -527,7 +534,7 @@ class searchParameters extends parameters
     var $siteParamsArray         = array();
     var $subSiteParamsArray      = array();
     var $treeParamsArray         = array();
-    var $specimenParamsArray     = array();
+    var $sampleParamsArray     = array();
     var $radiusParamsArray       = array();
     var $measurementParamsArray  = array();
     var $vmeasurementParamsArray  = array();
@@ -584,18 +591,18 @@ class searchParameters extends parameters
                 array_push($this->treeParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
             }  
 
-            // Specimen parameters
-            elseif( ($param['name'] == 'specimenid') || 
-                    ($param['name'] == 'specimenname') || 
+            // sample parameters
+            elseif( ($param['name'] == 'sampleid') || 
+                    ($param['name'] == 'samplename') || 
                     ($param['name'] == 'datecollected') || 
-                    ($param['name'] == 'specimencreated') || 
-                    ($param['name'] == 'specimenlastmodified') || 
-                    ($param['name'] == 'specimentypeid') || 
-                    ($param['name'] == 'specimentype') || 
+                    ($param['name'] == 'samplecreated') || 
+                    ($param['name'] == 'samplelastmodified') || 
+                    ($param['name'] == 'sampletypeid') || 
+                    ($param['name'] == 'sampletype') || 
                     ($param['name'] == 'isterminalringverified') || 
                     ($param['name'] == 'sapwoodcount') || 
                     ($param['name'] == 'issapwoodcountverified') || 
-                    ($param['name'] == 'isspecimenqualityverified') || 
+                    ($param['name'] == 'issamplequalityverified') || 
                     ($param['name'] == 'ispithverified') || 
                     ($param['name'] == 'unmeaspre') || 
                     ($param['name'] == 'unmeaspost') || 
@@ -603,15 +610,15 @@ class searchParameters extends parameters
                     ($param['name'] == 'isunmeaspostverified') || 
                     ($param['name'] == 'terminalringid') || 
                     ($param['name'] == 'terminalring') || 
-                    ($param['name'] == 'specimenqualityid') || 
-                    ($param['name'] == 'specimenquality') || 
-                    ($param['name'] == 'specimencontinuityid') || 
-                    ($param['name'] == 'specimencontinuity') || 
+                    ($param['name'] == 'samplequalityid') || 
+                    ($param['name'] == 'samplequality') || 
+                    ($param['name'] == 'samplecontinuityid') || 
+                    ($param['name'] == 'samplecontinuity') || 
                     ($param['name'] == 'pithid') || 
                     ($param['name'] == 'pith') || 
-                    ($param['name'] == 'isspecimencontinuityverified'))
+                    ($param['name'] == 'issamplecontinuityverified'))
             {
-                array_push($this->specimenParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
+                array_push($this->sampleParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
             }
 
             // Radius parameters
