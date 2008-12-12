@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <corina xmlns="http://dendro.cornell.edu/schema/corina/1.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://dendro.cornell.edu/schema/corina/1.0 file:/Users/peterbrewer/Documents/dev/php/Dev/schemas/corina.xsd">
+    xsi:schemaLocation="http://dendro.cornell.edu/schema/corina/1.0 file:/Users/peterbrewer/Documents/dev/php/Dev/schemas/corina.xsd"
+    xmlns:tridas="http://www.tridas.org/1.1/">
     
     <request type="plainlogin">       
         <authenticate username="yourusername" password="yourpassword" />
