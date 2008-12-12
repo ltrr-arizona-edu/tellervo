@@ -126,7 +126,7 @@ class auth
    * @param String $thePassword
    * @return unknown
    */
-  protected function login($theUsername, $thePassword)
+  public function login($theUsername, $thePassword)
   {
     global $dbconn;
 
@@ -295,7 +295,7 @@ class auth
    *
    * @return Boolean
    */
-  protected function isLoggedIn()
+  public function isLoggedIn()
   {
     return $this->isLoggedIn;
   }
@@ -305,7 +305,7 @@ class auth
    *
    * @return String
    */
-  protected function getFirstname()
+  public function getFirstname()
   {
     return $this->firstname;
   }
@@ -315,7 +315,7 @@ class auth
    *
    * @return String
    */
-  protected function getLastname()
+  public function getLastname()
   {
     return $this->lastname;
   }
@@ -325,7 +325,7 @@ class auth
    *
    * @return String
    */
-  protected function getUsername()
+  public function getUsername()
   {
     return $this->username;
   }
@@ -335,7 +335,7 @@ class auth
    *
    * @return Integer
    */
-  protected function getID()
+  public function getID()
   {
     return $this->securityuserid;
   }
@@ -348,7 +348,7 @@ class auth
    * @param unknown_type $theObjectID
    * @return unknown
    */
-  protected function getPermission($thePermissionType, $theObjectType, $theObjectID)
+  public function getPermission($thePermissionType, $theObjectType, $theObjectID)
   {
         // $theObjectType should be one of site,tree, vmeasurement, default
 
@@ -498,7 +498,7 @@ class auth
    *
    * @return boolean
    */
-  protected function isAdmin()
+  public function isAdmin()
   {
         global $dbconn;
         $sql = "select * from cpgdb.isadmin(".$this->securityuserid.") where isadmin=true";
@@ -526,7 +526,7 @@ class auth
    *
    * @return Integer
    */
-  protected function sequence() 
+  public function sequence() 
   {
      return mt_rand(1, 1048576);
   }
@@ -538,7 +538,7 @@ class auth
    * @param String $timeseed defaults to 'current'
    * @return String
    */
-  protected function nonce($seq, $timeseed="current")
+  public function nonce($seq, $timeseed="current")
   {
     if ($timeseed=="current")
     {

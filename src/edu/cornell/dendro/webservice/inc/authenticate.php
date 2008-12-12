@@ -125,7 +125,7 @@ class authenticate
      * @param Auth Class $auth
      * @return Boolean
      */
-    protected function doPlainAuthentication($paramsClass, $auth)
+    public function doPlainAuthentication($paramsClass, $auth)
     {
         $myAuth = $auth;
         $myRequest = $paramsClass;
@@ -150,7 +150,7 @@ class authenticate
      * @param Auth Class $auth
      * @return Boolean
      */
-    protected function doSecureAuthentication($paramsClass, $auth)
+    public function doSecureAuthentication($paramsClass, $auth)
     {
         $myAuth = $auth;
         $myRequest = $paramsClass;
@@ -191,7 +191,7 @@ class authenticate
      *
      * @return String
      */
-    protected function asXML($mode="all")
+    public function asXML($mode="all")
     {
         if(isset($this->xmldata))
         {

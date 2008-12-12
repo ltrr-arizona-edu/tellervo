@@ -60,6 +60,7 @@ class request
 
         $xmlrequest = xmlSpecialCharReplace($xmlrequest);
 
+   /*    
         // *** WARNING ***
         // Shameful kludge for making sure a lack of namespace in the XML request doesn't screw things up
         // This really needs fixing because it's soooo embarassing!
@@ -72,7 +73,15 @@ class request
         $doc = new DomDocument;
         $doc->loadXML($doc2->saveXML());
         // ****************
+ */ 
 
+        $doc = new DomDocument;
+        $doc->loadXML($xmlrequest);
+        if(!($doc->documentElement->hasAttribute('xmlns')))
+        {
+            $doc->documentElement->setAttributeNode(new DOMAttr('xmlns', 'http://dendro.cornell.edu/schema/corina/1.0'));
+        }
+ 
         // Handle validation errors ourselves
         libxml_use_internal_errors(true);
 
