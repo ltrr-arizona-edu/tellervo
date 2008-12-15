@@ -56,6 +56,9 @@ class request
     function validateXML($xmlrequest)
     {
         global $corinaXSD;
+        global $corinaNS;
+        global $tridasNS;
+
         $origErrorLevel = error_reporting(E_ERROR);
         $xmlrequest = xmlSpecialCharReplace($xmlrequest);
         $doc = new DomDocument;
@@ -68,6 +71,12 @@ class request
         if($doc->schemaValidate($corinaXSD))
         {
             $this->xmlrequest = simplexml_load_string($xmlrequest);
+            
+            // Set namespaces for XPath queries
+            $this->xmlrequest->registerXPathNamespace('cor', $corinaNS);
+            $this->xmlrequest->registerXPathNamespace('tds', $tridasNS);
+            
+            // Extract basic request information
             if($this->xmlrequest)
             {
                 $this->crudMode = strtolower($this->xmlrequest->request['type']);
@@ -162,16 +171,17 @@ class request
     	//***************        
         elseif ( ($this->crudMode=='read') || ($this->crudMode=='delete'))
         {
-        	if($this->xmlrequest->xpath('//request/entity'))
+        	if($this->xmlrequest->xpath('//cor:entity'))
         	{
-	            foreach ($this->xmlrequest->xpath('//request/entity') as $item)
+	            foreach ($this->xmlrequest->xpath('//cor:entity') as $item)
 	            {
 	                $parentID = NULL;
 	                switch($item['type'])
 	                {
 	                	case 'sample':
-	                		$newxml = "<tds:sample><identifier domain=\"local\">".$item['id']."</identifier></tds:sample>";
+	                		$newxml = simplexml_load_string("<tds:sample><identifier domain=\"local\">".$item['id']."</identifier></tds:sample>");
 	                		$myParamObj = new sampleParameters($this->metaHeader, $this->auth, $newxml, $parentID);
+                                        break;
 	                	default:
 	                		echo "error";
 	                		die;
@@ -180,6 +190,10 @@ class request
 	                array_push($this->paramObjectsArray, $myParamObj);
 	            }
         	}
+                else
+                {
+                    $this->metaHeader->setMessage("905", "Invalid XML request - read or delete requests require entity tags");
+                }
         
         }
         elseif ( ($this->crudMode=='create') || ($this->crudMode=='update') || ($this->crudMode=='assign') || ($this->crudMode=='unassign') )
@@ -363,7 +377,7 @@ class request
         elseif ( ($this->crudMode=='plainlogin') || ($this->crudMode=='securelogin') || ($this->crudMode=='nonce') ) 
         {
             $parentID = NULL;
-            $item = $this->xmlrequest->xpath('//authenticate');
+            $item = $this->xmlrequest->request->authenticate;
             $myParamObj = new authenticationParameters($this->metaHeader, $this->auth, $item, $parentID);
             array_push($this->paramObjectsArray, $myParamObj);
         }

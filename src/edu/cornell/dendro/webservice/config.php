@@ -30,6 +30,12 @@ $rngSchema = "/var/www/corina-webservice/dev/schemas/corina.rng";
 // URL to Corina XSD
 $corinaXSD = "/var/www/corina-webservice/dev/schemas/corina.xsd";
 
+// Corina Namespace URL
+$corinaNS = "http://dendro.cornell.edu/schema/corina/1.0";
+
+// TRiDaS Namespace URL
+$tridasNS = "http://www.tridas.org/1.1";
+
 // Timezone of the server this software is running on
 $serverTimezone = "America/New_York";
 

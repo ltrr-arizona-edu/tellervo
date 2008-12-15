@@ -24,17 +24,15 @@ class radius
     var $canDelete = NULL;
 
 
-    var $parentXMLTag = "radii"; 
-    var $lastErrorMessage = NULL;
-    var $lastErrorCode = NULL;
 
     /***************/
     /* CONSTRUCTOR */
     /***************/
 
-    function radius()
+    function __construct()
     {
-        // Constructor for this class.
+        $parentXMLTag = "radii";
+        parent::__construct($parentXMLTag);
     }
 
     /***********/

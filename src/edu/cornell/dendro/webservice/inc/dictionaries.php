@@ -10,7 +10,7 @@
  * *******************************************************************
  */
 require_once('dbhelper.php');
-require_once('dbentity.php');
+require_once('inc/dbEntity.php');
 
 require_once("inc/note.php");
 require_once("inc/sampleType.php");

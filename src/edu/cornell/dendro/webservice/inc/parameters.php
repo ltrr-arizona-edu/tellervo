@@ -173,7 +173,6 @@ class sampleParameters extends parameters
     
     function getXMLParams()
     {
-    	$this->getNamespace();
         if(isset($this->xmlrequest->identifier))                    $this->id                               = (int)      $this->xmlrequest->identifier;
         if(isset($this->xmlrequest->name))                          $this->name                             = addslashes($this->xmlrequest->name);
         if(isset($this->xmlrequest->dateCollected))                 $this->dateCollected                    = addslashes($this->xmlrequest->dateCollected);

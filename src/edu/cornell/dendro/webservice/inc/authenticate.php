@@ -208,7 +208,7 @@ class authenticate
      *
      * @return Integer
      */
-    protected function getLastErrorCode()
+    function getLastErrorCode()
     {
         // Return an integer containing the last error code recorded for this object
         $error = $this->lastErrorCode; 
@@ -220,7 +220,7 @@ class authenticate
      *
      * @return String
      */
-    protected function getLastErrorMessage()
+    function getLastErrorMessage()
     {
         // Return a string containing the last error message recorded for this object
         $error = $this->lastErrorMessage;

@@ -30,6 +30,9 @@ function writeOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd
 function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd="")
 {
     global $domain;
+    global $corinaNS;
+    global $tridasNS;
+
     $outputStr ="";
     $outputStr.="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     if ($metaHeader->status =="Error")
@@ -37,7 +40,7 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
         $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"https://".$domain."css/corina.css\"?>";
         $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"https://".$domain."css/docbook/driver.css\"?>";
     }
-    $outputStr.= "<corina>\n";
+    $outputStr.= "<corina xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\">\n";
     $outputStr.= $metaHeader->asXML();
     
     if($metaHeader->status !="Error")

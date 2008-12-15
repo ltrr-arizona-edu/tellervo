@@ -21,11 +21,11 @@ require_once('inc/dbEntity.php');
 
 class sample extends dbEntity
 {
-	/**
-	 * Method that was used to take a sample from the element
-	 *
-	 * @var unknown_type
-	 */
+/**
+ * Method that was used to take a sample from the element
+ *
+ * @var unknown_type
+ */
     var $sampleType = NULL; 
     
     /**
@@ -74,20 +74,14 @@ class sample extends dbEntity
     var $name = NULL;
     var $treeID = NULL;
     var $terminalRing = NULL;
-    var $isTerminalRingVerified = NULL;
     var $sapwoodCount = NULL;
     var $sapwoodCountVerified = NULL;
     var $sampleQuality = NULL;
-    var $sampleQualityVerified = NULL;
     var $sampleContinuity = NULL;
-    var $sampleContinuityVerified = NULL;
     var $pith = NULL;
     var $pithVerified = NULL;
-    var $isPithVerified = NULL;
     var $unmeasuredPre = NULL;
-    var $isUnmeasuredPreVerified = NULL;
     var $unmeasuredPost = NULL;
-    var $isUnmeasuredPostVerified = NULL;
     
     
     var $includePermissions = FALSE;
@@ -104,8 +98,9 @@ class sample extends dbEntity
     /* CONSTRUCTOR */
     /***************/
 
-    public function __construct($parentXMLTag)
+    public function __construct()
     {
+        $parentXMLTag = "element";
     	parent::__construct($parentXMLTag);
     }
 
@@ -268,8 +263,8 @@ class sample extends dbEntity
                 $row = pg_fetch_array($result);
                 $this->name = $row['name'];
                 $this->id = $row['sampleid'];
-                $this->samplingDate = $row['datecollected'];
-                $this->sampleType = $row['sampletype'];
+                $this->samplingDate = $row['samplingdate'];
+                $this->sampleType = $row['type'];
                 $this->terminalRing = $row['terminalring'];
                 $this->isTerminalRingVerified = fromPGtoPHPBool($row['isterminalringverified']);
                 $this->sapwoodCount = $row['sapwoodcount'];
@@ -370,7 +365,7 @@ class sample extends dbEntity
      * @param String $crudMode one of create, read, update or delete.
      * @return unknown
      */
-    protected function validateRequestParams($paramsObj, $crudMode)
+    function validateRequestParams($paramsObj, $crudMode)
     {
         // Check parameters based on crudMode 
         switch($crudMode)
@@ -504,7 +499,7 @@ class sample extends dbEntity
 	 * @param String $parts one of all, beginning or end. Defaults to 'all'
 	 * @return String
 	 */
-    protected function asXML($format='standard', $parts='all')
+    function asXML($format='standard', $parts='all')
     {
         switch($format)
         {
@@ -604,46 +599,40 @@ class sample extends dbEntity
     
             if( ($parts=="all") || ($parts=="beginning"))
             {
-                $xml.= "<sample ";
-                $xml.= "id=\"".$this->id."\" >";
-                $xml.= getResourceLinkTag("sample", $this->id)."\n ";
+                $xml.= "<tridas:sample>\n";
+                $xml.= "<tridas:identifier domain=\"$domain\">".$this->id."</tridas:identifier>";
+
+                //$xml.= getResourceLinkTag("sample", $this->id)."\n ";
                 
                 // Include permissions details if requested
                 if($this->includePermissions===TRUE) 
                 {
-                    $xml.= "<permissions canCreate=\"".fromPHPtoStringBool($this->canCreate)."\" ";
-                    $xml.= "canUpdate=\"".fromPHPtoStringBool($this->canUpdate)."\" ";
-                    $xml.= "canDelete=\"".fromPHPtoStringBool($this->canDelete)."\" />\n";
+                    $xml.= "<tridas:genericField name=\"canCreate\" type=\"boolean\">".fromPHPtoStringBool($this->canCreate)."</tridas:genericField ";
+                    $xml.= "<tridas:genericField name=\"canUpdate\" type=\"boolean\">".fromPHPtoStringBool($this->canUpdate)."</tridas:genericField ";
+                    $xml.= "<tridas:genericField name=\"canDelete\" type=\"boolean\">".fromPHPtoStringBool($this->canDelete)."</tridas:genericField ";
                 } 
               
-                if(isset($this->name))                          $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
+                if(isset($this->name))                          $xml.= "<tridas:genericField name=\"name\">".escapeXMLChars($this->name)."</tridas:genericField>\n";
                 
                 if($format!="minimal")
                 {
-                    if(isset($this->samplingDate))                 $xml.= "<samplingDate>".$this->samplingDate."</samplingDate>\n";
-                    if(isset($this->sampleType))                  $xml.= "<sampleType>".$this->sampleType."</sampleType>\n";
-                    if(isset($this->terminalRing))                  $xml.= "<terminalRing>".$this->terminalRing."</terminalRing>\n";
-                    if(isset($this->isTerminalRingVerified))        $xml.= "<isTerminalRingVerified>".fromPGtoStringBool($this->isTerminalRingVerified)."</isTerminalRingVerified>";
-                    if(isset($this->sapwoodCount))                  $xml.= "<sapwoodCount>".$this->sapwoodCount."</sapwoodCount>\n";
-                    if(isset($this->isSapwoodCountVerified))        $xml.= "<isSapwoodCountVerified>".fromPHPtoStringBool($this->isSapwoodCountVerified)."</isSapwoodCountVerified>";
-                    if(isset($this->sampleQuality))               $xml.= "<sampleQuality>".$this->sampleQuality."</sampleQuality>\n";
-                    if(isset($this->issampleQualityVerified))     $xml.= "<issampleQualityVerified>".fromPHPtoStringBool($this->issampleQualityVerified)."</issampleQualityVerified>\n";
-                    if(isset($this->sampleContinuity))            $xml.= "<sampleContinuity>".$this->sampleContinuity."</sampleContinuity>\n";
-                    if(isset($this->issampleContinuityVerified))  $xml.= "<issampleContinuityVerified>".fromPHPtoStringBool($this->issampleContinuityVerified)."</issampleContinuityVerified>\n";
-                    if(isset($this->pith))                          $xml.= "<pith>".$this->pith."</pith>\n";
-                    if(isset($this->isPithVerified))                $xml.= "<isPithVerified>".fromPHPtoStringBool($this->isPithVerified)."</isPithVerified>\n";
-                    if(isset($this->unmeasuredPre))                 $xml.= "<unmeasuredPre>".$this->unmeasuredPre."</unmeasuredPre>\n";
-                    if(isset($this->isUnmeasuredPreVerified))       $xml.= "<isUnmeasuredPreVerified>".fromPHPtoStringBool($this->isUnmeasuredPreVerified)."</isUnmeasuredPreVerified>\n";
-                    if(isset($this->unmeasuredPost))                $xml.= "<unmeasuredPost>".$this->unmeasuredPost."</unmeasuredPost>\n";
-                    if(isset($this->isUnmeasuredPostVerified))      $xml.= "<isUnmeasuredPostVerified>".fromPHPtoStringBool($this->isUnmeasuredPostVerified)."</isUnmeasuredPostVerified>\n";
-                    if(isset($this->createdTimeStamp))              $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
-                    if(isset($this->lastModifiedTimeStamp))         $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+                    if(isset($this->samplingDate))                 $xml.= "<samplingDate\">".$this->samplingDate."</samplingDate>\n";
+                    if(isset($this->sampleType))                  $xml.= "<tridas:genericField name=\"sampleType\">".$this->sampleType."</tridas:genericField>\n";
+                    if(isset($this->terminalRing))                  $xml.= "<tridas:genericField name=\"terminalRing\">".$this->terminalRing."</tridas:genericField>\n";
+                    if(isset($this->sapwoodCount))                  $xml.= "<tridas:genericField name=\"sapwoodCount\">".$this->sapwoodCount."</tridas:genericField>\n";
+                    if(isset($this->sampleQuality))               $xml.= "<tridas:genericField name=\"sampleQuality\">".$this->sampleQuality."</tridas:genericField>\n";
+                    if(isset($this->sampleContinuity))            $xml.= "<tridas:genericField name=\"sampleContinuity\">".$this->sampleContinuity."</tridas:genericField>\n";
+                    if(isset($this->pith))                          $xml.= "<tridas:genericField name=\"pith\">".$this->pith."</tridas:genericField>\n";
+                    if(isset($this->unmeasuredPre))                 $xml.= "<tridas:genericField name=\"unmeasuredPre\">".$this->unmeasuredPre."</tridas:genericField>\n";
+                    if(isset($this->unmeasuredPost))                $xml.= "<tridas:genericField name=\"unmeasuredPost\">".$this->unmeasuredPost."</tridas:genericField>\n";
+                    if(isset($this->createdTimeStamp))              $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->createdTimeStamp."</tridas:genericField>\n";
+                    if(isset($this->lastModifiedTimeStamp))         $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->lastModifiedTimeStamp."</tridas:genericField>\n";
                 }
             }
 
             if (($parts=="all") || ($parts=="end"))
             {
-                $xml.= "</sample>\n";
+                $xml.= "</tridas:sample>\n";
             }
             return $xml;
         }
