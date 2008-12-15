@@ -29,6 +29,20 @@ class dbEntity
     protected $identifierDomain = NULL;
     
     /**
+     * More information about the entity
+     *
+     * @var String
+     */
+    protected $description = NULL;
+    
+    /**
+     * Name of this entity
+     *
+     * @var unknown_type
+     */
+    protected $name = NULL;    
+    
+    /**
      * XML tag for this entities parent entity
      *
      * @var String
@@ -62,6 +76,36 @@ class dbEntity
      * @var Timestamp
      */
     protected $lastModifiedTimeStamp = NULL;
+    
+    /**
+     * Whether the permissions should also be included in the output
+     * 
+     * @var Boolean
+     */
+    protected $includePermissions = FALSE;
+    
+    /**
+     * Whether the user can create children of this entity
+     *
+     * @var Boolean
+     */
+    protected $canCreate = NULL;
+    
+    /**
+     * Whether the user can update this entity
+     *
+     * @var Boolean
+     */
+    protected $canUpdate = NULL;
+    
+    /**
+     * Whether the user can delete this entity
+     *
+     * @var Boolean
+     */
+    protected $canDelete = NULL;
+    
+    
     
     
     /**
@@ -201,5 +245,70 @@ class dbEntity
         return $error;
     }    
     
+    /**
+     * Retrieve the relevant permissions for this class from the database 
+     *
+     * @param Integer $securityUserID
+     * @return Boolean
+     */
+    function getPermissions($securityUserID)
+    {
+        global $dbconn;
+
+        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, get_class($this), $this->id)";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);
+            $row = pg_fetch_array($result);
+            
+            $this->canCreate = fromPGtoPHPBool($row['cancreate']);
+            $this->canUpdate = fromPGtoPHPBool($row['canupdate']);
+            $this->canDelete = fromPGtoPHPBool($row['candelete']);
+            $this->includePermissions = TRUE;
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+        return TRUE; 
+    }
+    
+    /**
+     * Stub for outputting this entity to XML.  This should be overloaded
+     *
+	 * @param String $format one of standard, comprehensive, summary, or minimal. Defaults to 'standard'
+	 * @param String $parts one of all, beginning or end. Defaults to 'all'
+	 * @return Boolean
+     */
+    function asXML($format='standard', $parts='all')
+    {
+    	$this->setErrorMessage("667", "The asXML() function should have been overloaded but hasn't been");
+    	return false;
+    }
+    
+    /**
+     * Stub for writing this entity to the database.  This should be overloaded
+     *
+     * @return Boolean
+     */
+     function writeToDB()
+    {
+     	$this->setErrorMessage("667", "The writeToDB() function should have been overloaded but hasn't been");
+    	return false;   	
+    }
+    
+     /**
+     * Stub for deleting this entity from the database.  This should be overloaded
+     *
+     * @return Boolean
+     */
+    function deleteFromDB()
+    {
+     	$this->setErrorMessage("667", "The deleteFromDB() function should have been overloaded but hasn't been");
+    	return false;     	
+    }
 }
 ?>

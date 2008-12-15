@@ -33,7 +33,7 @@ class sample extends dbEntity
      *
      * @var Date
      */
-    var $sampingDate = NULL;
+    var $samplingDate = NULL;
     	
     /**
      * Array of filenames associated with this sample
@@ -64,36 +64,9 @@ class sample extends dbEntity
      */
     var $knots = NULL;
     
-    /**
-     * More information about the sample
-     *
-     * @var String
-     */
-    var $description = NULL;
-    
-    var $name = NULL;
-    var $treeID = NULL;
-    var $terminalRing = NULL;
-    var $sapwoodCount = NULL;
-    var $sapwoodCountVerified = NULL;
-    var $sampleQuality = NULL;
-    var $sampleContinuity = NULL;
-    var $pith = NULL;
-    var $pithVerified = NULL;
-    var $unmeasuredPre = NULL;
-    var $unmeasuredPost = NULL;
-    
-    
-    var $includePermissions = FALSE;
-    var $canCreate = NULL;
-    var $canUpdate = NULL;
-    var $canDelete = NULL;
-    
+    var $treeID = NULL;    
     var $radiusArray = array();
-
-
-
-
+    
     /***************/
     /* CONSTRUCTOR */
     /***************/
@@ -120,123 +93,12 @@ class sample extends dbEntity
         $this->treeID=$theTreeID;
     }
 
-    function setsampleType($sampleType)
-    {
-        // Set speciemn type id from name
-        $mysampleType = new sampleType;
-        $mysampleType->setParamsFromName($sampleType);
-        $this->sampleType=$mysampleType->getName();
-    }
-
-    function setsampleTypeID($sampleTypeID)
-    {
-        // Set sample type id from id
-        $this->sampleTypeID=$sampleTypeID;
-    }
-
-    function setTerminalRing($terminalRing)
-    {
-        // Set terminal ring  from name
-        $this->terminalRing=$terminalRing;
-    }
-
-    function setTerminalRingID($terminalRingID)
-    {
-        // Set terminal ring id from id
-        $this->terminalRingID=$terminalRingID;
-    }
-
-    function setIsTerminalRingVerified($theBool)
-    {
-        $this->isTerminalRingVerified=$theBool;
-    }
-
-    function setsampleQuality($sampleQuality)
-    {
-        // Set sample quality from name
-        $this->sampleQuality=$sampleQuality;
-    }
-
-    function setsampleQualityID($sampleQualityID)
-    {
-        // Set sample quality id from id
-        $this->sampleQualityID=$sampleQualityID;
-    }
-    
-    function setIssampleQualityVerified($theBool)
-    {
-        $this->issampleQualityVerified=$theBool;
-    }
-
-    function setsampleContinuity($sampleContinuity)
-    {
-        // Set sample continuity from name
-        $this->sampleContinuity=$sampleContinuity;
-    }
-
-    function setsampleContinuityID($sampleContinuityID)
-    {
-        // Set sample continuity id from id
-        $this->sampleContinuityID=$sampleContinuityID;
-    }
-    
-    function setIssampleContinuityVerified($theBool)
-    {
-        $this->issampleContinuityVerified=$theBool;
-    }
-
-    function setPith($pith)
-    {
-        // Set pith id from name
-        $this->pith=$pith;
-    }
-
-    function setPithID($pithID)
-    {
-        // Set pith id from id
-        $this->pithID=$pithID;
-    }
-    
-    function setIsPithVerified($theBool)
-    {
-        // Set pith id from id
-        $this->isPithVerified=$theBool;
-    }
-    
+ 
     function setSamplingDate($samplingDate)
     {
         $this->samplingDate = $samplingDate;
     }
     
-    function setSapwoodCount($sapwoodCount)
-    {
-        $this->sapwoodCount = $sapwoodCount;
-    }
-    
-    function setIsSapwoodCountVerified($theBool)
-    {
-        $this->isSapwoodCountVerified = $theBool;
-    }
-    
-    function setUnmeasPre($theValue)
-    {
-        $this->unmeasuredPre = $theValue;
-    }
-    
-    function setIsUnmeasPreVerified($theBool)
-    {
-        $this->isUnmeasuredPreVerified = $theBool;
-    }
-    
-    function setUnmeasPost($theValue)
-    {
-        $this->unmeasuredPost = $theValue;
-    }
-    
-    function setIsUnmeasPostVerified($theBool)
-    {
-        $this->isUnmeasuredPostVerified = $theBool;
-    }
     
     function setParamsFromDB($theID)
     {
@@ -264,22 +126,7 @@ class sample extends dbEntity
                 $this->name = $row['name'];
                 $this->id = $row['sampleid'];
                 $this->samplingDate = $row['samplingdate'];
-                $this->sampleType = $row['type'];
-                $this->terminalRing = $row['terminalring'];
-                $this->isTerminalRingVerified = fromPGtoPHPBool($row['isterminalringverified']);
-                $this->sapwoodCount = $row['sapwoodcount'];
-                $this->isSapwoodCountVerified = fromPGtoPHPBool($row['issapwoodcountverified']);
-                $this->sampleQuality= $row['samplequality'];
-                $this->issampleQualityVerified= fromPGtoPHPBool($row['issamplequalityverified']);
-                $this->sampleContinuity = $row['samplecontinuity'];
-                $this->issampleContinuityVerified = fromPGtoPHPBool($row['issamplecontinuityverified']);
-                $this->pith = $row['pith'];
-                $this->isPithVerified = fromPGtoPHPBool($row['ispithverified']);
-                $this->unmeasuredPre = $row['unmeaspre'];
-                $this->isUnmeasuredPreVerified = fromPGtoPHPBool($row['isunmeaspreverified']);
-                $this->unmeasuredPost = $row['unmeaspost'];
-                $this->isUnmeasuredPostVerified = fromPGtoPHPBool($row['isunmeaspostverified']);
-                $this->createdTimeStamp = $row['createdtimestamp'];
+		        $this->createdTimeStamp = $row['createdtimestamp'];
                 $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
             }
         }
@@ -334,22 +181,8 @@ class sample extends dbEntity
         if(isset($paramsClass->id))                            $this->id                               = $paramsClass->id;                      
         if(isset($paramsClass->treeID))                        $this->treeID                           = $paramsClass->treeID;                      
         if(isset($paramsClass->name))                          $this->name                             = $paramsClass->name;                      
-        if(isset($paramsClass->samplingDate))                 $this->samplingDate                    = $paramsClass->samplingDate;            
-        if(isset($paramsClass->sampleType))                  $this->sampleType                     = $paramsClass->sampleType;              
-        if(isset($paramsClass->terminalRing))                  $this->terminalRing                     = $paramsClass->terminalRing;              
-        if(isset($paramsClass->sapwoodCount))                  $this->sapwoodCount                     = $paramsClass->sapwoodCount;              
-        if(isset($paramsClass->sampleQuality))               $this->sampleQuality                  = $paramsClass->sampleQuality;           
-        if(isset($paramsClass->sampleContinuity))            $this->sampleContinuity               = $paramsClass->sampleContinuity;       
-        if(isset($paramsClass->pith))                          $this->pith                             = $paramsClass->pith;          
-        if(isset($paramsClass->unmeasuredPre))                 $this->unmeasuredPre                    = $paramsClass->unmeasuredPre;             
-        if(isset($paramsClass->unmeasuredPost))                $this->unmeasuredPost                   = $paramsClass->unmeasuredPost;            
-        if(isset($paramsClass->isTerminalRingVerified))        $this->isTerminalRingVerified           = $paramsClass->isTerminalRingVerified;   
-        if(isset($paramsClass->isSapwoodCountVerified))        $this->isSapwoodCountVerified           = $paramsClass->isSapwoodCountVerified;    
-        if(isset($paramsClass->issampleQualityVerified))     $this->issampleQualityVerified        = $paramsClass->issampleQualityVerified; 
-        if(isset($paramsClass->issampleContinuityVerified))  $this->issampleContinuityVerified     = $paramsClass->issampleContinuityVerified;
-        if(isset($paramsClass->isPithVerified))                $this->isPithVerified                   = $paramsClass->isPithVerified;            
-        if(isset($paramsClass->isUnmeasuredPreVerified))       $this->isUnmeasuredPreVerified          = $paramsClass->isUnmeasuredPreVerified;  
-        if(isset($paramsClass->isUnmeasuredPostVerified))      $this->isUnmeasuredPostVerified         = $paramsClass->isUnmeasuredPostVerified;  
+        if(isset($paramsClass->samplingDate))                  $this->samplingDate                     = $paramsClass->samplingDate;            
+        if(isset($paramsClass->sampleType))                    $this->sampleType                       = $paramsClass->sampleType;              
         return true;
     }
 
@@ -397,20 +230,6 @@ class sample extends dbEntity
                 if(($paramsObj->name==NULL) 
                     && ($paramsObj->samplingDate==NULL) 
                     && ($paramsObj->sampleType==NULL) 
-                    && ($paramsObj->terminalRing==NULL) 
-                    && ($paramsObj->sapwoodCount==NULL) 
-                    && ($paramsObj->sampleQuality==NULL) 
-                    && ($paramsObj->sampleContinuity==NULL) 
-                    && ($paramsObj->pith==NULL) 
-                    && ($paramsObj->unmeasuredPre==NULL) 
-                    && ($paramsObj->unmeasuredPost==NULL) 
-                    && ($paramsObj->isTerminalRingVerified==NULL) 
-                    && ($paramsObj->isSapwoodCountVerified==NULL) 
-                    && ($paramsObj->issampleQualityVerified==NULL) 
-                    && ($paramsObj->issampleContinuityVerified==NULL) 
-                    && ($paramsObj->isPithVerified==NULL) 
-                    && ($paramsObj->isUnmeasuredPreVerified==NULL) 
-                    && ($paramsObj->isUnmeasuredPostVerified==NULL)
                     && ($paramsObj->hasChild!=True))
                 {
                     $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
@@ -454,37 +273,6 @@ class sample extends dbEntity
                 $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
                 return false;
         }
-    }
-
-    /**
-     * Retrieve the relevant permissions for this class from the database 
-     *
-     * @param Integer $securityUserID
-     * @return Boolean
-     */
-    function getPermissions($securityUserID)
-    {
-        global $dbconn;
-
-        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'sample', $this->id)";
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $result = pg_query($dbconn, $sql);
-            $row = pg_fetch_array($result);
-            
-            $this->canCreate = fromPGtoPHPBool($row['cancreate']);
-            $this->canUpdate = fromPGtoPHPBool($row['canupdate']);
-            $this->canDelete = fromPGtoPHPBool($row['candelete']);
-            $this->includePermissions = TRUE;
-        }
-        else
-        {
-            // Connection bad
-            $this->setErrorMessage("001", "Error connecting to database");
-            return FALSE;
-        }
-        return TRUE; 
     }
 
 
@@ -612,21 +400,14 @@ class sample extends dbEntity
                     $xml.= "<tridas:genericField name=\"canDelete\" type=\"boolean\">".fromPHPtoStringBool($this->canDelete)."</tridas:genericField ";
                 } 
               
-                if(isset($this->name))                          $xml.= "<tridas:genericField name=\"name\">".escapeXMLChars($this->name)."</tridas:genericField>\n";
+                if(isset($this->name))                        $xml.= "<tridas:genericField name=\"name\">".escapeXMLChars($this->name)."</tridas:genericField>\n";
                 
                 if($format!="minimal")
                 {
-                    if(isset($this->samplingDate))                 $xml.= "<samplingDate\">".$this->samplingDate."</samplingDate>\n";
-                    if(isset($this->sampleType))                  $xml.= "<tridas:genericField name=\"sampleType\">".$this->sampleType."</tridas:genericField>\n";
-                    if(isset($this->terminalRing))                  $xml.= "<tridas:genericField name=\"terminalRing\">".$this->terminalRing."</tridas:genericField>\n";
-                    if(isset($this->sapwoodCount))                  $xml.= "<tridas:genericField name=\"sapwoodCount\">".$this->sapwoodCount."</tridas:genericField>\n";
-                    if(isset($this->sampleQuality))               $xml.= "<tridas:genericField name=\"sampleQuality\">".$this->sampleQuality."</tridas:genericField>\n";
-                    if(isset($this->sampleContinuity))            $xml.= "<tridas:genericField name=\"sampleContinuity\">".$this->sampleContinuity."</tridas:genericField>\n";
-                    if(isset($this->pith))                          $xml.= "<tridas:genericField name=\"pith\">".$this->pith."</tridas:genericField>\n";
-                    if(isset($this->unmeasuredPre))                 $xml.= "<tridas:genericField name=\"unmeasuredPre\">".$this->unmeasuredPre."</tridas:genericField>\n";
-                    if(isset($this->unmeasuredPost))                $xml.= "<tridas:genericField name=\"unmeasuredPost\">".$this->unmeasuredPost."</tridas:genericField>\n";
-                    if(isset($this->createdTimeStamp))              $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->createdTimeStamp."</tridas:genericField>\n";
-                    if(isset($this->lastModifiedTimeStamp))         $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->lastModifiedTimeStamp."</tridas:genericField>\n";
+                    if(isset($this->samplingDate))            $xml.= "<samplingDate\">".$this->samplingDate."</samplingDate>\n";
+                    if(isset($this->sampleType))              $xml.= "<tridas:genericField name=\"sampleType\">".$this->sampleType."</tridas:genericField>\n";
+                    if(isset($this->createdTimeStamp))        $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->createdTimeStamp."</tridas:genericField>\n";
+                    if(isset($this->lastModifiedTimeStamp))   $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->lastModifiedTimeStamp."</tridas:genericField>\n";
                 }
             }
 
@@ -671,24 +452,10 @@ class sample extends dbEntity
                 {
                     // New record
                     $sql = "insert into tblsample ( ";
-                        if(isset($this->name))                          $sql.="name, ";
-                        if(isset($this->treeID))                        $sql.="treeid, ";
-                        if(isset($this->samplingDate))                 $sql.="samplingDate, ";
+                        if(isset($this->name))                        $sql.="name, ";
+                        if(isset($this->treeID))                      $sql.="treeid, ";
+                        if(isset($this->samplingDate))                $sql.="samplingDate, ";
                         if(isset($this->sampleType))                  $sql.="sampletype, ";
-                        if(isset($this->terminalRing))                  $sql.="terminalring, ";
-                        if(isset($this->isTerminalRingVerified))        $sql.="isterminalringverified, ";
-                        if(isset($this->sapwoodCount))                  $sql.="sapwoodcount, ";
-                        if(isset($this->isSapwoodCountVerified))        $sql.="issapwoodcountverified, ";
-                        if(isset($this->sampleQuality))               $sql.="samplequality, ";
-                        if(isset($this->issampleQualityVerified))     $sql.="issamplequalityverified, ";
-                        if(isset($this->sampleContinuity))            $sql.="samplecontinuity, ";
-                        if(isset($this->issampleContinuityVerified))  $sql.="issamplecontinuityverified, ";
-                        if(isset($this->pith))                          $sql.="pith, ";
-                        if(isset($this->isPithVerified))                $sql.="ispithverified, ";
-                        if(isset($this->unmeasuredPre))                 $sql.="unmeaspre, ";
-                        if(isset($this->isUnmeasuredPreVerified))       $sql.="isunmeaspreverified, ";
-                        if(isset($this->unmeasuredPost))                $sql.="unmeaspost, ";
-                        if(isset($this->isUnmeasuredPostVerified))      $sql.="isunmeaspostverified, ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
@@ -696,20 +463,6 @@ class sample extends dbEntity
                         if(isset($this->treeID))                        $sql.="'".$this->treeID                                         ."', ";
                         if(isset($this->samplingDate))                 $sql.="'".$this->samplingDate                                  ."', ";
                         if(isset($this->sampleType))                  $sql.="'".$this->sampleType                                   ."', ";
-                        if(isset($this->terminalRing))                  $sql.="'".$this->terminalRing                                   ."', ";
-                        if(isset($this->isTerminalRingVerified))        $sql.="'".fromPHPtoPGBool($this->isTerminalRingVerified)        ."', ";
-                        if(isset($this->sapwoodCount))                  $sql.="'".$this->sapwoodCount                                   ."', ";
-                        if(isset($this->isSapwoodCountVerified))        $sql.="'".fromPHPtoPGBool($this->isSapwoodCountVerified)        ."', ";
-                        if(isset($this->sampleQuality))               $sql.="'".$this->sampleQuality                                ."', ";
-                        if(isset($this->issampleQualityVerified))     $sql.="'".fromPHPtoPGBool($this->issampleQualityVerified)     ."', ";
-                        if(isset($this->sampleContinuity))            $sql.="'".$this->sampleContinuity                             ."', ";
-                        if(isset($this->issampleContinuityVerified))  $sql.="'".fromPHPtoPGBool($this->issampleContinuityVerified)  ."', ";
-                        if(isset($this->pith))                          $sql.="'".$this->pith                                           ."', ";
-                        if(isset($this->isPithVerified))                $sql.="'".fromPHPtoPGBool($this->isPithVerified)                ."', ";
-                        if(isset($this->unmeasuredPre))                 $sql.="'".$this->unmeasuredPre                                  ."', ";
-                        if(isset($this->isUnmeasuredPreVerified))       $sql.="'".fromPHPtoPGBool($this->isUnmeasuredPreVerified)       ."', ";
-                        if(isset($this->unmeasuredPost))                $sql.="'".$this->unmeasuredPost                                 ."', ";
-                        if(isset($this->isUnmeasuredPostVerified))      $sql.="'".fromPHPtoPGBool($this->isUnmeasuredPostVerified)      ."', ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
@@ -723,20 +476,6 @@ class sample extends dbEntity
                         if(isset($this->treeID))                        $sql.="treeID='"                        .$this->treeID                                          ."', ";
                         if(isset($this->samplingDate))                 $sql.="samplingDate='"                 .$this->samplingDate                                   ."', ";
                         if(isset($this->sampleType))                  $sql.="sampletype='"                  .$this->sampleType                                    ."', ";
-                        if(isset($this->terminalRing))                  $sql.="terminalring='"                  .$this->terminalRing                                    ."', ";
-                        if(isset($this->isTerminalRingVerified))        $sql.="isterminalringverified='"        .fromPHPtoPGBool($this->isTerminalRingVerified)         ."', ";
-                        if(isset($this->sapwoodCount))                  $sql.="sapwoodcount='"                  .$this->sapwoodCount                                    ."', ";
-                        if(isset($this->isSapwoodCountVerified))        $sql.="issapwoodcountverified='"        .fromPHPtoPGBool($this->isSapwoodCountVerified)         ."', ";
-                        if(isset($this->sampleQuality))               $sql.="samplequality='"               .$this->sampleQuality                                 ."', ";
-                        if(isset($this->issampleQualityVerified))     $sql.="issamplequalityverified='"     .fromPHPtoPGBool($this->issampleQualityVerified)      ."', ";
-                        if(isset($this->sampleContinuity))            $sql.="samplecontinuity='"            .$this->sampleContinuity                              ."', ";
-                        if(isset($this->issampleContinuityVerified))  $sql.="issamplecontinuityverified='"  .fromPHPtoPGBool($this->issampleContinuityVerified)   ."', ";
-                        if(isset($this->pith))                          $sql.="pith='"                          .$this->pith                                            ."', ";
-                        if(isset($this->isPithVerified))                $sql.="ispithverified='"                .fromPHPtoPGBool($this->isPithVerified)                 ."', ";
-                        if(isset($this->unmeasuredPre))                 $sql.="unmeaspre='"                     .$this->unmeasuredPre                                   ."', ";
-                        if(isset($this->isUnmeasuredPreVerified))       $sql.="isunmeaspreverified='"           .fromPHPtoPGBool($this->isUnmeasuredPreVerified)        ."', ";
-                        if(isset($this->unmeasuredPost))                $sql.="unmeaspost='"                    .$this->unmeasuredPost                                  ."', ";
-                        if(isset($this->isUnmeasuredPostVerified))      $sql.="isunmeaspostverified='"          .fromPHPtoPGBool($this->isUnmeasuredPostVerified)       ."', ";
                     $sql = substr($sql, 0, -2);
                     $sql.= " where sampleid='".$this->id."'";
                 }

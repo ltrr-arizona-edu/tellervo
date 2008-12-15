@@ -1,29 +1,22 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.0
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * *******************************************************************
+ */
+
 require_once('dbhelper.php');
+require_once('inc/dbEntity.php');
 
-class radius 
+class radius extends dbEntity
 {
-    var $id = NULL;
-    var $name = NULL;
-    var $sampleID = NULL;
-    
+    var $sampleID = NULL;   
     var $measurementArray = array();
-    var $createdTimeStamp = NULL;
-    var $lastModifiedTimeStamp = NULL;
-    
-    var $includePermissions = FALSE;
-    var $canCreate = NULL;
-    var $canUpdate = NULL;
-    var $canDelete = NULL;
-
-
 
     /***************/
     /* CONSTRUCTOR */
@@ -49,13 +42,6 @@ class radius
     {
         // Set the current objects note.
         $this->sampleID=$thesampleID;
-    }
-
-    function setErrorMessage($theCode, $theMessage)
-    {
-        // Set the error latest error message and code for this object.
-        $this->lastErrorCode = $theCode;
-        $this->lastErrorMessage = $theMessage;
     }
 
     function setParamsFromDB($theID)
@@ -212,39 +198,11 @@ class radius
         }
     }
 
-    function getPermissions($securityUserID)
-    {
-        global $dbconn;
-
-        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'radius', $this->id)";
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $result = pg_query($dbconn, $sql);
-            $row = pg_fetch_array($result);
-            
-            $this->canCreate = fromPGtoPHPBool($row['cancreate']);
-            $this->canUpdate = fromPGtoPHPBool($row['canupdate']);
-            $this->canDelete = fromPGtoPHPBool($row['candelete']);
-            $this->includePermissions = TRUE;
-    
-        }
-        else
-        {
-            // Connection bad
-            $this->setErrorMessage("001", "Error connecting to database");
-            return FALSE;
-        }
-
-        return TRUE;
-        
-    }
-
-
     /***********/
     /*ACCESSORS*/
     /***********/
 
+    
     function asXML($format='standard', $parts='all')
     {
         switch($format)
