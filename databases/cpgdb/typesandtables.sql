@@ -18,8 +18,8 @@ CREATE TABLE tblVMeasurementMetaCache (
     ReadingCount integer NOT NULL,
     MeasurementCount integer DEFAULT 1 NOT NULL
     vsextent geometry,
-    siteCode text,
-    siteCount integer,   
+    objectCode text,
+    objectCount integer,   
     commonTaxonName text,
     taxonCount integer
     prefix text;
@@ -60,8 +60,8 @@ CREATE TYPE typPermissionSet AS (
 DROP TYPE typVMeasurementSummaryInfo CASCADE;
 CREATE TYPE typVMeasurementSummaryInfo AS (
    VMeasurementID integer,
-   siteCode text,
-   siteCount integer,   
+   objectCode text,
+   objectCount integer,   
    commonTaxonName text,
    taxonCount integer
 );

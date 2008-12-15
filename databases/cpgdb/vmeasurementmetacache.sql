@@ -55,13 +55,13 @@ BEGIN
       SELECT vmid,Measurement.MeasurementID FROM cpgdb.FindVMParentMeasurements(vmid) Measurement;
 
    -- Calculate extent of vmeasurement by looking up locations of all associated direct Measurements
-   SELECT setsrid(extent(tbltree.location)::geometry,4326)
+   SELECT setsrid(extent(tblelement.location)::geometry,4326)
       INTO  ret.vmextent
-      FROM  tbltree, tblspecimen, tblradius, tblMeasurement, tblvmeasurement
+      FROM  tblelement, tblspecimen, tblradius, tblMeasurement, tblvmeasurement
       WHERE tblvmeasurement.measurementid=tblmeasurement.measurementid
       AND   tblmeasurement.radiusid=tblradius.radiusid
       AND   tblradius.specimenid=tblspecimen.specimenid
-      AND   tblspecimen.treeid=tbltree.treeid
+      AND   tblspecimen.treeid=tblelement.treeid
       AND   tblvmeasurement.vmeasurementid
             IN (SELECT vMeasurementid
                    FROM  cpgdb.FindVMParents(vmid, true)

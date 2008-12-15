@@ -36,8 +36,8 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 -- 1 = array of groups
--- 2 = type (vmeasurement, tree, site, default)
--- 3 = id (VMeasurementID, TreeID, SiteID, or 0 for default)
+-- 2 = type (vmeasurement, tree, object, default)
+-- 3 = id (VMeasurementID, TreeID, ObjectID, or 0 for default)
 CREATE OR REPLACE FUNCTION cpgdb.GetGroupPermissionSet(_groupIDs integer[], _permtype varchar, _pid integer) 
 RETURNS typPermissionSet AS $$
 DECLARE
@@ -52,11 +52,11 @@ DECLARE
    childPerms typPermissionSet;
    setSize integer;
 
-   stypes varchar[] := array['vmeasurement','tree','site','default'];
+   stypes varchar[] := array['vmeasurement','tree','object','default'];
 BEGIN
    -- Invalid type specified?
    IF NOT (_permtype = ANY(stypes)) THEN
-      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vmeasurement, tree, site, default (case matters!).', _permtype;
+      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vmeasurement, tree, object, default (case matters!).', _permtype;
    END IF;
 
    -- Build our query
@@ -120,19 +120,19 @@ BEGIN
          END IF;
          
       ELSIF _permType = 'tree' THEN
-         -- Get the siteID of this tree
-         SELECT tblSubsite.siteID INTO objid FROM tblTree, tblSubsite
-                WHERE tblTree.subsiteID=tblSubsite.SubsiteID
-                AND tblTree.treeid = _pid;
+         -- Get the objectID of this tree
+         SELECT tblSubobject.objectID INTO objid FROM tblTree, tblSubobject
+                WHERE tblTree.subobjectID=tblSubobject.SubobjectID
+                AND tblTree.elementid = _pid;
 
          IF NOT FOUND THEN
-            RAISE EXCEPTION 'Could not determine security: tree % -> site does not exist', _pid;
+            RAISE EXCEPTION 'Could not determine security: tree % -> object does not exist', _pid;
          END IF;
          
-         perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'site', objid);
+         perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'object', objid);
          RETURN perms;
          
-      ELSIF _permType = 'site' THEN
+      ELSIF _permType = 'object' THEN
          -- Get default permissions
          perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'default', 0);
          RETURN perms;
@@ -248,8 +248,8 @@ RETURNS integer[] AS $$
 $$ LANGUAGE SQL IMMUTABLE;
 
 -- 1 = securityUserID
--- 2 = type (VMeasurement, Tree, Site, Default)
--- 3 = id (VMeasurementID, TreeID, SiteID, or 0 for default)
+-- 2 = type (VMeasurement, Tree, Object, Default)
+-- 3 = id (VMeasurementID, TreeID, ObjectID, or 0 for default)
 CREATE OR REPLACE FUNCTION cpgdb.GetUserPermissionSet(integer, varchar, integer) 
 RETURNS typPermissionSet AS $$
 DECLARE

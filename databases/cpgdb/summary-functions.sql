@@ -27,7 +27,7 @@ BEGIN
 	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
 	INNER JOIN tblSpecimen sp on sp.specimenID = r.specimenID
-	INNER JOIN tblTree t on t.treeID = sp.treeID
+	INNER JOIN tblElement t on t.treeID = sp.treeID
 	INNER JOIN tblSubsite su on su.subsiteID = t.subsiteID
 	INNER JOIN tblSite s on s.siteID = su.siteID
 	WHERE d.VMeasurementID = VMID
@@ -49,7 +49,7 @@ BEGIN
 	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
 	INNER JOIN tblSpecimen sp on sp.specimenID = r.specimenID
-	INNER JOIN tblTree t on t.treeID = sp.treeID
+	INNER JOIN tblElement t on t.treeID = sp.treeID
 	INNER JOIN tlkpTaxon tx on tx.taxonID = t.taxonID
 	WHERE d.VMeasurementID = VMID
 	GROUP BY(t.taxonID)) as txbasic
@@ -154,7 +154,7 @@ BEGIN
 	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
 	INNER JOIN tblSpecimen sp on sp.specimenID = r.specimenID
-	INNER JOIN tblTree t on t.treeID = sp.treeID
+	INNER JOIN tblElement t on t.treeID = sp.treeID
 	INNER JOIN tblSubsite su on su.subsiteID = t.subsiteID
 	INNER JOIN tblSite s on s.siteID = su.siteID
 	INNER JOIN tblVMeasurement vm on vm.vmeasurementid = d.vmeasurementid
@@ -203,7 +203,7 @@ BEGIN
 
    IF labelfor = 'tree' THEN
       queryLevel := 1;
-      whereClause := ' WHERE t.treeid=' || OBJID;
+      whereClause := ' WHERE t.elementid=' || OBJID;
    ELSIF labelfor = 'specimen' THEN
       queryLevel := 2;      
       whereClause := ' WHERE sp.specimenid=' || OBJID;
@@ -216,11 +216,11 @@ BEGIN
 
    -- Start out with the basics
    selection := 's.code as a,su.name as b,t.name as c';
-   query := ' FROM tblsite s INNER JOIN tblsubsite su ON su.siteid = s.siteid INNER JOIN tbltree t ON t.subsiteid = su.subsiteid';
+   query := ' FROM tblsite s INNER JOIN tblsubsite su ON su.siteid = s.siteid INNER JOIN tblelement t ON t.subsiteid = su.subsiteid';
 
    -- add specimen
    IF queryLevel > 1 THEN
-      query := query || ' INNER JOIN tblspecimen sp ON sp.treeid = t.treeid';
+      query := query || ' INNER JOIN tblspecimen sp ON sp.elementid = t.elementid';
       selection := selection || ',sp.name as d';
    END IF;
 
