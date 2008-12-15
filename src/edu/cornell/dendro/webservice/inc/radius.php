@@ -3,7 +3,7 @@
  * *******************************************************************
  * PHP Corina Middleware
  * E-Mail: p.brewer@cornell.edu
- * Requirements : PHP >= 5.0
+ * Requirements : PHP >= 5.2
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
@@ -14,7 +14,7 @@ require_once('dbhelper.php');
 require_once('inc/dbEntity.php');
 
 class radius extends dbEntity
-{
+{	
     var $sampleID = NULL;   
     var $measurementArray = array();
 
@@ -24,30 +24,27 @@ class radius extends dbEntity
 
     function __construct()
     {
-        $parentXMLTag = "radii";
-        parent::__construct($parentXMLTag);
+        $groupXMLTag = "radii";
+        parent::__construct($groupXMLTag);
     }
 
     /***********/
     /* SETTERS */
     /***********/
 
-    function setName($theName)
-    {
-        // Set the current objects note.
-        $this->name=$theName;
-    }
-    
     function setsampleID($thesampleID)
     {
-        // Set the current objects note.
         $this->sampleID=$thesampleID;
     }
 
+    /**
+     * Set the current objects parameters from the database
+     *
+     * @param Integer $theID
+     * @return Boolean
+     */
     function setParamsFromDB($theID)
     {
-        // Set the current objects parameters from the database
-
         global $dbconn;
         
         $this->id=$theID;
@@ -340,36 +337,9 @@ class radius extends dbEntity
         }
     }
 
-    function getParentTagBegin()
-    {
-        // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tblradius")."'>";
-        return $xml;
-    }
-
-    function getParentTagEnd()
-    {
-        // Return a string containing the end XML tag for the current object's parent
-        $xml = "</".$this->parentXMLTag.">";
-        return $xml;
-    }
-
     function getID()
     {
         return $this->id;
-    }
-    function getLastErrorCode()
-    {
-        // Return an integer containing the last error code recorded for this object
-        $error = $this->lastErrorCode; 
-        return $error;  
-    }
-
-    function getLastErrorMessage()
-    {
-        // Return a string containing the last error message recorded for this object
-        $error = $this->lastErrorMessage;
-        return $error;
     }
 
     /***********/

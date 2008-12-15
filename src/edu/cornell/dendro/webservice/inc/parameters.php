@@ -1,12 +1,14 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * *******************************************************************
+ */
 
 class parameters 
 {
@@ -28,16 +30,10 @@ class parameters
 
     function getXMLParams()
     {
-        echo "This function should be overloaded";
+        echo "This function must be overloaded";
+        die();
     }
     
-    function getNamespace()
-    {
-    	$namespaces = $this->xmlrequest->getNamespaces(true);
-    	var_dump($namespaces);
-    }
-
-
 }
 
 
@@ -126,7 +122,7 @@ class treeParameters extends parameters
         if(isset($this->xmlrequest->longitude))             $this->longitude            = (double)   $this->xmlrequest->longitude;
         if(isset($this->xmlrequest->precision))             $this->precision            = (double)   $this->xmlrequest->precision;
         if(isset($this->xmlrequest->isLiveTree))            $this->isLiveTree           = fromStringtoPHPBool($this->xmlrequest->isLiveTree);
-        if(isset($this->xmlrequest->sample))              $this->hasChild             = True;
+        if(isset($this->xmlrequest->sample))                $this->hasChild             = True;
         
         $treeNotes = $this->xmlrequest->xpath('//treeNotes');
         if (isset($treeNotes[0]->treeNote[0]))
@@ -145,25 +141,12 @@ class treeParameters extends parameters
 
 class sampleParameters extends parameters
 {
-    var $id                            = NULL;
-    var $treeID                        = NULL;
-    var $name                          = NULL;
-    var $dateCollected                 = NULL;
-    var $sampleType                  = NULL;
-    var $terminalRing                  = NULL;
-    var $sapwoodCount                  = NULL;
-    var $sampleQuality               = NULL;
-    var $sampleContinuity            = NULL;
-    var $pith                          = NULL;
-    var $unmeasuredPre                 = NULL;
-    var $unmeasuredPost                = NULL;
-    var $isTerminalRingVerified        = NULL;
-    var $isSapwoodCountVerified        = NULL;
-    var $issampleQualityVerified     = NULL;
-    var $issampleContinuityVerified  = NULL;
-    var $isPithVerified                = NULL;
-    var $isUnmeasuredPreVerified       = NULL;
-    var $isUnmeasuredPostVerified      = NULL;
+    var $id             = NULL;
+    var $treeID         = NULL;
+    var $name           = NULL;
+    var $samplingDate   = NULL;
+    var $sampleType     = NULL;
+
 
     function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
     {
@@ -173,33 +156,20 @@ class sampleParameters extends parameters
     
     function getXMLParams()
     {
-        if(isset($this->xmlrequest->identifier))                    $this->id                               = (int)      $this->xmlrequest->identifier;
-        if(isset($this->xmlrequest->name))                          $this->name                             = addslashes($this->xmlrequest->name);
-        if(isset($this->xmlrequest->dateCollected))                 $this->dateCollected                    = addslashes($this->xmlrequest->dateCollected);
-        if(isset($this->xmlrequest->sampleType))                  $this->sampleType                     = addslashes($this->xmlrequest->sampleType);
-        if(isset($this->xmlrequest->terminalRing))                  $this->terminalRing                     = addslashes($this->xmlrequest->terminalRing);
-        if(isset($this->xmlrequest->sapwoodCount))                  $this->sapwoodCount                     = (int)      $this->xmlrequest->sapwoodCount;
-        if(isset($this->xmlrequest->sampleQuality))               $this->sampleQuality                  = addslashes($this->xmlrequest->sampleQuality);
-        if(isset($this->xmlrequest->sampleContinuity))            $this->sampleContinuity               = addslashes($this->xmlrequest->sampleContinuity);
-        if(isset($this->xmlrequest->pith))                          $this->pith                             = addslashes($this->xmlrequest->pith);
-        if(isset($this->xmlrequest->unmeasuredPre))                 $this->unmeasuredPre                    = (int)      $this->xmlrequest->unmeasuredPre;
-        if(isset($this->xmlrequest->unmeasuredPost))                $this->unmeasuredPost                   = (int)      $this->xmlrequest->unmeasuredPost;
-        if(isset($this->xmlrequest->isTerminalRingVerified))        $this->isTerminalRingVerified           = fromStringtoPHPBool(   $this->xmlrequest->isTerminalRingVerified);
-        if(isset($this->xmlrequest->isSapwoodCountVerified))        $this->isSapwoodCountVerified           = fromStringtoPHPBool(   $this->xmlrequest->isSapwoodCountVerified);
-        if(isset($this->xmlrequest->issampleQualityVerified))     $this->issampleQualityVerified        = fromStringtoPHPBool(   $this->xmlrequest->issampleQualityVerified);
-        if(isset($this->xmlrequest->issampleContinuityVerified))  $this->issampleContinuityVerified     = fromStringtoPHPBool(   $this->xmlrequest->issampleContinuityVerified);
-        if(isset($this->xmlrequest->isPithVerified))                $this->isPithVerified                   = fromStringtoPHPBool(   $this->xmlrequest->isPithVerified);
-        if(isset($this->xmlrequest->isUnmeasuredPreVerified))       $this->isUnmeasuredPreVerified          = fromStringtoPHPBool(   $this->xmlrequest->isUnmeasuredPreVerified);
-        if(isset($this->xmlrequest->isUnmeasuredPostVerified))      $this->isUnmeasuredPostVerified         = fromStringtoPHPBool(   $this->xmlrequest->isUnmeasuredPostVerified);
-        if(isset($this->xmlrequest->radius))                        $this->hasChild                         = True;
+        if(isset($this->xmlrequest->identifier))         $this->id                = (int)      $this->xmlrequest->identifier;
+        if(isset($this->xmlrequest->name))               $this->name              = addslashes($this->xmlrequest->name);
+        if(isset($this->xmlrequest->samplingDate))       $this->samplingDate      = addslashes($this->xmlrequest->samplingDate);
+        if(isset($this->xmlrequest->sampleType))         $this->sampleType        = addslashes($this->xmlrequest->sampleType);
+        if(isset($this->xmlrequest->radius))             $this->hasChild          = True;
     }
 }
+
 
 class radiusParameters extends parameters
 {
     var $id         = NULL;
     var $name       = NULL;
-    var $sampleID = NULL;
+    var $sampleID   = NULL;
 
     function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
     {

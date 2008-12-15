@@ -1,12 +1,14 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * *******************************************************************
+ */
 
 /**
  * Base class for entities that are representations of database tables
@@ -47,7 +49,7 @@ class dbEntity
      *
      * @var String
      */
-	protected $parentXMLTag = NULL; 
+	protected $groupXMLTag = NULL; 
 	
 	/**
 	 * The last error associated with this entity
@@ -111,11 +113,11 @@ class dbEntity
     /**
      * Constructor for this entity
      *
-     * @param String $parentXMLTag
+     * @param String $groupXMLTag
      */
-    protected function __construct($parentXMLTag)
+    protected function __construct($groupXMLTag)
     {
-    	$this->setParentXMLTag($parentXMLTag);
+    	$this->setgroupXMLTag($groupXMLTag);
     }
 
     
@@ -145,9 +147,9 @@ class dbEntity
      *
      * @param String $theTag
      */
-    private function setParentXMLTag($theTag)
+    private function setgroupXMLTag($theTag)
     {
-		$this->parentXMLTag = $theTag;
+		$this->groupXMLTag = $theTag;
     }
     
     /**
@@ -160,6 +162,17 @@ class dbEntity
     {
     	$this->id = $identifier;
     	$this->identifierDomain = $domain;	
+    }
+    
+
+    /**
+     * Set the current entities name.
+     *
+     * @param String $theName
+     */
+    function setName($theName)
+    {
+        $this->name=$theName;
     }
     
 	/**
@@ -195,7 +208,7 @@ class dbEntity
     protected function getParentTagBegin()
     {
         // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tblsample")."'>";
+        $xml = "<".$this->groupXMLTag." lastModified='".getLastUpdateDate("tblsample")."'>";
         return $xml;
     }
 
@@ -207,7 +220,7 @@ class dbEntity
     protected function getParentTagEnd()
     {
         // Return a string containing the end XML tag for the current object's parent
-        $xml = "</".$this->parentXMLTag.">";
+        $xml = "</".$this->groupXMLTag.">";
         return $xml;
     }
 

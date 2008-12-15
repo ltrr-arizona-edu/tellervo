@@ -3,7 +3,7 @@
  * *******************************************************************
  * PHP Corina Middleware
  * E-Mail: p.brewer@cornell.edu
- * Requirements : PHP >= 5.0
+ * Requirements : PHP >= 5.2
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
@@ -73,8 +73,8 @@ class sample extends dbEntity
 
     public function __construct()
     {
-        $parentXMLTag = "element";
-    	parent::__construct($parentXMLTag);
+        $groupXMLTag = "samples";
+    	parent::__construct($groupXMLTag);
     }
 
     /***********/
@@ -433,7 +433,7 @@ class sample extends dbEntity
      *
      * @return Boolean
      */
-    protected function writeToDB()
+    function writeToDB()
     {
         // Write the current object to the database
 
