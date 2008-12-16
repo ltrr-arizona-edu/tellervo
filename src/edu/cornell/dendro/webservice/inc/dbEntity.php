@@ -10,6 +10,8 @@
  * *******************************************************************
  */
 
+require_once('dbhelper.php');
+
 /**
  * Base class for entities that are representations of database tables
  *
@@ -149,7 +151,7 @@ class dbEntity
      */
     private function setgroupXMLTag($theTag)
     {
-		$this->groupXMLTag = $theTag;
+		$this->groupXMLTag = addslashes($theTag);
     }
     
     /**
@@ -160,8 +162,8 @@ class dbEntity
      */
     private function setID($identifier, $domain)
     {
-    	$this->id = $identifier;
-    	$this->identifierDomain = $domain;	
+    	$this->id = addslashes($identifier);
+    	$this->identifierDomain = addslashes($domain);	
     }
     
 
@@ -172,7 +174,7 @@ class dbEntity
      */
     function setName($theName)
     {
-        $this->name=$theName;
+        $this->name=addslashes($theName);
     }
     
 	/**
@@ -288,40 +290,581 @@ class dbEntity
         }
         return TRUE; 
     }
-    
-    /**
-     * Stub for outputting this entity to XML.  This should be overloaded
-     *
-	 * @param String $format one of standard, comprehensive, summary, or minimal. Defaults to 'standard'
-	 * @param String $parts one of all, beginning or end. Defaults to 'all'
-	 * @return Boolean
-     */
-    function asXML($format='standard', $parts='all')
-    {
-    	$this->setErrorMessage("667", "The asXML() function should have been overloaded but hasn't been");
-    	return false;
-    }
-    
-    /**
-     * Stub for writing this entity to the database.  This should be overloaded
-     *
-     * @return Boolean
-     */
-     function writeToDB()
-    {
-     	$this->setErrorMessage("667", "The writeToDB() function should have been overloaded but hasn't been");
-    	return false;   	
-    }
-    
-     /**
-     * Stub for deleting this entity from the database.  This should be overloaded
-     *
-     * @return Boolean
-     */
-    function deleteFromDB()
-    {
-     	$this->setErrorMessage("667", "The deleteFromDB() function should have been overloaded but hasn't been");
-    	return false;     	
-    }
+
 }
+
+class objectEntity extends dbEntity
+{
+	/**
+	 * Functional description: building (church, house etc) water well, painting,
+	 * musical instrucment, ship, type of forest
+	 *
+	 * @var String
+	 */
+	protected $type = NULL;
+	
+	/**
+	 * More elaborate description of the object itself
+	 *
+	 * @var String
+	 */
+	protected $description = NULL;
+	
+	/**
+	 * Name, place of the workshop/wharf
+	 *
+	 * @var String
+	 */
+	protected $creator = NULL;
+	
+	/**
+	 * Owner of the object
+	 *
+	 * @var String
+	 */
+	protected $owner = NULL;
+	
+	/**
+	 * URL's of associated files
+	 *
+	 * @var unknown_type
+	 */
+	protected $file = NULL;
+	
+	/**
+	 * One of growth; utilised (static); utilised (mobile); current, manufacture
+	 *
+	 * @var String
+	 */
+	protected $locationType = NULL;
+	
+	/**
+	 * Precision of the location information in metres
+	 *
+	 * @var Integer
+	 */
+	protected $locationPrecision = NULL;
+	
+	/**
+	 * Additional information and the location 
+	 *
+	 * @var String
+	 */
+	protected $locationComment = NULL;
+	
+	
+    function __construct()
+    {  
+        $groupXMLTag = "objects";
+        parent::__construct($groupXMLTag);  	
+	}
+
+	/***********/
+    /* SETTERS */
+    /***********/   	
+	
+	function setType($value)
+	{
+		$this->type = addslashes($value);
+	}
+	
+	function setDescription($value)
+	{
+		$this->description = addslashes($value);
+	}
+	
+	function setCreator($value)
+	{
+		$this->creator = addslashes($value);
+	}
+	
+	function setOwner($value)
+	{	
+		$this->owner = addslashes($value);
+	}
+	
+	function setFile($value)
+	{
+		$this->file = addslashes($value);
+	}
+
+	function setLocationType($value)
+	{
+		$this->locationType = addslashes($value);
+	}
+	
+	function setLocationPrecision($value)
+	{	
+		$this->locationPrecision = (int) $value;
+	}
+	
+	function setLocationComment($value)
+	{
+		$this->locationComment = addslashes($value);
+	}
+
+	/***********/
+    /* GETTERS */
+    /***********/ 	
+
+	function getType()
+	{
+		return $this->type;
+	}
+	
+	function getDescription()
+	{
+		return $this->description;
+	}
+	
+	function getCreator()
+	{
+		return $this->creator;
+	}
+	
+	function getOwner()
+	{	
+		return $this->owner;
+	}
+	
+	function getFile()
+	{
+		return $this->file;
+	}
+
+	function getLocationType()
+	{
+		return $this->locationType;
+	}
+	
+	function getLocationPrecision()
+	{	
+		return $this->locationPrecision();
+	}
+	
+	function getLocationComment()
+	{
+		return $this->locationComment();
+	}
+	
+	
+}
+
+
+class elementEntity extends dbEntity
+{
+	protected $taxonID = NULL;
+	protected $authenticity = NULL;
+	protected $shape = NULL;
+	protected $diameter = NULL;
+	protected $height = NULL;
+	protected $width = NULL;
+	protected $depth = NULL;
+	protected $type = NULL;
+	protected $file = NULL;
+	/**
+	 * One of growth; utilised (static); utilised (mobile); current, manufacture
+	 *
+	 * @var String
+	 */
+	protected $locationType = NULL;
+	
+	/**
+	 * Precision of the location information in metres
+	 *
+	 * @var Integer
+	 */
+	protected $locationPrecision = NULL;
+	
+	/**
+	 * Additional information and the location 
+	 *
+	 * @var String
+	 */
+	protected $locationComment = NULL;
+	protected $processing = NULL;
+	protected $marks = NULL;
+	protected $description = NULL;
+	
+	
+    function __construct()
+    {  
+        $groupXMLTag = "elements";
+        parent::__construct($groupXMLTag);  	
+	}
+
+	/***********/
+    /* SETTERS */
+    /***********/ 	
+	
+	function setTaxonID($value)
+	{
+		$this->taxonID = (int) $value;
+	}
+	
+	function setAuthenticity($value)
+	{
+		$this->authenticity = addslashes($value);
+	}
+
+	function setShape($value)
+	{
+		$this->shape = addslashes($value);
+	}
+	
+	function setDiameter($value)
+	{
+		$this->diameter = (double) $diameter;
+	}
+	
+	function setDimensions($height, $width, $depth)
+	{
+		$this->height = (double) $height;
+		$this->width = (double) $width;
+		$this->depth = (double) $depth;
+	}
+	
+	function setType($value)
+	{
+		$this->type = addslashes($value);
+	}
+	
+	function setFile($value)
+	{
+		$this->file = addslashes($file);
+	}
+		
+	function setLocationType($value)
+	{
+		$this->locationType = addslashes($value);
+	}
+	
+	function setLocationPrecision($value)
+	{	
+		$this->locationPrecision = (int) $value;
+	}
+	
+	function setLocationComment($value)
+	{
+		$this->locationComment = addslashes($value);
+	}
+	
+	function setProcessing($value)
+	{
+		$this->processing = addslashes($value); 
+	}
+	
+	function setMarks($value)
+	{
+		$this->marks = addslashes($value);
+	}
+	
+	function setDescription($value)
+	{
+		$this->description = addslashes($value);
+	}
+
+	/***********/
+    /* GETTERS */
+    /***********/ 	
+
+	/**
+	 * Get the Taxon
+	 *
+	 * @return unknown
+	 */
+	function getTaxonID()
+	{
+		return $this->taxonID;
+	}
+	
+	function getAuthenticity()
+	{
+		return $this->authenticity;
+	}
+
+	function getShape()
+	{
+		return $this->shape;
+	}
+	
+	function getDiameter()
+	{
+		return $this->diameter;
+	}
+	
+	/**
+	 * Get the height, width, depth or diameter of the element
+	 *
+	 * @param String $dimension
+	 * @return Double
+	 */
+	function getDimension($dimension)
+	{
+		switch($dimension)
+		{
+			case "height":
+				return $this->height;
+			case "width":
+				return $this->width;
+			case "depth":
+				return $this->depth;
+			case "diameter":
+				return $this->getDiameter();
+			default:
+				return false;
+		}
+	}
+	
+	function getType()
+	{
+		return $this->type;
+	}
+	
+	function getFile()
+	{
+		return $this->file;
+	}
+		
+	function getLocationType()
+	{
+		return $this->locationType;
+	}
+	
+	function getLocationPrecision()
+	{	
+		return $this->locationPrecision;
+	}
+	
+	function getLocationComment()
+	{
+		return $this->locationComment;
+	}
+	
+	function getProcessing()
+	{
+		return $this->processing; 
+	}
+	
+	function getMarks()
+	{
+		return $this->marks;
+	}
+	
+	function getDescription()
+	{
+		return $this->description = addslashes();
+	}	
+	
+}
+
+
+
+class sampleEntity extends dbEntity
+{
+    function __construct()
+    {  
+        $groupXMLTag = "samples";
+        parent::__construct($groupXMLTag);  	
+	}	
+	
+}
+
+class radiusEntity extends dbEntity
+{
+    protected $sampleID = NULL;   
+    protected $measurementArray = array();
+    /**
+     * Whether pith is present or absent 
+     *
+     * @var Boolean
+     */
+    protected $pithPresent = NULL;
+    
+    /**
+     * One of n/a; absent; complete; incomplete
+     *
+     * @var String
+     */
+    protected $sapwood = NULL;
+    
+    /**
+     * Bark present or absent
+     *
+     * @var Boolean
+     */
+    protected $barkPresent = NULL;
+    
+    /**
+     * Number of observed sapwood rings
+     *
+     * @var Integer
+     */
+    protected $numberOfSapwoodRings = NULL;
+    
+    /**
+     * Information about the last rings under the bark
+     *
+     * @var String
+     */
+    protected $lastRingUnderBark = NULL;
+    
+    /**
+     * Estimated number of missing heartwood rings
+     *
+     * @var Integer
+     */
+    protected $missingHeartwoodRingsToPith = NULL;
+    
+    /**
+     * Foundation for missing heartwood rings estimate
+     *
+     * @var String
+     */
+    protected $missingHeartwoodRingsToPithFoundation = NULL;
+    
+    /**
+     * Estimated number of missing sapwood rings
+     *
+     * @var Integer
+     */
+    protected $missingSapwoodRingsToBark = NULL;
+    
+    /**
+     * Foundation for missing sapwood rings estimate
+     *
+     * @var unknown_type
+     */
+    protected $missingSapwoodRingsToBarkFoundation = NULL;
+
+    function __construct()
+    {
+        $groupXMLTag = "radii";
+        parent::__construct($groupXMLTag);  	
+	}
+
+	/***********/
+    /* SETTERS */
+    /***********/   
+	
+	/**
+	 * Set whether the pith is present or not
+	 *
+	 * @param Boolean $value
+	 */
+	function setPithPresent($value)
+	{
+		$this->pithPresent = $value;		
+	}
+	
+	/**
+	 * Set the sample ID 
+	 *
+	 * @param unknown_type $value
+	 */
+	function setSampleID($value)
+	{
+		$this->sampleID = $value;
+	}
+	
+	function setSapwood($value)
+	{
+		$this->sapwood = $value;
+	}
+	
+	function setBarkPresent($value)
+	{
+		$this->barkPresent = $value;
+	}
+	
+	function setNumberOfSapwoodRings($value)
+	{
+		$this->numberOfSapwoodRings = $value;
+	}
+	
+	function setLastRingUnderBark($value)
+	{
+		$this->lastRingUnderBark = $value;
+	}
+	
+	function setMissingHeartwoodRingsToPith($value)
+	{
+		$this->missingHeartwoodRingsToPith = $value;
+	}
+
+	function setMissingHeartwoodRingsToPithFoundation($value)
+	{
+		$this->missingHeartwoodRingsToPithFoundation = $value;
+	}
+	
+	function setMissingSapwoodRingsToPith($value)
+	{
+		$this->missingSapwoodRingsToPith = $value;
+	}
+	
+	function setMissingSapwoodRingsToPithFoundation($value)
+	{
+		$this->missingSapwoodRingsToPithFoundation = $value;
+	}
+	
+     /**********/
+    /* GETTERS */
+    /***********/   	
+
+	function getPithPresent()
+	{
+		return $this->pithPresent;		
+	}
+	
+	function getSampleID()
+	{
+		return $this->sampleID;
+	}
+	
+	function getSapwood()
+	{
+		return $this->sapwood;
+	}
+	
+	function getBarkPresent()
+	{
+		return $this->barkPresent;
+	}
+	
+	function getNumberOfSapwoodRings()
+	{
+		return $this->numberOfSapwoodRings;
+	}
+	
+	function getLastRingUnderBark()
+	{
+		return $this->lastRingUnderBark;
+	}
+	
+	function getMissingHeartwoodRingsToPith()
+	{
+		return $this->missingHeartwoodRingsToPith;
+	}
+
+	function getMissingHeartwoodRingsToPithFoundation()
+	{
+		return $this->missingHeartwoodRingsToPithFoundation;
+	}
+	
+	function getMissingSapwoodRingsToPith()
+	{
+		return $this->missingSapwoodRingsToPith;
+	}
+	
+	function getMissingSapwoodRingsToPithFoundation()
+	{
+		return $this->missingSapwoodRingsToPithFoundation;
+	}	
+	
+}
+
+
+
+
+
 ?>

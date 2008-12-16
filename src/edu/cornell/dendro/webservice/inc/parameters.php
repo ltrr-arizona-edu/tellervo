@@ -9,6 +9,89 @@
  * @license http://opensource.org/licenses/gpl-license.php GPL
  * *******************************************************************
  */
+require_once('inc/dbEntity.php');
+
+interface IParams
+{
+    function setParamsFromXMLRequest();
+}
+
+class objectParameters extends objectEntity implements IParams
+{
+    var $xmlrequest = NULL;
+    var $hasChild   = FALSE;
+
+    function __construct($xmlrequest, $parentID=NULL)
+    {
+        $this->xmlrequest = $xmlrequest;
+    }
+    
+    function setParamsFromXMLRequest()
+    {
+
+    }	
+}
+
+class elementParameters extends elementEntity implements IParams
+{   
+    var $xmlrequest = NULL;
+    var $hasChild   = FALSE;
+
+    function __construct($xmlrequest, $parentID=NULL)
+    {
+        $this->xmlrequest = $xmlrequest;
+    }
+	
+	function setParamsFromXMLRequest()
+	{
+		
+	}
+}
+
+class sampleParameters extends sampleEntity implements IParams
+{   
+    var $xmlrequest = NULL;
+    var $hasChild   = FALSE;
+
+    function __construct($xmlrequest, $parentID=NULL)
+    {
+        $this->xmlrequest = $xmlrequest;
+    }
+	
+	
+	function setParamsFromXMLRequest()
+	{
+		
+	}
+}
+
+class radiusParameters extends radiusEntity implements IParams
+{   
+    var $xmlrequest = NULL;
+    var $hasChild   = FALSE;
+
+    function __construct($xmlrequest, $parentID=NULL)
+    {
+        $this->sampleID = $parentID;
+        $this->xmlrequest = $xmlrequest;
+    }
+    
+    function setParamsFromXMLRequest()
+    {
+        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
+        if(isset($this->xmlrequest->name))                  $this->name         = addslashes($this->xmlrequest->name);
+        if(isset($this->xmlrequest->measurement))           $this->hasChild     = True;
+    }
+}
+        
+
+
+
+/**
+ * Old stuff needs refactoring
+ *
+ */
+
 
 class parameters 
 {
@@ -34,63 +117,6 @@ class parameters
         die();
     }
     
-}
-
-
-class siteParameters extends parameters
-{
-    var $id             = NULL;
-    var $name           = NULL;
-    var $code           = NULL;
-    var $siteNoteArray = array();
-        
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        $mySite = $this->xmlrequest->xpath('//site');
-        if(isset($mySite[0]['id']))                  $this->id                       = (int) $mySite[0]['id'];
-        if(isset($mySite[0]->name))                  $this->name                     = addslashes($mySite[0]->name);
-        if(isset($mySite[0]->code))                  $this->code                     = addslashes($mySite[0]->code);
-        if(isset($this->xmlrequest->subSite))        $this->hasChild                 = True;
-
-        $siteNotes = $this->xmlrequest->xpath('//siteNotes');
-        if (isset($siteNotes[0]->siteNote[0]))
-        {
-            foreach($siteNotes[0] as $item)
-            {
-                array_push($this->siteNoteArray, $item['id']);
-            }
-        }
-        else
-        {
-            $this->siteNoteArray = array('empty');
-        }
-    }
-}
-
-class subSiteParameters extends parameters
-{
-    var $id         = NULL;
-    var $name       = NULL;
-    var $siteID     = NULL;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        $this->siteID = $parentID;
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))      $this->id           = (int) $this->xmlrequest['id'];
-        if(isset($this->xmlrequest->name))      $this->name         = addslashes($this->xmlrequest->name);
-        if(isset($this->xmlrequest->tree))      $this->hasChild     = True;
-    }
-
 }
 
 class treeParameters extends parameters
@@ -165,25 +191,7 @@ class sampleParameters extends parameters
 }
 
 
-class radiusParameters extends parameters
-{
-    var $id         = NULL;
-    var $name       = NULL;
-    var $sampleID   = NULL;
 
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        $this->sampleID = $parentID;
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest->name))                  $this->name         = addslashes($this->xmlrequest->name);
-        if(isset($this->xmlrequest->measurement))           $this->hasChild     = True;
-    }
-}
 
 
 

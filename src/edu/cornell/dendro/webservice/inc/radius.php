@@ -13,10 +13,8 @@
 require_once('dbhelper.php');
 require_once('inc/dbEntity.php');
 
-class radius extends dbEntity
-{	
-    var $sampleID = NULL;   
-    var $measurementArray = array();
+class radius extends radiusEntity
+{	  
 
     /***************/
     /* CONSTRUCTOR */
@@ -24,15 +22,14 @@ class radius extends dbEntity
 
     function __construct()
     {
-        $groupXMLTag = "radii";
-        parent::__construct($groupXMLTag);
+
     }
 
     /***********/
     /* SETTERS */
     /***********/
 
-    function setsampleID($thesampleID)
+    function setSampleID($thesampleID)
     {
         $this->sampleID=$thesampleID;
     }
@@ -69,6 +66,15 @@ class radius extends dbEntity
                 $this->sampleID = $row['sampleid'];
                 $this->createdTimeStamp = $row['createdtimestamp'];
                 $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
+                $this->pithPresent = fromPGtoPHPBool($row['pithpresent']);
+                $this->sapwood = $row['sapwood'];
+                $this->barkPresent = fromPGtoPHPBool($row['barkpresent']);
+                $this->numberOfSapwoodRings = $row['numberofsapwoodrings'];
+                $this->lastRingUnderBark = $row['lastringunderbark'];
+                $this->missingHeartwoodRingsToPith = $row['missingheartwoodringstopith'];
+                $this->missingHeartwoodRingsToPithFoundation = $row['missingheartwoodringstopithfoundation'];
+                $this->missingSapwoodRingsToBark = $row['missingsapwoodringstobark'];
+                $this->missingSapwoodRingsToBarkFoundation = $row['missingsapwoodringstobarkfoundation'];  
             }
         }
         else
@@ -112,9 +118,11 @@ class radius extends dbEntity
     
     function setParamsFromParamsClass($paramsClass)
     {
+    	//$paramsClass = new RadiusParameters;
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
         if (isset($paramsClass->name))       $this->name       = $paramsClass->name;
         if (isset($paramsClass->sampleID)) $this->sampleID = $paramsClass->sampleID;
+        
 
         return true;
     }

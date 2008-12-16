@@ -47,6 +47,42 @@ function getLastUpdateDate($tablename)
 }
 
 /**
+ * Converts from most English, PHP or PG representations of a boolean into a PHP, English or PG boolean.
+ * Default output format is PHP
+ *
+ * @param String $value
+ * @param String $format
+ */
+function magicBool($value, $format='php')
+{
+	// Turn value into an internal boolean
+    if(($value===TRUE) || (strtolower($value) = 't') || (strtolower($value) = 'true') || ($value = 1) )
+    {   
+        $outputvalue = TRUE;
+    }
+    else
+    {
+        $outputvalue = FALSE;
+    }	
+    
+    // Output depending on format
+    switch(strtolower($format))
+    {
+    	case "php":
+    		return $outputvalue;
+    	case "pg":
+    		if($outputvalue===TRUE) return 't';
+    		return 'f';
+    	case "english":
+    		if($outputvalue===TRUE) return 'True';
+    		return 'False';
+    	default:
+    		return false;
+    }
+	
+}
+
+/**
  * Translates PostgreSQL boolean to a PHP boolean
  *
  * @param PG Bool $theValue
