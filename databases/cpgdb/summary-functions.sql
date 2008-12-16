@@ -21,26 +21,26 @@ BEGIN
    ret.VMeasurementID := VMID;
    numrows := 0;
 
-   -- Get unique sites
+   -- Get unique objects
    FOR rec IN SELECT s.code 
 	FROM tblVMeasurementDerivedCache d
 	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
-	INNER JOIN tblSpecimen sp on sp.specimenID = r.specimenID
-	INNER JOIN tblElement t on t.treeID = sp.treeID
-	INNER JOIN tblSubsite su on su.subsiteID = t.subsiteID
-	INNER JOIN tblSite s on s.siteID = su.siteID
+	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
+	INNER JOIN tblElement t on t.elementID = sp.elementID
+	INNER JOIN tblSubobject su on su.subobjectID = t.subobjectID
+	INNER JOIN tblObject s on s.objectID = su.objectID
 	WHERE d.VMeasurementID = VMID
 	GROUP BY(s.code)   
    LOOP
       IF numrows = 0 THEN
-         ret.siteCode = rec.code;
+         ret.objectCode = rec.code;
       ELSE
-         ret.siteCode = ret.siteCode || ';' || rec.code;
+         ret.objectCode = ret.objectCode || ';' || rec.code;
       END IF;
       numrows := numrows + 1;
    END LOOP;
-   ret.siteCount = numrows;   
+   ret.objectCount = numrows;   
 
    -- Now, get the list of associated taxa
    numrows := 0;
@@ -48,8 +48,8 @@ BEGIN
  	(SELECT t.taxonID::integer FROM tblVMeasurementDerivedCache d
 	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
-	INNER JOIN tblSpecimen sp on sp.specimenID = r.specimenID
-	INNER JOIN tblElement t on t.treeID = sp.treeID
+	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
+	INNER JOIN tblElement t on t.elementID = sp.elementID
 	INNER JOIN tlkpTaxon tx on tx.taxonID = t.taxonID
 	WHERE d.VMeasurementID = VMID
 	GROUP BY(t.taxonID)) as txbasic
@@ -114,7 +114,7 @@ LANGUAGE 'SQL' IMMUTABLE;
 --
 -- GetLabel: returns a lab code label for a specified object
 -- 
--- 1: label type ('vmeasurement', 'specimen', 'tree', )
+-- 1: label type ('vmeasurement', 'sample', 'element', )
 -- 2: label id
 -- 3: boolean, true = prefix only (e.g. C-XXX-A-B-1-D), false = full lab code (C-XXX-A-B-1-)
 --
@@ -132,10 +132,10 @@ DECLARE
 
    rec record;
 
-   siten text;
-   subsiten text;
-   treen text;
-   specimenn text;
+   objectn text;
+   subobjectn text;
+   elementn text;
+   samplen text;
    radiusn text;
    measurementn text;
    ret text;
@@ -153,19 +153,19 @@ BEGIN
 	FROM tblVMeasurementDerivedCache d
 	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
-	INNER JOIN tblSpecimen sp on sp.specimenID = r.specimenID
-	INNER JOIN tblElement t on t.treeID = sp.treeID
-	INNER JOIN tblSubsite su on su.subsiteID = t.subsiteID
-	INNER JOIN tblSite s on s.siteID = su.siteID
+	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
+	INNER JOIN tblElement t on t.elementID = sp.elementID
+	INNER JOIN tblSubobject su on su.subobjectID = t.subobjectID
+	INNER JOIN tblObject s on s.objectID = su.objectID
 	INNER JOIN tblVMeasurement vm on vm.vmeasurementid = d.vmeasurementid
 	WHERE d.VMeasurementID = OBJID
       LOOP
          count := count + 1;
 
-         siten := rec.a;
-         subsiten := rec.b;
-         treen := rec.c;
-         specimenn := rec.d;
+         objectn := rec.a;
+         subobjectn := rec.b;
+         elementn := rec.c;
+         samplen := rec.d;
          radiusn := rec.e;
          measurementn := rec.f;
       END LOOP;
@@ -183,15 +183,15 @@ BEGIN
          RETURN measurementn;
       END IF;
 
-      -- Start with silly cornell prefix and site
-      ret := 'C-' || siten;
+      -- Start with silly cornell prefix and object
+      ret := 'C-' || objectn;
 
-      -- Tack on the subsitename, if it's not Main
-      IF subsiten <> 'Main' THEN
-         ret := ret || '/' || subsiten;
+      -- Tack on the subobjectname, if it's not Main
+      IF subobjectn <> 'Main' THEN
+         ret := ret || '/' || subobjectn;
       END IF;
 
-      ret := ret || '-' || treen || '-' || specimenn || '-' || radiusn || '-';
+      ret := ret || '-' || elementn || '-' || samplen || '-' || radiusn || '-';
 
       -- add the name if we're not a prefix
       IF NOT PrefixOnly THEN
@@ -201,41 +201,41 @@ BEGIN
       RETURN ret;
    END IF; -- VMeasurement special case
 
-   IF labelfor = 'tree' THEN
+   IF labelfor = 'element' THEN
       queryLevel := 1;
       whereClause := ' WHERE t.elementid=' || OBJID;
-   ELSIF labelfor = 'specimen' THEN
+   ELSIF labelfor = 'sample' THEN
       queryLevel := 2;      
-      whereClause := ' WHERE sp.specimenid=' || OBJID;
+      whereClause := ' WHERE sp.sampleid=' || OBJID;
    ELSIF labelfor = 'radius' THEN
       queryLevel := 3;      
       whereClause := ' WHERE r.radiusid=' || OBJID;
    ELSE
-      RAISE EXCEPTION 'Invalid usage: label must be for vmeasurement, tree, specimen, or radius';
+      RAISE EXCEPTION 'Invalid usage: label must be for vmeasurement, element, sample, or radius';
    END IF;
 
    -- Start out with the basics
    selection := 's.code as a,su.name as b,t.name as c';
-   query := ' FROM tblsite s INNER JOIN tblsubsite su ON su.siteid = s.siteid INNER JOIN tblelement t ON t.subsiteid = su.subsiteid';
+   query := ' FROM tblobject s INNER JOIN tblsubobject su ON su.objectid = s.objectid INNER JOIN tblelement t ON t.subobjectid = su.subobjectid';
 
-   -- add specimen
+   -- add sample
    IF queryLevel > 1 THEN
-      query := query || ' INNER JOIN tblspecimen sp ON sp.elementid = t.elementid';
+      query := query || ' INNER JOIN tblsample sp ON sp.elementid = t.elementid';
       selection := selection || ',sp.name as d';
    END IF;
 
    -- add radius
    IF queryLevel > 2 THEN
-      query := query || ' INNER JOIN tblradius r ON r.specimenid = sp.specimenid';
+      query := query || ' INNER JOIN tblradius r ON r.sampleid = sp.sampleid';
       selection := selection || ',r.name as e';
    END IF;
 
    -- execute our messy query
    FOR rec IN EXECUTE 'SELECT ' || selection || query || whereClause LOOP
-      -- Start with silly cornell prefix and site
+      -- Start with silly cornell prefix and object
       ret := 'C-' || rec.a;
 
-      -- Tack on the subsitename, if it's not Main
+      -- Tack on the subobjectname, if it's not Main
       IF rec.b <> 'Main' THEN
          ret := ret || '/' || rec.b;
       END IF;

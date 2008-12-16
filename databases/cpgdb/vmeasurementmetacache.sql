@@ -57,11 +57,11 @@ BEGIN
    -- Calculate extent of vmeasurement by looking up locations of all associated direct Measurements
    SELECT setsrid(extent(tblelement.location)::geometry,4326)
       INTO  ret.vmextent
-      FROM  tblelement, tblspecimen, tblradius, tblMeasurement, tblvmeasurement
+      FROM  tblelement, tblsample, tblradius, tblMeasurement, tblvmeasurement
       WHERE tblvmeasurement.measurementid=tblmeasurement.measurementid
       AND   tblmeasurement.radiusid=tblradius.radiusid
-      AND   tblradius.specimenid=tblspecimen.specimenid
-      AND   tblspecimen.treeid=tblelement.treeid
+      AND   tblradius.sampleid=tblsample.sampleid
+      AND   tblsample.elementid=tblelement.elementid
       AND   tblvmeasurement.vmeasurementid
             IN (SELECT vMeasurementid
                    FROM  cpgdb.FindVMParents(vmid, true)
@@ -73,11 +73,11 @@ BEGIN
    UPDATE tblVMeasurementMetaCache SET vmextent = ret.vmextent WHERE VMeasurementID = ret.VMeasurementID;
 
    -- Now, get taxon and label data and update that
-   SELECT INTO ret.siteCode, ret.siteCount, ret.CommonTaxonName, ret.taxonCount, ret.prefix 
-       s.siteCode,s.siteCount,s.commonTaxonName,s.taxonCount,cpgdb.GetVMeasurementPrefix(vmid) AS prefix
+   SELECT INTO ret.objectCode, ret.objectCount, ret.CommonTaxonName, ret.taxonCount, ret.prefix 
+       s.objectCode,s.objectCount,s.commonTaxonName,s.taxonCount,cpgdb.GetVMeasurementPrefix(vmid) AS prefix
        FROM cpgdb.getVMeasurementSummaryInfo(vmid) AS s;
-   UPDATE tblVMeasurementMetaCache SET (siteCode, siteCount, commonTaxonName, taxonCount, prefix) =
-       (ret.siteCode, ret.siteCount, ret.CommonTaxonName, ret.taxonCount, ret.prefix)
+   UPDATE tblVMeasurementMetaCache SET (objectCode, objectCount, commonTaxonName, taxonCount, prefix) =
+       (ret.objectCode, ret.objectCount, ret.CommonTaxonName, ret.taxonCount, ret.prefix)
        WHERE VMeasurementID = vmid;
 
    -- Return result

@@ -6401,11 +6401,11 @@ CREATE OPERATOR ~= (
 ALTER OPERATOR public.~= (geometry, geometry) OWNER TO aps03pwb;
 
 --
--- Name: btree_geometry_ops; Type: OPERATOR CLASS; Schema: public; Owner: aps03pwb
+-- Name: belement_geometry_ops; Type: OPERATOR CLASS; Schema: public; Owner: aps03pwb
 --
 
-CREATE OPERATOR CLASS btree_geometry_ops
-    DEFAULT FOR TYPE geometry USING btree AS
+CREATE OPERATOR CLASS belement_geometry_ops
+    DEFAULT FOR TYPE geometry USING belement AS
     OPERATOR 1 <(geometry,geometry) ,
     OPERATOR 2 <=(geometry,geometry) ,
     OPERATOR 3 =(geometry,geometry) ,
@@ -6414,7 +6414,7 @@ CREATE OPERATOR CLASS btree_geometry_ops
     FUNCTION 1 geometry_cmp(geometry,geometry);
 
 
-ALTER OPERATOR CLASS public.btree_geometry_ops USING btree OWNER TO aps03pwb;
+ALTER OPERATOR CLASS public.belement_geometry_ops USING belement OWNER TO aps03pwb;
 
 --
 -- Name: gist_geometry_ops; Type: OPERATOR CLASS; Schema: public; Owner: aps03pwb

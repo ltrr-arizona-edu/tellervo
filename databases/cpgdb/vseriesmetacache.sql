@@ -74,11 +74,11 @@ BEGIN
 
 
    -- Now, get taxon and label data and update that
-   SELECT INTO ret.siteCode, ret.siteCount, ret.CommonTaxonName, ret.taxonCount, ret.label 
-       s.siteCode,s.siteCount,s.commonTaxonName,s.taxonCount,cpgdb.GetVSeriesLabel(vsid) AS label 
+   SELECT INTO ret.objectCode, ret.objectCount, ret.CommonTaxonName, ret.taxonCount, ret.label 
+       s.objectCode,s.objectCount,s.commonTaxonName,s.taxonCount,cpgdb.GetVSeriesLabel(vsid) AS label 
        FROM cpgdb.getVSeriesSummaryInfo(vsid) AS s;
-   UPDATE tblVSeriesMetaCache SET (siteCode, siteCount, commonTaxonName, taxonCount, label) =
-       (ret.siteCode, ret.siteCount, ret.CommonTaxonName, ret.taxonCount, ret.label)
+   UPDATE tblVSeriesMetaCache SET (objectCode, objectCount, commonTaxonName, taxonCount, label) =
+       (ret.objectCode, ret.objectCount, ret.CommonTaxonName, ret.taxonCount, ret.label)
        WHERE VSeriesID = vsid;
 
    -- Return result

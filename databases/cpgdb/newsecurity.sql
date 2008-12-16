@@ -36,8 +36,8 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 -- 1 = array of groups
--- 2 = type (vmeasurement, tree, object, default)
--- 3 = id (VMeasurementID, TreeID, ObjectID, or 0 for default)
+-- 2 = type (vmeasurement, element, object, default)
+-- 3 = id (VMeasurementID, ElementID, ObjectID, or 0 for default)
 CREATE OR REPLACE FUNCTION cpgdb.GetGroupPermissionSet(_groupIDs integer[], _permtype varchar, _pid integer) 
 RETURNS typPermissionSet AS $$
 DECLARE
@@ -52,11 +52,11 @@ DECLARE
    childPerms typPermissionSet;
    setSize integer;
 
-   stypes varchar[] := array['vmeasurement','tree','object','default'];
+   stypes varchar[] := array['vmeasurement','element','object','default'];
 BEGIN
    -- Invalid type specified?
    IF NOT (_permtype = ANY(stypes)) THEN
-      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vmeasurement, tree, object, default (case matters!).', _permtype;
+      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vmeasurement, element, object, default (case matters!).', _permtype;
    END IF;
 
    -- Build our query
@@ -81,22 +81,22 @@ BEGIN
       CLOSE res;
       
       IF _permtype = 'vmeasurement' THEN
-         -- This obnoxious query joins direct vss to trees, so we don't have to do another query
-         SELECT op.Name,tr.TreeID INTO vstype,objid FROM tblVMeasurement vs 
+         -- This obnoxious query joins direct vss to elements, so we don't have to do another query
+         SELECT op.Name,tr.ElementID INTO vstype,objid FROM tblVMeasurement vs 
             INNER JOIN tlkpVMeasurementOp op ON vs.VMeasurementOpID = op.VMeasurementOpID
             LEFT JOIN tblMeasurement t1 ON vs.MeasurementID = t1.MeasurementID 
             LEFT JOIN tblRadius t2 ON t2.RadiusID = t1.RadiusID 
-            LEFT JOIN tblSpecimen t3 on t3.SpecimenID = t2.SpecimenID 
-            LEFT JOIN tblTree tr ON tr.TreeID = t3.TreeID
+            LEFT JOIN tblSample t3 on t3.SampleID = t2.SampleID 
+            LEFT JOIN tblElement tr ON tr.ElementID = t3.ElementID
             WHERE vs.VMeasurementID = _pid;
 
          IF NOT FOUND THEN
-            RAISE EXCEPTION 'Could not determine security: vmeasurement % -> tree does not exist', _pid;
+            RAISE EXCEPTION 'Could not determine security: vmeasurement % -> element does not exist', _pid;
          END IF;
 
          IF vstype = 'Direct' THEN
-            -- We hit a direct VMeasurement. Move down to tree...
-            perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'tree', objid);
+            -- We hit a direct VMeasurement. Move down to element...
+            perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'element', objid);
 	    RETURN perms;
          ELSE
             -- Start with a completely empty permission set
@@ -119,14 +119,14 @@ BEGIN
             RETURN perms;
          END IF;
          
-      ELSIF _permType = 'tree' THEN
-         -- Get the objectID of this tree
-         SELECT tblSubobject.objectID INTO objid FROM tblTree, tblSubobject
-                WHERE tblTree.subobjectID=tblSubobject.SubobjectID
-                AND tblTree.elementid = _pid;
+      ELSIF _permType = 'element' THEN
+         -- Get the objectID of this element
+         SELECT tblSubobject.objectID INTO objid FROM tblElement, tblSubobject
+                WHERE tblElement.subobjectID=tblSubobject.SubobjectID
+                AND tblElement.elementid = _pid;
 
          IF NOT FOUND THEN
-            RAISE EXCEPTION 'Could not determine security: tree % -> object does not exist', _pid;
+            RAISE EXCEPTION 'Could not determine security: element % -> object does not exist', _pid;
          END IF;
          
          perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'object', objid);
@@ -248,8 +248,8 @@ RETURNS integer[] AS $$
 $$ LANGUAGE SQL IMMUTABLE;
 
 -- 1 = securityUserID
--- 2 = type (VMeasurement, Tree, Object, Default)
--- 3 = id (VMeasurementID, TreeID, ObjectID, or 0 for default)
+-- 2 = type (VMeasurement, Element, Object, Default)
+-- 3 = id (VMeasurementID, ElementID, ObjectID, or 0 for default)
 CREATE OR REPLACE FUNCTION cpgdb.GetUserPermissionSet(integer, varchar, integer) 
 RETURNS typPermissionSet AS $$
 DECLARE

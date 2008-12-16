@@ -5,7 +5,7 @@ DECLARE
    id ALIAS FOR $2;
 
    i INTEGER;
-   searches VARCHAR[] := array['VMeasurement','Measurement','Radius','Specimen','Tree','Subobject','Object'];
+   searches VARCHAR[] := array['VMeasurement','Measurement','Radius','Sample','Element','Subobject','Object'];
 
    whereClause VARCHAR;
    joinClause VARCHAR;
