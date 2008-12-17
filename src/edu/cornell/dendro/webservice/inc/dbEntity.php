@@ -344,7 +344,7 @@ class objectEntity extends dbEntity
 	 *
 	 * @var Geometry
 	 */
-	protected $location = NULL;
+	var $location = NULL;
 	
     function __construct()
     {  
@@ -420,10 +420,7 @@ class objectEntity extends dbEntity
 
 	function setLocationFromGeometry($geometry)
 	{
-		if(!(isset($this->location)))
-		{
-			$this->location = new geometry;	
-		}
+	        $this->location = new geometry;	
 		
 		$this->location->setGeometry($geometry);
 

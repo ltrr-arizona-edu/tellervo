@@ -46,9 +46,8 @@ class geometry
 	
 	
 	
-	function __construct($geometry)
+	function __construct()
 	{
-		$this->setGeometry($geometry);	
 	}
 	
     /***********/
@@ -93,14 +92,15 @@ class geometry
 	function asGML()
 	{
 		global $dbconn;
-		$sql = "select asgml(".$this->geometry.")";
+		$sql = "select asgml('".$this->geometry."')";
         $dbconnstatus = pg_connection_status($dbconn);
 		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
 		{
 		    pg_send_query($dbconn, $sql);
 		    $result = pg_get_result($dbconn); 
-            $row = pg_fetch_array($result);		
-            return $row['asgml'];
+                    $row = pg_fetch_array($result);		
+                    return $row['asgml'];
+
 		}
 		else
 		{
