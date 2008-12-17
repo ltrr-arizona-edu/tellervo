@@ -91,34 +91,26 @@ class geometry
     /***********/    	
 	function asGML()
 	{
-		global $dbconn;
-		$sql = "select asgml('".$this->geometry."')";
-        $dbconnstatus = pg_connection_status($dbconn);
-		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-		{
-		    pg_send_query($dbconn, $sql);
-		    $result = pg_get_result($dbconn); 
-                    $row = pg_fetch_array($result);		
-                    return $row['asgml'];
-
-		}
-		else
-		{
-			return false;
-		}
-
+		$sql = "select asgml('".$this->geometry."') as thevalue";
+		return $this->runSQLCalculation($sql);
 	}
 	
 	function asKML()
-	{	
+	{
+		$sql = "select askml('".$this->geometry."') as thevalue";
+		return $this->runSQLCalculation($sql);
 	}
 	
 	function getX()
-	{	
+	{
+		$sql = "select x(centroid('".$this->geometry."')) as thevalue";
+		return $this->runSQLCalculation($sql);			
 	}
 	
 	function getY()
 	{	
+		$sql = "select y(centroid('".$this->geometry."')) as thevalue";
+		return $this->runSQLCalculation($sql);			
 	}
 	
 	function getXMin()
@@ -135,6 +127,24 @@ class geometry
 	
 	function getYMax()
 	{
-	}	
+	}
+
+	private function runSQLCalculation($sql)
+	{
+		global $dbconn;
+        $dbconnstatus = pg_connection_status($dbconn);
+		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+		{
+		    pg_send_query($dbconn, $sql);
+		    $result = pg_get_result($dbconn); 
+            $row = pg_fetch_array($result);		
+            return $row['thevalue'];
+		}
+		else
+		{
+			return false;
+		}			
+	}
+	
 }
 ?>
