@@ -13,58 +13,10 @@
 require_once('dbhelper.php');
 require_once('inc/radius.php');
 require_once('inc/sampleType.php');
-require_once('inc/terminalRing.php');
-require_once('inc/sampleQuality.php');
-require_once('inc/sampleContinuity.php');
-require_once('inc/pith.php');
 require_once('inc/dbEntity.php');
 
-class sample extends dbEntity
+class sample extends sampleEntity implements IDBAccessor
 {
-/**
- * Method that was used to take a sample from the element
- *
- * @var unknown_type
- */
-    var $sampleType = NULL; 
-    
-    /**
-     * Year of dendrochronological sampling
-     *
-     * @var Date
-     */
-    var $samplingDate = NULL;
-    	
-    /**
-     * Array of filenames associated with this sample
-     *
-     * @var Array
-     */
-    var $fileArray = array();
-	
-    /**
-     * Position of sample in element
-     *
-     * @var String
-     */
-    var $position = NULL;
-	
-    
-    /**
-     * State this material is in (dry, wet, burned etc)
-     *
-     * @var String
-     */
-    var $state = NULL;
-    
-    /**
-     * Presence of knots
-     *
-     * @var Boolean
-     */
-    var $knots = NULL;
-    
-    var $treeID = NULL;    
     var $radiusArray = array();
     
     /***************/
@@ -80,25 +32,6 @@ class sample extends dbEntity
     /***********/
     /* SETTERS */
     /***********/
-
-    function setName($theName)
-    {
-        // Set the current objects note.
-        $this->name=$theName;
-    }
-    
-    function setTreeID($theTreeID)
-    {
-        // Set the current objects note.
-        $this->treeID=$theTreeID;
-    }
-
- 
-    function setSamplingDate($samplingDate)
-    {
-        $this->samplingDate = $samplingDate;
-    }
-    
     
     function setParamsFromDB($theID)
     {
@@ -151,7 +84,7 @@ class sample extends dbEntity
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
-
+			
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
             {

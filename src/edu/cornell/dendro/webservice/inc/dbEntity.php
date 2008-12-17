@@ -15,6 +15,19 @@ require_once('dbsetup.php');
 require_once('geometry.php');
 
 /**
+ * Interface for classes that inherit dbEntity and read/write to/from the database
+ *
+ */
+interface IDBAccessor
+{
+	function asXML();
+	function writToDB();
+	function deleteFromDB();
+	function validateRequestParams();
+}
+
+
+/**
  * Base class for entities that are representations of database tables
  *
  */
@@ -1362,7 +1375,30 @@ class radiusEntity extends dbEntity
 	
 }
 
-
+class taxonEntity extends dbEntity
+{
+    protected $parentID = NULL;
+    protected $label = NULL;
+    protected $colID = NULL;
+    protected $colParentID = NULL;
+    protected $taxonRank = NULL;
+    protected $parentXMLTag = "taxonDictionary"; 
+    protected $lastErrorMessage = NULL;
+    protected $lastErrorCode = NULL;
+    protected $kingdom = NULL;
+    protected $phylum = NULL;
+    protected $class = NULL;
+    protected $order = NULL;
+    protected $family = NULL;
+    protected $genus = NULL;
+    protected $species = NULL;
+	
+    
+    function __construct()
+    {
+    	
+    }
+}
 
 
 

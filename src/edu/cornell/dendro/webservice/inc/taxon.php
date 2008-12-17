@@ -11,25 +11,8 @@
  */
 require_once('dbhelper.php');
 
-class taxon 
+class taxon extends taxonEntity
 {
-    var $id = NULL;
-    var $parentID = NULL;
-    var $label = NULL;
-    var $colID = NULL;
-    var $colParentID = NULL;
-    var $taxonRank = NULL;
-    var $parentXMLTag = "taxonDictionary"; 
-    var $lastErrorMessage = NULL;
-    var $lastErrorCode = NULL;
-    var $kingdom = NULL;
-    var $phylum = NULL;
-    var $class = NULL;
-    var $order = NULL;
-    var $family = NULL;
-    var $genus = NULL;
-    var $species = NULL;
-   
 
     /***************/
     /* CONSTRUCTOR */
@@ -49,13 +32,6 @@ class taxon
     {
         // Set the current objects note.
         $this->label=$theLabel;
-    }
-
-    function setErrorMessage($theCode, $theMessage)
-    {
-        // Set the error latest error message and code for this object.
-        $this->lastErrorCode = $theCode;
-        $this->lastErrorMessage = $theMessage;
     }
 
     function setParamsFromDB($theID)
