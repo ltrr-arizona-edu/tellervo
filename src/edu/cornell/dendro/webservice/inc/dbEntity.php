@@ -418,16 +418,6 @@ class objectEntity extends dbEntity
 		return true;
 	}
 
-	function setLocationFromGeometry($geometry)
-	{
-	        $this->location = new geometry;	
-		
-		$this->location->setGeometry($geometry);
-
-	}
-
-
-
 	/***********/
     /* GETTERS */
     /***********/ 	
@@ -474,25 +464,12 @@ class elementEntity extends dbEntity
 	protected $type = NULL;
 	protected $file = NULL;
 	/**
-	 * One of growth; utilised (static); utilised (mobile); current, manufacture
+	 * Geometry object representing the location 
 	 *
-	 * @var String
+	 * @var Geometry
 	 */
-	protected $locationType = NULL;
-	
-	/**
-	 * Precision of the location information in metres
-	 *
-	 * @var Integer
-	 */
-	protected $locationPrecision = NULL;
-	
-	/**
-	 * Additional information and the location 
-	 *
-	 * @var String
-	 */
-	protected $locationComment = NULL;
+	var $location = NULL;
+
 	protected $processing = NULL;
 	protected $marks = NULL;
 	protected $description = NULL;
@@ -501,7 +478,8 @@ class elementEntity extends dbEntity
     function __construct()
     {  
         $groupXMLTag = "elements";
-        parent::__construct($groupXMLTag);  	
+        parent::__construct($groupXMLTag); 
+		$this->location = new geometry;	 	
 	}
 
 	/***********/
@@ -544,22 +522,7 @@ class elementEntity extends dbEntity
 	{
 		$this->file = addslashes($file);
 	}
-		
-	function setLocationType($value)
-	{
-		$this->locationType = addslashes($value);
-	}
-	
-	function setLocationPrecision($value)
-	{	
-		$this->locationPrecision = (int) $value;
-	}
-	
-	function setLocationComment($value)
-	{
-		$this->locationComment = addslashes($value);
-	}
-	
+			
 	function setProcessing($value)
 	{
 		$this->processing = addslashes($value); 
@@ -574,6 +537,7 @@ class elementEntity extends dbEntity
 	{
 		$this->description = addslashes($value);
 	}
+	
 
 	/***********/
     /* GETTERS */
@@ -635,21 +599,6 @@ class elementEntity extends dbEntity
 	function getFile()
 	{
 		return $this->file;
-	}
-		
-	function getLocationType()
-	{
-		return $this->locationType;
-	}
-	
-	function getLocationPrecision()
-	{	
-		return $this->locationPrecision;
-	}
-	
-	function getLocationComment()
-	{
-		return $this->locationComment;
 	}
 	
 	function getProcessing()
