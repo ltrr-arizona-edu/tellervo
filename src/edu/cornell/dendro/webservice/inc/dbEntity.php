@@ -33,6 +33,7 @@ interface IDBAccessor
  */
 class dbEntity 
 {
+
 	/**
 	 * Unique identifier for this entity
 	 *
@@ -170,6 +171,7 @@ class dbEntity
 		$this->groupXMLTag = addslashes($theTag);
 		return true;
     }
+
     
     /**
      * Set the identifier and from what domain it came
@@ -291,11 +293,11 @@ class dbEntity
      * @param Integer $securityUserID
      * @return Boolean
      */
-    function getPermissions($securityUserID)
+    function lookupPermissions($securityUserID)
     {
         global $dbconn;
 
-        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, get_class($this), $this->id)";
+        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, $this->getEntityType(), $this->getID())";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -314,6 +316,16 @@ class dbEntity
             return FALSE;
         }
         return TRUE; 
+    }
+    
+    function hasPermission($securityUserID, $crudMode)
+    {
+    	
+    }
+    
+    function getEntityType()
+    {
+    	return $this->get_class();
     }
 }
 
@@ -837,43 +849,43 @@ class sampleEntity extends dbEntity
 	 *
 	 * @var String
 	 */
-	protected $type = NULL;
+	private $type = NULL;
 	/**
 	 * Date the sample was taken
 	 *
 	 * @var ISODate
 	 */
-	protected $samplingDate = NULL;
+	private $samplingDate = NULL;
 	/**
 	 * Associated file URL
 	 *
 	 * @var String
 	 */
-	protected $file = NULL;
+	private $file = NULL;
 	/**
 	 * Position of the sample in the element
 	 *
 	 * @var String
 	 */
-	protected $position = NULL;
+	private $position = NULL;
 	/**
 	 * State of the material (dry, wet, conserved etc)
 	 *
 	 * @var String
 	 */
-	protected $state = NULL;
+	private $state = NULL;
 	/**
 	 * Presence of knots
 	 *
 	 * @var Boolean
 	 */
-	protected $knots = NULL;
+	private $knots = NULL;
 	/**
 	 * Description of the sample
 	 *
 	 * @var String
 	 */
-	protected $description = NULL;
+	private $description = NULL;
 	
 	
     function __construct()

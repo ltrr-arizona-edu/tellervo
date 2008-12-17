@@ -337,8 +337,8 @@ class sample extends sampleEntity implements IDBAccessor
                 
                 if($format!="minimal")
                 {
-                    if(isset($this->samplingDate))            $xml.= "<samplingDate\">".$this->samplingDate."</samplingDate>\n";
-                    if(isset($this->sampleType))              $xml.= "<tridas:genericField name=\"sampleType\">".$this->sampleType."</tridas:genericField>\n";
+                    if(isset($this->samplingDate))            $xml.= "<tridas:samplingDate\">".$this->getSamplingDate()."</samplingDate>\n";
+                    if(isset($this->type))                    $xml.= "<tridas:type>".$this->getType()."</tridas:genericField>\n";
                     if(isset($this->createdTimeStamp))        $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->createdTimeStamp."</tridas:genericField>\n";
                     if(isset($this->lastModifiedTimeStamp))   $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->lastModifiedTimeStamp."</tridas:genericField>\n";
                 }
