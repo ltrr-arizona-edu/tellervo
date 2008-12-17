@@ -115,19 +115,42 @@ class geometry
 	
 	function getXMin()
 	{
+		$sql = "select xmin(getbbox('".$this->geometry."')) as thevalue";
+		return $this->runSQLCalculation($sql);				
 	}
 	
 	function getYMin()
 	{
+		$sql = "select ymin(getbbox('".$this->geometry."')) as thevalue";
+		return $this->runSQLCalculation($sql);			
 	}
 
 	function getXMax()
 	{
+		$sql = "select xmax(getbbox('".$this->geometry."')) as thevalue";
+		return $this->runSQLCalculation($sql);			
 	}
 	
 	function getYMax()
 	{
+		$sql = "select ymax(getbbox('".$this->geometry."')) as thevalue";
+		return $this->runSQLCalculation($sql);			
 	}
+	
+	function getLocationType()
+	{
+		return $this->type;
+	}
+	
+	function getLocationPrecision()
+	{	
+		return $this->precision;
+	}
+	
+	function getLocationComment()
+	{
+		return $this->comment;
+	}	
 
 	private function runSQLCalculation($sql)
 	{
