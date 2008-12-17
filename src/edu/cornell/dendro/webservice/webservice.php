@@ -1,15 +1,16 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * *******************************************************************
+ */
 
 require_once("config.php");
-require_once("inc/dbsetup.php");
 require_once("inc/meta.php");
 require_once("inc/auth.php");
 require_once("inc/errors.php");

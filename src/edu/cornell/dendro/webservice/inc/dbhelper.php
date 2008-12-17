@@ -1,12 +1,14 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * *******************************************************************
+ */
 
 /**
  * Converts PG ISO 8601 date into a slightly different form of ISO 8601 date so that it vaidates in XML schema.
@@ -52,18 +54,24 @@ function getLastUpdateDate($tablename)
  *
  * @param String $value
  * @param String $format
+ * @return Boolean or 'error'
  */
-function magicBool($value, $format='php')
+
+function formatBool($value, $format='php')
 {
 	// Turn value into an internal boolean
     if(($value===TRUE) || (strtolower($value) = 't') || (strtolower($value) = 'true') || ($value = 1) )
     {   
         $outputvalue = TRUE;
     }
-    else
+    elseif(($value===FALSE) || (strtolower($value) = 'f') || (strtolower($value) = 'false') || ($value = 0) )
     {
         $outputvalue = FALSE;
     }	
+    else
+    {
+    	return 'error';
+    }
     
     // Output depending on format
     switch(strtolower($format))
@@ -251,4 +259,6 @@ function escapeXMLChars($theString)
     $theString = str_replace('>', '&gt;',   $theString);
     return $theString;
 }
+
+
 ?>

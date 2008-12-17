@@ -11,6 +11,8 @@
  */
 
 require_once('dbhelper.php');
+require_once('dbsetup.php');
+require_once('geometry.php')
 
 /**
  * Base class for entities that are representations of database tables
@@ -291,6 +293,12 @@ class dbEntity
         return TRUE; 
     }
 
+    function getLatitudeFromGeometry($geometry)
+    {
+    	global $dbconn;
+    	
+    	
+    }
 }
 
 class objectEntity extends dbEntity
@@ -327,34 +335,20 @@ class objectEntity extends dbEntity
 	/**
 	 * URL's of associated files
 	 *
-	 * @var unknown_type
+	 * @var String
 	 */
 	protected $file = NULL;
 	
 	/**
-	 * One of growth; utilised (static); utilised (mobile); current, manufacture
+	 * Geometry object representing the location 
 	 *
-	 * @var String
+	 * @var Geometry
 	 */
-	protected $locationType = NULL;
-	
-	/**
-	 * Precision of the location information in metres
-	 *
-	 * @var Integer
-	 */
-	protected $locationPrecision = NULL;
-	
-	/**
-	 * Additional information and the location 
-	 *
-	 * @var String
-	 */
-	protected $locationComment = NULL;
-	
+	protected $location = NULL;
 	
     function __construct()
     {  
+    	$this->location = new geometry();
         $groupXMLTag = "objects";
         parent::__construct($groupXMLTag);  	
 	}
@@ -363,44 +357,89 @@ class objectEntity extends dbEntity
     /* SETTERS */
     /***********/   	
 	
+	/**
+	 * Set the type of object
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
 	function setType($value)
 	{
+		
 		$this->type = addslashes($value);
+		return true;
 	}
 	
+	/**
+	 * Set the description of the object
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
 	function setDescription($value)
 	{
 		$this->description = addslashes($value);
+		return true;
 	}
 	
+	/**
+	 * Set the name of the creator - name, place of the workshop/wharf etc
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
 	function setCreator($value)
 	{
 		$this->creator = addslashes($value);
+		return true;
 	}
 	
+	/**
+	 * Set the name of the owner of this object
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
 	function setOwner($value)
 	{	
 		$this->owner = addslashes($value);
+		return true;
 	}
 	
+	/**
+	 * Set the url of an associated file
+	 *
+	 * @param String $value
+	 * @return true;
+	 */
 	function setFile($value)
 	{
 		$this->file = addslashes($value);
+		return true;
 	}
 
+	/**
+	 * Set the type of location the location field 
+	 *
+	 * @param unknown_type $value
+	 * @return unknown
+	 */
 	function setLocationType($value)
 	{
 		$this->locationType = addslashes($value);
+		return true;
 	}
 	
 	function setLocationPrecision($value)
 	{	
 		$this->locationPrecision = (int) $value;
+		return true;
 	}
 	
 	function setLocationComment($value)
 	{
 		$this->locationComment = addslashes($value);
+		return true;
 	}
 
 	/***********/
@@ -751,25 +790,51 @@ class radiusEntity extends dbEntity
 	 * Set whether the pith is present or not
 	 *
 	 * @param Boolean $value
+	 * 
 	 */
 	function setPithPresent($value)
 	{
-		$this->pithPresent = $value;		
+		if(formatBool($value)=='error')
+		{
+			$this->setErrorMessage(901, 'Pith field data type not recognised');	
+			return FALSE;
+		}
+		else
+		{
+			$this->pithPresent = $value;
+			return TRUE;		
+		}
 	}
 	
 	/**
 	 * Set the sample ID 
 	 *
-	 * @param unknown_type $value
+	 * @param Integer $value
+	 * @return Boolean 
 	 */
 	function setSampleID($value)
 	{
-		$this->sampleID = $value;
+		$this->sampleID = (int) $value;
+		return TRUE;
 	}
 	
+	/**
+	 * Set whether the sapwood is absent, complete, incomplete or n/a
+	 *
+	 * @param unknown_type $value
+	 */
 	function setSapwood($value)
 	{
-		$this->sapwood = $value;
+		if( (strtolower($value)!='n/a') || (strtolower($value)!='absent') || (strtolower($value)!='complete') ||(strtolower($value)!='incomplete') )
+		{
+			$this->sapwood = strtolower($value);
+			return TRUE;
+		}
+		else
+		{
+			$this->setErrorMessage(901, 'Sapwood field must be one of n/a; absent; complete; incomplete');
+			return FALSE;
+		}
 	}
 	
 	function setBarkPresent($value)
