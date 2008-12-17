@@ -325,7 +325,9 @@ class dbEntity
     
     function getEntityType()
     {
-    	return $this->get_class();
+        return get_class($this);
+
+
     }
 }
 
@@ -338,13 +340,6 @@ class objectEntity extends dbEntity
 	 * @var String
 	 */
 	protected $type = NULL;
-	
-	/**
-	 * More elaborate description of the object itself
-	 *
-	 * @var String
-	 */
-	protected $description = NULL;
 	
 	/**
 	 * Name, place of the workshop/wharf
@@ -398,17 +393,6 @@ class objectEntity extends dbEntity
 		return true;
 	}
 	
-	/**
-	 * Set the description of the object
-	 *
-	 * @param String $value
-	 * @return Boolean
-	 */
-	function setDescription($value)
-	{
-		$this->description = addslashes($value);
-		return true;
-	}
 	
 	/**
 	 * Set the name of the creator - name, place of the workshop/wharf etc
@@ -460,15 +444,6 @@ class objectEntity extends dbEntity
 		return $this->type;
 	}
 	
-	/**
-	 * Get the description of this object
-	 *
-	 * @return String
-	 */
-	function getDescription()
-	{
-		return $this->description;
-	}
 	
 	/**
 	 * Get the name of the creator of this object
@@ -579,12 +554,6 @@ class elementEntity extends dbEntity
 	 * @var String
 	 */
 	protected $marks = NULL;
-	/**
-	 * Description of the element
-	 *
-	 * @var String
-	 */
-	protected $description = NULL;
 	
 	
     function __construct()
@@ -718,18 +687,6 @@ class elementEntity extends dbEntity
 		return true;
 	}
 	
-	/**
-	 * Set the description of this element
-	 *
-	 * @param String $value
-	 * @return Boolean
-	 */
-	function setDescription($value)
-	{
-		$this->description = addslashes($value);
-		return true;
-	}
-	
 
 	/***********/
     /* GETTERS */
@@ -828,15 +785,6 @@ class elementEntity extends dbEntity
 		return $this->marks;
 	}
 	
-	/**
-	 * Get the description of this element
-	 *
-	 * @return String
-	 */
-	function getDescription()
-	{
-		return $this->description = addslashes();
-	}	
 	
 }
 
@@ -880,12 +828,6 @@ class sampleEntity extends dbEntity
 	 * @var Boolean
 	 */
 	private $knots = NULL;
-	/**
-	 * Description of the sample
-	 *
-	 * @var String
-	 */
-	private $description = NULL;
 	
 	
     function __construct()
@@ -967,17 +909,6 @@ class sampleEntity extends dbEntity
 		}
 	}
 	
-	/**
-	 * Set the description of the sample
-	 *
-	 * @param String $description
-	 * @return Boolean
-	 */
-	function setDescription($description)
-	{
-		$this->description = addslashes($description);
-		return true;
-	}
 	
 	
 	/***********/
@@ -1034,15 +965,6 @@ class sampleEntity extends dbEntity
 		return $this->knots;
 	}
 	
-	/**
-	 * Get the sample description
-	 *
-	 * @return String
-	 */
-	function getDescription()
-	{
-		return $this->description;
-	}
 }
 
 class radiusEntity extends dbEntity
@@ -1201,7 +1123,7 @@ class radiusEntity extends dbEntity
 	 */
 	function setNumberOfSapwoodRings($value)
 	{
-		if ( (gettype($value)='integer') || (gettype($value)='double') )
+		if ( (gettype($value)=='integer') || (gettype($value)=='double') )
 		{		
 			$this->numberOfSapwoodRings = (int) $value;
 			return true;
@@ -1232,7 +1154,7 @@ class radiusEntity extends dbEntity
 	 */
 	function setMissingHeartwoodRingsToPith($value)
 	{
-		if ( (gettype($value)='integer') || (gettype($value)='double') )
+		if ( (gettype($value)=='integer') || (gettype($value)=='double') )
 		{
 			$this->missingHeartwoodRingsToPith = (int) $value;
 			return true;
@@ -1263,7 +1185,7 @@ class radiusEntity extends dbEntity
 	 */
 	function setMissingSapwoodRingsToBark($value)
 	{
-		if ( (gettype($value)='integer') || (gettype($value)='double') )
+		if ( (gettype($value)=='integer') || (gettype($value)=='double') )
 		{
 			$this->missingSapwoodRingsToBark = (int) $value;
 			return true;
