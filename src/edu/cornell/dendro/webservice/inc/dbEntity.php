@@ -21,9 +21,9 @@ require_once('geometry.php');
 interface IDBAccessor
 {
 	function asXML();
-	function writToDB();
+	function writeToDB();
 	function deleteFromDB();
-	function validateRequestParams();
+	function validateRequestParams($paramsClass, $crudMode);
 }
 
 
