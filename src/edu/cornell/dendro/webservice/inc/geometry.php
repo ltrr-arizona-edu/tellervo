@@ -63,6 +63,29 @@ class geometry
 	{
 	}
 	
+	/**
+	 * Set the type of location the location field 
+	 *
+	 * @param unknown_type $value
+	 * @return unknown
+	 */
+	function setType($value)
+	{
+		$this->type = addslashes($value);
+		return true;
+	}
+	
+	function setPrecision($value)
+	{	
+		$this->precision = (int) $value;
+		return true;
+	}
+	
+	function setComment($value)
+	{
+		$this->comment = addslashes($value);
+		return true;
+	}
 
     /***********/
     /* GETTERS */

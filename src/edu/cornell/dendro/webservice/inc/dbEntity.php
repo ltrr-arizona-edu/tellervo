@@ -12,7 +12,7 @@
 
 require_once('dbhelper.php');
 require_once('dbsetup.php');
-require_once('geometry.php')
+require_once('geometry.php');
 
 /**
  * Base class for entities that are representations of database tables
@@ -418,29 +418,18 @@ class objectEntity extends dbEntity
 		return true;
 	}
 
-	/**
-	 * Set the type of location the location field 
-	 *
-	 * @param unknown_type $value
-	 * @return unknown
-	 */
-	function setLocationType($value)
+	function setLocationFromGeometry($geometry)
 	{
-		$this->locationType = addslashes($value);
-		return true;
+		if(!(isset($this->location)))
+		{
+			$this->location = new geometry;	
+		}
+		
+		$this->location->setGeometry($geometry);
+
 	}
-	
-	function setLocationPrecision($value)
-	{	
-		$this->locationPrecision = (int) $value;
-		return true;
-	}
-	
-	function setLocationComment($value)
-	{
-		$this->locationComment = addslashes($value);
-		return true;
-	}
+
+
 
 	/***********/
     /* GETTERS */
@@ -471,21 +460,7 @@ class objectEntity extends dbEntity
 		return $this->file;
 	}
 
-	function getLocationType()
-	{
-		return $this->locationType;
-	}
-	
-	function getLocationPrecision()
-	{	
-		return $this->locationPrecision();
-	}
-	
-	function getLocationComment()
-	{
-		return $this->locationComment();
-	}
-	
+
 	
 }
 
