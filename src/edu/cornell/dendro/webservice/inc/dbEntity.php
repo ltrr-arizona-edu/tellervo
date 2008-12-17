@@ -110,9 +110,7 @@ class dbEntity
      * @var Boolean
      */
     protected $canDelete = NULL;
-    
-    
-    
+
     
     /**
      * Constructor for this entity
@@ -138,22 +136,26 @@ class dbEntity
      *
      * @param Integer $theCode
      * @param String $theMessage
+     * @return Boolean 
      */
     protected function setErrorMessage($theCode, $theMessage)
     {
         // Set the error latest error message and code for this object.
         $this->lastErrorCode = $theCode;
         $this->lastErrorMessage = $theMessage;
+        return true;
     }
 
     /**
      * Set the text used in the XML for the parent of the inheriting entity
      *
      * @param String $theTag
+     * @return Boolean
      */
     private function setgroupXMLTag($theTag)
     {
 		$this->groupXMLTag = addslashes($theTag);
+		return true;
     }
     
     /**
@@ -161,11 +163,13 @@ class dbEntity
      *
      * @param String $identifier
      * @param String $domain
+     * @return Boolean
      */
     private function setID($identifier, $domain)
     {
     	$this->id = addslashes($identifier);
     	$this->identifierDomain = addslashes($domain);	
+    	return true;
     }
     
 
@@ -173,30 +177,36 @@ class dbEntity
      * Set the current entities name.
      *
      * @param String $theName
+     * @return Boolean
      */
     function setName($theName)
     {
         $this->name=addslashes($theName);
+        return true;
     }
     
 	/**
 	 * Set the timestamp for when this entity was created
 	 *
 	 * @param Timestamp $timestamp
+	 * @return Boolean
 	 */
     private function setCreatedTimestamp($timestamp)
     {
     	$this->createdTimeStamp=$timestamp;
+    	return true;
     }
     
     /**
      * Set the timestamp for when this entity was last modified
      *
      * @param Timestamp $timestamp
+     * @return Boolean
      */
     private function setLastModifiedTimestamp($timestamp)
     {
     	$this->lastModifiedTimeStamp=$timestamp;
+    	return true;
     }
     
     
@@ -291,13 +301,6 @@ class dbEntity
             return FALSE;
         }
         return TRUE; 
-    }
-
-    function getLatitudeFromGeometry($geometry)
-    {
-    	global $dbconn;
-    	
-    	
     }
 }
 
@@ -422,26 +425,51 @@ class objectEntity extends dbEntity
     /* GETTERS */
     /***********/ 	
 
+	/**
+	 * Get the type of object 
+	 *
+	 * @return String
+	 */
 	function getType()
 	{
 		return $this->type;
 	}
 	
+	/**
+	 * Get the description of this object
+	 *
+	 * @return String
+	 */
 	function getDescription()
 	{
 		return $this->description;
 	}
 	
+	/**
+	 * Get the name of the creator of this object
+	 *
+	 * @return String
+	 */
 	function getCreator()
 	{
 		return $this->creator;
 	}
 	
+	/**
+	 * Get the name of the owner of this object
+	 *
+	 * @return String
+	 */
 	function getOwner()
 	{	
 		return $this->owner;
 	}
 	
+	/**
+	 * Get the URL of the associated file of this object
+	 *
+	 * @return unknown
+	 */
 	function getFile()
 	{
 		return $this->file;
@@ -454,14 +482,59 @@ class objectEntity extends dbEntity
 
 class elementEntity extends dbEntity
 {
-	protected $taxonID = NULL;
+	/**
+	 * Taxonic information about this element
+	 *
+	 * @var Integer
+	 */
+	protected $taxon = NULL;
+	/**
+	 * Whether this element is original, a repair, or later addition
+	 *
+	 * @var String
+	 */
 	protected $authenticity = NULL;
+	/**
+	 * Shape of this element
+	 *
+	 * @var String
+	 */
 	protected $shape = NULL;
+	/**
+	 * Diameter of this element
+	 *
+	 * @var Double
+	 */
 	protected $diameter = NULL;
+	/**
+	 * Height of this element
+	 *
+	 * @var Double
+	 */
 	protected $height = NULL;
+	/**
+	 * Width of this element
+	 *
+	 * @var Double
+	 */
 	protected $width = NULL;
+	/**
+	 * Depth of this element here...
+	 *
+	 * @var Double
+	 */
 	protected $depth = NULL;
+	/**
+	 * Type of element
+	 *
+	 * @var String
+	 */
 	protected $type = NULL;
+	/**
+	 * Associate file URL
+	 *
+	 * @var String
+	 */
 	protected $file = NULL;
 	/**
 	 * Geometry object representing the location 
@@ -469,9 +542,23 @@ class elementEntity extends dbEntity
 	 * @var Geometry
 	 */
 	var $location = NULL;
-
+	/**
+	 * Processing (carved, sawn etc) rafting marks
+	 *
+	 * @var String
+	 */
 	protected $processing = NULL;
+	/**
+	 * Carpenter marks
+	 *
+	 * @var String
+	 */
 	protected $marks = NULL;
+	/**
+	 * Description of the element
+	 *
+	 * @var String
+	 */
 	protected $description = NULL;
 	
 	
@@ -479,90 +566,175 @@ class elementEntity extends dbEntity
     {  
         $groupXMLTag = "elements";
         parent::__construct($groupXMLTag); 
-		$this->location = new geometry;	 	
+		$this->location = new geometry;	
+		$this->taxon = new taxon; 	
 	}
 
 	/***********/
     /* SETTERS */
     /***********/ 	
 	
-	function setTaxonID($value)
-	{
-		$this->taxonID = (int) $value;
-	}
-	
+	/**
+	 * Set authenticity of element to original; repair; later addition
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
 	function setAuthenticity($value)
 	{
-		$this->authenticity = addslashes($value);
+		if( (strtolower($value=='original')) || (strtolower($value)=='repair') || (strtolower($value)=='later addition'))
+		{
+			$this->authenticity = strtolower($value);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
+	/**
+	 * Set the shape of this element
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
 	function setShape($value)
 	{
 		$this->shape = addslashes($value);
+		return true;
 	}
 	
-	function setDiameter($value)
+	/**
+	 * Set the diameter of this element
+	 *
+	 * @param Double $value
+	 * @return Boolean
+	 */
+	function setDiameter($diameter)
 	{
 		$this->diameter = (double) $diameter;
+		return true;
 	}
 	
+	/**
+	 * Set the height of this element
+	 *
+	 * @param Double $height
+	 * @return Boolean
+	 */
+	function setHeight($height)
+	{
+		$this->height = (double) $height;
+		return true;
+	}
+	
+	/**
+	 * Set the dimensions of this element
+	 *
+	 * @param Double $height
+	 * @param Double $width
+	 * @param Double $depth
+	 * @return Boolean
+	 */
 	function setDimensions($height, $width, $depth)
 	{
 		$this->height = (double) $height;
 		$this->width = (double) $width;
 		$this->depth = (double) $depth;
+		return true;
 	}
 	
-	function setType($value)
+	/**
+	 * Set the type of this element
+	 *
+	 * @param String $type
+	 * @return Boolean
+	 */
+	function setType($type)
 	{
-		$this->type = addslashes($value);
+		$this->type = addslashes($type);
+		return true;
 	}
 	
+	/**
+	 * Set the associated file
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
 	function setFile($value)
 	{
 		$this->file = addslashes($file);
+		return true;
 	}
-			
+
+	/**
+	 * Set the processing (carved, sawn etc) rafting marks
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
 	function setProcessing($value)
 	{
 		$this->processing = addslashes($value); 
+		return true;
 	}
 	
+	/**
+	 * Set the carpenter marks and inscriptions
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
 	function setMarks($value)
 	{
 		$this->marks = addslashes($value);
+		return true;
 	}
 	
+	/**
+	 * Set the description of this element
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
 	function setDescription($value)
 	{
 		$this->description = addslashes($value);
+		return true;
 	}
 	
 
 	/***********/
     /* GETTERS */
     /***********/ 	
-
-	/**
-	 * Get the Taxon
-	 *
-	 * @return unknown
-	 */
-	function getTaxonID()
-	{
-		return $this->taxonID;
-	}
 	
+	/**
+	 * Get the authenticity of this element
+	 *
+	 * @return String
+	 */
 	function getAuthenticity()
 	{
 		return $this->authenticity;
 	}
 
+	/**
+	 * Get the shape of this element
+	 *
+	 * @return String
+	 */
 	function getShape()
 	{
 		return $this->shape;
 	}
 	
+	/**
+	 * Get the diameter of this element
+	 *
+	 * @return Double
+	 */
 	function getDiameter()
 	{
 		return $this->diameter;
@@ -591,26 +763,51 @@ class elementEntity extends dbEntity
 		}
 	}
 	
+	/**
+	 * Get the element type
+	 *
+	 * @return String
+	 */
 	function getType()
 	{
 		return $this->type;
 	}
 	
+	/**
+	 * Get the URL of the associated file
+	 *
+	 * @return String
+	 */
 	function getFile()
 	{
 		return $this->file;
 	}
 	
+	/**
+	 * Get the processing marks
+	 *
+	 * @return String
+	 */
 	function getProcessing()
 	{
 		return $this->processing; 
 	}
 	
+	/**
+	 * Get the carpenter marks
+	 *
+	 * @return String
+	 */
 	function getMarks()
 	{
 		return $this->marks;
 	}
 	
+	/**
+	 * Get the description of this element
+	 *
+	 * @return String
+	 */
 	function getDescription()
 	{
 		return $this->description = addslashes();
@@ -622,12 +819,205 @@ class elementEntity extends dbEntity
 
 class sampleEntity extends dbEntity
 {
+	/**
+	 * Type of sample 
+	 *
+	 * @var String
+	 */
+	protected $type = NULL;
+	/**
+	 * Date the sample was taken
+	 *
+	 * @var ISODate
+	 */
+	protected $samplingDate = NULL;
+	/**
+	 * Associated file URL
+	 *
+	 * @var String
+	 */
+	protected $file = NULL;
+	/**
+	 * Position of the sample in the element
+	 *
+	 * @var String
+	 */
+	protected $position = NULL;
+	/**
+	 * State of the material (dry, wet, conserved etc)
+	 *
+	 * @var String
+	 */
+	protected $state = NULL;
+	/**
+	 * Presence of knots
+	 *
+	 * @var Boolean
+	 */
+	protected $knots = NULL;
+	/**
+	 * Description of the sample
+	 *
+	 * @var String
+	 */
+	protected $description = NULL;
+	
+	
     function __construct()
     {  
         $groupXMLTag = "samples";
         parent::__construct($groupXMLTag);  	
 	}	
 	
+	/***********/
+    /* SETTERS */
+    /***********/ 
+
+	/**
+	 * Set the sample type
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
+	function setType($value)
+	{
+		$this->type = addslashes($value);
+		return true;
+	}
+	
+	/**
+	 * Set the date that this sample was taken on
+	 * @todo check that the passed date is valid ISO8601
+	 * 
+	 * @param ISODate $date
+	 * @return Boolean
+	 */
+	function setSamplingDate($date)
+	{
+		$this->samplingDate=$date;
+		return true;
+	}
+	
+	/**
+	 * Set the position that the sample was in the element
+	 *
+	 * @param String $position
+	 * @return Boolean
+	 */
+	function setPosition($position)
+	{
+		$this->position = addslashes($position);
+		return true;
+	}
+	
+	/**
+	 * Set the state of the sample (dry, wet, conserved etc)
+	 *
+	 * @param String $state
+	 * @return Boolean
+	 */
+	function setState($state)
+	{
+		$this->state = addslashes($state);
+		return true;	
+	}
+	
+	/**
+	 * Set whether there are knots present
+	 *
+	 * @param Boolean $value
+	 * @return Boolean
+	 */
+	function setKnots($value)
+	{
+		if(formatBool($value)=='error')
+		{
+			$this->setErrorMessage(901, 'Knots field data type not recognised');	
+			return FALSE;
+		}
+		else
+		{
+			$this->knots = $value;
+			return TRUE;		
+		}
+	}
+	
+	/**
+	 * Set the description of the sample
+	 *
+	 * @param String $description
+	 * @return Boolean
+	 */
+	function setDescription($description)
+	{
+		$this->description = addslashes($description);
+		return true;
+	}
+	
+	
+	/***********/
+    /* GETTERS */
+    /***********/  	
+	
+	/**
+	 * Get the type of sample
+	 *
+	 * @return String
+	 */
+	function getType()
+	{
+		return $this->type;	
+	}
+	
+	/**
+	 * Get the date the sample was taken
+	 *
+	 * @return ISODate
+	 */
+	function getSamplingDate()
+	{
+		return $this->samplingDate;	
+	}
+	
+	/**
+	 * Get the position of the sample in the element
+	 *
+	 * @return String
+	 */
+	function getPosition()
+	{
+		return $this->position;
+	}
+	
+	/**
+	 * Get the state the sample is in (wet, dry etc)
+	 *
+	 * @return String
+	 */
+	function getState()
+	{
+		return $this->state;
+	}
+	
+	/**
+	 * Does the sample have knots?
+	 *
+	 * @return Boolean
+	 */
+	function getKnots()
+	{
+		return $this->knots;
+	}
+	
+	/**
+	 * Get the sample description
+	 *
+	 * @return String
+	 */
+	function getDescription()
+	{
+		return $this->description;
+	}
 }
 
 class radiusEntity extends dbEntity
@@ -758,45 +1148,128 @@ class radiusEntity extends dbEntity
 		}
 	}
 	
+	/**
+	 * Set whether the bark is present
+	 *
+	 * @param Boolean $value
+	 * @retun Boolean
+	 */
 	function setBarkPresent($value)
 	{
-		$this->barkPresent = $value;
+		$bark = formatBool($value);
+		if($bark=='error')
+		{
+			return false;
+		}
+		else
+		{
+			$this->barkPresent = $bark;
+			return true;
+		}
 	}
 	
+	/**
+	 * Set the number of sapwood rings
+	 *
+	 * @param Integer $value
+	 * @return Boolean
+	 */
 	function setNumberOfSapwoodRings($value)
 	{
-		$this->numberOfSapwoodRings = $value;
+		if ( (gettype($value)='integer') || (gettype($value)='double') )
+		{		
+			$this->numberOfSapwoodRings = (int) $value;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
+	/**
+	 * Set the last ring under the bark information
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
 	function setLastRingUnderBark($value)
 	{
 		$this->lastRingUnderBark = $value;
+		return true;
 	}
 	
+	/**
+	 * Set the number of missing heartwood rings to the pith
+	 *
+	 * @param Integer $value
+	 * @return Boolean
+	 */
 	function setMissingHeartwoodRingsToPith($value)
 	{
-		$this->missingHeartwoodRingsToPith = $value;
+		if ( (gettype($value)='integer') || (gettype($value)='double') )
+		{
+			$this->missingHeartwoodRingsToPith = (int) $value;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
+	/**
+	 * Set the foundation on which the number of missing heartwood rings was estimated
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
 	function setMissingHeartwoodRingsToPithFoundation($value)
 	{
-		$this->missingHeartwoodRingsToPithFoundation = $value;
+		$this->missingHeartwoodRingsToPithFoundation = addslashes($value);
+		return true;
 	}
 	
-	function setMissingSapwoodRingsToPith($value)
+	/**
+	 * Set the number of missing sapwood rings to the bark
+	 *
+	 * @param Integer $value
+	 * @return Boolean
+	 */
+	function setMissingSapwoodRingsToBark($value)
 	{
-		$this->missingSapwoodRingsToPith = $value;
+		if ( (gettype($value)='integer') || (gettype($value)='double') )
+		{
+			$this->missingSapwoodRingsToBark = (int) $value;
+			return true;
+		}
+		else
+		{
+			return false;
+		}	
 	}
 	
-	function setMissingSapwoodRingsToPithFoundation($value)
+	/**
+	 * Set the foundation on which the number of missing sapwood rings was estimated
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */	
+	function setMissingSapwoodRingsToBarkFoundation($value)
 	{
-		$this->missingSapwoodRingsToPithFoundation = $value;
+		$this->missingSapwoodRingsToBarkFoundation = addslashes($value);
+		return true;
 	}
 	
      /**********/
     /* GETTERS */
     /***********/   	
 
+	/**
+	 * Get whether the pith is present
+	 *
+	 * @return Boolean
+	 */
 	function getPithPresent()
 	{
 		return $this->pithPresent;		
@@ -807,44 +1280,84 @@ class radiusEntity extends dbEntity
 		return $this->sampleID;
 	}
 	
+	/**
+	 * Get whether the sapwood is n/a, absent, complete or incomplete
+	 *
+	 * @return String
+	 */
 	function getSapwood()
 	{
 		return $this->sapwood;
 	}
 	
+	/**
+	 * Is the bark present?
+	 *
+	 * @return Boolean
+	 */
 	function getBarkPresent()
 	{
 		return $this->barkPresent;
 	}
 	
+	/**
+	 * Get the number of sapwood rings
+	 *
+	 * @return Integer
+	 */
 	function getNumberOfSapwoodRings()
 	{
 		return $this->numberOfSapwoodRings;
 	}
 	
+	/**
+	 * Get information about the last ring under the bark
+	 *
+	 * @return String
+	 */
 	function getLastRingUnderBark()
 	{
 		return $this->lastRingUnderBark;
 	}
 	
+	/**
+	 * The number of missing heartwood rings to the pith
+	 *
+	 * @return Integer
+	 */
 	function getMissingHeartwoodRingsToPith()
 	{
 		return $this->missingHeartwoodRingsToPith;
 	}
 
+	/**
+	 * The foundation by which the number of missing heartwood rings was estimated
+	 *
+	 * @return String
+	 */
 	function getMissingHeartwoodRingsToPithFoundation()
 	{
 		return $this->missingHeartwoodRingsToPithFoundation;
 	}
 	
-	function getMissingSapwoodRingsToPith()
+	/**
+	 * The number of missing sapwood rings
+	 *
+	 * @return Integer
+	 */
+	function getMissingSapwoodRingsToBark()
 	{
-		return $this->missingSapwoodRingsToPith;
+		return $this->missingSapwoodRingsToBark;
 	}
 	
-	function getMissingSapwoodRingsToPithFoundation()
+	/**
+	 * The foundation by which the number of missing sapwood ring was estimated
+	 *
+	 * @return unknown
+	 */
+	function getMissingSapwoodRingsToBarkFoundation()
 	{
-		return $this->missingSapwoodRingsToPithFoundation;
+		return $this->missingSapwoodRingsToBarkFoundation;
 	}	
 	
 }
