@@ -29,6 +29,11 @@ class sample extends sampleEntity implements IDBAccessor
     	parent::__construct($groupXMLTag);
     }
 
+    public function __destruct()
+    {
+
+    }
+    
     /***********/
     /* SETTERS */
     /***********/
@@ -144,6 +149,7 @@ class sample extends sampleEntity implements IDBAccessor
                 }
                 if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
                 {
+                    echo $paramsObj->id;
                     $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer.  It is currently a ".gettype($paramsObj->id));
                     return false;
                 }

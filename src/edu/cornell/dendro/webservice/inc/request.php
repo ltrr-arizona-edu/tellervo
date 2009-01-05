@@ -182,7 +182,7 @@ class request
 	                {
 	                	case 'sample':
 	                		$newxml = simplexml_load_string("<tds:sample><identifier domain=\"local\">".$item['id']."</identifier></tds:sample>");
-	                		$myParamObj = new sampleParameters($this->metaHeader, $this->auth, $newxml, $parentID);
+	                		$myParamObj = new sampleParameters($newxml, $parentID);
                                         break;
 	                	default:
 	                		echo "error";

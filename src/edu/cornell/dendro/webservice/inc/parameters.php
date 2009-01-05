@@ -56,13 +56,14 @@ class sampleParameters extends sampleEntity implements IParams
     function __construct($xmlrequest, $parentID=NULL)
     {
         $this->xmlrequest = $xmlrequest;
+        $this->setParamsFromXMLRequest();
     }
 	
 	
-	function setParamsFromXMLRequest()
-	{
-		
-	}
+    function setParamsFromXMLRequest()
+    {
+        if(isset($this->xmlrequest->identifier))                  $this->setID((int) $this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
+    }
 }
 
 class radiusParameters extends radiusEntity implements IParams
@@ -165,7 +166,7 @@ class treeParameters extends parameters
     }
 }
 
-class sampleParameters extends parameters
+/*class sampleParameters extends parameters
 {
     var $id             = NULL;
     var $treeID         = NULL;
@@ -189,7 +190,7 @@ class sampleParameters extends parameters
         if(isset($this->xmlrequest->radius))             $this->hasChild          = True;
     }
 }
-
+ */
 
 
 

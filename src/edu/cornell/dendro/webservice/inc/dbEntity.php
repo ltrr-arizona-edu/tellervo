@@ -131,13 +131,13 @@ class dbEntity
      *
      * @param String $groupXMLTag
      */
-    protected function __construct($groupXMLTag)
+    public function __construct($groupXMLTag)
     {
     	$this->setgroupXMLTag($groupXMLTag);
     }
 
     
-    protected function __destruct()
+    public function __destruct()
     {
     }    
     
@@ -180,9 +180,9 @@ class dbEntity
      * @param String $domain
      * @return Boolean
      */
-    private function setID($identifier, $domain)
+    protected function setID($identifier, $domain)
     {
-    	$this->id = addslashes($identifier);
+    	$this->id = $identifier;
     	$this->identifierDomain = addslashes($domain);	
     	return true;
     }

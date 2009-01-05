@@ -17,7 +17,6 @@ require_once("inc/errors.php");
 require_once("inc/request.php");
 require_once("inc/parameters.php");
 require_once("inc/output.php");
-
 require_once("inc/site.php");
 require_once("inc/subSite.php");
 require_once("inc/element.php");
@@ -43,7 +42,7 @@ else
 {
     trigger_error('902'.'No XML request file given', E_USER_ERROR);
     $myMetaHeader->setRequestType("help");
-    writeHelpOutput($metaHeader);
+    writeHelpOutput($myMetaHeader);
     die();
 }
 
@@ -241,7 +240,7 @@ elseif($myMetaHeader->status != "Error")
         }
         elseif( ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete'))
         {
-            $myID = $paramObj->id;
+            $myID = $paramObj->getID();
         }
 
         if( ($myRequest->getCrudMode()=='create') || ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete'))
@@ -331,7 +330,7 @@ elseif($myMetaHeader->status != "Error")
         {
             if($myMetaHeader->status != "Error")
             {
-                $success = $myObject->setParamsFromDB($paramObj->id);
+                $success = $myObject->setParamsFromDB($paramObj->getID());
                 $success2 = $myObject->setChildParamsFromDB();
                 if(!($success && $success2))
                 {
