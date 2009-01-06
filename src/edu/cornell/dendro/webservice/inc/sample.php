@@ -43,7 +43,8 @@ class sample extends sampleEntity implements IDBAccessor
         // Set the current objects parameters from the database
 
         global $dbconn;
-        
+        global $domain;    
+
         $this->setID($theID);
         $sql = "select * from tblsample where sampleid='$theID'";
         $dbconnstatus = pg_connection_status($dbconn);
@@ -62,7 +63,7 @@ class sample extends sampleEntity implements IDBAccessor
                 // Set parameters from db
                 $row = pg_fetch_array($result);
                 $this->setName($row['name']);
-                $this->setID($row['sampleid'], $row['domain']);
+                $this->setID($row['sampleid'], $domain);
                 $this->setSamplingDate($row['samplingdate']);
 		        $this->setCreatedTimestamp($row['createdtimestamp']);
                 $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
@@ -142,18 +143,12 @@ class sample extends sampleEntity implements IDBAccessor
         switch($crudMode)
         {
             case "read":
-                if($paramsObj->id==NULL)
+                if($paramsObj->getID()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a sample.");
                     return false;
                 }
-                if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
-                {
-                    echo $paramsObj->id;
-                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer.  It is currently a ".gettype($paramsObj->id));
-                    return false;
-                }
-                if(!($paramsObj->id>0) && !($paramsObj->id==NULL))
+                if(!($paramsObj->getID()>0) && !($paramsObj->getID()==NULL))
                 {
                     $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer.");
                     return false;
@@ -161,14 +156,14 @@ class sample extends sampleEntity implements IDBAccessor
                 return true;
          
             case "update":
-                if($paramsObj->id == NULL)
+                if($paramsObj->getID() == NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
                     return false;
                 }
                 if(($paramsObj->name==NULL) 
-                    && ($paramsObj->samplingDate==NULL) 
-                    && ($paramsObj->sampleType==NULL) 
+                    && ($paramsObj->getSamplingDate()==NULL) 
+                    && ($paramsObj->getType()==NULL) 
                     && ($paramsObj->hasChild!=True))
                 {
                     $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
@@ -177,7 +172,7 @@ class sample extends sampleEntity implements IDBAccessor
                 return true;
 
             case "delete":
-                if($paramsObj->id == NULL) 
+                if($paramsObj->getID() == NULL) 
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
                     return false;
@@ -187,7 +182,7 @@ class sample extends sampleEntity implements IDBAccessor
             case "create":
                 if($paramsObj->hasChild===TRUE)
                 {
-                    if($paramsObj->id == NULL) 
+                    if($paramsObj->getID() == NULL) 
                     {
                         $this->setErrorMessage("902","Missing parameter - 'sampleid' field is required when creating a radius.");
                         return false;
@@ -339,14 +334,14 @@ class sample extends sampleEntity implements IDBAccessor
                     $xml.= "<tridas:genericField name=\"canDelete\" type=\"boolean\">".fromPHPtoStringBool($this->getPermission("Delete"))."</tridas:genericField ";
                 } 
               
-                if(isset($this->getName()))                        $xml.= "<tridas:genericField name=\"name\">".escapeXMLChars($this->getName())."</tridas:genericField>\n";
+                if($this->getName()!=NULL)                        $xml.= "<tridas:genericField name=\"name\">".escapeXMLChars($this->getName())."</tridas:genericField>\n";
                 
                 if($format!="minimal")
                 {
-                    if(isset($this->getSamplingDate()))           $xml.= "<tridas:samplingDate\">".$this->getSamplingDate()."</samplingDate>\n";
-                    if(isset($this->getType()))                   $xml.= "<tridas:type>".$this->getType()."</tridas:genericField>\n";
-                    if(isset($this->getCreatedTimeStamp()))       $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimestamp()."</tridas:genericField>\n";
-                    if(isset($this->getLastModifiedTimestamp()))  $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimestamp()."</tridas:genericField>\n";
+                    if($this->getSamplingDate()!=NULL)           $xml.= "<tridas:samplingDate\">".$this->getSamplingDate()."</samplingDate>\n";
+                    if($this->getType()!=NULL)                   $xml.= "<tridas:type>".$this->getType()."</tridas:genericField>\n";
+                    if($this->getCreatedTimeStamp()!=NULL)       $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimestamp()."</tridas:genericField>\n";
+                    if($this->getLastModifiedTimestamp()!=NULL)  $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimestamp()."</tridas:genericField>\n";
                 }
             }
 
@@ -391,17 +386,17 @@ class sample extends sampleEntity implements IDBAccessor
                 {
                     // New record
                     $sql = "insert into tblsample ( ";
-                        if(isset($this->getName()))                    $sql.="name, ";
+                        if($this->getName()!=NULL)                    $sql.="name, ";
                         //if(isset($this->treeID))                      $sql.="treeid, ";
-                        if(isset($this->getSamplingDate()))            $sql.="samplingdate, ";
-                        if(isset($this->getType()))                    $sql.="sampletype, ";
+                        if($this->getSamplingDate()!=NULL)            $sql.="samplingdate, ";
+                        if($this->getType()!=NULL)                    $sql.="sampletype, ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                        if(isset($this->getName()))                   $sql.="'".$this->getName()          ."', ";
+                        if($this->getName()!=NULL)                   $sql.="'".$this->getName()          ."', ";
                         //if(isset($this->treeID))                      $sql.="'".$this->treeID         ."', ";
-                        if(isset($this->getSamplingDate()))           $sql.="'".$this->getSamplingDate()  ."', ";
-                        if(isset($this->getType()))                   $sql.="'".$this->getType()          ."', ";
+                        if($this->getSamplingDate()!=NULL)           $sql.="'".$this->getSamplingDate()  ."', ";
+                        if($this->getType()!=NULL)                   $sql.="'".$this->getType()          ."', ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
@@ -411,10 +406,10 @@ class sample extends sampleEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql.="update tblsample set ";
-                        if(isset($this->getName()))          $sql.="name='"           .$this->getName()          ."', ";
+                        if($this->getName()!=NULL)          $sql.="name='"           .$this->getName()          ."', ";
                         //if(isset($this->treeID))           $sql.="treeID='"         .$this->treeID                                          ."', ";
-                        if(isset($this->getSamplingDate()))  $sql.="samplingdate='"   .$this->getSamplingDate()  ."', ";
-                        if(isset($this->getType()))          $sql.="sampletype='"     .$this->getType()          ."', ";
+                        if($this->getSamplingDate()!=NULL)  $sql.="samplingdate='"   .$this->getSamplingDate()  ."', ";
+                        if($this->getType()!=NULL)          $sql.="sampletype='"     .$this->getType()          ."', ";
                     $sql = substr($sql, 0, -2);
                     $sql.= " where sampleid='".$this->getID()."'";
                 }
