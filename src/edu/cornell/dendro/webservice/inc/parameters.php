@@ -115,6 +115,7 @@ class radiusParameters extends radiusEntity implements IParams
     {
         $this->sampleID = $parentID;
         $this->xmlrequest = $xmlrequest;
+        $this->setParamsFromXMLRequest();
     }
     
     function setParamsFromXMLRequest()
