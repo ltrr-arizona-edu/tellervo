@@ -28,7 +28,8 @@ class objectParameters extends objectEntity implements IParams
     
     function setParamsFromXMLRequest()
     {
-
+        if(isset($this->xmlrequest->identifier))         $this->setID($this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
+    	
     }	
 }
 
@@ -44,6 +45,7 @@ class elementParameters extends elementEntity implements IParams
 	
 	function setParamsFromXMLRequest()
 	{
+        if(isset($this->xmlrequest->identifier))         $this->setID($this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
 		
 	}
 }
@@ -62,7 +64,11 @@ class sampleParameters extends sampleEntity implements IParams
 	
     function setParamsFromXMLRequest()
     {
-        if(isset($this->xmlrequest->identifier))                  $this->setID((int) $this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
+        if(isset($this->xmlrequest->identifier))         $this->setID($this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
+        if(isset($this->xmlrequest->name))               $this->setName($this->xmlrequest->name);
+        if(isset($this->xmlrequest->samplingDate))       $this->setSamplingDate($this->xmlrequest->samplingDate);
+        if(isset($this->xmlrequest->sampleType))         $this->setType($this->xmlrequest->sampleType);
+        if(isset($this->xmlrequest->radius))             $this->hasChild  = True;
     }
 }
 
@@ -79,9 +85,9 @@ class radiusParameters extends radiusEntity implements IParams
     
     function setParamsFromXMLRequest()
     {
-        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest->name))                  $this->name         = addslashes($this->xmlrequest->name);
-        if(isset($this->xmlrequest->measurement))           $this->hasChild     = True;
+        if(isset($this->xmlrequest->identifier))         $this->setID($this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
+        if(isset($this->xmlrequest->name))               $this->setName($this->xmlrequest->name);
+        if(isset($this->xmlrequest->measurement))        $this->hasChild     = True;
     }
 }
         
@@ -93,7 +99,7 @@ class radiusParameters extends radiusEntity implements IParams
  *
  */
 
-
+/*
 class parameters 
 {
     var $xmlrequest                 = NULL;
@@ -165,36 +171,6 @@ class treeParameters extends parameters
         }
     }
 }
-
-/*class sampleParameters extends parameters
-{
-    var $id             = NULL;
-    var $treeID         = NULL;
-    var $name           = NULL;
-    var $samplingDate   = NULL;
-    var $sampleType     = NULL;
-
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        $this->treeID = $parentID;
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest->identifier))         $this->id                = (int)      $this->xmlrequest->identifier;
-        if(isset($this->xmlrequest->name))               $this->name              = addslashes($this->xmlrequest->name);
-        if(isset($this->xmlrequest->samplingDate))       $this->samplingDate      = addslashes($this->xmlrequest->samplingDate);
-        if(isset($this->xmlrequest->sampleType))         $this->sampleType        = addslashes($this->xmlrequest->sampleType);
-        if(isset($this->xmlrequest->radius))             $this->hasChild          = True;
-    }
-}
- */
-
-
-
-
 
 class measurementParameters extends parameters
 {
@@ -647,4 +623,5 @@ class searchParameters extends parameters
         }
     }
 }
+*/
 ?>

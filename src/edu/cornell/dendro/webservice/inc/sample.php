@@ -44,7 +44,7 @@ class sample extends sampleEntity implements IDBAccessor
 
         global $dbconn;
         
-        $this->id=$theID;
+        $this->setID($theID);
         $sql = "select * from tblsample where sampleid='$theID'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -61,11 +61,11 @@ class sample extends sampleEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->name = $row['name'];
-                $this->id = $row['sampleid'];
-                $this->samplingDate = $row['samplingdate'];
-		        $this->createdTimeStamp = $row['createdtimestamp'];
-                $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
+                $this->setName($row['name']);
+                $this->setID($row['sampleid'], $row['domain']);
+                $this->setSamplingDate($row['samplingdate']);
+		        $this->setCreatedTimestamp($row['createdtimestamp']);
+                $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
             }
         }
         else
@@ -85,7 +85,7 @@ class sample extends sampleEntity implements IDBAccessor
 
         global $dbconn;
 
-        $sql  = "select radiusid from tblradius where sampleid='".$this->id."'";
+        $sql  = "select radiusid from tblradius where sampleid='".$this->getID()."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -116,11 +116,11 @@ class sample extends sampleEntity implements IDBAccessor
     private function setParamsFromParamsClass($paramsClass)
     {
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
-        if(isset($paramsClass->id))                            $this->id                               = $paramsClass->id;                      
-        if(isset($paramsClass->treeID))                        $this->treeID                           = $paramsClass->treeID;                      
-        if(isset($paramsClass->name))                          $this->name                             = $paramsClass->name;                      
-        if(isset($paramsClass->samplingDate))                  $this->samplingDate                     = $paramsClass->samplingDate;            
-        if(isset($paramsClass->sampleType))                    $this->sampleType                       = $paramsClass->sampleType;              
+        if(isset($paramsClass->id))               $this->setID($paramsClass->id);                      
+        //if(isset($paramsClass->treeID))           $this->treeID                           = $paramsClass->treeID;                      
+        if(isset($paramsClass->name))             $this->setName($paramsClass->name);                      
+        if(isset($paramsClass->samplingDate))     $this->setSamplingDate($paramsClass->samplingDate);            
+        if(isset($paramsClass->sampleType))       $this->setType($paramsClass->sampleType);              
         return true;
     }
 
@@ -241,7 +241,7 @@ class sample extends sampleEntity implements IDBAccessor
                 FROM tblsubsite 
                 INNER JOIN tbltree ON tblsubsite.subsiteid=tbltree.subsiteid
                 INNER JOIN tblsample ON tbltree.treeid=tblsample.treeid
-                where tblsample.sampleid='".$this->id."'";
+                where tblsample.sampleid='".$this->getID()."'";
 
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -252,7 +252,7 @@ class sample extends sampleEntity implements IDBAccessor
                 if(pg_num_rows($result)==0)
                 {
                     // No records match the id specified
-                    $this->setErrorMessage("903", "No match for sample id=".$this->id);
+                    $this->setErrorMessage("903", "No match for sample id=".$this->getID());
                     return FALSE;
                 }
                 else
@@ -327,26 +327,26 @@ class sample extends sampleEntity implements IDBAccessor
             if( ($parts=="all") || ($parts=="beginning"))
             {
                 $xml.= "<tridas:sample>\n";
-                $xml.= "<tridas:identifier domain=\"$domain\">".$this->id."</tridas:identifier>";
+                $xml.= "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>";
 
                 //$xml.= getResourceLinkTag("sample", $this->id)."\n ";
                 
                 // Include permissions details if requested
-                if($this->includePermissions===TRUE) 
+                if($this->getIncludePermissions()===TRUE) 
                 {
-                    $xml.= "<tridas:genericField name=\"canCreate\" type=\"boolean\">".fromPHPtoStringBool($this->canCreate)."</tridas:genericField ";
-                    $xml.= "<tridas:genericField name=\"canUpdate\" type=\"boolean\">".fromPHPtoStringBool($this->canUpdate)."</tridas:genericField ";
-                    $xml.= "<tridas:genericField name=\"canDelete\" type=\"boolean\">".fromPHPtoStringBool($this->canDelete)."</tridas:genericField ";
+                    $xml.= "<tridas:genericField name=\"canCreate\" type=\"boolean\">".fromPHPtoStringBool($this->getPermission("Create"))."</tridas:genericField ";
+                    $xml.= "<tridas:genericField name=\"canUpdate\" type=\"boolean\">".fromPHPtoStringBool($this->getPermission("Update"))."</tridas:genericField ";
+                    $xml.= "<tridas:genericField name=\"canDelete\" type=\"boolean\">".fromPHPtoStringBool($this->getPermission("Delete"))."</tridas:genericField ";
                 } 
               
-                if(isset($this->name))                        $xml.= "<tridas:genericField name=\"name\">".escapeXMLChars($this->name)."</tridas:genericField>\n";
+                if(isset($this->getName()))                        $xml.= "<tridas:genericField name=\"name\">".escapeXMLChars($this->getName())."</tridas:genericField>\n";
                 
                 if($format!="minimal")
                 {
-                    if(isset($this->samplingDate))            $xml.= "<tridas:samplingDate\">".$this->getSamplingDate()."</samplingDate>\n";
-                    if(isset($this->type))                    $xml.= "<tridas:type>".$this->getType()."</tridas:genericField>\n";
-                    if(isset($this->createdTimeStamp))        $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->createdTimeStamp."</tridas:genericField>\n";
-                    if(isset($this->lastModifiedTimeStamp))   $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->lastModifiedTimeStamp."</tridas:genericField>\n";
+                    if(isset($this->getSamplingDate()))           $xml.= "<tridas:samplingDate\">".$this->getSamplingDate()."</samplingDate>\n";
+                    if(isset($this->getType()))                   $xml.= "<tridas:type>".$this->getType()."</tridas:genericField>\n";
+                    if(isset($this->getCreatedTimeStamp()))       $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimestamp()."</tridas:genericField>\n";
+                    if(isset($this->getLastModifiedTimestamp()))  $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimestamp()."</tridas:genericField>\n";
                 }
             }
 
@@ -391,17 +391,17 @@ class sample extends sampleEntity implements IDBAccessor
                 {
                     // New record
                     $sql = "insert into tblsample ( ";
-                        if(isset($this->name))                        $sql.="name, ";
-                        if(isset($this->treeID))                      $sql.="treeid, ";
-                        if(isset($this->samplingDate))                $sql.="samplingDate, ";
-                        if(isset($this->sampleType))                  $sql.="sampletype, ";
+                        if(isset($this->getName()))                    $sql.="name, ";
+                        //if(isset($this->treeID))                      $sql.="treeid, ";
+                        if(isset($this->getSamplingDate()))            $sql.="samplingdate, ";
+                        if(isset($this->getType()))                    $sql.="sampletype, ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                        if(isset($this->name))                          $sql.="'".$this->name                                           ."', ";
-                        if(isset($this->treeID))                        $sql.="'".$this->treeID                                         ."', ";
-                        if(isset($this->samplingDate))                 $sql.="'".$this->samplingDate                                  ."', ";
-                        if(isset($this->sampleType))                  $sql.="'".$this->sampleType                                   ."', ";
+                        if(isset($this->getName()))                   $sql.="'".$this->getName()          ."', ";
+                        //if(isset($this->treeID))                      $sql.="'".$this->treeID         ."', ";
+                        if(isset($this->getSamplingDate()))           $sql.="'".$this->getSamplingDate()  ."', ";
+                        if(isset($this->getType()))                   $sql.="'".$this->getType()          ."', ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
@@ -411,12 +411,12 @@ class sample extends sampleEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql.="update tblsample set ";
-                        if(isset($this->name))                          $sql.="name='"                          .$this->name                                            ."', ";
-                        if(isset($this->treeID))                        $sql.="treeID='"                        .$this->treeID                                          ."', ";
-                        if(isset($this->samplingDate))                 $sql.="samplingDate='"                 .$this->samplingDate                                   ."', ";
-                        if(isset($this->sampleType))                  $sql.="sampletype='"                  .$this->sampleType                                    ."', ";
+                        if(isset($this->getName()))          $sql.="name='"           .$this->getName()          ."', ";
+                        //if(isset($this->treeID))           $sql.="treeID='"         .$this->treeID                                          ."', ";
+                        if(isset($this->getSamplingDate()))  $sql.="samplingdate='"   .$this->getSamplingDate()  ."', ";
+                        if(isset($this->getType()))          $sql.="sampletype='"     .$this->getType()          ."', ";
                     $sql = substr($sql, 0, -2);
-                    $sql.= " where sampleid='".$this->id."'";
+                    $sql.= " where sampleid='".$this->getID()."'";
                 }
 
                 // Run SQL command
@@ -448,9 +448,9 @@ class sample extends sampleEntity implements IDBAccessor
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
                     {
-                        $this->id=$row['sampleid'];   
-                        $this->createdTimeStamp=$row['createdtimestamp'];   
-                        $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
+                        $this->setID($row['sampleid'], $row['domain']);   
+                        $this->setCreatedTimestamp($row['createdtimestamp']);   
+                        $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);   
                     }
                 }
             }
@@ -486,7 +486,7 @@ class sample extends sampleEntity implements IDBAccessor
         }
 
         //Only attempt to run SQL if there are no errors so far
-        if($this->lastErrorCode == NULL)
+        if($this->getLastErrorCode() == NULL)
         {
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)

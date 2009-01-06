@@ -39,91 +39,91 @@ class dbEntity
 	 *
 	 * @var String
 	 */
-    protected $id = NULL;	
+    private $id = NULL;	
     
     /**
      * Domain from which this entities identifier was issued
      *
      * @var String
      */
-    protected $identifierDomain = NULL;
+    private $identifierDomain = NULL;
     
     /**
      * More information about the entity
      *
      * @var String
      */
-    protected $description = NULL;
+    private $description = NULL;
     
     /**
      * Name of this entity
      *
      * @var unknown_type
      */
-    protected $name = NULL;    
+    private $name = NULL;    
     
     /**
      * XML tag for this entities parent entity
      *
      * @var String
      */
-	protected $groupXMLTag = NULL; 
+	private $groupXMLTag = NULL; 
 	
 	/**
 	 * The last error associated with this entity
 	 *
 	 * @var String
 	 */
-    protected $lastErrorMessage = NULL;
+    private $lastErrorMessage = NULL;
     
     /**
      * The last error code associated with this entity
      *
      * @var Integer
      */
-    protected $lastErrorCode = NULL;
+    private $lastErrorCode = NULL;
     
     /**
      * When this entity was created
      *
      * @var Timestamp
      */
-    protected $createdTimeStamp = NULL;
+    private $createdTimeStamp = NULL;
     
     /**
      * When this entity was last modified
      *
      * @var Timestamp
      */
-    protected $lastModifiedTimeStamp = NULL;
+    private $lastModifiedTimeStamp = NULL;
     
     /**
      * Whether the permissions should also be included in the output
      * 
      * @var Boolean
      */
-    protected $includePermissions = FALSE;
+    private $includePermissions = FALSE;
     
     /**
      * Whether the user can create children of this entity
      *
      * @var Boolean
      */
-    protected $canCreate = NULL;
+    private $canCreate = NULL;
     
     /**
      * Whether the user can update this entity
      *
      * @var Boolean
      */
-    protected $canUpdate = NULL;
+    private $canUpdate = NULL;
     
     /**
      * Whether the user can delete this entity
      *
      * @var Boolean
      */
-    protected $canDelete = NULL;
+    private $canDelete = NULL;
 
     
     /**
@@ -166,7 +166,7 @@ class dbEntity
      * @param String $theTag
      * @return Boolean
      */
-    private function setgroupXMLTag($theTag)
+    protected function setgroupXMLTag($theTag)
     {
 		$this->groupXMLTag = addslashes($theTag);
 		return true;
@@ -180,7 +180,7 @@ class dbEntity
      * @param String $domain
      * @return Boolean
      */
-    protected function setID($identifier, $domain)
+    protected function setID($identifier, $domain=NULL)
     {
     	$this->id = $identifier;
     	$this->identifierDomain = addslashes($domain);	
@@ -194,7 +194,7 @@ class dbEntity
      * @param String $theName
      * @return Boolean
      */
-    function setName($theName)
+    protected function setName($theName)
     {
         $this->name=addslashes($theName);
         return true;
@@ -206,7 +206,7 @@ class dbEntity
 	 * @param Timestamp $timestamp
 	 * @return Boolean
 	 */
-    private function setCreatedTimestamp($timestamp)
+    protected function setCreatedTimestamp($timestamp)
     {
     	$this->createdTimeStamp=$timestamp;
     	return true;
@@ -218,7 +218,7 @@ class dbEntity
      * @param Timestamp $timestamp
      * @return Boolean
      */
-    private function setLastModifiedTimestamp($timestamp)
+    protected function setLastModifiedTimestamp($timestamp)
     {
     	$this->lastModifiedTimeStamp=$timestamp;
     	return true;
@@ -254,6 +254,16 @@ class dbEntity
     }
 
     /**
+     * Get the name for this database entity
+     *
+     * @return String
+     */
+    protected function getName()
+    {
+    	return $this->name;
+    }
+    
+    /**
      * Get the ID number for this database entity
      *
      * @return Integer
@@ -286,6 +296,16 @@ class dbEntity
         $error = $this->lastErrorMessage;
         return $error;
     }    
+    
+    /**
+     * Should permissions be included?
+     *
+     * @return Boolean
+     */
+    function getIncludePermissions()
+    {   	
+    	return $this->includePermissions;
+    }
     
     /**
      * Retrieve the relevant permissions for this class from the database 
@@ -323,12 +343,57 @@ class dbEntity
     	
     }
     
+    /**
+     * Get the type of class that this entity is
+     *
+     * @return String
+     */
     function getEntityType()
     {
         return get_class($this);
-
-
     }
+    
+    /**
+     * Get the timestamp for when this entity was created
+     *
+     * @return ISODate
+     */
+    protected function getCreatedTimestamp()
+    {
+    	return $this->createdTimeStamp;
+    }
+    
+    /**
+     * Get the timestamp for when this entity was last modified
+     *
+     * @return ISODate
+     */
+    protected function getLastModifiedTimestamp()
+    {
+    	return $this->lastModifiedTimeStamp;
+    }
+    
+    /**
+     * Find out whether the user has permission to create, delete or update this entity
+     *
+     * @param String $type one of create, delete or update
+     * @return Boolean
+     */
+    protected function getPermission($type)
+    {
+    	switch(strtolower($type))
+    	{
+    		case "create":
+    			return $this->canCreate;
+    		case "delete":
+    			return $this->canDelete;
+    		case "update":
+    			return $this->canUpdate;
+    		default:
+    			return false;		
+    	}
+    }
+    
 }
 
 class objectEntity extends dbEntity
