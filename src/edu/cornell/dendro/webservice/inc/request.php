@@ -5,6 +5,9 @@
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  * 
+ * This class contains the logic for extracting the meaning from the
+ * user request and for storing these requests in parameter classes.
+ * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
  * *******************************************************************
