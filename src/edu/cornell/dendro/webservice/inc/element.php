@@ -14,10 +14,9 @@ require_once('inc/note.php');
 require_once('inc/sample.php');
 require_once('inc/taxon.php');
 
-class element 
+class element extends elementEntity implements IDBAccessor
 {
     var $id = NULL;
-    var $taxonID = NULL;
     var $originalTaxonName = NULL;
     var $subSiteID = NULL;
     var $name = NULL;
@@ -46,96 +45,21 @@ class element
     /***************/
     
 
-	/**
-     * Constructor for this class.
-     *
-     * @return element
-     */
-    function element()
-    { 
+    public function __construct()
+    {
+        $groupXMLTag = "element";
+    	parent::__construct($groupXMLTag);
     }
 
+    public function __destruct()
+    {
+
+    }
     /***********/
     /* SETTERS */
     /***********/
 
-    
-    /**
-     * // Set the current elements name
-     *
-     * @param String $theName
-     */
-    function setName($theName)
-    {  
-        $this->name=$theName;
-    }
-    
-    /**
-     * Set the current elements taxonid
-     *
-     * @param Integer $theTaxonID
-     */
-    function setTaxonID($theTaxonID)
-    {
-        $this->taxonID=$theTaxonID;
-    }
-
-    /**
-     * Set the current elements subsite ID
-     *
-     * @param Integer $theSubSiteID
-     */
-    function setSubSiteID($theSubSiteID)
-    {
-        $this->subSiteID=$theSubSiteID;
-    }
-    
-    /**
-     * Set the current elements latitude.  
-     * Deprecated - use setPrecision instead
-     *
-     * @param Float $theLatitude
-     */
-    function setLatitude($theLatitude)
-    { 
-        $this->latitude= (float) $theLatitude;
-    }
-
-     /**
-     * Set the current objects longitude
-     * Deprecated - use setPrecision instead
-     *
-     * @param Float $theLongitude 
-     */
-    function setLongitude($theLongitude)
-    {
-        $this->longitude= (float) $theLongitude;
-    }
-    
-    /**
-     * Set the current objects precision in meters
-     *
-     * @param Float $thePrecision
-     */
-    function setPrecision($thePrecision)
-    {
-        $this->precision=$thePrecision;
-    }
-
-     /**
-      * Set the location of the current elements location
-      *
-      * @param Float $theLat
-      * @param Float $theLong
-      * @param Float $thePrecision
-      */
-    function setLocality($theLat, $theLong, $thePrecision)
-    {
-        $this->latitude =  $theLat;
-        $this->longitude = $theLong;
-        $this->precision = $thePrecision;
-    }
-
+   
     /**
      * Set the current elements parameters from the database
      *
@@ -147,8 +71,8 @@ class element
     {
         global $dbconn;
         
-        $this->id=$theID;
-        $sql = "select originaltaxonname, elementid, taxonid, subsiteid, name, X(location) as long, Y(location) as lat, precision, createdtimestamp, lastmodifiedtimestamp from tblelement where elementid=$theID";
+        $this->getID()=$theID;
+        $sql = "select originaltaxonname, elementid, taxonid, subsiteid, name, X(location) as long, Y(location) as lat, precision, createdtimestamp, lastmodifiedtimestamp from tblelement where elementid=".$this->getID();
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -164,23 +88,23 @@ class element
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->taxonID = $row['taxonid'];
-                $this->originalTaxonName = $row['originaltaxonname'];
-                $this->subSiteID = $row['subsiteid'];
-                $this->name = $row['name'];
-                $this->latitude = $row['lat'];
-                $this->longitude = $row['long'];
-                $this->precision = $row['precision'];
-                $this->createdTimeStamp = dateFudge($row['createdtimestamp']);
-                $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
+                //$this->taxonID = $row['taxonid'];
+                //$this->originalTaxonName = $row['originaltaxonname'];
+                //$this->subSiteID = $row['subsiteid'];
+                $this->setName($row['name']);
+                //$this->latitude = $row['lat'];
+                //$this->longitude = $row['long'];
+                //$this->precision = $row['precision'];
+                $this->setCreatedTimestamp($row['createdtimestamp']);
+                $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
                 
                 if($format=='summary')
                 {
-                    $sql = "select cpgdb.getlabel('element', '".$this->id."')";
+                    $sql = "select cpgdb.getlabel('element', '".$this->getID()."')";
                     pg_send_query($dbconn, $sql);
                     $result = pg_get_result($dbconn);
                     $row = pg_fetch_array($result);
-                    $this->summaryFullLabCode = $row['getlabel'];
+                    //$this->summaryFullLabCode = $row['getlabel'];
                 }   
             }
 
@@ -206,8 +130,8 @@ class element
     {
         global $dbconn;
 
-        $sql  = "select elementnoteid from tblelementelementnote where elementid=".$this->id;
-        $sql2 = "select sampleid from tblsample where elementid=".$this->id;
+        $sql  = "select elementnoteid from tblelementelementnote where elementid=".$this->getID();
+        $sql2 = "select sampleid from tblsample where elementid=".$this->getID();
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -244,15 +168,15 @@ class element
     function setParamsFromParamsClass($paramsClass)
     {
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
-        if (isset($paramsClass->name))                  $this->name                 = $paramsClass->name;
-        if (isset($paramsClass->originalTaxonName))     $this->originalTaxonName    = $paramsClass->originalTaxonName;
-        if (isset($paramsClass->taxonID))               $this->taxonID              = $paramsClass->taxonID;
-        if (isset($paramsClass->latitude))              $this->latitude             = $paramsClass->latitude;
-        if (isset($paramsClass->longitude))             $this->longitude            = $paramsClass->longitude;
-        if (isset($paramsClass->precision))             $this->precision            = $paramsClass->precision;
-        if (isset($paramsClass->subSiteID))             $this->subSiteID            = $paramsClass->subSiteID;
+        if ($paramsClass->getName()!=NULL)             $this->setName($paramsClass->getName());
+        //if ($paramsClass->originalTaxonName))     $this->originalTaxonName    = $paramsClass->originalTaxonName;
+        if ($paramsClass->taxon->getTaxonID()!=NULL)   $this->setTaxonByID($paramsClass->taxon->getTaxonID());
+        //if ($paramsClass->latitude))              $this->latitude             = $paramsClass->latitude;
+        //if ($paramsClass->longitude))             $this->longitude            = $paramsClass->longitude;
+        if ($paramsClass->getPrecision()!=NULL)   $this->setPrecision($paramsClass->getPrecision());
+        //if ($paramsClass->subSiteID))             $this->subSiteID            = $paramsClass->subSiteID;
         
-        if (isset($paramsClass->elementNoteArray))
+        if ($paramsClass->elementNoteArray)
         {
             // Remove any existing site notes ready to be replaced with what user has specified
             unset($this->elementNoteArray);
@@ -283,7 +207,7 @@ class element
         switch($crudMode)
         {
             case "read":
-                if($paramsObj->id == NULL)
+                if($paramsObj->getID() == NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a element.");
                     return false;
@@ -291,17 +215,17 @@ class element
                 return true;
          
             case "update":
-                if($paramsObj->id == NULL)
+                if($paramsObj->getID() == NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating a element.");
                     return false;
                 }
                 if(($paramsObj->taxonID==NULL) 
                     && ($paramsObj->name==NULL) 
-                    && ($paramsObj->subSiteID==NULL) 
-                    && ($paramsObj->latitude==NULL) 
-                    && ($paramsObj->longitude==NULL) 
-                    && ($paramsObj->precision==NULL)
+                    //&& ($paramsObj->subSiteID==NULL) 
+                    //&& ($paramsObj->latitude==NULL) 
+                    //&& ($paramsObj->longitude==NULL) 
+                    && ($paramsObj->getPrecision()==NULL)
                     && ($paramsObj->hasChild!=True))
                 {
                     $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
@@ -310,7 +234,7 @@ class element
                 return true;
 
             case "delete":
-                if($paramsObj->id == NULL) 
+                if($paramsObj->getID() == NULL) 
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a element.");
                     return false;
@@ -320,7 +244,7 @@ class element
             case "create":
                 if($paramsObj->hasChild===TRUE)
                 {
-                    if($paramsObj->id == NULL) 
+                    if($paramsObj->getID() == NULL) 
                     {
                         $this->setErrorMessage("902","Missing parameter - 'elementid' field is required when creating a sample.");
                         return false;
@@ -328,12 +252,12 @@ class element
                 }
                 else
                 {
-                    if($paramsObj->name == NULL) 
+                    if($paramsObj->getName() == NULL) 
                     {
                         $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a element.");
                         return false;
                     }
-                    if($paramsObj->taxonID == NULL) 
+                    /*if($paramsObj->taxonID == NULL) 
                     {
                         $this->setErrorMessage("902","Missing parameter - 'validatedtaxonid' field is required when creating a element.");
                         return false;
@@ -342,7 +266,7 @@ class element
                     {
                         $this->setErrorMessage("902","Missing parameter - 'subsiteid' field is required.");
                         return false;
-                    }
+                    }*/
                 }
                 return true;
 
@@ -352,48 +276,9 @@ class element
         }
     }
 
-    /**
-     * Set an error message for this element
-     *
-     * @param Integer $theCode
-     * @param String $theMessage
-     */
-    function setErrorMessage($theCode, $theMessage)
-    {
-        // Set the error latest error message and code for this object.
-        $this->lastErrorCode = $theCode;
-        $this->lastErrorMessage = $theMessage;
-    }
 
-    function getPermissions($securityUserID)
-    {
-        global $dbconn;
-
-        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'element', $this->id)";
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $result = pg_query($dbconn, $sql);
-            $row = pg_fetch_array($result);
-            
-            $this->canCreate = fromPGtoPHPBool($row['cancreate']);
-            $this->canUpdate = fromPGtoPHPBool($row['canupdate']);
-            $this->canDelete = fromPGtoPHPBool($row['candelete']);
-            $this->includePermissions = TRUE;
     
-        }
-        else
-        {
-            // Connection bad
-            $this->setErrorMessage("001", "Error connecting to database");
-            return FALSE;
-        }
-
-        return TRUE;
-        
-    }
-
-
+    
     /***********/
     /*ACCESSORS*/
     /***********/
@@ -418,7 +303,7 @@ class element
             $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tblelement.elementid
                 FROM tblsubsite 
                 INNER JOIN tblelement ON tblsubsite.subsiteid=tblelement.subsiteid
-                where tblelement.elementid='".$this->id."'";
+                where tblelement.elementid='".$this->getID()."'";
 
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -503,15 +388,11 @@ class element
                     $xml.= getResourceLinkTag("element", $this->id, "map");
                 }
                 
-                // Include permissions details if requested
-                if($this->includePermissions===TRUE) 
-                {
-                    $xml.= "<permissions canCreate=\"".fromPHPtoStringBool($this->canCreate)."\" ";
-                    $xml.= "canUpdate=\"".fromPHPtoStringBool($this->canUpdate)."\" ";
-                    $xml.= "canDelete=\"".fromPHPtoStringBool($this->canDelete)."\" />\n";
-                } 
+                // Include permissions details if requested            
+                $xml .= $this->getPermissionsXML();
                 
-                if(isset($this->name))                  $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
+                if($this->getName()!=NULL)                        $xml.= "<tridas:genericField name=\"name\">".escapeXMLChars($this->getName())."</tridas:genericField>\n";
+                
 
                 if($format!="minimal")
                 {
@@ -604,63 +485,6 @@ class element
         }
     }
 
-    /**
-     * Get the opening parent XML tag
-     *
-     * @return unknown
-     */
-    function getParentTagBegin()
-    {
-        // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tblelement")."'>";
-        return $xml;
-    }
-
-    /**
-     * Get the end parent XML tag
-     *
-     * @return unknown
-     */
-    function getParentTagEnd()
-    {
-        // Return a string containing the end XML tag for the current object's parent
-        $xml = "</".$this->parentXMLTag.">";
-        return $xml;
-    }
-
-    /**
-    * Get the ID of this element
-    *
-    * @return unknown
-    */
-    function getID()
-    {
-        return $this->id;
-    }
-    
-    /**
-    * Get the last error code for this class
-    *
-    * @return unknown
-    */   
-    function getLastErrorCode()
-    {
-        // Return an integer containing the last error code recorded for this object
-        $error = $this->lastErrorCode; 
-        return $error;  
-    }
-
-    /**
-     * Get the last error message for this class
-     *
-     * @return unknown
-     */
-    function getLastErrorMessage()
-    {
-        // Return a string containing the last error message recorded for this object
-        $error = $this->lastErrorMessage;
-        return $error;
-    }
 
     /***********/
     /*FUNCTIONS*/

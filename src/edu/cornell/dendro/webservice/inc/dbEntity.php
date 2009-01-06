@@ -13,6 +13,7 @@
 require_once('dbhelper.php');
 require_once('dbsetup.php');
 require_once('geometry.php');
+require_once('taxon.php');
 
 /**
  * Interface for classes that inherit dbEntity and read/write to/from the database
@@ -312,6 +313,27 @@ class dbEntity
     function getIncludePermissions()
     {   	
     	return $this->includePermissions;
+    }
+    
+    /**
+     * Get the XML representation for the permissions if requested
+     *
+     * @return String
+     */
+    function getPermissionsXML()
+    {
+
+    	$xml = NULL;
+     	// Include permissions details if requested
+        if($this->getIncludePermissions()===TRUE) 
+        {
+            $xml.= "<tridas:genericField name=\"canCreate\" type=\"boolean\">".fromPHPtoStringBool($this->getPermission("Create"))."</tridas:genericField ";
+            $xml.= "<tridas:genericField name=\"canUpdate\" type=\"boolean\">".fromPHPtoStringBool($this->getPermission("Update"))."</tridas:genericField ";
+            $xml.= "<tridas:genericField name=\"canDelete\" type=\"boolean\">".fromPHPtoStringBool($this->getPermission("Delete"))."</tridas:genericField ";
+        } 
+
+        return $xml;
+    	
     }
     
     /**
@@ -759,7 +781,40 @@ class elementEntity extends dbEntity
 		return true;
 	}
 	
-
+	/**
+	 * Set the taxon using the Corina db ID code
+	 *
+	 * @param Integer $id
+	 */
+	function setTaxonByID($id)
+	{
+		$this->taxon = new Taxon;
+		$this->taxon->setParamsFromDB($id);
+		
+	}
+	
+	/**
+	 * Attempt to set the taxon using a name string
+	 *
+	 * @todo Implement
+	 * @param String $name
+	 */
+	function setTaxonByString($name)
+	{
+		
+	}
+	
+	/**
+	 * Set the taxon using the ITRDB taxon code
+	 * 
+	 * @todo Needs implementing
+	 * @param String $code
+	 */
+	function setTaxonByITRDBCode($code)
+	{
+		
+	}
+	
 	/***********/
     /* GETTERS */
     /***********/ 	

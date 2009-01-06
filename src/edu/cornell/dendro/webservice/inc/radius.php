@@ -13,7 +13,7 @@
 require_once('dbhelper.php');
 require_once('inc/dbEntity.php');
 
-class radius extends radiusEntity
+class radius extends radiusEntity implements IDBAccessor
 {	  
 
     /***************/
@@ -29,11 +29,6 @@ class radius extends radiusEntity
     /* SETTERS */
     /***********/
 
-    function setSampleID($thesampleID)
-    {
-        $this->sampleID=$thesampleID;
-    }
-
     /**
      * Set the current objects parameters from the database
      *
@@ -44,8 +39,8 @@ class radius extends radiusEntity
     {
         global $dbconn;
         
-        $this->id=$theID;
-        $sql = "select * from tblradius where radiusid=$theID";
+        $this->setID($theID);
+        $sql = "select * from tblradius where radiusid=".$this->getID();
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -61,20 +56,19 @@ class radius extends radiusEntity
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->name = $row['name'];
-                $this->id = $row['radiusid'];
-                $this->sampleID = $row['sampleid'];
-                $this->createdTimeStamp = $row['createdtimestamp'];
-                $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
-                $this->pithPresent = fromPGtoPHPBool($row['pithpresent']);
-                $this->sapwood = $row['sapwood'];
-                $this->barkPresent = fromPGtoPHPBool($row['barkpresent']);
-                $this->numberOfSapwoodRings = $row['numberofsapwoodrings'];
-                $this->lastRingUnderBark = $row['lastringunderbark'];
-                $this->missingHeartwoodRingsToPith = $row['missingheartwoodringstopith'];
-                $this->missingHeartwoodRingsToPithFoundation = $row['missingheartwoodringstopithfoundation'];
-                $this->missingSapwoodRingsToBark = $row['missingsapwoodringstobark'];
-                $this->missingSapwoodRingsToBarkFoundation = $row['missingsapwoodringstobarkfoundation'];  
+                $this->setName($row['name']);
+                $this->setSampleID($row['sampleid']);
+                $this->setCreatedTimestamp($row['createdtimestamp']);
+                $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
+                $this->setPithPresent(fromPGtoPHPBool($row['pithpresent']));
+                $this->setSapwood($row['sapwood']);
+                $this->setBarkPresent(fromPGtoPHPBool($row['barkpresent']));
+                $this->setNumberOfSapwoodRings($row['numberofsapwoodrings']);
+                $this->setLastRingUnderBark($row['lastringunderbark']);
+                $this->setMissingHeartwoodRingsToPith($row['missingheartwoodringstopith']);
+                $this->setMissingHeartwoodRingsToPithFoundation($row['missingheartwoodringstopithfoundation']);
+                $this->setMissingSapwoodRingsToBark($row['missingsapwoodringstobark']);
+                $this->setMissingSapwoodRingsToBarkFoundation($row['missingsapwoodringstobarkfoundation']);  
             }
         }
         else
@@ -94,7 +88,7 @@ class radius extends radiusEntity
 
         global $dbconn;
 
-        $sql  = "select measurementid from tblmeasurement where radiusid=".$this->id;
+        $sql  = "select measurementid from tblmeasurement where radiusid=".$this->getID();
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -120,8 +114,8 @@ class radius extends radiusEntity
     {
     	//$paramsClass = new RadiusParameters;
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
-        if (isset($paramsClass->name))       $this->name       = $paramsClass->name;
-        if (isset($paramsClass->sampleID)) $this->sampleID = $paramsClass->sampleID;
+        if ($paramsClass->getName()!=NULL)       $this->setName($paramsClass->getName());
+        if ($paramsClass->getSampleID()!=NULL)   $this->setSampleID($paramsClass->getSampleID());
         
 
         return true;
@@ -133,17 +127,12 @@ class radius extends radiusEntity
         switch($crudMode)
         {
             case "read":
-                if($paramsObj->id==NULL)
+                if($paramsObj->getID()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a radius.");
                     return false;
                 }
-                if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
-                {
-                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer.  It is currently a ".gettype($paramsObj->id));
-                    return false;
-                }
-                if(!($paramsObj->id>0) && !($paramsObj->id==NULL))
+                if(!($paramsObj->getID()>0) && !($paramsObj->getID()==NULL))
                 {
                     $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer.");
                     return false;
@@ -151,13 +140,13 @@ class radius extends radiusEntity
                 return true;
          
             case "update":
-                if($paramsObj->id == NULL)
+                if($paramsObj->getID()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
                     return false;
                 }
-                if(($paramsObj->sampleID==NULL) 
-                    && ($paramsObj->name==NULL)
+                if(($paramsObj->getSampleID()==NULL) 
+                    && ($paramsObj->getName()==NULL)
                     && ($paramsObj->hasChild!=True))
                 {
                     $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
@@ -166,7 +155,7 @@ class radius extends radiusEntity
                 return true;
 
             case "delete":
-                if($paramsObj->id == NULL) 
+                if($paramsObj->getID() == NULL) 
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
                     return false;
@@ -176,7 +165,7 @@ class radius extends radiusEntity
             case "create":
                 if($paramsObj->hasChild===TRUE)
                 {
-                    if($paramsObj->id == NULL) 
+                    if($paramsObj->getID() == NULL) 
                     {
                         $this->setErrorMessage("902","Missing parameter - 'radiusid' field is required when creating a measurement.");
                         return false;
@@ -184,12 +173,12 @@ class radius extends radiusEntity
                 }
                 else
                 {
-                    if($paramsObj->name == NULL) 
+                    if($paramsObj->getName() == NULL) 
                     {
                         $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a radius.");
                         return false;
                     }
-                    if($paramsObj->sampleID == NULL) 
+                    if($paramsObj->getSampleID() == NULL) 
                     {
                         $this->setErrorMessage("902","Missing parameter - 'sampleid' field is required when creating a radius.");
                         return false;
@@ -225,7 +214,7 @@ class radius extends radiusEntity
                 INNER JOIN tbltree ON tblsubsite.subsiteid=tbltree.subsiteid
                 INNER JOIN tblsample ON tbltree.treeid=tblsample.treeid
                 INNER JOIN tblradius ON tblsample.sampleid=tblradius.sampleid
-                where tblradius.radiusid='".$this->id."'";
+                where tblradius.radiusid='".$this->getID()."'";
 
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -236,7 +225,7 @@ class radius extends radiusEntity
                 if(pg_num_rows($result)==0)
                 {
                     // No records match the id specified
-                    $this->setErrorMessage("903", "No match for radius id=".$this->id);
+                    $this->setErrorMessage("903", "No match for radius id=".$this->getID());
                     return FALSE;
                 }
                 else
@@ -306,29 +295,29 @@ class radius extends radiusEntity
         global $domain;
         $xml ="";
         // Return a string containing the current object in XML format
-        if (!isset($this->lastErrorCode))
+        if ($this->getLastErrorCode()!=NULL)
         {
             if( ($parts=="all") || ($parts=="beginning") )
             {
                 // Only return XML when there are no errors.
                 $xml.= "<radius ";
-                $xml.= "id=\"".$this->id."\" >";
-                $xml.= getResourceLinkTag("radius", $this->id)."\n ";
+                $xml.= "id=\"".$this->getID()."\" >";
+                $xml.= getResourceLinkTag("radius", $this->getID())."\n ";
                 
                 // Include permissions details if requested
-                if($this->includePermissions===TRUE) 
+                if($this->getIncludePermissions()===TRUE) 
                 {
-                    $xml.= "<permissions canCreate=\"".fromPHPtoStringBool($this->canCreate)."\" ";
-                    $xml.= "canUpdate=\"".fromPHPtoStringBool($this->canUpdate)."\" ";
-                    $xml.= "canDelete=\"".fromPHPtoStringBool($this->canDelete)."\" />\n";
+                    $xml.= "<permissions canCreate=\"".fromPHPtoStringBool($this->getPermission("Create"))."\" ";
+                    $xml.= "canUpdate=\"".fromPHPtoStringBool($this->getPermission("Update"))."\" ";
+                    $xml.= "canDelete=\"".fromPHPtoStringBool($this->getPermission("Delete"))."\" />\n";
                 } 
                 
-                $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
+                $xml.= "<name>".escapeXMLChars($this->getName())."</name>\n";
 
                 if($format!="minimal")
                 {
-                    $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
-                    $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+                    $xml.= "<createdTimeStamp>".$this->getCreatedTimestamp()."</createdTimeStamp>\n";
+                    $xml.= "<lastModifiedTimeStamp>".$this->getLastModifiedTimestamp()."</lastModifiedTimeStamp>\n";
                 }
             }
 
@@ -345,11 +334,6 @@ class radius extends radiusEntity
         }
     }
 
-    function getID()
-    {
-        return $this->id;
-    }
-
     /***********/
     /*FUNCTIONS*/
     /***********/
@@ -363,27 +347,27 @@ class radius extends radiusEntity
         $sql2 = NULL;
         
         //Only attempt to run SQL if there are no errors so far
-        if($this->lastErrorCode == NULL)
+        if($this->getLastErrorCode() == NULL)
         {
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
                 // If ID has not been set then we assume that we are writing a new record to the DB.  Otherwise updating.
-                if($this->id == NULL)
+                if($this->getID() == NULL)
                 {
                     // New record
-                    $sql = "insert into tblradius (name, sampleid) values ('".$this->name."', '".$this->sampleID."')";
+                    $sql = "insert into tblradius (name, sampleid) values ('".$this->getName()."', '".$this->getSampleID()."')";
                     $sql2 = "select * from tblradius where radiusid=currval('tblradius_radiusid_seq')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tblradius set name='".$this->name."', sampleid='".$this->sampleID."' where radiusid=".$this->id;
+                    $sql = "update tblradius set name='".$this->getName()."', sampleid='".$this->getSampleID()."' where radiusid=".$this->getID();
                     $sql = "update tblradius set ";
-                    if (isset($this->name)) $sql.="name='".$this->name."', ";
-                    if (isset($this->sampleid)) $sql.="sampleid='".$this->sampleID.", ";
+                    if ($this->getName()!=NULL) $sql.="name='".$this->getName()."', ";
+                    if ($this->getSampleID()!=NULL) $sql.="sampleid='".$this->getSampleID().", ";
                     $sql = substr($sql, 0, -2);
-                    $sql.= " where radiusid=".$this->id;
+                    $sql.= " where radiusid=".$this->getID();
                 }
 
                 // Run SQL command
@@ -405,9 +389,9 @@ class radius extends radiusEntity
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
                     {
-                        $this->id=$row['radiusid'];   
-                        $this->createdTimeStamp=$row['createdtimestamp'];   
-                        $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
+                        $this->setID($row['radiusid']);   
+                        $this->setCreatedTimestamp($row['createdtimestamp']);   
+                        $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);   
                     }
                 }
 
@@ -431,20 +415,20 @@ class radius extends radiusEntity
         global $dbconn;
 
         // Check for required parameters
-        if($this->id == NULL) 
+        if($this->getID() == NULL) 
         {
             $this->setErrorMessage("902", "Missing parameter - 'id' field is required.");
             return FALSE;
         }
 
         //Only attempt to run SQL if there are no errors so far
-        if($this->lastErrorCode == NULL)
+        if($this->getLastErrorCode() == NULL)
         {
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tblradius where radiusid=".$this->id;
+                $sql = "delete from tblradius where radiusid=".$this->getID();
 
                 // Run SQL command
                 if ($sql)

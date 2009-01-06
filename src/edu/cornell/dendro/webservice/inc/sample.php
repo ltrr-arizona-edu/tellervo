@@ -326,14 +326,9 @@ class sample extends sampleEntity implements IDBAccessor
 
                 //$xml.= getResourceLinkTag("sample", $this->id)."\n ";
                 
-                // Include permissions details if requested
-                if($this->getIncludePermissions()===TRUE) 
-                {
-                    $xml.= "<tridas:genericField name=\"canCreate\" type=\"boolean\">".fromPHPtoStringBool($this->getPermission("Create"))."</tridas:genericField ";
-                    $xml.= "<tridas:genericField name=\"canUpdate\" type=\"boolean\">".fromPHPtoStringBool($this->getPermission("Update"))."</tridas:genericField ";
-                    $xml.= "<tridas:genericField name=\"canDelete\" type=\"boolean\">".fromPHPtoStringBool($this->getPermission("Delete"))."</tridas:genericField ";
-                } 
-              
+                // Include permissions details if requested            
+                $xml .= $this->getPermissionsXML();
+                
                 if($this->getName()!=NULL)                        $xml.= "<tridas:genericField name=\"name\">".escapeXMLChars($this->getName())."</tridas:genericField>\n";
                 
                 if($format!="minimal")
