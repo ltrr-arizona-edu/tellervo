@@ -180,10 +180,26 @@ class request
 	                $parentID = NULL;
 	                switch($item['type'])
 	                {
+	                	case 'object':    
+	                		$newxml = simplexml_load_string("<tds:object><identifier domain=\"local\">".$item['id']."</identifier></tds:object>");
+	                		$myParamObj = new objectParameters($newxml, $parentID);
+                            break;	                		
+
+                        case 'element':    
+	                		$newxml = simplexml_load_string("<tds:element><identifier domain=\"local\">".$item['id']."</identifier></tds:element>");
+	                		$myParamObj = new elementParameters($newxml, $parentID);
+                            break;	                		
+                            
 	                	case 'sample':
 	                		$newxml = simplexml_load_string("<tds:sample><identifier domain=\"local\">".$item['id']."</identifier></tds:sample>");
 	                		$myParamObj = new sampleParameters($newxml, $parentID);
-                                        break;
+                            break;
+
+	                	case 'radius':
+	                		$newxml = simplexml_load_string("<tds:radius><identifier domain=\"local\">".$item['id']."</identifier></tds:radius>");
+	                		$myParamObj = new radiusParameters($newxml, $parentID);
+                            break;
+                                                        
 	                	default:
 	                		echo "error";
 	                		die;

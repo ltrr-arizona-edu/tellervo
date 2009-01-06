@@ -260,14 +260,14 @@ class dbEntity
      */
     protected function getName()
     {
-        if(isset($this->name))
-        {
-    	    return $this->name;
-        }
-        else
-        {
-            return NULL;
-        }
+    	if(isset($this->name))
+    	{
+    		return $this->name;
+    	}
+    	else
+    	{
+    		return NULL;
+    	}
     }
     
     /**

@@ -16,6 +16,40 @@ interface IParams
     function setParamsFromXMLRequest();
 }
 
+class authenticationParameters implements IParams
+{
+    var $username     = NULL;
+    var $snonce       = NULL;
+    var $cnonce       = NULL;
+    var $seq          = NULL;
+    var $hash         = NULL;
+    var $password     = NULL;
+    var $xmlrequest   = NULL;
+    var $auth         = NULL;
+    var $metaHeader   = NULL;
+    
+
+    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
+    {
+    	$this->xmlrequest = $xmlrequest;
+    	$this->metaHeader = $metaHeader;
+    	$this->auth       = $auth;
+    	
+        $this->setParamsFromXMLRequest();
+    }
+
+    function setParamsFromXMLRequest()
+    {
+        if(isset($this->xmlrequest[0]['username']))                  $this->username                    = addslashes($this->xmlrequest[0]['username']);
+        if(isset($this->xmlrequest[0]['password']))                  $this->password                    = addslashes($this->xmlrequest[0]['password']);
+        if(isset($this->xmlrequest[0]['cnonce']))                    $this->cnonce                      = addslashes($this->xmlrequest[0]['cnonce']);
+        if(isset($this->xmlrequest[0]['snonce']))                    $this->snonce                      = addslashes($this->xmlrequest[0]['snonce']);
+        if(isset($this->xmlrequest[0]['hash']))                      $this->hash                        = addslashes($this->xmlrequest[0]['hash']);
+        if(isset($this->xmlrequest[0]['seq']))                       $this->seq                         = addslashes($this->xmlrequest[0]['seq']);
+    }
+}
+
+
 class objectParameters extends objectEntity implements IParams
 {
     var $xmlrequest = NULL;
