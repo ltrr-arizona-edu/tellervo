@@ -65,12 +65,12 @@ class authenticate
         switch($crudMode)
         {
             case "plainlogin":
-                if($paramsObj->username==NULL)
+                if($paramsObj->getUsername()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'username' field is required when doing a plain login");
                     return false;
                 }
-                if($paramsObj->password==NULL)
+                if($paramsObj->getPassword()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'password' field is required when doing a plain login");
                     return false;
@@ -78,7 +78,7 @@ class authenticate
                 return true;
             
             case "securelogin":
-                if($paramsObj->username==NULL)
+                if($paramsObj->getUsername()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'username' field is required when doing a secure login");
                     return false;
@@ -88,17 +88,17 @@ class authenticate
                     $this->setErrorMessage("902","Missing parameter - 'hash' field is required when doing a secure login");
                     return false;
                 }
-                if($paramsObj->cnonce==NULL)
+                if($paramsObj->getCNonce()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'cnonce' field is required when doing a secure login");
                     return false;
                 }
-                if($paramsObj->snonce==NULL)
+                if($paramsObj->getSNonce()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'snonce' field is required when doing a secure login");
                     return false;
                 }
-                if($paramsObj->seq==NULL)
+                if($paramsObj->getSeq()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'seq' field is required when doing a secure login");
                     return false;

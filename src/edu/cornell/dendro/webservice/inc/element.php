@@ -52,7 +52,7 @@ class element extends elementEntity implements IDBAccessor
     {
         global $dbconn;
         
-        $this->getID()=$theID;
+        $this->getID($theID);
         $sql = "select originaltaxonname, elementid, taxonid, subsiteid, name, X(location) as long, Y(location) as lat, precision, createdtimestamp, lastmodifiedtimestamp from tblelement where elementid=".$this->getID();
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
