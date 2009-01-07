@@ -580,7 +580,7 @@ class objectEntity extends dbEntity
 class elementEntity extends dbEntity
 {
 	/**
-	 * Taxonic information about this element
+	 * Taxonomic information about this element
 	 *
 	 * @var Integer
 	 */
@@ -638,7 +638,7 @@ class elementEntity extends dbEntity
 	 *
 	 * @var Geometry
 	 */
-	var $location = NULL;
+	protected $geometry = NULL;
 	/**
 	 * Processing (carved, sawn etc) rafting marks
 	 *
@@ -657,7 +657,7 @@ class elementEntity extends dbEntity
     {  
         $groupXMLTag = "elements";
         parent::__construct($groupXMLTag); 
-		$this->location = new geometry;	
+		$this->geometry = new geometry;	
 		$this->taxon = new taxon; 	
 	}
 
@@ -816,6 +816,27 @@ class elementEntity extends dbEntity
 	function setTaxonByITRDBCode($code)
 	{
 		
+	}
+	
+	/**
+	 * Set the geometry field of this element using a GML string
+	 *
+	 * @param String $gml
+	 */
+	function setGeometryFromGML($gml)
+	{
+		$this->geometry->setGeometryFromGML($gml);
+	}
+	
+	/**
+	 * Set the geometry field of this element using lat/long values.  Only applicable to point geometries.
+	 *
+	 * @param Float $lat
+	 * @param Float $long
+	 */
+	function setPointGeometryFromLatLong($lat, $long)
+	{
+		$this->geometry->setPointGeometryFromLatLong($lat, $long);
 	}
 	
 	/***********/

@@ -130,7 +130,7 @@ class authenticate
         $myAuth = $auth;
         $myRequest = $paramsClass;
 
-        $myAuth->login($myRequest->username, $myRequest->password);
+        $myAuth->login($myRequest->getUsername(), $myRequest->getPassword());
         if($myAuth->isLoggedIn())
         {
             return True;
@@ -155,7 +155,7 @@ class authenticate
         $myAuth = $auth;
         $myRequest = $paramsClass;
         
-        $myAuth->loginWithNonce($myRequest->username, $myRequest->hash, $myRequest->cnonce, $myRequest->snonce, $myRequest->seq);
+        $myAuth->loginWithNonce($myRequest->getUsername(), $myRequest->getHash(), $myRequest->getCNonce(), $myRequest->getSNonce(), $myRequest->getSeq());
         
         if($myAuth->isLoggedIn())
         {

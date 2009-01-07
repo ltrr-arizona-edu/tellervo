@@ -16,30 +16,11 @@ require_once('inc/taxon.php');
 
 class element extends elementEntity implements IDBAccessor
 {
-    var $id = NULL;
-    var $originalTaxonName = NULL;
-    var $subSiteID = NULL;
-    var $name = NULL;
-    var $latitude = NULL;
-    var $longitude = NULL;
-    var $precision = NULL;
-    var $isLiveelement = NULL;
-    var $sampleArray = array();
-    var $elementNoteArray = array();
-    var $createdTimeStamp = NULL;
-    var $lastModifiedTimeStamp = NULL;
-                    
-    var $summaryFullLabCode = NULL;
 
-    var $includePermissions = FALSE;
-    var $canCreate = NULL;
-    var $canUpdate = NULL;
-    var $canDelete = NULL;
+    protected $sampleArray = array();
+    protected $elementNoteArray = array();
 
-    var $parentXMLTag = "elements"; 
-    var $lastErrorMessage = NULL;
-    var $lastErrorCode = NULL;
-
+                   
     /***************/
     /* CONSTRUCTOR */
     /***************/

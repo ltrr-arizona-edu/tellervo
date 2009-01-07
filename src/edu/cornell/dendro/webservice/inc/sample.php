@@ -161,7 +161,7 @@ class sample extends sampleEntity implements IDBAccessor
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
                     return false;
                 }
-                if(($paramsObj->name==NULL) 
+                if(($paramsObj->getName() ==NULL) 
                     && ($paramsObj->getSamplingDate()==NULL) 
                     && ($paramsObj->getType()==NULL) 
                     && ($paramsObj->hasChild!=True))
@@ -190,12 +190,12 @@ class sample extends sampleEntity implements IDBAccessor
                 }
                 else
                 {
-                    if($paramsObj->name == NULL) 
+                    if($paramsObj->getName() == NULL) 
                     {
                         $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a sample.");
                         return false;
                     }
-                    if($paramsObj->treeID == NULL) 
+                    if($paramsObj->getTreeID() == NULL) 
                     {
                         $this->setErrorMessage("902","Missing parameter - 'treeid' field is required when creating a sample.");
                         return false;
@@ -315,7 +315,7 @@ class sample extends sampleEntity implements IDBAccessor
         global $domain;
         $xml ="";
         // Return a string containing the current object in XML format
-        if (!isset($this->lastErrorCode))
+        if ($this->getLastErrorCode()==NULL)
         {
             // Only return XML when there are no errors.
     
@@ -371,13 +371,13 @@ class sample extends sampleEntity implements IDBAccessor
         $sql2 = NULL;
 
         //Only attempt to run SQL if there are no errors so far
-        if($this->lastErrorCode == NULL)
+        if($this->getLastErrorCode() == NULL)
         {
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
                 // If ID has not been set then we assume that we are writing a new record to the DB.  Otherwise updating.
-                if($this->id == NULL)
+                if($this->getID() == NULL)
                 {
                     // New record
                     $sql = "insert into tblsample ( ";
@@ -469,7 +469,7 @@ class sample extends sampleEntity implements IDBAccessor
         global $dbconn;
 
         // Check for required parameters
-        if($this->id == NULL) 
+        if($this->getID() == NULL) 
         {
             $this->setErrorMessage("902", "Missing parameter - 'id' field is required.");
             return FALSE;
@@ -482,7 +482,7 @@ class sample extends sampleEntity implements IDBAccessor
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tblsample where sampleid='".$this->id."'";
+                $sql = "delete from tblsample where sampleid='".$this->getID()."'";
 
                 // Run SQL command
                 if ($sql)

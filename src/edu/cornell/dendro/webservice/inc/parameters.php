@@ -21,15 +21,15 @@ interface IParams
 
 class authenticationParameters implements IParams
 {
-    var $username     = NULL;
-    var $snonce       = NULL;
-    var $cnonce       = NULL;
-    var $seq          = NULL;
-    var $hash         = NULL;
-    var $password     = NULL;
-    var $xmlrequest   = NULL;
-    var $auth         = NULL;
-    var $metaHeader   = NULL;
+    protected $username     = NULL;
+    protected $snonce       = NULL;
+    protected $cnonce       = NULL;
+    protected $seq          = NULL;
+    protected $hash         = NULL;
+    protected $password     = NULL;
+    protected $xmlrequest   = NULL;
+    protected $auth         = NULL;
+    protected $metaHeader   = NULL;
     
 
     function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
@@ -50,6 +50,37 @@ class authenticationParameters implements IParams
         if(isset($this->xmlrequest[0]['hash']))                      $this->hash                        = addslashes($this->xmlrequest[0]['hash']);
         if(isset($this->xmlrequest[0]['seq']))                       $this->seq                         = addslashes($this->xmlrequest[0]['seq']);
     }
+    
+    function getUsername()
+    {
+    	return $this->username;
+    }
+    
+    function getSNonce()
+    {
+    	return $this->snonce;
+    }
+    
+    function getCNonce()
+    {
+    	return $this->cnonce;
+    }
+    
+    function getSeq()
+    {
+    	return $this->seq;
+    }
+    
+    function getHash()
+    {
+    	return $this->hash;
+    }
+    
+    function getPassword()
+    {
+    	return $this->password;
+    }
+    
 }
 
 
@@ -61,6 +92,7 @@ class objectParameters extends objectEntity implements IParams
     function __construct($xmlrequest, $parentID=NULL)
     {
         $this->xmlrequest = $xmlrequest;
+        $this->setParamsFromXMLRequest();
     }
     
     function setParamsFromXMLRequest()
@@ -78,6 +110,7 @@ class elementParameters extends elementEntity implements IParams
     function __construct($xmlrequest, $parentID=NULL)
     {
         $this->xmlrequest = $xmlrequest;
+        $this->setParamsFromXMLRequest();
     }
 	
 	function setParamsFromXMLRequest()

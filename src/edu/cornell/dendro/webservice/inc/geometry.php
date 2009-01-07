@@ -38,7 +38,7 @@ class geometry
 	private $precision = NULL;
 	
 	/**
-	 * Additional information and the location 
+	 * Additional information about the location 
 	 *
 	 * @var String
 	 */
@@ -52,15 +52,45 @@ class geometry
 	
     /***********/
     /* SETTERS */
-    /***********/    	
+    /***********/   
+
+	/**
+	 * Set the geometry field using a native PostGIS geometry representation
+	 *
+	 * @param String $geometry
+	 */
 	function setGeometry($geometry)
 	{
 		$this->geometry = $geometry;	
 	}
 	
+	/**
+	 * Set the geometry field using a GML string
+	 *
+	 * @todo Implement!  Hopefully someone has already written a library to do this otherwise we'll have to parse the GML ourselves.
+	 * @param String $gml
+	 */
 	function setGeometryFromGML($gml)
 	{
 	}
+	
+	/**
+	 * Set the geometry using latitude and longitude.  This funciton assumes that the lat and long are standard WGS84 coordinates.
+	 *
+	 * @param Float $lat
+	 * @param Float $long
+	 */
+	function setPointGeometryFromLatLong($lat, $long)
+	{
+		// Make sure the parameters are numbers to stop sql injection
+		$lat = (float) $lat;
+		$long = (float) $long;
+		$srid = 4326; // Standard WGS84 SRID is assumed for this funciton	
+		
+		$sql = "select setsrid(makepoint(".sprintf("%1.8f",$long).", ".sprintf("%1.8f",$lat)."), $srid) as thevalue";
+		$this->geometry = $this->runSQLCalculation($sql);		
+	}
+	
 	
 	/**
 	 * Set the type of location the location field 
