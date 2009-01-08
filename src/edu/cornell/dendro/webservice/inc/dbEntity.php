@@ -692,6 +692,10 @@ class elementEntity extends dbEntity
 			$this->authenticity = strtolower($value);
 			return true;
 		}
+                elseif($value==NULL)
+                {
+                        return false;
+                }
 		else
 		{
                         trigger_error("901"."Authenticity must be one of 'original, 'repair' or 'later addtion'. You specified '".strtolower($value)."'", E_USER_ERROR);
@@ -912,7 +916,7 @@ class elementEntity extends dbEntity
 	 */
 	function hasDimensions()
 	{
-		if( (isset($this->height)) || (isset($this->width)) || (isset($this->depth)) || (isset($this->diameter)) )
+		if( ($this->height!=NULL) || ($this->width!=NULL) || ($this->depth!=NULL) || ($this->diameter!=NULL) )
 		{
 			return True;
 		}
@@ -1781,17 +1785,17 @@ class taxonEntity extends dbEntity
         switch($theRank)
         {
             case "kingdom":
-                return $xml.$this->kingdom."</tridas:genericFieldn>";
+                if(isset($this->kingdom)) return $xml.$this->kingdom."</tridas:genericField>";
             case "phylum":
-                return $xml.$this->phylum."</tridas:genericField>";
+                if(isset($this->phylum))  return $xml.$this->phylum."</tridas:genericField>";
             case "class":
-                return $xml.$this->class."</tridas:genericField>";
+                if(isset($this->class))   return $xml.$this->class."</tridas:genericField>";
             case "order":
-                return $xml.$this->order."</tridas:genericField>";
+                if(isset($this->order))   return $xml.$this->order."</tridas:genericField>";
             case "family":
-                return $xml.$this->family."</tridas:genericField>";
+                if(isset($this->family))  return $xml.$this->family."</tridas:genericField>";
             case "genus":
-                return $xml.$this->genus."</tridas:genericField>";
+                if(isset($this->genus))   return $xml.$this->genus."</tridas:genericField>";
             default:
                 return false;
         }

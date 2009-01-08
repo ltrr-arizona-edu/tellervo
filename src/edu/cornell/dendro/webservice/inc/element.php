@@ -53,9 +53,10 @@ class element extends elementEntity implements IDBAccessor
         global $dbconn;
         
         $this->setID($theID);
-        $sql = "select tblelement.*, tlkplocationtype.name as locationtype from tlkplocationtype, tblelement where elementid='".$this->getID()."' and tblelement.locationtypeid=tlkplocationtype.locationtypeid";
+        //$sql = "select tblelement.* tlkplocationtype.name as locationtype from tlkplocationtype, tblelement where elementid='".$this->getID()."' and tblelement.locationtypeid=tlkplocationtype.locationtypeid";
+        $sql = "select * from tblelement left outer join (select locationtypeid, name as locationtype from tlkplocationtype) as loctype on (tblelement.locationtypeid = loctype.locationtypeid) where elementid='".$this->getID()."'";
 
-        //$sql = "select tblelement.*, tlkplocationtype.name as locationtype from tlkplocationtype, tblelement where elementid=".$this->getID()." and tblelement.locationtypeid=tlkplocationtype.locationtypeid";
+
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {

@@ -137,7 +137,15 @@ class sampleParameters extends sampleEntity implements IParams
 
     function __construct($xmlrequest, $parentID=NULL)
     {
-        $this->xmlrequest = $xmlrequest;
+        // Load the xmlrequest into a local SimpleXML variable
+        if (gettype($xmlrequest)=='object')
+        {
+            $this->xmlrequest = $xmlrequest;
+        }
+        else
+        {
+            $this->xmlrequest = simplexml_load_string($xmlrequest);
+        }
         $this->setParamsFromXMLRequest();
     }
 	
