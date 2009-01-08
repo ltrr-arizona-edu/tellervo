@@ -53,7 +53,7 @@ class element extends elementEntity implements IDBAccessor
         global $dbconn;
         
         $this->setID($theID);
-        $sql = "select originaltaxonname, elementid, taxonid, name, X(location) as long, Y(location) as lat, locationprecision, createdtimestamp, lastmodifiedtimestamp from tblelement where elementid=".$this->getID();
+        $sql = "select * from tblelement where elementid=".$this->getID();
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -69,15 +69,22 @@ class element extends elementEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                //$this->taxonID = $row['taxonid'];
-                //$this->originalTaxonName = $row['originaltaxonname'];
                 //$this->subSiteID = $row['subsiteid'];
+                $this->setTaxonByID($row['taxonid']);
+                $this->setOriginalTaxon($row['originaltaxonname']);
                 $this->setName($row['name']);
-                //$this->latitude = $row['lat'];
-                //$this->longitude = $row['long'];
-                //$this->precision = $row['precision'];
                 $this->setCreatedTimestamp($row['createdtimestamp']);
                 $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
+                $this->setAuthenticity($row['authenticity']);
+                $this->setShape($row['shape']);
+                $this->setDimensions($row['height'], $row['width'], $row['depth']);
+                $this->setDiameter($row['diameter']);
+                $this->setType($row['type']);
+                $this->geometry->setGeometry($row['location'], $row['type'], $row['precision'], $row['comment']);
+                $this->setProcessing($row['processing']);
+                $this->setMarks($row['marks']);
+                $this->setDescription($row['description']);
+                
                 
                 if($format=='summary')
                 {
@@ -372,6 +379,24 @@ class element extends elementEntity implements IDBAccessor
                 {
                     if($this->getAuthenticity()!=NULL)      $xml.= "<tridas:authenticity>".$this->getAuthenticity()."</tridas:authenticity>\n";
                     if($this->getShape()!=NULL)             $xml.= "<tridas:shape>".$this->getShape()."</tridas:shape>\n";
+                    if($this->hasDimensions())
+                    {
+                    	$xml.="<tridas:dimensions>";
+                    	/* @todo Units needs completing properly */
+                    	$xml.="<tridas:unit>meter</tridas:unit>";
+                    	if($this->getDimension('height')!=NULL)   $xml.="<tridas:height>".$this->getDimension('height')."</tridas:height>";
+                    	if($this->getDimension('width')!=NULL)    $xml.="<tridas:width>".$this->getDimension('width')."</tridas:width>";
+                    	if($this->getDimension('depth')!=NULL)    $xml.="<tridas:depth>".$this->getDimension('depth')."</tridas:depth>";
+                    	if($this->getDimension('diameter')!=NULL) $xml.="<tridas:diameter>".$this->getDimension('diameter')."</tridas:diameter>";
+                    	$xml.="</tridas:dimensions>";                    	
+                    }
+                    if($this->getType()!=NULL) $xml.="<tridas:type>".$this->getType()."</tridas:type>";
+                    if($this->getFile()!=NULL) $xml.="<tridas:file xlink:href=\"".$this->getFile()."\" />";
+                    if(isset($this->geometry)) $xml.=$this->geometry->asXML();
+                    if($this->getProcessing()!=NULL) $xml.="<tridas:processing>".$this->getProcessing()."</tridas:processing>";
+                    if($this->getMarks()!=NULL) $xml.="<tridas:marks>".$this->getMarks()."</tridas:marks>";  
+                    if($this->getDescription()!=NULL) $xml.="<tridas:description>".$this->getDescription()."</tridas:description>";                                      
+                  
 
                     //if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".escapeXMLChars($myTaxon->getLabel())."</validatedTaxon>\n";
                     //if(isset($this->originalTaxonName))    $xml.= "<originalTaxonName>".escapeXMLChars($this->originalTaxonName)."</originalTaxonName>\n";

@@ -585,6 +585,14 @@ class elementEntity extends dbEntity
 	 * @var Integer
 	 */
 	protected $taxon = NULL;
+	
+	/**
+	 * The name that this element was originally identified as 
+	 *
+	 * @var String
+	 */
+	protected $originalTaxon = NULL;
+	
 	/**
 	 * Whether this element is original, a repair, or later addition
 	 *
@@ -652,6 +660,12 @@ class elementEntity extends dbEntity
 	 */
 	protected $marks = NULL;
 	
+	/**
+	 * Description of element
+	 *
+	 * @var String
+	 */
+	protected $description = NULL;
 	
     function __construct()
     {  
@@ -784,9 +798,17 @@ class elementEntity extends dbEntity
 		return true;
 	}
 	
+	/**
+	 * Set taxon object
+	 *
+	 * @todo Implement
+	 * @param String $name
+	 * @param String $normalisedName (optional) Accepted varified and correct name
+	 * @param String $normalisedID (optional) ID code from standardised vocab
+	 * @param String $dictionary (optional) Name of standardised vocab from which the AVC name comes
+	 */
 	function setTaxon($name, $normalisedName=NULL, $normalisedID=NULL, $dictionary=NULL)
 	{
-		
 		// If one of the optional attributes is supplied, then all must be supplied
 		if( (isset($normalisedName)) || (isset($normalisedID)) || (isset($dictionary)) )
 		{
@@ -797,8 +819,19 @@ class elementEntity extends dbEntity
 			}
 		}
 		
+		$this->setOriginalTaxon($name);
+				
 	}
-	
+
+	/**
+	 * Set the original name by which this element was identified
+	 *
+	 * @param unknown_type $value
+	 */
+	function setOriginalTaxon($value)
+	{
+		$this->originalTaxon = addslashes($value);
+	}
 	
 	/**
 	 * Set the taxon using the Corina db ID code
@@ -835,6 +868,18 @@ class elementEntity extends dbEntity
 	}
 	
 	/**
+	 * Set the description of this element
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
+	function setDescription($value)
+	{
+		$this->description = addslashes($value);
+		return true;
+	}
+	
+	/**
 	 * Set the geometry field of this element using a GML string
 	 *
 	 * @param String $gml
@@ -858,6 +903,24 @@ class elementEntity extends dbEntity
 	/***********/
     /* GETTERS */
     /***********/ 	
+	
+	/**
+	 * Does this element have any dimensions associated with it?
+	 *
+	 * @return Boolean
+	 */
+	function hasDimensions()
+	{
+		if( (isset($this->height)) || (isset($this->width)) || (isset($this->depth)) || (isset($this->diameter)) )
+		{
+			return True;
+		}
+		else
+		{
+			return False;
+		}
+		
+	}
 	
 	/**
 	 * Get the authenticity of this element
@@ -952,7 +1015,25 @@ class elementEntity extends dbEntity
 		return $this->marks;
 	}
 	
+	/**
+	 * Get this elements description
+	 *
+	 * @return String
+	 */
+	function getDescription()
+	{
+		return $this->description;
+	}
 	
+	/**
+	 * Get the original taxon name which was given to this element
+	 *
+	 * @return String
+	 */
+	function getOriginalTaxon()
+	{
+		return $this->originalTaxon;
+	}
 }
 
 

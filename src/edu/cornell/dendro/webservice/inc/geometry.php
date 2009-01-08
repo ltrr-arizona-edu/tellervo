@@ -58,10 +58,16 @@ class geometry
 	 * Set the geometry field using a native PostGIS geometry representation
 	 *
 	 * @param String $geometry
+	 * @param String $type
+	 * @param String $precision
+	 * @param String $comment
 	 */
-	function setGeometry($geometry)
+	function setGeometry($geometry, $type=null, $precision=null, $comment=null)
 	{
-		$this->geometry = $geometry;	
+		$this->geometry = $geometry;
+		$this->setType($type);
+		$this->setPrecision($precision);
+		$this->setComment($comment);	
 	}
 	
 	/**
@@ -118,7 +124,20 @@ class geometry
 
     /***********/
     /* GETTERS */
-    /***********/    	
+    /***********/   
+
+	function asXML()
+	{
+        $xml = "<tridas:location>";
+       	$xml.= "<tridas:locationGeometry>";
+       	$xml.= $this->asGML();
+       	$xml.= "</tridas:locationGeometry>";
+       	if($this->getLocationType()!=NULL) $xml .= "<tridas:locationType>".$this->getLocationType()."</tridas:locationType>";
+        if($this->getLocationPrecision()!=NULL) $xml .= "<tridas:locationPrecision>".$this->getLocationPrecision()."</tridas:locationPrecision>";
+        if($this->getLocationComment()!=NULL) $xml .= "<tridas:locationComment>".$this->getLocationComment()."</tridas:locationComment>";      	
+       	$xml.= "</tridas:location>";
+	}
+	
 	function asGML()
 	{
 		$sql = "select asgml('".$this->geometry."') as thevalue";
