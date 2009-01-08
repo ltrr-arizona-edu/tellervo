@@ -39,6 +39,9 @@ $tridasNS = "http://www.tridas.org/1.1";
 // TRiDaS Namespace URL
 $gmlNS = "http://www.gml.org/";
 
+// The name and edition of the taxonomic authority used for taxonomy 
+$taxonomicAuthorityEdition = "Catalogue of Life Annual Checklist 2008";
+
 // Timezone of the server this software is running on
 $serverTimezone = "America/New_York";
 

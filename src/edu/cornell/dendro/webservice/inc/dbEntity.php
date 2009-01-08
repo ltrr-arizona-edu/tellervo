@@ -1585,6 +1585,26 @@ class taxonEntity extends dbEntity
     {
     	
     }
+    
+    /**********/
+    /* SETTERS */
+    /***********/   
+    
+    /**********/
+    /* GETTERS */
+    /***********/     
+    
+    function getCoLID()
+    {
+    	return $this->colID;
+    }
+
+    function getLabel()
+    {
+    	return $this->label;	
+    }
+    }
+    
 }
 
 
