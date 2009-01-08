@@ -687,13 +687,14 @@ class elementEntity extends dbEntity
 	 */
 	function setAuthenticity($value)
 	{
-		if( (strtolower($value=='original')) || (strtolower($value)=='repair') || (strtolower($value)=='later addition'))
+		if( (strtolower($value)=='original') || (strtolower($value)=='repair') || (strtolower($value)=='later addition'))
 		{
 			$this->authenticity = strtolower($value);
 			return true;
 		}
 		else
 		{
+                        trigger_error("901"."Authenticity must be one of 'original, 'repair' or 'later addtion'. You specified '".strtolower($value)."'", E_USER_ERROR);
 			return false;
 		}
 	}
@@ -830,7 +831,7 @@ class elementEntity extends dbEntity
 	 */
 	function setOriginalTaxon($value)
 	{
-		$this->taxon->setOriginalTaxon = addslashes($value);
+		$this->taxon->setOriginalTaxon(addslashes($value));
 	}
 	
 	/**
@@ -1032,7 +1033,7 @@ class elementEntity extends dbEntity
 	 */
 	function getOriginalTaxon()
 	{
-		return $this->originalTaxon;
+            return $this->taxon->getOriginalTaxon();
 	}
 
         function hasGeometry()

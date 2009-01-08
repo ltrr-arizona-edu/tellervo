@@ -216,54 +216,16 @@ class taxon extends taxonEntity implements IDBAccessor
             }
         }
     }
-/*
+
+    function validateRequestParams($paramsClass, $crudMode)
+    {
+
+        return false;
+    }
     function deleteFromDB()
     {
-        // Delete the record in the database matching the current object's ID
-
-        global $dbconn;
-
-        // Check for required parameters
-        if($this->id == NULL) 
-        {
-            $this->setErrorMessage("902", "Missing parameter - 'id' field is required.");
-            return FALSE;
-        }
-
-        //Only attempt to run SQL if there are no errors so far
-        if($this->lastErrorCode == NULL)
-        {
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-
-                $sql = "delete from tlkpspecimentype where specimentypeid=".$this->id;
-
-                // Run SQL command
-                if ($sql)
-                {
-                    // Run SQL 
-                    pg_send_query($dbconn, $sql);
-                    $result = pg_get_result($dbconn);
-                    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-                    {
-                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
-                        return FALSE;
-                    }
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-        }
-
-        // Return true as write to DB went ok.
-        return TRUE;
+        return false;
     }
- */
 // End of Class
 } 
 ?>
