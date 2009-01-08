@@ -830,7 +830,7 @@ class elementEntity extends dbEntity
 	 */
 	function setOriginalTaxon($value)
 	{
-		$this->originalTaxon = addslashes($value);
+		$this->taxon->setOriginalTaxon = addslashes($value);
 	}
 	
 	/**
@@ -1589,20 +1589,232 @@ class taxonEntity extends dbEntity
     
     /**********/
     /* SETTERS */
-    /***********/   
+    /***********/
+
+    function setOriginalTaxon($value)
+    {
+    	$this->originalTaxon=$value;
+    }
     
+    function setLabel($theLabel)
+    {
+        // Set the current objects note.
+        $this->label=$theLabel;
+    }   
+    function taxonRecordExists($colID)
+    {
+        global $dbconn;
+        $sql="select count(*) from tlkptaxon where colid=$colID";
+        
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);    
+            while ($row = pg_fetch_array($result))
+            {
+                if($row['count']>0)
+                {
+                    return True;
+                }
+                else
+                {   
+                    return False;
+                }
+            }
+        }
+    }
+    
+    function setHigherTaxonomy()
+    {
+        global $dbconn;
+        
+        $sql = "select * from cpgdb.qrytaxonomy(".$this->id.")";
+        //echo $sql;
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            if(pg_num_rows($result)==0)
+            {
+                // No records match the id specified
+                $this->setErrorMessage("903", "No records match the specified id");
+                return FALSE;
+            }
+            else
+            {
+                // Set parameters from db
+                $row = pg_fetch_array($result);
+                $this->kingdom  = $row['kingdom'];
+                $this->phylum   = $row['phylum'];
+                $this->class    = $row['class'];
+                $this->order    = $row['txorder'];
+                $this->family   = $row['family'];
+                $this->genus    = $row['genus'];
+                $this->species  = $row['species'];
+            }
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+
+        return TRUE;
+
+    }
+    
+
+
+    function setParamsFromCoL($CoLID)
+    {
+        $doneStuff = false;
+        $colURL="http://webservice.catalogueoflife.org/annual-checklist/2008/search.php?response=full&id=$CoLID";
+        $colXML = simplexml_load_file($colURL);
+        if($colXML['total_number_of_results']==1)
+        {
+            if($colXML->result->name_status=='accepted name')
+            {
+                // Write Higher taxon records
+                $parentID = NULL;
+                foreach ($colXML->result->classification->taxon as $currentTaxon)
+                {
+                    if(!($this->taxonRecordExists($currentTaxon->id)))
+                    {
+                        $this->setParamsWithParents($currentTaxon->id, $parentID, $currentTaxon->rank, $currentTaxon->name);
+                        $this->writeToDB();
+                        $doneStuff = true;
+                    }
+                    $parentID = $currentTaxon->id;
+                }
+
+                // Write requested taxon details
+                if(!($this->taxonRecordExists($colXML->result->id)))
+                {
+                    if($colXML->result->rank=="Infraspecies")
+                    {
+                        // This needs to change
+                        $rank = $colXML->result->infraspecies_marker;
+                    }
+                    else
+                    {
+                        $rank = $colXML->result->rank;
+                    }
+                    $this->setParamsWithParents($colXML->result->id, $parentID, $colXML->result->rank, $colXML->result->name." ".$colXML->result->author);
+                    $this->writeToDB();
+                    $doneStuff = true;
+                }
+            }
+            else
+            {
+                $this->setErrorMessage("901", "The requested taxon is a synonym.  Only accepted taxa can be added.");
+                return false;
+            }
+    
+        }
+        else
+        {   
+            // More than one taxon returned
+            $this->setErrorMessage("901", "The requested taxon is not unique.");
+            return false;
+        }
+
+        if ($doneStuff)
+        {
+            return true;
+        }
+        else
+        {
+            $this->setErrorMessage("906", "Record already exists.");
+            return false;
+        }
+
+    }  
     /**********/
     /* GETTERS */
     /***********/     
+    
+    /**
+     * Get the name by which this taxon was original identified
+     *
+     * @return String
+     */
+    function getOriginalTaxon()
+    {
+    	return $this->originalTaxon;
+    }
     
     function getCoLID()
     {
     	return $this->colID;
     }
 
+    function asXML($format='standard', $parts='all')
+    {
+    	global $taxonomicAuthorityEdition;
+    	
+        // Return a string containing the current object in XML format
+        if ($this->getLastErrorCode()==NULL)
+        {
+            // Only return XML when there are no errors.
+            //
+            // TO DO - Sort out XML special characters in XML.  
+            $xml= "<tridas:taxon normalStd=\"$taxonomicAuthorityEdition\" normalId=\"".$this->getCoLID()."\" normal=\"".$this->getLabel()."\">".$this->getOriginalTaxon()."</tridas:taxon>\n";
+            return $xml;
+        }
+        else
+        {
+            return FALSE;
+        }
+    }
+
     function getLabel()
     {
-    	return $this->label;	
+        return $this->label;
+    }
+    
+    function getHigherTaxonXML($theRank)
+    {
+        $xml = "<tridas:genericField name=\"$theRank\" >";
+        switch($theRank)
+        {
+            case "kingdom":
+                return $xml.$this->kingdom."</tridas:genericFieldn>";
+            case "phylum":
+                return $xml.$this->phylum."</tridas:genericField>";
+            case "class":
+                return $xml.$this->class."</tridas:genericField>";
+            case "order":
+                return $xml.$this->order."</tridas:genericField>";
+            case "family":
+                return $xml.$this->family."</tridas:genericField>";
+            case "genus":
+                return $xml.$this->genus."</tridas:genericField>";
+            default:
+                return false;
+        }
+    }
+
+    function getHigherTaxon($theRank)
+    {
+        switch($theRank)
+        {
+            case "kingdom":
+                return $this->kingdom;
+            case "phylum":
+                return $this->phylum;
+            case "class":
+                return $this->class;
+            case "order":
+                return $this->order;
+            case "family":
+                return $this->family;
+            case "genus":
+                return $this->genus;
+            default:
+                return false;
+        }
     }
     
 }
