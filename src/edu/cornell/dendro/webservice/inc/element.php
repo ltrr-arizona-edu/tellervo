@@ -405,16 +405,14 @@ class element extends elementEntity implements IDBAccessor
                     //if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".escapeXMLChars($myTaxon->getLabel())."</validatedTaxon>\n";
                     //if(isset($this->originalTaxonName))    $xml.= "<originalTaxonName>".escapeXMLChars($this->originalTaxonName)."</originalTaxonName>\n";
 
-                    if($hasHigherTaxonomy)
-                    {
-                        $xml.=$myTaxon->getHigherTaxonXML('kingdom');   
-                        $xml.=$myTaxon->getHigherTaxonXML('phylum');   
-                        $xml.=$myTaxon->getHigherTaxonXML('class');   
-                        $xml.=$myTaxon->getHigherTaxonXML('order');   
-                        $xml.=$myTaxon->getHigherTaxonXML('family');   
-                        $xml.=$myTaxon->getHigherTaxonXML('genus');   
-                        $xml.=$myTaxon->getHigherTaxonXML('species');   
-                    }
+					$xml.= $this->taxon->getHigherTaxonXML('kingdom');   
+                    $xml.= $this->taxon->getHigherTaxonXML('phylum');   
+                    $xml.= $this->taxon->getHigherTaxonXML('class');   
+                    $xml.= $this->taxon->getHigherTaxonXML('order');   
+                    $xml.= $this->taxon->getHigherTaxonXML('family');   
+                    $xml.= $this->taxon->getHigherTaxonXML('genus');   
+                    $xml.= $this->taxon->getHigherTaxonXML('species');   
+               
 
                     //if(isset($this->latitude))              $xml.= "<latitude>".$this->latitude."</latitude>\n";
                     //if(isset($this->longitude))             $xml.= "<longitude>".$this->longitude."</longitude>\n";

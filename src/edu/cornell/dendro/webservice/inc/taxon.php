@@ -60,6 +60,7 @@ class taxon extends taxonEntity implements IDBAccessor
                 $this->taxonRank = $row['taxonrank'];
                 $this->taxonRank = $row['taxonrank'];
                 $this->parentID = $row['parenttaxonid'];
+                $this->setHigherTaxonomy();
             }
         }
         else
