@@ -784,6 +784,22 @@ class elementEntity extends dbEntity
 		return true;
 	}
 	
+	function setTaxon($name, $normalisedName=NULL, $normalisedID=NULL, $dictionary=NULL)
+	{
+		
+		// If one of the optional attributes is supplied, then all must be supplied
+		if( (isset($normalisedName)) || (isset($normalisedID)) || (isset($dictionary)) )
+		{
+			if( (!isset($normalisedName)) && (!isset($normalisedID)) && (!isset($dictionary)) )
+			{
+				echo "here";
+				trigger_error("need more attribs", 901);		
+			}
+		}
+		
+	}
+	
+	
 	/**
 	 * Set the taxon using the Corina db ID code
 	 *

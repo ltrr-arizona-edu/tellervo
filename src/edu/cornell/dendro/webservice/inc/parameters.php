@@ -43,12 +43,12 @@ class authenticationParameters implements IParams
 
     function setParamsFromXMLRequest()
     {
-        if(isset($this->xmlrequest[0]['username']))                  $this->username                    = addslashes($this->xmlrequest[0]['username']);
-        if(isset($this->xmlrequest[0]['password']))                  $this->password                    = addslashes($this->xmlrequest[0]['password']);
-        if(isset($this->xmlrequest[0]['cnonce']))                    $this->cnonce                      = addslashes($this->xmlrequest[0]['cnonce']);
-        if(isset($this->xmlrequest[0]['snonce']))                    $this->snonce                      = addslashes($this->xmlrequest[0]['snonce']);
-        if(isset($this->xmlrequest[0]['hash']))                      $this->hash                        = addslashes($this->xmlrequest[0]['hash']);
-        if(isset($this->xmlrequest[0]['seq']))                       $this->seq                         = addslashes($this->xmlrequest[0]['seq']);
+        if(isset($this->xmlrequest[0]['username']))   $this->username   = addslashes($this->xmlrequest[0]['username']);
+        if(isset($this->xmlrequest[0]['password']))   $this->password   = addslashes($this->xmlrequest[0]['password']);
+        if(isset($this->xmlrequest[0]['cnonce']))     $this->cnonce     = addslashes($this->xmlrequest[0]['cnonce']);
+        if(isset($this->xmlrequest[0]['snonce']))     $this->snonce     = addslashes($this->xmlrequest[0]['snonce']);
+        if(isset($this->xmlrequest[0]['hash']))       $this->hash       = addslashes($this->xmlrequest[0]['hash']);
+        if(isset($this->xmlrequest[0]['seq']))        $this->seq        = addslashes($this->xmlrequest[0]['seq']);
     }
     
     function getUsername()
@@ -98,7 +98,7 @@ class objectParameters extends objectEntity implements IParams
     function setParamsFromXMLRequest()
     {
         if(isset($this->xmlrequest->identifier))         $this->setID($this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
-    	
+ 
     }	
 }
 
@@ -115,8 +115,8 @@ class elementParameters extends elementEntity implements IParams
 	
 	function setParamsFromXMLRequest()
 	{
-        if(isset($this->xmlrequest->identifier))         $this->setID($this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
-		
+        if(isset($this->xmlrequest->identifier))        $this->setID($this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
+		if(isset($this->xmlrequest->taxon))				$this->setTaxon("the taxon", "blah");
 	}
 }
 
