@@ -1034,6 +1034,11 @@ class elementEntity extends dbEntity
 	{
 		return $this->originalTaxon;
 	}
+
+        function hasGeometry()
+        {
+            return $this->geometry!=NULL;
+        }
 }
 
 

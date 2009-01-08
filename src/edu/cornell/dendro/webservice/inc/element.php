@@ -53,7 +53,9 @@ class element extends elementEntity implements IDBAccessor
         global $dbconn;
         
         $this->setID($theID);
-        $sql = "select * from tblelement where elementid=".$this->getID();
+        $sql = "select tblelement.*, tlkplocationtype.name as locationtype from tlkplocationtype, tblelement where elementid='".$this->getID()."' and tblelement.locationtypeid=tlkplocationtype.locationtypeid";
+
+        //$sql = "select tblelement.*, tlkplocationtype.name as locationtype from tlkplocationtype, tblelement where elementid=".$this->getID()." and tblelement.locationtypeid=tlkplocationtype.locationtypeid";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -80,7 +82,7 @@ class element extends elementEntity implements IDBAccessor
                 $this->setDimensions($row['height'], $row['width'], $row['depth']);
                 $this->setDiameter($row['diameter']);
                 $this->setType($row['type']);
-                $this->geometry->setGeometry($row['location'], $row['type'], $row['precision'], $row['comment']);
+                $this->geometry->setGeometry($row['location'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
                 $this->setProcessing($row['processing']);
                 $this->setMarks($row['marks']);
                 $this->setDescription($row['description']);
@@ -356,14 +358,13 @@ class element extends elementEntity implements IDBAccessor
     {
         global $domain;
         $xml ="";
+
+
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
             if(($parts=="all") || ($parts=="beginning"))
             {
-                $myTaxon = new taxon;
-                $myTaxon->setParamsFromDB($this->taxonID);
-                $hasHigherTaxonomy = $myTaxon->setHigherTaxonomy();
 
                 // Only return XML when there are no errors.
                 $xml = "<element>";
@@ -392,7 +393,10 @@ class element extends elementEntity implements IDBAccessor
                     }
                     if($this->getType()!=NULL) $xml.="<tridas:type>".$this->getType()."</tridas:type>";
                     if($this->getFile()!=NULL) $xml.="<tridas:file xlink:href=\"".$this->getFile()."\" />";
-                    if(isset($this->geometry)) $xml.=$this->geometry->asXML();
+                    if($this->hasGeometry()) 
+                    {
+                        $xml.=$this->geometry->asXML();
+                    }
                     if($this->getProcessing()!=NULL) $xml.="<tridas:processing>".$this->getProcessing()."</tridas:processing>";
                     if($this->getMarks()!=NULL) $xml.="<tridas:marks>".$this->getMarks()."</tridas:marks>";  
                     if($this->getDescription()!=NULL) $xml.="<tridas:description>".$this->getDescription()."</tridas:description>";                                      

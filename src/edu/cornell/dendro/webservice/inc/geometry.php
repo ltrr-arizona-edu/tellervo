@@ -136,6 +136,7 @@ class geometry
         if($this->getLocationPrecision()!=NULL) $xml .= "<tridas:locationPrecision>".$this->getLocationPrecision()."</tridas:locationPrecision>";
         if($this->getLocationComment()!=NULL) $xml .= "<tridas:locationComment>".$this->getLocationComment()."</tridas:locationComment>";      	
        	$xml.= "</tridas:location>";
+        return $xml;
 	}
 	
 	function asGML()

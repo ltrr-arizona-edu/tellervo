@@ -36,6 +36,9 @@ $corinaNS = "http://dendro.cornell.edu/schema/corina/1.0";
 // TRiDaS Namespace URL
 $tridasNS = "http://www.tridas.org/1.1";
 
+// TRiDaS Namespace URL
+$gmlNS = "http://www.gml.org/";
+
 // Timezone of the server this software is running on
 $serverTimezone = "America/New_York";
 
