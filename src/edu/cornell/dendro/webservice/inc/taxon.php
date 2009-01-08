@@ -274,7 +274,7 @@ class taxon extends taxonEntity
     	global $taxonomicAuthorityEdition;
     	
         // Return a string containing the current object in XML format
-        if (!isset($this->getLastErrorCode()))
+        if ($this->getLastErrorCode()==NULL)
         {
             // Only return XML when there are no errors.
             //

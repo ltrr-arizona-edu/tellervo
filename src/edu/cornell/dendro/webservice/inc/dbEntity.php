@@ -1579,6 +1579,7 @@ class taxonEntity extends dbEntity
     protected $family = NULL;
     protected $genus = NULL;
     protected $species = NULL;
+    protected $originalTaxon = NULL;
 	
     
     function __construct()
@@ -1602,7 +1603,6 @@ class taxonEntity extends dbEntity
     function getLabel()
     {
     	return $this->label;	
-    }
     }
     
 }
