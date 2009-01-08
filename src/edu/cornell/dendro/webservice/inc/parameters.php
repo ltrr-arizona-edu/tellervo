@@ -109,14 +109,24 @@ class elementParameters extends elementEntity implements IParams
 
     function __construct($xmlrequest, $parentID=NULL)
     {
-        $this->xmlrequest = $xmlrequest;
+        // Load the xmlrequest into a local SimpleXML variable
+        if (gettype($xmlrequest)=='object')
+        {
+            $this->xmlrequest = $xmlrequest;
+        }
+        else
+        {
+            $this->xmlrequest = simplexml_load_string($xmlrequest);
+        }
+
+        // Extract parameters from the XML request
         $this->setParamsFromXMLRequest();
     }
 	
 	function setParamsFromXMLRequest()
 	{
         if(isset($this->xmlrequest->identifier))        $this->setID($this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
-		if(isset($this->xmlrequest->taxon))				$this->setTaxon("the taxon", "blah");
+//		if(isset($this->xmlrequest->taxon))				$this->setTaxon("the taxon", "blah");
 	}
 }
 

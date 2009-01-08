@@ -52,8 +52,8 @@ class element extends elementEntity implements IDBAccessor
     {
         global $dbconn;
         
-        $this->getID($theID);
-        $sql = "select originaltaxonname, elementid, taxonid, subsiteid, name, X(location) as long, Y(location) as lat, precision, createdtimestamp, lastmodifiedtimestamp from tblelement where elementid=".$this->getID();
+        $this->setID($theID);
+        $sql = "select originaltaxonname, elementid, taxonid, name, X(location) as long, Y(location) as lat, locationprecision, createdtimestamp, lastmodifiedtimestamp from tblelement where elementid=".$this->getID();
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -62,7 +62,7 @@ class element extends elementEntity implements IDBAccessor
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No records match the specified id");
+                trigger_error("903"."No records match the specified id. $sql", E_USER_ERROR);
                 return FALSE;
             }
             else
@@ -359,15 +359,8 @@ class element extends elementEntity implements IDBAccessor
                 $hasHigherTaxonomy = $myTaxon->setHigherTaxonomy();
 
                 // Only return XML when there are no errors.
-                $xml = "<element ";
-                $xml.= "id=\"".$this->id."\" >";
-                $xml.= getResourceLinkTag("element", $this->id)."\n";
-                
-                // Include map reference tag if appropriate
-                if( (isset($this->latitude)) && (isset($this->longitude)) )
-                {
-                    $xml.= getResourceLinkTag("element", $this->id, "map");
-                }
+                $xml = "<element>";
+                $xml.= "<identifier domain=\"$domain\">".$this->getID()."</identifier >";
                 
                 // Include permissions details if requested            
                 $xml .= $this->getPermissionsXML();
@@ -377,9 +370,11 @@ class element extends elementEntity implements IDBAccessor
 
                 if($format!="minimal")
                 {
+                    if($this->getAuthenticity()!=NULL)      $xml.= "<tridas:authenticity>".$this->getAuthenticity()."</tridas:authenticity>\n";
+                    if($this->getShape()!=NULL)             $xml.= "<tridas:shape>".$this->getShape()."</tridas:shape>\n";
 
-                    if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".escapeXMLChars($myTaxon->getLabel())."</validatedTaxon>\n";
-                    if(isset($this->originalTaxonName))    $xml.= "<originalTaxonName>".escapeXMLChars($this->originalTaxonName)."</originalTaxonName>\n";
+                    //if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".escapeXMLChars($myTaxon->getLabel())."</validatedTaxon>\n";
+                    //if(isset($this->originalTaxonName))    $xml.= "<originalTaxonName>".escapeXMLChars($this->originalTaxonName)."</originalTaxonName>\n";
 
                     if($hasHigherTaxonomy)
                     {
@@ -392,12 +387,12 @@ class element extends elementEntity implements IDBAccessor
                         $xml.=$myTaxon->getHigherTaxonXML('species');   
                     }
 
-                    if(isset($this->latitude))              $xml.= "<latitude>".$this->latitude."</latitude>\n";
-                    if(isset($this->longitude))             $xml.= "<longitude>".$this->longitude."</longitude>\n";
-                    if(isset($this->precision))             $xml.= "<precision>".$this->precision."</precision>\n";
-                    if(isset($this->isLiveelement))            $xml.= "<isLiveelement>".$this->isLiveelement."</isLiveelement>\n";
-                    if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
-                    if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
+                    //if(isset($this->latitude))              $xml.= "<latitude>".$this->latitude."</latitude>\n";
+                    //if(isset($this->longitude))             $xml.= "<longitude>".$this->longitude."</longitude>\n";
+                    //if(isset($this->precision))             $xml.= "<precision>".$this->precision."</precision>\n";
+                    //if(isset($this->isLiveelement))            $xml.= "<isLiveelement>".$this->isLiveelement."</isLiveelement>\n";
+                    if($this->getCreatedTimeStamp()!=NULL)      $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimeStamp()."</tridas:genericField>\n";
+                    if($this->getLastModifiedTimeStamp()!=NULL) $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimeStamp()."</tridas:genericField>\n";
 
                     if($format=='summary')
                     {

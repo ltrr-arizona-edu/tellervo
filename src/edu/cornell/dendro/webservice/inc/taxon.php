@@ -293,21 +293,21 @@ class taxon extends taxonEntity
     
     function getHigherTaxonXML($theRank)
     {
-        $xml = "<higherTaxon rank=\"$theRank\" >";
+        $xml = "<tridas:genericField name=\"$theRank\" >";
         switch($theRank)
         {
             case "kingdom":
-                return $xml.$this->kingdom."</higherTaxon>";
+                return $xml.$this->kingdom."</tridas:genericFieldn>";
             case "phylum":
-                return $xml.$this->phylum."</higherTaxon>";
+                return $xml.$this->phylum."</tridas:genericField>";
             case "class":
-                return $xml.$this->class."</higherTaxon>";
+                return $xml.$this->class."</tridas:genericField>";
             case "order":
-                return $xml.$this->order."</higherTaxon>";
+                return $xml.$this->order."</tridas:genericField>";
             case "family":
-                return $xml.$this->family."</higherTaxon>";
+                return $xml.$this->family."</tridas:genericField>";
             case "genus":
-                return $xml.$this->genus."</higherTaxon>";
+                return $xml.$this->genus."</tridas:genericField>";
             default:
                 return false;
         }

@@ -150,6 +150,7 @@ class request
      */
     function createParamObjects()
     {
+        global $domain;
     	//******
     	//SEARCH
     	//******
@@ -181,31 +182,30 @@ class request
 	            foreach ($this->xmlrequest->xpath('//cor:entity') as $item)
 	            {
 	                $parentID = NULL;
-	                switch($item['type'])
+	                switch(strtolower($item['type']))
 	                {
 	                	case 'object':    
-	                		$newxml = simplexml_load_string("<tds:object><identifier domain=\"local\">".$item['id']."</identifier></tds:object>");
+	                		$newxml = "<tds:object><identifier domain=\"$domain\">".$item['id']."</identifier></tds:object>";
 	                		$myParamObj = new objectParameters($newxml, $parentID);
                             break;	                		
 
-                        case 'element':    
-	                		$newxml = simplexml_load_string("<tds:element><identifier domain=\"local\">".$item['id']."</identifier></tds:element>");
+                                case 'element':    
+	                		$newxml = "<tds:element><identifier domain=\"$domain\">".$item['id']."</identifier></tds:element>";
 	                		$myParamObj = new elementParameters($newxml, $parentID);
                             break;	                		
                             
 	                	case 'sample':
-	                		$newxml = simplexml_load_string("<tds:sample><identifier domain=\"local\">".$item['id']."</identifier></tds:sample>");
+	                		$newxml = "<tds:sample><identifier domain=\"$domain\">".$item['id']."</identifier></tds:sample>";
 	                		$myParamObj = new sampleParameters($newxml, $parentID);
                             break;
 
 	                	case 'radius':
-	                		$newxml = simplexml_load_string("<tds:radius><identifier domain=\"local\">".$item['id']."</identifier></tds:radius>");
+	                		$newxml = "<tds:radius><identifier domain=\"$domain\">".$item['id']."</identifier></tds:radius>";
 	                		$myParamObj = new radiusParameters($newxml, $parentID);
                             break;
                                                         
 	                	default:
-	                		echo "error";
-	                		die;
+	                		trigger_error("901"."Unknown entity type specified", E_USER_ERROR);
 	                }
 	                
 	                array_push($this->paramObjectsArray, $myParamObj);
