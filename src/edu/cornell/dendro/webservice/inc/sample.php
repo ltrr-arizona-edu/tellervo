@@ -67,6 +67,11 @@ class sample extends sampleEntity implements IDBAccessor
                 $this->setSamplingDate($row['samplingdate']);
 		        $this->setCreatedTimestamp($row['createdtimestamp']);
                 $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
+                $this->setPosition($row['position']);
+                $this->setState($row['state']);
+                $this->setKnots($row['knots']);
+                $this->setDescription($row['description']);
+                
             }
         }
         else
@@ -323,9 +328,7 @@ class sample extends sampleEntity implements IDBAccessor
             {
                 $xml.= "<tridas:sample>\n";
                 $xml.= "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>";
-
-                //$xml.= getResourceLinkTag("sample", $this->id)."\n ";
-                
+                      
                 // Include permissions details if requested            
                 $xml .= $this->getPermissionsXML();
                 
@@ -337,6 +340,10 @@ class sample extends sampleEntity implements IDBAccessor
                     if($this->getType()!=NULL)                   $xml.= "<tridas:type>".$this->getType()."</tridas:genericField>\n";
                     if($this->getCreatedTimeStamp()!=NULL)       $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimestamp()."</tridas:genericField>\n";
                     if($this->getLastModifiedTimestamp()!=NULL)  $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimestamp()."</tridas:genericField>\n";
+                    if($this->getPosition()!=NULL)				 $xml.= "<tridas:position>".$this->getPosition()."</tridas:position>";
+                    if($this->getState()!=NULL)					 $xml.= "<tridas:state>".$this->getState()."</tridas:state>";
+                    if($this->getKnots()!=NULL)					 $xml.= "<tridas:knots>".$this->getKnots('english')."</tridas:knots>";
+                    if($this->getDescription()!=NULL)			 $xml.= "<tridas:description>".$this->getDescription()."</tridas:description";
                 }
             }
 

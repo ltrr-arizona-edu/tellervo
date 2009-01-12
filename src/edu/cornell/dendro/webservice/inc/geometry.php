@@ -81,7 +81,7 @@ class geometry
 	}
 	
 	/**
-	 * Set the geometry using latitude and longitude.  This funciton assumes that the lat and long are standard WGS84 coordinates.
+	 * Set the geometry using latitude and longitude.  This function assumes that the lat and long are standard WGS84 coordinates.
 	 *
 	 * @param Float $lat
 	 * @param Float $long

@@ -67,11 +67,15 @@ function formatBool($value, $format='php')
     }
     elseif(($value===FALSE) || (strtolower($value) == 'f') || (strtolower($value) == 'false') || ($value === 0) )
     {
-        echo "HerE";
         $outputvalue = FALSE;
     }	
+    elseif($value==NULL)
+    {
+    	return NULL;
+    }
     else
     {
+		trigger_error("667"."Unable to interpret a boolean from the value provided to formatBool().  Value given was '$value'", E_USER_ERROR);    	
     	return 'error';
     }
     
@@ -87,6 +91,7 @@ function formatBool($value, $format='php')
     		if($outputvalue===TRUE) return 'True';
     		return 'False';
     	default:
+    		trigger_error("667"."Invalid format provided in formatBool().  Should be one of php, pg or english but got $format instead", E_USER_ERROR);
     		return false;
     }
 	

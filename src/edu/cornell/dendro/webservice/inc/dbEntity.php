@@ -151,7 +151,7 @@ class dbEntity
     
 	/**
      * Set the error message
-     *
+     * 
      * @param Integer $theCode
      * @param String $theMessage
      * @return Boolean 
@@ -161,6 +161,10 @@ class dbEntity
         // Set the error latest error message and code for this object.
         $this->lastErrorCode = $theCode;
         $this->lastErrorMessage = $theMessage;
+        
+        // Trigger the error
+        trigger_error($theCode.$theMessage, E_USER_ERROR);
+        
         return true;
     }
 
@@ -282,6 +286,17 @@ class dbEntity
     function getID()
     {
         return $this->id;
+    }
+    
+    /**
+     * Get the XML representation of the identifier
+     *
+     * @return unknown
+     */
+    function getIdentifierXML()
+    {
+    	global $domain;
+        return "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier >";  
     }
     
     /**
@@ -464,8 +479,36 @@ class objectEntity extends dbEntity
 	 *
 	 * @var Geometry
 	 */
-	var $location = NULL;
+	protected $location = NULL;
 	
+	/**
+	 * Description of this object
+	 *
+	 * @var String
+	 */
+	protected $description = NULL;
+	
+	/**
+	 * Title of this object
+	 *
+	 * @var String
+	 */
+	protected $title = NULL;
+	
+	/**
+	 * Broad historical period this object covers
+	 *
+	 * @var String
+	 */
+	protected $coverageTemporal = NULL;
+	
+	/**
+	 * Foundation for the broad historical date of this object
+	 *
+	 * @var unknown_type
+	 */
+	protected $coverageTemporalFoundation = NULL;
+		
     function __construct()
     {  
     	$this->location = new geometry();
@@ -490,6 +533,25 @@ class objectEntity extends dbEntity
 		return true;
 	}
 	
+	/**
+	 * Set this object's description
+	 *
+	 * @param String $value
+	 */
+	function setDescription($value)
+	{
+		$this->description = addslashes($value);
+	}
+	
+	/**
+	 * Set the title of this object
+	 *
+	 * @param String $value
+	 */
+	function setTitle($value)
+	{
+		$this->title = addslashes($value);
+	}
 	
 	/**
 	 * Set the name of the creator - name, place of the workshop/wharf etc
@@ -526,6 +588,21 @@ class objectEntity extends dbEntity
 		$this->file = addslashes($value);
 		return true;
 	}
+	
+	/**
+	 * Set the broad historical period of the object and the foundation for thinking that
+	 *
+	 * @param String $period
+	 * @param String $foundation
+	 */
+	function setCoverageTemporal($period, $foundation)
+	{
+		$this->coverageTemporal = addslashes($period);
+		$this->coverageTemporalFoundation = addslashes($foundation);	
+	}
+	
+	
+	
 
 	/***********/
     /* GETTERS */
@@ -541,6 +618,25 @@ class objectEntity extends dbEntity
 		return $this->type;
 	}
 	
+	/**
+	 * Get the description of this object
+	 *
+	 * @return String
+	 */
+	function getDescription()
+	{
+		return $this->description;
+	}
+	
+	/**
+	 * Get this object's title
+	 *
+	 * @return unknown
+	 */
+	function getTitle()
+	{
+		return $this->title;
+	}
 	
 	/**
 	 * Get the name of the creator of this object
@@ -572,7 +668,25 @@ class objectEntity extends dbEntity
 		return $this->file;
 	}
 
-
+	/**
+	 * Get the broad historical period this object covers
+	 *
+	 * @return String
+	 */
+	function getTemporalCoverage()
+	{
+		return $this->temporalCoverage;
+	}
+	
+	/**
+	 * Get the foundation for the broad historical periods this object covers
+	 *
+	 * @return String
+	 */
+	function getTemporalCoverageFoundation()
+	{
+		return $this->temporalCoverageFoundation;
+	}
 	
 }
 
@@ -1086,7 +1200,12 @@ class sampleEntity extends dbEntity
 	 * @var Boolean
 	 */
 	private $knots = NULL;
-	
+	/**
+	 * Description of this sample
+	 *
+	 * @var String
+	 */
+	private $description = NULL;
 	
     function __construct()
     {  
@@ -1167,6 +1286,15 @@ class sampleEntity extends dbEntity
 		}
 	}
 	
+	/**
+	 * Set the description of this sample
+	 *
+	 * @param String $value
+	 */
+	function setDescription($value)
+	{
+		$this->description = addslashes($value);
+	}
 	
 	
 	/***********/
@@ -1216,11 +1344,22 @@ class sampleEntity extends dbEntity
 	/**
 	 * Does the sample have knots?
 	 *
-	 * @return Boolean
+	 * @param String $format (php, pg, english)
+	 * @return Boolean or String
 	 */
-	function getKnots()
+	function getKnots($format="php")
 	{
-		return $this->knots;
+		return formatBool($this->knots, $format);
+	}
+	
+	/**
+	 * Get this sample's description
+	 *
+	 * @return String
+	 */
+	function getDescription()
+	{
+		return $this->description;
 	}
 	
 }

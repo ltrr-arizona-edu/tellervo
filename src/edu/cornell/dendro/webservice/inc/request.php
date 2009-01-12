@@ -189,7 +189,7 @@ class request
 	                		$myParamObj = new objectParameters($newxml, $parentID);
                             break;	                		
 
-                                case 'element':    
+                        case 'element':    
 	                		$newxml = "<tds:element><identifier domain=\"$domain\">".$item['id']."</identifier></tds:element>";
 	                		$myParamObj = new elementParameters($newxml, $parentID);
                             break;	                		
@@ -267,9 +267,9 @@ class request
                 }
             }
             
-            if($this->xmlrequest->xpath('//sample'))
+            if($this->xmlrequest->xpath('//tridas:sample'))
             {
-                foreach ($this->xmlrequest->xpath('//sample') as $item)
+                foreach ($this->xmlrequest->xpath('//tridas:sample') as $item)
                 {
                     $parentID = NULL;
                     $parent = $item->xpath('../..');

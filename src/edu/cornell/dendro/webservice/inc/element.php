@@ -42,7 +42,7 @@ class element extends elementEntity implements IDBAccessor
 
    
     /**
-     * Set the current elements parameters from the database
+     * Set the current element's parameters from the database
      *
      * @param Integer $theID
      * @param String $format (standard or summary. defaults to standard)
@@ -115,7 +115,7 @@ class element extends elementEntity implements IDBAccessor
      * Add the id's of the current elements direct children from the database
      * i.e. elementNotes and samples
      *
-     * @return unknown
+     * @return Boolean
      */
     function setChildParamsFromDB()
     {
@@ -279,7 +279,7 @@ class element extends elementEntity implements IDBAccessor
      *
      * @param String $format (one of standard, comprehensive, summary or minimal. Defaults to standard)
      * @param String $parts (one of all, beginning, or end. Defaults to all)
-     * @return unknown
+     * @return Boolean
      */
     function asXML($format='standard', $parts='all')
     {
@@ -351,9 +351,9 @@ class element extends elementEntity implements IDBAccessor
    /**
     * Internal function for getting the XML representation of this element.  Use asXML instead.
     *
-    * @param unknown_type $format
-    * @param unknown_type $parts
-    * @return unknown
+    * @param String $format
+    * @param String $parts
+    * @return Boolean
     */
     private function _asXML($format, $parts)
     {
@@ -362,14 +362,14 @@ class element extends elementEntity implements IDBAccessor
 
 
         // Return a string containing the current object in XML format
-        if (!isset($this->lastErrorCode))
+        if ($this->getLastErrorCode()!=NULL)
         {
             if(($parts=="all") || ($parts=="beginning"))
             {
 
                 // Only return XML when there are no errors.
-                $xml = "<element>";
-                $xml.= "<identifier domain=\"$domain\">".$this->getID()."</identifier >";
+                $xml = "<tridas:element>";
+                $xml.= $this->getIdentifierXML();   
                 
                 // Include permissions details if requested            
                 $xml .= $this->getPermissionsXML();
@@ -422,12 +422,7 @@ class element extends elementEntity implements IDBAccessor
                     if($this->getCreatedTimeStamp()!=NULL)      $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimeStamp()."</tridas:genericField>\n";
                     if($this->getLastModifiedTimeStamp()!=NULL) $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimeStamp()."</tridas:genericField>\n";
 
-                    if($format=='summary')
-                    {
-                        $xml.="<parentSummary>";
-                        $xml.="<fullLabCode>".$this->summaryFullLabCode."</fullLabCode>\n";
-                        $xml.="</parentSummary>";
-                    }
+                    if($format=='summary') $xml.="<tridas:genericField name=\"fullLabCode\">".$this->summaryFullLabCode."</tridas:genericField>\n";
 
                     if($format!="summary")
                     {
@@ -478,7 +473,7 @@ class element extends elementEntity implements IDBAccessor
             if(($parts=="all") || ($parts=="end"))
             {
                 // End XML tag
-                $xml.= "</element>\n";
+                $xml.= "</tridas:element>\n";
             }
 
             return $xml;
@@ -497,7 +492,7 @@ class element extends elementEntity implements IDBAccessor
     /**
      * Write the current element to the database
      *
-     * @return unknown
+     * @return Boolean
      */
     function writeToDB()
     {
@@ -611,7 +606,7 @@ class element extends elementEntity implements IDBAccessor
     /**
      * Delete the current element from the database
      *
-     * @return unknown
+     * @return Boolean
      */
     function deleteFromDB()
     {
