@@ -933,7 +933,6 @@ class elementEntity extends dbEntity
 		{
 			if( (!isset($normalisedName)) && (!isset($normalisedID)) && (!isset($dictionary)) )
 			{
-				echo "here";
 				trigger_error("need more attribs", 901);		
 			}
 		}

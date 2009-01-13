@@ -158,6 +158,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
+			<xs:attribute name="parentEntityID" type="xs:positiveInteger"/>
 		</xs:complexType>
 	</xs:element>
 	<!--

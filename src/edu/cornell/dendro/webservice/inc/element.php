@@ -360,9 +360,8 @@ class element extends elementEntity implements IDBAccessor
         global $domain;
         $xml ="";
 
-
         // Return a string containing the current object in XML format
-        if ($this->getLastErrorCode()!=NULL)
+        if ($this->getLastErrorCode()==NULL)
         {
             if(($parts=="all") || ($parts=="beginning"))
             {

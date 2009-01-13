@@ -143,8 +143,8 @@ more information on http://www.gnu.org/licenses/lgpl.html
 	<xs:element name="project">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="title"/>
-				<xs:element ref="identifier"/>
+				<xs:element ref="title" minOccurs="0"/>
+				<xs:element ref="identifier" minOccurs="0"/>
 				<xs:element ref="laboratory" maxOccurs="unbounded"/>
 				<xs:element ref="type" maxOccurs="unbounded"/>
 				<xs:element ref="category"/>

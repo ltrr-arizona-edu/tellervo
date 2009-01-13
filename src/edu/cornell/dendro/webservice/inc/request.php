@@ -75,7 +75,8 @@ class request
         // Do the validation
         if($doc->schemaValidate($corinaXSD))
         {
-            $this->xmlrequest = simplexml_load_string($xmlrequest);
+
+            $this->xmlrequest = simplexml_import_dom($doc);
             
             // Set namespaces for XPath queries
             $this->xmlrequest->registerXPathNamespace('cor', $corinaNS);
@@ -219,6 +220,22 @@ class request
         }
         elseif ( ($this->crudMode=='create') || ($this->crudMode=='update') || ($this->crudMode=='assign') || ($this->crudMode=='unassign') )
         {
+
+            // Extract ID of Parent entity if supplied
+            if(isset($this->xmlrequest->request['parentEntityID'])) $parentID = $this->xmlrequest->request['parentEntityID'];
+
+            print_r($this->xmlrequest);
+
+            if($this->xmlrequest->request->children('http://www.tridas.org/1.1'));
+            {
+                foreach ($this->xmlrequest->request->children('http://www.tridas.org/1.1') as $item)
+                {
+
+                    print_r($item);
+                }
+            }
+
+            /*
             if($this->xmlrequest->xpath('//dictionaries'))
             {
                 $parentID = NULL;
@@ -267,17 +284,11 @@ class request
                 }
             }
             
-            if($this->xmlrequest->xpath('//tridas:sample'))
+            if($this->xmlrequest->request->children('http://www.tridas.org/1.1'));
             {
-                foreach ($this->xmlrequest->xpath('//tridas:sample') as $item)
+                foreach ($this->xmlrequest->request->children('http://www.tridas.org/1.1') as $item)
                 {
-                    $parentID = NULL;
-                    $parent = $item->xpath('../..');
-                    if(isset($parent[0]->element['id']))
-                    {
-                        $parentID = $parent[0]->element['id'];
-                    }
-                    $myParamObj = new sampleParameters($this->metaHeader, $this->auth, $item, $parentID);
+                    $myParamObj = new sampleParameters($item, $parentID);
                     array_push($this->paramObjectsArray, $myParamObj);
                 }
             }
@@ -394,6 +405,8 @@ class request
                     array_push($this->paramObjectsArray, $myParamObj);
                 }
             }
+         */
+
         }
         elseif ( ($this->crudMode=='plainlogin') || ($this->crudMode=='securelogin') || ($this->crudMode=='nonce') ) 
         {

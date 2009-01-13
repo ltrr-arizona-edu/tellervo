@@ -65,7 +65,7 @@ class sample extends sampleEntity implements IDBAccessor
                 $this->setName($row['name']);
                 $this->setID($row['sampleid'], $domain);
                 $this->setSamplingDate($row['samplingdate']);
-		        $this->setCreatedTimestamp($row['createdtimestamp']);
+		$this->setCreatedTimestamp($row['createdtimestamp']);
                 $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
                 $this->setPosition($row['position']);
                 $this->setState($row['state']);

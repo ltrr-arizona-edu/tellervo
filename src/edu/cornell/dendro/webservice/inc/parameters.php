@@ -153,7 +153,15 @@ class sampleParameters extends sampleEntity implements IParams
     function setParamsFromXMLRequest()
     {
         if(isset($this->xmlrequest->identifier))         $this->setID($this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
-        if(isset($this->xmlrequest->name))               $this->setName($this->xmlrequest->name);
+
+        // Loop through the genericFields
+        foreach($this->xmlrequest->xpath('//genericField') as $field)
+        {
+            echo "field value = $field";
+            if($field['name']=='name') $this->setName($field);
+        }
+        
+
         if(isset($this->xmlrequest->samplingDate))       $this->setSamplingDate($this->xmlrequest->samplingDate);
         if(isset($this->xmlrequest->sampleType))         $this->setType($this->xmlrequest->sampleType);
         if(isset($this->xmlrequest->radius))             $this->hasChild  = True;
