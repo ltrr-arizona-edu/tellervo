@@ -21,34 +21,41 @@ interface IParams
 
 class authenticationParameters implements IParams
 {
-    protected $username     = NULL;
-    protected $snonce       = NULL;
-    protected $cnonce       = NULL;
-    protected $seq          = NULL;
-    protected $hash         = NULL;
-    protected $password     = NULL;
-    protected $xmlrequest   = NULL;
-    protected $auth         = NULL;
-    protected $metaHeader   = NULL;
+    protected $username      = NULL;
+    protected $snonce        = NULL;
+    protected $cnonce        = NULL;
+    protected $seq           = NULL;
+    protected $hash          = NULL;
+    protected $password      = NULL;
+    protected $xmlRequestDom = NULL;
+
     
 
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
+    function __construct($xmlrequest)
     {
-    	$this->xmlrequest = $xmlrequest;
-    	$this->metaHeader = $metaHeader;
-    	$this->auth       = $auth;
-    	
+        // Load the xmlrequest into a DOMDocument if it isn't already
+        if (gettype($xmlrequest)=='object')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+        
         $this->setParamsFromXMLRequest();
     }
 
     function setParamsFromXMLRequest()
     {
-        if(isset($this->xmlrequest[0]['username']))   $this->username   = addslashes($this->xmlrequest[0]['username']);
-        if(isset($this->xmlrequest[0]['password']))   $this->password   = addslashes($this->xmlrequest[0]['password']);
-        if(isset($this->xmlrequest[0]['cnonce']))     $this->cnonce     = addslashes($this->xmlrequest[0]['cnonce']);
-        if(isset($this->xmlrequest[0]['snonce']))     $this->snonce     = addslashes($this->xmlrequest[0]['snonce']);
-        if(isset($this->xmlrequest[0]['hash']))       $this->hash       = addslashes($this->xmlrequest[0]['hash']);
-        if(isset($this->xmlrequest[0]['seq']))        $this->seq        = addslashes($this->xmlrequest[0]['seq']);
+    	$authTag = $this->xmlRequestDom->getElementsByTagName("authenticate")->item(0);
+        if($authTag->getAttribute("username")!=NULL)   $this->username   = addslashes($authTag->getAttribute("username"));
+        if($authTag->getAttribute("password")!=NULL)   $this->password   = addslashes($authTag->getAttribute("password"));
+        if($authTag->getAttribute("cnonce")!=NULL)     $this->cnonce     = addslashes($authTag->getAttribute("cnonce"));
+        if($authTag->getAttribute("snonce")!=NULL)     $this->snonce     = addslashes($authTag->getAttribute("snonce"));
+        if($authTag->getAttribute("hash")!=NULL)       $this->hash       = addslashes($authTag->getAttribute("hash"));
+        if($authTag->getAttribute("seq")!=NULL)        $this->seq        = addslashes($authTag->getAttribute("seq"));
     }
     
     function getUsername()
@@ -83,7 +90,6 @@ class authenticationParameters implements IParams
     
 }
 
-
 class objectParameters extends objectEntity implements IParams
 {
     var $xmlrequest = NULL;
@@ -91,42 +97,149 @@ class objectParameters extends objectEntity implements IParams
 
     function __construct($xmlrequest, $parentID=NULL)
     {
-        $this->xmlrequest = $xmlrequest;
+    	// Load the xmlrequest into a local DOM variable
+        if (gettype($xmlrequest)=='object')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+    		
+        // Extract parameters from the XML request
         $this->setParamsFromXMLRequest();
     }
     
     function setParamsFromXMLRequest()
     {
-        if(isset($this->xmlrequest->identifier))         $this->setID($this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
- 
+		global $corinaNS;
+        global $tridasNS;
+
+        $children = $this->xmlRequestDom->documentElement->childNodes;
+        
+        foreach($children as $child)
+        {
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+		   switch ($child->tagName)
+		   {
+		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain"));
+		   	
+		   	default:
+		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'object' entity of the XML request", E_USER_NOTICE);
+		   }
+        }
     }	
 }
 
 class elementParameters extends elementEntity implements IParams
 {   
-    var $xmlrequest = NULL;
+    var $xmlRequestDom = NULL;
     var $hasChild   = FALSE;
 
     function __construct($xmlrequest, $parentID=NULL)
     {
-        // Load the xmlrequest into a local SimpleXML variable
+    	// Load the xmlrequest into a local DOM variable
         if (gettype($xmlrequest)=='object')
         {
-            $this->xmlrequest = $xmlrequest;
+            $this->xmlRequestDom = $xmlrequest;
         }
         else
         {
-            $this->xmlrequest = simplexml_load_string($xmlrequest);
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
         }
-
+    		
         // Extract parameters from the XML request
         $this->setParamsFromXMLRequest();
     }
 	
 	function setParamsFromXMLRequest()
 	{
-        if(isset($this->xmlrequest->identifier))        $this->setID($this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
-//		if(isset($this->xmlrequest->taxon))				$this->setTaxon("the taxon", "blah");
+		global $corinaNS;
+        global $tridasNS;
+        global $taxonomicAuthorityEdition;
+
+        $children = $this->xmlRequestDom->documentElement->childNodes;
+        
+        foreach($children as $child)
+        {
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+		   switch ($child->tagName)
+		   {
+		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain"));		   		
+		   	case "authenticity":	 	$this->setAuthenticity($child->nodeValue);   	
+		   	case "shape": 				$this->setShape($child->nodeValue); 	  		
+		   	case "function": 			$this->setType($child->nodeValue);
+		   	case "file": 				$this->setFile($child->nodeValue);	   	
+		   	case "processing": 			$this->setProcessing($child->nodeValue);	   	
+		   	case "marks": 				$this->setMarks($child->nodeValue);	   	
+		   	case "description":			$this->setDescription($child->nodeValue);		   		
+		   	case "locationType": 		$this->geometry->setType($child->nodeValue);		   	
+		   	case "locationPrecision": 	$this->geometry->setPrecision($child->nodeValue);		   	
+		   	case "locationComment": 	$this->geometry->setComment($child->nodeValue);
+		   	case "locationGeometry": 	$this->geometry->setGeometryFromGML($this->xmlRequestDom->saveXML($child));
+		   	
+		   	case "genericField":
+		   		$type = $child->getAttribute("type");
+		   		$name = $child->getAttribute("name");
+		   		$value = $child->nodeValue;		   		
+		   		switch($name)
+		   		{
+		   			case "name":
+		   				$this->setName($value);
+		   				break;
+		   		}
+		   		break;
+		    
+		   	case "taxon":
+		   		/* @todo
+		   		if($child->getAttribute("normalStd")==$taxonomicAuthorityEdition)
+		   		{
+		   			$this->setTaxonByCoLID($child->getAttribute("normalId"));
+		   			$this->setOriginalTaxon($child->nodeValue);
+		   		}
+		   		else
+		   		{
+		   			$this->setTaxonByString($child->nodeValue);
+		   		}
+				*/
+		   		break; 
+		   	
+		   	case "dimensions":
+		   		$unitTag = $child->getElementsByTagName("unit")->item(0);
+		   		$this->setDimensionUnits($unitTag->nodeValue.$child->getAttribute("power"));
+		   		$dimensionTags = $unitTag->childNodes;
+		   		
+		   		foreach($dimensionTags as $dimension)
+		   		{
+		   			if($dimension->nodeType != XML_ELEMENT_NODE) continue;
+		   			switch ($dimension->tagName)
+		   			{
+		   				case "diameter":
+		   					$this->setDiameter($dimension->nodeValue);
+		   					break;
+		   				case "height":
+		   					$this->setHeight($dimension->nodeValue);
+		   					break;
+		   				case "width":
+		   					$this->setWidth($dimension->nodeValue);
+		   					break;
+		   				case "depth":
+		   					$this->setDepth($dimension->nodeValue);
+		   					break;
+		   			}
+		   		}
+		   		break;
+		   		
+		   	default:
+		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'element' entity of the XML request", E_USER_NOTICE);
+		   
+		   }
+        } 		  	
 	}
 }
 
@@ -137,35 +250,42 @@ class sampleParameters extends sampleEntity implements IParams
 
     function __construct($xmlrequest, $parentID=NULL)
     {
-        // Load the xmlrequest into a local SimpleXML variable
+    	// Load the xmlrequest into a local DOM variable
         if (gettype($xmlrequest)=='object')
         {
-            $this->xmlrequest = $xmlrequest;
+            $this->xmlRequestDom = $xmlrequest;
         }
         else
         {
-            $this->xmlrequest = simplexml_load_string($xmlrequest);
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
         }
+    		
+        // Extract parameters from the XML request
         $this->setParamsFromXMLRequest();
     }
 	
 	
     function setParamsFromXMLRequest()
     {
-        if(isset($this->xmlrequest->identifier))         $this->setID($this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
+		global $corinaNS;
+        global $tridasNS;
 
-        // Loop through the genericFields
-        foreach($this->xmlrequest->xpath('//genericField') as $field)
-        {
-            echo "field value = $field";
-            if($field['name']=='name') $this->setName($field);
-        }
+        $children = $this->xmlRequestDom->documentElement->childNodes;
         
-
-        if(isset($this->xmlrequest->samplingDate))       $this->setSamplingDate($this->xmlrequest->samplingDate);
-        if(isset($this->xmlrequest->sampleType))         $this->setType($this->xmlrequest->sampleType);
-        if(isset($this->xmlrequest->radius))             $this->hasChild  = True;
-    }
+        foreach($children as $child)
+        {
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+		   switch ($child->tagName)
+		   {
+		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain"));
+		   	
+		   	default:
+		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'sample' entity of the XML request", E_USER_NOTICE);
+		   }
+        }
+    }	
 }
 
 class radiusParameters extends radiusEntity implements IParams
@@ -175,17 +295,41 @@ class radiusParameters extends radiusEntity implements IParams
 
     function __construct($xmlrequest, $parentID=NULL)
     {
-        $this->sampleID = $parentID;
-        $this->xmlrequest = $xmlrequest;
+    	// Load the xmlrequest into a local DOM variable
+        if (gettype($xmlrequest)=='object')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+    		
+        // Extract parameters from the XML request
         $this->setParamsFromXMLRequest();
     }
     
     function setParamsFromXMLRequest()
     {
-        if(isset($this->xmlrequest->identifier))         $this->setID($this->xmlrequest->identifier, $this->xmlrequest->identifier['domain']);
-        if(isset($this->xmlrequest->name))               $this->setName($this->xmlrequest->name);
-        if(isset($this->xmlrequest->measurement))        $this->hasChild     = True;
-    }
+		global $corinaNS;
+        global $tridasNS;
+
+        $children = $this->xmlRequestDom->documentElement->childNodes;
+        
+        foreach($children as $child)
+        {
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+		   switch ($child->tagName)
+		   {
+		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain"));
+		   	
+		   	default:
+		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'object' entity of the XML request", E_USER_NOTICE);
+		   }
+        }
+    }	
 }
         
 
@@ -196,7 +340,7 @@ class radiusParameters extends radiusEntity implements IParams
  *
  */
 
-/*
+
 class parameters 
 {
     var $xmlrequest                 = NULL;
@@ -222,7 +366,7 @@ class parameters
     }
     
 }
-
+/*
 class treeParameters extends parameters
 {
     var $id                 = NULL;
@@ -575,7 +719,7 @@ class securityGroupParameters extends parameters
     }
 
 }
-
+*/
 class searchParameters extends parameters
 {
     var $returnObject            = NULL;
@@ -720,5 +864,5 @@ class searchParameters extends parameters
         }
     }
 }
-*/
+
 ?>

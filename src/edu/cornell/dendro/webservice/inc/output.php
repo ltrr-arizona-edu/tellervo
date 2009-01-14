@@ -38,10 +38,10 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
     $outputStr.="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     if ($metaHeader->status =="Error")
     {
-        $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"https://".$domain."css/corina.css\"?>";
-        $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"https://".$domain."css/docbook/driver.css\"?>";
+        $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"https://".$domain."css/corina.css\"?>\n";
+        $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"https://".$domain."css/docbook/driver.css\"?>\n";
     }
-    $outputStr.= "<corina xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">\n";
+    $outputStr.= "\n<corina xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">\n";
     $outputStr.= $metaHeader->asXML();
     
     if($metaHeader->status !="Error")

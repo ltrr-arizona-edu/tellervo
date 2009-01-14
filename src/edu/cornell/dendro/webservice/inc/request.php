@@ -14,13 +14,13 @@
  */
 require_once("inc/parameters.php");
 require_once("inc/dbhelper.php");
-
+require_once("inc/xmlhelper.php");
+require_once("inc/output.php");
 
 class request
 { 
     protected $xmlrequest                 = NULL;
-    protected $auth                       = NULL;
-    protected $metaHeader                 = NULL;
+    protected $xmlRequestDom			  = NULL;
     protected $paramObjectsArray          = array(); 
     protected $crudMode                   = NULL;
     protected $format                     = 'standard';
@@ -32,10 +32,8 @@ class request
     /*CONSTRUCTOR*/
     /*************/
     
-    function __construct($metaHeader, $auth, $xmlrequest)
+    function __construct($xmlrequest)
     {
-        $this->metaHeader = $metaHeader;
-        $this->auth = $auth;
         $this->logRequest($xmlrequest);
         $this->validateXML(stripslashes($xmlrequest));
     }
@@ -47,7 +45,53 @@ class request
     function __destruct()
     { 
     }
-
+  
+    
+    private function setCrudMode($crudMode)
+    {
+    	global $myMetaHeader;
+    	global $myAuth;
+    	
+    	
+    	$this->crudMode = strtolower($crudMode);
+    	$myMetaHeader->setRequestType($this->getCrudMode());
+    	
+    	
+		// Check authentication and request login if necessary
+		if($myAuth->isLoggedIn())
+		{
+		    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
+		}
+		elseif( ($myRequest->getCrudMode()=="nonce"))
+		{
+		
+		}
+		elseif( ($myRequest->getCrudMode()!="plainlogin") && ($myRequest->getCrudMode()!="securelogin"))
+		{
+		    // User is not logged in and is either requesting a nonce or isn't trying to log in at all
+		    // so request them to log in first
+		    $seq = $myAuth->sequence();
+		    $myMetaHeader->requestLogin($myAuth->nonce($seq), $seq);
+		}
+		
+		if($myRequest->getCrudMode()=='logout')
+		{
+		    $myAuth->logout();
+		    writeHelpOutput($myMetaHeader);
+		    die;
+		}
+		
+		if($myRequest->getCrudMode()== "help")
+		{
+		    // Output the resulting XML
+		    writeHelpOutput($myMetaHeader);
+		    die;
+		}
+		    	
+    	
+    	
+    }
+    
     /***********/
     /*FUNCTIONS*/
     /***********/   
@@ -63,44 +107,36 @@ class request
         global $corinaXSD;
         global $corinaNS;
         global $tridasNS;
+        
 
         $origErrorLevel = error_reporting(E_ERROR);
         $xmlrequest = xmlSpecialCharReplace($xmlrequest);
         $doc = new DomDocument;
         $doc->loadXML($xmlrequest);
-  
+        
         // Handle validation errors ourselves
         libxml_use_internal_errors(true);
 
         // Do the validation
         if($doc->schemaValidate($corinaXSD))
-        {
-
-            $this->xmlrequest = simplexml_import_dom($doc);
-            
-            // Set namespaces for XPath queries
-            $this->xmlrequest->registerXPathNamespace('cor', $corinaNS);
-            $this->xmlrequest->registerXPathNamespace('tds', $tridasNS);
+        {      
+        	$this->xmlrequest = $xmlrequest;
+            $this->xmlRequestDom = $doc;
             
             // Extract basic request information
-            if($this->xmlrequest)
-            {
-                $this->crudMode = strtolower($this->xmlrequest->request['type']);
-                if(isset($this->xmlrequest->request['format'])) $this->format=strtolower($this->xmlrequest->request['format']);
-                if(isset($this->xmlrequest->request['includePermissions'])) $this->includePermissions = fromStringtoPHPBool($this->xmlrequest->request['includePermissions']);
-                error_reporting($origErrorLevel);
-                return true;
-            }
-            else
-            {
-                $this->metaHeader->setMessage("905", "Unknown XML Errors");
-                error_reporting($origErrorLevel);
-                return false;
-            }
+            $requesttag = $doc->getElementsByTagName("request")->item(0);
+            $this->setCrudMode($requesttag->getAttribute("type"));          
+            
+    
+            $this->format = strtolower($requesttag->getAttribute("format"));
+            $this->includePermissions = formatBool($requesttag->getAttribute("includePermissions"));
+            
+            error_reporting($origErrorLevel);
+            return true;
         }
         else
         {
-            $this->metaHeader->setMessage("905", "The XML request does not validate against the schema. ".$this->xml_validation_errors($xmlrequest));
+        	trigger_error("905"."The XML request does not validate against the schema. ".$this->xml_validation_errors($xmlrequest), E_USER_ERROR);
             error_reporting($origErrorLevel);
             return false;
         }
@@ -116,6 +152,7 @@ class request
     {
         global $dbconn;
         global $wsversion;
+        global $myAuth;
 
         if ($xmlrequest)
         {
@@ -126,13 +163,13 @@ class request
             $request = $_SERVER['REQUEST_URI'];
         }
 
-        if($this->auth->getID()==NULL)
+        if($myAuth->getID()==NULL)
         {
             $sql = "insert into tblrequestlog (request, ipaddr, wsversion, page, client) values ('".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion', '".$_SERVER['SCRIPT_NAME']."', '".addslashes($_SERVER['HTTP_USER_AGENT'])."')";
         }
         else
         {
-            $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion, page, client) values ('".$this->auth->getID()."', '".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion', '".$_SERVER['SCRIPT_NAME']."', '".addslashes($_SERVER['HTTP_USER_AGENT'])."')";
+            $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion, page, client) values ('".$myAuth->getID()."', '".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion', '".$_SERVER['SCRIPT_NAME']."', '".addslashes($_SERVER['HTTP_USER_AGENT'])."')";
         }
 
         pg_send_query($dbconn, $sql);
@@ -152,25 +189,26 @@ class request
     function createParamObjects()
     {
         global $domain;
+        global $corinaNS;
+        global $tridasNS;
+
+        $xpath = new DOMXPath($this->xmlRequestDom);
+       	$xpath->registerNamespace('cor', $corinaNS);
+       	$xpath->registerNamespace('tridas', $tridasNS);
+        
+        
     	//******
     	//SEARCH
     	//******
         if($this->crudMode=='search')
         {
-            if($this->xmlrequest->xpath('//request/searchParams'))
-            {
-                foreach ($this->xmlrequest->xpath('//request/searchParams') as $item)
-                {
-                    $parentID = NULL;
-                    $myParamObj = new searchParameters($this->metaHeader, $this->auth, $item, $parentID);
-                    array_push($this->paramObjectsArray, $myParamObj);
-                }
-            }
-            else
-            {
-                $this->metaHeader->setMessage("905", "Invalid XML request - search parameters have not been set for your search request");
+			//@todo this needs checking
+        	$fragment = $xpath->query("//cor:request/cor:searchParams");
+	
+            $parentID = NULL;
+            $myParamObj = new searchParameters($this->xmlRequestDom->saveXML($fragment), $parentID);
+            array_push($this->paramObjectsArray, $myParamObj);
 
-            }   
         }
         
     	//***************
@@ -178,30 +216,30 @@ class request
     	//***************        
         elseif ( ($this->crudMode=='read') || ($this->crudMode=='delete'))
         {
-        	if($this->xmlrequest->xpath('//cor:entity'))
+        	if($this->xmlRequestDom->getElementsByTagName("entity")->item(0)!=NULL)
         	{
-	            foreach ($this->xmlrequest->xpath('//cor:entity') as $item)
+	            foreach ($this->xmlRequestDom->getElementsByTagName("entity") as $item)
 	            {
 	                $parentID = NULL;
-	                switch(strtolower($item['type']))
+	                switch(strtolower($item->getAttribute('type')))
 	                {
 	                	case 'object':    
-	                		$newxml = "<tds:object><identifier domain=\"$domain\">".$item['id']."</identifier></tds:object>";
+	                		$newxml = "<tds:object><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:object>";
 	                		$myParamObj = new objectParameters($newxml, $parentID);
                             break;	                		
 
                         case 'element':    
-	                		$newxml = "<tds:element><identifier domain=\"$domain\">".$item['id']."</identifier></tds:element>";
+	                		$newxml = "<tridas:element><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:element>";
 	                		$myParamObj = new elementParameters($newxml, $parentID);
                             break;	                		
                             
 	                	case 'sample':
-	                		$newxml = "<tds:sample><identifier domain=\"$domain\">".$item['id']."</identifier></tds:sample>";
+	                		$newxml = "<tridas:sample><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:sample>";
 	                		$myParamObj = new sampleParameters($newxml, $parentID);
                             break;
 
 	                	case 'radius':
-	                		$newxml = "<tds:radius><identifier domain=\"$domain\">".$item['id']."</identifier></tds:radius>";
+	                		$newxml = "<tridas:radius><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:radius>";
 	                		$myParamObj = new radiusParameters($newxml, $parentID);
                             break;
                                                         
@@ -212,30 +250,44 @@ class request
 	                array_push($this->paramObjectsArray, $myParamObj);
 	            }
         	}
-                else
-                {
-                    $this->metaHeader->setMessage("905", "Invalid XML request - read or delete requests require entity tags");
-                }
+            else
+            {
+                trigger_error("905"."Invalid XML request - read or delete requests require entity tags", E_USER_ERROR);
+            }
         
         }
         elseif ( ($this->crudMode=='create') || ($this->crudMode=='update') || ($this->crudMode=='assign') || ($this->crudMode=='unassign') )
         {
 
             // Extract ID of Parent entity if supplied
-            if(isset($this->xmlrequest->request['parentEntityID'])) $parentID = $this->xmlrequest->request['parentEntityID'];
+            $requestTag = $this->xmlRequestDom->getElementsByTagName("request")->item(0);
+            if($requestTag!=NULL) $parentID = $requestTag->getAttribute("parentEntityID");
+			
+        	$fragment = $xpath->query("/cor:corina/cor:request/*");
 
-            print_r($this->xmlrequest);
 
-            if($this->xmlrequest->request->children('http://www.tridas.org/1.1'));
+            foreach ($fragment as $item)
             {
-                foreach ($this->xmlrequest->request->children('http://www.tridas.org/1.1') as $item)
-                {
 
-                    print_r($item);
-                }
+            	switch($item->tagName)
+            	{
+            		case "tridas:element":
+            			$myParamObj = new elementParameters($this->xmlRequestDom->saveXML($item), $parentID);
+            			break;
+            		case "tridas:sample":
+            			$myParamObj = new sampleParameters($this->xmlRequestDom->saveXML($item), $parentID);
+            			break;
+            		default:
+            			trigger_error("901"."Unknown entity tag &lt;".$item->tagName."&gt; when trying to ".$this->crudMode." a record", E_USER_ERROR);
+            	}
+            	
+                if(isset($myParamObj)) array_push($this->paramObjectsArray, $myParamObj);
+
             }
 
-            /*
+
+
+/*
             if($this->xmlrequest->xpath('//dictionaries'))
             {
                 $parentID = NULL;
@@ -243,17 +295,8 @@ class request
                 $myParamObj = new dictionariesParameters($this->metaHeader, $this->auth, $item, $parentID);
                 array_push($this->paramObjectsArray, $myParamObj);
             }
-        
-            if($this->xmlrequest->xpath('//site'))
-            {
-                foreach ($this->xmlrequest->xpath('//site') as $item)
-                {
-                    $parentID = NULL;
-                    $myParamObj = new siteParameters($this->metaHeader, $this->auth, $item, $parentID);
-                    array_push($this->paramObjectsArray, $myParamObj);
-                }
-            }
-            
+        */
+            /*
             if($this->xmlrequest->xpath('//subSite'))
             {
                 foreach ($this->xmlrequest->xpath('//subSite') as $item)
@@ -404,20 +447,20 @@ class request
                     $myParamObj = new securityGroupParameters($this->metaHeader, $this->auth, $item, $parentID);
                     array_push($this->paramObjectsArray, $myParamObj);
                 }
-            }
-         */
+            }*/
+         
 
         }
         elseif ( ($this->crudMode=='plainlogin') || ($this->crudMode=='securelogin') || ($this->crudMode=='nonce') ) 
-        {
-            $parentID = NULL;
-            $item = $this->xmlrequest->request->authenticate;
-            $myParamObj = new authenticationParameters($this->metaHeader, $this->auth, $item, $parentID);
-            array_push($this->paramObjectsArray, $myParamObj);
+        { 	
+        	$authTag = $this->xmlRequestDom->getElementsByTagName("authenticate")->item(0);
+       		$myParamObj = new authenticationParameters($this->xmlRequestDom->saveXML($authTag));
+       		array_push($this->paramObjectsArray, $myParamObj);  
         }
+        
         else
         {
-            $this->metaHeader->setMessage("667", "Program bug - unable to determine request mode but shouldn't have got this far!");
+            trigger_error("667"."Program bug - unable to determine request mode but shouldn't have got this far!", E_USER_ERROR);
         }
 
 
@@ -428,7 +471,7 @@ class request
         }
         else
         {
-            $this->metaHeader->setMessage("905", "Invalid XML request - unable to extract a meaningful request from your XML document.");
+            trigger_error("905"."Invalid XML request - unable to extract a meaningful request from your XML document.", E_USER_ERROR);
             return false;
         }
 

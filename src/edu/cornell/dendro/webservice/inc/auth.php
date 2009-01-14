@@ -614,6 +614,7 @@ class auth
   {
         $this->lastErrorMessage = $theMessage;
         $this->lastErrorCode = $theCode;
+        trigger_error($theCode.$theMessage, E_USER_ERROR);
   }
 
   /**

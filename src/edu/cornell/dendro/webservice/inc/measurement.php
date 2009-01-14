@@ -10,67 +10,8 @@
 require_once('dbhelper.php');
 require_once('inc/note.php');
 
-class measurement 
+class measurement extends measurementEntitiy implements IDBAccessor
 {
-    var $measurementID = NULL;
-    var $vmeasurementID = NULL;
-    var $vmeasurementResultID = NULL;
-    var $vmeasurementOpID = 5;
-    var $vmeasurementOpParam = NULL;
-    var $vmeasurementOp = "Direct";
-    var $vmeasurementUnits = NULL;
-    var $indexType = NULL;
-    var $radiusID = NULL;
-    var $isReconciled = FALSE;
-    var $startYear = NULL;
-    var $isLegacyCleaned = NULL;
-    var $datingTypeID = 3;
-    var $datingType = "Relative";
-    var $datingErrorPositive = NULL;
-    var $datingErrorNegative = NULL;
-    var $isPublished = NULL;
-    var $measuredByID = NULL;
-    var $measuredBy = NULL;
-    var $ownerUserID = NULL;
-    var $owner = NULL;
-    var $readingsArray = array();
-    var $readingsUnits = NULL;
-    var $referencesArray = array();
-    var $vmeasurementNoteArray = array();
-    var $createdTimeStamp = NULL;
-    var $lastModifiedTimeStamp = NULL;
-    var $name = NULL;
-    var $readingCount = NULL;
-    var $measurementCount = NULL;
-    var $description = NULL;
-    var $centroidLat = NULL;
-    var $centroidLong = NULL;
-    var $minLat = NULL;
-    var $maxLat = NULL;
-    var $minLong = NULL;
-    var $maxLong = NULL;
-    
-    var $masterVMeasurementID = NULL;
-    var $justification = NULL;
-    var $certaintyLevel = NULL;
-    var $newStartYear = NULL;
-
-    var $summarySiteCode = NULL;
-    var $summarySiteCount = NULL;
-    var $summaryTaxonName = NULL;
-    var $summaryTaxonCount = NULL;
-    var $labPrefix = NULL;
-    var $fullLabCode = NULL;
-    
-    var $includePermissions = FALSE;
-    var $canCreate = NULL;
-    var $canUpdate = NULL;
-    var $canDelete = NULL;
-
-    var $parentXMLTag = "measurement"; 
-    var $lastErrorMessage = NULL;
-    var $lastErrorCode = NULL;
-
     /***************/
     /* CONSTRUCTOR */
     /***************/
@@ -84,13 +25,6 @@ class measurement
     /***********/
     /* SETTERS */
     /***********/
-
-    function setErrorMessage($theCode, $theMessage)
-    {
-        // Set the error latest error message and code for this object.
-        $this->lastErrorCode = $theCode;
-        $this->lastErrorMessage = $theMessage;
-    }
 
     function setParamsFromDB($theID, $format="standard")
     {
@@ -398,10 +332,13 @@ class measurement
     }
 
 
-    function validateRequestParams($paramsObj, $crudMode)
+    function validateRequestParams($paramsObj)
     {
-        // Check parameters based on crudMode 
-        switch($crudMode)
+		global $myRequest;
+    	
+    	
+    	// Check parameters based on crudMode 
+        switch($myRequest->getCrudMode())
         {
             case "read":
                 if($paramsObj->id==NULL)

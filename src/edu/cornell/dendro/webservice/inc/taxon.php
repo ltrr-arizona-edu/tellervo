@@ -133,6 +133,12 @@ class taxon extends taxonEntity implements IDBAccessor
 
 
 
+    function asXML()
+    {
+    	global $taxonomicAuthorityEdition;
+    	$xml = "<tridas:taxon normalStd=\"$taxonomicAuthorityEdition\" normalId=\"".$this->getCoLID()."\" normal=\"".$this->getLabel()."\">".$this->getOriginalTaxon()."</tridas:taxon>";
+    	return $xml;
+    }
 
 
 
@@ -157,7 +163,7 @@ class taxon extends taxonEntity implements IDBAccessor
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
                 // If ID has not been set or colID has been set, then we assume that we are writing a new record to the DB.  Otherwise updating.
-                if( ($this->id == NULL) || (isset($this->colID)) ) 
+                if( ($this->getID() == NULL) || ($this->getCoLID()!=NULL) ) 
                 {
                     // New record
                     $sql = "insert into tlkptaxon (";

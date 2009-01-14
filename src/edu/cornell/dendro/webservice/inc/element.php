@@ -157,14 +157,20 @@ class element extends elementEntity implements IDBAccessor
      * @return unknown
      */
     function setParamsFromParamsClass($paramsClass)
-    {
-        // Alters the parameter values based upon values supplied by the user and passed as a parameters class
+    {    	
+    	// First validate that the parameters class is valid
+    	if(!$this->validateRequestParams($paramsClass))
+    	{
+    		return false;
+    	}
+    	    	
+        // Alter the parameter values based upon values supplied by the user and passed as a parameters class
         if ($paramsClass->getName()!=NULL)             $this->setName($paramsClass->getName());
         //if ($paramsClass->originalTaxonName))     $this->originalTaxonName    = $paramsClass->originalTaxonName;
-        if ($paramsClass->taxon->getTaxonID()!=NULL)   $this->setTaxonByID($paramsClass->taxon->getTaxonID());
+        //if ($paramsClass->taxon->getTaxonID()!=NULL)   $this->setTaxonByID($paramsClass->taxon->getTaxonID());
         //if ($paramsClass->latitude))              $this->latitude             = $paramsClass->latitude;
         //if ($paramsClass->longitude))             $this->longitude            = $paramsClass->longitude;
-        if ($paramsClass->getPrecision()!=NULL)   $this->setPrecision($paramsClass->getPrecision());
+        if ($paramsClass->geometry->getPrecision()!=NULL)   $this->geometry->setPrecision($paramsClass->getPrecision());
         //if ($paramsClass->subSiteID))             $this->subSiteID            = $paramsClass->subSiteID;
         
         if ($paramsClass->elementNoteArray)
@@ -189,13 +195,16 @@ class element extends elementEntity implements IDBAccessor
      * Check that the parameters within a defined parameters class are valid for
      * a specific crudMode
      *
+     * @todo wouldn't it be better to have the permissions functions done here?
      * @param Parameters Class $paramsObj
      * @param String $crudMode (one of create, read, update or delete)
      * @return unknown
      */
-    function validateRequestParams($paramsObj, $crudMode)
+    function validateRequestParams($paramsObj)
     {
-        switch($crudMode)
+    	global $myRequest;
+    	
+        switch($myRequest->getCrudMode())
         {
             case "read":
                 if($paramsObj->getID() == NULL)
@@ -203,6 +212,7 @@ class element extends elementEntity implements IDBAccessor
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a element.");
                     return false;
                 }
+
                 return true;
          
             case "update":

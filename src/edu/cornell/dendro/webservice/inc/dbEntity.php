@@ -27,7 +27,7 @@ interface IDBAccessor
 	function asXML();
 	function writeToDB();
 	function deleteFromDB();
-	function validateRequestParams($paramsClass, $crudMode);
+	function validateRequestParams($paramsClass);
 }
 
 
@@ -742,7 +742,13 @@ class elementEntity extends dbEntity
 	 *
 	 * @var Double
 	 */
-	protected $depth = NULL;
+	protected $depth = NULL;	
+	/**
+	 * Units in which the dimensions are recorded
+	 *
+	 * @var String
+	 */
+	protected $dimensionUnits = NULL;	
 	/**
 	 * Type of element
 	 *
@@ -852,21 +858,50 @@ class elementEntity extends dbEntity
 		$this->height = (double) $height;
 		return true;
 	}
+	/**
+	 * Set the width of this element
+	 *
+	 * @param Double $width
+	 * @return Boolean
+	 */
+	function setWidth($width)
+	{
+		$this->width = (double) $width;
+		return true;
+	}
+	/**
+	 * Set the depth of this element
+	 *
+	 * @param Double $depth
+	 * @return Boolean
+	 */
+	function setDepth($depth)
+	{
+		$this->depth = (double) $depth;
+		return true;
+	}	
 	
 	/**
 	 * Set the dimensions of this element
 	 *
+	 * @param String $units
 	 * @param Double $height
 	 * @param Double $width
 	 * @param Double $depth
 	 * @return Boolean
 	 */
-	function setDimensions($height, $width, $depth)
+	function setDimensions($units, $height, $width, $depth)
 	{
-		$this->height = (double) $height;
-		$this->width = (double) $width;
-		$this->depth = (double) $depth;
+		$this->setDimensionUnits($units);
+		$this->setHeight($height);
+		$this->setWidth($width);
+		$this->setDepth($depth);
 		return true;
+	}
+	
+	function setDimensionUnits($units)
+	{
+		$this->dimensionUnits = addslashes($units);
 	}
 	
 	/**
@@ -960,6 +995,18 @@ class elementEntity extends dbEntity
 	{
 		$this->taxon = new Taxon;
 		$this->taxon->setParamsFromDB($id);
+		
+	}
+	
+	/**
+	 * Set the taxon using the Catalogue of Life db ID
+	 *
+	 * @param Integer $id
+	 */
+	function setTaxonByCoLID($id)
+	{
+		$this->taxon = new Taxon;
+		$this->taxon->setParamsFromCoL($id);
 		
 	}
 	
@@ -1960,6 +2007,100 @@ class taxonEntity extends dbEntity
         }
     }
     
+}
+
+class measurementEntity extends dbEntity 
+{	
+	/**
+	 * What method was used to measure 
+	 *
+	 * @var String
+	 */
+	protected $measuringMethod = NULL;
+	/**
+	 * The variable that was measured (ring with, earlywood, latewood etc)
+	 *
+	 * @var String
+	 */
+	protected $variable = NULL;
+	protected $units = NULL;
+	protected $power = NULL;
+	
+	
+	var $measurementID = NULL;
+    var $vmeasurementID = NULL;
+    var $vmeasurementResultID = NULL;
+    var $vmeasurementOpID = 5;
+    var $vmeasurementOpParam = NULL;
+    var $vmeasurementOp = "Direct";
+    var $vmeasurementUnits = NULL;
+    var $indexType = NULL;
+    var $radiusID = NULL;
+    var $isReconciled = FALSE;
+    var $startYear = NULL;
+    var $isLegacyCleaned = NULL;
+    var $datingTypeID = 3;
+    var $datingType = "Relative";
+    var $datingErrorPositive = NULL;
+    var $datingErrorNegative = NULL;
+    var $isPublished = NULL;
+    var $measuredByID = NULL;
+    var $measuredBy = NULL;
+    var $ownerUserID = NULL;
+    var $owner = NULL;
+    var $readingsArray = array();
+    var $readingsUnits = NULL;
+    var $referencesArray = array();
+    var $vmeasurementNoteArray = array();
+    var $createdTimeStamp = NULL;
+    var $lastModifiedTimeStamp = NULL;
+    var $name = NULL;
+    var $readingCount = NULL;
+    var $measurementCount = NULL;
+    var $description = NULL;
+    protected $geometry = NULL;
+
+    
+    var $masterVMeasurementID = NULL;
+    var $justification = NULL;
+    var $certaintyLevel = NULL;
+    var $newStartYear = NULL;
+
+    var $summarySiteCode = NULL;
+    var $summarySiteCount = NULL;
+    var $summaryTaxonName = NULL;
+    var $summaryTaxonCount = NULL;
+    var $labPrefix = NULL;
+    var $fullLabCode = NULL;
+    
+    var $includePermissions = FALSE;
+    var $canCreate = NULL;
+    var $canUpdate = NULL;
+    var $canDelete = NULL;
+
+    var $parentXMLTag = "measurement"; 
+    var $lastErrorMessage = NULL;
+    var $lastErrorCode = NULL;
+	
+    function __construct()
+    {  
+        $groupXMLTag = "elements";
+        parent::__construct($groupXMLTag); 
+		$this->geometry = new geometry;	
+		$this->taxon = new taxon; 	
+	}
+
+	/***********/
+    /* SETTERS */
+    /***********/ 	
+	
+	/***********/
+    /* GETTERS */
+    /***********/
+
+	/*************/
+    /* FUNCTIONS */
+    /*************/ 		
 }
 
 
