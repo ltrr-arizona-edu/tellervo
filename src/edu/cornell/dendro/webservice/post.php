@@ -44,8 +44,8 @@ XML:  <textarea name="xmlrequest" rows="20" cols="80">
 <h4>Search for measurements of a site:</h4>
 
 <pre>
-&lt;?xml version="1.0" encoding="UTF-8" xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:tridas="http://www.tridas.org/1.1"?&gt;
-&lt;corina&gt;
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;corina xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:tridas="http://www.tridas.org/1.1"&gt;
   &lt;request type="search"&gt;
      &lt;searchParams returnObject="measurement" limit="5"&gt;
         &lt;param name="siteid" operator="&gt;" value="571" /&gt;

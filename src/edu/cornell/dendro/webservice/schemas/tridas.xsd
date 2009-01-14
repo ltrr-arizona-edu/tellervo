@@ -277,7 +277,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 				<xs:element ref="marks" minOccurs="0"/>
 				<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="sample" maxOccurs="unbounded"/>
+				<xs:element ref="sample" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -367,7 +367,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 				<xs:element ref="sapwood" minOccurs="0"/>
 				<xs:element ref="bark"/>
 				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="measurementSeries" maxOccurs="unbounded"/>
+				<xs:element ref="measurementSeries" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

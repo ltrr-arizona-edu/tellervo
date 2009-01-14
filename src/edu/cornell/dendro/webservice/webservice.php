@@ -28,7 +28,7 @@ require_once("inc/dictionaries.php");
 require_once("inc/search.php");
 
 
-$xmldata = NULL;
+$xmldata 		= NULL;
 $myAuth         = new auth();
 $myMetaHeader   = new meta();
 
@@ -36,7 +36,7 @@ $myMetaHeader   = new meta();
 // Create request object from supplied XML document
 if($_POST['xmlrequest'])
 {
-    $myRequest  = new request($myMetaHeader, $myAuth, $_POST['xmlrequest']);
+    $myRequest  = new request($_POST['xmlrequest']);
 }
 else
 {
@@ -47,42 +47,8 @@ else
 }
 
 
-// Extract the type of request from XML doc
-$myMetaHeader->setRequestType($myRequest->getCrudMode());
-
-
-// Check authentication and request login if necessary
-if($myAuth->isLoggedIn())
-{
-    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
-}
-elseif( ($myRequest->getCrudMode()=="nonce"))
-{
-
-}
-elseif( ($myRequest->getCrudMode()!="plainlogin") && ($myRequest->getCrudMode()!="securelogin"))
-{
-    // User is not logged in and is either requesting a nonce or isn't trying to log in at all
-    // so request them to log in first
-    $seq = $myAuth->sequence();
-    $myMetaHeader->requestLogin($myAuth->nonce($seq), $seq);
-}
-
-if($myRequest->getCrudMode()=='logout')
-{
-    $myAuth->logout();
-    writeHelpOutput($myMetaHeader);
-    die;
-}
-
-if($myRequest->getCrudMode()== "help")
-{
-    // Output the resulting XML
-    writeHelpOutput($myMetaHeader);
-    die;
-}
 // If there have been no errors so far go ahead and process the request
-elseif($myMetaHeader->status != "Error")
+if($myMetaHeader->status != "Error")
 {
     // create parameter objects from sections of the request XML document
     $myRequest->createParamObjects();
@@ -106,51 +72,19 @@ elseif($myMetaHeader->status != "Error")
         // Create classes to hold data in, based on type of sections in xml request 
         switch(get_class($paramObj))
         {
-            case "siteParameters":
-                $myObject = new site();
-                break;
-            case "subSiteParameters":
-                $myObject = new subSite();
-                break;
-            case "elementParameters":
-                $myObject = new element();
-                break;
-            case "sampleParameters":
-                $myObject = new sample();
-                break;
-            case "radiusParameters":
-                $myObject = new radius();
-                break;
-            case "measurementParameters":
-                $myObject = new measurement();
-                break;
-            case "siteNoteParameters":
-                $myObject = new siteNote();
-                break;
-            case "elementNoteParameters":
-                $myObject = new elementNote();
-                break;
-            case "vmeasurementNoteParameters":
-                $myObject = new vmeasurementNote();
-                break;
-            case "readingNoteParameters":
-                $myObject = new readingNote();
-                break;
-            case "authenticationParameters":
-                $myObject = new authenticate();
-                break;
-            case "searchParameters":
-                $myObject = new search();
-                break;
-            case "dictionariesParameters":
-                $myObject = new dictionaries();
-                break;
-            case "securityUserParameters":
-                $myObject = new securityUser();
-                break;
-            case "securityGroupParameters":
-                $myObject = new securityGroup();
-                break;
+            case "elementParameters": 			$myObject = new element();
+            case "sampleParameters":  			$myObject = new sample();
+            case "radiusParameters": 			$myObject = new radius();
+            //case "measurementParameters": 		$myObject = new measurement();
+            //case "siteNoteParameters": 			$myObject = new siteNote();
+            //case "elementNoteParameters": 		$myObject = new elementNote();
+            //case "vmeasurementNoteParameters": 	$myObject = new vmeasurementNote();
+            //case "readingNoteParameters": 		$myObject = new readingNote();
+            case "authenticationParameters": 	$myObject = new authenticate();
+            case "searchParameters": 			$myObject = new search();
+            //case "dictionariesParameters": 		$myObject = new dictionaries();
+            //case "securityUserParameters": 		$myObject = new securityUser();
+            //case "securityGroupParameters":		$myObject = new securityGroup();
             default:
                 trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
         }
@@ -168,14 +102,6 @@ elseif($myMetaHeader->status != "Error")
                 trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), $defaultErrType);
                 continue;
             }
-        }
-
-
-        // If doing a create and the current object has a child then skip because
-        // the focus of the create request is the child
-        if (($myRequest->getCrudMode()=='create') && ($paramObj->hasChild===TRUE) )
-        {
-            continue;
         }
 
         // ********************

@@ -2023,9 +2023,103 @@ class measurementEntity extends dbEntity
 	 * @var String
 	 */
 	protected $variable = NULL;
+	/**
+	 * Units of measurement (e.g. meters)
+	 *
+	 * @var String
+	 */
 	protected $units = NULL;
+	/**
+	 * Resolution of measurement, used in combination with the unit field.  Recorded as an integer representing the exponent of the SI-unit in the unit field.  
+	 *
+	 * @var unknown_type
+	 */
 	protected $power = NULL;
+	/**
+	 * Date the measurment was taken
+	 *
+	 * @var ISODate
+	 */
+	protected $measuringDate = NULL;
+	/**
+	 * Name of the analyst that made the series
+	 *
+	 * @var String
+	 */
+	protected $analyst = NULL;
+	/**
+	 * Name of the dendrochronologist that oversaw the analyst
+	 *
+	 * @var String
+	 */
+	protected $dendrochronologist = NULL;
+	/**
+	 * More information about the measurement
+	 *
+	 * @var String
+	 */
+	protected $comments = NULL;
+	/**
+	 * How the measurement is used e.g. in which calendar
+	 *
+	 * @var String
+	 */
+	protected $usage = NULL;
+	/**
+	 * Comments by later users on the quality of the series
+	 *
+	 * @var unknown_type
+	 */
+	protected $usageComments = NULL;
+	/**
+	 * 	Year of the first measured ring
+	 *
+	 * @var Integer
+	 */
+	protected $firstYear = NULL;
+	/**
+	 * Type of statistic used to support match with calendar
+	 *
+	 * @var String
+	 */
+	protected $statType = NULL;
+	/**
+	 * Staistical value used to support match with calendar
+	 *
+	 * @var Double
+	 */
+	protected $statValue = NULL;
+	/**
+	 * Significance of statistical match with the calendar
+	 *
+	 * @var Double
+	 */
+	protected $significanceLevel = NULL;
+	/**
+	 * Estimated year that the tree sprouted
+	 *
+	 * @var Integer 
+	 */
+	protected $sproutYear = NULL;
+	/**
+	 * Estimated year of the death of the tree
+	 *
+	 * @var Integer
+	 */
+	protected $deathYear = NULL;
+	/**
+	 * Estimated provenance derived from the matching calendar
+	 *
+	 * @var String
+	 */
+	protected $provenance = NULL;
 	
+	protected $type = NULL;
+	protected $standardizingMethod = NULL;
+	protected $author = NULL;
+	protected $objective = NULL;
+	protected $version = NULL;
+	protected $derivationDate = NULL;
 	
 	var $measurementID = NULL;
     var $vmeasurementID = NULL;
@@ -2044,10 +2138,8 @@ class measurementEntity extends dbEntity
     var $datingErrorPositive = NULL;
     var $datingErrorNegative = NULL;
     var $isPublished = NULL;
-    var $measuredByID = NULL;
-    var $measuredBy = NULL;
-    var $ownerUserID = NULL;
-    var $owner = NULL;
+
+
     var $readingsArray = array();
     var $readingsUnits = NULL;
     var $referencesArray = array();
@@ -2057,8 +2149,8 @@ class measurementEntity extends dbEntity
     var $name = NULL;
     var $readingCount = NULL;
     var $measurementCount = NULL;
-    var $description = NULL;
-    protected $geometry = NULL;
+
+
 
     
     var $masterVMeasurementID = NULL;
@@ -2073,14 +2165,8 @@ class measurementEntity extends dbEntity
     var $labPrefix = NULL;
     var $fullLabCode = NULL;
     
-    var $includePermissions = FALSE;
-    var $canCreate = NULL;
-    var $canUpdate = NULL;
-    var $canDelete = NULL;
 
-    var $parentXMLTag = "measurement"; 
-    var $lastErrorMessage = NULL;
-    var $lastErrorCode = NULL;
+
 	
     function __construct()
     {  
