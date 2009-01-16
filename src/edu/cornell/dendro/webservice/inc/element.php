@@ -80,7 +80,7 @@ class element extends elementEntity implements IDBAccessor
                 $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
                 $this->setAuthenticity($row['authenticity']);
                 $this->setShape($row['shape']);
-                $this->setDimensions($row['height'], $row['width'], $row['depth']);
+                $this->setDimensions($row['units'],$row['height'], $row['width'], $row['depth']);
                 $this->setDiameter($row['diameter']);
                 $this->setType($row['type']);
                 $this->geometry->setGeometry($row['location'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
@@ -170,10 +170,10 @@ class element extends elementEntity implements IDBAccessor
         //if ($paramsClass->taxon->getTaxonID()!=NULL)   $this->setTaxonByID($paramsClass->taxon->getTaxonID());
         //if ($paramsClass->latitude))              $this->latitude             = $paramsClass->latitude;
         //if ($paramsClass->longitude))             $this->longitude            = $paramsClass->longitude;
-        if ($paramsClass->geometry->getPrecision()!=NULL)   $this->geometry->setPrecision($paramsClass->getPrecision());
+        //if ($paramsClass->geometry->getPrecision()!=NULL)   $this->geometry->setPrecision($paramsClass->getPrecision());
         //if ($paramsClass->subSiteID))             $this->subSiteID            = $paramsClass->subSiteID;
         
-        if ($paramsClass->elementNoteArray)
+        /*if ($paramsClass->elementNoteArray)
         {
             // Remove any existing site notes ready to be replaced with what user has specified
             unset($this->elementNoteArray);
@@ -186,7 +186,7 @@ class element extends elementEntity implements IDBAccessor
                     array_push($this->elementNoteArray, (int) $item[0]);
                 }
             }
-        }   
+        }*/   
 
         return true;
     }
@@ -278,12 +278,14 @@ class element extends elementEntity implements IDBAccessor
     }
 
 
+
     
     
     /***********/
     /*ACCESSORS*/
     /***********/
 
+    
     /**
      * Get the XML representation of this element
      *
@@ -513,25 +515,25 @@ class element extends elementEntity implements IDBAccessor
 
 
         // Check for required parameters
-        if($this->name == NULL) 
+        if($this->getName() == NULL) 
         {
             $this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
             return FALSE;
         }
 
         //Only attempt to run SQL if there are no errors so far
-        if($this->lastErrorCode == NULL)
+        if($this->getLastErrorCode() == NULL)
         {
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
                 // If ID has not been set then we assume that we are writing a new record to the DB.  Otherwise updating.
-                if($this->id == NULL)
+                if($this->getID() == NULL)
                 {
                     // New Record
                     $sql = "insert into tblelement ( ";
-                        if (isset($this->taxonID))                                  $sql.= "taxonid, ";
-                        if (isset($this->subSiteID))                                $sql.= "subsiteid, ";
+                        if ($this->taxon->getTaxonID()!=NULL)                       $sql.= "taxonid, ";
+                        if (isset($this->getP))                                $sql.= "subsiteid, ";
                         if (isset($this->name))                                     $sql.= "name, ";
                         if (isset($this->precision))                                $sql.= "precision, ";
                         if (isset($this->isLiveelement))                               $sql.= "isliveelement, ";

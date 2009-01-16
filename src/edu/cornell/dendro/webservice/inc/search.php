@@ -41,10 +41,11 @@ class search
         $this->lastErrorMessage = $theMessage;
     }
 
-    function validateRequestParams($paramsObj, $crudMode)
+    function validateRequestParams($paramsObj)
     {
-        // Check parameters based on crudMode 
-        switch($crudMode)
+    	global $myRequest;
+    	
+        switch($myRequest->getCrudMode())
         {
             case "search":
                 if($paramsObj->returnObject==NULL)

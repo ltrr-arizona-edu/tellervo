@@ -11,6 +11,7 @@
  */
 
 require_once('dbhelper.php');
+require_once('inc/element.php');
 require_once('inc/radius.php');
 require_once('inc/sampleType.php');
 require_once('inc/dbEntity.php');
@@ -119,16 +120,64 @@ class sample extends sampleEntity implements IDBAccessor
      * @param Parameters Class $paramsClass
      * @return Boolean
      */
-    private function setParamsFromParamsClass($paramsClass)
+    function setParamsFromParamsClass($paramsClass)
     {
+    	global $myRequest;
+    	
+    	// If we're doing things that require the details of this sample's parent then set it
+    	if ($myRequest->getCrudMode()=='create')
+    	{
+    		if($paramsClass->getParentID()!=NULL) 	$this->setParentEntity($paramsClass->getParentID());
+    	}
+    	
+    	
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
-        if(isset($paramsClass->id))               $this->setID($paramsClass->id);                      
-        //if(isset($paramsClass->treeID))           $this->treeID                           = $paramsClass->treeID;                      
-        if(isset($paramsClass->name))             $this->setName($paramsClass->name);                      
-        if(isset($paramsClass->samplingDate))     $this->setSamplingDate($paramsClass->samplingDate);            
-        if(isset($paramsClass->sampleType))       $this->setType($paramsClass->sampleType);              
+        if($paramsClass->getID()!=NULL)         $this->setID($paramsClass->getID());                                          
+        if($paramsClass->getName()!=NULL)       $this->setName($paramsClass->getName());                      
+        if($paramsClass->getSamplingDate())     $this->setSamplingDate($paramsClass->getSamplingDate());            
+        if($paramsClass->getType()!=NULL)       $this->setType($paramsClass->getType());              
         return true;
     }
+    
+    /**
+     * Set the details of this samples parent.  If the sample is in the database already it will look up based on it's ID, otherwise you must pass the
+     * ID of the parent manually
+     *
+     * @param Integer $parentID
+     * @return Boolean
+     */
+    function setParentEntity($parentID=NULL)
+    {
+    	global $dbconn; 	
+    	
+    	// Find out the parent ID if it's not specified
+    	if($parentID==NULL)
+    	{
+    		$sql = "select elementid from tblsample where sampleid =".$this->getID();
+	    	$dbconnstatus = pg_connection_status($dbconn);
+	        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+	        {
+	            pg_send_query($dbconn, $sql);
+	            $result = pg_get_result($dbconn);
+	            if(pg_num_rows($result)==0)
+	            {
+	                // No records match the id specified
+	                echo $sql;
+	                $this->setErrorMessage("903", "No records match the specified id");
+	                return FALSE;
+	            }
+	            else
+	            {   
+	            	$parentID = $row['elementid'];
+			
+	            }
+        	}
+    	}
+    	
+    	// Actually do the setting
+        $this->parentEntity = new element;
+  		$this->parentEntity->setParamsFromDB($parentID);  
+    }    
 
     
     /*************/
@@ -201,9 +250,9 @@ class sample extends sampleEntity implements IDBAccessor
                         $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a sample.");
                         return false;
                     }
-                    if($paramsObj->getTreeID() == NULL) 
+                    if($paramsObj->getParentID() == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'treeid' field is required when creating a sample.");
+                        $this->setErrorMessage("902","Missing parameter - parentID field is required when creating a sample.");
                         return false;
                     }
                 }
@@ -376,8 +425,8 @@ class sample extends sampleEntity implements IDBAccessor
 
         global $dbconn;
         $sql = NULL;
-        $sql2 = NULL;
-
+        $sql2 = NULL;       
+        
         //Only attempt to run SQL if there are no errors so far
         if($this->getLastErrorCode() == NULL)
         {
@@ -389,17 +438,17 @@ class sample extends sampleEntity implements IDBAccessor
                 {
                     // New record
                     $sql = "insert into tblsample ( ";
-                        if($this->getName()!=NULL)                    $sql.="name, ";
-                        //if(isset($this->treeID))                      $sql.="treeid, ";
-                        if($this->getSamplingDate()!=NULL)            $sql.="samplingdate, ";
-                        if($this->getType()!=NULL)                    $sql.="sampletype, ";
+                        if($this->getName()!=NULL)                   $sql.="name, ";
+                        if($this->parentEntity->getID()!=NULL)       $sql.="elementid, ";
+                        if($this->getSamplingDate()!=NULL)           $sql.="samplingdate, ";
+                        if($this->getType()!=NULL)                   $sql.="type, ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                        if($this->getName()!=NULL)                   $sql.="'".$this->getName()          ."', ";
-                        //if(isset($this->treeID))                      $sql.="'".$this->treeID         ."', ";
-                        if($this->getSamplingDate()!=NULL)           $sql.="'".$this->getSamplingDate()  ."', ";
-                        if($this->getType()!=NULL)                   $sql.="'".$this->getType()          ."', ";
+                        if($this->getName()!=NULL)                   $sql.="'".$this->getName()             ."', ";
+                        if($this->parentEntity->getID()!=NULL)       $sql.="'".$this->parentEntity->getID() ."', ";
+                        if($this->getSamplingDate()!=NULL)           $sql.="'".$this->getSamplingDate()     ."', ";
+                        if($this->getType()!=NULL)                   $sql.="'".$this->getType()             ."', ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
@@ -409,10 +458,10 @@ class sample extends sampleEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql.="update tblsample set ";
-                        if($this->getName()!=NULL)          $sql.="name='"           .$this->getName()          ."', ";
-                        //if(isset($this->treeID))           $sql.="treeID='"         .$this->treeID                                          ."', ";
-                        if($this->getSamplingDate()!=NULL)  $sql.="samplingdate='"   .$this->getSamplingDate()  ."', ";
-                        if($this->getType()!=NULL)          $sql.="sampletype='"     .$this->getType()          ."', ";
+                        if($this->getName()!=NULL)             	$sql.="name='"           .$this->getName()          	."', ";
+                        if($this->parentEntity->getID()!=NULL) 	$sql.="elementid='"      .$this->parentEntity->getID() 	."', ";
+                        if($this->getSamplingDate()!=NULL)     	$sql.="samplingdate='"   .$this->getSamplingDate()  	."', ";
+                        if($this->getType()!=NULL)          	$sql.="type='"     .$this->getType()          	."', ";
                     $sql = substr($sql, 0, -2);
                     $sql.= " where sampleid='".$this->getID()."'";
                 }

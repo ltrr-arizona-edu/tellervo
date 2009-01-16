@@ -63,11 +63,11 @@ class request
 		{
 		    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
 		}
-		elseif( ($myRequest->getCrudMode()=="nonce"))
+		elseif( ($this->getCrudMode()=="nonce"))
 		{
 		
 		}
-		elseif( ($myRequest->getCrudMode()!="plainlogin") && ($myRequest->getCrudMode()!="securelogin"))
+		elseif( ($this->getCrudMode()!="plainlogin") && ($this->getCrudMode()!="securelogin"))
 		{
 		    // User is not logged in and is either requesting a nonce or isn't trying to log in at all
 		    // so request them to log in first
@@ -75,14 +75,14 @@ class request
 		    $myMetaHeader->requestLogin($myAuth->nonce($seq), $seq);
 		}
 		
-		if($myRequest->getCrudMode()=='logout')
+		if($this->getCrudMode()=='logout')
 		{
 		    $myAuth->logout();
 		    writeHelpOutput($myMetaHeader);
 		    die;
 		}
 		
-		if($myRequest->getCrudMode()== "help")
+		if($this->getCrudMode()== "help")
 		{
 		    // Output the resulting XML
 		    writeHelpOutput($myMetaHeader);

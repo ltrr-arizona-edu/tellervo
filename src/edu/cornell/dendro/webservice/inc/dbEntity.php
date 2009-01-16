@@ -46,6 +46,13 @@ class dbEntity
     private $id = NULL;	
     
     /**
+     * Class containing details of this entities parent entity
+     *
+     * @var Object
+     */
+	protected $parentEntity = NULL;
+
+	/**
      * Domain from which this entities identifier was issued
      *
      * @var String
@@ -179,7 +186,6 @@ class dbEntity
 		$this->groupXMLTag = addslashes($theTag);
 		return true;
     }
-
     
     /**
      * Set the identifier and from what domain it came
@@ -798,7 +804,7 @@ class elementEntity extends dbEntity
 	/***********/
     /* SETTERS */
     /***********/ 	
-	
+		
 	/**
 	 * Set authenticity of element to original; repair; later addition
 	 *
@@ -1277,9 +1283,8 @@ class sampleEntity extends dbEntity
 	
 	/**
 	 * Set the date that this sample was taken on
-	 * @todo check that the passed date is valid ISO8601
 	 * 
-	 * @param ISODate $date
+	 * @param String $date
 	 * @return Boolean
 	 */
 	function setSamplingDate($date)

@@ -47,6 +47,7 @@ else
 }
 
 
+
 // If there have been no errors so far go ahead and process the request
 if($myMetaHeader->status != "Error")
 {
@@ -72,33 +73,32 @@ if($myMetaHeader->status != "Error")
         // Create classes to hold data in, based on type of sections in xml request 
         switch(get_class($paramObj))
         {
-            case "elementParameters": 			$myObject = new element();
-            case "sampleParameters":  			$myObject = new sample();
-            case "radiusParameters": 			$myObject = new radius();
-            //case "measurementParameters": 		$myObject = new measurement();
-            //case "siteNoteParameters": 			$myObject = new siteNote();
-            //case "elementNoteParameters": 		$myObject = new elementNote();
-            //case "vmeasurementNoteParameters": 	$myObject = new vmeasurementNote();
-            //case "readingNoteParameters": 		$myObject = new readingNote();
-            case "authenticationParameters": 	$myObject = new authenticate();
-            case "searchParameters": 			$myObject = new search();
-            //case "dictionariesParameters": 		$myObject = new dictionaries();
-            //case "securityUserParameters": 		$myObject = new securityUser();
-            //case "securityGroupParameters":		$myObject = new securityGroup();
+            case "elementParameters": 			$myObject = new element(); break;
+            case "sampleParameters":  			$myObject = new sample(); break;
+            case "radiusParameters": 			$myObject = new radius(); break;
+            //case "measurementParameters": 		$myObject = new measurement(); break;
+            //case "siteNoteParameters": 			$myObject = new siteNote(); break;
+            //case "elementNoteParameters": 		$myObject = new elementNote(); break;
+            //case "vmeasurementNoteParameters": 	$myObject = new vmeasurementNote(); break;
+            //case "readingNoteParameters": 		$myObject = new readingNote(); break;
+            case "authenticationParameters": 	$myObject = new authenticate(); break;
+            case "searchParameters": 			$myObject = new search(); break;
+            //case "dictionariesParameters": 		$myObject = new dictionaries(); break;
+            //case "securityUserParameters": 		$myObject = new securityUser(); break;
+            //case "securityGroupParameters":		$myObject = new securityGroup(); break;
             default:
-                trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
+            	trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
         }
-        
+
         // Get the name of the object (minus the Parameters bit)
         $objectType = substr(get_class($paramObj), 0, -10);
-        
+         
         // Before doing anything else check the request parameters are valid
         if($myMetaHeader->status != "Error")
-        {
-            $success = $myObject->validateRequestParams($paramObj, $myRequest->getCrudMode());
+        {       
+            $success = $myObject->validateRequestParams($paramObj);
             if(!$success)
             {
-
                 trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), $defaultErrType);
                 continue;
             }
@@ -112,34 +112,26 @@ if($myMetaHeader->status != "Error")
 
         // We may need to alter the object type, so store the original object type first
         $originalObjectType = $objectType;
-              
+    
         if ($myRequest->getCrudMode()=='create')
         {
             // For create requests we need the type and id of the parent to check permissions
             switch ($objectType)
             {
-                case "site":
-                    $myID = NULL;
-                    $objectType="default";
-                    break;
-                case "subSite":
-                    $myID = $paramObj->siteID;
-                    $objectType="site";
-                    break;
                 case "element":
-                    $myID = $paramObj->subSiteID;
+                    $myID = $paramObj->parentID;
                     $objectType="subSite";
                     break;
                 case "sample":
-                    $myID = $paramObj->elementID;
+                    $myID = $paramObj->parentID;
                     $objectType="element";
                     break;
                 case "radius":
-                    $myID = $paramObj->sampleID;
+                    $myID = $paramObj->parentID;
                     $objectType="sample";
                     break;
                 case "measurement":
-                    $myID = $paramObj->radiusID;
+                    $myID = $paramObj->parentID;
                     $objectType="radius";
                     break;
 

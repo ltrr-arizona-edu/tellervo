@@ -59,10 +59,11 @@ class authenticate
      * @param String $crudMode
      * @return Boolean
      */
-    public function validateRequestParams($paramsObj, $crudMode)
+    public function validateRequestParams($paramsObj)
     {
-        // Check parameters based on crudMode 
-        switch($crudMode)
+    	global $myRequest;  	
+    	
+        switch($myRequest->getCrudMode())
         {
             case "plainlogin":
                 if($paramsObj->getUsername()==NULL)
