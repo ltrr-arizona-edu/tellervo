@@ -51,6 +51,7 @@ class request
     {
     	global $myMetaHeader;
     	global $myAuth;
+    	global $myRequest;
     	
     	
     	$this->crudMode = strtolower($crudMode);

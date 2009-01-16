@@ -224,7 +224,7 @@ class taxon extends taxonEntity implements IDBAccessor
         }
     }
 
-    function validateRequestParams($paramsClass, $crudMode)
+    function validateRequestParams($paramsClass)
     {
 
         return false;

@@ -10,7 +10,7 @@
 require_once('dbhelper.php');
 require_once('inc/note.php');
 
-class measurement extends measurementEntitiy implements IDBAccessor
+class measurement extends measurementEntity implements IDBAccessor
 {
     /***************/
     /* CONSTRUCTOR */

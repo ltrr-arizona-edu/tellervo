@@ -142,10 +142,11 @@ class sample extends sampleEntity implements IDBAccessor
      * @param String $crudMode one of create, read, update or delete.
      * @return unknown
      */
-    function validateRequestParams($paramsObj, $crudMode)
+    function validateRequestParams($paramsObj)
     {
-        // Check parameters based on crudMode 
-        switch($crudMode)
+    	global $myRequest;
+    	
+        switch($myRequest->getCrudMode())
         {
             case "read":
                 if($paramsObj->getID()==NULL)
