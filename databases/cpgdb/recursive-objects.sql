@@ -112,3 +112,7 @@ RETURNS SETOF tblObject AS '
 ' LANGUAGE SQL;
 
 
+CREATE OR REPLACE FUNCTION cpgdb.FindElementObjectAncestors(tblElement.elementId%TYPE)
+RETURNS SETOF tblObject AS '
+   SELECT * from cpgdb.recurseFindObjectAncestors((SELECT objectId FROM tblElement WHERE elementID=$1), 1)
+' LANGUAGE SQL;
