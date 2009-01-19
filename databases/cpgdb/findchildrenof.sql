@@ -1,3 +1,17 @@
+CREATE OR REPLACE FUNCTION cpgdb.FindChildrenOfObjectAncestor(parentid integer)
+RETURNS SETOF typVMeasurementSearchResult AS $$
+DECLARE
+   id integer;
+   res typVMeasurementSearchResult;
+BEGIN
+   FOR id IN SELECT objectId FROM cpgdb.FindObjectDescendants(parentid, true) LOOP
+      FOR res in SELECT * FROM cpgdb.FindChildrenOf('object', id) LOOP
+         RETURN NEXT res;
+      END LOOP;
+   END LOOP;
+END;
+$$ LANGUAGE 'plpgsql' STABLE;
+
 CREATE OR REPLACE FUNCTION cpgdb.FindChildrenOf(varchar, integer) 
 RETURNS SETOF typVMeasurementSearchResult AS $$
 DECLARE
@@ -5,7 +19,7 @@ DECLARE
    id ALIAS FOR $2;
 
    i INTEGER;
-   searches VARCHAR[] := array['VMeasurement','Measurement','Radius','Sample','Element','Subobject','Object'];
+   searches VARCHAR[] := array['VMeasurement','Measurement','Radius','Sample','Element','Object'];
 
    whereClause VARCHAR;
    joinClause VARCHAR;

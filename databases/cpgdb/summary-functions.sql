@@ -28,8 +28,7 @@ BEGIN
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
 	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
 	INNER JOIN tblElement t on t.elementID = sp.elementID
-	INNER JOIN tblSubobject su on su.subobjectID = t.subobjectID
-	INNER JOIN tblObject s on s.objectID = su.objectID
+	INNER JOIN tblObject s on s.objectID = t.objectID
 	WHERE d.VMeasurementID = VMID
 	GROUP BY(s.code)   
    LOOP
@@ -133,7 +132,6 @@ DECLARE
    rec record;
 
    objectn text;
-   subobjectn text;
    elementn text;
    samplen text;
    radiusn text;
@@ -149,21 +147,19 @@ BEGIN
    -- VMeasurement is a special case
    IF labelfor = 'vmeasurement' THEN 
       count := 0;
-      FOR rec IN SELECT s.code as a,su.name as b,t.name as c,sp.name as d,r.name as e,vm.name as f 
+      FOR rec IN SELECT s.code as a,t.name as c,sp.name as d,r.name as e,vm.name as f 
 	FROM tblVMeasurementDerivedCache d
 	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
 	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
 	INNER JOIN tblElement t on t.elementID = sp.elementID
-	INNER JOIN tblSubobject su on su.subobjectID = t.subobjectID
-	INNER JOIN tblObject s on s.objectID = su.objectID
+	INNER JOIN tblObject s on s.objectID = t.objectID
 	INNER JOIN tblVMeasurement vm on vm.vmeasurementid = d.vmeasurementid
 	WHERE d.VMeasurementID = OBJID
       LOOP
          count := count + 1;
 
          objectn := rec.a;
-         subobjectn := rec.b;
          elementn := rec.c;
          samplen := rec.d;
          radiusn := rec.e;
@@ -185,11 +181,6 @@ BEGIN
 
       -- Start with silly cornell prefix and object
       ret := 'C-' || objectn;
-
-      -- Tack on the subobjectname, if it's not Main
-      IF subobjectn <> 'Main' THEN
-         ret := ret || '/' || subobjectn;
-      END IF;
 
       ret := ret || '-' || elementn || '-' || samplen || '-' || radiusn || '-';
 
@@ -215,8 +206,8 @@ BEGIN
    END IF;
 
    -- Start out with the basics
-   selection := 's.code as a,su.name as b,t.name as c';
-   query := ' FROM tblobject s INNER JOIN tblsubobject su ON su.objectid = s.objectid INNER JOIN tblelement t ON t.subobjectid = su.subobjectid';
+   selection := 's.code as a,t.name as c';
+   query := ' FROM tblobject s INNER JOIN tblelement t ON t.objectid = s.objectid';
 
    -- add sample
    IF queryLevel > 1 THEN
@@ -234,11 +225,6 @@ BEGIN
    FOR rec IN EXECUTE 'SELECT ' || selection || query || whereClause LOOP
       -- Start with silly cornell prefix and object
       ret := 'C-' || rec.a;
-
-      -- Tack on the subobjectname, if it's not Main
-      IF rec.b <> 'Main' THEN
-         ret := ret || '/' || rec.b;
-      END IF;
 
       IF PrefixOnly THEN
          IF queryLevel = 1 THEN
