@@ -34,9 +34,9 @@ BEGIN
 
    SELECT * INTO lastRow FROM tblObject WHERE objectId = objid;
 
-   -- Not found? End of the line.
+   -- This shouldn't happen!
    IF NOT FOUND THEN
-      EXIT;
+      RAISE EXCEPTION 'Object ID % not found. Either original object does not exist or object tree is broken.', objid;
    END IF;
 
    -- Return myself?
@@ -45,6 +45,11 @@ BEGIN
    END IF;
 
    parentid := lastRow.parentObjectId;
+
+   -- We hit the toplevel ancestor, bail!
+   IF parentid IS NULL THEN
+      RETURN;
+   END IF;
 
    FOR lastRow IN SELECT * FROM cpgdb.recurseFindObjectAncestors(parentid, recursionlevel + 1) LOOP
       RETURN NEXT lastRow;
