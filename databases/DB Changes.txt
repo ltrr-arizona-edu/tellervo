@@ -38,3 +38,27 @@ alter table tblvmeasurementresult add column description varchar(1000);
 alter table tblvmeasurementresult add column ispublished boolean not null default false;
 
 alter table tblvmeasurement add column isGenerating boolean not null default true;
+
+---------------------------------------------
+- Changes 1/15/09 for tblSubobject removal
+---------------------------------------------
+ALTER TABLE tblObject ADD COLUMN parentObjectId integer REFERENCES tblObject(objectId) ON DELETE restrict ON UPDATE cascade;
+ALTER TABLE tblObject ADD CONSTRAINT "enforce_obj_uniqueparents" CHECK(parentObjectId <> objectId);
+CREATE INDEX "parent_object_index" ON tblObject (parentObjectId);
+
+-- Cut out subobjects
+ALTER TABLE tblElement ADD COLUMN objectId integer REFERENCES tblObject(objectId) ON DELETE restrict ON UPDATE cascade;
+
+-- Code to make a list for importing fixes
+-- -- -- -- SELECT tblSubObject.ObjectId,tblElement.Elementid FROM tblSubObject, tblElement WHERE tblElement.subobjectid = tblsubobject.subobjectid;
+-- SELECT 'UPDATE tblElement SET objectId = ',tblSubObject.ObjectId,' WHERE elementId = ',tblElement.Elementid FROM tblSubObject, tblElement WHERE tblElement.subobjectid = tblsubobject.subobjectid;
+
+DROP VIEW vwtblelement;
+CREATE VIEW vwtblelement AS
+    SELECT tblelement.elementid, tblelement.taxonid, tblelement.locationprecision AS "precision", tblelement.name AS treename, tblelement.objectid, tblelement.createdtimestamp AS 
+treecreated, tblelement.lastmodifiedtimestamp AS treelastmodified, tblelement.originaltaxonname, tblelement."location", y(tblelement."location") AS longitude, x(tblelement."location") AS 
+latitude, tlkptaxon.label AS taxon, tblelement.islivetree FROM tblelement, tlkptaxon WHERE (tblelement.taxonid = tlkptaxon.taxonid);
+
+ALTER TABLE tblElement DROP COLUMN subObjectId;
+ALTER TABLE tblElement ALTER COLUMN objectId SET NOT NULL;
+
