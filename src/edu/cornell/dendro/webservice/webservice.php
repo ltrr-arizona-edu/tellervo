@@ -17,8 +17,7 @@ require_once("inc/errors.php");
 require_once("inc/request.php");
 require_once("inc/parameters.php");
 require_once("inc/output.php");
-require_once("inc/site.php");
-require_once("inc/subSite.php");
+require_once("inc/object.php");
 require_once("inc/element.php");
 require_once("inc/sample.php");
 require_once("inc/radius.php");
@@ -76,6 +75,7 @@ if($myMetaHeader->status != "Error")
             case "elementParameters": 			$myObject = new element(); break;
             case "sampleParameters":  			$myObject = new sample(); break;
             case "radiusParameters": 			$myObject = new radius(); break;
+            case "objectParameters": 			$myObject = new object(); break;            
             //case "measurementParameters": 		$myObject = new measurement(); break;
             //case "siteNoteParameters": 			$myObject = new siteNote(); break;
             //case "elementNoteParameters": 		$myObject = new elementNote(); break;
@@ -135,7 +135,10 @@ if($myMetaHeader->status != "Error")
                     $objectType="radius";
                     break;
 
-                // These objects don't have parents                
+                // These objects don't have parents     
+                case "object":
+                	$myID = $paramObj->getID();
+                	break;           
                 case "siteNote":
                     $myID = $paramObj->id;
                     break;
@@ -243,9 +246,10 @@ if($myMetaHeader->status != "Error")
         // ********************
         // Populate class with data stored in db 
         // ********************
-       
+                        	
         if( ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete') )
         {
+
             if($myMetaHeader->status != "Error")
             {
                 $success = $myObject->setParamsFromDB($paramObj->getID());

@@ -225,7 +225,7 @@ class request
 	                switch(strtolower($item->getAttribute('type')))
 	                {
 	                	case 'object':    
-	                		$newxml = "<tds:object><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:object>";
+	                		$newxml = "<tridas:object><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:object>";
 	                		$myParamObj = new objectParameters($newxml, $parentID);
                             break;	                		
 

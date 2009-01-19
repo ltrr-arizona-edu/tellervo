@@ -121,6 +121,7 @@ class objectParameters extends objectEntity implements IParams
     {
 		global $corinaNS;
         global $tridasNS;
+	
 
         $children = $this->xmlRequestDom->documentElement->childNodes;
         

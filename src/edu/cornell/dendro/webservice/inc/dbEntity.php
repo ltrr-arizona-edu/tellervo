@@ -681,7 +681,7 @@ class objectEntity extends dbEntity
 	 */
 	function getTemporalCoverage()
 	{
-		return $this->temporalCoverage;
+		return $this->coverageTemporal;
 	}
 	
 	/**
@@ -691,7 +691,7 @@ class objectEntity extends dbEntity
 	 */
 	function getTemporalCoverageFoundation()
 	{
-		return $this->temporalCoverageFoundation;
+		return $this->coverageTemporalFoundation;
 	}
 	
 }

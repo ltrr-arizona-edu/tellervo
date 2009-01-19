@@ -47,8 +47,8 @@ class object extends objectEntity implements IDBAccessor
        global $dbconn;
         
         $this->setID($theID);
-        $sql = "select * from tblobject where objectid='".$this->getID()."'";
-
+	    $sql = "select * from tblobject left outer join (select locationtypeid, name as locationtype from tlkplocationtype) as loctype on (tblobject.locationtypeid = loctype.locationtypeid) where objectid='".$this->getID()."'";
+        
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -65,13 +65,13 @@ class object extends objectEntity implements IDBAccessor
                 // Set parameters from db
                 $row = pg_fetch_array($result);
                 $this->setDescription($row['description']);
-                $this->setTitle($row['title']);
+                $this->setTitle($row['name']);
                 $this->setCreator($row['creator']);
                 $this->setOwner($row['owner']);
                 $this->setFile($row['file']);
-                $this->setCoverageTemporal($row['coverageTemporal'], $row['coverageTemporalFoundation']);
+                $this->setType($row['type']);
+                $this->setCoverageTemporal($row['coveragetemporal'], $row['coveragetemporalfoundation']);
                 $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
-               
             }
 
         }
@@ -92,6 +92,7 @@ class object extends objectEntity implements IDBAccessor
      */
     function setChildParamsFromDB()	
     {
+    	return true;
     	
     }
 	
@@ -103,12 +104,12 @@ class object extends objectEntity implements IDBAccessor
      */
     function setParamsFromParamsClass($paramsClass)
     {
-    	
+    	return true;
     }
 
 
     /***********/
-    /* SETTERS */
+    /* GETTERS */
     /***********/
     
     /**
@@ -127,8 +128,9 @@ class object extends objectEntity implements IDBAccessor
 	{
         $xml = NULL;
 
+
         // Return a string containing the current object in XML format
-        if ($this->getLastErrorCode()!=NULL)
+        if ($this->getLastErrorCode()==NULL)
         {
             if(($parts=="all") || ($parts=="beginning"))
             { 
@@ -147,7 +149,7 @@ class object extends objectEntity implements IDBAccessor
             		$xml .="<tridas:coverageTemporalFoundation>".$this->getTemporalCoverageFoundation()."</tridas:coverageTemporalFoundation>";
             		$xml .="</tridas:coverage>";
             	}
-            	if($this->location->asGML()!=NULL) $xml.= $this->location->asGML();
+            	if($this->location->asXML()!=NULL) $xml.= $this->location->asXML();
             }  
 
 	    
@@ -171,19 +173,82 @@ class object extends objectEntity implements IDBAccessor
     /* FUNCTIONS */
     /*************/	
 	
-	
+	/**
+	 * Write the current object to the database
+	 * @todo Implement!
+	 *
+	 */
 	function writeToDB()
 	{
 		
 	}
 	
+	/**
+	 * Delete this object from the database
+	 *
+	 * @return Boolean
+	 */
 	function deleteFromDB()
 	{
-		
+      // Delete the record in the database matching the current object's ID
+
+        global $dbconn;
+
+        // Check for required parameters
+        if($this->getID() == NULL) 
+        {
+            $this->setErrorMessage("902", "Missing parameter - 'id' field is required.");
+            return FALSE;
+        }
+
+        //Only attempt to run SQL if there are no errors so far
+        if($this->getLastErrorCode() == NULL)
+        {
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+
+                $sql = "delete from tblobject where objectid=".$this->getID();
+                // Run SQL 
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn);
+                if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                {
+                    $PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
+                    switch($PHPErrorCode)
+                    {
+                    case 23503:
+                            // Foreign key violation
+                            $this->setErrorMessage("907", "Foreign key violation.  You must delete all objects associated with an element before deleting the element itself.");
+                            break;
+                    default:
+                            // Any other error
+                            $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                    }
+                    return FALSE;
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+        }
+
+        // Return true as write to DB went ok.
+        return TRUE;		
 	}
 	
-	function validateRequestParams($paramsClass, $crudMode)
+	/**
+     * Check that the parameters within a defined parameters class are valid
+	 *
+	 * @param objectParameters $paramsClass
+	 * @return Boolean
+	 */
+	function validateRequestParams($paramsClass)
 	{
+		return true;
 		
 	}
 	

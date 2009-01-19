@@ -196,9 +196,8 @@ class element extends elementEntity implements IDBAccessor
      * a specific crudMode
      *
      * @todo wouldn't it be better to have the permissions functions done here?
-     * @param Parameters Class $paramsObj
-     * @param String $crudMode (one of create, read, update or delete)
-     * @return unknown
+     * @param elementParameters $paramsObj
+     * @return Boolean
      */
     function validateRequestParams($paramsObj)
     {
