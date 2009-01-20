@@ -153,42 +153,33 @@ class element extends elementEntity implements IDBAccessor
     /**
      * Set the current elements parameters from a paramsClass object
      *
-     * @param Parameter Class $paramsClass
+     * @param elementParameters $paramsClass
      * @return unknown
      */
     function setParamsFromParamsClass($paramsClass)
-    {    	
-    	// First validate that the parameters class is valid
-    	if(!$this->validateRequestParams($paramsClass))
-    	{
-    		return false;
-    	}
-    	    	
+    {    	    	    	
         // Alter the parameter values based upon values supplied by the user and passed as a parameters class
-        if ($paramsClass->getName()!=NULL)             $this->setName($paramsClass->getName());
-        //if ($paramsClass->originalTaxonName))     $this->originalTaxonName    = $paramsClass->originalTaxonName;
-        //if ($paramsClass->taxon->getTaxonID()!=NULL)   $this->setTaxonByID($paramsClass->taxon->getTaxonID());
-        //if ($paramsClass->latitude))              $this->latitude             = $paramsClass->latitude;
-        //if ($paramsClass->longitude))             $this->longitude            = $paramsClass->longitude;
-        //if ($paramsClass->geometry->getPrecision()!=NULL)   $this->geometry->setPrecision($paramsClass->getPrecision());
-        //if ($paramsClass->subSiteID))             $this->subSiteID            = $paramsClass->subSiteID;
-        
-        /*if ($paramsClass->elementNoteArray)
-        {
-            // Remove any existing site notes ready to be replaced with what user has specified
-            unset($this->elementNoteArray);
-            $this->elementNoteArray = array();
+        if ($paramsClass->getName()!=NULL)             		$this->setName($paramsClass->getName());
+        if ($paramsClass->getAuthenticity()!=NULL)			$this->setAuthenticity($paramsClass->getAuthenticity());
+        if ($paramsClass->getDescription()!=NULL)			$this->setDescription($paramsClass->getDescription());
+        if ($paramsClass->getDiameter()!=NULL)				$this->setDiameter($paramsClass->getDiameter());
+        if ($paramsClass->hasDimensions())   				$this->setDimensions($paramsClass->getDimensionUnits(), 
+        																		 $paramsClass->getDimension('height'), 
+        																		 $paramsClass->getDimension('width'), 
+        																		 $paramsClass->getDimension('depth'));
+		if ($paramsClass->getDimensionUnits()!=NULL)		$this->setDimensionUnits($paramsClass->getDimensionUnits());
+		if ($paramsClass->getFile()!=NULL)					$this->setFile($paramsClass->getFile());
+		if ($paramsClass->getMarks()!=NULL)					$this->setMarks($paramsClass->getMarks());
+		if ($paramsClass->getOriginalTaxon()!=NULL)			$this->setOriginalTaxon($paramsClass->getOriginalTaxon());
+		if ($paramsClass->getProcessing()!=NULL)			$this->setProcessing($paramsClass->getProcessing());
+		if ($paramsClass->getShape()!=NULL)					$this->setShape($paramsClass->getShape());
+		if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType());
+		if ($paramsClass->hasGeometry())					$this->geometry->setGeometry($paramsClass->geometry->getLocationGeometry(),
+																						 $paramsClass->geometry->getLocationType(),
+																						 $paramsClass->geometry->getLocationPrecision(),
+																						 $paramsClass->geometry->getLocationComment());
+		return true;        																		 
 
-            if($paramsClass->elementNoteArray[0]!='empty')
-            {
-                foreach($paramsClass->elementNoteArray as $item)
-                {
-                    array_push($this->elementNoteArray, (int) $item[0]);
-                }
-            }
-        }*/   
-
-        return true;
     }
 
     /**
@@ -197,13 +188,12 @@ class element extends elementEntity implements IDBAccessor
      *
      * @todo wouldn't it be better to have the permissions functions done here?
      * @param elementParameters $paramsObj
+     * @param String $crudMode
      * @return Boolean
      */
-    function validateRequestParams($paramsObj)
-    {
-    	global $myRequest;
-    	
-        switch($myRequest->getCrudMode())
+    function validateRequestParams($paramsObj, $crudMode)
+    {    	
+        switch($crudMode)
         {
             case "read":
                 if($paramsObj->getID() == NULL)
@@ -211,7 +201,6 @@ class element extends elementEntity implements IDBAccessor
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a element.");
                     return false;
                 }
-
                 return true;
          
             case "update":
@@ -220,12 +209,7 @@ class element extends elementEntity implements IDBAccessor
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating a element.");
                     return false;
                 }
-                if(($paramsObj->taxonID==NULL) 
-                    && ($paramsObj->name==NULL) 
-                    //&& ($paramsObj->subSiteID==NULL) 
-                    //&& ($paramsObj->latitude==NULL) 
-                    //&& ($paramsObj->longitude==NULL) 
-                    && ($paramsObj->getPrecision()==NULL)
+                if(($paramsObj->getType()==NULL) 
                     && ($paramsObj->hasChild!=True))
                 {
                     $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
@@ -257,16 +241,6 @@ class element extends elementEntity implements IDBAccessor
                         $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a element.");
                         return false;
                     }
-                    /*if($paramsObj->taxonID == NULL) 
-                    {
-                        $this->setErrorMessage("902","Missing parameter - 'validatedtaxonid' field is required when creating a element.");
-                        return false;
-                    }
-                    if($paramsObj->subSiteID == NULL) 
-                    {
-                        $this->setErrorMessage("902","Missing parameter - 'subsiteid' field is required.");
-                        return false;
-                    }*/
                 }
                 return true;
 
@@ -562,7 +536,7 @@ class element extends elementEntity implements IDBAccessor
                         if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "location=setsrid(makepoint(".sprintf("%1.8f",$this->longitude).", ".sprintf("%1.8f",$this->latitude)."), 4326), ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
-                    $sql .= " where elementid=".$this->id;
+                    $sql .= " where elementid=".$this->getID();
                 }
                 //echo $sql;
 
@@ -595,9 +569,9 @@ class element extends elementEntity implements IDBAccessor
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
                     {
-                        $this->id=$row['elementid'];   
-                        $this->createdTimeStamp=$row['createdtimestamp'];   
-                        $this->lastModifiedTimeStamp=$row['lastmodifiedtimestamp'];   
+                        $this->setID($row['elementid']);   
+                        $this->setCreatedTimestamp($row['createdtimestamp']);   
+                        $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);   
                     }
                 }
             }
@@ -638,7 +612,7 @@ class element extends elementEntity implements IDBAccessor
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tblelement where elementid=".$this->id;
+                $sql = "delete from tblelement where elementid=".$this->getID();
 
                 // Run SQL command
                 if ($sql)

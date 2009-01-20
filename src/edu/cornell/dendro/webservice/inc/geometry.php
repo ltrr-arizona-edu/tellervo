@@ -187,6 +187,11 @@ class geometry
 		return $this->runSQLCalculation($sql);			
 	}
 	
+	function getLocationGeometry()
+	{
+		return $this->geometry;
+	}
+	
 	function getLocationType()
 	{
 		return $this->type;

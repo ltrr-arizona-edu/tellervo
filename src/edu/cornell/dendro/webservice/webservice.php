@@ -96,7 +96,7 @@ if($myMetaHeader->status != "Error")
         // Before doing anything else check the request parameters are valid
         if($myMetaHeader->status != "Error")
         {       
-            $success = $myObject->validateRequestParams($paramObj);
+            $success = $myObject->validateRequestParams($paramObj, $myRequest->getCrudMode());
             if(!$success)
             {
                 trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), $defaultErrType);

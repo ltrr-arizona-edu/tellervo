@@ -27,7 +27,7 @@ interface IDBAccessor
 	function asXML();
 	function writeToDB();
 	function deleteFromDB();
-	function validateRequestParams($paramsClass);
+	function validateRequestParams($paramsClass, $crudMode);
 }
 
 
@@ -50,7 +50,7 @@ class dbEntity
      *
      * @var Object
      */
-	protected $parentEntity = NULL;
+	protected $parentEntityArray = NULL;
 
 	/**
      * Domain from which this entities identifier was issued
@@ -514,7 +514,14 @@ class objectEntity extends dbEntity
 	 * @var unknown_type
 	 */
 	protected $coverageTemporalFoundation = NULL;
-		
+
+	/**
+	 * Code name for this object
+	 *
+	 * @var String
+	 */
+	protected $code = NULL;
+	
     function __construct()
     {  
     	$this->location = new geometry();
@@ -607,7 +614,15 @@ class objectEntity extends dbEntity
 		$this->coverageTemporalFoundation = addslashes($foundation);	
 	}
 	
-	
+	/**
+	 * Set this object's code name
+	 *
+	 * @param String $value
+	 */
+	function setCode($value)
+	{
+		$this->code = addslashes($value);
+	}
 	
 
 	/***********/
@@ -694,6 +709,25 @@ class objectEntity extends dbEntity
 		return $this->coverageTemporalFoundation;
 	}
 	
+	/**
+	 * Get code name for this object
+	 *
+	 * @return String
+	 */
+	function getCode()
+	{
+		return $this->code;
+	}
+	
+	/**
+	 * Does this object have any geometry information?
+	 *
+	 * @return Geometry
+	 */
+    function hasGeometry()
+    {
+        return $this->location->getLocationGeometry()!=NULL;
+    }
 }
 
 
@@ -1147,6 +1181,16 @@ class elementEntity extends dbEntity
 	}
 	
 	/**
+	 * Get the units the dimensions are stored in
+	 *
+	 * @return Double
+	 */
+	function getDimensionUnits()
+	{
+		return $this->dimensionUnits;
+	}
+	
+	/**
 	 * Get the element type
 	 *
 	 * @return String
@@ -1206,10 +1250,10 @@ class elementEntity extends dbEntity
             return $this->taxon->getOriginalTaxon();
 	}
 
-        function hasGeometry()
-        {
-            return $this->geometry!=NULL;
-        }
+    function hasGeometry()
+    {
+        return $this->geometry!=NULL;
+    }
 }
 
 

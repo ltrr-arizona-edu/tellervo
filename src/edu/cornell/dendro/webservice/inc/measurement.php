@@ -332,13 +332,10 @@ class measurement extends measurementEntity implements IDBAccessor
     }
 
 
-    function validateRequestParams($paramsObj)
-    {
-		global $myRequest;
-    	
-    	
+    function validateRequestParams($paramsObj, $crudMode)
+    {  		
     	// Check parameters based on crudMode 
-        switch($myRequest->getCrudMode())
+        switch($crudMode)
         {
             case "read":
                 if($paramsObj->id==NULL)

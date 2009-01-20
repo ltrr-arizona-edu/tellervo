@@ -11,7 +11,6 @@
  */
 require_once('dbhelper.php');
 
-
 class object extends objectEntity implements IDBAccessor
 {
                    
@@ -92,19 +91,67 @@ class object extends objectEntity implements IDBAccessor
      */
     function setChildParamsFromDB()	
     {
-    	return true;
+        global $dbconn;
+
+        $sql  = "select * from cpgdb.findobjectdescendants(".$this->getID().", false)";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);
+
+            if(pg_num_rows($result)>0)
+            {
+            	// Object has 'object' descendants
+                while ($row = pg_fetch_array($result))
+	            {
+	            	$entity = new object();
+	            	$entity->setParamsFromDB($row['objectid']);
+	                array_push($this->parentEntityArray, $entity);
+	            }
+            }            
+            else
+            {
+            	// Object has no 'object' descendants so grab the 'element descendants instead
+            	$sql2  = "select * from tblelement where objectid='".$this->getID()."'";   
+				while ($row = pg_fetch_array($result)) 
+				{
+                	$entity = new element();
+                	$entity->setParamsFromDB($row['elementid']);
+                	array_push($this->parentEntityArray, $entity);        	 	
+				}	          
+            }
+
+
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+
+        return TRUE;
     	
     }
 	
     /**
      * Set the current object's parameters from a paramsClass object
      *
-     * @param Parameter Class $paramsClass
+     * @param objectParameters $paramsClass
      * @return Boolean
      */
     function setParamsFromParamsClass($paramsClass)
     {
-    	return true;
+        if ($paramsClass->getCode()!=NULL)             		$this->setCode($paramsClass->getCode());
+        if ($paramsClass->getCreator()!=NULL)		  		$this->setCreator($paramsClass->getCreator());
+        if ($paramsClass->getDescription()!=NULL)			$this->setDescription($paramsClass->getDescription());
+        if ($paramsClass->getFile()!=NULL)					$this->setFile($paramsClass->getFile());
+        if ($paramsClass->getOwner()!=NULL)					$this->setOwner($paramsClass->getOwner());
+        if ($paramsClass->getTemporalCoverage()!=NULL)		$this->setCoverageTemporal($paramsClass->getTemporalCoverage(), $paramsClass->getTemporalCoverageFoundation());
+        if ($paramsClass->getTitle()!=NULL)					$this->setTitle($paramsClass->getTitle());
+        if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType());
+        
+        return true;
     }
 
 
@@ -121,8 +168,86 @@ class object extends objectEntity implements IDBAccessor
      */
 	function asXML($format='standard', $parts='all')
 	{
-		return $this->_asXML();
+		
+	    switch($format)
+        {
+        case "comprehensive":
+            require_once('object.php');
+            require_once('element.php');
+            require_once('sample.php');
+            require_once('radius.php');
+            global $dbconn;
+	        global $corinaNS;
+	        global $tridasNS;
+	        global $gmlNS;
+
+	        // Create a DOM Document to hold the XML as it's produced
+            $xml = new DomDocument();
+    		$xml->loadXML("<object xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\"></object>");
+    		$xml->formatOutput = true;
+
+    	    $myParentObjectArray = Array();
+	  		array_push($myParentObjectArray, $this);
+    		
+            $sql = "SELECT * from cpgdb.findobjectancestors(".$this->getID().", false)";
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+            	$result = pg_query($dbconn, $sql);
+
+				while ($row = pg_fetch_array($result)) 
+				{	
+					$myParentObject = new object();
+					$myParentObject->setParamsFromDB($row['objectid']);
+					array_push($myParentObjectArray, $myParentObject);
+				}
+
+				$myParentObjectArray = array_reverse($myParentObjectArray);
+				
+				$i = 0;
+				foreach($myParentObjectArray as $obj)
+				{
+					$dom = new DomDocument();
+					$dom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$obj->asXML()."</root>");
+					$dom->formatOutput = true;
+					
+					$objnode = $dom->getElementsByTagName("object")->item(0);
+					$objnode = $xml->importNode($objnode, true);
+					$xml->getElementsByTagName("object")->item($i)->appendChild($objnode);
+					$i++;
+				
+				}
+				
+				return $xml->saveXML($xml->getElementsByTagName("object")->item(1));
+            }
+            else
+	        {
+	            // Connection bad
+	            $this->setErrorMessage("001", "Error connecting to database");
+	            return FALSE;
+	        }
+  
+
+    
+        
+        case "standard":
+            return $this->_asXML($format, $parts);
+
+        case "summary":
+            return $this->_asXML($format, $parts);
+
+        case "minimal":
+            return $this->_asXML($format, $parts);
+
+        
+        default:
+            $this->setErrorMessage("901", "Unknown format. Must be one of 'standard', 'summary' or 'comprehensive'");
+            return false;
+        }
 	}
+	
+	
+	
 	
 	private function _asXML($format='standard', $parts='all')
 	{
@@ -149,7 +274,7 @@ class object extends objectEntity implements IDBAccessor
             		$xml .="<tridas:coverageTemporalFoundation>".$this->getTemporalCoverageFoundation()."</tridas:coverageTemporalFoundation>";
             		$xml .="</tridas:coverage>";
             	}
-            	if($this->location->asXML()!=NULL) $xml.= $this->location->asXML();
+            	if($this->hasGeometry()) 			$xml.= $this->location->asXML();
             }  
 
 	    
@@ -172,15 +297,140 @@ class object extends objectEntity implements IDBAccessor
     /*************/
     /* FUNCTIONS */
     /*************/	
-	
+
 	/**
 	 * Write the current object to the database
-	 * @todo Implement!
 	 *
+	 * @return Boolean
 	 */
 	function writeToDB()
 	{
-		
+        // Write the current object to the database
+
+        global $dbconn;
+        $sql = "";
+        $sql2 = "";
+
+
+        // Check for required parameters
+        if($this->getName() == NULL) 
+        {
+            $this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
+            return FALSE;
+        }
+
+        //Only attempt to run SQL if there are no errors so far
+        if($this->getLastErrorCode() == NULL)
+        {
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                // If ID has not been set then we assume that we are writing a new record to the DB.  Otherwise updating.
+                if($this->getID() == NULL)
+                {
+                    // New Record
+                    $sql = "insert into tblobject ( ";
+                        if ($this->getName()!=NULL)                                     $sql.= "name, ";
+                        if ($this->getCode()!=NULL)										$sql.= "code, ";
+                        if ($this->getCreator()!=NULL)									$sql.= "creator, ";
+                        if ($this->getOwner()!=NULL)									$sql.= "owner, ";
+                        if ($this->getType()!=NULL)										$sql.= "type, ";
+                        if ($this->getDescription()!=NULL)								$sql.= "description, ";
+                        if ($this->getTemporalCoverage()!=NULL)							$sql.= "coveragetemporal, ";
+                        if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "coveragetemporalfoundation, ";
+                        if ($this->location->getLocationGeometry()!=NULL)				$sql.= "locationgeometry, ";
+                        if ($this->location->getLocationComment()!=NULL)				$sql.= "locationcomment, ";
+                        if ($this->location->getLocationType()!=NULL)					$sql.= "locationtype, ";
+                        if ($this->location->getLocationPrecision()!=NULL)				$sql.= "locationprecision, ";
+                        if ($this->getFile()!=NULL)										$sql.= "file, ";
+                        if ($this->parentEntity->getID()!=NULL)							$sql.= "parentobjectid, ";
+                    // Trim off trailing space and comma
+                    $sql = substr($sql, 0, -2);
+                    $sql.=") values (";
+                        if ($this->getName()!=NULL)                                     $sql.= "'".$this->getName()."', ";
+                        if ($this->getCode()!=NULL)										$sql.= "'".$this->getCode()."', ";
+                        if ($this->getCreator()!=NULL)									$sql.= "'".$this->getCreatedTimestamp()."', ";
+                        if ($this->getOwner()!=NULL)									$sql.= "'".$this->getOwner()."', ";
+                        if ($this->getType()!=NULL)										$sql.= "'".$this->getType()."', ";
+                        if ($this->getDescription()!=NULL)								$sql.= "'".$this->getDescription()."', ";
+                        if ($this->getTemporalCoverage()!=NULL)							$sql.= "'".$this->getTemporalCoverage()."', ";
+                        if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "'".$this->getTemporalCoverageFoundation()."', ";
+                        if ($this->location->getLocationGeometry()!=NULL)				$sql.= "'".$this->location->getLocationGeometry()."', ";
+                        if ($this->location->getLocationComment()!=NULL)				$sql.= "'".$this->location->getLocationComment()."', ";
+                        if ($this->location->getLocationType()!=NULL)					$sql.= "'".$this->location->getLocationType()."', ";
+                        if ($this->location->getLocationPrecision()!=NULL)				$sql.= "'".$this->location->getLocationPrecision()."', ";
+                        if ($this->getFile()!=NULL)										$sql.= "'".$this->getFile()."', ";
+                        if ($this->parentEntity->getID()!=NULL)							$sql.= "'".$this->parentEntity->getID()."', ";   
+                    // Trim off trailing space and comma
+                    $sql = substr($sql, 0, -2);
+                    $sql.=")";
+                    $sql2 = "select * from tbloject where objectid=currval('tblobject_objectid_seq')";
+                }
+                else
+                {
+                    // Updating DB
+                    $sql = "update tblelement set ";
+                        if ($this->getName()!=NULL)                                     $sql.= "name='".$this->getName()."', ";
+                        if ($this->getCode()!=NULL)										$sql.= "code='".$this->getCode()."', ";
+                        if ($this->getCreator()!=NULL)									$sql.= "creator='".$this->getCreator()."', ";
+                        if ($this->getOwner()!=NULL)									$sql.= "owner='".$this->getOwner()."', ";
+                        if ($this->getType()!=NULL)										$sql.= "type='".$this->getType()."', ";
+                        if ($this->getDescription()!=NULL)								$sql.= "description='".$this->getDescription()."', ";
+                        if ($this->getTemporalCoverage()!=NULL)							$sql.= "coveragetemporal='".$this->getTemporalCoverage()."', ";
+                        if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "coveragetemporalfoundation='".$this->getTemporalCoverageFoundation()."', ";
+                        if ($this->location->getLocationGeometry()!=NULL)				$sql.= "locationgeometry='".$this->location->getLocationGeometry()."', ";
+                        if ($this->location->getLocationComment()!=NULL)				$sql.= "locationcomment='".$this->location->getLocationComment()."', ";
+                        if ($this->location->getLocationType()!=NULL)					$sql.= "locationtype='".$this->location->getLocationType()."', ";
+                        if ($this->location->getLocationPrecision()!=NULL)				$sql.= "locationprecision='".$this->location->getLocationPrecision()."', ";
+                        if ($this->getFile()!=NULL)										$sql.= "file='".$this->getFile()."', ";
+                        if ($this->parentEntity->getID()!=NULL)							$sql.= "parentobject='".$this->parentEntity->getID()."', ";                    
+                        // Trim off trailing space and comma
+                    $sql = substr($sql, 0, -2);
+                    $sql .= " where objectid=".$this->getID();
+                }
+                //echo $sql;
+
+                // Run SQL command
+                if ($sql)
+                {
+                    // Run SQL 
+                    pg_send_query($dbconn, $sql);
+                    $result = pg_get_result($dbconn);
+                    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                    {
+                        $PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
+                        switch($PHPErrorCode)
+                        {
+                        default:
+                                // Any other error
+                                $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                        }
+                        return FALSE;
+                    }
+                }
+                // Retrieve automated field values when a new record has been inserted
+                if ($sql2)
+                {
+                    // Run SQL
+                    $result = pg_query($dbconn, $sql2);
+                    while ($row = pg_fetch_array($result))
+                    {
+                        $this->setID($row['objectid']);   
+                        $this->setCreatedTimestamp($row['createdtimestamp']);   
+                        $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);   
+                    }
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+        }
+
+        // Return true as write to DB went ok.
+        return TRUE;		
 	}
 	
 	/**
@@ -219,7 +469,7 @@ class object extends objectEntity implements IDBAccessor
                     {
                     case 23503:
                             // Foreign key violation
-                            $this->setErrorMessage("907", "Foreign key violation.  You must delete all objects associated with an element before deleting the element itself.");
+                            $this->setErrorMessage("907", "Foreign key violation.  You must delete all entities associated with an object before deleting the object itself.");
                             break;
                     default:
                             // Any other error
@@ -244,11 +494,74 @@ class object extends objectEntity implements IDBAccessor
      * Check that the parameters within a defined parameters class are valid
 	 *
 	 * @param objectParameters $paramsClass
+	 * @param String $crudMode
 	 * @return Boolean
 	 */
-	function validateRequestParams($paramsClass)
-	{
-		return true;
+	function validateRequestParams($paramsClass, $crudMode)
+	{    	
+        switch($crudMode)
+        {
+            case "read":
+                if($paramsClass->getID() == NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a element.");
+                    return false;
+                }
+                return true;
+         
+            case "update":
+                if($paramsClass->getID() == NULL)
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating a element.");
+                    return false;
+                }
+                if(    ($paramsClass->getCode()==NULL)
+                    && ($paramsClass->getCreator()==NULL) 
+                    && ($paramsClass->getDescription()==NULL)
+                    && ($paramsClass->getType()==NULL)
+                    && ($paramsClass->getFile()==NULL)
+                    && ($paramsClass->getOwner()==NULL)
+                    && ($paramsClass->getTemporalCoverage()==NULL)
+                    && ($paramsClass->getTemporalCoverageFoundation()==NULL)
+                    && ($paramsClass->getTitle()==NULL) 
+                  )
+                {
+                    $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
+                    return false;
+                }
+                return true;
+
+            case "delete":
+                if($paramsClass->getID() == NULL) 
+                {
+                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a element.");
+                    return false;
+                }
+                return true;
+
+            case "create":
+                if($paramsClass->hasChild===TRUE)
+                {
+                    if($paramsClass->getID() == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'objectid' field is required when creating an element.");
+                        return false;
+                    }
+                }
+                else
+                {
+                    if($paramsClass->getName() == NULL) 
+                    {
+                        $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating an object.");
+                        return false;
+                    }
+                }
+                return true;
+
+            default:
+                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
+                return false;
+        }
 		
 	}
 	

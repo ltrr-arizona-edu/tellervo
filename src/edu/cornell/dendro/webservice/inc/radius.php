@@ -121,12 +121,10 @@ class radius extends radiusEntity implements IDBAccessor
         return true;
     }
 
-    function validateRequestParams($paramsObj)
+    function validateRequestParams($paramsObj, $crudMode)
     {
-        // Check parameters based on crudMode 
-    	global $myRequest;
-    	
-        switch($myRequest->getCrudMode())
+        // Check parameters based on crudMode    	
+        switch($crudMode)
         {
             case "read":
                 if($paramsObj->getID()==NULL)

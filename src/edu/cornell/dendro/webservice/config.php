@@ -22,7 +22,7 @@ $domain = "dendro.cornell.edu/dev/";
 $debugFlag = false; 
 
 // Version number to be displayed in output headers
-$wsversion = "0.1.".exec(svnversion); 
+$wsversion = "0.2.".exec(svnversion); 
 
 // Path to RelaxNG schema
 $rngSchema = "/var/www/corina-webservice/dev/schemas/corina.rng"; 
