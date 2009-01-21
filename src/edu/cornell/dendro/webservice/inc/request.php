@@ -269,7 +269,6 @@ class request
 
             foreach ($fragment as $item)
             {
-
             	switch($item->tagName)
             	{
             		case "tridas:element":
@@ -277,6 +276,9 @@ class request
             			break;
             		case "tridas:sample":
             			$myParamObj = new sampleParameters($this->xmlRequestDom->saveXML($item), $parentID);
+            			break;
+            		case "tridas:object":
+            			$myParamObj = new objectParameters($this->xmlRequestDom->saveXML($item), $parentID);
             			break;
             		default:
             			trigger_error("901"."Unknown entity tag &lt;".$item->tagName."&gt; when trying to ".$this->crudMode." a record", E_USER_ERROR);

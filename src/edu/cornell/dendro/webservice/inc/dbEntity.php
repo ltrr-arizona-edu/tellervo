@@ -145,6 +145,7 @@ class dbEntity
     public function __construct($groupXMLTag)
     {
     	$this->setgroupXMLTag($groupXMLTag);
+    	$this->parentEntityArray = array();
     }
 
     
@@ -237,7 +238,7 @@ class dbEntity
     	$this->lastModifiedTimeStamp=$timestamp;
     	return true;
     }
-    
+        
     
     /***********/
     /* GETTERS */

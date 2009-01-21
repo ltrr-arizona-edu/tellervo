@@ -64,7 +64,7 @@ class object extends objectEntity implements IDBAccessor
                 // Set parameters from db
                 $row = pg_fetch_array($result);
                 $this->setDescription($row['description']);
-                $this->setTitle($row['name']);
+                $this->setTitle($row['title']);
                 $this->setCreator($row['creator']);
                 $this->setOwner($row['owner']);
                 $this->setFile($row['file']);
@@ -151,6 +151,14 @@ class object extends objectEntity implements IDBAccessor
         if ($paramsClass->getTitle()!=NULL)					$this->setTitle($paramsClass->getTitle());
         if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType());
         
+        if ($paramsClass->parentID!=NULL)
+        {
+        	$parentObj = new object();
+        	$parentObj->setParamsFromDB($paramsClass->parentID);
+        	array_push($this->parentEntityArray, $parentObj);
+        }
+        
+        
         return true;
     }
 
@@ -226,10 +234,7 @@ class object extends objectEntity implements IDBAccessor
 	            $this->setErrorMessage("001", "Error connecting to database");
 	            return FALSE;
 	        }
-  
-
-    
-        
+ 
         case "standard":
             return $this->_asXML($format, $parts);
 
@@ -267,6 +272,8 @@ class object extends objectEntity implements IDBAccessor
             	if($this->getCreator()!=NULL)		$xml.= "<tridas:creator>".$this->getCreator()."</tridas:creator>";
             	if($this->getOwner()!=NULL)			$xml.= "<tridas:owner>".$this->getOwner()."</tridas:owner>";
             	if($this->getFile()!=NULL)			$xml.= "<tridas:file xlink:href=\"".$this->getFile()."\" />";
+            	if($this->getCode()!=NULL)			$xml.= "<tridas:genericField name=\"code\" type=\"string\">".$this->getCode()."</tridas:genericField>"; 
+            	
             	if($this->getTemporalCoverage()!=NULL)
             	{
             		$xml .="<tridas:coverage>";
@@ -313,9 +320,9 @@ class object extends objectEntity implements IDBAccessor
 
 
         // Check for required parameters
-        if($this->getName() == NULL) 
+        if($this->getTitle() == NULL) 
         {
-            $this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
+            $this->setErrorMessage("902", "Missing parameter - 'title' field is required.");
             return FALSE;
         }
 
@@ -330,7 +337,7 @@ class object extends objectEntity implements IDBAccessor
                 {
                     // New Record
                     $sql = "insert into tblobject ( ";
-                        if ($this->getName()!=NULL)                                     $sql.= "name, ";
+                        if ($this->getTitle()!=NULL)                                    $sql.= "title, ";
                         if ($this->getCode()!=NULL)										$sql.= "code, ";
                         if ($this->getCreator()!=NULL)									$sql.= "creator, ";
                         if ($this->getOwner()!=NULL)									$sql.= "owner, ";
@@ -343,11 +350,11 @@ class object extends objectEntity implements IDBAccessor
                         if ($this->location->getLocationType()!=NULL)					$sql.= "locationtype, ";
                         if ($this->location->getLocationPrecision()!=NULL)				$sql.= "locationprecision, ";
                         if ($this->getFile()!=NULL)										$sql.= "file, ";
-                        if ($this->parentEntity->getID()!=NULL)							$sql.= "parentobjectid, ";
+                        if (count($this->parentEntityArray)>0)							$sql.= "parentobjectid, ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                        if ($this->getName()!=NULL)                                     $sql.= "'".$this->getName()."', ";
+                        if ($this->getTitle()!=NULL)                                    $sql.= "'".$this->getTitle()."', ";
                         if ($this->getCode()!=NULL)										$sql.= "'".$this->getCode()."', ";
                         if ($this->getCreator()!=NULL)									$sql.= "'".$this->getCreatedTimestamp()."', ";
                         if ($this->getOwner()!=NULL)									$sql.= "'".$this->getOwner()."', ";
@@ -360,17 +367,17 @@ class object extends objectEntity implements IDBAccessor
                         if ($this->location->getLocationType()!=NULL)					$sql.= "'".$this->location->getLocationType()."', ";
                         if ($this->location->getLocationPrecision()!=NULL)				$sql.= "'".$this->location->getLocationPrecision()."', ";
                         if ($this->getFile()!=NULL)										$sql.= "'".$this->getFile()."', ";
-                        if ($this->parentEntity->getID()!=NULL)							$sql.= "'".$this->parentEntity->getID()."', ";   
+                        if (count($this->parentEntityArray)>0)							$sql.= "'".$this->parentEntityArray[0]->getID()."', ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
-                    $sql2 = "select * from tbloject where objectid=currval('tblobject_objectid_seq')";
+                    $sql2 = "select * from tblobject where objectid=currval('tblobject_objectid_seq')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update tblelement set ";
-                        if ($this->getName()!=NULL)                                     $sql.= "name='".$this->getName()."', ";
+                    $sql = "update tblobject set ";
+                        if ($this->getTitle()!=NULL)                                     $sql.= "title='".$this->getTitle()."', ";
                         if ($this->getCode()!=NULL)										$sql.= "code='".$this->getCode()."', ";
                         if ($this->getCreator()!=NULL)									$sql.= "creator='".$this->getCreator()."', ";
                         if ($this->getOwner()!=NULL)									$sql.= "owner='".$this->getOwner()."', ";
@@ -383,7 +390,7 @@ class object extends objectEntity implements IDBAccessor
                         if ($this->location->getLocationType()!=NULL)					$sql.= "locationtype='".$this->location->getLocationType()."', ";
                         if ($this->location->getLocationPrecision()!=NULL)				$sql.= "locationprecision='".$this->location->getLocationPrecision()."', ";
                         if ($this->getFile()!=NULL)										$sql.= "file='".$this->getFile()."', ";
-                        if ($this->parentEntity->getID()!=NULL)							$sql.= "parentobject='".$this->parentEntity->getID()."', ";                    
+                        if (count($this->parentEntityArray)>0)							$sql.= "parentobject='".$this->parentEntityArray[0]->getID()."', ";                    
                         // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql .= " where objectid=".$this->getID();
@@ -550,9 +557,9 @@ class object extends objectEntity implements IDBAccessor
                 }
                 else
                 {
-                    if($paramsClass->getName() == NULL) 
+                    if($paramsClass->getTitle() == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating an object.");
+                        $this->setErrorMessage("902","Missing parameter - 'title' field is required when creating an object.");
                         return false;
                     }
                 }

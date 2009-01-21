@@ -133,7 +133,45 @@ class objectParameters extends objectEntity implements IParams
 		   {
 		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
 		   	case "type":				$this->setType($child->nodeValue); break;
+		   	case "description":			$this->setDescription($child->nodeValue); break;
+		   	case "creator":				$this->setCreator($child->nodeValue); break;
+		   	case "title":				$this->setTitle($child->nodeValue); break;
+		   	case "owner":				$this->setOwner($child->nodeValue); break;
+		   	case "file":				$this->setFile($child->nodeValue); break;
+		   	case "genericField":
+		   		$type = $child->getAttribute("type");
+		   		$name = $child->getAttribute("name");
+		   		$value = $child->nodeValue;		   		
+		   		switch($name)
+		   		{
+		   			case "code":
+		   				$this->setCode($value);
+		   				break;
+		   		}
+		   		break;
+			
+		   	case "coverage":			
+		   		$coverageTags = $child->childNodes;
+		   		foreach($covereageTags as $tag)
+		   		{
+		   			switch($tag->tagName)
+		   			{
+		   				case "coverageTemporal":			$coverageTemporal = $tag->nodeValue; break;
+		   				case "coverageTemporalFoundation": 	$coverageTemporalFoundation = $tag->nodeValue; break;
+		   			}
+		   			
+		   			if ( (isset($coverageTemporal)) && (isset($coverageTemporalFoundation)) ) $this->setCoverageTemporal($coverageTemporal, $coverageTemporalFoundation);
+		
+		   		}
 		   	
+		   	case "location":
+		   		// @todo 
+		   		break;
+		   		
+		   	case "object":
+		   		trigger_error("901"."Nested objects not supported in XML request.  Use parentID instead to show relationships", E_USER_ERROR);
+		   		break;
+		   		
 		   	default:
 		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'object' entity of the XML request", E_USER_NOTICE);
 		   }
