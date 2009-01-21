@@ -740,68 +740,61 @@ class elementEntity extends dbEntity
 	 * @var Integer
 	 */
 	protected $taxon = NULL;
-	
-	/**
-	 * The name that this element was originally identified as 
-	 *
-	 * @var String
-	 */
-	protected $originalTaxon = NULL;
-	
+		
 	/**
 	 * Whether this element is original, a repair, or later addition
 	 *
 	 * @var String
 	 */
-	protected $authenticity = NULL;
+	private $authenticity = NULL;
 	/**
 	 * Shape of this element
 	 *
 	 * @var String
 	 */
-	protected $shape = NULL;
+	private $shape = NULL;
 	/**
 	 * Diameter of this element
 	 *
 	 * @var Double
 	 */
-	protected $diameter = NULL;
+	private $diameter = NULL;
 	/**
 	 * Height of this element
 	 *
 	 * @var Double
 	 */
-	protected $height = NULL;
+	private $height = NULL;
 	/**
 	 * Width of this element
 	 *
 	 * @var Double
 	 */
-	protected $width = NULL;
+	private $width = NULL;
 	/**
 	 * Depth of this element here...
 	 *
 	 * @var Double
 	 */
-	protected $depth = NULL;	
+	private $depth = NULL;	
 	/**
 	 * Units in which the dimensions are recorded
 	 *
 	 * @var String
 	 */
-	protected $dimensionUnits = NULL;	
+	private $dimensionUnits = NULL;	
 	/**
 	 * Type of element
 	 *
 	 * @var String
 	 */
-	protected $type = NULL;
+	private $type = NULL;
 	/**
 	 * Associate file URL
 	 *
 	 * @var String
 	 */
-	protected $file = NULL;
+	private $file = NULL;
 	/**
 	 * Geometry object representing the location 
 	 *
@@ -813,20 +806,20 @@ class elementEntity extends dbEntity
 	 *
 	 * @var String
 	 */
-	protected $processing = NULL;
+	private $processing = NULL;
 	/**
 	 * Carpenter marks
 	 *
 	 * @var String
 	 */
-	protected $marks = NULL;
+	private $marks = NULL;
 	
 	/**
 	 * Description of element
 	 *
 	 * @var String
 	 */
-	protected $description = NULL;
+	private $description = NULL;
 	
     function __construct()
     {  
@@ -1017,61 +1010,6 @@ class elementEntity extends dbEntity
 				
 	}
 
-	/**
-	 * Set the original name by which this element was identified
-	 *
-	 * @param unknown_type $value
-	 */
-	function setOriginalTaxon($value)
-	{
-		$this->taxon->setOriginalTaxon(addslashes($value));
-	}
-	
-	/**
-	 * Set the taxon using the Corina db ID code
-	 *
-	 * @param Integer $id
-	 */
-	function setTaxonByID($id)
-	{
-		$this->taxon = new Taxon;
-		$this->taxon->setParamsFromDB($id);
-		
-	}
-	
-	/**
-	 * Set the taxon using the Catalogue of Life db ID
-	 *
-	 * @param Integer $id
-	 */
-	function setTaxonByCoLID($id)
-	{
-		$this->taxon = new Taxon;
-		$this->taxon->setParamsFromCoL($id);
-		
-	}
-	
-	/**
-	 * Attempt to set the taxon using a name string
-	 *
-	 * @todo Implement
-	 * @param String $name
-	 */
-	function setTaxonByString($name)
-	{
-		
-	}
-	
-	/**
-	 * Set the taxon using the ITRDB taxon code
-	 * 
-	 * @todo Needs implementing
-	 * @param String $code
-	 */
-	function setTaxonByITRDBCode($code)
-	{
-		
-	}
 	
 	/**
 	 * Set the description of this element
@@ -1804,22 +1742,22 @@ class radiusEntity extends dbEntity
 
 class taxonEntity extends dbEntity
 {
-    protected $parentID = NULL;
-    protected $label = NULL;
-    protected $colID = NULL;
-    protected $colParentID = NULL;
-    protected $taxonRank = NULL;
-    protected $parentXMLTag = "taxonDictionary"; 
-    protected $lastErrorMessage = NULL;
-    protected $lastErrorCode = NULL;
-    protected $kingdom = NULL;
-    protected $phylum = NULL;
-    protected $class = NULL;
-    protected $order = NULL;
-    protected $family = NULL;
-    protected $genus = NULL;
-    protected $species = NULL;
-    protected $originalTaxon = NULL;
+    private $parentID = NULL;
+    private $label = NULL;
+    private $colID = NULL;
+    private $colParentID = NULL;
+    private $taxonRank = NULL;
+    private $parentXMLTag = "taxonDictionary"; 
+    private $lastErrorMessage = NULL;
+    private $lastErrorCode = NULL;
+    private $kingdom = NULL;
+    private $phylum = NULL;
+    private $class = NULL;
+    private $order = NULL;
+    private $family = NULL;
+    private $genus = NULL;
+    private $species = NULL;
+    private $originalTaxon = NULL;
 	
     
     function __construct()
@@ -1831,11 +1769,6 @@ class taxonEntity extends dbEntity
     /* SETTERS */
     /***********/
 
-    function setOriginalTaxon($value)
-    {
-    	$this->originalTaxon=$value;
-    }
-    
     function setLabel($theLabel)
     {
         // Set the current objects note.
@@ -1906,9 +1839,27 @@ class taxonEntity extends dbEntity
     }
     
 
-
-    function setParamsFromCoL($CoLID)
+	/**
+	 * Set the current taxon details using the Catalogue of Life dictionary.
+	 *
+	 * @param String $CoLID - CoL ID 
+	 * @param String $CoLNormalName - CoL normalised name for belts and braces check
+	 * @param String $webservice - either 'local' or 'remote'
+	 * @return Boolean
+	 */
+    function setParamsFromCoL($CoLID, $CoLNormalName, $webservice="local")
     {
+    	if($webservice=='local')
+    	{
+
+    		
+    	}
+    	else
+    	{
+    		$this->setErrorMessage("702", "Setting taxon parameters using the remote Cataloge of life webservice has not yet been implemented.");
+    	}
+    	
+    	/**
         $doneStuff = false;
         $colURL="http://webservice.catalogueoflife.org/annual-checklist/2008/search.php?response=full&id=$CoLID";
         $colXML = simplexml_load_file($colURL);
@@ -1969,8 +1920,33 @@ class taxonEntity extends dbEntity
             $this->setErrorMessage("906", "Record already exists.");
             return false;
         }
-
+		**/
     }  
+    
+    function setCoLID($id)
+    {
+    	$this->colID = $id;
+    }
+    
+    function setCoLParentID($id)
+    {
+    	$this->colParentID = $id;
+    }
+    
+    function setTaxonRank($rank)
+    {
+    	$this->taxonRank = $rank;
+    }
+    
+    function setParentID($id)
+    {
+    	$this->parentID = $id;
+    }
+    
+    function setOriginalTaxon($taxon)
+    {
+    	$this->originalTaxon = addslashes($taxon);
+    }
     /**********/
     /* GETTERS */
     /***********/     

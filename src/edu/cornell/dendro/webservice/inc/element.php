@@ -40,6 +40,54 @@ class element extends elementEntity implements IDBAccessor
     /* SETTERS */
     /***********/
 
+    function setParentsFromDB()
+    {
+        require_once('object.php');
+        global $dbconn;
+        global $corinaNS;
+        global $tridasNS;
+        global $gmlNS;
+                
+        // First find the immediate object entity parent
+           $sql = "SELECT * from cpgdb.findelementobjectancestors(".$this->getID().")";
+           $dbconnstatus = pg_connection_status($dbconn);
+           if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+           {
+               pg_send_query($dbconn, $sql);
+               $result = pg_get_result($dbconn); 
+
+               if(pg_num_rows($result)==0)
+               {
+                   // No records match the id specified
+                   $this->setErrorMessage("903", "There are no objects associated with element id=".$this->getID());
+                   return FALSE;
+               }
+               else
+               {
+				   // Empty array before populating it
+               	   $this->parentEntityArray = array();
+               	   
+               	   // Loop through all the parents
+                   while($row = pg_fetch_array($result))
+                   {
+                   		$myObject = new object();
+            			$success = $myObject->setParamsFromDB($row['objectid']);
+	                   	if($success===FALSE)
+	                   	{
+	                   	    trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
+	                   	}  
+
+	                   	// Add to the array of parents
+	                   	array_push($this->parentEntityArray,$myObject);
+                   }
+                   
+                   // Reverse array so that the immediate parent is first and is followed by
+                   // successively more ancestral parents
+                   $this->parentEntityArray = array_reverse($this->parentEntityArray);
+                   
+               }
+           }	
+    }
    
     /**
      * Set the current element's parameters from the database
@@ -73,8 +121,9 @@ class element extends elementEntity implements IDBAccessor
                 // Set parameters from db
                 $row = pg_fetch_array($result);
                 //$this->subSiteID = $row['subsiteid'];
-                $this->setTaxonByID($row['taxonid']);
-                $this->setOriginalTaxon($row['originaltaxonname']);
+                $this->taxon->setParamsFromDB($row['taxonid']);
+                $this->taxon->setOriginalTaxon($row['originaltaxonname']);
+                $this->taxon->setHigherTaxonomy();
                 $this->setName($row['name']);
                 $this->setCreatedTimestamp($row['createdtimestamp']);
                 $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
@@ -250,9 +299,6 @@ class element extends elementEntity implements IDBAccessor
         }
     }
 
-
-
-    
     
     /***********/
     /*ACCESSORS*/
@@ -271,56 +317,42 @@ class element extends elementEntity implements IDBAccessor
         switch($format)
         {
         case "comprehensive":
-            require_once('site.php');
-            require_once('subSite.php');
+            require_once('object.php');
             global $dbconn;
-            $xml = NULL;
+	        global $corinaNS;
+	        global $tridasNS;
+	        global $gmlNS;
+	        
+	        // We need to return the comprehensive XML for this element i.e. including all it's ancestral 
+	        // object entities.
+	        
+	        // Make sure the parent entities are set
+	        $this->setParentsFromDB();	        
+	        
+            // Grab the XML representation of the immediate parent using the 'comprehensive'
+            // attribute so that we get all the object ancestors formatted correctly                   
+            $xml = new DomDocument();   
+    		$xml->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->parentEntityArray[0]->asXML('comprehensive')."</root>");                   
 
-            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tblelement.elementid
-                FROM tblsubsite 
-                INNER JOIN tblelement ON tblsubsite.subsiteid=tblelement.subsiteid
-                where tblelement.elementid='".$this->getID()."'";
+    		// We need to locate the leaf tridas:object (one with no child tridas:objects)
+    		// because we need to insert our element xml here
+	        $xpath = new DOMXPath($xml);
+	       	$xpath->registerNamespace('cor', $corinaNS);
+	       	$xpath->registerNamespace('tridas', $tridasNS);		    		
+    		$nodelist = $xpath->query("//tridas:object[* and not(descendant::tridas:object)]");
+    		
+    		// Create a temporary DOM document to store our element XML
+    		$tempdom = new DomDocument();
+			$tempdom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->asXML()."</root>");
+   		
+			// Import and append the element XML node into the main XML DomDocument
+			$elemnode = $tempdom->getElementsByTagName("element")->item(0);
+			$elemnode = $xml->importNode($elemnode, true);
+			$nodelist->item(0)->appendChild($elemnode);
 
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                pg_send_query($dbconn, $sql);
-                $result = pg_get_result($dbconn); 
-
-                if(pg_num_rows($result)==0)
-                {
-                    // No records match the id specified
-                    $this->setErrorMessage("903", "No match for element id=".$this->id);
-                    return FALSE;
-                }
-                else
-                {
-                    $row = pg_fetch_array($result);
-
-                    $mySite = new site();
-                    $mySubSite = new subSite();
-
-                    $success = $mySite->setParamsFromDB($row['siteid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
-                    }
-                    
-                    $success = $mySubSite->setParamsFromDB($row['subsiteid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($mySubSite->getLastErrorCode().$mySubSite->getLastErrorMessage());
-                    }
-
-                    $xml = $mySite->asXML("summary", "beginning");
-                    $xml.= $mySubSite->asXML("summary", "beginning");
-                    $xml.= $this->_asXML("standard", "all");
-                    $xml.= $mySubSite->asXML("summary", "end");
-                    $xml.= $mySite->asXML("summary", "end");
-
-                }
-            }
-            return $xml;
+            // Return an XML string representation of the entire shebang
+            return $xml->saveXML($xml->getElementsByTagName("object")->item(0));
+            
         case "standard":
             return $this->_asXML($format, $parts);
         case "summary":
@@ -390,13 +422,7 @@ class element extends elementEntity implements IDBAccessor
                     //if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".escapeXMLChars($myTaxon->getLabel())."</validatedTaxon>\n";
                     //if(isset($this->originalTaxonName))    $xml.= "<originalTaxonName>".escapeXMLChars($this->originalTaxonName)."</originalTaxonName>\n";
 
-					$xml.= $this->taxon->getHigherTaxonXML('kingdom');   
-                    $xml.= $this->taxon->getHigherTaxonXML('phylum');   
-                    $xml.= $this->taxon->getHigherTaxonXML('class');   
-                    $xml.= $this->taxon->getHigherTaxonXML('order');   
-                    $xml.= $this->taxon->getHigherTaxonXML('family');   
-                    $xml.= $this->taxon->getHigherTaxonXML('genus');   
-                    $xml.= $this->taxon->getHigherTaxonXML('species');   
+ 
                
 
                     //if(isset($this->latitude))              $xml.= "<latitude>".$this->latitude."</latitude>\n";
@@ -433,7 +459,6 @@ class element extends elementEntity implements IDBAccessor
                         // Include samples if present
                         if (($this->sampleArray) && ($format=="standard"))
                         {
-                            $xml.="<references>\n";
                             foreach($this->sampleArray as $value)
                             {
                                 $mysample = new sample();
@@ -448,7 +473,6 @@ class element extends elementEntity implements IDBAccessor
                                     $myMetaHeader->setErrorMessage($mysample->getLastErrorCode, $mysample->getLastErrorMessage);
                                 }
                             }
-                            $xml.="</references>\n";
                         }
                     }
                 }

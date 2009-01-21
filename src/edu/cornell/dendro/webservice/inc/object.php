@@ -185,9 +185,6 @@ class object extends objectEntity implements IDBAccessor
         {
         case "comprehensive":
             require_once('object.php');
-            require_once('element.php');
-            require_once('sample.php');
-            require_once('radius.php');
             global $dbconn;
 	        global $corinaNS;
 	        global $tridasNS;

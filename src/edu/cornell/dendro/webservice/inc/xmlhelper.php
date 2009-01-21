@@ -40,4 +40,5 @@ function getXMLFragment($tags, $format='string')
    	}
 }
 
+
 ?>

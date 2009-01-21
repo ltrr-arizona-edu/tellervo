@@ -250,17 +250,17 @@ class elementParameters extends elementEntity implements IParams
 		   		break;
 		    
 		   	case "taxon":
-		   		/* @todo
+		   		/* @todo Decisions need to be made as to how taxonomy and dictionaries will be handled
+		   		 * */
 		   		if($child->getAttribute("normalStd")==$taxonomicAuthorityEdition)
 		   		{
-		   			$this->setTaxonByCoLID($child->getAttribute("normalId"));
+		   			$this->taxon->setParamsFromCoL($child->getAttribute("normalId"));
 		   			$this->setOriginalTaxon($child->nodeValue);
 		   		}
 		   		else
 		   		{
-		   			$this->setTaxonByString($child->nodeValue);
+					trigger_error("901"."The Corina web service only supports taxonomic data that conforms to the '$taxonomicAuthorityEdition'.  Please normalise your data and try again.", E_USER_ERROR);
 		   		}
-				*/
 		   		break; 
 		   	
 		   	case "dimensions":

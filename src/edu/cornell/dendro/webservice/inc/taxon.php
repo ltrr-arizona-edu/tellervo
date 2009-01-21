@@ -36,7 +36,7 @@ class taxon extends taxonEntity implements IDBAccessor
 
         global $dbconn;
         
-        $this->id=$theID;
+        $this->setID($theID);
         $sql = "select tlkptaxon.taxonid, tlkptaxon.parenttaxonid, tlkptaxon.colID, tlkptaxon.colParentID, tlkptaxonrank.taxonrank, tlkptaxon.label as label from tlkptaxon, tlkptaxonrank  where tlkptaxon.taxonid=$theID and tlkptaxonrank.taxonrankid=tlkptaxon.taxonrankid";
         //echo $sql;
         $dbconnstatus = pg_connection_status($dbconn);
@@ -47,19 +47,18 @@ class taxon extends taxonEntity implements IDBAccessor
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No records match the specified id");
+                $this->setErrorMessage("903", "No records match the specified taxon ID");
                 return FALSE;
             }
             else
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->label = $row['label'];
-                $this->colID = $row['colid'];
-                $this->colParentID = $row['colparentid'];
-                $this->taxonRank = $row['taxonrank'];
-                $this->taxonRank = $row['taxonrank'];
-                $this->parentID = $row['parenttaxonid'];
+                $this->setLabel($row['label']);
+                $this->setCoLID($row['colid']);
+                $this->setCoLParentID($row['colparentid']);
+                $this->setTaxonRank($row['taxonrank']);
+                $this->setParentID($row['parenttaxonid']);
                 $this->setHigherTaxonomy();
             }
         }
@@ -131,12 +130,61 @@ class taxon extends taxonEntity implements IDBAccessor
         }
     }
 
+   function setHigherTaxonomy()
+    {
+        global $dbconn;
+        
+        $sql = "select * from cpgdb.qrytaxonomy(".$this->getID().")";
+        //echo $sql;
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            if(pg_num_rows($result)==0)
+            {
+                // No records match the id specified
+                $this->setErrorMessage("903", "No records match the specified id");
+                return FALSE;
+            }
+            else
+            {
+                // Set parameters from db
+                $row = pg_fetch_array($result);
+                $this->kingdom  = $row['kingdom'];
+                $this->phylum   = $row['phylum'];
+                $this->class    = $row['class'];
+                $this->order    = $row['txorder'];
+                $this->family   = $row['family'];
+                $this->genus    = $row['genus'];
+                $this->species  = $row['species'];
+            }
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+
+        return TRUE;
+
+    }    
 
 
     function asXML()
     {
     	global $taxonomicAuthorityEdition;
     	$xml = "<tridas:taxon normalStd=\"$taxonomicAuthorityEdition\" normalId=\"".$this->getCoLID()."\" normal=\"".$this->getLabel()."\">".$this->getOriginalTaxon()."</tridas:taxon>";
+    	
+		$xml.= $this->getHigherTaxonXML('kingdom');   
+        $xml.= $this->getHigherTaxonXML('phylum');   
+        $xml.= $this->getHigherTaxonXML('class');   
+        $xml.= $this->getHigherTaxonXML('order');   
+        $xml.= $this->getHigherTaxonXML('family');   
+        $xml.= $this->getHigherTaxonXML('genus');   
+        $xml.= $this->getHigherTaxonXML('species');  
+    	
     	return $xml;
     }
 
