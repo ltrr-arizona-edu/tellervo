@@ -111,7 +111,7 @@ class object extends objectEntity implements IDBAccessor
             }            
             else
             {
-            	// Object has no 'object' descendants so grab the 'element descendants instead
+            	// Object has no 'object' descendants so grab the 'element' descendants instead
             	$sql2  = "select * from tblelement where objectid='".$this->getID()."'";   
 				while ($row = pg_fetch_array($result)) 
 				{
@@ -176,6 +176,10 @@ class object extends objectEntity implements IDBAccessor
      */
 	function asXML($format='standard', $parts='all')
 	{
+		global $myRequest;
+		
+		// Override request for comprehensive if doing a delete
+		if ($myRequest->getCrudMode()=='delete') $format = 'standard';
 		
 	    switch($format)
         {
