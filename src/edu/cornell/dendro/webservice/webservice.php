@@ -45,8 +45,6 @@ else
     die();
 }
 
-
-
 // If there have been no errors so far go ahead and process the request
 if($myMetaHeader->status != "Error")
 {
@@ -283,7 +281,7 @@ if($myMetaHeader->status != "Error")
                     trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                 }
             }
-            
+
             // Write object to db
             if($myMetaHeader->status != "Error")
             {

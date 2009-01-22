@@ -28,8 +28,7 @@ class element extends elementEntity implements IDBAccessor
 
     public function __construct()
     {
-        $groupXMLTag = "element";
-    	parent::__construct($groupXMLTag);
+    	parent::__construct();
     }
 
     public function __destruct()
@@ -120,6 +119,7 @@ class element extends elementEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
+                //print_r($row);
                 //$this->subSiteID = $row['subsiteid'];
                 $this->taxon->setParamsFromDB($row['taxonid']);
                 $this->taxon->setOriginalTaxon($row['originaltaxonname']);
@@ -219,7 +219,10 @@ class element extends elementEntity implements IDBAccessor
 		if ($paramsClass->getDimensionUnits()!=NULL)		$this->setDimensionUnits($paramsClass->getDimensionUnits());
 		if ($paramsClass->getFile()!=NULL)					$this->setFile($paramsClass->getFile());
 		if ($paramsClass->getMarks()!=NULL)					$this->setMarks($paramsClass->getMarks());
-		if ($paramsClass->getOriginalTaxon()!=NULL)			$this->setOriginalTaxon($paramsClass->getOriginalTaxon());
+		if ($paramsClass->taxon->getOriginalTaxon()!=NULL)	$this->taxon->setOriginalTaxon($paramsClass->taxon->getOriginalTaxon());
+		if ($paramsClass->taxon->getCoLID()!=NULL)			$this->taxon->setParamsFromCoL($paramsClass->taxon->getCoLID(), $paramsClass->taxon->getLabel());
+
+
 		if ($paramsClass->getProcessing()!=NULL)			$this->setProcessing($paramsClass->getProcessing());
 		if ($paramsClass->getShape()!=NULL)					$this->setShape($paramsClass->getShape());
 		if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType());
@@ -227,6 +230,14 @@ class element extends elementEntity implements IDBAccessor
 																						 $paramsClass->geometry->getLocationType(),
 																						 $paramsClass->geometry->getLocationPrecision(),
 																						 $paramsClass->geometry->getLocationComment());
+		
+																						 
+        if ($paramsClass->parentID!=NULL)
+        {
+        	$parentObj = new object();
+        	$parentObj->setParamsFromDB($paramsClass->parentID);
+        	array_push($this->parentEntityArray, $parentObj);
+        }																				 
 		return true;        																		 
 
     }
@@ -258,8 +269,18 @@ class element extends elementEntity implements IDBAccessor
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating a element.");
                     return false;
                 }
-                if(($paramsObj->getType()==NULL) 
-                    && ($paramsObj->hasChild!=True))
+                if(   ($paramsObj->getType()==NULL)
+                   && ($paramsObj->getAuthenticity()==NULL)
+                   && ($paramsObj->getDescription()==NULL)
+                   && ($paramsObj->hasDimensions()===FALSE)
+                   && ($paramsObj->getFile()==NULL)
+                   && ($paramsObj->getMarks()==NULL)
+                   && ($paramsObj->getProcessing()==NULL)
+                   && ($paramsObj->getShape()==NULL)
+                   && ($paramsObj->taxon->getCoLID()==NULL)
+                   && ($paramsObj->taxon->getOriginalTaxon()==NULL)
+                   && ($paramsObj->taxon->getLabel()==NULL)
+                   && ($paramsObj->hasChild!=True))
                 {
                     $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
                     return false;
@@ -418,17 +439,7 @@ class element extends elementEntity implements IDBAccessor
                     if($this->getMarks()!=NULL) $xml.="<tridas:marks>".$this->getMarks()."</tridas:marks>";  
                     if($this->getDescription()!=NULL) $xml.="<tridas:description>".$this->getDescription()."</tridas:description>";                                      
                     $xml.= $this->taxon->asXML();                  
-
-                    //if(isset($this->taxonID))               $xml.= "<validatedTaxon id=\"".$this->taxonID."\">".escapeXMLChars($myTaxon->getLabel())."</validatedTaxon>\n";
-                    //if(isset($this->originalTaxonName))    $xml.= "<originalTaxonName>".escapeXMLChars($this->originalTaxonName)."</originalTaxonName>\n";
-
- 
-               
-
-                    //if(isset($this->latitude))              $xml.= "<latitude>".$this->latitude."</latitude>\n";
-                    //if(isset($this->longitude))             $xml.= "<longitude>".$this->longitude."</longitude>\n";
-                    //if(isset($this->precision))             $xml.= "<precision>".$this->precision."</precision>\n";
-                    //if(isset($this->isLiveelement))            $xml.= "<isLiveelement>".$this->isLiveelement."</isLiveelement>\n";
+                    
                     if($this->getCreatedTimeStamp()!=NULL)      $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimeStamp()."</tridas:genericField>\n";
                     if($this->getLastModifiedTimeStamp()!=NULL) $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimeStamp()."</tridas:genericField>\n";
 
@@ -529,22 +540,54 @@ class element extends elementEntity implements IDBAccessor
                 {
                     // New Record
                     $sql = "insert into tblelement ( ";
-                        if ($this->taxon->getTaxonID()!=NULL)                       $sql.= "taxonid, ";
-                        if (isset($this->getP))                                $sql.= "subsiteid, ";
-                        if (isset($this->name))                                     $sql.= "name, ";
-                        if (isset($this->precision))                                $sql.= "precision, ";
-                        if (isset($this->isLiveelement))                               $sql.= "isliveelement, ";
-                        if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "location, ";
+                    	if (isset($this->parentEntityArray[0]))					$sql.= "objectid, ";
+                    	if ($this->getName()!=NULL)								$sql.= "name, ";
+                        if ($this->taxon->getID()!=NULL)                        $sql.= "taxonid, ";
+                        if ($this->getAuthenticity()!=NULL)						$sql.= "authenticity, ";
+                        if ($this->getShape()!=NULL)							$sql.= "shape, ";
+                        if ($this->hasDimensions())								
+	                    {
+	                    	if($this->getDimensionUnits()!=NULL)				$sql.= "units, ";
+	                    	if($this->getDimension('height')!=NULL)   			$sql.= "height, ";
+	                    	if($this->getDimension('width')!=NULL)    			$sql.= "width, ";
+	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "depth, ";
+	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "diameter, ";              	
+	                    }
+                        if ($this->getType()!=NULL)								$sql.= "type, ";
+                        if ($this->getFile()!=NULL)								$sql.= "file, ";
+                        if ($this->geometry->getLocationType()!=NULL)			$sql.= "locationtype, ";
+                        if ($this->geometry->getLocationPrecision()!=NULL)		$sql.= "locationprecision, ";
+                        if ($this->geometry->getLocationComment()!=NULL)		$sql.= "locationcomment, ";
+                        if ($this->geometry->getLocationGeometry()!=NULL)		$sql.= "locationgeometry, ";
+                        if ($this->getProcessing()!=NULL)						$sql.= "processing, ";
+                        if ($this->getMarks()!=NULL)							$sql.= "marks, ";
+                        if ($this->getDescription()!=NULL)						$sql.= "description, ";	                            
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                        if (isset($this->taxonID))                                  $sql.= "'".$this->taxonID.   "', ";
-                        if (isset($this->subSiteID))                                $sql.= "'".$this->subSiteID. "', ";
-                        if (isset($this->name))                                     $sql.= "'".$this->name.     "', ";
-                        if (isset($this->precision))                                $sql.= "'".$this->precision. "', ";
-                        if (isset($this->isLiveelement))                               $sql.="'".fromPHPtoPGBool($this->isLiveelement)."', ";
-                        if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "setsrid(makepoint(".sprintf("%1.8f",$this->longitude).", ".sprintf("%1.8f",$this->latitude)."), 4326), ";
-                    // Trim off trailing space and comma
+                    	if (isset($this->parentEntityArray[0]))					$sql.= "'".$this->parentEntityArray[0]->getID()."', ";                    
+                    	if ($this->getName()!=NULL)								$sql.= "'".$this->getName().  "', ";                    
+                        if ($this->taxon->getID()!=NULL)                        $sql.= "'".$this->taxon->getID().   "', ";
+                        if ($this->getAuthenticity()!=NULL)						$sql.= "'".$this->getAuthenticity()."', ";
+                        if ($this->getShape()!=NULL)							$sql.= "'".$this->getShape()."', ";
+                        if ($this->hasDimensions())								
+	                    {
+	                    	if($this->getDimensionUnits()!=NULL)				$sql.= "'".$this->getDimensionUnits()."', ";
+	                    	if($this->getDimension('height')!=NULL)   			$sql.= "'".$this->getDimension('height')."', ";
+	                    	if($this->getDimension('width')!=NULL)    			$sql.= "'".$this->getDimension('width')."', ";
+	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "'".$this->getDimension('depth')."', ";
+	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "'".$this->getDimension('diameter')."', ";;              	
+	                    }
+                        if ($this->getType()!=NULL)								$sql.= "'".$this->getType()."', ";
+                        if ($this->getFile()!=NULL)								$sql.= "'".$this->getFile()."', ";
+                        if ($this->geometry->getLocationType()!=NULL)			$sql.= "'".$this->geometry->getLocationType()."', ";
+                        if ($this->geometry->getLocationPrecision()!=NULL)		$sql.= "'".$this->geometry->getLocationPrecision()."', ";
+                        if ($this->geometry->getLocationComment()!=NULL)		$sql.= "'".$this->geometry->getLocationComment()."', ";
+                        if ($this->geometry->getLocationGeometry()!=NULL)		$sql.= "'".$this->geometry->getLocationGeometry()."', ";
+                        if ($this->getProcessing()!=NULL)						$sql.= "'".$this->getProcessing()."', ";
+                        if ($this->getMarks()!=NULL)							$sql.= "'".$this->getMarks()."', ";
+                        if ($this->getDescription()!=NULL)						$sql.= "'".$this->getDescription()."', ";                     
+                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
                     $sql2 = "select * from tblelement where elementid=currval('tblelement_elementid_seq')";
@@ -553,12 +596,8 @@ class element extends elementEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql = "update tblelement set ";
-                        if (isset($this->taxonID))                                  $sql.= "taxonid='".    $this->taxonID    ."', ";
-                        if (isset($this->subSiteID))                                $sql.= "subsiteid='".  $this->subSiteID  ."', ";
-                        if (isset($this->name))                                     $sql.= "name='".      $this->name      ."', ";
-                        if (isset($this->precision))                                $sql.= "precision='".  $this->precision  ."', ";
-                        if((isset($this->latitude)) && (isset($this->longitude)))   $sql.= "location=setsrid(makepoint(".sprintf("%1.8f",$this->longitude).", ".sprintf("%1.8f",$this->latitude)."), 4326), ";
-                    // Trim off trailing space and comma
+                        if ($this->taxon->getID()!=NULL)                                  $sql.= "taxonid='".    $this->taxon->getID()."', ";
+                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql .= " where elementid=".$this->getID();
                 }

@@ -72,6 +72,63 @@ class taxon extends taxonEntity implements IDBAccessor
         return TRUE;
     }
 
+    
+	/**
+	 * Set the current taxon details using the Catalogue of Life dictionary.
+	 *
+	 * @param String $CoLID - CoL ID 
+	 * @param String $CoLNormalName - CoL normalised name for belts and braces check
+	 * @param String $webservice - either 'local' or 'remote'
+	 * @return Boolean
+	 */
+    function setParamsFromCoL($CoLID, $CoLNormalName, $webservice="local")
+    {
+    	if($webservice=='local')
+    	{
+	        // Set the current objects parameters from the database
+	
+	        global $dbconn;
+	        
+	        $sql = "select taxonid, colid, label from tlkptaxon where colid=$CoLID and label='$CoLNormalName'";
+	        //echo $sql;
+	        $dbconnstatus = pg_connection_status($dbconn);
+	        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+	        {
+	            pg_send_query($dbconn, $sql);
+	            $result = pg_get_result($dbconn);
+	            if(pg_num_rows($result)==0)
+	            {
+	                // No records match the id specified
+	                $this->setErrorMessage("903", "Either no record matches the specified catalogue of life ID or the normalised name you gave is not consistent with the Catalogue of Life");
+	                return FALSE;
+	            }
+	            else
+	            {
+                	$row = pg_fetch_array($result);	            	
+					
+                	$this->setParamsFromDB($row['taxonid']);
+					
+	            }
+	        }
+	        else
+	        {
+	            // Connection bad
+	            $this->setErrorMessage("001", "Error connecting to database");
+	            return FALSE;
+	        }
+	
+	        return TRUE;
+    	}
+    	else
+    	{
+    		$this->setErrorMessage("702", "Setting taxon parameters using the remote Cataloge of life webservice has not yet been implemented.");
+    	}
+    	
+
+    }  
+        
+    
+    
         
     function setParamsWithParents($colID, $colParentID, $taxonRank, $label)
     {
@@ -144,7 +201,7 @@ class taxon extends taxonEntity implements IDBAccessor
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No records match the specified id");
+                $this->setErrorMessage("903", "No records match the specified id when looking up higher taxonomy");
                 return FALSE;
             }
             else
@@ -175,15 +232,14 @@ class taxon extends taxonEntity implements IDBAccessor
     function asXML()
     {
     	global $taxonomicAuthorityEdition;
-    	$xml = "<tridas:taxon normalStd=\"$taxonomicAuthorityEdition\" normalId=\"".$this->getCoLID()."\" normal=\"".$this->getLabel()."\">".$this->getOriginalTaxon()."</tridas:taxon>";
-    	
-		$xml.= $this->getHigherTaxonXML('kingdom');   
-        $xml.= $this->getHigherTaxonXML('phylum');   
-        $xml.= $this->getHigherTaxonXML('class');   
-        $xml.= $this->getHigherTaxonXML('order');   
-        $xml.= $this->getHigherTaxonXML('family');   
-        $xml.= $this->getHigherTaxonXML('genus');   
-        $xml.= $this->getHigherTaxonXML('species');  
+    	$xml = "<tridas:taxon normalStd=\"$taxonomicAuthorityEdition\" normalId=\"".$this->getCoLID()."\" normal=\"".$this->getLabel()."\">".$this->getOriginalTaxon()."</tridas:taxon>\n";
+		$xml.= $this->getHigherTaxonXML('kingdom')."\n";   
+        $xml.= $this->getHigherTaxonXML('phylum')."\n";   
+        $xml.= $this->getHigherTaxonXML('class')."\n";   
+        $xml.= $this->getHigherTaxonXML('order')."\n";   
+        $xml.= $this->getHigherTaxonXML('family')."\n";   
+        $xml.= $this->getHigherTaxonXML('genus')."\n";   
+        $xml.= $this->getHigherTaxonXML('species')."\n";  
     	
     	return $xml;
     }
@@ -203,9 +259,12 @@ class taxon extends taxonEntity implements IDBAccessor
     {
         
         global $dbconn;
+        
+        if ($this->getName()==NULL) $this->setErrorMessage("902", "Missing parameter - 'name' field is required."); return FALSE;
+        
 
         //Only attempt to run SQL if there are no errors so far
-        if($this->lastErrorCode == NULL)
+        if($this->getLastErrorCode()== NULL)
         {
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)

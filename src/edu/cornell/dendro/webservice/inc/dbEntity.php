@@ -43,7 +43,7 @@ class dbEntity
 	 *
 	 * @var String
 	 */
-    private $id = NULL;	
+    protected $id = NULL;	
     
     /**
      * Class containing details of this entities parent entity
@@ -57,84 +57,84 @@ class dbEntity
      *
      * @var String
      */
-    private $identifierDomain = NULL;
+    protected $identifierDomain = NULL;
     
     /**
      * More information about the entity
      *
      * @var String
      */
-    private $description = NULL;
+    protected $description = NULL;
     
     /**
      * Name of this entity
      *
      * @var unknown_type
      */
-    private $name = NULL;    
+    protected $name = NULL;    
     
     /**
      * XML tag for this entities parent entity
      *
      * @var String
      */
-	private $groupXMLTag = NULL; 
+	protected $groupXMLTag = NULL; 
 	
 	/**
 	 * The last error associated with this entity
 	 *
 	 * @var String
 	 */
-    private $lastErrorMessage = NULL;
+    protected $lastErrorMessage = NULL;
     
     /**
      * The last error code associated with this entity
      *
      * @var Integer
      */
-    private $lastErrorCode = NULL;
+    protected $lastErrorCode = NULL;
     
     /**
      * When this entity was created
      *
      * @var Timestamp
      */
-    private $createdTimeStamp = NULL;
+    protected $createdTimeStamp = NULL;
     
     /**
      * When this entity was last modified
      *
      * @var Timestamp
      */
-    private $lastModifiedTimeStamp = NULL;
+    protected $lastModifiedTimeStamp = NULL;
     
     /**
      * Whether the permissions should also be included in the output
      * 
      * @var Boolean
      */
-    private $includePermissions = FALSE;
+    protected $includePermissions = FALSE;
     
     /**
      * Whether the user can create children of this entity
      *
      * @var Boolean
      */
-    private $canCreate = NULL;
+    protected $canCreate = NULL;
     
     /**
      * Whether the user can update this entity
      *
      * @var Boolean
      */
-    private $canUpdate = NULL;
+    protected $canUpdate = NULL;
     
     /**
      * Whether the user can delete this entity
      *
      * @var Boolean
      */
-    private $canDelete = NULL;
+    protected $canDelete = NULL;
 
     
     /**
@@ -164,7 +164,7 @@ class dbEntity
      * @param String $theMessage
      * @return Boolean 
      */
-    protected function setErrorMessage($theCode, $theMessage)
+    final function setErrorMessage($theCode, $theMessage)
     {
         // Set the error latest error message and code for this object.
         $this->lastErrorCode = $theCode;
@@ -182,7 +182,7 @@ class dbEntity
      * @param String $theTag
      * @return Boolean
      */
-    protected function setgroupXMLTag($theTag)
+    final protected function setgroupXMLTag($theTag)
     {
 		$this->groupXMLTag = addslashes($theTag);
 		return true;
@@ -195,7 +195,7 @@ class dbEntity
      * @param String $domain
      * @return Boolean
      */
-    protected function setID($identifier, $domain=NULL)
+    final protected function setID($identifier, $domain=NULL)
     {
     	$this->id = $identifier;
     	$this->identifierDomain = addslashes($domain);	
@@ -221,7 +221,7 @@ class dbEntity
 	 * @param Timestamp $timestamp
 	 * @return Boolean
 	 */
-    protected function setCreatedTimestamp($timestamp)
+    final protected function setCreatedTimestamp($timestamp)
     {
     	$this->createdTimeStamp=$timestamp;
     	return true;
@@ -233,7 +233,7 @@ class dbEntity
      * @param Timestamp $timestamp
      * @return Boolean
      */
-    protected function setLastModifiedTimestamp($timestamp)
+    final protected function setLastModifiedTimestamp($timestamp)
     {
     	$this->lastModifiedTimeStamp=$timestamp;
     	return true;
@@ -737,7 +737,7 @@ class elementEntity extends dbEntity
 	/**
 	 * Taxonomic information about this element
 	 *
-	 * @var Integer
+	 * @var taxon
 	 */
 	protected $taxon = NULL;
 		
@@ -746,55 +746,55 @@ class elementEntity extends dbEntity
 	 *
 	 * @var String
 	 */
-	private $authenticity = NULL;
+	protected $authenticity = NULL;
 	/**
 	 * Shape of this element
 	 *
 	 * @var String
 	 */
-	private $shape = NULL;
+	protected $shape = NULL;
 	/**
 	 * Diameter of this element
 	 *
 	 * @var Double
 	 */
-	private $diameter = NULL;
+	protected $diameter = NULL;
 	/**
 	 * Height of this element
 	 *
 	 * @var Double
 	 */
-	private $height = NULL;
+	protected $height = NULL;
 	/**
 	 * Width of this element
 	 *
 	 * @var Double
 	 */
-	private $width = NULL;
+	protected $width = NULL;
 	/**
 	 * Depth of this element here...
 	 *
 	 * @var Double
 	 */
-	private $depth = NULL;	
+	protected $depth = NULL;	
 	/**
 	 * Units in which the dimensions are recorded
 	 *
 	 * @var String
 	 */
-	private $dimensionUnits = NULL;	
+	protected $dimensionUnits = NULL;	
 	/**
 	 * Type of element
 	 *
 	 * @var String
 	 */
-	private $type = NULL;
+	protected $type = NULL;
 	/**
 	 * Associate file URL
 	 *
 	 * @var String
 	 */
-	private $file = NULL;
+	protected $file = NULL;
 	/**
 	 * Geometry object representing the location 
 	 *
@@ -806,27 +806,26 @@ class elementEntity extends dbEntity
 	 *
 	 * @var String
 	 */
-	private $processing = NULL;
+	protected $processing = NULL;
 	/**
 	 * Carpenter marks
 	 *
 	 * @var String
 	 */
-	private $marks = NULL;
+	protected $marks = NULL;
 	
 	/**
 	 * Description of element
 	 *
 	 * @var String
 	 */
-	private $description = NULL;
+	protected $description = NULL;
 	
     function __construct()
     {  
-        $groupXMLTag = "elements";
-        parent::__construct($groupXMLTag); 
-		$this->geometry = new geometry;	
-		$this->taxon = new taxon; 	
+		parent::__construct("");
+		$this->geometry = new geometry();	
+		$this->taxon = new taxon(); 	
 	}
 
 	/***********/
@@ -1204,43 +1203,38 @@ class sampleEntity extends dbEntity
 	 *
 	 * @var String
 	 */
-	private $type = NULL;
+	protected $type = NULL;
 	/**
 	 * Date the sample was taken
 	 *
 	 * @var ISODate
 	 */
-	private $samplingDate = NULL;
+	protected $samplingDate = NULL;
 	/**
 	 * Associated file URL
 	 *
 	 * @var String
 	 */
-	private $file = NULL;
+	protected $file = NULL;
 	/**
 	 * Position of the sample in the element
 	 *
 	 * @var String
 	 */
-	private $position = NULL;
+	protected $position = NULL;
 	/**
 	 * State of the material (dry, wet, conserved etc)
 	 *
 	 * @var String
 	 */
-	private $state = NULL;
+	protected $state = NULL;
 	/**
 	 * Presence of knots
 	 *
 	 * @var Boolean
 	 */
-	private $knots = NULL;
-	/**
-	 * Description of this sample
-	 *
-	 * @var String
-	 */
-	private $description = NULL;
+	protected $knots = NULL;
+
 	
     function __construct()
     {  
@@ -1742,22 +1736,19 @@ class radiusEntity extends dbEntity
 
 class taxonEntity extends dbEntity
 {
-    private $parentID = NULL;
-    private $label = NULL;
-    private $colID = NULL;
-    private $colParentID = NULL;
-    private $taxonRank = NULL;
-    private $parentXMLTag = "taxonDictionary"; 
-    private $lastErrorMessage = NULL;
-    private $lastErrorCode = NULL;
-    private $kingdom = NULL;
-    private $phylum = NULL;
-    private $class = NULL;
-    private $order = NULL;
-    private $family = NULL;
-    private $genus = NULL;
-    private $species = NULL;
-    private $originalTaxon = NULL;
+    protected $parentID = NULL;
+    protected $label = NULL;
+    protected $colID = NULL;
+    protected $colParentID = NULL;
+    protected $taxonRank = NULL;
+    protected $kingdom = NULL;
+    protected $phylum = NULL;
+    protected $class = NULL;
+    protected $order = NULL;
+    protected $family = NULL;
+    protected $genus = NULL;
+    protected $species = NULL;
+    protected $originalTaxon = NULL;
 	
     
     function __construct()
@@ -1774,34 +1765,12 @@ class taxonEntity extends dbEntity
         // Set the current objects note.
         $this->label=$theLabel;
     }   
-    function taxonRecordExists($colID)
-    {
-        global $dbconn;
-        $sql="select count(*) from tlkptaxon where colid=$colID";
         
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $result = pg_query($dbconn, $sql);    
-            while ($row = pg_fetch_array($result))
-            {
-                if($row['count']>0)
-                {
-                    return True;
-                }
-                else
-                {   
-                    return False;
-                }
-            }
-        }
-    }
-    
     function setHigherTaxonomy()
     {
         global $dbconn;
-        
-        $sql = "select * from cpgdb.qrytaxonomy(".$this->id.")";
+        echo "bii";
+        $sql = "select * from cpgdb.qrytaxonomy(".$this->getID().")";
         //echo $sql;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -1816,6 +1785,7 @@ class taxonEntity extends dbEntity
             }
             else
             {
+            	
                 // Set parameters from db
                 $row = pg_fetch_array($result);
                 $this->kingdom  = $row['kingdom'];
@@ -1851,7 +1821,7 @@ class taxonEntity extends dbEntity
     {
     	if($webservice=='local')
     	{
-
+    		$this->setErrorMessage("702", "Setting taxon parameters using the local Cataloge of life webservice has not yet been implemented.");
     		
     	}
     	else
@@ -1950,6 +1920,30 @@ class taxonEntity extends dbEntity
     /**********/
     /* GETTERS */
     /***********/     
+
+   
+    function taxonRecordExists($colID)
+    {
+        global $dbconn;
+        $sql="select count(*) from tlkptaxon where colid=$colID";
+        
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);    
+            while ($row = pg_fetch_array($result))
+            {
+                if($row['count']>0)
+                {
+                    return True;
+                }
+                else
+                {   
+                    return False;
+                }
+            }
+        }
+    }    
     
     /**
      * Get the name by which this taxon was original identified
@@ -1966,25 +1960,6 @@ class taxonEntity extends dbEntity
     	return $this->colID;
     }
 
-    function asXML($format='standard', $parts='all')
-    {
-    	global $taxonomicAuthorityEdition;
-    	
-        // Return a string containing the current object in XML format
-        if ($this->getLastErrorCode()==NULL)
-        {
-            // Only return XML when there are no errors.
-            //
-            // TO DO - Sort out XML special characters in XML.  
-            $xml= "<tridas:taxon normalStd=\"$taxonomicAuthorityEdition\" normalId=\"".$this->getCoLID()."\" normal=\"".$this->getLabel()."\">".$this->getOriginalTaxon()."</tridas:taxon>\n";
-            return $xml;
-        }
-        else
-        {
-            return FALSE;
-        }
-    }
-
     function getLabel()
     {
         return $this->label;
@@ -1996,7 +1971,7 @@ class taxonEntity extends dbEntity
         switch($theRank)
         {
             case "kingdom":
-                if(isset($this->kingdom)) return $xml.$this->kingdom."</tridas:genericField>";
+                if($this->kingdom!=NULL) return $xml.$this->kingdom."</tridas:genericField>";
             case "phylum":
                 if(isset($this->phylum))  return $xml.$this->phylum."</tridas:genericField>";
             case "class":
