@@ -73,7 +73,7 @@ class element extends elementEntity implements IDBAccessor
             			$success = $myObject->setParamsFromDB($row['objectid']);
 	                   	if($success===FALSE)
 	                   	{
-	                   	    trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
+	                   	    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage());
 	                   	}  
 
 	                   	// Add to the array of parents

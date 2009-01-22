@@ -1314,6 +1314,11 @@ class sampleEntity extends dbEntity
 		}
 	}
 	
+	function setFile($file)
+	{
+		$this->file == addslashes($file);
+	}
+	
 	/**
 	 * Set the description of this sample
 	 *
@@ -1390,6 +1395,10 @@ class sampleEntity extends dbEntity
 		return $this->description;
 	}
 	
+	function getFile()
+	{
+		return $this->file;
+	}
 }
 
 class radiusEntity extends dbEntity

@@ -85,6 +85,50 @@ class sample extends sampleEntity implements IDBAccessor
         return TRUE;
     }
 
+    function setParentsFromDB()
+    {
+        require_once('element.php');
+        global $dbconn;
+        global $corinaNS;
+        global $tridasNS;
+        global $gmlNS;
+                
+        // First find the immediate object entity parent
+           $sql = "SELECT elementid from tblsample where sampleid=".$this->getID();
+           $dbconnstatus = pg_connection_status($dbconn);
+           if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+           {
+               pg_send_query($dbconn, $sql);
+               $result = pg_get_result($dbconn); 
+
+               if(pg_num_rows($result)==0)
+               {
+                   // No records match the id specified
+                   $this->setErrorMessage("903", "There are no elements associated with sample id=".$this->getID());
+                   return FALSE;
+               }
+               else
+               {
+				   // Empty array before populating it
+               	   $this->parentEntityArray = array();
+               	   
+               	   // Loop through all the parents
+                   while($row = pg_fetch_array($result))
+                   {
+                   		$myElement = new element();
+            			$success = $myElement->setParamsFromDB($row['elementid']);
+	                   	if($success===FALSE)
+	                   	{
+	                   	    trigger_error($myElement->getLastErrorCode().$myElement->getLastErrorMessage());
+	                   	}  
+
+	                   	// Add to the array of parents
+	                   	array_push($this->parentEntityArray,$myElement);
+                   }                   
+               }
+           }	
+    }    
+    
     function setChildParamsFromDB()
     {
         // Add the id's of the current objects direct children from the database
@@ -117,26 +161,30 @@ class sample extends sampleEntity implements IDBAccessor
     /**
      * Set the parameters of this class based upon the Parameters Class that has been passed
      *
-     * @param Parameters Class $paramsClass
+     * @param sampleParameters $paramsClass
      * @return Boolean
      */
     function setParamsFromParamsClass($paramsClass)
-    {
-    	global $myRequest;
-    	
-    	// If we're doing things that require the details of this sample's parent then set it
-    	if ($myRequest->getCrudMode()=='create')
-    	{
-    		if($paramsClass->getParentID()!=NULL) 	$this->setParentEntity($paramsClass->getParentID());
-    	}
-    	
-    	
+    {		
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
-        if($paramsClass->getID()!=NULL)         $this->setID($paramsClass->getID());                                          
-        if($paramsClass->getName()!=NULL)       $this->setName($paramsClass->getName());                      
-        if($paramsClass->getSamplingDate())     $this->setSamplingDate($paramsClass->getSamplingDate());            
-        if($paramsClass->getType()!=NULL)       $this->setType($paramsClass->getType());              
-        return true;
+        if($paramsClass->getID()!=NULL)         	$this->setID($paramsClass->getID());                                          
+        if($paramsClass->getName()!=NULL)       	$this->setName($paramsClass->getName());                      
+        if($paramsClass->getSamplingDate())     	$this->setSamplingDate($paramsClass->getSamplingDate());            
+        if($paramsClass->getType()!=NULL)       	$this->setType($paramsClass->getType());         
+        if($paramsClass->getFile()!=NULL)			$this->setFile($paramsClass->getFile());     
+        if($paramsClass->getPosition()!=NULL)		$this->setPosition($paramsClass->getPosition());
+        if($paramsClass->getState()!=NULL)			$this->setState($paramsClass->getState());
+        if($paramsClass->getKnots()!=NULL)			$this->setKnots($paramsClass->getKnots());
+        if($paramsClass->getDescription()!=NULL) 	$this->setDescription($paramsClass->getDescription());
+
+        if ($paramsClass->parentID!=NULL)
+        {
+        	$parentObj = new element();
+        	$parentObj->setParamsFromDB($paramsClass->parentID);
+        	array_push($this->parentEntityArray, $parentObj);
+        }																				 
+		return true;               
+   
     }
     
     /**
@@ -187,7 +235,7 @@ class sample extends sampleEntity implements IDBAccessor
     /**
      * Validate the parameters passed based on the CRUD mode
      *
-     * @param Params Class $paramsObj
+     * @param sampleParameters $paramsObj
      * @param String $crudMode one of create, read, update or delete.
      * @return unknown
      */
@@ -217,6 +265,11 @@ class sample extends sampleEntity implements IDBAccessor
                 if(($paramsObj->getName() ==NULL) 
                     && ($paramsObj->getSamplingDate()==NULL) 
                     && ($paramsObj->getType()==NULL) 
+                    && ($paramsObj->getFile()==NULL)
+                    && ($paramsObj->getPosition()==NULL)
+                    && ($paramsObj->getState()==NULL)
+                    && ($paramsObj->getKnots()==NULL)
+                    && ($paramsObj->getDescription()==NULL)
                     && ($paramsObj->hasChild!=True))
                 {
                     $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
@@ -279,78 +332,50 @@ class sample extends sampleEntity implements IDBAccessor
         switch($format)
         {
         case "comprehensive":
-            require_once('site.php');
-            require_once('subSite.php');
-            require_once('tree.php');
+            require_once('element.php');
             global $dbconn;
-            $xml = NULL;
+	        global $corinaNS;
+	        global $tridasNS;
+	        global $gmlNS;
+	        
+	        // We need to return the comprehensive XML for this element i.e. including all it's ancestral 
+	        // object entities.
+	        
+	        // Make sure the parent entities are set
+	        $this->setParentsFromDB();	        
+	        
+            // Grab the XML representation of the immediate parent using the 'comprehensive'
+            // attribute so that we get all the object ancestors formatted correctly                   
+            $xml = new DomDocument();   
+    		$xml->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->parentEntityArray[0]->asXML('comprehensive')."</root>");                   
 
-            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblsample.sampleid
-                FROM tblsubsite 
-                INNER JOIN tbltree ON tblsubsite.subsiteid=tbltree.subsiteid
-                INNER JOIN tblsample ON tbltree.treeid=tblsample.treeid
-                where tblsample.sampleid='".$this->getID()."'";
+    		// We need to locate the leaf tridas:element (one with no child tridas:objects)
+    		// because we need to insert our element xml here
+	        $xpath = new DOMXPath($xml);
+	       	$xpath->registerNamespace('cor', $corinaNS);
+	       	$xpath->registerNamespace('tridas', $tridasNS);		    		
+    		$nodelist = $xpath->query("//tridas:element[* and not(descendant::tridas:element)]");
+    		
+    		// Create a temporary DOM document to store our element XML
+    		$tempdom = new DomDocument();
+			$tempdom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->asXML()."</root>");
+   		
+			// Import and append the sample XML node into the main XML DomDocument
+			$node = $tempdom->getElementsByTagName("sample")->item(0);
+			$node = $xml->importNode($node, true);
+			$nodelist->item(0)->appendChild($node);
 
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                pg_send_query($dbconn, $sql);
-                $result = pg_get_result($dbconn); 
-
-                if(pg_num_rows($result)==0)
-                {
-                    // No records match the id specified
-                    $this->setErrorMessage("903", "No match for sample id=".$this->getID());
-                    return FALSE;
-                }
-                else
-                {
-                    $row = pg_fetch_array($result);
-
-                    $mySite = new site();
-                    $mySubSite = new subSite();
-                    $myTree = new tree();
-
-                    $success = $mySite->setParamsFromDB($row['siteid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
-                    }
-                    
-                    $success = $mySubSite->setParamsFromDB($row['subsiteid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($mySubSite->getLastErrorCode().$mySubSite->getLastErrorMessage());
-                    }
-                    
-                    $success = $myTree->setParamsFromDB($row['treeid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($myTree->getLastErrorCode().$myTree->getLastErrorMessage());
-                    }
-
-                    $xml = $mySite->asXML("summary", "beginning");
-                    $xml.= $mySubSite->asXML("summary", "beginning");
-                    $xml.= $myTree->asXML("summary", "beginning");
-                    $xml.= $this->_asXML("standard", "all");
-                    $xml.= $myTree->asXML("summary", "end");
-                    $xml.= $mySubSite->asXML("summary", "end");
-                    $xml.= $mySite->asXML("summary", "end");
-                }
-            }
-            return $xml;
-
+            // Return an XML string representation of the entire shebang
+            return $xml->saveXML($xml->getElementsByTagName("object")->item(0));
+            
         case "standard":
             return $this->_asXML($format, $parts);
-
         case "summary":
             return $this->_asXML($format, $parts);
-
         case "minimal":
             return $this->_asXML($format, $parts);
-
         default:
-            $this->setErrorMessage("901", "Unknown format. Must be one of 'standard', 'summary' or 'comprehensive'");
+            $this->setErrorMessage("901", "Unknown format. Must be one of 'standard', 'summary', 'minimal' or 'comprehensive'");
             return false;
         }
     }
@@ -385,7 +410,7 @@ class sample extends sampleEntity implements IDBAccessor
                 if($format!="minimal")
                 {
                     if($this->getSamplingDate()!=NULL)           $xml.= "<tridas:samplingDate\">".$this->getSamplingDate()."</samplingDate>\n";
-                    if($this->getType()!=NULL)                   $xml.= "<tridas:type>".$this->getType()."</tridas:genericField>\n";
+                    if($this->getType()!=NULL)                   $xml.= "<tridas:type>".$this->getType()."</tridas:type>\n";
                     if($this->getCreatedTimeStamp()!=NULL)       $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimestamp()."</tridas:genericField>\n";
                     if($this->getLastModifiedTimestamp()!=NULL)  $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimestamp()."</tridas:genericField>\n";
                     if($this->getPosition()!=NULL)				 $xml.= "<tridas:position>".$this->getPosition()."</tridas:position>";
@@ -436,17 +461,27 @@ class sample extends sampleEntity implements IDBAccessor
                 {
                     // New record
                     $sql = "insert into tblsample ( ";
-                        if($this->getName()!=NULL)                   $sql.="name, ";
-                        if($this->parentEntity->getID()!=NULL)       $sql.="elementid, ";
-                        if($this->getSamplingDate()!=NULL)           $sql.="samplingdate, ";
-                        if($this->getType()!=NULL)                   $sql.="type, ";
+                        if($this->getName()!=NULL)                   	$sql.="name, ";
+                        if(isset($this->parentEntityArray[0]))		 	$sql.="elementid, ";
+                        if($this->getSamplingDate()!=NULL)           	$sql.="samplingdate, ";
+                        if($this->getType()!=NULL)                   	$sql.="type, ";
+                        if($this->getFile()!=NULL)					 	$sql.="file, ";
+                        if($this->getPosition()!=NULL)					$sql.="position, ";
+                        if($this->getState()!=NULL)						$sql.="state, ";
+                        if($this->getKnots()!=NULL)						$sql.="knots, ";
+                        if($this->getDescription()!=NULL)				$sql.="description, ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                        if($this->getName()!=NULL)                   $sql.="'".$this->getName()             ."', ";
-                        if($this->parentEntity->getID()!=NULL)       $sql.="'".$this->parentEntity->getID() ."', ";
-                        if($this->getSamplingDate()!=NULL)           $sql.="'".$this->getSamplingDate()     ."', ";
-                        if($this->getType()!=NULL)                   $sql.="'".$this->getType()             ."', ";
+                        if($this->getName()!=NULL)                   	$sql.="'".$this->getName()             	."', ";
+                        if(isset($this->parentEntityArray[0]))      	$sql.="'".$this->parentEntityArray[0]->getID() 	."', ";
+                        if($this->getSamplingDate()!=NULL)           	$sql.="'".$this->getSamplingDate()     	."', ";
+                        if($this->getType()!=NULL)                   	$sql.="'".$this->getType()             	."', ";
+                        if($this->getFile()!=NULL)					 	$sql.="'".$this->getFile()  			."', ";
+                        if($this->getPosition()!=NULL)					$sql.="'".$this->getPosition()			."', ";
+                        if($this->getState()!=NULL)						$sql.="'".$this->getState()				."', ";
+                        if($this->getKnots()!=NULL)						$sql.="'".$this->getKnots("pg")			."', ";
+                        if($this->getDescription()!=NULL)				$sql.="'".$this->getDescription()		."', ";                        
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
@@ -456,10 +491,15 @@ class sample extends sampleEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql.="update tblsample set ";
-                        if($this->getName()!=NULL)             	$sql.="name='"           .$this->getName()          	."', ";
-                        if($this->parentEntity->getID()!=NULL) 	$sql.="elementid='"      .$this->parentEntity->getID() 	."', ";
-                        if($this->getSamplingDate()!=NULL)     	$sql.="samplingdate='"   .$this->getSamplingDate()  	."', ";
-                        if($this->getType()!=NULL)          	$sql.="type='"     .$this->getType()          	."', ";
+                        if($this->getName()!=NULL)             	$sql.="name='"           	.$this->getName()          						."', ";
+                        if(isset($this->parentEntityArray[0])) 	$sql.="elementid='"      	.$this->parentEntityArray[0]->getID() 	."', ";
+                        if($this->getSamplingDate()!=NULL)     	$sql.="samplingdate='"   	.$this->getSamplingDate()  						."', ";
+                        if($this->getType()!=NULL)          	$sql.="type='"     			.$this->getType()          						."', ";
+                        if($this->getFile()!=NULL)				$sql.="file='"	 			.$this->getFile()  								."', ";
+                        if($this->getPosition()!=NULL)			$sql.="position='"			.$this->getPosition()							."', ";
+                        if($this->getState()!=NULL)				$sql.="state='"				.$this->getState()								."', ";
+                        if($this->getKnots()!=NULL)				$sql.="knots='"				.$this->getKnots("pg")			."', ";
+                        if($this->getDescription()!=NULL)		$sql.="description='"		.$this->getDescription()		."', ";                             
                     $sql = substr($sql, 0, -2);
                     $sql.= " where sampleid='".$this->getID()."'";
                 }
@@ -475,10 +515,10 @@ class sample extends sampleEntity implements IDBAccessor
                         $PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
                         switch($PHPErrorCode)
                         {
-                        case 23514:
+/*                        case 23514:
                                 // Foreign key violation
                                 $this->setErrorMessage("909", "Check constraint violation.  Sapwood count must be a positive integer.");
-                                break;
+                                break;*/
                         default:
                                 // Any other error
                                 $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
@@ -493,7 +533,7 @@ class sample extends sampleEntity implements IDBAccessor
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
                     {
-                        $this->setID($row['sampleid'], $row['domain']);   
+                        $this->setID($row['sampleid']);   
                         $this->setCreatedTimestamp($row['createdtimestamp']);   
                         $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);   
                     }

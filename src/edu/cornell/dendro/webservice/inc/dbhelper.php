@@ -63,14 +63,17 @@ function formatBool($value, $format='php')
    
     if(($value===TRUE) || (strtolower($value) == 't') || (strtolower($value) == 'true') || ($value === 1) )
     {   
+    	echo "boo";
         $outputvalue = TRUE;
     }
     elseif(($value===FALSE) || (strtolower($value) == 'f') || (strtolower($value) == 'false') || ($value === 0) )
     {
+    	echo "hoo";
         $outputvalue = FALSE;
     }	
     elseif($value==NULL)
     {
+    	echo "arse";
     	return NULL;
     }
     else
