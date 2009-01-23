@@ -247,9 +247,8 @@ if($myMetaHeader->status != "Error")
                         	
         if( ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete') )
         {
-
             if($myMetaHeader->status != "Error")
-            {
+            {            	
                 $success = $myObject->setParamsFromDB($paramObj->getID());
                 $success2 = $myObject->setChildParamsFromDB();
                 if(!($success && $success2))

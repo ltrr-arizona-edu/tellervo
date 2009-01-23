@@ -419,6 +419,11 @@ class sample extends sampleEntity implements IDBAccessor
                     if($this->getKnots()!=NULL)					 $xml.= "<tridas:knots>".$this->getKnots('english')."</tridas:knots>";
                     if($this->getDescription()!=NULL)			 $xml.= "<tridas:description>".$this->getDescription()."</tridas:description>";
                 }
+                
+                if($this->getCreatedTimeStamp()!=NULL)      $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimeStamp()."</tridas:genericField>\n";
+            	if($this->getLastModifiedTimeStamp()!=NULL) $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimeStamp()."</tridas:genericField>\n";
+                
+                
             }
 
             if (($parts=="all") || ($parts=="end"))

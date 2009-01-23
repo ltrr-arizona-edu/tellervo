@@ -49,7 +49,7 @@ function getLastUpdateDate($tablename)
 }
 
 /**
- * Converts from most English, PHP or PG representations of a boolean into a PHP, English or PG boolean.
+ * Converts from most English, PHP or PG representations of a boolean into a PHP, English, Presence/Absence or PG boolean.
  * Default output format is PHP
  *
  * @param String $value
@@ -60,11 +60,11 @@ function getLastUpdateDate($tablename)
 function formatBool($value, $format='php')
 {
 	// Turn value into an internal boolean
-    if(($value===TRUE) || (strtolower($value) == 't') || (strtolower($value) == 'true') || ($value === 1) || ($value == '1'))
+    if(($value===TRUE) || (strtolower($value) == 't') || (strtolower($value) == 'true') || ($value === 1) || ($value == '1') || (strtolower($value) == 'present'))
     {   
         $outputvalue = TRUE;
     }
-    elseif(($value===FALSE) || (strtolower($value) == 'f') || (strtolower($value) == 'false') || ($value === 0) || ($value == '0') )
+    elseif(($value===FALSE) || (strtolower($value) == 'f') || (strtolower($value) == 'false') || ($value === 0) || ($value == '0') || (strtolower($value) == 'absent') )
     {
         $outputvalue = FALSE;
     }	
@@ -89,6 +89,9 @@ function formatBool($value, $format='php')
     	case "english":
     		if($outputvalue===TRUE) return 'True';
     		return 'False';
+    	case "presentabsent":
+    		if($outputvalue===TRUE) return 'present';
+    		return 'absent';
     	default:
     		trigger_error("667"."Invalid format provided in formatBool().  Should be one of php, pg or english but got $format instead", E_USER_ERROR);
     		return false;

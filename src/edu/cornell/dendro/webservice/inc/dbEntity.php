@@ -1420,6 +1420,13 @@ class radiusEntity extends dbEntity
     protected $sapwood = NULL;
     
     /**
+     * Whether heartwood is present or absent
+     *
+     * @var Boolean
+     */
+    protected $heartwoodPresent = NULL;
+    
+    /**
      * Bark present or absent
      *
      * @var Boolean
@@ -1486,15 +1493,15 @@ class radiusEntity extends dbEntity
 	 */
 	function setPithPresent($value)
 	{
-		if(formatBool($value)=='error')
-		{
-			$this->setErrorMessage(901, 'Pith field data type not recognised');	
-			return FALSE;
-		}
-		else
+		$value = formatBool($value);
+		if($value!=='error')
 		{
 			$this->pithPresent = $value;
 			return TRUE;		
+		}
+		else
+		{
+			return FALSE;
 		}
 	}
 	
@@ -1538,14 +1545,39 @@ class radiusEntity extends dbEntity
 	function setBarkPresent($value)
 	{
 		$bark = formatBool($value);
-		if($bark=='error')
-		{
-			return false;
-		}
-		else
+		if($bark!=='error')
 		{
 			$this->barkPresent = $bark;
 			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Set whether the heartwood is present
+	 *
+	 * @param Boolean $value
+	 * @retun Boolean
+	 */
+	function setHeartwoodPresent($value)
+	{
+		//echo "setting heartwood present to $value \n";
+		$value = formatBool($value);
+		//echo "translated to $value \n";
+		
+		
+		if($value!=='error')
+		{
+
+			$this->heartwoodPresent = $value;
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 	
@@ -1557,15 +1589,9 @@ class radiusEntity extends dbEntity
 	 */
 	function setNumberOfSapwoodRings($value)
 	{
-		if ( (gettype($value)=='integer') || (gettype($value)=='double') )
-		{		
-			$this->numberOfSapwoodRings = (int) $value;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		$this->numberOfSapwoodRings = (int) $value;
+		return true;
+
 	}
 	
 	/**
@@ -1588,15 +1614,9 @@ class radiusEntity extends dbEntity
 	 */
 	function setMissingHeartwoodRingsToPith($value)
 	{
-		if ( (gettype($value)=='integer') || (gettype($value)=='double') )
-		{
-			$this->missingHeartwoodRingsToPith = (int) $value;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		$this->missingHeartwoodRingsToPith = (int) $value;
+		return true;
+
 	}
 
 	/**
@@ -1619,15 +1639,9 @@ class radiusEntity extends dbEntity
 	 */
 	function setMissingSapwoodRingsToBark($value)
 	{
-		if ( (gettype($value)=='integer') || (gettype($value)=='double') )
-		{
-			$this->missingSapwoodRingsToBark = (int) $value;
-			return true;
-		}
-		else
-		{
-			return false;
-		}	
+
+		$this->missingSapwoodRingsToBark = (int) $value;
+		return true;
 	}
 	
 	/**
@@ -1680,6 +1694,17 @@ class radiusEntity extends dbEntity
 	{
 		return $this->barkPresent;
 	}
+	
+	/**
+	 * Is the heartwood present?
+	 *
+	 * @return Boolean
+	 */
+	function getHeartwoodPresent()
+	{
+		return $this->heartwoodPresent;
+	}
+	
 	
 	/**
 	 * Get the number of sapwood rings
