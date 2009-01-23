@@ -1302,15 +1302,15 @@ class sampleEntity extends dbEntity
 	 */
 	function setKnots($value)
 	{
-		if(formatBool($value)=='error')
-		{
-			$this->setErrorMessage(901, 'Knots field data type not recognised');	
-			return FALSE;
-		}
-		else
+		$value = formatBool($value);
+		if($value!='error')
 		{
 			$this->knots = $value;
 			return TRUE;		
+		}
+		else
+		{
+			return FALSE;
 		}
 	}
 	

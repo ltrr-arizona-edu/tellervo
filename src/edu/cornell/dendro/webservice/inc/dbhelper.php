@@ -60,20 +60,16 @@ function getLastUpdateDate($tablename)
 function formatBool($value, $format='php')
 {
 	// Turn value into an internal boolean
-   
-    if(($value===TRUE) || (strtolower($value) == 't') || (strtolower($value) == 'true') || ($value === 1) )
+    if(($value===TRUE) || (strtolower($value) == 't') || (strtolower($value) == 'true') || ($value === 1) || ($value == '1'))
     {   
-    	echo "boo";
         $outputvalue = TRUE;
     }
-    elseif(($value===FALSE) || (strtolower($value) == 'f') || (strtolower($value) == 'false') || ($value === 0) )
+    elseif(($value===FALSE) || (strtolower($value) == 'f') || (strtolower($value) == 'false') || ($value === 0) || ($value == '0') )
     {
-    	echo "hoo";
         $outputvalue = FALSE;
     }	
     elseif($value==NULL)
     {
-    	echo "arse";
     	return NULL;
     }
     else

@@ -328,7 +328,8 @@ class sample extends sampleEntity implements IDBAccessor
 	 * @return String
 	 */
     function asXML($format='standard', $parts='all')
-    {
+    {  	
+   	
         switch($format)
         {
         case "comprehensive":
@@ -416,7 +417,7 @@ class sample extends sampleEntity implements IDBAccessor
                     if($this->getPosition()!=NULL)				 $xml.= "<tridas:position>".$this->getPosition()."</tridas:position>";
                     if($this->getState()!=NULL)					 $xml.= "<tridas:state>".$this->getState()."</tridas:state>";
                     if($this->getKnots()!=NULL)					 $xml.= "<tridas:knots>".$this->getKnots('english')."</tridas:knots>";
-                    if($this->getDescription()!=NULL)			 $xml.= "<tridas:description>".$this->getDescription()."</tridas:description";
+                    if($this->getDescription()!=NULL)			 $xml.= "<tridas:description>".$this->getDescription()."</tridas:description>";
                 }
             }
 

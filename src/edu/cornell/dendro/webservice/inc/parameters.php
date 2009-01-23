@@ -383,7 +383,7 @@ class sampleParameters extends sampleEntity implements IParams
 		   	case "position":			$this->setPosition($child->nodeValue); break;
 		   	case "state":				$this->setState($child->nodeValue); break;
 		   	case "knots":				$this->setKnots(formatBool($child->nodeValue)); break;
-		   	case "decription":			$this->setDescription($child->nodeValue); break;		
+		   	case "description":			$this->setDescription($child->nodeValue); break;		
 
 		   	case "genericField":
 		   		$type = $child->getAttribute("type");

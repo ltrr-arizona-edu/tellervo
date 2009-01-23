@@ -50,9 +50,7 @@ class request
     private function setCrudMode($crudMode)
     {
     	global $myMetaHeader;
-    	global $myAuth;
-    	global $myRequest;
-    	
+    	global $myAuth;    	
     	
     	$this->crudMode = strtolower($crudMode);
     	$myMetaHeader->setRequestType($this->getCrudMode());
@@ -88,9 +86,7 @@ class request
 		    writeHelpOutput($myMetaHeader);
 		    die;
 		}
-		    	
-    	
-    	
+		    	    	
     }
     
     /***********/
@@ -131,6 +127,10 @@ class request
     
             $this->format = strtolower($requesttag->getAttribute("format"));
             $this->includePermissions = formatBool($requesttag->getAttribute("includePermissions"));
+            
+            // Override format to standard if doing a 'delete'
+            if ($this->getCrudMode()=='delete') $this->format = 'standard';
+            
             
             error_reporting($origErrorLevel);
             return true;
