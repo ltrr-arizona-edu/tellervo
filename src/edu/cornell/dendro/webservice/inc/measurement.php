@@ -1,12 +1,14 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * *******************************************************************
+ */
 require_once('dbhelper.php');
 require_once('inc/note.php');
 
@@ -332,23 +334,25 @@ class measurement extends measurementEntity implements IDBAccessor
     }
 
 
+    /**
+     * Validate the parameters passed from a measurementParameters class
+     *
+     * @param measurementParameters $paramsObj
+     * @param String $crudMode
+     * @return Boolean
+     */
     function validateRequestParams($paramsObj, $crudMode)
     {  		
     	// Check parameters based on crudMode 
         switch($crudMode)
         {
             case "read":
-                if($paramsObj->id==NULL)
+                if($paramsObj->getID()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a measurement.");
                     return false;
                 }
-                if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
-                {
-                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer.  It is currently a ".gettype($paramsObj->id));
-                    return false;
-                }
-                if(!($paramsObj->id>0) && !($paramsObj->id==NULL))
+                if(!($paramsObj->getID()>0) && !($paramsObj->getID()==NULL))
                 {
                     $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer.");
                     return false;
@@ -356,7 +360,7 @@ class measurement extends measurementEntity implements IDBAccessor
                 return true;
          
             case "update":
-                if($paramsObj->id==NULL)
+                if($paramsObj->getID()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating measurement.");
                     return false;
@@ -391,7 +395,7 @@ class measurement extends measurementEntity implements IDBAccessor
                 
                 // Only allow update on a measurement which is not used by other vm's downstream
                 global $dbconn;
-                $sql = "select cpgdb.findvmchildren(".$paramsObj->id.", false)";
+                $sql = "select cpgdb.findvmchildren(".$paramsObj->getID().", false)";
                 $dbconnstatus = pg_connection_status($dbconn);
                 if ($dbconnstatus ===PGSQL_CONNECTION_OK)
                 {
@@ -417,7 +421,7 @@ class measurement extends measurementEntity implements IDBAccessor
 
 
             case "delete":
-                if($paramsObj->id == NULL) 
+                if($paramsObj->getID() == NULL) 
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a measurement.");
                     return false;
@@ -430,17 +434,17 @@ class measurement extends measurementEntity implements IDBAccessor
                     $this->setErrorMessage("902","Missing parameter - you must specify either references or readings when creating a new measurement.");
                     return false;
                 }
-                if(($paramsObj->readingsArray) && ($paramsObj->radiusID== NULL))
+                if(($paramsObj->readingsArray) && ($paramsObj->parentID== NULL))
                 {
                     $this->setErrorMessage("902","Missing parameter - a new direct measurement must include a radiusID.");
                     return false;
                 }
-                if( ($paramsObj->name==NULL) ) 
+                /**if( ($paramsObj->name==NULL) ) 
                 {   
                     $this->setErrorMessage("902","Missing parameter - a new measurement requires the name parameter.");
                     return false;
-                }
-                if(($paramsObj->readingsArray) && ($paramsObj->startYear== NULL) && ($paramsObj->datingTypeID==1))
+                }*/
+                if(($paramsObj->readingsArray) && ($paramsObj->getFirstYear()== NULL) && ($paramsObj->datingTypeID==1))
                 {
                     $this->setErrorMessage("902","Missing parameter - a new absolute direct measurement must include a startYear.");
                     return false;
@@ -1055,29 +1059,24 @@ class measurement extends measurementEntity implements IDBAccessor
         }
 
         // Proceed if there are no errors already
-        if (!isset($this->lastErrorCode))
+        if ($this->getLastErrorCode()==NULL)
         {
             // Only return XML when there are no errors.
-            $xml.= "<measurement ";
-            $xml.= "id=\"".$this->vmeasurementID."\">";
-            $xml.= getResourceLinkTag("measurement", $this->vmeasurementID);
+            $xml.= "<tridas:measurementSeries>";
+            $xml.= "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>";
+            //$xml.= getResourceLinkTag("measurement", $this->vmeasurementID);
 
             // Include map reference tag if appropriate
-            if( (isset($this->centroidLat)) && (isset($this->centroidLong)) )
-            {
-                $xml.= getResourceLinkTag("measurement", $this->vmeasurementID, "map");
-            }
+            //if( (isset($this->centroidLat)) && (isset($this->centroidLong)) )
+            //{
+            //    $xml.= getResourceLinkTag("measurement", $this->vmeasurementID, "map");
+            //}
 
-            // Include permissions details if requested
-            if($this->includePermissions===TRUE) 
-            {
-                $xml.= "<permissions canCreate=\"".fromPHPtoStringBool($this->canCreate)."\" ";
-                $xml.= "canUpdate=\"".fromPHPtoStringBool($this->canUpdate)."\" ";
-                $xml.= "canDelete=\"".fromPHPtoStringBool($this->canDelete)."\" />\n";
-            } 
+            // Include permissions details if requested            
+            $xml .= $this->getPermissionsXML();
             
-            if($format!="minimal") $xml.= "<metadata>\n";
-            if(isset($this->name))                  $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
+            //if($format!="minimal") $xml.= "<metadata>\n";
+            if($this->getName()!=NULL)                  $xml.= "<tridas:genericField type=\"name\">".escapeXMLChars($this->name)."</tridas:genericField>\n";
 
 
             // Only output the remainder of the data if we're not using the 'minimal' format
@@ -1145,93 +1144,13 @@ class measurement extends measurementEntity implements IDBAccessor
                 // Using 'summary' format so just give minimal XML for all references and nothing else
                 if($format=="summary")
                 {
-                    // Only look up references if recursion level is greater than 0
-                    if($recurseLevel>0)
-                    {
-                        if(sizeof($this->referencesArray)>0)
-                        {
-                            $xml.="<references>";
-                            foreach($this->referencesArray as $value)
-                            {
-                                $myReference = new measurement();
-                                $success = $myReference->setParamsFromDB($value, "summary");
-
-                                if($success)
-                                {
-                                    $xml.=$myReference->_asXML("minimal", "all", $recurseLevel);
-                                }
-                                else
-                                {
-                                    $this->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
-                                }
-                            }
-                            $xml.="</references>";
-                        }
-                    }
-
-                    $xml.="</metadata>\n";
-                    $xml.= "</measurement>\n";
+                    $xml.= "</tridas:measurementSeries>\n";
                     return $xml;
                 }
 
                 // Standard or Comprehensive format so give the whole lot
                 else
                 {
-                
-                    // Include site notes if present
-                    if ($this->vmeasurementNoteArray)
-                    {
-                        $xml.= "<siteNotes>\n";
-                        foreach($this->vmeasurementNoteArray as $value)
-                        {
-                            $myVMeasurementNote = new vmeasurementNote();
-                            $success = $myVMeasurementNote->setParamsFromDB($value);
-
-                            if($success)
-                            {
-                                $xml.=$myVMeasurementNote->asXML();
-                            }
-                            else
-                            {
-                                $this->setErrorMessage($myVMeasurementNote->getLastErrorCode, $myVMeasurementNote->getLastErrorMessage);
-                            }
-                        }
-                        $xml.= "</siteNotes>\n";
-                    }
-                    
-                    // Include all refences to other vmeasurements recursing if requested 
-                    if ($this->referencesArray)
-                    {
-                        // Only look up references if recursion level is greater than 0
-                        if($recurseLevel>0)
-                        {
-                            $xml.="<references>";
-                            foreach($this->referencesArray as $value)
-                            {
-                                $myReference = new measurement();
-                                $success = $myReference->setParamsFromDB($value, "summary");
-
-                                if($success)
-                                {
-                                    $xml.=$myReference->_asXML("summary", "all", $recurseLevel);
-                                }
-                                else
-                                {
-                                    $this->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
-                                }
-                            }
-                            $xml.="</references>\n";
-                        }
-                    }
-                    else
-                    {
-                        $xml.="<references>\n";
-                        $xml.= getResourceLinkTag("radius", $this->radiusID);
-                        $xml.="</references>\n";
-                    }
-                    
-                    $xml.= "</metadata>\n";
-
                     // Include all readings 
                     if ($this->readingsArray)
                     {
@@ -1254,7 +1173,7 @@ class measurement extends measurementEntity implements IDBAccessor
                         }
 
 
-                        $xml.="<readings type=\"annual\" units=\"-5\">\n";
+                        $xml.="<tridas:values>\n";
                         foreach($this->readingsArray as $key => $value)
                         {
                             // Calculate absolute year where possible
@@ -1267,13 +1186,13 @@ class measurement extends measurementEntity implements IDBAccessor
                                 }
                             }
 
-                            $xml.="<reading year=\"".$yearvalue."\" ";
-                            if (!($value['wjinc'] === NULL && $value['wjdec'] === NULL))
-                            {
-                                $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
-                            }
-                            $xml .="count=\"".$value['count']."\" value=\"".$this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
-                         
+                            $xml.="<tridas:value index=\"nr".$yearvalue."\" ";
+                            //if (!($value['wjinc'] === NULL && $value['wjdec'] === NULL))
+                            //{
+                            //    $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
+                            //}
+                            //$xml .="count=\"".$value['count']."\" value=\"".$this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
+                         	$xml.="value=\"".$this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
 
                             // Add any notes that are in the notesArray subarray
                             if(count($value['notesArray']) > 0)
@@ -1294,17 +1213,17 @@ class measurement extends measurementEntity implements IDBAccessor
                                 }
                             }
 
-                            $xml.="</reading>\n";
+                            $xml.="</tridas:value>\n";
 
                             // Increment yearvalue for next loop
                             $yearvalue++;
 
                         }
-                        $xml.="</readings>\n";
+                        $xml.="</tridas:values>\n";
                     }
                 }    
             }
-            $xml.= "</measurement>\n";
+            $xml.= "</tridas:measurementSeries>\n";
             return $xml;
         }
         else

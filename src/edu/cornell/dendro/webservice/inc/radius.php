@@ -57,7 +57,7 @@ class radius extends radiusEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->setName($row['name']);
+                $this->setCode($row['code']);
                 $this->setSampleID($row['sampleid']);
                 $this->setCreatedTimestamp($row['createdtimestamp']);
                 $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
@@ -168,7 +168,7 @@ class radius extends radiusEntity implements IDBAccessor
     {    	
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
         if ($paramsClass->getID()!=NULL)		 							$this->setID($paramsClass->getID());
-        if ($paramsClass->getName()!=NULL)       							$this->setName($paramsClass->getName());
+        if ($paramsClass->getCode()!=NULL)       							$this->setCode($paramsClass->getCode());
         if ($paramsClass->getPithPresent()!=NULL)							$this->setPithPresent($paramsClass->getPithPresent());
         if ($paramsClass->getSapwood()!=NULL)								$this->setSapwood($paramsClass->getSapwood());
         if ($paramsClass->getBarkPresent()!=NULL)							$this->setBarkPresent($paramsClass->getBarkPresent());
@@ -221,7 +221,7 @@ class radius extends radiusEntity implements IDBAccessor
                     return false;
                 }
                 if(($paramsObj->getSampleID()==NULL) 
-                    && ($paramsObj->getName()==NULL)
+                    && ($paramsObj->getCode()==NULL)
                     && ($paramsObj->hasChild!=True))
                 {
                     $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
@@ -248,9 +248,9 @@ class radius extends radiusEntity implements IDBAccessor
                 }
                 else
                 {
-                    if($paramsObj->getName() == NULL) 
+                    if($paramsObj->getCode() == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a radius.");
+                        $this->setErrorMessage("902","Missing parameter - 'code' field is required when creating a radius.");
                         return false;
                     }
                     if($paramsObj->parentID == NULL) 
@@ -339,13 +339,13 @@ class radius extends radiusEntity implements IDBAccessor
             if( ($parts=="all") || ($parts=="beginning"))
             {
                 $xml.= "<tridas:radius>\n";
-                $xml.= "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>";
-                      
+                $xml.= $this->getIdentifierXML();          
+                $xml.= $this->getDBIDXML();
+                
                 // Include permissions details if requested            
                 $xml .= $this->getPermissionsXML();
                 
-                if($this->getName()!=NULL)                        					$xml.= "<tridas:genericField name=\"name\">".escapeXMLChars($this->getName())."</tridas:genericField>\n";
-                
+            
                 if($format!="minimal")
                 {
                     if($this->getPithPresent()!=NULL)           					$xml.= "<tridas:pith presence=\"".formatBool($this->getPithPresent(), "presentabsent")."\"></tridas:pith>\n";
@@ -412,7 +412,7 @@ class radius extends radiusEntity implements IDBAccessor
                 {
                     // New record
                     $sql = "insert into tblradius ( ";
-                        if($this->getName()!=NULL)                   				$sql.="name, ";
+                        if($this->getCode()!=NULL)                   				$sql.="code, ";
                         if(isset($this->parentEntityArray[0]))		 				$sql.="sampleid, ";
                         if($this->getBarkPresent()!=NULL)							$sql.="barkpresent, ";
                         if($this->getHeartwoodPresent()!=NULL)						$sql.="heartwoodpresent, ";
@@ -427,7 +427,7 @@ class radius extends radiusEntity implements IDBAccessor
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                        if($this->getName()!=NULL)                   				$sql.="'".$this->getName()             																					. "', ";
+                        if($this->getCode()!=NULL)                   				$sql.="'".$this->getCode()             																					. "', ";
                         if(isset($this->parentEntityArray[0]))      				$sql.="'".$this->parentEntityArray[0]->getID() 																. "', ";
                         if($this->getBarkPresent()!=NULL)							$sql.="'".formatBool($this->getBarkPresent(),"pg")					. "', ";
                         if($this->getHeartwoodPresent()!=NULL)						$sql.="'".formatBool($this->getHeartwoodPresent(),"pg"). "', ";
@@ -448,7 +448,7 @@ class radius extends radiusEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql.="update tblsample set ";
-                        if($this->getName()!=NULL)             	$sql.="name='"           	.$this->getName()          						."', ";
+                        if($this->getCode()!=NULL)             	$sql.="code='"           	.$this->getCode()          						."', ";
                         if(isset($this->parentEntityArray[0])) 	$sql.="elementid='"      	.$this->parentEntityArray[0]->getID() 	."', ";
                         if($this->getSamplingDate()!=NULL)     	$sql.="samplingdate='"   	.$this->getSamplingDate()  						."', ";
                         if($this->getType()!=NULL)          	$sql.="type='"     			.$this->getType()          						."', ";

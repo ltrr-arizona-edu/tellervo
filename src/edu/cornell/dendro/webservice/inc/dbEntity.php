@@ -71,7 +71,7 @@ class dbEntity
      *
      * @var unknown_type
      */
-    protected $name = NULL;    
+    protected $code = NULL;    
     
     /**
      * XML tag for this entities parent entity
@@ -204,14 +204,14 @@ class dbEntity
     
 
     /**
-     * Set the current entities name.
+     * Set the current entities code.
      *
-     * @param String $theName
+     * @param String $theCode
      * @return Boolean
      */
-    protected function setName($theName)
+    protected function setCode($theCode)
     {
-        $this->name=addslashes($theName);
+        $this->code=addslashes($theCode);
         return true;
     }
     
@@ -269,15 +269,15 @@ class dbEntity
     }
 
     /**
-     * Get the name for this database entity
+     * Get the code for this database entity
      *
      * @return String
      */
-    protected function getName()
+    protected function getCode()
     {
-    	if(isset($this->name))
+    	if(isset($this->code))
     	{
-    		return $this->name;
+    		return $this->code;
     	}
     	else
     	{
@@ -303,8 +303,14 @@ class dbEntity
     function getIdentifierXML()
     {
     	global $domain;
-        return "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier >";  
+        return "<tridas:identifier domain=\"$domain\">".$this->getCode()."</tridas:identifier>";  
     }
+    
+    function getDBIDXML()
+    {
+    	return "<tridas:genericField name=\"corinaDBID\" type=\"integer\">".$this->getID()."</tridas:genericField>\n";
+    }
+    
     
     /**
      * Get the most recent error code for this database entity
@@ -2148,7 +2154,6 @@ class measurementEntity extends dbEntity
 	 * @var String
 	 */
 	protected $provenance = NULL;
-	
 	protected $type = NULL;
 	protected $standardizingMethod = NULL;
 	protected $author = NULL;
@@ -2173,8 +2178,6 @@ class measurementEntity extends dbEntity
     var $datingErrorPositive = NULL;
     var $datingErrorNegative = NULL;
     var $isPublished = NULL;
-
-
     var $readingsArray = array();
     var $readingsUnits = NULL;
     var $referencesArray = array();
@@ -2184,25 +2187,10 @@ class measurementEntity extends dbEntity
     var $name = NULL;
     var $readingCount = NULL;
     var $measurementCount = NULL;
-
-
-
-    
     var $masterVMeasurementID = NULL;
     var $justification = NULL;
     var $certaintyLevel = NULL;
-    var $newStartYear = NULL;
 
-    var $summarySiteCode = NULL;
-    var $summarySiteCount = NULL;
-    var $summaryTaxonName = NULL;
-    var $summaryTaxonCount = NULL;
-    var $labPrefix = NULL;
-    var $fullLabCode = NULL;
-    
-
-
-	
     function __construct()
     {  
         $groupXMLTag = "elements";
@@ -2215,10 +2203,264 @@ class measurementEntity extends dbEntity
     /* SETTERS */
     /***********/ 	
 	
-	/***********/
+	/**
+	 * Set the method used to create this measurement
+	 *
+	 * @param String $method
+	 */
+	function setMeasurementMethod($method)
+	{
+		$this->measuringMethod = addslashes($method);
+		
+	}
+	
+	/**
+	 * Set the variable that has been measured (ring width, early width etc)
+	 *
+	 * @param String $variable
+	 */
+	function setVariables($variable)
+	{
+		$this->variable = addslashes($variable);
+	}
+	
+	/**
+	 * Set the measurment units 
+	 *
+	 * @param Double $units
+	 * @param Integer $power
+	 */
+	function setMeasuringUnits($units, $power)
+	{
+		$this->units = $units;
+	}
+	
+	/**
+	 * Set the date this measurement was measured
+	 *
+	 * @param unknown_type $date
+	 */
+	function setMeasuringDate($date)
+	{
+		$this->measuringDate = $date;
+	}
+	
+	/**
+	 * Set the person who measured this
+	 *
+	 * @param unknown_type $analyst
+	 */
+	function setAnalyst($analyst)
+	{
+		$this->analyst = addslashes($analyst);
+	}
+	
+	function setDendrochronologist($name)
+	{
+		$this->dendrochronologist = addslashes($name);
+	}
+	
+	function setComments($comments)
+	{
+		$this->comments = addslashes($comments);
+	}
+	
+	function setUsage($usage)
+	{
+		$this->usage = addslashes($usage);
+	}
+	
+	function setUsageComments($comments)
+	{
+		$this->usageComments = addslashes($comments);
+	}
+	
+	function setFirstYear($year)
+	{
+		$this->firstYear = (int) $year;
+	}
+	
+	function setStatType($type)
+	{
+		$this->statType = addslashes($type);
+	}
+	
+	function setStatValue($value)
+	{
+		$this->statValue = (double) $value;	
+	}
+	
+	function setSignificanceLevel($level)
+	{
+		$this->significanceLevel = (double) $level;
+	}
+	
+	function setSproutYear($year)
+	{
+		$this->sproutYear = (int) $year;
+	}
+	
+	function setDeathYear($year)
+	{
+		$this->deathYear = (int) $year;
+	}
+	
+	function setProvenance($provenance)
+	{
+		$this->provenance = addslashes($provenance);
+	}
+	
+	function setType($type)
+	{
+		$this->type = addslashes($type);
+	}
+	
+	function setStandardizingMethod($method)
+	{
+		$this->standardizingMethod = addslashes($method);
+	}
+	
+	function setAuthor($author)
+	{
+		$this->author = addslashes($author);
+	}
+	
+	function setObjective($objective)
+	{
+		$this->objective = addslashes($objective);
+	}
+	
+	function setVersion($version)
+	{
+		$this->version = addslashes($version);
+	}
+	
+	function setDerivationDate($date)
+	{
+		$this->derivationDate = $date;
+	}
+	
+	/***********
     /* GETTERS */
     /***********/
 
+	function getMeasuringMethod()
+	{
+		return $this->measuringMethod;
+	}
+	
+	function getVariables()
+	{
+		return $this->variable;
+	}
+	
+	function getUnits()
+	{
+		return $this->units;
+	}
+	
+	function getUnitsPower()
+	{
+		return $this->power;
+	}
+	
+	function getMeasuringDate()
+	{
+		return $this->measuringDate;
+	}
+	
+	function getAnalyst()
+	{
+		return $this->analyst;
+	}
+	
+	function getDendrochronologist()
+	{
+		return $this->dendrochronologist;
+	}
+	
+	function getComments()
+	{
+		return $this->comments;
+	}
+	
+	function getUsage()
+	{
+		return $this->usage;
+	}
+	
+	function getUsageComments()
+	{
+		return $this->usageComments;
+	}
+	
+	function getFirstYear()
+	{
+		return $this->firstYear;
+	}
+	
+	function getStatType()
+	{
+		return $this->statType;
+	}
+	
+	function getStatValue()
+	{
+		return $this->statValue;
+	}
+	
+	function getSignificanceLevel()
+	{
+		return $this->significanceLevel;
+	}
+	
+	function getSproutYear()
+	{
+		return $this->sproutYear;
+	}
+	
+	function getDeathYear()
+	{
+		return $this->deathYear;
+	}
+	
+	function getProvenance()
+	{
+		return $this->provenance;
+	}
+	
+	function getType()
+	{
+		return $this->type;	
+	}
+	
+	function getStandardizingMethod()
+	{
+		return $this->standardizingMethod;
+	}
+	
+	function getAuthor()
+	{
+		return $this->author;
+	}
+	
+	function getObjective()
+	{
+		return $this->objective;
+	}
+	
+	function getVersion()
+	{
+		return $this->version;
+	}
+	
+	function getDerivationDate()
+	{
+		return $this->derivationDate;
+	}
+	
+	
+	
 	/*************/
     /* FUNCTIONS */
     /*************/ 		

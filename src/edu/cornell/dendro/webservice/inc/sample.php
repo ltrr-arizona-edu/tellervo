@@ -63,10 +63,10 @@ class sample extends sampleEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->setName($row['name']);
+                $this->setCode($row['code']);
                 $this->setID($row['sampleid'], $domain);
                 $this->setSamplingDate($row['samplingdate']);
-		$this->setCreatedTimestamp($row['createdtimestamp']);
+				$this->setCreatedTimestamp($row['createdtimestamp']);
                 $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
                 $this->setPosition($row['position']);
                 $this->setState($row['state']);
@@ -168,7 +168,7 @@ class sample extends sampleEntity implements IDBAccessor
     {		
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
         if($paramsClass->getID()!=NULL)         	$this->setID($paramsClass->getID());                                          
-        if($paramsClass->getName()!=NULL)       	$this->setName($paramsClass->getName());                      
+        if($paramsClass->getCode()!=NULL)       	$this->setCode($paramsClass->getCode());                      
         if($paramsClass->getSamplingDate())     	$this->setSamplingDate($paramsClass->getSamplingDate());            
         if($paramsClass->getType()!=NULL)       	$this->setType($paramsClass->getType());         
         if($paramsClass->getFile()!=NULL)			$this->setFile($paramsClass->getFile());     
@@ -262,7 +262,7 @@ class sample extends sampleEntity implements IDBAccessor
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
                     return false;
                 }
-                if(($paramsObj->getName() ==NULL) 
+                if(($paramsObj->getCode() ==NULL) 
                     && ($paramsObj->getSamplingDate()==NULL) 
                     && ($paramsObj->getType()==NULL) 
                     && ($paramsObj->getFile()==NULL)
@@ -296,9 +296,9 @@ class sample extends sampleEntity implements IDBAccessor
                 }
                 else
                 {
-                    if($paramsObj->getName() == NULL) 
+                    if($paramsObj->getCode() == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a sample.");
+                        $this->setErrorMessage("902","Missing parameter - 'code' field is required when creating a sample.");
                         return false;
                     }
                     if($paramsObj->getParentID() == NULL) 
@@ -401,13 +401,14 @@ class sample extends sampleEntity implements IDBAccessor
             if( ($parts=="all") || ($parts=="beginning"))
             {
                 $xml.= "<tridas:sample>\n";
-                $xml.= "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>";
-                      
+                $xml.=  $this->getIdentifierXML();
+              	$xml .= $this->getDBIDXML();
+              	                     
                 // Include permissions details if requested            
                 $xml .= $this->getPermissionsXML();
                 
-                if($this->getName()!=NULL)                        $xml.= "<tridas:genericField name=\"name\">".escapeXMLChars($this->getName())."</tridas:genericField>\n";
-                
+
+             
                 if($format!="minimal")
                 {
                     if($this->getSamplingDate()!=NULL)           $xml.= "<tridas:samplingDate\">".$this->getSamplingDate()."</samplingDate>\n";
@@ -467,7 +468,7 @@ class sample extends sampleEntity implements IDBAccessor
                 {
                     // New record
                     $sql = "insert into tblsample ( ";
-                        if($this->getName()!=NULL)                   	$sql.="name, ";
+                        if($this->getCode()!=NULL)                   	$sql.="code, ";
                         if(isset($this->parentEntityArray[0]))		 	$sql.="elementid, ";
                         if($this->getSamplingDate()!=NULL)           	$sql.="samplingdate, ";
                         if($this->getType()!=NULL)                   	$sql.="type, ";
@@ -479,7 +480,7 @@ class sample extends sampleEntity implements IDBAccessor
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                        if($this->getName()!=NULL)                   	$sql.="'".$this->getName()             	."', ";
+                        if($this->getCode()!=NULL)                   	$sql.="'".$this->getCode()             	."', ";
                         if(isset($this->parentEntityArray[0]))      	$sql.="'".$this->parentEntityArray[0]->getID() 	."', ";
                         if($this->getSamplingDate()!=NULL)           	$sql.="'".$this->getSamplingDate()     	."', ";
                         if($this->getType()!=NULL)                   	$sql.="'".$this->getType()             	."', ";
@@ -497,7 +498,7 @@ class sample extends sampleEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql.="update tblsample set ";
-                        if($this->getName()!=NULL)             	$sql.="name='"           	.$this->getName()          						."', ";
+                        if($this->getCode()!=NULL)             	$sql.="code='"           	.$this->getCode()          						."', ";
                         if(isset($this->parentEntityArray[0])) 	$sql.="elementid='"      	.$this->parentEntityArray[0]->getID() 	."', ";
                         if($this->getSamplingDate()!=NULL)     	$sql.="samplingdate='"   	.$this->getSamplingDate()  						."', ";
                         if($this->getType()!=NULL)          	$sql.="type='"     			.$this->getType()          						."', ";

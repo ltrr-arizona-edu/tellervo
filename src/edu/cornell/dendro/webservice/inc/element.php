@@ -100,7 +100,7 @@ class element extends elementEntity implements IDBAccessor
         global $dbconn;
         
         $this->setID($theID);
-        //$sql = "select tblelement.* tlkplocationtype.name as locationtype from tlkplocationtype, tblelement where elementid='".$this->getID()."' and tblelement.locationtypeid=tlkplocationtype.locationtypeid";
+        //$sql = "select tblelement.* tlkplocationtype.code as locationtype from tlkplocationtype, tblelement where elementid='".$this->getID()."' and tblelement.locationtypeid=tlkplocationtype.locationtypeid";
         $sql = "select * from tblelement left outer join (select locationtypeid, name as locationtype from tlkplocationtype) as loctype on (tblelement.locationtypeid = loctype.locationtypeid) where elementid='".$this->getID()."'";
 
 
@@ -124,7 +124,7 @@ class element extends elementEntity implements IDBAccessor
                 $this->taxon->setParamsFromDB($row['taxonid']);
                 $this->taxon->setOriginalTaxon($row['originaltaxonname']);
                 $this->taxon->setHigherTaxonomy();
-                $this->setName($row['name']);
+                $this->setCode($row['code']);
                 $this->setCreatedTimestamp($row['createdtimestamp']);
                 $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
                 $this->setAuthenticity($row['authenticity']);
@@ -170,18 +170,10 @@ class element extends elementEntity implements IDBAccessor
     {
         global $dbconn;
 
-        $sql  = "select elementnoteid from tblelementelementnote where elementid=".$this->getID();
         $sql2 = "select sampleid from tblsample where elementid=".$this->getID();
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
-            $result = pg_query($dbconn, $sql);
-            while ($row = pg_fetch_array($result))
-            {
-                // Get all element note id's for this element and store 
-                array_push($this->elementNoteArray, $row['elementnoteid']);
-            }
-
             $result = pg_query($dbconn, $sql2);
             while ($row = pg_fetch_array($result))
             {
@@ -208,7 +200,7 @@ class element extends elementEntity implements IDBAccessor
     function setParamsFromParamsClass($paramsClass)
     {    	    	    	
         // Alter the parameter values based upon values supplied by the user and passed as a parameters class
-        if ($paramsClass->getName()!=NULL)             		$this->setName($paramsClass->getName());
+        if ($paramsClass->getCode()!=NULL)             		$this->setCode($paramsClass->getCode());
         if ($paramsClass->getAuthenticity()!=NULL)			$this->setAuthenticity($paramsClass->getAuthenticity());
         if ($paramsClass->getDescription()!=NULL)			$this->setDescription($paramsClass->getDescription());
         if ($paramsClass->getDiameter()!=NULL)				$this->setDiameter($paramsClass->getDiameter());
@@ -306,9 +298,9 @@ class element extends elementEntity implements IDBAccessor
                 }
                 else
                 {
-                    if($paramsObj->getName() == NULL) 
+                    if($paramsObj->getCode() == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'name' field is required when creating a element.");
+                        $this->setErrorMessage("902","Missing parameter - 'code' field is required when creating a element.");
                         return false;
                     }
                 }
@@ -411,8 +403,7 @@ class element extends elementEntity implements IDBAccessor
                 // Include permissions details if requested            
                 $xml .= $this->getPermissionsXML();
                 
-                if($this->getName()!=NULL)                        $xml.= "<tridas:genericField name=\"name\">".escapeXMLChars($this->getName())."</tridas:genericField>\n";
-                
+      			$xml.= $this->getDBIDXML();         
 
                 if($format!="minimal")
                 {
@@ -523,9 +514,9 @@ class element extends elementEntity implements IDBAccessor
 
 
         // Check for required parameters
-        if($this->getName() == NULL) 
+        if($this->getCode() == NULL) 
         {
-            $this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
+            $this->setErrorMessage("902", "Missing parameter - 'code' field is required.");
             return FALSE;
         }
 
@@ -541,7 +532,7 @@ class element extends elementEntity implements IDBAccessor
                     // New Record
                     $sql = "insert into tblelement ( ";
                     	if (isset($this->parentEntityArray[0]))					$sql.= "objectid, ";
-                    	if ($this->getName()!=NULL)								$sql.= "name, ";
+                    	if ($this->getCode()!=NULL)								$sql.= "code, ";
                         if ($this->taxon->getID()!=NULL)                        $sql.= "taxonid, ";
                         if ($this->getAuthenticity()!=NULL)						$sql.= "authenticity, ";
                         if ($this->getShape()!=NULL)							$sql.= "shape, ";
@@ -566,7 +557,7 @@ class element extends elementEntity implements IDBAccessor
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
                     	if (isset($this->parentEntityArray[0]))					$sql.= "'".$this->parentEntityArray[0]->getID()."', ";                    
-                    	if ($this->getName()!=NULL)								$sql.= "'".$this->getName().  "', ";                    
+                    	if ($this->getCode()!=NULL)								$sql.= "'".$this->getCode().  "', ";                    
                         if ($this->taxon->getID()!=NULL)                        $sql.= "'".$this->taxon->getID().   "', ";
                         if ($this->getAuthenticity()!=NULL)						$sql.= "'".$this->getAuthenticity()."', ";
                         if ($this->getShape()!=NULL)							$sql.= "'".$this->getShape()."', ";

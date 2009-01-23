@@ -74,10 +74,7 @@ if($myMetaHeader->status != "Error")
             case "sampleParameters":  			$myObject = new sample(); break;
             case "radiusParameters": 			$myObject = new radius(); break;
             case "objectParameters": 			$myObject = new object(); break;            
-            //case "measurementParameters": 		$myObject = new measurement(); break;
-            //case "siteNoteParameters": 			$myObject = new siteNote(); break;
-            //case "elementNoteParameters": 		$myObject = new elementNote(); break;
-            //case "vmeasurementNoteParameters": 	$myObject = new vmeasurementNote(); break;
+            case "measurementParameters": 		$myObject = new measurement(); break;
             //case "readingNoteParameters": 		$myObject = new readingNote(); break;
             case "authenticationParameters": 	$myObject = new authenticate(); break;
             case "searchParameters": 			$myObject = new search(); break;
@@ -91,6 +88,8 @@ if($myMetaHeader->status != "Error")
         // Get the name of the object (minus the Parameters bit)
         $objectType = substr(get_class($paramObj), 0, -10);
          
+
+
         // Before doing anything else check the request parameters are valid
         if($myMetaHeader->status != "Error")
         {       

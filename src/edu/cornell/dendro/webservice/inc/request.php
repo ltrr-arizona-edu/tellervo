@@ -243,6 +243,17 @@ class request
 	                		$newxml = "<tridas:radius><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:radius>";
 	                		$myParamObj = new radiusParameters($newxml, $parentID);
                             break;
+                            
+	                	case 'measurementseries':
+
+	                		$newxml = "<tridas:measurementSeries><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:measurementSeries>";
+	                		$myParamObj = new measurementParameters($newxml, $parentID);
+                            break;
+                            
+	                	case 'derivedseries':
+	                		$newxml = "<tridas:derivedSeries><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:derivedSeries>";
+	                		$myParamObj = new measurementParameters($newxml, $parentID);
+                            break;	                		
                                                         
 	                	default:
 	                		trigger_error("901"."Unknown entity type specified", E_USER_ERROR);

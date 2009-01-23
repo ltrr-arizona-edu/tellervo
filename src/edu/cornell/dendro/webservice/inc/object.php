@@ -40,14 +40,28 @@ class object extends objectEntity implements IDBAccessor
 	 * Set this object's parameters from the database
 	 *
 	 * @param Integer $theID
+	 * @param String $idType
 	 */
-    function setParamsFromDB($theID)
+    function setParamsFromDB($theID, $idType='db')
 	{
+ 		
        global $dbconn;
         
-        $this->setID($theID);
-	    $sql = "select * from tblobject left outer join (select locationtypeid, name as locationtype from tlkplocationtype) as loctype on (tblobject.locationtypeid = loctype.locationtypeid) where objectid='".$this->getID()."'";
-        
+       switch(strtolower($idType))
+       {
+       	case 'db':
+		    $sql = "select * from tblobject left outer join (select locationtypeid, name as locationtype from tlkplocationtype) as loctype on (tblobject.locationtypeid = loctype.locationtypeid) where objectid='".$theID."'";
+		    break;
+		    
+       	case 'lab':
+		    $sql = "select * from tblobject left outer join (select locationtypeid, name as locationtype from tlkplocationtype) as loctype on (tblobject.locationtypeid = loctype.locationtypeid) where code='".$theID."'";
+       		break;
+
+       	default:
+       		trigger_error('667'.'Unknown database id type.', E_USER_ERROR);
+       		die();
+       }
+          
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -63,6 +77,8 @@ class object extends objectEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
+                $this->setID($row['objectid']);
+                $this->setCode($row['code']);
                 $this->setDescription($row['description']);
                 $this->setTitle($row['title']);
                 $this->setCreator($row['creator']);
@@ -273,7 +289,7 @@ class object extends objectEntity implements IDBAccessor
             	if($this->getCreator()!=NULL)		$xml.= "<tridas:creator>".$this->getCreator()."</tridas:creator>";
             	if($this->getOwner()!=NULL)			$xml.= "<tridas:owner>".$this->getOwner()."</tridas:owner>";
             	if($this->getFile()!=NULL)			$xml.= "<tridas:file xlink:href=\"".$this->getFile()."\" />";
-            	if($this->getCode()!=NULL)			$xml.= "<tridas:genericField name=\"code\" type=\"string\">".$this->getCode()."</tridas:genericField>"; 
+            	$xml.=$this->getDBIDXML();
             	
             	if($this->getTemporalCoverage()!=NULL)
             	{
