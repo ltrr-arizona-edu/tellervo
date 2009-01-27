@@ -21,7 +21,7 @@ class measurement extends measurementEntity implements IDBAccessor
     function __construct()
     {
         // Constructor for this class.
-        $this->vmeasurementOpID = 5;
+        $this->setVMeasurementOp(5);
     }
 
     /***********/
@@ -33,7 +33,7 @@ class measurement extends measurementEntity implements IDBAccessor
         // Set the current objects parameters from the database
         global $dbconn;
         
-        $this->vmeasurementID=$theID;
+        $this->setID($theID);
 
         // the uberquery - one query to rule them all?
         $sql = "SELECT vm.*, mc.*, su.username, op.name as opname, dt.label as datingtype, ".
@@ -45,9 +45,9 @@ class measurement extends measurementEntity implements IDBAccessor
 		"LEFT JOIN tblvmeasurementmetacache mc ON vm.vmeasurementid=mc.vmeasurementid ".
 		"LEFT JOIN tlkpdatingtype dt ON m.datingtypeid=dt.datingtypeid ".
 		"LEFT JOIN tblsecurityuser su ON vm.owneruserid=su.securityuserid ".
-		"WHERE vm.vmeasurementid=".$this->vmeasurementID;
+		"WHERE vm.vmeasurementid=".$this->getID();
 	// the query that makes the server make the measurement
-        $sql2 = "select * from cpgdb.getvmeasurementresult('$theID')";
+        $sql2 = "select * from cpgdb.getvmeasurementresult('".$this->getID()."')";
         
 	// the old query - here for posterity
         //$sql2 = "select tblvmeasurement.* from tblvmeasurement where vmeasurementid=".$this->vmeasurementID;
@@ -63,32 +63,25 @@ class measurement extends measurementEntity implements IDBAccessor
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No match for measurement id=".$theID);
+                $this->setErrorMessage("903", "No match for measurement id=".$this->getID());
                 return FALSE;
             }
             else
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->name = $row['name'];
-                $this->description = $row['description'];
-                
-                // Commented out the vmid here - we should have it passed to this function
-                // as a variable shouldn't we?
-                //$this->vmeasurementID = $row['vmeasurementid'];
-                
-                
+                 
                 //$this->vmeasurementResultID = $row['vmeasurementresultid'];
                 //$this->vmeasurementOpID = $row['vmeasurementopid'];
                 //$this->vmeasurementOpParam = $row['vmeasurementparamid'];
-                $this->radiusID = $row['radiusid'];
-                $this->isReconciled = fromPGtoPHPBool($row['isreconciled']);
-                $this->startYear = $row['startyear'];
-                $this->isLegacyCleaned = fromPGtoPHPBool($row['islegacycleaned']);
-                $this->datingErrorPositive = $row['datingerrorpositive'];
-                $this->datingErrorNegative = $row['datingerrornegative'];
-                $this->createdTimeStamp = $row['createdtimestamp'];
-                $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
+               
+                $this->setIsReconciled(fromPGtoPHPBool($row['isreconciled']));
+                $this->setStartYear($row['startyear']);
+                $this->setIsLegacyCleaned(fromPGtoPHPBool($row['islegacycleaned']));
+                $this->setDatingErrorPositive($row['datingerrorpositive']);
+                $this->setDatingErrorNegative($row['datingerrornegative']);
+                $this->setCreatedTimestamp($row['createdtimestamp']);
+                $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
                 //$this->setMeasuredByID($row['measuredbyid']);
 
                 // not this way... 
@@ -98,14 +91,14 @@ class measurement extends measurementEntity implements IDBAccessor
 	                $this->setVMeasurementOp($row2['vmeasurementopid']);
 	                $this->setOwnerUserID($row2['owneruserid']);
 		*/
-		$this->datingTypeID = $row['datingtypeid'];
-		$this->datingType = $row['datingtype'];
-		$this->measurementID = $row['measurementid'];
-		$this->vmeasurementOpID = $row['vmeasurementopid'];
-		$this->vmeasurementOp = $row['opname'];
-		$this->ownerUserID = $row['owneruserid'];
-                $this->setMeasuredByID($row['measuredbyid']);
-		$this->owner = $row['username'];
+				$this->setDatingType($row['datingtype']);
+				$this->datingType = $row['datingtype'];
+				$this->measurementID = $row['measurementid'];
+				$this->vmeasurementOpID = $row['vmeasurementopid'];
+				$this->vmeasurementOp = $row['opname'];
+				$this->ownerUserID = $row['owneruserid'];
+		                $this->setMeasuredByID($row['measuredbyid']);
+				$this->owner = $row['username'];
 
 		// all the metacache stuff...
                 $this->minLat = $row['ymin'];
@@ -164,6 +157,31 @@ class measurement extends measurementEntity implements IDBAccessor
         return TRUE;
     }
 
+    /**
+     * @todo 
+     *
+     */
+    function setParentsFromDB()
+    {
+    	global $dbconn;
+    	$sql = "SELECT radiusid FROM tblmeasurement WHERE measurementid=?";
+    	/*
+    	        // Set up parent details
+          	   	$this->parentEntityArray = array();
+           		$myRadius = new radius();
+           		$success = $myRadius->setParamsFromDB($row['radiusid']);
+	            if($success===FALSE)
+	            {
+	            	trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage());
+	            }  
+               	array_push($this->parentEntityArray,$myRadius);
+                
+                $this->setCode($row['code']);
+                $this->setComments($row['comments']);
+*/
+    }
+    
+    
     private function setCrossdateParamsFromDB()
     {
         global $dbconn;
@@ -508,335 +526,6 @@ class measurement extends measurementEntity implements IDBAccessor
         }
     }
 
-    function setOwnerUserID($theOwnerUserID)
-    {
-        if($theOwnerUserID)
-        {
-            //Only run if valid parameter has been provided
-            global $dbconn;
-
-            $this->ownerUserID = $theOwnerUserID;
-            
-            $sql  = "select username from tblsecurityuser where securityuserid=".$this->ownerUserID;
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->owner = $row['username'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        return FALSE;
-    }
-
-    function setVMeasurementOp($theVMeasurementOp)
-    {    
-        if(is_numeric($theVMeasurementOp))
-        {
-            // ID provided
-            global $dbconn;
-
-            $this->vmeasurementOpID = $theVMeasurementOp;
-            
-            $sql  = "select name from tlkpvmeasurementop where vmeasurementopid=".$this->vmeasurementOpID;
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->vmeasurementOp = $row['name'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        elseif(is_string($theVMeasurementOp))
-        {
-            global $dbconn;
-
-            $this->vmeasurementOp = ucfirst(strtolower($theVMeasurementOp));
-            
-            $sql  = "select vmeasurementopid from tlkpvmeasurementop where name ilike'".$theVMeasurementOp."'";
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->vmeasurementOpID = $row['vmeasurementopid'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        else
-        {
-            return FALSE;
-        }
-    }
-
-    function setVMeasurementOpParam($theParam)
-    {
-        global $dbconn;
-        if(is_numeric($theParam))
-        {
-            // Param is numeric - probably a year for use in redating
-            $this->vmeasurementOpParam = $theParam;
-            return true;
-        }
-        elseif(is_string($theParam))
-        {
-            // Param is string - probably index type
-            $sql  = "select indexid from tlkpindextype where indexname ilike '$theParam'";
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->vmeasurementOpParam = $row['indexid'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database for index type lookup");
-                return FALSE;
-            }
-            
-        } 
-        elseif($theParam==NULL)
-        {
-            return TRUE;
-        }
-        else
-        {
-            // Shouldn't be here!!
-            $this->setErrorMessage("667", "Program bug - measurement operation parameter not recognised");
-            return FALSE;
-        }
-    }
-    
-    function setMeasurementID()
-    {
-        if($this->vmeasurementID)
-        {
-            //Only run if valid parameter has been provided
-            global $dbconn;
-            
-            $sql  = "select measurementid from tblvmeasurement where vmeasurementid=".$this->vmeasurementID;
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->measurementID = $row['measurementid'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        return FALSE;
-    }
-    
-    function setUnits($units)
-    {
-        $this->readingsUnits = $units;
-    }
-    
-    function setNewStartYear($year)
-    {
-        $this->newStartYear = $year;
-    }
-    
-    function setCertaintyLevel($level)
-    {
-        $this->certaintyLevel = $level;
-    }
-    
-    function setJustification($justification)
-    {
-        $this->justification = $justification;
-    }
-    
-    function setMasterVMeasurementID($id)
-    {
-        $this->masterVMeasurementID = $id;
-    }
-    
-    function setReadingsArray($theReadingsArray)
-    {
-        $this->readingsArray = $theReadingsArray;
-    }
-    
-    function setReferencesArray($theReferencesArray)
-    {
-        $this->referencesArray = array();
-        $this->referencesArray = $theReferencesArray;
-    }
-    
-    function setRadiusID($theRadiusID)
-    {
-        $this->radiusID = $theRadiusID;
-    }
-
-    function setIsReconciled($isReconciled)
-    {
-        $this->isReconciled = fromStringtoPHPBool($isReconciled);
-    }
-
-    function setStartYear($theStartYear)
-    {
-        $this->startYear = $theStartYear;
-    }
-
-    function setIsLegacyCleaned($isLegacyCleaned)
-    {
-        $this->isLegacyCleaned = fromStringtoPHPBool($isLegacyCleaned);
-    }
-    
-    function setMeasuredByID($theMeasuredByID)
-    {
-        if($theMeasuredByID)
-        {
-            global $dbconn;
-
-            $this->measuredByID = $theMeasuredByID;
-            
-            $sql  = "select username from tblsecurityuser where securityuserid=".$this->measuredByID;
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->measuredBy = $row['username'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        return FALSE;
-    }
-    
-    function setDatingType($theDatingType)
-    {
-        if ($theDatingType)
-        {
-            global $dbconn;
-
-            $this->datingType = $theDatingType;
-            
-            $sql  = "select datingtypeid from tlkpdatingtype where label='".ucfirst(strtolower($this->datingType))."'";
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->datingTypeID = $row['datingtypeid'];
-                }
-            }            
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-       return FALSE;
-    }
-
-    function setDatingTypeID($theDatingTypeID)
-    {
-        if ($theDatingTypeID)
-        {
-            global $dbconn;
-
-            $this->datingTypeID = $theDatingTypeID;
-            
-            $sql  = "select label from tlkpdatingtype where datingtypeid=".$this->datingTypeID;
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->datingType = $row['label'];
-                }
-            }            
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        return FALSE;
-     }
-
-
-    function setDatingErrorPositive($theDatingErrorPositive)
-    {
-        $this->datingErrorPositive = $theDatingErrorPositive;
-    }
-    
-    function setDatingErrorNegative($theDatingErrorNegative)
-    {
-        $this->datingErrorNegative = $theDatingErrorNegative;
-    }
-
-    function setName($theName)
-    {
-        $this->name = $theName;
-
-        // assemble our full lab code, if we can
-        if($this->labPrefix != NULL)
-           $this->fullLabCode = $this->labPrefix . $this->name;
-    }
-    
-    function setDescription($theDescription)
-    {
-        $this->description = $theDescription;
-    }
-
-    function setIsPublished($isPublished)
-    {
-        $this->isPublished = fromStringtoPHPBool($isPublished);
-    }
 
     function setChildParamsFromDB()
     {
@@ -865,44 +554,10 @@ class measurement extends measurementEntity implements IDBAccessor
         return TRUE;
     }
 
-    function getPermissions($securityUserID)
-    {
-        global $dbconn;
-
-        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'measurement', $this->vmeasurementID)";
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $result = pg_query($dbconn, $sql);
-            $row = pg_fetch_array($result);
-            
-            $this->canCreate = fromPGtoPHPBool($row['cancreate']);
-            $this->canUpdate = fromPGtoPHPBool($row['canupdate']);
-            $this->canDelete = fromPGtoPHPBool($row['candelete']);
-            $this->includePermissions = TRUE;
-    
-        }
-        else
-        {
-            // Connection bad
-            $this->setErrorMessage("001", "Error connecting to database");
-            return FALSE;
-        }
-
-        return TRUE;
-        
-    }
-
-
     /***********/
     /*ACCESSORS*/
     /***********/
 
-    function getEndYear()
-    {
-        $length = count($this->readingsArray);
-        return $this->startYear + $length;
-    }
 
     function asTimelineXML()
     {
@@ -1231,38 +886,6 @@ class measurement extends measurementEntity implements IDBAccessor
             // Errors so returning false
             return FALSE;
         }
-    }
-
-    function getParentTagBegin()
-    {
-        // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tblmeasurement")."'>";
-        return $xml;
-    }
-
-    function getParentTagEnd()
-    {
-        // Return a string containing the end XML tag for the current object's parent
-        $xml = "</".$this->parentXMLTag.">";
-        return $xml;
-    }
-
-    function getID()
-    {
-        return $this->vmeasurementID;
-    }
-    function getLastErrorCode()
-    {
-        // Return an integer containing the last error code recorded for this object
-        $error = $this->lastErrorCode; 
-        return $error;  
-    }
-
-    function getLastErrorMessage()
-    {
-        // Return a string containing the last error message recorded for this object
-        $error = $this->lastErrorMessage;
-        return $error;
     }
 
     /***********/
@@ -1633,75 +1256,6 @@ class measurement extends measurementEntity implements IDBAccessor
         return TRUE;
     }
 
-    function getIndexNameFromParamID($paramid)
-    {
-        global $dbconn;
-
-        $sql  = "select indexname from tlkpindextype where indexid='".$paramid."'";
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $result = pg_query($dbconn, $sql);
-            while ($row = pg_fetch_array($result))
-            {
-                return $row['indexname'];
-            }
-        }
-        else
-        {
-            // Connection bad
-            $this->setErrorMessage("001", "Error connecting to database");
-            return FALSE;
-        }
-    }
-
-    function unitsHandler($value, $inputUnits, $outputUnits)
-    {   
-        // This is a helper function to deal with the units of readings 
-        // Internally Corina uses microns as this is (hopefully) the smallest 
-        // unit required in dendro
-        //
-        // To use default units set $inputUnits or $outputUnits to "default"
-
-        // Set units to default (microns) if requested
-        if($inputUnits == 'db-default') $inputUnits = -6;
-        if($outputUnits == 'db-default') $outputUnits = -6;
-        if($inputUnits == 'ws-default') $inputUnits = -5;
-        if($outputUnits == 'ws-default') $outputUnits = -5;
-
-        // Calculate difference between input and output units
-        $convFactor = $inputUnits - $outputUnits;
-
-        switch($convFactor)
-        {
-            case 0:
-                return $value;
-            case -1:
-                return round($value/10);
-            case -2:
-                return round($value/100);
-            case -3:
-                return round($value/1000);
-            case -4:
-                return round($value/10000);
-            case -5:
-                return round($value/100000);
-            case 1:
-                return $value*10;
-            case 2:
-                return $value*100;
-            case 3:
-                return $value*1000;
-            case 4:
-                return $value*10000;
-            case 5:
-                return $value*100000;
-            default:
-                // Not supported
-                $this->setErrorMessage("905", "This level of units is not supported");
-                return false;
-        }
-    }
 
 // End of Class
 } 

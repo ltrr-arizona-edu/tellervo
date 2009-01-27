@@ -101,7 +101,7 @@ class element extends elementEntity implements IDBAccessor
         
         $this->setID($theID);
         //$sql = "select tblelement.* tlkplocationtype.code as locationtype from tlkplocationtype, tblelement where elementid='".$this->getID()."' and tblelement.locationtypeid=tlkplocationtype.locationtypeid";
-        $sql = "select * from tblelement left outer join (select locationtypeid, name as locationtype from tlkplocationtype) as loctype on (tblelement.locationtypeid = loctype.locationtypeid) where elementid='".$this->getID()."'";
+        $sql = "SELECT * from vwtblelement WHERE elementid='".$this->getID()."'";
 
 
         $dbconnstatus = pg_connection_status($dbconn);
@@ -127,12 +127,12 @@ class element extends elementEntity implements IDBAccessor
                 $this->setCode($row['code']);
                 $this->setCreatedTimestamp($row['createdtimestamp']);
                 $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
-                $this->setAuthenticity($row['authenticity']);
-                $this->setShape($row['shape']);
+                $this->setAuthenticity($row['elementauthenticity']);
+                $this->setShape($row['elementshape']);
                 $this->setDimensions($row['units'],$row['height'], $row['width'], $row['depth']);
                 $this->setDiameter($row['diameter']);
-                $this->setType($row['type']);
-                $this->geometry->setGeometry($row['location'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
+                $this->setType($row['elementtype']);
+                $this->geometry->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
                 $this->setProcessing($row['processing']);
                 $this->setMarks($row['marks']);
                 $this->setDescription($row['description']);
@@ -534,8 +534,8 @@ class element extends elementEntity implements IDBAccessor
                     	if (isset($this->parentEntityArray[0]))					$sql.= "objectid, ";
                     	if ($this->getCode()!=NULL)								$sql.= "code, ";
                         if ($this->taxon->getID()!=NULL)                        $sql.= "taxonid, ";
-                        if ($this->getAuthenticity()!=NULL)						$sql.= "authenticity, ";
-                        if ($this->getShape()!=NULL)							$sql.= "shape, ";
+                        if ($this->getAuthenticity()!=NULL)						$sql.= "elementauthenticityid, ";
+                        if ($this->getShape()!=NULL)							$sql.= "elementshapeid, ";
                         if ($this->hasDimensions())								
 	                    {
 	                    	if($this->getDimensionUnits()!=NULL)				$sql.= "units, ";
@@ -544,7 +544,7 @@ class element extends elementEntity implements IDBAccessor
 	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "depth, ";
 	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "diameter, ";              	
 	                    }
-                        if ($this->getType()!=NULL)								$sql.= "type, ";
+                        if ($this->getType()!=NULL)								$sql.= "elementtypeid, ";
                         if ($this->getFile()!=NULL)								$sql.= "file, ";
                         if ($this->geometry->getLocationType()!=NULL)			$sql.= "locationtype, ";
                         if ($this->geometry->getLocationPrecision()!=NULL)		$sql.= "locationprecision, ";
@@ -559,8 +559,8 @@ class element extends elementEntity implements IDBAccessor
                     	if (isset($this->parentEntityArray[0]))					$sql.= "'".$this->parentEntityArray[0]->getID()."', ";                    
                     	if ($this->getCode()!=NULL)								$sql.= "'".$this->getCode().  "', ";                    
                         if ($this->taxon->getID()!=NULL)                        $sql.= "'".$this->taxon->getID().   "', ";
-                        if ($this->getAuthenticity()!=NULL)						$sql.= "'".$this->getAuthenticity()."', ";
-                        if ($this->getShape()!=NULL)							$sql.= "'".$this->getShape()."', ";
+                        if ($this->getAuthenticity()!=NULL)						$sql.= "'".$this->getAuthenticity(true)."', ";
+                        if ($this->getShape()!=NULL)							$sql.= "'".$this->getShape(true)."', ";
                         if ($this->hasDimensions())								
 	                    {
 	                    	if($this->getDimensionUnits()!=NULL)				$sql.= "'".$this->getDimensionUnits()."', ";
@@ -569,7 +569,7 @@ class element extends elementEntity implements IDBAccessor
 	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "'".$this->getDimension('depth')."', ";
 	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "'".$this->getDimension('diameter')."', ";;              	
 	                    }
-                        if ($this->getType()!=NULL)								$sql.= "'".$this->getType()."', ";
+                        if ($this->getType()!=NULL)								$sql.= "'".$this->getType(true)."', ";
                         if ($this->getFile()!=NULL)								$sql.= "'".$this->getFile()."', ";
                         if ($this->geometry->getLocationType()!=NULL)			$sql.= "'".$this->geometry->getLocationType()."', ";
                         if ($this->geometry->getLocationPrecision()!=NULL)		$sql.= "'".$this->geometry->getLocationPrecision()."', ";

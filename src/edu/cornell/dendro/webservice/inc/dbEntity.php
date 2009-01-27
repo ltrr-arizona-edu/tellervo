@@ -637,13 +637,21 @@ class objectEntity extends dbEntity
     /***********/ 	
 
 	/**
-	 * Get the type of object 
+	 * Get the type of object
 	 *
-	 * @return String
+	 * @param Boolean $asKey
+	 * @return unknown
 	 */
-	function getType()
+	function getType($asKey=false)
 	{
-		return $this->type;
+		if($asKey)
+		{
+			return dbQuery::getKeyFromValue("objecttype", $this->type);
+		}
+		else
+		{
+			return $this->type;
+		}
 	}
 	
 	/**
@@ -1074,21 +1082,37 @@ class elementEntity extends dbEntity
 	/**
 	 * Get the authenticity of this element
 	 *
-	 * @return String
+	 * @param Boolean $asKey
+	 * @return unknown
 	 */
-	function getAuthenticity()
+	function getAuthenticity($asKey=false)
 	{
-		return $this->authenticity;
+		if($asKey)
+		{
+			return dbQuery::getKeyFromValue("elementauthenticity", $this->authenticity);
+		}
+		else
+		{
+			return $this->authenticity;
+		}
 	}
 
 	/**
 	 * Get the shape of this element
 	 *
-	 * @return String
+	 * @param Boolean $asKey
+	 * @return Mixed
 	 */
-	function getShape()
+	function getShape($asKey=false)
 	{
-		return $this->shape;
+		if($asKey)
+		{
+			return dbQuery::getKeyFromValue("elementshape", $this->shape);
+		}
+		else
+		{
+			return $this->shape;
+		}
 	}
 	
 	/**
@@ -1139,9 +1163,16 @@ class elementEntity extends dbEntity
 	 *
 	 * @return String
 	 */
-	function getType()
+	function getType($asKey=false)
 	{
-		return $this->type;
+		if($asKey)
+		{
+			return dbQuery::getKeyFromValue("elementtype", $this->type);
+		}
+		else
+		{
+			return $this->type;
+		}
 	}
 	
 	/**
@@ -1565,26 +1596,13 @@ class radiusEntity extends dbEntity
 	/**
 	 * Set whether the heartwood is present
 	 *
-	 * @param Boolean $value
+	 * @param String $value
 	 * @retun Boolean
 	 */
-	function setHeartwoodPresent($value)
+	function setHeartwood($value)
 	{
-		//echo "setting heartwood present to $value \n";
-		$value = formatBool($value);
-		//echo "translated to $value \n";
-		
-		
-		if($value!=='error')
-		{
-
-			$this->heartwoodPresent = $value;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		$this->heartwood = addslashes($value);
+		return true;
 	}
 	
 	/**
@@ -1686,9 +1704,16 @@ class radiusEntity extends dbEntity
 	 *
 	 * @return String
 	 */
-	function getSapwood()
+	function getSapwood($asKey=false)
 	{
-		return $this->sapwood;
+		if($asKey)
+		{
+			return dbQuery::getKeyFromValue("sapwood", $this->sapwood);
+		}
+		else
+		{
+			return $this->sapwood;
+		}
 	}
 	
 	/**
@@ -1704,11 +1729,18 @@ class radiusEntity extends dbEntity
 	/**
 	 * Is the heartwood present?
 	 *
-	 * @return Boolean
+	 * @return String
 	 */
-	function getHeartwoodPresent()
+	function getHeartwood($asKey=false)
 	{
-		return $this->heartwoodPresent;
+		if($asKey)
+		{
+			return dbQuery::getKeyFromValue("heartwood", $this->heartwood);
+		}
+		else
+		{
+			return $this->heartwood;
+		}
 	}
 	
 	
@@ -2077,12 +2109,6 @@ class measurementEntity extends dbEntity
 	 */
 	protected $power = NULL;
 	/**
-	 * Date the measurment was taken
-	 *
-	 * @var ISODate
-	 */
-	protected $measuringDate = NULL;
-	/**
 	 * Name of the analyst that made the series
 	 *
 	 * @var String
@@ -2119,77 +2145,103 @@ class measurementEntity extends dbEntity
 	 */
 	protected $firstYear = NULL;
 	/**
-	 * Type of statistic used to support match with calendar
-	 *
-	 * @var String
-	 */
-	protected $statType = NULL;
-	/**
-	 * Staistical value used to support match with calendar
-	 *
-	 * @var Double
-	 */
-	protected $statValue = NULL;
-	/**
-	 * Significance of statistical match with the calendar
-	 *
-	 * @var Double
-	 */
-	protected $significanceLevel = NULL;
-	/**
-	 * Estimated year that the tree sprouted
-	 *
-	 * @var Integer 
-	 */
-	protected $sproutYear = NULL;
-	/**
-	 * Estimated year of the death of the tree
-	 *
-	 * @var Integer
-	 */
-	protected $deathYear = NULL;
-	/**
 	 * Estimated provenance derived from the matching calendar
 	 *
 	 * @var String
 	 */
 	protected $provenance = NULL;
+	/**
+	 * Type e.g. chronology, object curve
+	 *
+	 * @var String
+	 */
 	protected $type = NULL;
+	/**
+	 * Method by which the series has been indexed
+	 *
+	 * @var String
+	 */
 	protected $standardizingMethod = NULL;
+	/**
+	 * Author of this virtual series
+	 *
+	 * @var String
+	 */
 	protected $author = NULL;
+	/**
+	 * Reason this series was made
+	 *
+	 * @var String
+	 */
 	protected $objective = NULL;
+	/**
+	 * Version number for this series
+	 *
+	 * @var unknown_type
+	 */
 	protected $version = NULL;
-	protected $derivationDate = NULL;
+	/**
+	 * This series' operation type
+	 *
+	 * @var String
+	 */
+    protected $vmeasurementOp = NULL;
+    /**
+     * This series' operation parameter
+     *
+     * @var String
+     */
+    protected $vmeasurementOpParam = NULL;
+    /**
+     * Measurement ID
+     *
+     * @var Integer
+     */
+	protected $measurementID = NULL;
+	/**
+	 * VMeasuremennt Result ID
+	 *
+	 * @var Integer
+	 */
+    protected $vmeasurementResultID = NULL;
+    /**
+     * Whether this vm has been reconciled
+     *
+     * @var Boolean
+     */
+	protected $isReconciled = FALSE;
+	/**
+	 * Whether this series has been cleaned
+	 *
+	 * @var Boolean
+	 */
+	protected $isLegacyCleaned = NULL;
+	/**
+	 * Justification for choice of crossdate
+	 *
+	 * @var String
+	 */
+    protected $justification = NULL;
+    /**
+     * Certainty for this choice of crossdate
+     *
+     * @var unknown_type
+     */
+    protected $certaintyLevel = NULL;
 	
-	var $measurementID = NULL;
-    var $vmeasurementID = NULL;
-    var $vmeasurementResultID = NULL;
-    var $vmeasurementOpID = 5;
-    var $vmeasurementOpParam = NULL;
-    var $vmeasurementOp = "Direct";
-    var $vmeasurementUnits = NULL;
-    var $indexType = NULL;
-    var $radiusID = NULL;
-    var $isReconciled = FALSE;
-    var $startYear = NULL;
-    var $isLegacyCleaned = NULL;
-    var $datingTypeID = 3;
-    var $datingType = "Relative";
-    var $datingErrorPositive = NULL;
-    var $datingErrorNegative = NULL;
-    var $isPublished = NULL;
+    /**
+     * Array of readings/values
+     *
+     * @var unknown_type
+     */
     var $readingsArray = array();
-    var $readingsUnits = NULL;
+    
+    //  Various summary fields
     var $referencesArray = array();
-    var $vmeasurementNoteArray = array();
-    var $createdTimeStamp = NULL;
-    var $lastModifiedTimeStamp = NULL;
-    var $name = NULL;
     var $readingCount = NULL;
     var $measurementCount = NULL;
     var $masterVMeasurementID = NULL;
-    var $justification = NULL;
-    var $certaintyLevel = NULL;
+
 
     function __construct()
     {  
@@ -2340,6 +2392,338 @@ class measurementEntity extends dbEntity
 		$this->derivationDate = $date;
 	}
 	
+    function setOwnerUserID($theOwnerUserID)
+    {
+        if($theOwnerUserID)
+        {
+            //Only run if valid parameter has been provided
+            global $dbconn;
+
+            $this->ownerUserID = $theOwnerUserID;
+            
+            $sql  = "select username from tblsecurityuser where securityuserid=".$this->ownerUserID;
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    $this->owner = $row['username'];
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+            return TRUE;
+        }
+        return FALSE;
+    }
+
+    function setVMeasurementOp($theVMeasurementOp)
+    {    
+        if(is_numeric($theVMeasurementOp))
+        {
+            // ID provided
+            global $dbconn;
+
+            $this->vmeasurementOpID = $theVMeasurementOp;
+            
+            $sql  = "select name from tlkpvmeasurementop where vmeasurementopid=".$this->vmeasurementOpID;
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    $this->vmeasurementOp = $row['name'];
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+            return TRUE;
+        }
+        elseif(is_string($theVMeasurementOp))
+        {
+            global $dbconn;
+
+            $this->vmeasurementOp = ucfirst(strtolower($theVMeasurementOp));
+            
+            $sql  = "select vmeasurementopid from tlkpvmeasurementop where name ilike'".$theVMeasurementOp."'";
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    $this->vmeasurementOpID = $row['vmeasurementopid'];
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+            return TRUE;
+        }
+        else
+        {
+            return FALSE;
+        }
+    }
+
+    function setVMeasurementOpParam($theParam)
+    {
+        global $dbconn;
+        if(is_numeric($theParam))
+        {
+            // Param is numeric - probably a year for use in redating
+            $this->vmeasurementOpParam = $theParam;
+            return true;
+        }
+        elseif(is_string($theParam))
+        {
+            // Param is string - probably index type
+            $sql  = "select indexid from tlkpindextype where indexname ilike '$theParam'";
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    $this->vmeasurementOpParam = $row['indexid'];
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database for index type lookup");
+                return FALSE;
+            }
+            
+        } 
+        elseif($theParam==NULL)
+        {
+            return TRUE;
+        }
+        else
+        {
+            // Shouldn't be here!!
+            $this->setErrorMessage("667", "Program bug - measurement operation parameter not recognised");
+            return FALSE;
+        }
+    }
+    
+    function setMeasurementID()
+    {
+        if($this->vmeasurementID)
+        {
+            //Only run if valid parameter has been provided
+            global $dbconn;
+            
+            $sql  = "select measurementid from tblvmeasurement where vmeasurementid=".$this->vmeasurementID;
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    $this->measurementID = $row['measurementid'];
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+            return TRUE;
+        }
+        return FALSE;
+    }
+    
+    function setUnits($units)
+    {
+        $this->readingsUnits = $units;
+    }
+    
+    function setNewStartYear($year)
+    {
+        $this->newStartYear = $year;
+    }
+    
+    function setCertaintyLevel($level)
+    {
+        $this->certaintyLevel = $level;
+    }
+    
+    function setJustification($justification)
+    {
+        $this->justification = $justification;
+    }
+    
+    function setMasterVMeasurementID($id)
+    {
+        $this->masterVMeasurementID = $id;
+    }
+    
+    function setReadingsArray($theReadingsArray)
+    {
+        $this->readingsArray = $theReadingsArray;
+    }
+    
+    function setReferencesArray($theReferencesArray)
+    {
+        $this->referencesArray = array();
+        $this->referencesArray = $theReferencesArray;
+    }
+    
+    function setRadiusID($theRadiusID)
+    {
+        $this->radiusID = $theRadiusID;
+    }
+
+    function setIsReconciled($isReconciled)
+    {
+        $this->isReconciled = fromStringtoPHPBool($isReconciled);
+    }
+
+    function setStartYear($theStartYear)
+    {
+        $this->startYear = $theStartYear;
+    }
+
+    function setIsLegacyCleaned($isLegacyCleaned)
+    {
+        $this->isLegacyCleaned = fromStringtoPHPBool($isLegacyCleaned);
+    }
+    
+    function setMeasuredByID($theMeasuredByID)
+    {
+        if($theMeasuredByID)
+        {
+            global $dbconn;
+
+            $this->measuredByID = $theMeasuredByID;
+            
+            $sql  = "select username from tblsecurityuser where securityuserid=".$this->measuredByID;
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    $this->measuredBy = $row['username'];
+                }
+            }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+            return TRUE;
+        }
+        return FALSE;
+    }
+    
+    function setDatingType($theDatingType)
+    {
+        if ($theDatingType)
+        {
+            global $dbconn;
+
+            $this->datingType = $theDatingType;
+            
+            $sql  = "select datingtypeid from tlkpdatingtype where label='".ucfirst(strtolower($this->datingType))."'";
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    $this->datingTypeID = $row['datingtypeid'];
+                }
+            }            
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+            return TRUE;
+        }
+       return FALSE;
+    }
+
+    function setDatingTypeID($theDatingTypeID)
+    {
+        if ($theDatingTypeID)
+        {
+            global $dbconn;
+
+            $this->datingTypeID = $theDatingTypeID;
+            
+            $sql  = "select label from tlkpdatingtype where datingtypeid=".$this->datingTypeID;
+            $dbconnstatus = pg_connection_status($dbconn);
+            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+            {
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                    $this->datingType = $row['label'];
+                }
+            }            
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+            return TRUE;
+        }
+        return FALSE;
+     }
+
+
+    function setDatingErrorPositive($theDatingErrorPositive)
+    {
+        $this->datingErrorPositive = $theDatingErrorPositive;
+    }
+    
+    function setDatingErrorNegative($theDatingErrorNegative)
+    {
+        $this->datingErrorNegative = $theDatingErrorNegative;
+    }
+
+    function setName($theName)
+    {
+        $this->name = $theName;
+
+        // assemble our full lab code, if we can
+        if($this->labPrefix != NULL)
+           $this->fullLabCode = $this->labPrefix . $this->name;
+    }
+    
+    function setDescription($theDescription)
+    {
+        $this->description = $theDescription;
+    }
+
+    function setIsPublished($isPublished)
+    {
+        $this->isPublished = fromStringtoPHPBool($isPublished);
+    }
+	
+	
+	
 	/***********
     /* GETTERS */
     /***********/
@@ -2459,11 +2843,90 @@ class measurementEntity extends dbEntity
 		return $this->derivationDate;
 	}
 	
+
+    function getEndYear()
+    {
+        $length = count($this->readingsArray);
+        return $this->startYear + $length;
+    }	
 	
 	
 	/*************/
     /* FUNCTIONS */
-    /*************/ 		
+    /*************/ 
+
+    function getIndexNameFromParamID($paramid)
+    {
+        global $dbconn;
+
+        $sql  = "select indexname from tlkpindextype where indexid='".$paramid."'";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            $result = pg_query($dbconn, $sql);
+            while ($row = pg_fetch_array($result))
+            {
+                return $row['indexname'];
+            }
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+    }
+
+    function unitsHandler($value, $inputUnits, $outputUnits)
+    {   
+        // This is a helper function to deal with the units of readings 
+        // Internally Corina uses microns as this is (hopefully) the smallest 
+        // unit required in dendro
+        //
+        // To use default units set $inputUnits or $outputUnits to "default"
+
+        // Set units to default (microns) if requested
+        if($inputUnits == 'db-default') $inputUnits = -6;
+        if($outputUnits == 'db-default') $outputUnits = -6;
+        if($inputUnits == 'ws-default') $inputUnits = -5;
+        if($outputUnits == 'ws-default') $outputUnits = -5;
+
+        // Calculate difference between input and output units
+        $convFactor = $inputUnits - $outputUnits;
+
+        switch($convFactor)
+        {
+            case 0:
+                return $value;
+            case -1:
+                return round($value/10);
+            case -2:
+                return round($value/100);
+            case -3:
+                return round($value/1000);
+            case -4:
+                return round($value/10000);
+            case -5:
+                return round($value/100000);
+            case 1:
+                return $value*10;
+            case 2:
+                return $value*100;
+            case 3:
+                return $value*1000;
+            case 4:
+                return $value*10000;
+            case 5:
+                return $value*100000;
+            default:
+                // Not supported
+                $this->setErrorMessage("905", "This level of units is not supported");
+                return false;
+        }
+    }
+    
+    
+    
 }
 
 

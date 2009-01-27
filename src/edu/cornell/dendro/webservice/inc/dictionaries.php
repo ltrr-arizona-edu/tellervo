@@ -70,7 +70,7 @@ class dictionaries
         
         $xmldata = "";
 
-        $dictItems = array('siteNote', 'pith', 'sampleQuality', 'sampleType', 'terminalRing', 'region', 'sampleContinuity', 'elementNote', 'vmeasurementNote', 'readingNote', 'taxon', 'securityUser', 'datingType');
+        $dictItems = array('pith', 'sampleQuality', 'sampleType', 'terminalRing', 'region', 'sampleContinuity', 'readingNote', 'taxon', 'securityUser', 'datingType');
             
         // sample Type 
         $dbconnstatus = pg_connection_status($dbconn);

@@ -50,11 +50,11 @@ class object extends objectEntity implements IDBAccessor
        switch(strtolower($idType))
        {
        	case 'db':
-		    $sql = "select * from tblobject left outer join (select locationtypeid, name as locationtype from tlkplocationtype) as loctype on (tblobject.locationtypeid = loctype.locationtypeid) where objectid='".$theID."'";
+		    $sql = "SELECT * FROM vwtblobject WHERE objectid='".$theID."'";
 		    break;
 		    
        	case 'lab':
-		    $sql = "select * from tblobject left outer join (select locationtypeid, name as locationtype from tlkplocationtype) as loctype on (tblobject.locationtypeid = loctype.locationtypeid) where code='".$theID."'";
+		    $sql = "SELECT * FROM vwtblobject WHERE code='".$theID."'";
        		break;
 
        	default:
@@ -342,6 +342,11 @@ class object extends objectEntity implements IDBAccessor
             $this->setErrorMessage("902", "Missing parameter - 'title' field is required.");
             return FALSE;
         }
+	    if($this->getCode() == NULL) 
+        {
+            $this->setErrorMessage("902", "Missing parameter - 'code' field is required.");
+            return FALSE;
+        }
 
         //Only attempt to run SQL if there are no errors so far
         if($this->getLastErrorCode() == NULL)
@@ -358,7 +363,7 @@ class object extends objectEntity implements IDBAccessor
                         if ($this->getCode()!=NULL)										$sql.= "code, ";
                         if ($this->getCreator()!=NULL)									$sql.= "creator, ";
                         if ($this->getOwner()!=NULL)									$sql.= "owner, ";
-                        if ($this->getType()!=NULL)										$sql.= "type, ";
+                        if ($this->getType()!=NULL)										$sql.= "objecttypeid, ";
                         if ($this->getDescription()!=NULL)								$sql.= "description, ";
                         if ($this->getTemporalCoverage()!=NULL)							$sql.= "coveragetemporal, ";
                         if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "coveragetemporalfoundation, ";
@@ -375,7 +380,7 @@ class object extends objectEntity implements IDBAccessor
                         if ($this->getCode()!=NULL)										$sql.= "'".$this->getCode()."', ";
                         if ($this->getCreator()!=NULL)									$sql.= "'".$this->getCreatedTimestamp()."', ";
                         if ($this->getOwner()!=NULL)									$sql.= "'".$this->getOwner()."', ";
-                        if ($this->getType()!=NULL)										$sql.= "'".$this->getType()."', ";
+                        if ($this->getType()!=NULL)										$sql.= "'".$this->getType(true)."', ";
                         if ($this->getDescription()!=NULL)								$sql.= "'".$this->getDescription()."', ";
                         if ($this->getTemporalCoverage()!=NULL)							$sql.= "'".$this->getTemporalCoverage()."', ";
                         if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "'".$this->getTemporalCoverageFoundation()."', ";
@@ -394,11 +399,11 @@ class object extends objectEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql = "update tblobject set ";
-                        if ($this->getTitle()!=NULL)                                     $sql.= "title='".$this->getTitle()."', ";
+                        if ($this->getTitle()!=NULL)                                    $sql.= "title='".$this->getTitle()."', ";
                         if ($this->getCode()!=NULL)										$sql.= "code='".$this->getCode()."', ";
                         if ($this->getCreator()!=NULL)									$sql.= "creator='".$this->getCreator()."', ";
                         if ($this->getOwner()!=NULL)									$sql.= "owner='".$this->getOwner()."', ";
-                        if ($this->getType()!=NULL)										$sql.= "type='".$this->getType()."', ";
+                        if ($this->getType()!=NULL)										$sql.= "objecttypeid='".$this->getType(true)."', ";
                         if ($this->getDescription()!=NULL)								$sql.= "description='".$this->getDescription()."', ";
                         if ($this->getTemporalCoverage()!=NULL)							$sql.= "coveragetemporal='".$this->getTemporalCoverage()."', ";
                         if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "coveragetemporalfoundation='".$this->getTemporalCoverageFoundation()."', ";

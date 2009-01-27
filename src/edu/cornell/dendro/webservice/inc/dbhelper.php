@@ -269,5 +269,42 @@ function escapeXMLChars($theString)
     return $theString;
 }
 
+class dbquery
+{
+	
+	public static function getKeyFromValue($entityname, $value)
+	{
+		global $dbconn;
+		$sql = "select tlkp".$entityname.".".$entityname."id as key from tlkp$entityname where $entityname='$value'";
+		
+		$dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            if(pg_num_rows($result)==0)
+            {
+            	trigger_error("667"."No record found when looking up key for ".$value." in table tlkp$entityname", E_USER_NOTICE);
+                return NULL;
+            }
+            else
+            {
+                // Set parameters from db
+                $row = pg_fetch_array($result);
+				return $row['key'];
+            }
+
+        }
+        else
+        {
+            // Connection bad
+            trigger_error("001"."Error connecting to database", E_USER_ERROR);
+            return FALSE;
+        }
+
+        return TRUE;		
+	
+	}
+}
 
 ?>
