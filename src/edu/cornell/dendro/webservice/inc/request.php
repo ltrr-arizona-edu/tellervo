@@ -253,7 +253,11 @@ class request
 	                	case 'derivedseries':
 	                		$newxml = "<tridas:derivedSeries><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:derivedSeries>";
 	                		$myParamObj = new measurementParameters($newxml, $parentID);
-                            break;	                		
+                            break;	 
+
+	                	case 'dictionaries':
+	                		$myParamObj = new dictionariesParameters(null, null);
+	                		break;
                                                         
 	                	default:
 	                		trigger_error("901"."Unknown entity type specified", E_USER_ERROR);

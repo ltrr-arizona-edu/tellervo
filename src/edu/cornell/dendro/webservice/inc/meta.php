@@ -35,8 +35,8 @@ class meta
     global $wsversion;
     $this->startTimestamp = microtime(true);
     $this->requestdate= date(DATE_ISO8601);
-    $this->requesturl= escapeXMLChars($_SERVER['REQUEST_URI']);
-    $this->clientversion= escapeXMLChars($_SERVER['HTTP_USER_AGENT']);
+    $this->requesturl= dbHelper::escapeXMLChars($_SERVER['REQUEST_URI']);
+    $this->clientversion= dbHelper::escapeXMLChars($_SERVER['HTTP_USER_AGENT']);
     if($theRequestType)  $this->requesttype= $theRequestType;
     $this->wsversion = $wsversion;
   }

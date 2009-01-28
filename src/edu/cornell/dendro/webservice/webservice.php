@@ -78,17 +78,17 @@ if($myMetaHeader->status != "Error")
             //case "readingNoteParameters": 		$myObject = new readingNote(); break;
             case "authenticationParameters": 	$myObject = new authenticate(); break;
             case "searchParameters": 			$myObject = new search(); break;
-            //case "dictionariesParameters": 		$myObject = new dictionaries(); break;
+            case "dictionariesParameters": 		$myObject = new dictionaries(); break;
             //case "securityUserParameters": 		$myObject = new securityUser(); break;
             //case "securityGroupParameters":		$myObject = new securityGroup(); break;
             default:
             	trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
+            	echo "Object type not supported";
+            	die();
         }
 
         // Get the name of the object (minus the Parameters bit)
         $objectType = substr(get_class($paramObj), 0, -10);
-         
-
 
         // Before doing anything else check the request parameters are valid
         if($myMetaHeader->status != "Error")

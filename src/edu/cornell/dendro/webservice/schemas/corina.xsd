@@ -92,10 +92,11 @@
 										<xs:enumeration value="radius"></xs:enumeration>
 										<xs:enumeration value="measurementSeries"></xs:enumeration>
 										<xs:enumeration value="derivedSeries"></xs:enumeration>
+										<xs:enumeration value="dictionaries"></xs:enumeration>
 									</xs:restriction>	
 								</xs:simpleType>
 							</xs:attribute>
-							<xs:attribute name="id" type="xs:positiveInteger"/>
+							<xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
 						</xs:complexType>
 					</xs:element>
 				</xs:sequence>

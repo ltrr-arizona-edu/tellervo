@@ -253,25 +253,17 @@ function getResourceLinkTag($object, $id, $format="xml")
 
 }
 
-/**
- * Replace all special XML characters in a string
- *
- * @param String $theString
- * @return String
- */
-function escapeXMLChars($theString)
-{
-    $theString = str_replace('&', '&amp;',  $theString);
-    $theString = str_replace("'", '&apos;', $theString);
-    $theString = str_replace('"', '&quot;', $theString);
-    $theString = str_replace('<', '&lt;',   $theString);
-    $theString = str_replace('>', '&gt;',   $theString);
-    return $theString;
-}
 
-class dbquery
+class dbHelper
 {
 	
+	/**
+	 * Translates a value into a db pkey for one of the standard lookup tables
+	 *
+	 * @param String $entityname
+	 * @param String $value
+	 * @return Integer
+	 */
 	public static function getKeyFromValue($entityname, $value)
 	{
 		global $dbconn;
@@ -303,8 +295,26 @@ class dbquery
         }
 
         return TRUE;		
-	
 	}
+	
+	/**
+	 * Replace all special XML characters in a string
+	 *
+	 * @param String $theString
+	 * @return String
+	 */
+	public static function escapeXMLChars($theString)
+	{
+	    $theString = str_replace('&', '&amp;',  $theString);
+	    $theString = str_replace("'", '&apos;', $theString);
+	    $theString = str_replace('"', '&quot;', $theString);
+	    $theString = str_replace('<', '&lt;',   $theString);
+	    $theString = str_replace('>', '&gt;',   $theString);
+	    return $theString;
+	}
+	
+	
+	
 }
 
 ?>

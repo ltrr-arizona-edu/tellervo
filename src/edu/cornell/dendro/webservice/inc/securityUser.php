@@ -266,9 +266,9 @@ class securityUser
             // Only return XML when there are no errors.
             $xml.= "<user ";
             $xml.= "id=\"".$this->id."\" ";
-            $xml.= "username=\"".escapeXMLChars($this->username)."\" ";
-            $xml.= "firstName=\"".escapeXMLChars($this->firstName)."\" ";
-            $xml.= "lastName=\"".escapeXMLChars($this->lastName)."\" ";
+            $xml.= "username=\"".dbHelper::escapeXMLChars($this->username)."\" ";
+            $xml.= "firstName=\"".dbHelper::escapeXMLChars($this->firstName)."\" ";
+            $xml.= "lastName=\"".dbHelper::escapeXMLChars($this->lastName)."\" ";
             $xml.= "isActive=\"".fromPGtoStringBool($this->isActive)."\" ";
             $xml.= ">";
 

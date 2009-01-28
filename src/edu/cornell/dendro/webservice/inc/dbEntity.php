@@ -646,7 +646,7 @@ class objectEntity extends dbEntity
 	{
 		if($asKey)
 		{
-			return dbQuery::getKeyFromValue("objecttype", $this->type);
+			return dbHelper::getKeyFromValue("objecttype", $this->type);
 		}
 		else
 		{
@@ -1089,7 +1089,7 @@ class elementEntity extends dbEntity
 	{
 		if($asKey)
 		{
-			return dbQuery::getKeyFromValue("elementauthenticity", $this->authenticity);
+			return dbHelper::getKeyFromValue("elementauthenticity", $this->authenticity);
 		}
 		else
 		{
@@ -1107,7 +1107,7 @@ class elementEntity extends dbEntity
 	{
 		if($asKey)
 		{
-			return dbQuery::getKeyFromValue("elementshape", $this->shape);
+			return dbHelper::getKeyFromValue("elementshape", $this->shape);
 		}
 		else
 		{
@@ -1167,7 +1167,7 @@ class elementEntity extends dbEntity
 	{
 		if($asKey)
 		{
-			return dbQuery::getKeyFromValue("elementtype", $this->type);
+			return dbHelper::getKeyFromValue("elementtype", $this->type);
 		}
 		else
 		{
@@ -1708,7 +1708,7 @@ class radiusEntity extends dbEntity
 	{
 		if($asKey)
 		{
-			return dbQuery::getKeyFromValue("sapwood", $this->sapwood);
+			return dbHelper::getKeyFromValue("sapwood", $this->sapwood);
 		}
 		else
 		{
@@ -1735,7 +1735,7 @@ class radiusEntity extends dbEntity
 	{
 		if($asKey)
 		{
-			return dbQuery::getKeyFromValue("heartwood", $this->heartwood);
+			return dbHelper::getKeyFromValue("heartwood", $this->heartwood);
 		}
 		else
 		{

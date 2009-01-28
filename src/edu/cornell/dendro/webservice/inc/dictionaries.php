@@ -70,9 +70,14 @@ class dictionaries
         
         $xmldata = "";
 
-        $dictItems = array('pith', 'sampleQuality', 'sampleType', 'terminalRing', 'region', 'sampleContinuity', 'readingNote', 'taxon', 'securityUser', 'datingType');
-            
-        // sample Type 
+        //$dictItems = array('pith', 'sampleQuality', 'sampleType', 'terminalRing', 'region', 'sampleContinuity', 'readingNote', 'taxon', 'securityUser', 'datingType');
+
+        $dictItems = array('objectType', 'elementType', 'sampleType', 'coverageTemporal', 'coverageTemporalFoundation', 
+        				  'locationType', 'elementAuthenticity', 'elementShape', 'sapwood', 'heartwood', 'measurementVariable',
+        				  'datingType', 'taxon', 'region', 'readingNote');
+       
+        
+		// Standard dictionar items
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -80,82 +85,39 @@ class dictionaries
             {
                 if($item=="region")
                 {
-                    $sql="select distinct(tblsiteregion.regionid) as id, tblregion.regionname from tblsiteregion, tblregion where tblsiteregion.regionid=tblregion.regionid";
+                	// Unique case
+                    $sql="select distinct(tblobjectregion.regionid) as id, tblregion.regionname as value from tblobjectregion, tblregion where tblobjectregion.regionid=tblregion.regionid";
+                }
+                elseif($item=="readingNote")
+                {
+                	// Unique case
+                	$sql="select readingnoteid as id, note as value from tlkpreadingnote where isstandard='t'";
+                }
+                elseif($item=='taxon')
+                {
+                	//Unique case
+                	$sql="select taxonid as id, label as value from tlkptaxon order by taxonid";
                 }
                 elseif($item=="securityUser")
                 {
-                    $sql = "select ".strtolower($item)."id as id from tbl".strtolower($item)." order by ".strtolower($item)."id"; 
+                	// Unique case
+                    $sql = "select securityuserid as id, as value from tbl".strtolower($item)." where ".strtolower($item)."id>0 order by ".strtolower($item)."id"; 
                 }
                 else
                 {
-                    $sql = "select ".strtolower($item)."id as id from tlkp".strtolower($item)." order by ".strtolower($item)."id"; 
+                	// Looking up in tlkp style table
+                    $sql = "select ".strtolower($item)."id as id, ".strtolower($item)." as value from tlkp".strtolower($item)." where ".strtolower($item)."id>0 order by ".strtolower($item)."id"; 
                 }
-                
-                switch ($item)
-                {
-                    case "siteNote":
-                        $myObj = new siteNote();
-                        break;
-                    case "pith":
-                        $myObj = new pith();
-                        break;
-                    case "sampleQuality":
-                        $myObj = new sampleQuality();
-                        break;
-                    case "sampleType":
-                        $myObj = new sampleType();
-                        break;
-                    case "terminalRing":
-                        $myObj = new terminalRing();
-                        break;
-                    case "region":
-                        $myObj = new region();
-                        break;
-                    case "sampleContinuity":
-                        $myObj = new sampleContinuity();
-                        break;
-                    case "elementNote":
-                        $myObj = new elementNote();
-                        break;
-                    case "vmeasurementNote":
-                        $myObj = new vmeasurementNote();
-                        break;
-                    case "readingNote":
-                        $myObj = new readingNote();
-                        break;
-                    case "taxon":
-                        $myObj = new taxon();
-                        break;
-                    case "securityUser":
-                        $myObj = new securityUser();
-                        break;
-                    case "datingType":
-                        $myObj = new datingType();
-                        break;
-                    default:
-                        echo "not supported yet";
-                        die();
-                }
-                
-                $xmldata.=$myObj->getParentTagBegin();
+                                
+                $xmldata.= "<".$item."Dictionary>\n";
                 
                 // Run SQL
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    $success = $myObj->setParamsFromDB($row['id']);
-
-                    if($success)
-                    {
-                        $xmldata.=$myObj->asXML();
-                    }
-                    else
-                    {
-                    //   trigger_error($mysampleType->getLastErrorCode().$mysampleType->getLastErrorMessage());
-                    }
+                    $xmldata.= "<".$item." id=\"".$row['id']."\">".dbHelper::escapeXMLChars($row['value'])."</".$item.">\n";
                 }
-                $xmldata.=$myObj->getParentTagEnd();
-                unset($myDummyObj, $myObj);
+                $xmldata.= "</".$item."Dictionary>\n";
             }
         }
         else
@@ -164,6 +126,51 @@ class dictionaries
             trigger_error("001"."Error connecting to database");
         }
 
+        
+        // More complex dictionary items
+        $dictItemsWithClasses = array('securityUser');
+        
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            foreach($dictItemsWithClasses as $item)
+            {
+                switch($item)
+                {
+            		case "securityUser": 
+            			$sql="select securityuserid as id from tblsecurityuser";
+            			$myObj = new securityUser();
+            			break;
+            		
+		
+                }               
+                $xmldata.= "<".$item."Dictionary>\n";
+                
+                // Run SQL
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                	$success = $myObj->setParamsFromDB($row['id']);
+                	
+                	if($success)
+                	{
+                		$xmldata.=$myObj->asXML();
+                	}
+                	else
+                	{
+                		
+                	}
+                }
+                $xmldata.= "</".$item."Dictionary>\n";
+                unset($myObj);
+            }
+        }
+        else
+        {
+            // Connection bad
+            trigger_error("001"."Error connecting to database");
+        }       
+       
         // Put xmldata into class variable
         if($xmldata!=NULL)
         {

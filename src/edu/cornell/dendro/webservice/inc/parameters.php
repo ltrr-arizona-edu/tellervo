@@ -20,6 +20,27 @@ interface IParams
     function setParamsFromXMLRequest();
 }
 
+class dictionariesParameters implements IParams
+{   
+    protected $xmlRequestDom = NULL;
+
+    function __construct($xmlrequest)
+    {
+
+    }
+
+    function setParamsFromXMLRequest()
+    {
+    	return null;
+    }
+    
+    function getID()
+    {
+    	return null;
+    }
+}
+
+
 class authenticationParameters implements IParams
 {
     protected $username      = NULL;
@@ -596,6 +617,9 @@ class measurementParameters extends measurementEntity implements IParams
 }
 
 
+
+
+
 /**
  * Old stuff needs refactoring
  *
@@ -878,19 +902,7 @@ class readingNoteParameters extends parameters
     }
 }
 
-class dictionariesParameters extends parameters
-{   
-    var $id = NULL;
 
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-
-    function getXMLParams()
-    {
-    }
-}
 
 class authenticationParameters extends parameters
 {
