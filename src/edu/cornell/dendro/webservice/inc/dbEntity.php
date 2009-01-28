@@ -2225,10 +2225,16 @@ class measurementEntity extends dbEntity
     /**
      * Certainty for this choice of crossdate
      *
-     * @var unknown_type
+     * @var Integer
      */
     protected $certaintyLevel = NULL;
-	
+    /**
+     * The code for this vmeasurement
+     *
+     * @var String
+     */
+	protected $code = NULL;
+    
     /**
      * Array of readings/values
      *
@@ -2241,7 +2247,43 @@ class measurementEntity extends dbEntity
     var $readingCount = NULL;
     var $measurementCount = NULL;
     var $masterVMeasurementID = NULL;
-
+    
+    /**
+     * Summerisation of the object codes for this measrurement
+     *
+     * @var Mixed
+     */
+    protected $summaryObjectCode = NULL;
+    /**
+     * Number of objects this vmeasurements is associated with
+     *
+     * @var Mixed
+     */
+    protected $summaryObjectCount = NULL;
+    /**
+     * Summary of the taxonomic information for this vmeasurement
+     *
+     * @var Mixed
+     */
+    protected $summaryTaxonName = NULL;
+    /**
+     * Number of taxa that are associated with this measurement
+     *
+     * @var Mixed
+     */
+    protected $summaryTaxonCount = NULL;
+    /**
+     * Lab prefix code for this measurement
+     *
+     * @var Mixed
+     */
+    protected $labPrefix = NULL;
+    /**
+     * Full lab code for thie measurement
+     *
+     * @var Mixed
+     */
+    protected $fullLabCode = NULL;
 
     function __construct()
     {  
@@ -2255,6 +2297,26 @@ class measurementEntity extends dbEntity
     /* SETTERS */
     /***********/ 	
 	
+	function setSummaryInfo($objectcode, $objectcount, $taxonname, $taxoncount, $labprefix)
+	{
+        $this->summaryObjectCode = $objectcode;
+        $this->summaryObjectCount =  $objectcount;
+        $this->summaryTaxonName = $taxonname;
+        $this->summaryTaxonCount = $taxoncount;
+        $this->labPrefix = $labprefix;
+        $this->fullLabCode = $labprefix.$this->getCode();
+	}
+	
+	function setMeasurementCount($count)
+	{
+		$this->measurementCount = (integer) $count;
+	}
+	
+	function setReadingCount($count)
+	{
+		$this->readingCount = (integer) $count;
+	}
+	
 	/**
 	 * Set the method used to create this measurement
 	 *
@@ -2262,6 +2324,7 @@ class measurementEntity extends dbEntity
 	 */
 	function setMeasurementMethod($method)
 	{
+
 		$this->measuringMethod = addslashes($method);
 		
 	}
@@ -2271,7 +2334,7 @@ class measurementEntity extends dbEntity
 	 *
 	 * @param String $variable
 	 */
-	function setVariables($variable)
+	function setVariable($variable)
 	{
 		$this->variable = addslashes($variable);
 	}
@@ -2295,6 +2358,16 @@ class measurementEntity extends dbEntity
 	function setMeasuringDate($date)
 	{
 		$this->measuringDate = $date;
+	}
+	
+	/**
+	 * Set the code for this measurement
+	 *
+	 * @param unknown_type $code
+	 */
+	function setCode($code)
+	{
+		$this->code = addslashes($code);
 	}
 	
 	/**
@@ -2523,12 +2596,12 @@ class measurementEntity extends dbEntity
     
     function setMeasurementID()
     {
-        if($this->vmeasurementID)
+        if($this->getID())
         {
             //Only run if valid parameter has been provided
             global $dbconn;
             
-            $sql  = "select measurementid from tblvmeasurement where vmeasurementid=".$this->vmeasurementID;
+            $sql  = "select measurementid from tblvmeasurement where vmeasurementid=".$this->getID();
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
@@ -2548,6 +2621,7 @@ class measurementEntity extends dbEntity
         }
         return FALSE;
     }
+          
     
     function setUnits($units)
     {
@@ -2642,11 +2716,11 @@ class measurementEntity extends dbEntity
 
             $this->datingType = $theDatingType;
             
-            $sql  = "select datingtypeid from tlkpdatingtype where label='".ucfirst(strtolower($this->datingType))."'";
+            $sql  = "select datingtypeid from tlkpdatingtype where datingtype='".ucfirst(strtolower($this->getDatingType()))."'";
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
-                $result = pg_query($dbconn, $sql);
+            	$result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
                     $this->datingTypeID = $row['datingtypeid'];
@@ -2702,7 +2776,7 @@ class measurementEntity extends dbEntity
     {
         $this->datingErrorNegative = $theDatingErrorNegative;
     }
-
+    
     function setName($theName)
     {
         $this->name = $theName;
@@ -2728,12 +2802,140 @@ class measurementEntity extends dbEntity
     /* GETTERS */
     /***********/
 
+	/**
+	 * Get the year in which we think the tree sprouted
+	 *
+	 * @return Integer
+	 */
+    function getSproutYear()
+    { 
+    	return $this->getFirstYear() - $this->parentEntityArray[0]->getMissingHeartwoodRingsToPith();
+    }
+    
+    /**
+     * Get the year in which this tree died
+     *
+     * @return Integer
+     */
+    function getDeathYear()
+    {
+    	return $this->getFirstYear() + $this->getReadingCount() + $this->parentEntityArray[0]->getMissingSapwoodRingsToBark();
+    }
+    
+    /**
+     * Get the name and version of the software used to do the statistics
+     *
+     * @return unknown
+     */
+    function getUsedSoftware()
+    {
+    	global $wsversion;
+    	return "Corina ".$wsversion;
+    }
+    
+    function getCode()
+    {
+    	return $this->code;
+    }
+    
+    function getSummaryObjectCode()
+    {
+    	return $this->summaryObjectCode;
+    }
+    
+    function getSummaryObjectCount()
+    {
+    	return $this->summaryObjectCount;
+    }
+    
+    function getSummaryTaxonName()
+    {
+    	return $this->summaryTaxonName;
+    }
+    
+    function getSummaryTaxonCount()
+    {
+    	return $this->summaryTaxonCount;
+    }
+    
+    function getLabPrefix()
+    {
+    	return $this->labPrefix;
+    }
+    
+    function getFullLabCode()
+    {
+    	return $this->getLabPrefix().$this->getCode;
+    }
+    
+    function getDatingType()
+    {
+    	return $this->datingType;
+    	
+    }
+    
+    function getCertaintyLevel()
+    {
+    	return $this->certaintyLevel;
+    	
+    }
+    
+    function getIsLegacyCleaned()
+    {
+    	return $this->isLegacyCleaned;
+    }
+    
+    function getIsReconciled()
+    {
+    	return $this->isReconciled;
+    }
+    
+    function getJustification()
+    {
+    	return $this->justification;
+    }
+    
+    function getMasterVMeasurementID()
+    {
+    	return $this->masterVMeasurementID;
+    }
+    
+    function getMeasurementCount()
+    {
+    	return $this->measurementCount;
+    }
+    
+    function getMeasurementID()
+    {
+    	return $this->measurementid;
+    }
+        
+    function getReadingCount()
+    {
+    	return $this->readingCount;
+    }
+    
+    function getVMeasurementOp()
+    {
+    	return $this->vmeasurementOp;
+    }
+    
+    function getVMeasurementOpParam()
+    {
+    	return $this->vmeasurementOpParam;
+    }
+    
+    function getVMeasurementResultID()
+    {
+    	return $this->vmeasurementResultID;
+    }
+    
 	function getMeasuringMethod()
 	{
 		return $this->measuringMethod;
 	}
 	
-	function getVariables()
+	function getVariable()
 	{
 		return $this->variable;
 	}
@@ -2750,7 +2952,7 @@ class measurementEntity extends dbEntity
 	
 	function getMeasuringDate()
 	{
-		return $this->measuringDate;
+		return $this->getCreatedTimestamp();
 	}
 	
 	function getAnalyst()

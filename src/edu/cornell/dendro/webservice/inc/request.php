@@ -254,10 +254,6 @@ class request
 	                		$newxml = "<tridas:derivedSeries><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:derivedSeries>";
 	                		$myParamObj = new measurementParameters($newxml, $parentID);
                             break;	 
-
-	                	case 'dictionaries':
-	                		$myParamObj = new dictionariesParameters(null, null);
-	                		break;
                                                         
 	                	default:
 	                		trigger_error("901"."Unknown entity type specified", E_USER_ERROR);
@@ -265,6 +261,11 @@ class request
 	                
 	                array_push($this->paramObjectsArray, $myParamObj);
 	            }
+        	}
+        	elseif($this->xmlRequestDom->getElementsByTagName("dictionaries")->item(0)!=NULL)
+        	{
+        		$myParamObj = new dictionariesParameters(null, null);
+        		array_push($this->paramObjectsArray, $myParamObj);
         	}
             else
             {
@@ -565,7 +566,7 @@ class request
             {
                 $message .= ", column $error->column";
             }
-            $message .= " and is shown below: <sourceCode>".escapeXMLChars($problemCode)."</sourceCode> ";
+            $message .= " and is shown below: <sourceCode>".dbHelper::escapeXMLChars($problemCode)."</sourceCode> ";
         }
         else
         {

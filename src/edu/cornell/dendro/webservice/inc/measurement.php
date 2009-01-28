@@ -36,7 +36,7 @@ class measurement extends measurementEntity implements IDBAccessor
         $this->setID($theID);
 
         // the uberquery - one query to rule them all?
-        $sql = "SELECT vm.*, mc.*, su.username, op.name as opname, dt.label as datingtype, ".
+        $sql = "SELECT vm.*, mc.*, su.username, op.name as opname, dt.datingtype, ".
 		"m.radiusid, m.isreconciled, m.islegacycleaned, m.datingtypeid, m.datingerrorpositive, m.datingerrornegative, m.measuredbyid, ".
 		"x(centroid(vmextent)), y(centroid(vmextent)), xmin(vmextent), xmax(vmextent), ymin(vmextent), ymax(vmextent) ".
 		"FROM tblvmeasurement vm ".
@@ -63,7 +63,7 @@ class measurement extends measurementEntity implements IDBAccessor
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No match for measurement id=".$this->getID());
+                $this->setErrorMessage("903", "No match for measurement id=".$this->getID().". SQL was $sql");
                 return FALSE;
             }
             else
@@ -92,31 +92,19 @@ class measurement extends measurementEntity implements IDBAccessor
 	                $this->setOwnerUserID($row2['owneruserid']);
 		*/
 				$this->setDatingType($row['datingtype']);
-				$this->datingType = $row['datingtype'];
-				$this->measurementID = $row['measurementid'];
+				$this->setMeasurementID($row['measurementid']);
 				$this->vmeasurementOpID = $row['vmeasurementopid'];
-				$this->vmeasurementOp = $row['opname'];
-				$this->ownerUserID = $row['owneruserid'];
-		                $this->setMeasuredByID($row['measuredbyid']);
+				$this->setVMeasurementOp($row['opname']);
+				$this->setOwnerUserID($row['owneruserid']);
+		        $this->setMeasuredByID($row['measuredbyid']);
 				$this->owner = $row['username'];
 
-		// all the metacache stuff...
-                $this->minLat = $row['ymin'];
-                $this->maxLat = $row['ymax'];
-                $this->minLong = $row['xmin'];
-                $this->maxLong = $row['xmax'];
-                $this->centroidLat = $row['y'];
-                $this->centroidLong = $row['x'];
-                $this->readingCount = $row['readingcount'];
-                $this->measurementCount = $row['measurementcount'];
-                $this->summarySiteCode = $row['sitecode'];
-                $this->summarySiteCount = $row['sitecount'];
-                $this->summaryTaxonName = $row['commontaxonname'];
-                $this->summaryTaxonCount = $row['taxoncount'];
-                $this->labPrefix = $row['prefix'];
+				// all the metacache stuff...
+                $this->setReadingCount($row['readingcount']);
+                $this->setMeasurementCount($row['measurementcount']);
+                $this->setSummaryInfo($row['objectcode'], $row['objectcount'], $row['commontaxonname'], $row['taxoncount'], $row['prefix']);
 
-                // assemble our full lab code
-                $this->fullLabCode = $this->labPrefix . $this->name;
+
 
                 if($this->vmeasurementOp=='Index')
                 {
@@ -185,17 +173,17 @@ class measurement extends measurementEntity implements IDBAccessor
     private function setCrossdateParamsFromDB()
     {
         global $dbconn;
-        $sql = "select * from tblcrossdate where vmeasurementid=".$this->vmeasurementID;
+        $sql = "select * from tblcrossdate where vmeasurementid=".$this->getID();
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
             $result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
             {
-                $this->masterVMeasurementID = $row['mastervmeasurementid'];
-                $this->startYear = $row['startyear'];
-                $this->justification = $row['justification'];
-                $this->certaintyLevel = $row['confidence'];
+                $this->setMasterVMeasurementID($row['mastervmeasurementid']);
+                $this->setFirstYear($row['startyear']);
+                $this->setJustification($row['justification']);
+                $this->setCertaintyLevel($row['confidence']);
             }
         }
 
@@ -268,7 +256,8 @@ class measurement extends measurementEntity implements IDBAccessor
         global $dbconn;
         
         
-        $sql  = "select * from cpgdb.findvmparents('".$this->vmeasurementID."', 'false') where recursionlevel=0";
+        $sql  = "select * from cpgdb.findvmparents('".$this->getID()."', 'false') where recursionlevel=0";
+echo $sql;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -731,14 +720,41 @@ class measurement extends measurementEntity implements IDBAccessor
             $xml .= $this->getPermissionsXML();
             
             //if($format!="minimal") $xml.= "<metadata>\n";
-            if($this->getName()!=NULL)                  $xml.= "<tridas:genericField type=\"name\">".escapeXMLChars($this->name)."</tridas:genericField>\n";
+            if($this->getCode()!=NULL)                  $xml.= "<tridas:genericField type=\"code\">".dbHelper::escapeXMLChars($this->getCode())."</tridas:genericField>\n";
 
 
             // Only output the remainder of the data if we're not using the 'minimal' format
             if ($format!="minimal")
             {
-                if(isset($this->isReconciled))          $xml.= "<isReconciled>".fromPHPtoStringBool($this->isReconciled)."</isReconciled>\n";
+            	if($this->getAnalyst()!=NULL)				$xml.= "<tridas:analyst>".$this->getAnalyst()."</tridas:analyst>\n";
+         		if($this->getDendrochronologist()!=NULL)	$xml.= "<tridas:dendrochronologist>".$this->getDendrochronologist()."</trodas:dendrochronologist>\n";
+         		if($this->getMeasuringMethod()!=NULL)		$xml.= "<tridas:measuringMethod>".$this->getMeasuringMethod()."</tridas:measuringMethod>\n";
+         		if($this->getMeasuringDate()!=NULL) 		$xml.= "<tridas:measuringDate>".$this->getMeasuringDate()."</tridas:measuringDate>\n";
+         		if($this->getVariable()!=NULL)				$xml.= "<tridas:variable>".$this->getVariable()."</tridas:variable>";
+         		if($this->getUnits()!=NULL)
+         		{
+         													$xml.= "<tridas:units factor=\"".$this->getUnitsPower()."\" system=\"SI\">\n";
+         													$xml.= "<tridas:unit>".$this->getUnits()."</tridas:unit>\n";
+         													$xml.= "</tridas:units>\n";
+         		}
+         		
+         		if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
+         		if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".$this->getUsage()."</tridas:usage>\n";
+         		if($this->getUsageComments()!=NULL)			$xml.= "<tridas:usageComments>".$this->getUsageComments()."</tridas:usageComments>\n";
+            	
+            	
+                if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"isReconciled\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
 
+                											$xml.="<tridas:interpretation>\n";
+                if($this->getFirstYear()!=NULL)				$xml.="<tridas:firstYear>".$this->getFirstYear()."</tridas:firstYear>\n";
+                if($this->getSproutYear()!=NULL)			$xml.="<tridas:sproutYear>".$this->getSproutYear()."</tridas:sproutYear>\n";
+                if($this->getDeathYear()!=NULL)				$xml.="<tridas:deathYear>".$this->getDeathYear()."</tridas:deathYear>\n";
+                if($this->getProvenance()!=NULL)			$xml.="<tridas:provenance>".$this->getProvenance()."</tridas:provenance>\n";
+                											$xml.="</tridas:interpretation>\n";
+                
+                								
+                
+                
                 $xml.="<dating ";
                 if(isset($this->startYear))             $xml.= "startYear=\"".$this->startYear."\" ";
                 if(isset($this->readingCount))          $xml.= "count=\"".$this->readingCount."\" ";
@@ -748,9 +764,9 @@ class measurement extends measurementEntity implements IDBAccessor
                 $xml.="/>";
 
                 if(isset($this->isLegacyCleaned))       $xml.= "<isLegacyCleaned>".fromPHPtoStringBool($this->isLegacyCleaned)."</isLegacyCleaned>\n";
-                if(isset($this->measuredByID))          $xml.= "<measuredBy id=\"".$this->measuredByID."\">".escapeXMLChars($this->measuredBy)."</measuredBy>\n";
-                if(isset($this->ownerUserID))           $xml.= "<owner id=\"".$this->ownerUserID."\">".escapeXMLChars($this->owner)."</owner>\n";
-                if(isset($this->description))           $xml.= "<description>".escapeXMLChars($this->description)."</description>\n";
+                if(isset($this->measuredByID))          $xml.= "<measuredBy id=\"".$this->measuredByID."\">".dbHelper::escapeXMLChars($this->measuredBy)."</measuredBy>\n";
+                if(isset($this->ownerUserID))           $xml.= "<owner id=\"".$this->ownerUserID."\">".dbHelper::escapeXMLChars($this->owner)."</owner>\n";
+                if(isset($this->description))           $xml.= "<description>".dbHelper::escapeXMLChars($this->description)."</description>\n";
                 if(isset($this->isPublished))           $xml.= "<isPublished>".fromPHPtoStringBool($this->isPublished)."</isPublished>\n";
                 if(isset($this->vmeasurementOp))
                 {
@@ -787,8 +803,8 @@ class measurement extends measurementEntity implements IDBAccessor
 		if($format=="summary" || $format=="standard") {
                     // Return special summary section
                     $xml.="<summary>";
-                    $xml.="<labPrefix>".escapeXMLChars($this->labPrefix)."</labPrefix>\n";
-                    $xml.="<fullLabCode>".escapeXMLChars($this->fullLabCode)."</fullLabCode>\n";
+                    $xml.="<labPrefix>".dbHelper::escapeXMLChars($this->labPrefix)."</labPrefix>\n";
+                    $xml.="<fullLabCode>".dbHelper::escapeXMLChars($this->fullLabCode)."</fullLabCode>\n";
                     $xml.="<taxon count=\"".$this->summaryTaxonCount."\" commonAncestor=\"".$this->summaryTaxonName."\"/>\n";
                     $xml.="<site count=\"".$this->summarySiteCount."\" ";
                     if($this->summarySiteCount=1) $xml.="siteCode=\"".$this->summarySiteCode."\"/>\n";
