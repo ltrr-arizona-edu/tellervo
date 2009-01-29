@@ -12,7 +12,7 @@ require_once('inc/note.php');
 require_once('inc/subSite.php');
 require_once('inc/region.php');
 
-class search 
+class search Implements IDBAccessor
 {
     var $id = NULL;
     var $xmldata = NULL;
@@ -41,11 +41,10 @@ class search
         $this->lastErrorMessage = $theMessage;
     }
 
-    function validateRequestParams($paramsObj)
+    function validateRequestParams($paramsObj, $crudMode)
     {
-    	global $myRequest;
     	
-        switch($myRequest->getCrudMode())
+        switch($crudMode)
         {
             case "search":
                 if($paramsObj->returnObject==NULL)
@@ -102,21 +101,21 @@ class search
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
                 // Build filter SQL
-                if ($myRequest->siteParamsArray)         $filterSQL .= $this->paramsToFilterSQL($myRequest->siteParamsArray, "site");
-                if ($myRequest->subSiteParamsArray)      $filterSQL .= $this->paramsToFilterSQL($myRequest->subSiteParamsArray, "subsite");
-                if ($myRequest->treeParamsArray)         $filterSQL .= $this->paramsToFilterSQL($myRequest->treeParamsArray, "tree");
-                if ($myRequest->specimenParamsArray)     $filterSQL .= $this->paramsToFilterSQL($myRequest->specimenParamsArray, "specimen");
-                if ($myRequest->radiusParamsArray)       $filterSQL .= $this->paramsToFilterSQL($myRequest->radiusParamsArray, "radius");
-                if ($myRequest->vmeasurementParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementParamsArray, "vmeasurement");
-                if ($myRequest->measurementParamsArray)  $filterSQL .= $this->paramsToFilterSQL($myRequest->measurementParamsArray, "measurement");
-                if ($myRequest->vmeasurementMetaCacheParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementMetaCacheParamsArray, "vmeasurementmetacache");
+                if ($myRequest->objectParamsArray)         			$filterSQL .= $this->paramsToFilterSQL($myRequest->objectParamsArray, "object");
+                if ($myRequest->elementParamsArray)      			$filterSQL .= $this->paramsToFilterSQL($myRequest->elementParamsArray, "element");
+                if ($myRequest->sampleParamsArray)       			$filterSQL .= $this->paramsToFilterSQL($myRequest->sampleParamsArray, "sample");
+                if ($myRequest->radiusParamsArray)       			$filterSQL .= $this->paramsToFilterSQL($myRequest->radiusParamsArray, "radius");
+                if ($myRequest->vmeasurementParamsArray) 			$filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementParamsArray, "vmeasurement");
+                if ($myRequest->measurementParamsArray)  			$filterSQL .= $this->paramsToFilterSQL($myRequest->measurementParamsArray, "measurement");
+                if ($myRequest->vmeasurementMetaCacheParamsArray) 	$filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementMetaCacheParamsArray, "vmeasurementmetacache");
                 // Trim off final ' and ' from filter SQL
                 $filterSQL = substr($filterSQL, 0, -5);
             }
         }
 
+		
         // Compile full SQL statement from parts
-        if(isset($filterSQL))
+        if($filterSQL!=NULL)
         {
             $fullSQL = "SELECT ".$returnObjectSQL.$this->fromSQL($myRequest)." WHERE ".$filterSQL.$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
         }
@@ -140,29 +139,24 @@ class search
             else
             {*/
 
-            $result = @pg_query($dbconn, $fullSQL);
-            while ($row = @pg_fetch_array($result))
+            $result = pg_query($dbconn, $fullSQL);
+            while ($row = pg_fetch_array($result))
             {
                 // Check user has permission to read then create a new object
-                if($myRequest->returnObject=="site") 
+                if($myRequest->returnObject=="object") 
                 {
-                    $myReturnObject = new site();
-                    $hasPermission = $myAuth->getPermission("read", "site", $row['id']);
+                    $myReturnObject = new object();
+                    $hasPermission = $myAuth->getPermission("read", "object", $row['id']);
                 }
-                elseif($myRequest->returnObject=="subsite")
+                elseif($myRequest->returnObject=="element")
                 {
-                    $myReturnObject = new subSite();
-                    $hasPermission = $myAuth->getPermission("read", "subSite", $row['id']);
+                    $myReturnObject = new element();
+                    $hasPermission = $myAuth->getPermission("read", "element", $row['id']);
                 }
                 elseif($myRequest->returnObject=="tree") 
                 {
-                    $myReturnObject = new tree();
-                    $hasPermission = $myAuth->getPermission("read", "tree", $row['id']);
-                }
-                elseif($myRequest->returnObject=="specimen")
-                {
-                    $myReturnObject = new specimen();
-                    $hasPermission = $myAuth->getPermission("read", "specimen", $row['id']);
+                    $myReturnObject = new sample();
+                    $hasPermission = $myAuth->getPermission("read", "sample", $row['id']);
                 }
                 elseif($myRequest->returnObject=="radius") 
                 {
@@ -185,8 +179,9 @@ class search
                     continue;
                 }
 
+   
                 // Set parameters on new object and return XML
-                $success = $myReturnObject->setParamsFromDB($row['id'], $format);
+                $success = $myReturnObject->setParamsFromDB($row['id']);
 
                 // Get permissions if requested
                 if($includePermissions===TRUE) $myReturnObject->getPermissions($myAuth->getID());
@@ -194,7 +189,7 @@ class search
                 //$success = $myReturnObject->setParamsFromDB($row['id'], "brief");
                 if($success)
                 {
-                    $xmldata.=$myReturnObject->asXML($format, "all");
+                    $xmldata.=$myReturnObject->asXML($format);
 
                 }
                 else
@@ -317,17 +312,14 @@ class search
 
         switch($objectName)
         {
-        case "site":
-            return "site";
+        case "object":
+            return "object";
             break;
-        case "subsite":
-            return "subsite";
+        case "element":
+            return "element";
             break;
-        case "tree":
-            return "tree";
-            break;
-        case "specimen":
-            return "specimen";
+        case "sample":
+            return "sample";
             break;
         case "radius":
             return "radius";
@@ -346,17 +338,14 @@ class search
 
         switch($objectName)
         {
-        case "site":
-            return "vwtblsite";
+        case "object":
+            return "vwtblobject";
             break;
-        case "subsite":
-            return "vwtblsubsite";
+        case "element":
+            return "vwtblelement";
             break;
-        case "tree":
-            return "vwtbltree";
-            break;
-        case "specimen":
-            return "vwtblspecimen";
+        case "sample":
+            return "vwtblsample";
             break;
         case "radius":
             return "vwtblradius";
@@ -387,47 +376,47 @@ class search
         $fromSQL = "\nFROM ";
         $withinJoin = FALSE;
 
-        if( (($this->getLowestRelationshipLevel($myRequest)<=6) && ($this->getHighestRelationshipLevel($myRequest)>=6)) || ($myRequest->returnObject == 'site'))
+        /*if( (($this->getLowestRelationshipLevel($myRequest)<=6) && ($this->getHighestRelationshipLevel($myRequest)>=6)) || ($myRequest->returnObject == 'project'))
         {
-            $fromSQL .= $this->tableName("site")." \n";
+            $fromSQL .= $this->tableName("project")." \n";
             $withinJoin = TRUE;
-        }
+        }*/
         
-        if( (($this->getLowestRelationshipLevel($myRequest)<=5) && ($this->getHighestRelationshipLevel($myRequest)>=5)) || ($myRequest->returnObject == 'subsite'))  
+        if( (($this->getLowestRelationshipLevel($myRequest)<=5) && ($this->getHighestRelationshipLevel($myRequest)>=5)) || ($myRequest->returnObject == 'object'))  
         {
             if($withinJoin)
             {
-                $fromSQL .= "INNER JOIN ".$this->tableName("subsite")." ON ".$this->tableName("site").".siteid = ".$this->tableName("subsite").".siteid \n";
+                $fromSQL .= $this->tableName("object")." \n";
             }
             else
             {
-                $fromSQL .= $this->tableName("subsite")." \n";
+                $fromSQL .= $this->tableName("object")." \n";
                 $withinJoin = TRUE;
             }
         }
         
-        if( (($this->getLowestRelationshipLevel($myRequest)<=4) && ($this->getHighestRelationshipLevel($myRequest)>=4)) || ($myRequest->returnObject == 'tree'))
+        if( (($this->getLowestRelationshipLevel($myRequest)<=4) && ($this->getHighestRelationshipLevel($myRequest)>=4)) || ($myRequest->returnObject == 'element'))
         {
             if($withinJoin)
             {
-                $fromSQL .= "INNER JOIN ".$this->tableName("tree")." ON ".$this->tableName("subsite").".subsiteid = ".$this->tableName("tree").".subsiteid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("element")." ON ".$this->tableName("object").".objectid = ".$this->tableName("element").".objectid \n";
             }
             else
             {
-                $fromSQL .= $this->tableName("tree")." \n";
+                $fromSQL .= $this->tableName("element")." \n";
                 $withinJoin = TRUE;
             }
         }        
         
-        if( (($this->getLowestRelationshipLevel($myRequest)<=3) && ($this->getHighestRelationshipLevel($myRequest)>=3)) || ($myRequest->returnObject == 'specimen'))
+        if( (($this->getLowestRelationshipLevel($myRequest)<=3) && ($this->getHighestRelationshipLevel($myRequest)>=3)) || ($myRequest->returnObject == 'sample'))
         {
             if($withinJoin)
             {
-                $fromSQL .= "INNER JOIN ".$this->tableName("specimen")." ON ".$this->tableName("tree").".treeid = ".$this->tableName("specimen").".treeid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("sample")." ON ".$this->tableName("element").".elementid = ".$this->tableName("sample").".elementid \n";
             }
             else
             {
-                $fromSQL .= $this->tableName("specimen")." \n";
+                $fromSQL .= $this->tableName("sample")." \n";
                 $withinJoin = TRUE;
             }
         }
@@ -436,7 +425,7 @@ class search
         {
             if($withinJoin)
             {
-                $fromSQL .= "INNER JOIN ".$this->tableName("radius")." ON ".$this->tableName("specimen").".specimenid = ".$this->tableName("radius").".specimenid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("radius")." ON ".$this->tableName("sample").".sampleid = ".$this->tableName("radius").".sampleid \n";
             }
             else
             {
@@ -466,19 +455,21 @@ class search
         return $fromSQL;
     }
 
-    function getLowestRelationshipLevel($theRequest)
+    function getLowestRelationshipLevel($myRequest)
     {
         // This function returns an interger representing the most junior level of relationship required in this query
-        // tblsite         -- 6 -- most senior
-        // tblsubsite      -- 5 --
-        // tbltree         -- 4 --
-        // tblspecimen     -- 3 --
+        // tblproject      -- 6 -- most senior
+        // tblobject       -- 5 --
+        // tblelement      -- 4 --
+        // tblsample       -- 3 --
         // tblradius       -- 2 --
         // tblmeasurement  -- 1 -- most junior
-        
-        $myRequest = $theRequest;
-        
-        if (($myRequest->measurementParamsArray) || ($myRequest->returnObject == 'vmeasurement'))
+                
+        if (($myRequest->measurementParamsArray)  			||
+            ($myRequest->vmeasurementParamsArray) 			||
+            ($myRequest->vmeasurementMetaCacheParamsArray)  ||
+            ($myRequest->derivedCacheParamsArray) 			||
+            ($myRequest->returnObject == 'vmeasurement'))
         {
             return 1;
         }
@@ -486,22 +477,22 @@ class search
         {
             return 2;
         }
-        elseif (($myRequest->specimenParamsArray) || ($myRequest->returnObject == 'specimen'))
+        elseif (($myRequest->sampleParamsArray) || ($myRequest->returnObject == 'sample'))
         {
             return 3;
         }
-        elseif (($myRequest->treeParamsArray) || ($myRequest->returnObject == 'tree'))
+        elseif (($myRequest->elementParamsArray) || ($myRequest->returnObject == 'element'))
         {
             return 4;
         }
-        elseif (($myRequest->subSiteParamsArray) || ($myRequest->returnObject == 'subsite'))
+        elseif (($myRequest->objectParamsArray) || ($myRequest->returnObject == 'object'))
         {
             return 5;
         }
-        if (($myRequest->siteParamsArray) || ($myRequest->returnObject == 'site'))
-        {
-            return 6;
-        }
+        //elseif (($myRequest->projectParamsArray) || ($myRequest->returnObject == 'project'))
+        //{
+        //    return 6;
+        //}
         else
         {
             return false;
@@ -511,28 +502,28 @@ class search
     function getHighestRelationshipLevel($theRequest)
     {
         // This function returns an interger representing the most senior level of relationship required in this query
-        // tblsite         -- 6 -- most senior
-        // tblsubsite      -- 5 --
-        // tbltree         -- 4 --
-        // tblspecimen     -- 3 --
+        // tblproject      -- 6 -- most senior
+        // tblobject       -- 5 --
+        // tblelement      -- 4 --
+        // tblsample       -- 3 --
         // tblradius       -- 2 --
         // tblmeasurement  -- 1 -- most junior
 
         $myRequest = $theRequest;
 
-        if (($myRequest->siteParamsArray) || ($myRequest->returnObject == 'site'))
-        {
-            return 6;
-        }
-        elseif (($myRequest->subSiteParamsArray) || ($myRequest->returnObject == 'subsite'))
+        //if (($myRequest->projectParamsArray) || ($myRequest->returnObject == 'project'))
+        //{
+        //    return 6;
+        //}
+        if (($myRequest->objectParamsArray) || ($myRequest->returnObject == 'object'))
         {
             return 5;
         }
-        elseif (($myRequest->treeParamsArray) || ($myRequest->returnObject == 'tree'))
+        elseif (($myRequest->elementParamsArray) || ($myRequest->returnObject == 'element'))
         {
             return 4;
         }
-        elseif (($myRequest->specimenParamsArray) || ($myRequest->returnObject == 'specimen'))
+        elseif (($myRequest->sampleParamsArray) || ($myRequest->returnObject == 'sample'))
         {
             return 3;
         }
@@ -540,19 +531,11 @@ class search
         {
             return 2;
         }
-        elseif (($myRequest->measurementParamsArray) || ($myRequest->returnObject == 'measurement'))
-        {
-            return 1;
-        }
-        elseif (($myRequest->vmeasurementParamsArray) || ($myRequest->returnObject == 'measurement'))
-        {
-            return 1;
-        }
-        elseif (($myRequest->vmeasurementMetaCacheParamsArray) || ($myRequest->returnObject == 'measurement'))
-        {
-            return 1;
-        }
-        elseif (($myRequest->derivedCacheParamsArray) || ($myRequest->returnObject == 'measurement'))
+        elseif (($myRequest->measurementParamsArray) || 
+        		($myRequest->vmeasurementParamsArray) ||
+        		($myRequest->vmeasurementMetaCacheParamsArray) ||
+        		($myRequest->derivedCacheParamsArray) ||
+		        ($myRequest->returnObject == 'measurement'))
         {
             return 1;
         }
@@ -584,24 +567,36 @@ class search
         }
         if (($lowestLevel<=2) && ($highestLevel>2))
         {
-            $sql .= "vwtblradius.specimenid=vwtblspecimen.specimenid and ";
+            $sql .= "vwtblradius.sampleid=vwtblample.sampleid and ";
         }
         if (($lowestLevel<=3) && ($highestLevel>3))
         {
-            $sql .= "vwtblspecimen.treeid=vwtbltree.treeid and ";
+            $sql .= "vwtblsample.elementid=vwtblelement.elementid and ";
         }
         if (($lowestLevel<=4) && ($highestLevel>4))
         {
-            $sql .= "vwtbltree.subsiteid=vwtblsubsite.subsiteid and ";
+            $sql .= "vwtblelement.objectid=vwtblobject.objectid and ";
         }
-        if (($lowestLevel<=5) && ($highestLevel>5))
-        {
-            $sql .= "vwtblsubsite.siteid=vwtblsite.siteid and ";
-        }
+        //if (($lowestLevel<=5) && ($highestLevel>5))
+        //{
+        //    $sql .= "vwtblsubsite.siteid=vwtblsite.siteid and ";
+        //}
 
         return $sql;
     }
 
+    
+    function writeToDB()
+    {
+    	trigger_error("667"."search class should not be asked to write to db", E_USER_ERROR);
+    	return false;
+    }
+    
+    function deleteFromDB()
+    {
+    	trigger_error("667"."search class should not be asked to delete from the db", E_USER_ERROR);
+    	return false;
+    }
 
 
 // End of Class

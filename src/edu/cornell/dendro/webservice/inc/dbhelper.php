@@ -166,6 +166,7 @@ class dbHelper
 	/**
 	 * Translates PostgreSQL boolean to a PHP boolean
 	 *
+	 * @deprecated use dbHelper::formatBool()
 	 * @param PG Bool $theValue
 	 * @return PHP Bool
 	 */
@@ -191,6 +192,7 @@ class dbHelper
 	/**
 	 * Translates a PHP boolean to a PostgreSQL boolean.
 	 *
+	 * @deprecated use dbHelper::formatBool() 
 	 * @param PHP Bool $theValue
 	 * @return PG Bool
 	 */
@@ -219,6 +221,7 @@ class dbHelper
 	/**
 	 * Translate any English value for true and false into a boolean
 	 *
+	 * @deprecated use dbHelper::formatBool() 
 	 * @param String $theValue
 	 * @return Bool
 	 */
@@ -245,6 +248,7 @@ class dbHelper
 	/**
 	 * Translate a PostgreSQL Bool to an English string
 	 *
+	 * @deprecated use dbHelper::formatBool() 
 	 * @param PG Bool $theValue
 	 * @return String
 	 */
@@ -263,6 +267,7 @@ class dbHelper
 	/**
 	 * Translate a PHP Bool into an English string
 	 *
+	 * @deprecated use dbHelper::formatBool() 
 	 * @param Bool $theValue
 	 * @return String
 	 */
@@ -281,7 +286,7 @@ class dbHelper
 	 */
 	public static function xmlSpecialCharReplace($xmlrequest)
 	{
-	    // Seriously kludge fix to swap out special chars
+	    // Seriously kludgey fix to swap out special chars
 	    $findStr = "operator=\">\"";
 	    $replaceStr = "operator=\"&gt;\"";
 	    $xmlrequest = str_replace($findStr, $replaceStr, $xmlrequest);

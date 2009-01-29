@@ -1339,7 +1339,7 @@ class sampleEntity extends dbEntity
 	 */
 	function setKnots($value)
 	{
-		$value = formatBool($value);
+		$value = dbHelper::formatBool($value);
 		if($value!='error')
 		{
 			$this->knots = $value;
@@ -1419,7 +1419,7 @@ class sampleEntity extends dbEntity
 	 */
 	function getKnots($format="php")
 	{
-		return formatBool($this->knots, $format);
+		return dbHelper::formatBool($this->knots, $format);
 	}
 	
 	/**
@@ -1530,7 +1530,7 @@ class radiusEntity extends dbEntity
 	 */
 	function setPithPresent($value)
 	{
-		$value = formatBool($value);
+		$value = dbHelper::formatBool($value);
 		if($value!=='error')
 		{
 			$this->pithPresent = $value;
@@ -1581,7 +1581,7 @@ class radiusEntity extends dbEntity
 	 */
 	function setBarkPresent($value)
 	{
-		$bark = formatBool($value);
+		$bark = dbHelper::formatBool($value);
 		if($bark!=='error')
 		{
 			$this->barkPresent = $bark;
@@ -2999,17 +2999,7 @@ class measurementEntity extends dbEntity
 	{
 		return $this->significanceLevel;
 	}
-	
-	function getSproutYear()
-	{
-		return $this->sproutYear;
-	}
-	
-	function getDeathYear()
-	{
-		return $this->deathYear;
-	}
-	
+		
 	function getProvenance()
 	{
 		return $this->provenance;

@@ -107,7 +107,7 @@ class request
         
 
         $origErrorLevel = error_reporting(E_ERROR);
-        $xmlrequest = xmlSpecialCharReplace($xmlrequest);
+        $xmlrequest = dbHelper::xmlSpecialCharReplace($xmlrequest);
         $doc = new DomDocument;
         $doc->loadXML($xmlrequest);
         
@@ -125,8 +125,8 @@ class request
             $this->setCrudMode($requesttag->getAttribute("type"));          
             
     
-            $this->format = strtolower($requesttag->getAttribute("format"));
-            $this->includePermissions = formatBool($requesttag->getAttribute("includePermissions"));
+            if($requesttag->getAttribute("format")!=NULL) $this->format = strtolower($requesttag->getAttribute("format"));
+            $this->includePermissions = dbHelper::formatBool($requesttag->getAttribute("includePermissions"));
             
             // Override format to standard if doing a 'delete'
             if ($this->getCrudMode()=='delete') $this->format = 'standard';
@@ -203,13 +203,16 @@ class request
     	//******
         if($this->crudMode=='search')
         {
-			//@todo this needs checking
-        	$fragment = $xpath->query("//cor:request/cor:searchParams");
-	
-            $parentID = NULL;
-            $myParamObj = new searchParameters($this->xmlRequestDom->saveXML($fragment), $parentID);
-            array_push($this->paramObjectsArray, $myParamObj);
-
+        	$fragment = $xpath->query("//cor:request[(descendant::cor:searchParams)]");
+	       	
+        	foreach ($fragment as $item)
+        	{	
+        		if($item->nodeType != XML_ELEMENT_NODE) continue;  
+        		
+	            $parentID = NULL;
+	            $myParamObj = new searchParameters($this->xmlRequestDom->saveXML($item), $parentID);
+	            array_push($this->paramObjectsArray, $myParamObj);
+        	}
         }
         
     	//***************

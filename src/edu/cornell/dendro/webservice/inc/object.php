@@ -284,10 +284,10 @@ class object extends objectEntity implements IDBAccessor
             	$xml.= "<tridas:object>";
                 $xml.= $this->getIdentifierXML();     
                 if($this->getType()!=NULL)     		$xml.= "<tridas:type>".$this->getType()."</tridas:type>";        	
-            	if($this->getDescription()!=NULL)	$xml.= "<tridas:description>".$this->getDescription()."</tridas:description>";
-            	if($this->getTitle()!=NULL)			$xml.= "<tridas:title>".$this->getTitle()."</tridas:title>";
-            	if($this->getCreator()!=NULL)		$xml.= "<tridas:creator>".$this->getCreator()."</tridas:creator>";
-            	if($this->getOwner()!=NULL)			$xml.= "<tridas:owner>".$this->getOwner()."</tridas:owner>";
+            	if($this->getDescription()!=NULL)	$xml.= "<tridas:description>".dbHelper::escapeXMLChars($this->getDescription())."</tridas:description>";
+            	if($this->getTitle()!=NULL)			$xml.= "<tridas:title>".dbHelper::escapeXMLChars($this->getTitle())."</tridas:title>";
+            	if($this->getCreator()!=NULL)		$xml.= "<tridas:creator>".dbHelper::escapeXMLChars($this->getCreator())."</tridas:creator>";
+            	if($this->getOwner()!=NULL)			$xml.= "<tridas:owner>".dbHelper::escapeXMLChars($this->getOwner())."</tridas:owner>";
             	if($this->getFile()!=NULL)			$xml.= "<tridas:file xlink:href=\"".$this->getFile()."\" />";
             	$xml.=$this->getDBIDXML();
             	

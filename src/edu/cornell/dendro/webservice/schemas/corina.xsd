@@ -34,7 +34,12 @@
 					<xs:element name="searchParams">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element ref="param" maxOccurs="unbounded"/>
+								<xs:choice>
+									<xs:element ref="param" maxOccurs="unbounded"/>
+									<xs:element name="all" />
+									
+								</xs:choice>
+								
 							</xs:sequence>
 							<xs:attribute name="returnObject">
 								<xs:simpleType>
@@ -239,76 +244,115 @@
 			<xs:attribute name="name">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:enumeration value="siteid"/>
-						<xs:enumeration value="sitename"/>
-						<xs:enumeration value="sitecode"/>
-						<xs:enumeration value="sitecreated"/>
-						<xs:enumeration value="sitelastmodified"/>
-						<xs:enumeration value="sitexcentroid"/>
-						<xs:enumeration value="siteycentroid"/>
-						<xs:enumeration value="subsiteid"/>
-						<xs:enumeration value="subsitename"/>
-						<xs:enumeration value="subsitecreated"/>
-						<xs:enumeration value="subsitelastmodified"/>
-						<xs:enumeration value="treeid"/>
-						<xs:enumeration value="treename"/>
-						<xs:enumeration value="treecreated"/>
-						<xs:enumeration value="treelastmodified"/>
-						<xs:enumeration value="precision"/>
-						<xs:enumeration value="latitude"/>
-						<xs:enumeration value="longitude"/>
-						<xs:enumeration value="isLiveTree"/>
-						<xs:enumeration value="originaltaxonname"/>
-						<xs:enumeration value="specimenid"/>
-						<xs:enumeration value="specimenname"/>
-						<xs:enumeration value="datecollected"/>
-						<xs:enumeration value="specimencreated"/>
-						<xs:enumeration value="specimenlastmodified"/>
-						<xs:enumeration value="specimentypeid"/>
-						<xs:enumeration value="specimentype"/>
-						<xs:enumeration value="isterminalringverified"/>
-						<xs:enumeration value="sapwoodcount"/>
-						<xs:enumeration value="issapwoodcountverified"/>
-						<xs:enumeration value="isspecinenqualityverified"/>
-						<xs:enumeration value="ispithverified"/>
-						<xs:enumeration value="unmeaspre"/>
-						<xs:enumeration value="unmeaspost"/>
-						<xs:enumeration value="isunmeaspreverified"/>
-						<xs:enumeration value="isunmeaspostverified"/>
-						<xs:enumeration value="terminalringid"/>
-						<xs:enumeration value="terminalring"/>
-						<xs:enumeration value="specimenqualityid"/>
-						<xs:enumeration value="specimenquality"/>
-						<xs:enumeration value="specimencontinuityid"/>
-						<xs:enumeration value="specimencontinuity"/>
-						<xs:enumeration value="pithid"/>
-						<xs:enumeration value="pith"/>
-						<xs:enumeration value="isspecimencontinuityverified"/>
+
+						<!-- OBJECT ATTRIBUTES-->
+						<xs:enumeration value="objectid"/>
+						<xs:enumeration value="objectdbid"/>						
+						<xs:enumeration value="objecttitle"/>
+						<xs:enumeration value="objectcreated"/>
+						<xs:enumeration value="objectlastmodified"/>
+						<xs:enumeration value="objectdescription" />
+						<xs:enumeration value="objectcreator" />
+						<xs:enumeration value="objectowner" />
+						<xs:enumeration value="objectfile" />
+						<xs:enumeration value="objectcoverageTemporal" />
+						<xs:enumeration value="objectcoverageTemporalFoundation" />
+						<xs:enumeration value="objectlocationtype"/>
+						<xs:enumeration value="objectlocationprecision" />
+						<xs:enumeration value="objectlocationcomment" />
+						
+						<!-- ELEMENT ATTRIBUTES -->
+						<xs:enumeration value="elementid" />
+						<xs:enumeration value="elementdbid" />
+						<xs:enumeration value="elementtaxon"/>
+						<xs:enumeration value="elementoriginaltaxonname"/>
+						<xs:enumeration value="elementphylumname"/>
+						<xs:enumeration value="elementclassname"/>
+						<xs:enumeration value="elementordername"/>
+						<xs:enumeration value="elementfamilyname"/>
+						<xs:enumeration value="elementgenusname"/>
+						<xs:enumeration value="elementspeciesname"/>
+						<xs:enumeration value="elementinfraspeciesname"/>
+						<xs:enumeration value="elementinfraspeciestype"/>
+						<xs:enumeration value="elementauthenticity" />
+						<xs:enumeration value="elementshape" />
+						<xs:enumeration value="elementheight" />
+						<xs:enumeration value="elementwidth" />
+						<xs:enumeration value="elementdepth" />
+						<xs:enumeration value="elementdiameter" />
+						<xs:enumeration value="elementdimensionunits" />
+						<xs:enumeration value="elementdimensionunitspower" />
+						<xs:enumeration value="elementtype" />
+						<xs:enumeration value="elementfile" />
+						<xs:enumeration value="elementlocationtype"/>
+						<xs:enumeration value="elementlocationprecision"/>
+						<xs:enumeration value="elementlocationcomment"/>
+						<xs:enumeration value="elementprocessing"/>
+						<xs:enumeration value="elementmarks"/>
+						<xs:enumeration value="elementdescription"/>
+						<xs:enumeration value="elementcreated" />
+						<xs:enumeration value="elementlastmodified"/>
+						
+						<!-- SAMPLE ATTRIBUTES -->
+						<xs:enumeration value="sampleid"/>
+						<xs:enumeration value="sampledbid"/>
+						<xs:enumeration value="samplesamplingdate"/>
+						<xs:enumeration value="samplefile"/>
+						<xs:enumeration value="sampleposition"/>
+						<xs:enumeration value="samplestate"/>
+						<xs:enumeration value="sampleknots"/>
+						<xs:enumeration value="sampledescription"/>
+						<xs:enumeration value="samplecreated"/>
+						<xs:enumeration value="samplelastmodified"/>
+						
+						<!-- RADIUS ATTRIBUTES -->
 						<xs:enumeration value="radiusid"/>
-						<xs:enumeration value="radiusname"/>
+						<xs:enumeration value="radiusdbid"/>
+						<xs:enumeration value="radiuspith"/>
+						<xs:enumeration value="radiussapwood"/>
+						<xs:enumeration value="radiusheartwood"/>
+						<xs:enumeration value="radiusbark"/>
+						<xs:enumeration value="radiusnumbersapwoodrings"/>
+						<xs:enumeration value="radiuslastringunderbark"/>
+						<xs:enumeration value="radiusmissingheartwoodringstopith"/>
+						<xs:enumeration value="radiusmissingheartwoodringstopithfoundation"/>
+						<xs:enumeration value="radiusmissingsapwoodringstobark"/>
+						<xs:enumeration value="radiusmissingsapwoodringstobarkfoundation"/>
 						<xs:enumeration value="radiuscreated"/>
-						<xs:enumeration value="measurementid"/>
-						<xs:enumeration value="measurementname"/>
-						<xs:enumeration value="measurementcreated"/>
-						<xs:enumeration value="measurementlastmodified"/>
-						<xs:enumeration value="measurementoperator"/>
-						<xs:enumeration value="measurementdescription"/>
-						<xs:enumeration value="measurementispublished"/>
-						<xs:enumeration value="measurementowneruserid"/>
-						<xs:enumeration value="operatorparameter"/>
-						<xs:enumeration value="measurementisreconciled"/>
-						<xs:enumeration value="datingtype"/>
-						<xs:enumeration value="datingerrorpositive"/>
-						<xs:enumeration value="datingerrornegative"/>
-						<xs:enumeration value="startyear"/>
-						<xs:enumeration value="readingcount"/>
-						<xs:enumeration value="measurementcount"/>
-						<xs:enumeration value="measurementymin"/>
-						<xs:enumeration value="measurementymax"/>
-						<xs:enumeration value="measurementxmin"/>
-						<xs:enumeration value="measurementxmax"/>
-						<xs:enumeration value="measurementxcentroid"/>
-						<xs:enumeration value="measurementycentroid"/>
+						<xs:enumeration value="radiuslastmodified"/>
+						
+						<!-- SERIES ATTRIBUTES -->
+						<xs:enumeration value="seriesid"/>
+						<xs:enumeration value="seriesdbid"/>
+						<xs:enumeration value="seriesmeasuringmethod"/>
+						<xs:enumeration value="seriesvariable"/>
+						<xs:enumeration value="seriesunit"/>
+						<xs:enumeration value="seriespower"/>
+						<xs:enumeration value="seriesmeasuringdate"/>
+						<xs:enumeration value="seriesanalyst"/>
+						<xs:enumeration value="seriesdendrochronologist"/>
+						<xs:enumeration value="seriescomments"/>
+						<xs:enumeration value="seriesusage"/>
+						<xs:enumeration value="seriesusagecomments"/>
+						<xs:enumeration value="seriesfirstyear"/>
+						<xs:enumeration value="seriessproutyear"/>
+						<xs:enumeration value="seriesdeathyear"/>
+						<xs:enumeration value="seriesprovenance"/>
+						<xs:enumeration value="seriestype"/>
+						<xs:enumeration value="seriesstandardizingmethod"/>
+						<xs:enumeration value="seriesauthor"/>
+						<xs:enumeration value="seriesobjective"/>
+						<xs:enumeration value="seriesversion"/>
+						<xs:enumeration value="seriesderivationdate"/>
+						<xs:enumeration value="serieslastmodified"/>
+						<xs:enumeration value="seriesoperatorparameter"/>
+						<xs:enumeration value="seriesisreconciled"/>
+						<xs:enumeration value="seriesdatingtype"/>
+						<xs:enumeration value="seriesdatingerrorpositive"/>
+						<xs:enumeration value="seriesdatingerrornegative"/>
+						<xs:enumeration value="seriesvaluecount"/>
+						<xs:enumeration value="seriescount"/>
+
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>

@@ -61,9 +61,9 @@ class radius extends radiusEntity implements IDBAccessor
                 $this->setSampleID($row['sampleid']);
                 $this->setCreatedTimestamp($row['radiuscreated']);
                 $this->setLastModifiedTimestamp($row['radiuslastmodified']);
-                $this->setPithPresent(fromPGtoPHPBool($row['pithpresent']));
+                $this->setPithPresent(dbHelper::fromPGtoPHPBool($row['pithpresent']));
                 $this->setSapwood($row['sapwood']);
-                $this->setBarkPresent(fromPGtoPHPBool($row['barkpresent']));
+                $this->setBarkPresent(dbHelper::formatBool($row['barkpresent']));
                 $this->setNumberOfSapwoodRings($row['numberofsapwoodrings']);
                 $this->setLastRingUnderBark($row['lastringunderbark']);
                 $this->setMissingHeartwoodRingsToPith($row['missingheartwoodringstopith']);

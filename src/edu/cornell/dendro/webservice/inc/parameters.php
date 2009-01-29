@@ -20,6 +20,94 @@ interface IParams
     function setParamsFromXMLRequest();
 }
 
+
+class searchParameters implements IParams
+{
+    var $xmlRequestDom 			 			= NULL;	
+    var $returnObject            			= NULL;
+    var $limit                   			= NULL;
+    var $skip                    			= NULL;
+    var $allData                 			= FALSE;
+    
+    var $objectParamsArray		 			= array();
+    var $elementParamsArray					= array();
+    var $sampleParamsArray					= array();
+    var $radiusParamsArray					= array();
+    var $measurementParamsArray  			= array();
+    var $vmeasurementParamsArray  			= array();
+    var $vmeasurementResultParamsArray  	= array();
+    var $vmeasurementMetaCacheParamsArray  	= array();
+    var $derivedCacheParamsArray			= array();
+
+
+    function __construct($xmlrequest)
+    {
+        // Load the xmlrequest into a DOMDocument if it isn't already
+        if (gettype($xmlrequest)=='object')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }	
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+        
+        $this->setParamsFromXMLRequest();
+    }
+
+    function setParamsFromXMLRequest()
+    {
+    	global $corinaNS;
+        global $tridasNS;
+	
+        // Get main attributes
+    	$searchParamsTag = $this->xmlRequestDom->getElementsByTagName("searchParams")->item(0); 	
+		$this->returnObject = addslashes($searchParamsTag->getAttribute("returnObject"));
+		$this->limit = (int) $searchParamsTag->getAttribute("limit");
+		$this->skip = (int) $searchParamsTag->getAttribute("skip");
+		
+		// Get individual params
+		$paramsTags = $this->xmlRequestDom->getElementsByTagName("param");	
+		
+		foreach ($paramsTags as $param)
+		{
+			if($param->nodeType != XML_ELEMENT_NODE) continue; 
+			
+			// If the <all> tag is found set allData to true and finish
+			if($param->tagName=='all') 
+			{
+				$this->allData=TRUE; 
+				break;
+			}
+			
+			// Detect table name from parameter name
+			$paramType = substr(strtolower($param->getAttribute("name")), 0, 6);
+			if($paramType=='elemen') $paramType = 'element';						
+			    
+			// Create a parameter array
+			$paramArray = array ('name' => addslashes($param->getAttribute("name")), 
+								 'operator' => addslashes($param->getAttribute("operator")),
+								 'value' => addslashes($param->getAttribute("value")));
+			
+			// Add parameter array to the relevant *ParamsArray
+			switch ($paramType)
+			{
+				case "object":	array_push($this->objectParamsArray, $paramArray);	break;
+				
+				case "element":	array_push($this->elementParamsArray, $paramArray ); break;
+
+				case "sample":	array_push($this->sampleParamsArray, $paramArray );	break;
+									
+				case "radius":	array_push($this->radiusParamsArray, $paramArray );	break;
+									
+				default:		trigger_error("104"."Unknown parameter type of $paramType specified.", E_USER_ERROR);
+			}	
+		}		
+
+	}
+}
+
 class dictionariesParameters implements IParams
 {   
     protected $xmlRequestDom = NULL;
@@ -993,149 +1081,6 @@ class securityGroupParameters extends parameters
 
 }
 */
-class searchParameters extends parameters
-{
-    var $returnObject            = NULL;
-    var $limit                   = NULL;
-    var $skip                    = NULL;
-    var $allData                 = FALSE;
-    var $siteParamsArray         = array();
-    var $subSiteParamsArray      = array();
-    var $treeParamsArray         = array();
-    var $sampleParamsArray     = array();
-    var $radiusParamsArray       = array();
-    var $measurementParamsArray  = array();
-    var $vmeasurementParamsArray  = array();
-    var $vmeasurementResultParamsArray  = array();
-    var $vmeasurementMetaCacheParamsArray  = array();
 
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-
-    function getXMLParams()
-    {
-        if($this->xmlrequest['returnObject'])  $this->returnObject  = addslashes ( $this->xmlrequest['returnObject']);
-        if($this->xmlrequest['limit'])         $this->limit         = (int) $this->xmlrequest['limit'];
-        if($this->xmlrequest['skip'])          $this->skip          = (int) $this->xmlrequest['skip'];
-        if(isset($this->xmlrequest->all))      $this->allData       = TRUE;
-                        
-        foreach($this->xmlrequest->xpath('//param') as $param)
-        {
-            // Site Parameters
-            if    ( ($param['name'] == 'siteid') || 
-                    ($param['name'] == 'sitename') || 
-                    ($param['name'] == 'sitecode') || 
-                    ($param['name'] == 'sitecreated') || 
-                    ($param['name'] == 'sitexcentroid') || 
-                    ($param['name'] == 'siteycentroid') || 
-                    ($param['name'] == 'sitelastmodified') )
-            {
-                array_push($this->siteParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
-            }
-
-            // Subsite Parameters
-            elseif( ($param['name'] == 'subsiteid') || 
-                    ($param['name'] == 'subsitename') || 
-                    ($param['name'] == 'subsitecreated') || 
-                    ($param['name'] == 'subsitelastmodified'))
-            {
-                array_push($this->subSiteParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
-            }
-
-            // Tree Parameters
-            elseif( ($param['name'] == 'treeid') || 
-                    ($param['name'] == 'treename') || 
-                    ($param['name'] == 'originaltaxonname') || 
-                    ($param['name'] == 'treecreated') || 
-                    ($param['name'] == 'treelastmodified') || 
-                    ($param['name'] == 'precision') || 
-                    ($param['name'] == 'islivetree') || 
-                    ($param['name'] == 'latitude') || 
-                    ($param['name'] == 'longitude'))
-            {
-                array_push($this->treeParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
-            }  
-
-            // sample parameters
-            elseif( ($param['name'] == 'sampleid') || 
-                    ($param['name'] == 'samplename') || 
-                    ($param['name'] == 'datecollected') || 
-                    ($param['name'] == 'samplecreated') || 
-                    ($param['name'] == 'samplelastmodified') || 
-                    ($param['name'] == 'sampletypeid') || 
-                    ($param['name'] == 'sampletype') || 
-                    ($param['name'] == 'isterminalringverified') || 
-                    ($param['name'] == 'sapwoodcount') || 
-                    ($param['name'] == 'issapwoodcountverified') || 
-                    ($param['name'] == 'issamplequalityverified') || 
-                    ($param['name'] == 'ispithverified') || 
-                    ($param['name'] == 'unmeaspre') || 
-                    ($param['name'] == 'unmeaspost') || 
-                    ($param['name'] == 'isunmeaspreverified') || 
-                    ($param['name'] == 'isunmeaspostverified') || 
-                    ($param['name'] == 'terminalringid') || 
-                    ($param['name'] == 'terminalring') || 
-                    ($param['name'] == 'samplequalityid') || 
-                    ($param['name'] == 'samplequality') || 
-                    ($param['name'] == 'samplecontinuityid') || 
-                    ($param['name'] == 'samplecontinuity') || 
-                    ($param['name'] == 'pithid') || 
-                    ($param['name'] == 'pith') || 
-                    ($param['name'] == 'issamplecontinuityverified'))
-            {
-                array_push($this->sampleParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
-            }
-
-            // Radius parameters
-            elseif( ($param['name'] == 'radiusid') || 
-                    ($param['name'] == 'radiusname') || 
-                    ($param['name'] == 'radiuscreated') || 
-                    ($param['name'] == 'radiuslastmodified'))
-            {
-                array_push($this->radiusParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
-            }
-
-            // Measurement Parameters
-            elseif( ($param['name'] == 'measurementname') || 
-                    ($param['name'] == 'measurementoperator') || 
-                    ($param['name'] == 'measurementdescription') || 
-                    ($param['name'] == 'measurementispublished') || 
-                    ($param['name'] == 'measurementowneruserid') || 
-                    ($param['name'] == 'measurementcreated') || 
-                    ($param['name'] == 'operatorparameter') || 
-                    ($param['name'] == 'measurementlastmodified'))
-            {
-                array_push($this->vmeasurementParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
-            }
-            elseif( ($param['name'] == 'measurementid') )
-            {
-                array_push($this->vmeasurementParamsArray, array ('name' => addslashes('vmeasurementid'), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
-            } 
-            elseif( ($param['name'] == 'measurementisreconciled') || 
-                    ($param['name'] == 'datingtype') || 
-                    ($param['name'] == 'datingerrornegative') || 
-                    ($param['name'] == 'datingerrorpositive'))
-            {
-                array_push($this->measurementParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
-            }
-            elseif( ($param['name'] == 'startyear') || 
-                    ($param['name'] == 'readingcount') || 
-                    ($param['name'] == 'measurementcount') || 
-                    ($param['name'] == 'measurementymin') || 
-                    ($param['name'] == 'measurementymax') || 
-                    ($param['name'] == 'measurementxmin') || 
-                    ($param['name'] == 'measurementxmax') || 
-                    ($param['name'] == 'measurementxcentroid') || 
-                    ($param['name'] == 'measurementycentroid'))
-            {
-                array_push($this->vmeasurementMetaCacheParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
-            }
-
-        }
-    }
-}
 
 ?>
