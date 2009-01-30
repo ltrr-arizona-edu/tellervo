@@ -330,7 +330,7 @@ if($myMetaHeader->status != "Error")
                     }
                 }
             }
-            $xmldata.="<sql>".htmlSpecialChars($myObject->sqlcommand)."</sql>";
+            $xmldata.= $myObject->xmlDebugOutput();
         }
 
 

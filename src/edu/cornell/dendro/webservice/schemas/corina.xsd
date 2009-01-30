@@ -260,11 +260,11 @@
 						<xs:enumeration value="objectlocationtype"/>
 						<xs:enumeration value="objectlocationprecision" />
 						<xs:enumeration value="objectlocationcomment" />
+						<xs:enumeration value="objecttype" />
 						
 						<!-- ELEMENT ATTRIBUTES -->
 						<xs:enumeration value="elementid" />
 						<xs:enumeration value="elementdbid" />
-						<xs:enumeration value="elementtaxon"/>
 						<xs:enumeration value="elementoriginaltaxonname"/>
 						<xs:enumeration value="elementphylumname"/>
 						<xs:enumeration value="elementclassname"/>
@@ -296,14 +296,15 @@
 						<!-- SAMPLE ATTRIBUTES -->
 						<xs:enumeration value="sampleid"/>
 						<xs:enumeration value="sampledbid"/>
-						<xs:enumeration value="samplesamplingdate"/>
+						<xs:enumeration value="samplingdate"/>
 						<xs:enumeration value="samplefile"/>
 						<xs:enumeration value="sampleposition"/>
 						<xs:enumeration value="samplestate"/>
-						<xs:enumeration value="sampleknots"/>
+						<xs:enumeration value="samplehasknots"/>
 						<xs:enumeration value="sampledescription"/>
 						<xs:enumeration value="samplecreated"/>
 						<xs:enumeration value="samplelastmodified"/>
+						<xs:enumeration value="samplingdatecertainty"/>
 						
 						<!-- RADIUS ATTRIBUTES -->
 						<xs:enumeration value="radiusid"/>

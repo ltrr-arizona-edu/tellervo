@@ -456,6 +456,11 @@ class dbEntity
     
 }
 
+
+/**
+ * Class for representing a TRiDaS object database entity.  An object is the subject of dendro-research - an item that is investigated 
+ *
+ */
 class objectEntity extends dbEntity
 {
 	/**
@@ -745,7 +750,10 @@ class objectEntity extends dbEntity
     }
 }
 
-
+/**
+ * Class for representing a TRiDaS element database entity.  An element is a piece of wood originating from one tree
+ *
+ */
 class elementEntity extends dbEntity
 {
 	/**
@@ -1232,7 +1240,10 @@ class elementEntity extends dbEntity
 }
 
 
-
+/**
+ * Class for representing a TRiDaS sample database entity.  A sample is the physical sample of an element to be measured
+ *
+ */
 class sampleEntity extends dbEntity
 {
 	/**
@@ -1438,6 +1449,10 @@ class sampleEntity extends dbEntity
 	}
 }
 
+/**
+ * Class for representing a TRiDaS radius database entity.  A radius is a line from pith to bark from which the measurements are made.
+ *
+ */
 class radiusEntity extends dbEntity
 {
     protected $sampleID = NULL;   
@@ -1806,6 +1821,11 @@ class radiusEntity extends dbEntity
 	
 }
 
+
+/**
+ * Class representing a taxon in the database
+ *
+ */
 class taxonEntity extends dbEntity
 {
     protected $parentID = NULL;
@@ -2082,6 +2102,11 @@ class taxonEntity extends dbEntity
     
 }
 
+
+/**
+ * A class representing TRiDaS measurementSeries and derivedSeries in the database.  This class also includes representations of TRiDaS values.
+ *
+ */
 class measurementEntity extends dbEntity 
 {	
 	/**

@@ -15,8 +15,13 @@
 require_once('inc/dbEntity.php');
 require_once('inc/dbhelper.php');
 
+/**
+ * Interface for parameters objects
+ *
+ */
 interface IParams
 {
+	function __construct($xmlrequest);
     function setParamsFromXMLRequest();
 }
 
@@ -29,6 +34,7 @@ class searchParameters implements IParams
     var $skip                    			= NULL;
     var $allData                 			= FALSE;
     
+    var $paramsArray						= array();
     var $objectParamsArray		 			= array();
     var $elementParamsArray					= array();
     var $sampleParamsArray					= array();
@@ -81,28 +87,90 @@ class searchParameters implements IParams
 				break;
 			}
 			
-			// Detect table name from parameter name
-			$paramType = substr(strtolower($param->getAttribute("name")), 0, 6);
-			if($paramType=='elemen') $paramType = 'element';						
-			    
-			// Create a parameter array
-			$paramArray = array ('name' => addslashes($param->getAttribute("name")), 
-								 'operator' => addslashes($param->getAttribute("operator")),
-								 'value' => addslashes($param->getAttribute("value")));
+			// Create an array for translating the search parameters names into Corina database table and field names
+			$translationArray = array (		
+										'objectid' => 							array('tbl' => 'vwtblobject', 'field' => 'code'),
+										'objectdbid' => 						array('tbl' => 'vwtblobject', 'field' => 'objectid'),                        
+										'objecttitle' => 						array('tbl' => 'vwtblobject', 'field' => 'title'),
+										'objectcreated' => 						array('tbl' => 'vwtblobject', 'field' => 'createdtimestamp'),
+										'objectlastmodified' => 				array('tbl' => 'vwtblobject', 'field' => 'lastmodifiedtimestamp'),
+										'objectdescription' => 					array('tbl' => 'vwtblobject', 'field' => 'description'),
+										'objectcreator' => 						array('tbl' => 'vwtblobject', 'field' => 'creator'),
+										'objectowner' => 						array('tbl' => 'vwtblobject', 'field' => 'owner'),
+										'objectfile' => 						array('tbl' => 'vwtblobject', 'field' => 'file'),
+										'objectcoverageTemporal' => 			array('tbl' => 'vwtblobject', 'field' => 'coveragetemporal'),
+										'objectcoverageTemporalFoundation' => 	array('tbl' => 'vwtblobject', 'field' => 'coveragetemporalfoundation'),
+										'objectlocationtype' => 				array('tbl' => 'vwtblobject', 'field' => 'locationtype'),
+										'objectlocationprecision' => 			array('tbl' => 'vwtblobject', 'field' => 'locationprecision'),
+										'objectlocationcomment' => 				array('tbl' => 'vwtblobject', 'field' => 'locationcomment'),
+										'objecttype' =>							array('tbl' => 'vwtblobject', 'field' => 'type'),	
 			
-			// Add parameter array to the relevant *ParamsArray
-			switch ($paramType)
-			{
-				case "object":	array_push($this->objectParamsArray, $paramArray);	break;
-				
-				case "element":	array_push($this->elementParamsArray, $paramArray ); break;
+										'elementid' => 							array ('tbl' => 'vwtblelement', 	'field'  => 'code'),
+										'elementdbid' => 						array('tbl' => 'vwtblelement', 'field' => 'elementid'),
+										'elementoriginaltaxonname' => 			array('tbl' => 'vwtblelement', 'field' => 'originaltaxonname'),
+										//'elementphylumname' => array('tbl' => 'vwtblelement', 'field' => ''),
+										//'elementclassname' => array('tbl' => 'vwtblelement', 'field' => ''),
+										//'elementordername' => array('tbl' => 'vwtblelement', 'field' => ''),
+										//'elementfamilyname' => array('tbl' => 'vwtblelement', 'field' => ''),
+										//'elementgenusname' => array('tbl' => 'vwtblelement', 'field' => ''),
+										//'elementspeciesname' => array('tbl' => 'vwtblelement', 'field' => ''),
+										//'elementinfraspeciesname' => array('tbl' => 'vwtblelement', 'field' => ''),
+										//'elementinfraspeciestype' => array('tbl' => 'vwtblelement', 'field' => ''),
+										'elementauthenticity' => 				array('tbl' => 'vwtblelement', 'field' => 'elementauthenticity'),
+										'elementshape' => 						array('tbl' => 'vwtblelement', 'field' => 'elementshape'),
+										'elementheight' => 						array('tbl' => 'vwtblelement', 'field' => 'height'),
+										'elementwidth' => 						array('tbl' => 'vwtblelement', 'field' => 'width'),
+										'elementdepth' => 						array('tbl' => 'vwtblelement', 'field' => 'depth'),
+										'elementdiameter' => 					array('tbl' => 'vwtblelement', 'field' => 'diameter'),
+										'elementdimensionunits' => 				array('tbl' => 'vwtblelement', 'field' => 'units'),
+										//'elementdimensionunitspower' => array('tbl' => 'vwtblelement', 'field' => ''),
+										'elementtype' => 						array('tbl' => 'vwtblelement', 'field' => 'elementtype'),
+										'elementfile' => 						array('tbl' => 'vwtblelement', 'field' => 'file'),
+										'elementlocationtype' => 				array('tbl' => 'vwtblelement', 'field' => 'locationtype'),
+										'elementlocationprecision' => 			array('tbl' => 'vwtblelement', 'field' => 'locationprecision'),
+										'elementlocationcomment' => 			array('tbl' => 'vwtblelement', 'field' => 'locationcomment'),
+										'elementprocessing' => 					array('tbl' => 'vwtblelement', 'field' => 'processing'),
+										'elementmarks' => 						array('tbl' => 'vwtblelement', 'field' => 'marks'),
+										'elementdescription' => 				array('tbl' => 'vwtblelement', 'field' => 'description'),
+										'elementcreated' => 					array('tbl' => 'vwtblelement', 'field' => 'createdtimestamp'),
+										'elementlastmodified' =>	 			array('tbl' => 'vwtblelement', 'field' => 'lastmodifiedtimestamp'),
 
-				case "sample":	array_push($this->sampleParamsArray, $paramArray );	break;
-									
-				case "radius":	array_push($this->radiusParamsArray, $paramArray );	break;
-									
-				default:		trigger_error("104"."Unknown parameter type of $paramType specified.", E_USER_ERROR);
-			}	
+										'sampleid' => 							array('tbl' => 'vwtblsample', 'field' => 'code'),
+										'sampledbid' => 						array('tbl' => 'vwtblsample', 'field' => 'sampleid'),
+										'samplingdate' => 						array('tbl' => 'vwtblsample', 'field' => 'samplingdate'),
+										'samplefile' => 						array('tbl' => 'vwtblsample', 'field' => 'file'),
+										'sampleposition' => 					array('tbl' => 'vwtblsample', 'field' => 'position'),
+										'samplestate' => 						array('tbl' => 'vwtblsample', 'field' => 'state'),
+										'samplehasknots' => 					array('tbl' => 'vwtblsample', 'field' => 'knots'),
+										'sampledescription' => 					array('tbl' => 'vwtblsample', 'field' => 'description'),
+										'samplecreated' => 						array('tbl' => 'vwtblsample', 'field' => 'createtimestamp'),
+										'samplelastmodified' => 				array('tbl' => 'vwtblsample', 'field' => 'lastmodifiedtimstamp'),
+										'samplingdatecertainty' => 				array('tbl' => 'vwtblsample', 'field' => 'datecertainty'),
+										
+									  );
+
+			if(isset($translationArray[$param->getAttribute("name")]))
+			{
+				$fieldname = $translationArray[$param->getAttribute("name")]['field'];
+				$tablename = $translationArray[$param->getAttribute("name")]['tbl'];
+				$operator = addslashes($param->getAttribute("operator"));
+				$value = addslashes($param->getAttribute("value"));
+				$temparr = array('table'=>$tablename, 'field'=>$fieldname, 'operator'=>$operator, 'value'=>$value);
+	
+				
+				
+				// Add params to a parametersArray
+				array_push($this->paramsArray,  $temparr);
+			}
+			else
+			{
+				trigger_error("104"."Unknown parameter type of $paramType specified.", E_USER_ERROR);
+			}
+			
+
+			
+			
+		
 		}		
 
 	}

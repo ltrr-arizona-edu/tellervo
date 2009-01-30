@@ -13,6 +13,10 @@
 require_once('dbhelper.php');
 require_once('inc/dbEntity.php');
 
+/**
+ * Class for interacting with a radiusEntity.  This contains the logic of how to read and write data from the database as well as error checking etc.
+ *
+ */
 class radius extends radiusEntity implements IDBAccessor
 {	  
 

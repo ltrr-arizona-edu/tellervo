@@ -12,6 +12,10 @@
 require_once('dbhelper.php');
 require_once('inc/note.php');
 
+/**
+ * Class for interacting with a measurementEntity.  This contains the logic of how to read and write data from the database as well as error checking etc.
+ *
+ */
 class measurement extends measurementEntity implements IDBAccessor
 {
     /***************/

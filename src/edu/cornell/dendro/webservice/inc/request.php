@@ -17,6 +17,10 @@ require_once("inc/dbhelper.php");
 require_once("inc/xmlhelper.php");
 require_once("inc/output.php");
 
+/**
+ * Class to handle the requests from a user.  Contains the logic for parsing XML requests and or creating parameter objects.
+ *
+ */
 class request
 { 
     protected $xmlrequest                 = NULL;

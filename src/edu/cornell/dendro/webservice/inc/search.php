@@ -12,6 +12,10 @@ require_once('inc/note.php');
 require_once('inc/subSite.php');
 require_once('inc/region.php');
 
+/**
+ * Class for directing search requests.  Compiles SQL commands from search parameters and compiles XML results.
+ *
+ */
 class search Implements IDBAccessor
 {
     var $id = NULL;
@@ -20,6 +24,9 @@ class search Implements IDBAccessor
     var $lastErrorMessage = NULL;
     var $sqlcommand = NULL;
     var $deniedRecArray = array();
+    var $returnObject= NULL;
+    var $format = NULL;
+    var $recordHits = 0;
 
     /***************/
     /* CONSTRUCTOR */
@@ -74,6 +81,11 @@ class search Implements IDBAccessor
         global $dbconn;
         $myAuth       = $auth;
         $myRequest    = $paramsClass;
+		
+        $this->returnObject = $paramsClass->returnObject;
+        $this->format = $format;
+        
+        
         $orderBySQL   = NULL;
         $groupBySQL   = NULL;
         $filterSQL    = NULL;
@@ -85,12 +97,13 @@ class search Implements IDBAccessor
         if($myRequest->returnObject=='measurement')
         {
             $myRequest->returnObject='vmeasurement';
+            $this->returnObject = 'vmeasurement';
         }
 
         // Build return object dependent SQL
-        $returnObjectSQL = $this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id as id ";
-        $orderBySQL      = "\n ORDER BY ".$this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id asc ";
-        $groupBySQL      = "\n GROUP BY ".$this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id" ;
+        $returnObjectSQL = $this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id as id ";
+        $orderBySQL      = "\n ORDER BY ".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id asc ";
+        $groupBySQL      = "\n GROUP BY ".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id" ;
         if ($myRequest->limit) $limitSQL = "\n LIMIT ".$myRequest->limit;
         if ($myRequest->skip)  $skipSQL  = "\n OFFSET ".$myRequest->skip;
 
@@ -101,27 +114,18 @@ class search Implements IDBAccessor
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
                 // Build filter SQL
-                if ($myRequest->objectParamsArray)         			$filterSQL .= $this->paramsToFilterSQL($myRequest->objectParamsArray, "object");
-                if ($myRequest->elementParamsArray)      			$filterSQL .= $this->paramsToFilterSQL($myRequest->elementParamsArray, "element");
-                if ($myRequest->sampleParamsArray)       			$filterSQL .= $this->paramsToFilterSQL($myRequest->sampleParamsArray, "sample");
-                if ($myRequest->radiusParamsArray)       			$filterSQL .= $this->paramsToFilterSQL($myRequest->radiusParamsArray, "radius");
-                if ($myRequest->vmeasurementParamsArray) 			$filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementParamsArray, "vmeasurement");
-                if ($myRequest->measurementParamsArray)  			$filterSQL .= $this->paramsToFilterSQL($myRequest->measurementParamsArray, "measurement");
-                if ($myRequest->vmeasurementMetaCacheParamsArray) 	$filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementMetaCacheParamsArray, "vmeasurementmetacache");
-                // Trim off final ' and ' from filter SQL
-                $filterSQL = substr($filterSQL, 0, -5);
+                $filterSQL .= $this->paramsToFilterSQL($myRequest->paramsArray);
             }
         }
 
-		
         // Compile full SQL statement from parts
         if($filterSQL!=NULL)
         {
-            $fullSQL = "SELECT ".$returnObjectSQL.$this->fromSQL($myRequest)." WHERE ".$filterSQL.$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
+            $fullSQL = "SELECT ".$returnObjectSQL.$this->fromSQL($myRequest->paramsArray)." WHERE ".$filterSQL.$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
         }
         else
         {
-            $fullSQL = "SELECT ".$returnObjectSQL.$this->fromSQL($myRequest).$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
+            $fullSQL = "SELECT ".$returnObjectSQL.$this->fromSQL($myRequest->paramsArray).$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
         }
 
         // Add SQL to XML output
@@ -130,47 +134,40 @@ class search Implements IDBAccessor
         // Do SQL Query
         pg_send_query($dbconn, $fullSQL);
         $result = pg_get_result($dbconn);
-            /*echo "rows = ".pg_num_rows($result);
-            if(pg_num_rows($result)==0)
-            {
-                // No records match the id specified
-                $this->setErrorMessage("903","No records matched the criteria specified. SQL statement was: $fullSQL");
-            }
-            else
-            {*/
+            $this->recordHits = pg_num_rows($result);
 
             $result = pg_query($dbconn, $fullSQL);
             while ($row = pg_fetch_array($result))
             {
                 // Check user has permission to read then create a new object
-                if($myRequest->returnObject=="object") 
+                if($this->returnObject=="object") 
                 {
                     $myReturnObject = new object();
                     $hasPermission = $myAuth->getPermission("read", "object", $row['id']);
                 }
-                elseif($myRequest->returnObject=="element")
+                elseif($this->returnObject=="element")
                 {
                     $myReturnObject = new element();
                     $hasPermission = $myAuth->getPermission("read", "element", $row['id']);
                 }
-                elseif($myRequest->returnObject=="tree") 
+                elseif($this->returnObject=="tree") 
                 {
                     $myReturnObject = new sample();
                     $hasPermission = $myAuth->getPermission("read", "sample", $row['id']);
                 }
-                elseif($myRequest->returnObject=="radius") 
+                elseif($this->returnObject=="radius") 
                 {
                     $myReturnObject = new radius();
                     $hasPermission = $myAuth->getPermission("read", "radius", $row['id']);
                 }
-                elseif($myRequest->returnObject=="vmeasurement")
+                elseif($this->returnObject=="vmeasurement")
                 {
                     $myReturnObject = new measurement();
                     $hasPermission = $myAuth->getPermission("read", "measurement", $row['id']);
                 }
                 else
                 {
-                    $this->setErrorMessage("901","Invalid return object ".$myRequest->returnObject." specified.  Must be one of site, subsite, tree, specimen, radius or measurement");
+                    $this->setErrorMessage("901","Invalid return object ".$this->returnObject." specified.  Must be one of site, subsite, tree, specimen, radius or measurement");
                 }
 
                 if($hasPermission===FALSE)
@@ -201,7 +198,7 @@ class search Implements IDBAccessor
 
             if(count($this->deniedRecArray)>0 )
             {
-                $errMessage = "Permission denied on the following ".$myRequest->returnObject."id(s): ";
+                $errMessage = "Permission denied on the following ".$this->returnObject."id(s): ";
                 foreach ($this->deniedRecArray as $id)
                 {
                     $errMessage .= $id.", ";
@@ -226,6 +223,12 @@ class search Implements IDBAccessor
             }
     }
 
+    function xmlDebugOutput()
+    {
+    	$xmldata = "<sql records=\"".$this->recordHits."\">".htmlSpecialChars($this->sqlcommand)."</sql>";
+    	return $xmldata;
+    }
+    
     function asXML($format='standard', $mode="all")
     {
         if(isset($this->xmldata))
@@ -236,18 +239,6 @@ class search Implements IDBAccessor
         {
             return false;
         }
-    }
-
-    function asKML($mode="all")
-    {
-    }
-
-    function getParentTagBegin()
-    {
-    }
-
-    function getParentTagEnd()
-    {
     }
 
     function getLastErrorCode()
@@ -268,9 +259,10 @@ class search Implements IDBAccessor
     /*FUNCTIONS*/
     /***********/
 
-    function paramsToFilterSQL($paramsArray, $paramName)
+    private function paramsToFilterSQL($paramsArray)
     {
         $filterSQL = NULL;
+
         foreach($paramsArray as $param)
         {
             // Set operator
@@ -300,14 +292,15 @@ class search Implements IDBAccessor
                 $operator = "=";
                 $value = " '".$param['value']."'";
             }
-            $filterSQL .= $this->tableName($paramName).".".$param['name']." ".$operator.$value." and ";
+            $filterSQL .= $param['table'].".".$param['field']." ".$operator.$value." and ";
         }
 
-
+        // Trim off last 'and'
+        $filterSQL = substr($filterSQL, 0, -5);
         return $filterSQL;
     }
 
-    function variableName($objectName)
+    private function variableName($objectName)
     {
 
         switch($objectName)
@@ -333,7 +326,7 @@ class search Implements IDBAccessor
 
     }
 
-    function tableName($objectName)
+    private function tableName($objectName)
     {
 
         switch($objectName)
@@ -371,18 +364,34 @@ class search Implements IDBAccessor
 
     }
     
-    function fromSQL($myRequest)
+    private function tablesFromParams($paramsArray)
     {
+    	// Create an array of tables that are being used
+    	$uniqTables = array();
+    	foreach ($paramsArray as $param)
+    	{
+    		array_push($uniqTables, $param['table']);
+    	}
+    	$uniqTables = array_unique($uniqTables);
+    	return $uniqTables;
+    }
+    
+    
+    private function fromSQL($paramsArray)
+    {    
+    	$tables = $this->tablesFromParams($paramsArray);	
         $fromSQL = "\nFROM ";
         $withinJoin = FALSE;
 
-        /*if( (($this->getLowestRelationshipLevel($myRequest)<=6) && ($this->getHighestRelationshipLevel($myRequest)>=6)) || ($myRequest->returnObject == 'project'))
+        /*if( (($this->getLowestRelationshipLevel($myRequest)<=6) && ($this->getHighestRelationshipLevel($myRequest)>=6)) || ($this->returnObject == 'project'))
         {
             $fromSQL .= $this->tableName("project")." \n";
             $withinJoin = TRUE;
         }*/
+              
         
-        if( (($this->getLowestRelationshipLevel($myRequest)<=5) && ($this->getHighestRelationshipLevel($myRequest)>=5)) || ($myRequest->returnObject == 'object'))  
+        
+        if( (($this->getLowestRelationshipLevel($tables)<=5) && ($this->getHighestRelationshipLevel($tables)>=5)) || ($this->returnObject == 'object'))  
         {
             if($withinJoin)
             {
@@ -395,7 +404,7 @@ class search Implements IDBAccessor
             }
         }
         
-        if( (($this->getLowestRelationshipLevel($myRequest)<=4) && ($this->getHighestRelationshipLevel($myRequest)>=4)) || ($myRequest->returnObject == 'element'))
+        if( (($this->getLowestRelationshipLevel($tables)<=4) && ($this->getHighestRelationshipLevel($tables)>=4)) || ($this->returnObject == 'element'))
         {
             if($withinJoin)
             {
@@ -408,7 +417,7 @@ class search Implements IDBAccessor
             }
         }        
         
-        if( (($this->getLowestRelationshipLevel($myRequest)<=3) && ($this->getHighestRelationshipLevel($myRequest)>=3)) || ($myRequest->returnObject == 'sample'))
+        if( (($this->getLowestRelationshipLevel($tables)<=3) && ($this->getHighestRelationshipLevel($tables)>=3)) || ($this->returnObject == 'sample'))
         {
             if($withinJoin)
             {
@@ -421,7 +430,7 @@ class search Implements IDBAccessor
             }
         }
         
-        if( (($this->getLowestRelationshipLevel($myRequest)<=2) && ($this->getHighestRelationshipLevel($myRequest)>=2)) || ($myRequest->returnObject == 'radius'))
+        if( (($this->getLowestRelationshipLevel($tables)<=2) && ($this->getHighestRelationshipLevel($tables)>=2)) || ($this->returnObject == 'radius'))
         {
             if($withinJoin)
             {
@@ -434,7 +443,7 @@ class search Implements IDBAccessor
             }
         }
         
-        if( (($this->getLowestRelationshipLevel($myRequest)<=1) && ($this->getHighestRelationshipLevel($myRequest)>=1)) || ($myRequest->returnObject == 'measurement'))  
+        if( (($this->getLowestRelationshipLevel($tables)<=1) && ($this->getHighestRelationshipLevel($tables)>=1)) || ($this->returnObject == 'measurement'))  
         {
             if($withinJoin)
             {
@@ -455,7 +464,7 @@ class search Implements IDBAccessor
         return $fromSQL;
     }
 
-    function getLowestRelationshipLevel($myRequest)
+    private function getLowestRelationshipLevel($tables)
     {
         // This function returns an interger representing the most junior level of relationship required in this query
         // tblproject      -- 6 -- most senior
@@ -464,32 +473,32 @@ class search Implements IDBAccessor
         // tblsample       -- 3 --
         // tblradius       -- 2 --
         // tblmeasurement  -- 1 -- most junior
-                
-        if (($myRequest->measurementParamsArray)  			||
-            ($myRequest->vmeasurementParamsArray) 			||
-            ($myRequest->vmeasurementMetaCacheParamsArray)  ||
-            ($myRequest->derivedCacheParamsArray) 			||
-            ($myRequest->returnObject == 'vmeasurement'))
+    	
+        if ((in_array('tblmeasurement', $tables))  			||
+            (in_array('tblvmeasurement', $tables)) 			||
+            (in_array('tblvmeasurementmetacache', $tables))  ||
+            (in_array('tblvmeasurementderivedcache', $tables)) 			||
+            ($this->returnObject == 'vmeasurement'))
         {
             return 1;
         }
-        elseif (($myRequest->radiusParamsArray) || ($myRequest->returnObject == 'radius'))
+        elseif ((in_array('vwtblradius', $tables)) || ($this->returnObject == 'radius'))
         {
             return 2;
         }
-        elseif (($myRequest->sampleParamsArray) || ($myRequest->returnObject == 'sample'))
+        elseif ((in_array('vwtblsample', $tables)) || ($this->returnObject == 'sample'))
         {
             return 3;
         }
-        elseif (($myRequest->elementParamsArray) || ($myRequest->returnObject == 'element'))
+        elseif ((in_array('vwtblelement', $tables)) || ($this->returnObject == 'element'))
         {
             return 4;
         }
-        elseif (($myRequest->objectParamsArray) || ($myRequest->returnObject == 'object'))
+        elseif ((in_array('vwtblobject', $tables)) || ($this->returnObject == 'object'))
         {
             return 5;
         }
-        //elseif (($myRequest->projectParamsArray) || ($myRequest->returnObject == 'project'))
+        //elseif ((in_array('vwtblproject')) || ($this->returnObject == 'project'))
         //{
         //    return 6;
         //}
@@ -499,7 +508,7 @@ class search Implements IDBAccessor
         }
     }
 
-    function getHighestRelationshipLevel($theRequest)
+    private function getHighestRelationshipLevel($tables)
     {
         // This function returns an interger representing the most senior level of relationship required in this query
         // tblproject      -- 6 -- most senior
@@ -509,33 +518,31 @@ class search Implements IDBAccessor
         // tblradius       -- 2 --
         // tblmeasurement  -- 1 -- most junior
 
-        $myRequest = $theRequest;
-
-        //if (($myRequest->projectParamsArray) || ($myRequest->returnObject == 'project'))
+        //if (($myRequest->projectParamsArray) || ($this->returnObject == 'project'))
         //{
         //    return 6;
         //}
-        if (($myRequest->objectParamsArray) || ($myRequest->returnObject == 'object'))
+        if ((in_array('vwtblobject', $tables)) || ($this->returnObject == 'object'))
         {
             return 5;
         }
-        elseif (($myRequest->elementParamsArray) || ($myRequest->returnObject == 'element'))
+        elseif ((in_array('vwtblelement', $tables)) || ($this->returnObject == 'element'))
         {
             return 4;
         }
-        elseif (($myRequest->sampleParamsArray) || ($myRequest->returnObject == 'sample'))
+        elseif ((in_array('vwtblsample', $tables)) || ($this->returnObject == 'sample'))
         {
             return 3;
         }
-        elseif (($myRequest->radiusParamsArray) || ($myRequest->returnObject == 'radius'))
+        elseif ((in_array('vwtblradius', $tables)) || ($this->returnObject == 'radius'))
         {
             return 2;
         }
-        elseif (($myRequest->measurementParamsArray) || 
-        		($myRequest->vmeasurementParamsArray) ||
-        		($myRequest->vmeasurementMetaCacheParamsArray) ||
-        		($myRequest->derivedCacheParamsArray) ||
-		        ($myRequest->returnObject == 'measurement'))
+        elseif ((in_array('tblmeasurement')) || 
+        		(in_array('tblvmeasurement')) ||
+        		(in_array('tblvmeasurementmetacache')) ||
+        		(in_array('tblvmeasurementderivedcache')) ||
+		        ($this->returnObject == 'measurement'))
         {
             return 1;
         }
@@ -545,7 +552,7 @@ class search Implements IDBAccessor
         }
     }
 
-    function getRelationshipSQL($theRequest)
+    private function getRelationshipSQL($theRequest)
     {
         // Returns the 'where' clause part of the query SQL for the table relationships 
 
