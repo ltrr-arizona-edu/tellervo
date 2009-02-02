@@ -14,6 +14,10 @@
 
 require_once('dbhelper.php');
 
+/**
+ * This class handles authentication requests from the user
+ *
+ */
 class authenticate 
 {
     var $id = NULL;

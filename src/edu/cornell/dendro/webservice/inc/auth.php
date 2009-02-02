@@ -11,6 +11,12 @@
  * *******************************************************************
  */
 
+/**
+ * This class handles all the authentication requirements for the webservice.  It is not to be confused with authenticate.php which is used to direct 
+ * authentication requests from the user.
+ *
+ */
+
 class auth 
 {
   var $securityuserid = NULL;

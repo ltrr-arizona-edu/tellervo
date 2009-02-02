@@ -12,7 +12,6 @@
  */
 require_once('dbhelper.php');
 require_once('inc/note.php');
-require_once('inc/subSite.php');
 require_once('inc/region.php');
 
 /**
