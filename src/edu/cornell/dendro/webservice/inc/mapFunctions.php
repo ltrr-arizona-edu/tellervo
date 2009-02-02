@@ -1,12 +1,15 @@
 <?php
-
-//*******************************************
-//
-// VARIOUS GOOGLE MAPS JAVASCRIPT FUNCTIONS 
-//
-// Include where necessary!
-//
-//*******************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package Ancillary
+ * *******************************************************************
+ */
 
 function incGMapScript($script)
 {

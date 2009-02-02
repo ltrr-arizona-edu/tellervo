@@ -10,6 +10,7 @@
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @packages Core
  * *******************************************************************
  */
 require_once('inc/dbEntity.php');

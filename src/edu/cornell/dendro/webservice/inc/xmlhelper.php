@@ -1,8 +1,21 @@
 <?php
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package Ancillary
+ * *******************************************************************
+ */
 
+
+/*
 function setXMLErrors($myMetaHeader, $errors)
 {
-print_r($errors);
+
 
     foreach ($errors as $error)
     {
@@ -10,6 +23,7 @@ print_r($errors);
         $myMetaHeader->setMessage("905", $message);
     }
 }
+*/
 
 /**
  * Get the XML fragment from a DOMNodeList as either an XML string or a DomDocument

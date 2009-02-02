@@ -10,6 +10,7 @@
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package Core
  * *******************************************************************
  */
 require_once("inc/parameters.php");
