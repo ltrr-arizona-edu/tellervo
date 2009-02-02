@@ -10,7 +10,7 @@
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @packages Core
+ * @package CorinaWS
  * *******************************************************************
  */
 require_once('inc/dbEntity.php');

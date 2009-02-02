@@ -10,7 +10,7 @@
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package Core
+ * @package CorinaWS
  * *******************************************************************
  */
 require_once("inc/parameters.php");
