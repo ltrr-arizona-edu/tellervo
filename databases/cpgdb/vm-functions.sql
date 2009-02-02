@@ -1,10 +1,10 @@
 --
--- CreateNewVMeasurement(VMeasurementOp, VMeasurementOpParameter, OwnerUserID, Name, 
---                       Description, MeasurementID, Constituents)
+-- CreateNewVMeasurement(VMeasurementOp, VMeasurementOpParameter, OwnerUserID, Code, 
+--                       Comments, MeasurementID, Constituents)
 -- VMeasurementOp - Varchar - From tlkpVMeasurementOp 
 -- VMeasurementOpParameter - Integer - Must be specified for REDATE or INDEX; otherwise NULL
--- Name - Varchar - Must be specified
--- Description - Varchar - May be NULL
+-- Code - Varchar - Must be specified
+-- Comments - Varchar - May be NULL
 -- MeasurementID - Integer - For direct only; the Measurement derived from.
 -- Constituents - Array of VMeasurementID - Must be NULL for DIRECT type, an array of one value for any type
 --                other than SUM and DIRECT, and an array of one or more values for SUM
@@ -17,8 +17,8 @@ DECLARE
    OP ALIAS FOR $1;
    OPParam ALIAS FOR $2;
    V_OwnerUserID ALIAS FOR $3;
-   V_Name ALIAS FOR $4;
-   V_Description ALIAS FOR $5;
+   V_Code ALIAS FOR $4;
+   V_Comments ALIAS FOR $5;
    BaseMeasurement ALIAS FOR $6;
    Constituents ALIAS FOR $7;
 
@@ -42,8 +42,8 @@ BEGIN
       RAISE EXCEPTION 'Invalid VMeasurementOP %', OP;
    END IF;
 
-   IF V_Name IS NULL THEN
-      RAISE EXCEPTION 'Name must not be NULL';
+   IF V_Code IS NULL THEN
+      RAISE EXCEPTION 'Code must not be NULL';
    END IF;
 
    -- Default to being done at the end of this function
@@ -67,8 +67,8 @@ BEGIN
       END IF;
 
       -- Our Direct Case is easy; perform it here and leave.
-      INSERT INTO tblVMeasurement(VMeasurementID, MeasurementID, VMeasurementOpID, Name, Description, OwnerUserID)
-         VALUES (newID, BaseMeasurement, OpID, V_Name, V_Description, V_OwnerUserID);
+      INSERT INTO tblVMeasurement(VMeasurementID, MeasurementID, VMeasurementOpID, Code, Comments, OwnerUserID)
+         VALUES (newID, BaseMeasurement, OpID, V_Code, V_Comments, V_OwnerUserID);
 
       RETURN newID;
 
@@ -115,8 +115,8 @@ BEGIN
    END IF;
 
    -- Create the VMeasurement
-   INSERT INTO tblVMeasurement(VMeasurementID, VMeasurementOpID, Name, Description, OwnerUserID, VMeasurementOpParameter, isGenerating)
-      VALUES (newID, OpID, V_Name, V_Description, V_OwnerUserID, OPParam, TRUE);
+   INSERT INTO tblVMeasurement(VMeasurementID, VMeasurementOpID, Code, Comments, OwnerUserID, VMeasurementOpParameter, isGenerating)
+      VALUES (newID, OpID, V_Code, V_Comments, V_OwnerUserID, OPParam, TRUE);
 
    -- Create the grouping
    FOR CVMId IN array_lower(Constituents, 1)..array_upper(Constituents,1) LOOP   

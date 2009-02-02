@@ -147,7 +147,7 @@ BEGIN
    -- VMeasurement is a special case
    IF labelfor = 'vmeasurement' THEN 
       count := 0;
-      FOR rec IN SELECT s.code as a,t.name as c,sp.name as d,r.name as e,vm.name as f 
+      FOR rec IN SELECT s.code as a,t.code as c,sp.code as d,r.code as e,vm.code as f 
 	FROM tblVMeasurementDerivedCache d
 	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
 	INNER JOIN tblRadius r on r.radiusID = m.radiusID
@@ -206,19 +206,19 @@ BEGIN
    END IF;
 
    -- Start out with the basics
-   selection := 's.code as a,t.name as c';
+   selection := 's.code as a,t.code as c';
    query := ' FROM tblobject s INNER JOIN tblelement t ON t.objectid = s.objectid';
 
    -- add sample
    IF queryLevel > 1 THEN
       query := query || ' INNER JOIN tblsample sp ON sp.elementid = t.elementid';
-      selection := selection || ',sp.name as d';
+      selection := selection || ',sp.code as d';
    END IF;
 
    -- add radius
    IF queryLevel > 2 THEN
       query := query || ' INNER JOIN tblradius r ON r.sampleid = sp.sampleid';
-      selection := selection || ',r.name as e';
+      selection := selection || ',r.code as e';
    END IF;
 
    -- execute our messy query

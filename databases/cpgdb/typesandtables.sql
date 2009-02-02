@@ -3,11 +3,11 @@ CREATE TYPE typVMeasurementSearchResult AS (
    RecursionLevel integer,
    VMeasurementID integer,
    Op varchar,
-   Name varchar,
+   Code varchar,
    StartYear integer,
    ReadingCount integer,
    MeasurementCount integer,
-   Description varchar,
+   Comments varchar,
    Modified timestamp
 );
 
