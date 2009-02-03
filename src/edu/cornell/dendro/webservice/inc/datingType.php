@@ -12,7 +12,7 @@
  */
 require_once('dbhelper.php');
 
-class datingType 
+class olddatingType 
 {
     var $id = NULL;
     var $label = NULL;

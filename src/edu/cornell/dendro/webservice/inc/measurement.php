@@ -26,7 +26,7 @@ class measurement extends measurementEntity implements IDBAccessor
     function __construct()
     {
         // Constructor for this class.
-        $this->setVMeasurementOp(5);
+        //$this->setVMeasurementOp(5);
     }
 
     /***********/
@@ -40,74 +40,69 @@ class measurement extends measurementEntity implements IDBAccessor
         
         $this->setID($theID);
 
-        // the uberquery - one query to rule them all?
-        $sql = "SELECT vm.*, mc.*, su.username, op.name as opname, dt.datingtype, ".
-		"m.radiusid, m.isreconciled, m.islegacycleaned, m.datingtypeid, m.datingerrorpositive, m.datingerrornegative, m.measuredbyid, ".
-		"x(centroid(vmextent)), y(centroid(vmextent)), xmin(vmextent), xmax(vmextent), ymin(vmextent), ymax(vmextent) ".
-		"FROM tblvmeasurement vm ".
-		"INNER JOIN tlkpvmeasurementop op ON vm.vmeasurementopid=op.vmeasurementopid ".
-		"LEFT JOIN tblmeasurement m ON vm.measurementid=m.measurementid ".
-		"LEFT JOIN tblvmeasurementmetacache mc ON vm.vmeasurementid=mc.vmeasurementid ".
-		"LEFT JOIN tlkpdatingtype dt ON m.datingtypeid=dt.datingtypeid ".
-		"LEFT JOIN tblsecurityuser su ON vm.owneruserid=su.securityuserid ".
-		"WHERE vm.vmeasurementid=".$this->getID();
-	// the query that makes the server make the measurement
-        $sql2 = "select * from cpgdb.getvmeasurementresult('".$this->getID()."')";
+        // the uberquery - one query to rule them all?     
+        $sql = "SELECT * FROM vwcomprehensivevm WHERE vmeasurementid='".$this->getID()."'";
         
-	// the old query - here for posterity
-        //$sql2 = "select tblvmeasurement.* from tblvmeasurement where vmeasurementid=".$this->vmeasurementID;
+        // the query that makes the server make the measurement
+        $sql2 = "select * from cpgdb.getvmeasurementresult('".$this->getID()."')";
+                   
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
-            // Kludge city - the dbconn occassionally has results left on it from somewhere not sure
-            // where so retrieve results before sending SQL otherwise you'll get a messy notice
-            $result = pg_get_result($dbconn); 
+
             pg_send_query($dbconn, $sql);
             $result = pg_get_result($dbconn); 
-
+			
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No match for measurement id=".$this->getID().". SQL was $sql");
+                $this->setErrorMessage("903", "No match for measurement id=".$this->getID());
                 return FALSE;
             }
             else
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                 
-                //$this->vmeasurementResultID = $row['vmeasurementresultid'];
-                //$this->vmeasurementOpID = $row['vmeasurementopid'];
-                //$this->vmeasurementOpParam = $row['vmeasurementparamid'];
-               
-                $this->setIsReconciled(fromPGtoPHPBool($row['isreconciled']));
-                $this->setStartYear($row['startyear']);
-                $this->setIsLegacyCleaned(fromPGtoPHPBool($row['islegacycleaned']));
-                $this->setDatingErrorPositive($row['datingerrorpositive']);
+
+                $this->setAnalyst($row['measuredbyid']);
+                $this->setAuthor($row['owneruserid']);
+                //$this->setCertaintyLevel();
+                $this->setCode($row['code']);
+                $this->setComments($row['comments']);
                 $this->setDatingErrorNegative($row['datingerrornegative']);
+                $this->setDatingErrorPositive($row['datingerrorpositive']);
+                $this->setDatingType($row['datingtypeid'],$row['datingtype']);
+                //$this->setDendrochronologist();
+                $this->setDerivationDate($row['createdtimestamp']);
+                $this->setFirstYear($row['startyear']);
+                $this->setIsLegacyCleaned(dbHelper::formatBool($row['islegacycleaned']));
+                $this->setIsPublished(dbHelper::formatBool($row['ispublished']));
+                //$this->setJustification();
+                //$this->setMasterVMeasurementID();
+                $this->setMeasurementCount($row['measurementcount']);
+                $this->setMeasurementID($row['measurementid']);
+                $this->setMeasurementMethod($row['measuringmethodid'], NULL);
+                $this->setMeasuringDate($row['createdtimestamp']);
+                $this->setMeasuringUnits($row['unitid'], NULL, $row['power']);
+                $this->setVariable($row['measurementvariableid'], NULL);
+                //$this->setNewStartYear();
+                $this->setObjective($row['objective']);
+                //$this->setOwnerUserID();
+                $this->setProvenance($row['provenance']);
+                //$this->setRadiusID();
+                $this->setReadingCount($row['readingcount']);
+                //$this->setSignificanceLevel();
+                //$this->setStandardizingMethod();
                 $this->setCreatedTimestamp($row['createdtimestamp']);
                 $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
-                //$this->setMeasuredByID($row['measuredbyid']);
+				$this->setVMeasurementOp($row['vmeasurementopid'], $row['opname']);
+				$this->setUsage($row['usage']);
+				$this->setUsageComments($row['usagecomments']);
+                
+                
+                
 
-                // not this way... 
-		/*
- 	               $this->setDatingTypeID($row['datingtypeid']);
-			$this->setMeasurementID();
-	                $this->setVMeasurementOp($row2['vmeasurementopid']);
-	                $this->setOwnerUserID($row2['owneruserid']);
-		*/
-				$this->setDatingType($row['datingtype']);
-				$this->setMeasurementID($row['measurementid']);
-				$this->vmeasurementOpID = $row['vmeasurementopid'];
-				$this->setVMeasurementOp($row['opname']);
-				$this->setOwnerUserID($row['owneruserid']);
-		        $this->setMeasuredByID($row['measuredbyid']);
-				$this->owner = $row['username'];
-
-				// all the metacache stuff...
-                $this->setReadingCount($row['readingcount']);
-                $this->setMeasurementCount($row['measurementcount']);
-                $this->setSummaryInfo($row['objectcode'], $row['objectcount'], $row['commontaxonname'], $row['taxoncount'], $row['prefix']);
+                //$this->setSummaryInfo($row['objectcode'], $row['objectcount'], $row['commontaxonname'], $row['taxoncount'], $row['prefix']);
 
 
 
@@ -156,22 +151,47 @@ class measurement extends measurementEntity implements IDBAccessor
      */
     function setParentsFromDB()
     {
-    	global $dbconn;
-    	$sql = "SELECT radiusid FROM tblmeasurement WHERE measurementid=?";
-    	/*
-    	        // Set up parent details
-          	   	$this->parentEntityArray = array();
-           		$myRadius = new radius();
-           		$success = $myRadius->setParamsFromDB($row['radiusid']);
-	            if($success===FALSE)
-	            {
-	            	trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage());
-	            }  
-               	array_push($this->parentEntityArray,$myRadius);
+        require_once('radius.php');
+        global $dbconn;
+        global $corinaNS;
+        global $tridasNS;
+        global $gmlNS;
                 
-                $this->setCode($row['code']);
-                $this->setComments($row['comments']);
-*/
+        // First find the immediate radius entity parent
+           $sql = "SELECT radiusid from tblmeasurement where measurementid=".$this->getMeasurementID();
+
+           $dbconnstatus = pg_connection_status($dbconn);
+           if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+           {
+               pg_send_query($dbconn, $sql);
+               $result = pg_get_result($dbconn); 
+
+               if(pg_num_rows($result)==0)
+               {
+                   // No records match the id specified
+                   $this->setErrorMessage("903", "There are no radii associated with measurement id=".$this->getID());
+                   return FALSE;
+               }
+               else
+               {
+				   // Empty array before populating it
+               	   $this->parentEntityArray = array();
+               	   
+               	   // Loop through all the parents
+                   while($row = pg_fetch_array($result))
+                   {
+                   		$myRadius = new radius();
+            			$success = $myRadius->setParamsFromDB($row['radiusid']);
+	                   	if($success===FALSE)
+	                   	{
+	                   	    trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage());
+	                   	}  
+
+	                   	// Add to the array of parents
+	                   	array_push($this->parentEntityArray,$myRadius);
+                   }                   
+               }
+           }	
     }
     
     
@@ -262,7 +282,7 @@ class measurement extends measurementEntity implements IDBAccessor
         
         
         $sql  = "select * from cpgdb.findvmparents('".$this->getID()."', 'false') where recursionlevel=0";
-echo $sql;
+
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -523,27 +543,7 @@ echo $sql;
 
     function setChildParamsFromDB()
     {
-        // Add the id's of the current objects direct children from the database
 
-        global $dbconn;
-
-        $sql  = "select vmeasurementnoteid from tblvmeasurementvmeasurementnote where vmeasurementid=".$this->vmeasurementID;
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $result = pg_query($dbconn, $sql);
-            while ($row = pg_fetch_array($result))
-            {
-                // Get all tree note id's for this tree and store 
-                array_push($this->vmeasurementNoteArray, $row['vmeasurementnoteid']);
-            }
-        }
-        else
-        {
-            // Connection bad
-            $this->setErrorMessage("001", "Error connecting to database");
-            return FALSE;
-        }
 
         return TRUE;
     }
@@ -571,110 +571,59 @@ echo $sql;
     {
 
         // Only direct measurements can have comprehensive format so overide if necessary
-        if( ($format=='comprehensive') && ($this->vmeasurementOp!='Direct'))
+        /*if( ($format=='comprehensive') && ($this->vmeasurementOp!='Direct'))
         {
             $format = 'standard';
-        }
+        }*/
 
         switch($format)
         {
         case "comprehensive":
-            require_once('site.php');
-            require_once('subSite.php');
-            require_once('tree.php');
-            require_once('specimen.php');
             require_once('radius.php');
             global $dbconn;
-            $xml = NULL;
+	        global $corinaNS;
+	        global $tridasNS;
+	        global $gmlNS;
+	        
+	        // We need to return the comprehensive XML for this element i.e. including all it's ancestral 
+	        // object entities.
+	        
+	        // Make sure the parent entities are set
+	        $this->setParentsFromDB();	        
+	        
+            // Grab the XML representation of the immediate parent using the 'comprehensive'
+            // attribute so that we get all the object ancestors formatted correctly                   
+            $xml = new DomDocument();   
+    		$xml->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->parentEntityArray[0]->asXML('comprehensive')."</root>");                   
 
-            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblspecimen.specimenid, tblradius.radiusid, tblmeasurement.measurementid, tblvmeasurement.vmeasurementid 
-                FROM tblsubsite 
-                INNER JOIN tbltree ON tblsubsite.subsiteid=tbltree.subsiteid
-                INNER JOIN tblspecimen ON tbltree.treeid=tblspecimen.treeid
-                INNER JOIN tblradius ON tblspecimen.specimenid = tblradius.specimenid
-                INNER JOIN tblmeasurement ON tblradius.radiusid = tblmeasurement.radiusid
-                INNER JOIN tblvmeasurement ON tblmeasurement.measurementid=tblvmeasurement.measurementid
-                where tblvmeasurement.vmeasurementid='".$this->vmeasurementID."'";
+    		// We need to locate the leaf tridas:radius (one with no child tridas:radius)
+    		// because we need to insert our measurement xml here
+	        $xpath = new DOMXPath($xml);
+	       	$xpath->registerNamespace('cor', $corinaNS);
+	       	$xpath->registerNamespace('tridas', $tridasNS);		    		
+    		$nodelist = $xpath->query("//tridas:radius[* and not(descendant::tridas:radius)]");
+    		
+    		// Create a temporary DOM document to store our measurement XML
+    		$tempdom = new DomDocument();
+			$tempdom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->asXML()."</root>");
+   		
+			// Import and append the measurement XML node into the main XML DomDocument
+			$node = $tempdom->getElementsByTagName("measurementSeries")->item(0);
+			$node = $xml->importNode($node, true);
+			$nodelist->item(0)->appendChild($node);
 
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                pg_send_query($dbconn, $sql);
-                $result = pg_get_result($dbconn); 
+            // Return an XML string representation of the entire shebang
+            return $xml->saveXML($xml->getElementsByTagName("object")->item(0));
 
-                if(pg_num_rows($result)==0)
-                {
-                    // No records match the id specified
-                    $this->setErrorMessage("903", "No match for measurement id=".$this->vmeasurementID);
-                    return FALSE;
-                }
-                else
-                {
-                    $row = pg_fetch_array($result);
-
-                    $mySite = new site();
-                    $mySubSite = new subSite();
-                    $myTree = new tree();
-                    $mySpecimen = new specimen();
-                    $myRadius = new radius();
-
-                    $success = $mySite->setParamsFromDB($row['siteid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
-                    }
-                    
-                    $success = $mySubSite->setParamsFromDB($row['subsiteid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($mySubSite->getLastErrorCode().$mySubSite->getLastErrorMessage());
-                    }
-                    
-                    $success = $myTree->setParamsFromDB($row['treeid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($myTree->getLastErrorCode().$myTree->getLastErrorMessage());
-                    }
-                    
-                    $success = $mySpecimen->setParamsFromDB($row['specimenid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($mySpecimen->getLastErrorCode().$mySpecimen->getLastErrorMessage());
-                    }
-                    
-                    $success = $myRadius->setParamsFromDB($row['radiusid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage());
-                    }
-
-                    $xml = $mySite->asXML("summary", "beginning");
-                    $xml.= $mySubSite->asXML("summary", "beginning");
-                    $xml.= $myTree->asXML("summary", "beginning");
-                    $xml.= $mySpecimen->asXML("summary", "beginning");
-                    $xml.= $myRadius->asXML("summary", "beginning");
-                    $xml.= $this->_asXML("standard", "all");
-                    $xml.= $myRadius->asXML("summary", "end");
-                    $xml.= $mySpecimen->asXML("summary", "end");
-                    $xml.= $myTree->asXML("summary", "end");
-                    $xml.= $mySubSite->asXML("summary", "end");
-                    $xml.= $mySite->asXML("summary", "end");
-                }
-            }
-            return $xml;
         
         case "standard":
             return $this->_asXML($format, $parts);
-
         case "summary":
             return $this->_asXML($format, $parts);
-
         case "minimal":
             return $this->_asXML($format, $parts);
-
-        
         default:
-            $this->setErrorMessage("901", "Unknown format. Must be one of 'standard', 'summary' or 'comprehensive'");
+            $this->setErrorMessage("901", "Unknown format. Must be one of 'standard', 'summary', 'minimal' or 'comprehensive'");
             return false;
         }
     }
@@ -710,70 +659,36 @@ echo $sql;
         // Proceed if there are no errors already
         if ($this->getLastErrorCode()==NULL)
         {
-            // Only return XML when there are no errors.
-            $xml.= "<tridas:measurementSeries>";
-            $xml.= "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>";
-            //$xml.= getResourceLinkTag("measurement", $this->vmeasurementID);
+        	// Only return XML when there are no errors.
+        	if($this->getTridasSeriesType()=='measurementSeries')
+        	{
+        		return $this->getMeasurementSeriesXML($format, $parts, $recurseLevel);
+        	}
+        	else
+        	{
+        		return $this->getDerivedSeriesXML($format, $parts, $recurseLevel);
+        	}
+        	
+ 
+        }
+        else
+        {
+            // Errors so returning false
+            return FALSE;
+        }
+    }
 
-            // Include map reference tag if appropriate
-            //if( (isset($this->centroidLat)) && (isset($this->centroidLong)) )
-            //{
-            //    $xml.= getResourceLinkTag("measurement", $this->vmeasurementID, "map");
-            //}
-
-            // Include permissions details if requested            
-            $xml .= $this->getPermissionsXML();
-            
-            //if($format!="minimal") $xml.= "<metadata>\n";
-            if($this->getCode()!=NULL)                  $xml.= "<tridas:genericField type=\"code\">".dbHelper::escapeXMLChars($this->getCode())."</tridas:genericField>\n";
-
-
-            // Only output the remainder of the data if we're not using the 'minimal' format
-            if ($format!="minimal")
-            {
-            	if($this->getAnalyst()!=NULL)				$xml.= "<tridas:analyst>".$this->getAnalyst()."</tridas:analyst>\n";
-         		if($this->getDendrochronologist()!=NULL)	$xml.= "<tridas:dendrochronologist>".$this->getDendrochronologist()."</trodas:dendrochronologist>\n";
-         		if($this->getMeasuringMethod()!=NULL)		$xml.= "<tridas:measuringMethod>".$this->getMeasuringMethod()."</tridas:measuringMethod>\n";
-         		if($this->getMeasuringDate()!=NULL) 		$xml.= "<tridas:measuringDate>".$this->getMeasuringDate()."</tridas:measuringDate>\n";
-         		if($this->getVariable()!=NULL)				$xml.= "<tridas:variable>".$this->getVariable()."</tridas:variable>";
-         		if($this->getUnits()!=NULL)
-         		{
-         													$xml.= "<tridas:units factor=\"".$this->getUnitsPower()."\" system=\"SI\">\n";
-         													$xml.= "<tridas:unit>".$this->getUnits()."</tridas:unit>\n";
-         													$xml.= "</tridas:units>\n";
-         		}
-         		
-         		if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
-         		if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".$this->getUsage()."</tridas:usage>\n";
-         		if($this->getUsageComments()!=NULL)			$xml.= "<tridas:usageComments>".$this->getUsageComments()."</tridas:usageComments>\n";
-            	
-            	
-                if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"isReconciled\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
-
-                											$xml.="<tridas:interpretation>\n";
-                if($this->getFirstYear()!=NULL)				$xml.="<tridas:firstYear>".$this->getFirstYear()."</tridas:firstYear>\n";
-                if($this->getSproutYear()!=NULL)			$xml.="<tridas:sproutYear>".$this->getSproutYear()."</tridas:sproutYear>\n";
-                if($this->getDeathYear()!=NULL)				$xml.="<tridas:deathYear>".$this->getDeathYear()."</tridas:deathYear>\n";
-                if($this->getProvenance()!=NULL)			$xml.="<tridas:provenance>".$this->getProvenance()."</tridas:provenance>\n";
-                											$xml.="</tridas:interpretation>\n";
-                
-                								
-                
-                
-                $xml.="<dating ";
-                if(isset($this->startYear))             $xml.= "startYear=\"".$this->startYear."\" ";
-                if(isset($this->readingCount))          $xml.= "count=\"".$this->readingCount."\" ";
-                if(isset($this->datingType))            $xml.= "type=\"".$this->datingType."\" ";
-                if(isset($this->datingErrorPositive))   $xml.= "positiveError=\"".$this->datingErrorPositive."\" ";
-                if(isset($this->datingErrorNegative))   $xml.= "negativeError=\"".$this->datingErrorNegative."\" ";
-                $xml.="/>";
-
-                if(isset($this->isLegacyCleaned))       $xml.= "<isLegacyCleaned>".fromPHPtoStringBool($this->isLegacyCleaned)."</isLegacyCleaned>\n";
-                if(isset($this->measuredByID))          $xml.= "<measuredBy id=\"".$this->measuredByID."\">".dbHelper::escapeXMLChars($this->measuredBy)."</measuredBy>\n";
-                if(isset($this->ownerUserID))           $xml.= "<owner id=\"".$this->ownerUserID."\">".dbHelper::escapeXMLChars($this->owner)."</owner>\n";
-                if(isset($this->description))           $xml.= "<description>".dbHelper::escapeXMLChars($this->description)."</description>\n";
-                if(isset($this->isPublished))           $xml.= "<isPublished>".fromPHPtoStringBool($this->isPublished)."</isPublished>\n";
-                if(isset($this->vmeasurementOp))
+    private function getDerivedSeriesXML($format, $parts, $recurseLevel=2)
+    {
+    	$xml = null;
+ 	    $xml.= "<tridas:".$this->getTridasSeriesType().">";
+     	$xml.= $this->getIdentifierXML();
+     	
+        // Include permissions details if requested            
+        $xml .= $this->getPermissionsXML();     	
+    	
+        
+                                if(isset($this->vmeasurementOp))
                 {
                     // Include operation details if applicable
                     if(isset($this->vmeasurementOpParam))
@@ -782,7 +697,7 @@ echo $sql;
                     }
                     else
                     {
-                        $xml.= "<operation>".strtolower($this->vmeasurementOp)."</operation>\n";
+                        $xml.= "<operation>".strtolower($this->vmeasurementOp->getValue())."</operation>\n";
                     }
                 }
                 
@@ -796,16 +711,67 @@ echo $sql;
                     $xml.= "<justification>".escapeXMLChars($this->justification)."</justification>\n";
                     $xml.= "</crossdate>\n";
                 }
-                
-                if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
-                if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
-                if( (isset($this->minLat)) && (isset($this->minLong)) && (isset($this->maxLat)) && (isset($this->maxLong)))
-                {
-                    $xml.= "<extent minLat=\"".$this->minLat."\" maxLat=\"".$this->maxLat."\" minLong=\"".$this->minLong."\" maxLong=\"".$this->maxLong."\" centroidLat=\"".$this->centroidLat."\" centroidLong=\"".$this->centroidLong."\" />";
-                }
 
+ 	    $xml.= "</tridas:".$this->getTridasSeriesType().">";                
+        return $xml;
+        
+    }
+    
+    private function getMeasurementSeriesXML($format, $parts, $recurseLevel=2)
+    {
+		
+        $xml = "<tridas:".$this->getTridasSeriesType().">";
+      	$xml.= $this->getIdentifierXML();
+
+        // Include permissions details if requested            
+        $xml .= $this->getPermissionsXML();
+            
+            // Only output the remainder of the data if we're not using the 'minimal' format
+            if ($format!="minimal")
+            {
+         		if(isset($this->measuringMethod))			$xml.= "<tridas:measuringMethod>".$this->measuringMethod->getValue()."</tridas:measuringMethod>\n";
+         		if(isset($this->variable))					$xml.= "<tridas:variable>".$this->variable->getValue()."</tridas:variable>";            	
+                if(isset($this->units))
+         		{
+         													$xml.= "<tridas:units factor=\"".$this->getUnitsPower()."\" system=\"SI\">\n";
+         													$xml.= "<tridas:unit>".$this->units->getValue()."</tridas:unit>\n";
+         													$xml.= "</tridas:units>\n";
+         		}         		
+         		if($this->getMeasuringDate()!=NULL) 		$xml.= "<tridas:measuringDate>".$this->getMeasuringDate()."</tridas:measuringDate>\n";         		    		
+            	if(isset($this->analyst))					$xml.= "<tridas:analyst>".$this->analyst->getFormattedName()."</tridas:analyst>\n";
+         		if(isset($this->dendrochronologist))		$xml.= "<tridas:dendrochronologist>".$this->dendrochronologist->getFormattedName()."</trodas:dendrochronologist>\n";
+         		if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
+         		if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".$this->getUsage()."</tridas:usage>\n";
+         		if($this->getUsageComments()!=NULL)			$xml.= "<tridas:usageComments>".$this->getUsageComments()."</tridas:usageComments>\n";
+                if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"isReconciled\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
+
+                											$xml.="<tridas:interpretation>\n";
+                if($this->getFirstYear()!=NULL)				$xml.="<tridas:firstYear>".$this->getFirstYear()."</tridas:firstYear>\n";
+                if($this->getSproutYear()!=NULL)			$xml.="<tridas:sproutYear>".$this->getSproutYear()."</tridas:sproutYear>\n";
+                if($this->getDeathYear()!=NULL)				$xml.="<tridas:deathYear>".$this->getDeathYear()."</tridas:deathYear>\n";
+                if($this->getProvenance()!=NULL)			$xml.="<tridas:provenance>".$this->getProvenance()."</tridas:provenance>\n";
+                											$xml.="</tridas:interpretation>\n";
+                
+                								
+                
+                
+                /*$xml.="<dating ";
+                if(isset($this->startYear))             $xml.= "startYear=\"".$this->startYear."\" ";
+                if(isset($this->readingCount))          $xml.= "count=\"".$this->readingCount."\" ";
+                if(isset($this->datingType))            $xml.= "type=\"".$this->datingType->getValue()."\" ";
+                if(isset($this->datingErrorPositive))   $xml.= "positiveError=\"".$this->datingErrorPositive."\" ";
+                if(isset($this->datingErrorNegative))   $xml.= "negativeError=\"".$this->datingErrorNegative."\" ";
+                $xml.="/>";*/
+
+                if(isset($this->isLegacyCleaned))       $xml.= "<tridas:genericField name=\"isLegacyCleaned\">".dbHelper::formatBool($this->isLegacyCleaned, "english")."</tridas:genericField>\n";
+                if(isset($this->isPublished))           $xml.= "<tridas:genericField name=\"isPublished\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
+
+                
+                if($this->getCreatedTimeStamp()!=NULL)      $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimeStamp()."</tridas:genericField>\n";
+                if($this->getLastModifiedTimeStamp()!=NULL) $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimeStamp()."</tridas:genericField>\n";
+                
 		// show summary information in standard and summary modes
-		if($format=="summary" || $format=="standard") {
+		/*if($format=="summary" || $format=="standard") {
                     // Return special summary section
                     $xml.="<summary>";
                     $xml.="<labPrefix>".dbHelper::escapeXMLChars($this->labPrefix)."</labPrefix>\n";
@@ -815,100 +781,102 @@ echo $sql;
                     if($this->summarySiteCount=1) $xml.="siteCode=\"".$this->summarySiteCode."\"/>\n";
                     if($this->measurementCount!=NULL) $xml.="<measurement count=\"".$this->measurementCount."\"/>";
                     $xml.="</summary>";
-		}
+		}*/
 
                 // Using 'summary' format so just give minimal XML for all references and nothing else
                 if($format=="summary")
                 {
-                    $xml.= "</tridas:measurementSeries>\n";
+            		$xml.= "</tridas:".$this->getTridasSeriesType().">";
                     return $xml;
                 }
 
                 // Standard or Comprehensive format so give the whole lot
                 else
                 {
-                    // Include all readings 
-                    if ($this->readingsArray)
-                    {
-                        // Initially set yearvalue to 1001 default
-                        if ($this->datingType=='Relative')
-                        {
-                            $yearvalue = 1001;
-                        }
-                        else
-                        {
-                            if($this->startYear==NULL)
-                            {
-                                $this->setErrorMessage(667, "Start year missing from absolute or absolute with error measurement.  You shouldn't have been able to get this far!");
-                                return false;    
-                            }
-                            else
-                            {
-                                $yearvalue = $this->startYear;
-                            }
-                        }
-
-
-                        $xml.="<tridas:values>\n";
-                        foreach($this->readingsArray as $key => $value)
-                        {
-                            // Calculate absolute year where possible
-                            if ($this->datingType!='Relative')
-                            {
-                                if($yearvalue==0)
-                                {
-                                    // If year value is 0 increment to 1 as there is no such year as 0bc/ad
-                                    $yearvalue = 1;
-                                }
-                            }
-
-                            $xml.="<tridas:value index=\"nr".$yearvalue."\" ";
-                            //if (!($value['wjinc'] === NULL && $value['wjdec'] === NULL))
-                            //{
-                            //    $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
-                            //}
-                            //$xml .="count=\"".$value['count']."\" value=\"".$this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
-                         	$xml.="value=\"".$this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
-
-                            // Add any notes that are in the notesArray subarray
-                            if(count($value['notesArray']) > 0)
-                            {
-                                foreach($value['notesArray'] as $notevalue)
-                                {
-                                    $myReadingNote = new readingNote;
-                                    $success = $myReadingNote->setParamsFromDB($notevalue);
-
-                                    if($success)
-                                    {
-                                        $xml.=$myReadingNote->asXML();
-                                    }
-                                    else
-                                    {
-                                        $this->setErrorMessage($myReadingNote->getLastErrorCode(), $myReadingNote->getLastErrorMessage());
-                                    }
-                                }
-                            }
-
-                            $xml.="</tridas:value>\n";
-
-                            // Increment yearvalue for next loop
-                            $yearvalue++;
-
-                        }
-                        $xml.="</tridas:values>\n";
-                    }
+					$xml.=$this->getValuesXML();
                 }    
             }
-            $xml.= "</tridas:measurementSeries>\n";
+            $xml.= "</tridas:".$this->getTridasSeriesType().">";
             return $xml;
-        }
-        else
-        {
-            // Errors so returning false
-            return FALSE;
-        }
     }
+    
+    
+    private function getValuesXML()
+    {
+           // Include all readings 
+       if ($this->readingsArray)
+       {
+           // Initially set yearvalue to 1001 default
+           if ($this->datingType=='Relative')
+           {
+               $yearvalue = 1001;
+           }
+           else
+           {
+               if($this->getFirstYear()==NULL)
+               {
+                   $this->setErrorMessage(667, "First year missing from absolute or absolute with error measurement.  You shouldn't have been able to get this far!");
+                   return false;    
+               }
+               else
+               {
+                   $yearvalue = $this->getFirstYear();
+               }
+           }
 
+
+           $xml ="<tridas:values>\n";
+           foreach($this->readingsArray as $key => $value)
+           {
+               // Calculate absolute year where possible
+               if ($this->datingType!='Relative')
+               {
+                   if($yearvalue==0)
+                   {
+                       // If year value is 0 increment to 1 as there is no such year as 0bc/ad
+                       $yearvalue = 1;
+                   }
+               }
+
+               $xml.="<tridas:value index=\"nr".$yearvalue."\" ";
+               //if (!($value['wjinc'] === NULL && $value['wjdec'] === NULL))
+               //{
+               //    $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
+               //}
+               //$xml .="count=\"".$value['count']."\" value=\"".$this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
+            	$xml.="value=\"".$this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
+
+               // Add any notes that are in the notesArray subarray
+               if(count($value['notesArray']) > 0)
+               {
+                   foreach($value['notesArray'] as $notevalue)
+                   {
+                       $myReadingNote = new readingNote;
+                       $success = $myReadingNote->setParamsFromDB($notevalue);
+
+                       if($success)
+                       {
+                           $xml.=$myReadingNote->asXML();
+                       }
+                       else
+                       {
+                           $this->setErrorMessage($myReadingNote->getLastErrorCode(), $myReadingNote->getLastErrorMessage());
+                       }
+                   }
+               }
+
+               $xml.="</tridas:value>\n";
+
+               // Increment yearvalue for next loop
+               $yearvalue++;
+
+           }
+           $xml.="</tridas:values>\n";
+       }
+       return $xml;
+    }
+    
+    
     /***********/
     /*FUNCTIONS*/
     /***********/

@@ -88,6 +88,8 @@ if($myMetaHeader->status != "Error")
             	die();
         }
 
+        $myObject->__construct();
+        
         // Get the name of the object (minus the Parameters bit)
         $objectType = substr(get_class($paramObj), 0, -10);
 

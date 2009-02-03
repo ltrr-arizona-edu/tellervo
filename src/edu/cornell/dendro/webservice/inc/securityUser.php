@@ -110,7 +110,7 @@ class securityUser
                 $this->setFirstName($row['firstname']);
                 $this->setLastName($row['lastname']);
                 //$this->setPassword($row['password'], "hash");
-                $this->setIsActive(fromPGtoPHPBool($row['isactive']));
+                $this->setIsActive(dbHelper::formatBool($row['isactive']));
             }
         }
         else
@@ -260,6 +260,11 @@ class securityUser
     /*ACCESSORS*/
     /***********/
 
+    function getFormattedName()
+    {
+    	return $this->firstName." ".$this->lastName;
+    }
+    
     function asXML()
     {
         $xml = NULL;

@@ -18,6 +18,7 @@ require_once('dbhelper.php');
 require_once('dbsetup.php');
 require_once('geometry.php');
 require_once('taxon.php');
+require_once('lookupEntity.php');
 
 /**
  * Interface for classes that inherit dbEntity and read/write to/from the database
@@ -2113,19 +2114,19 @@ class measurementEntity extends dbEntity
 	/**
 	 * What method was used to measure 
 	 *
-	 * @var String
+	 * @var measuringMethod
 	 */
 	protected $measuringMethod = NULL;
 	/**
 	 * The variable that was measured (ring with, earlywood, latewood etc)
 	 *
-	 * @var String
+	 * @var variable
 	 */
 	protected $variable = NULL;
 	/**
 	 * Units of measurement (e.g. meters)
 	 *
-	 * @var String
+	 * @var unit
 	 */
 	protected $units = NULL;
 	/**
@@ -2137,13 +2138,13 @@ class measurementEntity extends dbEntity
 	/**
 	 * Name of the analyst that made the series
 	 *
-	 * @var String
+	 * @var securityUser
 	 */
 	protected $analyst = NULL;
 	/**
 	 * Name of the dendrochronologist that oversaw the analyst
 	 *
-	 * @var String
+	 * @var securityUser
 	 */
 	protected $dendrochronologist = NULL;
 	/**
@@ -2209,7 +2210,7 @@ class measurementEntity extends dbEntity
 	/**
 	 * This series' operation type
 	 *
-	 * @var String
+	 * @var vmeasurementOp
 	 */
     protected $vmeasurementOp = NULL;
     /**
@@ -2261,6 +2262,13 @@ class measurementEntity extends dbEntity
      */
 	protected $code = NULL;
     
+	/**
+	 * How this measurement has been dated
+	 *
+	 * @var datingType
+	 */
+	protected $datingType = NULL;
+	
     /**
      * Array of readings/values
      *
@@ -2315,8 +2323,10 @@ class measurementEntity extends dbEntity
     {  
         $groupXMLTag = "elements";
         parent::__construct($groupXMLTag); 
-		$this->geometry = new geometry;	
-		$this->taxon = new taxon; 	
+		$this->geometry = new geometry();	
+		$this->taxon = new taxon(); 	
+		$this->dendrochronologist = new securityUser();
+		$this->analyst = new securityUser();
 	}
 
 	/***********/
@@ -2344,26 +2354,19 @@ class measurementEntity extends dbEntity
 	}
 	
 	/**
-	 * Set the method used to create this measurement
+	 * Set the method used to create this measurement.  You can supply id, value or both
 	 *
-	 * @param String $method
+	 * @param Integer $id
+	 * @param String $value
 	 */
-	function setMeasurementMethod($method)
+	function setMeasurementMethod($id, $value)
 	{
-
-		$this->measuringMethod = addslashes($method);
+		
+		$this->measuringMethod = new measuringMethod();
+		$this->measuringMethod->setMeasuringMethod($id, $value);
 		
 	}
-	
-	/**
-	 * Set the variable that has been measured (ring width, early width etc)
-	 *
-	 * @param String $variable
-	 */
-	function setVariable($variable)
-	{
-		$this->variable = addslashes($variable);
-	}
+		
 	
 	/**
 	 * Set the measurment units 
@@ -2371,9 +2374,11 @@ class measurementEntity extends dbEntity
 	 * @param Double $units
 	 * @param Integer $power
 	 */
-	function setMeasuringUnits($units, $power)
+	function setMeasuringUnits($id, $value, $power)
 	{
-		$this->units = $units;
+		$this->units = new unit();
+		$this->units->setUnit($id, $value);
+		$this->power = $power;
 	}
 	
 	/**
@@ -2397,13 +2402,14 @@ class measurementEntity extends dbEntity
 	}
 	
 	/**
-	 * Set the person who measured this
+	 * Set the person who measured this using their ID
 	 *
-	 * @param unknown_type $analyst
+	 * @param unknown_type $id
 	 */
-	function setAnalyst($analyst)
+	function setAnalyst($id)
 	{
-		$this->analyst = addslashes($analyst);
+		$this->analyst = new securityUser();
+		$this->analyst->setParamsFromDB($id);
 	}
 	
 	function setDendrochronologist($name)
@@ -2446,16 +2452,6 @@ class measurementEntity extends dbEntity
 		$this->significanceLevel = (double) $level;
 	}
 	
-	function setSproutYear($year)
-	{
-		$this->sproutYear = (int) $year;
-	}
-	
-	function setDeathYear($year)
-	{
-		$this->deathYear = (int) $year;
-	}
-	
 	function setProvenance($provenance)
 	{
 		$this->provenance = addslashes($provenance);
@@ -2471,9 +2467,10 @@ class measurementEntity extends dbEntity
 		$this->standardizingMethod = addslashes($method);
 	}
 	
-	function setAuthor($author)
+	function setAuthor($authorid)
 	{
-		$this->author = addslashes($author);
+		$this->author = new securityUser();
+		$this->author->setParamsFromDB($authorid);
 	}
 	
 	function setObjective($objective)
@@ -2521,61 +2518,17 @@ class measurementEntity extends dbEntity
         return FALSE;
     }
 
-    function setVMeasurementOp($theVMeasurementOp)
+    function setVariable($id, $value)
+    {
+    	$this->variable = new variable();
+    	$this->variable->setVariable($id, $value);
+    }
+    
+    
+    function setVMeasurementOp($id, $value)
     {    
-        if(is_numeric($theVMeasurementOp))
-        {
-            // ID provided
-            global $dbconn;
-
-            $this->vmeasurementOpID = $theVMeasurementOp;
-            
-            $sql  = "select name from tlkpvmeasurementop where vmeasurementopid=".$this->vmeasurementOpID;
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->vmeasurementOp = $row['name'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        elseif(is_string($theVMeasurementOp))
-        {
-            global $dbconn;
-
-            $this->vmeasurementOp = ucfirst(strtolower($theVMeasurementOp));
-            
-            $sql  = "select vmeasurementopid from tlkpvmeasurementop where name ilike'".$theVMeasurementOp."'";
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->vmeasurementOpID = $row['vmeasurementopid'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        else
-        {
-            return FALSE;
-        }
+ 		$this->vmeasurementOp = new vmeasurementOp();
+ 		$this->vmeasurementOp->setVMeasurementOp($id, $value);
     }
 
     function setVMeasurementOpParam($theParam)
@@ -2620,14 +2573,15 @@ class measurementEntity extends dbEntity
         }
     }
     
-    function setMeasurementID()
+    function setMeasurementID($id)
     {
-        if($this->getID())
+    	if ($id!=NULL)
         {
             //Only run if valid parameter has been provided
             global $dbconn;
             
             $sql  = "select measurementid from tblvmeasurement where vmeasurementid=".$this->getID();
+          
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
@@ -2637,6 +2591,7 @@ class measurementEntity extends dbEntity
                     $this->measurementID = $row['measurementid'];
                 }
             }
+            
             else
             {
                 // Connection bad
@@ -2645,7 +2600,15 @@ class measurementEntity extends dbEntity
             }
             return TRUE;
         }
-        return FALSE;
+        elseif($this->getID())
+        {
+        	$this->measurementID = $id;
+        	return TRUE;
+        }
+        else
+        {
+        	return FALSE;
+        }
     }
           
     
@@ -2702,95 +2665,14 @@ class measurementEntity extends dbEntity
 
     function setIsLegacyCleaned($isLegacyCleaned)
     {
-        $this->isLegacyCleaned = fromStringtoPHPBool($isLegacyCleaned);
+        $this->isLegacyCleaned = dbHelper::formatBool($isLegacyCleaned);
     }
-    
-    function setMeasuredByID($theMeasuredByID)
+      
+    function setDatingType($id, $value)
     {
-        if($theMeasuredByID)
-        {
-            global $dbconn;
-
-            $this->measuredByID = $theMeasuredByID;
-            
-            $sql  = "select username from tblsecurityuser where securityuserid=".$this->measuredByID;
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->measuredBy = $row['username'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        return FALSE;
+    	$this->datingType = new datingType();
+    	$this->datingType->setDatingType($id, $value);
     }
-    
-    function setDatingType($theDatingType)
-    {
-        if ($theDatingType)
-        {
-            global $dbconn;
-
-            $this->datingType = $theDatingType;
-            
-            $sql  = "select datingtypeid from tlkpdatingtype where datingtype='".ucfirst(strtolower($this->getDatingType()))."'";
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-            	$result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->datingTypeID = $row['datingtypeid'];
-                }
-            }            
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-       return FALSE;
-    }
-
-    function setDatingTypeID($theDatingTypeID)
-    {
-        if ($theDatingTypeID)
-        {
-            global $dbconn;
-
-            $this->datingTypeID = $theDatingTypeID;
-            
-            $sql  = "select label from tlkpdatingtype where datingtypeid=".$this->datingTypeID;
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->datingType = $row['label'];
-                }
-            }            
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        return FALSE;
-     }
 
 
     function setDatingErrorPositive($theDatingErrorPositive)
@@ -2802,14 +2684,21 @@ class measurementEntity extends dbEntity
     {
         $this->datingErrorNegative = $theDatingErrorNegative;
     }
-    
+
+    /**
+     * Enter description here...
+     *
+     * @deprecated 
+     * @param unknown_type $theName
+     */
     function setName($theName)
     {
-        $this->name = $theName;
+/*        $this->name = $theName;
 
         // assemble our full lab code, if we can
         if($this->labPrefix != NULL)
            $this->fullLabCode = $this->labPrefix . $this->name;
+*/
     }
     
     function setDescription($theDescription)
@@ -2819,7 +2708,7 @@ class measurementEntity extends dbEntity
 
     function setIsPublished($isPublished)
     {
-        $this->isPublished = fromStringtoPHPBool($isPublished);
+        $this->isPublished = dbHelper::formatBool($isPublished);
     }
 	
 	
@@ -2828,6 +2717,19 @@ class measurementEntity extends dbEntity
     /* GETTERS */
     /***********/
 
+    function getTridasSeriesType()
+    {
+
+    	if($this->vmeasurementOp->getValue()=='Direct')
+    	{
+    		return "measurementSeries";
+    	}
+    	else
+    	{
+    		return "derivedSeries";
+    	}
+    }
+    
 	/**
 	 * Get the year in which we think the tree sprouted
 	 *
@@ -2835,7 +2737,15 @@ class measurementEntity extends dbEntity
 	 */
     function getSproutYear()
     { 
-    	return $this->getFirstYear() - $this->parentEntityArray[0]->getMissingHeartwoodRingsToPith();
+    	if (isset($this->parantEntityArray[0]))
+    	{
+    		return $this->getFirstYear() - $this->parentEntityArray[0]->getMissingHeartwoodRingsToPith();
+    	}
+    	else
+    	{
+    		//trigger_error('666'.'Unable to obtain estimate of missing heartwood rings for this measurement', E_USER_NOTICE);
+    		return false;
+    	}
     }
     
     /**
@@ -2845,7 +2755,15 @@ class measurementEntity extends dbEntity
      */
     function getDeathYear()
     {
-    	return $this->getFirstYear() + $this->getReadingCount() + $this->parentEntityArray[0]->getMissingSapwoodRingsToBark();
+    	if (isset($this->parantEntityArray[0]))
+    	{
+    		return $this->getFirstYear() + $this->getReadingCount() + $this->parentEntityArray[0]->getMissingSapwoodRingsToBark();
+    	}
+    	else
+    	{    	
+    		//trigger_error('666'.'Unable to obtain estimate of missing sapwood rings for this measurement', E_USER_NOTICE);
+    		return false;    		
+    	}
     }
     
     /**
@@ -2933,7 +2851,7 @@ class measurementEntity extends dbEntity
     
     function getMeasurementID()
     {
-    	return $this->measurementid;
+    	return $this->measurementID;
     }
         
     function getReadingCount()
@@ -2981,15 +2899,7 @@ class measurementEntity extends dbEntity
 		return $this->getCreatedTimestamp();
 	}
 	
-	function getAnalyst()
-	{
-		return $this->analyst;
-	}
-	
-	function getDendrochronologist()
-	{
-		return $this->dendrochronologist;
-	}
+
 	
 	function getComments()
 	{
