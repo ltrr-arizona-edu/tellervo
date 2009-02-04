@@ -2192,7 +2192,7 @@ class measurementEntity extends dbEntity
 	/**
 	 * Author of this virtual series
 	 *
-	 * @var String
+	 * @var securityUser
 	 */
 	protected $author = NULL;
 	/**
@@ -2250,11 +2250,11 @@ class measurementEntity extends dbEntity
 	 */
     protected $justification = NULL;
     /**
-     * Certainty for this choice of crossdate
+     * Confidence for this choice of crossdate
      *
      * @var Integer
      */
-    protected $certaintyLevel = NULL;
+    protected $confidenceLevel = NULL;
     /**
      * The code for this vmeasurement
      *
@@ -2525,6 +2525,11 @@ class measurementEntity extends dbEntity
     }
     
     
+    function setMasterVMeasurementID($id)
+    {
+    	$this->masterVMeasurementID = (integer) $id;
+    }
+    
     function setVMeasurementOp($id, $value)
     {    
  		$this->vmeasurementOp = new vmeasurementOp();
@@ -2622,21 +2627,16 @@ class measurementEntity extends dbEntity
         $this->newStartYear = $year;
     }
     
-    function setCertaintyLevel($level)
+    function setConfidenceLevel($level)
     {
-        $this->certaintyLevel = $level;
+        $this->confidenceLevel = $level;
     }
     
     function setJustification($justification)
     {
         $this->justification = $justification;
     }
-    
-    function setMasterVMeasurementID($id)
-    {
-        $this->masterVMeasurementID = $id;
-    }
-    
+       
     function setReadingsArray($theReadingsArray)
     {
         $this->readingsArray = $theReadingsArray;
@@ -2818,9 +2818,9 @@ class measurementEntity extends dbEntity
     	
     }
     
-    function getCertaintyLevel()
+    function getConfidenceLevel()
     {
-    	return $this->certaintyLevel;
+    	return $this->confidenceLevel;
     	
     }
     
@@ -2953,7 +2953,7 @@ class measurementEntity extends dbEntity
 	
 	function getAuthor()
 	{
-		return $this->author;
+		return $this->author->getFormattedName();
 	}
 	
 	function getObjective()

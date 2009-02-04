@@ -77,8 +77,9 @@ class measurement extends measurementEntity implements IDBAccessor
                 $this->setFirstYear($row['startyear']);
                 $this->setIsLegacyCleaned(dbHelper::formatBool($row['islegacycleaned']));
                 $this->setIsPublished(dbHelper::formatBool($row['ispublished']));
-                //$this->setJustification();
-                //$this->setMasterVMeasurementID();
+                $this->setJustification($row['justification']);
+                $this->setConfidenceLevel($row['confidence']);
+                $this->setMasterVMeasurementID($row['mastervmeasurementid']);
                 $this->setMeasurementCount($row['measurementcount']);
                 $this->setMeasurementID($row['measurementid']);
                 $this->setMeasurementMethod($row['measuringmethodid'], NULL);
@@ -195,24 +196,6 @@ class measurement extends measurementEntity implements IDBAccessor
     }
     
     
-    private function setCrossdateParamsFromDB()
-    {
-        global $dbconn;
-        $sql = "select * from tblcrossdate where vmeasurementid=".$this->getID();
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $result = pg_query($dbconn, $sql);
-            while ($row = pg_fetch_array($result))
-            {
-                $this->setMasterVMeasurementID($row['mastervmeasurementid']);
-                $this->setFirstYear($row['startyear']);
-                $this->setJustification($row['justification']);
-                $this->setCertaintyLevel($row['confidence']);
-            }
-        }
-
-    }
 
     private function setReadingsFromDB()
     {
@@ -276,7 +259,6 @@ class measurement extends measurementEntity implements IDBAccessor
 
     private function setReferencesFromDB()
     {
-        //echo "setReferencesFromDB called";
         // Add any vmeasurements that the current measurement has been made from
         global $dbconn;
         
@@ -584,36 +566,56 @@ class measurement extends measurementEntity implements IDBAccessor
 	        global $corinaNS;
 	        global $tridasNS;
 	        global $gmlNS;
-	        
-	        // We need to return the comprehensive XML for this element i.e. including all it's ancestral 
-	        // object entities.
-	        
-	        // Make sure the parent entities are set
-	        $this->setParentsFromDB();	        
-	        
-            // Grab the XML representation of the immediate parent using the 'comprehensive'
-            // attribute so that we get all the object ancestors formatted correctly                   
-            $xml = new DomDocument();   
-    		$xml->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->parentEntityArray[0]->asXML('comprehensive')."</root>");                   
 
-    		// We need to locate the leaf tridas:radius (one with no child tridas:radius)
-    		// because we need to insert our measurement xml here
-	        $xpath = new DOMXPath($xml);
-	       	$xpath->registerNamespace('cor', $corinaNS);
-	       	$xpath->registerNamespace('tridas', $tridasNS);		    		
-    		$nodelist = $xpath->query("//tridas:radius[* and not(descendant::tridas:radius)]");
-    		
-    		// Create a temporary DOM document to store our measurement XML
-    		$tempdom = new DomDocument();
-			$tempdom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->asXML()."</root>");
-   		
-			// Import and append the measurement XML node into the main XML DomDocument
-			$node = $tempdom->getElementsByTagName("measurementSeries")->item(0);
-			$node = $xml->importNode($node, true);
-			$nodelist->item(0)->appendChild($node);
-
-            // Return an XML string representation of the entire shebang
-            return $xml->saveXML($xml->getElementsByTagName("object")->item(0));
+	        if($this->getTridasSeriesType()=='measurementSeries')
+	        {
+	        	// Make sure the parent entities are set
+	        	$this->setParentsFromDB();	
+	        	
+		        // We need to return the comprehensive XML for this element i.e. including all it's ancestral 
+		        // object entities.      
+		        
+	            // Grab the XML representation of the immediate parent using the 'comprehensive'
+	            // attribute so that we get all the object ancestors formatted correctly                   
+	            $xml = new DomDocument();   
+	    		$xml->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->parentEntityArray[0]->asXML('comprehensive')."</root>");                   
+	
+	    		// We need to locate the leaf tridas:radius (one with no child tridas:radius)
+	    		// because we need to insert our measurement xml here
+		        $xpath = new DOMXPath($xml);
+		       	$xpath->registerNamespace('cor', $corinaNS);
+		       	$xpath->registerNamespace('tridas', $tridasNS);		    		
+	    		$nodelist = $xpath->query("//tridas:radius[* and not(descendant::tridas:radius)]");
+	    		
+	    		// Create a temporary DOM document to store our measurement XML
+	    		$tempdom = new DomDocument();
+				$tempdom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->asXML()."</root>");
+	   		
+				// Import and append the measurement XML node into the main XML DomDocument
+				$node = $tempdom->getElementsByTagName("measurementSeries")->item(0);
+				$node = $xml->importNode($node, true);
+				$nodelist->item(0)->appendChild($node);
+	
+	            // Return an XML string representation of the entire shebang
+	            return $xml->saveXML($xml->getElementsByTagName("object")->item(0));
+	        }
+	        elseif($this->getTridasSeriesType()=='derivedSeries')
+	        {
+	        	$xml = NULL;
+	        	foreach($this->referencesArray as $ref)
+	        	{
+		        	$refMeasurement = new measurement();
+		        	$refMeasurement->setParamsFromDB($ref);
+		        	$xml.= $refMeasurement->asXML('comprehensive');
+	        	}
+	        	$xml.= $this->asXML('standard');
+	        	return $xml;
+	        }
+	        else
+	        {
+	        	echo "error";
+	        	die();
+	        }
 
         
         case "standard":
@@ -681,46 +683,66 @@ class measurement extends measurementEntity implements IDBAccessor
     private function getDerivedSeriesXML($format, $parts, $recurseLevel=2)
     {
     	$xml = null;
- 	    $xml.= "<tridas:".$this->getTridasSeriesType().">";
+ 	    $xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getID()."\">";
      	$xml.= $this->getIdentifierXML();
      	
         // Include permissions details if requested            
         $xml .= $this->getPermissionsXML();     	
-    	
+               
+                if(isset($this->referencesArray))
+            	{		
+            												$xml.= "<tridas:linkSeries>";
+            		foreach($this->referencesArray as $ref)
+            		{
+            												$xml.= "<tridas:idRef ref=\"".$ref."\"/>\n";
+            		}
+            												$xml.= "</tridas:linkSeries>";
+            	}	
         
-                                if(isset($this->vmeasurementOp))
+                if(isset($this->vmeasurementOp)) 			$xml.= "<tridas:type>".strtolower($this->vmeasurementOp->getValue())."</tridas:type>\n";               
+                if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"operationParameter\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
+ 				if($this->getObjective()!=NULL)				$xml.= "<tridas:objective>".addslashes($this->getObjective())."</tridas:objective>\n";
+ 				if($this->getStandardizingMethod()!=NULL)	$xml.= "<tridas:standardizingMethod>".addslashes($this->getStandardizingMethod())."</tridas:standardizingMethod>";
+ 				if($this->getAuthor()!=NULL)				$xml.= "<tridas:author>".addslashes($this->getAuthor())."</tridas:author>\n";
+ 				if($this->getVersion()!=NULL)				$xml.= "<tridas:version>".addslashes($this->getVersion())."</tridas:version>\n";
+ 				if($this->getDerivationDate()!=NULL)		$xml.= "<tridas:derivationDate>".$this->getDerivationDate()."</tridas:derivationDate>\n";
+ 				if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".addslashes($this->getComments())."</tridas:comments>\n";
+ 				if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".addslashes($this->getUsage())."</tridas:usage>\n";
+ 				if($this->getUsageComments()!=NULL)			$xml.= "<tridas:usageComments>".addslashes($this->getUsageComments())."</tridas:usageComments>\n";
+ 															$xml.= "<tridas:interpretation>\n";
+				if($this->getMasterVMeasurementID()!=NULL)	$xml.= "<tridas:calendar>\n<tridas:linkSeries>\n<tridas:idRef ref=\"".$this->getMasterVMeasurementID()."\"/>\n</tridas:linkSeries>\n</tridas:calendar>\n"; 															
+ 															
+ 				if($this->getFirstYear()!=NULL)				$xml.= "<tridas:firstYear>".$this->getFirstYear()."</tridas:firstYear>\n";
+ 				if($this->getSproutYear()!=NULL)			$xml.= "<tridas:sproutYear>".$this->getSproutYear()."</tridas:sproutYear>\n";
+ 				if($this->getDeathYear()!=NULL)				$xml.= "<tridas:deathYear>".$this->getDeathYear()."</tridas:deathYear>\n";
+ 				if($this->getProvenance()!=NULL)			$xml.= "<tridas:provenance>".addslashes($this->getProvenance())."</tridas:provenance>\n";
+ 															$xml.= "</tridas:interpretation>\n"; 
+ 				if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"crossdateJustification\">".$this->getJustification()."</tridas:genericField>\n";				
+ 				if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"crossdateConfidenceLevel\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
+ 				
+ 			
+
+                // Using 'summary' format so just give minimal XML for all references and nothing else
+                if($format=="summary")
                 {
-                    // Include operation details if applicable
-                    if(isset($this->vmeasurementOpParam))
-                    {
-                        $xml.= "<operation parameter=\"".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."\">".strtolower($this->vmeasurementOp)."</operation>\n";
-                    }
-                    else
-                    {
-                        $xml.= "<operation>".strtolower($this->vmeasurementOp->getValue())."</operation>\n";
-                    }
-                }
-                
-                if($this->vmeasurementOp=="Crossdate")
-                {
-                    // Include crossdate info if applicable
-                    $xml.= "<crossdate>\n";
-                    $xml.= "<basedOn><measurement id=\"".$this->masterVMeasurementID."\"/></basedOn>\n";
-                    $xml.= "<startYear>".$this->startYear."</startYear>\n";
-                    $xml.= "<certaintyLevel>".$this->certaintyLevel."</certaintyLevel>\n";
-                    $xml.= "<justification>".escapeXMLChars($this->justification)."</justification>\n";
-                    $xml.= "</crossdate>\n";
+            		$xml.= "</tridas:".$this->getTridasSeriesType().">";
+                    return $xml;
                 }
 
- 	    $xml.= "</tridas:".$this->getTridasSeriesType().">";                
-        return $xml;
+                // Standard or Comprehensive format so give the whole lot
+                else
+                {
+					$xml.=$this->getValuesXML();
+			        $xml.= "</tridas:".$this->getTridasSeriesType().">";
+		            return $xml;
+                }    
         
     }
     
     private function getMeasurementSeriesXML($format, $parts, $recurseLevel=2)
     {
 		
-        $xml = "<tridas:".$this->getTridasSeriesType().">";
+ 	    $xml = "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getID()."\">";
       	$xml.= $this->getIdentifierXML();
 
         // Include permissions details if requested            
@@ -728,7 +750,7 @@ class measurement extends measurementEntity implements IDBAccessor
             
             // Only output the remainder of the data if we're not using the 'minimal' format
             if ($format!="minimal")
-            {
+            {            	
          		if(isset($this->measuringMethod))			$xml.= "<tridas:measuringMethod>".$this->measuringMethod->getValue()."</tridas:measuringMethod>\n";
          		if(isset($this->variable))					$xml.= "<tridas:variable>".$this->variable->getValue()."</tridas:variable>";            	
                 if(isset($this->units))
@@ -751,17 +773,7 @@ class measurement extends measurementEntity implements IDBAccessor
                 if($this->getDeathYear()!=NULL)				$xml.="<tridas:deathYear>".$this->getDeathYear()."</tridas:deathYear>\n";
                 if($this->getProvenance()!=NULL)			$xml.="<tridas:provenance>".$this->getProvenance()."</tridas:provenance>\n";
                 											$xml.="</tridas:interpretation>\n";
-                
-                								
-                
-                
-                /*$xml.="<dating ";
-                if(isset($this->startYear))             $xml.= "startYear=\"".$this->startYear."\" ";
-                if(isset($this->readingCount))          $xml.= "count=\"".$this->readingCount."\" ";
-                if(isset($this->datingType))            $xml.= "type=\"".$this->datingType->getValue()."\" ";
-                if(isset($this->datingErrorPositive))   $xml.= "positiveError=\"".$this->datingErrorPositive."\" ";
-                if(isset($this->datingErrorNegative))   $xml.= "negativeError=\"".$this->datingErrorNegative."\" ";
-                $xml.="/>";*/
+
 
                 if(isset($this->isLegacyCleaned))       $xml.= "<tridas:genericField name=\"isLegacyCleaned\">".dbHelper::formatBool($this->isLegacyCleaned, "english")."</tridas:genericField>\n";
                 if(isset($this->isPublished))           $xml.= "<tridas:genericField name=\"isPublished\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
@@ -794,10 +806,11 @@ class measurement extends measurementEntity implements IDBAccessor
                 else
                 {
 					$xml.=$this->getValuesXML();
+			        $xml.= "</tridas:".$this->getTridasSeriesType().">";
+		            return $xml;
                 }    
             }
-            $xml.= "</tridas:".$this->getTridasSeriesType().">";
-            return $xml;
+
     }
     
     
