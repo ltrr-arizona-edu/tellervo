@@ -128,7 +128,12 @@ DECLARE
 BEGIN
 
    -- Start the query
-   OPEN ref FOR EXECUTE 'SELECT * FROM tblObject WHERE ' || whereclause;
+   OPEN ref FOR EXECUTE 'SELECT tblObject.* FROM tblObject ' ||
+	'LEFT JOIN tlkpObjectType USING(objectTypeID) ' ||
+	'LEFT JOIN tlkpLocationType USING(locationTypeID) ' ||
+	'LEFT JOIN tlkpCoverageTemporal USING(coverageTemporalID) ' ||
+	'LEFT JOIN tlkpCoverageTemporalFoundation USING (coverageTemporalFoundationID) ' ||
+	'WHERE ' || whereclause;
 
    LOOP
       FETCH ref INTO obj;
