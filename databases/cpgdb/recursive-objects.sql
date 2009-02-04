@@ -116,3 +116,43 @@ CREATE OR REPLACE FUNCTION cpgdb.FindElementObjectAncestors(tblElement.elementId
 RETURNS SETOF tblObject AS '
    SELECT * from cpgdb.recurseFindObjectAncestors((SELECT objectId FROM tblElement WHERE elementID=$1), 1)
 ' LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION cpgdb._internalFindObjectsAndDescendantsWhere(whereclause text)
+RETURNS SETOF tblObject AS $$
+DECLARE
+   ref refcursor;
+
+   obj tblObject;
+   child tblObject;
+   objid tblObject.objectId%TYPE;
+BEGIN
+
+   -- Start the query
+   OPEN ref FOR EXECUTE 'SELECT * FROM tblObject WHERE ' || whereclause;
+
+   LOOP
+      FETCH ref INTO obj;
+
+      -- Done?
+      IF NOT FOUND THEN
+         CLOSE ref;
+         EXIT;
+      END IF;
+
+      -- Return this object
+      RETURN NEXT obj;
+
+      -- Return this object's descendant tree
+      objid = obj.objectId;
+      FOR child IN SELECT * from cpgdb.recurseFindObjectDescendants(objid, 1) LOOP
+         RETURN NEXT child;
+      END LOOP;
+   END LOOP;
+END;
+$$ LANGUAGE 'plpgsql' STABLE;
+
+CREATE OR REPLACE FUNCTION cpgdb.FindObjectsAndDescendantsWhere(whereclause text) 
+RETURNS SETOF tblObject AS $$
+  SELECT DISTINCT * FROM cpgdb._internalFindObjectsAndDescendantsWhere($1);
+$$ LANGUAGE SQL;
+
