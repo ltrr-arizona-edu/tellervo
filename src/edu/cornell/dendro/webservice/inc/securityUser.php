@@ -260,6 +260,12 @@ class securityUser
     /*ACCESSORS*/
     /***********/
 
+    function getID()
+    {
+    	return $this->id;
+    	
+    }
+    
     function getFormattedName()
     {
     	return $this->firstName." ".$this->lastName;

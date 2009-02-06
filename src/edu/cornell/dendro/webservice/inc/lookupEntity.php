@@ -125,8 +125,21 @@ class measuringMethod extends lookupEntity
 	}
 }
 
-class datingType extends lookupEntity
+class dating extends lookupEntity
 {
+	/**
+	 * Positive error around date
+	 *
+	 * @var Integer
+	 */
+	protected $datingErrorPositive = NULL;
+	/**
+	 * Negative error around date
+	 *
+	 * @var Integer
+	 */
+	protected $datingErrorNegative = NULL;
+	
 	function __construct()
 	{
 		parent::__construct("tlkpdatingtype", "datingtype");
@@ -136,11 +149,34 @@ class datingType extends lookupEntity
 	{
 		$this->setLookupEntity($id, $value);
 	}
+	
+	function setDatingErrors($postive, $negative)
+	{
+		$this->datingErrorNegative = (integer) $negative;
+		$this->datingErrorPositive = (integer) $positive;	
+	}
+	
+	function getDatingErrorPositive()
+	{
+		return $this->datingErrorPositive;
+	}
+	
+	function getDatingErrorNegative()
+	{
+		return $this->datingErrorNegative;
+	}
 }
 
 
 class unit extends lookupEntity
 {
+	/**
+	 * Exponent of the unit
+	 *
+	 * @var Integer
+	 */
+	protected $power = NULL;
+	
 	function __construct()
 	{
 		parent::__construct("tlkpunit", "unit");
@@ -149,6 +185,16 @@ class unit extends lookupEntity
 	function setUnit($id, $value)
 	{
 		$this->setLookupEntity($id, $value);
+	}
+	
+	function setPower($power)
+	{
+		$this->power = (integer) $power;
+	}
+	
+	function getPower()
+	{
+		return $this->power;
 	}
 }
 

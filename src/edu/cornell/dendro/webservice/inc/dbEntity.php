@@ -2265,9 +2265,9 @@ class measurementEntity extends dbEntity
 	/**
 	 * How this measurement has been dated
 	 *
-	 * @var datingType
+	 * @var dating
 	 */
-	protected $datingType = NULL;
+	protected $dating = NULL;
 	
     /**
      * Array of readings/values
@@ -2319,6 +2319,9 @@ class measurementEntity extends dbEntity
      */
     protected $fullLabCode = NULL;
 
+      
+    
+    
     function __construct()
     {  
         $groupXMLTag = "elements";
@@ -2668,22 +2671,7 @@ class measurementEntity extends dbEntity
         $this->isLegacyCleaned = dbHelper::formatBool($isLegacyCleaned);
     }
       
-    function setDatingType($id, $value)
-    {
-    	$this->datingType = new datingType();
-    	$this->datingType->setDatingType($id, $value);
-    }
 
-
-    function setDatingErrorPositive($theDatingErrorPositive)
-    {
-        $this->datingErrorPositive = $theDatingErrorPositive;
-    }
-    
-    function setDatingErrorNegative($theDatingErrorNegative)
-    {
-        $this->datingErrorNegative = $theDatingErrorNegative;
-    }
 
     /**
      * Enter description here...
@@ -2812,11 +2800,6 @@ class measurementEntity extends dbEntity
     	return $this->getLabPrefix().$this->getCode;
     }
     
-    function getDatingType()
-    {
-    	return $this->datingType;
-    	
-    }
     
     function getConfidenceLevel()
     {

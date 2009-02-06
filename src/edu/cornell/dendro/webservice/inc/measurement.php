@@ -894,21 +894,42 @@ class measurement extends measurementEntity implements IDBAccessor
     /*FUNCTIONS*/
     /***********/
 
+    /**
+     * Writes this object to the database 
+     *
+     * @return Boolean
+     */
     function writeToDB()
     {
         // Write the current object to the database
+        
+    	/**  
+    	 * ORDER OF PLAY
+    	 * *************
+    	 * New direct measurements:
+    	 * 1) Insert tblmeasurement row
+    	 * 2) Insert multiple tblreading rows
+    	 * 3) Insert tblreadingreadingnote rows
+    	 * 4) Create new vmeasurement with cpgdb.createnewvmeasurement()
+    	 * 
+    	 * New derived measurement:
+    	 * 1) Use cpgdb.createnewvmeasurement()
+    	 * 2) Use cpgdb.finishcrossdate() if it's a crossdate
+    	 * 
+    	 * Edit existing measurement:
+    	 * 1) Delete then reinsert relevant tblvmeasurementgroup entries if derived
+    	 * 2) Update tblmeasurement row
+    	 * 3) Delete then reinsert tblreading entries if direct
+    	 * 4) Update tblvmeasurement row
+    	 * 
+    	 * **************
+    	 */ 
+    	
 
         global $dbconn;
-        
-        // Check for required parameters
-        if($this->name == NULL) 
-        {
-            //$this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
-            //return FALSE;
-        }
 
         //Only attempt to run SQL if there are no errors so far
-        if($this->lastErrorCode == NULL)
+        if($this->getLastErrorCode() == NULL)
         {
 
             // Check DB connection is OK before continueing
@@ -918,31 +939,55 @@ class measurement extends measurementEntity implements IDBAccessor
                 // 
                 // New record
                 //
-                if(($this->vmeasurementID == NULL))
+                if(($this->getID() == NULL))
                 {
-                    if($this->vmeasurementOp=='Direct')
+                    if($this->getVMeasurementOp()=='Direct')
                     {
                         // New direct measurement so create tblmeasurement record first
                         $sql = "insert into tblmeasurement  (  ";
-                            if($this->radiusID)              $sql.= "radiusid, "; 
-                            if($this->isReconciled!=NULL)    $sql.= "isreconciled, "; 
-                            if($this->startYear)             $sql.= "startyear, "; 
-                            if($this->isLegacyCleaned!=NULL) $sql.= "islegacycleaned, "; 
-                            if($this->measuredByID)          $sql.= "measuredbyid, "; 
-                            if($this->datingErrorPositive)   $sql.= "datingerrorpositive, "; 
-                            if($this->datingErrorNegative)   $sql.= "datingerrornegative, "; 
-                            if($this->datingTypeID)          $sql.= "datingtypeid, "; 
+                            if(isset($this->parentEntityArray[0]))              $sql.= "radiusid, "; 
+                            if($this->getIsReconciled()!=NULL)    				$sql.= "isreconciled, "; 
+                            if($this->getFirstYear())				            $sql.= "startyear, "; 
+                            if($this->getIsLegacyCleaned()!=NULL) 				$sql.= "islegacycleaned, "; 
+                            if(isset($this->analyst))					        $sql.= "measuredbyid, "; 
+                            if(isset($this->dating))
+                            {
+                            													$sql.= "datingtypeid, "; 
+                            if($this->dating->getDatingErrorNegative()!=NULL)   $sql.= "datingerrornegative, "; 
+                            if($this->dating->getDatingErrorPositive()!=NULL)   $sql.= "datingerrorpositive, "; 
+                            }
+                            if(isset($this->variable))							$sql.= "measurementvariableid, ";
+                            if(isset($this->units))	
+                            {
+                            													$sql.= "unitid, ";
+                            if($this->units->getPower()!=NULL)					$sql.= "power, ";
+                            }
+                            if($this->getProvenance()!=NULL)					$sql.= "provenance, ";
+                            if(isset($this->measuringMethod))					$sql.= "measuringmethodid, ";
+                            if(isset($this->dendrochronologist))				$sql.= "supervisedbyid, ";
                         // Trim off trailing space and comma
                         $sql = substr($sql, 0, -2);
                         $sql.=") values (";
-                            if($this->radiusID)               $sql.= "'".$this->radiusID."', ";
-                            if($this->isReconciled!=NULL)     $sql.= "'".fromPHPtoPGBool($this->isReconciled)."', ";
-                            if($this->startYear)              $sql.=     $this->startYear.", ";
-                            if($this->isLegacyCleaned!=NULL)  $sql.= "'".fromPHPtoPGBool($this->isLegacyCleaned)."', ";
-                            if($this->measuredByID)           $sql.= "'".$this->measuredByID."', ";
-                            if($this->datingErrorPositive)    $sql.= "'".$this->datingErrorPositive."', ";
-                            if($this->datingErrorNegative)    $sql.= "'".$this->datingErrorNegative."', ";
-                            if($this->datingTypeID)           $sql.= "'".$this->datingTypeID."', ";
+                            if(isset($this->parentEntityArray[0]))              $sql.= "'".$this->parentEntityArray[0]->getID()."', "; 
+                            if($this->getIsReconciled()!=NULL)    				$sql.= "'".dbHelper::formatBool($this->getIsReconciled(), 'english')."', "; 
+                            if($this->getFirstYear())				            $sql.= "'".$this->getFirstYear()."' "; 
+                            if($this->getIsLegacyCleaned()!=NULL) 				$sql.= "'".dbHelper::formatBool($this->getIsLegacyCleaned(), 'english')."', "; 
+                            if(isset($this->analyst))					        $sql.= "'".$this->analyst->getID()."', "; 
+                            if(isset($this->dating))
+                            {
+                            													$sql.= "'".$this->dating->getID()."', "; 
+                            if($this->dating->getDatingErrorNegative()!=NULL)   $sql.= "'".$this->dating->getDatingErrorNegative()."', "; 
+                            if($this->dating->getDatingErrorPositive()!=NULL)   $sql.= "'".$this->dating->getDatingErrorPositive()."', "; 
+                            }
+                            if(isset($this->variable))							$sql.= "'".$this->variable->getID()."', ";
+                            if(isset($this->units))						
+                            {		
+                            													$sql.= "'".$this->units->getID()."', ";
+                            if($this->units->getPower()!=NULL)					$sql.= "'".$this->units->getPower()."', ";
+                            }
+                            if($this->getProvenance()!=NULL)					$sql.= "'".$this->getProvenance()."', ";
+                            if(isset($this->measuringMethod))					$sql.= "'".$this->measuringMethod->getID()."', ";
+                            if(isset($this->dendrochronologist))				$sql.= "'".$this->dendrochronologist->getID().", ";                                                  
                         // Trim off trailing space and comma
                         $sql = substr($sql, 0, -2);
                         $sql.=")";
@@ -962,7 +1007,7 @@ class measurement extends measurementEntity implements IDBAccessor
                             $result = pg_query($dbconn, $sql2);
                             while ($row = pg_fetch_array($result))
                             {
-                                $this->measurementID=$row['measurementid'];   
+                                $this->setMeasurementID($row['measurementid']);   
                             }
                         }    
                         
