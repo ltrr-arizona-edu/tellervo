@@ -24,16 +24,9 @@ public class DBQuery {
 	}
 	
 	public String createUUID() throws SQLException {
-		String nativeUUID = UUID.createUUID();
-
-		if(nativeUUID != null)
-			return nativeUUID;
-
-		if(nativeUUID == null)
-			throw new SQLException("Could not generate UUID");
-
+		/* Now requires uuid-ossp module to be installed in postgres */
 		Statement stmt = sqlConnection.createStatement();
-		ResultSet res = stmt.executeQuery("SELECT uuid()");
+		ResultSet res = stmt.executeQuery("SELECT uuid_generate_v1()");
 		
 		// perhaps some better error checking is in order,
 		// but this will throw an SQLException if things go bad...
