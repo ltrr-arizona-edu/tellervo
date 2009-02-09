@@ -19,14 +19,23 @@ class lookupEntity
 {
 	private $tablename;
 	private $fieldname;
+	private $idfieldname;
 	
 	private $value;
 	private $id;
 	
-	function __construct($tablename, $fieldname)
+	function __construct($lookuptablename, $lookupnamefield, $lookupidfield=NULL)
 	{
-		$this->tablename = $tablename;
-		$this->fieldname = $fieldname;
+		$this->tablename = $lookuptablename;
+		$this->fieldname = $lookupnamefield;
+		if($lookupidfield!=NULL)
+		{
+			$this->idfieldname = $lookupidfield;
+		}
+		else
+		{
+			$this->idfieldname = $lookupnamefield."id";
+		}
 	}
 	
 	protected function setLookupEntity($id, $value)
@@ -42,7 +51,7 @@ class lookupEntity
 		if( ($id!=NULL) && ($value==NULL) )
 		{
 			// ID but no value
-			$sql = "SELECT ".$this->fieldname." AS thevalue FROM ".$this->tablename." WHERE ".$this->fieldname."id = '".$id."'";
+			$sql = "SELECT ".$this->fieldname." AS thevalue FROM ".$this->tablename." WHERE ".$this->idfieldname." = '".$id."'";
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
@@ -64,7 +73,7 @@ class lookupEntity
 		elseif ( ($id==NULL) && ($value!=NULL) )
 		{	
 			// Value given but no ID
-			$sql = "SELECT ".$this->fieldname."id AS theid FROM ".$this->tablename." WHERE ".$this->fieldname." = '".$this->value."'";
+			$sql = "SELECT ".$this->idfieldname." AS theid FROM ".$this->tablename." WHERE ".$this->fieldname." = '".$this->value."'";
 		
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -150,7 +159,7 @@ class dating extends lookupEntity
 		$this->setLookupEntity($id, $value);
 	}
 	
-	function setDatingErrors($postive, $negative)
+	function setDatingErrors($positive, $negative)
 	{
 		$this->datingErrorNegative = (integer) $negative;
 		$this->datingErrorPositive = (integer) $positive;	
@@ -200,16 +209,54 @@ class unit extends lookupEntity
 
 class vmeasurementOp extends lookupEntity
 {
+	/**
+	 * vmeasurement operation parameter object
+	 *
+	 * @var vmeasurementOpParam
+	 */
+	protected $param = NULL;
+	
 	function __construct()
 	{
 		parent::__construct("tlkpvmeasurementop", "name");
+		$this->param = new vmeasurementOpParam();
 	}
 	
 	function setVMeasurementOp($id, $value)
 	{
 		$this->setLookupEntity($id, $value);
 	}
+	
+	function setParam($id, $value)
+	{
+		$this->param->setVmeasurementOpParam($id, $value);
+	}
+	
+	function getParamID()
+	{
+		return $this->param->getID();
+	}
+	
+	function getParamValue()
+	{
+		return $this->param->getValue();
+	}
 }
+
+class vmeasurementOpParam extends lookupEntity
+{
+	function __construct()
+	{
+		parent::__construct("tlkpindextype", "indexname", "indexid");
+	}
+	
+	function setVmeasurementOpParam($id, $value)
+	{
+		$this->setLookupEntity($id, $value);
+	}
+	
+}
+
 
 class variable extends lookupEntity
 {
@@ -223,5 +270,9 @@ class variable extends lookupEntity
 		$this->setLookupEntity($id, $value);
 	}
 }
+
+
+
+
 
 ?>

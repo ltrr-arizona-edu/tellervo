@@ -33,6 +33,8 @@ $myAuth         = new auth();
 $myMetaHeader   = new meta();
 
 
+if ($debugFlag===TRUE) $myMetaHeader->setTiming("Beginning request");
+
 // Create request object from supplied XML document
 if($_POST['xmlrequest'])
 {
@@ -167,6 +169,7 @@ if($myMetaHeader->status != "Error")
         if( ($myRequest->getCrudMode()=='create') || ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete'))
         {
             // Do permissions check
+            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Beginning permissions check...");
             if($myAuth->getPermission($myRequest->getCrudMode(), $objectType, $myID)===FALSE)
             {
                 // Permission denied
@@ -190,7 +193,10 @@ if($myMetaHeader->status != "Error")
                     break;
                 }
             }
+            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Permissions check completed");
         }
+        
+
 
 
         // ********************
@@ -250,9 +256,13 @@ if($myMetaHeader->status != "Error")
         if( ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete') )
         {
             if($myMetaHeader->status != "Error")
-            {            	
+            {   
+            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Calling setParamsFromDB on ".get_class($myObject));            	         	
                 $success = $myObject->setParamsFromDB($paramObj->getID());
+            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setParamsFromDB on ".get_class($myObject));
+            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Calling setChildParamsFromDB on ".get_class($myObject));             	                 
                 $success2 = $myObject->setChildParamsFromDB();
+            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setChildParamsFromDB on ".get_class($myObject));                 
                 if(!($success && $success2))
                 {
                     if ($myObject->getLastErrorCode()==701)
@@ -276,6 +286,7 @@ if($myMetaHeader->status != "Error")
             // Update parameters in object
             if($myMetaHeader->status != "Error")
             {
+            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Setting parameters to new requested values");              	
                 $success = $myObject->setParamsFromParamsClass($paramObj, $myAuth);
                 if(!$success)
                 {
@@ -286,6 +297,7 @@ if($myMetaHeader->status != "Error")
             // Write object to db
             if($myMetaHeader->status != "Error")
             {
+            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Writing ".get_class($myObject)." to database");              	
                 $success = $myObject->writeToDB();
                 if(!$success)
                 {
@@ -302,6 +314,7 @@ if($myMetaHeader->status != "Error")
         {
             if($myMetaHeader->status != "Error")
             {
+            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Deleting ".get_class($myObject)." from database");  
                 $success = $myObject->deleteFromDB();
                 if(!$success)
                 {
@@ -318,7 +331,9 @@ if($myMetaHeader->status != "Error")
         {
             if($myMetaHeader->status != "Error")
             {
+            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Beginning search...");              	
                 $success = $myObject->doSearch($paramObj, $myAuth, $myRequest->includePermissions, $myRequest->getFormat());
+            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed search");                       
                 if(!$success)
                 {
                     if ($myObject->getLastErrorCode()=='103')
@@ -351,6 +366,7 @@ if($myMetaHeader->status != "Error")
         // ********************
         if($myMetaHeader->status != "Error")
         {
+            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Outputting XML...");               	
             if($myRequest->getFormat()!=NULL)
             {
                 $xmldata.= $myObject->asXML($myRequest->getFormat());
@@ -359,6 +375,7 @@ if($myMetaHeader->status != "Error")
             {
                 $xmldata.= $myObject->asXML();
             }
+            if ($debugFlag===TRUE) $myMetaHeader->setTiming("XML output complete");                   
         }
         
 

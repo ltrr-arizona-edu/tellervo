@@ -2214,12 +2214,6 @@ class measurementEntity extends dbEntity
 	 */
     protected $vmeasurementOp = NULL;
     /**
-     * This series' operation parameter
-     *
-     * @var String
-     */
-    protected $vmeasurementOpParam = NULL;
-    /**
      * Measurement ID
      *
      * @var Integer
@@ -2330,11 +2324,24 @@ class measurementEntity extends dbEntity
 		$this->taxon = new taxon(); 	
 		$this->dendrochronologist = new securityUser();
 		$this->analyst = new securityUser();
+		$this->dating = new dating();
 	}
 
 	/***********/
     /* SETTERS */
     /***********/ 	
+	
+	function setVMeasurementOp($id, $value)
+	{
+		$this->vmeasurementOp = new vmeasurementOp();
+		$this->vmeasurementOp->setVMeasurementOp($id, $value);
+	}
+	
+	function setDatingType($id, $value)
+	{
+		$this->dating = new dating();
+		$this->dating->setDatingType($id, $value);
+	}
 	
 	function setSummaryInfo($objectcode, $objectcount, $taxonname, $taxoncount, $labprefix)
 	{
@@ -2532,54 +2539,7 @@ class measurementEntity extends dbEntity
     {
     	$this->masterVMeasurementID = (integer) $id;
     }
-    
-    function setVMeasurementOp($id, $value)
-    {    
- 		$this->vmeasurementOp = new vmeasurementOp();
- 		$this->vmeasurementOp->setVMeasurementOp($id, $value);
-    }
 
-    function setVMeasurementOpParam($theParam)
-    {
-        global $dbconn;
-        if(is_numeric($theParam))
-        {
-            // Param is numeric - probably a year for use in redating
-            $this->vmeasurementOpParam = $theParam;
-            return true;
-        }
-        elseif(is_string($theParam))
-        {
-            // Param is string - probably index type
-            $sql  = "select indexid from tlkpindextype where indexname ilike '$theParam'";
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->vmeasurementOpParam = $row['indexid'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database for index type lookup");
-                return FALSE;
-            }
-            
-        } 
-        elseif($theParam==NULL)
-        {
-            return TRUE;
-        }
-        else
-        {
-            // Shouldn't be here!!
-            $this->setErrorMessage("667", "Program bug - measurement operation parameter not recognised");
-            return FALSE;
-        }
-    }
     
     function setMeasurementID($id)
     {
@@ -2620,9 +2580,10 @@ class measurementEntity extends dbEntity
     }
           
     
-    function setUnits($units)
+    function setUnits($id, $value)
     {
-        $this->readingsUnits = $units;
+		$this->units = new unit();
+		$this->units->setUnit($id, $value);
     }
     
     function setNewStartYear($year)
@@ -2658,7 +2619,7 @@ class measurementEntity extends dbEntity
 
     function setIsReconciled($isReconciled)
     {
-        $this->isReconciled = fromStringtoPHPBool($isReconciled);
+        $this->isReconciled = dbHelper::formatBool($isReconciled);
     }
 
     function setStartYear($theStartYear)
@@ -2844,12 +2805,26 @@ class measurementEntity extends dbEntity
     
     function getVMeasurementOp()
     {
-    	return $this->vmeasurementOp;
+    	if(isset($this->vmeasurementOp))
+    	{
+    		return $this->vmeasurementOp->getValue();
+    	}
+    	else
+    	{
+    		return false;
+    	}
     }
     
     function getVMeasurementOpParam()
     {
-    	return $this->vmeasurementOpParam;
+    	if(isset($this->vmeasurementOp))
+    	{
+    		return $this->vmeasurementOp->getParamValue();
+    	}
+    	else
+    	{
+    		return false;
+    	}
     }
     
     function getVMeasurementResultID()

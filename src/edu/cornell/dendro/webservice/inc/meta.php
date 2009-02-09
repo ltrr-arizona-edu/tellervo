@@ -81,8 +81,6 @@ class meta
 
   function setTiming($theLabel)
   {
-    // Setter for error and warning messages
-
     $message = array($theLabel => round(((microtime(true)*1000)-($this->startTimestamp*1000)), 0));
     array_push($this->timing, $message);
   }

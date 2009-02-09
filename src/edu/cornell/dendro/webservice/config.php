@@ -25,7 +25,7 @@ $dbName = corina_dev;
 $domain = "dendro.cornell.edu/dev/";
 
 // Whether to display debug messages
-$debugFlag = false; 
+$debugFlag = TRUE; 
 
 // Version number to be displayed in output headers
 $wsversion = "0.2.".exec(svnversion); 

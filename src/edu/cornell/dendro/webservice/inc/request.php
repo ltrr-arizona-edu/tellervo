@@ -306,7 +306,10 @@ class request
             			break;
             		case "tridas:radius":
             			$myParamObj = new radiusParameters($this->xmlRequestDom->saveXML($item), $parentID);
-            			break;            			
+            			break;        
+            		case "tridas:measurementSeries":
+            			$myParamObj = new measurementParameters($this->xmlRequestDom->saveXML($item), $parentID);
+            			break;    			
             		default:
             			trigger_error("901"."Unknown entity tag &lt;".$item->tagName."&gt; when trying to ".$this->crudMode." a record", E_USER_ERROR);
             	}

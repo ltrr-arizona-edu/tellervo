@@ -27,6 +27,7 @@ class measurement extends measurementEntity implements IDBAccessor
     {
         // Constructor for this class.
         //$this->setVMeasurementOp(5);
+        parent::__construct();
     }
 
     /***********/
@@ -35,8 +36,12 @@ class measurement extends measurementEntity implements IDBAccessor
 
     function setParamsFromDB($theID, $format="standard")
     {
+    	global $dbconn;
+    	global $myMetaHeader;
+    	global $debugFlag;
+    	
+    	
         // Set the current objects parameters from the database
-        global $dbconn;
         
         $this->setID($theID);
 
@@ -50,9 +55,11 @@ class measurement extends measurementEntity implements IDBAccessor
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
 
+            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Starting setParamsFromDB SQL query");          	
             pg_send_query($dbconn, $sql);
             $result = pg_get_result($dbconn); 
-			
+            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setParamsFromDB SQL query"); 			
+            
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
@@ -64,14 +71,14 @@ class measurement extends measurementEntity implements IDBAccessor
                 // Set parameters from db
                 $row = pg_fetch_array($result);
 
+            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Setting measurement parameters from DB result");                 
                 $this->setAnalyst($row['measuredbyid']);
                 $this->setAuthor($row['owneruserid']);
                 //$this->setCertaintyLevel();
                 $this->setCode($row['code']);
                 $this->setComments($row['comments']);
-                $this->setDatingErrorNegative($row['datingerrornegative']);
-                $this->setDatingErrorPositive($row['datingerrorpositive']);
                 $this->setDatingType($row['datingtypeid'],$row['datingtype']);
+                $this->dating->setDatingErrors($row['datingerrorpositive'], $row['datingerrornegative']);
                 //$this->setDendrochronologist();
                 $this->setDerivationDate($row['createdtimestamp']);
                 $this->setFirstYear($row['startyear']);
@@ -99,7 +106,8 @@ class measurement extends measurementEntity implements IDBAccessor
 				$this->setVMeasurementOp($row['vmeasurementopid'], $row['opname']);
 				$this->setUsage($row['usage']);
 				$this->setUsageComments($row['usagecomments']);
-                
+
+				
                 
                 
 
@@ -110,7 +118,7 @@ class measurement extends measurementEntity implements IDBAccessor
                 if($this->vmeasurementOp=='Index')
                 {
                     // indexid for a sum
-                    $this->setVMeasurementOpParam($this->getIndexNameFromParamID($row['vmeasurementopparameter']));
+                    $this->setVMeasurementOpParam($row['vmeasurementopparameter']);
                 }
 
                 if($this->vmeasurementOp=='Crossdate')
@@ -122,15 +130,20 @@ class measurement extends measurementEntity implements IDBAccessor
                 {
                     $this->setReferencesFromDB();
                 }
+                
+                if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setting measurement parameters from DB result");   
 
+                
 		// Deal with readings if we actually need them...
 		if($format=="standard" || $format=="comprehensive") {
+			        if ($debugFlag===TRUE) $myMetaHeader->setTiming("Running cpgdb.getVMeasurementResult()");   
                     pg_send_query($dbconn, $sql2);
                     $result2 = pg_get_result($dbconn);
                     $row2 = pg_fetch_array($result2);
 
                     $this->vmeasurementResultID = $row2['vmeasurementresultid'];
                     $success = $this->setReadingsFromDB();
+			        if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed running cpgdb.getVMeasurementResult()");                       
                     return $success;
 		}
             }
@@ -217,7 +230,7 @@ class measurement extends measurementEntity implements IDBAccessor
                 if ($relYearCheck==$row['relyear'])
                 {
                     // Get all reading values to array 
-                    $this->readingsArray[$row['relyear']] = array('reading' => $row['reading'], 
+                    $this->readingsArray[$row['relyear']] = array('reading' => $row['value'], 
                                                                   'wjinc' => $row['wjinc'], 
                                                                   'wjdec' => $row['wjdec'], 
                                                                   'count' => $row['count'],
@@ -287,30 +300,50 @@ class measurement extends measurementEntity implements IDBAccessor
     }
 
 
+    /**
+     * Set attributes of this class using a parametersClass
+     *
+     * @param measurementParameters $paramsClass
+     * @param auth $auth
+     * @return Boolean
+     */
     function setParamsFromParamsClass($paramsClass, $auth)
     {
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
-        if ($paramsClass->radiusID!=NULL)              $this->setRadiusID($paramsClass->radiusID);
-        if (isset($paramsClass->isReconciled))         $this->setIsReconciled($paramsClass->isReconciled);
-        if (isset($paramsClass->startYear))            $this->setStartYear($paramsClass->startYear);
-        if (isset($paramsClass->isLegacyCleaned))      $this->setIsLegacyCleaned($paramsClass->isLegacyCleaned);
-        //if (isset($paramsClass->datingTypeID))        $this->setDatingTypeID($paramsClass->datingTypeID);
-        if (isset($paramsClass->datingType))           $this->setDatingType($paramsClass->datingType);
-        if (isset($paramsClass->datingErrorPositive))  $this->setDatingErrorPositive($paramsClass->datingErrorPositive);
-        if (isset($paramsClass->datingErrorNegative))  $this->setDatingErrorNegative($paramsClass->datingErrorNegative);
-        if (isset($paramsClass->name))                 $this->setName($paramsClass->name);
-        if (isset($paramsClass->description))          $this->setDescription($paramsClass->description);
-        if (isset($paramsClass->isPublished))          $this->setIsPublished($paramsClass->isPublished);
-        if (isset($paramsClass->vmeasurementOp))       $this->setVMeasurementOp($paramsClass->vmeasurementOp);
-        if (isset($paramsClass->vmeasurementOpParam))  $this->setVMeasurementOpParam($paramsClass->vmeasurementOpParam);
-        if (sizeof($paramsClass->referencesArray)>0)   $this->setReferencesArray($paramsClass->referencesArray);
-        if (isset($paramsClass->masterVMeasurementID)) $this->setMasterVMeasurementID($paramsClass->masterVMeasurementID);
-        if (isset($paramsClass->justification))        $this->setJustification($paramsClass->justification);
-        if (isset($paramsClass->certaintyLevel))       $this->setCertaintyLevel($paramsClass->certaintyLevel);
-        if (isset($paramsClass->newStartYear))         $this->setNewStartYear($paramsClass->newStartYear);
-        if (isset($paramsClass->readingsUnits))        $this->setUnits($paramsClass->readingsUnits);
+        if ($paramsClass->getIsReconciled()!=NULL)         	$this->setIsReconciled($paramsClass->getIsReconciled());
+        if ($paramsClass->getFirstYear()!=NULL)            	$this->setFirstYear($paramsClass->getFirstYear());
+        if ($paramsClass->getIsLegacyCleaned()!=NULL)		$this->setIsLegacyCleaned($paramsClass->getIsLegacyCleaned());
+        if (isset($paramsClass->dating))
+        {	
+        													$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
+        													$this->dating->setDatingErrors($paramsClass->dating->getDatingErrorPositive(), $paramsClass->dating->getDatingErrorNegative());
+        }
+        if ($paramsClass->getCode()!=NULL)					$this->setCode($paramsClass->getCode());
+        if ($paramsClass->getComments()!=NULL)				$this->setComments($paramsClass->getComments());
+        if (isset($paramsClass->vmeasurementOp))
+        {
+        													$this->setVMeasurementOp($paramsClass->vmeasurementOp->getID(), $paramsClass->vmeasurementOp->getValue());
+															$this->vmeasurementOp->setParam($paramsClass->vmeasurementOp->getParamID(), $paramsClass->vmeasurementOp->getParamValue());        													
+        }
+        
+        
+        //if (sizeof($paramsClass->referencesArray)>0)   $this->setReferencesArray($paramsClass->referencesArray);
+        //if (isset($paramsClass->masterVMeasurementID)) $this->setMasterVMeasurementID($paramsClass->masterVMeasurementID);
+        //if (isset($paramsClass->justification))        $this->setJustification($paramsClass->justification);
+        //if (isset($paramsClass->certaintyLevel))       $this->setCertaintyLevel($paramsClass->certaintyLevel);
+        //if (isset($paramsClass->newStartYear))         $this->setNewStartYear($paramsClass->newStartYear);
+        //if (isset($paramsClass->readingsUnits))        $this->setUnits($paramsClass->readingsUnits);
         if (sizeof($paramsClass->readingsArray)>0)     $this->setReadingsArray($paramsClass->readingsArray);
 
+
+        if ($paramsClass->parentID!=NULL)
+        {
+        	$parentObj = new radius();
+        	$parentObj->setParamsFromDB($paramsClass->parentID);
+        	array_push($this->parentEntityArray, $parentObj);
+        }																				 
+     
+        
         //echo "BEFORE\n";
         //print_r($this->readingsArray);
         
@@ -318,30 +351,38 @@ class measurement extends measurementEntity implements IDBAccessor
         if (sizeof($paramsClass->readingsArray)>0) 
         {
             foreach($this->readingsArray as $key => $value)
-            {
-                $convValue = $this->unitsHandler($value['reading'], $this->readingsUnits, 'db-default');
-                $this->readingsArray[$key]['reading'] = $convValue;
+            {   
+            	if (isset($this->units))
+            	{
+            		$power = $this->units->getPower();  
+            	}
+            	else
+            	{
+            		$power = -5;
+            	}
+                $convValue = $this->unitsHandler($value['value'], $power, 'db-default');
+                $this->readingsArray[$key]['value'] = $convValue;
             } 
         }
         //echo "AFTER\n";
         //print_r($this->readingsArray);
         
         // Set Owner and Measurer IDs if specified otherwise use current user details
-        if (isset($paramsClass->ownerUserID))
+        if (isset($paramsClass->author))
         {
-            $this->setOwnerUserID($paramsClass->ownerUserID);
+            $this->setAuthor($paramsClass->author->getID());
         }
         else
         {
-            $this->setOwnerUserID($auth->getID());
+            $this->setAuthor($auth->getID());
         }
-        if (isset($paramsClass->measuredByID))
+        if (isset($paramsClass->analyst))
         {
-            $this->setMeasuredByID($paramsClass->measuredByID);
+            $this->setAnalyst($paramsClass->analyst->getID());
         }
         else
         {
-            $this->setMeasuredByID($auth->getID());
+            $this->setAnalyst($auth->getID());
         }
 
         return true;
@@ -356,7 +397,7 @@ class measurement extends measurementEntity implements IDBAccessor
      * @return Boolean
      */
     function validateRequestParams($paramsObj, $crudMode)
-    {  		
+    {  		    	
     	// Check parameters based on crudMode 
         switch($crudMode)
         {
@@ -388,7 +429,7 @@ class measurement extends measurementEntity implements IDBAccessor
                 {
                     foreach ($paramsObj->readingsArray as $reading)
                     {
-                        if(!is_numeric($reading['reading'])) 
+                        if(!is_numeric($reading['value'])) 
                         {
                             $this->setErrorMessage("902","Invalid parameter - All your readings must be numbers.");
                             return false;
@@ -458,10 +499,13 @@ class measurement extends measurementEntity implements IDBAccessor
                     $this->setErrorMessage("902","Missing parameter - a new measurement requires the name parameter.");
                     return false;
                 }*/
-                if(($paramsObj->readingsArray) && ($paramsObj->getFirstYear()== NULL) && ($paramsObj->datingTypeID==1))
+                if(($paramsObj->readingsArray) && ($paramsObj->getFirstYear()== NULL) && (isset($paramsObj->dating)) )
                 {
-                    $this->setErrorMessage("902","Missing parameter - a new absolute direct measurement must include a startYear.");
-                    return false;
+                	if ($paramsObj->dating->getID()==1) 
+                	{	
+                		$this->setErrorMessage("902","Missing parameter - a new absolute direct measurement must include a startYear.");
+                    	return false;
+                	}
                 }
                 /*if(($paramsObj->readingsArray) && ($paramsObj->datingTypeID==NULL))
                 {
@@ -550,8 +594,8 @@ class measurement extends measurementEntity implements IDBAccessor
     }
 
     function asXML($format='standard', $parts="full")
-    {
-
+    {   	
+    	
         // Only direct measurements can have comprehensive format so overide if necessary
         /*if( ($format=='comprehensive') && ($this->vmeasurementOp!='Direct'))
         {
@@ -759,7 +803,7 @@ class measurement extends measurementEntity implements IDBAccessor
          													$xml.= "<tridas:unit>".$this->units->getValue()."</tridas:unit>\n";
          													$xml.= "</tridas:units>\n";
          		}         		
-         		if($this->getMeasuringDate()!=NULL) 		$xml.= "<tridas:measuringDate>".$this->getMeasuringDate()."</tridas:measuringDate>\n";         		    		
+         		if($this->getMeasuringDate()!=NULL) 		$xml.= "<tridas:measuringDate certainty=\"exact\">".$this->getMeasuringDate()."</tridas:measuringDate>\n";         		    		
             	if(isset($this->analyst))					$xml.= "<tridas:analyst>".$this->analyst->getFormattedName()."</tridas:analyst>\n";
          		if(isset($this->dendrochronologist))		$xml.= "<tridas:dendrochronologist>".$this->dendrochronologist->getFormattedName()."</trodas:dendrochronologist>\n";
          		if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
@@ -820,7 +864,7 @@ class measurement extends measurementEntity implements IDBAccessor
        if ($this->readingsArray)
        {
            // Initially set yearvalue to 1001 default
-           if ($this->datingType=='Relative')
+           if ($this->dating->getValue()=='Relative')
            {
                $yearvalue = 1001;
            }
@@ -842,7 +886,7 @@ class measurement extends measurementEntity implements IDBAccessor
            foreach($this->readingsArray as $key => $value)
            {
                // Calculate absolute year where possible
-               if ($this->datingType!='Relative')
+               if ($this->dating->getValue()!='Relative')
                {
                    if($yearvalue==0)
                    {
@@ -856,8 +900,8 @@ class measurement extends measurementEntity implements IDBAccessor
                //{
                //    $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
                //}
-               //$xml .="count=\"".$value['count']."\" value=\"".$this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
-            	$xml.="value=\"".$this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
+               //$xml .="count=\"".$value['count']."\" value=\"".$this->unitsHandler($value['value'], "db-default", "ws-default")."\">";
+            	$xml.="value=\"".$this->unitsHandler($value['value'], "db-default", "ws-default")."\">";
 
                // Add any notes that are in the notesArray subarray
                if(count($value['notesArray']) > 0)
@@ -888,6 +932,136 @@ class measurement extends measurementEntity implements IDBAccessor
        }
        return $xml;
     }
+
+   /**
+     * Creates the sql for doing a cpgdb.createnewvmeasurement()
+     *
+     * @return unknown
+     */
+    private function getCreateNewVMeasurementSQL()
+    {
+       /*
+       -- VMeasurementOp          - Varchar - From tlkpVMeasurementOp
+       -- VMeasurementOpParameter - Integer - Must be specified for REDATE or INDEX; otherwise NULL
+       -- Name                    - Varchar - Must be specified
+       -- Description             - Varchar - May be NULL
+       -- MeasurementID           - Integer - For direct only; the measurement derived from.
+       -- Constituents            - Array   - Array of VMeasurementID - Must be NULL for DIRECT type, an array of one value for any type
+       --                                     other than SUM and DIRECT, and an array of one or more values for SUM
+	   -- Usage                   - Varchar - 
+	   -- UsageComments           - Varchar - 
+       -- Objective               - Varchar - 
+       -- Version                 - Varchar - 
+       -- RETURNS: A new VMeasurementID
+       */
+
+              $sql = "select * from cpgdb.createnewvmeasurement(";
+              
+              // Operation
+              $sql.= "'".$this->getVMeasurementOp()."', ";
+              
+              // Operation parameters
+              if($this->getVMeasurementOpParam()!=NULL)      
+              { 
+              	$sql.= "'".$this->getVMeasurementOpParam()."', "; 
+              } 
+              else 
+              { 
+              	$sql.= "NULL, "; 
+              }
+              
+              // Author
+              if($this->author->getID()!=NULL)
+              {
+              	$sql.= $this->author->getID().", ";
+              }
+              else
+              {	
+              	$sql.= $myAuth->getID().", ";
+              }
+              
+              // Code
+              $sql.= "'".$this->getCode()."', ";
+              
+              // Comments
+              if($this->getComments()!=NULL)              
+              { 
+              	$sql.= "'".$this->description."', ";         
+              } 
+              else 
+              { 
+              	$sql.= "NULL, "; 
+              }
+              
+              // Base measurement
+              if($this->vmeasurementOp=='Direct') 
+              { 
+              	$sql.= $this->measurementID.", ";            
+              } 
+              else 
+              { 
+              	$sql.= "NULL, "; 
+              }
+              
+              // Constituents
+              if($this->vmeasurementOp!='Direct') 
+              { 
+                  $sql.= "ARRAY[";
+                  foreach($this->referencesArray as $value)
+                  {
+                      $sql.= $value.", ";
+                  }
+                  $sql = substr($sql, 0, -2)."], ";            
+              } 
+              else 
+              { 
+                  $sql.= "NULL, "; 
+              }
+              
+              // Usage
+              if($this->getUsage()!=NULL)
+              {
+              	$sql.= $this->getUsage().", ";
+              }
+              else
+              {
+              	$sql.="NULL, ";
+              }
+              
+              // Usage comments
+              if($this->getUsageComments()!=NULL)
+              {
+              	$sql.= $this->getUsageComments().", ";
+              }
+              else
+              {	
+              	$sql.="NULL, ";
+              }
+              
+              // Objective
+              if($this->getObjective()!=NULL)
+              {
+              	$sql.= "'".$this->getObjective()."', ";
+              }
+              else
+              {
+              	$sql.="NULL, ";
+              }
+              
+              // Version
+              if($this->getVersion()!=NULL)
+              {
+              	$sql.= "'".$this->getVersion()."')";
+              }
+              else
+              {
+              	$sql.= "NULL)";
+              }
+              
+              return $sql;
+    	
+    }
+        
     
     
     /***********/
@@ -927,6 +1101,7 @@ class measurement extends measurementEntity implements IDBAccessor
     	
 
         global $dbconn;
+        global $myAuth;
 
         //Only attempt to run SQL if there are no errors so far
         if($this->getLastErrorCode() == NULL)
@@ -1016,7 +1191,7 @@ class measurement extends measurementEntity implements IDBAccessor
                         foreach($this->readingsArray as $key => $value)
                         {
                             // First loop through the readingsArray and create insert statement for tblreading table
-                            $insertSQL = "insert into tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$relyear.", ".$value['reading'].")";
+                            $insertSQL = "insert into tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$relyear.", ".$value['value'].")";
                             $relyear++;
                             
                             // Do tblreading inserts
@@ -1064,41 +1239,9 @@ class measurement extends measurementEntity implements IDBAccessor
 
                     }
 
-
-                    /*
-                        -- CreateNewVMeasurement(VMeasurementOp, VMeasurementOpParameter, OwnerUserID, Name,
-                        --                       Description, MeasurementID, Constituents)
-                        -- VMeasurementOp - Varchar - From tlkpVMeasurementOp
-                        -- VMeasurementOpParameter - Integer - Must be specified for REDATE or INDEX; otherwise NULL
-                        -- Name - Varchar - Must be specified
-                        -- Description - Varchar - May be NULL
-                        -- MeasurementID - Integer - For direct only; the measurement derived from.
-                        -- Constituents - Array of VMeasurementID - Must be NULL for DIRECT type, an array of one value for any type
-                        --                other than SUM and DIRECT, and an array of one or more values for SUM
-                        -- RETURNS: A new VMeasurementID
-                    */
-
-                    $sql = "select * from cpgdb.createnewvmeasurement(";
-                    $sql.= "'".$this->vmeasurementOp."', ";
-                    if($this->vmeasurementOpParam)      { $sql.= "'".$this->vmeasurementOpParam."', "; } else { $sql.= "NULL, "; }
-                    $sql.= $this->ownerUserID.", ";
-                    $sql.= "'".$this->name."', ";
-                    if($this->description)              { $sql.= "'".$this->description."', ";         } else { $sql.= "NULL, "; }
-                    if($this->vmeasurementOp=='Direct') { $sql.= $this->measurementID.", ";            } else { $sql.= "NULL, "; }
-                    if($this->vmeasurementOp!='Direct') 
-                    { 
-                        $sql.= "ARRAY[";
-                        foreach($this->referencesArray as $value)
-                        {
-                            $sql.= $value.", ";
-                        }
-                        $sql = substr($sql, 0, -2)."])";            
-                    } 
-                    else 
-                    { 
-                        $sql.= "NULL) "; 
-                    }
-
+                    // Create new vmeasurement
+					$sql = $this->getCreateNewVMeasurementSQL();
+ 
                     // Run SQL 
                     pg_send_query($dbconn, $sql);
                     $result = pg_get_result($dbconn);
@@ -1138,57 +1281,65 @@ class measurement extends measurementEntity implements IDBAccessor
                 else
                 {
                     // Editing an exisiting record
-
-                    // First update the tblvmeasurement table
+                    $insertSQL	= NULL;
                     $updateSQL2 = NULL;
-                    $updateSQL = "update tblvmeasurement set ";
-                    $insertSQL="";
-                    if($this->name)               $updateSQL.= "name = '".$this->name."', ";
-                    if($this->description)        $updateSQL.= "description = '".$this->description."', ";
-                    if(isset($this->isPublished)) $updateSQL.= "ispublished='".fromPHPtoPGBool($this->isPublished)."' ,";
-                    if($this->ownerUserID)        $updateSQL.= "owneruserid = ".$this->ownerUserID.", ";
-                    $updateSQL = substr($updateSQL, 0 , -2);
-                    $updateSQL.= " where vmeasurementid=".$this->vmeasurementID."; ";
+                    
+                    // Update references or readings depending on whether the measurement is direct or not
 
-                    // Then update references or readings depending on whether the measurement is direct or not
-                    if ($this->vmeasurementOp!=="Direct")
+                    if ($this->getVMeasurementOp()!=="Direct")
                     {
                         // Update references to other vmeasurements
-                        $deleteSQL = "delete from tblvmeasurementgroup where vmeasurementid=".$this->vmeasurementID."; ";
+                        $deleteSQL = "DELETE FROM tblvmeasurementgroup WHERE vmeasurementid=".$this->vmeasurementID."; ";
                         $relyear = 0;
                         foreach($this->referencesArray as $key => $value)
                         {
-                            $insertSQL .= "insert into tblvmeasurementgroup (vmeasurementid, membervmeasurementid) values (".$this->vmeasurementID.", ".$value."); ";
+                            $insertSQL .= "INSERT INTO tblvmeasurementgroup (vmeasurementid, membervmeasurementid) VALUES (".$this->getID().", ".$value."); ";
                             $relyear++;
                         }
                     }
                     elseif($this->vmeasurementOp=="Direct")
                     {
                         // Update the tblmeasurement table
-                        $updateSQL2.= "update tblmeasurement set ";
-                        if(isset($this->radiusID))            $updateSQL2.= "radiusid = ".$this->radiusID.", ";
-                        if(isset($this->isReconciled))        $updateSQL2.= "isreconciled='".fromPHPtoPGBool($this->isReconciled)."', ";
-                        if(isset($this->startYear))           $updateSQL2.= "startyear = ".$this->startYear.", ";
-                        if(isset($this->isLegacyCleaned))     $updateSQL2.= "islegacycleaned='".fromPHPtoPGBool($this->isLegacyCleaned)."', ";
-                        if(isset($this->measuredByID))        $updateSQL2.= "measuredbyid = ".$this->measuredByID.", ";
-                        if(isset($this->datingTypeID))        $updateSQL2.= "datingtypeid = ".$this->datingTypeID.", ";
-                        if(isset($this->datingerrorpositive)) $updateSQL2.= "datingerrorpositive = ".$this->datingerrorpositive.", ";
-                        if(isset($this->datingerrornegative)) $updateSQL2.= "datingerrornegative = ".$this->datingerrornegative.", ";
+                        $updateSQL2.= "UPDATE tblmeasurement SET ";
+                        if($this->parentEntityArray[0]->getID()!=NULL)            	$updateSQL2.= "radiusid = ".$this->parentEntityArray[0]->getID().", ";
+                        if($this->getIsReconciled()!=NULL)        					$updateSQL2.= "isreconciled='".dbHelper::formatBool($this->getIsReconciled(),'pg')."', ";
+                        if($this->getFirstYear()!=NULL)           					$updateSQL2.= "startyear = ".$this->getFirstYear().", ";
+                        if($this->getIsLegacyCleaned()!=NULL)     					$updateSQL2.= "islegacycleaned='".dbHelper::formatBool($this->getIsLegacyCleaned(),'pg')."', ";
+                        if($this->analyst->getID()!=NULL)	        				$updateSQL2.= "measuredbyid = ".$this->analyst->getID().", ";
+                        if($this->dating->getID()!=NULL)        					$updateSQL2.= "datingtypeid = ".$this->dating->getID().", ";
+                        if($this->dating->getDatingErrorPositive()!=NULL) 			$updateSQL2.= "datingerrorpositive = ".$this->dating->getDatingErrorPositive().", ";
+                        if($this->dating->getDatingErrorNegative()!=NULL) 			$updateSQL2.= "datingerrornegative = ".$this->dating->getDatingErrorNegative().", ";
                         $updateSQL2 = substr($updateSQL2, 0 , -2);
-                        $updateSQL2.= " where measurementid=".$this->measurementID."; ";
+                        $updateSQL2.= " WHERE measurementid=".$this->getMeasurementID()."; ";
 
                         // Update readings
-                        $deleteSQL = "delete from tblreading where measurementid=".$this->measurementID."; ";
+                        $deleteSQL = "DELETE FROM tblreading WHERE measurementid=".$this->getMeasurementID()."; ";
                         $relyear = 0;
                         foreach($this->readingsArray as $key => $value)
                         {
-                            $insertSQL .= "insert into tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$relyear.", ".$value['reading']."); ";
+                            $insertSQL .= "INSERT INTO tblreading (measurementid, relyear, reading) VALUES (".$this->getMeasurementID().", ".$relyear.", ".$value['value']."); ";
                             $relyear++;
                         }
                     }
                     
+                    // Update the tblvmeasurement table
+                    $updateSQL = "UPDATE tblvmeasurement SET ";
+                    
+                    if($this->getVMeasurementOp()!=NULL)		$updateSQL.= "vmeasurementopid ='".$this->vmeasurementOp->getID()."', ";
+                    if($this->getVMeasurementOpParam()!=NULL)	$updateSQL.= "vmeasurementopparameter ='".$this->vmeasurementOp->getParamID()."', ";
+                    if($this->getCode()!=NULL)               	$updateSQL.= "code = '".$this->getCode()."', ";
+                    if($this->getComments()!=NULL)        		$updateSQL.= "comments = '".$this->getComments()."', ";
+                    if($this->author->getID()!=NULL)			$updateSQL.= "owneruserid = '".$this->author->getID()."', ";
+                    if($this->usage!=NULL)						$updateSQL.= "usage = '".$this->usage."', ";
+                    if($this->usageComments!=NULL)				$updateSQL.= "usagecomments= '".$this->usageComments."', ";
+                    if($this->objective!=NULL)					$updateSQL.= "objective= '".$this->objective."', ";
+                    if($this->version!=NULL)					$updateSQL.= "version= '".$this->version."', ";
+                    $updateSQL = substr($updateSQL, 0 , -2);
+                    $updateSQL.= " WHERE vmeasurementid=".$this->getID()."; ";
+                    
+                    
                     // Perform query using transactions so that if anything goes wrong we can roll back
-                    $transaction = array("begin;", $deleteSQL, $insertSQL, $updateSQL, $updateSQL2);
+                    $transaction = array("begin;", $deleteSQL, $insertSQL, $updateSQL2, $updateSQL );
 
                     foreach($transaction as $stmt)
                     {
@@ -1226,19 +1377,19 @@ class measurement extends measurementEntity implements IDBAccessor
         global $dbconn;
 
         // Check for required parameters
-        if($this->vmeasurementID == NULL) 
+        if($this->getID() == NULL) 
         {
             $this->setErrorMessage("902", "Missing parameter - 'id' field is required.");
             return FALSE;
         }
         
         //Only attempt to run SQL if there are no errors so far
-        if($this->lastErrorCode == NULL)
+        if($this->getLastErrorCode() == NULL)
         {
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
-                $sql = "select * from cpgdb.findvmchildren('".$this->vmeasurementID."', FALSE)";
+                $sql = "SELECT * FROM cpgdb.findvmchildren('".$this->getID()."', FALSE)";
                 pg_send_query($dbconn, $sql);
                 $result = pg_get_result($dbconn);
 
@@ -1251,21 +1402,21 @@ class measurement extends measurementEntity implements IDBAccessor
                 else
                 {
                     // Retrieve data for record about to be deleted
-                    $this->setParamsFromDB($this->vmeasurementID);
+                    $this->setParamsFromDB($this->getID());
 
-                    if($this->vmeasurementOp=="Direct")
+                    if($this->vmeasurementOp->getValue()=="Direct")
                     {
                         // This is a direct measurement so we can delete the tblmeasurement entry and everything else should cascade delete
-                        $deleteSQL = "delete from tblmeasurement where measurementid=".$this->measurementID.";"; 
+                        $deleteSQL = "DELETE FROM tblmeasurement WHERE measurementid=".$this->getMeasurementID().";"; 
                     }
                     else
                     {
                         // This is a derived measurement so we just delete the tblvmeasurement record and let everything else cascade delete
-                        $deleteSQL = "delete from tblvmeasurement where vmeasurementid=".$this->vmeasurementID.";"; 
+                        $deleteSQL = "DELETE FROM tblvmeasurement WHERE vmeasurementid=".$this->getID().";"; 
                     }
 
                     // Perform deletes using transactions
-                    $transaction = "begin;".$deleteSQL;
+                    $transaction = "BEGIN;".$deleteSQL;
 
                     pg_send_query($dbconn, $transaction);
                     $result = pg_get_result($dbconn);
@@ -1274,7 +1425,7 @@ class measurement extends measurementEntity implements IDBAccessor
                     {
                         // All gone badly so throw error and rollback
                         $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $transaction");
-                        pg_send_query($dbconn, "rollback;");
+                        pg_send_query($dbconn, "ROLLBACK;");
                         return FALSE;
                     }
                     else
@@ -1285,7 +1436,7 @@ class measurement extends measurementEntity implements IDBAccessor
                            //echo $result;
                         }
                         // All gone well so commit transaction to db
-                        pg_send_query($dbconn, "commit;");
+                        pg_send_query($dbconn, "COMMIT;");
                         return TRUE;
                     }
                 }
@@ -1304,6 +1455,9 @@ class measurement extends measurementEntity implements IDBAccessor
     }
 
 
+ 
+    
+    
 // End of Class
 } 
 

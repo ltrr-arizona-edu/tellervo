@@ -121,7 +121,7 @@ class securityUser
         }
 
         return TRUE;
-    }
+    }  
 
     function setChildParamsFromDB()
     {
@@ -283,7 +283,7 @@ class securityUser
             $xml.= "username=\"".dbHelper::escapeXMLChars($this->username)."\" ";
             $xml.= "firstName=\"".dbHelper::escapeXMLChars($this->firstName)."\" ";
             $xml.= "lastName=\"".dbHelper::escapeXMLChars($this->lastName)."\" ";
-            $xml.= "isActive=\"".fromPGtoStringBool($this->isActive)."\" ";
+            $xml.= "isActive=\"".dbHelper::formatBool($this->isActive, 'english')."\" ";
             $xml.= ">";
 
             if (isset($this->groupArray))
