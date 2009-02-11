@@ -457,22 +457,22 @@ more information on http://www.gnu.org/licenses/lgpl.html
 %%%%%%%%%%%%%%-->
 	<xs:element name="measurementSeries">
 		<xs:complexType>
-			<xs:sequence>
+			<xs:sequence minOccurs="1" maxOccurs="unbounded">
 				<xs:element ref="identifier" minOccurs="0"/>
-				<xs:element ref="analyst" minOccurs="0" maxOccurs="unbounded"/>
+				<!--<xs:element ref="analyst" minOccurs="0"/>-->
+			    <xs:element name="analyst" type="xs:string"></xs:element>
 				<xs:element ref="dendrochronologist" minOccurs="0"/>
 				<xs:element ref="measuringMethod"/>
 				<xs:element ref="measuringDate"/>
-				<xs:element ref="variable"/>
-				<xs:element ref="units"/>
+				<xs:element ref="units" maxOccurs="1" />
 				<xs:element ref="comments" minOccurs="0"/>
 				<xs:element ref="usage" minOccurs="0"/>
-				<xs:element ref="usageComments" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="usageComments" minOccurs="0" maxOccurs="unbounded"/>				    
 				<xs:choice minOccurs="0">
 					<xs:element ref="interpretation"/>
 					<xs:element ref="interpretationUnsolved"/>
 				</xs:choice>
+			    <xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="values"/>
 			</xs:sequence>
 			<xs:attribute name="id" type="xs:ID"/>
@@ -522,9 +522,10 @@ more information on http://www.gnu.org/licenses/lgpl.html
 	<xs:element name="interpretation">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="calendar"/>
-				<xs:element ref="firstYear"/>
-				<xs:element ref="statFoundation" maxOccurs="unbounded"/>
+			    <xs:element ref="firstYear" minOccurs="0"/>
+			    <xs:element ref="calendar" minOccurs="0" />
+
+				<xs:element ref="statFoundation" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="sproutYear" minOccurs="0"/>
 				<xs:element ref="deathYear" minOccurs="0"/>
 				<xs:element ref="provenance" minOccurs="0"/>
@@ -559,10 +560,11 @@ more information on http://www.gnu.org/licenses/lgpl.html
 	<xs:element name="interpretationUnsolved" type="xs:string"/>
 	<!-- MEASUREMENTSERIES.values -->
 	<xs:element name="values">
-		<xs:complexType>
+		<xs:complexType>		
 			<xs:sequence>
 				<xs:element ref="value" maxOccurs="unbounded"/>
 			</xs:sequence>
+			<xs:attribute name="type" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="value">

@@ -735,6 +735,12 @@ class measurementParameters extends measurementEntity implements IParams
 		global $corinaNS;
         global $tridasNS;
 
+        if($this->xmlRequestDom->documentElement->tagName=='measurementSeries')
+        {
+        	$this->setVMeasurementOp(5, 'Direct');
+        }
+        
+        
         $children = $this->xmlRequestDom->documentElement->childNodes;
        
         
@@ -750,7 +756,6 @@ class measurementParameters extends measurementEntity implements IParams
 		   	case "dendrochronologist":	break;
 		   	case "measuringMethod":		$this->setMeasurementMethod(NULL, $child->nodeValue); break;
 		   	case "measuringDate":		$this->setMeasuringDate($child->nodeValue); break;
-		   	case "variable":			$this->setVariable(NULL, $child->nodeValue); break;
 		   	case "comments":			$this->setComments($child->nodeValue); break;
 		   	case "usage":				$this->setUsage($child->nodeValue); break;
 		   	case "usageComments":		$this->setUsageComments($child->nodeValue); break;
@@ -776,6 +781,22 @@ class measurementParameters extends measurementEntity implements IParams
 		   		$this->units->setPower($unitPower);
 				break;		   		
 			
+		   	case "interpretation":
+		   		$interpTags = $child->childNodes;
+		   		foreach($interpTags as $interpTag)
+		   		{
+		   			if($interpTag->nodeType != XML_ELEMENT_NODE) continue;
+		   			switch($interpTag->nodeName)
+		   			{
+		   				case "firstYear":
+		   					$this->setFirstYear($interpTag->nodeValue);
+		   					break;
+		   				default:
+		   					break;
+		   			}
+		   		}
+		   		break;
+				
 		    case "genericField":
 		   		$type = $child->getAttribute("type");
 		   		$name = $child->getAttribute("name");
@@ -808,32 +829,52 @@ class measurementParameters extends measurementEntity implements IParams
 		   		break;
 		   		
 		   	case "values":
-
+		   		
+		   		$this->setVariable(NULL, $child->getAttribute("type"));
 		   		$valuetags = $child->childNodes;
 		   		$i = 0;
 		   		
 		   		foreach($valuetags as $tag)
 		   		{
 		   			if($tag->nodeType != XML_ELEMENT_NODE) continue;
-		   			$index = $tag->getAttribute("index");
-		   			$value = $tag->getAttribute("value");   			
-										
-					$this->readingsArray[$i] = array('value' => $value, 
-                                                     'wjinc' => NULL, 
-                                                     'wjdec' => NULL, 
-                                                     'count' => NULL,
-                                                     'notesArray' => array());
+		   			if($tag->tagName == 'value') 
+		   			{	
+		   				// Tag is a <value> tag so process
+		   				
+		   				// get the index and value fields
+			   			$index = $tag->getAttribute("index");
+			   			$value = $tag->getAttribute("value");  
+
+			   			// See if it has child nodes (notes or subvalues)
+			   			$valuechildren = $tag->childNodes;
+		   				$myNotesArray = array();			   			
+			   			foreach($valuechildren as $valuechild)
+			   			{
+			   				if($valuechild->nodeType != XML_ELEMENT_NODE) continue;
+			   				if($valuechild->tagName == 'note')
+			   				{
+			   					// Add notes in a notes array
+			   					array_push($myNotesArray, $valuechild->nodeValue);
+			   				}
+			   				
+			   			}
+
+			   			// Mush all the reading and notes into the ReadingArray
+						$this->readingsArray[$i] = array('value' => $value, 
+	                                                     'wjinc' => NULL, 
+	                                                     'wjdec' => NULL, 
+	                                                     'count' => NULL,
+	                                                     'notesArray' => $myNotesArray);
+		   			}
+		   			else
+		   			{
+		   				// Tag not a value tag so skip
+		   				continue;
+		   			}
+		   			
+		   			// Increment readingArray counter
 					$i++;
 					
-		   			/* @todo 
-		   			 * implement notes for values
-		   			$notetags = $tag->childNodes;
-		   			foreach($notetags as $note)
-		   			{
-		   				if($note->nodeType != XML_ELEMENT_NODE) continue;
-
-		   				
-		   			}*/
 		   		}		   			
 				break;		   		
 		   		

@@ -230,7 +230,7 @@ class measurement extends measurementEntity implements IDBAccessor
                 if ($relYearCheck==$row['relyear'])
                 {
                     // Get all reading values to array 
-                    $this->readingsArray[$row['relyear']] = array('reading' => $row['value'], 
+                    $this->readingsArray[$row['relyear']] = array('reading' => $row['reading'], 
                                                                   'wjinc' => $row['wjinc'], 
                                                                   'wjdec' => $row['wjdec'], 
                                                                   'count' => $row['count'],
@@ -777,6 +777,7 @@ class measurement extends measurementEntity implements IDBAccessor
                 else
                 {
 					$xml.=$this->getValuesXML();
+					$xml.=$this->getValuesXML(true);					
 			        $xml.= "</tridas:".$this->getTridasSeriesType().">";
 		            return $xml;
                 }    
@@ -796,7 +797,7 @@ class measurement extends measurementEntity implements IDBAccessor
             if ($format!="minimal")
             {            	
          		if(isset($this->measuringMethod))			$xml.= "<tridas:measuringMethod>".$this->measuringMethod->getValue()."</tridas:measuringMethod>\n";
-         		if(isset($this->variable))					$xml.= "<tridas:variable>".$this->variable->getValue()."</tridas:variable>";            	
+         		//if(isset($this->variable))					$xml.= "<tridas:variable>".$this->variable->getValue()."</tridas:variable>";            	
                 if(isset($this->units))
          		{
          													$xml.= "<tridas:units factor=\"".$this->getUnitsPower()."\" system=\"SI\">\n";
@@ -805,7 +806,7 @@ class measurement extends measurementEntity implements IDBAccessor
          		}         		
          		if($this->getMeasuringDate()!=NULL) 		$xml.= "<tridas:measuringDate certainty=\"exact\">".$this->getMeasuringDate()."</tridas:measuringDate>\n";         		    		
             	if(isset($this->analyst))					$xml.= "<tridas:analyst>".$this->analyst->getFormattedName()."</tridas:analyst>\n";
-         		if(isset($this->dendrochronologist))		$xml.= "<tridas:dendrochronologist>".$this->dendrochronologist->getFormattedName()."</trodas:dendrochronologist>\n";
+         		if(isset($this->dendrochronologist))		$xml.= "<tridas:dendrochronologist>".$this->dendrochronologist->getFormattedName()."</tridas:dendrochronologist>\n";
          		if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
          		if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".$this->getUsage()."</tridas:usage>\n";
          		if($this->getUsageComments()!=NULL)			$xml.= "<tridas:usageComments>".$this->getUsageComments()."</tridas:usageComments>\n";
@@ -857,8 +858,8 @@ class measurement extends measurementEntity implements IDBAccessor
 
     }
     
-    
-    private function getValuesXML()
+        
+    private function getValuesXML($wj=false)
     {
            // Include all readings 
        if ($this->readingsArray)
@@ -882,7 +883,14 @@ class measurement extends measurementEntity implements IDBAccessor
            }
 
 
-           $xml ="<tridas:values>\n";
+           if($wj===TRUE)
+           {
+           		$xml ="<tridas:values type=\"weiserjahre\">\n";
+           }
+           else
+           {
+           		$xml ="<tridas:values type=\"".$this->getVariable()."\">\n";
+           }
            foreach($this->readingsArray as $key => $value)
            {
                // Calculate absolute year where possible
@@ -895,13 +903,21 @@ class measurement extends measurementEntity implements IDBAccessor
                    }
                }
 
-               $xml.="<tridas:value index=\"nr".$yearvalue."\" ";
+               $xml.="<tridas:value index=\"nr".$yearvalue."\" value=\"";
                //if (!($value['wjinc'] === NULL && $value['wjdec'] === NULL))
                //{
                //    $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
                //}
                //$xml .="count=\"".$value['count']."\" value=\"".$this->unitsHandler($value['value'], "db-default", "ws-default")."\">";
-            	$xml.="value=\"".$this->unitsHandler($value['value'], "db-default", "ws-default")."\">";
+               
+               if($wj===TRUE)
+               {
+               		$xml.= $value['wjinc']."/".$value['wjdec']."\">";
+               }
+               else
+               {
+            		$xml.= $this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
+               }
 
                // Add any notes that are in the notesArray subarray
                if(count($value['notesArray']) > 0)
@@ -1139,13 +1155,13 @@ class measurement extends measurementEntity implements IDBAccessor
                             }
                             if($this->getProvenance()!=NULL)					$sql.= "provenance, ";
                             if(isset($this->measuringMethod))					$sql.= "measuringmethodid, ";
-                            if(isset($this->dendrochronologist))				$sql.= "supervisedbyid, ";
+                            if($this->dendrochronologist->getID()!=NULL)				$sql.= "supervisedbyid, ";
                         // Trim off trailing space and comma
                         $sql = substr($sql, 0, -2);
                         $sql.=") values (";
                             if(isset($this->parentEntityArray[0]))              $sql.= "'".$this->parentEntityArray[0]->getID()."', "; 
                             if($this->getIsReconciled()!=NULL)    				$sql.= "'".dbHelper::formatBool($this->getIsReconciled(), 'english')."', "; 
-                            if($this->getFirstYear())				            $sql.= "'".$this->getFirstYear()."' "; 
+                            if($this->getFirstYear())				            $sql.= "'".$this->getFirstYear()."', "; 
                             if($this->getIsLegacyCleaned()!=NULL) 				$sql.= "'".dbHelper::formatBool($this->getIsLegacyCleaned(), 'english')."', "; 
                             if(isset($this->analyst))					        $sql.= "'".$this->analyst->getID()."', "; 
                             if(isset($this->dating))
@@ -1162,7 +1178,7 @@ class measurement extends measurementEntity implements IDBAccessor
                             }
                             if($this->getProvenance()!=NULL)					$sql.= "'".$this->getProvenance()."', ";
                             if(isset($this->measuringMethod))					$sql.= "'".$this->measuringMethod->getID()."', ";
-                            if(isset($this->dendrochronologist))				$sql.= "'".$this->dendrochronologist->getID().", ";                                                  
+                            if($this->dendrochronologist->getID()!=NULL)				$sql.= "'".$this->dendrochronologist->getID()."', ";                                                  
                         // Trim off trailing space and comma
                         $sql = substr($sql, 0, -2);
                         $sql.=")";
@@ -1241,6 +1257,7 @@ class measurement extends measurementEntity implements IDBAccessor
 
                     // Create new vmeasurement
 					$sql = $this->getCreateNewVMeasurementSQL();
+	
  
                     // Run SQL 
                     pg_send_query($dbconn, $sql);
