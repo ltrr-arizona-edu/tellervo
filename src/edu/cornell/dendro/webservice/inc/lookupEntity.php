@@ -56,6 +56,11 @@ class lookupEntity
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
                 $result = pg_query($dbconn, $sql);
+                if (pg_num_rows($result) == 0)
+                {
+					trigger_error("903"."The id '".$id."' was not found when doing a lookup in table ".$this->tablename, E_USER_ERROR);
+					return false;
+                }                
                 while ($row = pg_fetch_array($result))
                 {
                 	$this->id = $id;
@@ -73,12 +78,17 @@ class lookupEntity
 		elseif ( ($id==NULL) && ($value!=NULL) )
 		{	
 			// Value given but no ID
-			$sql = "SELECT ".$this->idfieldname." AS theid FROM ".$this->tablename." WHERE ".$this->fieldname." = '".$this->value."'";
+			$sql = "SELECT ".$this->idfieldname." AS theid FROM ".$this->tablename." WHERE ".$this->fieldname." = '".$value."'";
 		
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
                 $result = pg_query($dbconn, $sql);
+                if (pg_num_rows($result) == 0)
+                {
+					trigger_error("903"."The value '".$value."' was not found when doing a lookup in table ".$this->tablename, E_USER_ERROR);
+					return false;
+                }
                 while ($row = pg_fetch_array($result))
                 {
                 	$this->id = $row['theid'];
@@ -218,8 +228,8 @@ class vmeasurementOp extends lookupEntity
 	
 	function __construct()
 	{
-		parent::__construct("tlkpvmeasurementop", "name");
-		$this->param = new vmeasurementOpParam();
+		parent::__construct("tlkpvmeasurementop", "name", "vmeasurementopid");
+		$this->param = new standardizingMethod();
 	}
 	
 	function setVMeasurementOp($id, $value)
@@ -227,9 +237,20 @@ class vmeasurementOp extends lookupEntity
 		$this->setLookupEntity($id, $value);
 	}
 	
-	function setParam($id, $value)
+	function setStandardizingMethod($id, $value)
 	{
-		$this->param->setVmeasurementOpParam($id, $value);
+		$this->param->setStandardizingMethod($id, $value);
+
+	}
+	
+	function getStandardizingMethod()
+	{
+		return $this->param->getStandardizingMethod();
+	}
+	
+	function getStandardizingMethodID()
+	{
+		return $this->param->getID();
 	}
 	
 	function getParamID()
@@ -243,16 +264,26 @@ class vmeasurementOp extends lookupEntity
 	}
 }
 
-class vmeasurementOpParam extends lookupEntity
+class standardizingMethod extends lookupEntity
 {
 	function __construct()
 	{
 		parent::__construct("tlkpindextype", "indexname", "indexid");
 	}
 	
-	function setVmeasurementOpParam($id, $value)
+	function setStandardizingMethod($id, $value)
 	{
 		$this->setLookupEntity($id, $value);
+	}
+	
+	/**
+	 * Get the standardizing method
+	 *
+	 * @return String
+	 */
+	function getStandardizingMethod()
+	{
+		return $this->getValue();	
 	}
 	
 }
@@ -270,8 +301,6 @@ class variable extends lookupEntity
 		$this->setLookupEntity($id, $value);
 	}
 }
-
-
 
 
 

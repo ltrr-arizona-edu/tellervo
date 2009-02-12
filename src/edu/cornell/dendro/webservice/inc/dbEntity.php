@@ -2184,12 +2184,6 @@ class measurementEntity extends dbEntity
 	 */
 	protected $type = NULL;
 	/**
-	 * Method by which the series has been indexed
-	 *
-	 * @var String
-	 */
-	protected $standardizingMethod = NULL;
-	/**
 	 * Author of this virtual series
 	 *
 	 * @var securityUser
@@ -2472,9 +2466,21 @@ class measurementEntity extends dbEntity
 		$this->type = addslashes($type);
 	}
 	
-	function setStandardizingMethod($method)
+	function setStandardizingMethod($id, $value)
 	{
-		$this->standardizingMethod = addslashes($method);
+		// If the operation has not been set make it 'index' 
+		// as this must be the case if setting the standardization
+		// method.
+		if(!isset($this->vmeasurementOp))
+		{
+			$this->vmeasurementOp = new vmeasurementOp();
+			$this->vmeasurementOp->setVMeasurementOp(NULL, "Index");
+		}
+		
+		
+		$this->vmeasurementOp->setStandardizingMethod($id, $value);
+		
+	
 	}
 	
 	function setAuthor($authorid)
@@ -2543,7 +2549,7 @@ class measurementEntity extends dbEntity
     
     function setMeasurementID($id)
     {
-    	if ($id!=NULL)
+    	if ($id==NULL)
         {
             //Only run if valid parameter has been provided
             global $dbconn;
@@ -2568,15 +2574,12 @@ class measurementEntity extends dbEntity
             }
             return TRUE;
         }
-        elseif($this->getID())
+        else
         {
         	$this->measurementID = $id;
         	return TRUE;
         }
-        else
-        {
-        	return FALSE;
-        }
+
     }
           
     
@@ -2815,11 +2818,11 @@ class measurementEntity extends dbEntity
     	}
     }
     
-    function getVMeasurementOpParam()
+    function getStandardizingMethod()
     {
     	if(isset($this->vmeasurementOp))
     	{
-    		return $this->vmeasurementOp->getParamValue();
+    		return $this->vmeasurementOp->getStandardizingMethod();
     	}
     	else
     	{
@@ -2910,12 +2913,7 @@ class measurementEntity extends dbEntity
 	{
 		return $this->type;	
 	}
-	
-	function getStandardizingMethod()
-	{
-		return $this->standardizingMethod;
-	}
-	
+		
 	function getAuthor()
 	{
 		return $this->author->getFormattedName();

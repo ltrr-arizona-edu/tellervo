@@ -100,10 +100,11 @@ class measurement extends measurementEntity implements IDBAccessor
                 //$this->setRadiusID();
                 $this->setReadingCount($row['readingcount']);
                 //$this->setSignificanceLevel();
-                //$this->setStandardizingMethod();
+				$this->setVMeasurementOp($row['vmeasurementopid'], $row['opname']);	
+                $this->setStandardizingMethod($row['vmeasurementopparameter'], null);
                 $this->setCreatedTimestamp($row['createdtimestamp']);
                 $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
-				$this->setVMeasurementOp($row['vmeasurementopid'], $row['opname']);
+			
 				$this->setUsage($row['usage']);
 				$this->setUsageComments($row['usagecomments']);
 
@@ -323,17 +324,19 @@ class measurement extends measurementEntity implements IDBAccessor
         if (isset($paramsClass->vmeasurementOp))
         {
         													$this->setVMeasurementOp($paramsClass->vmeasurementOp->getID(), $paramsClass->vmeasurementOp->getValue());
-															$this->vmeasurementOp->setParam($paramsClass->vmeasurementOp->getParamID(), $paramsClass->vmeasurementOp->getParamValue());        													
+															$this->vmeasurementOp->setStandardizingMethod($paramsClass->vmeasurementOp->getParamID(), $paramsClass->vmeasurementOp->getStandardizingMethod());        													
         }
         
         
-        //if (sizeof($paramsClass->referencesArray)>0)   $this->setReferencesArray($paramsClass->referencesArray);
+        if (sizeof($paramsClass->referencesArray)>0)   $this->setReferencesArray($paramsClass->referencesArray);
         //if (isset($paramsClass->masterVMeasurementID)) $this->setMasterVMeasurementID($paramsClass->masterVMeasurementID);
         //if (isset($paramsClass->justification))        $this->setJustification($paramsClass->justification);
         //if (isset($paramsClass->certaintyLevel))       $this->setCertaintyLevel($paramsClass->certaintyLevel);
         //if (isset($paramsClass->newStartYear))         $this->setNewStartYear($paramsClass->newStartYear);
         //if (isset($paramsClass->readingsUnits))        $this->setUnits($paramsClass->readingsUnits);
         if (sizeof($paramsClass->readingsArray)>0)     $this->setReadingsArray($paramsClass->readingsArray);
+        
+       
 
 
         if ($paramsClass->parentID!=NULL)
@@ -494,11 +497,11 @@ class measurement extends measurementEntity implements IDBAccessor
                     $this->setErrorMessage("902","Missing parameter - a new direct measurement must include a radiusID.");
                     return false;
                 }
-                /**if( ($paramsObj->name==NULL) ) 
+                if( ($paramsObj->getCode()==NULL) ) 
                 {   
-                    $this->setErrorMessage("902","Missing parameter - a new measurement requires the name parameter.");
+                    $this->setErrorMessage("902","Missing parameter - a new measurement requires the code parameter.");
                     return false;
-                }*/
+                }
                 if(($paramsObj->readingsArray) && ($paramsObj->getFirstYear()== NULL) && (isset($paramsObj->dating)) )
                 {
                 	if ($paramsObj->dating->getID()==1) 
@@ -517,7 +520,7 @@ class measurement extends measurementEntity implements IDBAccessor
                     $this->setErrorMessage("902","Invalid parameter - You have only supplied ".count($paramsObj->readingsArray)." readings.  Minimum number required is 10.", E_USER_ERROR);
                     return false;
                 }
-                if(($paramsObj->referencesArray) && ($paramsObj->radiusID)) 
+                if(($paramsObj->referencesArray) && ($paramsObj->parentID)) 
                 {
                     $this->setErrorMessage("902","Invalid parameter - a new measurement based on other measurements cannot include a radiusID.");
                     return false;
@@ -729,27 +732,25 @@ class measurement extends measurementEntity implements IDBAccessor
     	$xml = null;
  	    $xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getID()."\">";
      	$xml.= $this->getIdentifierXML();
+     	    	
      	
         // Include permissions details if requested            
         $xml .= $this->getPermissionsXML();     	
-               
-                if(isset($this->referencesArray))
-            	{		
-            												$xml.= "<tridas:linkSeries>";
-            		foreach($this->referencesArray as $ref)
-            		{
-            												$xml.= "<tridas:idRef ref=\"".$ref."\"/>\n";
-            		}
-            												$xml.= "</tridas:linkSeries>";
-            	}	
-        
-                if(isset($this->vmeasurementOp)) 			$xml.= "<tridas:type>".strtolower($this->vmeasurementOp->getValue())."</tridas:type>\n";               
+                      
+                if(isset($this->vmeasurementOp)) 			$xml.= "<tridas:type>".$this->vmeasurementOp->getValue()."</tridas:type>\n";               
                 if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"operationParameter\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
  				if($this->getObjective()!=NULL)				$xml.= "<tridas:objective>".addslashes($this->getObjective())."</tridas:objective>\n";
  				if($this->getStandardizingMethod()!=NULL)	$xml.= "<tridas:standardizingMethod>".addslashes($this->getStandardizingMethod())."</tridas:standardizingMethod>";
  				if($this->getAuthor()!=NULL)				$xml.= "<tridas:author>".addslashes($this->getAuthor())."</tridas:author>\n";
  				if($this->getVersion()!=NULL)				$xml.= "<tridas:version>".addslashes($this->getVersion())."</tridas:version>\n";
- 				if($this->getDerivationDate()!=NULL)		$xml.= "<tridas:derivationDate>".$this->getDerivationDate()."</tridas:derivationDate>\n";
+ 				if($this->getDerivationDate()!=NULL)		$xml.= "<tridas:derivationDate certainty=\"exact\">".$this->getDerivationDate()."</tridas:derivationDate>\n";
+ 				if(isset($this->referencesArray))
+            	{		
+            		foreach($this->referencesArray as $ref)
+            		{
+            												$xml.= "<tridas:usedSeries>".$ref."</tridas:usedSeries>\n";
+            		}
+            	}	
  				if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".addslashes($this->getComments())."</tridas:comments>\n";
  				if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".addslashes($this->getUsage())."</tridas:usage>\n";
  				if($this->getUsageComments()!=NULL)			$xml.= "<tridas:usageComments>".addslashes($this->getUsageComments())."</tridas:usageComments>\n";
@@ -860,92 +861,100 @@ class measurement extends measurementEntity implements IDBAccessor
     
         
     private function getValuesXML($wj=false)
-    {
-           // Include all readings 
-       if ($this->readingsArray)
+    { 
+       if (!$this->readingsArray)
        {
-           // Initially set yearvalue to 1001 default
-           if ($this->dating->getValue()=='Relative')
+       		return false;
+       }
+       
+       if($wj===TRUE && $this->getVMeasurementOp()=='Index')
+       {
+       		return false;
+       }
+       
+       
+       // Initially set yearvalue to 1001 default
+       if ($this->dating->getValue()=='Relative')
+       {
+           $yearvalue = 1001;
+       }
+       else
+       {
+           if($this->getFirstYear()==NULL)
            {
-               $yearvalue = 1001;
+               $this->setErrorMessage(667, "First year missing from absolute or absolute with error measurement.  You shouldn't have been able to get this far!");
+               return false;    
            }
            else
            {
-               if($this->getFirstYear()==NULL)
+               $yearvalue = $this->getFirstYear();
+           }
+       }
+
+
+       if($wj===TRUE)
+       {
+       		$xml ="<tridas:values type=\"weiserjahre\">\n";
+       }
+       else
+       {
+       		$xml ="<tridas:values type=\"".$this->getVariable()."\">\n";
+       }
+       foreach($this->readingsArray as $key => $value)
+       {
+           // Calculate absolute year where possible
+           if ($this->dating->getValue()!='Relative')
+           {
+               if($yearvalue==0)
                {
-                   $this->setErrorMessage(667, "First year missing from absolute or absolute with error measurement.  You shouldn't have been able to get this far!");
-                   return false;    
-               }
-               else
-               {
-                   $yearvalue = $this->getFirstYear();
+                   // If year value is 0 increment to 1 as there is no such year as 0bc/ad
+                   $yearvalue = 1;
                }
            }
 
-
+           $xml.="<tridas:value index=\"nr".$yearvalue."\" value=\"";
+           //if (!($value['wjinc'] === NULL && $value['wjdec'] === NULL))
+           //{
+           //    $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
+           //}
+           //$xml .="count=\"".$value['count']."\" value=\"".$this->unitsHandler($value['value'], "db-default", "ws-default")."\">";
+           
            if($wj===TRUE)
            {
-           		$xml ="<tridas:values type=\"weiserjahre\">\n";
+           		$xml.= $value['wjinc']."/".$value['wjdec']."\">";
            }
            else
            {
-           		$xml ="<tridas:values type=\"".$this->getVariable()."\">\n";
+        		$xml.= $this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
            }
-           foreach($this->readingsArray as $key => $value)
+
+           // Add any notes that are in the notesArray subarray
+           if(count($value['notesArray']) > 0)
            {
-               // Calculate absolute year where possible
-               if ($this->dating->getValue()!='Relative')
+               foreach($value['notesArray'] as $notevalue)
                {
-                   if($yearvalue==0)
+                   $myReadingNote = new readingNote;
+                   $success = $myReadingNote->setParamsFromDB($notevalue);
+
+                   if($success)
                    {
-                       // If year value is 0 increment to 1 as there is no such year as 0bc/ad
-                       $yearvalue = 1;
+                       $xml.=$myReadingNote->asXML();
+                   }
+                   else
+                   {
+                       $this->setErrorMessage($myReadingNote->getLastErrorCode(), $myReadingNote->getLastErrorMessage());
                    }
                }
-
-               $xml.="<tridas:value index=\"nr".$yearvalue."\" value=\"";
-               //if (!($value['wjinc'] === NULL && $value['wjdec'] === NULL))
-               //{
-               //    $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
-               //}
-               //$xml .="count=\"".$value['count']."\" value=\"".$this->unitsHandler($value['value'], "db-default", "ws-default")."\">";
-               
-               if($wj===TRUE)
-               {
-               		$xml.= $value['wjinc']."/".$value['wjdec']."\">";
-               }
-               else
-               {
-            		$xml.= $this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
-               }
-
-               // Add any notes that are in the notesArray subarray
-               if(count($value['notesArray']) > 0)
-               {
-                   foreach($value['notesArray'] as $notevalue)
-                   {
-                       $myReadingNote = new readingNote;
-                       $success = $myReadingNote->setParamsFromDB($notevalue);
-
-                       if($success)
-                       {
-                           $xml.=$myReadingNote->asXML();
-                       }
-                       else
-                       {
-                           $this->setErrorMessage($myReadingNote->getLastErrorCode(), $myReadingNote->getLastErrorMessage());
-                       }
-                   }
-               }
-
-               $xml.="</tridas:value>\n";
-
-               // Increment yearvalue for next loop
-               $yearvalue++;
-
            }
-           $xml.="</tridas:values>\n";
+
+           $xml.="</tridas:value>\n";
+
+           // Increment yearvalue for next loop
+           $yearvalue++;
+
        }
+       $xml.="</tridas:values>\n";
+
        return $xml;
     }
 
@@ -977,9 +986,9 @@ class measurement extends measurementEntity implements IDBAccessor
               $sql.= "'".$this->getVMeasurementOp()."', ";
               
               // Operation parameters
-              if($this->getVMeasurementOpParam()!=NULL)      
+              if($this->getStandardizingMethod()!=NULL)      
               { 
-              	$sql.= "'".$this->getVMeasurementOpParam()."', "; 
+              	$sql.= "'".$this->vmeasurementOp->getStandardizingMethodID()."', "; 
               } 
               else 
               { 
@@ -1002,7 +1011,7 @@ class measurement extends measurementEntity implements IDBAccessor
               // Comments
               if($this->getComments()!=NULL)              
               { 
-              	$sql.= "'".$this->description."', ";         
+              	$sql.= "'".$this->getComments()."', ";         
               } 
               else 
               { 
@@ -1010,9 +1019,9 @@ class measurement extends measurementEntity implements IDBAccessor
               }
               
               // Base measurement
-              if($this->vmeasurementOp=='Direct') 
+              if($this->getVMeasurementOp()=='Direct') 
               { 
-              	$sql.= $this->measurementID.", ";            
+              	$sql.= $this->getMeasurementID().", ";            
               } 
               else 
               { 
@@ -1020,7 +1029,7 @@ class measurement extends measurementEntity implements IDBAccessor
               }
               
               // Constituents
-              if($this->vmeasurementOp!='Direct') 
+              if($this->getVMeasurementOp()!='Direct') 
               { 
                   $sql.= "ARRAY[";
                   foreach($this->referencesArray as $value)
@@ -1141,7 +1150,7 @@ class measurement extends measurementEntity implements IDBAccessor
                             if($this->getFirstYear())				            $sql.= "startyear, "; 
                             if($this->getIsLegacyCleaned()!=NULL) 				$sql.= "islegacycleaned, "; 
                             if(isset($this->analyst))					        $sql.= "measuredbyid, "; 
-                            if(isset($this->dating))
+                            if($this->dating->getID()!=NULL)
                             {
                             													$sql.= "datingtypeid, "; 
                             if($this->dating->getDatingErrorNegative()!=NULL)   $sql.= "datingerrornegative, "; 
@@ -1164,7 +1173,7 @@ class measurement extends measurementEntity implements IDBAccessor
                             if($this->getFirstYear())				            $sql.= "'".$this->getFirstYear()."', "; 
                             if($this->getIsLegacyCleaned()!=NULL) 				$sql.= "'".dbHelper::formatBool($this->getIsLegacyCleaned(), 'english')."', "; 
                             if(isset($this->analyst))					        $sql.= "'".$this->analyst->getID()."', "; 
-                            if(isset($this->dating))
+                            if($this->dating->getID()!=NULL)
                             {
                             													$sql.= "'".$this->dating->getID()."', "; 
                             if($this->dating->getDatingErrorNegative()!=NULL)   $sql.= "'".$this->dating->getDatingErrorNegative()."', "; 
@@ -1198,6 +1207,7 @@ class measurement extends measurementEntity implements IDBAccessor
                             $result = pg_query($dbconn, $sql2);
                             while ($row = pg_fetch_array($result))
                             {
+                            	
                                 $this->setMeasurementID($row['measurementid']);   
                             }
                         }    

@@ -38,7 +38,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 	<xs:complexType name="date">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
-				<xs:attribute name="certainty" use="required">
+				<xs:attribute name="certainty" use="optional">
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
 							<xs:enumeration value="unknown"/>
@@ -56,7 +56,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 	<xs:element name="linkSeries">
 		<xs:complexType>
 			<xs:choice>
-				<xs:element name="idRref">
+				<xs:element name="idRef">
 					<xs:complexType>
 						<xs:attribute name="ref" type="xs:IDREF"/>
 					</xs:complexType>
@@ -140,28 +140,28 @@ more information on http://www.gnu.org/licenses/lgpl.html
 %%%%%%%%%%%%%%
 %		PROJECT
 %%%%%%%%%%%%%% -->
-	<xs:element name="project">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="title" minOccurs="0"/>
-				<xs:element ref="identifier" minOccurs="0"/>
-				<xs:element ref="laboratory" maxOccurs="unbounded"/>
-				<xs:element ref="type" maxOccurs="unbounded"/>
-				<xs:element ref="category"/>
-				<xs:element ref="investigator"/>
-				<xs:element ref="period"/>
-				<xs:element ref="description" minOccurs="0"/>
-				<xs:element ref="requestDate" minOccurs="0"/>
-				<xs:element ref="commissioner" minOccurs="0"/>
-				<xs:element ref="reference" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="research" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="object" maxOccurs="unbounded"/>
-				<xs:element ref="derivedSeries" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+<xs:element name="project">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element ref="title" minOccurs="0"/>
+			<xs:element ref="identifier" minOccurs="0"/>
+			<xs:element ref="laboratory" maxOccurs="unbounded"/>
+			<xs:element ref="type" maxOccurs="unbounded"/>
+			<xs:element ref="category"/>
+			<xs:element ref="investigator"/>
+			<xs:element ref="period"/>
+			<xs:element ref="description" minOccurs="0"/>
+			<xs:element ref="requestDate" minOccurs="0"/>
+			<xs:element ref="commissioner" minOccurs="0"/>
+			<xs:element ref="reference" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="research" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="object" maxOccurs="unbounded"/>				
+			<xs:element ref="derivedSeries" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
 	<!-- PROJECT.title (global type)-->
 	<!-- PROJECT.identifier (global type) -->
 	<!-- PROJECT.laboratory -->
@@ -524,9 +524,9 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			<xs:sequence>
 			    <xs:element ref="firstYear" minOccurs="0"/>
 			    <xs:element ref="calendar" minOccurs="0" />
-
 				<xs:element ref="statFoundation" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="sproutYear" minOccurs="0"/>
+				<xs:element ref="usedSoftware" minOccurs="0"/>
 				<xs:element ref="deathYear" minOccurs="0"/>
 				<xs:element ref="provenance" minOccurs="0"/>
 			</xs:sequence>
@@ -535,7 +535,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 	<xs:element name="calendar">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="linkSeries"/>
+				<xs:element ref="usedSeries"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -590,27 +590,24 @@ more information on http://www.gnu.org/licenses/lgpl.html
 	<xs:element name="derivedSeries">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="linkSeries" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="identifier" minOccurs="0"/>
-				<xs:element ref="type" maxOccurs="unbounded"/>
+				<xs:element ref="type" minOccurs="1" maxOccurs="1"/>
 				<xs:element ref="objective" minOccurs="0"/>
-				<xs:element ref="standardizingMethod"/>
+				<xs:element ref="standardizingMethod" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="author" minOccurs="0"/>
 				<xs:element ref="version" minOccurs="0"/>
 				<xs:element ref="derivationDate" minOccurs="0"/>
-				<xs:element ref="usedSoftware" minOccurs="0"/>
 				<xs:element ref="usedSeries" maxOccurs="unbounded"/>
 				<xs:element ref="comments" minOccurs="0"/>
 				<xs:element ref="usage" minOccurs="0"/>
 				<xs:element ref="usageComments" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="variable"/>
-				<xs:element ref="units"/>
-				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="units" minOccurs="0"/>
 				<xs:choice minOccurs="0">
 					<xs:element ref="interpretation"/>
 					<xs:element ref="interpretationUnsolved"/>
 				</xs:choice>
-				<xs:element ref="values"/>
+				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>				
+				<xs:element ref="values" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="id" type="xs:ID"/>
 		</xs:complexType>
