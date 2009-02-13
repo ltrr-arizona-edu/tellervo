@@ -71,9 +71,9 @@ class dbEntity
     /**
      * Name of this entity
      *
-     * @var unknown_type
+     * @var String
      */
-    protected $code = NULL;    
+    protected $title = NULL;    
     
     /**
      * XML tag for this entities parent entity
@@ -208,6 +208,7 @@ class dbEntity
     /**
      * Set the current entities code.
      *
+     * @deprecated use setTitle()
      * @param String $theCode
      * @return Boolean
      */
@@ -215,6 +216,12 @@ class dbEntity
     {
         $this->code=addslashes($theCode);
         return true;
+    }
+    
+    protected function setTitle($title)
+    {
+    	$this->title=addslashes($title);
+    	return true;
     }
     
 	/**
@@ -273,13 +280,31 @@ class dbEntity
     /**
      * Get the code for this database entity
      *
+     * @deprecated use getTitle()
      * @return String
      */
     protected function getCode()
     {
-    	if(isset($this->code))
+    	if(isset($this->title))
     	{
-    		return $this->code;
+    		return $this->title;
+    	}
+    	else
+    	{
+    		return NULL;
+    	}
+    }
+    
+    /**
+     * Get the title of this database entity
+     *
+     * @return String
+     */
+    protected function getTitle()
+    {
+        	if(isset($this->title))
+    	{
+    		return $this->title;
     	}
     	else
     	{
@@ -305,7 +330,7 @@ class dbEntity
     function getIdentifierXML()
     {
     	global $domain;
-        return "<tridas:identifier domain=\"$domain\">".$this->getCode()."</tridas:identifier>";  
+        return "<tridas:title>".$this->getTitle()."</tridas:title>\n<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>";  
     }
     
     function getDBIDXML()
@@ -1529,6 +1554,13 @@ class radiusEntity extends dbEntity
      */
     protected $missingSapwoodRingsToBarkFoundation = NULL;
 
+    /**
+     * The angle from true north 
+     *
+     * @var Double
+     */
+    protected $azimuth = NULL;
+    
     function __construct()
     {
         $groupXMLTag = "radii";
@@ -1538,6 +1570,16 @@ class radiusEntity extends dbEntity
 	/***********/
     /* SETTERS */
     /***********/   
+	
+	/**
+	 * Set the angle of this radius from true north
+	 *
+	 * @param Double $value
+	 */
+	function setAzimuth($value)
+	{
+		$this->azimuth = (double) $value;
+	}
 	
 	/**
 	 * Set whether the pith is present or not
@@ -1701,6 +1743,16 @@ class radiusEntity extends dbEntity
     /* GETTERS */
     /***********/   	
 
+	/**
+	 * Get the angle of this radius from true norht
+	 *
+	 * @return Double
+	 */
+	function getAzimuth()
+	{
+		return $this->azimuth;
+	}
+	
 	/**
 	 * Get whether the pith is present
 	 *
@@ -2384,17 +2436,7 @@ class measurementEntity extends dbEntity
 		$this->units->setUnit($id, $value);
 		$this->power = $power;
 	}
-	
-	/**
-	 * Set the date this measurement was measured
-	 *
-	 * @param unknown_type $date
-	 */
-	function setMeasuringDate($date)
-	{
-		$this->measuringDate = $date;
-	}
-	
+		
 	/**
 	 * Set the code for this measurement
 	 *
@@ -2498,12 +2540,7 @@ class measurementEntity extends dbEntity
 	{
 		$this->version = addslashes($version);
 	}
-	
-	function setDerivationDate($date)
-	{
-		$this->derivationDate = $date;
-	}
-	
+		
     function setOwnerUserID($theOwnerUserID)
     {
         if($theOwnerUserID)
@@ -2862,13 +2899,6 @@ class measurementEntity extends dbEntity
 		return $this->power;
 	}
 	
-	function getMeasuringDate()
-	{
-		return $this->getCreatedTimestamp();
-	}
-	
-
-	
 	function getComments()
 	{
 		return $this->comments;
@@ -2929,12 +2959,6 @@ class measurementEntity extends dbEntity
 		return $this->version;
 	}
 	
-	function getDerivationDate()
-	{
-		return $this->derivationDate;
-	}
-	
-
     function getEndYear()
     {
         $length = count($this->readingsArray);

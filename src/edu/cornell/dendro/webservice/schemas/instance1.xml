@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tridas:derivedSeries xmlns:ns3="http://www.w3.org/1999/xlink"
+ xmlns:tridas="http://www.tridas.org/1.1"
+ xmlns:gml="http://www.opengis.net/gml"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.tridas.org/1.1 file:/Volumes/dendroserver/corina-webservice/dev/schemas/tridas.xsd">
+
+    <tridas:identifier domain="dendro.cornell.edu/dev/">ASF 1 sum</tridas:identifier>
+        <tridas:type>sum</tridas:type>
+        <tridas:author>Carol Griggs</tridas:author>
+        <tridas:derivationDate certainty="exact">2008-10-14 09:28:24.704021-04</tridas:derivationDate>
+        <tridas:usedSeries>1100</tridas:usedSeries>
+        <tridas:usedSeries>1090</tridas:usedSeries>
+        <tridas:interpretation>
+            <tridas:firstYear>1001</tridas:firstYear>
+        </tridas:interpretation>
+        <tridas:values type="Ring width">
+            <tridas:value index="nr1001" value="178"></tridas:value>
+            
+            <tridas:value index="nr1002" value="212"></tridas:value>
+            <tridas:value index="nr1003" value="235"></tridas:value>
+            <tridas:value index="nr1004" value="251"></tridas:value>
+            <tridas:value index="nr1005" value="213"></tridas:value>
+            <tridas:value index="nr1006" value="226"></tridas:value>
+            <tridas:value index="nr1007" value="214"></tridas:value>
+            <tridas:value index="nr1008" value="218"></tridas:value>
+            <tridas:value index="nr1009" value="183"></tridas:value>
+            <tridas:value index="nr1010" value="178"></tridas:value>
+            <tridas:value index="nr1011" value="132"></tridas:value>
+            <tridas:value index="nr1012" value="176"></tridas:value>
+            <tridas:value index="nr1013" value="149"></tridas:value>
+            <tridas:value index="nr1014" value="149"></tridas:value>
+            <tridas:value index="nr1015" value="167"></tridas:value>
+            <tridas:value index="nr1016" value="180"></tridas:value>
+            <tridas:value index="nr1017" value="138"></tridas:value>
+            <tridas:value index="nr1018" value="126"></tridas:value>
+            
+            <tridas:value index="nr1019" value="161"></tridas:value>
+            <tridas:value index="nr1020" value="163"></tridas:value>
+            <tridas:value index="nr1021" value="149"></tridas:value>
+            <tridas:value index="nr1022" value="122"></tridas:value>
+            <tridas:value index="nr1023" value="154"></tridas:value>
+            <tridas:value index="nr1024" value="133"></tridas:value>
+            <tridas:value index="nr1025" value="134"></tridas:value>
+            <tridas:value index="nr1026" value="134"></tridas:value>
+            <tridas:value index="nr1027" value="142"></tridas:value>
+            <tridas:value index="nr1028" value="113"></tridas:value>
+            <tridas:value index="nr1029" value="152"></tridas:value>
+            <tridas:value index="nr1030" value="119"></tridas:value>
+            <tridas:value index="nr1031" value="141"></tridas:value>
+            <tridas:value index="nr1032" value="150"></tridas:value>
+            <tridas:value index="nr1033" value="146"></tridas:value>
+            <tridas:value index="nr1034" value="135"></tridas:value>
+            <tridas:value index="nr1035" value="139"></tridas:value>
+            
+            <tridas:value index="nr1036" value="182"></tridas:value>
+            <tridas:value index="nr1037" value="210"></tridas:value>
+            <tridas:value index="nr1038" value="225"></tridas:value>
+            <tridas:value index="nr1039" value="213"></tridas:value>
+            <tridas:value index="nr1040" value="217"></tridas:value>
+            <tridas:value index="nr1041" value="236"></tridas:value>
+            <tridas:value index="nr1042" value="220"></tridas:value>
+            <tridas:value index="nr1043" value="165"></tridas:value>
+            <tridas:value index="nr1044" value="189"></tridas:value>
+            <tridas:value index="nr1045" value="180"></tridas:value>
+            <tridas:value index="nr1046" value="160"></tridas:value>
+            <tridas:value index="nr1047" value="116"></tridas:value>
+            <tridas:value index="nr1048" value="150"></tridas:value>
+            <tridas:value index="nr1049" value="156"></tridas:value>
+            <tridas:value index="nr1050" value="155"></tridas:value>
+            <tridas:value index="nr1051" value="137"></tridas:value>
+            <tridas:value index="nr1052" value="156"></tridas:value>
+            
+            <tridas:value index="nr1053" value="167"></tridas:value>
+            <tridas:value index="nr1054" value="148"></tridas:value>
+            <tridas:value index="nr1055" value="154"></tridas:value>
+            <tridas:value index="nr1056" value="158"></tridas:value>
+            <tridas:value index="nr1057" value="156"></tridas:value>
+            <tridas:value index="nr1058" value="140"></tridas:value>
+            <tridas:value index="nr1059" value="101"></tridas:value>
+            <tridas:value index="nr1060" value="106"></tridas:value>
+            <tridas:value index="nr1061" value="124"></tridas:value>
+            <tridas:value index="nr1062" value="112"></tridas:value>
+            <tridas:value index="nr1063" value="99"></tridas:value>
+            <tridas:value index="nr1064" value="120"></tridas:value>
+            <tridas:value index="nr1065" value="165"></tridas:value>
+            <tridas:value index="nr1066" value="190"></tridas:value>
+            <tridas:value index="nr1067" value="180"></tridas:value>
+            <tridas:value index="nr1068" value="160"></tridas:value>
+            <tridas:value index="nr1069" value="125"></tridas:value>
+            
+            <tridas:value index="nr1070" value="131"></tridas:value>
+            <tridas:value index="nr1071" value="126"></tridas:value>
+            <tridas:value index="nr1072" value="163"></tridas:value>
+            <tridas:value index="nr1073" value="144"></tridas:value>
+            <tridas:value index="nr1074" value="133"></tridas:value>
+            <tridas:value index="nr1075" value="143"></tridas:value>
+            <tridas:value index="nr1076" value="141"></tridas:value>
+            <tridas:value index="nr1077" value="114"></tridas:value>
+            <tridas:value index="nr1078" value="115"></tridas:value>
+            <tridas:value index="nr1079" value="108"></tridas:value>
+            <tridas:value index="nr1080" value="163"></tridas:value>
+            <tridas:value index="nr1081" value="154"></tridas:value>
+            <tridas:value index="nr1082" value="135"></tridas:value>
+        </tridas:values>
+        <tridas:values type="weiserjahre">
+            <tridas:value index="nr1001" value="0/0"></tridas:value>
+            <tridas:value index="nr1002" value="2/0"></tridas:value>
+            
+            <tridas:value index="nr1003" value="1/1"></tridas:value>
+            <tridas:value index="nr1004" value="2/0"></tridas:value>
+            <tridas:value index="nr1005" value="0/2"></tridas:value>
+            <tridas:value index="nr1006" value="1/1"></tridas:value>
+            <tridas:value index="nr1007" value="0/2"></tridas:value>
+            <tridas:value index="nr1008" value="2/0"></tridas:value>
+            <tridas:value index="nr1009" value="0/2"></tridas:value>
+            <tridas:value index="nr1010" value="1/1"></tridas:value>
+            <tridas:value index="nr1011" value="0/2"></tridas:value>
+            <tridas:value index="nr1012" value="2/0"></tridas:value>
+            <tridas:value index="nr1013" value="0/2"></tridas:value>
+            <tridas:value index="nr1014" value="1/1"></tridas:value>
+            <tridas:value index="nr1015" value="1/0"></tridas:value>
+            <tridas:value index="nr1016" value="2/0"></tridas:value>
+            <tridas:value index="nr1017" value="0/2"></tridas:value>
+            <tridas:value index="nr1018" value="0/2"></tridas:value>
+            <tridas:value index="nr1019" value="2/0"></tridas:value>
+            
+            <tridas:value index="nr1020" value="1/1"></tridas:value>
+            <tridas:value index="nr1021" value="1/1"></tridas:value>
+            <tridas:value index="nr1022" value="0/2"></tridas:value>
+            <tridas:value index="nr1023" value="2/0"></tridas:value>
+            <tridas:value index="nr1024" value="0/2"></tridas:value>
+            <tridas:value index="nr1025" value="2/0"></tridas:value>
+            <tridas:value index="nr1026" value="1/1"></tridas:value>
+            <tridas:value index="nr1027" value="1/1"></tridas:value>
+            <tridas:value index="nr1028" value="0/2"></tridas:value>
+            <tridas:value index="nr1029" value="2/0"></tridas:value>
+            <tridas:value index="nr1030" value="0/2"></tridas:value>
+            <tridas:value index="nr1031" value="2/0"></tridas:value>
+            <tridas:value index="nr1032" value="2/0"></tridas:value>
+            <tridas:value index="nr1033" value="0/2"></tridas:value>
+            <tridas:value index="nr1034" value="0/2"></tridas:value>
+            <tridas:value index="nr1035" value="2/0"></tridas:value>
+            <tridas:value index="nr1036" value="2/0"></tridas:value>
+            
+            <tridas:value index="nr1037" value="2/0"></tridas:value>
+            <tridas:value index="nr1038" value="2/0"></tridas:value>
+            <tridas:value index="nr1039" value="1/1"></tridas:value>
+            <tridas:value index="nr1040" value="1/1"></tridas:value>
+            <tridas:value index="nr1041" value="2/0"></tridas:value>
+            <tridas:value index="nr1042" value="1/1"></tridas:value>
+            <tridas:value index="nr1043" value="0/2"></tridas:value>
+            <tridas:value index="nr1044" value="2/0"></tridas:value>
+            <tridas:value index="nr1045" value="0/2"></tridas:value>
+            <tridas:value index="nr1046" value="0/2"></tridas:value>
+            <tridas:value index="nr1047" value="0/2"></tridas:value>
+            <tridas:value index="nr1048" value="2/0"></tridas:value>
+            <tridas:value index="nr1049" value="1/1"></tridas:value>
+            <tridas:value index="nr1050" value="1/1"></tridas:value>
+            <tridas:value index="nr1051" value="0/2"></tridas:value>
+            <tridas:value index="nr1052" value="2/0"></tridas:value>
+            <tridas:value index="nr1053" value="2/0"></tridas:value>
+            
+            <tridas:value index="nr1054" value="0/2"></tridas:value>
+            <tridas:value index="nr1055" value="1/1"></tridas:value>
+            <tridas:value index="nr1056" value="1/1"></tridas:value>
+            <tridas:value index="nr1057" value="1/1"></tridas:value>
+            <tridas:value index="nr1058" value="1/1"></tridas:value>
+            <tridas:value index="nr1059" value="0/2"></tridas:value>
+            <tridas:value index="nr1060" value="1/0"></tridas:value>
+            <tridas:value index="nr1061" value="2/0"></tridas:value>
+            <tridas:value index="nr1062" value="0/1"></tridas:value>
+            <tridas:value index="nr1063" value="0/2"></tridas:value>
+            <tridas:value index="nr1064" value="2/0"></tridas:value>
+            <tridas:value index="nr1065" value="2/0"></tridas:value>
+            <tridas:value index="nr1066" value="2/0"></tridas:value>
+            <tridas:value index="nr1067" value="0/2"></tridas:value>
+            <tridas:value index="nr1068" value="0/2"></tridas:value>
+            <tridas:value index="nr1069" value="0/2"></tridas:value>
+            <tridas:value index="nr1070" value="2/0"></tridas:value>
+            
+            <tridas:value index="nr1071" value="0/2"></tridas:value>
+            <tridas:value index="nr1072" value="2/0"></tridas:value>
+            <tridas:value index="nr1073" value="0/2"></tridas:value>
+            <tridas:value index="nr1074" value="0/1"></tridas:value>
+            <tridas:value index="nr1075" value="1/0"></tridas:value>
+            <tridas:value index="nr1076" value="0/1"></tridas:value>
+            <tridas:value index="nr1077" value="0/1"></tridas:value>
+            <tridas:value index="nr1078" value="1/0"></tridas:value>
+            <tridas:value index="nr1079" value="0/1"></tridas:value>
+            <tridas:value index="nr1080" value="1/0"></tridas:value>
+            <tridas:value index="nr1081" value="0/1"></tridas:value>
+            <tridas:value index="nr1082" value="0/1"></tridas:value>
+        </tridas:values>
+    </tridas:derivedSeries>
+    

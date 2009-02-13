@@ -75,12 +75,11 @@ class measurement extends measurementEntity implements IDBAccessor
                 $this->setAnalyst($row['measuredbyid']);
                 $this->setAuthor($row['owneruserid']);
                 //$this->setCertaintyLevel();
-                $this->setCode($row['code']);
+                $this->setTitle($row['code']);
                 $this->setComments($row['comments']);
                 $this->setDatingType($row['datingtypeid'],$row['datingtype']);
                 $this->dating->setDatingErrors($row['datingerrorpositive'], $row['datingerrornegative']);
                 //$this->setDendrochronologist();
-                $this->setDerivationDate($row['createdtimestamp']);
                 $this->setFirstYear($row['startyear']);
                 $this->setIsLegacyCleaned(dbHelper::formatBool($row['islegacycleaned']));
                 $this->setIsPublished(dbHelper::formatBool($row['ispublished']));
@@ -90,7 +89,6 @@ class measurement extends measurementEntity implements IDBAccessor
                 $this->setMeasurementCount($row['measurementcount']);
                 $this->setMeasurementID($row['measurementid']);
                 $this->setMeasurementMethod($row['measuringmethodid'], NULL);
-                $this->setMeasuringDate($row['createdtimestamp']);
                 $this->setMeasuringUnits($row['unitid'], NULL, $row['power']);
                 $this->setVariable($row['measurementvariableid'], NULL);
                 //$this->setNewStartYear();
@@ -729,6 +727,7 @@ class measurement extends measurementEntity implements IDBAccessor
 
     private function getDerivedSeriesXML($format, $parts, $recurseLevel=2)
     {
+    	global $domain;
     	$xml = null;
  	    $xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getID()."\">";
      	$xml.= $this->getIdentifierXML();
@@ -743,13 +742,14 @@ class measurement extends measurementEntity implements IDBAccessor
  				if($this->getStandardizingMethod()!=NULL)	$xml.= "<tridas:standardizingMethod>".addslashes($this->getStandardizingMethod())."</tridas:standardizingMethod>";
  				if($this->getAuthor()!=NULL)				$xml.= "<tridas:author>".addslashes($this->getAuthor())."</tridas:author>\n";
  				if($this->getVersion()!=NULL)				$xml.= "<tridas:version>".addslashes($this->getVersion())."</tridas:version>\n";
- 				if($this->getDerivationDate()!=NULL)		$xml.= "<tridas:derivationDate certainty=\"exact\">".$this->getDerivationDate()."</tridas:derivationDate>\n";
+ 				if($this->getCreatedTimestamp()!=NULL)		$xml.= "<tridas:createdTimestamp>".$this->getCreatedTimestamp()."</tridas:createdTimestamp>\n";
  				if(isset($this->referencesArray))
-            	{		
+            	{											$xml.= "<tridas:linkSeries>\n";
             		foreach($this->referencesArray as $ref)
             		{
-            												$xml.= "<tridas:usedSeries>".$ref."</tridas:usedSeries>\n";
+            												$xml.= "<tridas:identifier domain=\"$domain\">".$ref."</tridas:identifier>\n";
             		}
+										            		$xml.= "</tridas:linkSeries>\n";
             	}	
  				if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".addslashes($this->getComments())."</tridas:comments>\n";
  				if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".addslashes($this->getUsage())."</tridas:usage>\n";
@@ -805,8 +805,7 @@ class measurement extends measurementEntity implements IDBAccessor
          													$xml.= "<tridas:unit>".$this->units->getValue()."</tridas:unit>\n";
          													$xml.= "</tridas:units>\n";
          		}         		
-         		if($this->getMeasuringDate()!=NULL) 		$xml.= "<tridas:measuringDate certainty=\"exact\">".$this->getMeasuringDate()."</tridas:measuringDate>\n";         		    		
-            	if(isset($this->analyst))					$xml.= "<tridas:analyst>".$this->analyst->getFormattedName()."</tridas:analyst>\n";
+               	if(isset($this->analyst))					$xml.= "<tridas:analyst>".$this->analyst->getFormattedName()."</tridas:analyst>\n";
          		if(isset($this->dendrochronologist))		$xml.= "<tridas:dendrochronologist>".$this->dendrochronologist->getFormattedName()."</tridas:dendrochronologist>\n";
          		if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
          		if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".$this->getUsage()."</tridas:usage>\n";
@@ -825,8 +824,8 @@ class measurement extends measurementEntity implements IDBAccessor
                 if(isset($this->isPublished))           $xml.= "<tridas:genericField name=\"isPublished\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
 
                 
-                if($this->getCreatedTimeStamp()!=NULL)      $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimeStamp()."</tridas:genericField>\n";
-                if($this->getLastModifiedTimeStamp()!=NULL) $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimeStamp()."</tridas:genericField>\n";
+                if($this->getCreatedTimeStamp()!=NULL)      $xml.= "<tridas:createdTimestamp>".$this->getCreatedTimeStamp()."</tridas:createdTimestamp>\n";
+                if($this->getLastModifiedTimeStamp()!=NULL) $xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimeStamp()."</tridas:lastModifiedTimestamp>\n";
                 
 		// show summary information in standard and summary modes
 		/*if($format=="summary" || $format=="standard") {
