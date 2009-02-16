@@ -120,6 +120,94 @@ class meta
      return False;
   }
 
+  /**
+   * Search the complete HTTP_USER_AGENT for identifiers of known client programs and return the associated version number.  
+   * If no known clients are identifier then returns false
+   *
+   * @return Mixed
+   */
+  function getClientVersion()
+  {
+  	global $corinaClientIdentifiers;
+  	foreach($corinaClientIdentifiers as $app)
+  	{ 	
+	  	if (strstr($this->clientversion, $app['name']))
+	  	{
+	  		return substr(strstr($this->clientversion, $app['name']), strlen($app['name'])+1);
+	  		break;
+	  	}	
+  	}	
+  	return false;
+  }
+  
+  /**
+   * Is the version of the client being used valid?
+   *
+   * @return Boolean
+   */
+  function isClientVersionValid()
+  {
+  	global $corinaClientIdentifiers;
+	global $onlyAllowKnownClients;
+	
+	
+  	foreach($corinaClientIdentifiers as $app)
+  	{ 	
+	  	if (strstr($this->clientversion, $app['name']))
+	  	{
+	  		$minVersion =  $app['minVersion'];
+	  		if($this->getClientVersion()>$minVersion) 
+	  		{
+	  			return true;
+	  		}
+	  		else
+	  		{
+	  			return false;
+	  		}
+	  	}	
+  	}
+
+  	// Return either false or null depending on if strict client checking is enabled
+  	if($onlyAllowKnownClients===TRUE)
+  	{ 
+  		return false;
+  	}
+  	else
+  	{
+  		return null;
+  	}
+  }
+  
+  
+  function getClientName()
+  {
+  	global $corinaClientIdentifiers;	
+  	
+  	foreach($corinaClientIdentifiers as $app)
+  	{ 	
+	  	if (strstr($this->clientversion, $app['name']))
+	  	{
+	  		return $app['name'];
+	  	}	
+  	}	
+  	return false;
+  }
+  
+  function getMinRequiredClientVersion()
+  {
+  	global $corinaClientIdentifiers;	
+  	
+  	foreach($corinaClientIdentifiers as $app)
+  	{ 	
+	  	if (strstr($this->clientversion, $app['name']))
+	  	{
+	  		return $app['minVersion'];
+	  	}	
+  	}	
+  	return false;
+  }
+  
+    
   function asXML()
   {
     // Get class as XML 
