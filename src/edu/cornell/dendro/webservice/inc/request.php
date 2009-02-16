@@ -68,9 +68,7 @@ class request
    			{
    				trigger_error("107"."The version of ".$myMetaHeader->getClientName()." that you are using (v".$myMetaHeader->getClientVersion().") to connect to the Corina webservice is no longer supported.\n"  
    						     ."Please download an updated version (>".$myMetaHeader->getMinRequiredClientVersion().") and try again.", E_USER_ERROR);
-   			}
-   			
-   			return false;
+   			}	
    		}
     	
     	$this->crudMode = strtolower($crudMode);

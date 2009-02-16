@@ -74,7 +74,7 @@ $corinaClientIdentifiers = array(
 								array("name" => "Gecko", 		"minVersion" => "1.0")
 								);
 								
-// Only accept clients of a known type and version								
+// Only accept known clients								
 $onlyAllowKnownClients = FALSE;
 
 
