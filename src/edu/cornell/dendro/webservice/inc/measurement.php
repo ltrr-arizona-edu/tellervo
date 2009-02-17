@@ -495,9 +495,9 @@ class measurement extends measurementEntity implements IDBAccessor
                     $this->setErrorMessage("902","Missing parameter - a new direct measurement must include a radiusID.");
                     return false;
                 }
-                if( ($paramsObj->getCode()==NULL) ) 
+                if( ($paramsObj->getTitle()==NULL) ) 
                 {   
-                    $this->setErrorMessage("902","Missing parameter - a new measurement requires the code parameter.");
+                    $this->setErrorMessage("902","Missing parameter - a new measurement requires the title parameter.");
                     return false;
                 }
                 if(($paramsObj->readingsArray) && ($paramsObj->getFirstYear()== NULL) && (isset($paramsObj->dating)) )
@@ -527,6 +527,13 @@ class measurement extends measurementEntity implements IDBAccessor
                 {
                     $this->setErrorMessage("902","Missing parameter - a new measurement based on other measurements must include an operation.");
                     return false;
+                }
+                echo "size =".sizeof($paramsObj->referencesArray);
+                echo "type = ".$paramsObj->getType();
+                if((sizeof($paramsObj->referencesArray)<2) && ($paramsObj->getType()=='Sum') ) 
+                {
+                	$this->setErrorMessage("902","You need to supply two or more measurements if you want to create a sum", E_USER_ERROR);
+                	return false;
                 }
                 if( (!(isset($paramsObj->referencesArray))) && (isset($paramsObj->vmeasurementOp)) )
                 {

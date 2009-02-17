@@ -300,11 +300,11 @@ class dbEntity
      *
      * @return String
      */
-    protected function getTitle()
+    function getTitle()
     {
-        	if(isset($this->title))
+       	if(isset($this->title))
     	{
-    		return $this->title;
+    		return dbHelper::escapeXMLChars($this->title);
     	}
     	else
     	{
@@ -330,7 +330,7 @@ class dbEntity
     function getIdentifierXML()
     {
     	global $domain;
-        return "<tridas:title>".$this->getTitle()."</tridas:title>\n<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>";  
+        return "<tridas:title>".dbHelper::escapeXMLChars($this->getTitle())."</tridas:title>\n<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>";  
     }
     
     function getDBIDXML()
@@ -1494,16 +1494,16 @@ class radiusEntity extends dbEntity
     /**
      * One of n/a; absent; complete; incomplete
      *
-     * @var String
+     * @var sapwood
      */
     protected $sapwood = NULL;
     
     /**
-     * Whether heartwood is present or absent
+     * One of n/a; absent; complete; incomplete
      *
-     * @var Boolean
+     * @var heartwood	
      */
-    protected $heartwoodPresent = NULL;
+    protected $heartwood = NULL;
     
     /**
      * Bark present or absent
@@ -1614,22 +1614,16 @@ class radiusEntity extends dbEntity
 	}
 	
 	/**
-	 * Set whether the sapwood is absent, complete, incomplete or n/a
+	 * Set whether the sapwood is n/a; absent; complete; incomplete
 	 *
-	 * @param unknown_type $value
+	 * @param String $value
+	 * @param Integer $id
+	 * @retun Boolean
 	 */
-	function setSapwood($value)
+	function setSapwood($id, $value)
 	{
-		if( (strtolower($value)!='n/a') || (strtolower($value)!='absent') || (strtolower($value)!='complete') ||(strtolower($value)!='incomplete') )
-		{
-			$this->sapwood = strtolower($value);
-			return TRUE;
-		}
-		else
-		{
-			$this->setErrorMessage(901, 'Sapwood field must be one of n/a; absent; complete; incomplete');
-			return FALSE;
-		}
+		$this->sapwood = new sapwood();
+		return $this->sapwood->setSapwood($id, $value);
 	}
 	
 	/**
@@ -1653,15 +1647,16 @@ class radiusEntity extends dbEntity
 	}
 	
 	/**
-	 * Set whether the heartwood is present
+	 * Set whether the heartwood is n/a; absent; complete; incomplete
 	 *
 	 * @param String $value
+	 * @param Integer $id
 	 * @retun Boolean
 	 */
-	function setHeartwood($value)
+	function setHeartwood($id, $value)
 	{
-		$this->heartwood = addslashes($value);
-		return true;
+		$this->heartwood = new heartwood();
+		return $this->heartwood->setHeartwood($id, $value);
 	}
 	
 	/**
@@ -1777,11 +1772,11 @@ class radiusEntity extends dbEntity
 	{
 		if($asKey)
 		{
-			return dbHelper::getKeyFromValue("sapwood", $this->sapwood);
+			return $this->sapwood->getID();
 		}
 		else
 		{
-			return $this->sapwood;
+			return $this->sapwood->getValue();
 		}
 	}
 	
@@ -1796,7 +1791,7 @@ class radiusEntity extends dbEntity
 	}
 	
 	/**
-	 * Is the heartwood present?
+	 * Get whether the heartwood is n/a, absent, complete or incomplete
 	 *
 	 * @return String
 	 */
@@ -1804,11 +1799,11 @@ class radiusEntity extends dbEntity
 	{
 		if($asKey)
 		{
-			return dbHelper::getKeyFromValue("heartwood", $this->heartwood);
+			return $this->heartwood->getID();
 		}
 		else
 		{
-			return $this->heartwood;
+			return $this->heartwood->getValue();
 		}
 	}
 	
@@ -2229,12 +2224,15 @@ class measurementEntity extends dbEntity
 	 * @var String
 	 */
 	protected $provenance = NULL;
+	
+	
 	/**
 	 * Type e.g. chronology, object curve
 	 *
 	 * @var String
 	 */
 	protected $type = NULL;
+	
 	/**
 	 * Author of this virtual series
 	 *
@@ -2505,6 +2503,7 @@ class measurementEntity extends dbEntity
 	
 	function setType($type)
 	{
+		echo "setting type\n";
 		$this->type = addslashes($type);
 	}
 	
@@ -2941,7 +2940,7 @@ class measurementEntity extends dbEntity
 	
 	function getType()
 	{
-		return $this->type;	
+		return $this->vmeasurementOp->getValue();
 	}
 		
 	function getAuthor()

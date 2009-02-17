@@ -425,12 +425,6 @@ more information on http://www.gnu.org/licenses/lgpl.html
 				<xs:element ref="missingHeartwoodRingsToPithFoundation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="presence" use="required">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="present"/>
-						<xs:enumeration value="absent"/>
-					</xs:restriction>
-				</xs:simpleType>
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>

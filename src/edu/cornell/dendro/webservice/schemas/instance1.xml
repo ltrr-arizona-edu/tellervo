@@ -1,196 +1,184 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tridas:derivedSeries xmlns:ns3="http://www.w3.org/1999/xlink"
- xmlns:tridas="http://www.tridas.org/1.1"
- xmlns:gml="http://www.opengis.net/gml"
+<ns1:radius xmlns:ns1="http://www.tridas.org/1.1"
+ xmlns:ns2="http://www.opengis.net/gml"
+ xmlns:ns3="http://www.w3.org/1999/xlink"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation="http://www.tridas.org/1.1 file:/Volumes/dendroserver/corina-webservice/dev/schemas/tridas.xsd">
-
-    <tridas:identifier domain="dendro.cornell.edu/dev/">ASF 1 sum</tridas:identifier>
-        <tridas:type>sum</tridas:type>
-        <tridas:author>Carol Griggs</tridas:author>
-        <tridas:derivationDate certainty="exact">2008-10-14 09:28:24.704021-04</tridas:derivationDate>
-        <tridas:usedSeries>1100</tridas:usedSeries>
-        <tridas:usedSeries>1090</tridas:usedSeries>
-        <tridas:interpretation>
-            <tridas:firstYear>1001</tridas:firstYear>
-        </tridas:interpretation>
-        <tridas:values type="Ring width">
-            <tridas:value index="nr1001" value="178"></tridas:value>
-            
-            <tridas:value index="nr1002" value="212"></tridas:value>
-            <tridas:value index="nr1003" value="235"></tridas:value>
-            <tridas:value index="nr1004" value="251"></tridas:value>
-            <tridas:value index="nr1005" value="213"></tridas:value>
-            <tridas:value index="nr1006" value="226"></tridas:value>
-            <tridas:value index="nr1007" value="214"></tridas:value>
-            <tridas:value index="nr1008" value="218"></tridas:value>
-            <tridas:value index="nr1009" value="183"></tridas:value>
-            <tridas:value index="nr1010" value="178"></tridas:value>
-            <tridas:value index="nr1011" value="132"></tridas:value>
-            <tridas:value index="nr1012" value="176"></tridas:value>
-            <tridas:value index="nr1013" value="149"></tridas:value>
-            <tridas:value index="nr1014" value="149"></tridas:value>
-            <tridas:value index="nr1015" value="167"></tridas:value>
-            <tridas:value index="nr1016" value="180"></tridas:value>
-            <tridas:value index="nr1017" value="138"></tridas:value>
-            <tridas:value index="nr1018" value="126"></tridas:value>
-            
-            <tridas:value index="nr1019" value="161"></tridas:value>
-            <tridas:value index="nr1020" value="163"></tridas:value>
-            <tridas:value index="nr1021" value="149"></tridas:value>
-            <tridas:value index="nr1022" value="122"></tridas:value>
-            <tridas:value index="nr1023" value="154"></tridas:value>
-            <tridas:value index="nr1024" value="133"></tridas:value>
-            <tridas:value index="nr1025" value="134"></tridas:value>
-            <tridas:value index="nr1026" value="134"></tridas:value>
-            <tridas:value index="nr1027" value="142"></tridas:value>
-            <tridas:value index="nr1028" value="113"></tridas:value>
-            <tridas:value index="nr1029" value="152"></tridas:value>
-            <tridas:value index="nr1030" value="119"></tridas:value>
-            <tridas:value index="nr1031" value="141"></tridas:value>
-            <tridas:value index="nr1032" value="150"></tridas:value>
-            <tridas:value index="nr1033" value="146"></tridas:value>
-            <tridas:value index="nr1034" value="135"></tridas:value>
-            <tridas:value index="nr1035" value="139"></tridas:value>
-            
-            <tridas:value index="nr1036" value="182"></tridas:value>
-            <tridas:value index="nr1037" value="210"></tridas:value>
-            <tridas:value index="nr1038" value="225"></tridas:value>
-            <tridas:value index="nr1039" value="213"></tridas:value>
-            <tridas:value index="nr1040" value="217"></tridas:value>
-            <tridas:value index="nr1041" value="236"></tridas:value>
-            <tridas:value index="nr1042" value="220"></tridas:value>
-            <tridas:value index="nr1043" value="165"></tridas:value>
-            <tridas:value index="nr1044" value="189"></tridas:value>
-            <tridas:value index="nr1045" value="180"></tridas:value>
-            <tridas:value index="nr1046" value="160"></tridas:value>
-            <tridas:value index="nr1047" value="116"></tridas:value>
-            <tridas:value index="nr1048" value="150"></tridas:value>
-            <tridas:value index="nr1049" value="156"></tridas:value>
-            <tridas:value index="nr1050" value="155"></tridas:value>
-            <tridas:value index="nr1051" value="137"></tridas:value>
-            <tridas:value index="nr1052" value="156"></tridas:value>
-            
-            <tridas:value index="nr1053" value="167"></tridas:value>
-            <tridas:value index="nr1054" value="148"></tridas:value>
-            <tridas:value index="nr1055" value="154"></tridas:value>
-            <tridas:value index="nr1056" value="158"></tridas:value>
-            <tridas:value index="nr1057" value="156"></tridas:value>
-            <tridas:value index="nr1058" value="140"></tridas:value>
-            <tridas:value index="nr1059" value="101"></tridas:value>
-            <tridas:value index="nr1060" value="106"></tridas:value>
-            <tridas:value index="nr1061" value="124"></tridas:value>
-            <tridas:value index="nr1062" value="112"></tridas:value>
-            <tridas:value index="nr1063" value="99"></tridas:value>
-            <tridas:value index="nr1064" value="120"></tridas:value>
-            <tridas:value index="nr1065" value="165"></tridas:value>
-            <tridas:value index="nr1066" value="190"></tridas:value>
-            <tridas:value index="nr1067" value="180"></tridas:value>
-            <tridas:value index="nr1068" value="160"></tridas:value>
-            <tridas:value index="nr1069" value="125"></tridas:value>
-            
-            <tridas:value index="nr1070" value="131"></tridas:value>
-            <tridas:value index="nr1071" value="126"></tridas:value>
-            <tridas:value index="nr1072" value="163"></tridas:value>
-            <tridas:value index="nr1073" value="144"></tridas:value>
-            <tridas:value index="nr1074" value="133"></tridas:value>
-            <tridas:value index="nr1075" value="143"></tridas:value>
-            <tridas:value index="nr1076" value="141"></tridas:value>
-            <tridas:value index="nr1077" value="114"></tridas:value>
-            <tridas:value index="nr1078" value="115"></tridas:value>
-            <tridas:value index="nr1079" value="108"></tridas:value>
-            <tridas:value index="nr1080" value="163"></tridas:value>
-            <tridas:value index="nr1081" value="154"></tridas:value>
-            <tridas:value index="nr1082" value="135"></tridas:value>
-        </tridas:values>
-        <tridas:values type="weiserjahre">
-            <tridas:value index="nr1001" value="0/0"></tridas:value>
-            <tridas:value index="nr1002" value="2/0"></tridas:value>
-            
-            <tridas:value index="nr1003" value="1/1"></tridas:value>
-            <tridas:value index="nr1004" value="2/0"></tridas:value>
-            <tridas:value index="nr1005" value="0/2"></tridas:value>
-            <tridas:value index="nr1006" value="1/1"></tridas:value>
-            <tridas:value index="nr1007" value="0/2"></tridas:value>
-            <tridas:value index="nr1008" value="2/0"></tridas:value>
-            <tridas:value index="nr1009" value="0/2"></tridas:value>
-            <tridas:value index="nr1010" value="1/1"></tridas:value>
-            <tridas:value index="nr1011" value="0/2"></tridas:value>
-            <tridas:value index="nr1012" value="2/0"></tridas:value>
-            <tridas:value index="nr1013" value="0/2"></tridas:value>
-            <tridas:value index="nr1014" value="1/1"></tridas:value>
-            <tridas:value index="nr1015" value="1/0"></tridas:value>
-            <tridas:value index="nr1016" value="2/0"></tridas:value>
-            <tridas:value index="nr1017" value="0/2"></tridas:value>
-            <tridas:value index="nr1018" value="0/2"></tridas:value>
-            <tridas:value index="nr1019" value="2/0"></tridas:value>
-            
-            <tridas:value index="nr1020" value="1/1"></tridas:value>
-            <tridas:value index="nr1021" value="1/1"></tridas:value>
-            <tridas:value index="nr1022" value="0/2"></tridas:value>
-            <tridas:value index="nr1023" value="2/0"></tridas:value>
-            <tridas:value index="nr1024" value="0/2"></tridas:value>
-            <tridas:value index="nr1025" value="2/0"></tridas:value>
-            <tridas:value index="nr1026" value="1/1"></tridas:value>
-            <tridas:value index="nr1027" value="1/1"></tridas:value>
-            <tridas:value index="nr1028" value="0/2"></tridas:value>
-            <tridas:value index="nr1029" value="2/0"></tridas:value>
-            <tridas:value index="nr1030" value="0/2"></tridas:value>
-            <tridas:value index="nr1031" value="2/0"></tridas:value>
-            <tridas:value index="nr1032" value="2/0"></tridas:value>
-            <tridas:value index="nr1033" value="0/2"></tridas:value>
-            <tridas:value index="nr1034" value="0/2"></tridas:value>
-            <tridas:value index="nr1035" value="2/0"></tridas:value>
-            <tridas:value index="nr1036" value="2/0"></tridas:value>
-            
-            <tridas:value index="nr1037" value="2/0"></tridas:value>
-            <tridas:value index="nr1038" value="2/0"></tridas:value>
-            <tridas:value index="nr1039" value="1/1"></tridas:value>
-            <tridas:value index="nr1040" value="1/1"></tridas:value>
-            <tridas:value index="nr1041" value="2/0"></tridas:value>
-            <tridas:value index="nr1042" value="1/1"></tridas:value>
-            <tridas:value index="nr1043" value="0/2"></tridas:value>
-            <tridas:value index="nr1044" value="2/0"></tridas:value>
-            <tridas:value index="nr1045" value="0/2"></tridas:value>
-            <tridas:value index="nr1046" value="0/2"></tridas:value>
-            <tridas:value index="nr1047" value="0/2"></tridas:value>
-            <tridas:value index="nr1048" value="2/0"></tridas:value>
-            <tridas:value index="nr1049" value="1/1"></tridas:value>
-            <tridas:value index="nr1050" value="1/1"></tridas:value>
-            <tridas:value index="nr1051" value="0/2"></tridas:value>
-            <tridas:value index="nr1052" value="2/0"></tridas:value>
-            <tridas:value index="nr1053" value="2/0"></tridas:value>
-            
-            <tridas:value index="nr1054" value="0/2"></tridas:value>
-            <tridas:value index="nr1055" value="1/1"></tridas:value>
-            <tridas:value index="nr1056" value="1/1"></tridas:value>
-            <tridas:value index="nr1057" value="1/1"></tridas:value>
-            <tridas:value index="nr1058" value="1/1"></tridas:value>
-            <tridas:value index="nr1059" value="0/2"></tridas:value>
-            <tridas:value index="nr1060" value="1/0"></tridas:value>
-            <tridas:value index="nr1061" value="2/0"></tridas:value>
-            <tridas:value index="nr1062" value="0/1"></tridas:value>
-            <tridas:value index="nr1063" value="0/2"></tridas:value>
-            <tridas:value index="nr1064" value="2/0"></tridas:value>
-            <tridas:value index="nr1065" value="2/0"></tridas:value>
-            <tridas:value index="nr1066" value="2/0"></tridas:value>
-            <tridas:value index="nr1067" value="0/2"></tridas:value>
-            <tridas:value index="nr1068" value="0/2"></tridas:value>
-            <tridas:value index="nr1069" value="0/2"></tridas:value>
-            <tridas:value index="nr1070" value="2/0"></tridas:value>
-            
-            <tridas:value index="nr1071" value="0/2"></tridas:value>
-            <tridas:value index="nr1072" value="2/0"></tridas:value>
-            <tridas:value index="nr1073" value="0/2"></tridas:value>
-            <tridas:value index="nr1074" value="0/1"></tridas:value>
-            <tridas:value index="nr1075" value="1/0"></tridas:value>
-            <tridas:value index="nr1076" value="0/1"></tridas:value>
-            <tridas:value index="nr1077" value="0/1"></tridas:value>
-            <tridas:value index="nr1078" value="1/0"></tridas:value>
-            <tridas:value index="nr1079" value="0/1"></tridas:value>
-            <tridas:value index="nr1080" value="1/0"></tridas:value>
-            <tridas:value index="nr1081" value="0/1"></tridas:value>
-            <tridas:value index="nr1082" value="0/1"></tridas:value>
-        </tridas:values>
-    </tridas:derivedSeries>
-    
+    <ns1:title>title0</ns1:title>
+    <ns1:identifier domain="domain0">identifier0</ns1:identifier>
+    <ns1:pith presence="present"/>
+    <ns1:heartwood presence="present">
+        <ns1:missingHeartwoodRingsToPith>missingHeartwoodRingsToPith0</ns1:missingHeartwoodRingsToPith>
+        <ns1:missingHeartwoodRingsToPithFoundation>missingHeartwoodRingsToPithFoundation0</ns1:missingHeartwoodRingsToPithFoundation>
+    </ns1:heartwood>
+    <ns1:sapwood presence="not applicable">
+        <ns1:nrOfSapwoodRings>nrOfSapwoodRings0</ns1:nrOfSapwoodRings>
+        <ns1:lastRingUnderBark>lastRingUnderBark0</ns1:lastRingUnderBark>
+        <ns1:missingSapwoodRingsToBark>missingSapwoodRingsToBark0</ns1:missingSapwoodRingsToBark>
+        <ns1:missingSapwoodRingsToBarkFoundation>missingSapwoodRingsToBarkFoundation0</ns1:missingSapwoodRingsToBarkFoundation>
+    </ns1:sapwood>
+    <ns1:bark presence="present"/>
+    <ns1:azimuth>0</ns1:azimuth>
+    <ns1:genericField name="name0" type="type0">genericField0</ns1:genericField>
+    <ns1:genericField name="name1" type="type1">genericField1</ns1:genericField>
+    <ns1:createdTimestamp>2006-05-04T18:13:51.0Z</ns1:createdTimestamp>
+    <ns1:lastModifiedTimestamp>2006-05-04T18:13:51.0Z</ns1:lastModifiedTimestamp>
+    <ns1:measurementSeries id="ID000">
+        <ns1:title>title1</ns1:title>
+        <ns1:identifier domain="domain1">identifier1</ns1:identifier>
+        <ns1:analyst>analyst0</ns1:analyst>
+        <ns1:dendrochronologist>dendrochronologist0</ns1:dendrochronologist>
+        <ns1:measuringMethod normalStd="normalStd0" normalId="normalId0" normal="normal0">measuringMethod0</ns1:measuringMethod>
+        <ns1:units name="name2" description="description0" factor="factor0" system="SI">
+            <ns1:unit power="0" description="description1">unit0</ns1:unit>
+            <ns1:unit power="0" description="description2">unit1</ns1:unit>
+        </ns1:units>
+        <ns1:comments>comments0</ns1:comments>
+        <ns1:usage>usage0</ns1:usage>
+        <ns1:usageComments>usageComments0</ns1:usageComments>
+        <ns1:usageComments>usageComments1</ns1:usageComments>
+            <ns1:interpretation>
+                <ns1:firstYear certainty="unknown">firstYear0</ns1:firstYear>
+                <ns1:calendar>
+                    <ns1:usedSeries>usedSeries0</ns1:usedSeries>
+                </ns1:calendar>
+                <ns1:statFoundation>
+                    <ns1:statValue>0</ns1:statValue>
+                    <ns1:type normalStd="normalStd1" normalId="normalId1" normal="normal1">type0</ns1:type>
+                    <ns1:significanceLevel>0</ns1:significanceLevel>
+                    <ns1:usedSoftware>usedSoftware0</ns1:usedSoftware>
+                </ns1:statFoundation>
+                <ns1:statFoundation>
+                    <ns1:statValue>0</ns1:statValue>
+                    <ns1:type normalStd="normalStd2" normalId="normalId2" normal="normal2">type1</ns1:type>
+                    <ns1:significanceLevel>0</ns1:significanceLevel>
+                    <ns1:usedSoftware>usedSoftware1</ns1:usedSoftware>
+                </ns1:statFoundation>
+                <ns1:sproutYear certainty="unknown">sproutYear0</ns1:sproutYear>
+                <ns1:usedSoftware>usedSoftware2</ns1:usedSoftware>
+                <ns1:deathYear certainty="unknown">deathYear0</ns1:deathYear>
+                <ns1:provenance>provenance0</ns1:provenance>
+            </ns1:interpretation>
+        <ns1:genericField name="name3" type="type2">genericField2</ns1:genericField>
+        <ns1:genericField name="name4" type="type3">genericField3</ns1:genericField>
+        <ns1:createdTimestamp>2006-05-04T18:13:51.0Z</ns1:createdTimestamp>
+        <ns1:lastModifiedTimestamp>2006-05-04T18:13:51.0Z</ns1:lastModifiedTimestamp>
+        <ns1:values type="type4">
+            <ns1:value value="value0" index="index0">
+                <ns1:note>note0</ns1:note>
+                <ns1:note>note1</ns1:note>
+            </ns1:value>
+            <ns1:value value="value1" index="index1">
+                <ns1:note>note2</ns1:note>
+                <ns1:note>note3</ns1:note>
+            </ns1:value>
+        </ns1:values>
+        <ns1:title>title2</ns1:title>
+        <ns1:identifier domain="domain2">identifier2</ns1:identifier>
+        <ns1:analyst>analyst1</ns1:analyst>
+        <ns1:dendrochronologist>dendrochronologist1</ns1:dendrochronologist>
+        <ns1:measuringMethod normalStd="normalStd3" normalId="normalId3" normal="normal3">measuringMethod1</ns1:measuringMethod>
+        <ns1:units name="name5" description="description3" factor="factor1" system="SI">
+            <ns1:unit power="0" description="description4">unit2</ns1:unit>
+            <ns1:unit power="0" description="description5">unit3</ns1:unit>
+        </ns1:units>
+        <ns1:comments>comments1</ns1:comments>
+        <ns1:usage>usage1</ns1:usage>
+        <ns1:usageComments>usageComments2</ns1:usageComments>
+        <ns1:usageComments>usageComments3</ns1:usageComments>
+            <ns1:interpretation>
+                <ns1:firstYear certainty="unknown">firstYear1</ns1:firstYear>
+                <ns1:calendar>
+                    <ns1:usedSeries>usedSeries1</ns1:usedSeries>
+                </ns1:calendar>
+                <ns1:statFoundation>
+                    <ns1:statValue>0</ns1:statValue>
+                    <ns1:type normalStd="normalStd4" normalId="normalId4" normal="normal4">type2</ns1:type>
+                    <ns1:significanceLevel>0</ns1:significanceLevel>
+                    <ns1:usedSoftware>usedSoftware3</ns1:usedSoftware>
+                </ns1:statFoundation>
+                <ns1:statFoundation>
+                    <ns1:statValue>0</ns1:statValue>
+                    <ns1:type normalStd="normalStd5" normalId="normalId5" normal="normal5">type3</ns1:type>
+                    <ns1:significanceLevel>0</ns1:significanceLevel>
+                    <ns1:usedSoftware>usedSoftware4</ns1:usedSoftware>
+                </ns1:statFoundation>
+                <ns1:sproutYear certainty="unknown">sproutYear1</ns1:sproutYear>
+                <ns1:usedSoftware>usedSoftware5</ns1:usedSoftware>
+                <ns1:deathYear certainty="unknown">deathYear1</ns1:deathYear>
+                <ns1:provenance>provenance1</ns1:provenance>
+            </ns1:interpretation>
+        <ns1:genericField name="name6" type="type5">genericField4</ns1:genericField>
+        <ns1:genericField name="name7" type="type6">genericField5</ns1:genericField>
+        <ns1:createdTimestamp>2006-05-04T18:13:51.0Z</ns1:createdTimestamp>
+        <ns1:lastModifiedTimestamp>2006-05-04T18:13:51.0Z</ns1:lastModifiedTimestamp>
+        <ns1:values type="type7">
+            <ns1:value value="value2" index="index2">
+                <ns1:note>note4</ns1:note>
+                <ns1:note>note5</ns1:note>
+            </ns1:value>
+            <ns1:value value="value3" index="index3">
+                <ns1:note>note6</ns1:note>
+                <ns1:note>note7</ns1:note>
+            </ns1:value>
+        </ns1:values>
+    </ns1:measurementSeries>
+    <ns1:measurementSeries id="ID001">
+        <ns1:title>title3</ns1:title>
+        <ns1:identifier domain="domain3">identifier3</ns1:identifier>
+        <ns1:analyst>analyst2</ns1:analyst>
+        <ns1:dendrochronologist>dendrochronologist2</ns1:dendrochronologist>
+        <ns1:measuringMethod normalStd="normalStd6" normalId="normalId6" normal="normal6">measuringMethod2</ns1:measuringMethod>
+        <ns1:units name="name8" description="description6" factor="factor2" system="SI">
+            <ns1:unit power="0" description="description7">unit4</ns1:unit>
+            <ns1:unit power="0" description="description8">unit5</ns1:unit>
+        </ns1:units>
+        <ns1:comments>comments2</ns1:comments>
+        <ns1:usage>usage2</ns1:usage>
+        <ns1:usageComments>usageComments4</ns1:usageComments>
+        <ns1:usageComments>usageComments5</ns1:usageComments>
+            <ns1:interpretationUnsolved>interpretationUnsolved0</ns1:interpretationUnsolved>
+        <ns1:genericField name="name9" type="type8">genericField6</ns1:genericField>
+        <ns1:genericField name="name10" type="type9">genericField7</ns1:genericField>
+        <ns1:createdTimestamp>2006-05-04T18:13:51.0Z</ns1:createdTimestamp>
+        <ns1:lastModifiedTimestamp>2006-05-04T18:13:51.0Z</ns1:lastModifiedTimestamp>
+        <ns1:values type="type10">
+            <ns1:value value="value4" index="index4">
+                <ns1:note>note8</ns1:note>
+                <ns1:note>note9</ns1:note>
+            </ns1:value>
+            <ns1:value value="value5" index="index5">
+                <ns1:note>note10</ns1:note>
+                <ns1:note>note11</ns1:note>
+            </ns1:value>
+        </ns1:values>
+        <ns1:title>title4</ns1:title>
+        <ns1:identifier domain="domain4">identifier4</ns1:identifier>
+        <ns1:analyst>analyst3</ns1:analyst>
+        <ns1:dendrochronologist>dendrochronologist3</ns1:dendrochronologist>
+        <ns1:measuringMethod normalStd="normalStd7" normalId="normalId7" normal="normal7">measuringMethod3</ns1:measuringMethod>
+        <ns1:units name="name11" description="description9" factor="factor3" system="SI">
+            <ns1:unit power="0" description="description10">unit6</ns1:unit>
+            <ns1:unit power="0" description="description11">unit7</ns1:unit>
+        </ns1:units>
+        <ns1:comments>comments3</ns1:comments>
+        <ns1:usage>usage3</ns1:usage>
+        <ns1:usageComments>usageComments6</ns1:usageComments>
+        <ns1:usageComments>usageComments7</ns1:usageComments>
+            <ns1:interpretationUnsolved>interpretationUnsolved1</ns1:interpretationUnsolved>
+        <ns1:genericField name="name12" type="type11">genericField8</ns1:genericField>
+        <ns1:genericField name="name13" type="type12">genericField9</ns1:genericField>
+        <ns1:createdTimestamp>2006-05-04T18:13:51.0Z</ns1:createdTimestamp>
+        <ns1:lastModifiedTimestamp>2006-05-04T18:13:51.0Z</ns1:lastModifiedTimestamp>
+        <ns1:values type="type13">
+            <ns1:value value="value6" index="index6">
+                <ns1:note>note12</ns1:note>
+                <ns1:note>note13</ns1:note>
+            </ns1:value>
+            <ns1:value value="value7" index="index7">
+                <ns1:note>note14</ns1:note>
+                <ns1:note>note15</ns1:note>
+            </ns1:value>
+        </ns1:values>
+    </ns1:measurementSeries>
+</ns1:radius>

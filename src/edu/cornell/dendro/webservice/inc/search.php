@@ -81,6 +81,9 @@ class search Implements IDBAccessor
     {
 
         global $dbconn;
+        global $debugFlag;
+        global $myMetaHeader;
+        
         $myAuth       = $auth;
         $myRequest    = $paramsClass;
 		
@@ -96,7 +99,7 @@ class search Implements IDBAccessor
         $xmldata      = NULL;
 
         // Overide return object to vmeasurement if measurement requested
-        if($myRequest->returnObject=='measurement')
+        if(($myRequest->returnObject=='measurementSeries') || ($myRequest->returnObject=='derivedSeries'))
         {
             $myRequest->returnObject='vmeasurement';
             $this->returnObject = 'vmeasurement';
@@ -132,6 +135,8 @@ class search Implements IDBAccessor
 
         // Add SQL to XML output
         $this->sqlcommand .= $fullSQL;
+        
+        if ($debugFlag===TRUE) $myMetaHeader->setTiming("Compilation of search SQL complete");
 
         // Do SQL Query
         pg_send_query($dbconn, $fullSQL);
@@ -141,6 +146,8 @@ class search Implements IDBAccessor
             $result = pg_query($dbconn, $fullSQL);
             while ($row = pg_fetch_array($result))
             {
+	            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Begin permissions check");
+	                        	
                 // Check user has permission to read then create a new object
                 if($this->returnObject=="object") 
                 {
@@ -152,7 +159,7 @@ class search Implements IDBAccessor
                     $myReturnObject = new element();
                     $hasPermission = $myAuth->getPermission("read", "element", $row['id']);
                 }
-                elseif($this->returnObject=="tree") 
+                elseif($this->returnObject=="sample") 
                 {
                     $myReturnObject = new sample();
                     $hasPermission = $myAuth->getPermission("read", "sample", $row['id']);
@@ -172,19 +179,25 @@ class search Implements IDBAccessor
                     $this->setErrorMessage("901","Invalid return object ".$this->returnObject." specified.  Must be one of site, subsite, tree, specimen, radius or measurement");
                 }
 
+                
                 if($hasPermission===FALSE)
                 {
                     array_push($this->deniedRecArray, $row['id']); 
                     continue;
                 }
-
+                
+                if ($debugFlag===TRUE) $myMetaHeader->setTiming("Permissions check complete");
+				
    
                 // Set parameters on new object and return XML
+                if ($debugFlag===TRUE) $myMetaHeader->setTiming("Get current entities details from database");
                 $success = $myReturnObject->setParamsFromDB($row['id']);
+                if ($debugFlag===TRUE) $myMetaHeader->setTiming("Got details from database");
 
                 // Get permissions if requested
                 if($includePermissions===TRUE) $myReturnObject->getPermissions($myAuth->getID());
 
+                if ($debugFlag===TRUE) $myMetaHeader->setTiming("Get current entities XML");
                 //$success = $myReturnObject->setParamsFromDB($row['id'], "brief");
                 if($success)
                 {
@@ -209,6 +222,8 @@ class search Implements IDBAccessor
                 $this->setErrorMessage("103", $errMessage);
             }
 
+            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Permissions checks complete"); 
+            
             // Put xmldata into class variable
             if($xmldata!=NULL)
             {
@@ -445,7 +460,7 @@ class search Implements IDBAccessor
             }
         }
         
-        if( (($this->getLowestRelationshipLevel($tables)<=1) && ($this->getHighestRelationshipLevel($tables)>=1)) || ($this->returnObject == 'measurement'))  
+        if( (($this->getLowestRelationshipLevel($tables)<=1) && ($this->getHighestRelationshipLevel($tables)>=1)) || ($this->returnObject == 'vmeasurement'))  
         {
             if($withinJoin)
             {
@@ -540,11 +555,13 @@ class search Implements IDBAccessor
         {
             return 2;
         }
-        elseif ((in_array('tblmeasurement')) || 
-        		(in_array('tblvmeasurement')) ||
-        		(in_array('tblvmeasurementmetacache')) ||
-        		(in_array('tblvmeasurementderivedcache')) ||
-		        ($this->returnObject == 'measurement'))
+        elseif ( (in_array('tblmeasurement', $tables)) || 
+        		 (in_array('tblvmeasurement', $tables)) ||
+        		 (in_array('tblvmeasurementmetacache', $tables)) ||
+        		 (in_array('tblvmeasurementderivedcache', $tables)) ||
+		         ($this->returnObject == 'measurementSeries') ||
+		         ($this->returnObject == 'derivedSeries')
+		       )
         {
             return 1;
         }

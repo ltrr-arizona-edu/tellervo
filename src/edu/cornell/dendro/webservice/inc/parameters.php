@@ -90,8 +90,8 @@ class searchParameters implements IParams
 			
 			// Create an array for translating the search parameters names into Corina database table and field names
 			$translationArray = array (		
-										'objectid' => 							array('tbl' => 'vwtblobject', 'field' => 'code'),
-										'objectdbid' => 						array('tbl' => 'vwtblobject', 'field' => 'objectid'),                        
+										'objectid' => 							array('tbl' => 'vwtblobject', 'field' => 'objectid'),
+										//'objectdbid' => 						array('tbl' => 'vwtblobject', 'field' => 'objectid'),                        
 										'objecttitle' => 						array('tbl' => 'vwtblobject', 'field' => 'title'),
 										'objectcreated' => 						array('tbl' => 'vwtblobject', 'field' => 'createdtimestamp'),
 										'objectlastmodified' => 				array('tbl' => 'vwtblobject', 'field' => 'lastmodifiedtimestamp'),
@@ -106,8 +106,8 @@ class searchParameters implements IParams
 										'objectlocationcomment' => 				array('tbl' => 'vwtblobject', 'field' => 'locationcomment'),
 										'objecttype' =>							array('tbl' => 'vwtblobject', 'field' => 'type'),	
 			
-										'elementid' => 							array ('tbl' => 'vwtblelement', 	'field'  => 'code'),
-										'elementdbid' => 						array('tbl' => 'vwtblelement', 'field' => 'elementid'),
+										'elementid' => 							array ('tbl' => 'vwtblelement', 	'field'  => 'elementid'),
+										//'elementdbid' => 						array('tbl' => 'vwtblelement', 'field' => 'elementid'),
 										'elementoriginaltaxonname' => 			array('tbl' => 'vwtblelement', 'field' => 'originaltaxonname'),
 										//'elementphylumname' => array('tbl' => 'vwtblelement', 'field' => ''),
 										//'elementclassname' => array('tbl' => 'vwtblelement', 'field' => ''),
@@ -136,8 +136,8 @@ class searchParameters implements IParams
 										'elementcreated' => 					array('tbl' => 'vwtblelement', 'field' => 'createdtimestamp'),
 										'elementlastmodified' =>	 			array('tbl' => 'vwtblelement', 'field' => 'lastmodifiedtimestamp'),
 
-										'sampleid' => 							array('tbl' => 'vwtblsample', 'field' => 'code'),
-										'sampledbid' => 						array('tbl' => 'vwtblsample', 'field' => 'sampleid'),
+										'sampleid' => 							array('tbl' => 'vwtblsample', 'field' => 'sampleid'),
+										//'sampledbid' => 						array('tbl' => 'vwtblsample', 'field' => 'sampleid'),
 										'samplingdate' => 						array('tbl' => 'vwtblsample', 'field' => 'samplingdate'),
 										'samplefile' => 						array('tbl' => 'vwtblsample', 'field' => 'file'),
 										'sampleposition' => 					array('tbl' => 'vwtblsample', 'field' => 'position'),
@@ -634,8 +634,8 @@ class radiusParameters extends radiusEntity implements IParams
 		   {
 		   	case "title":				$this->setTitle($child->nodeValue); break;
 		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
-		   	case "pith":				$this->setPithPresent(formatBool($child->getAttribute("presence"))); break;
-		   	case "bark":				$this->setBarkPresent(formatBool($child->getAttribute("presence"))); break;
+		   	case "pith":				$this->setPithPresent(dbHelper::formatBool($child->getAttribute("presence"))); break;
+		   	case "bark":				$this->setBarkPresent(dbHelper::formatBool($child->getAttribute("presence"))); break;
 		   	case "azimuth":				$this->setAzimuth($child->nodeValue); break;
    			case "createdTimestamp": 	  break;
    			case "lastModifiedTimestamp": break;
@@ -654,7 +654,7 @@ class radiusParameters extends radiusEntity implements IParams
 			*/
 		   	
 		   	case "sapwood":
-		   		$this->setSapwood($child->getAttribute("presence"));
+		   		$this->setSapwood(NULL, $child->getAttribute("presence"));
 		   		$sapwoodtags = $child->childNodes;
 		   		
 		   		foreach($sapwoodtags as $tag)
@@ -673,7 +673,7 @@ class radiusParameters extends radiusEntity implements IParams
 				break;
 		   		
 		   	case "heartwood":
-		   		$this->setHeartwoodPresent($child->getAttribute("presence"));
+		   		$this->setHeartwood(null, $child->getAttribute("presence"));
 		   		
 		   		$heartwoodtags = $child->childNodes;
 		   		
@@ -749,12 +749,23 @@ class measurementParameters extends measurementEntity implements IParams
 		   	case "comments":			$this->setComments($child->nodeValue); break;
 		   	case "usage":				$this->setUsage($child->nodeValue); break;
 		   	case "usageComments":		$this->setUsageComments($child->nodeValue); break;
-		   	case "type":				$this->setVMeasurementOp(null, $child->nodeValue); break;
-   			case "usedSeries":			array_push($this->referencesArray, $child->nodeValue); break; 
+		   	case "type":				$this->setVMeasurementOp(null, $child->nodeValue); break;			
    			case "standardizingMethod":	$this->setStandardizingMethod(null, $child->nodeValue); break;
    			case "createdTimeStamp": 		break;
    			case "lastModifiedTimeStamp": 	break;		
    			   	
+   			case "linkSeries":
+   				$seriesTags = $child->childNodes;
+   				foreach($seriesTags as $series)
+   				{
+   					if($series->nodeType != XML_ELEMENT_NODE) continue;
+   					if($series->nodeName=='identifier')
+   					{
+   						array_push($this->referencesArray, $series->nodeValue);  		
+   					}
+   				}
+   				break;	
+   		
 		   	case "units":
 		   		$unitsName = $child->getAttribute("name");
 		   		$unitsDescription = $child->getAttribute("description");
@@ -810,7 +821,11 @@ class measurementParameters extends measurementEntity implements IParams
 		   			
 		   			case "dendrochronologistID":
 		   				$this->dendrochronologist->setParamsFromDB($value);
-		   				break;   					
+		   				break;
+
+		   			case "authorID":
+		   				$this->setAuthor($value);
+		   				break;
 		   				
 		   			case "isLegacyCleaned":
 		   				$this->setIsLegacyCleaned($value);

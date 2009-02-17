@@ -140,7 +140,7 @@ class measuringMethod extends lookupEntity
 
 	function setMeasuringMethod($id, $value)	
 	{
-		$this->setLookupEntity($id, $value);
+		return $this->setLookupEntity($id, $value);
 	}
 }
 
@@ -166,7 +166,7 @@ class dating extends lookupEntity
 
 	function setDatingType($id, $value)	
 	{
-		$this->setLookupEntity($id, $value);
+		return $this->setLookupEntity($id, $value);
 	}
 	
 	function setDatingErrors($positive, $negative)
@@ -208,7 +208,7 @@ class unit extends lookupEntity
 	
 	function setPower($power)
 	{
-		$this->power = (integer) $power;
+		return $this->power = (integer) $power;
 	}
 	
 	function getPower()
@@ -234,12 +234,12 @@ class vmeasurementOp extends lookupEntity
 	
 	function setVMeasurementOp($id, $value)
 	{
-		$this->setLookupEntity($id, $value);
+		return $this->setLookupEntity($id, $value);
 	}
 	
 	function setStandardizingMethod($id, $value)
 	{
-		$this->param->setStandardizingMethod($id, $value);
+		return $this->param->setStandardizingMethod($id, $value);
 
 	}
 	
@@ -273,7 +273,7 @@ class standardizingMethod extends lookupEntity
 	
 	function setStandardizingMethod($id, $value)
 	{
-		$this->setLookupEntity($id, $value);
+		return $this->setLookupEntity($id, $value);
 	}
 	
 	/**
@@ -298,7 +298,33 @@ class variable extends lookupEntity
 	
 	function setVariable($id, $value)
 	{
-		$this->setLookupEntity($id, $value);
+		return $this->setLookupEntity($id, $value);
+	}
+}
+
+class sapwood extends lookupEntity
+{
+	function __construct()
+	{
+		parent::__construct("tlkpsapwood","sapwood", "sapwoodid");
+	}
+	
+	function setSapwood($id, $value)
+	{
+		return $this->setLookupEntity($id, $value);
+	}
+}
+
+class heartwood extends lookupEntity
+{
+	function __construct()
+	{
+		parent::__construct("tlkpheartwood", "heartwood", "heartwoodid");
+	}
+	
+	function setHeartwood($id, $value)
+	{
+		return $this->setLookupEntity($id, $value);
 	}
 }
 
