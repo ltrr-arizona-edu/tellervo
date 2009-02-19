@@ -41,6 +41,7 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.prefs.components.UIDefaultsComponent;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.BugReport;
 import edu.cornell.dendro.corina.util.JDisclosureTriangle;
 import edu.cornell.dendro.corina.util.WeakEventListenerList;
 
@@ -422,7 +423,7 @@ public class Prefs extends AbstractSubsystem {
 
 		// -- disclosure triangle with scrollable text area: click for
 		// details... (stacktrace)
-		JComponent stackTrace = new JScrollPane(new JTextArea(Bug
+		JComponent stackTrace = new JScrollPane(new JTextArea(BugReport
 				.getStackTrace(e), 10, 60));
 		JDisclosureTriangle v = new JDisclosureTriangle(I18n
 				.getText("click_for_details"), stackTrace, false);
