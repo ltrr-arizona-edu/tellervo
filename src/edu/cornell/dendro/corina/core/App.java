@@ -53,8 +53,9 @@ public class App {
 
     // if the user hasn't specified a parser with
     // -Dorg.xml.sax.driver=..., use crimson.
-    if (System.getProperty("org.xml.sax.driver") == null)
-      System.setProperty("org.xml.sax.driver", "org.apache.crimson.parser.XMLReaderImpl");
+    // No! it's not 1998 anymore...
+    //if (System.getProperty("org.xml.sax.driver") == null)
+    //  System.setProperty("org.xml.sax.driver", "org.apache.crimson.parser.XMLReaderImpl");
     // xerces: "org.apache.xerces.parsers.SAXParser"
     // gnu/jaxp: "gnu.xml.aelfred2.SAXDriver"
 
