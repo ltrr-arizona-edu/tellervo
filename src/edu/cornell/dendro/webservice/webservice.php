@@ -36,13 +36,23 @@ $myMetaHeader   = new meta();
 if ($debugFlag===TRUE) $myMetaHeader->setTiming("Beginning request");
 
 // Create request object from supplied XML document
-if($_POST['xmlrequest'])
+if(isset($_POST['xmlrequest']))
 {
-    $myRequest  = new request($_POST['xmlrequest']);
+    if($_POST['xmlrequest']!=NULL) 
+    {
+    	$myRequest  = new request($_POST['xmlrequest']);
+    }
+    else
+    {
+	    trigger_error('902'.'No XML request file given', E_USER_ERROR);
+	    $myMetaHeader->setRequestType("help");
+	    writeHelpOutput($myMetaHeader);
+	    die();    	
+    }
 }
 else
 {
-    trigger_error('902'.'No XML request file given', E_USER_ERROR);
+	trigger_error('902'.'This webservice expects a POST variable called xmlrequest inside which should be a string representation of your XML request document.  Please see the documentation for detailed information on how to interact with this webservice.', E_USER_ERROR);
     $myMetaHeader->setRequestType("help");
     writeHelpOutput($myMetaHeader);
     die();

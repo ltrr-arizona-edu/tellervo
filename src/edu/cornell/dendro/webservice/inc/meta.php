@@ -133,7 +133,7 @@ class meta
   	{ 	
 	  	if (strstr($this->clientversion, $app['name']))
 	  	{
-	  		return substr(strstr($this->clientversion, $app['name']), strlen($app['name'])+1);
+	  		return (float) substr(strstr($this->clientversion, $app['name']), strlen($app['name'])+1);
 	  		break;
 	  	}	
   	}	
@@ -156,7 +156,7 @@ class meta
 	  	if (strstr($this->clientversion, $app['name']))
 	  	{
 	  		$minVersion =  $app['minVersion'];
-	  		if($this->getClientVersion()>$minVersion) 
+	  		if($this->getClientVersion()>=$minVersion) 
 	  		{
 	  			return true;
 	  		}

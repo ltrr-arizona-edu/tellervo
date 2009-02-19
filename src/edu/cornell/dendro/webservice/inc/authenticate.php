@@ -182,7 +182,7 @@ class authenticate
      * @param Params Class $paramsClass
      * @param Auth Class $auth
      */
-    protected function setNonce($paramsClass, $auth)
+    public function setNonce($paramsClass, $auth)
     {
         $myAuth = $auth;
         $myRequest = $paramsClass;

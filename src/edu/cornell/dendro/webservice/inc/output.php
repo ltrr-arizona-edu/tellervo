@@ -31,13 +31,29 @@ function getHelpDocbook($page)
     return $xml;
 }
 
+/**
+ * Enter description here...
+ *
+ * @param meta $metaHeader
+ * @param unknown_type $xmldata
+ * @param unknown_type $parentTagBegin
+ * @param unknown_type $parentTagEnd
+ */
 function writeOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd="")
 {
     header('Content-Type: application/xhtml+xml; charset=utf-8');
     echo createOutput($metaHeader, $xmldata, $parentTagBegin, $parentTagEnd);
 }
 
-
+/**
+ * Enter description here...
+ *
+ * @param meta $metaHeader
+ * @param String $xmldata
+ * @param String $parentTagBegin
+ * @param String $parentTagEnd
+ * @return String
+ */
 function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd="")
 {
     global $domain;
@@ -52,7 +68,19 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
         $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"https://".$domain."css/corina.css\"?>\n";
         $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"https://".$domain."css/docbook/driver.css\"?>\n";
     }
-    $outputStr.= "\n<corina xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">\n";
+    
+   	// Set root XML tag
+   	// If client is unsupported play safe and don't use namespaces
+    if ( (isset($metaHeader->messages[0][107])) || (isset($metaHeader->messages[0][108])) )
+    {
+        $outputStr.= "\n<corina>\n";
+    }
+    else
+    {
+    	$outputStr.= "\n<corina xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">\n";
+    }
+    
+    
     $outputStr.= $metaHeader->asXML();
     
     if($metaHeader->status !="Error")

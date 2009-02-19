@@ -57,20 +57,6 @@ class request
     	global $myMetaHeader;
     	global $myAuth;   	
     	
-    	// If using a known client then check that the version is compatible
-   		if($myMetaHeader->isClientVersionValid()===FALSE)
-   		{
-   			if($myMetaHeader->getClientName()===FALSE)
-   			{
-   				trigger_error("107"."The client that you are using is not recognised/supported by this webservice.", E_USER_ERROR);
-   			}
-   			else
-   			{
-   				trigger_error("107"."The version of ".$myMetaHeader->getClientName()." that you are using (v".$myMetaHeader->getClientVersion().") to connect to the Corina webservice is no longer supported.\n"  
-   						     ."Please download an updated version (>".$myMetaHeader->getMinRequiredClientVersion().") and try again.", E_USER_ERROR);
-   			}	
-   		}
-    	
     	$this->crudMode = strtolower($crudMode);
     	$myMetaHeader->setRequestType($this->getCrudMode());
     	
@@ -123,7 +109,8 @@ class request
         global $corinaXSD;
         global $corinaNS;
         global $tridasNS;
-        
+    	global $myMetaHeader;
+    	global $myAuth;         
 
         $origErrorLevel = error_reporting(E_ERROR);
         $xmlrequest = dbHelper::xmlSpecialCharReplace($xmlrequest);
@@ -133,6 +120,26 @@ class request
         // Handle validation errors ourselves
         libxml_use_internal_errors(true);
 
+        // If using a known client then check that the version is compatible
+   		if($myMetaHeader->isClientVersionValid()===FALSE)
+   		{
+   			
+   			if($myMetaHeader->getClientName()===FALSE)
+   			{
+   				trigger_error("107"."The client that you are using is not recognised/supported by this webservice. Supported clients are:"
+   				
+   				, E_USER_ERROR);
+   			}
+   			else
+   			{
+   				trigger_error("108"."The version of ".$myMetaHeader->getClientName()." that you are using is no longer supported\nby the webservice at: ".
+   							 "https://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']."\n\n".
+   							 "Your current ".$myMetaHeader->getClientName()." version = ".$myMetaHeader->getClientVersion()."\n".
+   							 "You need version >= ".$myMetaHeader->getMinRequiredClientVersion()."\n\n".
+   							 "Please download the latest version and try again.", E_USER_ERROR);
+   			}	
+   		}        
+        
         // Do the validation
         if($doc->schemaValidate($corinaXSD))
         {      

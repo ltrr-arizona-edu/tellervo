@@ -20,6 +20,7 @@ $old_error_handler = set_error_handler("userErrorHandler");
 function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars) 
 {
     global $myMetaHeader;
+    $wrapwidth = 90;
 
     // Associative array for looking up friendly error names
     $errortype      = array(
@@ -81,11 +82,11 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
     // Generic PHP errors
     if (in_array($errno, $phperrors))
     {
-        $myMetaHeader->setMessage($errno, "PHP ".$errortype[$errno]." - ".$errmsg.". See line $linenum in file $filename", "Warning");
+        $myMetaHeader->setMessage($errno, wordwrap("PHP ".$errortype[$errno]." - ".$errmsg.". See line $linenum in file $filename", $wrapwidth), "Warning");
     }
     elseif (in_array($errno, $phpwarnings))
     {
-        $myMetaHeader->setMessage($errno, "PHP ".$errortype[$errno]." - ".$errmsg.". See line $linenum in file $filename ", "Warning");
+        $myMetaHeader->setMessage($errno, wordwrap("PHP ".$errortype[$errno]." - ".$errmsg.". See line $linenum in file $filename ", $wrapwidth), "Warning");
     }
 
     // Corina specific errors
@@ -93,25 +94,25 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
     {
         $errno = (int) substr($errmsg, 0, 3);
         $errmsg = substr($errmsg, 3);
-        $myMetaHeader->setMessage($errno, $errmsg, "Error");
+        $myMetaHeader->setMessage($errno, wordwrap($errmsg, $wrapwidth), "Error");
     }
     elseif ($errno == E_USER_WARNING)
     {
         $errno = (int) substr($errmsg, 0, 3);
         $errmsg = substr($errmsg, 3);
-        $myMetaHeader->setMessage($errno, $errmsg, "Warning");
+        $myMetaHeader->setMessage($errno, wordwrap($errmsg, $wrapwidth), "Warning");
     }
     elseif ($errno == E_USER_NOTICE)
     {
         $errno = (int) substr($errmsg, 0, 3);
         $errmsg = substr($errmsg, 3);
-        $myMetaHeader->setMessage($errno, $errmsg, "Notice");
+        $myMetaHeader->setMessage($errno, wordwrap($errmsg, $wrapwidth), "Notice");
     }
     
     // Other unusual PHP errors
     else 
     {
-        $myMetaHeader->setMessage("P".$errno, "PHP ".$errortype[$errno]." - ".$errmsg.". \n See line $linenum \n in file $filename", "Warning");
+        $myMetaHeader->setMessage("P".$errno, wordwrap("PHP ".$errortype[$errno]." - ".$errmsg.". \n See line $linenum \n in file $filename", $wrapwidth), "Warning");
     }
     
 }

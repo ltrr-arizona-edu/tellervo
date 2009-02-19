@@ -12,7 +12,13 @@ This XML Schema is available under LGPLv3
 more information on http://www.gnu.org/licenses/lgpl.html
 
 ***********************************************-->
-<xs:schema xmlns="http://www.tridas.org/1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" targetNamespace="http://www.tridas.org/1.1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns="http://www.tridas.org/1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:xlink="http://www.w3.org/1999/xlink" 
+	xmlns:gml="http://www.opengis.net/gml" 
+	xmlns:unitsml="urn:oasis:names:tc:unitsml:schema:xsd:UnitsMLSchema-0.9.17"
+	targetNamespace="http://www.tridas.org/1.1"
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified">
 	<!--
 %%%%%%%%%%%%%%
 %		EXTERNAL SCHEMAS	
@@ -29,7 +35,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			<xs:extension base="xs:dateTime"></xs:extension>
 		</xs:simpleContent>	
 	</xs:complexType>
-	
+				
 	<xs:element name="createdTimestamp" type="timestamp"/>
 	<xs:element name="lastModifiedTimestamp" type="timestamp"/>
 	
