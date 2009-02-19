@@ -63,7 +63,7 @@ public class Authenticate extends Resource {
 
 	@Override
 	protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) {
-		Element auth = new Element("authenticate");
+		Element auth = new CorinaElement("authenticate");
 		
 		// only for secure login
 		if(queryType == ResourceQueryType.SECURELOGIN) {
@@ -83,15 +83,15 @@ public class Authenticate extends Resource {
 		
 		// get our nonce nicely
 		if(getQueryType() == ResourceQueryType.NONCE) {
-			Element content = doc.getRootElement().getChild("content");
+			Element content = doc.getRootElement().getChild("content", CorinaXML.CORINA_NS);
 			if(content == null)
 				return false;
 			
-			Element nonce = content.getChild("nonce");
+			Element nonce = content.getChild("nonce", CorinaXML.CORINA_NS);
 			if(nonce == null)
 				return false;
 			
-			seq = nonce.getAttributeValue("seq");
+			seq = nonce.getAttributeValue("seq", CorinaXML.CORINA_NS);
 			srvNonce = nonce.getText();
 			if(srvNonce == null)
 				return false;

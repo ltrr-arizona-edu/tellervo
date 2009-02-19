@@ -29,7 +29,7 @@
 	<classpathentry kind="lib" path="Libraries/commons-email-1.0.jar"/>
 	<classpathentry kind="lib" path="Libraries/mail.jar"/>
 	<classpathentry kind="lib" path="Libraries/postgresql-8.2-506.jdbc3.jar"/>
-	<classpathentry kind="lib" path="Libraries/jdom.jar"/>
+	<classpathentry kind="lib" path="Libraries/jdom.jar" sourcepath="S:/source/jdom-1.1/src/java"/>
 	<classpathentry kind="lib" path="Libraries/pljava.jar"/>
 	<classpathentry kind="lib" path="Libraries/forms-1.1.0.jar"/>
 	<classpathentry kind="lib" path="Libraries/swing-layout-1.0.3.jar"/>

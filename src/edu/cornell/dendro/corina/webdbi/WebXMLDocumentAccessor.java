@@ -328,11 +328,12 @@ public class WebXMLDocumentAccessor {
 		requestDocument = new Document();
 		
 		// create the root element
-		Element corina = new Element("corina");			
+		Element corina = new CorinaElement("corina");
+		
 		requestDocument.setRootElement(corina);
 		
 		// create the request element
-		Element request = new Element("request");
+		Element request = new CorinaElement("request");
 		request.setAttribute("type", queryType.getVerb());
 		corina.addContent(request);
 		
@@ -379,7 +380,7 @@ public class WebXMLDocumentAccessor {
 			a.execute();*/
 			
 			e = a.createRequest(ResourceQueryType.SECURELOGIN);//"securelogin");
-			Element auth = new Element("authenticate");
+			Element auth = new CorinaElement("authenticate");
 			e.addContent(auth);			
 			auth.setAttribute("username", "kit");
 			a.execute();
