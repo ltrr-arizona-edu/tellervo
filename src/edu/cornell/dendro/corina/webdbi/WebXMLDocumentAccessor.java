@@ -154,7 +154,7 @@ public class WebXMLDocumentAccessor {
 				MultipartEntity postEntity = new MultipartEntity();
 				req = post;
 							
-				XMLBody xmlb = new XMLBody(requestDocument, "application/corina+xml", "request.cxml");				
+				XMLBody xmlb = new XMLBody(requestDocument, "application/corina+xml", null);				
 				postEntity.addPart("xmlrequest", xmlb);
 				postEntity.addPart("traceback", new StringBody(getStackTrace()));
 				post.setEntity(postEntity);
