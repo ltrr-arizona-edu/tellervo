@@ -5,15 +5,40 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.platform.Platform;
+import edu.cornell.dendro.corina.util.BugReport;
+import edu.cornell.dendro.corina.util.PureStringWriter;
+import edu.cornell.dendro.corina.util.XMLBody;
+import edu.cornell.dendro.corina.util.XMLResponseHandler;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.InputStreamBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.jdom.*;
 import org.jdom.input.*;
+import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-import java.net.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
 
-import javax.net.ssl.*;
 import java.io.*;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 /*
  * This class is for accessing XML documents from the web service.
@@ -21,7 +46,7 @@ import java.io.*;
 
 public class WebXMLDocumentAccessor {	
 	/** The URL we plan to access */ 
-	private URL url;
+	private URI url;
 	
 	/** The type of request we plan to use (POST or GET) */
 	private int requestMethod;
@@ -47,13 +72,13 @@ public class WebXMLDocumentAccessor {
 		requestMethod = METHOD_GET;
 		
 		try {
-			String path = App.prefs.getPref("corina.webservice.url");
+			String path = App.prefs.getPref("corina.webservice.url", "invalid-url!");
 			if(!path.endsWith("/"))
 				path += "/";
 			path += noun + ".php" + "?mode=" + verb;
 
-			url = new URL(path);			
-		} catch (MalformedURLException e) {
+			url = new URI(path);			
+		} catch (URISyntaxException e) {
 			new Bug(e);
 		}
 	}
@@ -70,8 +95,7 @@ public class WebXMLDocumentAccessor {
 		requestMethod = METHOD_POST;
 		
 		try {
-			String path = App.prefs.getPref("corina.webservice.url");
-			
+			String path = App.prefs.getPref("corina.webservice.url", "invalid-url!");
 			/*
 			 * Not anymore...
 			 * 
@@ -80,8 +104,8 @@ public class WebXMLDocumentAccessor {
 			path += noun + ".php";
 			*/
 			
-			url = new URL(path);			
-		} catch (MalformedURLException e) {
+			url = new URI(path);
+		} catch (URISyntaxException e) {
 			new Bug(e);
 		}		
 	}
@@ -99,50 +123,91 @@ public class WebXMLDocumentAccessor {
 	public void execute() throws IOException {
 		doRequest();
 	}
+
+	/**
+	 * Quick and dirty debug: gets a stack trace
+	 * @return
+	 */
+	private String getStackTrace() {
+		PureStringWriter sw = new PureStringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		new Throwable().printStackTrace(pw);
+		return sw.toString();
+	}
 	
 	private Document doRequest() throws IOException {
-		HttpURLConnection http = (HttpURLConnection) url.openConnection();
+		//HttpURLConnection http = (HttpURLConnection) url.openConnection();
+		DefaultHttpClient client = new DefaultHttpClient();
+		HttpUriRequest req;
+		HttpEntity responseEntity = null;
+		Document inDocument = null;
+		String sanitizedUri = url.toString().replaceAll("[^\\w]", "_");
 
 		try {
 			if(requestMethod == METHOD_POST) {
 				if(this.requestDocument == null)
 					throw new NullPointerException("requestDocument is null yet required for this type of query");
-				http.setRequestMethod("POST");
-				http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-				http.setDoOutput(true);
+
+				// Create a new POST request
+				HttpPost post = new HttpPost(url);
+				// Make it a multipart post
+				MultipartEntity postEntity = new MultipartEntity();
+				req = post;
+							
+				XMLBody xmlb = new XMLBody(requestDocument, "application/corina+xml", "request.cxml");				
+				postEntity.addPart("xmlrequest", xmlb);
+				postEntity.addPart("traceback", new StringBody(getStackTrace()));
+				post.setEntity(postEntity);
+				
+				// debug
+				System.out.println("SENDING XML: ");
+				XMLOutputter outp = new XMLOutputter();
+				outp.setFormat(Format.getPrettyFormat());
+				outp.output(requestDocument, System.out);
+			} else {
+				// well, that's nice and easy
+				req = new HttpGet(url);
+			}
+
+			String cookie = App.prefs.getPref("corina.webservice.cookie." + sanitizedUri, null);
+			if(cookie != null) {
+				client.getCookieStore();
+				//http.setRequestProperty("Cookie", cookie);
 			}
 			
-			String cookie = App.prefs.getPref("corina.webservice.cookie");
-			if(cookie != null)
-				http.setRequestProperty("Cookie", cookie);
-			
-			// Set any header fields and do other various setup
-			http.setRequestProperty("User-Agent", "Corina WSI " + URLEncoder.encode(Build.VERSION, "UTF-8"));
-			http.setUseCaches(false);
+			req.setHeader("User-Agent", "Corina WSI/HttpClient" + 
+					" " + URLEncoder.encode(Build.VERSION, "UTF-8"));
 
-			// if we're using an https connection, we're going to have to be careful
-			if(http instanceof HttpsURLConnection) {
-				HttpsURLConnection https = (HttpsURLConnection) http;
-
+			// are we using https? should we allow self-signed certs?
+			if(url.getScheme().equals("https")) {
 				try {
+					// make a new SSL context
 					SSLContext sc = SSLContext.getInstance("SSL");
 					sc.init(null, trustAllCerts, new java.security.SecureRandom());
-					https.setSSLSocketFactory(sc.getSocketFactory());
+					
+					// make a new socket factory
+					SSLSocketFactory socketFactory = new SSLSocketFactory(sc);
+					
+					// register the scheme with the connection
+					Scheme scheme = new Scheme("https", socketFactory, 443);
+					client.getConnectionManager().getSchemeRegistry().register(scheme);
 				} catch (Exception e) {
 					// don't do anything; we'll just get errors later.
 				}
 			}
-
-			if(requestMethod == METHOD_POST) {
-				XMLOutputter outp = new XMLOutputter();
-	
-				http.getOutputStream().write("xmlrequest=".getBytes());
-				outp.output(requestDocument, new URLEncodingOutputStream(http.getOutputStream()));
-
-				// debug
-				outp.output(requestDocument, System.out);
-			}
 			
+			XMLResponseHandler responseHandler = new XMLResponseHandler();
+			inDocument = client.execute(req, responseHandler);
+			
+
+			CorinaDocumentInspector inspector = new CorinaDocumentInspector(inDocument);
+			
+			// Verify our document structure, throw any exceptions!
+			inspector.verifyDocument();
+			
+			return inDocument;				
+
+			/*
 			int responseCode = http.getResponseCode();
 			if(responseCode != HttpURLConnection.HTTP_OK) {
 				throw new IOException("Unexpected response code " + responseCode + " while accessing " + url.toExternalForm());
@@ -186,7 +251,7 @@ public class WebXMLDocumentAccessor {
 				System.out.println("\nIncoming Document:\n" + sb.toString());
 			} catch (Exception e) {}
 			in.reset();
-			**/
+			** /
 			
 			try {
 				// parse the input into an XML document
@@ -199,10 +264,39 @@ public class WebXMLDocumentAccessor {
 				return inDocument;				
 			} catch (JDOMException jdoe) {
 				throw new IOException("Could not parse document: JDOM error: " + jdoe);
-			}
+			} */
+		} catch (HttpResponseException hre) {
+			BugReport bugs = new BugReport(hre);
+			
+			bugs.addDocument("sent.xml", requestDocument);
+			
+			new Bug(hre, bugs);
+
+			throw new IOException("The server returned a protocol error " + hre.getStatusCode() + 
+					": " + hre.getLocalizedMessage());
+			
+		} catch (IOException ioe) {
+			throw ioe;
+			
+		} catch (Exception uhe) {
+			BugReport bugs = new BugReport(uhe);
+			
+			bugs.addDocument("sent.xml", requestDocument);
+			if(inDocument != null)
+				bugs.addDocument("received.xml", inDocument);
+			
+			new Bug(uhe, bugs);
+			
+			throw new IOException("Exception " + uhe.getClass().getName() + ": " + uhe.getLocalizedMessage());
 		} finally {
-			// make sure that no matter what, we clean up.
-			http.disconnect();
+			// clean up!
+			if(responseEntity != null) {
+				try {
+					responseEntity.consumeContent();
+				} catch (IOException ioe) {
+					// do nothing; we're just releasing resources anyway
+				}
+			}
 		}
 	}
 
