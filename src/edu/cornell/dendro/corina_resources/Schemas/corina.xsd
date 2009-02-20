@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:tridas="http://www.tridas.org/1.1" targetNamespace="http://dendro.cornell.edu/schema/corina/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<!--
+%%%%%%%%%%%%%%
+%		EXTERNAL SCHEMAS	
+%%%%%%%%%%%%%% -->
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlinks.xsd"/>
+	<xs:import namespace="http://www.tridas.org/1.1" schemaLocation="tridas.xsd"/>
+	<!--
+%%%%%%%%%%%%%%
+%		ROOT
+%%%%%%%%%%%%%% -->
+	<xs:element name="corina">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="request"/>
+				</xs:sequence>
+				<xs:sequence>
+					<xs:element ref="header"/>
+					<xs:element ref="content"/>				
+				</xs:sequence>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<!--
+%%%%%%%%%%%%%%
+%		REQUEST
+%%%%%%%%%%%%%% -->
+	<xs:element name="request">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="searchParams">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:choice>
+									<xs:element ref="param" maxOccurs="unbounded"/>
+									<xs:element name="all" />
+									
+								</xs:choice>
+								
+							</xs:sequence>
+							<xs:attribute name="returnObject">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="sample"/>
+										<xs:enumeration value="object"/>
+										<xs:enumeration value="element"/>
+										<xs:enumeration value="radius"/>
+										<xs:enumeration value="taxon"/>
+										<xs:enumeration value="measurementSeries"/>
+										<xs:enumeration value="derivedSeries" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="limit" type="xs:positiveInteger"/>
+							<xs:attribute name="skip" type="xs:positiveInteger"/>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:sequence>
+					<xs:element name="authenticate">
+						<xs:complexType>
+							<xs:attribute name="username" type="xs:string"/>
+							<xs:attribute name="password" type="xs:string"/>						
+							<xs:attribute name="cnonce" type="xs:string"/>
+							<xs:attribute name="snonce" type="xs:string"/>
+							<xs:attribute name="hash" type="xs:string"/>
+							<xs:attribute name="seq" type="xs:string"/>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>	
+				<xs:sequence>
+					<xs:element ref="tridas:project" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="tridas:element" minOccurs="0" maxOccurs="unbounded"/>					
+					<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="tridas:radius" minOccurs="0" maxOccurs="unbounded"/>			
+					<xs:element ref="tridas:measurementSeries" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="tridas:derivedSeries" minOccurs="0" maxOccurs="unbounded"/>					
+				</xs:sequence>
+				<xs:sequence>
+					<xs:annotation>
+						<xs:documentation>This should only be empty when requesting a nonce or when logging out</xs:documentation>
+					</xs:annotation>
+				</xs:sequence>
+				<xs:sequence>
+					<xs:element name="dictionaries"></xs:element>
+				</xs:sequence>
+				<xs:sequence>
+					<xs:element name="entity" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType >
+							<xs:attribute name="type">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="project"/>
+										<xs:enumeration value="object"></xs:enumeration>
+										<xs:enumeration value="element"></xs:enumeration>
+										<xs:enumeration value="sample"></xs:enumeration>
+										<xs:enumeration value="radius"></xs:enumeration>
+										<xs:enumeration value="measurementSeries"></xs:enumeration>
+										<xs:enumeration value="derivedSeries"></xs:enumeration>
+									</xs:restriction>	
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="id" type="xs:positiveInteger"/>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:sequence>
+					<xs:element name="parentEntity">
+						<xs:complexType >
+							<xs:sequence>
+								<xs:element ref="tridas:project" minOccurs="0" maxOccurs="unbounded"/>
+								<xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
+								<xs:element ref="tridas:element" minOccurs="0" maxOccurs="unbounded"/>					
+								<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
+								<xs:element ref="tridas:radius" minOccurs="0" maxOccurs="unbounded"/>			
+								<xs:element ref="tridas:measurementSeries" minOccurs="0" maxOccurs="unbounded"/>
+								<xs:element ref="tridas:derivedSeries" minOccurs="0" maxOccurs="unbounded"/>					
+							</xs:sequence>
+							<xs:attribute name="type">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="project"/>
+										<xs:enumeration value="object"></xs:enumeration>
+										<xs:enumeration value="element"></xs:enumeration>
+										<xs:enumeration value="sample"></xs:enumeration>
+										<xs:enumeration value="radius"></xs:enumeration>
+										<xs:enumeration value="measurementSeries"></xs:enumeration>
+										<xs:enumeration value="derivedSeries"></xs:enumeration>
+									</xs:restriction>	
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="id" type="xs:positiveInteger"/>
+							
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:choice>
+			<xs:attribute name="type">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="create"/>
+						<xs:enumeration value="read"/>
+						<xs:enumeration value="update"/>
+						<xs:enumeration value="delete"/>
+						<xs:enumeration value="plainlogin"/>
+						<xs:enumeration value="securelogin"/>
+						<xs:enumeration value="nonce"/>
+						<xs:enumeration value="logout"/>
+						<xs:enumeration value="help"/>
+						<xs:enumeration value="search"/>
+						<xs:enumeration value="assign"/>
+						<xs:enumeration value="unassign"/>
+					</xs:restriction>	
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="format">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="standard"/>
+						<xs:enumeration value="summary"/>
+						<xs:enumeration value="comprehensive"/>
+						<xs:enumeration value="minimal"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="parentEntityID" type="xs:positiveInteger"/>
+		</xs:complexType>
+	</xs:element>
+	<!--
+%%%%%%%%%%%%%%
+%		HEADER
+%%%%%%%%%%%%%% -->
+	<xs:element name="header">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="user">
+					<xs:complexType>
+						<xs:attribute name="id" type="xs:positiveInteger"/>
+						<xs:attribute name="username" type="xs:string"/>
+						<xs:attribute name="firstname" type="xs:string"/>
+						<xs:attribute name="lastname" type="xs:string"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="wsversion" type="xs:string"/>
+				<xs:element name="requestdate" type="xs:dateTime"/>
+				<xs:element name="queryTime">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:double">
+								<xs:attribute name="unit">
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:enumeration value="seconds"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="requesturl" type="xs:string"/>
+				<xs:element name="requesttype">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="search"/>
+							<xs:enumeration value="create"/>
+							<xs:enumeration value="read"/>
+							<xs:enumeration value="update"/>
+							<xs:enumeration value="delete"/>
+							<xs:enumeration value="plainlogin"/>
+							<xs:enumeration value="securelogin"/>
+							<xs:enumeration value="nonce"/>
+							<xs:enumeration value="logout"/>
+							<xs:enumeration value="help"/>
+							<xs:enumeration value="assign"/>
+							<xs:enumeration value="unassign"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+%%%%%%%%%%%%%%
+%		CONTENT
+%%%%%%%%%%%%%% -->
+	<xs:element name="content">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="sql"/>
+				<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+%%%%%%%%%%%%%%
+%		PARAM
+%%%%%%%%%%%%%% -->
+	<xs:element name="param">
+		<xs:complexType>
+			<xs:attribute name="name">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+
+						<!-- OBJECT ATTRIBUTES-->
+						<xs:enumeration value="objectid"/>
+						<xs:enumeration value="objectdbid"/>						
+						<xs:enumeration value="objecttitle"/>
+						<xs:enumeration value="objectcreated"/>
+						<xs:enumeration value="objectlastmodified"/>
+						<xs:enumeration value="objectdescription" />
+						<xs:enumeration value="objectcreator" />
+						<xs:enumeration value="objectowner" />
+						<xs:enumeration value="objectfile" />
+						<xs:enumeration value="objectcoverageTemporal" />
+						<xs:enumeration value="objectcoverageTemporalFoundation" />
+						<xs:enumeration value="objectlocationtype"/>
+						<xs:enumeration value="objectlocationprecision" />
+						<xs:enumeration value="objectlocationcomment" />
+						<xs:enumeration value="objecttype" />
+						
+						<!-- ELEMENT ATTRIBUTES -->
+						<xs:enumeration value="elementid" />
+						<xs:enumeration value="elementdbid" />
+						<xs:enumeration value="elementoriginaltaxonname"/>
+						<xs:enumeration value="elementphylumname"/>
+						<xs:enumeration value="elementclassname"/>
+						<xs:enumeration value="elementordername"/>
+						<xs:enumeration value="elementfamilyname"/>
+						<xs:enumeration value="elementgenusname"/>
+						<xs:enumeration value="elementspeciesname"/>
+						<xs:enumeration value="elementinfraspeciesname"/>
+						<xs:enumeration value="elementinfraspeciestype"/>
+						<xs:enumeration value="elementauthenticity" />
+						<xs:enumeration value="elementshape" />
+						<xs:enumeration value="elementheight" />
+						<xs:enumeration value="elementwidth" />
+						<xs:enumeration value="elementdepth" />
+						<xs:enumeration value="elementdiameter" />
+						<xs:enumeration value="elementdimensionunits" />
+						<xs:enumeration value="elementdimensionunitspower" />
+						<xs:enumeration value="elementtype" />
+						<xs:enumeration value="elementfile" />
+						<xs:enumeration value="elementlocationtype"/>
+						<xs:enumeration value="elementlocationprecision"/>
+						<xs:enumeration value="elementlocationcomment"/>
+						<xs:enumeration value="elementprocessing"/>
+						<xs:enumeration value="elementmarks"/>
+						<xs:enumeration value="elementdescription"/>
+						<xs:enumeration value="elementcreated" />
+						<xs:enumeration value="elementlastmodified"/>
+						
+						<!-- SAMPLE ATTRIBUTES -->
+						<xs:enumeration value="sampleid"/>
+						<xs:enumeration value="sampledbid"/>
+						<xs:enumeration value="samplingdate"/>
+						<xs:enumeration value="samplefile"/>
+						<xs:enumeration value="sampleposition"/>
+						<xs:enumeration value="samplestate"/>
+						<xs:enumeration value="samplehasknots"/>
+						<xs:enumeration value="sampledescription"/>
+						<xs:enumeration value="samplecreated"/>
+						<xs:enumeration value="samplelastmodified"/>
+						<xs:enumeration value="samplingdatecertainty"/>
+						
+						<!-- RADIUS ATTRIBUTES -->
+						<xs:enumeration value="radiusid"/>
+						<xs:enumeration value="radiusdbid"/>
+						<xs:enumeration value="radiuspith"/>
+						<xs:enumeration value="radiussapwood"/>
+						<xs:enumeration value="radiusheartwood"/>
+						<xs:enumeration value="radiusbark"/>
+						<xs:enumeration value="radiusnumbersapwoodrings"/>
+						<xs:enumeration value="radiuslastringunderbark"/>
+						<xs:enumeration value="radiusmissingheartwoodringstopith"/>
+						<xs:enumeration value="radiusmissingheartwoodringstopithfoundation"/>
+						<xs:enumeration value="radiusmissingsapwoodringstobark"/>
+						<xs:enumeration value="radiusmissingsapwoodringstobarkfoundation"/>
+						<xs:enumeration value="radiuscreated"/>
+						<xs:enumeration value="radiuslastmodified"/>
+						
+						<!-- SERIES ATTRIBUTES -->
+						<xs:enumeration value="seriesid"/>
+						<xs:enumeration value="seriesdbid"/>
+						<xs:enumeration value="seriesmeasuringmethod"/>
+						<xs:enumeration value="seriesvariable"/>
+						<xs:enumeration value="seriesunit"/>
+						<xs:enumeration value="seriespower"/>
+						<xs:enumeration value="seriesmeasuringdate"/>
+						<xs:enumeration value="seriesanalyst"/>
+						<xs:enumeration value="seriesdendrochronologist"/>
+						<xs:enumeration value="seriescomments"/>
+						<xs:enumeration value="seriesusage"/>
+						<xs:enumeration value="seriesusagecomments"/>
+						<xs:enumeration value="seriesfirstyear"/>
+						<xs:enumeration value="seriessproutyear"/>
+						<xs:enumeration value="seriesdeathyear"/>
+						<xs:enumeration value="seriesprovenance"/>
+						<xs:enumeration value="seriestype"/>
+						<xs:enumeration value="seriesstandardizingmethod"/>
+						<xs:enumeration value="seriesauthor"/>
+						<xs:enumeration value="seriesobjective"/>
+						<xs:enumeration value="seriesversion"/>
+						<xs:enumeration value="seriesderivationdate"/>
+						<xs:enumeration value="serieslastmodified"/>
+						<xs:enumeration value="seriesoperatorparameter"/>
+						<xs:enumeration value="seriesisreconciled"/>
+						<xs:enumeration value="seriesdatingtype"/>
+						<xs:enumeration value="seriesdatingerrorpositive"/>
+						<xs:enumeration value="seriesdatingerrornegative"/>
+						<xs:enumeration value="seriesvaluecount"/>
+						<xs:enumeration value="seriescount"/>
+
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="operator">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="&gt;"/>
+						<xs:enumeration value="&lt;"/>
+						<xs:enumeration value="="/>
+						<xs:enumeration value="!="/>
+						<xs:enumeration value="like"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="value" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<!--
+%%%%%%%%%%%%%%
+%		LINK
+%%%%%%%%%%%%%% -->
+	<xs:element name="link">
+		<xs:complexType>
+			<xs:attribute name="type" type="xs:string"/>
+			<xs:attribute name="object" type="xs:string"/>
+			<xs:attribute name="id" type="xs:positiveInteger"/>
+			<xs:attribute ref="xlink:href"/>
+		</xs:complexType>
+	</xs:element>	
+
+</xs:schema>

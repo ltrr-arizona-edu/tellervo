@@ -8,6 +8,7 @@ import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.util.BugReport;
 import edu.cornell.dendro.corina.util.PureStringWriter;
 import edu.cornell.dendro.corina.util.XMLBody;
+import edu.cornell.dendro.corina.util.XMLParsingException;
 import edu.cornell.dendro.corina.util.XMLResponseHandler;
 
 import org.apache.http.HttpEntity;
@@ -25,6 +26,7 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.VersionInfo;
 import org.jdom.*;
 import org.jdom.input.*;
 import org.jdom.output.Format;
@@ -175,8 +177,8 @@ public class WebXMLDocumentAccessor {
 				//http.setRequestProperty("Cookie", cookie);
 			}
 			
-			req.setHeader("User-Agent", "Corina WSI/HttpClient" + 
-					" " + URLEncoder.encode(Build.VERSION, "UTF-8"));
+			req.setHeader("User-Agent", "Corina WSI " + Build.VERSION + 
+					" (" + clientModuleVersion + "; ts " + Build.TIMESTAMP +")");
 
 			// are we using https? should we allow self-signed certs?
 			if(url.getScheme().equals("https")) {
@@ -275,6 +277,25 @@ public class WebXMLDocumentAccessor {
 			throw new IOException("The server returned a protocol error " + hre.getStatusCode() + 
 					": " + hre.getLocalizedMessage());
 			
+		} catch (XMLParsingException xmlpe) {
+			Throwable cause = xmlpe.getCause();
+			BugReport bugs = new BugReport(cause);
+			Document invalidDoc = xmlpe.getNonvalidatingDocument();
+			File invalidFile = xmlpe.getInvalidFile();
+
+			bugs.addDocument("sent.xml", requestDocument);
+			if(invalidDoc != null)
+				bugs.addDocument("recv-nonvalid.xml", invalidDoc);
+			if(invalidFile != null)
+				bugs.addDocument("recv-malformed.xml", invalidFile);
+			
+			new Bug(cause, bugs);
+			
+			// it's probably an ioexception...
+			if(cause instanceof IOException)
+				throw (IOException) cause;
+			
+			throw xmlpe;
 		} catch (IOException ioe) {
 			throw ioe;
 			
@@ -396,5 +417,27 @@ public class WebXMLDocumentAccessor {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	static private final String clientModuleVersion;
+	
+	static {
+	    final String[] modules = {
+	        "org.apache.http",              // HttpCore (main)
+	        "org.apache.http.cookie",       // HttpCookie   
+	        "org.apache.http.client",       // HttpClient
+	    };
+	    
+        final VersionInfo[] via = VersionInfo.loadVersionInfo(modules, null);        
+        final StringBuffer buf = new StringBuffer();
+        
+        for(int i = 0; i < via.length; i++) {
+        	if(buf.length() != 0)
+        		buf.append("; ");
+        	
+        	buf.append(via[i].getModule() + " " + via[i].getRelease());
+        }
+        
+        clientModuleVersion = buf.toString();
 	}
 }
