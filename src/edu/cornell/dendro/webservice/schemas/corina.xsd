@@ -24,7 +24,10 @@
 				</xs:sequence>
 				<xs:sequence>
 					<xs:element ref="header"/>
-					<xs:element ref="content"/>				
+					<xs:choice>
+						<xs:element ref="content" minOccurs="0" maxOccurs="1"/>	
+						<xs:element ref="help"  minOccurs="0" maxOccurs="1"/>
+					</xs:choice>
 				</xs:sequence>
 			</xs:choice>
 		</xs:complexType>
@@ -262,7 +265,6 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="sql" minOccurs="0" maxOccurs="1"/>
-				<xs:element name="help"  minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="nonce" minOccurs="0" maxOccurs="1"></xs:element>
 				<xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:element" minOccurs="0" maxOccurs="unbounded"/>
@@ -284,6 +286,18 @@
 			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
+	
+<!--
+	%%%%%%%%%%%%%%
+	%		HELP
+	%%%%%%%%%%%%%% -->	
+<xs:element name="help">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:any/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
 	
 	<!--
 %%%%%%%%%%%%%%
