@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<corina xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://dendro.cornell.edu/schema/corina/1.0 corina.xsd"
+ xmlns:gml="http://www.opengis.net/gml"
+ xmlns:tridas="http://www.tridas.org/1.1"
+ xmlns="http://dendro.cornell.edu/schema/corina/1.0">
+    <header><wsVersion>0.2.1517:1572M</wsVersion>
+        <clientVersion>Corina WSI 2.03 b1 (HttpCore/main 4.0-beta3; HttpClient 4.0-beta2; ts (time/date unknown))</clientVersion>
+        <requestDate>2009-02-20T16:01:45-05:00</requestDate>
+        <queryTime unit="seconds">0.09</queryTime>
+        <requestUrl>/dev/webservice.php</requestUrl>
+        <requestType>nonce</requestType>
+        <status>OK</status>
+        <timing label="Beginning request">0</timing>
+        <timing label="Outputting XML...">94</timing><timing label="XML output complete">94</timing></header>
+    <content>
+        <nonce seq="1234">7ac4dcf6aa20b013eb8e1aebcd70b3a9</nonce>
+    </content></corina>

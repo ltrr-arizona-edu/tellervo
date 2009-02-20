@@ -93,18 +93,26 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
     }
     else
     {
-        $outputStr.= "<help>\n";
+        
         if($metaHeader->getIsLoginRequired())
         {
+        	$outputStr.= "<help>\n";
             // WS Request failed because the user isn't authenticated. SHow authentication docs
             $outputStr.= getHelpDocbook('Authentication');
+            $outputStr.= "</help>\n";
+        }
+        elseif($metaHeader->getClientName()=='Corina WSI')
+        {
+        	
         }
         else
         {
+        	$outputStr.= "<help>\n";
             // WS Request failed for another reason so show this objects docs
             $outputStr.= getHelpDocbook('Introduction');
+            $outputStr.= "</help>\n";
         }
-        $outputStr.= "</help>\n";
+        
     }
     
     $outputStr.= "</corina>";

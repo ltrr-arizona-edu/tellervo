@@ -65,7 +65,7 @@ class auth
    * @param String $theSequence
    * @return unknown
    */
-  protected function loginWithNonce($theUsername, $theClientHash, $theClientNonce, $theServerNonce, $theSequence)
+  function loginWithNonce($theUsername, $theClientHash, $theClientNonce, $theServerNonce, $theSequence)
   {
     global $dbconn;
 

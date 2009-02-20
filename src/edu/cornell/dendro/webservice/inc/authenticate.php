@@ -60,8 +60,7 @@ class authenticate
      * In this case $crudMode should be one of 'plainlogin', 'nonce'
      * or 'securelogin'.
      *
-     * @param Parameters class $paramsObj
-     * @param String $crudMode
+     * @param authenticationParameters $paramsObj
      * @return Boolean
      */
     public function validateRequestParams($paramsObj)
@@ -89,7 +88,7 @@ class authenticate
                     $this->setErrorMessage("902","Missing parameter - 'username' field is required when doing a secure login");
                     return false;
                 }
-                if($paramsObj->hash==NULL)
+                if($paramsObj->getHash()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'hash' field is required when doing a secure login");
                     return false;

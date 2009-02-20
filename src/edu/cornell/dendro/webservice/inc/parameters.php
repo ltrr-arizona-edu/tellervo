@@ -48,8 +48,7 @@ class searchParameters implements IParams
 
 
     function __construct($xmlrequest)
-    {
-    	parent::__construct();    	
+    { 	
         // Load the xmlrequest into a DOMDocument if it isn't already
         if (gettype($xmlrequest)=='object')
         {
@@ -179,7 +178,7 @@ class dictionariesParameters implements IParams
 
     function __construct($xmlrequest)
     {
-    	parent::__construct();
+
     }
 
     function setParamsFromXMLRequest()
@@ -209,9 +208,7 @@ class authenticationParameters implements IParams
     
 
     function __construct($xmlrequest)
-    {
-    	parent::__construct();    	
-    	
+    {    	
         // Load the xmlrequest into a DOMDocument if it isn't already
         if (gettype($xmlrequest)=='object')
         {
@@ -920,7 +917,7 @@ class measurementParameters extends measurementEntity implements IParams
  * Old stuff needs refactoring
  *
  */
-
+/*
 
 class parameters 
 {
@@ -947,284 +944,7 @@ class parameters
     }
     
 }
-/*
-class treeParameters extends parameters
-{
-    var $id                 = NULL;
-    var $name               = NULL;
-    var $taxonID            = NULL;
-    var $originalTaxonName  = NULL;
-    var $latitude           = NULL;
-    var $longitude          = NULL;
-    var $precision          = NULL;
-    var $subSiteID          = NULL;
-    var $isLiveTree         = NULL;
-    var $treeNoteArray      = array();
 
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        $this->subSiteID = $parentID;
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                  $this->id                   = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest->name))                  $this->name                 = addslashes($this->xmlrequest->name);
-        if(isset($this->xmlrequest->originalTaxonName))     $this->originalTaxonName    = addslashes($this->xmlrequest->originalTaxonName);
-        if(isset($this->xmlrequest->validatedTaxon['id']))  $this->taxonID              = (int)      $this->xmlrequest->validatedTaxon['id'];
-        if(isset($this->xmlrequest->latitude))              $this->latitude             = (double)   $this->xmlrequest->latitude;
-        if(isset($this->xmlrequest->longitude))             $this->longitude            = (double)   $this->xmlrequest->longitude;
-        if(isset($this->xmlrequest->precision))             $this->precision            = (double)   $this->xmlrequest->precision;
-        if(isset($this->xmlrequest->isLiveTree))            $this->isLiveTree           = fromStringtoPHPBool($this->xmlrequest->isLiveTree);
-        if(isset($this->xmlrequest->sample))                $this->hasChild             = True;
-        
-        $treeNotes = $this->xmlrequest->xpath('//treeNotes');
-        if (isset($treeNotes[0]->treeNote[0]))
-        {
-            foreach($treeNotes[0] as $item)
-            {
-                array_push($this->treeNoteArray, $item['id']);
-            }
-        }
-        else
-        {
-            $this->treeNoteArray = array('empty');
-        }
-    }
-}
-
-class measurementParameters extends parameters
-{
-    var $id                     = NULL;
-    var $radiusID               = NULL;
-    var $startYear              = NULL;
-    var $measuredByID           = NULL;  
-    var $ownerUserID            = NULL;
-    var $datingTypeID           = NULL;
-    var $datingType             = NULL;
-    var $datingErrorPositive    = NULL;
-    var $datingErrorNegative    = NULL;
-    var $name                   = NULL;
-    var $description            = NULL;  
-    var $isLegacyCleaned        = NULL;
-    var $isReconciled           = NULL;
-    var $isPublished            = NULL;
-    var $vmeasurementOp         = NULL;
-    var $vmeasurementOpParam    = NULL;
-    var $readingsType           = NULL;
-    var $readingsUnits          = NULL;
-    var $readingsArray          = array();
-    var $referencesArray        = array();
-    var $measurementNoteArray   = array();
-    var $masterVMeasurementID   = NULL;
-    var $certaintyLevel         = NULL;
-    var $justification          = NULL;
-    var $newStartYear           = NULL;
-
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        $this->radiusID = $parentID;
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                                          $this->id                    = (int)                $this->xmlrequest['id'];
-        if(isset($this->xmlrequest->metadata->measuredBy['id']))                    $this->measuredByID          = (int)                $this->xmlrequest->metadata->measuredBy['id'];
-        if(isset($this->xmlrequest->metadata->owner['id']))                         $this->ownerUserID           = (int)                $this->xmlrequest->metadata->owner['id'];
-        //if(isset($this->xmlrequest->metadata->datingTypeID))                      $this->datingTypeID          = addslashes(          $this->xmlrequest->metadata->datingTypeID);
-        if(isset($this->xmlrequest->metadata->dating['startYear']))                 $this->startYear             = (int)                $this->xmlrequest->metadata->dating['startYear'];
-        if(isset($this->xmlrequest->metadata->dating['type']))                      $this->datingType            = addslashes(          $this->xmlrequest->metadata->dating['type']);
-        if(isset($this->xmlrequest->metadata->dating['positiveError']))             $this->datingErrorPositive   = (int)                $this->xmlrequest->metadata->dating['positiveError'];
-        if(isset($this->xmlrequest->metadata->dating['negativeError']))             $this->datingErrorNegative   = (int)                $this->xmlrequest->metadata->dating['negativeError'];
-        if(isset($this->xmlrequest->metadata->name))                                $this->name                  = addslashes(          $this->xmlrequest->metadata->name);
-        if(isset($this->xmlrequest->metadata->description))                         $this->description           = addslashes(          $this->xmlrequest->metadata->description);
-        if(isset($this->xmlrequest->metadata->isLegacyCleaned))                     $this->isLegacyCleaned       = fromStringtoPHPBool( $this->xmlrequest->metadata->isLegacyCleaned);
-        if(isset($this->xmlrequest->metadata->isReconciled))                        $this->isReconciled          = fromStringtoPHPBool( $this->xmlrequest->metadata->isReconciled);
-        if(isset($this->xmlrequest->metadata->isPublished))                         $this->isPublished           = fromStringtoPHPBool( $this->xmlrequest->metadata->isPublished);
-        if(isset($this->xmlrequest->readings['type']))                              $this->readingsType          = addslashes(          $this->xmlrequest->readings['type']);
-        if(isset($this->xmlrequest->readings['units']))                             $this->readingsUnits         = (int)                $this->xmlrequest->readings['units'];
-        if(isset($this->xmlrequest->metadata->operation))                           $this->vmeasurementOp        = addslashes(          $this->xmlrequest->metadata->operation);
-        if(isset($this->xmlrequest->metadata->operation['parameter']))              $this->vmeasurementOpParam   = addslashes(          $this->xmlrequest->metadata->operation['parameter']);
-        if(isset($this->xmlrequest->metadata->crossdate->basedOn->measurement['id']))       
-                                                                                    $this->masterVMeasurementID  = (int)                $this->xmlrequest->metadata->crossdate->basedOn->measurement['id'];
-        if(isset($this->xmlrequest->metadata->crossdate->startYear))                $this->startYear             = (int)                $this->xmlrequest->metadata->crossdate->startYear;
-        if(isset($this->xmlrequest->metadata->crossdate->certaintyLevel))           $this->certaintyLevel        = (int)                $this->xmlrequest->metadata->crossdate->certaintyLevel;
-        if(isset($this->xmlrequest->metadata->crossdate->justification))            $this->justification         = addslashes(          $this->xmlrequest->metadata->crossdate->justification);
-        if(isset($this->xmlrequest->metadata->crossdate->startYear))                $this->newStartYear          = (int)                $this->xmlrequest->metadata->crossdate->startYear;
-
-        
-        foreach($this->xmlrequest->xpath('//references/measurement') as $refmeasurement)
-        {
-            if($refmeasurement['id']) array_push($this->referencesArray, $refmeasurement['id']);
-        }
-        
-        $theYear =-1;
-        foreach($this->xmlrequest->xpath('//readings/reading') as $reading)
-        {
-            if ($reading['year']!=NULL) 
-            {
-                // If the XML includes a year attribute use it
-                $theYear = (int) $reading['year'];
-            }
-            else
-            {
-                // Otherwise use relative years - base 0
-                $theYear++; 
-            }
-
-            $theValue = (int) $reading['value'];
-            $this->readingsArray[$theYear] = array('reading' => $theValue, 'wjinc' => NULL, 'wjdec' => NULL, 'count' => 1, 'notesArray' => array());
-                
-            if(isset($reading->readingNote))
-            {
-                foreach($reading->readingNote as $readingNote)
-                {
-                    array_push($this->readingsArray[$theYear], (int) $readingNote['id']); 
-                }
-
-            }
-
-        }
-        
-        $measurementNotes = $this->xmlrequest->xpath('//measurementNotes');
-        if (isset($measurementNotes[0]->measurementNote[0]))
-        {
-            foreach($measurmentNotes[0] as $item)
-            {
-                array_push($this->measurementNoteArray, $item['id']);
-            }
-        }
-        else
-        {
-            $this->measurementNoteArray = array('empty');
-        }
-    }
-}
-
-class taxonParameters extends parameters
-{
-    // TO DO!!!
-    var $id         = NULL;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest['isStandard']))          $this->isStandard   = fromStringToPHPBool($this->xmlrequest['isStandard']);
-        if(isset($this->xmlrequest))                        $this->note         = addslashes(trim($this->xmlrequest));
-    }
-}
-
-class siteNoteParameters extends parameters
-{
-    var $id         = NULL;
-    var $note       = NULL;
-    var $isStandard = FALSE;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest['isStandard']))          $this->isStandard   = fromStringToPHPBool($this->xmlrequest['isStandard']);
-        if(isset($this->xmlrequest))                        $this->note         = addslashes(trim($this->xmlrequest));
-    }
-}
-
-class treeNoteParameters extends parameters
-{
-    var $id         = null;
-    var $note       = null;
-    var $isStandard = false;
-
-    function __construct($metaheader, $auth, $xmlrequest, $parentid=null)
-    {
-        parent::__construct($metaheader, $auth, $xmlrequest);
-    }
-    
-    function getxmlparams()
-    {
-        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest['isStandard']))          $this->isStandard   = fromStringToPHPBool($this->xmlrequest['isStandard']);
-        if(isset($this->xmlrequest))                        $this->note         = addslashes(trim($this->xmlrequest));
-    }
-}
-
-class vmeasurementNoteParameters extends parameters
-{
-    var $id         = NULL;
-    var $note       = NULL;
-    var $isStandard = FALSE;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest['isStandard']))          $this->isStandard   = fromStringToPHPBool($this->xmlrequest['isStandard']);
-        if(isset($this->xmlrequest))                        $this->note         = addslashes(trim($this->xmlrequest));
-    }
-}
-
-class readingNoteParameters extends parameters
-{
-    var $id         = NULL;
-    var $note       = NULL;
-    var $isStandard = FALSE;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest['isStandard']))          $this->isStandard   = fromStringToPHPBool($this->xmlrequest['isStandard']);
-        if(isset($this->xmlrequest))                        $this->note         = addslashes(trim($this->xmlrequest));
-    }
-}
-
-
-
-class authenticationParameters extends parameters
-{
-    var $username     = NULL;
-    var $snonce       = NULL;
-    var $cnonce       = NULL;
-    var $seq          = NULL;
-    var $hash         = NULL;
-    var $password     = NULL;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        $this->radiusID = $parentID;
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest[0]['username']))                  $this->username                    = addslashes($this->xmlrequest[0]['username']);
-        if(isset($this->xmlrequest[0]['password']))                  $this->password                    = addslashes($this->xmlrequest[0]['password']);
-        if(isset($this->xmlrequest[0]['cnonce']))                    $this->cnonce                      = addslashes($this->xmlrequest[0]['cnonce']);
-        if(isset($this->xmlrequest[0]['snonce']))                    $this->snonce                      = addslashes($this->xmlrequest[0]['snonce']);
-        if(isset($this->xmlrequest[0]['hash']))                      $this->hash                        = addslashes($this->xmlrequest[0]['hash']);
-        if(isset($this->xmlrequest[0]['seq']))                       $this->seq                         = addslashes($this->xmlrequest[0]['seq']);
-    }
-}
 
 class securityUserParameters extends parameters
 {
