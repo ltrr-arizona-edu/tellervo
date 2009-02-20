@@ -74,20 +74,6 @@ class dbHelper
 	    return $theString;
 	}
 	
-	
-	/**
-	 * Converts PG ISO 8601 date into a slightly different form of ISO 8601 date so that it vaidates in XML schema.
-	 * Adds T between date and time
-	 * Adds :00 to timezone.  Super fudgy as will bomb if a non hourly timezone is used e.g. +13:45 - Chatham Is.
-	 *
-	 * @param Date $theDate
-	 * @return String
-	 */
-	public static function dateFudge($theDate)
-	{
-	    return str_replace(" ", "T", $theDate).":00";
-	}
-	
 	/**
 	 * Get the timestamp when the specified table was last updated
 	 *
@@ -323,6 +309,11 @@ class dbHelper
 	
 	}
 	
+	
+	public static function pgDateTimeToCompliantISO($datetime)
+	{
+		return date('c', strtotime($datetime));
+	}
 	
 }
 

@@ -232,7 +232,7 @@ class dbEntity
 	 */
     final protected function setCreatedTimestamp($timestamp)
     {
-    	$this->createdTimeStamp=$timestamp;
+    	$this->createdTimeStamp= dbHelper::pgDateTimeToCompliantISO($timestamp);
     	return true;
     }
     
@@ -244,7 +244,7 @@ class dbEntity
      */
     final protected function setLastModifiedTimestamp($timestamp)
     {
-    	$this->lastModifiedTimeStamp=$timestamp;
+    	$this->lastModifiedTimeStamp= dbHelper::pgDateTimeToCompliantISO($timestamp);
     	return true;
     }
         
@@ -323,6 +323,16 @@ class dbEntity
     }
     
     /**
+     * Returns the internal XML reference string for this entity
+     *
+     * @return String
+     */
+    function getXMLRefID()
+    {
+    	return "XREF-".$this->getID();
+    }
+    
+    /**
      * Get the XML representation of the identifier
      *
      * @return unknown
@@ -330,7 +340,8 @@ class dbEntity
     function getIdentifierXML()
     {
     	global $domain;
-        return "<tridas:title>".dbHelper::escapeXMLChars($this->getTitle())."</tridas:title>\n<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>";  
+        return "<tridas:title>".dbHelper::escapeXMLChars($this->getTitle())."</tridas:title>\n".
+               "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>\n";  
     }
     
     function getDBIDXML()
@@ -1276,7 +1287,7 @@ class sampleEntity extends dbEntity
 	/**
 	 * Type of sample 
 	 *
-	 * @var String
+	 * @var sampleType
 	 */
 	protected $type = NULL;
 	/**
@@ -1324,13 +1335,18 @@ class sampleEntity extends dbEntity
 	/**
 	 * Set the sample type
 	 *
+	 * @param Integer $id
 	 * @param String $value
 	 * @return Boolean
 	 */
-	function setType($value)
+	function setType($id, $value)
 	{
-		$this->type = addslashes($value);
-		return true;
+		if(!isset($this->type))
+		{
+			$this->type = new sampleType();
+		}
+		
+		return $this->type->setSampleType($id, $value);
 	}
 	
 	/**
@@ -1416,7 +1432,7 @@ class sampleEntity extends dbEntity
 	 */
 	function getType()
 	{
-		return $this->type;	
+		return $this->type->getValue();	
 	}
 	
 	/**
@@ -1484,6 +1500,7 @@ class radiusEntity extends dbEntity
 {
     protected $sampleID = NULL;   
     protected $measurementArray = array();
+ 
     /**
      * Whether pith is present or absent 
      *

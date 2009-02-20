@@ -129,26 +129,41 @@ class geometry
 
 	function asXML()
 	{
-        $xml = "<tridas:location>";
-       	$xml.= "<tridas:locationGeometry>";
+        $xml = "<tridas:location>\n";
+       	$xml.= "<tridas:locationGeometry>\n";
        	$xml.= $this->asGML();
-       	$xml.= "</tridas:locationGeometry>";
-       	if($this->getLocationType()!=NULL) $xml .= "<tridas:locationType>".$this->getLocationType()."</tridas:locationType>";
-        if($this->getLocationPrecision()!=NULL) $xml .= "<tridas:locationPrecision>".$this->getLocationPrecision()."</tridas:locationPrecision>";
-        if($this->getLocationComment()!=NULL) $xml .= "<tridas:locationComment>".$this->getLocationComment()."</tridas:locationComment>";      	
-       	$xml.= "</tridas:location>";
+       	$xml.= "\n</tridas:locationGeometry>\n";
+       	if($this->getLocationType()!=NULL) $xml .= "<tridas:locationType>".$this->getLocationType()."</tridas:locationType>\n";
+        if($this->getLocationPrecision()!=NULL) $xml .= "<tridas:locationPrecision>".$this->getLocationPrecision()."</tridas:locationPrecision>\n";
+        if($this->getLocationComment()!=NULL) $xml .= "<tridas:locationComment>".$this->getLocationComment()."</tridas:locationComment>\n";      	
+       	$xml.= "</tridas:location>\n";
         return $xml;
 	}
 	
-	function asGML()
+	/**
+	 * Get this location geometry as GML
+	 *
+	 * @param Integer $gmlversion either 2 or 3 defaults to 3
+	 * @return String
+	 */
+	function asGML($gmlversion=3)
 	{
-		$sql = "select asgml('".$this->geometry."') as thevalue";
+		// Override to v3 if not 2 or 3
+		if ($gmlversion!=2 || $gmlversion!=3) $gmlversion=3;
+		
+		$sql = "select st_asgml($gmlversion, '".$this->geometry."') as thevalue";		
 		return $this->runSQLCalculation($sql);
 	}
 	
-	function asKML()
+	/**
+	 * Get the location geometry as KML
+	 *
+	 * @param Integer $kmlversion
+	 * @return String
+	 */
+	function asKML($kmlversion=2)
 	{
-		$sql = "select askml('".$this->geometry."') as thevalue";
+		$sql = "select st_askml($kmlversion'".$this->geometry."') as thevalue";
 		return $this->runSQLCalculation($sql);
 	}
 	

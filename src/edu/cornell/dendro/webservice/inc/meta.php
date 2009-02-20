@@ -37,7 +37,7 @@ class meta
   {
     global $wsversion;
     $this->startTimestamp = microtime(true);
-    $this->requestdate= date(DATE_ISO8601);
+    $this->requestdate= date(c);
     $this->requesturl= dbHelper::escapeXMLChars($_SERVER['REQUEST_URI']);
     $this->clientversion= dbHelper::escapeXMLChars($_SERVER['HTTP_USER_AGENT']);
     if($theRequestType)  $this->requesttype= $theRequestType;
@@ -69,9 +69,13 @@ class meta
     {
         $this->status="Error";
     }
-    elseif($this->status=="Warning" || $theStatus=="Warning")
+    elseif($this->status=="Warning" || $theStatus=="Warning" )
     {
         $this->status="Warning";
+    }
+    elseif($this->status=="Notice" || $theStatus=="Notice")
+    {
+    	$this->startTimestamp="Notice";
     }
     else
     {
@@ -216,12 +220,12 @@ class meta
     {
         $xml.="<user id=\"".$this->securityUserID."\" username=\"".$this->username."\" firstname=\"".$this->firstname."\" lastname=\"".$this->lastname."\" />\n";
     }
-    $xml.="<wsversion>".$this->wsversion."</wsversion>\n";
-    $xml.="<clientversion>".$this->clientversion."</clientversion>\n";
-    $xml.="<requestdate>".$this->requestdate."</requestdate>\n";
+    $xml.="<wsVersion>".$this->wsversion."</wsVersion>\n";
+    $xml.="<clientVersion>".$this->clientversion."</clientVersion>\n";
+    $xml.="<requestDate>".$this->requestdate."</requestDate>\n";
     $xml.="<queryTime unit=\"seconds\">".round((microtime(true)-$this->startTimestamp), 2)."</queryTime>\n";
-    $xml.="<requesturl>".$this->requesturl."</requesturl>\n";
-    $xml.="<requesttype>".$this->requesttype."</requesttype>\n";
+    $xml.="<requestUrl>".$this->requesturl."</requestUrl>\n";
+    $xml.="<requestType>".$this->requesttype."</requestType>\n";
     $xml.="<status>".$this->status."</status>\n";
 
     // Remove duplicate messages

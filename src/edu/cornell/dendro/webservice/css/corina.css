@@ -167,11 +167,16 @@ message
 
 sourceCode
 {
-    font-family: courier;
+    font-family: courier, sans-serif;
     display : block;
     margin-left : 30px;
     margin-top : 10px;
     margin-bottom : 10px;
 
+}
+
+timing
+{
+    display : none;
 }
 

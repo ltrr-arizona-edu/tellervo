@@ -62,7 +62,8 @@ class radius extends radiusEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->setCode($row['radiuscode']);
+                $this->setAzimuth($row['azimuth']);
+                $this->setTitle($row['radiuscode']);
                 $this->setSampleID($row['sampleid']);
                 $this->setCreatedTimestamp($row['radiuscreated']);
                 $this->setLastModifiedTimestamp($row['radiuslastmodified']);
@@ -184,6 +185,7 @@ class radius extends radiusEntity implements IDBAccessor
         if ($paramsClass->getMissingHeartwoodRingsToPithFoundation()!=NULL)	$this->setMissingHeartwoodRingsToPithFoundation($paramsClass->getMissingHeartwoodRingsToPithFoundation());
         if ($paramsClass->getMissingSapwoodRingsToBark()!=NULL)				$this->setMissingSapwoodRingsToBark($paramsClass->getMissingSapwoodRingsToBark());
         if ($paramsClass->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$this->setMissingSapwoodRingsToBarkFoundation($paramsClass->getMissingSapwoodRingsToBarkFoundation());
+        if ($paramsClass->getAzimuth()!=NULL)								$this->setAzimuth($paramsClass->getAzimuth());
 
         if ($paramsClass->parentID!=NULL)
         {
@@ -345,7 +347,6 @@ class radius extends radiusEntity implements IDBAccessor
             {
                 $xml.= "<tridas:radius>\n";
                 $xml.= $this->getIdentifierXML();          
-                $xml.= $this->getDBIDXML();
                 
                 // Include permissions details if requested            
                 $xml .= $this->getPermissionsXML();
@@ -354,6 +355,13 @@ class radius extends radiusEntity implements IDBAccessor
                 if($format!="minimal")
                 {
                     if($this->getPithPresent()!=NULL)           					$xml.= "<tridas:pith presence=\"".dbHelper::formatBool($this->getPithPresent(), "presentabsent")."\"></tridas:pith>\n";
+                	if( ($this->getHeartwood()!=NULL)  )	
+					{
+																					$xml.= "<tridas:heartwood presence=\"".$this->getHeartwood()."\">";
+						if($this->getMissingHeartwoodRingsToPith()!=NULL)			$xml.= "<tridas:missingHeartwoodRingsToPith>".$this->getMissingHeartwoodRingsToPith()."</tridas:missingHeartwoodRingsToPith>\n";
+						if($this->getMissingHeartwoodRingsToPithFoundation()!=NULL)	$xml.= "<tridas:missingHeartwoodRingsToPithFoundation>".$this->getMissingHeartwoodRingsToPithFoundation()."</tridas:missingHeartwoodRingsToPithFoundation>\n";																				
+																					$xml.= "</tridas:heartwood>\n";
+					}
                     if($this->getSapwood()!=NULL)
                     {
                     																$xml.= "<tridas:sapwood presence=\"".$this->getSapwood()."\">";
@@ -363,16 +371,11 @@ class radius extends radiusEntity implements IDBAccessor
                     	if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$xml.= "<tridas:missingSapwoodRingsToBarkFoundation>".$this->getMissingSapwoodRingsToBarkFoundation()."</tridas:missingSapwoodRingsToBarkFoundation>\n";	
                     																$xml.= "</tridas:sapwood>\n";
                     }
-					if( ($this->getHeartwood()!=NULL)  )	
-					{
-																					$xml.= "<tridas:heartwood presence=\"".$this->getHeartwood()."\">";
-						if($this->getMissingHeartwoodRingsToPith()!=NULL)			$xml.= "<tridas:missingHeartwoodRingsToPith>".$this->getMissingHeartwoodRingsToPith()."</tridas:missingHeartwoodRingsToPith>\n";
-						if($this->getMissingHeartwoodRingsToPithFoundation()!=NULL)	$xml.= "<tridas:missingHeartwoodRingsToPithFoundation>".$this->getMissingHeartwoodRingsToPithFoundation()."</tridas:missingHeartwoodRingsToPithFoundation>\n";																				
-																					$xml.= "</tridas:heartwood>\n";
-					}
-					if($this->getBarkPresent()!=NULL)								$xml.= "<tridas:bark presence=\"".formatBool($this->getBarkPresent(), "presentabsent")."\"/>";
-                    if($this->getCreatedTimeStamp()!=NULL)      					$xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimeStamp()."</tridas:genericField>\n";
-                    if($this->getLastModifiedTimeStamp()!=NULL) 					$xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimeStamp()."</tridas:genericField>\n";
+
+					if($this->getBarkPresent()!=NULL)								$xml.= "<tridas:bark presence=\"".dbHelper::formatBool($this->getBarkPresent(), "presentabsent")."\"/>";
+					if($this->getAzimuth()!=NULL)									$xml.= "<tridas:azimuth>".$this->getAzimuth()."</tridas:azimuth>\n";
+                    if($this->getCreatedTimeStamp()!=NULL)      					$xml.= "<tridas:createdTimestamp>".$this->getCreatedTimeStamp()."</tridas:createdTimestamp>\n";
+                    if($this->getLastModifiedTimeStamp()!=NULL) 					$xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimeStamp()."</tridas:lastModifiedTimestamp>\n";
 			
                     
                 }

@@ -29,15 +29,10 @@ more information on http://www.gnu.org/licenses/lgpl.html
 %%%%%%%%%%%%%%
 %		GLOBAL TYPES
 %%%%%%%%%%%%%% -->
-	<!-- timestamp -->
-	<xs:complexType name="timestamp">
-		<xs:simpleContent>
-			<xs:extension base="xs:dateTime"></xs:extension>
-		</xs:simpleContent>	
-	</xs:complexType>
-				
-	<xs:element name="createdTimestamp" type="timestamp"/>
-	<xs:element name="lastModifiedTimestamp" type="timestamp"/>
+	
+	<xs:element name="createdTimestamp" type="xs:dateTime"/>
+
+	<xs:element name="lastModifiedTimestamp" type="xs:dateTime"/>
 	
 	<!-- controlledVoc -->
 	<xs:complexType name="controlledVoc">
@@ -106,9 +101,9 @@ more information on http://www.gnu.org/licenses/lgpl.html
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="locationGeometry"/>
-				<xs:element ref="locationType"/>
-				<xs:element ref="locationPrecision"/>
-				<xs:element ref="locationComment"/>
+				<xs:element ref="locationType" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="locationPrecision" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="locationComment" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -288,8 +283,8 @@ more information on http://www.gnu.org/licenses/lgpl.html
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="title" minOccurs="1" maxOccurs="1"/>
-				<xs:element ref="linkSeries" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="identifier" minOccurs="0"/>
+				<xs:element ref="linkSeries" minOccurs="0" maxOccurs="unbounded"/>				
 				<xs:element ref="taxon"/>
 				<xs:element ref="shape" minOccurs="0"/>
 				<xs:element ref="dimensions" minOccurs="0"/>
@@ -355,7 +350,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 				<xs:element ref="title" minOccurs="1" maxOccurs="1"/>						
 				<xs:element ref="identifier" minOccurs="0"/>
 				<xs:element ref="type"/>
-				<xs:element ref="samplingDate"/>
+				<xs:element ref="samplingDate" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="position" minOccurs="0"/>
 				<xs:element ref="state" minOccurs="0"/>

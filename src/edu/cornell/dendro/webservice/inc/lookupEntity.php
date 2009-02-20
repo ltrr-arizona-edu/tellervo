@@ -328,6 +328,19 @@ class heartwood extends lookupEntity
 	}
 }
 
+class sampleType extends lookupEntity
+{
+	function __construct()
+	{
+		parent::__construct("tlkpsampletype", "sampletype", "sampletypeid");
+	}
+	
+	function setSampleType($id, $value)
+	{
+		return $this->setLookupEntity($id, $value);
+	}
+}
+
 
 
 ?>

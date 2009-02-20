@@ -14,7 +14,6 @@ require_once('dbhelper.php');
 require_once('inc/dbEntity.php');
 
 require_once("inc/note.php");
-require_once("inc/sampleType.php");
 require_once("inc/taxon.php");
 require_once("inc/region.php");
 require_once("inc/securityUser.php");

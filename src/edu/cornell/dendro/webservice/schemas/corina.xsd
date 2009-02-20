@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:tridas="http://www.tridas.org/1.1" targetNamespace="http://dendro.cornell.edu/schema/corina/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns="http://dendro.cornell.edu/schema/corina/1.0" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:xlink="http://www.w3.org/1999/xlink" 
+	xmlns:tridas="http://www.tridas.org/1.1" 
+	targetNamespace="http://dendro.cornell.edu/schema/corina/1.0" 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified">
 	<!--
 %%%%%%%%%%%%%%
 %		EXTERNAL SCHEMAS	
@@ -185,8 +191,9 @@
 						<xs:attribute name="lastname" type="xs:string"/>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="wsversion" type="xs:string"/>
-				<xs:element name="requestdate" type="xs:dateTime"/>
+				<xs:element name="wsVersion" type="xs:string"/>
+				<xs:element name="clientVersion" type="xs:string"/>
+				<xs:element name="requestDate" type="xs:dateTime"/>
 				<xs:element name="queryTime">
 					<xs:complexType>
 						<xs:simpleContent>
@@ -202,8 +209,8 @@
 						</xs:simpleContent>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="requesturl" type="xs:string"/>
-				<xs:element name="requesttype">
+				<xs:element name="requestUrl" type="xs:string"/>
+				<xs:element name="requestType">
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
 							<xs:enumeration value="search"/>
@@ -221,6 +228,29 @@
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
+				<xs:element name="status">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="OK"/>
+							<xs:enumeration value="Warning"/>
+							<xs:enumeration value="Notice"/>
+							<xs:enumeration value="Error"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="message" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="code" type="xs:string" />
+								
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="timing" minOccurs="0" maxOccurs="unbounded">
+				</xs:element>	
+				
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -231,8 +261,14 @@
 	<xs:element name="content">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="sql"/>
+				<xs:element name="sql" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="tridas:element" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="tridas:radius" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="tridas:measurementSeries" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="tridas:derivedSeries" minOccurs="0" maxOccurs="unbounded"/>
+				
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

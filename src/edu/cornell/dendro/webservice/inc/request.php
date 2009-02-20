@@ -119,7 +119,7 @@ class request
         
         // Handle validation errors ourselves
         libxml_use_internal_errors(true);
-
+       
         // If using a known client then check that the version is compatible
    		if($myMetaHeader->isClientVersionValid()===FALSE)
    		{

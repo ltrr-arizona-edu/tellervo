@@ -43,7 +43,7 @@ $corinaNS = "http://dendro.cornell.edu/schema/corina/1.0";
 $tridasNS = "http://www.tridas.org/1.1";
 
 // TRiDaS Namespace URL
-$gmlNS = "http://www.gml.org/";
+$gmlNS = "http://www.opengis.net/gml";
 
 // The name and edition of the taxonomic authority used for taxonomy 
 $taxonomicAuthorityEdition = "Catalogue of Life Annual Checklist 2008";

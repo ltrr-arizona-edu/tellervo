@@ -736,7 +736,7 @@ class measurement extends measurementEntity implements IDBAccessor
     {
     	global $domain;
     	$xml = null;
- 	    $xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getID()."\">";
+ 	    $xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
      	$xml.= $this->getIdentifierXML();
      	    	
      	
@@ -744,12 +744,11 @@ class measurement extends measurementEntity implements IDBAccessor
         $xml .= $this->getPermissionsXML();     	
                       
                 if(isset($this->vmeasurementOp)) 			$xml.= "<tridas:type>".$this->vmeasurementOp->getValue()."</tridas:type>\n";               
-                if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"operationParameter\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
  				if($this->getObjective()!=NULL)				$xml.= "<tridas:objective>".addslashes($this->getObjective())."</tridas:objective>\n";
- 				if($this->getStandardizingMethod()!=NULL)	$xml.= "<tridas:standardizingMethod>".addslashes($this->getStandardizingMethod())."</tridas:standardizingMethod>";
+ 				if($this->getStandardizingMethod()!=NULL)	$xml.= "<tridas:standardizingMethod>".addslashes($this->getStandardizingMethod())."</tridas:standardizingMethod>\n";
  				if($this->getAuthor()!=NULL)				$xml.= "<tridas:author>".addslashes($this->getAuthor())."</tridas:author>\n";
  				if($this->getVersion()!=NULL)				$xml.= "<tridas:version>".addslashes($this->getVersion())."</tridas:version>\n";
- 				if($this->getCreatedTimestamp()!=NULL)		$xml.= "<tridas:createdTimestamp>".$this->getCreatedTimestamp()."</tridas:createdTimestamp>\n";
+
  				if(isset($this->referencesArray))
             	{											$xml.= "<tridas:linkSeries>\n";
             		foreach($this->referencesArray as $ref)
@@ -769,9 +768,15 @@ class measurement extends measurementEntity implements IDBAccessor
  				if($this->getDeathYear()!=NULL)				$xml.= "<tridas:deathYear>".$this->getDeathYear()."</tridas:deathYear>\n";
  				if($this->getProvenance()!=NULL)			$xml.= "<tridas:provenance>".addslashes($this->getProvenance())."</tridas:provenance>\n";
  															$xml.= "</tridas:interpretation>\n"; 
+ 				
+ 															
+ 															
  				if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"crossdateJustification\">".$this->getJustification()."</tridas:genericField>\n";				
  				if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"crossdateConfidenceLevel\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
- 				
+ 				if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"operationParameter\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
+ 				if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"authorID\">".$this->author->getID()."</tridas:genericField>\n"; 				
+ 				if($this->getCreatedTimestamp()!=NULL)		$xml.= "<tridas:createdTimestamp>".$this->getCreatedTimestamp()."</tridas:createdTimestamp>\n";
+ 				if($this->getLastModifiedTimestamp()!=NULL)	$xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimestamp()."</tridas:lastModifiedTimestamp>\n"; 				 				
  			
 
                 // Using 'summary' format so just give minimal XML for all references and nothing else
@@ -795,29 +800,26 @@ class measurement extends measurementEntity implements IDBAccessor
     private function getMeasurementSeriesXML($format, $parts, $recurseLevel=2)
     {
 		
- 	    $xml = "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getID()."\">";
+ 	    $xml = "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
       	$xml.= $this->getIdentifierXML();
 
-        // Include permissions details if requested            
-        $xml .= $this->getPermissionsXML();
+
             
             // Only output the remainder of the data if we're not using the 'minimal' format
             if ($format!="minimal")
             {            	
-         		if(isset($this->measuringMethod))			$xml.= "<tridas:measuringMethod>".$this->measuringMethod->getValue()."</tridas:measuringMethod>\n";
-         		//if(isset($this->variable))					$xml.= "<tridas:variable>".$this->variable->getValue()."</tridas:variable>";            	
+               	if(isset($this->analyst))					$xml.= "<tridas:analyst>".$this->analyst->getFormattedName()."</tridas:analyst>\n";
+        		if(isset($this->dendrochronologist))		$xml.= "<tridas:dendrochronologist>".$this->dendrochronologist->getFormattedName()."</tridas:dendrochronologist>\n";
+               	if(isset($this->measuringMethod))			$xml.= "<tridas:measuringMethod>".$this->measuringMethod->getValue()."</tridas:measuringMethod>\n";        	
                 if(isset($this->units))
          		{
          													$xml.= "<tridas:units factor=\"".$this->getUnitsPower()."\" system=\"SI\">\n";
          													$xml.= "<tridas:unit>".$this->units->getValue()."</tridas:unit>\n";
          													$xml.= "</tridas:units>\n";
          		}         		
-               	if(isset($this->analyst))					$xml.= "<tridas:analyst>".$this->analyst->getFormattedName()."</tridas:analyst>\n";
-         		if(isset($this->dendrochronologist))		$xml.= "<tridas:dendrochronologist>".$this->dendrochronologist->getFormattedName()."</tridas:dendrochronologist>\n";
-         		if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
+          		if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
          		if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".$this->getUsage()."</tridas:usage>\n";
          		if($this->getUsageComments()!=NULL)			$xml.= "<tridas:usageComments>".$this->getUsageComments()."</tridas:usageComments>\n";
-                if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"isReconciled\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
 
                 											$xml.="<tridas:interpretation>\n";
                 if($this->getFirstYear()!=NULL)				$xml.="<tridas:firstYear>".$this->getFirstYear()."</tridas:firstYear>\n";
@@ -826,10 +828,15 @@ class measurement extends measurementEntity implements IDBAccessor
                 if($this->getProvenance()!=NULL)			$xml.="<tridas:provenance>".$this->getProvenance()."</tridas:provenance>\n";
                 											$xml.="</tridas:interpretation>\n";
 
-
-                if(isset($this->isLegacyCleaned))       $xml.= "<tridas:genericField name=\"isLegacyCleaned\">".dbHelper::formatBool($this->isLegacyCleaned, "english")."</tridas:genericField>\n";
-                if(isset($this->isPublished))           $xml.= "<tridas:genericField name=\"isPublished\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
-
+		        // Include permissions details if requested            
+		        $xml .= $this->getPermissionsXML();
+                if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"isReconciled\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
+		        if(isset($this->isLegacyCleaned))       	$xml.= "<tridas:genericField name=\"isLegacyCleaned\">".dbHelper::formatBool($this->isLegacyCleaned, "english")."</tridas:genericField>\n";
+                if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"isPublished\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
+ 				if(isset($this->analyst))					$xml.= "<tridas:genericField name=\"analystID\">".$this->analyst->getID()."</tridas:genericField>\n";
+ 				if(isset($this->dendrochronologist))		$xml.= "<tridas:genericField name=\"dendrochronologistID\">".$this->dendrochronologist->getID()."</tridas:genericField>\n"; 				
+ 				
+                
                 
                 if($this->getCreatedTimeStamp()!=NULL)      $xml.= "<tridas:createdTimestamp>".$this->getCreatedTimeStamp()."</tridas:createdTimestamp>\n";
                 if($this->getLastModifiedTimeStamp()!=NULL) $xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimeStamp()."</tridas:lastModifiedTimestamp>\n";

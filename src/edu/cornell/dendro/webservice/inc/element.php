@@ -401,14 +401,11 @@ class element extends elementEntity implements IDBAccessor
                 $xml = "<tridas:element>";
                 $xml.= $this->getIdentifierXML();   
                 
-                // Include permissions details if requested            
-                $xml .= $this->getPermissionsXML();
-                
-      			$xml.= $this->getDBIDXML();         
 
+                
                 if($format!="minimal")
                 {
-                    if($this->getAuthenticity()!=NULL)      $xml.= "<tridas:authenticity>".$this->getAuthenticity()."</tridas:authenticity>\n";
+                    $xml.= $this->taxon->asXML();  
                     if($this->getShape()!=NULL)             $xml.= "<tridas:shape>".$this->getShape()."</tridas:shape>\n";
                     if($this->hasDimensions())
                     {
@@ -420,22 +417,25 @@ class element extends elementEntity implements IDBAccessor
                     	if($this->getDimension('depth')!=NULL)    $xml.="<tridas:depth>".$this->getDimension('depth')."</tridas:depth>";
                     	if($this->getDimension('diameter')!=NULL) $xml.="<tridas:diameter>".$this->getDimension('diameter')."</tridas:diameter>";
                     	$xml.="</tridas:dimensions>";                    	
-                    }
-                    if($this->getType()!=NULL) $xml.="<tridas:type>".$this->getType()."</tridas:type>";
-                    if($this->getFile()!=NULL) $xml.="<tridas:file xlink:href=\"".$this->getFile()."\" />";
+                    }                                     
+                    if($this->getAuthenticity()!=NULL)      $xml.= "<tridas:authenticity>".$this->getAuthenticity()."</tridas:authenticity>\n";
                     if($this->hasGeometry()) 
                     {
                         $xml.=$this->geometry->asXML();
-                    }
+                    }                 
+                    if($this->getDescription()!=NULL) $xml.="<tridas:description>".$this->getDescription()."</tridas:description>";
+                    if($this->getType()!=NULL) $xml.="<tridas:type>".$this->getType()."</tridas:type>";
                     if($this->getProcessing()!=NULL) $xml.="<tridas:processing>".$this->getProcessing()."</tridas:processing>";
                     if($this->getMarks()!=NULL) $xml.="<tridas:marks>".$this->getMarks()."</tridas:marks>";  
-                    if($this->getDescription()!=NULL) $xml.="<tridas:description>".$this->getDescription()."</tridas:description>";                                      
-                    $xml.= $this->taxon->asXML();                  
-                    
-                    if($this->getCreatedTimeStamp()!=NULL)      $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimeStamp()."</tridas:genericField>\n";
-                    if($this->getLastModifiedTimeStamp()!=NULL) $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimeStamp()."</tridas:genericField>\n";
+                    if($this->getFile()!=NULL) $xml.="<tridas:file xlink:href=\"".$this->getFile()."\" />";
+                    if($format=='summary') $xml.="<tridas:genericField name=\"fullLabCode\">".$this->summaryFullLabCode."</tridas:genericField>\n"; 
+	                // Include permissions details if requested            
+	                $xml .= $this->getPermissionsXML();                      
+                    $xml.= $this->taxon->getHigherTaxonomyXML();
+                    if($this->getCreatedTimeStamp()!=NULL)      $xml.= "<tridas:createdTimestamp>".$this->getCreatedTimeStamp()."</tridas:createdTimestamp>\n";
+                    if($this->getLastModifiedTimeStamp()!=NULL) $xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimeStamp()."</tridas:lastModifiedTimestamp>\n";
 
-                    if($format=='summary') $xml.="<tridas:genericField name=\"fullLabCode\">".$this->summaryFullLabCode."</tridas:genericField>\n";
+
 
                     if($format!="summary")
                     {

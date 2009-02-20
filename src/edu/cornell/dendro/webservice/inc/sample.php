@@ -14,7 +14,6 @@
 require_once('dbhelper.php');
 require_once('inc/element.php');
 require_once('inc/radius.php');
-require_once('inc/sampleType.php');
 require_once('inc/dbEntity.php');
 
 class sample extends sampleEntity implements IDBAccessor
@@ -48,7 +47,7 @@ class sample extends sampleEntity implements IDBAccessor
         global $domain;    
 
         $this->setID($theID);
-        $sql = "select * from tblsample where sampleid='$theID'";
+        $sql = "select * from vwtblsample where sampleid='$theID'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -65,6 +64,7 @@ class sample extends sampleEntity implements IDBAccessor
                 // Set parameters from db
                 $row = pg_fetch_array($result);
                 $this->setCode($row['code']);
+                $this->setType($row['sampletypeid'], $row['sampletype']);
                 $this->setID($row['sampleid'], $domain);
                 $this->setSamplingDate($row['samplingdate']);
 				$this->setCreatedTimestamp($row['createdtimestamp']);
@@ -403,7 +403,6 @@ class sample extends sampleEntity implements IDBAccessor
             {
                 $xml.= "<tridas:sample>\n";
                 $xml.=  $this->getIdentifierXML();
-              	$xml .= $this->getDBIDXML();
               	                     
                 // Include permissions details if requested            
                 $xml .= $this->getPermissionsXML();
@@ -412,19 +411,17 @@ class sample extends sampleEntity implements IDBAccessor
              
                 if($format!="minimal")
                 {
-                    if($this->getSamplingDate()!=NULL)           $xml.= "<tridas:samplingDate\">".$this->getSamplingDate()."</samplingDate>\n";
                     if($this->getType()!=NULL)                   $xml.= "<tridas:type>".$this->getType()."</tridas:type>\n";
-                    if($this->getCreatedTimeStamp()!=NULL)       $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimestamp()."</tridas:genericField>\n";
-                    if($this->getLastModifiedTimestamp()!=NULL)  $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimestamp()."</tridas:genericField>\n";
+                	if($this->getSamplingDate()!=NULL)           $xml.= "<tridas:samplingDate>".$this->getSamplingDate()."</samplingDate>\n";
+                	if($this->getFile()!=NULL)					 $xml.= "<tridas:file>".$this->getFile()."</tridas:file>\n";
                     if($this->getPosition()!=NULL)				 $xml.= "<tridas:position>".$this->getPosition()."</tridas:position>";
                     if($this->getState()!=NULL)					 $xml.= "<tridas:state>".$this->getState()."</tridas:state>";
                     if($this->getKnots()!=NULL)					 $xml.= "<tridas:knots>".$this->getKnots('english')."</tridas:knots>";
                     if($this->getDescription()!=NULL)			 $xml.= "<tridas:description>".$this->getDescription()."</tridas:description>";
+                    if($this->getCreatedTimeStamp()!=NULL)       $xml.= "<tridas:createdTimestamp>".$this->getCreatedTimestamp()."</tridas:createdTimestamp>\n";
+                    if($this->getLastModifiedTimestamp()!=NULL)  $xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimestamp()."</tridas:lastModifiedTimestamp>\n";                    
                 }
-                
-                if($this->getCreatedTimeStamp()!=NULL)      $xml.= "<tridas:genericField name=\"createdTimeStamp\">".$this->getCreatedTimeStamp()."</tridas:genericField>\n";
-            	if($this->getLastModifiedTimeStamp()!=NULL) $xml.= "<tridas:genericField name=\"lastModifiedTimeStamp\">".$this->getLastModifiedTimeStamp()."</tridas:genericField>\n";
-                
+                               
                 
             }
 
