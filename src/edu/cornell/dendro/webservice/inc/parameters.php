@@ -49,6 +49,7 @@ class searchParameters implements IParams
 
     function __construct($xmlrequest)
     {
+    	parent::__construct();    	
         // Load the xmlrequest into a DOMDocument if it isn't already
         if (gettype($xmlrequest)=='object')
         {
@@ -178,7 +179,7 @@ class dictionariesParameters implements IParams
 
     function __construct($xmlrequest)
     {
-
+    	parent::__construct();
     }
 
     function setParamsFromXMLRequest()
@@ -209,6 +210,8 @@ class authenticationParameters implements IParams
 
     function __construct($xmlrequest)
     {
+    	parent::__construct();    	
+    	
         // Load the xmlrequest into a DOMDocument if it isn't already
         if (gettype($xmlrequest)=='object')
         {
@@ -274,6 +277,8 @@ class objectParameters extends objectEntity implements IParams
 
     function __construct($xmlrequest, $parentID=NULL)
     {
+    	parent::__construct();    	
+    	
     	// Load the xmlrequest into a local DOM variable
         if (gettype($xmlrequest)=='object')
         {
@@ -511,6 +516,9 @@ class sampleParameters extends sampleEntity implements IParams
        
     function __construct($xmlrequest, $parentID=NULL)
     {
+    	
+    	parent::__construct();    	
+    	
     	// Load the xmlrequest into a local DOM variable
         if (gettype($xmlrequest)=='object')
         {
@@ -591,6 +599,8 @@ class radiusParameters extends radiusEntity implements IParams
 
     function __construct($xmlrequest, $parentID=NULL)
     {
+    	parent::__construct();    	
+    	
     	// Load the xmlrequest into a local DOM variable
         if (gettype($xmlrequest)=='object')
         {
@@ -693,6 +703,8 @@ class measurementParameters extends measurementEntity implements IParams
 
     function __construct($xmlrequest, $parentID=NULL)
     {
+    	parent::__construct();
+    	
     	// Load the xmlrequest into a local DOM variable
         if (gettype($xmlrequest)=='object')
         {

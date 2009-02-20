@@ -1198,7 +1198,7 @@ class measurement extends measurementEntity implements IDBAccessor
                             													$sql.= "'".$this->units->getID()."', ";
                             if($this->units->getPower()!=NULL)					$sql.= "'".$this->units->getPower()."', ";
                             }
-                            if($this->getProvenance()!=NULL)					$sql.= "'".$this->getProvenance()."', ";
+                            if($this->getProvenance()!=NULL)					$sql.= "'".pg_escape_string($this->getProvenance())."', ";
                             if(isset($this->measuringMethod))					$sql.= "'".$this->measuringMethod->getID()."', ";
                             if($this->dendrochronologist->getID()!=NULL)				$sql.= "'".$this->dendrochronologist->getID()."', ";                                                  
                         // Trim off trailing space and comma
@@ -1368,12 +1368,12 @@ class measurement extends measurementEntity implements IDBAccessor
                     if($this->getVMeasurementOp()!=NULL)		$updateSQL.= "vmeasurementopid ='".$this->vmeasurementOp->getID()."', ";
                     if($this->getVMeasurementOpParam()!=NULL)	$updateSQL.= "vmeasurementopparameter ='".$this->vmeasurementOp->getParamID()."', ";
                     if($this->getCode()!=NULL)               	$updateSQL.= "code = '".$this->getCode()."', ";
-                    if($this->getComments()!=NULL)        		$updateSQL.= "comments = '".$this->getComments()."', ";
+                    if($this->getComments()!=NULL)        		$updateSQL.= "comments = '".pg_escape_string($this->getComments())."', ";
                     if($this->author->getID()!=NULL)			$updateSQL.= "owneruserid = '".$this->author->getID()."', ";
-                    if($this->usage!=NULL)						$updateSQL.= "usage = '".$this->usage."', ";
-                    if($this->usageComments!=NULL)				$updateSQL.= "usagecomments= '".$this->usageComments."', ";
-                    if($this->objective!=NULL)					$updateSQL.= "objective= '".$this->objective."', ";
-                    if($this->version!=NULL)					$updateSQL.= "version= '".$this->version."', ";
+                    if($this->usage!=NULL)						$updateSQL.= "usage = '".pg_escape_string($this->usage)."', ";
+                    if($this->usageComments!=NULL)				$updateSQL.= "usagecomments= '".pg_escape_string($this->usageComments)."', ";
+                    if($this->objective!=NULL)					$updateSQL.= "objective= '".pg_escape_string($this->objective)."', ";
+                    if($this->version!=NULL)					$updateSQL.= "version= '".pg_escape_string($this->version)."', ";
                     $updateSQL = substr($updateSQL, 0 , -2);
                     $updateSQL.= " WHERE vmeasurementid=".$this->getID()."; ";
                     

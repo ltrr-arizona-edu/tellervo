@@ -183,7 +183,7 @@
 	<xs:element name="header">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="user">
+				<xs:element name="user" minOccurs="0" maxOccurs="1">
 					<xs:complexType>
 						<xs:attribute name="id" type="xs:positiveInteger"/>
 						<xs:attribute name="username" type="xs:string"/>
