@@ -262,6 +262,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="sql" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="help"  minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="nonce" minOccurs="0" maxOccurs="1"></xs:element>
 				<xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:element" minOccurs="0" maxOccurs="unbounded"/>
