@@ -17,6 +17,7 @@ public class XMLBody extends AbstractContentBody {
 
     private final Document in;
     private final String filename;
+    private boolean pretty = false;
     
     public XMLBody(final Document in, final String mimeType, final String filename) {
         super(mimeType);
@@ -31,12 +32,25 @@ public class XMLBody extends AbstractContentBody {
         this(in, "application/xml", filename);
     }
     
+    /**
+     * Format this XML as pretty or not
+     * Returns self, so you can do:
+     *    new XMLBody(in).setPretty(true)...
+     * @param pretty
+     * @return
+     */
+    public XMLBody setPretty(boolean pretty) {
+    	this.pretty = pretty;
+    	
+    	return this;
+    }
+    
     public void writeTo(final OutputStream out, int mode) throws IOException {
         if (out == null) {
             throw new IllegalArgumentException("Output stream may not be null");
         }
        	XMLOutputter outp = new XMLOutputter();
-       	outp.setFormat(Format.getCompactFormat());
+       	outp.setFormat(pretty ? Format.getPrettyFormat() : Format.getCompactFormat());
         	
        	outp.output(in, out);        	
         out.flush();
