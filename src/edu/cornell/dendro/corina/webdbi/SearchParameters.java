@@ -18,7 +18,7 @@ public class SearchParameters {
 	 * @param all
 	 */
 	public void addSearchForAll() {
-		searchElement.addContent(new Element("all"));
+		searchElement.addContent(new CorinaElement("all"));
 		asText += "[all]";
 	}
 	

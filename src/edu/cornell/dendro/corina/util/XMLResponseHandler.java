@@ -2,10 +2,12 @@ package edu.cornell.dendro.corina.util;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -26,6 +28,8 @@ import org.jdom.input.SAXBuilder;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.org.apache.xerces.internal.impl.io.MalformedByteSequenceException;
 
 public class XMLResponseHandler implements ResponseHandler<Document> {
    /**
@@ -77,14 +81,14 @@ public class XMLResponseHandler implements ResponseHandler<Document> {
 		 */
 		
 		File tempFile = null;
-		FileWriter fileOut = null;
+		OutputStreamWriter fileOut = null;
 		boolean usefulFile = false;	// preserve this file outside this local context?
 
 		try {
 			// read this into a temporary file if we can
 			try {
 				tempFile = File.createTempFile("corina", ".xml");
-				fileOut = new FileWriter(tempFile, false);
+				fileOut = new OutputStreamWriter(new FileOutputStream(tempFile, false), charset);
 
 			} catch (IOException ioe) {
 				// well, that didn't work...
@@ -127,7 +131,16 @@ public class XMLResponseHandler implements ResponseHandler<Document> {
 				// this document must be malformed
 				usefulFile = true;
 				throw new XMLParsingException(jdome, tempFile);
+			} 
+		} catch (IOException ioe) {
+			// well, something there failed and it was lower level than just bad XML...
+			if(tempFile != null) {
+				usefulFile = true;
+				throw new XMLParsingException(ioe, tempFile);
 			}
+			
+			throw new XMLParsingException(ioe);
+			
 		} finally {
 			// make sure we closed our file
 			if(fileOut != null)
