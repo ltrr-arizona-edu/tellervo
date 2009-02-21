@@ -29,7 +29,7 @@ public class Dictionary extends CachedResource {
 	// Nothing fancy here, just use the defaults
 	@Override
 	protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) {
-		requestElement.addContent(new Element("dictionaries"));
+		requestElement.addContent(new CorinaElement("dictionaries"));
 		return requestElement;
 	}
 	
@@ -42,7 +42,7 @@ public class Dictionary extends CachedResource {
 	@Override
 	protected boolean processQueryResult(Document doc) {
 		Element root = doc.getRootElement();
-		Element dataElement = root.getChild("content");
+		Element dataElement = root.getChild("content", CorinaXML.CORINA_NS);
 		
 		if(dataElement == null) {
 			System.out.println("No content element in dictionary; ignoring this.");

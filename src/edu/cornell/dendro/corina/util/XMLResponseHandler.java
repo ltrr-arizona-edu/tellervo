@@ -27,7 +27,7 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class XMLResponseHandler implements ResponseHandler<Document>, EntityResolver {
+public class XMLResponseHandler implements ResponseHandler<Document> {
    /**
      * Returns the response body as an XML document if the response was successful (a
      * 2xx status code). If no response body exists, this returns null. If the
@@ -70,11 +70,10 @@ public class XMLResponseHandler implements ResponseHandler<Document>, EntityReso
 		 * 1) Save XML to disk temporarily (it can be big, 
 		 * 		we might want to look at it as a raw file)
 		 * 2) If we can't write to disk:
-		 * 		a) Try to parse using schemas
+		 * 		a) Try to parse
 		 * 		b) Give up on failure
-		 * 3) Try to parse with schemas
-		 * 4) Try to parse without validation, throw error with document
-		 * 5) Throw error with the raw document (it's malformed XML)
+		 * 3) Try to parse
+		 * 4) Throw error with the raw document (it's malformed XML)
 		 */
 		
 		File tempFile = null;
@@ -84,14 +83,14 @@ public class XMLResponseHandler implements ResponseHandler<Document>, EntityReso
 		try {
 			// read this into a temporary file if we can
 			try {
-				tempFile = File.createTempFile("corina", "xmltmp");
+				tempFile = File.createTempFile("corina", ".xml");
 				fileOut = new FileWriter(tempFile, false);
 
 			} catch (IOException ioe) {
 				// well, that didn't work...
 				try {
-					// try building it with validation
-					SAXBuilder builder = getValidatingBuilder();
+					// try building it in memory, then
+					SAXBuilder builder = new SAXBuilder();
 
 					return builder.build(new BufferedReader(
 							new InputStreamReader(instream, charset)));
@@ -120,23 +119,14 @@ public class XMLResponseHandler implements ResponseHandler<Document>, EntityReso
 
 			try {
 				// try building it with validation
-				SAXBuilder builder = getValidatingBuilder();
+				SAXBuilder builder = new SAXBuilder();
 
 				return builder.build(tempFile);
 
 			} catch (JDOMException jdome) {
-				try {
-					// ok, it didn't validate and/or it's malformed
-					// try building it without validation so we can print it out
-					Document doc = new SAXBuilder().build(tempFile);
-
-					throw new XMLParsingException(jdome, doc);
-
-				} catch (JDOMException jdome2) {
-					// this document must be malformed
-					usefulFile = true;
-					throw new XMLParsingException(jdome2, tempFile);
-				}
+				// this document must be malformed
+				usefulFile = true;
+				throw new XMLParsingException(jdome, tempFile);
 			}
 		} finally {
 			// make sure we closed our file
@@ -144,51 +134,14 @@ public class XMLResponseHandler implements ResponseHandler<Document>, EntityReso
 				fileOut.close();
 			
 			// make sure we delete it, too
-			if (!usefulFile)
-				tempFile.delete();
-			else
-				tempFile.deleteOnExit();
-		}
-	}
-    
-    private SAXBuilder getValidatingBuilder() {
-    	SAXBuilder builder = new SAXBuilder(true);
-    	
-    	builder.setFeature("http://apache.org/xml/features/validation/schema", true);
-        builder.setProperty("http://apache.org/xml/properties/schema/external-schemaLocation", 
-        		"http://dendro.cornell.edu/schema/corina/1.0 corina.xsd " + 
-        		"http://www.tridas.org/1.1 tridas.xsd " +
-        		"http://www.opengis.net/gml gmlsf.xsd " +
-        		"http://www.w3.org/1999/xlink xlinks.xsd");
-    	builder.setEntityResolver(this);
-    	
-    	return builder;
-    }
-    
-    public InputSource resolveEntity(String publicID, String systemID)
-			throws IOException, SAXException {
-    	
-		if (systemID != null && systemID.endsWith(".xsd")) {
-			String filename = systemID.substring(systemID.lastIndexOf('/') + 1);
-			try {
-				return new InputSource(findSchema(filename));
-			} catch (Exception e) {
-				System.out.println("Failed to load local schema: " + filename);
+			if(tempFile != null)
+			{
+				if (!usefulFile)
+					tempFile.delete();
+				else
+					tempFile.deleteOnExit();
 			}
 		}
-		
-		return null; // default behavior: download the schema!
 	}
-    
-    private InputStream findSchema(String filename) {
-    	InputStream ret = XMLResponseHandler.class.getClassLoader().getResourceAsStream
-    		("edu/cornell/dendro/corina_resources/Schemas/" + filename);
-    	
-    	if(ret == null)
-    		throw new IllegalArgumentException();
-    	
-    	System.out.println("Loaded local schema: " + filename);
-    	
-    	return ret;
-    }
+      
 }

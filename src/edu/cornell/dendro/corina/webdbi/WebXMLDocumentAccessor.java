@@ -170,12 +170,8 @@ public class WebXMLDocumentAccessor {
 				// well, that's nice and easy
 				req = new HttpGet(url);
 			}
-
-			String cookie = App.prefs.getPref("corina.webservice.cookie." + sanitizedUri, null);
-			if(cookie != null) {
-				client.getCookieStore();
-				//http.setRequestProperty("Cookie", cookie);
-			}
+			
+			client.setCookieStore(WSCookieStoreHandler.getCookieStore().toCookieStore());
 			
 			req.setHeader("User-Agent", "Corina WSI " + Build.VERSION + 
 					" (" + clientModuleVersion + "; ts " + Build.TIMESTAMP +")");
@@ -201,72 +197,20 @@ public class WebXMLDocumentAccessor {
 			XMLResponseHandler responseHandler = new XMLResponseHandler();
 			inDocument = client.execute(req, responseHandler);
 			
-
+			// save our cookies?
+			WSCookieStoreHandler.getCookieStore().fromCookieStore(client.getCookieStore());
+			
+			// ok, now inspect the document we got back
 			CorinaDocumentInspector inspector = new CorinaDocumentInspector(inDocument);
+
+			// Verify our document based on schema validity
+			inspector.validate();
 			
 			// Verify our document structure, throw any exceptions!
 			inspector.verifyDocument();
 			
 			return inDocument;				
 
-			/*
-			int responseCode = http.getResponseCode();
-			if(responseCode != HttpURLConnection.HTTP_OK) {
-				throw new IOException("Unexpected response code " + responseCode + " while accessing " + url.toExternalForm());
-			}
-			
-			cookie = http.getHeaderField("Set-Cookie");
-			if(cookie != null) {
-				int idx = cookie.indexOf(';');
-				if(idx >= 0)
-					cookie = cookie.substring(0, idx);
-				App.prefs.setPref("corina.webservice.cookie", cookie);
-			}
-
-			//InputStream in = http.getInputStream();
-			// Wrap a bufferedreader around this, so the saxbuilder can't break our socket and hang
-			BufferedReader in = new BufferedReader(new InputStreamReader(http.getInputStream(), "UTF-8"));
-			
-			// Skip past any sort of errors PHP might throw at us.
-			String line;
-			in.mark(4096);
-			while((line = in.readLine()) != null) {
-				if(line.startsWith("<?xml")) {
-					in.reset();
-					break;
-				}
-				in.mark(4096);
-			}
-
-			
-			//debug
-			/**
-			in.mark(163840);
-			try {
-				StringBuffer sb = new StringBuffer();
-				int v;
-				
-				while((v = in.read()) != -1) {
-					sb.append((char) v);
-				}
-				
-				System.out.println("\nIncoming Document:\n" + sb.toString());
-			} catch (Exception e) {}
-			in.reset();
-			** /
-			
-			try {
-				// parse the input into an XML document
-				Document inDocument = new SAXBuilder().build(in);
-				CorinaDocumentInspector inspector = new CorinaDocumentInspector(inDocument);
-				
-				// Verify our document structure, throw any exceptions!
-				inspector.verifyDocument();
-				
-				return inDocument;				
-			} catch (JDOMException jdoe) {
-				throw new IOException("Could not parse document: JDOM error: " + jdoe);
-			} */
 		} catch (HttpResponseException hre) {
 			BugReport bugs = new BugReport(hre);
 			

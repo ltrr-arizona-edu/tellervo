@@ -91,7 +91,7 @@ public class Authenticate extends Resource {
 			if(nonce == null)
 				return false;
 			
-			seq = nonce.getAttributeValue("seq", CorinaXML.CORINA_NS);
+			seq = nonce.getAttributeValue("seq");
 			srvNonce = nonce.getText();
 			if(srvNonce == null)
 				return false;

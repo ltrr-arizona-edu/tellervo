@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="edu/cornell/dendro/corina/db/|edu/cornell/dendro/corina/search/" including="edu/cornell/dendro/corina/**|edu/cornell/dendro/corina_indexing/**|edu/cornell/dendro/corina_resources/**|edu/cornell/dendro/cpgdb/**|log4j.xml" kind="src" path="src"/>
+	<classpathentry excluding="edu/cornell/dendro/corina/db/|edu/cornell/dendro/corina/search/" including="edu/cornell/dendro/corina/**|edu/cornell/dendro/corina_indexing/**|edu/cornell/dendro/corina_resources/**|edu/cornell/dendro/cpgdb/**|edu/cornell/dendro/webservice/schemas/*|log4j.xml" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="Libraries/batik.jar"/>
 	<classpathentry kind="lib" path="Libraries/junit.jar"/>

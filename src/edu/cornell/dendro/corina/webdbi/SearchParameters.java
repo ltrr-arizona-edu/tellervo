@@ -7,7 +7,7 @@ public class SearchParameters {
 	private String asText;
 	
 	public SearchParameters(String returnObjectType) {
-		searchElement = new Element("searchParams");
+		searchElement = new CorinaElement("searchParams");
 		searchElement.setAttribute("returnObject", returnObjectType);
 		asText = "";
 	}
@@ -23,7 +23,7 @@ public class SearchParameters {
 	}
 	
 	public void addSearchConstraint(String name, String comparison, String value) {
-		Element param = new Element("param");
+		Element param = new CorinaElement("param");
 		
 		param.setAttribute("name", name);
 		param.setAttribute("operator", comparison);
