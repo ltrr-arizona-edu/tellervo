@@ -1,11 +1,18 @@
 package edu.cornell.dendro.corina.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.swing.ListModel;
 
@@ -13,6 +20,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -32,7 +40,37 @@ public class BugReport {
 	public BugReport(Throwable t) {
 		this.bug = t;
 		
-		addDocument("loghistory.txt", getLogTrace());
+		addCompressedLogHistory();
+	}
+	
+	private void addCompressedLogHistory() {		
+		try {
+			// create a byte buffer with an initial 1024-byte capacity
+			ByteArrayOutputStream bytebuf = new ByteArrayOutputStream(1024);
+			ZipOutputStream out = new ZipOutputStream(bytebuf);
+			
+			// create a new file, loghistory.txt
+			out.putNextEntry(new ZipEntry("loghistory.txt"));
+			// make it a utf-8 representation of the 
+			ByteArrayInputStream in = new ByteArrayInputStream(getLogTrace().getBytes("utf-8"));
+
+			int len;
+			byte[] buf = new byte[1024];
+			while((len = in.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+			
+			in.close();
+			out.closeEntry();
+			out.close();
+			
+			// ok, if all went well, bytebuf is technically a .zip file...
+			
+			in = new ByteArrayInputStream(bytebuf.toByteArray());
+			addDocument("loghistory.zip", in);
+		} catch (IOException ioe) {
+			// just don't include it, then
+		}
 	}
 	
 	public static String getUserName() {
@@ -206,11 +244,17 @@ public class BugReport {
 			// add any attached documents
 			for(DocumentHolder dh : documents) {
 				if(dh.getDocument() instanceof File)
-					postEntity.addPart("attachments[]", new FileBody((File)dh.getDocument()));
+					postEntity.addPart("attachments[]", 
+							new FileBody((File)dh.getDocument()));
 				else if(dh.getDocument() instanceof Document)
-					postEntity.addPart("attachments[]", new XMLBody((Document)dh.getDocument(), dh.getFilename()));
+					postEntity.addPart("attachments[]", 
+							new XMLBody((Document)dh.getDocument(), dh.getFilename()).setPretty(true));
+				else if(dh.getDocument() instanceof InputStream)
+					postEntity.addPart("attachments[]", 
+							new InputStreamBody((InputStream)dh.getDocument(), dh.getFilename()));
 				else
-					postEntity.addPart("attachments[]", new UTF8StringBody(dh.getDocument().toString(), dh.getFilename()));
+					postEntity.addPart("attachments[]", 
+							new UTF8StringBody(dh.getDocument().toString(), dh.getFilename()));
 			}
 				
 			post.setEntity(postEntity);
