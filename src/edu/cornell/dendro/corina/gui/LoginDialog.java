@@ -246,12 +246,9 @@ public class LoginDialog extends JDialog {
 	}
 	
 	private void loadSettings() {
-		String tmp;
 		
 		// remember the username? load it.
-		if((tmp = App.prefs.getPref("corina.login.remember_username")) != null &&
-				Boolean.valueOf(tmp) == true) {
-			
+		if(App.prefs.getBooleanPref("corina.login.remember_username", true)) {
 			rememberUsername.setSelected(true);
 			username.setText(App.prefs.getPref("corina.login.username", ""));			
 		} else {
@@ -259,9 +256,7 @@ public class LoginDialog extends JDialog {
 		}
 		
 		// remember the password? load it.
-		if((tmp = App.prefs.getPref("corina.login.remember_password")) != null &&
-				Boolean.valueOf(tmp) == true) {
-			
+		if(App.prefs.getBooleanPref("corina.login.remember_password", false)) {
 			rememberPassword.setSelected(true);
 			password.setText(decryptPassword(App.prefs.getPref("corina.login.password", "").toCharArray()));			
 		} else {
@@ -269,9 +264,7 @@ public class LoginDialog extends JDialog {
 		}
 		
 		// auto login?
-		if((tmp = App.prefs.getPref("corina.login.auto_login")) != null &&
-				Boolean.valueOf(tmp) == true) {	
-			
+		if(App.prefs.getBooleanPref("corina.login.auto_login", false)) {		
 			autoLogin.setSelected(true);
 		} else {
 			autoLogin.setSelected(false);

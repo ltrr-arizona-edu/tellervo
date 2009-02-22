@@ -136,13 +136,8 @@ public class Bug extends JDialog {
 		String msgText = "<html>We apologize but an internal error has occurred within Corina and there "
 						+ "<i>may</i> have been a <br>loss of data.<br><br>"
 						+ "Please contact the Corina developers with details of what you were doing"
-						+ " prior to getting<br> this message.<br>";
-		
-		// attach any attachments..
-		for(BugReport.DocumentHolder a : report.getDocuments()) {
-			msgText += "<br>This bug report contains the file: " + a.getFilename() + "<br>";
-		}
-		
+						+ " prior to getting<br> this message by submitting a report.<br>";
+			
 		JPanel message = Layout
 				.flowLayoutL(msgText);
 		
@@ -155,6 +150,7 @@ public class Bug extends JDialog {
 			}
 		});
 
+		final JDialog glue = this;
 		JButton submitreport = new JButton("Submit bug report");
 		submitreport.addActionListener(new AbstractAction() {
 			/**
@@ -163,8 +159,8 @@ public class Bug extends JDialog {
 			private static final long serialVersionUID = 4617777199430388184L;
 
 			public void actionPerformed(ActionEvent e) {
-				if(report.submit())
-					dispose();
+				BugReportDialog reportDlg = new BugReportDialog(glue, report);
+				dispose();
 			}
 		});
 

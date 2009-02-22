@@ -32,6 +32,9 @@ import edu.cornell.dendro.corina.ui.Alert;
 
 public class BugReport {
 	private final Throwable bug;
+
+	private String fromEmail;
+	private String comments;
 	
 	/**
 	 * Create a bug report from this throwable
@@ -41,8 +44,17 @@ public class BugReport {
 		this.bug = t;
 		
 		addCompressedLogHistory();
+		fromEmail = comments = null;
 	}
 	
+	public void setFromEmail(String fromEmail) {
+		this.fromEmail = fromEmail;
+	}
+
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+
 	private void addCompressedLogHistory() {		
 		try {
 			// create a byte buffer with an initial 1024-byte capacity
@@ -223,6 +235,7 @@ public class BugReport {
 		
 		public String getFilename() { return filename; }
 		public Object getDocument() { return document; }
+		public String toString() { return filename; }
 	}
 	
 	//// web code to submit bug report
@@ -240,7 +253,12 @@ public class BugReport {
 			postEntity.addPart("sysinfo", new StringBody(getSystemInfo()));
 			postEntity.addPart("stacktrace", new StringBody(getStackTrace(bug)));
 			postEntity.addPart("userinfo", new StringBody(getUserInfo()));
-			
+
+			if(fromEmail != null)
+				postEntity.addPart("replyto", new StringBody(fromEmail));
+			if(comments != null)
+				postEntity.addPart("comments", new StringBody(comments));
+
 			// add any attached documents
 			for(DocumentHolder dh : documents) {
 				if(dh.getDocument() instanceof File)
