@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns="http://dendro.cornell.edu/schema/corina/1.0" 
-	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-	xmlns:xlink="http://www.w3.org/1999/xlink" 
-	xmlns:tridas="http://www.tridas.org/1.1" 
-	targetNamespace="http://dendro.cornell.edu/schema/corina/1.0" 
-	elementFormDefault="qualified" 
-	attributeFormDefault="unqualified">
+<xs:schema xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:tridas="http://www.tridas.org/1.1" targetNamespace="http://dendro.cornell.edu/schema/corina/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<!--
 %%%%%%%%%%%%%%
 %		EXTERNAL SCHEMAS	
@@ -46,9 +40,7 @@
 								<xs:choice>
 									<xs:element ref="param" maxOccurs="unbounded"/>
 									<xs:element name="all" />
-									
 								</xs:choice>
-								
 							</xs:sequence>
 							<xs:attribute name="returnObject">
 								<xs:simpleType>
@@ -143,7 +135,6 @@
 								</xs:simpleType>
 							</xs:attribute>
 							<xs:attribute name="id" type="xs:positiveInteger"/>
-							
 						</xs:complexType>
 					</xs:element>
 				</xs:sequence>
@@ -242,18 +233,15 @@
 					</xs:simpleType>
 				</xs:element>
 				<xs:element name="message" minOccurs="0" maxOccurs="unbounded">
-					<xs:complexType>
-						<xs:simpleContent>
-							<xs:extension base="xs:string">
-								<xs:attribute name="code" type="xs:string" />
-								
-							</xs:extension>
-						</xs:simpleContent>
+					<xs:complexType mixed="true">
+						<xs:sequence>
+							<xs:element name="sourceCode" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+						<xs:attribute name="code" type="xs:string"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="timing" minOccurs="0" maxOccurs="unbounded">
 				</xs:element>	
-				
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -265,13 +253,31 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="sql" minOccurs="0" maxOccurs="1"/>
-				<xs:element ref="nonce" minOccurs="0" maxOccurs="1"></xs:element>
-				<xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="nonce" minOccurs="0" maxOccurs="1"/>
+                                
+                <xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:element" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:radius" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:measurementSeries" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:derivedSeries" minOccurs="0" maxOccurs="unbounded"/>
+
+                <xs:element ref="objectTypeDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="elementTypeDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="sampleTypeDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="coverageTemporalDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="coverageTemporalFoundationDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="locationTypeDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="elementAuthenticityDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="elementShapeDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="sapwoodDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="heartwoodDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="measurementVariableDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="datingTypeDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="taxonDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="regionDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="readingNoteDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="securityUserDictionary" minOccurs="0" maxOccurs="1"/>
 				
 			</xs:sequence>
 		</xs:complexType>
@@ -286,6 +292,287 @@
 			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
+
+        <xs:element name="objectTypeDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="objectType" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                            	<xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                            	</xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+        <xs:element name="elementTypeDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="elementType" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                                <xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                                </xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+
+        <xs:element name="sampleTypeDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="sampleType" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                                <xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                                </xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+        <xs:element name="coverageTemporalDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="coverageTemporal" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                                <xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                                </xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+        <xs:element name="coverageTemporalFoundationDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="coverageTemporalFoundation" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                                <xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                                </xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+        <xs:element name="locationTypeDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="locationType" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                                <xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                                </xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+        <xs:element name="elementAuthenticityDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="elementAuthenticity" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                                <xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                                </xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+        <xs:element name="elementShapeDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="elementShape" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                                <xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                                </xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+        <xs:element name="sapwoodDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="sapwood" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                                <xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                                </xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+        <xs:element name="heartwoodDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="heartwood" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                                <xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                                </xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+        <xs:element name="measurementVariableDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="measurementVariable" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                                <xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                                </xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+        <xs:element name="datingTypeDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="datingType" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                                <xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                                </xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+        <xs:element name="taxonDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="taxon" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                                <xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                                </xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+        <xs:element name="regionDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="region" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                                <xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                                </xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+        <xs:element name="readingNoteDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="readingNote" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:simpleContent>
+	                                <xs:extension base="xs:string">
+	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
+	                                </xs:extension>
+                            	</xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+        <xs:element name="securityUserDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="user" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                            	<xs:sequence>
+                            		<xs:element name="memberOf">
+                            			<xs:complexType>
+                            				<xs:sequence>
+                            					<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded"/>
+                            				</xs:sequence>
+                            			</xs:complexType>
+                            		</xs:element>
+                            	</xs:sequence>                                	
+                                <xs:attribute name="id" type="xs:integer" use="required"/>
+                                <xs:attribute name="username" type="xs:string" use="required"/>
+                                <xs:attribute name="firstName" type="xs:string" use="required"/>
+                                <xs:attribute name="lastName" type="xs:string" use="required"/>
+                                <xs:attribute name="isActive" type="xs:boolean" use="required"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+	
+
+		<xs:element name="securityGroup">
+			<xs:complexType>
+				<xs:simpleContent>
+					<xs:extension base="xs:string">
+						<xs:attribute name="id" type="xs:integer" use="required"/>
+						<xs:attribute name="name" type="xs:string" use="required"/>
+						<xs:attribute name="description" type="xs:string" use="required"/>
+						<xs:attribute name="isActive" type="xs:boolean" use="required"/>
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+		</xs:element>
+
 	
 <!--
 	%%%%%%%%%%%%%%
