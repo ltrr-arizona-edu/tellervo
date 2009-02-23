@@ -106,11 +106,11 @@ class object extends objectEntity implements IDBAccessor
      *
      * @return Boolean
      */
-    function setChildParamsFromDB()	
+    function setChildParamsFromDB($cascade=false)	
     {
         global $dbconn;
 
-        $sql  = "select * from cpgdb.findobjectdescendants(".$this->getID().", false)";
+        $sql  = "select objectid from vwtblobject where parentobjectid='".$this->getID()."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -123,22 +123,11 @@ class object extends objectEntity implements IDBAccessor
 	            {
 	            	$entity = new object();
 	            	$entity->setParamsFromDB($row['objectid']);
-	                array_push($this->parentEntityArray, $entity);
+	            	$entity->setChildParamsFromDB(true);
+	            	//print_r($entity);
+	                array_push($this->childrenEntityArray, $entity);
 	            }
             }            
-            else
-            {
-            	// Object has no 'object' descendants so grab the 'element' descendants instead
-            	$sql2  = "select * from tblelement where objectid='".$this->getID()."'";   
-				while ($row = pg_fetch_array($result)) 
-				{
-                	$entity = new element();
-                	$entity->setParamsFromDB($row['elementid']);
-                	array_push($this->parentEntityArray, $entity);        	 	
-				}	          
-            }
-
-
         }
         else
         {
@@ -298,8 +287,19 @@ class object extends objectEntity implements IDBAccessor
             		$xml .="</tridas:coverage>";
             	}
             	if($this->hasGeometry()) 			$xml.= $this->location->asXML();
+            	if($this->getCode()!=NULL)			$xml.="<tridas:genericField type=\"labCode\">".$this->getCode()."</tridas:genericField>\n";
+            
             }  
-
+            
+            //echo "count of children = ".count($this->childrenEntityArray)."\n";
+            if(count($this->childrenEntityArray))
+            {
+            	foreach($this->childrenEntityArray as $childObject)
+            	{           		
+            		$xml.= $childObject->asXML()."\n";
+            	}
+            }
+            
 	    
         	if(($parts=="all") || ($parts=="end"))
             {

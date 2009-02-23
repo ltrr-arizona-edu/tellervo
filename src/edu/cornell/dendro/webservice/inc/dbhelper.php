@@ -138,8 +138,8 @@ class dbHelper
 	    		if($outputvalue===TRUE) return 't';
 	    		return 'f';
 	    	case "english":
-	    		if($outputvalue===TRUE) return 'True';
-	    		return 'False';
+	    		if($outputvalue===TRUE) return 'true';
+	    		return 'false';
 	    	case "presentabsent":
 	    		if($outputvalue===TRUE) return 'present';
 	    		return 'absent';

@@ -57,6 +57,7 @@
 							</xs:attribute>
 							<xs:attribute name="limit" type="xs:positiveInteger"/>
 							<xs:attribute name="skip" type="xs:positiveInteger"/>
+							<xs:attribute name="includeChildren" type="xs:boolean" />
 						</xs:complexType>
 					</xs:element>
 				</xs:sequence>
@@ -612,6 +613,8 @@
 						<xs:enumeration value="objectlocationprecision" />
 						<xs:enumeration value="objectlocationcomment" />
 						<xs:enumeration value="objecttype" />
+						<xs:enumeration value="objectcode" />
+						<xs:enumeration value="parentobjectid" />
 						
 						<!-- ELEMENT ATTRIBUTES -->
 						<xs:enumeration value="elementid" />
@@ -716,6 +719,7 @@
 						<xs:enumeration value="="/>
 						<xs:enumeration value="!="/>
 						<xs:enumeration value="like"/>
+						<xs:enumeration value="is"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>

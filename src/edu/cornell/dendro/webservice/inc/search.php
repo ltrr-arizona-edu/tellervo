@@ -77,6 +77,16 @@ class search Implements IDBAccessor
     /***********/
     /*ACCESSORS*/
     /***********/
+    
+    /**
+     * Actually do the search
+     *
+     * @param searchParameters $paramsClass
+     * @param Auth $auth
+     * @param Boolean $includePermissions
+     * @param String $format
+     * @return Boolean
+     */
     function doSearch($paramsClass, $auth, $includePermissions, $format)
     {
 
@@ -194,6 +204,13 @@ class search Implements IDBAccessor
                 $success = $myReturnObject->setParamsFromDB($row['id']);
                 if ($debugFlag===TRUE) $myMetaHeader->setTiming("Got details from database");
 
+                // Do children if requested
+                if($paramsClass->includeChildren===TRUE)
+                {
+                	$myReturnObject->setChildParamsFromDB(true);
+                }
+                
+              
                 // Get permissions if requested
                 if($includePermissions===TRUE) $myReturnObject->getPermissions($myAuth->getID());
 
@@ -293,10 +310,6 @@ class search Implements IDBAccessor
                 $operator = "<";
                 $value = " '".$param['value']."'";
                 break;
-            case "=":
-                $operator = "=";
-                $value = " '".$param['value']."'";
-                break;
             case "!=":
                 $operator = "!=";
                 $value = " '".$param['value']."'";
@@ -305,6 +318,10 @@ class search Implements IDBAccessor
                 $operator = "ilike";
                 $value = " '%".$param['value']."%'";
                 break;
+            case "is":
+            	$operator = "is";
+            	$value = " ".$param['value']." ";
+            	break;
             default :
                 $operator = "=";
                 $value = " '".$param['value']."'";

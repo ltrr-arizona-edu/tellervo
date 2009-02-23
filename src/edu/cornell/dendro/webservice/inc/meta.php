@@ -225,7 +225,7 @@ class meta
     $xml.="<requestDate>".$this->requestdate."</requestDate>\n";
     $xml.="<queryTime unit=\"seconds\">".round((microtime(true)-$this->startTimestamp), 2)."</queryTime>\n";
     $xml.="<requestUrl>".$this->requesturl."</requestUrl>\n";
-    $xml.="<requestType>".$this->requesttype."</requestType>\n";
+    $xml.="<requestType>".strtolower($this->requesttype)."</requestType>\n";
     $xml.="<status>".$this->status."</status>\n";
 
     // Remove duplicate messages

@@ -50,10 +50,17 @@ class dbEntity
     /**
      * Class containing details of this entities parent entity
      *
-     * @var Object
+     * @var Mixed
      */
 	protected $parentEntityArray = NULL;
-
+	
+	/**
+	 * Array of classes representing this entities children
+	 *
+	 * @var Mixed
+	 */
+	protected $childrenEntityArray = NULL;
+	
 	/**
      * Domain from which this entities identifier was issued
      *
@@ -148,6 +155,7 @@ class dbEntity
     {
     	$this->setgroupXMLTag($groupXMLTag);
     	$this->parentEntityArray = array();
+    	$this->childrenEntityArray = array();
     }
 
     
@@ -220,7 +228,7 @@ class dbEntity
     
     protected function setTitle($title)
     {
-    	$this->title=addslashes($title);
+    	$this->title=$title;
     	return true;
     }
     

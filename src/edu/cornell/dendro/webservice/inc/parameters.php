@@ -34,6 +34,7 @@ class searchParameters implements IParams
     var $limit                   			= NULL;
     var $skip                    			= NULL;
     var $allData                 			= FALSE;
+    var $includeChildren					= FALSE;
     
     var $paramsArray						= array();
     var $objectParamsArray		 			= array();
@@ -73,6 +74,7 @@ class searchParameters implements IParams
 		$this->returnObject = addslashes($searchParamsTag->getAttribute("returnObject"));
 		$this->limit = (int) $searchParamsTag->getAttribute("limit");
 		$this->skip = (int) $searchParamsTag->getAttribute("skip");
+		$this->includeChildren = (bool) $searchParamsTag->getAttribute("includeChildren");
 		
 		// Get individual params
 		$paramsTags = $this->xmlRequestDom->getElementsByTagName("param");	
@@ -94,6 +96,8 @@ class searchParameters implements IParams
 									'objectlocationprecision' => 			array('tbl' => 'vwtblobject', 'field' => 'locationprecision'),
 									'objectlocationcomment' => 				array('tbl' => 'vwtblobject', 'field' => 'locationcomment'),
 									'objecttype' =>							array('tbl' => 'vwtblobject', 'field' => 'type'),	
+									'parentobjectid' =>						array('tbl' => 'vwtblobject', 'field' => 'parentobjectid'),
+									'objectcode' =>							array('tbl' => 'vwtblobject', 'field' => 'code'),
 		
 									'elementid' => 							array ('tbl' => 'vwtblelement', 	'field'  => 'elementid'),
 									//'elementdbid' => 						array('tbl' => 'vwtblelement', 'field' => 'elementid'),
