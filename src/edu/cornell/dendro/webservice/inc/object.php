@@ -287,7 +287,7 @@ class object extends objectEntity implements IDBAccessor
             		$xml .="</tridas:coverage>";
             	}
             	if($this->hasGeometry()) 			$xml.= $this->location->asXML();
-            	if($this->getCode()!=NULL)			$xml.="<tridas:genericField type=\"labCode\">".$this->getCode()."</tridas:genericField>\n";
+            	if($this->getCode()!=NULL)			$xml.="<tridas:genericField name=\"labCode\">".$this->getCode()."</tridas:genericField>\n";
             
             }  
             
