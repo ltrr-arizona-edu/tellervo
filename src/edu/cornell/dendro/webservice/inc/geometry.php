@@ -87,9 +87,16 @@ class geometry
 		   			return false;
 		   		}
 		   }
+		   
+		   // Extract coordinates from point GML
+		   $coords = explode(" ", $doc->getElementsByTagName("pos")->item(0)->nodeValue, 2);
+		   
+		   // Calculate geometry value and store
+		   $sql = "select geomfromtext('POINT(".$coords[0]." ".$coords[1].")', 4326) as thevalue";
+		   $this->geometry = $this->runSQLCalculation($sql);	
+		   return true;	   
         }
   
-        trigger_error("104"."This webservice doesn't yet accept GML data.  Please try again later!", E_USER_NOTICE);
 	}
 	
 	/**

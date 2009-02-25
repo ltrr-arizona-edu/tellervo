@@ -156,6 +156,7 @@ class object extends objectEntity implements IDBAccessor
         if ($paramsClass->getTemporalCoverage()!=NULL)		$this->setCoverageTemporal($paramsClass->getTemporalCoverage(), $paramsClass->getTemporalCoverageFoundation());
         if ($paramsClass->getTitle()!=NULL)					$this->setTitle($paramsClass->getTitle());
         if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType());
+        if ($paramsClass->location->getGeometry()!=NULL)	$this->location->setGeometry($paramsClass->location->getGeometry());
         
         if ($paramsClass->parentID!=NULL)
         {

@@ -327,8 +327,9 @@ class objectParameters extends objectEntity implements IParams
 				foreach($locationTags as $tag)
 				{
 		  	 		if($tag->nodeType != XML_ELEMENT_NODE) continue;  
-		  	 		$this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag)); break;
+		  	 		$this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag));
 				}
+				break;
 		   	
 		   	case "genericField":
 		   		$type = $child->getAttribute("type");
