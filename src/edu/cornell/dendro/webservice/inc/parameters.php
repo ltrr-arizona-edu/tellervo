@@ -321,7 +321,14 @@ class objectParameters extends objectEntity implements IParams
 		   	case "title":				$this->setTitle($child->nodeValue); break;
 		   	case "createdTimestamp":	break;
 		   	case "lastModifiedTimestamp": break;
-		   	
+
+		   	case "location": 
+				$locationTags = $child->childNodes;
+				foreach($locationTags as $tag)
+				{
+		  	 		if($tag->nodeType != XML_ELEMENT_NODE) continue;  
+		  	 		$this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag)); break;
+				}
 		   	
 		   	case "genericField":
 		   		$type = $child->getAttribute("type");
@@ -329,8 +336,10 @@ class objectParameters extends objectEntity implements IParams
 		   		$value = $child->nodeValue;		   		
 		   		switch($name)
 		   		{	   			
+		   			case "labCode" : $this->setCode($value); break;
+		   			
 		   			default:
-		   			trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'object' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+		   			trigger_error("901"."Unknown attribute type $name in the &lt;".$child->tagName."&gt; tag of the 'object'. This tag is being ignored", E_USER_NOTICE);
 		   		}
 		   		break;
 			
@@ -348,10 +357,9 @@ class objectParameters extends objectEntity implements IParams
 		   			if ( (isset($coverageTemporal)) && (isset($coverageTemporalFoundation)) ) $this->setCoverageTemporal($coverageTemporal, $coverageTemporalFoundation);
 		
 		   		}
-		   	
-		   	case "location":
-		   		// @todo 
 		   		break;
+		   	
+		   	
 		   		
 		   	case "object":
 		   		trigger_error("901"."Nested objects not supported in XML request.  Use parentID instead to show relationships", E_USER_ERROR);
@@ -413,10 +421,10 @@ class elementParameters extends elementEntity implements IParams
 		   	case "processing": 			$this->setProcessing($child->nodeValue); break;	   	
 		   	case "marks": 				$this->setMarks($child->nodeValue); break;	   	
 		   	case "description":			$this->setDescription($child->nodeValue); break;		   		
-		   	case "locationType": 		$this->geometry->setType($child->nodeValue); break;		   	
-		   	case "locationPrecision": 	$this->geometry->setPrecision($child->nodeValue); break;		   	
-		   	case "locationComment": 	$this->geometry->setComment($child->nodeValue); break;
-		   	case "locationGeometry": 	$this->geometry->setGeometryFromGML($this->xmlRequestDom->saveXML($child)); break;
+		   	case "locationType": 		$this->location->setType($child->nodeValue); break;		   	
+		   	case "locationPrecision": 	$this->location->setPrecision($child->nodeValue); break;		   	
+		   	case "locationComment": 	$this->location->setComment($child->nodeValue); break;
+		   	case "locationGeometry": 	$this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($child)); break;
 		   	case "createdTimestamp":	  break;
 		   	case "lastModifiedTimestamp": break;		   	
 		   	

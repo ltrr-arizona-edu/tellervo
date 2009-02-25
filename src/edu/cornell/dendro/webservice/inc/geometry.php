@@ -17,59 +17,34 @@
  */
 class geometry
 {
+	function __construct()
+	{
+	}	
+
 	/**
 	 * The actual geometry
 	 *
 	 * @var Geometry
 	 */
-	private $geometry = NULL;
-	
-	/**
-	 * One of growth; utilised (static); utilised (mobile); current, manufacture
-	 *
-	 * @var String
-	 */
-	private $type = NULL;
-	
-	/**
-	 * Precision of the location information in metres
-	 *
-	 * @var Integer
-	 */
-	private $precision = NULL;
-	
+	protected $geometry = NULL;
+		
 	/**
 	 * Additional information about the location 
 	 *
 	 * @var String
 	 */
-	private $comment = NULL;	
-	
-	
-	
-	function __construct()
-	{
-	}
+	protected $comment = NULL;	
+
 	
     /***********/
     /* SETTERS */
     /***********/   
 
-	/**
-	 * Set the geometry field using a native PostGIS geometry representation
-	 *
-	 * @param String $geometry
-	 * @param String $type
-	 * @param String $precision
-	 * @param String $comment
-	 */
-	function setGeometry($geometry, $type=null, $precision=null, $comment=null)
+	function setComment($value)
 	{
-		$this->geometry = $geometry;
-		$this->setType($type);
-		$this->setPrecision($precision);
-		$this->setComment($comment);	
-	}
+		$this->comment = addslashes($value);
+		return true;
+	}	
 	
 	/**
 	 * Set the geometry field using a GML string
@@ -79,65 +54,67 @@ class geometry
 	 */
 	function setGeometryFromGML($gml)
 	{
-	}
-	
-	/**
-	 * Set the geometry using latitude and longitude.  This function assumes that the lat and long are standard WGS84 coordinates.
-	 *
-	 * @param Float $lat
-	 * @param Float $long
-	 */
-	function setPointGeometryFromLatLong($lat, $long)
-	{
-		// Make sure the parameters are numbers to stop sql injection
-		$lat = (float) $lat;
-		$long = (float) $long;
-		$srid = 4326; // Standard WGS84 SRID is assumed for this funciton	
+		global $gmlNS;
+				
+		// Wrap GML tags in root elements
+		$start = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>".
+				 "<corina xmlns=\"$gmlNS\">".
+    			 "<featureMember>\n";
+    	$end =  "</featureMember></corina>"; 
+        $doc = new DomDocument;
+        $doc->loadXML($start.$gml.$end);
+
+        // Handle validation errors ourselves
+        libxml_use_internal_errors(true);		
 		
-		$sql = "select setsrid(makepoint(".sprintf("%1.8f",$long).", ".sprintf("%1.8f",$lat)."), $srid) as thevalue";
-		$this->geometry = $this->runSQLCalculation($sql);		
+        // Do various checks for unsupported GML data
+        $tags = $doc->getElementsByTagName("locationGeometry")->item(0)->childNodes;
+        foreach($tags as $tag)
+        {
+		   if($tag->nodeType != XML_ELEMENT_NODE) continue;   
+			
+		   if(strtolower($tag->tagName)!="point")
+		   {
+		   		trigger_error("104"."This webservice does not accept gml:".$tag->tagName.". Please resubmit your request with either no GML data or with gml:point data.", E_USER_ERROR);
+		   		return false;
+		   }
+		   
+		   if($tag->hasAttribute("srsName"))
+		   {
+		   		if($tag->getAttribute("srsName")!="EPSG:4326")
+		   		{
+		   			trigger_error("104"."This webservice currently only supports GML data supplied in the EPSG:4326 coordinate system", E_USER_ERROR);
+		   			return false;
+		   		}
+		   }
+        }
+  
+        trigger_error("104"."This webservice doesn't yet accept GML data.  Please try again later!", E_USER_NOTICE);
 	}
-	
 	
 	/**
-	 * Set the type of location the location field 
+	 * Set the actual geometry field
 	 *
-	 * @param unknown_type $value
-	 * @return unknown
+	 * @param String $geometry
 	 */
-	function setType($value)
+	function setGeometry($geometry)
 	{
-		$this->type = addslashes($value);
-		return true;
+		$this->geometry = $geometry;
 	}
-	
-	function setPrecision($value)
-	{	
-		$this->precision = (int) $value;
-		return true;
-	}
-	
-	function setComment($value)
-	{
-		$this->comment = addslashes($value);
-		return true;
-	}
+		
 
     /***********/
     /* GETTERS */
     /***********/   
 
-	function asXML()
+	/**
+	 * Get the comment associated with this geometry
+	 *
+	 * @return String
+	 */
+	function getComment()
 	{
-        $xml = "<tridas:location>\n";
-       	$xml.= "<tridas:locationGeometry>\n";
-       	$xml.= $this->asGML();
-       	$xml.= "\n</tridas:locationGeometry>\n";
-       	if($this->getLocationType()!=NULL) $xml .= "<tridas:locationType>".$this->getLocationType()."</tridas:locationType>\n";
-        if($this->getLocationPrecision()!=NULL) $xml .= "<tridas:locationPrecision>".$this->getLocationPrecision()."</tridas:locationPrecision>\n";
-        if($this->getLocationComment()!=NULL) $xml .= "<tridas:locationComment>".$this->getLocationComment()."</tridas:locationComment>\n";      	
-       	$xml.= "</tridas:location>\n";
-        return $xml;
+		return $this->comment;
 	}
 	
 	/**
@@ -203,27 +180,12 @@ class geometry
 		return $this->runSQLCalculation($sql);			
 	}
 	
-	function getLocationGeometry()
+	function getGeometry()
 	{
 		return $this->geometry;
 	}
 	
-	function getLocationType()
-	{
-		return $this->type;
-	}
-	
-	function getLocationPrecision()
-	{	
-		return $this->precision;
-	}
-	
-	function getLocationComment()
-	{
-		return $this->comment;
-	}	
-
-	private function runSQLCalculation($sql)
+	function runSQLCalculation($sql)
 	{
 		global $dbconn;
         $dbconnstatus = pg_connection_status($dbconn);
@@ -240,5 +202,134 @@ class geometry
 		}			
 	}
 	
+}
+
+class location extends geometry
+{
+	
+	function __construct()
+	{
+	}
+		
+    /***********/
+    /* SETTERS */
+    /***********/   
+	
+	/**
+	 * One of growth; utilised (static); utilised (mobile); current, manufacture
+	 *
+	 * @var String
+	 */
+	private $type = NULL;
+	
+	/**
+	 * Precision of the location information in metres
+	 *
+	 * @var Integer
+	 */
+	private $precision = NULL;	
+	
+	/**
+	 * Set the geometry field using a native PostGIS geometry representation
+	 *
+	 * @param String $geometry
+	 * @param String $type
+	 * @param String $precision
+	 * @param String $comment
+	 */
+	function setGeometry($geometry, $type=null, $precision=null, $comment=null)
+	{
+		$this->geometry = $geometry;
+		$this->setType($type);
+		$this->setPrecision($precision);
+		$this->setComment($comment);	
+	}
+	
+	/**
+	 * Set the geometry using latitude and longitude.  This function assumes that the lat and long are standard WGS84 coordinates.
+	 *
+	 * @param Float $lat
+	 * @param Float $long
+	 */
+	function setPointGeometryFromLatLong($lat, $long)
+	{
+		// Make sure the parameters are numbers to stop sql injection
+		$lat = (float) $lat;
+		$long = (float) $long;
+		$srid = 4326; // Standard WGS84 SRID is assumed for this funciton	
+		
+		$sql = "select setsrid(makepoint(".sprintf("%1.8f",$long).", ".sprintf("%1.8f",$lat)."), $srid) as thevalue";
+		$this->geometry = $this->runSQLCalculation($sql);		
+	}	
+	
+	/**
+	 * Set the type of location the location field 
+	 *
+	 * @param unknown_type $value
+	 * @return unknown
+	 */
+	function setType($value)
+	{
+		$this->type = addslashes($value);
+		return true;
+	}
+	
+	function setPrecision($value)
+	{	
+		$this->precision = (int) $value;
+		return true;
+	}
+	
+
+    /***********/
+    /* GETTERS */
+    /***********/  	
+	
+	function asXML()
+	{
+        $xml = "<tridas:location>\n";
+       	$xml.= "<tridas:locationGeometry>\n";
+       	$xml.= $this->asGML();
+       	$xml.= "\n</tridas:locationGeometry>\n";
+       	if($this->getType()!=NULL) $xml .= "<tridas:locationType>".$this->getType()."</tridas:locationType>\n";
+        if($this->getPrecision()!=NULL) $xml .= "<tridas:locationPrecision>".$this->getPrecision()."</tridas:locationPrecision>\n";
+        if($this->getComment()!=NULL) $xml .= "<tridas:locationComment>".$this->getComment()."</tridas:locationComment>\n";      	
+       	$xml.= "</tridas:location>\n";
+        return $xml;
+	}	
+	
+	function getType()
+	{
+		return $this->type;
+	}
+	
+	function getPrecision()
+	{	
+		return $this->precision;
+	}
+	
+	function getLocationGeometry()
+	{
+		return $this->getGeometry();
+	}	
+}
+
+class extent extends geometry
+{
+
+    /***********/
+    /* GETTERS */
+    /***********/  	
+	
+	function asXML()
+	{
+        $xml = "<tridas:extent>\n";
+       	$xml.= "<tridas:extentGeometry>\n";
+       	$xml.= $this->asGML();
+       	$xml.= "\n</tridas:extentGeometry>\n";
+        if($this->getComment()!=NULL) $xml .= "<tridas:extentComment>".$this->getComment()."</tridas:extentComment>\n";      	
+       	$xml.= "</tridas:extent>\n";
+        return $xml;
+	}
 }
 ?>

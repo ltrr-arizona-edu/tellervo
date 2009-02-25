@@ -96,6 +96,23 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
+	<!-- extent -->
+	<xs:element name="extent">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="extentGeometry"/>
+				<xs:element ref="extentComment" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="extentGeometry">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="gml:Polygon"/>
+			</xs:sequence>
+		</xs:complexType>		
+	</xs:element>
+	<xs:element name="extentComment" type="xs:string"/>	
 	<!-- location -->
 	<xs:element name="location">
 		<xs:complexType>
@@ -637,6 +654,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 					<xs:element ref="interpretation"/>
 					<xs:element ref="interpretationUnsolved"/>
 				</xs:choice>
+				<xs:element ref="extent" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>		
 				<xs:element ref="createdTimestamp" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="lastModifiedTimestamp" minOccurs="0" maxOccurs="1"/>				

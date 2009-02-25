@@ -582,7 +582,7 @@ class objectEntity extends dbEntity
 	
     function __construct()
     {  
-    	$this->location = new geometry();
+    	$this->location = new location();
         $groupXMLTag = "objects";
         parent::__construct($groupXMLTag);  	
 	}
@@ -868,7 +868,7 @@ class elementEntity extends dbEntity
 	 *
 	 * @var Geometry
 	 */
-	protected $geometry = NULL;
+	protected $location = NULL;
 	/**
 	 * Processing (carved, sawn etc) rafting marks
 	 *
@@ -892,7 +892,7 @@ class elementEntity extends dbEntity
     function __construct()
     {  
 		parent::__construct("");
-		$this->geometry = new geometry();	
+		$this->location = new location();	
 		$this->taxon = new taxon(); 	
 	}
 
@@ -1091,24 +1091,24 @@ class elementEntity extends dbEntity
 	}
 	
 	/**
-	 * Set the geometry field of this element using a GML string
+	 * Set the location field of this element using a GML string
 	 *
 	 * @param String $gml
 	 */
 	function setGeometryFromGML($gml)
 	{
-		$this->geometry->setGeometryFromGML($gml);
+		$this->location->setGeometryFromGML($gml);
 	}
 	
 	/**
-	 * Set the geometry field of this element using lat/long values.  Only applicable to point geometries.
+	 * Set the location field of this element using lat/long values.  Only applicable to point geometries.
 	 *
 	 * @param Float $lat
 	 * @param Float $long
 	 */
 	function setPointGeometryFromLatLong($lat, $long)
 	{
-		$this->geometry->setPointGeometryFromLatLong($lat, $long);
+		$this->location->setPointGeometryFromLatLong($lat, $long);
 	}
 	
 	/***********/
@@ -1281,7 +1281,7 @@ class elementEntity extends dbEntity
 
     function hasGeometry()
     {
-        return $this->geometry!=NULL;
+        return $this->location!=NULL;
     }
 }
 
@@ -2381,7 +2381,13 @@ class measurementEntity extends dbEntity
      * @var Mixed
      */
     protected $fullLabCode = NULL;
-
+   
+    /**
+     * The geographical extent covered by this series
+     *
+     * @var extent
+     */
+    protected $extent = NULL;
       
     
     
@@ -2389,7 +2395,7 @@ class measurementEntity extends dbEntity
     {  
         $groupXMLTag = "elements";
         parent::__construct($groupXMLTag); 
-		$this->geometry = new geometry();	
+		$this->extent = new extent();	
 		$this->taxon = new taxon(); 	
 		$this->dendrochronologist = new securityUser();
 		$this->analyst = new securityUser();
@@ -2399,6 +2405,21 @@ class measurementEntity extends dbEntity
 	/***********/
     /* SETTERS */
     /***********/ 	
+	
+	function setExtent($extent)
+	{
+		$this->extent->setGeometry($extent);
+	}
+	
+	function setExtentFromGML($gml)
+	{
+		$this->extent->setGeometryFromGML($gml);
+	}
+	
+	function setExtentComment($comment)
+	{
+		$this->extent->setComment($comment);
+	}
 	
 	function setVMeasurementOp($id, $value)
 	{
@@ -2730,6 +2751,11 @@ class measurementEntity extends dbEntity
     /* GETTERS */
     /***********/
 
+    function getExtentAsXML()
+    {
+    	return $this->extent->asXML();
+    }
+    
     function getTridasSeriesType()
     {
 

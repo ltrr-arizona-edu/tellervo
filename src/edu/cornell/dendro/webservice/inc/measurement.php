@@ -102,17 +102,11 @@ class measurement extends measurementEntity implements IDBAccessor
                 $this->setStandardizingMethod($row['vmeasurementopparameter'], null);
                 $this->setCreatedTimestamp($row['createdtimestamp']);
                 $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
-			
+				$this->setExtent($row['extentgeometry']);
+				//$this->setExtentComment($row['extentcomment']);
 				$this->setUsage($row['usage']);
 				$this->setUsageComments($row['usagecomments']);
-
-				
-                
-                
-
                 //$this->setSummaryInfo($row['objectcode'], $row['objectcount'], $row['commontaxonname'], $row['taxoncount'], $row['prefix']);
-
-
 
                 if($this->vmeasurementOp=='Index')
                 {
@@ -333,7 +327,7 @@ class measurement extends measurementEntity implements IDBAccessor
         //if (isset($paramsClass->newStartYear))         $this->setNewStartYear($paramsClass->newStartYear);
         //if (isset($paramsClass->readingsUnits))        $this->setUnits($paramsClass->readingsUnits);
         if (sizeof($paramsClass->readingsArray)>0)     $this->setReadingsArray($paramsClass->readingsArray);
-        
+           
        
 
 
@@ -770,7 +764,7 @@ class measurement extends measurementEntity implements IDBAccessor
  															$xml.= "</tridas:interpretation>\n"; 
  				
  															
- 															
+ 				if($this->getExtentAsXML()!=NULL)			$xml.= $this->getExtentAsXML();											
  				if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"crossdateJustification\">".$this->getJustification()."</tridas:genericField>\n";				
  				if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"crossdateConfidenceLevel\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
  				if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"operationParameter\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";

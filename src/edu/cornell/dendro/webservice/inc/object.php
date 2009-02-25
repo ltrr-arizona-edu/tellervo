@@ -366,10 +366,10 @@ class object extends objectEntity implements IDBAccessor
                         if ($this->getDescription()!=NULL)								$sql.= "description, ";
                         if ($this->getTemporalCoverage()!=NULL)							$sql.= "coveragetemporal, ";
                         if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "coveragetemporalfoundation, ";
-                        if ($this->location->getLocationGeometry()!=NULL)				$sql.= "locationgeometry, ";
-                        if ($this->location->getLocationComment()!=NULL)				$sql.= "locationcomment, ";
-                        if ($this->location->getLocationType()!=NULL)					$sql.= "locationtype, ";
-                        if ($this->location->getLocationPrecision()!=NULL)				$sql.= "locationprecision, ";
+                        if ($this->location->getGeometry()!=NULL)						$sql.= "locationgeometry, ";
+                        if ($this->location->getComment()!=NULL)						$sql.= "locationcomment, ";
+                        if ($this->location->getType()!=NULL)							$sql.= "locationtype, ";
+                        if ($this->location->getPrecision()!=NULL)						$sql.= "locationprecision, ";
                         if ($this->getFile()!=NULL)										$sql.= "file, ";
                         if (count($this->parentEntityArray)>0)							$sql.= "parentobjectid, ";
                     // Trim off trailing space and comma
@@ -383,10 +383,10 @@ class object extends objectEntity implements IDBAccessor
                         if ($this->getDescription()!=NULL)								$sql.= "'".$this->getDescription()."', ";
                         if ($this->getTemporalCoverage()!=NULL)							$sql.= "'".$this->getTemporalCoverage()."', ";
                         if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "'".$this->getTemporalCoverageFoundation()."', ";
-                        if ($this->location->getLocationGeometry()!=NULL)				$sql.= "'".$this->location->getLocationGeometry()."', ";
-                        if ($this->location->getLocationComment()!=NULL)				$sql.= "'".$this->location->getLocationComment()."', ";
-                        if ($this->location->getLocationType()!=NULL)					$sql.= "'".$this->location->getLocationType()."', ";
-                        if ($this->location->getLocationPrecision()!=NULL)				$sql.= "'".$this->location->getLocationPrecision()."', ";
+                        if ($this->location->getGeometry()!=NULL)						$sql.= "'".$this->location->getGeometry()."', ";
+                        if ($this->location->getComment()!=NULL)						$sql.= "'".$this->location->getComment()."', ";
+                        if ($this->location->getType()!=NULL)							$sql.= "'".$this->location->getType()."', ";
+                        if ($this->location->getPrecision()!=NULL)						$sql.= "'".$this->location->getPrecision()."', ";
                         if ($this->getFile()!=NULL)										$sql.= "'".$this->getFile()."', ";
                         if (count($this->parentEntityArray)>0)							$sql.= "'".$this->parentEntityArray[0]->getID()."', ";
                     // Trim off trailing space and comma
@@ -406,10 +406,10 @@ class object extends objectEntity implements IDBAccessor
                         if ($this->getDescription()!=NULL)								$sql.= "description='".$this->getDescription()."', ";
                         if ($this->getTemporalCoverage()!=NULL)							$sql.= "coveragetemporal='".$this->getTemporalCoverage()."', ";
                         if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "coveragetemporalfoundation='".$this->getTemporalCoverageFoundation()."', ";
-                        if ($this->location->getLocationGeometry()!=NULL)				$sql.= "locationgeometry='".$this->location->getLocationGeometry()."', ";
-                        if ($this->location->getLocationComment()!=NULL)				$sql.= "locationcomment='".$this->location->getLocationComment()."', ";
-                        if ($this->location->getLocationType()!=NULL)					$sql.= "locationtype='".$this->location->getLocationType()."', ";
-                        if ($this->location->getLocationPrecision()!=NULL)				$sql.= "locationprecision='".$this->location->getLocationPrecision()."', ";
+                        if ($this->location->getGeometry()!=NULL)						$sql.= "locationgeometry='".$this->location->getGeometry()."', ";
+                        if ($this->location->getComment()!=NULL)						$sql.= "locationcomment='".$this->location->getComment()."', ";
+                        if ($this->location->getType()!=NULL)							$sql.= "locationtype='".$this->location->getType()."', ";
+                        if ($this->location->getPrecision()!=NULL)						$sql.= "locationprecision='".$this->location->getPrecision()."', ";
                         if ($this->getFile()!=NULL)										$sql.= "file='".$this->getFile()."', ";
                         if (count($this->parentEntityArray)>0)							$sql.= "parentobject='".$this->parentEntityArray[0]->getID()."', ";                    
                         // Trim off trailing space and comma

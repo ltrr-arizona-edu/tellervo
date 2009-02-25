@@ -133,7 +133,7 @@ class element extends elementEntity implements IDBAccessor
                 $this->setDimensions($row['units'],$row['height'], $row['width'], $row['depth']);
                 $this->setDiameter($row['diameter']);
                 $this->setType($row['elementtype']);
-                $this->geometry->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
+                $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
                 $this->setProcessing($row['processing']);
                 $this->setMarks($row['marks']);
                 $this->setDescription($row['description']);
@@ -219,10 +219,10 @@ class element extends elementEntity implements IDBAccessor
 		if ($paramsClass->getProcessing()!=NULL)			$this->setProcessing($paramsClass->getProcessing());
 		if ($paramsClass->getShape()!=NULL)					$this->setShape($paramsClass->getShape());
 		if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType());
-		if ($paramsClass->hasGeometry())					$this->geometry->setGeometry($paramsClass->geometry->getLocationGeometry(),
-																						 $paramsClass->geometry->getLocationType(),
-																						 $paramsClass->geometry->getLocationPrecision(),
-																						 $paramsClass->geometry->getLocationComment());
+		if ($paramsClass->hasGeometry())					$this->location->setGeometry($paramsClass->location->getLocationGeometry(),
+																						 $paramsClass->location->getLocationType(),
+																						 $paramsClass->location->getLocationPrecision(),
+																						 $paramsClass->location->getLocationComment());
 		
 																						 
         if ($paramsClass->parentID!=NULL)
@@ -421,7 +421,7 @@ class element extends elementEntity implements IDBAccessor
                     if($this->getAuthenticity()!=NULL)      $xml.= "<tridas:authenticity>".$this->getAuthenticity()."</tridas:authenticity>\n";
                     if($this->hasGeometry()) 
                     {
-                        $xml.=$this->geometry->asXML();
+                        $xml.=$this->location->asXML();
                     }                 
                     if($this->getDescription()!=NULL) $xml.="<tridas:description>".$this->getDescription()."</tridas:description>";
                     if($this->getType()!=NULL) $xml.="<tridas:type>".$this->getType()."</tridas:type>";
@@ -547,10 +547,10 @@ class element extends elementEntity implements IDBAccessor
 	                    }
                         if ($this->getType()!=NULL)								$sql.= "elementtypeid, ";
                         if ($this->getFile()!=NULL)								$sql.= "file, ";
-                        if ($this->geometry->getLocationType()!=NULL)			$sql.= "locationtype, ";
-                        if ($this->geometry->getLocationPrecision()!=NULL)		$sql.= "locationprecision, ";
-                        if ($this->geometry->getLocationComment()!=NULL)		$sql.= "locationcomment, ";
-                        if ($this->geometry->getLocationGeometry()!=NULL)		$sql.= "locationgeometry, ";
+                        if ($this->location->getLocationType()!=NULL)			$sql.= "locationtype, ";
+                        if ($this->location->getLocationPrecision()!=NULL)		$sql.= "locationprecision, ";
+                        if ($this->location->getLocationComment()!=NULL)		$sql.= "locationcomment, ";
+                        if ($this->location->getLocationGeometry()!=NULL)		$sql.= "locationgeometry, ";
                         if ($this->getProcessing()!=NULL)						$sql.= "processing, ";
                         if ($this->getMarks()!=NULL)							$sql.= "marks, ";
                         if ($this->getDescription()!=NULL)						$sql.= "description, ";	                            
@@ -572,10 +572,10 @@ class element extends elementEntity implements IDBAccessor
 	                    }
                         if ($this->getType()!=NULL)								$sql.= "'".$this->getType(true)."', ";
                         if ($this->getFile()!=NULL)								$sql.= "'".$this->getFile()."', ";
-                        if ($this->geometry->getLocationType()!=NULL)			$sql.= "'".$this->geometry->getLocationType()."', ";
-                        if ($this->geometry->getLocationPrecision()!=NULL)		$sql.= "'".$this->geometry->getLocationPrecision()."', ";
-                        if ($this->geometry->getLocationComment()!=NULL)		$sql.= "'".$this->geometry->getLocationComment()."', ";
-                        if ($this->geometry->getLocationGeometry()!=NULL)		$sql.= "'".$this->geometry->getLocationGeometry()."', ";
+                        if ($this->location->getLocationType()!=NULL)			$sql.= "'".$this->location->getLocationType()."', ";
+                        if ($this->location->getLocationPrecision()!=NULL)		$sql.= "'".$this->location->getLocationPrecision()."', ";
+                        if ($this->location->getLocationComment()!=NULL)		$sql.= "'".$this->location->getLocationComment()."', ";
+                        if ($this->location->getLocationGeometry()!=NULL)		$sql.= "'".$this->location->getLocationGeometry()."', ";
                         if ($this->getProcessing()!=NULL)						$sql.= "'".$this->getProcessing()."', ";
                         if ($this->getMarks()!=NULL)							$sql.= "'".$this->getMarks()."', ";
                         if ($this->getDescription()!=NULL)						$sql.= "'".$this->getDescription()."', ";                     
