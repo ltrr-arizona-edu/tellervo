@@ -45,7 +45,6 @@ public class BugReportDialog extends BugReportInfoPanel_UI implements ActionList
 		dialog.setVisible(true);
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent e) {
 		String email = txtEmailAddress.getText();
 		String comments = txtComments.getText();
