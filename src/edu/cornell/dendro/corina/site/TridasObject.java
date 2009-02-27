@@ -8,8 +8,8 @@ import java.util.TreeMap;
 
 import org.jdom.Element;
 
-public class Site extends GenericIntermediateObject implements Comparable {
-	public Site(String id, String name, String code) {
+public class TridasObject extends TridasEntityBase implements Comparable {
+	public TridasObject(String id, String name, String code) {
 		super(id, name);
 		this.code = code;
 		
@@ -49,10 +49,10 @@ public class Site extends GenericIntermediateObject implements Comparable {
 	}
 	
 	public String toFullString() {
-		if(code.equals(name))
-			return name;
+		if(code.equals(title))
+			return title;
 		
-		return "[" + code + "] " + name;
+		return "[" + code + "] " + title;
 	}
 		
 	public String getCode() {
@@ -73,7 +73,7 @@ public class Site extends GenericIntermediateObject implements Comparable {
 		return subsites;
 	}	
 	
-	public static Site xmlToSite(Element root) {
+	public static TridasObject xmlToSite(Element root) {
 		String id, name, code;
 		
 		id = root.getAttributeValue("id");
@@ -89,7 +89,7 @@ public class Site extends GenericIntermediateObject implements Comparable {
 			return null;			
 		}
 		
-		Site site = new Site(id, name, code);
+		TridasObject site = new TridasObject(id, name, code);
 		
 		// catch a region tag (or multiple)
 		for(Element region : (List<Element>) root.getChildren("region")) {
@@ -127,7 +127,7 @@ public class Site extends GenericIntermediateObject implements Comparable {
 		if(!isNew())
 			root.setAttribute("id", getID());
 		
-		root.addContent(new Element("name").setText(name));
+		root.addContent(new Element("name").setText(title));
 		root.addContent(new Element("code").setText(code));
 		
 		// are these necessary?

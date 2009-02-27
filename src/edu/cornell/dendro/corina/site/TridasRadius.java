@@ -2,12 +2,12 @@ package edu.cornell.dendro.corina.site;
 
 import org.jdom.Element;
 
-public class Radius extends GenericIntermediateObject {
-	public Radius(String id, String name) {
+public class TridasRadius extends TridasEntityBase {
+	public TridasRadius(String id, String name) {
 		super(id, name);
 	}
 	
-	public static Radius xmlToRadius(Element root) {
+	public static TridasRadius xmlToRadius(Element root) {
 		String id, name;
 		
 		id = root.getAttributeValue("id");
@@ -22,7 +22,7 @@ public class Radius extends GenericIntermediateObject {
 			return null;			
 		}
 		
-		Radius radius = new Radius(id, name);
+		TridasRadius radius = new TridasRadius(id, name);
 		
 		radius.setResourceIdentifierFromElement(root);
 		
@@ -35,7 +35,7 @@ public class Radius extends GenericIntermediateObject {
 		if(!isNew())
 			root.setAttribute("id", getID());
 
-		root.addContent(new Element("name").setText(name));	
+		root.addContent(new Element("name").setText(title));	
 
 		return root;
 	}

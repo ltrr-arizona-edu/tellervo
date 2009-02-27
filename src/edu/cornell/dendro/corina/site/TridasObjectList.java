@@ -29,7 +29,7 @@ public class TridasObjectList extends CachedResource {
 	 * @param cachedResourceName
 	 */
 	public TridasObjectList() {
-		super("tridas:objects", ResourceQueryType.SEARCH);		
+		super("tridas.objects", ResourceQueryType.SEARCH);		
 	}
 
 	/* (non-Javadoc)
@@ -79,11 +79,11 @@ public class TridasObjectList extends CachedResource {
 				
 		List<?> data = dataElement.getChildren("site");
 		Iterator<?> itr = data.iterator();
-		TreeMap<String, Site> newsites = new TreeMap<String, Site>();
+		TreeMap<String, TridasObject> newsites = new TreeMap<String, TridasObject>();
 		
 		while(itr.hasNext()) {
 			Element se = (Element) itr.next();
-			Site site = Site.xmlToSite(se);
+			TridasObject site = TridasObject.xmlToSite(se);
 			
 			// problem with the site?
 			if(site == null)
@@ -104,7 +104,7 @@ public class TridasObjectList extends CachedResource {
 	 * Gets the list of sites sorted alphabetically by code (as a Collection)
 	 * @return
 	 */
-	public Collection<Site> getSites() {
+	public Collection<TridasObject> getSites() {
 		return siteMap.values();
 	}
 	
@@ -114,7 +114,7 @@ public class TridasObjectList extends CachedResource {
 	 * @param code
 	 * @return
 	 */
-	public Site findSite(String code) {
+	public TridasObject findSite(String code) {
 		return siteMap.get(code);
 	}
 	
@@ -123,7 +123,7 @@ public class TridasObjectList extends CachedResource {
 	 * @param code
 	 * @return
 	 */
-	public SortedMap<String, Site> getSimilarSites(String code) {
+	public SortedMap<String, TridasObject> getSimilarSites(String code) {
 		return siteMap.tailMap(code);
 	}
 	
@@ -132,10 +132,10 @@ public class TridasObjectList extends CachedResource {
 	 * Use sparingly!
 	 * @param site
 	 */
-	public void addSite(Site site) {
+	public void addSite(TridasObject site) {
 		siteMap.put(site.getCode(), site);
 	}
 	
 	// the site map
-	private TreeMap<String, Site> siteMap;
+	private TreeMap<String, TridasObject> siteMap;
 }

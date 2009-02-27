@@ -2,7 +2,7 @@ package edu.cornell.dendro.corina.site;
 
 import org.jdom.Element;
 
-public class Subsite extends GenericIntermediateObject implements Comparable {
+public class Subsite extends TridasEntityBase implements Comparable {
 	public Subsite(String id, String name) {
 		super(id, name);
 	}
@@ -38,7 +38,7 @@ public class Subsite extends GenericIntermediateObject implements Comparable {
 			root.setAttribute("id", getID());
 
 		// all we have is a name...
-		root.addContent(new Element("name").setText(name));
+		root.addContent(new Element("name").setText(title));
 		
 		return root;
 	}

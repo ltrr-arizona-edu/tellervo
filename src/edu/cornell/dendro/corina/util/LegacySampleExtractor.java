@@ -17,11 +17,11 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.site.Radius;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.Specimen;
+import edu.cornell.dendro.corina.site.TridasRadius;
+import edu.cornell.dendro.corina.site.TridasObject;
+import edu.cornell.dendro.corina.site.TridasSample;
 import edu.cornell.dendro.corina.site.Subsite;
-import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.site.TridasElement;
 
 /**
  * This class provides convenience methods for extracting data out of old-format Corina samples
@@ -51,14 +51,14 @@ public class LegacySampleExtractor {
 	private String radiusName;
 	private String measurementName;
 	
-	private Site associatedSite;
+	private TridasObject associatedSite;
 	
 	/**
 	 * Get the site object!
 	 * 
 	 * @return
 	 */
-	public Site asSite() {
+	public TridasObject asSite() {
 		return associatedSite;
 	}
 	
@@ -83,9 +83,9 @@ public class LegacySampleExtractor {
 	 * Populates: name, species->originalTaxonName
 	 * @return
 	 */
-	public Tree asTree() {
-		Tree tree = new Tree(Tree.ID_NEW, (specimenOrTreeName == null) ? 
-				Tree.NAME_INVALID : specimenOrTreeName);
+	public TridasElement asTree() {
+		TridasElement tree = new TridasElement(TridasElement.ID_NEW, (specimenOrTreeName == null) ? 
+				TridasElement.NAME_INVALID : specimenOrTreeName);
 		String val;
 		
 		if((val = (String) sample.getMeta("species")) != null)
@@ -104,9 +104,9 @@ public class LegacySampleExtractor {
 	 * specimencontinuity
 	 * @return
 	 */
-	public Specimen asSpecimen() {
-		Specimen spec = new Specimen(Specimen.ID_NEW, (specimenOrTreeName == null) ? 
-				Specimen.NAME_INVALID : specimenOrTreeName);
+	public TridasSample asSpecimen() {
+		TridasSample spec = new TridasSample(TridasSample.ID_NEW, (specimenOrTreeName == null) ? 
+				TridasSample.NAME_INVALID : specimenOrTreeName);
 		String val;
 		Object oval;
 		
@@ -155,9 +155,9 @@ public class LegacySampleExtractor {
 	 * name
 	 * @return
 	 */
-	public Radius asRadius() {
-		Radius radius = new Radius(Radius.ID_NEW, (radiusName == null) ? 
-				Radius.NAME_INVALID : radiusName);
+	public TridasRadius asRadius() {
+		TridasRadius radius = new TridasRadius(TridasRadius.ID_NEW, (radiusName == null) ? 
+				TridasRadius.NAME_INVALID : radiusName);
 		return radius;
 	}
 

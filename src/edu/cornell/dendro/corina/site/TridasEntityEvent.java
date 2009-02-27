@@ -5,12 +5,12 @@ import java.util.EventObject;
 /**
    An event signifying that an intermediateObject has changed
 */
-public class IntermediateObjectEvent extends EventObject {
+public class TridasEntityEvent extends EventObject {
     /**
        Construct a new IntermediateObjectEvent with the specified source.
        @param source the IntermediateObject this event is about
     */
-	public IntermediateObjectEvent(GenericIntermediateObject source) {
+	public TridasEntityEvent(TridasEntityBase source) {
 		super(source);
 	}
 }

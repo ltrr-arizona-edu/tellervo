@@ -16,7 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.TridasObject;
 import edu.cornell.dendro.corina.site.Subsite;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
@@ -82,8 +82,8 @@ public class SubsiteEditorPanel extends BaseEditorPanel<Subsite> {
 		if(ir.getObject().get(0) instanceof Subsite) {
 			setNewObject((Subsite) ir.getObject().get(0));
 			if(getParentObject() != null) {
-				((Site)getParentObject()).addSubsite(getNewObject());
-				((Site)getParentObject()).sortSubsites();
+				((TridasObject)getParentObject()).addSubsite(getNewObject());
+				((TridasObject)getParentObject()).sortSubsites();
 			}
 		}
 		

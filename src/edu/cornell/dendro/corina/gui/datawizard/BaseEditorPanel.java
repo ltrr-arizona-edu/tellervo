@@ -14,12 +14,12 @@ import javax.swing.UIDefaults;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import edu.cornell.dendro.corina.site.GenericIntermediateObject;
-import edu.cornell.dendro.corina.site.Radius;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.Specimen;
+import edu.cornell.dendro.corina.site.TridasEntityBase;
+import edu.cornell.dendro.corina.site.TridasRadius;
+import edu.cornell.dendro.corina.site.TridasObject;
+import edu.cornell.dendro.corina.site.TridasSample;
 import edu.cornell.dendro.corina.site.Subsite;
-import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.site.TridasElement;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
 
@@ -66,13 +66,13 @@ public abstract class BaseEditorPanel<OBJT> extends BasePanel {
 	public void setParentObject(Object obj, Class<?> childClass) {
 		boolean valid = false;
 		
-		if(childClass.equals(Subsite.class) && obj.getClass().equals(Site.class)) 
+		if(childClass.equals(Subsite.class) && obj.getClass().equals(TridasObject.class)) 
 			valid = true;
-		else if(childClass.equals(Tree.class) && obj.getClass().equals(Subsite.class)) 
+		else if(childClass.equals(TridasElement.class) && obj.getClass().equals(Subsite.class)) 
 			valid = true;
-		else if(childClass.equals(Specimen.class) && obj.getClass().equals(Tree.class)) 
+		else if(childClass.equals(TridasSample.class) && obj.getClass().equals(TridasElement.class)) 
 			valid = true;
-		else if(childClass.equals(Radius.class) && obj.getClass().equals(Specimen.class)) 
+		else if(childClass.equals(TridasRadius.class) && obj.getClass().equals(TridasSample.class)) 
 			valid = true;
 		/*
 		 * maybe for measurements?
@@ -86,8 +86,8 @@ public abstract class BaseEditorPanel<OBJT> extends BasePanel {
 		this.parentObject = obj;
 	}
 	
-	protected GenericIntermediateObject getParentObject() {
-		return (GenericIntermediateObject) parentObject;
+	protected TridasEntityBase getParentObject() {
+		return (TridasEntityBase) parentObject;
 	}
 	
 	/**
@@ -216,8 +216,8 @@ public abstract class BaseEditorPanel<OBJT> extends BasePanel {
 	 * @param obj
 	 */
 	public void setUpdateObject(OBJT obj) {
-		if(obj instanceof GenericIntermediateObject) {
-			if(((GenericIntermediateObject) obj).isNew())
+		if(obj instanceof TridasEntityBase) {
+			if(((TridasEntityBase) obj).isNew())
 				throw new IllegalArgumentException("Trying to create an update dialog for a new resource!");
 		}
 		
@@ -232,7 +232,7 @@ public abstract class BaseEditorPanel<OBJT> extends BasePanel {
 		if(updatingObject == null)
 			return;
 		
-		((GenericIntermediateObject) obj).assimilateIntermediateObject((GenericIntermediateObject) updatingObject);
+		((TridasEntityBase) obj).assimilateIntermediateObject((TridasEntityBase) updatingObject);
 	}
 	
 	/**

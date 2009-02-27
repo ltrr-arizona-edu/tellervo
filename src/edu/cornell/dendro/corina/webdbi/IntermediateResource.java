@@ -6,15 +6,15 @@ import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 
-import edu.cornell.dendro.corina.site.GenericIntermediateObject;
-import edu.cornell.dendro.corina.site.Radius;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.Specimen;
+import edu.cornell.dendro.corina.site.TridasEntityBase;
+import edu.cornell.dendro.corina.site.TridasRadius;
+import edu.cornell.dendro.corina.site.TridasObject;
+import edu.cornell.dendro.corina.site.TridasSample;
 import edu.cornell.dendro.corina.site.Subsite;
-import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.site.TridasElement;
 
 
-public class IntermediateResource extends ResourceObject<List<? extends GenericIntermediateObject>> {
+public class IntermediateResource extends ResourceObject<List<? extends TridasEntityBase>> {
 	/**
 	 * Performs a search based on search parameters, returns a list of one type of object (specified by search!)
 	 * 
@@ -36,14 +36,14 @@ public class IntermediateResource extends ResourceObject<List<? extends GenericI
 	 * @param child
 	 * @param queryType
 	 */
-	public IntermediateResource(GenericIntermediateObject parent, 
-			GenericIntermediateObject child)
+	public IntermediateResource(TridasEntityBase parent, 
+			TridasEntityBase child)
 	{
 		super("intermediate", child.isNew() ? ResourceQueryType.CREATE : ResourceQueryType.UPDATE);
 
 		// well that's a mouthful
-		ArrayList<GenericIntermediateObject> kludgelist = 
-			new ArrayList<GenericIntermediateObject>();
+		ArrayList<TridasEntityBase> kludgelist = 
+			new ArrayList<TridasEntityBase>();
 		
 		// add our list!
 		kludgelist.add(parent);
@@ -57,19 +57,19 @@ public class IntermediateResource extends ResourceObject<List<? extends GenericI
 			return requestElement.addContent(getSearchParameters().getXMLElement());
 		}
 		else if(queryType == ResourceQueryType.CREATE) {
-			GenericIntermediateObject parent = getObject().get(0);
-			GenericIntermediateObject child = getObject().get(1);
+			TridasEntityBase parent = getObject().get(0);
+			TridasEntityBase child = getObject().get(1);
 			
 			// child must be new, otherwise use an update!
 			if(!child.isNew())
 				throw new ResourceException("CREATE called for resource that already has an ID");
 			
 			// child must have a non-new parent (except for sites)
-			if(!(child instanceof Site) && (parent == null || parent.isNew()))
+			if(!(child instanceof TridasObject) && (parent == null || parent.isNew()))
 				throw new ResourceException("CREATE called with an invalid parent");
 			
 			Element parentElement;
-			if(child instanceof Site)
+			if(child instanceof TridasObject)
 				parentElement = requestElement;
 			else 
 				// make a copy, otherwise we'll break it
@@ -79,14 +79,14 @@ public class IntermediateResource extends ResourceObject<List<? extends GenericI
 			parentElement.addContent(child.toXML());
 			
 			// add it, if it's a new thingy
-			if(!(child instanceof Site))
+			if(!(child instanceof TridasObject))
 				requestElement.addContent(parentElement);
 			
 			return requestElement;
 		}
 		else if(queryType == ResourceQueryType.UPDATE) {
-			GenericIntermediateObject parent = getObject().get(0);
-			GenericIntermediateObject child = getObject().get(1);
+			TridasEntityBase parent = getObject().get(0);
+			TridasEntityBase child = getObject().get(1);
 			
 			// child must be old, otherwise use a create
 			if(child.isNew())
@@ -118,12 +118,12 @@ public class IntermediateResource extends ResourceObject<List<? extends GenericI
 		case CREATE:
 		case UPDATE:
 		case SEARCH: {
-			List<GenericIntermediateObject> objList = new ArrayList<GenericIntermediateObject>();
+			List<TridasEntityBase> objList = new ArrayList<TridasEntityBase>();
 			List<Element> base;
 		
 			base = content.getChildren("site");
 			for(Element e : base) {
-				Site site = Site.xmlToSite(e);
+				TridasObject site = TridasObject.xmlToSite(e);
 			
 				if(site != null)
 					objList.add(site);
@@ -139,7 +139,7 @@ public class IntermediateResource extends ResourceObject<List<? extends GenericI
 
 			base = content.getChildren("tree");
 			for(Element e : base) {
-				Tree tree = Tree.xmlToTree(e);
+				TridasElement tree = TridasElement.xmlToTree(e);
 			
 				if(tree != null)
 					objList.add(tree);
@@ -147,7 +147,7 @@ public class IntermediateResource extends ResourceObject<List<? extends GenericI
 
 			base = content.getChildren("specimen");
 			for(Element e : base) {
-				Specimen specimen = Specimen.xmlToSpecimen(e);
+				TridasSample specimen = TridasSample.xmlToSpecimen(e);
 			
 				if(specimen != null)
 					objList.add(specimen);
@@ -155,7 +155,7 @@ public class IntermediateResource extends ResourceObject<List<? extends GenericI
 
 			base = content.getChildren("radius");
 			for(Element e : base) {
-				Radius radius = Radius.xmlToRadius(e);
+				TridasRadius radius = TridasRadius.xmlToRadius(e);
 			
 				if(radius != null)
 					objList.add(radius);

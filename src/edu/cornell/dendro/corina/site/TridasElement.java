@@ -5,8 +5,8 @@ import org.jdom.Element;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Taxon;
 
-public class Tree extends GenericIntermediateObject {
-	public Tree(String id, String name) {
+public class TridasElement extends TridasEntityBase {
+	public TridasElement(String id, String name) {
 		super(id, name);
 	}
 	
@@ -19,7 +19,7 @@ public class Tree extends GenericIntermediateObject {
 	private Taxon validatedTaxon = null;
 	private Boolean isLiveTree = null;
 		
-	public static Tree xmlToTree(Element root) {
+	public static TridasElement xmlToTree(Element root) {
 		String id, name, attr;
 		
 		id = root.getAttributeValue("id");
@@ -34,7 +34,7 @@ public class Tree extends GenericIntermediateObject {
 			return null;			
 		}
 				
-		Tree tree = new Tree(id, name);
+		TridasElement tree = new TridasElement(id, name);
 
 		attr = root.getChildText("latitude");
 		tree.setLatitude(attr);
@@ -66,7 +66,7 @@ public class Tree extends GenericIntermediateObject {
 		if(!isNew())
 			root.setAttribute("id", getID());
 
-		root.addContent(new Element("name").setText(name));
+		root.addContent(new Element("name").setText(title));
 
 		if(latitude != null)
 			root.addContent(new Element("latitude").setText(latitude));

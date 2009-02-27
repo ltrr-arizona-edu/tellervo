@@ -13,11 +13,11 @@ import edu.cornell.dendro.corina.index.Index;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.site.Radius;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.Specimen;
+import edu.cornell.dendro.corina.site.TridasRadius;
+import edu.cornell.dendro.corina.site.TridasObject;
+import edu.cornell.dendro.corina.site.TridasSample;
 import edu.cornell.dendro.corina.site.Subsite;
-import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.site.TridasElement;
 
 /**
  * @author lucasm
@@ -335,11 +335,11 @@ public class MeasurementResource extends ResourceObject<Sample> {
 				// kludge to catch a null measurementElement :)
 				measurementElement.getChild("metadata");
 				
-				s.setMeta("::radius", Radius.xmlToRadius(radiusElement));
-				s.setMeta("::specimen", Specimen.xmlToSpecimen(specimenElement));
-				s.setMeta("::tree", Tree.xmlToTree(treeElement));
+				s.setMeta("::radius", TridasRadius.xmlToRadius(radiusElement));
+				s.setMeta("::specimen", TridasSample.xmlToSpecimen(specimenElement));
+				s.setMeta("::tree", TridasElement.xmlToTree(treeElement));
 				s.setMeta("::subsite", Subsite.xmlToSubsite(subSiteElement));
-				s.setMeta("::site", Site.xmlToSite(siteElement));
+				s.setMeta("::site", TridasObject.xmlToSite(siteElement));
 			} catch (NullPointerException npe) {
 				throw new MalformedDocumentException("Invalid comprehensive measurement format");				
 			}

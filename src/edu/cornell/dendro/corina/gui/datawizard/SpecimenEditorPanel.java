@@ -36,8 +36,8 @@ import edu.cornell.dendro.corina.dictionary.SpecimenContinuity;
 import edu.cornell.dendro.corina.dictionary.SpecimenType;
 import edu.cornell.dendro.corina.dictionary.Taxon;
 import edu.cornell.dendro.corina.dictionary.TerminalRing;
-import edu.cornell.dendro.corina.site.Specimen;
-import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.site.TridasSample;
+import edu.cornell.dendro.corina.site.TridasElement;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 
@@ -45,7 +45,7 @@ import edu.cornell.dendro.corina.webdbi.IntermediateResource;
  *
  * @author  peterbrewer
  */
-public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
+public class SpecimenEditorPanel extends BaseEditorPanel<TridasSample> {
     
     /** Creates new form Specimen */
     public SpecimenEditorPanel() {
@@ -121,14 +121,14 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
     	lblNamePrefix.setText(parentPrefix);
 	}
     
-	public void setDefaultsFrom(Specimen spec) {
+	public void setDefaultsFrom(TridasSample spec) {
 		String v;
 		Integer iv;
 		Boolean b;
 		
 		// populate name
 		v = spec.toString();
-		if(!v.equals(Specimen.NAME_INVALID))
+		if(!v.equals(TridasSample.NAME_INVALID))
 			txtSpecimenName.setText(v);
 		
 		v = spec.getDateCollected();
@@ -214,7 +214,7 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
     }
     
 	public void commit() {
-		Specimen sp = new Specimen(Specimen.ID_NEW, txtSpecimenName.getText());
+		TridasSample sp = new TridasSample(TridasSample.ID_NEW, txtSpecimenName.getText());
     	assimilateUpdateObject(sp);
     	IntermediateResource ir = new IntermediateResource(getParentObject(), sp);
     	
@@ -258,8 +258,8 @@ public class SpecimenEditorPanel extends BaseEditorPanel<Specimen> {
     	if(!createOrUpdateObject(ir))
     		return;
     	
-		if(ir.getObject().get(0) instanceof Specimen) {
-			setNewObject((Specimen) ir.getObject().get(0));
+		if(ir.getObject().get(0) instanceof TridasSample) {
+			setNewObject((TridasSample) ir.getObject().get(0));
 		}
 		
     	dispose();

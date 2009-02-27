@@ -15,10 +15,10 @@ import edu.cornell.dendro.corina.gui.datawizard.EditorPanelFactory;
 import edu.cornell.dendro.corina.gui.datawizard.MeasurementModifyPanel;
 import edu.cornell.dendro.corina.gui.datawizard.WizardChildMonitor;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.site.GenericIntermediateObject;
+import edu.cornell.dendro.corina.site.TridasEntityBase;
 
 public class IntermediateEditorDialog extends JDialog implements WizardChildMonitor {
-	private BaseEditorPanel<GenericIntermediateObject> editor;
+	private BaseEditorPanel<TridasEntityBase> editor;
 	private Sample sample;
 	private String metaKey;
 	
@@ -39,8 +39,8 @@ public class IntermediateEditorDialog extends JDialog implements WizardChildMoni
 			editor = new MeasurementModifyPanel(sample);
 		}
 		else {
-			GenericIntermediateObject obj = (GenericIntermediateObject) sample.getMeta(metaKey);
-			editor = (BaseEditorPanel<GenericIntermediateObject>) EditorPanelFactory.createPanelForClass(obj.getClass());
+			TridasEntityBase obj = (TridasEntityBase) sample.getMeta(metaKey);
+			editor = (BaseEditorPanel<TridasEntityBase>) EditorPanelFactory.createPanelForClass(obj.getClass());
 			editor.setDefaultsFrom(obj); // copy defaults
 			editor.setUpdateObject(obj); // update this object
 			editor.populate("Lab Prefix-");

@@ -10,7 +10,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.TridasObject;
 
 /**
  * A quick and dirty class to render stars in a combo box
@@ -30,8 +30,8 @@ public class SiteRenderer implements ListCellRenderer {
 			c.setBackground(index % 2 == 0 ? DBBrowser.ODD_ROW_COLOR
 					: Color.white);	
 
-		if(value instanceof Site) {
-			Site site = (Site) value;
+		if(value instanceof TridasObject) {
+			TridasObject site = (TridasObject) value;
 			
 			JLabel lblCode = new JLabel(site.getCode());
 			JLabel lblName = new JLabel(site.toString());

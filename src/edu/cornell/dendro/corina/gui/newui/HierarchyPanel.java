@@ -40,12 +40,12 @@ import edu.cornell.dendro.corina.gui.datawizard.SpecimenEditorPanel;
 import edu.cornell.dendro.corina.gui.datawizard.SubsiteEditorPanel;
 import edu.cornell.dendro.corina.gui.datawizard.TreeEditorPanel;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.site.GenericIntermediateObject;
-import edu.cornell.dendro.corina.site.Radius;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.Specimen;
+import edu.cornell.dendro.corina.site.TridasEntityBase;
+import edu.cornell.dendro.corina.site.TridasRadius;
+import edu.cornell.dendro.corina.site.TridasObject;
+import edu.cornell.dendro.corina.site.TridasSample;
 import edu.cornell.dendro.corina.site.Subsite;
-import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.site.TridasElement;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
@@ -61,7 +61,7 @@ import edu.cornell.dendro.corina.webdbi.SearchParameters;
 
 public class HierarchyPanel extends javax.swing.JPanel {
 	private JDialog parent;
-	private Site lastSelectedSite;
+	private TridasObject lastSelectedSite;
     
     /** Creates new form CreateSample */
     public HierarchyPanel(JPanel parent) {
@@ -119,7 +119,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
     	// new SUBSITE
     	btnNewSubsite.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			Site site = (Site) cboSite.getSelectedItem();
+    			TridasObject site = (TridasObject) cboSite.getSelectedItem();
     			SubsiteEditorPanel sd = null;// = new SubsiteDialog(parent, true, site);
     			
     			sd.setVisible(true);
@@ -151,7 +151,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
 
     	btnNewSpecimen.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			Tree tree = (Tree) cboTree.getSelectedItem();
+    			TridasElement tree = (TridasElement) cboTree.getSelectedItem();
     			SpecimenEditorPanel sd = null;// = new SpecimenDialog(parent, true, getLabel(3), tree);
     			
     			sd.setVisible(true);
@@ -166,7 +166,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
     	
     	btnNewRadius.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			Specimen specimen = (Specimen) cboSpecimen.getSelectedItem();
+    			TridasSample specimen = (TridasSample) cboSpecimen.getSelectedItem();
     			RadiusEditorPanel rd = null;// = new RadiusDialog(parent, true, getLabel(4), specimen);
     			
     			rd.setVisible(true);
@@ -196,12 +196,12 @@ public class HierarchyPanel extends javax.swing.JPanel {
         		updateLabel();
 
         		// The user chose the 'choose a site' option
-        		if(!(o instanceof Site)) {
+        		if(!(o instanceof TridasObject)) {
         			return;
         		}
         		
         		// yay, now choose a subsite!
-        		Site s = (Site) o;
+        		TridasObject s = (TridasObject) o;
         		populateSubsites(s.getSubsites());
         		
         		// If we only have one subsite, select it
@@ -231,7 +231,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
 				if (e.getOffset() + 1 == text.length()) {
 					// get a list of keys greater (alphabetically) than what we have
 					// we really only care about the first entry that's greater than what we have
-					SortedMap<String, Site> similarSites = App.tridasObjects.getSimilarSites(text);
+					SortedMap<String, TridasObject> similarSites = App.tridasObjects.getSimilarSites(text);
 
 					String completion;
 					if (similarSites.firstKey().startsWith(text))
@@ -274,7 +274,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
 
 			public void keyTyped(KeyEvent e) {			
 				if(e.getKeyChar() == KeyEvent.VK_ENTER) {
-					Site selectedSite; 
+					TridasObject selectedSite; 
 					
 					// if we have the site code the user typed in
 					if((selectedSite = App.tridasObjects.findSite(cboSiteEditor.getText())) != null) {
@@ -352,11 +352,11 @@ public class HierarchyPanel extends javax.swing.JPanel {
 
         		disableBoxes(3);
         		updateLabel();
-        		if(!(o instanceof Tree)) {
+        		if(!(o instanceof TridasElement)) {
         			return;
         		}
         		
-        		Tree t = (Tree) o;
+        		TridasElement t = (TridasElement) o;
         		populateSpecimens(t.getID());
         	}
         });
@@ -372,11 +372,11 @@ public class HierarchyPanel extends javax.swing.JPanel {
 
         		disableBoxes(4);
         		updateLabel();
-        		if(!(o instanceof Specimen)) {
+        		if(!(o instanceof TridasSample)) {
         			return;
         		}
         		
-        		Specimen s = (Specimen) o;
+        		TridasSample s = (TridasSample) o;
         		populateRadii(s.getID());
         	}
         });
@@ -392,7 +392,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
 
         		disableBoxes(5);
         		updateLabel();
-        		if(!(o instanceof Radius)) {
+        		if(!(o instanceof TridasRadius)) {
         			return;
         		}
         		
@@ -455,8 +455,8 @@ public class HierarchyPanel extends javax.swing.JPanel {
     		
     		// site
     		o = cboSite.getSelectedItem();
-    		if((o != null) && (o instanceof Site)) {
-    			sb.append(((Site)o).getCode());
+    		if((o != null) && (o instanceof TridasObject)) {
+    			sb.append(((TridasObject)o).getCode());
     		}
     		else
     			break;
@@ -481,7 +481,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
     		
     		// tree
     		o = cboTree.getSelectedItem();
-    		if((o != null) && (o instanceof Tree)) {
+    		if((o != null) && (o instanceof TridasElement)) {
     			sb.append(o);
     			sb.append("-");
     		}
@@ -493,7 +493,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
     		
     		// specimen
     		o = cboSpecimen.getSelectedItem();
-    		if((o != null) && (o instanceof Specimen)) {
+    		if((o != null) && (o instanceof TridasSample)) {
     			sb.append(o);
     			sb.append("-");
     		}
@@ -505,7 +505,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
     		
     		// radius
     		o = cboRadius.getSelectedItem();
-    		if((o != null) && (o instanceof Radius)) {
+    		if((o != null) && (o instanceof TridasRadius)) {
     			sb.append(o);
     		}
     		else
@@ -538,9 +538,9 @@ public class HierarchyPanel extends javax.swing.JPanel {
     }
     
     private void populateSiteList() {
-    	Collection<Site> sites = App.tridasObjects.getSites();
+    	Collection<TridasObject> sites = App.tridasObjects.getSites();
     	Object selectedSiteObj = cboSite.getSelectedItem();
-    	Site selectedSite = (selectedSiteObj instanceof Site ? (Site) selectedSiteObj : null);
+    	TridasObject selectedSite = (selectedSiteObj instanceof TridasObject ? (TridasObject) selectedSiteObj : null);
     	
     	Object[] siteList = formulateArrayFromCollection(sites, "site");
     	
@@ -553,10 +553,10 @@ public class HierarchyPanel extends javax.swing.JPanel {
     			Object obj = cboSite.getModel().getElementAt(i);
     			
     			// don't compare against non-sites
-    			if(!(obj instanceof Site))
+    			if(!(obj instanceof TridasObject))
     				continue;
     			
-    			if(((Site)obj).equals(selectedSite)) {
+    			if(((TridasObject)obj).equals(selectedSite)) {
     				cboSite.setSelectedIndex(i);
     				break;
     			}

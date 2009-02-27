@@ -13,14 +13,14 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.User;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleSummary;
-import edu.cornell.dendro.corina.site.GenericIntermediateObject;
+import edu.cornell.dendro.corina.site.TridasEntityBase;
 import edu.cornell.dendro.corina.util.LegacySampleExtractor;
 
 /**
  *
  * @author  peterbrewer
  */
-public class MeasurementModifyPanel extends BaseEditorPanel<GenericIntermediateObject> {
+public class MeasurementModifyPanel extends BaseEditorPanel<TridasEntityBase> {
 	private Sample s;
     private boolean validForm;
 

@@ -23,9 +23,9 @@ import edu.cornell.dendro.corina.dictionary.User;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.site.GenericIntermediateObject;
-import edu.cornell.dendro.corina.site.Specimen;
-import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.site.TridasEntityBase;
+import edu.cornell.dendro.corina.site.TridasSample;
+import edu.cornell.dendro.corina.site.TridasElement;
 import edu.cornell.dendro.corina.util.LegacySampleExtractor;
 import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
 
@@ -33,7 +33,7 @@ import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
  *
  * @author  peterbrewer
  */
-public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject> {
+public class MeasurementPanel extends BaseContentPanel<TridasEntityBase> {
 	private Sample s;
 	private WizardPanelParent parent;
     private boolean validForm;
@@ -248,7 +248,7 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
     	lblMeasurementPrefix.setText(parentPrefix);
     }
     
-    public void setParentObject(GenericIntermediateObject obj) {
+    public void setParentObject(TridasEntityBase obj) {
     	// no id, so it's a new measurement...
     	s.setLoader(new CorinaWebElement(new ResourceIdentifier("measurement", null)));
     	s.setMeta("::dbparent", obj.getResourceIdentifier());
@@ -261,7 +261,7 @@ public class MeasurementPanel extends BaseContentPanel<GenericIntermediateObject
     /**
      * Does nothing for the final panel
      */
-    public GenericIntermediateObject getPanelObject() {
+    public TridasEntityBase getPanelObject() {
     	return null;
     }
  

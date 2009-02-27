@@ -21,7 +21,7 @@ public class ComboBoxPopulator {
 		this.cbo = cbo;		
 	}
 	
-	public void populate(GenericIntermediateObject parent) {
+	public void populate(TridasEntityBase parent) {
 		if(parent == null) {
 			cbo.setPrototypeDisplayValue("XXXXXXXXXXXXXXXXXXXXXXXXX");
 			populateSiteList();
@@ -29,9 +29,9 @@ public class ComboBoxPopulator {
 			return;
 		}
 		
-		if(parent instanceof Site) {
+		if(parent instanceof TridasObject) {
 			cbo.setPrototypeDisplayValue("XXXXXXXXXXXX");
-			populateSubsites(((Site) parent).getSubsites());
+			populateSubsites(((TridasObject) parent).getSubsites());
 			// subsite
 			return;
 		}
@@ -42,13 +42,13 @@ public class ComboBoxPopulator {
 			return;
 		}
 		
-		if(parent instanceof Tree) {
+		if(parent instanceof TridasElement) {
 			populateSpecimens(parent.getID());
 			// specimen
 			return;
 		}
 		
-		if(parent instanceof Specimen) {
+		if(parent instanceof TridasSample) {
 			populateRadii(parent.getID());
 			// radius
 			return;
@@ -77,9 +77,9 @@ public class ComboBoxPopulator {
     }
     
     private void populateSiteList() {
-    	Collection<Site> sites = App.tridasObjects.getSites();
+    	Collection<TridasObject> sites = App.tridasObjects.getSites();
     	Object selectedSiteObj = cbo.getSelectedItem();
-    	Site selectedSite = (selectedSiteObj instanceof Site ? (Site) selectedSiteObj : null);
+    	TridasObject selectedSite = (selectedSiteObj instanceof TridasObject ? (TridasObject) selectedSiteObj : null);
     	
     	Object[] siteList = formulateArrayFromCollection(sites, "site");
     	
@@ -93,10 +93,10 @@ public class ComboBoxPopulator {
     			Object obj = cbo.getModel().getElementAt(i);
     			
     			// don't compare against non-sites
-    			if(!(obj instanceof Site))
+    			if(!(obj instanceof TridasObject))
     				continue;
     			
-    			if(((Site)obj).equals(selectedSite)) {
+    			if(((TridasObject)obj).equals(selectedSite)) {
     				cbo.setSelectedIndex(i);
     				break;
     			}

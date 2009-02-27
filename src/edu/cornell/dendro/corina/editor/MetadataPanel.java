@@ -23,10 +23,10 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.sample.SampleSummary;
-import edu.cornell.dendro.corina.site.GenericIntermediateObject;
-import edu.cornell.dendro.corina.site.Radius;
-import edu.cornell.dendro.corina.site.Specimen;
-import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.site.TridasEntityBase;
+import edu.cornell.dendro.corina.site.TridasRadius;
+import edu.cornell.dendro.corina.site.TridasSample;
+import edu.cornell.dendro.corina.site.TridasElement;
 import edu.cornell.dendro.corina.util.Center;
 
 import java.lang.reflect.Method;
@@ -164,7 +164,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 	}
 	
 	private void addRadius(GridBagConstraints c) {
-		Radius r = (Radius) s.getMeta("::radius");
+		TridasRadius r = (TridasRadius) s.getMeta("::radius");
 		
 		if(r == null)
 			return;
@@ -187,7 +187,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 	}
 	
 	private void addSpecimen(GridBagConstraints c) {
-		Specimen sp = (Specimen) s.getMeta("::specimen");
+		TridasSample sp = (TridasSample) s.getMeta("::specimen");
 		
 		if(sp == null)
 			return;
@@ -278,7 +278,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 	}
 
 	private void addTree(GridBagConstraints c) {
-		Tree t = (Tree) s.getMeta("::tree");
+		TridasElement t = (TridasElement) s.getMeta("::tree");
 		
 		if(t == null)
 			return;		
@@ -642,7 +642,7 @@ public class MetadataPanel extends JScrollPane implements SampleListener {
 			}
 			
 			// find the object in the sample
-			GenericIntermediateObject src = (GenericIntermediateObject) s.getMeta("::" + x[0]);
+			TridasEntityBase src = (TridasEntityBase) s.getMeta("::" + x[0]);
 			if(src == null) {
 				comp.setBackground(Color.pink);				
 				comp.setOpaque(true);

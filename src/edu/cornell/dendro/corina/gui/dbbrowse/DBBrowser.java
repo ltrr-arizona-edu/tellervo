@@ -34,7 +34,7 @@ import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.TridasObject;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.MeasurementSearchResource;
@@ -415,7 +415,7 @@ public class DBBrowser extends DBBrowser_UI{
 				// set up our query...
 				MeasurementSearchResource ms = new MeasurementSearchResource();
 				for(int i = 0; i < selected.length; i++) {
-					Site site = (Site) selected[i];
+					TridasObject site = (TridasObject) selected[i];
 					ms.getSearchParameters().addSearchConstraint("siteid", "=", site.getID());
 				}
 
@@ -472,9 +472,9 @@ public class DBBrowser extends DBBrowser_UI{
 }
     
     private void populateSiteList() {
-    	Collection<Site> sites = App.tridasObjects.getSites();
+    	Collection<TridasObject> sites = App.tridasObjects.getSites();
     	SiteRegion region = (SiteRegion) cboBrowseBy.getSelectedItem();
-    	Site selectedSite = (Site) lstSites.getSelectedValue();
+    	TridasObject selectedSite = (TridasObject) lstSites.getSelectedValue();
     	
     	// have we selected 'all regions?'
     	if(region.getInternalRepresentation().equals("ALL")) { 
@@ -485,11 +485,11 @@ public class DBBrowser extends DBBrowser_UI{
 
         	// User HAS entered filter text
         	} else {
-        		List<Site> filteredSites = new ArrayList<Site>();
+        		List<TridasObject> filteredSites = new ArrayList<TridasObject>();
         		
         		// Loop through master site list and check if filter matches
         		String filter = txtFilterInput.getText().toLowerCase();
-        		for(Site s : sites){
+        		for(TridasObject s : sites){
 	        		String search = s.toFullString().toLowerCase();
 	        		if(search.indexOf(filter) != -1)
 	        			filteredSites.add(s);        				
@@ -500,10 +500,10 @@ public class DBBrowser extends DBBrowser_UI{
     	
         // A particular region has been selected so limit list before applying filter
     	} else {
-    		List<Site> filteredSites = new ArrayList<Site>();
+    		List<TridasObject> filteredSites = new ArrayList<TridasObject>();
     		
     		// filter the sites...
-    		for(Site s : sites) {
+    		for(TridasObject s : sites) {
     			if(s.inRegion(region.getInternalRepresentation())){
  
     	    		// User has NOT entered filter text
@@ -526,7 +526,7 @@ public class DBBrowser extends DBBrowser_UI{
     	// we have to compare sites. blurgh.
     	if(selectedSite != null) {
     		for(int i = 0; i < lstSites.getModel().getSize(); i++) {
-    			if(((Site)lstSites.getModel().getElementAt(i)).equals(selectedSite)) {
+    			if(((TridasObject)lstSites.getModel().getElementAt(i)).equals(selectedSite)) {
     				lstSites.setSelectedIndex(i);
     				lstSites.ensureIndexIsVisible(i);
     				break;
@@ -573,7 +573,7 @@ public class DBBrowser extends DBBrowser_UI{
      * @param code
      */
     public void selectSiteByCode(String code) {
-    	Site site = App.tridasObjects.findSite(code);
+    	TridasObject site = App.tridasObjects.findSite(code);
     	
     	lstSites.setSelectedValue(site, true);
     }

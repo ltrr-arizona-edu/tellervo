@@ -2,8 +2,8 @@ package edu.cornell.dendro.corina.site;
 
 import org.jdom.Element;
 
-public class Specimen extends GenericIntermediateObject {
-	public Specimen(String id, String name) {
+public class TridasSample extends TridasEntityBase {
+	public TridasSample(String id, String name) {
 		super(id, name);
 	}
 	
@@ -27,7 +27,7 @@ public class Specimen extends GenericIntermediateObject {
 	private Boolean isUnmeasuredPostVerified;
 	
 	
-	public static Specimen xmlToSpecimen(Element root) {
+	public static TridasSample xmlToSpecimen(Element root) {
 		String id, name;
 		
 		id = root.getAttributeValue("id");
@@ -42,7 +42,7 @@ public class Specimen extends GenericIntermediateObject {
 			return null;			
 		}
 		
-		Specimen specimen = new Specimen(id, name);
+		TridasSample specimen = new TridasSample(id, name);
 
 		specimen.setSpecimenType(root.getChildText("specimenType"));
 		specimen.setDateCollected(root.getChildText("dateCollected"));
@@ -106,7 +106,7 @@ public class Specimen extends GenericIntermediateObject {
 		if(!isNew())
 			root.setAttribute("id", getID());
 
-		root.addContent(new Element("name").setText(name));
+		root.addContent(new Element("name").setText(title));
 		
 		if(specimenType != null)
 			root.addContent(new Element("specimenType").setText(specimenType));

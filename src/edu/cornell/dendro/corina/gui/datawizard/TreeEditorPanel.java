@@ -25,7 +25,7 @@ import javax.swing.event.DocumentListener;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Taxon;
 import edu.cornell.dendro.corina.site.Subsite;
-import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.site.TridasElement;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 
@@ -33,7 +33,7 @@ import edu.cornell.dendro.corina.webdbi.IntermediateResource;
  *
  * @author  peterbrewer
  */
-public class TreeEditorPanel extends BaseEditorPanel<Tree> {
+public class TreeEditorPanel extends BaseEditorPanel<TridasElement> {
     
     /** Creates new form NewSite */
     public TreeEditorPanel() {
@@ -114,12 +114,12 @@ public class TreeEditorPanel extends BaseEditorPanel<Tree> {
     	lblNamePrefix.setText(parentPrefix);
 	}
 	
-	public void setDefaultsFrom(Tree tree) {
+	public void setDefaultsFrom(TridasElement tree) {
 		String v;
 		
 		// populate name
 		v = tree.toString();
-		if(!v.equals(Tree.NAME_INVALID))
+		if(!v.equals(TridasElement.NAME_INVALID))
 			txtTreeName.setText(v);
 		
 		// populate original taxon
@@ -138,7 +138,7 @@ public class TreeEditorPanel extends BaseEditorPanel<Tree> {
 	}
 		
 	public void commit() {
-		Tree tree = new Tree(Tree.ID_NEW, txtTreeName.getText());
+		TridasElement tree = new TridasElement(TridasElement.ID_NEW, txtTreeName.getText());
 		assimilateUpdateObject(tree);
     	IntermediateResource ir = new IntermediateResource(getParentObject(), tree);
 
@@ -164,8 +164,8 @@ public class TreeEditorPanel extends BaseEditorPanel<Tree> {
     	if(!createOrUpdateObject(ir))
     		return;
     	
-		if(ir.getObject().get(0) instanceof Tree) {
-			setNewObject((Tree) ir.getObject().get(0));
+		if(ir.getObject().get(0) instanceof TridasElement) {
+			setNewObject((TridasElement) ir.getObject().get(0));
 		}
 		
     	dispose();

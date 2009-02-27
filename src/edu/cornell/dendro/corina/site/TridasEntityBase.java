@@ -20,16 +20,30 @@ import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
  * @author lucasm
  *
  */
-public abstract class GenericIntermediateObject {
-	public GenericIntermediateObject(String id, String name) {
+public abstract class TridasEntityBase {
+	/**
+	 * Use the domain-positive constructor instead
+	 * @deprecated
+	 * @param id
+	 * @param name
+	 */
+	public TridasEntityBase(String id, String name) {
+		this("!deprecated", id, name);
+	}
+	
+	public TridasEntityBase(String domain, String id, String title) {
+		this.domain = domain;
 		this.id = id;
-		this.name = name;
+		this.title = title;
 	}
 
 	/** The object's internally represented id */
-	protected String id;
-	/** The object's name */
-	protected String name;
+	protected String id;	
+	/** The object's title */
+	protected String title;
+	/** The domain the object is from */
+	protected String domain;
+	
 	/** A resource identifier */
 	protected ResourceIdentifier resourceIdentifier;
 	
@@ -38,7 +52,7 @@ public abstract class GenericIntermediateObject {
 	public final static String NAME_INVALID = "::INVALID::";
 
 	public String toString() {
-		return name;
+		return title;
 	}
 
 	public String getID() {
@@ -52,15 +66,15 @@ public abstract class GenericIntermediateObject {
 	@Override
 	public boolean equals(Object o) {
 		// if it's a site, check ids.
-		if(o instanceof GenericIntermediateObject)
-			return (((GenericIntermediateObject)o).id.equals(this.id));
+		if(o instanceof TridasEntityBase)
+			return (((TridasEntityBase)o).id.equals(this.id));
 		
 		return super.equals(o);
 	}
 
 	public int compareTo(Object o) {
-		if(o instanceof GenericIntermediateObject)
-			return ((GenericIntermediateObject)o).name.compareToIgnoreCase(this.name);
+		if(o instanceof TridasEntityBase)
+			return ((TridasEntityBase)o).title.compareToIgnoreCase(this.title);
 	
 		// errr? yeah.
 		return 0;
@@ -71,7 +85,7 @@ public abstract class GenericIntermediateObject {
 	 * 
 	 * @param obj
 	 */
-	public void assimilateIntermediateObject(GenericIntermediateObject obj) {
+	public void assimilateIntermediateObject(TridasEntityBase obj) {
 		this.id = obj.id;
 		this.resourceIdentifier = obj.resourceIdentifier;
 	}
@@ -91,22 +105,22 @@ public abstract class GenericIntermediateObject {
 	public abstract Element toXML();
 	
 	// listening interface
-	private Vector<IntermediateObjectListener> listeners = new Vector<IntermediateObjectListener>();
+	private Vector<TridasEntityListener> listeners = new Vector<TridasEntityListener>();
 	
-	public void addIntermediateObjectListener(IntermediateObjectListener l) {
+	public void addIntermediateObjectListener(TridasEntityListener l) {
 		if(!listeners.contains(l))
 			listeners.add(l);
 	}
 	
-	public void removeIntermediateObjectListener(IntermediateObjectListener l) {
+	public void removeIntermediateObjectListener(TridasEntityListener l) {
 		listeners.remove(l);
 	}
 
 	protected void fireEvent(String method) {
 		// alert all listeners
-		Vector<IntermediateObjectListener> l;
+		Vector<TridasEntityListener> l;
 		synchronized (this) {
-			l = (Vector<IntermediateObjectListener>) listeners.clone();
+			l = (Vector<TridasEntityListener>) listeners.clone();
 		}
 
 		int size = l.size();
@@ -114,11 +128,11 @@ public abstract class GenericIntermediateObject {
 		if (size == 0)
 			return;
 
-		IntermediateObjectEvent e = new IntermediateObjectEvent(this);
+		TridasEntityEvent e = new TridasEntityEvent(this);
 
 		try {
-			Class<?> types[] = new Class[] { IntermediateObjectEvent.class };
-			Method m = IntermediateObjectListener.class.getMethod(method, types);
+			Class<?> types[] = new Class[] { TridasEntityEvent.class };
+			Method m = TridasEntityListener.class.getMethod(method, types);
 			Object args[] = new Object[] { e };
 
 			for (int i = 0; i < size; i++) {

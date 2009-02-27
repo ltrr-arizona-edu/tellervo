@@ -20,7 +20,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.site.Site;
+import edu.cornell.dendro.corina.site.TridasObject;
 import edu.cornell.dendro.corina.site.Subsite;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
@@ -32,7 +32,7 @@ import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
  *
  * @author  peterbrewer
  */
-public class SiteEditorPanel extends BaseEditorPanel<Site> {
+public class SiteEditorPanel extends BaseEditorPanel<TridasObject> {
     
     /** Creates new form Site */
     public SiteEditorPanel() {
@@ -79,15 +79,15 @@ public class SiteEditorPanel extends BaseEditorPanel<Site> {
     }
 	
     public void commit() {
-    	Site site = new Site(Site.ID_NEW, txtSiteName.getText(), txtSiteCode.getText());
+    	TridasObject site = new TridasObject(TridasObject.ID_NEW, txtSiteName.getText(), txtSiteCode.getText());
     	assimilateUpdateObject(site);
-    	IntermediateResource ir = new IntermediateResource((Site) null, site);
+    	IntermediateResource ir = new IntermediateResource((TridasObject) null, site);
     	
     	if(!createOrUpdateObject(ir))
     		return;
 
-		if(ir.getObject().get(0) instanceof Site) {
-			setNewObject((Site) ir.getObject().get(0));
+		if(ir.getObject().get(0) instanceof TridasObject) {
+			setNewObject((TridasObject) ir.getObject().get(0));
 	    	// add the site to the site list
 			App.tridasObjects.addSite(getNewObject());
 		}
