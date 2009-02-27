@@ -98,6 +98,8 @@ class searchParameters implements IParams
 									'objecttype' =>							array('tbl' => 'vwtblobject', 'field' => 'type'),	
 									'parentobjectid' =>						array('tbl' => 'vwtblobject', 'field' => 'parentobjectid'),
 									'objectcode' =>							array('tbl' => 'vwtblobject', 'field' => 'code'),
+									'objectlocation' =>						array('tbl' => 'vwtblobject', 'field' => 'locationgeometry'),
+									'countOfChildSeriesOfObject' =>			array('tbl' => 'vwtblobject', 'field' => 'countofchildvmeasurements'),
 		
 									'elementid' => 							array ('tbl' => 'vwtblelement', 	'field'  => 'elementid'),
 									//'elementdbid' => 						array('tbl' => 'vwtblelement', 'field' => 'elementid'),
@@ -325,9 +327,19 @@ class objectParameters extends objectEntity implements IParams
 		   	case "location": 
 				$locationTags = $child->childNodes;
 				foreach($locationTags as $tag)
-				{
+				{	
 		  	 		if($tag->nodeType != XML_ELEMENT_NODE) continue;  
-		  	 		$this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag));
+		  	 		
+		  	 		switch($tag->tagName)
+		  	 		{
+		  	 			case "locationGeometry": $this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag)); break;
+		  	 			case "locationComment" : $this->location->setComment($tag->nodeValue); break;
+		  	 			case "locationPrecision" : $this->location->setPrecision($tag->nodeValue); break;
+		  	 			case "locationType":		$this->location->setType($tag->nodeValue); break;  	 
+		  	 			default:
+						trigger_error("901"."Unknown tag ".$tag->tagName." in location section of the 'object' entity. This tag is being ignored", E_USER_NOTICE);
+		  	 				
+		  	 		}	  	 		
 				}
 				break;
 		   	

@@ -88,6 +88,7 @@ class object extends objectEntity implements IDBAccessor
                 $this->setType($row['type']);
                 $this->setCoverageTemporal($row['coveragetemporal'], $row['coveragetemporalfoundation']);
                 $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
+                $this->setCountOfChildVMeasurements($row['countofchildvmeasurements']);
             }
 
         }
@@ -157,6 +158,8 @@ class object extends objectEntity implements IDBAccessor
         if ($paramsClass->getTitle()!=NULL)					$this->setTitle($paramsClass->getTitle());
         if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType());
         if ($paramsClass->location->getGeometry()!=NULL)	$this->location->setGeometry($paramsClass->location->getGeometry());
+        if ($paramsClass->location->getPrecision()!=NULL)	$this->location->setPrecision($paramsClass->location->getPrecision());
+        if ($paramsClass->location->getComment()!=NULL)		$this->location->setComment($paramsClass->location->getComment());
         
         if ($paramsClass->parentID!=NULL)
         {
@@ -272,7 +275,9 @@ class object extends objectEntity implements IDBAccessor
         {
             if(($parts=="all") || ($parts=="beginning"))
             { 
-            	$xml.= "<tridas:object>";
+            	//if ($this->hasGeometry())			$xml.="<gml:featureMember>\n";
+            	//$xml.= "<tridas:object fid=\"".$this->getID()."\">";
+            	$xml.= "<tridas:object>\n";
                 $xml.= $this->getIdentifierXML();     
                 if($this->getType()!=NULL)     		$xml.= "<tridas:type>".$this->getType()."</tridas:type>";        	
             	if($this->getDescription()!=NULL)	$xml.= "<tridas:description>".dbHelper::escapeXMLChars($this->getDescription())."</tridas:description>";
@@ -289,6 +294,7 @@ class object extends objectEntity implements IDBAccessor
             	}
             	if($this->hasGeometry()) 			$xml.= $this->location->asXML();
             	if($this->getCode()!=NULL)			$xml.="<tridas:genericField name=\"labCode\">".$this->getCode()."</tridas:genericField>\n";
+            	if($this->getCountOfChildVMeasurements()!=NULL) $xml.="<tridas:genericField name=\"countOfChildSeries\">".$this->getCountOfChildVMeasurements()."</tridas:genericField>\n";
             
             }  
             
@@ -306,6 +312,7 @@ class object extends objectEntity implements IDBAccessor
             {
                 // End XML tag
                 $xml.= "</tridas:object>\n";
+                //if ($this->hasGeometry())			$xml.="</gml:featureMember>\n";
             }
 
             return $xml;

@@ -341,6 +341,19 @@ class sampleType extends lookupEntity
 	}
 }
 
+class locationType extends lookupEntity
+{
 
+	function __construct()
+	{
+		parent::__construct("tlkplocationtype", "locationtype", "locationtypeid");
+	}
+	
+	function setLocationType($id, $value)
+	{
+		return $this->setLookupEntity($id, $value);
+	}
+	
+}
 
 ?>

@@ -46,11 +46,13 @@ class geometry
 		return true;
 	}	
 	
+
 	/**
-	 * Set the geometry field using a GML string
+	 * Set the geometry field using a GML string.  Currently this isn't very sophisticated as it will only accept gml:point data
+	 * At some point this should use the OGR library.
 	 *
-	 * @todo Implement!  Hopefully someone has already written a library to do this otherwise we'll have to parse the GML ourselves.
 	 * @param String $gml
+	 * @return Boolean
 	 */
 	function setGeometryFromGML($gml)
 	{
@@ -92,12 +94,28 @@ class geometry
 		   $coords = explode(" ", $doc->getElementsByTagName("pos")->item(0)->nodeValue, 2);
 		   
 		   // Calculate geometry value and store
-		   $sql = "select geomfromtext('POINT(".$coords[0]." ".$coords[1].")', 4326) as thevalue";
-		   $this->geometry = $this->runSQLCalculation($sql);	
+		   $this->setPointGeometryFromLatLong($coords[0], $coords[1]);	
 		   return true;	   
         }
   
 	}
+	
+	/**
+	 * Set the geometry using latitude and longitude.  Default coordinate system is 4326
+	 *
+	 * @param Float $lat
+	 * @param Float $long
+	 * @param Integer $srid
+	 */
+	function setPointGeometryFromLatLong($lat, $long, $srid=4326)
+	{
+		// Make sure the parameters are numbers to stop sql injection
+		$lat = (float) $lat;
+		$long = (float) $long;	
+		
+		$sql = "select setsrid(makepoint(".sprintf("%1.8f",$long).", ".sprintf("%1.8f",$lat)."), $srid) as thevalue";
+		$this->geometry = $this->runSQLCalculation($sql);	
+	}		
 	
 	/**
 	 * Set the actual geometry field
@@ -216,6 +234,7 @@ class location extends geometry
 	
 	function __construct()
 	{
+		$this->type = new locationType();
 	}
 		
     /***********/
@@ -225,7 +244,7 @@ class location extends geometry
 	/**
 	 * One of growth; utilised (static); utilised (mobile); current, manufacture
 	 *
-	 * @var String
+	 * @var locationType
 	 */
 	private $type = NULL;
 	
@@ -247,38 +266,20 @@ class location extends geometry
 	function setGeometry($geometry, $type=null, $precision=null, $comment=null)
 	{
 		$this->geometry = $geometry;
-		$this->setType($type);
+		if($type!=NULL) $this->setType(NULL, $type);
 		$this->setPrecision($precision);
 		$this->setComment($comment);	
 	}
-	
-	/**
-	 * Set the geometry using latitude and longitude.  This function assumes that the lat and long are standard WGS84 coordinates.
-	 *
-	 * @param Float $lat
-	 * @param Float $long
-	 */
-	function setPointGeometryFromLatLong($lat, $long)
-	{
-		// Make sure the parameters are numbers to stop sql injection
-		$lat = (float) $lat;
-		$long = (float) $long;
-		$srid = 4326; // Standard WGS84 SRID is assumed for this funciton	
 		
-		$sql = "select setsrid(makepoint(".sprintf("%1.8f",$long).", ".sprintf("%1.8f",$lat)."), $srid) as thevalue";
-		$this->geometry = $this->runSQLCalculation($sql);		
-	}	
-	
 	/**
 	 * Set the type of location the location field 
 	 *
 	 * @param unknown_type $value
 	 * @return unknown
 	 */
-	function setType($value)
+	function setType($id, $value)
 	{
-		$this->type = addslashes($value);
-		return true;
+		return $this->type->setLocationType($id, $value);
 	}
 	
 	function setPrecision($value)
@@ -307,7 +308,7 @@ class location extends geometry
 	
 	function getType()
 	{
-		return $this->type;
+		return $this->type->getValue();
 	}
 	
 	function getPrecision()

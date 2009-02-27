@@ -580,6 +580,13 @@ class objectEntity extends dbEntity
 	 */
 	protected $code = NULL;
 	
+	/**
+	 * Number of vmeasurements associated with this object
+	 *
+	 * @var Integer
+	 */
+	protected $countOfChildVMeasurements= NULL;
+	
     function __construct()
     {  
     	$this->location = new location();
@@ -590,6 +597,11 @@ class objectEntity extends dbEntity
 	/***********/
     /* SETTERS */
     /***********/   	
+	
+	function setCountOfChildVMeasurements($count)
+	{
+		$this->countOfChildVMeasurements = (int) $count;
+	}
 	
 	/**
 	 * Set the type of object
@@ -687,6 +699,11 @@ class objectEntity extends dbEntity
     /* GETTERS */
     /***********/ 	
 
+	function getCountOfChildVMeasurements()
+	{
+		return $this->countOfChildVMeasurements;
+	}
+	
 	/**
 	 * Get the type of object
 	 *

@@ -615,6 +615,8 @@
 						<xs:enumeration value="objecttype" />
 						<xs:enumeration value="objectcode" />
 						<xs:enumeration value="parentobjectid" />
+						<xs:enumeration value="objectlocation" />
+						<xs:enumeration value="countOfChildSeriesOfObject"/>
 						
 						<!-- ELEMENT ATTRIBUTES -->
 						<xs:enumeration value="elementid" />
