@@ -1,6 +1,9 @@
 package edu.cornell.dendro.corina.gui;
 
+import java.awt.Dialog;
 import java.awt.EventQueue;
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -17,7 +20,7 @@ public class BugReportDialog extends BugReportInfoPanel_UI implements ActionList
 	private BugReport report;
 	private JDialog dialog;
 	
-	public BugReportDialog(JDialog parent, BugReport report) {
+	public BugReportDialog(Window parent, BugReport report) {
 		this.report = report;
 
 		txtEmailAddress.setText(App.prefs.getPref("corina.bugreport.fromemail", ""));
@@ -30,8 +33,12 @@ public class BugReportDialog extends BugReportInfoPanel_UI implements ActionList
 		pbProgress.setMaximum(100);
 		pbProgress.setValue(50);
 		txtProgressLabel.setText("Waiting for user input...");
-		
-		dialog = new JDialog(parent, "Submitting bug report...", true);
+
+		// JDialog constructor fails when parent is a null dialog (!@#)
+		if(parent instanceof Dialog)
+			dialog = new JDialog((Dialog) parent, "Submitting bug report...", true);
+		else
+			dialog = new JDialog((Frame) parent, "Submitting bug report...", true);
 		
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.setContentPane(this);
