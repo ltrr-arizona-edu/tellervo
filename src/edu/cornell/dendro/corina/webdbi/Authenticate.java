@@ -82,8 +82,9 @@ public class Authenticate extends Resource {
 	protected boolean processQueryResult(Document doc) {
 		
 		// get our nonce nicely
+		// note: nonce is in the header
 		if(getQueryType() == ResourceQueryType.NONCE) {
-			Element content = doc.getRootElement().getChild("content", CorinaXML.CORINA_NS);
+			Element content = doc.getRootElement().getChild("header", CorinaXML.CORINA_NS);
 			if(content == null)
 				return false;
 			
