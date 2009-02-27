@@ -73,7 +73,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
     	populateSiteList();
     	
         // Whenever the site list changes, make sure we repopulate our site list
-        App.sites.addResourceEventListener(new ResourceEventListener() {
+        App.tridasObjects.addResourceEventListener(new ResourceEventListener() {
         	public void resourceChanged(ResourceEvent re) {	
         		if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE)
         			populateSiteList();
@@ -231,7 +231,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
 				if (e.getOffset() + 1 == text.length()) {
 					// get a list of keys greater (alphabetically) than what we have
 					// we really only care about the first entry that's greater than what we have
-					SortedMap<String, Site> similarSites = App.sites.getSimilarSites(text);
+					SortedMap<String, Site> similarSites = App.tridasObjects.getSimilarSites(text);
 
 					String completion;
 					if (similarSites.firstKey().startsWith(text))
@@ -277,7 +277,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
 					Site selectedSite; 
 					
 					// if we have the site code the user typed in
-					if((selectedSite = App.sites.findSite(cboSiteEditor.getText())) != null) {
+					if((selectedSite = App.tridasObjects.findSite(cboSiteEditor.getText())) != null) {
 						// select it, don't allow it to be edited, and etc
 						cboSubsite.requestFocus();
 						cboSite.setSelectedItem(selectedSite);
@@ -538,7 +538,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
     }
     
     private void populateSiteList() {
-    	Collection<Site> sites = App.sites.getSites();
+    	Collection<Site> sites = App.tridasObjects.getSites();
     	Object selectedSiteObj = cboSite.getSelectedItem();
     	Site selectedSite = (selectedSiteObj instanceof Site ? (Site) selectedSiteObj : null);
     	

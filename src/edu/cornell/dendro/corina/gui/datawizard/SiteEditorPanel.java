@@ -89,7 +89,7 @@ public class SiteEditorPanel extends BaseEditorPanel<Site> {
 		if(ir.getObject().get(0) instanceof Site) {
 			setNewObject((Site) ir.getObject().get(0));
 	    	// add the site to the site list
-			App.sites.addSite(getNewObject());
+			App.tridasObjects.addSite(getNewObject());
 		}
 
 		dispose();

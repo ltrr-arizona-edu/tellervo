@@ -92,7 +92,7 @@ public class DBBrowser extends DBBrowser_UI{
         Center.center(this);
         
         // Whenever the site list changes, make sure we repopulate our site list
-        App.sites.addResourceEventListener(new ResourceEventListener() {
+        App.tridasObjects.addResourceEventListener(new ResourceEventListener() {
         	public void resourceChanged(ResourceEvent re) {	
         		if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE)
         			populateSiteList();
@@ -472,7 +472,7 @@ public class DBBrowser extends DBBrowser_UI{
 }
     
     private void populateSiteList() {
-    	Collection<Site> sites = App.sites.getSites();
+    	Collection<Site> sites = App.tridasObjects.getSites();
     	SiteRegion region = (SiteRegion) cboBrowseBy.getSelectedItem();
     	Site selectedSite = (Site) lstSites.getSelectedValue();
     	
@@ -573,7 +573,7 @@ public class DBBrowser extends DBBrowser_UI{
      * @param code
      */
     public void selectSiteByCode(String code) {
-    	Site site = App.sites.findSite(code);
+    	Site site = App.tridasObjects.findSite(code);
     	
     	lstSites.setSelectedValue(site, true);
     }

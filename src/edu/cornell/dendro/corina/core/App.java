@@ -26,7 +26,7 @@ public class App {
   public static Platform platform;
   public static Logging logging;
   public static Dictionary dictionary;
-  public static TridasObjectList sites;
+  public static TridasObjectList tridasObjects;
   
   private final static boolean DEBUGGING = false;
 
@@ -127,11 +127,11 @@ public class App {
     if (meter != null) {
     	meter.setNote("Initializing Site List...");
     }
-    sites = new TridasObjectList();
+    tridasObjects = new TridasObjectList();
     if(splash != null && isLoggedIn) { // must be logged in...
     	// don't update the site list in debug mode...
     	if(!DEBUGGING)
-    		sites.query();
+    		tridasObjects.query();
         if (meter != null) {
         	meter.setNote("Updating Site List...");
         }

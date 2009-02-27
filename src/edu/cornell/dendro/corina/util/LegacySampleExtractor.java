@@ -43,7 +43,7 @@ public class LegacySampleExtractor {
 		
 		// populate the site because this is easy!
 		if(siteName != null)
-			associatedSite = App.sites.findSite(siteName);
+			associatedSite = App.tridasObjects.findSite(siteName);
 	}
 	
 	private String siteName;

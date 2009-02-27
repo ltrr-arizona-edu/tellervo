@@ -77,7 +77,7 @@ public class ComboBoxPopulator {
     }
     
     private void populateSiteList() {
-    	Collection<Site> sites = App.sites.getSites();
+    	Collection<Site> sites = App.tridasObjects.getSites();
     	Object selectedSiteObj = cbo.getSelectedItem();
     	Site selectedSite = (selectedSiteObj instanceof Site ? (Site) selectedSiteObj : null);
     	
