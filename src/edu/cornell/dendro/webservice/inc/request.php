@@ -60,16 +60,18 @@ class request
     	$this->crudMode = strtolower($crudMode);
     	$myMetaHeader->setRequestType($this->getCrudMode());
     	
-    	 
-		// Check authentication and request login if necessary
-		if($myAuth->isLoggedIn())
+		// Set nonce if requested
+    	if( ($this->getCrudMode()=="nonce"))
 		{
-		    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
-		}
-		elseif( ($this->getCrudMode()=="nonce"))
-		{
+			// Logout first in case a user is already logged in
+			$myAuth->logout();
 			$seq = $myAuth->sequence();
 		    $myMetaHeader->requestLogin($myAuth->nonce($seq), $seq, 'OK');
+		}		
+		// Check authentication and request login if necessary
+    	elseif($myAuth->isLoggedIn())
+		{
+		    $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
 		}
 		elseif( ($this->getCrudMode()!="plainlogin") && ($this->getCrudMode()!="securelogin"))
 		{
