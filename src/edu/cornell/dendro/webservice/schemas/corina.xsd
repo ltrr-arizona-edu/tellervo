@@ -489,15 +489,8 @@
         <xs:element name="taxonDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="taxon" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                                <xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                                </xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element ref="tridas:taxon" minOccurs="0" maxOccurs="unbounded"/>
+                        
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>

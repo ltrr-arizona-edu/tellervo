@@ -85,6 +85,7 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
     
     if($metaHeader->status !="Error")
     {
+    	// There is proper content so display
         $outputStr.= "<content>\n";
         $outputStr.= $parentTagBegin."\n";
         $outputStr.= $xmldata;
@@ -93,17 +94,18 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
     }
     else
     {
+    	// There was an error so try and be helpful
         
-        if($metaHeader->getIsLoginRequired())
+    	if($metaHeader->getClientName()=='Corina WSI')
         {
-        	$outputStr.= "<help>\n";
-            // WS Request failed because the user isn't authenticated. SHow authentication docs
-            $outputStr.= getHelpDocbook('Authentication');
-            $outputStr.= "</help>\n";
+			// Don't waste time showing docs as client is Corina and docs won't be read
         }
-        elseif($metaHeader->getClientName()=='Corina WSI')
+        elseif($metaHeader->getIsLoginRequired())
         {
-        	
+          	$outputStr.= "<help>\n";
+            // WS Request failed because the user isn't authenticated. Show authentication docs
+            $outputStr.= getHelpDocbook('Authentication');
+            $outputStr.= "</help>\n";      	
         }
         else
         {
