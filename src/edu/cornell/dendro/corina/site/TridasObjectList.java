@@ -14,6 +14,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 import edu.cornell.dendro.corina.webdbi.CachedResource;
+import edu.cornell.dendro.corina.webdbi.CorinaXML;
 import edu.cornell.dendro.corina.webdbi.ResourceException;
 import edu.cornell.dendro.corina.webdbi.ResourceQueryType;
 import edu.cornell.dendro.corina.webdbi.SearchParameters;
@@ -22,13 +23,13 @@ import edu.cornell.dendro.corina.webdbi.SearchParameters;
  * @author lucasm
  *
  */
-public class SiteList extends CachedResource {
+public class TridasObjectList extends CachedResource {
 
 	/**
 	 * @param cachedResourceName
 	 */
-	public SiteList() {
-		super("sites", ResourceQueryType.SEARCH);		
+	public TridasObjectList() {
+		super("tridas:objects", ResourceQueryType.SEARCH);		
 	}
 
 	/* (non-Javadoc)
@@ -37,12 +38,19 @@ public class SiteList extends CachedResource {
 	@Override
 	protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) throws ResourceException {
 		/*
-		 * <searchParams returnObject="site">
+		 * <searchParams returnObject="object">
 		 *  <all />
 		 * </searchParams>
+		 * 
+		 * No, now
+		 * 
+		 * <searchParams returnObject="object" includeChildren="true">
+		 *   <param name="parentObjectId" operator="is" value="NULL" />
+		 * </searchParams>
 		 */
-		SearchParameters sp = new SearchParameters("site");
-		sp.addSearchForAll();
+		SearchParameters sp = new SearchParameters("object");
+		sp.addSearchAttribute("includeChildren", "true");
+		sp.addSearchConstraint("parentobjectid", "is", "NULL");
 		requestElement.addContent(sp.getXMLElement());
 		
 		return requestElement;
@@ -50,7 +58,7 @@ public class SiteList extends CachedResource {
 
 	@Override
 	protected void queryFailed(Exception e) {
-		System.out.println("Could not load sites:");
+		System.out.println("Could not load objects:");
 		e.printStackTrace();
 	}
 	
@@ -60,7 +68,9 @@ public class SiteList extends CachedResource {
 	@Override
 	protected boolean processQueryResult(Document doc) throws ResourceException {
 		Element root = doc.getRootElement();
-		Element dataElement = root.getChild("content");
+		Element dataElement = root.getChild("content", CorinaXML.CORINA_NS);
+
+		System.out.println("Loading objects...");
 		
 		if(dataElement == null) {
 			System.out.println("No content element in dictionary; ignoring this.");

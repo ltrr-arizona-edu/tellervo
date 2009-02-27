@@ -11,7 +11,7 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
-import edu.cornell.dendro.corina.site.SiteList;
+import edu.cornell.dendro.corina.site.TridasObjectList;
 import edu.cornell.dendro.corina.webdbi.Authenticate;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 
@@ -26,7 +26,7 @@ public class App {
   public static Platform platform;
   public static Logging logging;
   public static Dictionary dictionary;
-  public static SiteList sites;
+  public static TridasObjectList sites;
   
   private final static boolean DEBUGGING = false;
 
@@ -127,7 +127,7 @@ public class App {
     if (meter != null) {
     	meter.setNote("Initializing Site List...");
     }
-    sites = new SiteList();
+    sites = new TridasObjectList();
     if(splash != null && isLoggedIn) { // must be logged in...
     	// don't update the site list in debug mode...
     	if(!DEBUGGING)
