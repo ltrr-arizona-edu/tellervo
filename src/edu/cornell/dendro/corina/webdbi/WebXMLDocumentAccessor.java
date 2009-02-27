@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.webdbi;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.BugReportDialog;
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.platform.Platform;
@@ -36,6 +37,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 
+import java.awt.Frame;
 import java.io.*;
 
 import javax.net.ssl.SSLContext;
@@ -141,10 +143,11 @@ public class WebXMLDocumentAccessor {
 		//HttpURLConnection http = (HttpURLConnection) url.openConnection();
 		DefaultHttpClient client = new DefaultHttpClient();
 		HttpUriRequest req;
-		HttpEntity responseEntity = null;
 		Document inDocument = null;
-		String sanitizedUri = url.toString().replaceAll("[^\\w]", "_");
 
+		lastInDocument = null;
+		lastOutDocument = requestDocument;
+		
 		try {
 			if(requestMethod == METHOD_POST) {
 				if(this.requestDocument == null)
@@ -162,10 +165,12 @@ public class WebXMLDocumentAccessor {
 				post.setEntity(postEntity);
 				
 				// debug
+				/*
 				System.out.println("SENDING XML: ");
 				XMLOutputter outp = new XMLOutputter();
 				outp.setFormat(Format.getPrettyFormat());
 				outp.output(requestDocument, System.out);
+				*/
 			} else {
 				// well, that's nice and easy
 				req = new HttpGet(url);
@@ -196,6 +201,8 @@ public class WebXMLDocumentAccessor {
 			
 			XMLResponseHandler responseHandler = new XMLResponseHandler();
 			inDocument = client.execute(req, responseHandler);
+			
+			lastInDocument = inDocument;
 			
 			// save our cookies?
 			WSCookieStoreHandler.getCookieStore().fromCookieStore(client.getCookieStore());
@@ -254,14 +261,7 @@ public class WebXMLDocumentAccessor {
 			
 			throw new IOException("Exception " + uhe.getClass().getName() + ": " + uhe.getLocalizedMessage());
 		} finally {
-			// clean up!
-			if(responseEntity != null) {
-				try {
-					responseEntity.consumeContent();
-				} catch (IOException ioe) {
-					// do nothing; we're just releasing resources anyway
-				}
-			}
+			//?
 		}
 	}
 
@@ -383,5 +383,20 @@ public class WebXMLDocumentAccessor {
         }
         
         clientModuleVersion = buf.toString();
+	}
+	
+	private static Document lastInDocument = null;
+	private static Document lastOutDocument = null;
+	
+	public static void forceGenerateWSBug() {
+		Exception e = new Exception("Operator forced bug report");
+		BugReport report = new BugReport(e);
+
+		if(lastOutDocument != null)
+			report.addDocument("sent.xml", lastOutDocument);
+		if(lastInDocument != null)
+			report.addDocument("received.xml", lastInDocument);
+		
+		new BugReportDialog((Frame)null, report);
 	}
 }

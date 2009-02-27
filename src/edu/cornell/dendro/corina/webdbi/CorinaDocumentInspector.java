@@ -37,13 +37,13 @@ public class CorinaDocumentInspector {
 	
 	public void verifyDocument() throws ResourceException {
 		// debug!
-		/**/
+		/*
 		try {
 			XMLOutputter outp = new XMLOutputter();
 			outp.setFormat(Format.getPrettyFormat());
 			outp.output(document, System.out);
 		} catch (Exception e) {}
-		/**/
+		*/
 		// end debug
 		
 		Element root = document.getRootElement();
