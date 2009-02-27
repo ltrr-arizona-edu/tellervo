@@ -29,8 +29,6 @@ class taxon extends taxonEntity implements IDBAccessor
     /* SETTERS */
     /***********/
 
-
-
     function setParamsFromDB($theID)
     {
         // Set the current objects parameters from the database
@@ -38,10 +36,9 @@ class taxon extends taxonEntity implements IDBAccessor
         global $dbconn;
         
         $this->setID($theID);
-        $sql = "SELECT tlkptaxon.taxonid, tlkptaxon.parenttaxonid, tlkptaxon.colID, tlkptaxon.colParentID, tlkptaxonrank.taxonrank, tlkptaxon.label AS label ".
-        		"FROM tlkptaxon, tlkptaxonrank  ".
-        		"WHERE tlkptaxon.taxonid=".pg_escape_string($theID)." ".
-        		"AND tlkptaxonrank.taxonrankid=tlkptaxon.taxonrankid";
+        $sql = "SELECT taxon.taxonid, taxon.label, taxon.parentTaxonID, taxon.colID, taxon.colParentID, rank.taxonrank
+				FROM tlkpTaxon taxon
+				INNER JOIN tlkpTaxonRank rank on rank.taxonrankid=taxon.taxonrankid where taxonid=".pg_escape_string($this->getID());
         //echo $sql;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -63,7 +60,7 @@ class taxon extends taxonEntity implements IDBAccessor
                 $this->setCoLParentID($row['colparentid']);
                 $this->setTaxonRank($row['taxonrank']);
                 $this->setParentID($row['parenttaxonid']);
-                $this->setHigherTaxonomy();
+                //$this->setHigherTaxonomy();
             }
         }
         else

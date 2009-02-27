@@ -86,15 +86,17 @@ class dictionaries
                 	// Unique case
                 	$sql="select readingnoteid as id, note as value from tlkpreadingnote where isstandard='t'";
                 }
-                elseif($item=='taxon')
-                {
-                	//Unique case
-                	$sql="select taxonid as id, label as value from tlkptaxon order by taxonid";
-                }
                 elseif($item=="securityUser")
                 {
                 	// Unique case
                     $sql = "select securityuserid as id, as value from tbl".strtolower($item)." where ".strtolower($item)."id>0 order by ".strtolower($item)."id"; 
+                }
+                elseif($item=="taxon")
+                {
+                	// Unique case
+                	$sql = "SELECT taxon.taxonid, taxon.label, taxon.parentTaxonID, taxon.colID, taxon.colParentID, rank.taxonrank
+                			FROM tlkpTaxon taxon
+							INNER JOIN tlkpTaxonRank rank on rank.taxonrankid=taxon.taxonrankid";
                 }
                 else
                 {
@@ -108,7 +110,15 @@ class dictionaries
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    $xmldata.= "<".$item." id=\"".$row['id']."\">".dbHelper::escapeXMLChars($row['value'])."</".$item.">\n";
+                	if($item=='taxon')
+                	{
+				    	global $taxonomicAuthorityEdition;
+				    	$xmldata .= "<tridas:taxon normalStd=\"$taxonomicAuthorityEdition\" normalId=\"".$row['colid']."\" normal=\"".dbHelper::escapeXMLChars($row['label'])."\"/>\n";    	
+                	}
+                	else
+                	{
+                    	$xmldata.= "<".$item." id=\"".$row['id']."\">".dbHelper::escapeXMLChars($row['value'])."</".$item.">\n";
+                	}
                 }
                 $xmldata.= "</".$item."Dictionary>\n";
             }
@@ -134,9 +144,14 @@ class dictionaries
             			$sql="select securityuserid as id from tblsecurityuser";
             			$myObj = new securityUser();
             			break;
+            		case "taxon":
+                       	$sql="select taxonid as id, label as value from tlkptaxon order by taxonid";
+                       	$myObj = new taxon();
+                       	break;
+                }
             		
 		
-                }               
+                            
                 $xmldata.= "<".$item."Dictionary>\n";
                 
                 // Run SQL

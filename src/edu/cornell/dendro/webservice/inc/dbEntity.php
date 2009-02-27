@@ -1946,7 +1946,7 @@ class taxonEntity extends dbEntity
     function setLabel($theLabel)
     {
         // Set the current objects note.
-        $this->label=$theLabel;
+        $this->label=dbHelper::escapeXMLChars($theLabel);
     }   
         
     function setHigherTaxonomy()
