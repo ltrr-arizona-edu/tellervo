@@ -23,10 +23,10 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.sample.SampleSummary;
-import edu.cornell.dendro.corina.site.TridasEntityBase;
-import edu.cornell.dendro.corina.site.TridasRadius;
-import edu.cornell.dendro.corina.site.TridasSample;
-import edu.cornell.dendro.corina.site.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasEntityBase;
+import edu.cornell.dendro.corina.tridas.TridasRadius;
+import edu.cornell.dendro.corina.tridas.TridasSample;
 import edu.cornell.dendro.corina.util.Center;
 
 import java.lang.reflect.Method;

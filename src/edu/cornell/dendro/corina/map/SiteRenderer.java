@@ -1,6 +1,6 @@
 package edu.cornell.dendro.corina.map;
 
-import edu.cornell.dendro.corina.site.LegacySite;
+import edu.cornell.dendro.corina.tridas.LegacySite;
 import edu.cornell.dendro.corina.util.ColorUtils;
 
 import java.awt.Color;

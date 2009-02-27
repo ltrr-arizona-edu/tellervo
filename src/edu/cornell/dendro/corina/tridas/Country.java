@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.site;
+package edu.cornell.dendro.corina.tridas;
 
 import edu.cornell.dendro.corina.gui.Bug;
 
@@ -37,7 +37,7 @@ public class Country {
     static {
         Properties prop = new Properties();
         try {
-            ClassLoader cl = edu.cornell.dendro.corina.site.Country.class.getClassLoader();
+            ClassLoader cl = edu.cornell.dendro.corina.tridas.Country.class.getClassLoader();
             prop.load(cl.getResource("edu/cornell/dendro/corina_resources/countries.properties").openStream());
         } catch (Exception e) {
             Bug.bug(e); // can't happen

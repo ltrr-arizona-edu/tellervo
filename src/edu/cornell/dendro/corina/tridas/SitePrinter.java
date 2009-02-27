@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina.site;
+package edu.cornell.dendro.corina.tridas;
 
 import edu.cornell.dendro.corina.print.Printer;
 import edu.cornell.dendro.corina.print.Line;

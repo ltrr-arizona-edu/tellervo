@@ -8,7 +8,7 @@ import javax.swing.JComboBox;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
-import edu.cornell.dendro.corina.site.*;
+import edu.cornell.dendro.corina.tridas.*;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;

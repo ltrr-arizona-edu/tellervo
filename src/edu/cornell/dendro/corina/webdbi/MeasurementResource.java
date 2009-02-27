@@ -13,11 +13,11 @@ import edu.cornell.dendro.corina.index.Index;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.site.TridasRadius;
-import edu.cornell.dendro.corina.site.TridasObject;
-import edu.cornell.dendro.corina.site.TridasSample;
-import edu.cornell.dendro.corina.site.Subsite;
-import edu.cornell.dendro.corina.site.TridasElement;
+import edu.cornell.dendro.corina.tridas.Subsite;
+import edu.cornell.dendro.corina.tridas.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasObject;
+import edu.cornell.dendro.corina.tridas.TridasRadius;
+import edu.cornell.dendro.corina.tridas.TridasSample;
 
 /**
  * @author lucasm

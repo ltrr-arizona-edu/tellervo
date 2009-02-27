@@ -34,7 +34,7 @@ import java.util.zip.GZIPInputStream;
 import javax.swing.JOptionPane;
 import javax.swing.ProgressMonitor;
 
-import edu.cornell.dendro.corina.site.Location;
+import edu.cornell.dendro.corina.tridas.Location;
 
 // an interface to earth.rez-format files.
 // ABSTRACT: make interface for getting Segments(?) from a disk file,

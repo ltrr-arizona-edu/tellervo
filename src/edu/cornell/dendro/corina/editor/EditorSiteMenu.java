@@ -1,10 +1,10 @@
 package edu.cornell.dendro.corina.editor;
 
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.site.LegacySite;
-import edu.cornell.dendro.corina.site.LegacySiteDB;
-import edu.cornell.dendro.corina.site.SiteInfoDialog;
-import edu.cornell.dendro.corina.site.SiteNotFoundException;
+import edu.cornell.dendro.corina.tridas.LegacySite;
+import edu.cornell.dendro.corina.tridas.LegacySiteDB;
+import edu.cornell.dendro.corina.tridas.SiteInfoDialog;
+import edu.cornell.dendro.corina.tridas.SiteNotFoundException;
 import edu.cornell.dendro.corina.map.MapFrame;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;

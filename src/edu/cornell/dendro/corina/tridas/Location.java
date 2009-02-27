@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina.site;
+package edu.cornell.dendro.corina.tridas;
 
 import edu.cornell.dendro.corina.map.Point3D;
 import edu.cornell.dendro.corina.ui.I18n;

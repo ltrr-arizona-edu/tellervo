@@ -3,7 +3,7 @@ package edu.cornell.dendro.corina.map.tools;
 import edu.cornell.dendro.corina.map.View;
 import edu.cornell.dendro.corina.map.Projection;
 import edu.cornell.dendro.corina.map.MapPanel;
-import edu.cornell.dendro.corina.site.Location;
+import edu.cornell.dendro.corina.tridas.Location;
 import edu.cornell.dendro.corina.ui.Builder;
 
 import java.awt.Cursor;

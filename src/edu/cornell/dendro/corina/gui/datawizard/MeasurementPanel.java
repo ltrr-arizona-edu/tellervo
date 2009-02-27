@@ -23,9 +23,9 @@ import edu.cornell.dendro.corina.dictionary.User;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.site.TridasEntityBase;
-import edu.cornell.dendro.corina.site.TridasSample;
-import edu.cornell.dendro.corina.site.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasEntityBase;
+import edu.cornell.dendro.corina.tridas.TridasSample;
 import edu.cornell.dendro.corina.util.LegacySampleExtractor;
 import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
 

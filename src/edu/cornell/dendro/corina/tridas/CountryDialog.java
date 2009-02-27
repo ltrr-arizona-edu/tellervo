@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina.site;
+package edu.cornell.dendro.corina.tridas;
 
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -47,7 +47,7 @@ import edu.cornell.dendro.corina.util.OKCancel;
 /**
    Display a dialog allowing the user to choose a country, or "None".
 
-   @see edu.cornell.dendro.corina.site.Country
+   @see edu.cornell.dendro.corina.tridas.Country
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$

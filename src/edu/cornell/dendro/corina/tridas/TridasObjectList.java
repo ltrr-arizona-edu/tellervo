@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.cornell.dendro.corina.site;
+package edu.cornell.dendro.corina.tridas;
 
 import java.util.ArrayList;
 import java.util.Collection;

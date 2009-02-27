@@ -34,7 +34,7 @@ import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.site.TridasObject;
+import edu.cornell.dendro.corina.tridas.TridasObject;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.MeasurementSearchResource;

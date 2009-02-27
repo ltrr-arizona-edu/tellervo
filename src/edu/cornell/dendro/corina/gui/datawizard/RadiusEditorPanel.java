@@ -10,9 +10,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import edu.cornell.dendro.corina.dictionary.Taxon;
-import edu.cornell.dendro.corina.site.TridasRadius;
-import edu.cornell.dendro.corina.site.TridasSample;
-import edu.cornell.dendro.corina.site.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasRadius;
+import edu.cornell.dendro.corina.tridas.TridasSample;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 

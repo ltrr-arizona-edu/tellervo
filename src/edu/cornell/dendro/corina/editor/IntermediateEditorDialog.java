@@ -15,7 +15,7 @@ import edu.cornell.dendro.corina.gui.datawizard.EditorPanelFactory;
 import edu.cornell.dendro.corina.gui.datawizard.MeasurementModifyPanel;
 import edu.cornell.dendro.corina.gui.datawizard.WizardChildMonitor;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.site.TridasEntityBase;
+import edu.cornell.dendro.corina.tridas.TridasEntityBase;
 
 public class IntermediateEditorDialog extends JDialog implements WizardChildMonitor {
 	private BaseEditorPanel<TridasEntityBase> editor;

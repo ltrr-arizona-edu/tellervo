@@ -13,7 +13,7 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.User;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleSummary;
-import edu.cornell.dendro.corina.site.TridasEntityBase;
+import edu.cornell.dendro.corina.tridas.TridasEntityBase;
 import edu.cornell.dendro.corina.util.LegacySampleExtractor;
 
 /**

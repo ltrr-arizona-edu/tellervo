@@ -24,11 +24,11 @@ import edu.cornell.dendro.corina.map.Point3D;
 import edu.cornell.dendro.corina.map.View;
 import edu.cornell.dendro.corina.map.Projection;
 import edu.cornell.dendro.corina.map.MapPanel;
-import edu.cornell.dendro.corina.site.Location;
-import edu.cornell.dendro.corina.site.LegacySite;
-import edu.cornell.dendro.corina.site.LegacySiteDB;
-import edu.cornell.dendro.corina.site.SiteInfoDialog;
-import edu.cornell.dendro.corina.site.SiteNotFoundException;
+import edu.cornell.dendro.corina.tridas.LegacySite;
+import edu.cornell.dendro.corina.tridas.LegacySiteDB;
+import edu.cornell.dendro.corina.tridas.Location;
+import edu.cornell.dendro.corina.tridas.SiteInfoDialog;
+import edu.cornell.dendro.corina.tridas.SiteNotFoundException;
 import edu.cornell.dendro.corina.ui.Builder;
 
 import java.awt.Color;

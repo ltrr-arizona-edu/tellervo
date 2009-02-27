@@ -24,7 +24,7 @@ import edu.cornell.dendro.corina.map.View;
 import edu.cornell.dendro.corina.map.Matrix;
 import edu.cornell.dendro.corina.map.Point3D;
 import edu.cornell.dendro.corina.map.Projection;
-import edu.cornell.dendro.corina.site.Location;
+import edu.cornell.dendro.corina.tridas.Location;
 
 import java.awt.Point;
 

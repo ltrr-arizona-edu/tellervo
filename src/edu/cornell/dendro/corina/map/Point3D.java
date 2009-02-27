@@ -20,7 +20,7 @@
 
 package edu.cornell.dendro.corina.map;
 
-import edu.cornell.dendro.corina.site.Location;
+import edu.cornell.dendro.corina.tridas.Location;
 
 /**
    A point in 3-space: (x, y, z).  Each component (x, y, z) is a float.

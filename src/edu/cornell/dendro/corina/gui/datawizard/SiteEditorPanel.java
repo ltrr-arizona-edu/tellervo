@@ -20,8 +20,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.site.TridasObject;
-import edu.cornell.dendro.corina.site.Subsite;
+import edu.cornell.dendro.corina.tridas.Subsite;
+import edu.cornell.dendro.corina.tridas.TridasObject;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;

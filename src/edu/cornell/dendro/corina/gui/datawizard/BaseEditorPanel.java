@@ -14,12 +14,12 @@ import javax.swing.UIDefaults;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import edu.cornell.dendro.corina.site.TridasEntityBase;
-import edu.cornell.dendro.corina.site.TridasRadius;
-import edu.cornell.dendro.corina.site.TridasObject;
-import edu.cornell.dendro.corina.site.TridasSample;
-import edu.cornell.dendro.corina.site.Subsite;
-import edu.cornell.dendro.corina.site.TridasElement;
+import edu.cornell.dendro.corina.tridas.Subsite;
+import edu.cornell.dendro.corina.tridas.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasEntityBase;
+import edu.cornell.dendro.corina.tridas.TridasObject;
+import edu.cornell.dendro.corina.tridas.TridasRadius;
+import edu.cornell.dendro.corina.tridas.TridasSample;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
 

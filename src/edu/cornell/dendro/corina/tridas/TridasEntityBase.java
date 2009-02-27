@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.site;
+package edu.cornell.dendro.corina.tridas;
 
 import java.lang.reflect.Method;
 import java.util.List;

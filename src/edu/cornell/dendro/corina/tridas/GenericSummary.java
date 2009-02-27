@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.site;
+package edu.cornell.dendro.corina.tridas;
 
 public class GenericSummary {
 	private String labPrefix;

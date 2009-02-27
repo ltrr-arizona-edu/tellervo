@@ -6,12 +6,12 @@ import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 
-import edu.cornell.dendro.corina.site.TridasEntityBase;
-import edu.cornell.dendro.corina.site.TridasRadius;
-import edu.cornell.dendro.corina.site.TridasObject;
-import edu.cornell.dendro.corina.site.TridasSample;
-import edu.cornell.dendro.corina.site.Subsite;
-import edu.cornell.dendro.corina.site.TridasElement;
+import edu.cornell.dendro.corina.tridas.Subsite;
+import edu.cornell.dendro.corina.tridas.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasEntityBase;
+import edu.cornell.dendro.corina.tridas.TridasObject;
+import edu.cornell.dendro.corina.tridas.TridasRadius;
+import edu.cornell.dendro.corina.tridas.TridasSample;
 
 
 public class IntermediateResource extends ResourceObject<List<? extends TridasEntityBase>> {

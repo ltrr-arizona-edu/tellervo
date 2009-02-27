@@ -6,7 +6,8 @@ import edu.cornell.dendro.corina.map.Projection;
 import edu.cornell.dendro.corina.map.MapFile;
 import edu.cornell.dendro.corina.map.Palette;
 
-import edu.cornell.dendro.corina.site.Location;
+import edu.cornell.dendro.corina.tridas.Location;
+
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.io.IOException; // !!!

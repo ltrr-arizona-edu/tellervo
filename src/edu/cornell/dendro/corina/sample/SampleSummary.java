@@ -1,6 +1,6 @@
 package edu.cornell.dendro.corina.sample;
 
-import edu.cornell.dendro.corina.site.GenericSummary;
+import edu.cornell.dendro.corina.tridas.GenericSummary;
 
 /**
  * A simple class to hold summary information about a sample

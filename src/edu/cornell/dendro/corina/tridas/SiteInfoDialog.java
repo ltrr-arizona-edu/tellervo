@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina.site;
+package edu.cornell.dendro.corina.tridas;
 
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.Help;
@@ -60,8 +60,8 @@ import javax.swing.*;
    <li>make "masters"/"nonfits" on a tab (or 2 tabs)?
 </ul>
 
-   @see edu.cornell.dendro.corina.site.CountryPopup
-   @see edu.cornell.dendro.corina.site.Country
+   @see edu.cornell.dendro.corina.tridas.CountryPopup
+   @see edu.cornell.dendro.corina.tridas.Country
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$

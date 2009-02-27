@@ -62,11 +62,11 @@ import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.map.tools.ToolBox;
-import edu.cornell.dendro.corina.site.Location;
-import edu.cornell.dendro.corina.site.LegacySite;
-import edu.cornell.dendro.corina.site.LegacySiteDB;
-import edu.cornell.dendro.corina.site.SiteInfoDialog;
-import edu.cornell.dendro.corina.site.SitePrinter;
+import edu.cornell.dendro.corina.tridas.LegacySite;
+import edu.cornell.dendro.corina.tridas.LegacySiteDB;
+import edu.cornell.dendro.corina.tridas.Location;
+import edu.cornell.dendro.corina.tridas.SiteInfoDialog;
+import edu.cornell.dendro.corina.tridas.SitePrinter;
 import edu.cornell.dendro.corina.ui.Builder;
 
 public class MapFrame extends XFrame implements PrintableDocument, ComponentListener {

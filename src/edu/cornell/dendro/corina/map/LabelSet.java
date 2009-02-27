@@ -1,7 +1,7 @@
 package edu.cornell.dendro.corina.map;
 
-import edu.cornell.dendro.corina.site.LegacySite;
-import edu.cornell.dendro.corina.site.LegacySiteDB;
+import edu.cornell.dendro.corina.tridas.LegacySite;
+import edu.cornell.dendro.corina.tridas.LegacySiteDB;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -26,7 +26,7 @@ import java.util.HashSet;
      <li>Move getLocations() to Site?  (Law of Demeter.)  Or better: make it getVisibleLocations().
    </ul>
  
-   @see edu.cornell.dendro.corina.site.LegacySite
+   @see edu.cornell.dendro.corina.tridas.LegacySite
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$

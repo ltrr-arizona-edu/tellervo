@@ -23,8 +23,8 @@ package edu.cornell.dendro.corina.map.tools;
 import edu.cornell.dendro.corina.map.View;
 import edu.cornell.dendro.corina.map.Projection;
 import edu.cornell.dendro.corina.map.MapPanel;
-import edu.cornell.dendro.corina.site.LegacySite;
-import edu.cornell.dendro.corina.site.SiteNotFoundException;
+import edu.cornell.dendro.corina.tridas.LegacySite;
+import edu.cornell.dendro.corina.tridas.SiteNotFoundException;
 
 import java.util.List;
 import java.util.Collections;

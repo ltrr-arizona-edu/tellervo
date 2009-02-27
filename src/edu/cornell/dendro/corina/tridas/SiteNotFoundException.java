@@ -18,7 +18,7 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina.site;
+package edu.cornell.dendro.corina.tridas;
 
 /**
    An exception thrown when a search for a site turns up no matches.

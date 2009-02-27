@@ -25,10 +25,10 @@ import edu.cornell.dendro.corina.map.layers.GridlinesLayer;
 import edu.cornell.dendro.corina.map.layers.MapLayer;
 import edu.cornell.dendro.corina.map.layers.LegendLayer;
 import edu.cornell.dendro.corina.map.layers.SitesLayer;
-import edu.cornell.dendro.corina.site.Location;
-import edu.cornell.dendro.corina.site.LegacySite;
-import edu.cornell.dendro.corina.site.LegacySiteDB;
-import edu.cornell.dendro.corina.site.SiteNotFoundException;
+import edu.cornell.dendro.corina.tridas.LegacySite;
+import edu.cornell.dendro.corina.tridas.LegacySiteDB;
+import edu.cornell.dendro.corina.tridas.Location;
+import edu.cornell.dendro.corina.tridas.SiteNotFoundException;
 
 import java.util.List;
 import java.util.ArrayList;

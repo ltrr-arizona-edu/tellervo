@@ -11,7 +11,7 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
-import edu.cornell.dendro.corina.site.TridasObjectList;
+import edu.cornell.dendro.corina.tridas.TridasObjectList;
 import edu.cornell.dendro.corina.webdbi.Authenticate;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 

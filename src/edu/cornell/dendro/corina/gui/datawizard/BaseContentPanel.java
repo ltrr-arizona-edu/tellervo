@@ -34,12 +34,12 @@ import javax.swing.ListModel;
 import javax.swing.UIManager;
 
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.site.TridasEntityBase;
-import edu.cornell.dendro.corina.site.TridasRadius;
-import edu.cornell.dendro.corina.site.TridasObject;
-import edu.cornell.dendro.corina.site.TridasSample;
-import edu.cornell.dendro.corina.site.Subsite;
-import edu.cornell.dendro.corina.site.TridasElement;
+import edu.cornell.dendro.corina.tridas.Subsite;
+import edu.cornell.dendro.corina.tridas.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasEntityBase;
+import edu.cornell.dendro.corina.tridas.TridasObject;
+import edu.cornell.dendro.corina.tridas.TridasRadius;
+import edu.cornell.dendro.corina.tridas.TridasSample;
 
 /**
  * @author lucasm

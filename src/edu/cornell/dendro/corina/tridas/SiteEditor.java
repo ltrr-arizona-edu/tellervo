@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.cornell.dendro.corina.site;
+package edu.cornell.dendro.corina.tridas;
 
 import java.awt.Dimension;
 import java.util.ArrayList;

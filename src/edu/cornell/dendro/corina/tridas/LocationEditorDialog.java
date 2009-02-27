@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.site;
+package edu.cornell.dendro.corina.tridas;
 
 import java.awt.Component;
 import java.awt.Frame;

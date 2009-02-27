@@ -21,7 +21,7 @@
 package edu.cornell.dendro.corina.map;
 
 import edu.cornell.dendro.corina.map.projections.RectangularProjection;
-import edu.cornell.dendro.corina.site.Location;
+import edu.cornell.dendro.corina.tridas.Location;
 
 import java.awt.Point;
 

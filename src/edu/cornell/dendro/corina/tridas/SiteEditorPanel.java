@@ -1,9 +1,9 @@
-package edu.cornell.dendro.corina.site;
+package edu.cornell.dendro.corina.tridas;
 
 import edu.cornell.dendro.corina.map.MapFrame;
-import edu.cornell.dendro.corina.site.LegacySite;
-import edu.cornell.dendro.corina.site.Country;
-import edu.cornell.dendro.corina.site.SiteInfoDialog;
+import edu.cornell.dendro.corina.tridas.Country;
+import edu.cornell.dendro.corina.tridas.LegacySite;
+import edu.cornell.dendro.corina.tridas.SiteInfoDialog;
 import edu.cornell.dendro.corina.util.PopupListener;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.gui.Layout;

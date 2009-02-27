@@ -10,7 +10,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-import edu.cornell.dendro.corina.site.TridasObject;
+import edu.cornell.dendro.corina.tridas.TridasObject;
 
 /**
  * A quick and dirty class to render stars in a combo box

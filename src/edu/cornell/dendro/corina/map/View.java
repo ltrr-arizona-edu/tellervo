@@ -22,7 +22,7 @@ package edu.cornell.dendro.corina.map;
 
 import java.awt.Dimension;
 
-import edu.cornell.dendro.corina.site.Location;
+import edu.cornell.dendro.corina.tridas.Location;
 
 // TODO: what's a zoom factor of 1.0 defined to be, exactly?
 // TODO: loc should be getCenter/setCenter?

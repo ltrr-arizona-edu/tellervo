@@ -20,7 +20,7 @@
 
 package edu.cornell.dendro.corina.map;
 
-import edu.cornell.dendro.corina.site.Location;
+import edu.cornell.dendro.corina.tridas.Location;
 import junit.framework.TestCase;
 
 public class UnitTests extends TestCase {

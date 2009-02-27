@@ -24,8 +24,8 @@ import javax.swing.event.DocumentListener;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Taxon;
-import edu.cornell.dendro.corina.site.Subsite;
-import edu.cornell.dendro.corina.site.TridasElement;
+import edu.cornell.dendro.corina.tridas.Subsite;
+import edu.cornell.dendro.corina.tridas.TridasElement;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 
