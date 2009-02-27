@@ -47,7 +47,7 @@ class sample extends sampleEntity implements IDBAccessor
         global $domain;    
 
         $this->setID($theID);
-        $sql = "select * from vwtblsample where sampleid='$theID'";
+        $sql = "SELECT * FROM vwtblsample WHERE sampleid='".pg_escape_string($theID)."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -95,7 +95,7 @@ class sample extends sampleEntity implements IDBAccessor
         global $gmlNS;
                 
         // First find the immediate object entity parent
-           $sql = "SELECT elementid from tblsample where sampleid=".$this->getID();
+           $sql = "SELECT elementid FROM tblsample WHERE sampleid=".pg_escape_string($this->getID());
            $dbconnstatus = pg_connection_status($dbconn);
            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
            {
@@ -137,7 +137,7 @@ class sample extends sampleEntity implements IDBAccessor
 
         global $dbconn;
 
-        $sql  = "select radiusid from tblradius where sampleid='".$this->getID()."'";
+        $sql  = "SELECT radiusid FROM tblradius WHERE sampleid='".pg_escape_string($this->getID())."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -202,7 +202,7 @@ class sample extends sampleEntity implements IDBAccessor
     	// Find out the parent ID if it's not specified
     	if($parentID==NULL)
     	{
-    		$sql = "select elementid from tblsample where sampleid =".$this->getID();
+    		$sql = "SELECT elementid FROM tblsample WHERE sampleid =".pg_escape_string($this->getID());
 	    	$dbconnstatus = pg_connection_status($dbconn);
 	        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
 	        {
@@ -465,7 +465,7 @@ class sample extends sampleEntity implements IDBAccessor
                 if($this->getID() == NULL)
                 {
                     // New record
-                    $sql = "insert into tblsample ( ";
+                    $sql = "INSERT INTO tblsample ( ";
                         if($this->getCode()!=NULL)                   	$sql.="code, ";
                         if(isset($this->parentEntityArray[0]))		 	$sql.="elementid, ";
                         if($this->getSamplingDate()!=NULL)           	$sql.="samplingdate, ";
@@ -477,36 +477,36 @@ class sample extends sampleEntity implements IDBAccessor
                         if($this->getDescription()!=NULL)				$sql.="description, ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
-                    $sql.=") values (";
-                        if($this->getCode()!=NULL)                   	$sql.="'".$this->getCode()             	."', ";
-                        if(isset($this->parentEntityArray[0]))      	$sql.="'".$this->parentEntityArray[0]->getID() 	."', ";
-                        if($this->getSamplingDate()!=NULL)           	$sql.="'".$this->getSamplingDate()     	."', ";
-                        if($this->getType()!=NULL)                   	$sql.="'".$this->getType()             	."', ";
-                        if($this->getFile()!=NULL)					 	$sql.="'".$this->getFile()  			."', ";
-                        if($this->getPosition()!=NULL)					$sql.="'".$this->getPosition()			."', ";
-                        if($this->getState()!=NULL)						$sql.="'".$this->getState()				."', ";
-                        if($this->getKnots()!=NULL)						$sql.="'".$this->getKnots("pg")			."', ";
-                        if($this->getDescription()!=NULL)				$sql.="'".$this->getDescription()		."', ";                        
+                    $sql.=") VALUES (";
+                        if($this->getCode()!=NULL)                   	$sql.="'".pg_escape_string($this->getCode())."', ";
+                        if(isset($this->parentEntityArray[0]))      	$sql.="'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
+                        if($this->getSamplingDate()!=NULL)           	$sql.="'".pg_escape_string($this->getSamplingDate())."', ";
+                        if($this->getType()!=NULL)                   	$sql.="'".pg_escape_string($this->getType())."', ";
+                        if($this->getFile()!=NULL)					 	$sql.="'".pg_escape_string($this->getFile())."', ";
+                        if($this->getPosition()!=NULL)					$sql.="'".pg_escape_string($this->getPosition())."', ";
+                        if($this->getState()!=NULL)						$sql.="'".pg_escape_string($this->getState())."', ";
+                        if($this->getKnots()!=NULL)						$sql.="'".pg_escape_string($this->getKnots("pg"))."', ";
+                        if($this->getDescription()!=NULL)				$sql.="'".pg_escape_string($this->getDescription())."', ";                        
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
-                    $sql2 = "select * from tblsample where sampleid=currval('tblsample_sampleid_seq')";
+                    $sql2 = "SELECT * FROM tblsample WHERE sampleid=currval('tblsample_sampleid_seq')";
                 }
                 else
                 {
                     // Updating DB
                     $sql.="update tblsample set ";
-                        if($this->getCode()!=NULL)             	$sql.="code='"           	.$this->getCode()          						."', ";
-                        if(isset($this->parentEntityArray[0])) 	$sql.="elementid='"      	.$this->parentEntityArray[0]->getID() 	."', ";
-                        if($this->getSamplingDate()!=NULL)     	$sql.="samplingdate='"   	.$this->getSamplingDate()  						."', ";
-                        if($this->getType()!=NULL)          	$sql.="type='"     			.$this->getType()          						."', ";
-                        if($this->getFile()!=NULL)				$sql.="file='"	 			.$this->getFile()  								."', ";
-                        if($this->getPosition()!=NULL)			$sql.="position='"			.$this->getPosition()							."', ";
-                        if($this->getState()!=NULL)				$sql.="state='"				.$this->getState()								."', ";
-                        if($this->getKnots()!=NULL)				$sql.="knots='"				.$this->getKnots("pg")			."', ";
-                        if($this->getDescription()!=NULL)		$sql.="description='"		.$this->getDescription()		."', ";                             
+                        if($this->getCode()!=NULL)             	$sql.="code='"           	.pg_escape_string($this->getCode())          						."', ";
+                        if(isset($this->parentEntityArray[0])) 	$sql.="elementid='"      	.pg_escape_string($this->parentEntityArray[0]->getID()) 	."', ";
+                        if($this->getSamplingDate()!=NULL)     	$sql.="samplingdate='"   	.pg_escape_string($this->getSamplingDate())  						."', ";
+                        if($this->getType()!=NULL)          	$sql.="type='"     			.pg_escape_string($this->getType())          						."', ";
+                        if($this->getFile()!=NULL)				$sql.="file='"	 			.pg_escape_string($this->getFile())  								."', ";
+                        if($this->getPosition()!=NULL)			$sql.="position='"			.pg_escape_string($this->getPosition())							."', ";
+                        if($this->getState()!=NULL)				$sql.="state='"				.pg_escape_string($this->getState())								."', ";
+                        if($this->getKnots()!=NULL)				$sql.="knots='"				.pg_escape_string($this->getKnots("pg"))			."', ";
+                        if($this->getDescription()!=NULL)		$sql.="description='"		.pg_escape_string($this->getDescription())		."', ";                             
                     $sql = substr($sql, 0, -2);
-                    $sql.= " where sampleid='".$this->getID()."'";
+                    $sql.= " WHERE sampleid='".pg_escape_string($this->getID())."'";
                 }
 
                 // Run SQL command
@@ -582,7 +582,7 @@ class sample extends sampleEntity implements IDBAccessor
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tblsample where sampleid='".$this->getID()."'";
+                $sql = "DELETE FROM tblsample WHERE sampleid='".pg_escape_string($this->getID())."'";
 
                 // Run SQL command
                 if ($sql)

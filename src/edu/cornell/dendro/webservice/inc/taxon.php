@@ -38,7 +38,10 @@ class taxon extends taxonEntity implements IDBAccessor
         global $dbconn;
         
         $this->setID($theID);
-        $sql = "select tlkptaxon.taxonid, tlkptaxon.parenttaxonid, tlkptaxon.colID, tlkptaxon.colParentID, tlkptaxonrank.taxonrank, tlkptaxon.label as label from tlkptaxon, tlkptaxonrank  where tlkptaxon.taxonid=$theID and tlkptaxonrank.taxonrankid=tlkptaxon.taxonrankid";
+        $sql = "SELECT tlkptaxon.taxonid, tlkptaxon.parenttaxonid, tlkptaxon.colID, tlkptaxon.colParentID, tlkptaxonrank.taxonrank, tlkptaxon.label AS label ".
+        		"FROM tlkptaxon, tlkptaxonrank  ".
+        		"WHERE tlkptaxon.taxonid=".pg_escape_string($theID)." ".
+        		"AND tlkptaxonrank.taxonrankid=tlkptaxon.taxonrankid";
         //echo $sql;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -90,7 +93,10 @@ class taxon extends taxonEntity implements IDBAccessor
 	
 	        global $dbconn;
 	        
-	        $sql = "select taxonid, colid, label from tlkptaxon where colid=$CoLID and label='$CoLNormalName'";
+	        $sql = "SELECT taxonid, colid, label 
+	        		FROM tlkptaxon 
+	        		WHERE colid=".pg_escape_string($CoLID)." 
+	        		AND label='".pg_escape_string($CoLNormalName)."'";
 	        //echo $sql;
 	        $dbconnstatus = pg_connection_status($dbconn);
 	        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -136,7 +142,9 @@ class taxon extends taxonEntity implements IDBAccessor
         global $dbconn;
 
         // Lookup taxon rank id
-        $sql = "select taxonrankid from tlkptaxonrank where taxonrank ilike '$taxonRank'";
+        $sql = "SELECT taxonrankid 
+        		FROM tlkptaxonrank 
+        		WHERE taxonrank ilike '".pg_escape_string($taxonRank)."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -155,7 +163,9 @@ class taxon extends taxonEntity implements IDBAccessor
         // Lookup parent taxon id
         if ($colParentID)
         {
-            $sql = "select taxonid from tlkptaxon where colid=$colParentID";
+            $sql = "SELECT taxonid 
+            		FROM tlkptaxon 
+            		WHERE colid=".pg_escape_string($colParentID);
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
@@ -192,7 +202,7 @@ class taxon extends taxonEntity implements IDBAccessor
     {
         global $dbconn;
         
-        $sql = "select * from cpgdb.qrytaxonomy(".$this->getID().")";
+        $sql = "SELECT * FROM cpgdb.qrytaxonomy(".pg_escape_string($this->getID()).")";
         //echo $sql;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)

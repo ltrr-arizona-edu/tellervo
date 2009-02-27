@@ -71,7 +71,7 @@ class searchParameters implements IParams
 	
         // Get main attributes
     	$searchParamsTag = $this->xmlRequestDom->getElementsByTagName("searchParams")->item(0); 	
-		$this->returnObject = addslashes($searchParamsTag->getAttribute("returnObject"));
+		$this->returnObject = $searchParamsTag->getAttribute("returnObject");
 		$this->limit = (int) $searchParamsTag->getAttribute("limit");
 		$this->skip = (int) $searchParamsTag->getAttribute("skip");
 		$this->includeChildren = (bool) $searchParamsTag->getAttribute("includeChildren");
@@ -162,8 +162,8 @@ class searchParameters implements IParams
 			{
 				$fieldname = $translationArray[$param->getAttribute("name")]['field'];
 				$tablename = $translationArray[$param->getAttribute("name")]['tbl'];
-				$operator = addslashes($param->getAttribute("operator"));
-				$value = addslashes($param->getAttribute("value"));
+				$operator = $param->getAttribute("operator");
+				$value = $param->getAttribute("value");
 				$temparr = array('table'=>$tablename, 'field'=>$fieldname, 'operator'=>$operator, 'value'=>$value);
 	
 				// Add params to a parametersArray
@@ -232,12 +232,12 @@ class authenticationParameters implements IParams
     function setParamsFromXMLRequest()
     {
     	$authTag = $this->xmlRequestDom->getElementsByTagName("authenticate")->item(0);
-        if($authTag->getAttribute("username")!=NULL)   $this->username   = addslashes($authTag->getAttribute("username"));
-        if($authTag->getAttribute("password")!=NULL)   $this->password   = addslashes($authTag->getAttribute("password"));
-        if($authTag->getAttribute("cnonce")!=NULL)     $this->cnonce     = addslashes($authTag->getAttribute("cnonce"));
-        if($authTag->getAttribute("snonce")!=NULL)     $this->snonce     = addslashes($authTag->getAttribute("snonce"));
-        if($authTag->getAttribute("hash")!=NULL)       $this->hash       = addslashes($authTag->getAttribute("hash"));
-        if($authTag->getAttribute("seq")!=NULL)        $this->seq        = addslashes($authTag->getAttribute("seq"));
+        if($authTag->getAttribute("username")!=NULL)   $this->username   = $authTag->getAttribute("username");
+        if($authTag->getAttribute("password")!=NULL)   $this->password   = $authTag->getAttribute("password");
+        if($authTag->getAttribute("cnonce")!=NULL)     $this->cnonce     = $authTag->getAttribute("cnonce");
+        if($authTag->getAttribute("snonce")!=NULL)     $this->snonce     = $authTag->getAttribute("snonce");
+        if($authTag->getAttribute("hash")!=NULL)       $this->hash       = $authTag->getAttribute("hash");
+        if($authTag->getAttribute("seq")!=NULL)        $this->seq        = $authTag->getAttribute("seq");
     }
     
     function getUsername()

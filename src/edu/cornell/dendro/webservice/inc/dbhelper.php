@@ -28,7 +28,7 @@ class dbHelper
 	public static function getKeyFromValue($entityname, $value)
 	{
 		global $dbconn;
-		$sql = "select tlkp".$entityname.".".$entityname."id as key from tlkp$entityname where $entityname='$value'";
+		$sql = "select tlkp".pgsql_escape_string($entityname).".".pgsql_escape_string($entityname)."id as key from tlkp".pgsql_escape_string($entityname)." where ".pgsql_escape_string($entityname)."='".pgsql_escape_string($value)."'";
 		
 		$dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -83,7 +83,7 @@ class dbHelper
 	public static function getLastUpdateDate($tablename)
 	{
 	    global $dbconn;
-	    $sql = "select max(lastmodifiedtimestamp) as max from $tablename";
+	    $sql = "select max(lastmodifiedtimestamp) as max from ".pgsql_escape_string($tablename);
 	    $dbconnstatus = pg_connection_status($dbconn);        
 	    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
 	    {

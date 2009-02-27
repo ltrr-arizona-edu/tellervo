@@ -78,7 +78,7 @@ class auth
     }
 
     
-    $sql = "select * from tblsecurityuser where username='$theUsername' and isactive=true";
+    $sql = "select * from tblsecurityuser where username='".pg_escape_string($theUsername)."' and isactive=true";
  
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -137,7 +137,7 @@ class auth
   {
     global $dbconn;
 
-    $sql = "select * from tblsecurityuser where username='$theUsername' and isactive=true";
+    $sql = "select * from tblsecurityuser where username='".pg_escape_string($theUsername)."' and isactive=true";
     
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -277,11 +277,11 @@ class auth
 
     if ($this->getID()==NULL) 
     {
-        $sql = "insert into tblrequestlog (request, ipaddr, wsversion) values ('".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion')";
+        $sql = "insert into tblrequestlog (request, ipaddr, wsversion) values ('".pg_escape_string($request)."', '".$_SERVER['REMOTE_ADDR']."', '".pg_escape_string($wsversion)."')";
     }
     else
     {
-        $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion) values ('".$this->getID()."', '".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion')";
+        $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion) values ('".$this->getID()."', '".pg_escape_string($request)."', '".$_SERVER['REMOTE_ADDR']."', '".pg_escape_string($wsversion)."')";
     }
 
     pg_send_query($dbconn, $sql);
@@ -657,7 +657,7 @@ class auth
   {
     global $dbconn;
 
-    $sql = "update tblsecurityuser set password='".hash('md5', $password)."' where username='".$this->username."'";
+    $sql = "update tblsecurityuser set password='".hash('md5', pg_escape_string($password))."' where username='".pg_escape_string($this->username)."'";
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {

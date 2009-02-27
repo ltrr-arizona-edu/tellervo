@@ -194,7 +194,7 @@ class dbEntity
      */
     final protected function setgroupXMLTag($theTag)
     {
-		$this->groupXMLTag = addslashes($theTag);
+		$this->groupXMLTag = $theTag;
 		return true;
     }
     
@@ -208,7 +208,7 @@ class dbEntity
     final protected function setID($identifier, $domain=NULL)
     {
     	$this->id = $identifier;
-    	$this->identifierDomain = addslashes($domain);	
+    	$this->identifierDomain = $domain;	
     	return true;
     }
     
@@ -222,7 +222,7 @@ class dbEntity
      */
     protected function setCode($theCode)
     {
-        $this->code=addslashes($theCode);
+        $this->code=$theCode;
         return true;
     }
     
@@ -612,7 +612,7 @@ class objectEntity extends dbEntity
 	function setType($value)
 	{
 		
-		$this->type = addslashes($value);
+		$this->type = $value;
 		return true;
 	}
 	
@@ -623,7 +623,7 @@ class objectEntity extends dbEntity
 	 */
 	function setDescription($value)
 	{
-		$this->description = addslashes($value);
+		$this->description = $value;
 	}
 	
 	/**
@@ -633,7 +633,7 @@ class objectEntity extends dbEntity
 	 */
 	function setTitle($value)
 	{
-		$this->title = addslashes($value);
+		$this->title = $value;
 	}
 	
 	/**
@@ -644,7 +644,7 @@ class objectEntity extends dbEntity
 	 */
 	function setCreator($value)
 	{
-		$this->creator = addslashes($value);
+		$this->creator = $value;
 		return true;
 	}
 	
@@ -656,7 +656,7 @@ class objectEntity extends dbEntity
 	 */
 	function setOwner($value)
 	{	
-		$this->owner = addslashes($value);
+		$this->owner = $value;
 		return true;
 	}
 	
@@ -668,7 +668,7 @@ class objectEntity extends dbEntity
 	 */
 	function setFile($value)
 	{
-		$this->file = addslashes($value);
+		$this->file = $value;
 		return true;
 	}
 	
@@ -680,8 +680,8 @@ class objectEntity extends dbEntity
 	 */
 	function setCoverageTemporal($period, $foundation)
 	{
-		$this->coverageTemporal = addslashes($period);
-		$this->coverageTemporalFoundation = addslashes($foundation);	
+		$this->coverageTemporal = $period;
+		$this->coverageTemporalFoundation = $foundation;	
 	}
 	
 	/**
@@ -691,7 +691,7 @@ class objectEntity extends dbEntity
 	 */
 	function setCode($value)
 	{
-		$this->code = addslashes($value);
+		$this->code = $value;
 	}
 	
 
@@ -883,7 +883,7 @@ class elementEntity extends dbEntity
 	/**
 	 * Geometry object representing the location 
 	 *
-	 * @var Geometry
+	 * @var Location
 	 */
 	protected $location = NULL;
 	/**
@@ -949,7 +949,7 @@ class elementEntity extends dbEntity
 	 */
 	function setShape($value)
 	{
-		$this->shape = addslashes($value);
+		$this->shape = $value;
 		return true;
 	}
 	
@@ -1019,7 +1019,7 @@ class elementEntity extends dbEntity
 	
 	function setDimensionUnits($units)
 	{
-		$this->dimensionUnits = addslashes($units);
+		$this->dimensionUnits = $units;
 	}
 	
 	/**
@@ -1030,7 +1030,7 @@ class elementEntity extends dbEntity
 	 */
 	function setType($type)
 	{
-		$this->type = addslashes($type);
+		$this->type = $type;
 		return true;
 	}
 	
@@ -1042,7 +1042,7 @@ class elementEntity extends dbEntity
 	 */
 	function setFile($value)
 	{
-		$this->file = addslashes($file);
+		$this->file = $file;
 		return true;
 	}
 
@@ -1054,7 +1054,7 @@ class elementEntity extends dbEntity
 	 */
 	function setProcessing($value)
 	{
-		$this->processing = addslashes($value); 
+		$this->processing = $value; 
 		return true;
 	}
 	
@@ -1066,7 +1066,7 @@ class elementEntity extends dbEntity
 	 */
 	function setMarks($value)
 	{
-		$this->marks = addslashes($value);
+		$this->marks = $value;
 		return true;
 	}
 	
@@ -1103,7 +1103,7 @@ class elementEntity extends dbEntity
 	 */
 	function setDescription($value)
 	{
-		$this->description = addslashes($value);
+		$this->description = $value;
 		return true;
 	}
 	
@@ -1394,7 +1394,7 @@ class sampleEntity extends dbEntity
 	 */
 	function setPosition($position)
 	{
-		$this->position = addslashes($position);
+		$this->position = $position;
 		return true;
 	}
 	
@@ -1406,7 +1406,7 @@ class sampleEntity extends dbEntity
 	 */
 	function setState($state)
 	{
-		$this->state = addslashes($state);
+		$this->state = $state;
 		return true;	
 	}
 	
@@ -1432,7 +1432,7 @@ class sampleEntity extends dbEntity
 	
 	function setFile($file)
 	{
-		$this->file == addslashes($file);
+		$this->file == $file;
 	}
 	
 	/**
@@ -1442,7 +1442,7 @@ class sampleEntity extends dbEntity
 	 */
 	function setDescription($value)
 	{
-		$this->description = addslashes($value);
+		$this->description = $value;
 	}
 	
 	
@@ -1747,7 +1747,7 @@ class radiusEntity extends dbEntity
 	 */
 	function setMissingHeartwoodRingsToPithFoundation($value)
 	{
-		$this->missingHeartwoodRingsToPithFoundation = addslashes($value);
+		$this->missingHeartwoodRingsToPithFoundation = $value;
 		return true;
 	}
 	
@@ -1772,7 +1772,7 @@ class radiusEntity extends dbEntity
 	 */	
 	function setMissingSapwoodRingsToBarkFoundation($value)
 	{
-		$this->missingSapwoodRingsToBarkFoundation = addslashes($value);
+		$this->missingSapwoodRingsToBarkFoundation = $value;
 		return true;
 	}
 	
@@ -2098,7 +2098,7 @@ class taxonEntity extends dbEntity
     
     function setOriginalTaxon($taxon)
     {
-    	$this->originalTaxon = addslashes($taxon);
+    	$this->originalTaxon = $taxon;
     }
     /**********/
     /* GETTERS */
@@ -2505,7 +2505,7 @@ class measurementEntity extends dbEntity
 	 */
 	function setCode($code)
 	{
-		$this->code = addslashes($code);
+		$this->code = $code;
 	}
 	
 	/**
@@ -2521,22 +2521,22 @@ class measurementEntity extends dbEntity
 	
 	function setDendrochronologist($name)
 	{
-		$this->dendrochronologist = addslashes($name);
+		$this->dendrochronologist = $name;
 	}
 	
 	function setComments($comments)
 	{
-		$this->comments = addslashes($comments);
+		$this->comments = $comments;
 	}
 	
 	function setUsage($usage)
 	{
-		$this->usage = addslashes($usage);
+		$this->usage = $usage;
 	}
 	
 	function setUsageComments($comments)
 	{
-		$this->usageComments = addslashes($comments);
+		$this->usageComments = $comments;
 	}
 	
 	function setFirstYear($year)
@@ -2546,7 +2546,7 @@ class measurementEntity extends dbEntity
 	
 	function setStatType($type)
 	{
-		$this->statType = addslashes($type);
+		$this->statType = $type;
 	}
 	
 	function setStatValue($value)
@@ -2561,13 +2561,12 @@ class measurementEntity extends dbEntity
 	
 	function setProvenance($provenance)
 	{
-		$this->provenance = addslashes($provenance);
+		$this->provenance = $provenance;
 	}
 	
 	function setType($type)
 	{
-		echo "setting type\n";
-		$this->type = addslashes($type);
+		$this->type = $type;
 	}
 	
 	function setStandardizingMethod($id, $value)
@@ -2595,12 +2594,12 @@ class measurementEntity extends dbEntity
 	
 	function setObjective($objective)
 	{
-		$this->objective = addslashes($objective);
+		$this->objective = $objective;
 	}
 	
 	function setVersion($version)
 	{
-		$this->version = addslashes($version);
+		$this->version = $version;
 	}
 		
     function setOwnerUserID($theOwnerUserID)

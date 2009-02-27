@@ -113,7 +113,7 @@ class geometry
 		$lat = (float) $lat;
 		$long = (float) $long;	
 		
-		$sql = "select setsrid(makepoint(".sprintf("%1.8f",$long).", ".sprintf("%1.8f",$lat)."), $srid) as thevalue";
+		$sql = "select setsrid(makepoint(".sprintf("%1.8f",pg_escape_string($long)).", ".sprintf("%1.8f",pg_escape_string($lat))."), ".pg_escape_string($srid)." as thevalue";
 		$this->geometry = $this->runSQLCalculation($sql);	
 	}		
 	
@@ -153,7 +153,7 @@ class geometry
 		// Override to v3 if not 2 or 3
 		if ($gmlversion!=2 || $gmlversion!=3) $gmlversion=3;
 		
-		$sql = "select st_asgml($gmlversion, '".$this->geometry."') as thevalue";		
+		$sql = "select st_asgml(".pg_escape_string($gmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";		
 		return $this->runSQLCalculation($sql);
 	}
 	
@@ -165,7 +165,7 @@ class geometry
 	 */
 	function asKML($kmlversion=2)
 	{
-		$sql = "select st_askml($kmlversion'".$this->geometry."') as thevalue";
+		$sql = "select st_askml(".pg_escape_string($kmlversion)."'".pg_escape_string($this->geometry)."') as thevalue";
 		return $this->runSQLCalculation($sql);
 	}
 	

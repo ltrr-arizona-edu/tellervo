@@ -46,10 +46,10 @@ class measurement extends measurementEntity implements IDBAccessor
         $this->setID($theID);
 
         // the uberquery - one query to rule them all?     
-        $sql = "SELECT * FROM vwcomprehensivevm WHERE vmeasurementid='".$this->getID()."'";
+        $sql = "SELECT * FROM vwcomprehensivevm WHERE vmeasurementid='".pg_escape_string($this->getID())."'";
         
         // the query that makes the server make the measurement
-        $sql2 = "select * from cpgdb.getvmeasurementresult('".$this->getID()."')";
+        $sql2 = "select * from cpgdb.getvmeasurementresult('".pg_escape_string($this->getID())."')";
                    
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -165,7 +165,7 @@ class measurement extends measurementEntity implements IDBAccessor
         global $gmlNS;
                 
         // First find the immediate radius entity parent
-           $sql = "SELECT radiusid from tblmeasurement where measurementid=".$this->getMeasurementID();
+           $sql = "SELECT radiusid from tblmeasurement where measurementid=".pg_escape_string($this->getMeasurementID());
 
            $dbconnstatus = pg_connection_status($dbconn);
            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -212,7 +212,7 @@ class measurement extends measurementEntity implements IDBAccessor
         unset($this->readingsArray);
         $this->readingsArray = array();
 
-        $sql  = "select * from cpgdb.getvmeasurementreadingresult('".$this->vmeasurementResultID."') order by relyear asc";
+        $sql  = "select * from cpgdb.getvmeasurementreadingresult('".pg_escape_string($this->getVMeasurementResultID())."') order by relyear asc";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -244,7 +244,7 @@ class measurement extends measurementEntity implements IDBAccessor
             // If this is a direct measurement then add any notes as a subarray
             if($row['readingid'])
             {
-                $noteSQL = "SELECT tlkpreadingnote.*, tblreadingreadingnote.readingid FROM tlkpreadingnote, tblreadingreadingnote WHERE tblreadingreadingnote.readingid = ".$row['readingid'];
+                $noteSQL = "SELECT tlkpreadingnote.*, tblreadingreadingnote.readingid FROM tlkpreadingnote, tblreadingreadingnote WHERE tblreadingreadingnote.readingid = ".pg_escape_string($row['readingid']);
                 $noteResult = pg_query($dbconn, $noteSQL);
                 while($noteRow = pg_fetch_array($noteResult))
                 {
@@ -269,7 +269,7 @@ class measurement extends measurementEntity implements IDBAccessor
         global $dbconn;
         
         
-        $sql  = "select * from cpgdb.findvmparents('".$this->getID()."', 'false') where recursionlevel=0";
+        $sql  = "select * from cpgdb.findvmparents('".pg_escape_string($this->getID())."', 'false') where recursionlevel=0";
 
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -990,12 +990,12 @@ class measurement extends measurementEntity implements IDBAccessor
               $sql = "select * from cpgdb.createnewvmeasurement(";
               
               // Operation
-              $sql.= "'".$this->getVMeasurementOp()."', ";
+              $sql.= "'".pg_escape_string($this->getVMeasurementOp())."', ";
               
               // Operation parameters
               if($this->getStandardizingMethod()!=NULL)      
               { 
-              	$sql.= "'".$this->vmeasurementOp->getStandardizingMethodID()."', "; 
+              	$sql.= "'".pg_escape_string($this->vmeasurementOp->getStandardizingMethodID())."', "; 
               } 
               else 
               { 
@@ -1005,20 +1005,20 @@ class measurement extends measurementEntity implements IDBAccessor
               // Author
               if($this->author->getID()!=NULL)
               {
-              	$sql.= $this->author->getID().", ";
+              	$sql.= pg_escape_string($this->author->getID()).", ";
               }
               else
               {	
-              	$sql.= $myAuth->getID().", ";
+              	$sql.= pg_escape_string($myAuth->getID()).", ";
               }
               
               // Code
-              $sql.= "'".$this->getCode()."', ";
+              $sql.= "'".pg_escape_string($this->getCode())."', ";
               
               // Comments
               if($this->getComments()!=NULL)              
               { 
-              	$sql.= "'".$this->getComments()."', ";         
+              	$sql.= "'".pg_escape_string($this->getComments())."', ";         
               } 
               else 
               { 
@@ -1028,7 +1028,7 @@ class measurement extends measurementEntity implements IDBAccessor
               // Base measurement
               if($this->getVMeasurementOp()=='Direct') 
               { 
-              	$sql.= $this->getMeasurementID().", ";            
+              	$sql.= pg_escape_string($this->getMeasurementID()).", ";            
               } 
               else 
               { 
@@ -1041,7 +1041,7 @@ class measurement extends measurementEntity implements IDBAccessor
                   $sql.= "ARRAY[";
                   foreach($this->referencesArray as $value)
                   {
-                      $sql.= $value.", ";
+                      $sql.= pg_escape_string($value).", ";
                   }
                   $sql = substr($sql, 0, -2)."], ";            
               } 
@@ -1053,7 +1053,7 @@ class measurement extends measurementEntity implements IDBAccessor
               // Usage
               if($this->getUsage()!=NULL)
               {
-              	$sql.= $this->getUsage().", ";
+              	$sql.= pg_escape_string($this->getUsage()).", ";
               }
               else
               {
@@ -1063,7 +1063,7 @@ class measurement extends measurementEntity implements IDBAccessor
               // Usage comments
               if($this->getUsageComments()!=NULL)
               {
-              	$sql.= $this->getUsageComments().", ";
+              	$sql.= pg_escape_string($this->getUsageComments()).", ";
               }
               else
               {	
@@ -1073,7 +1073,7 @@ class measurement extends measurementEntity implements IDBAccessor
               // Objective
               if($this->getObjective()!=NULL)
               {
-              	$sql.= "'".$this->getObjective()."', ";
+              	$sql.= "'".pg_escape_string($this->getObjective())."', ";
               }
               else
               {
@@ -1083,7 +1083,7 @@ class measurement extends measurementEntity implements IDBAccessor
               // Version
               if($this->getVersion()!=NULL)
               {
-              	$sql.= "'".$this->getVersion()."')";
+              	$sql.= "'".pg_escape_string($this->getVersion())."')";
               }
               else
               {
@@ -1175,26 +1175,26 @@ class measurement extends measurementEntity implements IDBAccessor
                         // Trim off trailing space and comma
                         $sql = substr($sql, 0, -2);
                         $sql.=") values (";
-                            if(isset($this->parentEntityArray[0]))              $sql.= "'".$this->parentEntityArray[0]->getID()."', "; 
+                            if(isset($this->parentEntityArray[0]))              $sql.= "'".pg_escape_string($this->parentEntityArray[0]->getID())."', "; 
                             if($this->getIsReconciled()!=NULL)    				$sql.= "'".dbHelper::formatBool($this->getIsReconciled(), 'english')."', "; 
-                            if($this->getFirstYear())				            $sql.= "'".$this->getFirstYear()."', "; 
+                            if($this->getFirstYear())				            $sql.= "'".pg_escape_string($this->getFirstYear())."', "; 
                             if($this->getIsLegacyCleaned()!=NULL) 				$sql.= "'".dbHelper::formatBool($this->getIsLegacyCleaned(), 'english')."', "; 
-                            if(isset($this->analyst))					        $sql.= "'".$this->analyst->getID()."', "; 
+                            if(isset($this->analyst))					        $sql.= "'".pg_escape_string($this->analyst->getID())."', "; 
                             if($this->dating->getID()!=NULL)
                             {
-                            													$sql.= "'".$this->dating->getID()."', "; 
-                            if($this->dating->getDatingErrorNegative()!=NULL)   $sql.= "'".$this->dating->getDatingErrorNegative()."', "; 
-                            if($this->dating->getDatingErrorPositive()!=NULL)   $sql.= "'".$this->dating->getDatingErrorPositive()."', "; 
+                            													$sql.= "'".pg_escape_string($this->dating->getID())."', "; 
+                            if($this->dating->getDatingErrorNegative()!=NULL)   $sql.= "'".pg_escape_string($this->dating->getDatingErrorNegative())."', "; 
+                            if($this->dating->getDatingErrorPositive()!=NULL)   $sql.= "'".pg_escape_string($this->dating->getDatingErrorPositive())."', "; 
                             }
                             if(isset($this->variable))							$sql.= "'".$this->variable->getID()."', ";
                             if(isset($this->units))						
                             {		
-                            													$sql.= "'".$this->units->getID()."', ";
-                            if($this->units->getPower()!=NULL)					$sql.= "'".$this->units->getPower()."', ";
+                            													$sql.= "'".pg_escape_string($this->units->getID())."', ";
+                            if($this->units->getPower()!=NULL)					$sql.= "'".pg_escape_string($this->units->getPower())."', ";
                             }
                             if($this->getProvenance()!=NULL)					$sql.= "'".pg_escape_string($this->getProvenance())."', ";
-                            if(isset($this->measuringMethod))					$sql.= "'".$this->measuringMethod->getID()."', ";
-                            if($this->dendrochronologist->getID()!=NULL)				$sql.= "'".$this->dendrochronologist->getID()."', ";                                                  
+                            if(isset($this->measuringMethod))					$sql.= "'".pg_escape_string($this->measuringMethod->getID())."', ";
+                            if($this->dendrochronologist->getID()!=NULL)		$sql.= "'".pg_escape_string($this->dendrochronologist->getID())."', ";                                                  
                         // Trim off trailing space and comma
                         $sql = substr($sql, 0, -2);
                         $sql.=")";
@@ -1224,7 +1224,7 @@ class measurement extends measurementEntity implements IDBAccessor
                         foreach($this->readingsArray as $key => $value)
                         {
                             // First loop through the readingsArray and create insert statement for tblreading table
-                            $insertSQL = "insert into tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$relyear.", ".$value['value'].")";
+                            $insertSQL = "insert into tblreading (measurementid, relyear, reading) values (".pg_escape_string($this->measurementID).", ".pg_escape_string($relyear).", ".pg_escape_string($value['value']).")";
                             $relyear++;
                             
                             // Do tblreading inserts
@@ -1252,7 +1252,7 @@ class measurement extends measurementEntity implements IDBAccessor
                                     foreach($value['notesArray'] as $noteKey )
                                     {
                                         // Looping through notes and creating SQL insert statements
-                                        $insertSQL = "INSERT INTO tblreadingreadingnote (readingid, readingnoteid) value(".$thisReadingID.", ".$noteKey.")";
+                                        $insertSQL = "INSERT INTO tblreadingreadingnote (readingid, readingnoteid) value(".pg_escape_string($thisReadingID).", ".pg_escape_string($noteKey).")";
                                     
                                         // Do tblreadingreadingnote inserts
                                         pg_send_query($dbconn, $insertSQL);
@@ -1297,7 +1297,11 @@ class measurement extends measurementEntity implements IDBAccessor
                     // This extra SQL query is needed to finish off a crossdate
                     if($this->vmeasurementOp=='Crossdate')
                     {
-                        $sql = "select cpgdb.finishCrossdate(".$localVMID.", ".$this->newStartYear.", ".$this->masterVMeasurementID.", '".$this->justification."', ".$this->certaintyLevel.")";
+                        $sql = "select cpgdb.finishCrossdate(".pg_escape_string($localVMID).", ".
+                        		pg_escape_string($this->newStartYear).", ".
+                        		pg_escape_string($this->masterVMeasurementID).", '".
+                        		pg_escape_string($this->justification)."', ".
+                        		pg_escape_string($this->certaintyLevel).")";
                         pg_send_query($dbconn, $sql);
                         $result = pg_get_result($dbconn);
                         if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
@@ -1323,11 +1327,11 @@ class measurement extends measurementEntity implements IDBAccessor
                     if ($this->getVMeasurementOp()!=="Direct")
                     {
                         // Update references to other vmeasurements
-                        $deleteSQL = "DELETE FROM tblvmeasurementgroup WHERE vmeasurementid=".$this->vmeasurementID."; ";
+                        $deleteSQL = "DELETE FROM tblvmeasurementgroup WHERE vmeasurementid=".pg_escape_string($this->vmeasurementID)."; ";
                         $relyear = 0;
                         foreach($this->referencesArray as $key => $value)
                         {
-                            $insertSQL .= "INSERT INTO tblvmeasurementgroup (vmeasurementid, membervmeasurementid) VALUES (".$this->getID().", ".$value."); ";
+                            $insertSQL .= "INSERT INTO tblvmeasurementgroup (vmeasurementid, membervmeasurementid) VALUES (".pg_escape_string($this->getID()).", ".pg_escape_string($value)."); ";
                             $relyear++;
                         }
                     }
@@ -1335,23 +1339,23 @@ class measurement extends measurementEntity implements IDBAccessor
                     {
                         // Update the tblmeasurement table
                         $updateSQL2.= "UPDATE tblmeasurement SET ";
-                        if($this->parentEntityArray[0]->getID()!=NULL)            	$updateSQL2.= "radiusid = ".$this->parentEntityArray[0]->getID().", ";
+                        if($this->parentEntityArray[0]->getID()!=NULL)            	$updateSQL2.= "radiusid = ".pg_escape_string($this->parentEntityArray[0]->getID()).", ";
                         if($this->getIsReconciled()!=NULL)        					$updateSQL2.= "isreconciled='".dbHelper::formatBool($this->getIsReconciled(),'pg')."', ";
-                        if($this->getFirstYear()!=NULL)           					$updateSQL2.= "startyear = ".$this->getFirstYear().", ";
+                        if($this->getFirstYear()!=NULL)           					$updateSQL2.= "startyear = ".pg_escape_string($this->getFirstYear()).", ";
                         if($this->getIsLegacyCleaned()!=NULL)     					$updateSQL2.= "islegacycleaned='".dbHelper::formatBool($this->getIsLegacyCleaned(),'pg')."', ";
-                        if($this->analyst->getID()!=NULL)	        				$updateSQL2.= "measuredbyid = ".$this->analyst->getID().", ";
-                        if($this->dating->getID()!=NULL)        					$updateSQL2.= "datingtypeid = ".$this->dating->getID().", ";
-                        if($this->dating->getDatingErrorPositive()!=NULL) 			$updateSQL2.= "datingerrorpositive = ".$this->dating->getDatingErrorPositive().", ";
-                        if($this->dating->getDatingErrorNegative()!=NULL) 			$updateSQL2.= "datingerrornegative = ".$this->dating->getDatingErrorNegative().", ";
+                        if($this->analyst->getID()!=NULL)	        				$updateSQL2.= "measuredbyid = ".pg_escape_string($this->analyst->getID()).", ";
+                        if($this->dating->getID()!=NULL)        					$updateSQL2.= "datingtypeid = ".pg_escape_string($this->dating->getID()).", ";
+                        if($this->dating->getDatingErrorPositive()!=NULL) 			$updateSQL2.= "datingerrorpositive = ".pg_escape_string($this->dating->getDatingErrorPositive()).", ";
+                        if($this->dating->getDatingErrorNegative()!=NULL) 			$updateSQL2.= "datingerrornegative = ".pg_escape_string($this->dating->getDatingErrorNegative()).", ";
                         $updateSQL2 = substr($updateSQL2, 0 , -2);
-                        $updateSQL2.= " WHERE measurementid=".$this->getMeasurementID()."; ";
+                        $updateSQL2.= " WHERE measurementid=".pg_escape_string($this->getMeasurementID())."; ";
 
                         // Update readings
-                        $deleteSQL = "DELETE FROM tblreading WHERE measurementid=".$this->getMeasurementID()."; ";
+                        $deleteSQL = "DELETE FROM tblreading WHERE measurementid=".pg_escape_string($this->getMeasurementID())."; ";
                         $relyear = 0;
                         foreach($this->readingsArray as $key => $value)
                         {
-                            $insertSQL .= "INSERT INTO tblreading (measurementid, relyear, reading) VALUES (".$this->getMeasurementID().", ".$relyear.", ".$value['value']."); ";
+                            $insertSQL .= "INSERT INTO tblreading (measurementid, relyear, reading) VALUES (".pg_escape_string($this->getMeasurementID()).", ".pg_escape_string($relyear).", ".pg_escape_string($value['value'])."); ";
                             $relyear++;
                         }
                     }
@@ -1359,11 +1363,11 @@ class measurement extends measurementEntity implements IDBAccessor
                     // Update the tblvmeasurement table
                     $updateSQL = "UPDATE tblvmeasurement SET ";
                     
-                    if($this->getVMeasurementOp()!=NULL)		$updateSQL.= "vmeasurementopid ='".$this->vmeasurementOp->getID()."', ";
-                    if($this->getVMeasurementOpParam()!=NULL)	$updateSQL.= "vmeasurementopparameter ='".$this->vmeasurementOp->getParamID()."', ";
-                    if($this->getCode()!=NULL)               	$updateSQL.= "code = '".$this->getCode()."', ";
+                    if($this->getVMeasurementOp()!=NULL)		$updateSQL.= "vmeasurementopid ='".pg_escape_string($this->vmeasurementOp->getID())."', ";
+                    if($this->getVMeasurementOpParam()!=NULL)	$updateSQL.= "vmeasurementopparameter ='".pg_escape_string($this->vmeasurementOp->getParamID())."', ";
+                    if($this->getCode()!=NULL)               	$updateSQL.= "code = '".pg_escape_string($this->getCode())."', ";
                     if($this->getComments()!=NULL)        		$updateSQL.= "comments = '".pg_escape_string($this->getComments())."', ";
-                    if($this->author->getID()!=NULL)			$updateSQL.= "owneruserid = '".$this->author->getID()."', ";
+                    if($this->author->getID()!=NULL)			$updateSQL.= "owneruserid = '".pg_escape_string($this->author->getID())."', ";
                     if($this->usage!=NULL)						$updateSQL.= "usage = '".pg_escape_string($this->usage)."', ";
                     if($this->usageComments!=NULL)				$updateSQL.= "usagecomments= '".pg_escape_string($this->usageComments)."', ";
                     if($this->objective!=NULL)					$updateSQL.= "objective= '".pg_escape_string($this->objective)."', ";
@@ -1441,12 +1445,12 @@ class measurement extends measurementEntity implements IDBAccessor
                     if($this->vmeasurementOp->getValue()=="Direct")
                     {
                         // This is a direct measurement so we can delete the tblmeasurement entry and everything else should cascade delete
-                        $deleteSQL = "DELETE FROM tblmeasurement WHERE measurementid=".$this->getMeasurementID().";"; 
+                        $deleteSQL = "DELETE FROM tblmeasurement WHERE measurementid=".pg_escape_string($this->getMeasurementID()).";"; 
                     }
                     else
                     {
                         // This is a derived measurement so we just delete the tblvmeasurement record and let everything else cascade delete
-                        $deleteSQL = "DELETE FROM tblvmeasurement WHERE vmeasurementid=".$this->getID().";"; 
+                        $deleteSQL = "DELETE FROM tblvmeasurement WHERE vmeasurementid=".pg_escape_string($this->getID()).";"; 
                     }
 
                     // Perform deletes using transactions

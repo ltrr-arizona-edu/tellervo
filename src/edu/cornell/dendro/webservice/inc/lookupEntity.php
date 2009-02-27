@@ -51,7 +51,9 @@ class lookupEntity
 		if( ($id!=NULL) && ($value==NULL) )
 		{
 			// ID but no value
-			$sql = "SELECT ".$this->fieldname." AS thevalue FROM ".$this->tablename." WHERE ".$this->idfieldname." = '".$id."'";
+			$sql =   "SELECT ".pg_escape_string($this->fieldname)." AS thevalue "
+				 	."FROM ".pg_escape_string($this->tablename)." "
+				 	."WHERE ".pg_escape_string($this->idfieldname)." = '".pg_escape_string($id)."'";
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
@@ -78,7 +80,9 @@ class lookupEntity
 		elseif ( ($id==NULL) && ($value!=NULL) )
 		{	
 			// Value given but no ID
-			$sql = "SELECT ".$this->idfieldname." AS theid FROM ".$this->tablename." WHERE ".$this->fieldname." = '".$value."'";
+			$sql =   "SELECT ".pg_escape_string($this->idfieldname)." AS theid "
+					."FROM ".pg_escape_string($this->tablename)." "
+					."WHERE ".pg_escape_string($this->fieldname)." = '".pg_escape_string($value)."'";
 		
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)

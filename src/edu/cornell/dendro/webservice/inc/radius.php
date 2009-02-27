@@ -46,7 +46,7 @@ class radius extends radiusEntity implements IDBAccessor
         global $dbconn;
         
         $this->setID($theID);
-        $sql = "SELECT * FROM vwtblradius WHERE radiusid='".$this->getID()."'";
+        $sql = "SELECT * FROM vwtblradius WHERE radiusid='".pg_escape_string($this->getID())."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -142,7 +142,7 @@ class radius extends radiusEntity implements IDBAccessor
 
         global $dbconn;
 
-        $sql  = "select measurementid from tblmeasurement where radiusid=".$this->getID();
+        $sql  = "select measurementid from tblmeasurement where radiusid=".pg_escape_string($this->getID());
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -435,18 +435,18 @@ class radius extends radiusEntity implements IDBAccessor
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                        if($this->getTitle()!=NULL)                   				$sql.="'".$this->getTitle()             																					. "', ";
-                        if(isset($this->parentEntityArray[0]))      				$sql.="'".$this->parentEntityArray[0]->getID() 																. "', ";
-                        if($this->getBarkPresent()!=NULL)							$sql.="'".formatBool($this->getBarkPresent(),"pg")					. "', ";
-                        if($this->getHeartwood()!=NULL)								$sql.="'".$this->getHeartwood(true). "', ";
-                        if($this->getLastRingUnderBark()!=NULL)						$sql.="'".$this->getLastRingUnderBark()																					. "', ";
-                        if($this->getMissingHeartwoodRingsToPith()!=NULL)			$sql.="'".$this->getMissingHeartwoodRingsToPith()														. "', ";
-                        if($this->getMissingHeartwoodRingsToPithFoundation()!=NULL)	$sql.="'".$this->getMissingHeartwoodRingsToPithFoundation()				. "', ";
-                        if($this->getMissingSapwoodRingsToBark()!=NULL)				$sql.="'".$this->getMissingSapwoodRingsToBark()																. "', ";
-                        if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$sql.="'".$this->getMissingSapwoodRingsToBarkFoundation()      . "', ";
-                        if($this->getNumberOfSapwoodRings()!=NULL)					$sql.="'".$this->getNumberOfSapwoodRings()																				. "', ";
-                        if($this->getPithPresent()!=NULL)							$sql.="'".dbHelper::formatBool($this->getPithPresent(),"pg")					. "', ";
-                        if($this->getSapwood()!=NULL)								$sql.="'".$this->getSapwood(true) 																							. "', ";                     
+                        if($this->getTitle()!=NULL)                   				$sql.="'".pg_escape_string($this->getTitle())."', ";
+                        if(isset($this->parentEntityArray[0]))      				$sql.="'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
+                        if($this->getBarkPresent()!=NULL)							$sql.="'".formatBool($this->getBarkPresent(),"pg"). "', ";
+                        if($this->getHeartwood()!=NULL)								$sql.="'".pg_escape_string($this->getHeartwood(true))."', ";
+                        if($this->getLastRingUnderBark()!=NULL)						$sql.="'".pg_escape_string($this->getLastRingUnderBark())."', ";
+                        if($this->getMissingHeartwoodRingsToPith()!=NULL)			$sql.="'".pg_escape_string($this->getMissingHeartwoodRingsToPith())."', ";
+                        if($this->getMissingHeartwoodRingsToPithFoundation()!=NULL)	$sql.="'".pg_escape_string($this->getMissingHeartwoodRingsToPithFoundation())."', ";
+                        if($this->getMissingSapwoodRingsToBark()!=NULL)				$sql.="'".pg_escape_string($this->getMissingSapwoodRingsToBark())."', ";
+                        if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$sql.="'".pg_escape_string($this->getMissingSapwoodRingsToBarkFoundation())."', ";
+                        if($this->getNumberOfSapwoodRings()!=NULL)					$sql.="'".pg_escape_string($this->getNumberOfSapwoodRings())."', ";
+                        if($this->getPithPresent()!=NULL)							$sql.="'".dbHelper::formatBool($this->getPithPresent(),"pg")."', ";
+                        if($this->getSapwood()!=NULL)								$sql.="'".pg_escape_string($this->getSapwood(true))."', ";                     
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
@@ -456,20 +456,20 @@ class radius extends radiusEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql.="UPDATE tblradius SET ";
-                        if($this->getCode()!=NULL)                   				$sql.="code='".$this->getCode()             																					. "', ";
-                        if(isset($this->parentEntityArray[0]))      				$sql.="sampleid='".$this->parentEntityArray[0]->getID() 																. "', ";
-                        if($this->getBarkPresent()!=NULL)							$sql.="barpresent='".formatBool($this->getBarkPresent(),"pg")					. "', ";
-                        if($this->getHeartwood()!=NULL)								$sql.="heartwoodid='".$this->getHeartwood(true). "', ";
-                        if($this->getLastRingUnderBark()!=NULL)						$sql.="lastringunderbark='".$this->getLastRingUnderBark()																					. "', ";
-                        if($this->getMissingHeartwoodRingsToPith()!=NULL)			$sql.="missingheartwoodringstopith='".$this->getMissingHeartwoodRingsToPith()														. "', ";
-                        if($this->getMissingHeartwoodRingsToPithFoundation()!=NULL)	$sql.="missingheartwoodringstopithfoundation='".$this->getMissingHeartwoodRingsToPithFoundation()				. "', ";
-                        if($this->getMissingSapwoodRingsToBark()!=NULL)				$sql.="missingsapwoodringstobark='".$this->getMissingSapwoodRingsToBark()																. "', ";
-                        if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$sql.="missingsapwoodringstobarkfoundation='".$this->getMissingSapwoodRingsToBarkFoundation()      . "', ";
-                        if($this->getNumberOfSapwoodRings()!=NULL)					$sql.="numberofsapwoodrings='".$this->getNumberOfSapwoodRings()																				. "', ";
-                        if($this->getPithPresent()!=NULL)							$sql.="pithpresent='".formatBool($this->getPithPresent(),"pg")					. "', ";
-                        if($this->getSapwood()!=NULL)								$sql.="sapwood='".$this->getSapwood(true) . "', ";        
+                        if($this->getCode()!=NULL)                   				$sql.="code='".pg_escape_string($this->getCode())."', ";
+                        if(isset($this->parentEntityArray[0]))      				$sql.="sampleid='".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
+                        if($this->getBarkPresent()!=NULL)							$sql.="barpresent='".formatBool($this->getBarkPresent(),"pg")."', ";
+                        if($this->getHeartwood()!=NULL)								$sql.="heartwoodid='".pg_escape_string($this->getHeartwood(true))."', ";
+                        if($this->getLastRingUnderBark()!=NULL)						$sql.="lastringunderbark='".pg_escape_string($this->getLastRingUnderBark())."', ";
+                        if($this->getMissingHeartwoodRingsToPith()!=NULL)			$sql.="missingheartwoodringstopith='".pg_escape_string($this->getMissingHeartwoodRingsToPith())."', ";
+                        if($this->getMissingHeartwoodRingsToPithFoundation()!=NULL)	$sql.="missingheartwoodringstopithfoundation='".pg_escape_string($this->getMissingHeartwoodRingsToPithFoundation())."', ";
+                        if($this->getMissingSapwoodRingsToBark()!=NULL)				$sql.="missingsapwoodringstobark='".pg_escape_string($this->getMissingSapwoodRingsToBark())."', ";
+                        if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$sql.="missingsapwoodringstobarkfoundation='".pg_escape_string($this->getMissingSapwoodRingsToBarkFoundation())."', ";
+                        if($this->getNumberOfSapwoodRings()!=NULL)					$sql.="numberofsapwoodrings='".pg_escape_string($this->getNumberOfSapwoodRings())."', ";
+                        if($this->getPithPresent()!=NULL)							$sql.="pithpresent='".formatBool($this->getPithPresent(),"pg")."', ";
+                        if($this->getSapwood()!=NULL)								$sql.="sapwood='".pg_escape_string($this->getSapwood(true))."', ";        
                     $sql = substr($sql, 0, -2);
-                    $sql.= " WHERE radiusid='".$this->getID()."'";
+                    $sql.= " WHERE radiusid='".pg_escape_string($this->getID())."'";
                 }
  
                 // Run SQL command
@@ -530,7 +530,7 @@ class radius extends radiusEntity implements IDBAccessor
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tblradius where radiusid=".$this->getID();
+                $sql = "DELETE FROM tblradius WHERE radiusid=".pg_escape_string($this->getID());
 
                 // Run SQL command
                 if ($sql)

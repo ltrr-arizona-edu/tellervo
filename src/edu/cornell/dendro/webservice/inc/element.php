@@ -49,7 +49,7 @@ class element extends elementEntity implements IDBAccessor
         global $gmlNS;
                 
         // First find the immediate object entity parent
-           $sql = "SELECT * from cpgdb.findelementobjectancestors(".$this->getID().")";
+           $sql = "SELECT * from cpgdb.findelementobjectancestors(".pg_escape_string($this->getID()).")";
            $dbconnstatus = pg_connection_status($dbconn);
            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
            {
@@ -102,7 +102,7 @@ class element extends elementEntity implements IDBAccessor
         
         $this->setID($theID);
         //$sql = "select tblelement.* tlkplocationtype.code as locationtype from tlkplocationtype, tblelement where elementid='".$this->getID()."' and tblelement.locationtypeid=tlkplocationtype.locationtypeid";
-        $sql = "SELECT * from vwtblelement WHERE elementid='".$this->getID()."'";
+        $sql = "SELECT * from vwtblelement WHERE elementid='".pg_escape_string($this->getID())."'";
 
 
         $dbconnstatus = pg_connection_status($dbconn);
@@ -141,7 +141,7 @@ class element extends elementEntity implements IDBAccessor
                 
                 if($format=='summary')
                 {
-                    $sql = "select cpgdb.getlabel('element', '".$this->getID()."')";
+                    $sql = "select cpgdb.getlabel('element', '".pg_escape_string($this->getID())."')";
                     pg_send_query($dbconn, $sql);
                     $result = pg_get_result($dbconn);
                     $row = pg_fetch_array($result);
@@ -171,7 +171,7 @@ class element extends elementEntity implements IDBAccessor
     {
         global $dbconn;
 
-        $sql2 = "select sampleid from tblsample where elementid=".$this->getID();
+        $sql2 = "select sampleid from tblsample where elementid=".pg_escape_string($this->getID());
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -557,28 +557,28 @@ class element extends elementEntity implements IDBAccessor
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                    	if (isset($this->parentEntityArray[0]))					$sql.= "'".$this->parentEntityArray[0]->getID()."', ";                    
-                    	if ($this->getCode()!=NULL)								$sql.= "'".$this->getCode().  "', ";                    
-                        if ($this->taxon->getID()!=NULL)                        $sql.= "'".$this->taxon->getID().   "', ";
-                        if ($this->getAuthenticity()!=NULL)						$sql.= "'".$this->getAuthenticity(true)."', ";
-                        if ($this->getShape()!=NULL)							$sql.= "'".$this->getShape(true)."', ";
+                    	if (isset($this->parentEntityArray[0]))					$sql.= "'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";                    
+                    	if ($this->getCode()!=NULL)								$sql.= "'".pg_escape_string($this->getCode()).  "', ";                    
+                        if ($this->taxon->getID()!=NULL)                        $sql.= "'".pg_escape_string($this->taxon->getID()).   "', ";
+                        if ($this->getAuthenticity()!=NULL)						$sql.= "'".pg_escape_string($this->getAuthenticity(true))."', ";
+                        if ($this->getShape()!=NULL)							$sql.= "'".pg_escape_string($this->getShape(true))."', ";
                         if ($this->hasDimensions())								
 	                    {
-	                    	if($this->getDimensionUnits()!=NULL)				$sql.= "'".$this->getDimensionUnits()."', ";
-	                    	if($this->getDimension('height')!=NULL)   			$sql.= "'".$this->getDimension('height')."', ";
-	                    	if($this->getDimension('width')!=NULL)    			$sql.= "'".$this->getDimension('width')."', ";
-	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "'".$this->getDimension('depth')."', ";
-	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "'".$this->getDimension('diameter')."', ";;              	
+	                    	if($this->getDimensionUnits()!=NULL)				$sql.= "'".pg_escape_string($this->getDimensionUnits())."', ";
+	                    	if($this->getDimension('height')!=NULL)   			$sql.= "'".pg_escape_string($this->getDimension('height'))."', ";
+	                    	if($this->getDimension('width')!=NULL)    			$sql.= "'".pg_escape_string($this->getDimension('width'))."', ";
+	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "'".pg_escape_string($this->getDimension('depth'))."', ";
+	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "'".pg_escape_string($this->getDimension('diameter'))."', ";;              	
 	                    }
-                        if ($this->getType()!=NULL)								$sql.= "'".$this->getType(true)."', ";
-                        if ($this->getFile()!=NULL)								$sql.= "'".$this->getFile()."', ";
-                        if ($this->location->getLocationType()!=NULL)			$sql.= "'".$this->location->getLocationType()."', ";
-                        if ($this->location->getLocationPrecision()!=NULL)		$sql.= "'".$this->location->getLocationPrecision()."', ";
-                        if ($this->location->getLocationComment()!=NULL)		$sql.= "'".$this->location->getLocationComment()."', ";
-                        if ($this->location->getLocationGeometry()!=NULL)		$sql.= "'".$this->location->getLocationGeometry()."', ";
-                        if ($this->getProcessing()!=NULL)						$sql.= "'".$this->getProcessing()."', ";
-                        if ($this->getMarks()!=NULL)							$sql.= "'".$this->getMarks()."', ";
-                        if ($this->getDescription()!=NULL)						$sql.= "'".$this->getDescription()."', ";                     
+                        if ($this->getType()!=NULL)								$sql.= "'".pg_escape_string($this->getType(true))."', ";
+                        if ($this->getFile()!=NULL)								$sql.= "'".pg_escape_string($this->getFile())."', ";
+                        if ($this->location->getLocationType()!=NULL)			$sql.= "'".pg_escape_string($this->location->getLocationType())."', ";
+                        if ($this->location->getLocationPrecision()!=NULL)		$sql.= "'".pg_escape_string($this->location->getLocationPrecision())."', ";
+                        if ($this->location->getLocationComment()!=NULL)		$sql.= "'".pg_escape_string($this->location->getLocationComment())."', ";
+                        if ($this->location->getLocationGeometry()!=NULL)		$sql.= "'".pg_escape_string($this->location->getLocationGeometry())."', ";
+                        if ($this->getProcessing()!=NULL)						$sql.= "'".pg_escape_string($this->getProcessing())."', ";
+                        if ($this->getMarks()!=NULL)							$sql.= "'".pg_escape_string($this->getMarks())."', ";
+                        if ($this->getDescription()!=NULL)						$sql.= "'".pg_escape_string($this->getDescription())."', ";                     
                      // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
@@ -588,10 +588,31 @@ class element extends elementEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql = "update tblelement set ";
-                        if ($this->taxon->getID()!=NULL)                                  $sql.= "taxonid='".    $this->taxon->getID()."', ";
+                    	if (isset($this->parentEntityArray[0]))					$sql.= "objectid='".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
+                    	if ($this->getCode()!=NULL)								$sql.= "code='".pg_escape_string($this->getCode())."', ";
+                        if ($this->taxon->getID()!=NULL)                        $sql.= "taxonid='".pg_escape_string($this->taxon->getID())."', ";
+                        if ($this->getAuthenticity()!=NULL)						$sql.= "elementauthenticityid='".pg_escape_string($this->getAuthenticity(true))."', ";
+                        if ($this->getShape()!=NULL)							$sql.= "elementshapeid='".pg_escape_string($this->getShape(true))."', ";
+                        if ($this->hasDimensions())								
+	                    {
+	                    	if($this->getDimensionUnits()!=NULL)				$sql.= "units='".pg_escape_string($this->getDimensionUnits())."', ";
+	                    	if($this->getDimension('height')!=NULL)   			$sql.= "height='".pg_escape_string($this->getDimension('height'))."', ";
+	                    	if($this->getDimension('width')!=NULL)    			$sql.= "width='".pg_escape_string($this->getDimension('width'))."', ";
+	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "depth='".pg_escape_string($this->getDimension('depth'))."', ";
+	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "diameter=".pg_escape_string($this->getDimension('diameter'))."', ";            	
+	                    }
+                        if ($this->getType()!=NULL)								$sql.= "elementtypeid='".pg_escape_string($this->getType(true))."', ";
+                        if ($this->getFile()!=NULL)								$sql.= "file='".pg_escape_string($this->getFile())."', ";
+                        if ($this->location->getType()!=NULL)					$sql.= "locationtype='".pg_escape_string($this->location->getType())."', ";
+                        if ($this->location->getPrecision()!=NULL)				$sql.= "locationprecision='".pg_escape_string($this->location->getPrecision())."', ";
+                        if ($this->location->getComment()!=NULL)				$sql.= "locationcomment='".pg_escape_string($this->location->getComment())."', ";
+                        if ($this->location->getGeometry()!=NULL)				$sql.= "locationgeometry='".pg_escape_string($this->location->getGeometry())."', ";
+                        if ($this->getProcessing()!=NULL)						$sql.= "processing='".pg_escape_string($this->getProcessing()).", ";
+                        if ($this->getMarks()!=NULL)							$sql.= "marks='".pg_escape_string($this->getMarks())."', ";
+                        if ($this->getDescription()!=NULL)						$sql.= "description='".pg_escape_string($this->getDescription())."', ";	  
                      // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
-                    $sql .= " where elementid=".$this->getID();
+                    $sql .= " where elementid=".pg_escape_string($this->getID());
                 }
                 //echo $sql;
 
