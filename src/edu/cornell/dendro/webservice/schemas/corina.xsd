@@ -241,8 +241,8 @@
 						<xs:attribute name="code" type="xs:string"/>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="timing" minOccurs="0" maxOccurs="unbounded">
-				</xs:element>	
+				<xs:element name="timing" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="nonce" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -254,7 +254,6 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="sql" minOccurs="0" maxOccurs="1"/>
-				<xs:element ref="nonce" minOccurs="0" maxOccurs="1"/>
                                 
                 <xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:element" minOccurs="0" maxOccurs="unbounded"/>

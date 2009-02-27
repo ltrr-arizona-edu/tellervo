@@ -232,12 +232,15 @@ class authenticationParameters implements IParams
     function setParamsFromXMLRequest()
     {
     	$authTag = $this->xmlRequestDom->getElementsByTagName("authenticate")->item(0);
-        if($authTag->getAttribute("username")!=NULL)   $this->username   = $authTag->getAttribute("username");
-        if($authTag->getAttribute("password")!=NULL)   $this->password   = $authTag->getAttribute("password");
-        if($authTag->getAttribute("cnonce")!=NULL)     $this->cnonce     = $authTag->getAttribute("cnonce");
-        if($authTag->getAttribute("snonce")!=NULL)     $this->snonce     = $authTag->getAttribute("snonce");
-        if($authTag->getAttribute("hash")!=NULL)       $this->hash       = $authTag->getAttribute("hash");
-        if($authTag->getAttribute("seq")!=NULL)        $this->seq        = $authTag->getAttribute("seq");
+    	if($authTag!=NULL)
+    	{
+	        if($authTag->getAttribute("username")!=NULL)   $this->username   = $authTag->getAttribute("username");
+	        if($authTag->getAttribute("password")!=NULL)   $this->password   = $authTag->getAttribute("password");
+	        if($authTag->getAttribute("cnonce")!=NULL)     $this->cnonce     = $authTag->getAttribute("cnonce");
+	        if($authTag->getAttribute("snonce")!=NULL)     $this->snonce     = $authTag->getAttribute("snonce");
+	        if($authTag->getAttribute("hash")!=NULL)       $this->hash       = $authTag->getAttribute("hash");
+	        if($authTag->getAttribute("seq")!=NULL)        $this->seq        = $authTag->getAttribute("seq");
+    	}
     }
     
     function getUsername()

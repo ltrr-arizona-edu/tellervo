@@ -88,7 +88,7 @@ class meta
     $message = array($theLabel => round(((microtime(true)*1000)-($this->startTimestamp*1000)), 0));
     array_push($this->timing, $message);
   }
-
+  
   function requestLogin($nonce, $seq, $messageType="Error")
   {
       $this->seq=$seq;

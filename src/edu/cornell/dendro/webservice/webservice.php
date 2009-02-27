@@ -250,16 +250,6 @@ if($myMetaHeader->status != "Error")
         }
 
         // ********************
-        // GET NONCE
-        // ********************
-        
-        if($myRequest->getCrudMode()=='nonce') 
-        {
-            $myObject->setNonce($paramObj, $myAuth);
-
-        }
-
-        // ********************
         // Populate class with data stored in db 
         // ********************
                         	

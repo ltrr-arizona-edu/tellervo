@@ -60,7 +60,7 @@ class request
     	$this->crudMode = strtolower($crudMode);
     	$myMetaHeader->setRequestType($this->getCrudMode());
     	
-    	
+    	 
 		// Check authentication and request login if necessary
 		if($myAuth->isLoggedIn())
 		{
@@ -68,7 +68,8 @@ class request
 		}
 		elseif( ($this->getCrudMode()=="nonce"))
 		{
-		
+			$seq = $myAuth->sequence();
+		    $myMetaHeader->requestLogin($myAuth->nonce($seq), $seq, 'OK');
 		}
 		elseif( ($this->getCrudMode()!="plainlogin") && ($this->getCrudMode()!="securelogin"))
 		{
