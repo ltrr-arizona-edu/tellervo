@@ -296,15 +296,7 @@
         <xs:element name="objectTypeDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="objectType" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                            	<xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                            	</xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="objectType" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
@@ -312,15 +304,7 @@
         <xs:element name="elementTypeDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="elementType" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                                <xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                                </xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="elementType" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
@@ -329,15 +313,7 @@
         <xs:element name="sampleTypeDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="sampleType" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                                <xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                                </xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="sampleType" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
@@ -345,15 +321,7 @@
         <xs:element name="coverageTemporalDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="coverageTemporal" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                                <xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                                </xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="coverageTemporal" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
@@ -361,15 +329,7 @@
         <xs:element name="coverageTemporalFoundationDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="coverageTemporalFoundation" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                                <xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                                </xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="coverageTemporalFoundation" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
@@ -377,15 +337,7 @@
         <xs:element name="locationTypeDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="locationType" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                                <xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                                </xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="locationType" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
@@ -393,15 +345,7 @@
         <xs:element name="elementAuthenticityDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="elementAuthenticity" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                                <xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                                </xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="elementAuthenticity" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
@@ -409,15 +353,7 @@
         <xs:element name="elementShapeDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="elementShape" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                                <xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                                </xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="elementShape" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
@@ -425,15 +361,7 @@
         <xs:element name="sapwoodDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="sapwood" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                                <xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                                </xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="sapwood" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
@@ -441,15 +369,7 @@
         <xs:element name="heartwoodDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="heartwood" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                                <xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                                </xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="heartwood" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
@@ -457,15 +377,7 @@
         <xs:element name="measurementVariableDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="measurementVariable" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                                <xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                                </xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="measurementVariable" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
@@ -473,15 +385,7 @@
         <xs:element name="datingTypeDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="datingType" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                                <xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                                </xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="datingType" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
@@ -490,7 +394,6 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element ref="tridas:taxon" minOccurs="0" maxOccurs="unbounded"/>
-                        
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
@@ -498,15 +401,7 @@
         <xs:element name="regionDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="region" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                                <xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                                </xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="region" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
@@ -514,15 +409,7 @@
         <xs:element name="readingNoteDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="readingNote" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:simpleContent>
-	                                <xs:extension base="xs:string">
-	                                        <xs:attribute name="id" type="xs:integer" use="required"/>
-	                                </xs:extension>
-                            	</xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="readingNote" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
