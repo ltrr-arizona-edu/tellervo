@@ -34,6 +34,58 @@ class measurement extends measurementEntity implements IDBAccessor
     /* SETTERS */
     /***********/
 
+    function setParamsFromDBRow($row)
+    {
+        global $debugFlag;
+        global $myMetaHeader;
+
+        if ($debugFlag===TRUE) $myMetaHeader->setTiming("Setting measurement parameters from DB result");                 
+        $this->setID($row['vmeasurementid']);
+        $this->setAnalyst($row['measuredbyid']);
+        $this->setAuthor($row['owneruserid']);
+        //$this->setCertaintyLevel();
+        $this->setTitle($row['code']);
+        $this->setComments($row['comments']);
+        $this->setDatingType($row['datingtypeid'],$row['datingtype']);
+        $this->dating->setDatingErrors($row['datingerrorpositive'], $row['datingerrornegative']);
+        //$this->setDendrochronologist();
+        $this->setFirstYear($row['startyear']);
+        $this->setIsLegacyCleaned(dbHelper::formatBool($row['islegacycleaned']));
+        $this->setIsPublished(dbHelper::formatBool($row['ispublished']));
+        $this->setJustification($row['justification']);
+        $this->setConfidenceLevel($row['confidence']);
+        $this->setMasterVMeasurementID($row['mastervmeasurementid']);
+        $this->setMeasurementCount($row['measurementcount']);
+        $this->setMeasurementID($row['measurementid']);
+        $this->setMeasurementMethod($row['measuringmethodid'], NULL);
+        $this->setMeasuringUnits($row['unitid'], NULL, $row['power']);
+        $this->setVariable($row['measurementvariableid'], NULL);
+        //$this->setNewStartYear();
+        $this->setObjective($row['objective']);
+        //$this->setOwnerUserID();
+        $this->setProvenance($row['provenance']);
+        //$this->setRadiusID();
+        $this->setReadingCount($row['readingcount']);
+        //$this->setSignificanceLevel();
+        $this->setVMeasurementOp($row['vmeasurementopid'], $row['opname']);	
+        $this->setStandardizingMethod($row['vmeasurementopparameter'], null);
+        $this->setCreatedTimestamp($row['createdtimestamp']);
+        $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
+        $this->setExtent($row['extentgeometry']);
+        //$this->setExtentComment($row['extentcomment']);
+        $this->setUsage($row['usage']);
+        $this->setUsageComments($row['usagecomments']);
+        //$this->setSummaryInfo($row['objectcode'], $row['objectcount'], $row['commontaxonname'], $row['taxoncount'], $row['prefix']);
+        if($this->vmeasurementOp=='Index') $this->setVMeasurementOpParam($row['vmeasurementopparameter']);
+        if($this->vmeasurementOp=='Crossdate') $this->setCrossdateParamsFromDB();
+        
+        $this->setReadingsFromDB();
+            
+        if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setting measurement parameters from DB result");   
+        return true;
+
+    }
+
     function setParamsFromDB($theID, $format="standard")
     {
     	global $dbconn;
@@ -48,8 +100,6 @@ class measurement extends measurementEntity implements IDBAccessor
         // the uberquery - one query to rule them all?     
         $sql = "SELECT * FROM vwcomprehensivevm WHERE vmeasurementid='".pg_escape_string($this->getID())."'";
         
-        // the query that makes the server make the measurement
-        $sql2 = "select * from cpgdb.getvmeasurementresult('".pg_escape_string($this->getID())."')";
                    
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -70,73 +120,19 @@ class measurement extends measurementEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
+                $this->setParamsFromDBRow($row);
 
-            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Setting measurement parameters from DB result");                 
-                $this->setAnalyst($row['measuredbyid']);
-                $this->setAuthor($row['owneruserid']);
-                //$this->setCertaintyLevel();
-                $this->setTitle($row['code']);
-                $this->setComments($row['comments']);
-                $this->setDatingType($row['datingtypeid'],$row['datingtype']);
-                $this->dating->setDatingErrors($row['datingerrorpositive'], $row['datingerrornegative']);
-                //$this->setDendrochronologist();
-                $this->setFirstYear($row['startyear']);
-                $this->setIsLegacyCleaned(dbHelper::formatBool($row['islegacycleaned']));
-                $this->setIsPublished(dbHelper::formatBool($row['ispublished']));
-                $this->setJustification($row['justification']);
-                $this->setConfidenceLevel($row['confidence']);
-                $this->setMasterVMeasurementID($row['mastervmeasurementid']);
-                $this->setMeasurementCount($row['measurementcount']);
-                $this->setMeasurementID($row['measurementid']);
-                $this->setMeasurementMethod($row['measuringmethodid'], NULL);
-                $this->setMeasuringUnits($row['unitid'], NULL, $row['power']);
-                $this->setVariable($row['measurementvariableid'], NULL);
-                //$this->setNewStartYear();
-                $this->setObjective($row['objective']);
-                //$this->setOwnerUserID();
-                $this->setProvenance($row['provenance']);
-                //$this->setRadiusID();
-                $this->setReadingCount($row['readingcount']);
-                //$this->setSignificanceLevel();
-				$this->setVMeasurementOp($row['vmeasurementopid'], $row['opname']);	
-                $this->setStandardizingMethod($row['vmeasurementopparameter'], null);
-                $this->setCreatedTimestamp($row['createdtimestamp']);
-                $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
-				$this->setExtent($row['extentgeometry']);
-				//$this->setExtentComment($row['extentcomment']);
-				$this->setUsage($row['usage']);
-				$this->setUsageComments($row['usagecomments']);
-                //$this->setSummaryInfo($row['objectcode'], $row['objectcount'], $row['commontaxonname'], $row['taxoncount'], $row['prefix']);
-
-                if($this->vmeasurementOp=='Index')
-                {
-                    // indexid for a sum
-                    $this->setVMeasurementOpParam($row['vmeasurementopparameter']);
-                }
-
-                if($this->vmeasurementOp=='Crossdate')
-                {
-                    $this->setCrossdateParamsFromDB();
-                }
 
                 if (($format=="standard") || ($format=="comprehensive") || ($format=="summary") )
                 {
                     $this->setReferencesFromDB();
                 }
                 
-                if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setting measurement parameters from DB result");   
-
-                
 		// Deal with readings if we actually need them...
-		if($format=="standard" || $format=="comprehensive") {
-			        if ($debugFlag===TRUE) $myMetaHeader->setTiming("Running cpgdb.getVMeasurementResult()");   
-                    pg_send_query($dbconn, $sql2);
-                    $result2 = pg_get_result($dbconn);
-                    $row2 = pg_fetch_array($result2);
-
-                    $this->vmeasurementResultID = $row2['vmeasurementresultid'];
+                if($format=="standard" || $format=="comprehensive") 
+                {
                     $success = $this->setReadingsFromDB();
-			        if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed running cpgdb.getVMeasurementResult()");                       
+		    if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed running cpgdb.getVMeasurementResult()");                       
                     return $success;
 		}
             }
@@ -207,10 +203,22 @@ class measurement extends measurementEntity implements IDBAccessor
     {
         // Add all readings data to the object
         global $dbconn;
+        global $myMetaHeader;
+        global $debugFlag;
 
         // Empty the reading array in case we have data already in there
         unset($this->readingsArray);
         $this->readingsArray = array();
+        
+        
+        // Call getVMeasurementResult().
+        // Do we really need to do this?
+        if ($debugFlag===TRUE) $myMetaHeader->setTiming("Running cpgdb.getVMeasurementResult()");   
+        $sql2 = "SELECT * FROM cpgdb.getvmeasurementresult('".pg_escape_string($this->getID())."')";
+        pg_send_query($dbconn, $sql2);
+        $result2 = pg_get_result($dbconn);
+        $row2 = pg_fetch_array($result2);
+        $this->vmeasurementResultID = $row2['vmeasurementresultid'];
 
         $sql  = "select * from cpgdb.getvmeasurementreadingresult('".pg_escape_string($this->getVMeasurementResultID())."') order by relyear asc";
         $dbconnstatus = pg_connection_status($dbconn);
@@ -522,8 +530,6 @@ class measurement extends measurementEntity implements IDBAccessor
                     $this->setErrorMessage("902","Missing parameter - a new measurement based on other measurements must include an operation.");
                     return false;
                 }
-                echo "size =".sizeof($paramsObj->referencesArray);
-                echo "type = ".$paramsObj->getType();
                 if((sizeof($paramsObj->referencesArray)<2) && ($paramsObj->getType()=='Sum') ) 
                 {
                 	$this->setErrorMessage("902","You need to supply two or more measurements if you want to create a sum", E_USER_ERROR);

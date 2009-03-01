@@ -35,7 +35,26 @@ class object extends objectEntity implements IDBAccessor
     /***********/
     /* SETTERS */
     /***********/
-    
+
+    function setParamsFromDBRow($row)
+    {
+        global $debugFlag;
+        global $myMetaHeader;
+        if ($debugFlag===TRUE) $myMetaHeader->setTiming("Setting object parameters for objectid ".$row['objectid']);                 
+        // Set parameters from db
+        $this->setID($row['objectid']);
+        $this->setCode($row['code']);
+        $this->setDescription($row['description']);
+        $this->setTitle($row['title']);
+        $this->setCreator($row['creator']);
+        $this->setOwner($row['owner']);
+        $this->setFile($row['file']);
+        $this->setType($row['type']);
+        $this->setCoverageTemporal($row['coveragetemporal'], $row['coveragetemporalfoundation']);
+        $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
+        $this->setCountOfChildVMeasurements($row['countofchildvmeasurements']);
+        return true;
+    }    
     
 	/**
 	 * Set this object's parameters from the database
@@ -78,17 +97,7 @@ class object extends objectEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->setID($row['objectid']);
-                $this->setCode($row['code']);
-                $this->setDescription($row['description']);
-                $this->setTitle($row['title']);
-                $this->setCreator($row['creator']);
-                $this->setOwner($row['owner']);
-                $this->setFile($row['file']);
-                $this->setType($row['type']);
-                $this->setCoverageTemporal($row['coveragetemporal'], $row['coveragetemporalfoundation']);
-                $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
-                $this->setCountOfChildVMeasurements($row['countofchildvmeasurements']);
+                $this->setParamsFromDBRow($row);
             }
 
         }

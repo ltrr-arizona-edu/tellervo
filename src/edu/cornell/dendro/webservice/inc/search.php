@@ -116,9 +116,11 @@ class search Implements IDBAccessor
         }
 
         // Build return object dependent SQL
-        $returnObjectSQL = $this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id as id ";
+        $returnObjectSQL = $this->tableName($this->returnObject).".* ";
+        //$returnObjectSQL = $this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id as id ";
         $orderBySQL      = "\n ORDER BY ".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id asc ";
-        $groupBySQL      = "\n GROUP BY ".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id" ;
+        //$groupBySQL      = "\n GROUP BY ".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id" ;
+        $groupBySQL = NULL;
         if ($myRequest->limit) $limitSQL = "\n LIMIT ".pg_escape_string($myRequest->limit);
         if ($myRequest->skip)  $skipSQL  = "\n OFFSET ".pg_escape_string($myRequest->skip);
 
@@ -162,27 +164,27 @@ class search Implements IDBAccessor
                 if($this->returnObject=="object") 
                 {
                     $myReturnObject = new object();
-                    $hasPermission = $myAuth->getPermission("read", "object", $row['id']);
+                    $hasPermission = $myAuth->getPermission("read", "object", $row['objectid']);
                 }
                 elseif($this->returnObject=="element")
                 {
                     $myReturnObject = new element();
-                    $hasPermission = $myAuth->getPermission("read", "element", $row['id']);
+                    $hasPermission = $myAuth->getPermission("read", "element", $row['elementid']);
                 }
                 elseif($this->returnObject=="sample") 
                 {
                     $myReturnObject = new sample();
-                    $hasPermission = $myAuth->getPermission("read", "sample", $row['id']);
+                    $hasPermission = $myAuth->getPermission("read", "sample", $row['sampleid']);
                 }
                 elseif($this->returnObject=="radius") 
                 {
                     $myReturnObject = new radius();
-                    $hasPermission = $myAuth->getPermission("read", "radius", $row['id']);
+                    $hasPermission = $myAuth->getPermission("read", "radius", $row['radiusid']);
                 }
                 elseif($this->returnObject=="vmeasurement")
                 {
                     $myReturnObject = new measurement();
-                    $hasPermission = $myAuth->getPermission("read", "measurement", $row['id']);
+                    $hasPermission = $myAuth->getPermission("read", "measurement", $row['vmeasurementid']);
                 }
                 else
                 {
@@ -201,7 +203,8 @@ class search Implements IDBAccessor
    
                 // Set parameters on new object and return XML
                 if ($debugFlag===TRUE) $myMetaHeader->setTiming("Get current entities details from database");
-                $success = $myReturnObject->setParamsFromDB($row['id']);
+                $success = $myReturnObject->setParamsFromDBRow($row);
+                //$success = $myReturnObject->setParamsFromDB($row['id']);
                 if ($debugFlag===TRUE) $myMetaHeader->setTiming("Got details from database");
 
                 // Do children if requested
@@ -378,19 +381,19 @@ class search Implements IDBAccessor
             return "vwtblradius";
             break;
         case "measurement":
-            return "vwtblmeasurement";
+            return "vwcomprehensivevm";
             break;
         case "vmeasurement":
-            return "vwtblvmeasurement";
+            return "vwcomprehensivevm";
             break;
         case "vmeasurementmetacache":
-            return "vwtblvmeasurementmetacache";
+            return "vwcomprehensivevm";
             break;
 //        case "vmeasurementresult":
 //            return "vwtblvmeasurementresult";
 //            break;
         case "vmeasurementderivedcache":
-            return "tblvmeasurementderivedcache";
+            return "vwcomprehensivevm";
             break;
         default:
             return false;
@@ -477,6 +480,22 @@ class search Implements IDBAccessor
             }
         }
         
+        
+        if( (($this->getLowestRelationshipLevel($tables)<=1) && ($this->getHighestRelationshipLevel($tables)>=1)) || ($this->returnObject == 'vmeasurement'))  
+        {
+            if($withinJoin)
+            {
+                $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurement")." ON ".$this->tableName("radius").".radiusid = ".$this->tableName("vmeasurement").".radiusid \n";
+            }
+            else
+            {
+                $fromSQL .= $this->tableName("vmeasuremnt")." \n";
+                $withinJoin = TRUE;
+            }
+
+        }
+
+        /*
         if( (($this->getLowestRelationshipLevel($tables)<=1) && ($this->getHighestRelationshipLevel($tables)>=1)) || ($this->returnObject == 'vmeasurement'))  
         {
             if($withinJoin)
@@ -493,7 +512,7 @@ class search Implements IDBAccessor
                 $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurement")." ON ".$this->tableName("vmeasurementderivedcache").".vmeasurementid = ".$this->tableName("vmeasurement").".vmeasurementid \n";
                 $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurementmetacache")." ON ".$this->tableName("vmeasurement").".vmeasurementid = ".$this->tableName("vmeasurementmetacache").".vmeasurementid \n";
             }
-        }
+        }*/
                
         return $fromSQL;
     }

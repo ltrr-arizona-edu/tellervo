@@ -88,6 +88,27 @@ class element extends elementEntity implements IDBAccessor
                }
            }	
     }
+
+
+    function setParamsFromDBRow($row)
+    {
+        $this->taxon->setParamsFromDB($row['taxonid']);
+        $this->taxon->setOriginalTaxon($row['originaltaxonname']);
+        $this->taxon->setHigherTaxonomy();
+        $this->setCode($row['code']);
+        $this->setCreatedTimestamp($row['createdtimestamp']);
+        $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
+        $this->setAuthenticity($row['elementauthenticity']);
+        $this->setShape($row['elementshape']);
+        $this->setDimensions($row['units'],$row['height'], $row['width'], $row['depth']);
+        $this->setDiameter($row['diameter']);
+        $this->setType($row['elementtype']);
+        $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
+        $this->setProcessing($row['processing']);
+        $this->setMarks($row['marks']);
+        $this->setDescription($row['description']);
+        return true;
+    }
    
     /**
      * Set the current element's parameters from the database
@@ -120,24 +141,7 @@ class element extends elementEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                //print_r($row);
-                //$this->subSiteID = $row['subsiteid'];
-                $this->taxon->setParamsFromDB($row['taxonid']);
-                $this->taxon->setOriginalTaxon($row['originaltaxonname']);
-                $this->taxon->setHigherTaxonomy();
-                $this->setCode($row['code']);
-                $this->setCreatedTimestamp($row['createdtimestamp']);
-                $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
-                $this->setAuthenticity($row['elementauthenticity']);
-                $this->setShape($row['elementshape']);
-                $this->setDimensions($row['units'],$row['height'], $row['width'], $row['depth']);
-                $this->setDiameter($row['diameter']);
-                $this->setType($row['elementtype']);
-                $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
-                $this->setProcessing($row['processing']);
-                $this->setMarks($row['marks']);
-                $this->setDescription($row['description']);
-                
+                $this->setParamsFromDBRow($row);
                 
                 if($format=='summary')
                 {

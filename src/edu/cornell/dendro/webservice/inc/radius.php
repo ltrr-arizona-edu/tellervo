@@ -35,6 +35,27 @@ class radius extends radiusEntity implements IDBAccessor
     /* SETTERS */
     /***********/
 
+    function setParamsFromDBRow($row)
+    {
+        $this->setAzimuth($row['azimuth']);
+        $this->setTitle($row['radiuscode']);
+        $this->setSampleID($row['sampleid']);
+        $this->setCreatedTimestamp($row['radiuscreated']);
+        $this->setLastModifiedTimestamp($row['radiuslastmodified']);
+        $this->setPithPresent(dbHelper::fromPGtoPHPBool($row['pithpresent']));
+        $this->setSapwood($row['sapwoodid'], $row['sapwood']);
+        $this->setBarkPresent(dbHelper::formatBool($row['barkpresent']));
+        $this->setNumberOfSapwoodRings($row['numberofsapwoodrings']);
+        $this->setLastRingUnderBark($row['lastringunderbark']);
+        $this->setMissingHeartwoodRingsToPith($row['missingheartwoodringstopith']);
+        $this->setMissingHeartwoodRingsToPithFoundation($row['missingheartwoodringstopithfoundation']);
+        $this->setMissingSapwoodRingsToBark($row['missingsapwoodringstobark']);
+        $this->setMissingSapwoodRingsToBarkFoundation($row['missingsapwoodringstobarkfoundation']);  
+        $this->setHeartwood($row['heartwoodid'], $row['heartwood']);
+        return true;
+
+    }
+
     /**
      * Set the current objects parameters from the database
      *
@@ -62,21 +83,7 @@ class radius extends radiusEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->setAzimuth($row['azimuth']);
-                $this->setTitle($row['radiuscode']);
-                $this->setSampleID($row['sampleid']);
-                $this->setCreatedTimestamp($row['radiuscreated']);
-                $this->setLastModifiedTimestamp($row['radiuslastmodified']);
-                $this->setPithPresent(dbHelper::fromPGtoPHPBool($row['pithpresent']));
-                $this->setSapwood($row['sapwoodid'], $row['sapwood']);
-                $this->setBarkPresent(dbHelper::formatBool($row['barkpresent']));
-                $this->setNumberOfSapwoodRings($row['numberofsapwoodrings']);
-                $this->setLastRingUnderBark($row['lastringunderbark']);
-                $this->setMissingHeartwoodRingsToPith($row['missingheartwoodringstopith']);
-                $this->setMissingHeartwoodRingsToPithFoundation($row['missingheartwoodringstopithfoundation']);
-                $this->setMissingSapwoodRingsToBark($row['missingsapwoodringstobark']);
-                $this->setMissingSapwoodRingsToBarkFoundation($row['missingsapwoodringstobarkfoundation']);  
-                $this->setHeartwood($row['heartwoodid'], $row['heartwood']);
+                $this->setParamsFromDBRow($row);
             }
         }
         else

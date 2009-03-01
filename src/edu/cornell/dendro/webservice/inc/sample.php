@@ -38,6 +38,23 @@ class sample extends sampleEntity implements IDBAccessor
     /***********/
     /* SETTERS */
     /***********/
+
+    function setParamsFromDBRow($row)
+    {
+        global $domain;
+
+        $this->setCode($row['code']);
+        $this->setType($row['sampletypeid'], $row['sampletype']);
+        $this->setID($row['sampleid'], $domain);
+        $this->setSamplingDate($row['samplingdate']);
+        $this->setCreatedTimestamp($row['createdtimestamp']);
+        $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
+        $this->setPosition($row['position']);
+        $this->setState($row['state']);
+        $this->setKnots($row['knots']);
+        $this->setDescription($row['description']);
+        return true;
+    }
     
     function setParamsFromDB($theID)
     {
@@ -63,16 +80,7 @@ class sample extends sampleEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->setCode($row['code']);
-                $this->setType($row['sampletypeid'], $row['sampletype']);
-                $this->setID($row['sampleid'], $domain);
-                $this->setSamplingDate($row['samplingdate']);
-				$this->setCreatedTimestamp($row['createdtimestamp']);
-                $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
-                $this->setPosition($row['position']);
-                $this->setState($row['state']);
-                $this->setKnots($row['knots']);
-                $this->setDescription($row['description']);
+                $this->setParamsFromDBRow($row);
                 
             }
         }
