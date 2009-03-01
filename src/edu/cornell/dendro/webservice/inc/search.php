@@ -329,7 +329,7 @@ class search Implements IDBAccessor
                 $operator = "=";
                 $value = " '".$param['value']."'";
             }
-            $filterSQL .= $param['table'].".".$param['field']." ".$operator.$value." and ";
+            $filterSQL .= $param['table'].".".$param['field']." ".$operator.$value."\n AND ";
         }
 
         // Trim off last 'and'
@@ -427,7 +427,6 @@ class search Implements IDBAccessor
         }*/
               
         
-        
         if( (($this->getLowestRelationshipLevel($tables)<=5) && ($this->getHighestRelationshipLevel($tables)>=5)) || ($this->returnObject == 'object'))  
         {
             if($withinJoin)
@@ -481,7 +480,7 @@ class search Implements IDBAccessor
         }
         
         
-        if( (($this->getLowestRelationshipLevel($tables)<=1) && ($this->getHighestRelationshipLevel($tables)>=1)) || ($this->returnObject == 'vmeasurement'))  
+        if( (($this->getLowestRelationshipLevel($tables)<=1) && ($this->getHighestRelationshipLevel($tables)>=1)) || ($this->returnObject == 'vmeasurement') || ($this->returnObject =='vmeasurement'))  
         {
             if($withinJoin)
             {
@@ -527,11 +526,9 @@ class search Implements IDBAccessor
         // tblradius       -- 2 --
         // tblmeasurement  -- 1 -- most junior
     	
-        if ((in_array('tblmeasurement', $tables))  			||
-            (in_array('tblvmeasurement', $tables)) 			||
-            (in_array('tblvmeasurementmetacache', $tables))  ||
-            (in_array('tblvmeasurementderivedcache', $tables)) 			||
-            ($this->returnObject == 'vmeasurement'))
+        if ((in_array('vwcomprehensivevm', $tables))  			||
+		         ($this->returnObject == 'vmeasurement') 
+                     )
         {
             return 1;
         }
@@ -591,12 +588,8 @@ class search Implements IDBAccessor
         {
             return 2;
         }
-        elseif ( (in_array('tblmeasurement', $tables)) || 
-        		 (in_array('tblvmeasurement', $tables)) ||
-        		 (in_array('tblvmeasurementmetacache', $tables)) ||
-        		 (in_array('tblvmeasurementderivedcache', $tables)) ||
-		         ($this->returnObject == 'measurementSeries') ||
-		         ($this->returnObject == 'derivedSeries')
+        elseif ( (in_array('vwcomprehensivevm', $tables)) || 
+		         ($this->returnObject == 'vmeasurement') 
 		       )
         {
             return 1;
@@ -616,8 +609,6 @@ class search Implements IDBAccessor
         $highestLevel = $this->getHighestRelationshipLevel($myRequest);
         $sql ="";
 
-        //echo "high = $highestLevel\n";
-        //echo "low = $lowestLevel\n";
 
         if (($lowestLevel==1) && ($highestLevel>=1))
         {

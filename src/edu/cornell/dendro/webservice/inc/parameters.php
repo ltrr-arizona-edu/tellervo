@@ -142,6 +142,8 @@ class searchParameters implements IParams
 									'samplecreated' => 						array('tbl' => 'vwtblsample', 'field' => 'createtimestamp'),
 									'samplelastmodified' => 				array('tbl' => 'vwtblsample', 'field' => 'lastmodifiedtimstamp'),
 									'samplingdatecertainty' => 				array('tbl' => 'vwtblsample', 'field' => 'datecertainty'),
+
+                                                                        'radiusid' =>                                           array('tbl' => 'vwtblradius', 'field' => 'radiusid')
 									
 								  );
 		
@@ -171,7 +173,7 @@ class searchParameters implements IParams
 			}
 			else
 			{
-				trigger_error("104"."Unknown parameter type of $paramType specified.", E_USER_ERROR);
+				trigger_error("104"."Unknown parameter ".$param->getAttribute("name")." specified.", E_USER_ERROR);
 			}	
 		}		
 
