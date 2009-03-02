@@ -203,7 +203,7 @@ class search Implements IDBAccessor
    
                 // Set parameters on new object and return XML
                 if ($debugFlag===TRUE) $myMetaHeader->setTiming("Get current entities details from database");
-                $success = $myReturnObject->setParamsFromDBRow($row);
+                $success = $myReturnObject->setParamsFromDBRow($row, $format);
                 //$success = $myReturnObject->setParamsFromDB($row['id']);
                 if ($debugFlag===TRUE) $myMetaHeader->setTiming("Got details from database");
 

@@ -34,7 +34,7 @@ class measurement extends measurementEntity implements IDBAccessor
     /* SETTERS */
     /***********/
 
-    function setParamsFromDBRow($row)
+    function setParamsFromDBRow($row, $format="standard")
     {
         global $debugFlag;
         global $myMetaHeader;
@@ -79,8 +79,12 @@ class measurement extends measurementEntity implements IDBAccessor
         if($this->vmeasurementOp=='Index') $this->setVMeasurementOpParam($row['vmeasurementopparameter']);
         if($this->vmeasurementOp=='Crossdate') $this->setCrossdateParamsFromDB();
         
-        $this->setReadingsFromDB();
-            
+		// Deal with readings if we actually need them...
+        if($format!="summary") $this->setReadingsFromDB();                      
+        
+		// Set References 
+		$this->setReferencesFromDB();
+		
         if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setting measurement parameters from DB result");   
         return true;
 
@@ -120,21 +124,7 @@ class measurement extends measurementEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->setParamsFromDBRow($row);
-
-
-                if (($format=="standard") || ($format=="comprehensive") || ($format=="summary") )
-                {
-                    $this->setReferencesFromDB();
-                }
-                
-		// Deal with readings if we actually need them...
-                if($format=="standard" || $format=="comprehensive") 
-                {
-                    $success = $this->setReadingsFromDB();
-		    if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed running cpgdb.getVMeasurementResult()");                       
-                    return $success;
-		}
+                $this->setParamsFromDBRow($row);                
             }
 
         }
@@ -212,7 +202,6 @@ class measurement extends measurementEntity implements IDBAccessor
         
         
         // Call getVMeasurementResult().
-        // Do we really need to do this?
         if ($debugFlag===TRUE) $myMetaHeader->setTiming("Running cpgdb.getVMeasurementResult()");   
         $sql2 = "SELECT * FROM cpgdb.getvmeasurementresult('".pg_escape_string($this->getID())."')";
         pg_send_query($dbconn, $sql2);
@@ -220,7 +209,9 @@ class measurement extends measurementEntity implements IDBAccessor
         $row2 = pg_fetch_array($result2);
         $this->vmeasurementResultID = $row2['vmeasurementresultid'];
 
-        $sql  = "select * from cpgdb.getvmeasurementreadingresult('".pg_escape_string($this->getVMeasurementResultID())."') order by relyear asc";
+        // Call getVMeasurementReadingResult()
+        $sql  = "SELECT * FROM cpgdb.getvmeasurementreadingresult('".pg_escape_string($this->getVMeasurementResultID())."') ".
+        		"ORDER BY relyear ASC";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {

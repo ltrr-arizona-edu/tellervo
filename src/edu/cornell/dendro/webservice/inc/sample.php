@@ -39,7 +39,7 @@ class sample extends sampleEntity implements IDBAccessor
     /* SETTERS */
     /***********/
 
-    function setParamsFromDBRow($row)
+    function setParamsFromDBRow($row, $format="standard")
     {
         global $domain;
 
