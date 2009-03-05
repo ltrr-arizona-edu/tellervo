@@ -107,6 +107,11 @@ class element extends elementEntity implements IDBAccessor
         $this->setProcessing($row['processing']);
         $this->setMarks($row['marks']);
         $this->setDescription($row['description']);
+        $this->setAltitude($row['altitude']);
+        $this->setSlope($row['slopeangle'], $row['slopeazimuth']);
+        $this->setBedrockDescription($row['bedrockdescription']);
+        $this->setSoilDepth($row['soildepth']);
+        $this->setSoilDescription($row['soildescription']);
         return true;
     }
    
@@ -430,7 +435,23 @@ class element extends elementEntity implements IDBAccessor
                     if($this->getDescription()!=NULL) $xml.="<tridas:description>".$this->getDescription()."</tridas:description>";
                     if($this->getType()!=NULL) $xml.="<tridas:type>".$this->getType()."</tridas:type>";
                     if($this->getProcessing()!=NULL) $xml.="<tridas:processing>".$this->getProcessing()."</tridas:processing>";
-                    if($this->getMarks()!=NULL) $xml.="<tridas:marks>".$this->getMarks()."</tridas:marks>";  
+                    if($this->getMarks()!=NULL) $xml.="<tridas:marks>".$this->getMarks()."</tridas:marks>";
+                    if($this->getAltitude()!=NULL) $xml.="<tridas:altitude>".$this->getAltitude()."</tridas:altitude>";
+                    if(($this->getSlopeAngle()!=NULL) || ($this->getSlopeAzimuth()!=NULL)) 
+                    {
+                    	$xml.="<tridas:slope>\n"; 
+                    	if($this->getSlopeAngle()!=NULL) $xml.="<tridas:angle>".$this->getSlopeAngle()."</tridas:angle>\n";
+                    	if($this->getSlopeAzimuth()!=NULL) $xml.="<tridas:azimuth>".$this->getSlopeAzimuth()."</tridas:azimuth>\n";
+                    	$xml.="</tridas:slope>\n";
+                    }
+                    if(($this->getSoilDepth()!=NULL) || ($this->getSoilDescription()!=NULL))
+                    {
+                    	$xml.="<tridas:soil>\n";
+                    	if($this->getSoilDescription()!=NULL) $xml.="<tridas:description>".dbHelper::escapeXMLChars($this->getSoilDescription())."</tridas:soilDescription>\n";
+                    	if($this->getSoilDepth()!=NULL) $xml.="<tridas:depth>".$this->getSoilDepth()."</tridas:depth>\n";
+                    	$xml.="<tridas:soil>\n";
+                    }
+                    
                     if($this->getFile()!=NULL) $xml.="<tridas:file xlink:href=\"".$this->getFile()."\" />";
                     if($format=='summary') $xml.="<tridas:genericField name=\"fullLabCode\">".$this->summaryFullLabCode."</tridas:genericField>\n"; 
 	                // Include permissions details if requested            

@@ -906,6 +906,44 @@ class elementEntity extends dbEntity
 	 */
 	protected $description = NULL;
 	
+	/**
+	 * Altitude of tree
+	 *
+	 * @var Integer
+	 */
+	protected $altitude = NULL;
+	/**
+	 * Angle of slope
+	 *
+	 * @var Integer
+	 */
+	protected $slopeAngle = NULL;
+	/**
+	 * Azimuth of slope
+	 *
+	 * @var Angle
+	 */
+	protected $slopeAzimuth = NULL;
+	/**
+	 * Description of the soil type
+	 *
+	 * @var String
+	 */
+	protected $soilDescription = NULL;
+	/**
+	 * Depth of soil in centimetres
+	 *
+	 * @var unknown_type
+	 */
+	protected $soilDepth = NULL;
+	/**
+	 * Description of the underlying bedrock
+	 *
+	 * @var String
+	 */
+	protected $bedrockDescription = NULL;
+	
+	
     function __construct()
     {  
 		parent::__construct("");
@@ -917,6 +955,42 @@ class elementEntity extends dbEntity
     /* SETTERS */
     /***********/ 	
 		
+	function setAltitude($altitude)
+	{
+		$this->altitude = (int) $altitude;
+	}
+	
+	function setSlope($angle, $azimuth)
+	{
+		$this->setSlopeAngle($angle);
+		$this->setSlopeAzimuth($azimuth);
+	}
+	
+	function setSlopeAngle($angle)
+	{
+		$this->slopeAngle = (int) $angle;
+	}
+	
+	function setSlopeAzimuth($azimuth)
+	{
+		$this->slopeAzimuth = (int) $azimuth;
+	}
+	
+	function setSoilDescription($description)
+	{
+		$this->soilDescription = $description;
+	}
+	
+	function setSoilDepth($depth)
+	{
+		$this->soilDepth = (double) $depth;	
+	}
+	
+	function setBedrockDescription($description)
+	{
+		$this->bedrockDescription = $description;
+	}
+	
 	/**
 	 * Set authenticity of element to original; repair; later addition
 	 *
@@ -1131,6 +1205,36 @@ class elementEntity extends dbEntity
 	/***********/
     /* GETTERS */
     /***********/ 	
+	
+	function getAltitude()
+	{
+		return $this->altitude;
+	}
+	
+	function getSlopeAngle()
+	{
+		return $this->slopeAngle;
+	}
+	
+	function getSlopeAzimuth()
+	{
+		return $this->slopeAzimuth;
+	}
+
+	function getSoilDescription()
+	{
+		return $this->soilDescription;
+	}
+	
+	function getSoilDepth()
+	{
+		return $this->soilDepth;
+	}
+	
+	function getBedrockDescription()
+	{
+		return $this->bedrockDescription;
+	}
 	
 	/**
 	 * Does this element have any dimensions associated with it?
