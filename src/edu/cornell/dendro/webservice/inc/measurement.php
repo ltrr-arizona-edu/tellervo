@@ -895,15 +895,25 @@ class measurement extends measurementEntity implements IDBAccessor
            }
        }
 
-
-       if($wj===TRUE)
+       $xml = "<tridas:values>\n";
+       
+       if($this->getUnits()!=NULL)
        {
-       		$xml ="<tridas:values type=\"weiserjahre\">\n";
+            if($wj===TRUE)
+	        {
+	       		$xml ="<tridas:variable>weiserjahre</tridas:variable>\n";
+	        }
+	        else
+	        {
+	       		$xml ="<tridas:variable>".$this->getVariable()."</tridas:variable>\n";
+      		}
+       		$xml.="<tridas:unit>".$this->getUnits()."</tridas:unit>\n";
        }
        else
        {
-       		$xml ="<tridas:values type=\"".$this->getVariable()."\">\n";
+       		$xml.="<tridas:unitless/>\n"; 
        }
+      
        foreach($this->readingsArray as $key => $value)
        {
            // Calculate absolute year where possible
@@ -925,12 +935,16 @@ class measurement extends measurementEntity implements IDBAccessor
            
            if($wj===TRUE)
            {
-           		$xml.= $value['wjinc']."/".$value['wjdec']."\">";
+           		$xml.= $value['wjinc']."/".$value['wjdec'];
            }
            else
            {
-        		$xml.= $this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
+        		$xml.= $this->unitsHandler($value['reading'], "db-default", "ws-default");
            }
+           
+           
+           
+           $xml .="\">";
 
            // Add any notes that are in the notesArray subarray
            if(count($value['notesArray']) > 0)
