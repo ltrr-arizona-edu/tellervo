@@ -198,7 +198,6 @@ class unit extends lookupEntity
 	 *
 	 * @var Integer
 	 */
-	protected $power = NULL;
 	
 	function __construct()
 	{
@@ -208,16 +207,6 @@ class unit extends lookupEntity
 	function setUnit($id, $value)
 	{
 		$this->setLookupEntity($id, $value);
-	}
-	
-	function setPower($power)
-	{
-		return $this->power = (integer) $power;
-	}
-	
-	function getPower()
-	{
-		return $this->power;
 	}
 }
 

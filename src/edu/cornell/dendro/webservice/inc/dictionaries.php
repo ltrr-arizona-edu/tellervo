@@ -113,7 +113,7 @@ class dictionaries
                 	if($item=='taxon')
                 	{
 				    	global $taxonomicAuthorityEdition;
-				    	$xmldata .= "<taxon normalStd=\"$taxonomicAuthorityEdition\" normalId=\"".$row['colid']."\" normal=\"".dbHelper::escapeXMLChars($row['label'])."\"/>\n";    	
+				    	$xmldata .= "<tridas:taxon normalStd=\"$taxonomicAuthorityEdition\" normalId=\"".$row['colid']."\" normal=\"".dbHelper::escapeXMLChars($row['label'])."\"/>\n";    	
                 	}
                 	else
                 	{

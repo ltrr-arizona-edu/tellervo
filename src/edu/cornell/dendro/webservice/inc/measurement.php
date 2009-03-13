@@ -75,6 +75,7 @@ class measurement extends measurementEntity implements IDBAccessor
         //$this->setExtentComment($row['extentcomment']);
         $this->setUsage($row['usage']);
         $this->setUsageComments($row['usagecomments']);
+        $this->setUnits($row['unitid'], NULL);
         //$this->setSummaryInfo($row['objectcode'], $row['objectcount'], $row['commontaxonname'], $row['taxoncount'], $row['prefix']);
         if($this->vmeasurementOp=='Index') $this->setVMeasurementOpParam($row['vmeasurementopparameter']);
         if($this->vmeasurementOp=='Crossdate') $this->setCrossdateParamsFromDB();
@@ -754,7 +755,7 @@ class measurement extends measurementEntity implements IDBAccessor
  															$xml.= "<tridas:interpretation>\n";
 				if($this->getMasterVMeasurementID()!=NULL)	$xml.= "<tridas:calendar>\n<tridas:linkSeries>\n<tridas:idRef ref=\"".$this->getMasterVMeasurementID()."\"/>\n</tridas:linkSeries>\n</tridas:calendar>\n"; 															
  															
- 				if($this->getFirstYear()!=NULL)				$xml.= "<tridas:firstYear>".$this->getFirstYear()."</tridas:firstYear>\n";
+ 				if($this->getFirstYear()!=NULL)				$xml.= "<tridas:firstYear suffix=\"".dateHelper::getGregorianSuffixFromSignedYear()."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getFirstYear())."</tridas:firstYear>\n";
  				if($this->getSproutYear()!=NULL)			$xml.= "<tridas:sproutYear>".$this->getSproutYear()."</tridas:sproutYear>\n";
  				if($this->getDeathYear()!=NULL)				$xml.= "<tridas:deathYear>".$this->getDeathYear()."</tridas:deathYear>\n";
  				if($this->getProvenance()!=NULL)			$xml.= "<tridas:provenance>".addslashes($this->getProvenance())."</tridas:provenance>\n";
@@ -801,13 +802,7 @@ class measurement extends measurementEntity implements IDBAccessor
             {            	
                	if(isset($this->analyst))					$xml.= "<tridas:analyst>".$this->analyst->getFormattedName()."</tridas:analyst>\n";
         		if(isset($this->dendrochronologist))		$xml.= "<tridas:dendrochronologist>".$this->dendrochronologist->getFormattedName()."</tridas:dendrochronologist>\n";
-               	if(isset($this->measuringMethod))			$xml.= "<tridas:measuringMethod>".$this->measuringMethod->getValue()."</tridas:measuringMethod>\n";        	
-                if(isset($this->units))
-         		{
-         													$xml.= "<tridas:units factor=\"".$this->getUnitsPower()."\" system=\"SI\">\n";
-         													$xml.= "<tridas:unit>".$this->units->getValue()."</tridas:unit>\n";
-         													$xml.= "</tridas:units>\n";
-         		}         		
+               	if(isset($this->measuringMethod))			$xml.= "<tridas:measuringMethod>".$this->measuringMethod->getValue()."</tridas:measuringMethod>\n";        	       		
           		if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
          		if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".$this->getUsage()."</tridas:usage>\n";
          		if($this->getUsageComments()!=NULL)			$xml.= "<tridas:usageComments>".$this->getUsageComments()."</tridas:usageComments>\n";
@@ -901,11 +896,11 @@ class measurement extends measurementEntity implements IDBAccessor
        {
             if($wj===TRUE)
 	        {
-	       		$xml ="<tridas:variable>weiserjahre</tridas:variable>\n";
+	       		$xml .="<tridas:variable>weiserjahre</tridas:variable>\n";
 	        }
 	        else
 	        {
-	       		$xml ="<tridas:variable>".$this->getVariable()."</tridas:variable>\n";
+	       		$xml .="<tridas:variable>".$this->getVariable()."</tridas:variable>\n";
       		}
        		$xml.="<tridas:unit>".$this->getUnits()."</tridas:unit>\n";
        }
@@ -926,25 +921,26 @@ class measurement extends measurementEntity implements IDBAccessor
                }
            }
 
-           $xml.="<tridas:value index=\"nr".$yearvalue."\" value=\"";
-           //if (!($value['wjinc'] === NULL && $value['wjdec'] === NULL))
-           //{
-           //    $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
-           //}
-           //$xml .="count=\"".$value['count']."\" value=\"".$this->unitsHandler($value['value'], "db-default", "ws-default")."\">";
+           // Add year index
+           $xml.="<tridas:value index=\"nr".$yearvalue."\" ";
            
+           // Add actual value          
            if($wj===TRUE)
            {
-           		$xml.= $value['wjinc']."/".$value['wjdec'];
+           		$xml.= "value=\"".$value['wjinc']."/".$value['wjdec']."\" ";
            }
            else
            {
-        		$xml.= $this->unitsHandler($value['reading'], "db-default", "ws-default");
+        		$xml.= "value=\"".$this->unitsHandler($value['reading'], "db-default", "ws-default")."\" ";
            }
            
+           // Add count if appropriate
+           if($value['count']!=NULL)
+           {
+           		$xml.= "count=\"".$value['count']."\"";
+           }
            
-           
-           $xml .="\">";
+           $xml .=">";
 
            // Add any notes that are in the notesArray subarray
            if(count($value['notesArray']) > 0)

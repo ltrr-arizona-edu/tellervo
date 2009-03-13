@@ -3061,12 +3061,7 @@ class measurementEntity extends dbEntity
 	
 	function getUnits()
 	{
-		return $this->units;
-	}
-	
-	function getUnitsPower()
-	{
-		return $this->power;
+		return $this->units->getValue();
 	}
 	
 	function getComments()
