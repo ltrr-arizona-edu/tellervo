@@ -15,7 +15,6 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
-import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
 
 public class MeasurementSearchResource extends ResourceObject<ElementList> {
@@ -25,7 +24,7 @@ public class MeasurementSearchResource extends ResourceObject<ElementList> {
 		public MeasurementSearchResource() {
 			super("measurementsearch", ResourceQueryType.SEARCH);
 			
-			setSearchParameters(new SearchParameters("measurement"));
+			setSearchParameters(new SearchParameters("measurementSeries"));
 		}
 
 		/**
@@ -68,15 +67,26 @@ public class MeasurementSearchResource extends ResourceObject<ElementList> {
 			// Extract root and specimen elements from returned XML file
 			Element root = doc.getRootElement();
 
-			Element content = root.getChild("content");
+			Element content = root.getChild("content", edu.cornell.dendro.corina.webdbi.CorinaXML.CORINA_NS);
 			if(content == null)
-				throw new MalformedDocumentException("No content element in measurement");
+				throw new MalformedDocumentException(doc, "No content element in measurement");
 			
 			// get a list of measurements (note: can be empty!)
-			List<Element> measurementElements = content.getChildren("measurement");
-			
-			// create a list of elemets
+			List<Element> measurementElements = content.getChildren();
+
+			// create a list of elements
 			ElementList elist = new ElementList();
+
+			for(Element meas : measurementElements) {
+				// only tridas elements
+				if(!meas.getNamespace().equals(edu.cornell.dendro.corina.webdbi.CorinaXML.TRIDAS_NS))
+					continue;
+				
+				// we only want measurementSeries or derivedSeries here - and we ignore this distinction
+				if(!(meas.getName().equals("measurementSeries") || meas.getName().equals("derivedSeries")))
+					continue;
+			}
+			
 			CorinaXML loader = new CorinaXML();
 			
 			for(Element measurement : measurementElements) {

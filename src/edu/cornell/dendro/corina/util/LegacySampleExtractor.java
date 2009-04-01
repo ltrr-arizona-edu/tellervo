@@ -19,6 +19,7 @@ import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.tridas.Subsite;
 import edu.cornell.dendro.corina.tridas.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasIdentifier;
 import edu.cornell.dendro.corina.tridas.TridasObject;
 import edu.cornell.dendro.corina.tridas.TridasRadius;
 import edu.cornell.dendro.corina.tridas.TridasSample;
@@ -43,7 +44,7 @@ public class LegacySampleExtractor {
 		
 		// populate the site because this is easy!
 		if(siteName != null)
-			associatedSite = App.tridasObjects.findSite(siteName);
+			associatedSite = App.tridasObjects.findObjectByCode(siteName);
 	}
 	
 	private String siteName;
@@ -66,6 +67,7 @@ public class LegacySampleExtractor {
 	 * Get the 'main' subsite, if a site was found
 	 * @return
 	 */
+	/*
 	public Subsite asSubsite() {
 		if(associatedSite != null) {
 			List<Subsite> subsites = associatedSite.getSubsites();
@@ -77,6 +79,7 @@ public class LegacySampleExtractor {
 		
 		return null;
 	}
+	*/
 	
 	/**
 	 * Tree- 
@@ -84,7 +87,7 @@ public class LegacySampleExtractor {
 	 * @return
 	 */
 	public TridasElement asTree() {
-		TridasElement tree = new TridasElement(TridasElement.ID_NEW, (specimenOrTreeName == null) ? 
+		TridasElement tree = new TridasElement(TridasIdentifier.newEntity("element"), (specimenOrTreeName == null) ? 
 				TridasElement.NAME_INVALID : specimenOrTreeName);
 		String val;
 		

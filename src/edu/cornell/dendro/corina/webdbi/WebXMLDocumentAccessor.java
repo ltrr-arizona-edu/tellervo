@@ -254,7 +254,9 @@ public class WebXMLDocumentAccessor {
 			BugReport bugs = new BugReport(uhe);
 			
 			bugs.addDocument("sent.xml", requestDocument);
-			if(inDocument != null)
+			
+			// MalformedDocs are handled automatically by BugReport class
+			if(!(uhe instanceof MalformedDocumentException) && inDocument != null)
 				bugs.addDocument("received.xml", inDocument);
 			
 			new Bug(uhe, bugs);

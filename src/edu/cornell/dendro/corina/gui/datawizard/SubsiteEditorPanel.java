@@ -70,6 +70,7 @@ public class SubsiteEditorPanel extends BaseEditorPanel<Subsite> {
        	txtSite.setText(getParentObject().toString());    	
     }
     
+    /*
     public void commit() {
     	Subsite subsite = new Subsite(Subsite.ID_NEW, txtSubsiteName.getText());
     	assimilateUpdateObject(subsite);
@@ -89,6 +90,7 @@ public class SubsiteEditorPanel extends BaseEditorPanel<Subsite> {
 		
     	dispose();
     }
+    */
         
     protected void validateForm() {
     	boolean nameOk;

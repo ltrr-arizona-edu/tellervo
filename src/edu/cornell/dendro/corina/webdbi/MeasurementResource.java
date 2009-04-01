@@ -289,14 +289,12 @@ public class MeasurementResource extends ResourceObject<Sample> {
 	 */
 	@Override
 	protected boolean processQueryResult(Document doc) throws ResourceException {
-		// Extract root and specimen elements from returned XML file
-		Element root = doc.getRootElement();
 		
 		switch(getQueryType()) {
 		case READ:
 		case UPDATE:
 		case CREATE:
-			return loadSample(root);
+			return loadSample(doc);
 			
 		case DELETE:
 			return true;
@@ -307,13 +305,16 @@ public class MeasurementResource extends ResourceObject<Sample> {
 	}
 	
 	// do the actual loading of the sample. hmm...
-	private boolean loadSample(Element root) throws ResourceException {
+	private boolean loadSample(Document doc) throws ResourceException {
+		// Extract root and specimen elements from returned XML file
+		Element root = doc.getRootElement();
+		
 		// Create new sample to hold data
 		Sample s = new Sample();
 		
 		Element content = root.getChild("content");
 		if(content == null)
-			throw new MalformedDocumentException("No content element in measurement");
+			throw new MalformedDocumentException(doc, "No content element in measurement");
 		
 		// try the easy way first
 		Element measurementElement = content.getChild("measurement");
@@ -322,7 +323,7 @@ public class MeasurementResource extends ResourceObject<Sample> {
 			Element siteElement = content.getChild("site");
 
 			if(siteElement == null)
-				throw new MalformedDocumentException("Measurement format invalid or unknown (not comprehensive or standard)");
+				throw new MalformedDocumentException(doc, "Measurement format invalid or unknown (not comprehensive or standard)");
 			
 			// kludgy way of doing this, maybe, but I think it's cleaner than a million if(x==null) statements
 			try {
@@ -341,7 +342,7 @@ public class MeasurementResource extends ResourceObject<Sample> {
 				s.setMeta("::subsite", Subsite.xmlToSubsite(subSiteElement));
 				s.setMeta("::site", TridasObject.xmlToSite(siteElement));
 			} catch (NullPointerException npe) {
-				throw new MalformedDocumentException("Invalid comprehensive measurement format");				
+				throw new MalformedDocumentException(doc, "Invalid comprehensive measurement format");				
 			}
 		}
 		
@@ -350,7 +351,7 @@ public class MeasurementResource extends ResourceObject<Sample> {
 		try {
 			loader.loadMeasurement(s, measurementElement);
 		} catch (IOException ioe) {
-			throw new MalformedDocumentException("Poorly formed measurement: " + ioe);
+			throw new MalformedDocumentException(doc, "Poorly formed measurement: " + ioe);
 		}
 		
 		// Synchronise object

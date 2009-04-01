@@ -111,7 +111,7 @@ public class IntermediateResource extends ResourceObject<List<? extends TridasEn
 
 		Element content = root.getChild("content");
 		if(content == null)
-			throw new MalformedDocumentException("No content element in measurement");
+			throw new MalformedDocumentException(doc, "No content element in measurement");
 
 		switch(getQueryType()) {
 		case READ:

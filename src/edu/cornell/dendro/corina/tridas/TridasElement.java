@@ -4,14 +4,20 @@ import org.jdom.Element;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Taxon;
+import edu.cornell.dendro.corina.webdbi.CorinaXML;
 
 public class TridasElement extends TridasEntityBase {
-	public TridasElement(String id, String name) {
-		super(id, name);
+	public TridasElement(TridasIdentifier identifier, String title) {
+		super(identifier, title);
 	}
-	
+
+	public TridasElement(Element rootElement) {
+		super(rootElement);
+	}
+
 	// these are all stored as strings.
 	// verification of input must be done in whatever is setting these!
+
 	private String latitude = null;
 	private String longitude = null;
 	private String precision = null;
@@ -19,23 +25,13 @@ public class TridasElement extends TridasEntityBase {
 	private Taxon validatedTaxon = null;
 	private Boolean isLiveTree = null;
 		
-	public static TridasElement xmlToTree(Element root) {
-		String id, name, attr;
+	public static TridasElement xmlToTree(Element root) {		
+		TridasElement tree = new TridasElement(root);
 		
-		id = root.getAttributeValue("id");
-		if(id == null) {
-			System.out.println("Tree lacking an id? " + root.toString());
-			return null;
-		}
-		
-		name = root.getChildText("name");
-		if(name == null) {
-			System.out.println("Tree lacking an name? " + root.toString());
-			return null;			
-		}
-				
-		TridasElement tree = new TridasElement(id, name);
+		/*
 
+		String attr;
+		
 		attr = root.getChildText("latitude");
 		tree.setLatitude(attr);
 
@@ -54,15 +50,17 @@ public class TridasElement extends TridasEntityBase {
 			Taxon taxon = (Taxon) App.dictionary.getDictionaryMap("Taxon").get(id);
 			tree.setValidatedTaxon(taxon);
 		}
-		
-		tree.setResourceIdentifierFromElement(root);
+		*/
 		
 		return tree;
 	}
 	
 	public Element toXML() {
-		Element root = new Element("tree");
+		Element root = new Element("element");
 		
+		return root;
+		
+		/*
 		if(!isNew())
 			root.setAttribute("id", getID());
 
@@ -86,6 +84,7 @@ public class TridasElement extends TridasEntityBase {
 			root.addContent(new Element("isLiveTree").setText(isLiveTree.toString()));
 		
 		return root;
+		*/
 	}
 
 	/**

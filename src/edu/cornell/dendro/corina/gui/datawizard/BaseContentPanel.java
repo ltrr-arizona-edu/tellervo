@@ -364,7 +364,7 @@ public class BaseContentPanel<OBJT extends TridasEntityBase> extends BasePanel i
     	Object obj = cboExistingList.getSelectedItem();
     	
     	if(obj instanceof TridasObject)
-    		return ((TridasObject)obj).getCode();
+    		return ((TridasObject)obj).getLabCode();
     	
     	return obj.toString();
     }

@@ -3,6 +3,8 @@ package edu.cornell.dendro.corina.gui.dbbrowse;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -18,7 +20,7 @@ import edu.cornell.dendro.corina.tridas.TridasObject;
 public class SiteRenderer implements ListCellRenderer {
 	public SiteRenderer() {
 	}
-
+	
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
 
@@ -33,7 +35,7 @@ public class SiteRenderer implements ListCellRenderer {
 		if(value instanceof TridasObject) {
 			TridasObject site = (TridasObject) value;
 			
-			JLabel lblCode = new JLabel(site.getCode());
+			JLabel lblCode = new JLabel(site.getLabCode());
 			JLabel lblName = new JLabel(site.toString());
 			
 			Font font = lblCode.getFont();
@@ -43,8 +45,16 @@ public class SiteRenderer implements ListCellRenderer {
 			BoxLayout layout = new BoxLayout(c, BoxLayout.Y_AXIS);
 			c.setLayout(layout);
 			
+			if(site.seriesCountsValid()) {
+				String countStr = site.getObjectSeriesCount() + "/" + site.getObjectChildSeriesCount();
+				Font countFont = font.deriveFont(font.getSize() - 1.0f);
+
+				lblCode.setText(lblCode.getText() + "   " + countStr);
+			}
+			
 			c.add(lblCode);
 			c.add(lblName);
+			
 		} else if(value instanceof String) {
 			JLabel lblCode = new JLabel((String) value);
 			JLabel lblName = new JLabel((String) value);

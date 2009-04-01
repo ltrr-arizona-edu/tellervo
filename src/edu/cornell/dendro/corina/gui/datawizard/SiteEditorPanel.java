@@ -79,6 +79,7 @@ public class SiteEditorPanel extends BaseEditorPanel<TridasObject> {
     }
 	
     public void commit() {
+    	// TODO: Fix me!
     	TridasObject site = new TridasObject(TridasObject.ID_NEW, txtSiteName.getText(), txtSiteCode.getText());
     	assimilateUpdateObject(site);
     	IntermediateResource ir = new IntermediateResource((TridasObject) null, site);
@@ -89,7 +90,7 @@ public class SiteEditorPanel extends BaseEditorPanel<TridasObject> {
 		if(ir.getObject().get(0) instanceof TridasObject) {
 			setNewObject((TridasObject) ir.getObject().get(0));
 	    	// add the site to the site list
-			App.tridasObjects.addSite(getNewObject());
+			App.tridasObjects.addObject(getNewObject().getParent(), getNewObject());
 		}
 
 		dispose();

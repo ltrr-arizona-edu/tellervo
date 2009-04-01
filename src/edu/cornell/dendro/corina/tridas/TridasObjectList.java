@@ -5,6 +5,7 @@ package edu.cornell.dendro.corina.tridas;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
@@ -29,7 +30,11 @@ public class TridasObjectList extends CachedResource {
 	 * @param cachedResourceName
 	 */
 	public TridasObjectList() {
-		super("tridas.objects", ResourceQueryType.SEARCH);		
+		super("tridas.objects", ResourceQueryType.SEARCH);
+		
+		// make sure we don't start off with null class member
+		if(values == null)
+			values = new DataValues();
 	}
 
 	/* (non-Javadoc)
@@ -66,76 +71,124 @@ public class TridasObjectList extends CachedResource {
 	 * @see edu.cornell.dendro.corina.webdbi.Resource#processQueryResult(org.jdom.Document)
 	 */
 	@Override
-	protected boolean processQueryResult(Document doc) throws ResourceException {
+	protected synchronized boolean processQueryResult(Document doc) throws ResourceException {
 		Element root = doc.getRootElement();
 		Element dataElement = root.getChild("content", CorinaXML.CORINA_NS);
 
 		System.out.println("Loading objects...");
 		
 		if(dataElement == null) {
-			System.out.println("No content element in dictionary; ignoring this.");
+			System.out.println("No content element in objectlist; ignoring this.");
 			return false;
 		}
 				
-		List<?> data = dataElement.getChildren("site");
-		Iterator<?> itr = data.iterator();
-		TreeMap<String, TridasObject> newsites = new TreeMap<String, TridasObject>();
+		List<Element> data = dataElement.getChildren("object", CorinaXML.TRIDAS_NS);
+		DataValues dv = new DataValues();
 		
-		while(itr.hasNext()) {
-			Element se = (Element) itr.next();
-			TridasObject site = TridasObject.xmlToSite(se);
-			
-			// problem with the site?
-			if(site == null)
-				continue;
-			
-			// add the site to our map
-			newsites.put(site.getCode(), site);
-			
+		for(Element e : data) {
+			addObject(null, e, dv);
 		}
-
+		
 		// set our current list to our new list; discard the old list
-		siteMap = newsites;
+		values = dv;
 		
 		return true;
 	}
 	
 	/**
-	 * Gets the list of sites sorted alphabetically by code (as a Collection)
-	 * @return
+	 * Adds an object to our internal lists
+	 * Useful for when we create new objects internally
+	 * 
+	 * @param parent
+	 * @param obj
 	 */
-	public Collection<TridasObject> getSites() {
-		return siteMap.values();
+	public void addObject(TridasObject parent, TridasObject obj) {
+		obj.setParent(parent);
+		
+		if(parent != null)
+			parent.addChild(obj);
 	}
 	
 	/**
-	 * Find a site, by code
+	 * Add an object based on an XML element
+	 * 
+	 * @param parent
+	 * @param e
+	 */
+	private void addObject(TridasObject parent, Element e, DataValues dv) {
+		TridasObject obj = TridasObject.xmlToSite(e);
+		
+		// problem with object? stop here
+		if(obj == null)
+			return;
+		
+		// set the parent
+		obj.setParent(parent);
+		
+		// ok, now recursively add my children
+		List<Element> children = e.getChildren("object", CorinaXML.TRIDAS_NS);
+		for(Element childE : children) {
+			addObject(obj, childE, dv);
+		}
+		
+		// if I have a parent, mark myself as its child
+		// Note: we do this last to keep childSeriesCount!
+		if(parent != null)
+			parent.addChild(obj);		
+
+		addObjectToDataValues(obj, dv);
+	}
+	
+	private void addObjectToDataValues(TridasObject o, DataValues dv) {
+		String sortVal = o.hasLabCode() ? o.getLabCode() : o.toString();
+		
+		if(o.isTopLevelObject())
+			dv.topLevelObjectMap.put(sortVal, o);
+		
+		dv.sortedCodeToObjectMap.put(sortVal, o);
+	}
+	
+	/**
+	 * Get a list of objects sorted by lab code
+	 * 
+	 * @return
+	 */
+	public Collection<TridasObject> getObjectList() {
+		return Collections.unmodifiableCollection(values.sortedCodeToObjectMap.values());
+	}
+	
+	/**
+	 * Get a list of toplevel objects sorted by lab code
+	 * 
+	 * @return
+	 */
+	public Collection<TridasObject> getToplevelObjectList() {
+		return Collections.unmodifiableCollection(values.topLevelObjectMap.values());
+	}
+	
+	/**
+	 * Find an object, by lab code
 	 * 
 	 * @param code
 	 * @return
 	 */
-	public TridasObject findSite(String code) {
-		return siteMap.get(code);
+	public TridasObject findObjectByCode(String code) {
+		return values.sortedCodeToObjectMap.get(code);
 	}
 	
 	/**
-	 * Get a sorted map of codes equal to or greater than code
+	 * Get a sorted map of lab codes equal to or greater than code
 	 * @param code
 	 * @return
 	 */
-	public SortedMap<String, TridasObject> getSimilarSites(String code) {
-		return siteMap.tailMap(code);
+	public SortedMap<String, TridasObject> getSimilarObjectsByCode(String code) {
+		return Collections.unmodifiableSortedMap(values.sortedCodeToObjectMap.tailMap(code));
 	}
 	
-	/**
-	 * Add a site to the list
-	 * Use sparingly!
-	 * @param site
-	 */
-	public void addSite(TridasObject site) {
-		siteMap.put(site.getCode(), site);
-	}
+	private DataValues values;
 	
-	// the site map
-	private TreeMap<String, TridasObject> siteMap;
+	private class DataValues {
+		TreeMap<String, TridasObject> sortedCodeToObjectMap = new TreeMap<String, TridasObject>();
+		TreeMap<String, TridasObject> topLevelObjectMap = new TreeMap<String, TridasObject>();
+	}
 }

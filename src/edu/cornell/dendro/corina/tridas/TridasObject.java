@@ -8,117 +8,183 @@ import java.util.TreeMap;
 
 import org.jdom.Element;
 
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.webdbi.CorinaXML;
+
 public class TridasObject extends TridasEntityBase implements Comparable {
-	public TridasObject(String id, String name, String code) {
-		super(id, name);
-		this.code = code;
+	public TridasObject(TridasIdentifier identifier, String title) {
+		super(identifier, title);
+
+		children = new ArrayList<TridasObject>();
+		parent = null;
+		mySeriesCount = 0;
+		childSeriesCount = 0;
+		hasCode = false;
 		
-		subsites = new ArrayList<Subsite>();
-		regions = new HashMap<String, String>();
+		// not valid until populated by server
+		countsValid = false;
 	}
-		
+	
+	public TridasObject(TridasIdentifier identifier, String title, String labCode) {
+		this(identifier, title);
+
+		this.labCode = labCode;
+		hasCode = true;
+	}
+
 	/** The site's code (e.g., CYL) */
-	private String code;
+	private String labCode;
+	private boolean hasCode;
 	
-	/** A list of any subsites */
-	private List<Subsite> subsites;
+	/** A list of any children */
+	private List<TridasObject> children;
+	private TridasObject parent;
 	
-	/*
-	 * Region stuff
-	 */
-	private HashMap<String, String> regions;
-	
-	/**
-	 * Add this site to a particular region
-	 * 
-	 * @param regionID
-	 * @param regionName
-	 */
-	public void addRegion(String regionID, String regionName) {
-		regions.put(regionID, regionName);
-	}
+	/** How many child series do I have (vmeasurements) */
+	private int mySeriesCount;
+	/** How many child series do my children and I have? */
+	private int childSeriesCount;
+	/** Are these counts valid? */
+	private boolean countsValid;
 	
 	/**
-	 * Check to see if this site is in a region, by id
-	 * 
-	 * @param regionID
+	 * Determines if this is a top level object (has no parent)
 	 * @return
 	 */
-	public boolean inRegion(String regionID) {
-		return regions.containsKey(regionID);
+	public boolean isTopLevelObject() {
+		return (parent == null);
+	}
+	
+	/**
+	 * Determines if this has any children
+	 * @return
+	 */
+	public boolean hasChildren() {
+		return children.isEmpty();
+	}
+	
+	/**
+	 * Does this object have a lab code?
+	 * @return
+	 */
+	public boolean hasLabCode() {
+		return hasCode;
+	}
+	
+	/**
+	 * Are my counts of child series valid?
+	 * @return
+	 */
+	public boolean seriesCountsValid() {
+		return countsValid;
+	}
+	
+	/**
+	 * Get the number of series that this particular object has
+	 * @return
+	 */
+	public int getObjectSeriesCount() {
+		return this.mySeriesCount;
+	}
+	
+	/**
+	 * Get the number of objects that this series and its children have
+	 * @return
+	 */
+	public int getObjectChildSeriesCount() {
+		return this.childSeriesCount;
 	}
 	
 	public String toFullString() {
-		if(code.equals(title))
+		if(labCode.equals(title))
 			return title;
 		
-		return "[" + code + "] " + title;
+		return "[" + labCode + "] " + title;
 	}
 		
-	public String getCode() {
-		return code;
+	public String getLabCode() {
+		return labCode;
 	}
 	
-	// add a subsite
-	public void addSubsite(Subsite subsite) {
-		subsites.add(subsite);
+	/**
+	 * Set my parent object (may be null)
+	 * @param parent
+	 */
+	public void setParent(TridasObject parent) {
+		this.parent = parent;
 	}
 	
-	public void sortSubsites() {
-		Collections.sort(subsites);
+	/**
+	 * Returns parent, or null if I am a toplevel object
+	 * @return
+	 */
+	public TridasObject getParent() {
+		return parent;
 	}
-	
-	// get the subsite list
-	public List<Subsite> getSubsites() {
-		return subsites;
+
+	/**
+	 * Add a child object
+	 * @param subsite
+	 */
+	public void addChild(TridasObject o) {
+		children.add(o);
+		
+		// keep track of the number of child series
+		childSeriesCount += o.childSeriesCount;
+	}
+
+	/**
+	 * Get a read-only list of children
+	 * @return
+	 */
+	public List<TridasObject> getChildren() {
+		return Collections.unmodifiableList(children);
 	}	
 	
+	/**
+	 * Create a TridasObject from an XML Element
+	 * Does not handle the recursive case
+	 * @param root
+	 * @return
+	 */
 	public static TridasObject xmlToSite(Element root) {
-		String id, name, code;
-		
-		id = root.getAttributeValue("id");
-		if(id == null) {
-			System.out.println("Site lacking an id? " + root.toString());
-			return null;
-		}
-		
-		name = root.getChildText("name");
-		code = root.getChildText("code");
-		if(name == null || code == null) {
-			System.out.println("Site lacking a name or code? " + root.toString());
-			return null;			
-		}
-		
-		TridasObject site = new TridasObject(id, name, code);
-		
-		// catch a region tag (or multiple)
-		for(Element region : (List<Element>) root.getChildren("region")) {
-			if(((id = region.getAttributeValue("id")) != null)) {
-				site.addRegion(id, region.getText());
-			}			
-		}
-		
-		// now, get any subsites
-		Element child = root.getChild("references");
-		if(child != null) {
-			List<Element> subsites = child.getChildren("subSite");
-			
-			for(Element ss : subsites) {
-				Subsite subsite = Subsite.xmlToSubsite(ss);
+		String id, title;
+		Element identifier;
+		TridasIdentifier tid;
 
-				// add our subsite
-				if(subsite != null)
-					site.addSubsite(subsite);
+		// this shouldn't fail if schema validated correctly
+		if((identifier = root.getChild("identifier", CorinaXML.TRIDAS_NS)) == null)
+				throw new IllegalArgumentException("missing object identifier");
+
+		tid = new TridasIdentifier(identifier, "object");
+			
+		if((title = root.getChildText("title", CorinaXML.TRIDAS_NS)) == null)
+			throw new IllegalArgumentException("missing object title");
+				
+		// Finally, create our object
+		TridasObject obj = new TridasObject(tid, title);
+		
+		String val;
+		List<Element> el;
+
+		// TODO: Handle type
+		
+		el = root.getChildren("genericField", CorinaXML.TRIDAS_NS);
+		for(Element e : el) {
+			String genericFieldName = e.getAttributeValue("name");
+			
+			if(genericFieldName.equals("labCode")) {
+				obj.labCode = e.getText();
+				obj.hasCode = true;
+			}
+			else if(genericFieldName.equals("countOfChildSeries")) {
+				obj.mySeriesCount = Integer.parseInt(e.getText());
+				obj.childSeriesCount = obj.mySeriesCount;
+				obj.countsValid = true;
 			}
 		}
-
-		// sort the subsites alphabetically
-		site.sortSubsites();
 		
-		// handle our links
-		site.setResourceIdentifierFromElement(root);
-		
-		return site;
+		return obj;
 	}
 	
 	public Element toXML() {
@@ -128,7 +194,7 @@ public class TridasObject extends TridasEntityBase implements Comparable {
 			root.setAttribute("id", getID());
 		
 		root.addContent(new Element("name").setText(title));
-		root.addContent(new Element("code").setText(code));
+		root.addContent(new Element("code").setText(labCode));
 		
 		// are these necessary?
 		// TODO: Regions?

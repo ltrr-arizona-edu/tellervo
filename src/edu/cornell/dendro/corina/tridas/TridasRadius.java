@@ -3,28 +3,23 @@ package edu.cornell.dendro.corina.tridas;
 import org.jdom.Element;
 
 public class TridasRadius extends TridasEntityBase {
-	public TridasRadius(String id, String name) {
-		super(id, name);
+	/**
+	 * @param rootElement
+	 */
+	public TridasRadius(Element rootElement) {
+		super(rootElement);
+	}
+
+	/**
+	 * @param identifier
+	 * @param title
+	 */
+	public TridasRadius(TridasIdentifier identifier, String title) {
+		super(identifier, title);
 	}
 	
 	public static TridasRadius xmlToRadius(Element root) {
-		String id, name;
-		
-		id = root.getAttributeValue("id");
-		if(id == null) {
-			System.out.println("Radius lacking an id? " + root.toString());
-			return null;
-		}
-		
-		name = root.getChildText("name");
-		if(name == null) {
-			System.out.println("Radius lacking an name? " + root.toString());
-			return null;			
-		}
-		
-		TridasRadius radius = new TridasRadius(id, name);
-		
-		radius.setResourceIdentifierFromElement(root);
+		TridasRadius radius = new TridasRadius(root);
 		
 		return radius;
 	}
@@ -32,9 +27,6 @@ public class TridasRadius extends TridasEntityBase {
 	public Element toXML() {
 		Element root = new Element("radius");
 		
-		if(!isNew())
-			root.setAttribute("id", getID());
-
 		root.addContent(new Element("name").setText(title));	
 
 		return root;

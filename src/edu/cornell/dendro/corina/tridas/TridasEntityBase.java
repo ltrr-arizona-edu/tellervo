@@ -8,6 +8,7 @@ import org.jdom.Element;
 
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
+import edu.cornell.dendro.corina.webdbi.CorinaXML;
 import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
 
 /**
@@ -22,52 +23,72 @@ import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
  */
 public abstract class TridasEntityBase {
 	/**
-	 * Use the domain-positive constructor instead
-	 * @deprecated
-	 * @param id
-	 * @param name
+	 * Create a tridas entity from this tridas identifier
+	 * @param identifier
+	 * @param title
 	 */
-	public TridasEntityBase(String id, String name) {
-		this("!deprecated", id, name);
-	}
-	
-	public TridasEntityBase(String domain, String id, String title) {
-		this.domain = domain;
-		this.id = id;
+	public TridasEntityBase(TridasIdentifier identifier, String title) {
+		if(title == null)
+			throw new IllegalArgumentException("tridas titles may not be null");
+		
+		this.identifier = identifier;
 		this.title = title;
 	}
 
-	/** The object's internally represented id */
-	protected String id;	
+	/**
+	 * Create a tridas entity from this tridas identifier given as an XML element
+	 * @param entityType
+	 * @param identifier
+	 * @param title
+	 */
+	public TridasEntityBase(String entityType, Element identifier, String title) {
+		this(new TridasIdentifier(identifier, entityType), title);
+	}
+	
+	/**
+	 * Create a tridas entity from a root tridas element
+	 * @param rootElement
+	 */
+	public TridasEntityBase(Element rootElement) {
+		this(rootElement.getName(), 
+				rootElement.getChild("identifier", CorinaXML.TRIDAS_NS),
+				rootElement.getChildText("title", CorinaXML.TRIDAS_NS)
+		);
+	}
+
+	
 	/** The object's title */
 	protected String title;
-	/** The domain the object is from */
-	protected String domain;
+
+	/** The identifer (id,domain) the object is from */
+	protected TridasIdentifier identifier;
 	
-	/** A resource identifier */
-	protected ResourceIdentifier resourceIdentifier;
-	
-	public final static String ID_NEW = "::NEW::";
-	public final static String ID_INVALID = "::INVALID::";
 	public final static String NAME_INVALID = "::INVALID::";
 
 	public String toString() {
 		return title;
 	}
 
+	/**
+	 * Get the ID of this object.
+	 * Same as calling getIdentifier().getID()
+	 */
 	public String getID() {
-		return id;
+		return identifier.getID();
 	}
 	
 	public boolean isNew() {
-		return id.equals(ID_NEW);
+		return identifier.getID().equals(TridasIdentifier.ID_NEW);
 	}
 	
 	@Override
 	public boolean equals(Object o) {
 		// if it's a site, check ids.
-		if(o instanceof TridasEntityBase)
-			return (((TridasEntityBase)o).id.equals(this.id));
+		if(o instanceof TridasEntityBase) {
+			TridasEntityBase b = (TridasEntityBase) o;
+			
+			return b.identifier.equals(identifier);
+		}
 		
 		return super.equals(o);
 	}
@@ -81,10 +102,19 @@ public abstract class TridasEntityBase {
 	}
 	
 	/**
+	 * @deprecated
+	 * @return
+	 */
+	public ResourceIdentifier getResourceIdentifier() {
+		throw new IllegalArgumentException("This function is deprecated. Fix your code.");
+	}
+	
+	/**
 	 * Takes obj's identity
 	 * 
 	 * @param obj
 	 */
+	/*
 	public void assimilateIntermediateObject(TridasEntityBase obj) {
 		this.id = obj.id;
 		this.resourceIdentifier = obj.resourceIdentifier;
@@ -101,6 +131,7 @@ public abstract class TridasEntityBase {
 	public void setResourceIdentifierFromElement(Element rootElement) {
 		setResourceIdentifier(ResourceIdentifier.fromRootElement(rootElement));
 	}
+	*/
 	
 	public abstract Element toXML();
 	

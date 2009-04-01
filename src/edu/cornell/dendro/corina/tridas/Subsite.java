@@ -4,7 +4,7 @@ import org.jdom.Element;
 
 public class Subsite extends TridasEntityBase implements Comparable {
 	public Subsite(String id, String name) {
-		super(id, name);
+		super(null, id);
 	}
 	
 	public static Subsite xmlToSubsite(Element root) {
@@ -26,7 +26,7 @@ public class Subsite extends TridasEntityBase implements Comparable {
 		Subsite subsite = new Subsite(id, name);
 		
 		// setup our links
-		subsite.setResourceIdentifierFromElement(root);
+//		subsite.setResourceIdentifierFromElement(root);
 		
 		return subsite;
 	}

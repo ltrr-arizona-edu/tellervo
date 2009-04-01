@@ -29,6 +29,7 @@ import org.jdom.Document;
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.webdbi.MalformedDocumentException;
 
 public class BugReport {
 	private final Throwable bug;
@@ -45,6 +46,16 @@ public class BugReport {
 		
 		addCompressedLogHistory();
 		fromEmail = comments = null;
+		
+		/**
+		 * If this is a malformed document, include the bad document with our bug report
+		 */
+		if(t instanceof MalformedDocumentException) {
+			Document badDoc = ((MalformedDocumentException) t).getMalformedDocument();
+			
+			if(badDoc != null)
+				addDocument("malformed.xml", badDoc);
+		}
 	}
 	
 	public void setFromEmail(String fromEmail) {

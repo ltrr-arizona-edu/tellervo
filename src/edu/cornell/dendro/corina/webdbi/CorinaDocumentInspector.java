@@ -19,9 +19,7 @@ import org.jdom.output.SAXOutputter;
 import org.jdom.output.XMLOutputter;
 import org.xml.sax.SAXException;
 
-import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.util.XMLParsingException;
-import edu.cornell.dendro.corina.util.XMLResponseHandler;
 
 /*
  * This class verifies Corina XML document structure, 
@@ -49,20 +47,20 @@ public class CorinaDocumentInspector {
 		Element root = document.getRootElement();
 		
 		if(root == null) 
-			throw new MalformedDocumentException("document has no root element");
+			throw new MalformedDocumentException(document, "document has no root element");
 		
 		if(!root.getName().equalsIgnoreCase("corina"))
-			throw new MalformedDocumentException("root element is the wrong type");
+			throw new MalformedDocumentException(document, "root element is the wrong type");
 		
 		Element header;
 		if((header = root.getChild("header", CorinaXML.CORINA_NS)) == null)
-			throw new MalformedDocumentException("document has no header");
+			throw new MalformedDocumentException(document, "document has no header");
 		
 		// do we check for content here? I'm going to say no.
 		
 		Element e;
 		if((e = header.getChild("status", CorinaXML.CORINA_NS)) == null) 
-			throw new MalformedDocumentException("no status in document header");
+			throw new MalformedDocumentException(document, "no status in document header");
 
 		// status is ok? we're fine then.
 		if(e.getText().compareToIgnoreCase("ok") == 0)

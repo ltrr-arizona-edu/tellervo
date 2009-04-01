@@ -231,7 +231,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
 				if (e.getOffset() + 1 == text.length()) {
 					// get a list of keys greater (alphabetically) than what we have
 					// we really only care about the first entry that's greater than what we have
-					SortedMap<String, TridasObject> similarSites = App.tridasObjects.getSimilarSites(text);
+					SortedMap<String, TridasObject> similarSites = App.tridasObjects.getSimilarObjectsByCode(text);
 
 					String completion;
 					if (similarSites.firstKey().startsWith(text))
@@ -456,7 +456,7 @@ public class HierarchyPanel extends javax.swing.JPanel {
     		// site
     		o = cboSite.getSelectedItem();
     		if((o != null) && (o instanceof TridasObject)) {
-    			sb.append(((TridasObject)o).getCode());
+    			sb.append(((TridasObject)o).getLabCode());
     		}
     		else
     			break;

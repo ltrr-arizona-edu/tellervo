@@ -35,6 +35,7 @@ import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.tridas.TridasObject;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.MeasurementSearchResource;
@@ -416,7 +417,7 @@ public class DBBrowser extends DBBrowser_UI{
 				MeasurementSearchResource ms = new MeasurementSearchResource();
 				for(int i = 0; i < selected.length; i++) {
 					TridasObject site = (TridasObject) selected[i];
-					ms.getSearchParameters().addSearchConstraint("siteid", "=", site.getID());
+					ms.getSearchParameters().addSearchConstraint("objectid", "=", site.getID());
 				}
 
 				PrototypeLoadDialog dlg = new PrototypeLoadDialog(ms);
@@ -469,10 +470,10 @@ public class DBBrowser extends DBBrowser_UI{
 				}
 			}
 		});
-}
+	}
     
     private void populateSiteList() {
-    	Collection<TridasObject> sites = App.tridasObjects.getSites();
+    	Collection<TridasObject> sites = App.tridasObjects.getObjectList();
     	SiteRegion region = (SiteRegion) cboBrowseBy.getSelectedItem();
     	TridasObject selectedSite = (TridasObject) lstSites.getSelectedValue();
     	
@@ -500,6 +501,8 @@ public class DBBrowser extends DBBrowser_UI{
     	
         // A particular region has been selected so limit list before applying filter
     	} else {
+    		Alert.error("error", "regions are disabled, use all please");
+    		/*
     		List<TridasObject> filteredSites = new ArrayList<TridasObject>();
     		
     		// filter the sites...
@@ -520,6 +523,7 @@ public class DBBrowser extends DBBrowser_UI{
     		}
     		
     		lstSites.setModel(new javax.swing.DefaultComboBoxModel(filteredSites.toArray()));
+    		*/
     	}
     	
     	// if our site list was updated in the background,
@@ -573,7 +577,7 @@ public class DBBrowser extends DBBrowser_UI{
      * @param code
      */
     public void selectSiteByCode(String code) {
-    	TridasObject site = App.tridasObjects.findSite(code);
+    	TridasObject site = App.tridasObjects.findObjectByCode(code);
     	
     	lstSites.setSelectedValue(site, true);
     }

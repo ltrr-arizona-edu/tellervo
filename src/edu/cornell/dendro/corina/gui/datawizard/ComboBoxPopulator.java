@@ -31,7 +31,7 @@ public class ComboBoxPopulator {
 		
 		if(parent instanceof TridasObject) {
 			cbo.setPrototypeDisplayValue("XXXXXXXXXXXX");
-			populateSubsites(((TridasObject) parent).getSubsites());
+			//populateSubsites(((TridasObject) parent).getSubsites());
 			// subsite
 			return;
 		}
@@ -77,7 +77,7 @@ public class ComboBoxPopulator {
     }
     
     private void populateSiteList() {
-    	Collection<TridasObject> sites = App.tridasObjects.getSites();
+    	Collection<TridasObject> sites = App.tridasObjects.getObjectList();
     	Object selectedSiteObj = cbo.getSelectedItem();
     	TridasObject selectedSite = (selectedSiteObj instanceof TridasObject ? (TridasObject) selectedSiteObj : null);
     	
