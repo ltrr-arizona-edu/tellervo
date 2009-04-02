@@ -15,6 +15,7 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridas.Subsite;
 import edu.cornell.dendro.corina.tridas.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasIdentifier;
 import edu.cornell.dendro.corina.tridas.TridasObject;
 import edu.cornell.dendro.corina.tridas.TridasRadius;
 import edu.cornell.dendro.corina.tridas.TridasSample;
@@ -56,7 +57,7 @@ public class MeasurementResource extends ResourceObject<Sample> {
 	@Override
 	protected Element prepareQuery(ResourceQueryType queryType, Element requestElement) throws ResourceException {
 		Sample s = this.getObject();
-		ResourceIdentifier ri = this.getIdentifier();
+		TridasIdentifier ri = this.getIdentifier();
 		String id;
 				
 		switch(queryType) {
@@ -76,7 +77,7 @@ public class MeasurementResource extends ResourceObject<Sample> {
 			if(ri == null)
 				throw new ResourceException("No identifier specified for read/delete");
 			
-			requestElement.addContent(ri.asRequestXMLElement());
+			requestElement.addContent(ri.toCorinaEntityTag());
 			
 			break;
 

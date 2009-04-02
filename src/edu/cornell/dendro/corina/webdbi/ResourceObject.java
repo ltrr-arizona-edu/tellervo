@@ -1,5 +1,7 @@
 package edu.cornell.dendro.corina.webdbi;
 
+import edu.cornell.dendro.corina.tridas.TridasIdentifier;
+
 /*
  * A template class for a wrapper around an object
  * 
@@ -9,7 +11,7 @@ package edu.cornell.dendro.corina.webdbi;
 
 public abstract class ResourceObject<OBJTYPE> extends Resource {
 	private OBJTYPE object;
-	private ResourceIdentifier identifier;
+	private TridasIdentifier identifier;
 	private SearchParameters searchParams;
 	
 	public OBJTYPE getObject() {
@@ -30,12 +32,12 @@ public abstract class ResourceObject<OBJTYPE> extends Resource {
 		object = null;
 	}
 	
-	public void attachIdentifier(ResourceIdentifier identifier) {
+	public void attachIdentifier(TridasIdentifier identifier) {
 		// make a copy so we don't steal it
-		this.identifier = (ResourceIdentifier) identifier;
+		this.identifier = identifier;
 	}
 	
-	public ResourceIdentifier getIdentifier() {
+	public TridasIdentifier getIdentifier() {
 		return identifier;
 	}
 	

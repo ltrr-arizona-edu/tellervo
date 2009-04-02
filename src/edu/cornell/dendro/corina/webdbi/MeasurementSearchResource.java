@@ -11,11 +11,15 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 import edu.cornell.dendro.corina.formats.CorinaXML;
+import edu.cornell.dendro.corina.formats.Metadata;
+import edu.cornell.dendro.corina.formats.Tridas;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.TridasWSElement;
+import edu.cornell.dendro.corina.tridas.TridasIdentifier;
 
 public class MeasurementSearchResource extends ResourceObject<ElementList> {
 		/**
@@ -76,6 +80,7 @@ public class MeasurementSearchResource extends ResourceObject<ElementList> {
 
 			// create a list of elements
 			ElementList elist = new ElementList();
+			Tridas tridas = new Tridas();
 
 			for(Element meas : measurementElements) {
 				// only tridas elements
@@ -85,32 +90,16 @@ public class MeasurementSearchResource extends ResourceObject<ElementList> {
 				// we only want measurementSeries or derivedSeries here - and we ignore this distinction
 				if(!(meas.getName().equals("measurementSeries") || meas.getName().equals("derivedSeries")))
 					continue;
-			}
-			
-			CorinaXML loader = new CorinaXML();
-			
-			for(Element measurement : measurementElements) {
-				// Determine how we link to this element
-				ResourceIdentifier rid = null;
-				List<Element> links = measurement.getChildren("link");
-				rid = ResourceIdentifier.fromLinks(links);
-				
-				// no resource identifier?
-				if(rid == null) {
-					System.out.println("Resource identifier missing from measurement " +  
-							measurement.getAttributeValue("id"));
-					continue;
-				}
 				
 				try {
 					// load it into a basic sample
 					BaseSample bs = new BaseSample();
-					loader.loadBasicMeasurement(bs, measurement);
+					tridas.loadBasicSeries(bs, meas);
 					
 					edu.cornell.dendro.corina.sample.Element cachedElement;
 
 					// now, assign the loader to our sample
-					bs.setLoader(new CorinaWebElement(rid));
+					bs.setLoader(new TridasWSElement((TridasIdentifier) bs.getMeta(Metadata.TRIDAS_IDENTIFIER)));
 					
 					// use that to make a cached element...
 					cachedElement = new CachedElement(bs);

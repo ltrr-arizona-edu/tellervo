@@ -37,7 +37,7 @@ public class TridasIdentifier {
 	 */
 	public TridasIdentifier(Element identifierElement, String entityName) {
 		String val;
-		
+				
 		if(identifierElement == null)
 			throw new IllegalArgumentException("Null tridas identifier element");
 
@@ -52,6 +52,9 @@ public class TridasIdentifier {
 			throw new IllegalArgumentException("Tridas Identifier cannot be empty");
 		else
 			id = val;
+		
+		// and just use the provided entity name
+		this.entityName = entityName;
 	}
 	
 	/**
@@ -99,6 +102,11 @@ public class TridasIdentifier {
 		}
 		
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return domain.getDomainIdentifier() + ":" + entityName + ":" + id;
 	}
 	
 	/** An identifier for a new entity */
