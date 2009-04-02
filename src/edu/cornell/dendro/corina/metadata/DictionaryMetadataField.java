@@ -8,6 +8,8 @@ import edu.cornell.dendro.corina.webdbi.ResourceEventListener;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 /**
  * @author Lucas Madar
@@ -24,14 +26,14 @@ public class DictionaryMetadataField extends MetadataField implements
 		this.dictionaryName = dictionaryName;
 		this.hasSetValues = true;
 		
-		myDictionary = App.dictionary.getDictionary(dictionaryName);
+		myDictionary = new ArrayList<DictionaryElement>(App.dictionary.getDictionary(dictionaryName));
 		if(myDictionary == null)
 			System.out.println("Null dictionary for " + variableName + " [" + dictionaryName + "]");
 		loadTables();
 	}
 
 	private String dictionaryName;
-	private volatile List myDictionary; 
+	private volatile List<DictionaryElement> myDictionary; 
 	
 	private void loadTables() {
 		// do we need to do anything here? I think this function can probably be deleted!
@@ -52,17 +54,18 @@ public class DictionaryMetadataField extends MetadataField implements
 	
 	@Override
 	public String getListItemValue(int index) {
-		return ((BasicDictionaryElement) myDictionary.get(index)).getInternalRepresentation();
+		return myDictionary.get(index).getId();
 	}
 
 	@Override
 	public String getListItemDescription(int index) {
-		return ((BasicDictionaryElement) myDictionary.get(index)).getValue() + " [dict: " + getListItemValue(index) + "]";
+		return myDictionary.get(index).getValue() + " [dict: " + getListItemValue(index) + "]";
 	}
 	
 	public void resourceChanged(ResourceEvent re) {
 		if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE) {
-			myDictionary = App.dictionary.getDictionary(dictionaryName);
+			myDictionary.clear();
+			myDictionary.addAll(App.dictionary.getDictionary(dictionaryName));
 			loadTables();
 		}
 	}

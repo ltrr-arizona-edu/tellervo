@@ -1,53 +1,39 @@
 package edu.cornell.dendro.corina.dictionary;
 
-public class User extends BasicDictionaryElement {
-	public User(String internalRepresentation, String value) {
-		super(internalRepresentation, value);
+import org.jdom.Element;
+
+public class User extends DictionaryElement {
+	public User(Element e) {
+		super(DictionaryElement.Type.User, e);
+		
+		fullname = e.getAttributeValue("lastName") + ", " + e.getAttributeValue("firstName");
 	}
 	
-	private String username;
+	/**
+	 * Only for creating a user when we don't have one in the dictionary
+	 * @param name
+	 */
+	public User(String name) {
+		super("invalid", name);
+		fullname = name;
+	}
+	
 	private String fullname;
 	
 	/**
 	 * @return the username
 	 */
 	public String getUsername() {
-		return username;
+		return getValue();
 	}
-	/**
-	 * @param username the username to set
-	 */
-	public void setUsername(String username) {
-		this.username = username;
-	}
+		
 	/**
 	 * @return the fullname
 	 */
 	public String getFullname() {
 		return fullname;
 	}
-	
-	/**
-	 * @param firstname
-	 * @param lastname
-	 */
-	public void setFullname(String firstname, String lastname) {
-		if(firstname == null) {
-			if(lastname == null)
-				fullname = "[invalid user, id " + getInternalRepresentation() + "]";
-			else
-				fullname = lastname;
-		}
-		else if(lastname == null) {
-			if(firstname == null)
-				fullname = "[invalid user, id " + getInternalRepresentation() + "]";
-			else
-				fullname = firstname;
-		}
-		else 
-			fullname = lastname + ", " + firstname;
-	}
-	
+		
 	public String toString() {
 		return fullname;
 	}

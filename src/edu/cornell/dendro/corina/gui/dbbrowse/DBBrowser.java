@@ -28,7 +28,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.dictionary.SiteRegion;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
@@ -366,8 +365,22 @@ public class DBBrowser extends DBBrowser_UI{
 				});
     }
     
+    // Placeholder until we re-implement regions?
+    private class SiteRegion {
+    	public SiteRegion(String a, String b) {
+    		// blah
+    	}
+    	public String getInternalRepresentation() {
+    		return "ALL";
+    	}
+    	public String toString() {
+    		return "Regions are deprecated";
+    	}
+    }
+    
 	private void populateComponents() {
-    	List<SiteRegion> regions = (List<SiteRegion>) App.dictionary.getDictionary("Regions");
+    	//List<SiteRegion> regions = (List<SiteRegion>) App.dictionary.getDictionary("Regions");
+		List<SiteRegion> regions = new ArrayList<SiteRegion>();
     	List<SiteRegion> regionList = new ArrayList<SiteRegion>();
 
     	// single selection on site list
