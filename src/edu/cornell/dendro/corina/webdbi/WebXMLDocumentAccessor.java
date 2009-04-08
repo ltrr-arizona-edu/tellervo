@@ -3,6 +3,7 @@ package edu.cornell.dendro.corina.webdbi;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.BugReportDialog;
+import edu.cornell.dendro.corina.gui.XMLDebugView;
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.platform.Platform;
@@ -74,6 +75,7 @@ public class WebXMLDocumentAccessor {
 	@Deprecated
 	public WebXMLDocumentAccessor(String noun, String verb) {
 		requestMethod = METHOD_GET;
+		this.noun = noun;
 		
 		try {
 			String path = App.prefs.getPref("corina.webservice.url", "invalid-url!");
@@ -87,6 +89,8 @@ public class WebXMLDocumentAccessor {
 		}
 	}
 
+	private static String noun;
+	
 	/**
  	 * Makes a class capable of performing operations on a webservice "noun" 
 	 * 
@@ -97,6 +101,7 @@ public class WebXMLDocumentAccessor {
 	 */
 	public WebXMLDocumentAccessor(String noun) {
 		requestMethod = METHOD_POST;
+		this.noun = noun;
 		
 		try {
 			String path = App.prefs.getPref("corina.webservice.url", "invalid-url!");
@@ -165,6 +170,7 @@ public class WebXMLDocumentAccessor {
 				post.setEntity(postEntity);
 				
 				// debug
+				XMLDebugView.addDocument(requestDocument, noun, false);
 				/*
 				System.out.println("SENDING XML: ");
 				XMLOutputter outp = new XMLOutputter();
@@ -203,6 +209,8 @@ public class WebXMLDocumentAccessor {
 			inDocument = client.execute(req, responseHandler);
 			
 			lastInDocument = inDocument;
+
+			XMLDebugView.addDocument(inDocument, noun, true);
 			
 			// save our cookies?
 			WSCookieStoreHandler.getCookieStore().fromCookieStore(client.getCookieStore());
