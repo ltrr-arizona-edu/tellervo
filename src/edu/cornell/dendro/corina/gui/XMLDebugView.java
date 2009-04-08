@@ -35,10 +35,10 @@ public class XMLDebugView extends JDialog {
 	
 	private static class DocumentHolder {
 		public String name;
-		public Document doc;
+		public Object doc;
 		public Boolean direction;
 		
-		public DocumentHolder(Document doc, String name, boolean isIncoming) {
+		public DocumentHolder(Object doc, String name, boolean isIncoming) {
 			this.doc = doc;
 			this.name = name;
 			this.direction = isIncoming;
@@ -46,7 +46,7 @@ public class XMLDebugView extends JDialog {
 		
 		@Override
 		public String toString() {
-			return (direction ? "[I]" : "[O]") + name;
+			return (direction ? "[I] " : "[O] ") + name;
 		}
 	}
 	
@@ -83,10 +83,14 @@ public class XMLDebugView extends JDialog {
 					return;
 				}
 				
-				// set the sourceView to display the xml
-				XMLOutputter outputter = new XMLOutputter();
-				outputter.setFormat(Format.getPrettyFormat());
-				sourceView.setText(outputter.outputString(doc.doc));
+				if(doc.doc instanceof Document) {		
+					XMLOutputter outputter = new XMLOutputter();
+					outputter.setFormat(Format.getPrettyFormat());
+					sourceView.setText(outputter.outputString((Document)doc.doc));
+				}
+				else {
+					sourceView.setText(doc.doc.toString());
+				}
 			}
 			
 		});
@@ -108,13 +112,14 @@ public class XMLDebugView extends JDialog {
 		setSize(new Dimension(1024, 768));
 		pack();
 		
-		// apparently, this needs to be done here?
+		// set the sourceView to display the xml
+		// apparently, has to be done here
 		sourceView.setContentType("text/xml");
 
 		Center.center(this);
 	}
 	
-	public static void addDocument(Document doc, String title, boolean isIncoming) {
+	public static void addDocument(Object doc, String title, boolean isIncoming) {
 		if(!enabled)
 			return;
 		

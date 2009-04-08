@@ -3,8 +3,6 @@ package edu.cornell.dendro.corina.gui.dbbrowse;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -54,7 +52,8 @@ public class SiteRenderer implements ListCellRenderer {
 			
 			c.add(lblCode);
 			c.add(lblName);
-			
+		
+			System.out.println(lblCode.getText() + lblName.getText());
 		} else if(value instanceof String) {
 			JLabel lblCode = new JLabel((String) value);
 			JLabel lblName = new JLabel((String) value);

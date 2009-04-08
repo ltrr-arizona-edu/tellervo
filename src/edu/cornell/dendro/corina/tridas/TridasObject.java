@@ -96,14 +96,14 @@ public class TridasObject extends TridasEntityBase implements Comparable {
 	}
 	
 	public String toFullString() {
-		if(labCode.equals(title))
+		if(!hasCode || labCode.equals(title))
 			return title;
 		
 		return "[" + labCode + "] " + title;
 	}
 		
 	public String getLabCode() {
-		return labCode;
+		return hasCode ? labCode : "(n/a)";
 	}
 	
 	/**
@@ -173,11 +173,11 @@ public class TridasObject extends TridasEntityBase implements Comparable {
 		for(Element e : el) {
 			String genericFieldName = e.getAttributeValue("name");
 			
-			if(genericFieldName.equals("labCode")) {
+			if(genericFieldName.equals("corina.labCode")) {
 				obj.labCode = e.getText();
 				obj.hasCode = true;
 			}
-			else if(genericFieldName.equals("countOfChildSeries")) {
+			else if(genericFieldName.equals("corina.countOfChildSeries")) {
 				obj.mySeriesCount = Integer.parseInt(e.getText());
 				obj.childSeriesCount = obj.mySeriesCount;
 				obj.countsValid = true;

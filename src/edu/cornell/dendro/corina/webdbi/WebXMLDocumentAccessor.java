@@ -250,6 +250,8 @@ public class WebXMLDocumentAccessor {
 			
 			new Bug(cause, bugs);
 			
+			XMLDebugView.addDocument(BugReport.getStackTrace(cause), "Parsing Exception", true);
+			
 			// it's probably an ioexception...
 			if(cause instanceof IOException)
 				throw (IOException) cause;

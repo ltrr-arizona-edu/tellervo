@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -36,6 +37,7 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.tridas.TridasObject;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.MeasurementSearchResource;
 import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
@@ -76,7 +78,6 @@ public class DBBrowser extends DBBrowser_UI{
         
         isMultiDialog = openMulti;
 
-        lstSites.setCellRenderer(new SiteRenderer());
         listTableSplit.setOneTouchExpandable(true);
 
         setupTableArea();
@@ -384,8 +385,11 @@ public class DBBrowser extends DBBrowser_UI{
     	List<SiteRegion> regionList = new ArrayList<SiteRegion>();
 
     	// single selection on site list
+    	lstSites.setModel(new ArrayListModel<TridasObject>());
 		lstSites.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    	
+		// make it nicely render cells
+        lstSites.setCellRenderer(new SiteRenderer());
+
     	// Duplicate the region list; create an 'All Regions' 
     	regionList.add(new SiteRegion("ALL", "All Regions"));
     	
@@ -405,9 +409,10 @@ public class DBBrowser extends DBBrowser_UI{
 		
 		// Select the last used region otherwise select the first thing in the list
 		// populate our site list (done automatically by choosing an index)
-		if(App.prefs.getPref("corina.region.lastused") != null){
-			Integer lastUsedIndex = Integer.parseInt(App.prefs.getPref("corina.region.lastused"));
-			if(lastUsedIndex<cboBrowseBy.getItemCount()) cboBrowseBy.setSelectedIndex(lastUsedIndex);
+		if(App.prefs.getPref("corina.region.lastused", null) != null) {
+			Integer lastUsedIndex = App.prefs.getIntPref("corina.region.lastused", 0);
+			if(lastUsedIndex<cboBrowseBy.getItemCount()) 
+				cboBrowseBy.setSelectedIndex(lastUsedIndex);
         	populateSiteList();
 		} else {
 			cboBrowseBy.setSelectedIndex(0);
@@ -494,8 +499,8 @@ public class DBBrowser extends DBBrowser_UI{
     	if(region.getInternalRepresentation().equals("ALL")) { 
     		
     		// User has NOT entered filter text
-        	if(txtFilterInput.getText().equals("")){	
-        		lstSites.setModel(new javax.swing.DefaultComboBoxModel(sites.toArray()));
+        	if(txtFilterInput.getText().equals("")){
+        		((ArrayListModel<TridasObject>)lstSites.getModel()).replaceContents(sites);
 
         	// User HAS entered filter text
         	} else {
@@ -508,7 +513,7 @@ public class DBBrowser extends DBBrowser_UI{
 	        		if(search.indexOf(filter) != -1)
 	        			filteredSites.add(s);        				
         		}
-        		lstSites.setModel(new javax.swing.DefaultComboBoxModel(filteredSites.toArray()));
+        		((ArrayListModel<TridasObject>)lstSites.getModel()).replaceContents(filteredSites);
         	}		
     		
     	
