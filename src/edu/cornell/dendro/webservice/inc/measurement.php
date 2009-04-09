@@ -724,13 +724,29 @@ class measurement extends measurementEntity implements IDBAccessor
         }
     }
 
+    /**
+     * Get the Corina specific (genericField) XML tags that summarise the higher levels of the TRiDaS hierarchy
+     *
+     * @return String
+     */
+    private function getSummaryXMLTags()
+    {
+		$tags = "<tridas:genericField name=\"corina.objectTitle\" type=\"string\">".$this->getSummaryObjectTitle()."</tridas:genericField>";
+		$tags.= "<tridas:genericField name=\"corina.elementTitle\" type=\"string\">".$this->getSummaryElementTitle()."</tridas:genericField>";
+		$tags.= "<tridas:genericField name=\"corina.sampleTitle\" type=\"string\">".$this->getSummarySampleTitle()."</tridas:genericField>";
+		$tags.= "<tridas:genericField name=\"corina.radiusTitle\" type=\"string\">".$this->getSummaryRadiusTitle()."</tridas:genericField>";		
+    	return $tags;
+    }
+    
     private function getDerivedSeriesXML($format, $parts, $recurseLevel=2)
     {
     	global $domain;
     	$xml = null;
  	    $xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
      	$xml.= $this->getIdentifierXML();
-     	    	
+		if($this->getCreatedTimestamp()!=NULL)		$xml.= "<tridas:createdTimestamp>".$this->getCreatedTimestamp()."</tridas:createdTimestamp>\n";
+		if($this->getLastModifiedTimestamp()!=NULL)	$xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimestamp()."</tridas:lastModifiedTimestamp>\n"; 				 				
+	    	    	
      	
         // Include permissions details if requested            
         $xml .= $this->getPermissionsXML();     	
@@ -767,9 +783,7 @@ class measurement extends measurementEntity implements IDBAccessor
  				if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"crossdateConfidenceLevel\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
  				if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"operationParameter\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
  				if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"authorID\">".$this->author->getID()."</tridas:genericField>\n"; 				
- 				if($this->getCreatedTimestamp()!=NULL)		$xml.= "<tridas:createdTimestamp>".$this->getCreatedTimestamp()."</tridas:createdTimestamp>\n";
- 				if($this->getLastModifiedTimestamp()!=NULL)	$xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimestamp()."</tridas:lastModifiedTimestamp>\n"; 				 				
- 			
+	
 
                 // Using 'summary' format so just give minimal XML for all references and nothing else
                 if($format=="summary")
@@ -794,14 +808,16 @@ class measurement extends measurementEntity implements IDBAccessor
 		
  	    $xml = "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
       	$xml.= $this->getIdentifierXML();
-
+		if($this->getCreatedTimestamp()!=NULL)		$xml.= "<tridas:createdTimestamp>".$this->getCreatedTimestamp()."</tridas:createdTimestamp>\n";
+		if($this->getLastModifiedTimestamp()!=NULL)	$xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimestamp()."</tridas:lastModifiedTimestamp>\n"; 				 				
+	  
 
             
             // Only output the remainder of the data if we're not using the 'minimal' format
             if ($format!="minimal")
             {            	
-               	if(isset($this->analyst))					$xml.= "<tridas:analyst>".$this->analyst->getFormattedName()."</tridas:analyst>\n";
-        		if(isset($this->dendrochronologist))		$xml.= "<tridas:dendrochronologist>".$this->dendrochronologist->getFormattedName()."</tridas:dendrochronologist>\n";
+               	if($this->analyst->getFormattedName()!=NULL) $xml.= "<tridas:analyst>".$this->analyst->getFormattedName()."</tridas:analyst>\n";
+        		if($this->dendrochronologist->getFormattedName()!=NULL) $xml.= "<tridas:dendrochronologist>".$this->dendrochronologist->getFormattedName()."</tridas:dendrochronologist>\n";
                	if(isset($this->measuringMethod))			$xml.= "<tridas:measuringMethod>".$this->measuringMethod->getValue()."</tridas:measuringMethod>\n";        	       		
           		if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
          		if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".$this->getUsage()."</tridas:usage>\n";
@@ -816,17 +832,13 @@ class measurement extends measurementEntity implements IDBAccessor
 
 		        // Include permissions details if requested            
 		        $xml .= $this->getPermissionsXML();
-                if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"isReconciled\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
-		        if(isset($this->isLegacyCleaned))       	$xml.= "<tridas:genericField name=\"isLegacyCleaned\">".dbHelper::formatBool($this->isLegacyCleaned, "english")."</tridas:genericField>\n";
-                if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"isPublished\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
- 				if(isset($this->analyst))					$xml.= "<tridas:genericField name=\"analystID\">".$this->analyst->getID()."</tridas:genericField>\n";
- 				if(isset($this->dendrochronologist))		$xml.= "<tridas:genericField name=\"dendrochronologistID\">".$this->dendrochronologist->getID()."</tridas:genericField>\n"; 				
- 				
-                
-                
-                if($this->getCreatedTimeStamp()!=NULL)      $xml.= "<tridas:createdTimestamp>".$this->getCreatedTimeStamp()."</tridas:createdTimestamp>\n";
-                if($this->getLastModifiedTimeStamp()!=NULL) $xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimeStamp()."</tridas:lastModifiedTimestamp>\n";
-                
+                if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"corina.isReconciled\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
+		        if(isset($this->isLegacyCleaned))       	$xml.= "<tridas:genericField name=\"corina.isLegacyCleaned\">".dbHelper::formatBool($this->isLegacyCleaned, "english")."</tridas:genericField>\n";
+                if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"corina.isPublished\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
+ 				if(isset($this->analyst))					$xml.= "<tridas:genericField name=\"corina.analystID\">".$this->analyst->getID()."</tridas:genericField>\n";
+ 				if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"corina.dendrochronologistID\">".$this->dendrochronologist->getID()."</tridas:genericField>\n"; 				
+ 				if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\">".$this->getReadingCount()."</tridas:genericField>\n";
+ 				           
 		// show summary information in standard and summary modes
 		/*if($format=="summary" || $format=="standard") {
                     // Return special summary section
@@ -843,6 +855,7 @@ class measurement extends measurementEntity implements IDBAccessor
                 // Using 'summary' format so just give minimal XML for all references and nothing else
                 if($format=="summary")
                 {
+                	$xml.= $this->getSummaryXMLTags()."\n";
             		$xml.= "</tridas:".$this->getTridasSeriesType().">";
                     return $xml;
                 }

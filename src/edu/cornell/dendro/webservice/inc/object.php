@@ -272,7 +272,13 @@ class object extends objectEntity implements IDBAccessor
 	}
 	
 	
-	
+	public function asKML()
+	{
+		$kml = "<Placemark><description>".$this->getTitle()."</description>";
+		$kml .= $this->location->asKML();
+		$kml .= "</Placemark>";
+		return $kml;
+	}
 	
 	private function _asXML($format='standard', $parts='all')
 	{
@@ -302,8 +308,10 @@ class object extends objectEntity implements IDBAccessor
             		$xml .="</tridas:coverage>";
             	}
             	if($this->hasGeometry()) 			$xml.= $this->location->asXML();
-            	if($this->getCode()!=NULL)			$xml.="<tridas:genericField name=\"labCode\">".$this->getCode()."</tridas:genericField>\n";
-            	if($this->getCountOfChildVMeasurements()!=NULL) $xml.="<tridas:genericField name=\"countOfChildSeries\">".$this->getCountOfChildVMeasurements()."</tridas:genericField>\n";
+            	if($this->hasGeometry())			$xml.="<tridas:genericField name=\"corina.mapLink\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
+            	if($this->getCode()!=NULL)			$xml.="<tridas:genericField name=\"corina.labCode\">".$this->getCode()."</tridas:genericField>\n";
+            	if($this->getCountOfChildVMeasurements()!=NULL) $xml.="<tridas:genericField name=\"corina.countOfChildSeries\">".$this->getCountOfChildVMeasurements()."</tridas:genericField>\n";
+            	
             
             }  
             

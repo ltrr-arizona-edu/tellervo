@@ -165,8 +165,27 @@ class geometry
 	 */
 	function asKML($kmlversion=2)
 	{
-		$sql = "select st_askml(".pg_escape_string($kmlversion)."'".pg_escape_string($this->geometry)."') as thevalue";
-		return $this->runSQLCalculation($sql);
+		$sql = "select geometrytype('".pg_escape_string($this->geometry)."') as thevalue";
+		$dataType = $this->runSQLCalculation($sql);
+		$kml = "";
+		
+		switch($dataType)
+		{
+			case "POLYGON":
+				$sql = "select st_askml(".pg_escape_string($kmlversion).", st_centroid(st_expand('".pg_escape_string($this->geometry)."'::geometry, 0.1))) as thevalue"; 
+				//echo $sql."\n\n";
+				$kml .= $this->runSQLCalculation($sql);	
+				//echo $kml."\n";
+				
+			default:
+				$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";
+				//echo $sql."\n\n";
+				$kml .= $this->runSQLCalculation($sql);
+				//echo $kml."\n";				
+		}
+	
+
+		return $kml;
 	}
 	
 	function getX()
@@ -223,6 +242,7 @@ class geometry
 		}
 		else
 		{
+			trigger_error("No value returned in SQL query");
 			return false;
 		}			
 	}

@@ -500,6 +500,14 @@ class dbEntity
     	}
     }
     
+   function getMapLink()
+   {
+   		global $domain;
+   		
+   		return "https://".$domain."mapservice.php?format=gmap&entity=".$this->getEntityType()."&id=".$this->getID();
+   }
+    
+    
 }
 
 
@@ -721,7 +729,7 @@ class objectEntity extends dbEntity
 			return $this->type;
 		}
 	}
-	
+		
 	/**
 	 * Get the description of this object
 	 *
@@ -2467,11 +2475,29 @@ class measurementEntity extends dbEntity
     var $masterVMeasurementID = NULL;
     
     /**
-     * Summerisation of the object codes for this measrurement
+     * Summerisation of the object title for this measurement
      *
      * @var Mixed
      */
-    protected $summaryObjectCode = NULL;
+    protected $summaryObjectTitle = NULL;
+    /**
+     * Summerisation of the element title for this measurement
+     *
+     * @var Mixed
+     */
+    protected $summaryElementTitle = NULL;    
+    /**
+     * Summerisation of the sample title for this measurement
+     *
+     * @var Mixed
+     */
+    protected $summarySampleTitle = NULL;   
+    /**
+     * Summerisation of the radius title for this measurement
+     *
+     * @var Mixed
+     */
+    protected $summaryRadiusTitle = NULL;    
     /**
      * Number of objects this vmeasurements is associated with
      *
@@ -2489,7 +2515,7 @@ class measurementEntity extends dbEntity
      *
      * @var Mixed
      */
-    protected $summaryTaxonCount = NULL;
+    protected $summaryTaxonCount = NULL;    
     /**
      * Lab prefix code for this measurement
      *
@@ -2554,7 +2580,8 @@ class measurementEntity extends dbEntity
 		$this->dating->setDatingType($id, $value);
 	}
 	
-	function setSummaryInfo($objectcode, $objectcount, $taxonname, $taxoncount, $labprefix)
+	/**
+	function setSummaryInfo($objecttitle, $objectcount, $taxonname, $taxoncount, $labprefix)
 	{
         $this->summaryObjectCode = $objectcode;
         $this->summaryObjectCount =  $objectcount;
@@ -2562,8 +2589,28 @@ class measurementEntity extends dbEntity
         $this->summaryTaxonCount = $taxoncount;
         $this->labPrefix = $labprefix;
         $this->fullLabCode = $labprefix.$this->getCode();
+	}**/
+	
+	function setSummaryObjectTitle($title)
+	{
+		$this->summaryObjectTitle = $title;
 	}
 	
+	function setSummaryElementTitle($title)
+	{
+		$this->summaryElementTitle = $title;
+	}
+
+	function setSummarySampleTitle($title)
+	{
+		$this->summarySampleTitle = $title;
+	}
+	
+	function setSummaryRadiusTitle($title)
+	{
+		$this->summaryRadiusTitle = $title;
+	}
+		
 	function setMeasurementCount($count)
 	{
 		$this->measurementCount = (integer) $count;
@@ -2941,10 +2988,25 @@ class measurementEntity extends dbEntity
     	return $this->code;
     }
     
-    function getSummaryObjectCode()
+    function getSummaryObjectTitle()
     {
-    	return $this->summaryObjectCode;
+    	return $this->summaryObjectTitle;
     }
+    
+    function getSummaryElementTitle()
+    {
+    	return $this->summaryElementTitle;
+    }
+
+    function getSummarySampleTitle()
+    {
+    	return $this->summarySampleTitle;
+    }    
+
+    function getSummaryRadiusTitle()
+    {
+    	return $this->summaryRadiusTitle;
+    }    
     
     function getSummaryObjectCount()
     {

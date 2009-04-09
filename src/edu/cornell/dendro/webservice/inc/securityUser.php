@@ -268,7 +268,14 @@ class securityUser
     
     function getFormattedName()
     {
-    	return $this->firstName." ".$this->lastName;
+    	if (($this->firstName!=NULL) && ($this->lastName!=NULL))
+    	{
+    		return $this->firstName." ".$this->lastName;
+    	}
+    	else
+    	{
+    		return false;
+    	}
     }
     
     function asXML()

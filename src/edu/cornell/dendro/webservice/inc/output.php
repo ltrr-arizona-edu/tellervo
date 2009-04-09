@@ -190,7 +190,78 @@ function writeKMLOutput($xmldata)
 }
 
 
-function writeGMapOutput($xmldata, $requestParams)
+function writeGMapOutput($xmldata)
+{
+	global $gMapAPIKey;
+    include('inc/mapFunctions.php');
+	echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" 
+    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">
+	<html xmlns=\"http://www.w3.org/1999/xhtml\">
+  	<head>
+    <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"/>
+    <title>Corina Map</title>
+    
+   <!-- Make the document body take up the full screen -->
+  <style type=\"text/css\">
+    v\:* {behavior:url(#default#VML);}
+    html, body {width: 100%; height: 100%}
+    body {margin-top: 0px; margin-right: 0px; margin-left: 0px; margin-bottom: 0px}
+  </style>
+     
+    <script src=\"http://maps.google.com/maps?file=api&amp;v=2&amp;key=$gMapAPIKey\"
+      type=\"text/javascript\"></script>
+    <script type=\"text/javascript\"> 
+    
+   
+    var map;
+    var geoXml; 
+
+    function initialize() {
+      if (GBrowserIsCompatible()) {
+        geoXml = new GGeoXml(\"$xmldata\", finishedLoadingXml);
+	    map = new GMap2(document.getElementById(\"map_canvas\")); 
+	    // Set initial view outside of scope so that the user doesn't get a jerky experience
+	    map.setCenter(new GLatLng(-200,-200), 5, G_HYBRID_MAP); 
+        map.addControl(new GLargeMapControl());
+	    map.addControl(new GMenuMapTypeControl());
+	    map.addControl(new GOverviewMapControl());            
+    	map.addOverlay(geoXml);  
+
+      // Monitor the window resize event and let the map know when it occurs
+      if (window.attachEvent) { 
+        window.attachEvent(\"onresize\", function() {this.map.onResize()} );
+      } else {
+        window.addEventListener(\"resize\", function() {this.map.onResize()} , false);
+      }  	
+		
+ 
+      }
+
+      // Callback function which is run when XML is loaded
+      function finishedLoadingXml()
+      {   	
+      	geoXml.gotoDefaultViewport(map); 
+      	map.setZoom(9);
+	  }
+	  
+	  
+    } 
+   </script>
+  </head>
+
+  <body onload=\"initialize()\" onunload=\"GUnload()\">
+    <div id=\"map_canvas\" style=\"margin-left:0px;margin-bottom:0px; width: 99.6%; height: 99.8%; float:left; border: 1px solid black;\">aaa</div>
+    <div id=\"link\" style=\"position: absolute; top: 10px; left: 120px; color: white\"><a href=\"$xmldata\" style=\"font-family: verdana, arial, helvetica, sans-serif; font-size : 10px; 
+     \">Download data</a></div>
+  </body>
+</html>
+	";
+
+
+}
+
+
+function oldwriteGMapOutput($xmldata, $requestParams)
 {
     global $gMapAPIKey;
     include('inc/mapFunctions.php');

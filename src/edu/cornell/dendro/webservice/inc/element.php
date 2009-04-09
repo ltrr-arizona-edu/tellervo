@@ -96,6 +96,7 @@ class element extends elementEntity implements IDBAccessor
         $this->taxon->setOriginalTaxon($row['originaltaxonname']);
         $this->taxon->setHigherTaxonomy();
         $this->setCode($row['code']);
+        $this->setTitle($row['code']);
         $this->setCreatedTimestamp($row['createdtimestamp']);
         $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
         $this->setAuthenticity($row['elementauthenticity']);
@@ -388,6 +389,14 @@ class element extends elementEntity implements IDBAccessor
         }
     }
 
+	public function asKML()
+	{
+		$kml = "<Placemark><description>".$this->getTitle()."</description>";
+		$kml .= $this->location->asKML();
+		$kml .= "</Placemark>";
+		return $kml;
+	}
+    
    /**
     * Internal function for getting the XML representation of this element.  Use asXML instead.
     *
@@ -460,6 +469,7 @@ class element extends elementEntity implements IDBAccessor
                     if($this->getCreatedTimeStamp()!=NULL)      $xml.= "<tridas:createdTimestamp>".$this->getCreatedTimeStamp()."</tridas:createdTimestamp>\n";
                     if($this->getLastModifiedTimeStamp()!=NULL) $xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimeStamp()."</tridas:lastModifiedTimestamp>\n";
 
+                    if($this->hasGeometry())			$xml.="<tridas:genericField name=\"corina.mapLink\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
 
 
                     if($format!="summary")

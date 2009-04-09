@@ -19,10 +19,9 @@ require_once("inc/search.php");
 require_once("inc/errors.php");
 require_once("inc/output.php");
 
-require_once("inc/site.php");
-require_once("inc/subSite.php");
-require_once("inc/tree.php");
-require_once("inc/specimen.php");
+require_once("inc/object.php");
+require_once("inc/element.php");
+require_once("inc/sample.php");
 require_once("inc/radius.php");
 require_once("inc/measurement.php");
 require_once("inc/authenticate.php");
@@ -33,8 +32,11 @@ $myAuth         = new auth();
 $myMetaHeader   = new meta();
 
 // Get GET parameters
-$reqObject = $_GET['object'];
+$reqEntity = $_GET['entity'];
 $reqID = $_GET['id'];
+$format = $_GET['format'];
+
+if($format==NULL) $format = "kml";
 
 // Extract the type of request from XML doc
 $myMetaHeader->setRequestType('read');
@@ -53,76 +55,73 @@ else
     die();
 }
 
-// Validate request and compile XML
-if( ($reqObject=='site') || ($reqObject=='tree') )
+$xmldata = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<kml xmlns=\"http://earth.google.com/kml/2.0\">\n<Document>\n<Folder>\n<name>Corina Map Data</name>\n";
+
+if($reqID=="all")
 {
-    if($reqID)
-    {
-        $xmlrequest = "<corina><request type=\"search\" format=\"summary\"><searchParams returnObject=\"$reqObject\"><param name=\"".$reqObject."id"."\" operator=\"=\" value=\"".$reqID."\" /></searchParams></request></corina>";
-    }
-    else
-    {
-        $xmlrequest = "<corina><request type=\"search\" format=\"summary\"><searchParams returnObject=\"$reqObject\"><all/></searchParams></request></corina>";
-    }
-}
-elseif($reqObject=='measurement')
-{
-    $xmlrequest = "<corina><request type=\"search\" format=\"summary\"><searchParams returnObject=\"$reqObject\"><param name=\"".$reqObject."id"."\" operator=\"=\" value=\"".$reqID."\" /></searchParams></request></corina>";
-    //echo $xmlrequest;
+	echo "not supported yet";
+	die();
+	
 }
 else
 {
-    echo "unknown object type";
-    die();
+	switch($reqEntity)
+	{
+	    case "object": 			$myEntity = new object(); break;      
+	    case "element": 		$myEntity = new element(); break;     
+	
+	    default:
+	    	echo "Unknown entity $reqEntity";
+	    	die();
+	}
+	
+	$myEntity->__construct();
+	
+	if($myAuth->getPermission('read', $reqEntity, $reqID)===FALSE)
+	{
+		echo "Permission denied";
+		die();
+	}
+	
+	
+	$success = $myEntity->setParamsFromDB($reqID);
+	if(!$success)
+	{
+		echo $myEntity->getLastErrorCode().$myEntity->getLastErrorMessage();
+	}
+		
+	$xmldata .= $myEntity->asKML();
 }
 
-$myRequest = new request($myMetaHeader, $myAuth, $xmlrequest);
-$myRequest->createParamObjects();
+$xmldata .= "\n</Folder>\n</Document>\n";
+$xmldata .= "</kml>";
 
-foreach ($myRequest->getParamObjectsArray() as $paramObj)
+switch($format)
 {
-    $myObject = new search();
-    
-    // Before doing anything else check the request parameters are valid
-    if($myMetaHeader->status != "Error")
-    {
-        $success = $myObject->validateRequestParams($paramObj, $myRequest->getCrudMode());
-        if(!$success)
-        {
+	case "kml": echo $xmldata; die();
+	
+	case "gmap": 
+		global $tempFolder;
+		global $tempFolderURL;
+		
+		
 
-            trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), $defaultErrType);
-            continue;
-        }
-    }
-   
-   
-    if($myMetaHeader->status != "Error")
-    {
-        $success = $myObject->doSearch($paramObj, $myAuth, 'false', $myRequest->getFormat());
-        if(!$success)
-        {
-            if ($myObject->getLastErrorCode()=='103')
-            {
-                // Permission denied so just raise a notice not an error
-                trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_NOTICE);
-            }
-            else
-            {
-                // Full blown error
-                trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage());
-            }
-        }
-    }
-    $xmldata.="<sql>".htmlSpecialChars($myObject->sqlcommand)."</sql>";
-}
+		$tmpfname = tempnam($tempFolder, "CMS-Temp-").".kml";
+		try
+		{
+			$handle = fopen($tmpfname, "w");
+			fwrite($handle, $xmldata);
+			fclose($handle);			
+		}
+		catch (Exception $exception)
+		{
+			echo $exception->getMessage();
+			
+		}
 
-
-
-// Get XML representation of data
-if($myMetaHeader->status != "Error")
-{
-    $xmldata.= $myObject->asXML();
+		
+		writeGMapOutput($tempFolderURL.basename($tmpfname));
+				
 }
         
-//writeOutput($myMetaHeader, $xmldata);
-writeGMapOutput(createOutput($myMetaHeader, $xmldata), $myRequest);
+

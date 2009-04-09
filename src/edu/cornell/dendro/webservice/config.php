@@ -33,8 +33,14 @@ $wsversion = "0.2.".exec(svnversion);
 // Path to RelaxNG schema
 $rngSchema = "/var/www/corina-webservice/dev/schemas/corina.rng"; 
 
-// URL to Corina XSD
+// Path to Corina XSD
 $corinaXSD = "/var/www/corina-webservice/dev/schemas/corina.xsd";
+
+// Web accessible temporary folder
+$tempFolder = "/var/www/website/corinaMSTemp/";
+
+// Base URL of web accessible temporary folder
+$tempFolderURL = "http://dendro.cornell.edu/corinaMSTemp/";
 
 // Corina Namespace URL
 $corinaNS = "http://dendro.cornell.edu/schema/corina/1.0";
