@@ -274,7 +274,8 @@ class object extends objectEntity implements IDBAccessor
 	
 	public function asKML()
 	{
-		$kml = "<Placemark><description>".$this->getTitle()."</description>";
+		$kml = "<Placemark><name>".$this->getTitle()."</name><description><![CDATA[<br><b>Type</b>: ".$this->getType()."<br><b>Description</b>: ".dbHelper::escapeXMLChars($this->getDescription())."<br><b>Number of series:</b> ".$this->getCountOfChildVMeasurements()."]]></description>";
+		$kml .= "<styleUrl>#corinaDefault</styleUrl>";
 		$kml .= $this->location->asKML();
 		$kml .= "</Placemark>";
 		return $kml;

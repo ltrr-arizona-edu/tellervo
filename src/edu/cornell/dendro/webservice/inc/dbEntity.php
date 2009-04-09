@@ -462,21 +462,37 @@ class dbEntity
     /**
      * Get the timestamp for when this entity was created
      *
-     * @return ISODate
+	 * @param String $format optional PHP date() format string
+	 * @return Mixed
      */
-    protected function getCreatedTimestamp()
+    protected function getCreatedTimestamp($format=NULL)
     {
-    	return $this->createdTimeStamp;
+    	if($format==NULL)
+    	{
+    		return $this->createdTimeStamp;
+    	}
+    	else
+    	{
+    		return date($format, $this->createdTimeStamp);
+    	}
     }
     
-    /**
-     * Get the timestamp for when this entity was last modified
-     *
-     * @return ISODate
-     */
-    protected function getLastModifiedTimestamp()
+	/**
+	 * Get the timestamp for when this entity was last modified
+	 *
+	 * @param String $format optional PHP date() format string
+	 * @return Mixed
+	 */
+    protected function getLastModifiedTimestamp($format=NULL)
     {
-    	return $this->lastModifiedTimeStamp;
+        if($format==NULL)
+    	{
+    		return $this->lastModifiedTimeStamp;
+    	}
+    	else
+    	{
+    		return date($format, $this->lastModifiedTimeStamp);
+    	}
     }
     
     /**

@@ -215,16 +215,17 @@ function writeGMapOutput($xmldata)
    
     var map;
     var geoXml; 
-
+    
     function initialize() {
       if (GBrowserIsCompatible()) {
         geoXml = new GGeoXml(\"$xmldata\", finishedLoadingXml);
 	    map = new GMap2(document.getElementById(\"map_canvas\")); 
 	    // Set initial view outside of scope so that the user doesn't get a jerky experience
-	    map.setCenter(new GLatLng(-200,-200), 5, G_HYBRID_MAP); 
+	    map.setCenter(new GLatLng(-200,-200), 5, G_PHYSICAL_MAP); 
         map.addControl(new GLargeMapControl());
 	    map.addControl(new GMenuMapTypeControl());
-	    map.addControl(new GOverviewMapControl());            
+	    map.addControl(new GOverviewMapControl());    
+	    map.addMapType(G_PHYSICAL_MAP) ;         
     	map.addOverlay(geoXml);  
 
       // Monitor the window resize event and let the map know when it occurs

@@ -55,7 +55,36 @@ else
     die();
 }
 
-$xmldata = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<kml xmlns=\"http://earth.google.com/kml/2.0\">\n<Document>\n<Folder>\n<name>Corina Map Data</name>\n";
+$xmldata = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<kml xmlns=\"http://earth.google.com/kml/2.0\">\n<Document>\n";
+//$xmldata.= "<Style id=\"corinaDefault\">\n<LineStyle>\n<width>1.5</width>\n</LineStyle>\n<PolyStyle>\n<color>7dff0000</color>\n</PolyStyle>\n";
+//$xmldata.= "<IconStyle>\n><color>ff552277</color></IconStyle>\n</Style>";
+//$xmldata.= "<IconStyle>\n<Icon>\n<href>http://dendro.cornell.edu/temp/pin.png</href>\n</Icon>\n</IconStyle>\n</Style>";
+$xmldata .= "
+   
+        <Style id=\"corinaDefault\">
+            <IconStyle>
+                <scale>1</scale>
+                <Icon>
+                    <href>http://dendro.cornell.edu/temp/pin.png</href>
+                </Icon>
+                <hotSpot x=\"0.5\" y=\"0.5\" xunits=\"fraction\" yunits=\"fraction\"/>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+      <LineStyle>
+        <width>1.5</width>
+        <color>ff030385</color>
+      </LineStyle>
+      <PolyStyle>
+        <color>7d030385</color>
+      </PolyStyle>
+            
+        </Style>
+
+";
+
+$xmldata.= "<name>Corina Map Data</name>\n";
 
 if($reqID=="all")
 {
@@ -93,7 +122,7 @@ else
 	$xmldata .= $myEntity->asKML();
 }
 
-$xmldata .= "\n</Folder>\n</Document>\n";
+$xmldata .= "\n</Document>\n";
 $xmldata .= "</kml>";
 
 switch($format)
