@@ -411,28 +411,28 @@ class sample extends sampleEntity implements IDBAccessor
             {
                 $xml.= "<tridas:sample>\n";
                 $xml.=  $this->getIdentifierXML();
-              	                     
-                // Include permissions details if requested            
-                $xml .= $this->getPermissionsXML();
+              	$xml.= "<tridas:type>".$this->getType()."</tridas:type>\n";                     
+
                 
 
              
                 if($format!="minimal")
                 {
-                    if($this->getType()!=NULL)                   $xml.= "<tridas:type>".$this->getType()."</tridas:type>\n";
+                    
                 	if($this->getSamplingDate()!=NULL)           $xml.= "<tridas:samplingDate>".$this->getSamplingDate()."</samplingDate>\n";
                 	if($this->getFile()!=NULL)					 $xml.= "<tridas:file>".$this->getFile()."</tridas:file>\n";
-                    if($this->getPosition()!=NULL)				 $xml.= "<tridas:position>".$this->getPosition()."</tridas:position>";
-                    if($this->getState()!=NULL)					 $xml.= "<tridas:state>".$this->getState()."</tridas:state>";
-                    if($this->getKnots()!=NULL)					 $xml.= "<tridas:knots>".$this->getKnots('english')."</tridas:knots>";
-                    if($this->getDescription()!=NULL)			 $xml.= "<tridas:description>".$this->getDescription()."</tridas:description>";
-                    if($this->getCreatedTimeStamp()!=NULL)       $xml.= "<tridas:createdTimestamp>".$this->getCreatedTimestamp()."</tridas:createdTimestamp>\n";
-                    if($this->getLastModifiedTimestamp()!=NULL)  $xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimestamp()."</tridas:lastModifiedTimestamp>\n";                    
-                }
+                    if($this->getPosition()!=NULL)				 $xml.= "<tridas:position>".$this->getPosition()."</tridas:position>\n";
+                    if($this->getState()!=NULL)					 $xml.= "<tridas:state>".$this->getState()."</tridas:state>\n";
+                    if($this->getKnots()!=NULL)					 $xml.= "<tridas:knots>".$this->getKnots('english')."</tridas:knots>\n";
+                    if($this->getDescription()!=NULL)			 $xml.= "<tridas:description>".$this->getDescription()."</tridas:description>\n";
+		        }
                                
                 
             }
 
+            // Include permissions details if requested            
+            $xml .= $this->getPermissionsXML();            
+            
             if (($parts=="all") || ($parts=="end"))
             {
                 $xml.= "</tridas:sample>\n";

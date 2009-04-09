@@ -381,9 +381,7 @@ class radius extends radiusEntity implements IDBAccessor
 
 					if($this->getBarkPresent()!=NULL)								$xml.= "<tridas:bark presence=\"".dbHelper::formatBool($this->getBarkPresent(), "presentabsent")."\"/>";
 					if($this->getAzimuth()!=NULL)									$xml.= "<tridas:azimuth>".$this->getAzimuth()."</tridas:azimuth>\n";
-                    if($this->getCreatedTimeStamp()!=NULL)      					$xml.= "<tridas:createdTimestamp>".$this->getCreatedTimeStamp()."</tridas:createdTimestamp>\n";
-                    if($this->getLastModifiedTimeStamp()!=NULL) 					$xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimeStamp()."</tridas:lastModifiedTimestamp>\n";
-			
+       
                     
                 }
             }

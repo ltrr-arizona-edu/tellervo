@@ -349,7 +349,10 @@ class dbEntity
     {
     	global $domain;
         return "<tridas:title>".dbHelper::escapeXMLChars($this->getTitle())."</tridas:title>\n".
-               "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>\n";  
+               "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>\n".
+        	   "<tridas:createdTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getCreatedTimestamp())."</tridas:createdTimestamp>\n".
+		       "<tridas:lastModifiedTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getLastModifiedTimestamp())."</tridas:lastModifiedTimestamp>\n";
+        		
     }
     
     function getDBIDXML()

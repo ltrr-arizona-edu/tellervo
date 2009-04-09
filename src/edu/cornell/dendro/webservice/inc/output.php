@@ -41,8 +41,42 @@ function getHelpDocbook($page)
  */
 function writeOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd="")
 {
-    header('Content-Type: application/xhtml+xml; charset=utf-8');
-    echo createOutput($metaHeader, $xmldata, $parentTagBegin, $parentTagEnd);
+	global $debugFlag;
+    $theOutput =  createOutput($metaHeader, $xmldata, $parentTagBegin, $parentTagEnd);
+    
+    // If debug flag is on then validate created XML
+    if($debugFlag)
+    {
+	    global $corinaXSD;
+	    $origErrorLevel = error_reporting(E_ERROR);
+	    $doc = new DomDocument;
+	    $doc->loadXML($theOutput);
+	    libxml_use_internal_errors(true);
+	
+	    if($doc->schemaValidate($corinaXSD))  
+	    {
+	    	header('Content-Type: application/xhtml+xml; charset=utf-8');
+	    	echo $theOutput;
+	    }
+	    else
+	    {
+	    	echo "Output invalid: <br>	";
+	    	$therrs = libxml_get_errors();
+	    	foreach($therrs as $err)
+	    	{
+	    		echo $err->message."<br>";
+	    	}
+	        error_reporting($origErrorLevel);
+	        echo $theOutput;
+	        return false;
+	    }
+    }
+    else
+    {
+    	header('Content-Type: application/xhtml+xml; charset=utf-8');
+    	echo $theOutput;
+    }
+      
 }
 
 /**

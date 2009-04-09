@@ -419,11 +419,12 @@ class element extends elementEntity implements IDBAccessor
                 // Only return XML when there are no errors.
                 $xml = "<tridas:element>";
                 $xml.= $this->getIdentifierXML();   
-                
+                $xml.="<tridas:type>".$this->getType()."</tridas:type>\n";
 
                 
                 if($format!="minimal")
                 {
+                	
                     $xml.= $this->taxon->asXML();  
                     if($this->getShape()!=NULL)             $xml.= "<tridas:shape>".$this->getShape()."</tridas:shape>\n";
                     if($this->hasDimensions())
@@ -431,10 +432,10 @@ class element extends elementEntity implements IDBAccessor
                     	$xml.="<tridas:dimensions>";
                     	/* @todo Units needs completing properly */
                     	$xml.="<tridas:unit>meter</tridas:unit>";
-                    	if($this->getDimension('height')!=NULL)   $xml.="<tridas:height>".$this->getDimension('height')."</tridas:height>";
-                    	if($this->getDimension('width')!=NULL)    $xml.="<tridas:width>".$this->getDimension('width')."</tridas:width>";
-                    	if($this->getDimension('depth')!=NULL)    $xml.="<tridas:depth>".$this->getDimension('depth')."</tridas:depth>";
-                    	if($this->getDimension('diameter')!=NULL) $xml.="<tridas:diameter>".$this->getDimension('diameter')."</tridas:diameter>";
+                    	if($this->getDimension('height')!=NULL)   $xml.="<tridas:height>".$this->getDimension('height')."</tridas:height>\n";
+                    	if($this->getDimension('width')!=NULL)    $xml.="<tridas:width>".$this->getDimension('width')."</tridas:width>\n";
+                    	if($this->getDimension('depth')!=NULL)    $xml.="<tridas:depth>".$this->getDimension('depth')."</tridas:depth>\n";
+                    	if($this->getDimension('diameter')!=NULL) $xml.="<tridas:diameter>".$this->getDimension('diameter')."</tridas:diameter>\n";
                     	$xml.="</tridas:dimensions>";                    	
                     }                                     
                     if($this->getAuthenticity()!=NULL)      $xml.= "<tridas:authenticity>".$this->getAuthenticity()."</tridas:authenticity>\n";
@@ -442,11 +443,11 @@ class element extends elementEntity implements IDBAccessor
                     {
                         $xml.=$this->location->asXML();
                     }                 
-                    if($this->getDescription()!=NULL) $xml.="<tridas:description>".$this->getDescription()."</tridas:description>";
-                    if($this->getType()!=NULL) $xml.="<tridas:type>".$this->getType()."</tridas:type>";
-                    if($this->getProcessing()!=NULL) $xml.="<tridas:processing>".$this->getProcessing()."</tridas:processing>";
-                    if($this->getMarks()!=NULL) $xml.="<tridas:marks>".$this->getMarks()."</tridas:marks>";
-                    if($this->getAltitude()!=NULL) $xml.="<tridas:altitude>".$this->getAltitude()."</tridas:altitude>";
+                    if($this->getDescription()!=NULL) $xml.="<tridas:description>".$this->getDescription()."</tridas:description>\n";
+                    
+                    if($this->getProcessing()!=NULL) $xml.="<tridas:processing>".$this->getProcessing()."</tridas:processing>\n";
+                    if($this->getMarks()!=NULL) $xml.="<tridas:marks>".$this->getMarks()."</tridas:marks>\n";
+                    if($this->getAltitude()!=NULL) $xml.="<tridas:altitude>".$this->getAltitude()."</tridas:altitude>\n";
                     if(($this->getSlopeAngle()!=NULL) || ($this->getSlopeAzimuth()!=NULL)) 
                     {
                     	$xml.="<tridas:slope>\n"; 
@@ -467,9 +468,7 @@ class element extends elementEntity implements IDBAccessor
 	                // Include permissions details if requested            
 	                $xml .= $this->getPermissionsXML();                      
                     $xml.= $this->taxon->getHigherTaxonomyXML();
-                    if($this->getCreatedTimeStamp()!=NULL)      $xml.= "<tridas:createdTimestamp>".$this->getCreatedTimeStamp()."</tridas:createdTimestamp>\n";
-                    if($this->getLastModifiedTimeStamp()!=NULL) $xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimeStamp()."</tridas:lastModifiedTimestamp>\n";
-
+        
                     if($this->hasGeometry())			$xml.="<tridas:genericField name=\"corina.mapLink\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
 
 
