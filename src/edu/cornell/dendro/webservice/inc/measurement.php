@@ -50,7 +50,6 @@ class measurement extends measurementEntity implements IDBAccessor
         $this->dating->setDatingErrors($row['datingerrorpositive'], $row['datingerrornegative']);
         //$this->setDendrochronologist();
         $this->setFirstYear($row['startyear']);
-        $this->setIsLegacyCleaned(dbHelper::formatBool($row['islegacycleaned']));
         $this->setIsPublished(dbHelper::formatBool($row['ispublished']));
         $this->setJustification($row['justification']);
         $this->setConfidenceLevel($row['confidence']);
@@ -309,7 +308,6 @@ class measurement extends measurementEntity implements IDBAccessor
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
         if ($paramsClass->getIsReconciled()!=NULL)         	$this->setIsReconciled($paramsClass->getIsReconciled());
         if ($paramsClass->getFirstYear()!=NULL)            	$this->setFirstYear($paramsClass->getFirstYear());
-        if ($paramsClass->getIsLegacyCleaned()!=NULL)		$this->setIsLegacyCleaned($paramsClass->getIsLegacyCleaned());
         if (isset($paramsClass->dating))
         {	
         													$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
@@ -678,7 +676,14 @@ class measurement extends measurementEntity implements IDBAccessor
         }
     }
 
-
+	public function asKML()
+	{
+		$kml = "<Placemark><name>".$this->getSummaryObjectTitle()."-".$this->getSummaryElementTitle()."-".$this->getSummarySampleTitle()."-".$this->getSummaryRadiusTitle()."-".$this->getTitle()."</name><description><![CDATA[<br><b>Type</b>: ".$this->getType()."<br><b>Description</b>: ]]></description>";
+		$kml .= "<styleUrl>#corinaDefault</styleUrl>";
+		$kml .= $this->extent->asKML();
+		$kml .= "</Placemark>";
+		return $kml;
+	}
 
     private function _asXML($format, $parts, $recurseLevel=2)
     {
@@ -747,10 +752,7 @@ class measurement extends measurementEntity implements IDBAccessor
     	global $domain;
     	$xml = null;
  	    $xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
-     	$xml.= $this->getIdentifierXML();
-		if($this->getCreatedTimestamp()!=NULL)		$xml.= "<tridas:createdTimestamp>".$this->getCreatedTimestamp()."</tridas:createdTimestamp>\n";
-		if($this->getLastModifiedTimestamp()!=NULL)	$xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimestamp()."</tridas:lastModifiedTimestamp>\n"; 				 				
-	    	    	
+     	$xml.= $this->getIdentifierXML();	    	
      	
         // Include permissions details if requested            
         $xml .= $this->getPermissionsXML();     	
@@ -812,9 +814,6 @@ class measurement extends measurementEntity implements IDBAccessor
 		
  	    $xml = "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
       	$xml.= $this->getIdentifierXML();
-		if($this->getCreatedTimestamp()!=NULL)		$xml.= "<tridas:createdTimestamp>".$this->getCreatedTimestamp()."</tridas:createdTimestamp>\n";
-		if($this->getLastModifiedTimestamp()!=NULL)	$xml.= "<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimestamp()."</tridas:lastModifiedTimestamp>\n"; 				 				
-	  
 
             
             // Only output the remainder of the data if we're not using the 'minimal' format
@@ -828,16 +827,15 @@ class measurement extends measurementEntity implements IDBAccessor
          		if($this->getUsageComments()!=NULL)			$xml.= "<tridas:usageComments>".$this->getUsageComments()."</tridas:usageComments>\n";
 
                 											$xml.="<tridas:interpretation>\n";
-                if($this->getFirstYear()!=NULL)				$xml.="<tridas:firstYear>".$this->getFirstYear()."</tridas:firstYear>\n";
-                if($this->getSproutYear()!=NULL)			$xml.="<tridas:sproutYear>".$this->getSproutYear()."</tridas:sproutYear>\n";
-                if($this->getDeathYear()!=NULL)				$xml.="<tridas:deathYear>".$this->getDeathYear()."</tridas:deathYear>\n";
+                if($this->getFirstYear()!=NULL)				$xml.="<tridas:firstYear suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getFirstYear())."\">".$this->getFirstYear()."</tridas:firstYear>\n";
+                if($this->getSproutYear()!=NULL)			$xml.="<tridas:sproutYear suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getSproutYear())."\">".$this->getSproutYear()."</tridas:sproutYear>\n";
+                if($this->getDeathYear()!=NULL)				$xml.="<tridas:deathYear suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getDeathYear())."\">".$this->getDeathYear()."</tridas:deathYear>\n";
                 if($this->getProvenance()!=NULL)			$xml.="<tridas:provenance>".$this->getProvenance()."</tridas:provenance>\n";
                 											$xml.="</tridas:interpretation>\n";
 
 		        // Include permissions details if requested            
 		        $xml .= $this->getPermissionsXML();
                 if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"corina.isReconciled\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
-		        if(isset($this->isLegacyCleaned))       	$xml.= "<tridas:genericField name=\"corina.isLegacyCleaned\">".dbHelper::formatBool($this->isLegacyCleaned, "english")."</tridas:genericField>\n";
                 if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"corina.isPublished\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
  				if(isset($this->analyst))					$xml.= "<tridas:genericField name=\"corina.analystID\">".$this->analyst->getID()."</tridas:genericField>\n";
  				if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"corina.dendrochronologistID\">".$this->dendrochronologist->getID()."</tridas:genericField>\n"; 				
@@ -1179,7 +1177,6 @@ class measurement extends measurementEntity implements IDBAccessor
                             if(isset($this->parentEntityArray[0]))              $sql.= "radiusid, "; 
                             if($this->getIsReconciled()!=NULL)    				$sql.= "isreconciled, "; 
                             if($this->getFirstYear())				            $sql.= "startyear, "; 
-                            if($this->getIsLegacyCleaned()!=NULL) 				$sql.= "islegacycleaned, "; 
                             if(isset($this->analyst))					        $sql.= "measuredbyid, "; 
                             if($this->dating->getID()!=NULL)
                             {
@@ -1202,7 +1199,6 @@ class measurement extends measurementEntity implements IDBAccessor
                             if(isset($this->parentEntityArray[0]))              $sql.= "'".pg_escape_string($this->parentEntityArray[0]->getID())."', "; 
                             if($this->getIsReconciled()!=NULL)    				$sql.= "'".dbHelper::formatBool($this->getIsReconciled(), 'english')."', "; 
                             if($this->getFirstYear())				            $sql.= "'".pg_escape_string($this->getFirstYear())."', "; 
-                            if($this->getIsLegacyCleaned()!=NULL) 				$sql.= "'".dbHelper::formatBool($this->getIsLegacyCleaned(), 'english')."', "; 
                             if(isset($this->analyst))					        $sql.= "'".pg_escape_string($this->analyst->getID())."', "; 
                             if($this->dating->getID()!=NULL)
                             {
@@ -1366,7 +1362,6 @@ class measurement extends measurementEntity implements IDBAccessor
                         if($this->parentEntityArray[0]->getID()!=NULL)            	$updateSQL2.= "radiusid = ".pg_escape_string($this->parentEntityArray[0]->getID()).", ";
                         if($this->getIsReconciled()!=NULL)        					$updateSQL2.= "isreconciled='".dbHelper::formatBool($this->getIsReconciled(),'pg')."', ";
                         if($this->getFirstYear()!=NULL)           					$updateSQL2.= "startyear = ".pg_escape_string($this->getFirstYear()).", ";
-                        if($this->getIsLegacyCleaned()!=NULL)     					$updateSQL2.= "islegacycleaned='".dbHelper::formatBool($this->getIsLegacyCleaned(),'pg')."', ";
                         if($this->analyst->getID()!=NULL)	        				$updateSQL2.= "measuredbyid = ".pg_escape_string($this->analyst->getID()).", ";
                         if($this->dating->getID()!=NULL)        					$updateSQL2.= "datingtypeid = ".pg_escape_string($this->dating->getID()).", ";
                         if($this->dating->getDatingErrorPositive()!=NULL) 			$updateSQL2.= "datingerrorpositive = ".pg_escape_string($this->dating->getDatingErrorPositive()).", ";

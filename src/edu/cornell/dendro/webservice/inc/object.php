@@ -310,7 +310,7 @@ class object extends objectEntity implements IDBAccessor
             	}
             	if($this->hasGeometry()) 			$xml.= $this->location->asXML();
             	if($this->hasGeometry())			$xml.="<tridas:genericField name=\"corina.mapLink\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
-            	if($this->getCode()!=NULL)			$xml.="<tridas:genericField name=\"corina.labCode\">".$this->getCode()."</tridas:genericField>\n";
+            	if($this->getCode()!=NULL)			$xml.="<tridas:genericField name=\"corina.objectLabCode\">".$this->getCode()."</tridas:genericField>\n";
             	if($this->getCountOfChildVMeasurements()!=NULL) $xml.="<tridas:genericField name=\"corina.countOfChildSeries\">".$this->getCountOfChildVMeasurements()."</tridas:genericField>\n";
             	
             

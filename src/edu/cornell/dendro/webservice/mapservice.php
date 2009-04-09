@@ -56,34 +56,25 @@ else
 }
 
 $xmldata = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<kml xmlns=\"http://earth.google.com/kml/2.0\">\n<Document>\n";
-//$xmldata.= "<Style id=\"corinaDefault\">\n<LineStyle>\n<width>1.5</width>\n</LineStyle>\n<PolyStyle>\n<color>7dff0000</color>\n</PolyStyle>\n";
-//$xmldata.= "<IconStyle>\n><color>ff552277</color></IconStyle>\n</Style>";
-//$xmldata.= "<IconStyle>\n<Icon>\n<href>http://dendro.cornell.edu/temp/pin.png</href>\n</Icon>\n</IconStyle>\n</Style>";
-$xmldata .= "
-   
-        <Style id=\"corinaDefault\">
-            <IconStyle>
-                <scale>1</scale>
-                <Icon>
-                    <href>http://dendro.cornell.edu/temp/pin.png</href>
-                </Icon>
-                <hotSpot x=\"0.5\" y=\"0.5\" xunits=\"fraction\" yunits=\"fraction\"/>
-            </IconStyle>
+$xmldata .= "<Style id=\"corinaDefault\">
+              <IconStyle>
+               <scale>1</scale>
+               <Icon>
+                <href>http://dendro.cornell.edu/temp/pin.png</href>
+               </Icon>
+               <hotSpot x=\"0.5\" y=\"0.5\" xunits=\"fraction\" yunits=\"fraction\"/>
+              </IconStyle>
             <LabelStyle>
-                <scale>0</scale>
+              <scale>0</scale>
             </LabelStyle>
-      <LineStyle>
-        <width>1.5</width>
-        <color>ff030385</color>
-      </LineStyle>
-      <PolyStyle>
-        <color>7d030385</color>
-      </PolyStyle>
-            
-        </Style>
-
-";
-
+            <LineStyle>
+              <width>1.5</width>
+              <color>ff030385</color>
+            </LineStyle>
+            <PolyStyle>
+              <color>7d030385</color>
+            </PolyStyle>
+           </Style>";
 $xmldata.= "<name>Corina Map Data</name>\n";
 
 if($reqID=="all")
@@ -96,8 +87,11 @@ else
 {
 	switch($reqEntity)
 	{
-	    case "object": 			$myEntity = new object(); break;      
-	    case "element": 		$myEntity = new element(); break;     
+	    case "object": 				$myEntity = new object(); break;      
+	    case "element": 			$myEntity = new element(); break;   
+	    case "measurementSeries" :	$myEntity = new measurement(); break;
+	    case "derivedSeries" :  	$myEntity = new measurement(); break;	    
+	     
 	
 	    default:
 	    	echo "Unknown entity $reqEntity";

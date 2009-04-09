@@ -19,6 +19,7 @@ require_once('dbsetup.php');
 require_once('geometry.php');
 require_once('taxon.php');
 require_once('lookupEntity.php');
+require_once('securityUser.php');
 
 /**
  * Interface for classes that inherit dbEntity and read/write to/from the database
@@ -2449,12 +2450,6 @@ class measurementEntity extends dbEntity
      */
 	protected $isReconciled = FALSE;
 	/**
-	 * Whether this series has been cleaned
-	 *
-	 * @var Boolean
-	 */
-	protected $isLegacyCleaned = NULL;
-	/**
 	 * Justification for choice of crossdate
 	 *
 	 * @var String
@@ -2492,6 +2487,9 @@ class measurementEntity extends dbEntity
     var $readingCount = NULL;
     var $measurementCount = NULL;
     var $masterVMeasurementID = NULL;
+    
+    
+    protected $summaryObjectCode = NULL;
     
     /**
      * Summerisation of the object title for this measurement
@@ -2896,13 +2894,7 @@ class measurementEntity extends dbEntity
     function setStartYear($theStartYear)
     {
         $this->startYear = $theStartYear;
-    }
-
-    function setIsLegacyCleaned($isLegacyCleaned)
-    {
-        $this->isLegacyCleaned = dbHelper::formatBool($isLegacyCleaned);
-    }
-      
+    }    
 
 
     /**
@@ -3058,12 +3050,7 @@ class measurementEntity extends dbEntity
     	return $this->confidenceLevel;
     	
     }
-    
-    function getIsLegacyCleaned()
-    {
-    	return $this->isLegacyCleaned;
-    }
-    
+        
     function getIsReconciled()
     {
     	return $this->isReconciled;
