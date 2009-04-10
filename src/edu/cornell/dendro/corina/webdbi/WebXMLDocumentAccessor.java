@@ -89,7 +89,7 @@ public class WebXMLDocumentAccessor {
 		}
 	}
 
-	private static String noun;
+	private String noun;
 	
 	/**
  	 * Makes a class capable of performing operations on a webservice "noun" 
