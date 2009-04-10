@@ -108,7 +108,7 @@ class measurement extends measurementEntity implements IDBAccessor
 
         // the uberquery - one query to rule them all?     
         $sql = "SELECT * FROM vwcomprehensivevm WHERE vmeasurementid='".pg_escape_string($this->getID())."'";
-        
+
                    
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -688,7 +688,8 @@ class measurement extends measurementEntity implements IDBAccessor
 
     private function _asXML($format, $parts, $recurseLevel=2)
     {
-
+  
+    	
         // Return a string containing the current object in XML format
 
         // $recurseLevel = the number of levels of references tags you would like 
@@ -714,14 +715,14 @@ class measurement extends measurementEntity implements IDBAccessor
 
         // Proceed if there are no errors already
         if ($this->getLastErrorCode()==NULL)
-        {
+        {      		
         	// Only return XML when there are no errors.
         	if($this->getTridasSeriesType()=='measurementSeries')
         	{
         		return $this->getMeasurementSeriesXML($format, $parts, $recurseLevel);
         	}
         	else
-        	{
+        	{      		
         		return $this->getDerivedSeriesXML($format, $parts, $recurseLevel);
         	}
         	
@@ -750,6 +751,7 @@ class measurement extends measurementEntity implements IDBAccessor
     
     private function getDerivedSeriesXML($format, $parts, $recurseLevel=2)
     {
+
     	global $domain;
     	$xml = null;
  	    $xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
@@ -760,18 +762,20 @@ class measurement extends measurementEntity implements IDBAccessor
                       
                 if(isset($this->vmeasurementOp)) 			$xml.= "<tridas:type>".$this->vmeasurementOp->getValue()."</tridas:type>\n";               
  				if($this->getObjective()!=NULL)				$xml.= "<tridas:objective>".addslashes($this->getObjective())."</tridas:objective>\n";
- 				if($this->getStandardizingMethod()!=NULL)	$xml.= "<tridas:standardizingMethod>".addslashes($this->getStandardizingMethod())."</tridas:standardizingMethod>\n";
- 				if($this->getAuthor()!=NULL)				$xml.= "<tridas:author>".addslashes($this->getAuthor())."</tridas:author>\n";
- 				if($this->getVersion()!=NULL)				$xml.= "<tridas:version>".addslashes($this->getVersion())."</tridas:version>\n";
-
- 				if(isset($this->referencesArray))
+    			if(isset($this->referencesArray))
             	{											$xml.= "<tridas:linkSeries>\n";
             		foreach($this->referencesArray as $ref)
             		{
             												$xml.= "<tridas:identifier domain=\"$domain\">".$ref."</tridas:identifier>\n";
             		}
 										            		$xml.= "</tridas:linkSeries>\n";
-            	}	
+            	}
+ 				
+ 				if($this->getStandardizingMethod()!=NULL)	$xml.= "<tridas:standardizingMethod>".addslashes($this->getStandardizingMethod())."</tridas:standardizingMethod>\n";
+ 				if($this->getAuthor()!=NULL)				$xml.= "<tridas:author>".addslashes($this->getAuthor())."</tridas:author>\n";
+ 				if($this->getVersion()!=NULL)				$xml.= "<tridas:version>".addslashes($this->getVersion())."</tridas:version>\n";
+
+ 	
  				if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".addslashes($this->getComments())."</tridas:comments>\n";
  				if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".addslashes($this->getUsage())."</tridas:usage>\n";
  				if($this->getUsageComments()!=NULL)			$xml.= "<tridas:usageComments>".addslashes($this->getUsageComments())."</tridas:usageComments>\n";
@@ -785,7 +789,7 @@ class measurement extends measurementEntity implements IDBAccessor
  															$xml.= "</tridas:interpretation>\n"; 
  				
  															
- 				if($this->getExtentAsXML()!=NULL)			$xml.= $this->getExtentAsXML();											
+ 				if($this->hasExtent()!=NULL)				$xml.= $this->getExtentAsXML();											
  				if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"crossdateJustification\">".$this->getJustification()."</tridas:genericField>\n";				
  				if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"crossdateConfidenceLevel\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
  				if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"operationParameter\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
@@ -908,24 +912,31 @@ class measurement extends measurementEntity implements IDBAccessor
 
        $xml = "<tridas:values>\n";
        
-        if($wj===TRUE)
-        {
-       		$xml .="<tridas:variable normalStd=\"Corina\" normal=\"Weiserjahre\"/>\n";
-        }
-        else
-        {
-       		$xml .="<tridas:variable normalTridas=\"".$this->getVariable()."\"/>\n";
-     	}
-       
-       if($this->getUnits()!=NULL && ($wj===FALSE) )
+       if($this->getTridasSeriesType()=='measurementSeries')
        {
-       		$xml.="<tridas:unit>".$this->getUnits()."</tridas:unit>\n";
+       	   $xml .="<tridas:variable normalTridas=\"".$this->getVariable()."\"/>\n";
+           if($this->getUnits()!=NULL)
+	       {
+	       		$xml.="<tridas:unit normalTridas=\"".$this->getUnits()."\" />\n";
+	       }
+	       else
+	       {
+	       		$xml.="<tridas:unitless/>\n"; 
+	       }       		
        }
        else
        {
-       		$xml.="<tridas:unitless/>\n"; 
+            if($wj===TRUE)
+	        {
+	       		$xml .="<tridas:variable normalStd=\"Corina\" normal=\"Weiserjahre\"/>\n";
+	        }
+	        else
+	        {
+	       		$xml .="<tridas:variable normalTridas=\"".$this->getVariable()."\"/>\n";
+	     	}  
+	     	$xml.="<tridas:unit/>\n";      	
        }
-      
+            
        foreach($this->readingsArray as $key => $value)
        {
            // Calculate absolute year where possible

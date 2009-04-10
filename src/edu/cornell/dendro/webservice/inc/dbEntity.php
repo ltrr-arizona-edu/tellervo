@@ -2566,6 +2566,7 @@ class measurementEntity extends dbEntity
 		$this->dendrochronologist = new securityUser();
 		$this->analyst = new securityUser();
 		$this->dating = new dating();
+		$this->vmeasurementOp = new vmeasurementOp();
 	}
 
 	/***********/
@@ -2589,7 +2590,6 @@ class measurementEntity extends dbEntity
 	
 	function setVMeasurementOp($id, $value)
 	{
-		$this->vmeasurementOp = new vmeasurementOp();
 		$this->vmeasurementOp->setVMeasurementOp($id, $value);
 	}
 	
@@ -2936,6 +2936,12 @@ class measurementEntity extends dbEntity
     /* GETTERS */
     /***********/
 
+    
+    function hasExtent()
+    {
+        return $this->extent->getGeometry()!=NULL;
+    }
+    
     function getExtentAsXML()
     {
     	return $this->extent->asXML();
