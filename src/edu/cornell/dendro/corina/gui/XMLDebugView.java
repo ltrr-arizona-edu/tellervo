@@ -19,6 +19,7 @@ import org.jdom.Document;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.Center;
 
 import jsyntaxpane.DefaultSyntaxKit;
@@ -54,6 +55,8 @@ public class XMLDebugView extends JDialog {
 		// don't be modal
 		super(owner, false);
 		
+		setTitle("XML Communications Debugging Monitor");
+		
 		if(!enabled) {
 			dispose();
 			singleton = null;
@@ -68,7 +71,7 @@ public class XMLDebugView extends JDialog {
 		sourceView = new JEditorPane();		
 		sourceView.setEditable(false);
 		
-		docsView = new JList(new DefaultListModel());
+		docsView = new JList(new ArrayListModel<DocumentHolder>());
 		docsView.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		docsView.addListSelectionListener(new ListSelectionListener() {
 
@@ -123,10 +126,14 @@ public class XMLDebugView extends JDialog {
 		if(!enabled)
 			return;
 		
-		((DefaultListModel)singleton.docsView.getModel()).addElement(new DocumentHolder(doc, title, isIncoming));
+		ArrayListModel<DocumentHolder> model = (ArrayListModel<DocumentHolder>) singleton.docsView.getModel();
 		
-		if(singleton.docsView.getModel().getSize() > maxDocuments)
-			singleton.docsView.remove(0);
+		// add the new document to the tail of the list
+		model.add(new DocumentHolder(doc, title, isIncoming));
+		
+		// chop off the top of the list if it's too big
+		if(model.getSize() > maxDocuments)
+			model.remove(0);
 	}
 	
 	public static void showDialog() {
