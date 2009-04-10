@@ -53,6 +53,7 @@ class sample extends sampleEntity implements IDBAccessor
         $this->setState($row['state']);
         $this->setKnots($row['knots']);
         $this->setDescription($row['description']);
+        $this->setTitle($row['code']);
         return true;
     }
     

@@ -353,6 +353,8 @@ class dbEntity
                "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>\n".
         	   "<tridas:createdTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getCreatedTimestamp())."</tridas:createdTimestamp>\n".
 		       "<tridas:lastModifiedTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getLastModifiedTimestamp())."</tridas:lastModifiedTimestamp>\n";
+         	   //"<tridas:createdTimestamp>".$this->getCreatedTimestamp()."</tridas:createdTimestamp>\n".
+		       //"<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimestamp()."</tridas:lastModifiedTimestamp>\n";
         		
     }
     
@@ -2282,7 +2284,7 @@ class taxonEntity extends dbEntity
     
     function getHigherTaxonXML($theRank)
     {
-        $xml = "<tridas:genericField name=\"$theRank\" >";
+        $xml = "<tridas:genericField name=\"corina.$theRank\" >";
         switch($theRank)
         {
             case "kingdom":
@@ -2487,9 +2489,7 @@ class measurementEntity extends dbEntity
     var $readingCount = NULL;
     var $measurementCount = NULL;
     var $masterVMeasurementID = NULL;
-    
-    
-    protected $summaryObjectCode = NULL;
+   
     
     /**
      * Summerisation of the object title for this measurement
@@ -2520,6 +2520,8 @@ class measurementEntity extends dbEntity
      *
      * @var Mixed
      */
+    protected $summaryObjectCode = NULL;
+    
     protected $summaryObjectCount = NULL;
     /**
      * Summary of the taxonomic information for this vmeasurement
@@ -2607,6 +2609,11 @@ class measurementEntity extends dbEntity
         $this->labPrefix = $labprefix;
         $this->fullLabCode = $labprefix.$this->getCode();
 	}**/
+	
+	function setSummaryObjectCode($code)
+	{
+		$this->summaryObjectCode = $code;
+	}
 	
 	function setSummaryObjectTitle($title)
 	{
@@ -3022,6 +3029,11 @@ class measurementEntity extends dbEntity
     function getSummaryObjectCount()
     {
     	return $this->summaryObjectCount;
+    }
+    
+    function getSummaryObjectCode()
+    {
+    	return $this->summaryObjectCode;
     }
     
     function getSummaryTaxonName()

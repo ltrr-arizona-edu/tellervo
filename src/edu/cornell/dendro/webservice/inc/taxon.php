@@ -92,7 +92,7 @@ class taxon extends taxonEntity implements IDBAccessor
 	        
 	        $sql = "SELECT taxonid, colid, label 
 	        		FROM tlkptaxon 
-	        		WHERE colid=".pg_escape_string($CoLID)." 
+	        		WHERE colid='".pg_escape_string($CoLID)."' 
 	        		AND label='".pg_escape_string($CoLNormalName)."'";
 	        //echo $sql;
 	        $dbconnstatus = pg_connection_status($dbconn);

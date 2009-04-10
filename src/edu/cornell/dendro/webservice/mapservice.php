@@ -65,7 +65,8 @@ $xmldata .= "<Style id=\"corinaDefault\">
                <hotSpot x=\"0.5\" y=\"0.5\" xunits=\"fraction\" yunits=\"fraction\"/>
               </IconStyle>
             <LabelStyle>
-              <scale>0</scale>
+              <scale>1</scale>
+              <color>FFFFFFFF</color>
             </LabelStyle>
             <LineStyle>
               <width>1.5</width>
@@ -73,7 +74,7 @@ $xmldata .= "<Style id=\"corinaDefault\">
             </LineStyle>
             <PolyStyle>
               <color>7d030385</color>
-            </PolyStyle>
+            </PolyStyle>            
            </Style>";
 $xmldata.= "<name>Corina Map Data</name>\n";
 

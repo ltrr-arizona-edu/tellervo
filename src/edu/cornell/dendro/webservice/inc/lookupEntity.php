@@ -83,7 +83,7 @@ class lookupEntity
 			$sql =   "SELECT ".pg_escape_string($this->idfieldname)." AS theid "
 					."FROM ".pg_escape_string($this->tablename)." "
 					."WHERE ".pg_escape_string($this->fieldname)." = '".pg_escape_string($value)."'";
-		
+
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {

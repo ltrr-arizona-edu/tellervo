@@ -64,16 +64,11 @@ class dateHelper
 	{
 		if($year==NULL) return NULL;
 
-		if($year==0) 
-		{
-			trigger_error("910"."The year supplied is 0BC/AD which does not exist", E_USER_ERROR); 
-			return FALSE;
-		}
-		elseif($year>0) 
+		if($year>0) 
 		{
 			return "AD";
 		}
-		elseif($year<0) 
+		elseif($year<=0) 
 		{
 			return "BC";	
 		}
@@ -82,7 +77,7 @@ class dateHelper
 	static public function getGregorianYearNumberFromSignedYear($year)
 	{
 		if($year>0) return $year;
-		if($year<0) return 0 - $year;
+		if($year<=0) return 1 - $year;
 		
 		trigger_error("910"."Invalid year supplied to getGregorianYearNumberFromSignedYear()", E_USER_ERROR);
 		return false;

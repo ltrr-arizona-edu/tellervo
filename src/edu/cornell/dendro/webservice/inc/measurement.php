@@ -79,6 +79,7 @@ class measurement extends measurementEntity implements IDBAccessor
         if($this->vmeasurementOp=='Index') $this->setVMeasurementOpParam($row['vmeasurementopparameter']);
         if($this->vmeasurementOp=='Crossdate') $this->setCrossdateParamsFromDB();
         $this->setSummaryObjectTitle($row['objecttitle']);
+        $this->setSummaryObjectCode($row['objectcode']);
         $this->setSummaryElementTitle($row['elementcode']);
         $this->setSummarySampleTitle($row['samplecode']);
         $this->setSummaryRadiusTitle($row['radiuscode']);
@@ -678,7 +679,7 @@ class measurement extends measurementEntity implements IDBAccessor
 
 	public function asKML()
 	{
-		$kml = "<Placemark><name>".$this->getSummaryObjectTitle()."-".$this->getSummaryElementTitle()."-".$this->getSummarySampleTitle()."-".$this->getSummaryRadiusTitle()."-".$this->getTitle()."</name><description><![CDATA[<br><b>Type</b>: ".$this->getType()."<br><b>Description</b>: ]]></description>";
+		$kml = "<Placemark><name>".$this->getSummaryObjectCode()."-".$this->getSummaryElementTitle()."-".$this->getSummarySampleTitle()."-".$this->getSummaryRadiusTitle()."-".$this->getTitle()."</name><description><![CDATA[<br><b>Type</b>: ".$this->getType()."<br><b>Description</b>: ]]></description>";
 		$kml .= "<styleUrl>#corinaDefault</styleUrl>";
 		$kml .= $this->extent->asKML();
 		$kml .= "</Placemark>";
@@ -777,7 +778,7 @@ class measurement extends measurementEntity implements IDBAccessor
  															$xml.= "<tridas:interpretation>\n";
 				if($this->getMasterVMeasurementID()!=NULL)	$xml.= "<tridas:calendar>\n<tridas:linkSeries>\n<tridas:idRef ref=\"".$this->getMasterVMeasurementID()."\"/>\n</tridas:linkSeries>\n</tridas:calendar>\n"; 															
  															
- 				if($this->getFirstYear()!=NULL)				$xml.= "<tridas:firstYear suffix=\"".dateHelper::getGregorianSuffixFromSignedYear()."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getFirstYear())."</tridas:firstYear>\n";
+ 				if($this->getFirstYear()!=NULL)				$xml.= "<tridas:firstYear suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getFirstYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getFirstYear())."</tridas:firstYear>\n";
  				if($this->getSproutYear()!=NULL)			$xml.= "<tridas:sproutYear>".$this->getSproutYear()."</tridas:sproutYear>\n";
  				if($this->getDeathYear()!=NULL)				$xml.= "<tridas:deathYear>".$this->getDeathYear()."</tridas:deathYear>\n";
  				if($this->getProvenance()!=NULL)			$xml.= "<tridas:provenance>".addslashes($this->getProvenance())."</tridas:provenance>\n";
@@ -907,16 +908,17 @@ class measurement extends measurementEntity implements IDBAccessor
 
        $xml = "<tridas:values>\n";
        
-       if($this->getUnits()!=NULL)
+        if($wj===TRUE)
+        {
+       		$xml .="<tridas:variable normalStd=\"Corina\" normal=\"Weiserjahre\"/>\n";
+        }
+        else
+        {
+       		$xml .="<tridas:variable normalTridas=\"".$this->getVariable()."\"/>\n";
+     	}
+       
+       if($this->getUnits()!=NULL && ($wj===FALSE) )
        {
-            if($wj===TRUE)
-	        {
-	       		$xml .="<tridas:variable>weiserjahre</tridas:variable>\n";
-	        }
-	        else
-	        {
-	       		$xml .="<tridas:variable>".$this->getVariable()."</tridas:variable>\n";
-      		}
        		$xml.="<tridas:unit>".$this->getUnits()."</tridas:unit>\n";
        }
        else

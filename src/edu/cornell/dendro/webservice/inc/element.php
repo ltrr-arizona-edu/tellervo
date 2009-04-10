@@ -230,9 +230,9 @@ class element extends elementEntity implements IDBAccessor
 		if ($paramsClass->getShape()!=NULL)					$this->setShape($paramsClass->getShape());
 		if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType());
 		if ($paramsClass->hasGeometry())					$this->location->setGeometry($paramsClass->location->getLocationGeometry(),
-																						 $paramsClass->location->getLocationType(),
-																						 $paramsClass->location->getLocationPrecision(),
-																						 $paramsClass->location->getLocationComment());
+																						 $paramsClass->location->getType(),
+																						 $paramsClass->location->getPrecision(),
+																						 $paramsClass->location->getComment());
 		
 																						 
         if ($paramsClass->parentID!=NULL)

@@ -56,6 +56,7 @@ class geometry
 	 */
 	function setGeometryFromGML($gml)
 	{
+
 		global $gmlNS;
 				
 		// Wrap GML tags in root elements
@@ -92,6 +93,7 @@ class geometry
 		   
 		   // Extract coordinates from point GML
 		   $coords = explode(" ", $doc->getElementsByTagName("pos")->item(0)->nodeValue, 2);
+		     
 		   
 		   // Calculate geometry value and store
 		   $this->setPointGeometryFromLatLong($coords[0], $coords[1]);	
@@ -113,7 +115,8 @@ class geometry
 		$lat = (float) $lat;
 		$long = (float) $long;	
 		
-		$sql = "select setsrid(makepoint(".sprintf("%1.8f",pg_escape_string($long)).", ".sprintf("%1.8f",pg_escape_string($lat))."), ".pg_escape_string($srid)." as thevalue";
+		$sql = "select setsrid(makepoint(".sprintf("%1.8f",pg_escape_string($long)).", ".sprintf("%1.8f",pg_escape_string($lat))."), ".pg_escape_string($srid).") as thevalue";
+	
 		$this->geometry = $this->runSQLCalculation($sql);	
 	}		
 	
@@ -297,7 +300,7 @@ class location extends geometry
 	 * @param unknown_type $value
 	 * @return unknown
 	 */
-	function setType($id, $value)
+	function setType($id=NULL, $value=NULL)
 	{
 		return $this->type->setLocationType($id, $value);
 	}
@@ -329,6 +332,11 @@ class location extends geometry
 	function getType()
 	{
 		return $this->type->getValue();
+	}
+	
+	function getTypeID()
+	{
+		return $this->type->getID();
 	}
 	
 	function getPrecision()
