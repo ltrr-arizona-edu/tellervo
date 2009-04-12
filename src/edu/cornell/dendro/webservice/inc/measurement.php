@@ -38,7 +38,6 @@ class measurement extends measurementEntity implements IDBAccessor
     {
         global $debugFlag;
         global $myMetaHeader;
-
         if ($debugFlag===TRUE) $myMetaHeader->setTiming("Setting measurement parameters from DB result");                 
         $this->setID($row['vmeasurementid']);
         $this->setAnalyst($row['measuredbyid']);
@@ -63,7 +62,7 @@ class measurement extends measurementEntity implements IDBAccessor
         $this->setObjective($row['objective']);
         //$this->setOwnerUserID();
         $this->setProvenance($row['provenance']);
-        //$this->setRadiusID();
+        $this->setRadiusID($row['radiusid']);
         $this->setReadingCount($row['readingcount']);
         //$this->setSignificanceLevel();
         $this->setVMeasurementOp($row['vmeasurementopid'], $row['opname']);	
@@ -83,12 +82,12 @@ class measurement extends measurementEntity implements IDBAccessor
         $this->setSummaryElementTitle($row['elementcode']);
         $this->setSummarySampleTitle($row['samplecode']);
         $this->setSummaryRadiusTitle($row['radiuscode']);
-        
-		// Deal with readings if we actually need them...
+
+	// Deal with readings if we actually need them...
         if($format!="summary") $this->setReadingsFromDB();                      
         
-		// Set References 
-		$this->setReferencesFromDB();
+	// Set References 
+	$this->setReferencesFromDB();
 		
         if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setting measurement parameters from DB result");   
         return true;
@@ -108,7 +107,6 @@ class measurement extends measurementEntity implements IDBAccessor
 
         // the uberquery - one query to rule them all?     
         $sql = "SELECT * FROM vwcomprehensivevm WHERE vmeasurementid='".pg_escape_string($this->getID())."'";
-
                    
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -129,7 +127,7 @@ class measurement extends measurementEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->setParamsFromDBRow($row);                
+                $this->setParamsFromDBRow($row, $format);                
             }
 
         }
@@ -154,42 +152,30 @@ class measurement extends measurementEntity implements IDBAccessor
         global $corinaNS;
         global $tridasNS;
         global $gmlNS;
+
+        if($this->radiusID == NULL)
+        {
+            $this->setErrorMessage("903", "There are no radii associated with measurement id=".$this->getID());
+            return FALSE;
+        }
                 
-        // First find the immediate radius entity parent
-           $sql = "SELECT radiusid from tblmeasurement where measurementid=".pg_escape_string($this->getMeasurementID());
+        // Empty array before populating it
+        $this->parentEntityArray = array();
 
-           $dbconnstatus = pg_connection_status($dbconn);
-           if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-           {
-               pg_send_query($dbconn, $sql);
-               $result = pg_get_result($dbconn); 
-
-               if(pg_num_rows($result)==0)
-               {
-                   // No records match the id specified
-                   $this->setErrorMessage("903", "There are no radii associated with measurement id=".$this->getID());
-                   return FALSE;
-               }
-               else
-               {
-				   // Empty array before populating it
-               	   $this->parentEntityArray = array();
+        // see if we've cached it already
+        if(($myRadius = dbEntity::getCachedEntity("radius", $this->radiusID)) != NULL)
+        {
+           array_push($this->parentEntityArray, $myRadius);
+           return;
+        }
                	   
-               	   // Loop through all the parents
-                   while($row = pg_fetch_array($result))
-                   {
-                   		$myRadius = new radius();
-            			$success = $myRadius->setParamsFromDB($row['radiusid']);
-	                   	if($success===FALSE)
-	                   	{
-	                   	    trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage());
-	                   	}  
+        $myRadius = new radius();
+        $success = $myRadius->setParamsFromDB($this->radiusID);
+        if($success===FALSE)
+            trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage());
 
-	                   	// Add to the array of parents
-	                   	array_push($this->parentEntityArray,$myRadius);
-                   }                   
-               }
-           }	
+        // Add to the array of parents
+        array_push($this->parentEntityArray,$myRadius);
     }
     
     
@@ -596,6 +582,81 @@ class measurement extends measurementEntity implements IDBAccessor
 
     }
 
+    function recursiveSetParentsFromDB()
+    {
+        // load radius
+        $this->setParentsFromDB();
+        // load sample
+        $this->parentEntityArray[0]->setParentsFromDB();
+        // load element
+        $this->parentEntityArray[0]->parentEntityArray[0]->setParentsFromDB();
+        // load objects
+        $this->parentEntityArray[0]->parentEntityArray[0]->parentEntityArray[0]->setParentsFromDB();
+    }
+
+    function buildDerivationTree(&$direct, &$derived, &$all, $format='standard')
+    {
+        foreach($this->referencesArray as $ref)
+        {
+            if(array_key_exists($ref, $all))
+                continue; // duplicate!
+
+            $refMeasurement = new measurement();
+            $refMeasurement->setParamsFromDB($ref, ($format=='standard')?'summary':$format);
+
+            $all[$ref] = $refMeasurement;
+
+            if($refMeasurement->getTridasSeriesType()=='measurementSeries') {
+               // store this measurement in the direct array
+               array_push($direct, $refMeasurement);
+
+               // load parents
+               $refMeasurement->recursiveSetParentsFromDB();
+            }
+	    else
+            {
+               // add any 'derived' children, and then add myself afterwards
+               $refMeasurement->buildDerivationTree($direct, $derived, $all, $format);
+               array_push($derived, $this);
+            }
+        }
+
+    }
+
+    function derivedSeriesAsXML($format='standard') 
+    {
+        $direct = Array();
+        $derived = Array();
+        $all = Array();
+        $this->buildDerivationTree($direct, $derived, $all, $format);
+
+        // first, sort the trees for every direct measurement. GROSS.
+        $all = Array();
+        foreach($direct as $d) {
+           $myradius = $d->parentEntityArray[0];
+           $mysample = $myradius->parentEntityArray[0];
+           $myelement = $mysample->parentEntityArray[0];
+           $myobjects = $myelement->parentEntityArray;
+
+// TODO: FIXME!
+//           $all[$myelement][$mysample][$myradius] = $d;
+        }
+
+        foreach($all as $objects => $elements) {
+         foreach($elements as $element => $samples) {
+          foreach($samples as $sample => $radii) {
+           foreach($radii as $radius => $measurement) {
+           }
+          }
+         } 
+        }
+
+        $txml = "";
+
+        $txml.= $this->asXML('summary');
+        return $txml;
+    }
+
     function asXML($format='standard', $parts="full")
     {   	
     	
@@ -608,6 +669,7 @@ class measurement extends measurementEntity implements IDBAccessor
         switch($format)
         {
         case "comprehensive":
+        case "standard":
             require_once('radius.php');
             global $dbconn;
 	        global $corinaNS;
@@ -636,27 +698,19 @@ class measurement extends measurementEntity implements IDBAccessor
 	    		
 	    		// Create a temporary DOM document to store our measurement XML
 	    		$tempdom = new DomDocument();
-				$tempdom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->asXML()."</root>");
+			$tempdom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->_asXML($format, $parts)."</root>");
 	   		
-				// Import and append the measurement XML node into the main XML DomDocument
-				$node = $tempdom->getElementsByTagName("measurementSeries")->item(0);
-				$node = $xml->importNode($node, true);
-				$nodelist->item(0)->appendChild($node);
+			// Import and append the measurement XML node into the main XML DomDocument
+			$node = $tempdom->getElementsByTagName("measurementSeries")->item(0);
+			$node = $xml->importNode($node, true);
+			$nodelist->item(0)->appendChild($node);
 	
 	            // Return an XML string representation of the entire shebang
 	            return $xml->saveXML($xml->getElementsByTagName("object")->item(0));
 	        }
 	        elseif($this->getTridasSeriesType()=='derivedSeries')
 	        {
-	        	$xml = NULL;
-	        	foreach($this->referencesArray as $ref)
-	        	{
-		        	$refMeasurement = new measurement();
-		        	$refMeasurement->setParamsFromDB($ref);
-		        	$xml.= $refMeasurement->asXML('comprehensive');
-	        	}
-	        	$xml.= $this->asXML('standard');
-	        	return $xml;
+                    return $this->derivedSeriesAsXML($format);
 	        }
 	        else
 	        {
@@ -664,9 +718,6 @@ class measurement extends measurementEntity implements IDBAccessor
 	        	die();
 	        }
 
-        
-        case "standard":
-            return $this->_asXML($format, $parts);
         case "summary":
             return $this->_asXML($format, $parts);
         case "minimal":

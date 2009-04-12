@@ -47,6 +47,13 @@ class element extends elementEntity implements IDBAccessor
         global $corinaNS;
         global $tridasNS;
         global $gmlNS;
+
+    	if(($myObjectEntityArray = dbEntity::getCachedEntity("objectEntityArray", $this->objectID)) != NULL)
+    	{
+    	   $this->parentEntityArray = $myObjectEntityArray;
+    	   return;
+    	}
+
                 
         // First find the immediate object entity parent
            $sql = "SELECT * from cpgdb.findelementobjectancestors(".pg_escape_string($this->getID()).")";
@@ -84,7 +91,7 @@ class element extends elementEntity implements IDBAccessor
                    // Reverse array so that the immediate parent is first and is followed by
                    // successively more ancestral parents
                    $this->parentEntityArray = array_reverse($this->parentEntityArray);
-                   
+                   $this->cacheEntity($this->parentEntityArray, "objectEntityArray", $this->objectID);
                }
            }	
     }
@@ -113,6 +120,7 @@ class element extends elementEntity implements IDBAccessor
         $this->setBedrockDescription($row['bedrockdescription']);
         $this->setSoilDepth($row['soildepth']);
         $this->setSoilDescription($row['soildescription']);
+	$this->setObjectID($row['objectid']);
         return true;
     }
    
@@ -167,6 +175,7 @@ class element extends elementEntity implements IDBAccessor
             return FALSE;
         }
 
+        $this->cacheSelf();
         return TRUE;
     }
 

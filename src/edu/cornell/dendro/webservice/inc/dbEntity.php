@@ -146,6 +146,12 @@ class dbEntity
      */
     protected $canDelete = NULL;
 
+    /**
+     * A cache for minimizing repetitive DB queries
+     *
+     * @var Array
+     */
+    private static $dbEntityCache = array();
     
     /**
      * Constructor for this entity
@@ -529,7 +535,26 @@ class dbEntity
    		return "https://".$domain."mapservice.php?format=gmap&entity=".$this->getEntityType()."&id=".$this->getID();
    }
     
-    
+   static function getCachedEntity($entityType, $id, $format='standard') 
+   {
+      $key = $entityType.':'.$id.':'.$format;
+      if(!array_key_exists($key, dbEntity::$dbEntityCache)) {
+         return NULL;
+      }
+      return dbEntity::$dbEntityCache[$key];
+   }
+
+   protected function cacheSelf($format='standard')
+   {
+      $key = $this->getEntityType().':'.$this->getID().':'.$format;
+      dbEntity::$dbEntityCache[$key] = $this;
+   }
+
+   protected function cacheEntity($entity, $entityType, $id, $format='standard')
+   {
+      $key = $entityType.':'.$id.':'.$format;
+      dbEntity::$dbEntityCache[$key] = $entity;
+   }
 }
 
 
@@ -849,6 +874,8 @@ class objectEntity extends dbEntity
  */
 class elementEntity extends dbEntity
 {
+	protected $objectID = NULL;
+
 	/**
 	 * Taxonomic information about this element
 	 *
@@ -1232,6 +1259,18 @@ class elementEntity extends dbEntity
 		$this->location->setPointGeometryFromLatLong($lat, $long);
 	}
 	
+	/**
+	 * Set the object ID 
+	 *
+	 * @param Integer $value
+	 * @return Boolean 
+	 */
+	function setObjectID($value)
+	{
+		$this->objectID = (int) $value;
+		return TRUE;
+	}
+
 	/***********/
     /* GETTERS */
     /***********/ 	
@@ -1443,6 +1482,8 @@ class elementEntity extends dbEntity
  */
 class sampleEntity extends dbEntity
 {
+	protected $elementID = NULL;
+
 	/**
 	 * Type of sample 
 	 *
@@ -1579,6 +1620,18 @@ class sampleEntity extends dbEntity
 		$this->description = $value;
 	}
 	
+
+	/**
+	 * Set the element ID 
+	 *
+	 * @param Integer $value
+	 * @return Boolean 
+	 */
+	function setElementID($value)
+	{
+		$this->elementID = (int) $value;
+		return TRUE;
+	}
 	
 	/***********/
     /* GETTERS */
@@ -3291,7 +3344,7 @@ class measurementEntity extends dbEntity
         }
     }
     
-    
+        
     
 }
 

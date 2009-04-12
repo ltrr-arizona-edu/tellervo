@@ -54,6 +54,7 @@ class sample extends sampleEntity implements IDBAccessor
         $this->setKnots($row['knots']);
         $this->setDescription($row['description']);
         $this->setTitle($row['code']);
+	$this->setElementID($row['elementid']);
         return true;
     }
     
@@ -92,51 +93,39 @@ class sample extends sampleEntity implements IDBAccessor
             return FALSE;
         }
 
+        $this->cacheSelf();
         return TRUE;
     }
 
     function setParentsFromDB()
     {
         require_once('element.php');
-        global $dbconn;
-        global $corinaNS;
-        global $tridasNS;
-        global $gmlNS;
-                
-        // First find the immediate object entity parent
-           $sql = "SELECT elementid FROM tblsample WHERE sampleid=".pg_escape_string($this->getID());
-           $dbconnstatus = pg_connection_status($dbconn);
-           if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-           {
-               pg_send_query($dbconn, $sql);
-               $result = pg_get_result($dbconn); 
 
-               if(pg_num_rows($result)==0)
-               {
-                   // No records match the id specified
-                   $this->setErrorMessage("903", "There are no elements associated with sample id=".$this->getID());
-                   return FALSE;
-               }
-               else
-               {
-				   // Empty array before populating it
-               	   $this->parentEntityArray = array();
-               	   
-               	   // Loop through all the parents
-                   while($row = pg_fetch_array($result))
-                   {
-                   		$myElement = new element();
-            			$success = $myElement->setParamsFromDB($row['elementid']);
-	                   	if($success===FALSE)
-	                   	{
-	                   	    trigger_error($myElement->getLastErrorCode().$myElement->getLastErrorMessage());
-	                   	}  
+	if($this->elementID == NULL)
+	{   
+		// No records match the id specified
+		$this->setErrorMessage("903", "There are no elements associated with sample id=".$this->getID());
+		return FALSE;
+	}
+	// Empty array before populating it
+	$this->parentEntityArray = array();
 
-	                   	// Add to the array of parents
-	                   	array_push($this->parentEntityArray,$myElement);
-                   }                   
-               }
-           }	
+    	// see if we've cached it already
+    	if(($myElement = dbEntity::getCachedEntity("element", $this->elementID)) != NULL)
+    	{
+    	   array_push($this->parentEntityArray, $myElement);
+    	   return;
+    	}
+
+	$myElement = new element();
+	$success = $myElement->setParamsFromDB($this->elementID);
+	if($success===FALSE)
+	{
+		trigger_error($myElement->getLastErrorCode().$myElement->getLastErrorMessage());
+	}
+	
+	// Add to the array of parents
+	array_push($this->parentEntityArray,$myElement);
     }    
     
     function setChildParamsFromDB()

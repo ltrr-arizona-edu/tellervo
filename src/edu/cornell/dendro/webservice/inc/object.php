@@ -110,6 +110,7 @@ class object extends objectEntity implements IDBAccessor
             return FALSE;
         }
 
+        $this->cacheSelf();
         return TRUE;		
 	}
 

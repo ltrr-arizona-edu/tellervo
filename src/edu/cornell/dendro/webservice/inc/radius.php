@@ -93,54 +93,41 @@ class radius extends radiusEntity implements IDBAccessor
             return FALSE;
         }
 
+        $this->cacheSelf();
         return TRUE;
     }
 
     function setParentsFromDB()
     {
         require_once('sample.php');
-        global $dbconn;
-        global $corinaNS;
-        global $tridasNS;
-        global $gmlNS;
-                
-        // First find the immediate parent entity
-           $sql = "SELECT sampleid from tblradius where radiusid=".$this->getID();
-           $dbconnstatus = pg_connection_status($dbconn);
-           if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-           {
-               pg_send_query($dbconn, $sql);
-               $result = pg_get_result($dbconn); 
 
-               if(pg_num_rows($result)==0)
-               {
-                   // No records match the id specified
-                   $this->setErrorMessage("903", "There are no samples associated with radius id=".$this->getID());
-                   return FALSE;
-               }
-               else
-               {
-				   // Empty array before populating it
-               	   $this->parentEntityArray = array();
-               	   
-               	   // Loop through all the parents
-                   while($row = pg_fetch_array($result))
-                   {
-                   		$mySample = new sample();
-            			$success = $mySample->setParamsFromDB($row['sampleid']);
-	                   	if($success===FALSE)
-	                   	{
-	                   	    trigger_error($mySample->getLastErrorCode().$mySample->getLastErrorMessage());
-	                   	}  
+	if($this->sampleID == NULL)
+	{   
+		// No records match the id specified
+		$this->setErrorMessage("903", "There are no samples associated with radius id=".$this->getID());
+		return FALSE;
+	}
 
-	                   	// Add to the array of parents
-	                   	array_push($this->parentEntityArray,$mySample);
-                   }                   
-               }
-           }	
+	// Empty array before populating it
+	$this->parentEntityArray = array();
+
+	// see if we've cached it already
+        if(($mySample = dbEntity::getCachedEntity("sample", $this->sampleID)) != NULL)
+        {
+           array_push($this->parentEntityArray, $mySample);
+           return;
+        }
+
+	$mySample = new sample();
+	$success = $mySample->setParamsFromDB($this->sampleID);
+	if($success===FALSE)
+	{
+		trigger_error($mySample->getLastErrorCode().$mySample->getLastErrorMessage());
+	}
+
+	// Add to the array of parents
+	array_push($this->parentEntityArray,$mySample);
     }      
-    
-    
     
     function setChildParamsFromDB()
     {
@@ -314,7 +301,7 @@ class radius extends radiusEntity implements IDBAccessor
 	       	$xpath->registerNamespace('cor', $corinaNS);
 	       	$xpath->registerNamespace('tridas', $tridasNS);		    		
     		$nodelist = $xpath->query("//tridas:sample[* and not(descendant::tridas:sample)]");
-    		
+
     		// Create a temporary DOM document to store our element XML
     		$tempdom = new DomDocument();
 			$tempdom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->asXML()."</root>");
@@ -323,7 +310,6 @@ class radius extends radiusEntity implements IDBAccessor
 			$node = $tempdom->getElementsByTagName("radius")->item(0);
 			$node = $xml->importNode($node, true);
 			$nodelist->item(0)->appendChild($node);
-
             // Return an XML string representation of the entire shebang
             return $xml->saveXML($xml->getElementsByTagName("object")->item(0));
             
