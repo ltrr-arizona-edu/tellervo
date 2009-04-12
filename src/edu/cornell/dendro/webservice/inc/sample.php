@@ -409,7 +409,7 @@ class sample extends sampleEntity implements IDBAccessor
                 if($format!="minimal")
                 {
                     
-                	if($this->getSamplingDate()!=NULL)           $xml.= "<tridas:samplingDate>".$this->getSamplingDate()."</samplingDate>\n";
+                	if($this->getSamplingDate()!=NULL)           $xml.= "<tridas:samplingDate>".$this->getSamplingDate()."</tridas:samplingDate>\n";
                 	if($this->getFile()!=NULL)					 $xml.= "<tridas:file>".$this->getFile()."</tridas:file>\n";
                     if($this->getPosition()!=NULL)				 $xml.= "<tridas:position>".$this->getPosition()."</tridas:position>\n";
                     if($this->getState()!=NULL)					 $xml.= "<tridas:state>".$this->getState()."</tridas:state>\n";
