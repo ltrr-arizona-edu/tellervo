@@ -83,15 +83,16 @@ class measurement extends measurementEntity implements IDBAccessor
         $this->setSummarySampleTitle($row['samplecode']);
         $this->setSummaryRadiusTitle($row['radiuscode']);
 
-	// Deal with readings if we actually need them...
+	    // Deal with readings if we actually need them...
         if($format!="summary") $this->setReadingsFromDB();                      
         
-	// Set References 
-	$this->setReferencesFromDB();
+	    // Set References 
+	    $this->setReferencesFromDB();
 		
-        if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setting measurement parameters from DB result");   
+        if ($debugFlag===TRUE) 
+            $myMetaHeader->setTiming("Completed setting measurement parameters from DB result");   
+        
         return true;
-
     }
 
     function setParamsFromDB($theID, $format="standard")
@@ -594,15 +595,16 @@ class measurement extends measurementEntity implements IDBAccessor
         $this->parentEntityArray[0]->parentEntityArray[0]->parentEntityArray[0]->setParentsFromDB();
     }
 
-    function buildDerivationTree(&$direct, &$derived, &$all, $format='standard')
+    function loadDerivationTree(&$direct, &$derived, &$all, $format='standard')
     {
+        $myformat = ($format=='standard')?'summary':$format;
         foreach($this->referencesArray as $ref)
         {
             if(array_key_exists($ref, $all))
                 continue; // duplicate!
 
             $refMeasurement = new measurement();
-            $refMeasurement->setParamsFromDB($ref, ($format=='standard')?'summary':$format);
+            $refMeasurement->setParamsFromDB($ref, $myformat);
 
             $all[$ref] = $refMeasurement;
 
@@ -613,47 +615,161 @@ class measurement extends measurementEntity implements IDBAccessor
                // load parents
                $refMeasurement->recursiveSetParentsFromDB();
             }
-	    else
+	        else
             {
                // add any 'derived' children, and then add myself afterwards
-               $refMeasurement->buildDerivationTree($direct, $derived, $all, $format);
+               $refMeasurement->loadDerivationTree($direct, $derived, $all, $myformat);
                array_push($derived, $this);
             }
         }
 
     }
+    
+    function buildDerivationTrees(&$direct, &$objectToElementMap, &$elementTree, &$objectTree, &$all) 
+    {
+        foreach($direct as $d) {
+            $myradius = $d->parentEntityArray[0];
+            $mysample = $myradius->parentEntityArray[0];
+            $myelement = $mysample->parentEntityArray[0];
+            $myobjects = $myelement->parentEntityArray;
+            $lastobject = $myobjects[count($myobjects) - 1];
+
+            // get some IDs...
+            $rid = $myradius->getID();
+            $sid = $mysample->getID();
+            $eid = $myelement->getID();
+            $did = $d->getID();
+            $loid = $lastobject->getID();
+
+            // now, we have a map from element -> sample -> radius -> measurementSeries
+            $elementTree[$eid][$sid][$rid][$did] = 1;
+            // and last object id to radius map...
+            $objectToElementMap[$loid][$eid] = 1;
+
+            // make a map from type,id -> class
+            $all['measurement'][$did] = $d;
+            $all['radius'][$rid] = $myradius;
+            $all['sample'][$sid] = $mysample;
+            $all['element'][$eid] = $myelement;
+
+            // now, make a tree $objectTree[objid1][objid2][objid3]...
+            $lastArray = &$objectTree;
+            foreach($myobjects as $obj)
+            {
+                $objid = $obj->getID();
+
+                // add it to the map (like before)
+                $all['object'][$objid] = $obj;
+            
+                // make a tree of objects
+                if(!array_key_exists($objid, $lastArray))
+                    $lastArray[$objid] = array();
+                $lastArray = &$lastArray[$objid];
+            }
+        }
+    }
+
+    function textAsNode($text, $dom)
+    {
+        global $corinaNS;
+        global $tridasNS;
+        global $gmlNS;
+
+        $domhead = "<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">";
+        $domfoot = "</root>";
+
+        $tmpdom = new DomDocument();
+        if($tmpdom->loadXML($domhead.$text.$domfoot) === FALSE) {
+            trigger_error("Malformed XML in textAsNode: Internal Error.\n".$text);
+        }
+        return $dom->importNode($tmpdom->documentElement->childNodes->item(0), true);
+    }
+
+    function outputElementDerivationTree($elementID, &$dom, $curNode, &$elementTree, &$all, $format)
+    {
+        $myElement = $all['element'][$elementID];
+        $myElementNode = $this->textAsNode($myElement->asXML(), $dom);
+        $curNode->appendChild($myElementNode);
+
+        foreach($elementTree[$elementID] as $sampleID => $radii)
+        {
+            $mySample = $all['sample'][$sampleID];
+            $mySampleNode = $this->textAsNode($mySample->asXML(), $dom);
+            $myElementNode->appendChild($mySampleNode);
+
+            foreach($radii as $radiusID => $measurements)
+            {
+                $myRadius = $all['radius'][$radiusID];
+                $myRadiusNode = $this->textAsNode($myRadius->asXML(), $dom);
+                $mySampleNode->appendChild($myRadiusNode);
+
+                foreach($measurements as $measurementID => $dummy)
+                {
+                    $myMeasurement = $all['measurement'][$measurementID];
+                    $myMeasurementNode = $this->textAsNode($myMeasurement->_asXML($format, "full"), $dom);
+                    $myRadiusNode->appendChild($myMeasurementNode);
+                }
+            }
+        }
+    }
+
+    // this has to be recursive and strange, because we can have an unknown depth tree of objects
+    function outputDerivationTree(&$dom, $curNode, &$objectTree, &$elementTree, &$objectToElementMap, &$all, $format)
+    {
+        foreach($objectTree as $objid => $subObjectTree)
+        {
+            $obj = $all['object'][$objid];
+
+            $node = $this->textAsNode($obj->asXML(), $dom);
+            $curNode->appendChild($node);
+
+            // do subtrees first
+            if(count($subObjectTree) > 0)
+                $this->outputDerivationTree($dom, $node, $subObjectTree, $elementTree, $objectToElementMap, $all, $format);
+
+            // ok, done with any subtrees. Do I have any elements in this object?
+            if(array_key_exists($objid, $objectToElementMap))
+            {
+                foreach($objectToElementMap[$objid] as $elementID => $dummy)
+                    $this->outputElementDerivationTree($elementID, $dom, $node, $elementTree, $all, $format);
+            }
+        }
+    }
 
     function derivedSeriesAsXML($format='standard') 
     {
+        global $corinaNS;
+        global $tridasNS;
+        global $gmlNS;
+
+	    // first off, load everything
         $direct = Array();
         $derived = Array();
         $all = Array();
-        $this->buildDerivationTree($direct, $derived, $all, $format);
+        $this->loadDerivationTree($direct, $derived, $all, $format);
 
-        // first, sort the trees for every direct measurement. GROSS.
-        $all = Array();
-        foreach($direct as $d) {
-           $myradius = $d->parentEntityArray[0];
-           $mysample = $myradius->parentEntityArray[0];
-           $myelement = $mysample->parentEntityArray[0];
-           $myobjects = $myelement->parentEntityArray;
+        // then, sort everything
+        $objectToElementMap = array();
+        $all = array();
+        $elementTree = array();
+        $objectTree = array();
+	    $this->buildDerivationTrees($direct, $objectToElementMap, $elementTree, $objectTree, $all);
+    
+        $dom = new DomDocument();
+        $dom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\"></root>");
+        $this->outputDerivationTree($dom, $dom->documentElement, $objectTree, $elementTree, $objectToElementMap, $all, ($format=="standard")?"summary":$format);
 
-// TODO: FIXME!
-//           $all[$myelement][$mysample][$myradius] = $d;
-        }
-
-        foreach($all as $objects => $elements) {
-         foreach($elements as $element => $samples) {
-          foreach($samples as $sample => $radii) {
-           foreach($radii as $radius => $measurement) {
-           }
-          }
-         } 
+        // now, just print out the derivedSeries in order. $this is going to be last.
+        foreach($derived as $d)
+        {
+            $myformat = ($d == $this) ? $format : (($format=='standard') ? 'summary' : $format);
+            $dom->documentElement->appendChild($this->textAsNode($d->_asXML($myformat, "full"), $dom));
         }
 
         $txml = "";
+        foreach($dom->documentElement->childNodes as $child)
+            $txml .= $dom->saveXML($child);
 
-        $txml.= $this->asXML('summary');
         return $txml;
     }
 
