@@ -595,11 +595,15 @@ class measurement extends measurementEntity implements IDBAccessor
         $this->parentEntityArray[0]->parentEntityArray[0]->parentEntityArray[0]->setParentsFromDB();
     }
 
-    function loadDerivationTree(&$direct, &$derived, &$all, $format='standard')
+    function loadDerivationTree(&$direct, &$derived, &$all, $format='standard', $depth=1)
     {
         $myformat = ($format=='standard')?'summary':$format;
-        foreach($this->referencesArray as $ref)
+
+        // if we're on the first level, or we're comprehensive, traverse looking for children
+        if($depth == 1 || $myformat!='summary')
         {
+          foreach($this->referencesArray as $ref)
+          {
             if(array_key_exists($ref, $all))
                 continue; // duplicate!
 
@@ -615,14 +619,24 @@ class measurement extends measurementEntity implements IDBAccessor
                // load parents
                $refMeasurement->recursiveSetParentsFromDB();
             }
-	        else
+            else
             {
-               // add any 'derived' children, and then add myself afterwards
-               $refMeasurement->loadDerivationTree($direct, $derived, $all, $myformat);
-               array_push($derived, $this);
+               // add any 'derived' children
+               $refMeasurement->loadDerivationTree($direct, $derived, $all, $myformat, $depth+1);
             }
+          }
         }
 
+        // add myself to the appropriate list
+        if($this->getTridasSeriesType()=='measurementSeries') 
+        {
+            // first level measurement? load myself!
+            if($depth == 1)
+                $this->recursiveSetParentsFromDB();
+            array_push($direct, $this);
+        }
+        else if($this->getTridasSeriesType()=='derivedSeries')
+            array_push($derived, $this);
     }
     
     function buildDerivationTrees(&$direct, &$objectToElementMap, &$elementTree, &$objectTree, &$all) 
@@ -706,7 +720,9 @@ class measurement extends measurementEntity implements IDBAccessor
                 foreach($measurements as $measurementID => $dummy)
                 {
                     $myMeasurement = $all['measurement'][$measurementID];
-                    $myMeasurementNode = $this->textAsNode($myMeasurement->_asXML($format, "full"), $dom);
+                    $myFormat = ($myMeasurement == $this) ? $format : (($format=='standard') ? 'summary' : $format);
+
+                    $myMeasurementNode = $this->textAsNode($myMeasurement->_asXML($myFormat, "full"), $dom);
                     $myRadiusNode->appendChild($myMeasurementNode);
                 }
             }
@@ -736,7 +752,7 @@ class measurement extends measurementEntity implements IDBAccessor
         }
     }
 
-    function derivedSeriesAsXML($format='standard') 
+    function fullSeriesAsXML($format='standard') 
     {
         global $corinaNS;
         global $tridasNS;
@@ -757,7 +773,7 @@ class measurement extends measurementEntity implements IDBAccessor
     
         $dom = new DomDocument();
         $dom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\"></root>");
-        $this->outputDerivationTree($dom, $dom->documentElement, $objectTree, $elementTree, $objectToElementMap, $all, ($format=="standard")?"summary":$format);
+        $this->outputDerivationTree($dom, $dom->documentElement, $objectTree, $elementTree, $objectToElementMap, $all, $format);
 
         // now, just print out the derivedSeries in order. $this is going to be last.
         foreach($derived as $d)
@@ -786,47 +802,13 @@ class measurement extends measurementEntity implements IDBAccessor
         {
         case "comprehensive":
         case "standard":
-            require_once('radius.php');
-            global $dbconn;
-	        global $corinaNS;
-	        global $tridasNS;
-	        global $gmlNS;
-
 	        if($this->getTridasSeriesType()=='measurementSeries')
 	        {
-	        	// Make sure the parent entities are set
-	        	$this->setParentsFromDB();	
-	        	
-		        // We need to return the comprehensive XML for this element i.e. including all it's ancestral 
-		        // object entities.      
-		        
-	            // Grab the XML representation of the immediate parent using the 'comprehensive'
-	            // attribute so that we get all the object ancestors formatted correctly                   
-	            $xml = new DomDocument();   
-	    		$xml->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->parentEntityArray[0]->asXML('comprehensive')."</root>");                   
-	
-	    		// We need to locate the leaf tridas:radius (one with no child tridas:radius)
-	    		// because we need to insert our measurement xml here
-		        $xpath = new DOMXPath($xml);
-		       	$xpath->registerNamespace('cor', $corinaNS);
-		       	$xpath->registerNamespace('tridas', $tridasNS);		    		
-	    		$nodelist = $xpath->query("//tridas:radius[* and not(descendant::tridas:radius)]");
-	    		
-	    		// Create a temporary DOM document to store our measurement XML
-	    		$tempdom = new DomDocument();
-			$tempdom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->_asXML($format, $parts)."</root>");
-	   		
-			// Import and append the measurement XML node into the main XML DomDocument
-			$node = $tempdom->getElementsByTagName("measurementSeries")->item(0);
-			$node = $xml->importNode($node, true);
-			$nodelist->item(0)->appendChild($node);
-	
-	            // Return an XML string representation of the entire shebang
-	            return $xml->saveXML($xml->getElementsByTagName("object")->item(0));
-	        }
-	        elseif($this->getTridasSeriesType()=='derivedSeries')
+	                return $this->fullSeriesAsXML($format);
+            }        
+            elseif($this->getTridasSeriesType()=='derivedSeries')
 	        {
-                    return $this->derivedSeriesAsXML($format);
+                    return $this->fullSeriesAsXML($format);
 	        }
 	        else
 	        {
