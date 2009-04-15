@@ -77,10 +77,12 @@ class measurement extends measurementEntity implements IDBAccessor
         //$this->setSummaryInfo($row['objectcode'], $row['objectcount'], $row['commontaxonname'], $row['taxoncount'], $row['prefix']);
         if($this->vmeasurementOp=='Index') $this->setVMeasurementOpParam($row['vmeasurementopparameter']);
         if($this->vmeasurementOp=='Crossdate') $this->setCrossdateParamsFromDB();
-        $this->setSummaryObjectArray($row['objectid']);
         $this->setSummaryElementTitle($row['elementcode']);
         $this->setSummarySampleTitle($row['samplecode']);
         $this->setSummaryRadiusTitle($row['radiuscode']);
+
+	    // Only load summary fields if this is a summary...
+        if($format=='summary') $this->setSummaryObjectArray($row['objectid']);
 
 	    // Deal with readings if we actually need them...
         if($format!="summary") $this->setReadingsFromDB();                      

@@ -2664,7 +2664,14 @@ class measurementEntity extends dbEntity
 	function setSummaryObjectArray($juniorObjectID)
 	{
 		if($juniorObjectID==NULL) return false;
+
+		if(($myObjectEntityArray = dbEntity::getCachedEntity("objectEntityArray", $juniorObjectID)) != NULL)
+        	{
+        	   $this->summaryObjectArray = $myObjectEntityArray;
+        	   return TRUE;
+        	}
 		
+
 		global $dbconn;
 		
 		$sql = "select vwq.* from cpgdb.findObjectAncestors($juniorObjectID, true) oa JOIN vwTblObject vwq ON oa.objectid=vwq.objectid";
@@ -2679,7 +2686,8 @@ class measurementEntity extends dbEntity
             	$myObject->setParamsFromDBRow($row);
                 array_push($this->summaryObjectArray, $myObject);
             }
-
+		$this->summaryObjectArray = array_reverse($this->summaryObjectArray);
+		$this->cacheEntity($this->summaryObjectArray, "objectEntityArray", $juniorObjectID);
         }
         else
         {
