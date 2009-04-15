@@ -77,8 +77,7 @@ class measurement extends measurementEntity implements IDBAccessor
         //$this->setSummaryInfo($row['objectcode'], $row['objectcount'], $row['commontaxonname'], $row['taxoncount'], $row['prefix']);
         if($this->vmeasurementOp=='Index') $this->setVMeasurementOpParam($row['vmeasurementopparameter']);
         if($this->vmeasurementOp=='Crossdate') $this->setCrossdateParamsFromDB();
-        $this->setSummaryObjectTitle($row['objecttitle']);
-        $this->setSummaryObjectCode($row['objectcode']);
+        $this->setSummaryObjectArray($row['objectid']);
         $this->setSummaryElementTitle($row['elementcode']);
         $this->setSummarySampleTitle($row['samplecode']);
         $this->setSummaryRadiusTitle($row['radiuscode']);
@@ -891,10 +890,17 @@ class measurement extends measurementEntity implements IDBAccessor
      */
     private function getSummaryXMLTags()
     {
-		$tags = "<tridas:genericField name=\"corina.objectTitle\" type=\"string\">".$this->getSummaryObjectTitle()."</tridas:genericField>";
-		$tags.= "<tridas:genericField name=\"corina.elementTitle\" type=\"string\">".$this->getSummaryElementTitle()."</tridas:genericField>";
-		$tags.= "<tridas:genericField name=\"corina.sampleTitle\" type=\"string\">".$this->getSummarySampleTitle()."</tridas:genericField>";
-		$tags.= "<tridas:genericField name=\"corina.radiusTitle\" type=\"string\">".$this->getSummaryRadiusTitle()."</tridas:genericField>";		
+    	$tags = "";
+    	$i = 1;
+    	foreach($this->summaryObjectArray as $object)
+    	{
+			$tags .= "<tridas:genericField name=\"corina.objectTitle.$i\" type=\"string\">".$object->getTitle()."</tridas:genericField>\n";
+			$tags .= "<tridas:genericField name=\"corina.objectCode.$i\" type=\"string\">".$object->getCode()."</tridas:genericField>\n";
+ 			$i++;   		
+    	}
+		$tags.= "<tridas:genericField name=\"corina.elementTitle\" type=\"string\">".$this->getSummaryElementTitle()."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.sampleTitle\" type=\"string\">".$this->getSummarySampleTitle()."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.radiusTitle\" type=\"string\">".$this->getSummaryRadiusTitle()."</tridas:genericField>\n";		
     	return $tags;
     }
     
@@ -939,15 +945,16 @@ class measurement extends measurementEntity implements IDBAccessor
  				
  															
  				if($this->hasExtent()!=NULL)				$xml.= $this->getExtentAsXML();											
- 				if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"crossdateJustification\">".$this->getJustification()."</tridas:genericField>\n";				
- 				if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"crossdateConfidenceLevel\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
- 				if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"operationParameter\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
- 				if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"authorID\">".$this->author->getID()."</tridas:genericField>\n"; 				
+ 				if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"crossdateJustification\" type=\"string\">".$this->getJustification()."</tridas:genericField>\n";				
+ 				if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"crossdateConfidenceLevel\" type=\"string\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
+ 				if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"operationParameter\" type=\"string\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
+ 				if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"authorID\" type=\"integer\">".$this->author->getID()."</tridas:genericField>\n"; 				
 	
 
                 // Using 'summary' format so just give minimal XML for all references and nothing else
                 if($format=="summary")
                 {
+                	$xml.= $this->getSummaryXMLTags()."\n";
             		$xml.= "</tridas:".$this->getTridasSeriesType().">";
                     return $xml;
                 }
@@ -989,11 +996,11 @@ class measurement extends measurementEntity implements IDBAccessor
 
 		        // Include permissions details if requested            
 		        $xml .= $this->getPermissionsXML();
-                if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"corina.isReconciled\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
-                if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"corina.isPublished\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
- 				if(isset($this->analyst))					$xml.= "<tridas:genericField name=\"corina.analystID\">".$this->analyst->getID()."</tridas:genericField>\n";
- 				if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"corina.dendrochronologistID\">".$this->dendrochronologist->getID()."</tridas:genericField>\n"; 				
- 				if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\">".$this->getReadingCount()."</tridas:genericField>\n";
+                if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"corina.isReconciled\" type=\"boolean\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
+                if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"corina.isPublished\" type=\"boolean\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
+ 				if(isset($this->analyst))					$xml.= "<tridas:genericField name=\"corina.analystID\" type=\"integer\">".$this->analyst->getID()."</tridas:genericField>\n";
+ 				if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"corina.dendrochronologistID\" type=\"integer\">".$this->dendrochronologist->getID()."</tridas:genericField>\n"; 				
+ 				if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"integer\">".$this->getReadingCount()."</tridas:genericField>\n";
  				           
 		// show summary information in standard and summary modes
 		/*if($format=="summary" || $format=="standard") {

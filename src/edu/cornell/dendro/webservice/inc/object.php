@@ -37,7 +37,7 @@ class object extends objectEntity implements IDBAccessor
     /***********/
 
     function setParamsFromDBRow($row, $format="standard")
-    {
+    {  	
         global $debugFlag;
         global $myMetaHeader;
         if ($debugFlag===TRUE) $myMetaHeader->setTiming("Setting object parameters for objectid ".$row['objectid']);                 

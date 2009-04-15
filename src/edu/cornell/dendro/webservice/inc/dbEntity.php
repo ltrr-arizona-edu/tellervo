@@ -2543,13 +2543,12 @@ class measurementEntity extends dbEntity
     var $measurementCount = NULL;
     var $masterVMeasurementID = NULL;
    
-    
-    /**
-     * Summerisation of the object title for this measurement
-     *
-     * @var Mixed
-     */
-    protected $summaryObjectTitle = NULL;
+	/**
+	 * Array of Object codes and titles for this measurement ordered from most senior to most junior
+	 *
+	 * @var Array
+	 */
+    protected $summaryObjectArray = array();
     /**
      * Summerisation of the element title for this measurement
      *
@@ -2567,14 +2566,12 @@ class measurementEntity extends dbEntity
      *
      * @var Mixed
      */
-    protected $summaryRadiusTitle = NULL;    
+    protected $summaryRadiusTitle = NULL;   
     /**
      * Number of objects this vmeasurements is associated with
      *
      * @var Mixed
-     */
-    protected $summaryObjectCode = NULL;
-    
+     */  
     protected $summaryObjectCount = NULL;
     /**
      * Summary of the taxonomic information for this vmeasurement
@@ -2663,16 +2660,36 @@ class measurementEntity extends dbEntity
         $this->fullLabCode = $labprefix.$this->getCode();
 	}**/
 	
-	function setSummaryObjectCode($code)
-	{
-		$this->summaryObjectCode = $code;
-	}
 	
-	function setSummaryObjectTitle($title)
+	function setSummaryObjectArray($juniorObjectID)
 	{
-		$this->summaryObjectTitle = $title;
+		if($juniorObjectID==NULL) return false;
+		
+		global $dbconn;
+		
+		$sql = "select vwq.* from cpgdb.findObjectAncestors($juniorObjectID, true) oa JOIN vwTblObject vwq ON oa.objectid=vwq.objectid";
+		    
+		$dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {	         
+        	$result = pg_query($dbconn, $sql);
+            while ($row = pg_fetch_array($result))
+            {
+            	$myObject = new object();
+            	$myObject->setParamsFromDBRow($row);
+                array_push($this->summaryObjectArray, $myObject);
+            }
+
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+		
 	}
-	
+		
 	function setSummaryElementTitle($title)
 	{
 		$this->summaryElementTitle = $title;
@@ -3065,9 +3082,9 @@ class measurementEntity extends dbEntity
     	return $this->code;
     }
     
-    function getSummaryObjectTitle()
+    function getSummaryObjectTitle($level=1)
     {
-    	return $this->summaryObjectTitle;
+    	return $this->summaryObjectArray[$level]['title'];
     }
     
     function getSummaryElementTitle()
@@ -3090,9 +3107,9 @@ class measurementEntity extends dbEntity
     	return $this->summaryObjectCount;
     }
     
-    function getSummaryObjectCode()
+    function getSummaryObjectCode($level=1)
     {
-    	return $this->summaryObjectCode;
+    	return $this->summaryObjectArray[$level]['code'];
     }
     
     function getSummaryTaxonName()
