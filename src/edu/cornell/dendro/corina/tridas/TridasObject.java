@@ -173,7 +173,7 @@ public class TridasObject extends TridasEntityBase implements Comparable {
 		for(Element e : el) {
 			String genericFieldName = e.getAttributeValue("name");
 			
-			if(genericFieldName.equals("corina.labCode")) {
+			if(genericFieldName.equals("corina.objectLabCode")) {
 				obj.labCode = e.getText();
 				obj.hasCode = true;
 			}
