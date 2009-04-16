@@ -156,6 +156,7 @@ class search Implements IDBAccessor
             $this->recordHits = pg_num_rows($result);
 
             $result = pg_query($dbconn, $fullSQL);
+  
             while ($row = pg_fetch_array($result))
             {
 	            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Begin permissions check");
@@ -484,7 +485,9 @@ class search Implements IDBAccessor
         {
             if($withinJoin)
             {
-                $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurement")." ON ".$this->tableName("radius").".radiusid = ".$this->tableName("vmeasurement").".radiusid \n";
+                $fromSQL .= "INNER JOIN tblmeasurement ON tblmeasurement.radiusid = ".$this->tableName("radius").".radiusid \n";
+                $fromSQL .= "INNER JOIN tblvmeasurementderivedcache dc ON dc.measurementid = tblmeasurement.measurementid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurement")." ON dc.vmeasurementid = ".$this->tableName("vmeasurement").".vmeasurementid \n";
             }
             else
             {

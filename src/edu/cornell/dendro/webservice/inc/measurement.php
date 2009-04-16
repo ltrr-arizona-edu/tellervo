@@ -896,13 +896,13 @@ class measurement extends measurementEntity implements IDBAccessor
     	$i = 1;
     	foreach($this->summaryObjectArray as $object)
     	{
-			$tags .= "<tridas:genericField name=\"corina.objectTitle.$i\" type=\"string\">".$object->getTitle()."</tridas:genericField>\n";
-			$tags .= "<tridas:genericField name=\"corina.objectCode.$i\" type=\"string\">".$object->getCode()."</tridas:genericField>\n";
+			$tags .= "<tridas:genericField name=\"corina.objectTitle.$i\" type=\"string\">".dbHelper::escapeXMLChars($object->getTitle())."</tridas:genericField>\n";
+			$tags .= "<tridas:genericField name=\"corina.objectCode.$i\" type=\"string\">".dbHelper::escapeXMLChars($object->getCode())."</tridas:genericField>\n";
  			$i++;   		
     	}
-		$tags.= "<tridas:genericField name=\"corina.elementTitle\" type=\"string\">".$this->getSummaryElementTitle()."</tridas:genericField>\n";
-		$tags.= "<tridas:genericField name=\"corina.sampleTitle\" type=\"string\">".$this->getSummarySampleTitle()."</tridas:genericField>\n";
-		$tags.= "<tridas:genericField name=\"corina.radiusTitle\" type=\"string\">".$this->getSummaryRadiusTitle()."</tridas:genericField>\n";		
+		$tags.= "<tridas:genericField name=\"corina.elementTitle\" type=\"string\">".dbHelper::escapeXMLChars($this->getSummaryElementTitle())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.sampleTitle\" type=\"string\">".dbHelper::escapeXMLChars($this->getSummarySampleTitle())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.radiusTitle\" type=\"string\">".dbHelper::escapeXMLChars($this->getSummaryRadiusTitle())."</tridas:genericField>\n";		
     	return $tags;
     }
     
