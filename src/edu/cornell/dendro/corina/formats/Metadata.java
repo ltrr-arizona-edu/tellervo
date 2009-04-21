@@ -29,7 +29,10 @@ public class Metadata {
 	public final static String LEGACY_CLEANED = "legacyCleaned";
 	
 	/** The TridasIdentifier associated with this Object */
-	public final static String TRIDAS_IDENTIFIER = "::tridas";
+	public final static String TRIDAS_IDENTIFIER = "::tridasID";
+	
+	/** A LabCode object */
+	public final static String LABCODE = "::labcode";
 	
 	/**
 	 * Get the class type of the corresponding metadata

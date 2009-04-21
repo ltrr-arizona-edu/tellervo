@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.tridas;
 
 import org.jdom.Element;
 
+import edu.cornell.dendro.corina.util.StringDictionary;
 import edu.cornell.dendro.corina.webdbi.CorinaElement;
 
 public class TridasIdentifier {
@@ -54,7 +55,7 @@ public class TridasIdentifier {
 			id = val;
 		
 		// and just use the provided entity name
-		this.entityName = entityName;
+		this.entityName = StringDictionary.getEntityName(entityName);
 	}
 	
 	/**
@@ -71,6 +72,14 @@ public class TridasIdentifier {
 	 */
 	public String getID() {
 		return id;
+	}
+	
+	/**
+	 * Get the TRIDAS name of this entity (eg object, element, sample, etc)
+	 * @return
+	 */
+	public String getEntityName() {
+		return entityName;
 	}
 	
 	/**

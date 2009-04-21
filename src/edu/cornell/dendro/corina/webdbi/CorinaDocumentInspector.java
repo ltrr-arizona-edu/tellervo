@@ -169,8 +169,6 @@ public class CorinaDocumentInspector {
     	
     	if(ret == null)
     		System.out.println("FAILED to load local schema: " + filename);
-    	else
-    		System.out.println("Loaded local schema: " + filename);
     	
     	return ret;
     }

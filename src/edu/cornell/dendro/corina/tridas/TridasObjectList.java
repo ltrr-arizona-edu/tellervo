@@ -6,6 +6,7 @@ package edu.cornell.dendro.corina.tridas;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
@@ -116,7 +117,7 @@ public class TridasObjectList extends CachedResource {
 	 * @param e
 	 */
 	private void addObject(TridasObject parent, Element e, DataValues dv) {
-		TridasObject obj = TridasObject.xmlToSite(e);
+		TridasObject obj = new TridasObject(e);
 		
 		// problem with object? stop here
 		if(obj == null)
@@ -146,6 +147,7 @@ public class TridasObjectList extends CachedResource {
 			dv.topLevelObjectMap.put(sortVal, o);
 		
 		dv.sortedCodeToObjectMap.put(sortVal, o);
+		dv.idMap.put(o.getIdentifier(), o);
 	}
 	
 	/**
@@ -190,5 +192,6 @@ public class TridasObjectList extends CachedResource {
 	private class DataValues {
 		TreeMap<String, TridasObject> sortedCodeToObjectMap = new TreeMap<String, TridasObject>();
 		TreeMap<String, TridasObject> topLevelObjectMap = new TreeMap<String, TridasObject>();
+		HashMap<TridasIdentifier, TridasObject> idMap = new HashMap<TridasIdentifier, TridasObject>();
 	}
 }

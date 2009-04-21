@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.*;
 
 import edu.cornell.dendro.corina.formats.CorinaXML;
+import edu.cornell.dendro.corina.formats.Tridas;
 import edu.cornell.dendro.corina.index.Index;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -70,8 +71,8 @@ public class MeasurementResource extends ResourceObject<Sample> {
 		 * </corina>
 		 */
 		case READ:
-			// if we're reading, ask for a comprehensive format
-			requestElement.setAttribute("format", "comprehensive");
+			// if we're reading, ask for a standard, but not too comprehensive format
+			requestElement.setAttribute("format", "standard");
 			
 		case DELETE:
 			if(ri == null)
@@ -313,10 +314,11 @@ public class MeasurementResource extends ResourceObject<Sample> {
 		// Create new sample to hold data
 		Sample s = new Sample();
 		
-		Element content = root.getChild("content");
+		Element content = root.getChild("content", edu.cornell.dendro.corina.webdbi.CorinaXML.CORINA_NS);
 		if(content == null)
 			throw new MalformedDocumentException(doc, "No content element in measurement");
-		
+
+		/*
 		// try the easy way first
 		Element measurementElement = content.getChild("measurement");
 		if(measurementElement == null) {
@@ -346,11 +348,12 @@ public class MeasurementResource extends ResourceObject<Sample> {
 				throw new MalformedDocumentException(doc, "Invalid comprehensive measurement format");				
 			}
 		}
+		*/
 		
-		CorinaXML loader = new CorinaXML();
+		Tridas loader = new Tridas();
 		
 		try {
-			loader.loadMeasurement(s, measurementElement);
+			loader.loadSeries(s, content);
 		} catch (IOException ioe) {
 			throw new MalformedDocumentException(doc, "Poorly formed measurement: " + ioe);
 		}
