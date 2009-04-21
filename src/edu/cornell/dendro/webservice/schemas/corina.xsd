@@ -252,7 +252,7 @@
 %%%%%%%%%%%%%% -->
 	<xs:element name="content">
 		<xs:complexType>
-			<xs:sequence>
+			<xs:choice maxOccurs="unbounded">
 				<xs:element name="sql" minOccurs="0" maxOccurs="1"/>
                                 
                 <xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
@@ -279,7 +279,7 @@
                 <xs:element ref="readingNoteDictionary" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="securityUserDictionary" minOccurs="0" maxOccurs="1"/>
 				
-			</xs:sequence>
+			</xs:choice>
 		</xs:complexType>
 	</xs:element>
 	
