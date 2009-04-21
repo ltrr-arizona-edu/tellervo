@@ -3,6 +3,9 @@
  */
 package edu.cornell.dendro.corina.tridas;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jdom.Element;
 
 import edu.cornell.dendro.corina.Range;
@@ -11,6 +14,7 @@ import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.webdbi.CorinaXML;
 
 /**
  * @author lucasm
@@ -39,8 +43,31 @@ public class TridasSeries extends TridasEntityBase {
 	 */
 	public TridasSeries(Element rootElement) {
 		super(rootElement);
+		
+		loadValues(rootElement);
 	}
 	
+	/**
+	 * Are there any associated measurements with this sample?
+	 * 
+	 * @return
+	 */
+	public boolean hasMeasurements() {
+		return false;
+	}
+
+	/**
+	 * Copy the associated measurements into the Corina Sample
+	 * 
+	 * @param s
+	 */
+	public void copyMeasurementsOntoSample(Sample s) {
+		
+	}
+	
+	/**
+	 * Map data from this onto a corina base sample
+	 */
 	@Override
 	public void mapOntoSample(BaseSample s) {
 		String value;
@@ -57,19 +84,19 @@ public class TridasSeries extends TridasEntityBase {
 		LabCode labCode = new LabCode();
 		
 		for(int i = 1;;i++) {
-			if((value = (String) getMetadata("series.generic.corina.objectCode." + i)) != null)	
+			if((value = getMetadataString("series.generic.corina.objectCode." + i)) != null)	
 				labCode.appendSiteCode(value);
 			else
 				break;
 		}
 		
-		if((value = (String) getMetadata("series.generic.corina.elementTitle")) != null)
+		if((value = getMetadataString("series.generic.corina.elementTitle")) != null)
 			labCode.setElementCode(value);
-		if((value = (String) getMetadata("series.generic.corina.sampleTitle")) != null)
+		if((value = getMetadataString("series.generic.corina.sampleTitle")) != null)
 			labCode.setSampleCode(value);
-		if((value = (String) getMetadata("series.generic.corina.radiusTitle")) != null)
+		if((value = getMetadataString("series.generic.corina.radiusTitle")) != null)
 			labCode.setRadiusCode(value);
-		if((value = (String) getMetadata("series.title")) != null)
+		if((value = getMetadataString("series.title")) != null)
 			labCode.setSeriesCode(value);
 
 		// add the labcode to the sample
@@ -86,7 +113,7 @@ public class TridasSeries extends TridasEntityBase {
 			startYear = -9999; // 10,000 BC! 
 
 		// handle AD/BC
-		String yearType = (String) getMetadata("series.interpretation.firstYear.@suffix");
+		String yearType = getMetadataString("series.interpretation.firstYear.@suffix");
 		if(yearType != null) {
 			if(yearType.equalsIgnoreCase("BC")) {
 				startYear = 1 - startYear;
@@ -127,6 +154,57 @@ public class TridasSeries extends TridasEntityBase {
 		}
 	}
 
+	private class TridasValues {
+		private String name;
+		private TridasUnits units;
+		private List<Object> values;
+	}
+
+	private void loadUnitlessList(List<Element> valuesIn, List<Object> valuesOut) {
+		
+	}
+	
+	private void loadUnitList(List<Element> valuesIn, TridasValues tvalues) {
+		for(Element v : valuesIn) {
+			String txtVal = 
+		}
+	}
+	
+	private void loadValues(Element root) {
+		List<Element> valuesElements = (List<Element>) root.getChildren("values", CorinaXML.TRIDAS_NS);
+		
+		for(Element valuesElement : valuesElements) {
+			TridasValues v = new TridasValues();
+			
+			// get a list of actual values
+			List<Element> values = (List<Element>) valuesElement.getChildren("value", CorinaXML.TRIDAS_NS);
+			// the 'variable' tag
+			Element variable = valuesElement.getChild("variable", CorinaXML.TRIDAS_NS);
+			// the 'unit' tag
+			Element units = valuesElement.getChild("unit", CorinaXML.TRIDAS_NS);
+			String strval;
+			
+			// set name
+			if(variable != null && (strval = variable.getAttributeValue("normalTridas")) != null) {
+				v.name = "tridas." + strval;
+			}
+			else {
+				// ignore this type?
+				continue;
+			}
+
+			// create the storage...
+			v.values = new ArrayList<Object>(values.size());
+
+			if(units != null) {
+				v.units = TridasUnits.getUnitsForOfficialRepresentation(units.getAttributeValue("normalTridas"));
+				loadUnitList(values, v);
+			}
+			else
+				loadUnitlessList(values, v.values);
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.cornell.dendro.corina.tridas.TridasEntityBase#toXML()
 	 */

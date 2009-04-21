@@ -6,7 +6,6 @@ package edu.cornell.dendro.corina.webdbi;
 import org.jdom.*;
 
 import java.io.IOException;
-import java.util.*;
 
 import edu.cornell.dendro.corina.formats.CorinaXML;
 import edu.cornell.dendro.corina.formats.Tridas;
@@ -14,12 +13,7 @@ import edu.cornell.dendro.corina.index.Index;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.tridas.Subsite;
-import edu.cornell.dendro.corina.tridas.TridasElement;
 import edu.cornell.dendro.corina.tridas.TridasIdentifier;
-import edu.cornell.dendro.corina.tridas.TridasObject;
-import edu.cornell.dendro.corina.tridas.TridasRadius;
-import edu.cornell.dendro.corina.tridas.TridasSample;
 
 /**
  * @author lucasm

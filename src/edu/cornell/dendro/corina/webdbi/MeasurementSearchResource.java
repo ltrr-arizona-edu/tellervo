@@ -75,42 +75,34 @@ public class MeasurementSearchResource extends ResourceObject<ElementList> {
 			if(content == null)
 				throw new MalformedDocumentException(doc, "No content element in measurement");
 			
-			// get a list of measurements (note: can be empty!)
-			List<Element> measurementElements = content.getChildren();
+			// for loading files, or parsing for us
+			Tridas tridas = new Tridas();
+			
+			// load them into an array
+			BaseSample[] samples;
+			
+			try {
+				samples = tridas.loadFromTree(content);
+			} catch (IOException ioe) {
+				new Bug(ioe);
+				return false;
+			}
 
 			// create a list of elements
 			ElementList elist = new ElementList();
-			Tridas tridas = new Tridas();
+			
+			for(BaseSample b : samples) {
+				edu.cornell.dendro.corina.sample.Element cachedElement;
 
-			for(Element meas : measurementElements) {
-				// only tridas elements
-				if(!meas.getNamespace().equals(edu.cornell.dendro.corina.webdbi.CorinaXML.TRIDAS_NS))
-					continue;
+				// create a loader based on this particular element's identifier
+				b.setLoader(new TridasWSElement((TridasIdentifier) b.getMeta(Metadata.TRIDAS_IDENTIFIER)));
 				
-				// we only want measurementSeries or derivedSeries here - and we ignore this distinction
-				if(!(meas.getName().equals("measurementSeries") || meas.getName().equals("derivedSeries")))
-					continue;
+				// use that to make a cached element
+				cachedElement = new CachedElement(b);
 				
-				try {
-					// load it into a basic sample
-					BaseSample bs = new BaseSample();
-					tridas.loadBasicSeries(bs, meas);
-					
-					edu.cornell.dendro.corina.sample.Element cachedElement;
-
-					// now, assign the loader to our sample
-					bs.setLoader(new TridasWSElement((TridasIdentifier) bs.getMeta(Metadata.TRIDAS_IDENTIFIER)));
-					
-					// use that to make a cached element...
-					cachedElement = new CachedElement(bs);
-					
-					// add it to our element list
-					elist.add(cachedElement);
-				} catch (IOException ioe) {
-					new Bug(ioe);
-				}
+				elist.add(cachedElement);
 			}
-		
+					
 			setObject(elist);
 			return true;
 		}

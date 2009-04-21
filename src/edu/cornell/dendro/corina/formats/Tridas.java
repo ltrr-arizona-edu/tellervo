@@ -13,9 +13,12 @@ import org.jdom.input.SAXBuilder;
 
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.tridas.TridasElement;
 import edu.cornell.dendro.corina.tridas.TridasEntityMap;
 import edu.cornell.dendro.corina.tridas.TridasIdentifier;
 import edu.cornell.dendro.corina.tridas.TridasObject;
+import edu.cornell.dendro.corina.tridas.TridasRadius;
+import edu.cornell.dendro.corina.tridas.TridasSample;
 import edu.cornell.dendro.corina.tridas.TridasSeries;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.XMLDebug;
@@ -71,12 +74,72 @@ public class Tridas implements Filetype {
 		s.setMeta(value.metaTag, value.value);
 	}
 	
+	/**
+	 * Given a root element from an element, load everything below
+	 * 
+	 * @param root
+	 * @param samples
+	 * @param objects
+	 */
+	private void loadFromElementTree(Element root, List<BaseSample> corinaSamples, TridasObject[] objects) {
+		TridasElement thisElement = new TridasElement(root);
+		
+		List<Element> tridasSamples = (List<Element>) root.getChildren("sample", CorinaXML.TRIDAS_NS);
+		for(Element tridasSample : tridasSamples) {
+			TridasSample thisSample = new TridasSample(tridasSample);
+			List<Element> radii = (List<Element>) tridasSample.getChildren("radius", CorinaXML.TRIDAS_NS);
+			
+			for(Element radius : radii) {
+				TridasRadius thisRadius = new TridasRadius(radius);
+				List<Element> serieses = (List<Element>) radius.getChildren("measurementSeries", CorinaXML.TRIDAS_NS);
+				
+				for(Element series : serieses) {
+					TridasSeries thisSeries = new TridasSeries(series);
+					BaseSample newSample;
+					
+					// do we have measurements? if yes, we create a 'real' sample
+					if(thisSeries.hasMeasurements()) {
+						newSample = new Sample();
+						thisSeries.copyMeasurementsOntoSample((Sample) newSample);
+					}
+					else
+						newSample = new BaseSample(); // just a placeholder with metadata
+	
+					// map everything onto the sample
+					thisSeries.mapOntoSample(newSample);
+					thisRadius.mapOntoSample(newSample);
+					thisSample.mapOntoSample(newSample);
+					thisElement.mapOntoSample(newSample);
+					objects[objects.length - 1].mapOntoSample(newSample);
+					
+					// set the sample's metadata
+					newSample.setMeta(Metadata.OBJECT_ARRAY, objects);
+					newSample.setMeta(Metadata.OBJECT, objects[objects.length - 1]);
+					newSample.setMeta(Metadata.ELEMENT, thisElement);
+					newSample.setMeta(Metadata.SAMPLE, thisSample);
+					newSample.setMeta(Metadata.RADIUS, thisRadius);
+					
+					corinaSamples.add(newSample);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Recursive function to load elements and object tree
+	 * 
+	 * @param root
+	 * @param samples
+	 * @param objects
+	 */
 	private void loadFromObjectTree(Element root, List<BaseSample> samples, List<TridasObject> objects) {
 		List<Element> elements = (List<Element>) root.getChildren("element", CorinaXML.TRIDAS_NS);
 		List<Element> deeperObjects = (List<Element>) root.getChildren("object", CorinaXML.TRIDAS_NS);
 		TridasIdentifier identifier = new TridasIdentifier(root.getChild("identifier", CorinaXML.TRIDAS_NS), "object");
 		TridasObject thisObject = (TridasObject) TridasEntityMap.find(identifier);
-		
+	
+		// object didn't exist so far... this probably shouldn't happen unless we're dealing with
+		// a foreign object that's not in our system
 		if(thisObject == null) {
 			thisObject = new TridasObject(root);
 			System.out.println("Object '" + thisObject.toFullString() + "' did not exist in cache!");
@@ -88,6 +151,14 @@ public class Tridas implements Filetype {
 		// MUST process elements first!
 		// We do a breadth-first traversal here because 'objects' list represents objects at this depth;
 		// it's not so easy to go back.
+		
+		// get a 'set in stone' copy of the object array, so far
+		TridasObject[] objectArraySoFar = new TridasObject[objects.size()];
+		objects.toArray(objectArraySoFar);
+		
+		// load each element (and everything below it)
+		for(Element element : elements)
+			loadFromElementTree(element, samples, objectArraySoFar);
 		
 		// ok, now recursively process any child objects
 		for(Element childObject : deeperObjects) 
@@ -103,15 +174,22 @@ public class Tridas implements Filetype {
 		
 		for(Element child : treeChildren) {
 			
-			// First, check for sanity
+			// Only care about tridas objects (ignore sql, etc)
 			if(!child.getNamespace().equals(CorinaXML.TRIDAS_NS))
-				throw new IOException("Not a valid tridas document");
+				continue;
 
 			String childName = child.getName();
 			if(childName.equals("measurementSeries") || childName.equals("derivedSeries")) {
 				// whew, this is the easy, fun way!
 				TridasSeries series = new TridasSeries(child);
-				Sample s = new Sample();
+				BaseSample s;
+				
+				if(series.hasMeasurements()) {
+					s = new Sample();
+					series.copyMeasurementsOntoSample((Sample) s);
+				}
+				else
+					s = new BaseSample();
 
 				series.mapOntoSample(s);
 				samples.add(s);
@@ -126,25 +204,15 @@ public class Tridas implements Filetype {
 				System.out.println("Unknown type '" + childName + "' in tridas tree ignored");
 		}
 		
-		return (BaseSample[]) samples.toArray();
-	}
-	
-	public void loadBasicSeries(BaseSample s, Element root) throws IOException {
-
+		// convert to array and leave
+		BaseSample[] sampleArray = new BaseSample[samples.size()];
+		samples.toArray(sampleArray);
 		
-		String rootName = root.getName();
-		if(rootName.equals("measurementSeries") || rootName.equals("derivedSeries")) {
-			// whew, this is the easy, fun way!
-			TridasSeries series = new TridasSeries(root);
-			
-			series.mapOntoSample(s);
-		}
-		else if(rootName.equals("object")) {
-			// urgh, load an entire tree
-		}
-		else {
-			throw new IOException("Unknown tridas data format (not summary OR comprehensive)");
-		}
+		return sampleArray;
+	}
+
+	@Deprecated
+	public void loadBasicSeriesaaaa(BaseSample s, Element root) throws IOException {
 		/*
 		String tmpId = root.getAttributeValue("id");
 		String tmpName = root.getName() + ((tmpId != null) ? ("." + tmpId) : "");
@@ -176,7 +244,7 @@ public class Tridas implements Filetype {
 	}
 	
 	public void loadSeries(Sample s, Element root) throws IOException {
-		loadBasicSeries(s, root);
+		
 	}
 
 	public Sample load(BufferedReader r) throws IOException,

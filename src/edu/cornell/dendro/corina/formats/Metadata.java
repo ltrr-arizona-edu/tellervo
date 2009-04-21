@@ -34,6 +34,13 @@ public class Metadata {
 	/** A LabCode object */
 	public final static String LABCODE = "::labcode";
 	
+	/** The associated other object types */
+	public final static String OBJECT_ARRAY = "::objectArray";
+	public final static String OBJECT = "::object";
+	public final static String ELEMENT = "::element";
+	public final static String SAMPLE = "::sample";
+	public final static String RADIUS = "::radius";
+	
 	/**
 	 * Get the class type of the corresponding metadata
 	 * Defaults to String.class!
