@@ -66,7 +66,11 @@ public class XMLDebugView extends JDialog {
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		
 		// initialize java syntax editor
-		DefaultSyntaxKit.initKit();
+		try {
+			DefaultSyntaxKit.initKit();
+		} catch (Exception e) {
+			System.out.println("Couldn't initialize xml debug viewer. No sweat, ugly XML for you!");
+		}
 
 		sourceView = new JEditorPane();		
 		sourceView.setEditable(false);
