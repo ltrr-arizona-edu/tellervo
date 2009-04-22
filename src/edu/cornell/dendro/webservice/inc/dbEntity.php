@@ -1471,7 +1471,7 @@ class elementEntity extends dbEntity
 
     function hasGeometry()
     {
-        return $this->location!=NULL;
+        return $this->location->getGeometry()!=null;
     }
 }
 

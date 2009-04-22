@@ -1121,7 +1121,7 @@ class measurement extends measurementEntity implements IDBAccessor
            }
            
            // Add count if appropriate
-           if($value['count']!=NULL)
+           if(($value['count']!=NULL) && ($wj===FALSE))
            {
            		$xml.= "count=\"".$value['count']."\"";
            }
