@@ -68,7 +68,7 @@ public class XMLDebugView extends JDialog {
 		// initialize java syntax editor
 		try {
 			DefaultSyntaxKit.initKit();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			System.out.println("Couldn't initialize xml debug viewer. That sucks, ugly XML for you! (" + e.getClass().getName() + ")");
 		}
 
