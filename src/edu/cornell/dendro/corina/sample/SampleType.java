@@ -37,7 +37,7 @@ public enum SampleType {
 		try {
 			return valueOf(name.toUpperCase());
 		} catch (IllegalArgumentException ie) {
-			return null;
+			return UNKNOWN;
 		}
 	}
 }

@@ -4,12 +4,15 @@
 package edu.cornell.dendro.corina.tridas;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.jdom.Element;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.formats.InvalidDataException;
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -21,12 +24,31 @@ import edu.cornell.dendro.corina.webdbi.CorinaXML;
  *
  */
 public class TridasSeries extends TridasEntityBase {
+	private final static String RING_WIDTH_DATA = "tridas/Ring width";
+	private final static String WEISERJAHRE_DATA = "Corina/weiserjahre";
+	
+	// wj constants
+	private final static String WJINC = "inc";
+	private final static String WJDEC = "dec";
+	
+	// ring width constants
+	private final static String WIDTHS = "ringWidth";
+	private final static String COUNTS = "count";
+	
+	// everything else
+	private final static String RAW = "RAW";
+	
+	/**
+	 * A list of values associated with this series
+	 */
+	private List<TridasValues> values = new ArrayList<TridasValues>(2);
+	
 	/**
 	 * @param identifier
 	 * @param title
 	 */
 	public TridasSeries(TridasIdentifier identifier, String title) {
-		super(identifier, title);
+		super(identifier, title);		
 	}
 
 	/**
@@ -41,7 +63,7 @@ public class TridasSeries extends TridasEntityBase {
 	/**
 	 * @param rootElement
 	 */
-	public TridasSeries(Element rootElement) {
+	public TridasSeries(Element rootElement) throws InvalidDataException {
 		super(rootElement);
 		
 		loadValues(rootElement);
@@ -49,11 +71,11 @@ public class TridasSeries extends TridasEntityBase {
 	
 	/**
 	 * Are there any associated measurements with this sample?
-	 * 
+	 * (really, just checks if we have RING_WIDTH_DATA)
 	 * @return
 	 */
 	public boolean hasMeasurements() {
-		return false;
+		return findTridasValuesByName(RING_WIDTH_DATA) != null;
 	}
 
 	/**
@@ -61,8 +83,28 @@ public class TridasSeries extends TridasEntityBase {
 	 * 
 	 * @param s
 	 */
+	@SuppressWarnings("unchecked")
 	public void copyMeasurementsOntoSample(Sample s) {
+		TridasValues v;
 		
+		// copy ring width data
+		v = findTridasValuesByName(RING_WIDTH_DATA);
+		for(TridasValuesList vlist : v.valuesList) {
+			if(vlist.name.equals(WIDTHS))
+				s.setData(vlist.values);
+			else if(vlist.name.equals(COUNTS))
+				s.setCount((List<Integer>) (List) vlist.values);  // thanks, java generics! :P (type erasure!)
+		}
+		
+		// copy wj data
+		if((v = findTridasValuesByName(WEISERJAHRE_DATA)) != null) {
+			for(TridasValuesList vlist : v.valuesList) {
+				if(vlist.name.equals(WJINC))
+					s.setWJIncr((List<Integer>)(List) vlist.values);
+				if(vlist.name.equals(WJDEC))
+					s.setWJDecr((List<Integer>)(List) vlist.values);
+			}
+		}
 	}
 	
 	/**
@@ -77,6 +119,8 @@ public class TridasSeries extends TridasEntityBase {
 		
 		if(getTridasEntityName().equals("measurementSeries"))
 			s.setSampleType(SampleType.DIRECT);
+		else
+			s.setSampleType(SampleType.fromString(getMetadataString("series.type")));
 		
 		/**
 		 * Try labcode from "summary" data first
@@ -147,30 +191,93 @@ public class TridasSeries extends TridasEntityBase {
 		 */
 		
 		s.setMeta("title", LabCodeFormatter.getDefaultFormatter().format(labCode));
-
-		
-		if(s instanceof Sample) {
-			// copy over readings!
-		}
 	}
 
-	private class TridasValues {
+	/**
+	 * Internal class for representing the list of lists of values
+	 * @author lucasm
+	 *
+	 */
+	private static class TridasValues {
 		private String name;
 		private TridasUnits units;
-		private List<Object> values;
+		private List<TridasValuesList> valuesList;
 	}
 
-	private void loadUnitlessList(List<Element> valuesIn, List<Object> valuesOut) {
+	/**
+	 * Internal class for representing a list of values
+	 * @author lucasm
+	 *
+	 */
+	private static class TridasValuesList {
+		private String name;
+		private List<Object> values;
 		
-	}
-	
-	private void loadUnitList(List<Element> valuesIn, TridasValues tvalues) {
-		for(Element v : valuesIn) {
-			String txtVal = 
+		public TridasValuesList(String name, int sz) {
+			this.name = name;
+			this.values = new ArrayList<Object>(sz);
 		}
 	}
 	
-	private void loadValues(Element root) {
+	private void loadValues(List<Element> valuesIn, TridasValues tvalues) throws InvalidDataException {
+		if(tvalues.name.equalsIgnoreCase(RING_WIDTH_DATA)) {
+			TridasValuesList ringValuesList = new TridasValuesList(WIDTHS, valuesIn.size());
+			TridasValuesList countList = new TridasValuesList(COUNTS, valuesIn.size());
+			
+			// make these a list:
+			tvalues.valuesList = Arrays.asList(new TridasValuesList[] { ringValuesList, countList });
+			
+			for(Element v : valuesIn) {
+				String strValue = v.getAttributeValue("value");
+				String strCount = v.getAttributeValue("count");	
+				
+				try {
+					Integer value = Integer.valueOf(strValue);			
+					Integer count = (strCount != null) ? Integer.valueOf(strCount) : 1;
+					
+					ringValuesList.values.add(value);
+					countList.values.add(count);
+				} catch (NumberFormatException e) {
+					throw new InvalidDataException("Bad ring width: " + v, e);
+				}
+				
+			}
+		}
+		else if(tvalues.name.equalsIgnoreCase(WEISERJAHRE_DATA)) {
+			TridasValuesList incList = new TridasValuesList(WJINC, valuesIn.size());
+			TridasValuesList decList = new TridasValuesList(WJDEC, valuesIn.size());
+			
+			tvalues.valuesList = Arrays.asList(new TridasValuesList[] { incList, decList });
+			
+			for(Element v : valuesIn) {
+				try {
+					String strValue = v.getAttributeValue("value");
+					int slashPos;
+					
+					if(strValue == null || (slashPos = strValue.indexOf('/')) < 1)
+						throw new InvalidDataException("Invalid Weiserjahre Data Format!");
+					
+					Integer inc = Integer.valueOf(strValue.substring(0, slashPos));
+					Integer dec = Integer.valueOf(strValue.substring(slashPos + 1));
+					
+					incList.values.add(inc);
+					decList.values.add(dec);
+				} catch (NumberFormatException nfe) {
+					throw new InvalidDataException("Invalid weiserjahre data (not integers!)");
+				} 
+			}
+			
+		}
+		else {
+			TridasValuesList unknown = new TridasValuesList(RAW, valuesIn.size());
+			tvalues.valuesList = Collections.singletonList(unknown);
+			
+			for(Element v : valuesIn) 
+				unknown.values.add(v.getAttributeValue("value"));
+		}
+	}
+	
+	private void loadValues(Element root) throws InvalidDataException {
 		List<Element> valuesElements = (List<Element>) root.getChildren("values", CorinaXML.TRIDAS_NS);
 		
 		for(Element valuesElement : valuesElements) {
@@ -186,23 +293,46 @@ public class TridasSeries extends TridasEntityBase {
 			
 			// set name
 			if(variable != null && (strval = variable.getAttributeValue("normalTridas")) != null) {
-				v.name = "tridas." + strval;
+				// this is a tridas standard
+				v.name = "tridas/" + strval;
+			}
+			else if(variable != null && (strval = variable.getAttributeValue("normalStd")) != null) {
+				// this is some other kind of standard
+				v.name = strval + "/";
+				
+				// be safe
+				if((strval = variable.getAttributeValue("standard")) == null)
+					continue;
+				
+				v.name += strval;
 			}
 			else {
-				// ignore this type?
+				// shouldn't happen, so ignore this type?
 				continue;
 			}
 
-			// create the storage...
-			v.values = new ArrayList<Object>(values.size());
-
-			if(units != null) {
+			if(units != null)
 				v.units = TridasUnits.getUnitsForOfficialRepresentation(units.getAttributeValue("normalTridas"));
-				loadUnitList(values, v);
-			}
-			else
-				loadUnitlessList(values, v.values);
+			
+			loadValues(values, v);
+			
+			// add it to our list of values
+			this.values.add(v);
 		}
+	}
+	
+	/**
+	 * Search this List for a values structure
+	 * 
+	 * @param name
+	 * @return
+	 */
+	private TridasValues findTridasValuesByName(String name) {
+		for(TridasValues v : this.values)
+			if(v.name.equalsIgnoreCase(name))
+				return v;
+		
+		return null;
 	}
 	
 	/* (non-Javadoc)

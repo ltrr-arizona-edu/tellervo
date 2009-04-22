@@ -15,6 +15,7 @@ import java.util.Vector;
 import org.jdom.Attribute;
 import org.jdom.Element;
 
+import edu.cornell.dendro.corina.formats.InvalidDataException;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
@@ -124,7 +125,7 @@ public abstract class TridasEntityBase implements Comparable<Object> {
 	 * Map this entity onto this sample (set metadata, etc)
 	 * @param s
 	 */
-	public void mapOntoSample(BaseSample s) {
+	public void mapOntoSample(BaseSample s) throws InvalidDataException {
 		// by default, do nothing
 	}
 	

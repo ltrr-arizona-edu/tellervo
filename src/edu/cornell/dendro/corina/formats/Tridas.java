@@ -81,7 +81,7 @@ public class Tridas implements Filetype {
 	 * @param samples
 	 * @param objects
 	 */
-	private void loadFromElementTree(Element root, List<BaseSample> corinaSamples, TridasObject[] objects) {
+	private void loadFromElementTree(Element root, List<BaseSample> corinaSamples, TridasObject[] objects) throws InvalidDataException {
 		TridasElement thisElement = new TridasElement(root);
 		
 		List<Element> tridasSamples = (List<Element>) root.getChildren("sample", CorinaXML.TRIDAS_NS);
@@ -132,7 +132,7 @@ public class Tridas implements Filetype {
 	 * @param samples
 	 * @param objects
 	 */
-	private void loadFromObjectTree(Element root, List<BaseSample> samples, List<TridasObject> objects) {
+	private void loadFromObjectTree(Element root, List<BaseSample> samples, List<TridasObject> objects) throws InvalidDataException {
 		List<Element> elements = (List<Element>) root.getChildren("element", CorinaXML.TRIDAS_NS);
 		List<Element> deeperObjects = (List<Element>) root.getChildren("object", CorinaXML.TRIDAS_NS);
 		TridasIdentifier identifier = new TridasIdentifier(root.getChild("identifier", CorinaXML.TRIDAS_NS), "object");

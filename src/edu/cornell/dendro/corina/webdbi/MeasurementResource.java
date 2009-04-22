@@ -10,6 +10,7 @@ import java.io.IOException;
 import edu.cornell.dendro.corina.formats.CorinaXML;
 import edu.cornell.dendro.corina.formats.Tridas;
 import edu.cornell.dendro.corina.index.Index;
+import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
@@ -304,10 +305,7 @@ public class MeasurementResource extends ResourceObject<Sample> {
 	private boolean loadSample(Document doc) throws ResourceException {
 		// Extract root and specimen elements from returned XML file
 		Element root = doc.getRootElement();
-		
-		// Create new sample to hold data
-		Sample s = new Sample();
-		
+			
 		Element content = root.getChild("content", edu.cornell.dendro.corina.webdbi.CorinaXML.CORINA_NS);
 		if(content == null)
 			throw new MalformedDocumentException(doc, "No content element in measurement");
@@ -345,15 +343,19 @@ public class MeasurementResource extends ResourceObject<Sample> {
 		*/
 		
 		Tridas loader = new Tridas();
+		BaseSample[] loadedSamples;
 		
 		try {
-			loader.loadSeries(s, content);
+			loadedSamples = loader.loadFromTree(content);
 		} catch (IOException ioe) {
 			throw new MalformedDocumentException(doc, "Poorly formed measurement: " + ioe);
 		}
 		
+		if(loadedSamples.length == 0 || !(loadedSamples[loadedSamples.length - 1] instanceof Sample))
+				throw new MalformedDocumentException(doc, "No samples loaded in document");
+		
 		// Synchronise object
-		setObject(s);
+		setObject((Sample) loadedSamples[loadedSamples.length - 1]);
 		return true;
 	}
 
