@@ -19,11 +19,13 @@ public class InvalidDataException extends IOException {
 		super(s);
 	}
 
-	public InvalidDataException(Throwable arg0) {
-		super(arg0);
+	public InvalidDataException(Throwable cause) {
+		super();
+		initCause(cause);
 	}
 
-	public InvalidDataException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
+	public InvalidDataException(String s, Throwable cause) {
+		super(s);
+		initCause(cause);
 	}
 }
