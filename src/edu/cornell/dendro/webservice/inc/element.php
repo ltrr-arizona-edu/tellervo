@@ -429,8 +429,7 @@ class element extends elementEntity implements IDBAccessor
                 $xml = "<tridas:element>";
                 $xml.= $this->getIdentifierXML();   
                 $xml.="<tridas:type>".$this->getType()."</tridas:type>\n";
-
-                
+                if($this->getDescription()!=NULL) $xml.="<tridas:description>".$this->getDescription()."</tridas:description>\n";
                 if($format!="minimal")
                 {
                 	
@@ -452,7 +451,6 @@ class element extends elementEntity implements IDBAccessor
                     {
                         $xml.=$this->location->asXML();
                     }                 
-                    if($this->getDescription()!=NULL) $xml.="<tridas:description>".$this->getDescription()."</tridas:description>\n";
                     
                     if($this->getProcessing()!=NULL) $xml.="<tridas:processing>".$this->getProcessing()."</tridas:processing>\n";
                     if($this->getMarks()!=NULL) $xml.="<tridas:marks>".$this->getMarks()."</tridas:marks>\n";
