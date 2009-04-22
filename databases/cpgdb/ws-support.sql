@@ -7,6 +7,7 @@ CREATE VIEW vwDerivedCount AS
 
 CREATE VIEW vwDerivedTitles AS
     SELECT dc.vmeasurementid, dc.count as derivedCount, dc.firstMeasurementID,
+    (CASE WHEN dc.count = 1 THEN o.objectID ELSE NULL END) as objectID,
     (CASE WHEN dc.count = 1 THEN o.title ELSE NULL END) as objectTitle,
     (CASE WHEN dc.count = 1 THEN o.code ELSE NULL END) as objectCode,
     (CASE WHEN dc.count = 1 THEN e.code ELSE NULL END) as elementCode,
@@ -29,7 +30,7 @@ CREATE VIEW vwComprehensiveVM AS
 	su.username, op.name as opname, dt.datingtype, 
 	mc.vmextent AS extentgeometry,
 	cd.crossdateid, cd.mastervmeasurementid, cd.startyear AS newstartyear, cd.justification, cd.confidence,
-        der.objectTitle, der.objectCode, der.elementCode, der.sampleCode, der.radiusCode
+        der.objectID, der.objectTitle, der.objectCode, der.elementCode, der.sampleCode, der.radiusCode
     FROM tblvmeasurement vm
 	INNER JOIN tlkpvmeasurementop op ON vm.vmeasurementopid=op.vmeasurementopid
 	LEFT JOIN vwDerivedTitles der ON vm.vmeasurementid=der.vmeasurementid
@@ -39,3 +40,4 @@ CREATE VIEW vwComprehensiveVM AS
 	LEFT JOIN tblsecurityuser su ON vm.owneruserid=su.securityuserid
 	LEFT JOIN tblcrossdate cd ON vm.vmeasurementid = cd.vmeasurementid;
 
+GRANT SELECT on vwcomprehensivevm to "webuser";
