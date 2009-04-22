@@ -101,7 +101,7 @@ public class TridasSeries extends TridasEntityBase {
 			for(TridasValuesList vlist : v.valuesList) {
 				if(vlist.name.equals(WJINC))
 					s.setWJIncr((List<Integer>)(List) vlist.values);
-				if(vlist.name.equals(WJDEC))
+				else if(vlist.name.equals(WJDEC))
 					s.setWJDecr((List<Integer>)(List) vlist.values);
 			}
 		}
@@ -173,11 +173,12 @@ public class TridasSeries extends TridasEntityBase {
 		/**
 		 * Handle range
 		 */
-		
-		if(false) {
-			// handle readings-derived stuff here
-			Integer count = 0; // FIXME: Count number of ring-stuffs!
-			
+
+		TridasValues ringWidthData = findTridasValuesByName(RING_WIDTH_DATA);
+		if(ringWidthData != null) {
+			// anything in ring width data should suffice for a count
+			Integer count = ringWidthData.valuesList.get(0).values.size();
+
 			s.setRange(new Range(new Year(startYear), count));
 		}
 		else {
@@ -301,7 +302,7 @@ public class TridasSeries extends TridasEntityBase {
 				v.name = strval + "/";
 				
 				// be safe
-				if((strval = variable.getAttributeValue("standard")) == null)
+				if((strval = variable.getAttributeValue("normal")) == null)
 					continue;
 				
 				v.name += strval;
