@@ -27,5 +27,6 @@
 	<classpathentry kind="lib" path="Libraries/httpcore-4.0-beta3.jar"/>
 	<classpathentry kind="lib" path="Libraries/httpmime-4.0-beta2.jar"/>
 	<classpathentry kind="lib" path="Libraries/jh.jar"/>
+	<classpathentry kind="lib" path="Libraries/jsyntaxpane-0.9.5-b17.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
