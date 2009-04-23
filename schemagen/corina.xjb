@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0">
+
+	<!-- Make underscores significant; this fixes *most* of the ObjectFactory name collision errors -->
+	<jaxb:bindings>
+		<jaxb:globalBindings underscoreBinding="asCharInWord" generateIsSetMethod="true"/>
+	</jaxb:bindings> 
+
+	<!-- Tridas schema. Prefix with 'Tridas'! -->
+	<jaxb:bindings schemaLocation="../src/edu/cornell/dendro/webservice/schemas/tridas.xsd" node="/xs:schema">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.tridas.schema"/>
+			<jaxb:nameXmlTransform>
+				<jaxb:elementName prefix="Tridas" />
+			</jaxb:nameXmlTransform>
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+	<!-- Corina -->
+	<jaxb:bindings schemaLocation="../src/edu/cornell/dendro/webservice/schemas/corina.xsd" node="/xs:schema">
+		<jaxb:schemaBindings>
+			<jaxb:package name="edu.cornell.dendro.corina.schema"/>
+			<jaxb:nameXmlTransform>
+				<jaxb:elementName prefix="CorinaSvc" />
+			</jaxb:nameXmlTransform>
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+	<!-- GML -->
+	<jaxb:bindings schemaLocation="../src/edu/cornell/dendro/webservice/schemas/gmlsf.xsd" node="/xs:schema">
+		<jaxb:schemaBindings>
+			<jaxb:package name="net.opengis.gml.schema"/>
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+	
+</jaxb:bindings> 

@@ -58,12 +58,14 @@
                        Defaults to "dist".
 -->
 
+<!-- I'm not sure what good this is
   <exec executable="svn" output="svninfo.xml">
-    <arg line="info --xml"/>
+    <arg line="info - -xml"/>
   </exec>
   <xmlproperty file="svninfo.xml" collapseattributes="true"/>
 
   <property name="svn.revision"  value="${info.entry.revision}"/>
+-->
   <property name="app.name"      value="corina"/>
   <property name="app.version"   value="bleedingedge"/>
   <property name="app.keystore"  value="corina.keystore.set.in.build.properties"/>
@@ -184,6 +186,14 @@
     <pathelement location="${new-jfontchooser.jar}"/> 
   </path>
 
+  <path id="xjc.classpath">
+  	<pathelement location="Libraries/jaxb-xjc.jar"/>
+  </path>
+	
+  <!-- XJC JAXB schema compiler -->
+  <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+	<classpath refid="xjc.classpath" />
+  </taskdef>
 <!-- ==================== All Target ====================================== -->
 
 <!--
@@ -387,5 +397,50 @@
          basedir="${build.home}" index="true" compress="true" includes="edu/cornell/dendro/corina_indexing/**">
     </jar>
   </target>
+	
+<!--
+   Creates .jar file for corina, tridas, gml schema
+-->
+	<target name="buildschema" description="Rebuild a .jar file based on webservice schemas">
+		<!-- Compile the schema into java code -->
+		<mkdir dir="schemagen/src" />
+		<xjc binding="schemagen/corina.xjb" destdir="schemagen/src">
+			<schema dir="src/edu/cornell/dendro/webservice/schemas">
+				<include name="corina.xsd" />
+				<include name="tridas.xsd" />
+				<include name="gmlsf.xsd" />
+			</schema>
+			<produces dir="schemagen/src" includes="schemagen/src/**/*.java" />
+		</xjc>
 
+		<!-- Compile the java code -->
+		<mkdir dir="schemagen/build" />
+		<javac srcdir="schemagen/src" destdir="schemagen/build" />
+		
+		<!-- Jar up the java code -->
+		<jar jarfile="Libraries/corina-schema.jar" basedir="schemagen/build" index="true" compress="true" />
+
+		<!-- Make a javadoc for the java code -->
+		<mkdir dir="schemagen/doc" />
+	    <javadoc sourcepath="schemagen/src"
+	           classpathref="compile.classpath"
+	                destdir="schemagen/doc"
+	                 access="protected"
+	                 author="true"
+	                version="true"
+	                    use="true"
+	          breakiterator="true"
+	            windowtitle="${app.name} ${app.version} API Documentation">
+	      <doctitle><![CDATA[${app.name} ${app.version}<br/>API Documentation]]></doctitle>
+	      <header><![CDATA[${app.name} ${app.version}<br/>API Documentation]]></header>
+	    </javadoc>
+		
+		<!-- Compress the javadoc -->
+		<zip destfile="Libraries/corina-schema-doc.zip" basedir="schemagen/doc" />
+		
+		<!-- Clean up -->
+		<delete dir="schemagen/doc" />
+		<delete dir="schemagen/build" />
+		<delete dir="schemagen/src" />
+	</target>
 </project>
