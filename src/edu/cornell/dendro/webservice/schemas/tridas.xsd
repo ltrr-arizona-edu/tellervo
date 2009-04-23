@@ -597,7 +597,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 %%%%%%%%%%%%%%-->
 	<xs:element name="measurementSeries">
 		<xs:complexType>
-			<xs:sequence maxOccurs="unbounded">
+			<xs:sequence>
 				<xs:element ref="title"/>
 				<xs:element ref="identifier" minOccurs="0"/>
 				<xs:element ref="createdTimestamp" minOccurs="0"/>
