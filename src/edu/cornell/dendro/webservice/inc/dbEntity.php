@@ -3323,6 +3323,9 @@ class measurementEntity extends dbEntity
 
     function unitsHandler($value, $inputUnits, $outputUnits)
     {   
+    	global $dbDefaultUnits;
+    	global $wsDefaultUnits;
+    	
         // This is a helper function to deal with the units of readings 
         // Internally Corina uses microns as this is (hopefully) the smallest 
         // unit required in dendro
@@ -3330,10 +3333,10 @@ class measurementEntity extends dbEntity
         // To use default units set $inputUnits or $outputUnits to "default"
 
         // Set units to default (microns) if requested
-        if($inputUnits == 'db-default') $inputUnits = -6;
-        if($outputUnits == 'db-default') $outputUnits = -6;
-        if($inputUnits == 'ws-default') $inputUnits = -5;
-        if($outputUnits == 'ws-default') $outputUnits = -5;
+        if($inputUnits == 'db-default') $inputUnits = unit::getPowerFromUnitName($dbDefaultUnits);
+        if($outputUnits == 'db-default') $outputUnits = unit::getPowerFromUnitName($dbDefaultUnits);
+        if($inputUnits == 'ws-default') $inputUnits = unit::getPowerFromUnitName($wsDefaultUnits);
+        if($outputUnits == 'ws-default') $outputUnits = unit::getPowerFromUnitName($wsDefaultUnits);
 
         // Calculate difference between input and output units
         $convFactor = $inputUnits - $outputUnits;

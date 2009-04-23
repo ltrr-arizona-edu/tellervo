@@ -208,6 +208,25 @@ class unit extends lookupEntity
 	{
 		$this->setLookupEntity($id, $value);
 	}
+	
+	function getPower()
+	{
+		return $this->getPowerFromUnitName($this->getValue());
+	}
+	
+	static public function getPowerFromUnitName($name)
+	{
+		switch($name)
+		{
+			case "metres"				: return 0;
+			case "centimetres"			: return -2;			
+			case "millimetres"			: return -3;
+			case "1/10th millimetres"	: return -4;
+			case "1/100th millimetres"	: return -5;
+			case "micrometres"			: return -6;
+			default 					: return NULL;
+		}
+	}
 }
 
 class vmeasurementOp extends lookupEntity

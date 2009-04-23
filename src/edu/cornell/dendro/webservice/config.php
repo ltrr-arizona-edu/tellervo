@@ -25,7 +25,7 @@ $dbName = corina_dev;
 $domain = "dendro.cornell.edu/dev/";
 
 // Whether to display debug messages
-$debugFlag = FALSE; 
+$debugFlag = TRUE; 
 
 // Version number to be displayed in output headers
 $wsversion = "0.2.".exec(svnversion); 
@@ -83,6 +83,11 @@ $corinaClientIdentifiers = array(
 // Only accept known clients								
 $onlyAllowKnownClients = TRUE;
 
+// Default Units for the database (needs to be valid TRiDaS standard units) 
+$dbDefaultUnits = "micrometres";
+
+// Default Units for the webservice to output (needs to be valid TRiDaS standard units)
+$wsDefaultUnits = "1/100th millimetres";
 
 //************************
 

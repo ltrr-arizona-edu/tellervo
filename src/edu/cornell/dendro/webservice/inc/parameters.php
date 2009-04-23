@@ -782,8 +782,8 @@ class measurementParameters extends measurementEntity implements IParams
 		   	case "usageComments":		$this->setUsageComments($child->nodeValue); break;
 		   	case "type":				$this->setVMeasurementOp(null, $child->nodeValue); break;			
    			case "standardizingMethod":	$this->setStandardizingMethod(null, $child->nodeValue); break;
-   			case "createdTimeStamp": 		break;
-   			case "lastModifiedTimeStamp": 	break;		
+   			case "createdTimestamp": 		break;
+   			case "lastModifiedTimestamp": 	break;	
    			   	
    			case "linkSeries":
    				$seriesTags = $child->childNodes;
@@ -797,7 +797,7 @@ class measurementParameters extends measurementEntity implements IParams
    				}
    				break;	
    		
-		   	case "units":
+		   	/*case "unit":
 		   		$unitsName = $child->getAttribute("name");
 		   		$unitsDescription = $child->getAttribute("description");
 		   		$unitsFactor = $child->getAttribute("factor");
@@ -816,7 +816,7 @@ class measurementParameters extends measurementEntity implements IParams
 
 		   		$this->setUnits(NULL, $unitsName);
 		   		$this->units->setPower($unitPower);
-				break;		   		
+				break;*/		   		
 			
 		   	case "interpretation":
 		   		$interpTags = $child->childNodes;
@@ -857,9 +857,6 @@ class measurementParameters extends measurementEntity implements IParams
 		   			case "corina.authorID":
 		   				$this->setAuthor($value);
 		   				break;
-
-		   			case "corina.isPublished":
-		   				break;
 		   				
 		   			case "corina.crossdateJustification":
 		   				$this->setJustification($value);
@@ -869,6 +866,8 @@ class measurementParameters extends measurementEntity implements IParams
 		   				$this->setConfidenceLevel($value);
 		   				break;
 
+		   			case "corina.isPublished":			break;
+		   			case "corina.readingCount":			break;		   			
 		   			
 		   			default:
 		   				trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; with name attribute '".$name."' in the series entity of the XML request. Tag is being ignored", E_USER_NOTICE);
@@ -878,7 +877,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   			   		
 		   	case "values":
 		   		
-		   		$this->setVariable(NULL, $child->getAttribute("type"));
+		   		
 		   		$valuetags = $child->childNodes;
 		   		$i = 0;
 		   		
@@ -913,6 +912,28 @@ class measurementParameters extends measurementEntity implements IParams
 	                                                     'wjdec' => NULL, 
 	                                                     'count' => NULL,
 	                                                     'notesArray' => $myNotesArray);
+		   			}
+		   			else if($tag->tagName=='variable')
+		   			{		   				
+		   				if($tag->getAttribute("normalTridas")!=NULL)
+		   				{
+		   					$this->setVariable(NULL, $tag->getAttribute("normalTridas"));
+		   				}
+		   				else
+		   				{
+		   					trigger_error("104"."Only TRiDaS normalised variables are supported by this webservice", E_USER_ERROR);
+		   				}
+		   			}
+		   			else if($tag->tagName=='unit')
+		   			{
+		   				if($tag->getAttribute("normalTridas")!=NULL)
+		   				{
+		   					$this->setUnits(NULL, $tag->getAttribute("normalTridas"));
+		   				}
+		   				else
+		   				{
+		   					trigger_error("104"."Only TRiDaS normalised units are supported by this webservice", E_USER_ERROR);
+		   				}		   				
 		   			}
 		   			else
 		   			{
