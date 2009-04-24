@@ -32,10 +32,6 @@
 	<classpathentry kind="lib" path="Libraries/jaxb-api.jar"/>
 	<classpathentry kind="lib" path="Libraries/jaxb-impl.jar"/>
 	<classpathentry kind="lib" path="Libraries/jsr173_1.0_api.jar"/>
-	<classpathentry kind="lib" path="Libraries/corina-schema.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/Corina-dev/Libraries/corina-schema-doc.zip!/"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="Libraries/corina-schema.jar" sourcepath="Libraries/corina-schema-src.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

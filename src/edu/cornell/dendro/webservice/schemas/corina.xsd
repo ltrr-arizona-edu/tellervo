@@ -28,51 +28,114 @@
 	</xs:element>
 	<!--
 %%%%%%%%%%%%%%
+%		SEARCH PARAMS
+%%%%%%%%%%%%%% -->
+	<xs:element name="searchParams">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice>
+					<xs:element ref="param" maxOccurs="unbounded" />
+					<xs:element name="all" />
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="returnObject">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="sample" />
+						<xs:enumeration value="object" />
+						<xs:enumeration value="element" />
+						<xs:enumeration value="radius" />
+						<xs:enumeration value="taxon" />
+						<xs:enumeration value="measurementSeries" />
+						<xs:enumeration value="derivedSeries" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="limit" type="xs:positiveInteger" />
+			<xs:attribute name="skip" type="xs:positiveInteger" />
+			<xs:attribute name="includeChildren" type="xs:boolean" />
+		</xs:complexType>
+	</xs:element>
+	<!--
+%%%%%%%%%%%%%%
+%		AUTHENTICATE
+%%%%%%%%%%%%%% -->
+	<xs:element name="authenticate">
+		<xs:complexType>
+			<xs:attribute name="username" type="xs:string" />
+			<xs:attribute name="password" type="xs:string" />
+			<xs:attribute name="cnonce" type="xs:string" />
+			<xs:attribute name="snonce" type="xs:string" />
+			<xs:attribute name="hash" type="xs:string" />
+			<xs:attribute name="seq" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<!--
+%%%%%%%%%%%%%%
+%		ENTITY
+%%%%%%%%%%%%%% -->
+	<xs:element name="entity">
+		<xs:complexType>
+			<xs:attribute name="type">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="project" />
+						<xs:enumeration value="object"></xs:enumeration>
+						<xs:enumeration value="element"></xs:enumeration>
+						<xs:enumeration value="sample"></xs:enumeration>
+						<xs:enumeration value="radius"></xs:enumeration>
+						<xs:enumeration value="measurementSeries"></xs:enumeration>
+						<xs:enumeration value="derivedSeries"></xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="id" type="xs:positiveInteger" />
+		</xs:complexType>
+	</xs:element>
+	<!--
+%%%%%%%%%%%%%%
+%		PARENT ENTITY
+%%%%%%%%%%%%%% -->
+	<xs:element name="parentEntity">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tridas:project" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="tridas:element" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="tridas:radius" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="tridas:measurementSeries" minOccurs="0"
+					maxOccurs="unbounded" />
+				<xs:element ref="tridas:derivedSeries" minOccurs="0"
+					maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="type">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="project" />
+						<xs:enumeration value="object"></xs:enumeration>
+						<xs:enumeration value="element"></xs:enumeration>
+						<xs:enumeration value="sample"></xs:enumeration>
+						<xs:enumeration value="radius"></xs:enumeration>
+						<xs:enumeration value="measurementSeries"></xs:enumeration>
+						<xs:enumeration value="derivedSeries"></xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="id" type="xs:positiveInteger" />
+		</xs:complexType>
+	</xs:element>
+	<!--
+%%%%%%%%%%%%%%
 %		REQUEST
 %%%%%%%%%%%%%% -->
 	<xs:element name="request">
 		<xs:complexType>
 			<xs:choice>
-				<xs:sequence>
-					<xs:element name="searchParams">
-						<xs:complexType>
-							<xs:sequence>
-								<xs:choice>
-									<xs:element ref="param" maxOccurs="unbounded"/>
-									<xs:element name="all" />
-								</xs:choice>
-							</xs:sequence>
-							<xs:attribute name="returnObject">
-								<xs:simpleType>
-									<xs:restriction base="xs:string">
-										<xs:enumeration value="sample"/>
-										<xs:enumeration value="object"/>
-										<xs:enumeration value="element"/>
-										<xs:enumeration value="radius"/>
-										<xs:enumeration value="taxon"/>
-										<xs:enumeration value="measurementSeries"/>
-										<xs:enumeration value="derivedSeries" />
-									</xs:restriction>
-								</xs:simpleType>
-							</xs:attribute>
-							<xs:attribute name="limit" type="xs:positiveInteger"/>
-							<xs:attribute name="skip" type="xs:positiveInteger"/>
-							<xs:attribute name="includeChildren" type="xs:boolean" />
-						</xs:complexType>
-					</xs:element>
-				</xs:sequence>
-				<xs:sequence>
-					<xs:element name="authenticate">
-						<xs:complexType>
-							<xs:attribute name="username" type="xs:string"/>
-							<xs:attribute name="password" type="xs:string"/>						
-							<xs:attribute name="cnonce" type="xs:string"/>
-							<xs:attribute name="snonce" type="xs:string"/>
-							<xs:attribute name="hash" type="xs:string"/>
-							<xs:attribute name="seq" type="xs:string"/>
-						</xs:complexType>
-					</xs:element>
-				</xs:sequence>	
+				<xs:element ref="searchParams" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="authenticate" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="entity" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="parentEntity" minOccurs="0" maxOccurs="1"/>
 				<xs:sequence>
 					<xs:element ref="tridas:project" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
@@ -89,55 +152,6 @@
 				</xs:sequence>
 				<xs:sequence>
 					<xs:element name="dictionaries"></xs:element>
-				</xs:sequence>
-				<xs:sequence>
-					<xs:element name="entity" minOccurs="0" maxOccurs="unbounded">
-						<xs:complexType >
-							<xs:attribute name="type">
-								<xs:simpleType>
-									<xs:restriction base="xs:string">
-										<xs:enumeration value="project"/>
-										<xs:enumeration value="object"></xs:enumeration>
-										<xs:enumeration value="element"></xs:enumeration>
-										<xs:enumeration value="sample"></xs:enumeration>
-										<xs:enumeration value="radius"></xs:enumeration>
-										<xs:enumeration value="measurementSeries"></xs:enumeration>
-										<xs:enumeration value="derivedSeries"></xs:enumeration>
-									</xs:restriction>	
-								</xs:simpleType>
-							</xs:attribute>
-							<xs:attribute name="id" type="xs:positiveInteger"/>
-						</xs:complexType>
-					</xs:element>
-				</xs:sequence>
-				<xs:sequence>
-					<xs:element name="parentEntity">
-						<xs:complexType >
-							<xs:sequence>
-								<xs:element ref="tridas:project" minOccurs="0" maxOccurs="unbounded"/>
-								<xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
-								<xs:element ref="tridas:element" minOccurs="0" maxOccurs="unbounded"/>					
-								<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
-								<xs:element ref="tridas:radius" minOccurs="0" maxOccurs="unbounded"/>			
-								<xs:element ref="tridas:measurementSeries" minOccurs="0" maxOccurs="unbounded"/>
-								<xs:element ref="tridas:derivedSeries" minOccurs="0" maxOccurs="unbounded"/>					
-							</xs:sequence>
-							<xs:attribute name="type">
-								<xs:simpleType>
-									<xs:restriction base="xs:string">
-										<xs:enumeration value="project"/>
-										<xs:enumeration value="object"></xs:enumeration>
-										<xs:enumeration value="element"></xs:enumeration>
-										<xs:enumeration value="sample"></xs:enumeration>
-										<xs:enumeration value="radius"></xs:enumeration>
-										<xs:enumeration value="measurementSeries"></xs:enumeration>
-										<xs:enumeration value="derivedSeries"></xs:enumeration>
-									</xs:restriction>	
-								</xs:simpleType>
-							</xs:attribute>
-							<xs:attribute name="id" type="xs:positiveInteger"/>
-						</xs:complexType>
-					</xs:element>
 				</xs:sequence>
 			</xs:choice>
 			<xs:attribute name="type">

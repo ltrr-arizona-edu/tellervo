@@ -417,8 +417,11 @@
 		<mkdir dir="schemagen/build" />
 		<javac srcdir="schemagen/src" destdir="schemagen/build" />
 		
-		<!-- Jar up the java code -->
+		<!-- Jar up the java classes -->
 		<jar jarfile="Libraries/corina-schema.jar" basedir="schemagen/build" index="true" compress="true" />
+
+		<!-- Jar up the java code -->
+		<jar jarfile="Libraries/corina-schema-src.jar" basedir="schemagen/src" index="true" compress="true" />
 
 		<!-- Make a javadoc for the java code -->
 		<mkdir dir="schemagen/doc" />
