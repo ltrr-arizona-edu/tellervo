@@ -12,14 +12,14 @@ import org.jdom.Document;
  *
  */
 public class ResourceEvent extends EventObject {
-	public static final int RESOURCE_QUERY_COMPLETE = 1; 	// no params
+	public static final int RESOURCE_QUERY_COMPLETE = 1; 	// attached object
 	public static final int RESOURCE_QUERY_FAILED = 2; 		// may have optional attachedException!
-	public static final int RESOURCE_DEBUG_IN = 3;			// attached jdom Document
-	public static final int RESOURCE_DEBUG_OUT = 4;			// attached jdom Document
+	public static final int RESOURCE_DEBUG_IN = 3;			// no params
+	public static final int RESOURCE_DEBUG_OUT = 4;			// no params
 
 	private int eventType;
 	private Exception attachedException = null;
-	private Document attachedDocument = null;
+	private Object attachedObject = null;
 	
 	public int getEventType() {
 		return eventType;
@@ -29,8 +29,8 @@ public class ResourceEvent extends EventObject {
 		return attachedException;
 	}
 
-	public Document getAttachedDocument() {
-		return attachedDocument;
+	public Object getAttachedObject() {
+		return attachedObject;
 	}
 
 	/**
@@ -58,12 +58,12 @@ public class ResourceEvent extends EventObject {
 	/**
 	 * @param source The object that created this event
 	 * @param eventType The type of event as indicated in the ResourceEvent class
-	 * @param doc an attached jdom document
+	 * @param obj an attached object
 	 */
-	public ResourceEvent(Object source, int eventType, Document doc) {
+	public ResourceEvent(Object source, int eventType, Object obj) {
 		super(source);
 		
 		this.eventType = eventType;
-		this.attachedDocument = doc;
+		this.attachedObject = obj;
 	}
 }

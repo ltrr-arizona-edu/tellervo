@@ -49,7 +49,7 @@ public class CorinaWsiAccessor extends WebJaxbAccessor<WSIRootElement, WSIRootEl
 	 * @return
 	 * @throws JAXBException
 	 */
-	private synchronized static JAXBContext getCorinaContext() throws JAXBException {
+	protected synchronized static JAXBContext getCorinaContext() throws JAXBException {
 		if(corinaContext == null)
 			corinaContext = JAXBContext.newInstance(CORINA_CONTEXT_CLASSES);
 
@@ -71,6 +71,7 @@ public class CorinaWsiAccessor extends WebJaxbAccessor<WSIRootElement, WSIRootEl
 	private static final Class<?> CORINA_CONTEXT_CLASSES[] = {
 		net.opengis.gml.schema.ObjectFactory.class,
 		org.tridas.schema.ObjectFactory.class,
-		edu.cornell.dendro.corina.schema.ObjectFactory.class
+		edu.cornell.dendro.corina.schema.ObjectFactory.class,
+		edu.cornell.dendro.corina.tridasv2.TridasObjectEx.class
 	};
 }

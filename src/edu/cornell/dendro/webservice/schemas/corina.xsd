@@ -35,7 +35,10 @@
 			<xs:sequence>
 				<xs:choice>
 					<xs:element ref="param" maxOccurs="unbounded" />
-					<xs:element name="all" />
+					<xs:element name="all">
+						<xs:complexType>
+						</xs:complexType>
+					</xs:element>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="returnObject">
