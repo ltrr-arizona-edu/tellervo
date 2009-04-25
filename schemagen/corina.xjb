@@ -14,6 +14,12 @@
 				<jaxb:elementName prefix="Tridas" />
 			</jaxb:nameXmlTransform>
 		</jaxb:schemaBindings>
+		
+		<!-- Rename object element to custom class -->
+		<jaxb:bindings node="//xs:element[@name='object']">
+			<jaxb:class implClass="edu.cornell.dendro.corina.tridasv2.TridasObjectEx" />
+		</jaxb:bindings>
+		
 	</jaxb:bindings>
 
 	<!-- Corina -->
