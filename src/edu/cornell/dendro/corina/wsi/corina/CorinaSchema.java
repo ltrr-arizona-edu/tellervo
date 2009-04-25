@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.wsi;
+package edu.cornell.dendro.corina.wsi.corina;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -89,15 +89,28 @@ public class CorinaSchema {
     	
     	return ret;
     }
-
+    
     /**
      * A list of schema namespaces and their associated namespace files
      */
     
     private final static String VALIDATE_SCHEMAS[][] = {
     	// Order is important!
-    	{ "http://www.w3.org/1999/xlink", "xlinks.xsd" },
-    	{ "http://www.opengis.net/gml", "gmlsf.xsd" },
-    	{ "http://www.tridas.org/1.1", "tridas.xsd" },
-    	{ "http://dendro.cornell.edu/schema/corina/1.0", "corina.xsd" },
-    };}
+    	// namespace, filename, prefix
+    	{ "http://www.w3.org/1999/xlink", "xlinks.xsd", "xlink" },
+    	{ "http://www.opengis.net/gml", "gmlsf.xsd", "gml" },
+    	{ "http://www.tridas.org/1.1", "tridas.xsd", "tridas" },
+    	{ "http://dendro.cornell.edu/schema/corina/1.0", "corina.xsd", "c"},
+    };
+    
+    /**
+     * Acquires a list of schemas
+     * 0: Schema namespace
+     * 1: Schema filename
+     * 2: Desired schema prefix
+     * @return
+     */
+    public static String[][] getSchemas() {
+    	return VALIDATE_SCHEMAS;
+    }
+}

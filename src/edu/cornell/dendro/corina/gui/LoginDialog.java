@@ -25,11 +25,12 @@ import javax.swing.JTextField;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
-import edu.cornell.dendro.corina.webdbi.Authenticate;
-import edu.cornell.dendro.corina.webdbi.ResourceEvent;
-import edu.cornell.dendro.corina.webdbi.ResourceEventListener;
-import edu.cornell.dendro.corina.webdbi.WebInterfaceException;
-import edu.cornell.dendro.corina.webdbi.WebPermissionsException;
+import edu.cornell.dendro.corina.wsi.corina.resources.AuthenticateResource;
+import edu.cornell.dendro.corina.wsi.ResourceEvent;
+import edu.cornell.dendro.corina.wsi.ResourceEventListener;
+import edu.cornell.dendro.corina.wsi.corina.WebInterfaceCode;
+import edu.cornell.dendro.corina.wsi.corina.WebInterfaceException;
+import edu.cornell.dendro.corina.wsi.corina.WebPermissionsException;
 import edu.cornell.dendro.corina.core.App;
 
 
@@ -354,7 +355,7 @@ public class LoginDialog extends JDialog {
 	 * Do the actual server authentication
 	 * Danger! this runs in the event thread!
 	 */
-	private Authenticate authenticator;
+	private AuthenticateResource authenticator;
 	private SyncTaskDialog authenticationNotifier;
 	private void performAuthentication(final int recursionLevel) {
 		final JDialog glue = this;
@@ -382,7 +383,7 @@ public class LoginDialog extends JDialog {
 		
 		if(serverNonce == null) {
 			// ok, so we're trying to log in pre-emptively. First, we need a nonce from the server.
-			authenticator = new Authenticate();
+			authenticator = new AuthenticateResource();
 			
 			authenticator.addResourceEventListener(new ResourceEventListener() {
 				public void resourceChanged(ResourceEvent re) {
@@ -416,7 +417,7 @@ public class LoginDialog extends JDialog {
 		}
 		else {
 			// ok, so we have a nonce and we're trying to actually log in
-			authenticator = new Authenticate(getUsername(), getPassword(), serverNonce, serverNonceSeq);
+			authenticator = new AuthenticateResource(getUsername(), getPassword(), serverNonce, serverNonceSeq);
 			
 			authenticator.addResourceEventListener(new ResourceEventListener() {
 				public void resourceChanged(ResourceEvent re) {
@@ -436,7 +437,7 @@ public class LoginDialog extends JDialog {
 						// bad server nonce?
 						if(e instanceof WebInterfaceException && 
 								((WebInterfaceException)e).getMessageCode() == 
-									WebInterfaceException.ERROR_BAD_SERVER_NONCE) {
+									WebInterfaceCode.BAD_SERVER_NONCE) {
 							
 							setNonce(null, null);
 							performAuthentication(recursionLevel + 1);

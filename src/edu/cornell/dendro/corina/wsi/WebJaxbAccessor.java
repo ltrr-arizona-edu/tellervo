@@ -25,6 +25,8 @@ import org.jdom.*;
 import org.jdom.input.DOMBuilder;
 import org.jdom.transform.JDOMResult;
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.awt.Frame;
@@ -38,11 +40,14 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.Schema;
 
-/*
+/**
  * This class is for accessing XML documents from the web service.
+ * 
+ * INTYPE: The type we are expecting to receive
+ * OUTTYPE: The type we are sending
  */
 
-public class WebJaxbAccessor<INTYPE, OUTTYPE> {	
+public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OUTTYPE> {	
 	/** The URL we plan to access */ 
 	private URI url;
 	
@@ -50,10 +55,15 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> {
 	private RequestMethod requestMethod;
 	
 	/** The base type we plan to marshall and send to the server */
-	private INTYPE requestObject;
+	private OUTTYPE sendingObject;
 	
+	/** The class of the sendingObject (OUTTYPE.class) */
+	// not necessary!
+	//private Class<OUTTYPE> sendingObjectClass;
+
 	/** The class of the requestObject (INTYPE.class) */
-	private Class<INTYPE> requestObjectClass;
+	private Class<INTYPE> receivingObjectClass;
+
 	
 	/** The noun that we're accessing (measurements, radius, etc). 
 	 * Mostly used for debugging at this point.
@@ -67,12 +77,12 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> {
 	 * a POST request.
 	 * 
 	 * @param noun What we are affecting here. For example, dictionary, sample, etc.
-	 * @param requestObjectClass the class of the object I am operating on
+	 * @param receivingObjectClass the class of the object I am hoping to receive
 	 */
-	public WebJaxbAccessor(String noun, Class<INTYPE> requestObjectClass) {
+	public WebJaxbAccessor(String noun, Class<INTYPE> receivingObjectClass) {
 		requestMethod = RequestMethod.POST;
 		this.noun = noun;
-		this.requestObjectClass = requestObjectClass;
+		this.receivingObjectClass = receivingObjectClass;
 		
 		try {
 			String path = App.prefs.getPref("corina.webservice.url", "invalid-url!");
@@ -126,21 +136,36 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> {
 	protected JAXBContext getJAXBContext() throws JAXBException {
 		return JAXBContext.newInstance();
 	}
+
+	/**
+	 * Get a namespace prefix mapper for this instance
+	 * @return
+	 */
+	protected NamespacePrefixMapper getNamespacePrefixMapper() {
+		return null;
+	}
 	
 	/**
 	 * Marshall this object to a JDOM Document
 	 * 
 	 * @param context
 	 * @param object
+	 * @param prefixMapper an implementation of namespacePrefixMapper
 	 * @return
 	 * @throws JAXBException
 	 */
-	protected static Document marshallToDocument(JAXBContext context, Object object) throws JAXBException {
+	protected static Document marshallToDocument(JAXBContext context,
+			Object object, NamespacePrefixMapper prefixMapper)
+			throws JAXBException {
 		JDOMResult result = new JDOMResult();
 		Marshaller m = context.createMarshaller();
-		
+
+		// set a namespace prefix mapper
+		if (prefixMapper != null)
+			m.setProperty("com.sun.xml.bind.namespacePrefixMapper", prefixMapper);
+
 		m.marshal(object, result);
-		
+
 		return result.getDocument();
 	}
 	
@@ -149,8 +174,8 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> {
 	 * 
 	 * @param reqObj
 	 */
-	public void setRequestObject(INTYPE reqObj) {
-		this.requestObject = reqObj;
+	public void setRequestObject(OUTTYPE reqObj) {
+		this.sendingObject = reqObj;
 	}
 	
 	private INTYPE doRequest() throws IOException {
@@ -166,7 +191,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> {
 				
 		try {
 			if(requestMethod == RequestMethod.POST) {
-				if(this.requestObject == null)
+				if(this.sendingObject == null)
 					throw new NullPointerException("requestDocument is null yet required for this type of query");
 
 				// Create a new POST request
@@ -176,7 +201,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> {
 				req = post;	
 				
 				// create an XML document from the given objects
-				Document outDocument = marshallToDocument(context, requestObject);
+				Document outDocument = marshallToDocument(context, sendingObject, getNamespacePrefixMapper());
 
 				TransactionDebug.sent(outDocument, noun);
 				
@@ -220,8 +245,8 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> {
 			
 			// create a responsehandler
 			JaxbResponseHandler<INTYPE> responseHandler = 
-				new JaxbResponseHandler<INTYPE>(context, requestObjectClass);
-
+				new JaxbResponseHandler<INTYPE>(context, receivingObjectClass);
+			
 			// set the schema we validate against
 			responseHandler.setValidateSchema(getValidationSchema());
 			
@@ -246,7 +271,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> {
 		} catch (HttpResponseException hre) {
 			BugReport bugs = new BugReport(hre);
 			
-			bugs.addDocument("sent.xml", requestObject);
+			bugs.addDocument("sent.xml", sendingObject);
 			
 			new Bug(hre, bugs);
 
@@ -259,7 +284,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> {
 			Document invalidDoc = xmlpe.getNonvalidatingDocument();
 			File invalidFile = xmlpe.getInvalidFile();
 
-			bugs.addDocument("sent.xml", requestObject);
+			bugs.addDocument("sent.xml", sendingObject);
 			if(invalidDoc != null)
 				bugs.addDocument("recv-nonvalid.xml", invalidDoc);
 			if(invalidFile != null)
@@ -280,7 +305,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> {
 		} catch (Exception uhe) {
 			BugReport bugs = new BugReport(uhe);
 			
-			bugs.addDocument("sent.xml", requestObject);
+			bugs.addDocument("sent.xml", sendingObject);
 			
 			/*
 			// MalformedDocs are handled automatically by BugReport class

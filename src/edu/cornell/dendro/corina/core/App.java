@@ -13,6 +13,7 @@ import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.tridas.TridasObjectList;
 import edu.cornell.dendro.corina.webdbi.Authenticate;
+import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 
 /**
@@ -43,7 +44,7 @@ public class App {
     log.debug("initializing App");
     
     if (meter != null) {
-      meter.setMaximum(7);
+      meter.setMaximum(9);
       meter.setProgress(2);
     }
 
@@ -80,8 +81,19 @@ public class App {
     }*/
     
     // set up our proxies before we try to do anything online
+    if (meter != null)
+    	meter.setNote("Setting up proxy configuration...");
     proxies = new ProxyManager();
+    if (meter != null) 
+    	meter.setProgress(4);
     
+    // load our JAXB xml binding context
+    if (meter != null)
+    	meter.setNote("Binding TRiDaS/Corina schemas...");
+    CorinaWsiAccessor.loadCorinaContext();
+    if (meter != null)
+    	meter.setProgress(5);
+        
     boolean isLoggedIn = false;
     
     // only do this if we can log in now...
@@ -104,7 +116,7 @@ public class App {
     	}
 
     	if (meter != null) {
-        	meter.setProgress(4);
+        	meter.setProgress(6);
         }
     }
     
@@ -121,7 +133,7 @@ public class App {
         	dictionary.query();
     }
     if (meter != null) {
-    	meter.setProgress(5);
+    	meter.setProgress(7);
     }
 
     if (meter != null) {
@@ -137,12 +149,12 @@ public class App {
         }
     }
     if (meter != null) {
-    	meter.setProgress(6);
+    	meter.setProgress(8);
     }
 
     // we're done here!
 	if (meter != null)
-		meter.setProgress(7);
+		meter.setProgress(9);
 
     initialized = true;   
   }

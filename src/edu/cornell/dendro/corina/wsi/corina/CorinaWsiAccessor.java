@@ -1,25 +1,27 @@
-package edu.cornell.dendro.corina.wsi;
+package edu.cornell.dendro.corina.wsi.corina;
 
 import java.io.IOException;
-import java.math.BigInteger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.validation.Schema;
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
-import edu.cornell.dendro.corina.schema.CorinaSvcCorina;
-import edu.cornell.dendro.corina.schema.CorinaSvcEntity;
-import edu.cornell.dendro.corina.schema.CorinaSvcRequest;
+import edu.cornell.dendro.corina.schema.WSIRequest;
+import edu.cornell.dendro.corina.schema.WSIRootElement;
+import edu.cornell.dendro.corina.wsi.WebJaxbAccessor;
 
-public class CorinaJaxbAccessor extends WebJaxbAccessor<CorinaSvcCorina, CorinaSvcCorina> {
+public class CorinaWsiAccessor extends WebJaxbAccessor<WSIRootElement, WSIRootElement> {
 	/**
 	 * @param noun
 	 */
-	public CorinaJaxbAccessor(String noun) {
-		super(noun, CorinaSvcCorina.class);	
+	public CorinaWsiAccessor(String noun) {
+		super(noun, WSIRootElement.class);	
 	}
 	
 	/* (non-Javadoc)
@@ -35,9 +37,14 @@ public class CorinaJaxbAccessor extends WebJaxbAccessor<CorinaSvcCorina, CorinaS
 	 */
 	@Override
 	protected JAXBContext getJAXBContext() throws JAXBException {
-		return CorinaJaxbAccessor.getCorinaContext();
-	}
+		return CorinaWsiAccessor.getCorinaContext();
+	}	
 
+	@Override
+	protected NamespacePrefixMapper getNamespacePrefixMapper() {
+		return new CorinaNamespacePrefixMapper();
+	}
+	
 	/**
 	 * @return
 	 * @throws JAXBException
@@ -48,6 +55,17 @@ public class CorinaJaxbAccessor extends WebJaxbAccessor<CorinaSvcCorina, CorinaS
 
 		return corinaContext;
 	}
+	
+	/**
+	 * Load and cache the corina context!
+	 */
+	public static void loadCorinaContext() {
+		try {
+			getCorinaContext();
+		} catch (Exception e) {
+			new Bug(e);
+		}
+	}
 
 	private static JAXBContext corinaContext;
 	private static final Class<?> CORINA_CONTEXT_CLASSES[] = {
@@ -55,27 +73,4 @@ public class CorinaJaxbAccessor extends WebJaxbAccessor<CorinaSvcCorina, CorinaS
 		org.tridas.schema.ObjectFactory.class,
 		edu.cornell.dendro.corina.schema.ObjectFactory.class
 	};
-	
-	public static void main(String args[]) throws IOException {	
-		App.platform = new Platform();
-		App.platform.init();
-		App.prefs = new Prefs();
-		App.prefs.init();
-	
-		CorinaJaxbAccessor c = new CorinaJaxbAccessor("cows");
-		CorinaSvcCorina s = new CorinaSvcCorina();
-		CorinaSvcRequest req = new CorinaSvcRequest();
-		CorinaSvcEntity ent = new CorinaSvcEntity();
-		
-		ent.setType("measurementSeries");
-		ent.setId(BigInteger.valueOf(2258));
-		
-		s.setRequest(req);		
-		req.setType("read");
-		req.getEntity().add(ent);
-		
-		c.setRequestObject(s);
-		
-		c.execute();
-	}
 }

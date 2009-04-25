@@ -140,13 +140,16 @@ public class JaxbResponseHandler<T> implements ResponseHandler<T> {
 			// typesafe way of checking if this is the right type!
 			return returnClass.cast(ret);
 		} catch (UnmarshalException ume) {
+			usefulFile = true;
+			throw new ResponseProcessingException(ume, tempFile);
+
 		} catch (JAXBException jaxbe) {
 			usefulFile = true;
-			throw new UnmarshallingException(jaxbe, tempFile);
+			throw new ResponseProcessingException(jaxbe, tempFile);
 
 		} catch (ClassCastException cce) {
 			usefulFile = true;
-			throw new UnmarshallingException(cce, tempFile);
+			throw new ResponseProcessingException(cce, tempFile);
 
 		} finally {
 			// clean up and delete

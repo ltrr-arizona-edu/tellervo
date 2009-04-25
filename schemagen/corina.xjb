@@ -3,7 +3,7 @@
 
 	<!-- Make underscores significant; this fixes *most* of the ObjectFactory name collision errors -->
 	<jaxb:bindings>
-		<jaxb:globalBindings underscoreBinding="asCharInWord" generateIsSetMethod="true"/>
+		<jaxb:globalBindings underscoreBinding="asCharInWord" generateIsSetMethod="true" />
 	</jaxb:bindings> 
 
 	<!-- Tridas schema. Prefix with 'Tridas'! -->
@@ -18,10 +18,23 @@
 
 	<!-- Corina -->
 	<jaxb:bindings schemaLocation="../src/edu/cornell/dendro/webservice/schemas/corina.xsd" node="/xs:schema">
+	
+		<!-- Rename Corina root element to WSIRootElement -->
+		<jaxb:bindings node="//xs:element[@name='corina']">
+			<jaxb:class name="WSIRootElement" />
+		</jaxb:bindings>
+
+		<!-- Preserve header message code, but keep message content as DOM -->
+		<jaxb:bindings node="//xs:element[@name='message']">
+        	<jaxb:bindings node="./xs:complexType/xs:sequence">
+        		<jaxb:dom/>
+       		</jaxb:bindings>
+		</jaxb:bindings>
+
 		<jaxb:schemaBindings>
 			<jaxb:package name="edu.cornell.dendro.corina.schema"/>
 			<jaxb:nameXmlTransform>
-				<jaxb:elementName prefix="CorinaSvc" />
+				<jaxb:elementName prefix="WSI" />
 			</jaxb:nameXmlTransform>
 		</jaxb:schemaBindings>
 	</jaxb:bindings>
