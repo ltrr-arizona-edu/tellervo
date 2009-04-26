@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
@@ -48,6 +49,12 @@ public class LoginDialog extends JDialog {
 	
 	public LoginDialog(Frame frame) {
 		super(frame, true);
+		
+		initialize();
+	}
+
+	public LoginDialog(Dialog dialog) {
+		super(dialog, true);
 		
 		initialize();
 	}

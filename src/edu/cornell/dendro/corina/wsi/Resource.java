@@ -4,6 +4,7 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 
 import java.awt.EventQueue;
+import java.awt.Window;
 import java.io.IOException;
 
 import javax.swing.event.EventListenerList;
@@ -276,6 +277,25 @@ public abstract class Resource<INTYPE, OUTTYPE> {
 		if(queryThread != null)
 			queryThread.interrupt();
 	}	
+	
+	/** The window that requested this resource */
+	private Window ownerWindow;
+	
+	/**
+	 * Associate an owner window with this resource (can be null)
+	 * @param window
+	 */
+	public void setOwnerWindow(Window window) {
+		this.ownerWindow = window;
+	}
+
+	/**
+	 * Get the associated owner window (can be null)
+	 * @return
+	 */
+	public Window getOwnerWindow() {
+		return this.ownerWindow;
+	}
 	
 	/*
 	 * our event notification handlers are below. This is pretty standard java,

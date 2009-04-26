@@ -30,7 +30,7 @@
 	<classpathentry kind="lib" path="Libraries/jsyntaxpane-0.9.5-b17.jar"/>
 	<classpathentry kind="lib" path="Libraries/activation.jar"/>
 	<classpathentry kind="lib" path="Libraries/jaxb-api.jar"/>
-	<classpathentry kind="lib" path="Libraries/jaxb-impl.jar"/>
+	<classpathentry kind="lib" path="Libraries/jaxb-impl.jar" sourcepath="Libraries/src/jaxb-ri-2_1_11.src.zip"/>
 	<classpathentry kind="lib" path="Libraries/jsr173_1.0_api.jar"/>
 	<classpathentry kind="lib" path="Libraries/commons-lang-2.4-tiny.jar"/>
 	<classpathentry kind="output" path="build"/>

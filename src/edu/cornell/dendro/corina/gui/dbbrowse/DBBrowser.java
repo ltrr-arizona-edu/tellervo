@@ -34,15 +34,18 @@ import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.tridas.TridasObject;
+import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.MeasurementSearchResource;
 import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
-import edu.cornell.dendro.corina.webdbi.ResourceEvent;
-import edu.cornell.dendro.corina.webdbi.ResourceEventListener;
+import edu.cornell.dendro.corina.wsi.ResourceEvent;
+import edu.cornell.dendro.corina.wsi.ResourceEventListener;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
+import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
 public class DBBrowser extends DBBrowser_UI{
     private ElementList selectedElements;
@@ -385,7 +388,7 @@ public class DBBrowser extends DBBrowser_UI{
     	List<SiteRegion> regionList = new ArrayList<SiteRegion>();
 
     	// single selection on site list
-    	lstSites.setModel(new ArrayListModel<TridasObject>());
+    	lstSites.setModel(new ArrayListModel<TridasObjectEx>());
 		lstSites.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		// make it nicely render cells
         lstSites.setCellRenderer(new SiteRenderer());
@@ -418,6 +421,7 @@ public class DBBrowser extends DBBrowser_UI{
 			cboBrowseBy.setSelectedIndex(0);
 		}
 		
+		final DBBrowser glue = this;
 		lstSites.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
 			public void valueChanged(javax.swing.event.ListSelectionEvent lse) {
 				// ignore the first adjustment
@@ -432,23 +436,23 @@ public class DBBrowser extends DBBrowser_UI{
 				}
 				
 				// set up our query...
-				MeasurementSearchResource ms = new MeasurementSearchResource();
+				SearchParameters search = new SearchParameters("measurementSeries");
 				for(int i = 0; i < selected.length; i++) {
-					TridasObject site = (TridasObject) selected[i];
-					ms.getSearchParameters().addSearchConstraint("objectid", "=", site.getID());
+					TridasObjectEx site = (TridasObjectEx) selected[i];
+					search.addSearchConstraint("objectid", "=", site.getIdentifier().getValue());
 				}
 
-				PrototypeLoadDialog dlg = new PrototypeLoadDialog(ms);
+				SeriesSearchResource searchResource = new SeriesSearchResource(search);
+				CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(glue, searchResource);
 				
 				// start our query (remotely)
-				ms.query();		
-				
+				searchResource.query();
 				dlg.setVisible(true);
 				
 				if(!dlg.isSuccessful()) {
 					new Bug(dlg.getFailException());
 				} else {
-					((DBBrowserTableModel)tblAvailMeas.getModel()).setElements(ms.getObject());
+					((DBBrowserTableModel)tblAvailMeas.getModel()).setElements(searchResource.getAssociatedResult());
 				}
 			}
 		});
@@ -491,29 +495,29 @@ public class DBBrowser extends DBBrowser_UI{
 	}
     
     private void populateSiteList() {
-    	Collection<TridasObject> sites = App.tridasObjects.getObjectList();
+    	Collection<TridasObjectEx> sites = App.tridasObjects.getObjectList();
     	SiteRegion region = (SiteRegion) cboBrowseBy.getSelectedItem();
-    	TridasObject selectedSite = (TridasObject) lstSites.getSelectedValue();
+    	TridasObjectEx selectedSite = (TridasObjectEx) lstSites.getSelectedValue();
     	
     	// have we selected 'all regions?'
     	if(region.getInternalRepresentation().equals("ALL")) { 
     		
     		// User has NOT entered filter text
         	if(txtFilterInput.getText().equals("")){
-        		((ArrayListModel<TridasObject>)lstSites.getModel()).replaceContents(sites);
+        		((ArrayListModel<TridasObjectEx>)lstSites.getModel()).replaceContents(sites);
 
         	// User HAS entered filter text
         	} else {
-        		List<TridasObject> filteredSites = new ArrayList<TridasObject>();
+        		List<TridasObjectEx> filteredSites = new ArrayList<TridasObjectEx>();
         		
         		// Loop through master site list and check if filter matches
         		String filter = txtFilterInput.getText().toLowerCase();
-        		for(TridasObject s : sites){
-	        		String search = s.toFullString().toLowerCase();
+        		for(TridasObjectEx s : sites){
+	        		String search = s.toTitleString().toLowerCase();
 	        		if(search.indexOf(filter) != -1)
 	        			filteredSites.add(s);        				
         		}
-        		((ArrayListModel<TridasObject>)lstSites.getModel()).replaceContents(filteredSites);
+        		((ArrayListModel<TridasObjectEx>)lstSites.getModel()).replaceContents(filteredSites);
         	}		
     		
     	
@@ -521,10 +525,10 @@ public class DBBrowser extends DBBrowser_UI{
     	} else {
     		Alert.error("error", "regions are disabled, use all please");
     		/*
-    		List<TridasObject> filteredSites = new ArrayList<TridasObject>();
+    		List<TridasObjectEx> filteredSites = new ArrayList<TridasObject>();
     		
     		// filter the sites...
-    		for(TridasObject s : sites) {
+    		for(TridasObjectEx s : sites) {
     			if(s.inRegion(region.getInternalRepresentation())){
  
     	    		// User has NOT entered filter text
@@ -548,7 +552,7 @@ public class DBBrowser extends DBBrowser_UI{
     	// we have to compare sites. blurgh.
     	if(selectedSite != null) {
     		for(int i = 0; i < lstSites.getModel().getSize(); i++) {
-    			if(((TridasObject)lstSites.getModel().getElementAt(i)).equals(selectedSite)) {
+    			if(((TridasObjectEx)lstSites.getModel().getElementAt(i)).equals(selectedSite)) {
     				lstSites.setSelectedIndex(i);
     				lstSites.ensureIndexIsVisible(i);
     				break;
@@ -595,9 +599,10 @@ public class DBBrowser extends DBBrowser_UI{
      * @param code
      */
     public void selectSiteByCode(String code) {
-    	TridasObject site = App.tridasObjects.findObjectByCode(code);
+    	TridasObjectEx site = App.tridasObjects.findObjectBySiteCode(code);
     	
-    	lstSites.setSelectedValue(site, true);
+    	if(site != null)
+    		lstSites.setSelectedValue(site, true);
     }
     
     /** @return an ElementList of selected elements!

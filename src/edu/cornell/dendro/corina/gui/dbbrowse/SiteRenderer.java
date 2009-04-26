@@ -10,7 +10,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-import edu.cornell.dendro.corina.tridas.TridasObject;
+import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 
 /**
  * A quick and dirty class to render stars in a combo box
@@ -30,11 +30,11 @@ public class SiteRenderer implements ListCellRenderer {
 			c.setBackground(index % 2 == 0 ? DBBrowser.ODD_ROW_COLOR
 					: Color.white);	
 
-		if(value instanceof TridasObject) {
-			TridasObject site = (TridasObject) value;
+		if(value instanceof TridasObjectEx) {
+			TridasObjectEx site = (TridasObjectEx) value;
 			
 			JLabel lblCode = new JLabel(site.getLabCode());
-			JLabel lblName = new JLabel(site.toString());
+			JLabel lblName = new JLabel(site.getTitle());
 			
 			Font font = lblCode.getFont();
 			lblCode.setFont(font.deriveFont(Font.BOLD));
@@ -43,8 +43,9 @@ public class SiteRenderer implements ListCellRenderer {
 			BoxLayout layout = new BoxLayout(c, BoxLayout.Y_AXIS);
 			c.setLayout(layout);
 			
-			if(site.seriesCountsValid()) {
-				String countStr = site.getObjectSeriesCount() + "/" + site.getObjectChildSeriesCount();
+			Integer seriesCount = site.getSeriesCount();
+			if(seriesCount != null) {
+				String countStr = seriesCount + "/" + site.getChildSeriesCount();
 				Font countFont = font.deriveFont(font.getSize() - 1.0f);
 
 				lblCode.setText(lblCode.getText() + "   " + countStr);

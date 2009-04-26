@@ -100,6 +100,7 @@ public abstract class ResourceCacher<INTYPE> implements ResourceEventListener {
 			Object obj = unmarshaller.unmarshal(cacheFile);			
 			myResource.processQueryResult(intypeClass.cast(obj));
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.err.println("Couldn't load cache into "
 					+ myResource.getResourceName() + ": " + e.getMessage());
 			return false;

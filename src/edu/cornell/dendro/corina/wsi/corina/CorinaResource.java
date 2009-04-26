@@ -1,5 +1,8 @@
 package edu.cornell.dendro.corina.wsi.corina;
 
+import java.awt.Dialog;
+import java.awt.Window;
+
 import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.schema.WSIHeader;
@@ -119,7 +122,18 @@ public abstract class CorinaResource extends
 
 		// if we're set to prompt for login on failure, do so!
 		if (badCredentialsBehavior == BadCredentialsBehavior.PROMPT_FOR_LOGIN) {
-			LoginDialog dialog = new LoginDialog();
+			// build a login dialog with the proper owner
+			LoginDialog dialog;
+			Window ownerWindow = getOwnerWindow();
+			if (ownerWindow != null) {
+				if (ownerWindow instanceof Dialog)
+					dialog = new LoginDialog((Dialog) ownerWindow);
+				else if (ownerWindow instanceof Dialog)
+					dialog = new LoginDialog((Dialog) ownerWindow);
+				else
+					dialog = new LoginDialog();
+			} else
+				dialog = new LoginDialog();
 
 			// dialog needs to know the nonce!
 			dialog.setNonce(w.getNonce(), w.getNonceSeq());
