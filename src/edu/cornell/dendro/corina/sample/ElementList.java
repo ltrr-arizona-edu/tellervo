@@ -24,6 +24,10 @@ public class ElementList extends ArrayList<Element> {
 		super();
 	}
 
+	public ElementList(int sz) {
+		super(sz);
+	}
+
 	public ElementList(ElementList src) {
 		super();
 		

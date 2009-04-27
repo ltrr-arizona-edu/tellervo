@@ -3,9 +3,20 @@
  */
 package edu.cornell.dendro.corina.wsi.corina.resources;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.tridas.schema.BaseSeries;
+
+import edu.cornell.dendro.corina.formats.TridasDoc;
+import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.CachedElement;
+import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.schema.WSIRequest;
 import edu.cornell.dendro.corina.schema.WSIRootElement;
+import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.ResourceException;
 import edu.cornell.dendro.corina.wsi.corina.CorinaAssociatedResource;
 import edu.cornell.dendro.corina.wsi.corina.ResourceQueryType;
@@ -38,6 +49,37 @@ public class SeriesSearchResource extends CorinaAssociatedResource<ElementList> 
 	@Override
 	protected boolean processQueryResult(WSIRootElement object)
 			throws ResourceException {
-		return false;
+		
+		// get a list of only the 'series' elements
+		List<BaseSeries> seriesList = ListUtil.subListOfType(
+				object.getContent().getSqlOrObjectOrElement(), BaseSeries.class);
+
+		// a list of our elements
+		ElementList elements = new ElementList(seriesList.size());
+		TridasDoc reader = new TridasDoc();
+		
+		for(BaseSeries series : seriesList) {
+			BaseSample sample;
+			
+			try {
+				sample = reader.loadFromBaseSeries(series);
+			} catch (IOException e) {
+				System.err.println("Couldn't loadFromBaseSeries: " + e.toString());
+				continue;
+			}
+			
+			// create an loader and associate it with this sample
+			CorinaWsiTridasElement loader = new CorinaWsiTridasElement(series.getIdentifier());
+			sample.setLoader(loader);
+			
+			// create an associated element and add it to our list
+			CachedElement cachedElement = new CachedElement(sample);
+			elements.add(cachedElement);
+		}
+		
+		// associate our result..
+		setAssociatedResult(elements);
+		
+		return true;
 	}
 }

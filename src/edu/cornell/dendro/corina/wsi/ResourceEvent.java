@@ -18,8 +18,8 @@ public class ResourceEvent extends EventObject {
 	public static final int RESOURCE_DEBUG_OUT = 4;			// no params
 
 	private int eventType;
-	private Exception attachedException = null;
-	private Object attachedObject = null;
+	private Exception attachedException;
+	private Object attachedObject;
 	
 	public int getEventType() {
 		return eventType;

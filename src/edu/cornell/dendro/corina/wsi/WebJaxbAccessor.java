@@ -277,7 +277,27 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 
 			throw new IOException("The server returned a protocol error " + hre.getStatusCode() + 
 					": " + hre.getLocalizedMessage());
+		} catch (ResponseProcessingException rspe) {
+			Throwable cause = rspe.getCause();
+			BugReport bugs = new BugReport(cause);
+			Document invalidDoc = rspe.getNonvalidatingDocument();
+			File invalidFile = rspe.getInvalidFile();
+
+			bugs.addDocument("sent.xml", sendingObject);
+			if(invalidDoc != null)
+				bugs.addDocument("recv-nonvalid.xml", invalidDoc);
+			if(invalidFile != null)
+				bugs.addDocument("recv-malformed.xml", invalidFile);
 			
+			new Bug(cause, bugs);
+			
+			XMLDebugView.addDocument(BugReport.getStackTrace(cause), "Parsing Exception", true);
+			
+			// it's probably an ioexception...
+			if(cause instanceof IOException)
+				throw (IOException) cause;
+			
+			throw rspe;
 		} catch (XMLParsingException xmlpe) {
 			Throwable cause = xmlpe.getCause();
 			BugReport bugs = new BugReport(cause);

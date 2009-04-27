@@ -23,6 +23,10 @@ public class Metadata {
 	/** The name of the sample. Usually something like 'A', 'C', etc */
 	public final static String NAME = "name";
 	
+	/* Timestamps */
+	public final static String CREATED_TIMESTAMP = "createdTimestamp";
+	public final static String MODIFIED_TIMESTAMP = "modifiedTimestamp";
+	
 	/** The server says this is a "legacy cleaned" sample
 	 * FIXME: What is that, exactly?
 	 */

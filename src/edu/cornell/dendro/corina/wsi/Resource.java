@@ -187,7 +187,7 @@ public abstract class Resource<INTYPE, OUTTYPE> {
 		} finally {
 			// Notify listeners that everything went well
 			// no matter what!
-			fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_QUERY_COMPLETE));
+			fireResourceEvent(new ResourceEvent(this, ResourceEvent.RESOURCE_QUERY_COMPLETE, object));
 		}
 	}
 

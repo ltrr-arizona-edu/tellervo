@@ -49,9 +49,10 @@ public class TridasObjectList extends CorinaResource {
 		SearchParameters params = new SearchParameters("object");
 		
 		params.setIncludeChildren(true);
-		params.addSearchConstraint("parentObjectID", "is", "NULL");
+		params.addSearchConstraint("parentobjectid", "is", "NULL");
 		
 		request.setSearchParams(params);
+		request.setType("search");
 	}
 
 	/* (non-Javadoc)
@@ -60,7 +61,7 @@ public class TridasObjectList extends CorinaResource {
 	@Override
 	protected boolean processQueryResult(WSIRootElement object)
 			throws ResourceException {
-				
+
 		// get a list of only tridas objects
 		List<TridasObjectEx> objects = ListUtil.subListOfType(
 				object.getContent().getSqlOrObjectOrElement(), TridasObjectEx.class);
